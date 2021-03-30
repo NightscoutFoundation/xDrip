@@ -316,7 +316,7 @@ public class NFCReaderX {
                         // Protect against wifi reader and gmc reader coming at the same time.
                         synchronized (NFCReaderX.class) {
                             mResult.CalculateSmothedData();
-                            LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult), CaptureDateTime, tagId, allowUpload, patchUid, patchInfo );
+                            LibreAlarmReceiver.processReadingDataTransferObject( mResult, CaptureDateTime, tagId, allowUpload, patchUid, patchInfo );
                             Home.staticRefreshBGCharts();
                         }
                     } finally {

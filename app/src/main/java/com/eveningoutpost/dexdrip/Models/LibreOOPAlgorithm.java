@@ -215,9 +215,9 @@ public class LibreOOPAlgorithm {
             return;
         }
         boolean use_raw = Pref.getBooleanDefaultFalse("calibrate_external_libre_algorithm");
-        ReadingData.TransferObject libreAlarmObject = new ReadingData.TransferObject();
-        libreAlarmObject.data = new ReadingData();
-        libreAlarmObject.data.trend = new ArrayList<GlucoseData>();
+        ReadingData readingData = new ReadingData();
+
+        readingData.trend = new ArrayList<GlucoseData>();
         
         double factor = 1;
         if(use_raw) {
@@ -232,21 +232,21 @@ public class LibreOOPAlgorithm {
         glucoseData.realDate = oOPResults.timestamp;
         glucoseData.glucoseLevel = (int)(oOPResults.currentBg * factor);
         glucoseData.glucoseLevelRaw = (int)(oOPResults.currentBg * factor);
-        
-        libreAlarmObject.data.trend.add(glucoseData);
+
+        readingData.trend.add(glucoseData);
         
         // TODO: Add here data of last 10 minutes or whatever.
         
         
-       // Add the historic data
-        libreAlarmObject.data.history = new ArrayList<GlucoseData>();
+        // Add the historic data
+        readingData.history = new ArrayList<GlucoseData>();
         for(HistoricBg historicBg : oOPResults.historicBg) {
             if(historicBg.quality == 0) {
                 glucoseData = new GlucoseData();
                 glucoseData.realDate = oOPResults.timestamp + (historicBg.time - oOPResults.currentTime) * 60000;
                 glucoseData.glucoseLevel = (int)(historicBg.bg * factor);
                 glucoseData.glucoseLevelRaw = (int)(historicBg.bg * factor);
-                libreAlarmObject.data.history.add(glucoseData);
+                readingData.history.add(glucoseData);
             }
         }
         
@@ -256,10 +256,10 @@ public class LibreOOPAlgorithm {
         glucoseData.realDate = oOPResults.timestamp;
         glucoseData.glucoseLevel = (int)(oOPResults.currentBg * factor);
         glucoseData.glucoseLevelRaw = (int)(oOPResults.currentBg * factor);
-        libreAlarmObject.data.history.add(glucoseData);
+        readingData.history.add(glucoseData);
         
-        Log.e(TAG, "handleData Created the following object " + libreAlarmObject.toString());
-        LibreAlarmReceiver.CalculateFromDataTransferObject(libreAlarmObject, use_raw);
+        Log.e(TAG, "handleData Created the following object " + readingData.toString());
+        LibreAlarmReceiver.CalculateFromDataTransferObject(readingData, use_raw);
     }
     
     public static SensorType getSensorType(byte []SensorInfo) {
@@ -300,14 +300,13 @@ public class LibreOOPAlgorithm {
         int sensorTime = 256 * (ble_data[41] & 0xFF) + (ble_data[40] & 0xFF);
         Log.e(TAG, "Creating BG time =  " + sensorTime + "raw = " + raw);
         
-        ReadingData.TransferObject libreAlarmObject = new ReadingData.TransferObject();
-        libreAlarmObject.data = new ReadingData();
-        libreAlarmObject.data.trend = new ArrayList<GlucoseData>();
+        ReadingData readingData= new ReadingData();
+        readingData.trend = new ArrayList<GlucoseData>();
 
-        libreAlarmObject.data.raw_data = ble_data;
-        libreAlarmObject.data.trend = parseBleDataPerMinute(ble_data, timestamp);
-        
-        libreAlarmObject.data.history = parseBleDataHistory(ble_data, timestamp);
+        readingData.raw_data = ble_data;
+        readingData.trend = parseBleDataPerMinute(ble_data, timestamp);
+
+        readingData.history = parseBleDataHistory(ble_data, timestamp);
 
         //========= add code here for smoothing and gap closing.
 
@@ -315,8 +314,8 @@ public class LibreOOPAlgorithm {
         String SensorSN = LibreUtils.decodeSerialNumberKey(patchUid);
         
         // TODO: Add here data of last 10 minutes or whatever.
-        Log.e(TAG, "handleDecodedBleResult Created the following object " + libreAlarmObject.toString());
-        LibreAlarmReceiver.processReadingDataTransferObject(libreAlarmObject, timestamp, SensorSN, true /*=allowupload*/, patchUid, null/*=patchInfo*/);   
+        Log.e(TAG, "handleDecodedBleResult Created the following object " + readingData.toString());
+        LibreAlarmReceiver.processReadingDataTransferObject(readingData, timestamp, SensorSN, true /*=allowupload*/, patchUid, null/*=patchInfo*/);
     }
 
     public static ArrayList<GlucoseData> parseBleDataPerMinute(byte[] ble_data, Long captureDateTime) {

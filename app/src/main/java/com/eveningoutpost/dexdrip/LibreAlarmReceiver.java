@@ -158,7 +158,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                                     final ReadingData.TransferObject object =
                                             new Gson().fromJson(data, ReadingData.TransferObject.class);
                                     object.data.CalculateSmothedData();
-                                    processReadingDataTransferObject(object, JoH.tsl(), "LibreAlarm", false, null, null);
+                                    processReadingDataTransferObject(object.data, JoH.tsl(), "LibreAlarm", false, null, null);
                                     Log.d(TAG, "At End: Oldest : " + JoH.dateTimeText(oldest_cmp) + " Newest : " + JoH.dateTimeText(newest_cmp));
                                 } catch (Exception e) {
                                     Log.wtf(TAG, "Could not process data structure from LibreAlarm: " + e.toString());
@@ -179,27 +179,28 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
         }.start();
     }
 
-    public static void processReadingDataTransferObject(ReadingData.TransferObject object, long CaptureDateTime, String tagid, boolean allowUpload, byte []patchUid,  byte []patchInfo) {
-    	Log.i(TAG, "Data that was recieved from librealarm is " + HexDump.dumpHexString(object.data.raw_data));
+    public static void processReadingDataTransferObject(ReadingData readingData, long CaptureDateTime, String tagid, boolean allowUpload, byte []patchUid,  byte []patchInfo) {
+    	Log.i(TAG, "Data that was recieved from librealarm is " + HexDump.dumpHexString(readingData.raw_data));
     	// Save raw block record (we start from block 0)
-        LibreBlock.createAndSave(tagid, CaptureDateTime, object.data.raw_data, 0, allowUpload, patchUid,  patchInfo);
+        LibreBlock.createAndSave(tagid, CaptureDateTime, readingData.raw_data, 0, allowUpload, patchUid,  patchInfo);
 
         if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
-            if(object.data.raw_data == null) {
+            if(readingData.raw_data == null) {
                 Log.e(TAG, "Please update LibreAlarm to use OOP algorithm");
                 JoH.static_toast_long(gs(R.string.please_update_librealarm_to_use_oop_algorithm));
                 return;
             }
-            LibreOOPAlgorithm.sendData(object.data.raw_data, CaptureDateTime, tagid);
+            LibreOOPAlgorithm.sendData(readingData.raw_data, CaptureDateTime, tagid);
             return;
         }
-        CalculateFromDataTransferObject(object, use_raw_);
+        CalculateFromDataTransferObject(readingData, use_raw_);
     }
         
-    public static void CalculateFromDataTransferObject(ReadingData.TransferObject object, boolean use_raw) {
+    public static void CalculateFromDataTransferObject(ReadingData readingData, boolean use_raw) {
+        Log.i(TAG, "CalculateFromDataTransferObject called");
     	boolean use_smoothed_data = Pref.getBooleanDefaultFalse("libre_use_smoothed_data");
         // insert any recent data we can
-        final List<GlucoseData> mTrend = object.data.trend;
+        final List<GlucoseData> mTrend = readingData.trend;
         if (mTrend != null && mTrend.size() > 0) {
             Collections.sort(mTrend);
             final long thisSensorAge = mTrend.get(mTrend.size() - 1).sensorTime;
@@ -219,6 +220,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                     JoH.static_toast_long(gs(R.string.sensor_clock_has_not_advanced));
                     Pref.setBoolean("nfc_age_problem", true);
                 }
+                Log.d(TAG, "Sensor age did not advanced to: " + thisSensorAge);
                 return; // do not try to insert again
             } else {
                 Log.wtf(TAG, "Sensor age has gone backwards!!! " + sensorAge);
@@ -254,7 +256,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
             }
 
             // munge and insert the history data if any is missing
-            final List<GlucoseData> mHistory = object.data.history;
+            final List<GlucoseData> mHistory = readingData.history;
             if ((mHistory != null) && (mHistory.size() > 1)) {
                 Collections.sort(mHistory);
                 //applyTimeShift(mTrend, shiftx);
