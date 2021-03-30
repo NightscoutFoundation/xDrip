@@ -2,10 +2,10 @@
 <resources>
     <string name="title_activity_bluetooth_scan">Pesquisa Bluetooth</string>
     <string name="connected">Conectado</string>
-    <string name="disconnected">Desligado</string>
+    <string name="disconnected">Desconectado</string>
     <string name="menu_scan">Pesquisar</string>
     <string name="menu_stop">Parar</string>
-    <string name="menu_refresh">Actualizar</string>
+    <string name="menu_refresh">Atualizar</string>
     <string name="menu_export_database">Exportar base de dados</string>
     <string name="menu_export_csv_sidiary">Exportar CSV (formato SiDiary)</string>
     <string name="menu_import_db">Importar base de dados</string>
@@ -15,7 +15,7 @@
     <string name="title_activity_raw_data_table">Tabela de Dados em Bruto</string>
     <string name="title_activity_calculated_data_table">Tabela de Dados Calculados</string>
     <string name="title_activity_start_new_sensor">Iniciar Novo Sensor</string>
-    <string name="title_activity_new_sensor_location">Localização de Novo Sensor</string>
+    <string name="title_activity_new_sensor_location">Localização do Novo Sensor</string>
     <string name="title_activity_stop_sensor">Parar Sensor</string>
     <string name="title_activity_nav_drawer">Menu de Navegação</string>
     <string name="navigation_drawer_open">Abrir menu de navegação</string>
