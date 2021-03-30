@@ -309,7 +309,7 @@ public class LibreOOPAlgorithm {
         
         libreAlarmObject.data.history = parseBleDataHistory(ble_data, timestamp);
 
-        //========= add code here for smmothing and gap closing.
+        //========= add code here for smoothing and gap closing.
 
 
         String SensorSN = LibreUtils.decodeSerialNumberKey(patchUid);
@@ -383,7 +383,7 @@ public class LibreOOPAlgorithm {
     
     static public void handleOop2DecryptFarmResult(String tagId, long CaptureDateTime, byte[] buffer, byte []patchUid,  byte []patchInfo ) {
         lastRecievedData = JoH.tsl();
-        Log.e(TAG, "handleOop2PingResult - data" + JoH.bytesToHex(buffer));
+        Log.e(TAG, "handleOop2DecryptFarmResult - data " + JoH.bytesToHex(buffer));
         NFCReaderX.HandleGoodReading(tagId, buffer, CaptureDateTime, false , patchUid, patchInfo, true );
     }
     
