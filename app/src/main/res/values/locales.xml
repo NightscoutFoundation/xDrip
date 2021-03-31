@@ -21,6 +21,7 @@
         <item>русский</item>
         <item>עברית</item>
         <item>한국어</item>
+        <item>Українська</item>
     </string-array>
     <string-array name="LocaleChoicesValues">
         <item>nb</item>
@@ -43,5 +44,6 @@
         <item>ru</item>
         <item>iw</item>
         <item>ko</item>
+        <item>uk</item>
     </string-array>
 </resources>
