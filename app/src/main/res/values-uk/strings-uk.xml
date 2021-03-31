@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_activity_bluetooth_scan">Пошук Bluetooth-пристроїв</string>
+    <string name="connected">Підключено</string>
+    <string name="disconnected">Відключено</string>
+    <string name="menu_scan">Пошук</string>
+    <!-- MongoDB Settings -->
+    <string name="pref_default_mongodb_uri">mongodb://{користувач}:{пароль}@{хост}.mongolab.com:{11111}/{база даних}</string>
+    <!-- API Settings -->
+    <string name="pref_message_api_url">Майте на увазі, це лише основний URL і завантажувач буде автоматично додавати записи для POST-запитів. Значення API-SECRET на сервері повинно співпадати з Вашим паролем в налаштуваннях.</string>
+    <string name="pref_default_api_url">https://{пароль}@{сайт}.azurewebsites.net/API/v1/</string>
+    <!-- wifi Settings -->
+    <!-- Location Settings -->
+    <!-- broadcast settings -->
+    <!-- pebble settings -->
+    <string name="pref_summary_display_trend">Відображати тенденцію цукру крові на циферблаті Pebble Trend.</string>
+    <!-- Amazfit Settings -->
+    <string name="showcase_note_long">Кнопка Нотатки тепер передбачає використання голосового введення.\n\nУтримуйте кнопку Нотатки, щоб ввести коментар за допомогою клавіатури або змінити налаштування.</string>
+    <string name="showcase_redo">Кнопка Відновити дозволяє повернути останнє введене користувачем (а, потім, віддалене) значення дози інсуліну, вуглеводів, калібрування або нотатки.\n\nЧерез 30 хвилин, з моменту останньої дії, кнопка зникає з меню.</string>
+    <string name="showcase_undo">Кнопка Скасувати дозволяє видалити останнє введене користувачем значення дози інсуліну, вуглеводів, калібрування або нотатки.\n\nЧерез 30 хвилин, з моменту останньої дії, кнопка зникає з меню.</string>
+    <string name="minutes_with_bracket">" хв)"</string>
+    <string name="please_wait_need_two_readings_first">Будь ласка, зачекайте, поки будуть отримані 2 перших значення від трансмітера.</string>
+    <string name="double_check_dex_receiver_serial_number">Переконайтеся в правильності введеного серійного номера ресивера Dexcom. У ньому має бути 10 символів (не забудьте літери).</string>
+    <string name="persistent_high_for_greater_than">Тривала гіперглікемія більше &gt; </string>
+    <string name="space_mins">" хв"</string>
+    <string name="are_you_sure_you_want_switch_parakeet_to_setup">Ви впевнені, що хочете перемкнути Parakeet в режим налаштування?\n\nЗазвичай, даний режим використовується тільки для передачі на Parakeet текстових повідомлень, за допомогою яких можна, наприклад, змінити трансмітер, з якого Parakeet отримує дані тощо.</string>
+    <!-- trend arrow for speak -->
+</resources>
