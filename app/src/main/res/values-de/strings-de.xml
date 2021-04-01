@@ -891,7 +891,7 @@
     <string name="Speech_speed">Sprachgeschwindigkeit</string>
     <string name="Speech_pitch">Sprachliche Tonhöhe</string>
     <string name="Speak_Alerts">Sprich Alarme</string>
-    <string name="Speak_Alerts_Summary">Spricht die Alarmwerte bei Über-/Unterschreitungn aus</string>
+    <string name="Speak_Alerts_Summary">Spricht die Alarmwerte bei Über-/Unterschreitungen aus</string>
     <string name="advanced_bluereader_settings_summary">Erweiterte blueReader Einstellungen</string>
     <string name="advanced_bluereader_settings">blueReader Einstellungen</string>
     <string name="bluereader_restdays_onhome_sum">Zeigt die kalkulierte Restbatterielaufzeit in Tagen auf dem Übersichtsbildschirm an</string>
