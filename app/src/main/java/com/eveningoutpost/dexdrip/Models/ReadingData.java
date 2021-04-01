@@ -3,18 +3,22 @@ package com.eveningoutpost.dexdrip.Models;
 // class from LibreAlarm
 
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+
+import com.eveningoutpost.dexdrip.utils.LibreTrendPoint;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class ReadingData {
 
-    public List<GlucoseData> trend;
-    public List<GlucoseData> history;
+    private static final String TAG = "ReadingData";
+    public List<GlucoseData> trend; // Per minute data.
+    public List<GlucoseData> history;  // Per 15 minutes data.
     public byte[] raw_data;
 
     public ReadingData() {
-        this.trend = new ArrayList<>();
-        this.history = new ArrayList<>();
+        this.trend = new ArrayList<GlucoseData>();
+        this.history = new ArrayList<GlucoseData>();
         // The two bytes are needed here since some components don't like a null pointer.
         this.raw_data = new byte[2];
     }
@@ -98,6 +102,36 @@ public class ReadingData {
         // print the values, remove before release
         for (int i=0; i < trend.size() ; i++) {
             Log.e("xxx","" + i + " raw val " +  trend.get(i).glucoseLevelRaw + " smoothed " +  trend.get(i).glucoseLevelRawSmoothed);
+        }
+    }
+
+    public void ClearErrors(List<LibreTrendPoint> libreTrendPoints) {
+        // For the history data where each reading holds data for 15 minutes we remove only bad points.
+        Iterator<GlucoseData> it = history.iterator();
+        while (it.hasNext()) {
+            GlucoseData glucoseData = it.next();
+            if (libreTrendPoints.get((int)glucoseData.sensorTime).isError()) {
+                it.remove();
+            }
+        }
+
+        // For the per minute data, we are also going to check that the data from the last 4 minutes did not have an error.
+        it = trend.iterator();
+        while (it.hasNext()) {
+            GlucoseData glucoseData = it.next();
+            if(glucoseData.sensorTime < 4) {
+                // The first points are not intersting in any case.
+                continue;
+            }
+            boolean eroroFound = false;
+            for (int i = 0; i < 4 && !eroroFound; i++) {
+                if (libreTrendPoints.get((int) glucoseData.sensorTime - i ).isError()) {
+                    Log.e(TAG, "removnig point with flags = " + glucoseData.flags + " val = " + glucoseData.glucoseLevelRaw);
+                    it.remove();
+                    eroroFound = true;
+                    continue;
+                }
+            }
         }
     }
 }

@@ -24,10 +24,13 @@ import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.utils.LibreTrendUtil;
 import com.google.gson.Gson;
 
 import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
 import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
+
+import com.eveningoutpost.dexdrip.utils.LibreTrendPoint;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,7 +48,6 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
     private static final String TAG = "jamorham librereceiver";
     private static final boolean debug = false;
     private static final boolean d = true;
-    private static final boolean use_raw_ = true;
     private static final long segmentation_timeslice = (long)(Constants.MINUTE_IN_MS * 4.5);
     private static SharedPreferences prefs;
     private static long oldest = -1;
@@ -55,6 +57,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
     private static final Object lock = new Object();
     private static long sensorAge = 0;
     private static long timeShiftNearest = -1;
+    private static final long days_in_msec =  24 * 60* 60 * 1000;
 
     public static void clearSensorStats() {
         Pref.setInt("nfc_sensor_age", 0); // reset for nfc sensors
@@ -182,7 +185,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
     public static void processReadingDataTransferObject(ReadingData readingData, long CaptureDateTime, String tagid, boolean allowUpload, byte []patchUid,  byte []patchInfo) {
     	Log.i(TAG, "Data that was recieved from librealarm is " + HexDump.dumpHexString(readingData.raw_data));
     	// Save raw block record (we start from block 0)
-        LibreBlock.createAndSave(tagid, CaptureDateTime, readingData.raw_data, 0, allowUpload, patchUid,  patchInfo);
+        LibreBlock libreBlock = LibreBlock.createAndSave(tagid, CaptureDateTime, readingData.raw_data, 0, allowUpload, patchUid,  patchInfo);
 
         if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             if(readingData.raw_data == null) {
@@ -193,12 +196,24 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
             LibreOOPAlgorithm.sendData(readingData.raw_data, CaptureDateTime, tagid);
             return;
         }
-        CalculateFromDataTransferObject(readingData, use_raw_);
+        // smooth data here - how do we get the data to smooth... 
+        boolean use_smoothed_data = Pref.getBooleanDefaultFalse("libre_use_smoothed_data");
+        LibreTrendUtil libreTrendUtil = LibreTrendUtil.getInstance();
+        // Get the data for the last 24 hours, as this affects the cache.
+        
+        List<LibreTrendPoint> libreTrendPoints = libreTrendUtil.getData(JoH.tsl() - days_in_msec, JoH.tsl());
+        readingData.ClearErrors(libreTrendPoints);
+        if(use_smoothed_data) {
+            
+        } else {
+            // Not using smoothing, only remove error points. 
+        }
+        
+        CalculateFromDataTransferObject(readingData, use_smoothed_data, true);
     }
         
-    public static void CalculateFromDataTransferObject(ReadingData readingData, boolean use_raw) {
+    public static void CalculateFromDataTransferObject(ReadingData readingData, boolean use_smoothed_data, boolean use_raw) {
         Log.i(TAG, "CalculateFromDataTransferObject called");
-    	boolean use_smoothed_data = Pref.getBooleanDefaultFalse("libre_use_smoothed_data");
         // insert any recent data we can
         final List<GlucoseData> mTrend = readingData.trend;
         if (mTrend != null && mTrend.size() > 0) {
