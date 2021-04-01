@@ -12,6 +12,8 @@ import com.eveningoutpost.dexdrip.Models.GlucoseData;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.ReadingData;
 
+import com.eveningoutpost.dexdrip.utils.LibreTrendPoint;
+
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 /* 
@@ -28,11 +30,6 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
     
 
 */
-// This class represents a per minute data from the libre.
-class LibreTrendPoint {
-    long sensorTime; // The number of minutes from sensor start.
-    long rawSensorValue; // The raw value of the sensor 
-}
 
 // Represents the last point that we have data on.
 class LibreTrendLatest {
@@ -97,7 +94,7 @@ public class LibreTrendUtil {
         return timeId >= 0 && timeId < MAX_POINTS;
     }
     
-    List<LibreTrendPoint> getData(long startTimestamp, long endTimestamp) {
+    public List<LibreTrendPoint> getData(long startTimestamp, long endTimestamp) {
         Log.i(TAG, "Size of array is " + m_points.size() + " this = " + this);
         
         long startTime = Math.max(startTimestamp, m_libreTrendLatest.timestamp);
@@ -157,39 +154,7 @@ public class LibreTrendUtil {
         
         // Go over all blocks from the earlier to the latest, and fill the data.
         for (LibreBlock libreBlock : latestBlocks) {
-            if(!libreBlock.reference.equals(m_libreTrendLatest.SensorSN)) {
-                Log.i(TAG, "Detected a sensor change (or a new one) new sn is " + libreBlock.reference);
-                ResetPoints();
-                m_libreTrendLatest.SensorSN = libreBlock.reference;
-            }
-            
-            List<GlucoseData> trend = NFCReaderX.getTrend(libreBlock);
-            if(trend == null) {
-                Log.i(TAG, "NFCReaderX.getTrend returned null, ignoring reading");
-                continue;
-            }
-            // Go over all trend data (from the earlier to the later)
-            for (int i = trend.size() - 1; i >= 0; i--) {
-                GlucoseData glucoseData = trend.get(i);
-                if (debug_per_minute) {
-                    Log.i(TAG, "time = " + glucoseData.sensorTime + " = " + glucoseData.glucoseLevelRaw);
-                }
-                
-                long id = glucoseData.sensorTime;
-                if(IsTimeValid(id) == false) {
-                    Log.e(TAG, "Error invalid id (time) for bg " + id);
-                    return m_points;
-                }
-                
-                if(m_points.get((int)id).rawSensorValue == 0) {
-                    m_points.get((int)id).rawSensorValue = glucoseData.glucoseLevelRaw;
-                    m_points.get((int)id).sensorTime  = id;
-                    if(m_libreTrendLatest.id < id && m_libreTrendLatest.id != 0) {
-                        Log.wtf(TAG, "Error - we have seen an id bigger than latest id. m_libreTrendLatest.m_Id = " + m_libreTrendLatest.id + " id = " + id);
-                        Reset();
-                    }
-                }
-            }
+            AddLibreblock(libreBlock);
         }
         if(debug_per_minute) {
             Log.i(TAG, "Here are the points that we have");
@@ -208,6 +173,45 @@ public class LibreTrendUtil {
         }
         return m_points;
     }
+
+    public void AddLibreblock(LibreBlock libreBlock) {
+        if(!libreBlock.reference.equals(m_libreTrendLatest.SensorSN)) {
+            Log.i(TAG, "Detected a sensor change (or a new one) new sn is " + libreBlock.reference);
+            ResetPoints();
+            m_libreTrendLatest.SensorSN = libreBlock.reference;
+        }
+        
+        List<GlucoseData> trend = NFCReaderX.getTrend(libreBlock);
+        if(trend == null) {
+            Log.i(TAG, "NFCReaderX.getTrend returned null, ignoring reading");
+            return;
+        }
+        // Go over all trend data (from the earlier to the later)
+        for (int i = trend.size() - 1; i >= 0; i--) {
+            GlucoseData glucoseData = trend.get(i);
+            if (debug_per_minute) {
+                Log.i(TAG, "time = " + glucoseData.sensorTime + " = " + glucoseData.glucoseLevelRaw);
+            }
+            
+            long id = glucoseData.sensorTime;
+            if(IsTimeValid(id) == false) {
+                Log.e(TAG, "Error invalid id (time) for bg " + id);
+                return;
+            }
+            
+            if(m_points.get((int)id).rawSensorValue == 0) {
+                m_points.get((int)id).rawSensorValue = glucoseData.glucoseLevelRaw;
+                m_points.get((int)id).sensorTime  = id;
+                m_points.get((int)id).flags = glucoseData.flags;
+                m_points.get((int)id).source = glucoseData.source;
+                if(m_libreTrendLatest.id < id && m_libreTrendLatest.id != 0) {
+                    Log.wtf(TAG, "Error - we have seen an id bigger than latest id. m_libreTrendLatest.m_Id = " + m_libreTrendLatest.id + " id = " + id);
+                    Reset();
+                }
+            }
+        }
+    }
+    
     LibreTrendLatest getLibreTrendLatest() {
         return m_libreTrendLatest;
     }
