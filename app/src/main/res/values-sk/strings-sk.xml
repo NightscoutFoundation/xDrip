@@ -295,6 +295,7 @@
     <string name="start_snoozed">Začiatok odkladu</string>
     <string name="adjust_all_by_a_factor">Všetko prepočítať faktorom</string>
     <string name="reset">Resetovať</string>
+    <string name="pebble_and_android_wear_options">Nastavenia pre rôzne hodinky</string>
     <string name="customize_colours">Prispôsobiť farby</string>
     <string name="xdrip_plus_color_settings">Nastavenie xDrip+ farieb</string>
     <string name="glucose_values_and_lines">Hodnoty a čiary glykémií</string>
@@ -794,7 +795,7 @@
     <string name="DoubleDown">Rýchly pokles</string>
     <string name="SingleDown">Pokles</string>
     <string name="FortyFiveDown">Mierny pokles</string>
-    <string name="Flat">V rovine</string>
+    <string name="Flat">Rovno</string>
     <string name="FortyFiveUp">Mierny nárast</string>
     <string name="SingleUp">Nárast</string>
     <string name="DoubleUp">Rýchly nárast</string>
@@ -953,6 +954,7 @@ Je nutné zakázať v prípade, že chcete používať xdrip cifreník. (Požado
     <string name="miband_bg_dialog_title">Aktualizovať hodnoty glykémie teraz?</string>
     <string name="title_lefun_locale_12_hour">Zobrazovať čas v 12-hodinovom formáte</string>
     <string name="title_screens">Obrazovky</string>
+    <string name="summary_nsfollow_url">Web adresa, ktorú chceš sledovať</string>
     <string name="title_nsfollow_url">URL pre sledovanie Nightscout</string>
     <string name="summary_nsfollow_download_treatments">Ako nasledovník získavaj dáta aj z Nightscout</string>
     <string name="title_xdrip_plus_number_icon">Číselná ikona v oznamovacej oblasti</string>
@@ -966,6 +968,18 @@ Je nutné zakázať v prípade, že chcete používať xdrip cifreník. (Požado
     <string name="title_use_number_icon_large">Použiť veľkú číselnú ikonu</string>
     <string name="summary_number_icon_large_arrow">Zobraziť šípky trendov vo veľkej ikone</string>
     <string name="title_number_icon_large_arrow">Ukázať šípku vo veľkej ikone</string>
+    <string name="summary_inpen_screen">Sťahovanie informácií o dávkach</string>
+    <string name="title_inpen_screen">Inzulínové pero InPen</string>
+    <string name="title_inpen_enabled">Podpora InPen</string>
+    <string name="summary_inpen_sounds">Zvukom oznám prenos dát s perom</string>
+    <string name="title_inpen_sounds">Prehrávať zvuky</string>
+    <string name="summary_inpen_reset">Resetuj a nájdi nové pero v móde párovania</string>
+    <string name="title_inpen_reset">Nájsť nové pero</string>
+    <string name="summary_pendiq_screen">Čítanie a zápis dávok inzulínu</string>
+    <string name="title_pendiq_screen">Inzulínové pero Pendiq 2.0</string>
+    <string name="title_use_pendiq">Podpora pre Pendiq 2.0</string>
+    <string name="title_pendiq_send_treatments">Poslať ošetrenia do pera</string>
+    <string name="title_pendiq_pin">PIN kód pera</string>
     <string name="summary_play_sound_for_initial_calibration">Prehrať zvuk keď je požadovaná úvodná kalibrácia</string>
     <string name="title_play_sound_for_initial_calibration">Počiatočné upozornenie</string>
     <string name="category_falling_rising_bg">Pokles/nárast glykémie</string>
@@ -1014,6 +1028,7 @@ Je nutné zakázať v prípade, že chcete používať xdrip cifreník. (Požado
     <string name="yes_please">ÁNO, prosím</string>
     <string name="automated_calibration_enabled">Automatická kalibrácia je povolená</string>
     <string name="librealarm_data_format_appears_incompatible_protocol_changed_or_no_data">Dáta z LibreAlarm sú nekompatibilné!? Zmenil sa protokol, alebo nie sú dáta?</string>
+    <string name="sensor_age_has_gone_backwards">Vek senzora sa vrátil v čase!!</string>
     <string name="phone_has_no_nfc_reader">Telefón nemá čítačku NFC</string>
     <string name="nfc_is_not_enabled">NFC nie je povolené</string>
     <string name="not_so_quickly_wait_60_seconds">Nie tak rýchlo, počkaj 60 sekúnd</string>

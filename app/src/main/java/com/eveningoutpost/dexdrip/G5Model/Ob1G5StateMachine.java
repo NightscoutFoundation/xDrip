@@ -239,6 +239,7 @@ public class Ob1G5StateMachine {
         switch (pkt.type) {
             case AuthChallengeRxMessage:
                 // Respond to the challenge request
+                verifyChallengeHash(((AuthChallengeRxMessage) pkt.msg).tokenHash);
                 byte[] challengeHash = calculateChallengeHash(((AuthChallengeRxMessage) pkt.msg).challenge);
                 if (d)
                     UserError.Log.d(TAG, "challenge hash" + Arrays.toString(challengeHash));
@@ -597,6 +598,9 @@ public class Ob1G5StateMachine {
                                 // TODO persist this
                                 parent.msg("Session Started Successfully: " + JoH.dateTimeText(session_start.getSessionStart()) + " " + JoH.dateTimeText(session_start.getRequestedStart()) + " " + JoH.dateTimeText(session_start.getTransmitterTime()));
                                 DexResetHelper.cancel();
+                                if (!parent.lastSensorState.sensorStarted()) {
+                                    parent.lastSensorState = CalibrationState.SensorStarted;
+                                }
                             } else {
                                 final String msg = "Session Start Failed: " + session_start.message();
                                 parent.msg(msg);
@@ -611,10 +615,22 @@ public class Ob1G5StateMachine {
                                         UserError.Log.e(TAG, "No reset as TimeKeeper reports invalid: " + tk);
                                     }
                                 }
-                                if (Pref.getBooleanDefaultFalse("ob1_g5_restart_sensor") && (Sensor.isActive())) {
-                                    if (pratelimit("secondary-g5-start", 1800)) {
-                                        UserError.Log.ueh(TAG, "Trying to Start sensor again");
-                                        startSensor(tsl());
+                                if (Sensor.isActive()) {
+                                    if (Pref.getBooleanDefaultFalse("ob1_g5_restart_sensor")) {
+                                        if (pratelimit("secondary-g5-start", 1800)) {
+                                            UserError.Log.ueh(TAG, "Trying to Start sensor again");
+                                            startSensor(tsl());
+                                        } else {
+                                            if (!parent.lastSensorState.sensorStarted()) {
+                                                UserError.Log.uel(TAG, "Stopping sensor session due to repeated restart failure");
+                                                Sensor.stopSensor();
+                                            }
+                                        }
+                                    } else {
+                                        if (!parent.lastSensorState.sensorStarted()) {
+                                            UserError.Log.uel(TAG, "Stopping sensor session due to start failure");
+                                            Sensor.stopSensor();
+                                        }
                                     }
                                 }
                             }
@@ -629,6 +645,9 @@ public class Ob1G5StateMachine {
                                 final String msg = "Session Stopped Successfully: " + JoH.dateTimeText(session_stop.getSessionStart()) + " " + JoH.dateTimeText(session_stop.getSessionStop());
                                 parent.msg(msg);
                                 UserError.Log.ueh(TAG, msg);
+                                if (parent.lastSensorState.sensorStarted()) {
+                                    parent.lastSensorState = CalibrationState.SensorStopped;
+                                }
                                 reReadGlucoseData();
                                 enqueueUniqueCommand(new TimeTxMessage(), "Query time after stop");
                             } else {
@@ -671,6 +690,7 @@ public class Ob1G5StateMachine {
                             if (calibrate.accepted()) {
                                 parent.msg("Calibration accepted");
                                 UserError.Log.ueh(TAG, "Calibration accepted by transmitter");
+                                parent.lastSensorState = CalibrationState.CalibrationSent;
                             } else {
                                 final String msg = "Calibration rejected: " + calibrate.message();
                                 UserError.Log.wtf(TAG, msg);
@@ -1294,7 +1314,7 @@ public class Ob1G5StateMachine {
 
         } else {
             // TODO this is duplicated in processCalibrationState()
-            if (glucose.calibrationState().sensorFailed()) {
+            if (glucose.calibrationState().sensorFailed() && Sensor.isActive()) {
                 if (JoH.pratelimit("G5 Sensor Failed", 3600 * 3)) {
                     JoH.showNotification(devName() + " SENSOR FAILED", "Sensor reporting failed", null, Constants.G5_SENSOR_ERROR, true, true, false);
                 }
@@ -1603,14 +1623,39 @@ public class Ob1G5StateMachine {
         if (d) UserError.Log.d(TAG, "monitor backfill exit");
     }
 
+    private static boolean verifyChallengeHash(final byte[] token) {
+        if (lastAuthPacket == null) {
+            UserError.Log.d(TAG, "Impossible sequence for verification");
+            return false;
+        }
+        byte[] result;
+        result = calculateChallengeHash(lastAuthPacket.singleUseToken);
+        if (Arrays.equals(result, token)) {
+            UserError.Log.d(TAG, "Challenge hash verified");
+        } else {
+            UserError.Log.wtf(TAG, "Could not verify challenge");
+            return false;
+        }
+        return true;
+    }
+
+
     private static synchronized byte[] calculateChallengeHash(final byte[] challenge) {
+        final byte[] key = getCryptKey();
+        if (key == null) {
+            return null;
+        }
+        return calculateChallengeHash(challenge, key);
+    }
+
+
+    private static synchronized byte[] calculateChallengeHash(final byte[] challenge, final byte[] key) {
         if (challenge == null || challenge.length != 8) {
             UserError.Log.e(TAG, "Challenge length must be 8");
             return null;
         }
-
-        final byte[] key = getCryptKey();
-        if (key == null) {
+        if (key == null || key.length != 16) {
+            UserError.Log.e(TAG, "Key length must be 16");
             return null;
         }
 

@@ -37,7 +37,7 @@ public class SyncService extends IntentService {
     }
 
     private void synctoCloudDatabases() {
-        final UploaderTask task = new UploaderTask(getApplicationContext());
+        final UploaderTask task = new UploaderTask();
         task.executeOnExecutor(xdrip.executor);
     }
 

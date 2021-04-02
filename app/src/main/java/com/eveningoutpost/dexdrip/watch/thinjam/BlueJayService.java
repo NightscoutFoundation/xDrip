@@ -430,7 +430,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
             final BgReading bgReading = BgReading.last();
 
             if (bgReading == null || msSince(bgReading.timestamp) > Constants.MINUTE_IN_MS * 4) {
-                Ob1G5CollectionService.lastSensorState = CalibrationState.parse(info.state); // only update if newer?
+                Ob1G5CollectionService.processCalibrationStateLite(CalibrationState.parse(info.state), inboundTimestamp); // only update if newer?
                 if (D && info.glucose == 1) {
                     info.glucose = 123;         // TODO THIS IS DEBUG ONLY!!
                 }
@@ -1368,6 +1368,10 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
         }
         JoH.threadSleep(500);
         UserError.Log.d(TAG, "Requesting to enable notifications");
+        if (I.connection == null) {
+            UserError.Log.d(TAG, "Connection is null so cannot continue");
+            return;
+        }
         notificationSubscription = new Subscription(
                 I.connection.setupNotification(THINJAM_WRITE)
                         // .timeout(15, TimeUnit.SECONDS) // WARN

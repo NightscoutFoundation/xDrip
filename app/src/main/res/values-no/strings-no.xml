@@ -22,7 +22,7 @@
     <string name="navigation_drawer_close">Lukk navigasjonsmenyen</string>
     <string name="title_activity_calibration_check_in">Kalibreringsaktivitet</string>
     <string name="title_activity_usb_connected">USB-tilkoblet aktivitet</string>
-    <string name="snooze">Utsett</string>
+    <string name="snooze">Slumre</string>
     <string name="snooze_hint">Utsett varsling i x minutter</string>
     <string name="cancel">Avbryt</string>
     <string name="no">Nei</string>
@@ -234,7 +234,7 @@
     <string name="special_value">Spesiell verdi</string>
     <string name="history">Historikk</string>
     <string name="statistics">Statistikk</string>
-    <string name="snooze_alert">Utsett Alert</string>
+    <string name="snooze_alert">Slumre Varsel</string>
     <string name="less_common_settings">Mindre vanlige innstillinger</string>
     <string name="view_recent_errors_warnings">Vis nylige Feil / Advarsler</string>
     <string name="other_settings">Andre innstillinger</string>

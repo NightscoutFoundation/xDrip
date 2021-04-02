@@ -259,7 +259,8 @@ public class PercentileView extends View {
                 @Override
                 public void run() {
                     super.run();
-                    List<BgReadingStats> readings = DBSearchUtil.getReadings(false);
+                    final List<BgReadingStats> readings = DBSearchUtil.getReadings(false);
+                    if (readings == null) return;
                     int day = 1000 * 60 * 60 * 24;
 
                     int timeslot = day / NO_TIMESLOTS;
