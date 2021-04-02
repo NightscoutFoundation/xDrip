@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-import android.content.Context;
 import android.os.AsyncTask;
 
 import com.eveningoutpost.dexdrip.InfluxDB.InfluxDBUploader;
@@ -12,8 +11,8 @@ import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.Services.SyncService;
+import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.ArrayList;
@@ -30,9 +29,8 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
     public static Exception exception;
     private static final String TAG = UploaderTask.class.getSimpleName();
     public static final String BACKFILLING_BOOSTER = "backfilling-nightscout";
+    private static final boolean retry_timer = false;
 
-    public UploaderTask(Context pContext) {
-    }
 
     public Void doInBackground(String... urls) {
         try {
@@ -66,7 +64,6 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
             }
 
 
-
             for (long THIS_QUEUE : circuits) {
 
                 final List<BgReading> bgReadings = new ArrayList<>();
@@ -77,7 +74,7 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
                 final List<TransmitterData> transmittersData = new ArrayList<>();
                 final List<LibreBlock> libreBlock = new ArrayList<>();
                 final List<UploaderQueue> items = new ArrayList<>();
-                
+
                 for (String type : types) {
                     final List<UploaderQueue> bgups = UploaderQueue.getPendingbyType(type, THIS_QUEUE);
                     if (bgups != null) {
@@ -96,8 +93,12 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
                                         }
                                     } else if (type.equals(Calibration.class.getSimpleName())) {
                                         final Calibration this_cal = Calibration.byid(up.reference_id);
-                                        if ((this_cal != null) && (this_cal.isValid())) {
-                                            calibrations.add(this_cal);
+                                        if (this_cal != null) {
+                                            if (this_cal.isValid()) {
+                                                calibrations.add(this_cal);
+                                            } else {
+                                                Log.d(TAG, "Calibration with ID: " + up.reference_id + " is marked invalid");
+                                            }
                                         } else {
                                             Log.wtf(TAG, "Calibration with ID: " + up.reference_id + " appears to have been deleted");
                                         }
@@ -123,7 +124,7 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
                                         } else {
                                             Log.wtf(TAG, "TransmitterData with ID: " + up.reference_id + " appears to have been deleted");
                                         }
-                                    }  else if (type.equals(LibreBlock.class.getSimpleName())) {
+                                    } else if (type.equals(LibreBlock.class.getSimpleName())) {
                                         final LibreBlock this_LibreBlock = LibreBlock.byid(up.reference_id);
                                         if (this_LibreBlock != null) {
                                             libreBlock.add(this_LibreBlock);
@@ -137,9 +138,7 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
                                         items.add(up);
                                         Log.wtf(TAG, "Delete Treatments with ID: " + up.reference_uuid);
                                         treatmentsDel.add(up.reference_uuid);
-                                    }
-                                    else
-                                    if (up.reference_uuid != null) {
+                                    } else if (up.reference_uuid != null) {
                                         Log.d(TAG, UploaderQueue.getCircuitName(THIS_QUEUE) + " delete not yet implemented: " + up.reference_uuid);
                                         up.completed(THIS_QUEUE); // mark as completed so as not to tie up the queue for now
                                     }
@@ -173,6 +172,10 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
                         uploadStatus = WatchUpdaterService.sendWearUpload(bgReadings, calibrations, bloodtests, treatmentsAdd, treatmentsDel);
                     }
 
+                    if (retry_timer) {
+                        SyncService.startSyncService(Constants.MINUTE_IN_MS * 6); // standard retry timer
+                    }
+
                     // TODO some kind of fail counter?
                     if (uploadStatus) {
                         for (UploaderQueue up : items) {
@@ -181,7 +184,7 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
                         Log.d(TAG, UploaderQueue.getCircuitName(THIS_QUEUE) + " Marking: " + items.size() + " Items as successful");
 
                         if (PersistentStore.getBoolean(BACKFILLING_BOOSTER)) {
-                            Log.d(TAG,"Scheduling boosted repeat query");
+                            Log.d(TAG, "Scheduling boosted repeat query");
                             SyncService.startSyncService(2000);
                         }
 
@@ -192,7 +195,7 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
                     Log.d(TAG, "Nothing to upload for: " + UploaderQueue.getCircuitName(THIS_QUEUE));
                     if (PersistentStore.getBoolean(BACKFILLING_BOOSTER)) {
                         PersistentStore.setBoolean(BACKFILLING_BOOSTER, false);
-                        Log.d(TAG,"Switched off backfilling booster");
+                        Log.d(TAG, "Switched off backfilling booster");
                     }
                 }
 
