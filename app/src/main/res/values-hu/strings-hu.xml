@@ -20,5 +20,7 @@
     <string name="influxdb_database_name">InfluxDB adatbázis neve</string>
     <string name="upload_to_dexcom_share">VC-értékek feltöltése Dexcom Share-ként</string>
     <!-- trend arrow for speak -->
+    <string name="title_nsfollow_download_treatments">Kezelések letöltése</string>
+    <string name="are_you_sure_you_want_to_delete_this_treatment">Biztosan törölni akarja ezt a kezelési jegyzetet?</string>
     <string name="authentication_failed_wrong_password">Sikertelen azonosítás. Eltévesztette a jelszót?</string>
 </resources>
