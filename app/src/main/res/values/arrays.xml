@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="DexCollectionMethods">
+        <item>Bluetooth Wixel</item>
+        <item>xBridge Wixel</item>
+        <item>Wifi Wixel / Parakeet</item>
+        <item>Wifi Wixel + BT Wixel</item>
+        <item>Wifi Wixel + xBridge Wixel</item>
+        <item>G4 Share Receiver</item>
+        <item>G5/G6 Transmitter</item>
+        <item>Libre Bluetooth</item>
+        <item>Libre Bluetooth + wifi</item>
+        <item>Libre wifi</item>
+        <item>xDrip+ Sync Follower</item>
+        <item>LibreAlarm</item>
+        <item>Libre2 (patched App)</item>
+        <item>640G / EverSense</item>
+        <item>Medtrum A6</item>
+        <item>Nightscout Follower</item>
+        <item>Dex Share Follower</item>
+        <item>Disable Collection</item>
+    </string-array>
+
+    <string-array name="DexCollectionMethodValues">
+        <item>BluetoothWixel</item>
+        <item>DexbridgeWixel</item>
+        <item>WifiWixel</item>
+        <item>WifiBlueToothWixel</item>
+        <item>WifiDexbridgeWixel</item>
+        <item>DexcomShare</item>
+        <item>DexcomG5</item>
+        <item>LimiTTer</item>
+        <item>LimiTTerWifi</item>
+        <item>LibreWifi</item>
+        <item>Follower</item>
+        <item>LibreAlarm</item>
+        <item>LibreReceiver</item>
+        <item>NSEmulator</item>
+        <item>Medtrum</item>
+        <item>NSFollower</item>
+        <item>SHFollower</item>
+        <item>Disabled</item>
+    </string-array>
+
+     <string-array name="EnableStreamingMethods">
+        <item>@string/enable_streaming_always_allow</item>
+        <item>@string/enable_streaming_ask_each_time</item>
+        <item>@string/enable_streaming_never</item>
+    </string-array>
+
+    <string-array name="EnableStreamingValues">
+        <item>enable_streaming_always</item>
+        <item>enable_streaming_ask</item>
+        <item>enable_streaming_never</item>
+    </string-array>
+    
+    <string-array name="SendToPebbleChoice">
+
+        <item>Standard Watchface (old)</item>
+        <item>Color Trend Watchface</item>
+        <item>Pebble Classic Trend Watchface</item>
+        <item>Pebble Trend Clay Version (test)</item>
+    </string-array>
+    <string-array name="SendToPebbleChoiceValues">
+
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
+
+    <string-array name="PebbleTrendPeriods">
+        <item>1hr</item>
+        <item>2hr</item>
+        <item>3hr</item>
+        <item>4hr</item>
+    </string-array>
+    <string-array name="PebbleTrendPeriodValues">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+
+    <string-array name="UpdateChannel">
+        <item>stable</item>
+        <item>beta</item>
+        <item>alpha</item>
+    </string-array>
+
+    <string-array name="UpdateChannelDetail">
+        <item>Stable - tried and tested versions</item>
+        <item>Beta - new features but not fully tested </item>
+        <item>Alpha - versions for early testing</item>
+    </string-array>
+
+    <string-array name="UpdateChannelE">
+        <item>stable</item>
+        <item>beta</item>
+        <item>alpha</item>
+        <item>nightly</item>
+    </string-array>
+
+    <string-array name="UpdateChannelDetailE">
+        <item>Stable - tried and tested versions</item>
+        <item>Beta - new features but not fully tested </item>
+        <item>Alpha - versions for early testing</item>
+        <item>Nightly - untested raw code - experts only!</item>
+    </string-array>
+
+    <string-array name="TreatmentCalibrationChoice">
+        <item>auto</item>
+        <item>ask</item>
+        <item>never</item>
+        <item>always</item>
+    </string-array>
+
+    <string-array name="TreatmentCalibrationChoiceDetail">
+        <item>Automatic mode (best)</item>
+        <item>Ask me every time</item>
+        <item>Never use them</item>
+        <item>Always use them</item>
+    </string-array>
+
+
+    <string-array name="bgUnitEntries">
+        <item>mg/dL</item>
+        <item>mmol/L</item>
+    </string-array>
+
+    <string-array name="bgUnitValues">
+        <item>mgdl</item>
+        <item>mmol</item>
+    </string-array>
+
+    <!--     make sure to keep this values in sync with AlertPlayer.getAlertProfile -->
+    <string-array name="BgAlertProfileEntries">
+        <item>High</item>
+        <item>Medium</item>
+        <item>Ascending volume</item>
+        <item>Vibrate only</item>
+        <item>Silent</item>
+    </string-array>
+
+    <string-array name="BgAlertProfileValues">
+        <item>High</item>
+        <item>medium</item>
+        <item>ascending</item>
+        <item>vibrate only</item>
+        <item>Silent</item>
+    </string-array>
+
+    <string-array name="risingEntries">
+        <item>1 mg/dl (0.06 mmol/l)</item>
+        <item>2 mg/dl (0.11 mmol/l)</item>
+        <item>3 mg/dl (0.17 mmol/l)</item>
+    </string-array>
+
+    <string-array name="risingValues">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <string-array name="alertType">
+        <item>System Sound/Alarm</item>
+        <item>Custom Sound/Alarm</item>
+        <item>Default xDrip sound</item>
+    </string-array>
+
+    <string-array name="reminderAlertType">
+        <item>Android Ringtone/Alarm</item>
+        <item>Custom Audio file</item>
+        <item>Default xDrip+ reminder sound</item>
+    </string-array>
+
+<!--    TODO abstract noise values to single source -->
+    <string-array name="NoiseLevelBlock">
+        <item>Send even Extremely noisy signals</item>
+        <item>Only block noise level Extreme</item>
+        <item>Block Very High noise and worse</item>
+        <item>Block High noise and worse</item>
+    </string-array>
+    <string-array name="NoiseLevelBlockValues">
+        <item>100000</item>
+        <item>200</item>
+        <item>60</item>
+        <item>10</item>
+    </string-array>
+
+
+    <string-array name="TrendArrows">
+        <item>Jam Expressive Arrow 1</item>
+        <item>Jam Simple White Arrow 1</item>
+        <item>Jam Simple Color Arrow 1</item>
+        <item>Candy Cane</item>
+    </string-array>
+    <string-array name="TrendArrowValues">
+        <item>JamTrendArrowImpl</item>
+        <item>JamTrendArrow2Impl</item>
+        <item>JamTrendArrow2bImpl</item>
+        <item>JamTrendArrow3Impl</item>
+    </string-array>
+
+</resources>
