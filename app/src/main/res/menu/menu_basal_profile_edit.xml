@@ -2,6 +2,24 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/basalLoad"
+        android:checkable="false"
+        android:icon="@drawable/ic_open_in_app_grey600_48dp"
+        android:onClick="basalEditLoad"
+        android:orderInCategory="1"
+        android:title="Load"
+        android:visible="true"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/basalSave"
+        android:checkable="false"
+        android:icon="@drawable/ic_content_save_grey600_48dp"
+        android:onClick="basalEditSave"
+        android:orderInCategory="1"
+        android:title="Save"
+        android:visible="true"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/basalPlus"
         android:checkable="false"
         android:icon="@drawable/up_arrow_circle"

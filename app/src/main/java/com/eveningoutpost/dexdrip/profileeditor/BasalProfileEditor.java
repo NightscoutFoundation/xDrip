@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.profileeditor;
 
 import android.annotation.SuppressLint;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.v7.app.AppCompatActivity;
@@ -24,6 +25,7 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.ColorCache;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.ui.charts.BasalChart;
+import com.eveningoutpost.dexdrip.ui.dialog.GenericConfirmDialog;
 import com.eveningoutpost.dexdrip.ui.helpers.ColorUtil;
 
 import java.util.ArrayList;
@@ -37,6 +39,7 @@ import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.SubcolumnValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.ColumnChartView;
+import lombok.val;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 import static com.eveningoutpost.dexdrip.ui.helpers.UiHelper.convertDpToPixel;
@@ -70,8 +73,6 @@ public class BasalProfileEditor extends AppCompatActivity implements AdapterView
     // TODO long press on title bar swap subtitle / title?
     // TODO jump graph scale better
     // TODO add spline (later)
-    // TODO select from different profiles
-    // TODO actually load/save real profile data
     // TODO leading zero on qs items in title bar
     // TODO block till operation finished??
     // TODO sync with nightscout button????
@@ -85,6 +86,8 @@ public class BasalProfileEditor extends AppCompatActivity implements AdapterView
     Button setButton;
     Button plusButton;
     Button minusButton;
+
+    TextView basalStepLabel;
 
     Spinner basalSelectSpinner;
     Spinner basalStepSpinner;
@@ -100,6 +103,7 @@ public class BasalProfileEditor extends AppCompatActivity implements AdapterView
         chart = (ColumnChartView) findViewById(R.id.basalChart);
         basalSelectSpinner = findViewById(R.id.basalProfileSpinner);
         basalStepSpinner = findViewById(R.id.basalStepSpinner);
+        basalStepLabel = findViewById(R.id.basalStepLabel);
         setValue = (EditText) findViewById(R.id.basalSetText);
         setButton = (Button) findViewById(R.id.basalSetButton);
         plusButton = (Button) findViewById(R.id.basalPlusButton);
@@ -107,19 +111,57 @@ public class BasalProfileEditor extends AppCompatActivity implements AdapterView
 
         chart.setDataAnimationListener(this);
         chart.setOnValueTouchListener(new ValueTouchListener());
-        chart.setColumnChartData(BasalChart.columnData());
+        setChartFromSpinnerSelection();
 
         autoSetViewPort(true);
         refreshScreenElements();
+        refreshZoomFeatures();
+
+        populateBasalNameSpinner();
+        populateBasalStepSpinner();
+
+    }
+
+    private void refreshZoomFeatures() {
         chart.setZoomType(ZoomType.HORIZONTAL);
         chart.setContainerScrollEnabled(true, ContainerScrollType.HORIZONTAL);
         //chart.setZoomLevel(0,0,1);
         chart.setMaxZoom(4f);
         chart.setZoomLevel(getNewMaxViewport().centerX(), getNewMaxViewport().centerY(), 1f);
         chart.setTapZoomEnabled(false);
+    }
 
-        populateBasalStepSpinner();
+    private static final String LAST_BASAL_PROFILE_NAME = "LAST_BASAL_PROFILE_NAME";
 
+    private static void setLastBasalProfileName(final String value) {
+        PersistentStore.setString(LAST_BASAL_PROFILE_NAME, value);
+    }
+
+    private static String getLastBasalProfileName() {
+        return PersistentStore.getString(LAST_BASAL_PROFILE_NAME, "1");
+    }
+
+    private Rect goodMargin;
+
+    private void setChartFromSpinnerSelection() {
+        chart.getChartComputator().resetContentRect();
+        if (chart.getChartComputator().getContentRectMinusAxesMargins().right != 0) {
+            goodMargin = new Rect();
+            val currentMargin = chart.getChartComputator().getContentRectMinusAxesMargins();
+            goodMargin.bottom = currentMargin.bottom;
+        }
+
+        chart.setColumnChartData(BasalChart.columnData(getLastBasalProfileName()));
+
+        if (goodMargin != null) {
+            chart.getChartComputator().getContentRectMinusAllMargins().bottom = goodMargin.bottom;
+            chart.getChartComputator().getContentRectMinusAxesMargins().bottom = goodMargin.bottom;
+
+            BasalChart.refreshAxis(chart);
+            autoSetViewPort(true);
+            refreshZoomFeatures();
+        }
+        chart.getAxesRenderer().onChartDataChanged();
     }
 
     private void fixElipsus(ViewGroup root) {
@@ -150,7 +192,27 @@ public class BasalProfileEditor extends AppCompatActivity implements AdapterView
         }
     }
 
-    // TODO populate profile name spinner
+    private int findSpinnerPositionForName(final String name) {
+        val count = basalSelectSpinner.getAdapter().getCount();
+        for (int i = 0; i < count; i++) {
+            val item = basalSelectSpinner.getItemAtPosition(i);
+            if (item.toString().equals(name)) return i;
+        }
+        return 0;
+    }
+
+    private void populateBasalNameSpinner() {
+        ArrayList<String> nameSpinnerArray = new ArrayList<>();
+        nameSpinnerArray.add("1");
+        nameSpinnerArray.add("2");
+        nameSpinnerArray.add("3");
+        nameSpinnerArray.add("4");
+        nameSpinnerArray.add("5");
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, nameSpinnerArray);
+        basalSelectSpinner.setAdapter(spinnerArrayAdapter);
+        basalSelectSpinner.setSelection(findSpinnerPositionForName(getLastBasalProfileName()));
+        basalSelectSpinner.setOnItemSelectedListener(this);
+    }
 
     private void populateBasalStepSpinner() {
         ArrayList<String> stepSpinnerArray = new ArrayList<>();
@@ -188,6 +250,20 @@ public class BasalProfileEditor extends AppCompatActivity implements AdapterView
 
     public void basalEditPlus(MenuItem x) {
         adjustSelectedColumns(getStepValue(), false);
+    }
+
+    public void basalEditLoad(MenuItem x) {
+        setChartFromSpinnerSelection();
+        refreshTotals();
+    }
+
+    public void basalEditSave(MenuItem x) {
+        GenericConfirmDialog.show(this, "Confirm Overwrite", "Are you sure you want to save this to profile " + basalSelectSpinner.getSelectedItem().toString() + " ?", new Runnable() {
+            @Override
+            public void run() {
+                BasalProfile.save(getLastBasalProfileName(), getListOfValues());
+            }
+        });
     }
 
     public void basalEditMinus(MenuItem x) {
@@ -240,7 +316,8 @@ public class BasalProfileEditor extends AppCompatActivity implements AdapterView
 
 
         try {
-            getSupportActionBar().setSubtitle(R.string.basal_editor);
+            // TODO i18n string format
+            getSupportActionBar().setSubtitle(getString(R.string.basal_editor) + "    (loaded profile: " + getLastBasalProfileName() + ")");
             getSupportActionBar().setTitle(span);
             fixElipsus(null); // how often do we actually need to do this??
             //get
@@ -272,7 +349,7 @@ public class BasalProfileEditor extends AppCompatActivity implements AdapterView
     private Viewport autoSetViewPort(boolean reset) {
 
         final Viewport moveViewPort = getNewMaxViewport();
-        android.util.Log.d(TAG, "Setting viewport: " + moveViewPort.top);
+        android.util.Log.d(TAG, "Setting viewport: " + moveViewPort.top + " " + moveViewPort.right);
 
         chart.setViewportCalculationEnabled(false);
         chart.setMaximumViewport(moveViewPort);
@@ -415,15 +492,32 @@ public class BasalProfileEditor extends AppCompatActivity implements AdapterView
         plusButton.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
         minusButton.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
         basalStepSpinner.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+        basalStepLabel.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    private List<Float> getListOfValues() {
+        final int columns = chart.getChartData().getColumns().size();
+        final ArrayList<Float> values = new ArrayList<>(columns);
+        for (int col = 0; col < columns; col++) {
+            values.add(JoH.roundFloat(chart.getChartData().getColumns().get(col).getValues().get(0).getValue(), 2));
+        }
+        return values;
     }
 
     // spinner
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        UserError.Log.d(TAG, "Spinner selected it: " + position);
-        basalStepSpinner.setSelection(position);
-        PersistentStore.setLong(PREF_STORED_BASAL_STEP, position + 1); // increment so we know 0 is unset
-        buttonsToMatchStep();
+        if (parent == basalStepSpinner) {
+            UserError.Log.d(TAG, "Step Spinner selected it: " + position);
+            basalStepSpinner.setSelection(position);
+            PersistentStore.setLong(PREF_STORED_BASAL_STEP, position + 1); // increment so we know 0 is unset
+            buttonsToMatchStep();
+        } else if (parent == basalSelectSpinner) {
+            UserError.Log.d(TAG, "Name Spinner selected it: " + position);
+            setLastBasalProfileName(parent.getSelectedItem().toString());
+        } else {
+            UserError.Log.wtf(TAG, "Unknown spinner selected");
+        }
     }
 
     // spinner
