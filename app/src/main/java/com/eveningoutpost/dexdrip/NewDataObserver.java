@@ -1,5 +1,10 @@
 package com.eveningoutpost.dexdrip;
 
+import android.app.UiModeManager;
+import android.content.Context;
+import android.content.res.Configuration;
+import android.util.Log;
+
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
@@ -9,6 +14,7 @@ import com.eveningoutpost.dexdrip.ShareModels.Models.ShareUploadPayload;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.UtilityModels.SpeechUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.VehicleMode;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
@@ -143,7 +149,8 @@ public class NewDataObserver {
     // speak value
     private static void textToSpeech(BgReading bgReading, BestGlucose.DisplayGlucose dg) {
         //Text to speech
-        if (Pref.getBooleanDefaultFalse("bg_to_speech") || VehicleMode.shouldSpeak()) {
+        if (Pref.getBooleanDefaultFalse("bg_to_speech") || VehicleMode.shouldSpeak()
+                || (Pref.getBooleanDefaultFalse(xdrip.getAppContext().getString(R.string.pref_car_loud_alerts_key)) && isCarUiMode(xdrip.getAppContext()))) {
             if (dg == null) dg = BestGlucose.getDisplayGlucose();
             if (dg != null) {
                 BgToSpeech.speak(dg.mgdl, dg.timestamp, dg.delta_name);
@@ -151,6 +158,14 @@ public class NewDataObserver {
                 BgToSpeech.speak(bgReading.calculated_value, bgReading.timestamp, bgReading.slopeName());
             }
         }
+    }
+
+    private static boolean isCarUiMode(Context c) {
+        UiModeManager uiModeManager = (UiModeManager) c.getSystemService(Context.UI_MODE_SERVICE);
+        if(uiModeManager != null) {
+            return uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_CAR;
+        }
+        return false;
     }
 
     // share uploader
