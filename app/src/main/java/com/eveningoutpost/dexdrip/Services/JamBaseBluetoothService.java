@@ -98,7 +98,7 @@ public abstract class JamBaseBluetoothService extends Service {
         wl.acquire(ms);
     }
 
-    protected void releaseWakeLock() {
+    protected synchronized void releaseWakeLock() {
         JoH.releaseWakeLock(wl);
     }
 

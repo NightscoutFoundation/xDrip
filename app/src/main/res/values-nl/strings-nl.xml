@@ -59,7 +59,7 @@
     <string name="pref_title_api_url">Basis URL</string>
     <string name="pref_dialog_api_url">Voer Basis API URL in</string>
     <string name="pref_message_api_url">Dit is alleen de basis-URL, de uploader zal automatisch / items voor de POST toevoegen.  API_SECRET op de server moet overeenkomen met uw wachtwoordzin in deze instelling.</string>
-    <string name="pref_default_api_url">https: // yourpassphrase @ {UW-SITE} .azurewebsites.net / api / v1 /</string>
+    <string name="pref_default_api_url">https://yourpassphrase@{UW-SITE}.azurewebsites.net/api/v1/</string>
     <!-- wifi Settings -->
     <string name="wifi_recievers_dialog_message">Door komma\'s gescheiden lijst van ip: poort (bijvoorbeeld 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
     <string name="wifi_recievers_dialog_title">Voer Ip-adressen en poorten van de ontvangers in(met inbegrip van MongoDB adressen indien nodig)</string>
@@ -166,8 +166,8 @@
     <string name="expires_days">{0, choice,0#Sensor Verloopt!|1#Eindigt in {0, number} dagen|1&lt;Eindigt in {0, number} dagen}</string>
     <string name="expires_at">Eindigt over {0}</string>
     <string name="space_minutes_ago">" Minuten geleden"</string>
-    <string name="in_libre_all_house_mode_no_readings_collected_yet">"In libre alle thuismodus: nog geen metingen verzameld."</string>
-    <string name="in_libre_all_house_mode_last_data_collected">"In libre alle thuismodus: laatste lezing "</string>
+    <string name="in_libre_all_house_mode_no_readings_collected_yet">"In libre hele huis modus: nog geen metingen verzameld."</string>
+    <string name="in_libre_all_house_mode_last_data_collected">"In libre hele huis modus: laatste lezing "</string>
     <string name="space_minute_ago">" Minuut geleden"</string>
     <string name="show_parakeet_map">Toon Parakeet kaart</string>
     <string name="switch_parakeet_to_setup_mode">Schakel Parakeet naar de Setup-modus</string>
@@ -282,7 +282,7 @@
     <string name="view_recent_errors_warnings">Bekijk recente fouten / waarschuwingen</string>
     <string name="other_settings">Andere instellingen</string>
     <string name="older_gratuitous_wakelocks">Oudere wake locks die mogelijk nodig zijn voor Nightwatch of Android Wear (hoger energieverbruik)</string>
-    <string name="use_excessive_wakelocks">Gebruik Overmatig Wakelocks</string>
+    <string name="use_excessive_wakelocks">Gebruik overmatig veel Wakelocks</string>
     <string name="speak_readings">Spreek Lezingen</string>
     <string name="extra_status_line">Extra Statusregel</string>
     <string name="dexcom_share_server_upload">Dexcom Share Server upload</string>
@@ -319,6 +319,7 @@
     <string name="speak_your_treatment">Spreek uw behandeling bijvoorbeeld:\nxx eenheden insuline / xx gram koolhydraten</string>
     <string name="speech_recognition_is_not_supported">Spraakherkenning wordt niet ondersteund</string>
     <string name="treatment_note">Behandeling Opmerking</string>
+    <string name="accessibility_description">xDrip gebruikt de toegankelijkheidsfunctie alleen om het scherm aan te passen wanneer het apparaat is vergrendeld. Dit is waarschijnlijk alleen handig als je een telefoon hebt met de functie Always On Display en deze hebt ingeschakeld. xDrip heeft op geen enkele andere manier interactie met Android.</string>
     <string name="could_not_export_database">Kon database niet exporteren :(</string>
     <string name="exported_to">"Uitgevoerd naar "</string>
     <string name="default_to_voice_input_next_time">Standaard naar voice-ingang de volgende keer</string>
@@ -383,7 +384,7 @@
     <string name="send_parakeet_map_location_to_followers">Stuur Parkiet kaart locatie naar volgers</string>
     <string name="sync_parakeet_geolocation">Sync Parkiet geolocatie</string>
     <string name="disable_all_sync_features">Schakel alle sync features</string>
-    <string name="temporary_work_around_disable_all_sync_detail">Tijdelijk werk-around optie, volledig stopt alle synchronisatie. Kan reboot nodig heeft na opnieuw worden ingeschakeld. Gebruik in combinatie met zorg!</string>
+    <string name="temporary_work_around_disable_all_sync_detail">Tijdelijke work-around optie, stopt alle synchronisatie volledig. Moet mogelijk opnieuw worden opgestart nadat het opnieuw is ingeschakeld. Voorzichtig gebruiken!</string>
     <string name="automatic_updates_crash_reports_and_feedback">Automatische updates, crashrapporten en Feedback aan Developer</string>
     <string name="crowd_sourced_translation">Crowd-sourced vertaling</string>
     <string name="please_enter_your_question_or_comments_here">Vul hier uw vraag of opmerking hier.\nAls u een e-mailadres op te geven kunt u een reactie te krijgen.\n\n</string>
@@ -444,7 +445,7 @@
     <string name="bluetooth_wakelocks">Bluetooth Wakelocks</string>
     <string name="compatible_broadcast">Compatibele Broadcast</string>
     <string name="show_datatables">Show DataTables</string>
-    <string name="display_bridge_battery">Beeldscherm Bridge Battery</string>
+    <string name="display_bridge_battery">Geef Bridge-batterij weer</string>
     <string name="close_gatt_on_ble_disconnect">Sluit GATT op verbreken van BLE</string>
     <string name="disable_battery_warning">Uitschakelen Batterijwaarschuwing</string>
     <string name="additional_text_status">Extra tekst-status</string>
@@ -458,12 +459,12 @@
     <string name="show_on_widget">Toon op widget</string>
     <string name="calibration_data_long">Calibration Data (lang)</string>
     <string name="calibration_data_short">Calibration Data (kort)</string>
-    <string name="store_sensor_location_to_help">Store sensor locaton om algoritme verbetering helpen</string>
-    <string name="help_the_developers_improve_the_algorithm">Help de ontwikkelaars het verbeteren van de xDrip algoritme.</string>
+    <string name="store_sensor_location_to_help">Sla de sensorlocatie op om algoritme te verbeteren</string>
+    <string name="help_the_developers_improve_the_algorithm">Help de ontwikkelaars het xDrip-algoritme te verbeteren.</string>
     <string name="help_the_community">Steun de gemeenschap</string>
     <string name="double_tap_or_pinch_to_zoom">Dubbele tik of knijpen om te zoomen.</string>
     <string name="start_sensor">Start Nieuwe Sensor</string>
-    <string name="debug_and_other_misc_options">Debuggen en andere misc opties</string>
+    <string name="debug_and_other_misc_options">Foutopsporing en andere diverse opties</string>
     <string name="low_glucose_values">Lage glucosewaarden</string>
     <string name="revert_to_default">Terugzetten naar Standaard</string>
     <string name="filtered_values">Gefilterd Waarden</string>
@@ -543,7 +544,7 @@
     <string name="predictive_model_inner_workings">Voorspellend model innerlijke werking</string>
     <string name="noise_model_inner_workings">Noise model innerlijke werking</string>
     <string name="glucose_number_from_filtered">Glucose nummer uit Filtered</string>
-    <string name="if_the_phone_has_text_to_speech">Als de telefoon heeft tekst-naar-spraak-mogelijkheden zal elke meting te spreken.</string>
+    <string name="if_the_phone_has_text_to_speech">Als de telefoon tekst-naar-spraak mogelijkheden heeft, spreekt hij elke nieuwe lezing uit.</string>
     <string name="upload_logs">Logboeken uploaden</string>
     <string name="short_off_text_for_switches">UIT</string>
     <string name="short_on_text_for_switches">OP</string>
@@ -608,12 +609,12 @@
     <string name="repeatedly_restart_collection_service">Herstart de verzamel service herhaaldelijk bij elke hint van ontbrekende gegevens. Alleen inschakelen als u gegevens verliest.</string>
     <string name="aggressive_service_restarts">Agressieve service herstart</string>
     <string name="predictive_readings_old">Oude methode - niet aanbevolen! Probeer elke minuut metingen te voorspellen op basis van de voorgaande waarden.</string>
-    <string name="use_external_blukon_algorithm_summary">Gebruik een libre-algoritme buiten het proces. (blukon / NFC / LibreAlarm)</string>
+    <string name="use_external_blukon_algorithm_summary">Gebruik een libre algoritme buiten het proces. (blukon/NFC /LibreAlarm)</string>
     <string name="display_predictive_values">Voorspellende waarden weergeven</string>
-    <string name="use_external_blukon_algorithm">Externe Libre algoritme.</string>
+    <string name="use_external_blukon_algorithm">Libre algoritme buiten het proces.</string>
     <string name="calibrate_external_libre_algorithm_summary">XDrip kalibratiemethoden toepassen op OOOP-gegevens.</string>
     <string name="calibrate_external_libre_algorithm_title">OOP algoritme kalibreren.</string>
-    <string name="libre_use_smoothed_data_summary">Gebruik een gemiddelde van 5 punten om vloeiendere libre-gegevens te krijgen.</string>
+    <string name="libre_use_smoothed_data_summary">Gebruik een gemiddelde van 5 punten om vloeiendere libre gegevens te krijgen.</string>
     <string name="libre_use_smoothed_data_title">Soepele libre gegevens.</string>
     <string name="retrieve_blukon_history_title">Haal Libre-geschiedenis op</string>
     <string name="retrieve_blukon_history_summary">Haal de gemiste geschiedenis op van het Blukon-apparaat bij het opnieuw verbinden met de sensor.</string>
@@ -707,8 +708,8 @@
     <string name="mongo_db_uri">Mongo DB Uri</string>
     <string name="skip_local_lan">Sla voor lokale servers met 192.168.x.x-adressen uploads over als er geen lokale netwerkverbinding is.</string>
     <string name="skip_lan_uploads">Sla LAN-uploads over</string>
-    <string name="mongo_load_transmitter_data_title">Upload gegevens van libre-zenders</string>
-    <string name="mongo_load_transmitter_data_summary">Sta meer dan één xDrip toe om verbinding te maken met BT-apparaten en de gegevens die ze ontvangen in de cloud op te slaan. Dit zou alle huisdekking voor libre met miaomiao mogelijk moeten maken, of 2 ouders die hetzelfde BT-apparaat gebruiken.</string>
+    <string name="mongo_load_transmitter_data_title">Upload gegevens van libre zenders</string>
+    <string name="mongo_load_transmitter_data_summary">Sta meer dan één xDrip toe om verbinding te maken met BT-apparaten en de gegevens die ze ontvangen op te slaan in de cloud. Dit zou hele huis dekking voor libre met miaomiao mogelijk moeten maken, of 2 ouders die hetzelfde BT-apparaat overduidelijk gebruiken.</string>
     <string name="influxdb_sync">Schakel InfluxDB-synchronisatie in</string>
     <string name="influxdb_uri">InfluxDB Uri</string>
     <string name="influxdb_database_name">InfluxDB-databasenaam</string>
@@ -1406,7 +1407,7 @@
     <string name="your_display_name">Uw weergavenaam:</string>
     <string name="followers_email">Volgers Email:</string>
     <string name="send_invite">Uitnodiging sturen</string>
-    <string name="description_sensor_location">In de toekomst wil xDrip anonieme sensorgegevens naar de ontwikkelaars sturen om het kalibratie-algoritme te verbeteren... Als u besluit om u aan te melden, wordt u voor elke gegevensoverdracht om bevestiging gevraagd. Er worden nooit gegevens verzonden zonder uw toestemming. Om ons te helpen de kalibratie te begrijpen en af ​​te stemmen, willen we graag weten waar deze sensor is geplaatst. Druk op de terugknop om te annuleren.</string>
+    <string name="description_sensor_location">In de toekomst zou Xdrip graag anonieme sensorgegevens verzenden naar de ontwikkelaars om het kalibratie algoritme te verbeteren... Als u besluit om u aan te melden, wordt u gevraagd om te bevestigen voordat u elke gegevensoverdracht begint. Gegevens worden nooit zonder uw toestemming verzonden. Om ons te helpen de kalibratie te begrijpen en te verfijnen, willen we weten waar deze sensor is geplaatst. Druk op de knop Terug om te annuleren.</string>
     <string name="save_sensor_location">Bewaar de sensorlocatie</string>
     <string name="alerts">Meldingen</string>
     <string name="use_internal_downloader">Gebruik interne downloader</string>
@@ -1486,7 +1487,7 @@
     <string name="unusual_internal_context_problem__please_report">Ongebruikelijk intern contextprobleem - gelieve te melden</string>
     <string name="cannot_start__please_report_context_problem">Kan niet starten - meld contextprobleem</string>
     <string name="xdrip_will_not_work_below_android_version_42">xDrip+ werkt niet onder Android-versie 4.2</string>
-    <string name="xdrip_oop2_not_installed">xDrip+ heeft OOP2 nodig om Libre2/LibreUS-sensoren te kunnen gebruiken.</string>
+    <string name="xdrip_oop2_not_installed">xDrip+ heeft oop2 nodig om Libre2 / LibreUS-sensoren te kunnen gebruiken.</string>
     <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Deze app heeft een witte lijst met batterij-optimalisatie nodig, anders werkt deze niet goed. Reset app-voorkeuren</string>
     <string name="setting_disabled_">Instelling uitgeschakeld :)</string>
     <string name="yes_please">JA, graag</string>
@@ -1499,7 +1500,7 @@
     <string name="starting_sync_to_other_devices">Synchronisatie met andere apparaten starten</string>
     <string name="deleting_all_bg_readings">ALLE BG-metingen verwijderen!</string>
     <string name="could_not_export_csv_">Kan CSV niet exporteren :(</string>
-    <string name="librealarm_data_format_appears_incompatible_protocol_changed_or_no_data">Het gegevensformaat van LibreAlarm lijkt incompatibel!? protocol gewijzigd of geen gegevens?</string>
+    <string name="librealarm_data_format_appears_incompatible_protocol_changed_or_no_data">Het gegevensformaat van LibreAlarm lijkt incompatibel!? Protocol gewijzigd of geen gegevens?</string>
     <string name="please_update_librealarm_to_use_oop_algorithm">Werk LibreAlarm bij om het OOP-algoritme te gebruiken</string>
     <string name="sensor_clock_has_not_advanced">Sensorklok is niet vooruitgegaan!</string>
     <string name="sensor_age_has_gone_backwards">Sensorleeftijd is achteruit gegaan!!</string>
@@ -1546,7 +1547,7 @@
     <string name="pref_enable_insulinprofiles">schakel ten minste één en maximaal drie profielen in</string>
     <string name="pref_select_basal_insulinprofiles">kies het basale insulineprofiel.</string>
     <string name="pref_select_bolus_insulinprofiles">kies het bolusinsuline-profiel. ook gebruikt voor pomp en pen...</string>
-    <string name="enable_streaming_summary">maak verbinding met libre 2-sensoren nadat u ze hebt gescand. Dit zorgt ervoor dat de libre reader en libre link geen waarschuwingen meer ontvangen</string>
+    <string name="enable_streaming_summary">Maak verbinding met libre 2 sensoren nadat u ze hebt gescand. Dit zorgt ervoor dat de libre reader en libre link geen waarschuwingen meer ontvangen</string>
     <string name="enable_streaming_title">Bluetooth-verbinding starten met libre 2-sensoren</string>
     <string name="enable_streaming_always_allow">Maak altijd verbinding met libre2-sensoren</string>
     <string name="enable_streaming_ask_each_time">elke keer vragen</string>

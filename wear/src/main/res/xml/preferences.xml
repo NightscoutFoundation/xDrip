@@ -257,6 +257,17 @@
             android:key="use_black_divider"
             android:summary="@string/summary_use_black_divider"
             android:title="@string/title_use_black_divider" />
+
+        <Preference
+            android:key="request_download"
+            android:summary="@string/build_version_name"
+            android:title="Force update">
+            <intent
+                android:action="android.intent.action.MAIN"
+                android:targetClass="com.eveningoutpost.dexdrip.UpdateActivity"
+                android:targetPackage="com.eveningoutpost.dexdrip" />
+        </Preference>
+
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="has_demigod_mode"

@@ -166,13 +166,13 @@
     <string name="expires_days">{0, choice,0#Senzor expirat!|1#Se termina in {0, number} zi|1&lt;Se termina in {0, number} zile}</string>
     <string name="expires_at">Expiră {0}</string>
     <string name="space_minutes_ago">" Minute în urmă"</string>
-    <string name="in_libre_all_house_mode_no_readings_collected_yet">"În modul Libre în toată casa: nici o citire nu a fost colectată încă."</string>
-    <string name="in_libre_all_house_mode_last_data_collected">"În modul Libre în toată casa: Ultima citire "</string>
+    <string name="in_libre_all_house_mode_no_readings_collected_yet">"În modul libre în toată casa: nici o citire nu a fost colectată încă."</string>
+    <string name="in_libre_all_house_mode_last_data_collected">"În modul libre în toată casa: Ultima citire "</string>
     <string name="space_minute_ago">" Minut în urmă"</string>
     <string name="show_parakeet_map">Arată harta Parakeet</string>
     <string name="switch_parakeet_to_setup_mode">Comută Parakeet în modul de configurare</string>
     <string name="view_events_log">Vizualizează Jurnalul de evenimente</string>
-    <string name="show_libre_trend">Afisare trend libre</string>
+    <string name="show_libre_trend">Afișare trend libre</string>
     <string name="libre_15_minutes_graph">Graficul Libre pe 15 minute</string>
     <string name="libre_last_x_minutes_graph">Grafic Libre pe ultimele %d minute</string>
     <string name="share_config_via_qr_code">Partajează configurarea printr-un cod QR</string>
@@ -319,6 +319,7 @@
     <string name="speak_your_treatment">Rostește tratamentul. De exemplu:\nx,x unități de insulină/xx grame carbohidrați</string>
     <string name="speech_recognition_is_not_supported">Recunoașterea vorbirii nu este acceptată</string>
     <string name="treatment_note">Notițe despre tratament</string>
+    <string name="accessibility_description">xDrip folosește funcția Accesibilitate doar pentru a regla ecranul atunci când dispozitivul este blocat. Acest lucru este probabil util doar dacă aveți un telefon cu funcția Always On Display și activați. xDrip nu interacționează cu Android în niciun alt mod.</string>
     <string name="could_not_export_database">Baza de date nu a putut fi exportată :(</string>
     <string name="exported_to">"Exportată ï¿½n "</string>
     <string name="default_to_voice_input_next_time">Data viitoare, comută automat la comandă vocală</string>
@@ -608,13 +609,13 @@
     <string name="repeatedly_restart_collection_service">Resetează repetat serviciul de colectare la orice sugestie de date lipsă. Activați numai dacă aveți pierderi de date.</string>
     <string name="aggressive_service_restarts">Restart agresiv al serviciului</string>
     <string name="predictive_readings_old">Metoda veche - nu este recomandată! Încercări de prezicere a citirilor în fiecare minut pe baza ultimelor valori.</string>
-    <string name="use_external_blukon_algorithm_summary">Utilizaţi un algoritm Libre în afara procesului. (blukon/NFC/LibreAlarm)</string>
+    <string name="use_external_blukon_algorithm_summary">Utilizaţi un algoritm libre în afara procesului. (blukon/NFC/LibreAlarm)</string>
     <string name="display_predictive_values">Afișare valori predictive</string>
-    <string name="use_external_blukon_algorithm">Algoritmul libre în afara procesului.</string>
+    <string name="use_external_blukon_algorithm">Algoritm libre în afara procesului.</string>
     <string name="calibrate_external_libre_algorithm_summary">Aplică metodele de calibrare xDrip pe datele OOP.</string>
     <string name="calibrate_external_libre_algorithm_title">Algoritm de calibrare in afara procesului Libre (OOP).</string>
-    <string name="libre_use_smoothed_data_summary">Utilizați media de la 5 puncte pentru a obține date mai aplatizate.</string>
-    <string name="libre_use_smoothed_data_title">Aplatizare date Libre.</string>
+    <string name="libre_use_smoothed_data_summary">Utilizați media din 5 puncte pentru a obține date mai aplatizate.</string>
+    <string name="libre_use_smoothed_data_title">Aplatizare date libre.</string>
     <string name="retrieve_blukon_history_title">Recuperează istoric Libre</string>
     <string name="retrieve_blukon_history_summary">Recuperează din dispozitivul Blukon istoricul pierdut atunci când se reconectează la senzor.</string>
     <string name="interpret_share_raw">Dacă se utilizează Share, xDrip va afișa valorile când acestea sunt în mod normal ascunse pe receptor.</string>
@@ -707,8 +708,8 @@
     <string name="mongo_db_uri">Mongo DB Uri</string>
     <string name="skip_local_lan">Pentru serverele locale cu adresele 192.168.x.x, săriți peste încărcare atunci când nu există conexiune la rețeaua locala.</string>
     <string name="skip_lan_uploads">Omite încărcările LAN</string>
-    <string name="mongo_load_transmitter_data_title">Încărcare date transmițător Libre</string>
-    <string name="mongo_load_transmitter_data_summary">Permiteți mai multor xDrip să se conecteze la dispozitivele BT și să stocheze datele pe care le primesc în cloud. Acest lucru ar trebui să permită acoperirea întregii locuințe pentru Libre cu MiaoMiao sau 2 părinţi care utilizează acelaşi dispozitiv BT în mod transparent.</string>
+    <string name="mongo_load_transmitter_data_title">Încărcare date transmițător libre</string>
+    <string name="mongo_load_transmitter_data_summary">Permiteți mai multor xDrip să se conecteze la dispozitivele BT și să stocheze datele pe care le primesc în cloud. Acest lucru ar trebui să permită acoperirea întregii locuințe pentru Libre cu MiaoMiao sau 2 părinți care utilizează același dispozitiv BT în mod transparent.</string>
     <string name="influxdb_sync">Activează sincronizarea InfluxDB</string>
     <string name="influxdb_uri">InfluxDB Uri</string>
     <string name="influxdb_database_name">Nume baza de date InfluxDB</string>
@@ -1346,7 +1347,9 @@
     <string name="summary_libre_whole_house_collector">Acest telefon va fi colector în rețeaua întregii case</string>
     <string name="title_libre_whole_house_collector">Libre Întreaga Casă</string>
     <string name="summary_xdrip_plus_desert_sync_settings">Urmărire în afara rețelei</string>
+    <string name="title_xdrip_plus_desert_sync_settings">Sincronizare Desert</string>
     <string name="summary_desert_sync_enabled">Activare facilități de sincronizare locale non-internet</string>
+    <string name="title_desert_sync_enabled">Sincronizare Desert</string>
     <string name="title_desert_sync_master_ip">Adresa IP principală</string>
     <string name="summary_send_sync_show_qr">Cod de bare pentru urmăritori ca să scaneze și să se configureze automat</string>
     <string name="title_send_sync_show_qr">Arată codul de bare QR</string>
@@ -1410,6 +1413,7 @@
     <string name="title">Titlu</string>
     <string name="summary">Sumar</string>
     <string name="auto_refresh">Actualizare Automată</string>
+    <string name="set_up_desert_sync_follower">Configurează un urmăritor pentru sincronizarea Desert</string>
     <string name="version">Versiune:</string>
     <string name="sensor_start">Pornire senzor:</string>
     <string name="plug_in_your_dexcom_reciever">Conectează receptorul dexcom, apoi apasă acest buton și ține pumnii!</string>
@@ -1417,6 +1421,7 @@
     <string name="progress">progres</string>
     <string name="bluetooth_device">Dispozitiv Bluetooth:   </string>
     <string name="transmitter_battery_status">Baterie transmițător:  </string>
+    <string name="top">Sus</string>
     <string name="connect_device_usb_otg">Vă rugăm să conectaţi dispozitivul prin cablu USB OTG.</string>
     <string name="connection_status">Stare conexiune:</string>
     <string name="range_in_high_low">Interval: (în/hiper/hipo)</string>
@@ -1459,6 +1464,7 @@
     <string name="are_you_sure_you_want_to_delete_this_blood_test_result">Sunteţi sigur că doriţi să ştergeţi acesta glicemie din deget?</string>
     <string name="yes_delete">Da, Șterge</string>
     <string name="deleted">Șters!</string>
+    <string name="wifi_sleep_policy_issue">Problemă in politica WiFi Sleep</string>
     <string name="your_wifi_is_set_to_sleep_when_the_phone_screen_is_off__this_may_cause_problems_if_you_dont_have_cellular_data_or_have_devices_on_your_local_network__would_you_like_to_go_to_the_settings_page_to_set__always_keep_wifi_on_during_sleep">WiFi este configurat să se oprească atunci când ecranul telefonului este oprit.\n\nAcest lucru poate cauza probleme dacă nu aveți date mobile sau aveți dispozitive în rețeaua dvs. locală.\n\nDoriți să mergeți la pagina de setări pentru a seta:\n\nPăstrați întotdeauna WiFi activat în timpul somnului?</string>
     <string name="maybe_later">Poate mai tarziu</string>
     <string name="yes_do_it">DA, Fă acest lucru</string>
@@ -1480,7 +1486,7 @@
     <string name="unusual_internal_context_problem__please_report">Problemă internă neobișnuită - vă rugăm să raportați</string>
     <string name="cannot_start__please_report_context_problem">Nu se poate începe - vă rugăm să raportați contextul problemei</string>
     <string name="xdrip_will_not_work_below_android_version_42">xDrip+ nu va funcționa cu versiunea Android 4.2 sau mai mică</string>
-    <string name="xdrip_oop2_not_installed">xDrip+ are nevoie de OOP2 pentru a manipula senzorii Libre2/LibreUS.</string>
+    <string name="xdrip_oop2_not_installed">xDrip+ are nevoie de Oop2 pentru a funcționa cu senzorii Libre2/LibreUS.</string>
     <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Această aplicație are nevoie de permisiuni complete pentru optimizarea bateriei sau nu va funcționa bine. Vă rugăm să resetați preferințele aplicației</string>
     <string name="setting_disabled_">Setare dezactivată :)</string>
     <string name="yes_please">DA, te rog</string>
@@ -1493,7 +1499,7 @@
     <string name="starting_sync_to_other_devices">Pornire sincronizare cu alte dispozitive</string>
     <string name="deleting_all_bg_readings">Șterge TOATE citirile de glicemie!</string>
     <string name="could_not_export_csv_">Nu s-a putut exporta fișierul CSV :(</string>
-    <string name="librealarm_data_format_appears_incompatible_protocol_changed_or_no_data">Formatul datelor LibreAlarm pare incompatibil! Protocolul a fost modificat sau nu există date?</string>
+    <string name="librealarm_data_format_appears_incompatible_protocol_changed_or_no_data">Formatul datelor LibreAlarm pare incompatibil!? Protocolul a fost modificat sau nu există date?</string>
     <string name="please_update_librealarm_to_use_oop_algorithm">Vă rugăm să actualizați LibreAlarm pentru a utiliza algoritmul OOP</string>
     <string name="sensor_clock_has_not_advanced">Ora senzorului nu a avansată!</string>
     <string name="sensor_age_has_gone_backwards">Vârsta senzorului a mers înapoi!!</string>
@@ -1529,7 +1535,9 @@
     <string name="ob1_session_restarted_title">Sesiune senzor repornită</string>
     <string name="ob1_session_restarted_msg">Sesiunea senzorului a fost repornită preventiv. Vă rugăm să verificaţi dacă următoarele citiri sunt ok şi calibrați dacă este necesar</string>
     <string name="ob1_session_restarted_note">Sesiunea senzorului a fost repornită</string>
+    <string name="title_ob1_g5_preemptive_restart_extended_time_travel">Durata extinsa - mod călătorie</string>
     <string name="summary_ob1_g5_preemptive_restart_extended_time_travel">Repornește sesiunea pentru a începe în ziua 3 pentru a evita erorile</string>
+    <string name="title_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares">Permite mereu durata extinsa - mod calatorie</string>
     <string name="summary_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares">Permite variații extinse a timpului cu toate versiunile de firmware (doar modul inginerie) </string>
     <string name="collection_summary_ob1_g5_preemptive_restart">Reporniți automat un senzor înainte să se oprească</string>
     <string name="title_ob1_g5_preemptive_restart_alert">Alertă la repornirea preventivă</string>
@@ -1538,7 +1546,7 @@
     <string name="pref_enable_insulinprofiles">activează cel puțin un profil dar maxim trei profiluri</string>
     <string name="pref_select_basal_insulinprofiles">alege profilul insulinei bazale.</string>
     <string name="pref_select_bolus_insulinprofiles">alegeţi profilul insulinei bolus. se utilizează şi pentru pompă sau stilouri injectoare...</string>
-    <string name="enable_streaming_summary">Conectează-te la senzorii Libre2 după ce se scanează. Acest lucru va împiedica cititorul Libre și aplicația LibreLink să primească alerte.</string>
+    <string name="enable_streaming_summary">conectează-te la senzorii Libre2 după ce ii scanezi. Acest lucru va împiedica cititorul Libre și aplicația LibreLink să primească alerte</string>
     <string name="enable_streaming_title">Pornire conexiune bluetooth cu senzori libre 2</string>
     <string name="enable_streaming_always_allow">Conectează întotdeauna la senzorii libre2</string>
     <string name="enable_streaming_ask_each_time">întreabă de fiecare dată</string>

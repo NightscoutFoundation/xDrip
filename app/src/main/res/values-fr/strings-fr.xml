@@ -73,7 +73,7 @@
     <string name="title_activity_share_test">Test Share</string>
     <!-- pebble settings -->
     <string name="pref_pebble_trend_watchface">Utiliser le cadran Pebble Tendances</string>
-    <string name="pref_summary_pebble_trend_watchface">Utilisez/installez le Cadran Pebble Tendances (expérimental)</string>
+    <string name="pref_summary_pebble_trend_watchface">Utiliser/installer le Cadran Pebble Tendances (expérimental)</string>
     <string name="pref_pebble_display_trend">Afficher la Tendance</string>
     <string name="pref_summary_display_trend">Afficher la tendance de glycémie sur le cadran de la montre Pebble xDrip.</string>
     <string name="pref_pebble_display_high_line">Afficher la limite élevée</string>
@@ -218,7 +218,7 @@
     <string name="persistent_high_alert">Alerte Hyper persistante</string>
     <string name="forecasted_low_alert">Alerte de previsions d\'hypoglycémie</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapoler les données pour essayer de prévoir les hypoglycémies</string>
-    <string name="alarm_at_forecasted_low_mins">Alarme pour prévisions d\'hypoglycémies minimum</string>
+    <string name="alarm_at_forecasted_low_mins">Délai de prévisions d\'hypoglycémies en minutes</string>
     <string name="other_xdrip_plus_alerts">Autres alertes xDrip+</string>
     <string name="xdrip_plus_display_settings">xDrip+ Paramètres d\'affichage</string>
     <string name="display_customisations">Afficher les personnalisations</string>
@@ -319,6 +319,7 @@
     <string name="speak_your_treatment">Prononcer votre traitement par exemple:\nxx unités d\'insuline / xx grammes de glucides</string>
     <string name="speech_recognition_is_not_supported">La reconnaissance vocale n\'est pas pris en charge</string>
     <string name="treatment_note">Remarque sur le traitement</string>
+    <string name="accessibility_description">xDrip utilise la fonction d\'Accessibilité seulement pour régler l\'écran lorsque l\'appareil est verrouillé. Ceci n\'est probablement utile que si vous avez un téléphone avec la fonction Always On Display et que vous l\'avez activée. xDrip n\'interagit pas avec Android d\'une autre manière.</string>
     <string name="could_not_export_database">Impossible d\'exporter la base de données :(</string>
     <string name="exported_to">"Exporté vers "</string>
     <string name="default_to_voice_input_next_time">Utiliser la saisie vocale la prochaine fois</string>
@@ -361,10 +362,10 @@
     <string name="enter_second_bg_value">Entrer la seconde valeur de glycémie</string>
     <string name="language_editor">Editeur de langue</string>
     <string name="configure_missed_readings">Configurer les lectures manqués</string>
-    <string name="install_pebble_snooze_control_app">Installez l\'application Pebble Snooze Control</string>
-    <string name="install_pebble_classic_trend_watchface">Installez le Cadran Pebble Tendances Classic</string>
-    <string name="install_pebble_trend_watchface">Installez le Cadran Pebble Tendances</string>
-    <string name="install_pebble_watchface">Installez le Cadran Pebble</string>
+    <string name="install_pebble_snooze_control_app">Installer l\'application Pebble Snooze Control</string>
+    <string name="install_pebble_classic_trend_watchface">Installer le Cadran Pebble Tendances Classic</string>
+    <string name="install_pebble_trend_watchface">Installer le Cadran Pebble Tendances</string>
+    <string name="install_pebble_watchface">Installer le Cadran Pebble</string>
     <string name="glucose_history">Historique Glycémie</string>
     <string name="import_database">Importer la base de données</string>
     <string name="sensor_table">Table du Capteur</string>
@@ -502,7 +503,7 @@
     <string name="key_is_used_instead_of_google_account">Key est utilisé au lieu du compte Google</string>
     <string name="sync_using_custom_security_key">Synchroniser en utilisant la clé de sécurité personnalisé</string>
     <string name="handset_group_security_key">Clé de sécurité de groupe de dispositifs</string>
-    <string name="handset_sync_grouping_key">Clé de synchronisation des de groupes de dispositifs</string>
+    <string name="handset_sync_grouping_key">Clé de regroupement de synchronisation des appareils</string>
     <string name="alert_name_colon">Nom de l\'alerte:</string>
     <string name="threshold_colon">Seuil:</string>
     <string name="default_snooze_colon">Mise en veille par défaut:</string>
@@ -547,7 +548,7 @@
     <string name="upload_logs">Télécharger les Logs</string>
     <string name="short_off_text_for_switches">OFF</string>
     <string name="short_on_text_for_switches">ON</string>
-    <string name="install_pebble_apps">Installez Pebble Apps</string>
+    <string name="install_pebble_apps">Installer Pebble Apps</string>
     <string name="sliding_24_hour_window_summary">Utilisez les dernières 24 heures au lieu de temps à partir de minuit pour les statistiques.</string>
     <string name="sliding_24_hour_window">Fenêtre coulissante</string>
     <string name="split">Divisé</string>
@@ -586,7 +587,7 @@
     <string name="speak_glucose_twice">Prononcer la valeur de glycémie deux fois</string>
     <string name="short_speak_readings_shortcut">Afficher un raccourci dans le menu ☰ pour gérer les prononciations de lectures</string>
     <string name="speak_readings_shortcut">Raccourci pour les lectures prononcées</string>
-    <string name="battery_optimization_off">Sur Android 6 + s\'assurer que l’optimisation de la batterie est désactivée. Recommandé</string>
+    <string name="battery_optimization_off">Sur Android 6+ s\'assurer que l’optimisation de la batterie est désactivée. Recommandé</string>
     <string name="battery_optimization_on">Ne pas continuer à demander l’optimisation de la batterie. Non recommandé</string>
     <string name="battery_optimization_prompt">Invité pour l’optimisation de la batterie</string>
     <string name="advanced_bluetooth_settings">Paramètres Bluetooth avancés</string>
@@ -610,11 +611,11 @@
     <string name="predictive_readings_old">Vieille méthode - non recommandée ! Tente de prédire les lectures chaque minute basé sur les valeurs passées récentes.</string>
     <string name="use_external_blukon_algorithm_summary">Utiliser un algorithme Libre hors processus. (blukon/NFC/LibreAlarm)</string>
     <string name="display_predictive_values">Afficher les valeurs prédictives</string>
-    <string name="use_external_blukon_algorithm">Utiliser l\'algorithme hors processus Libre.</string>
+    <string name="use_external_blukon_algorithm">Algorithme libre hors processus.</string>
     <string name="calibrate_external_libre_algorithm_summary">Appliquer les méthodes de calibration xDrip sur des données OOP.</string>
     <string name="calibrate_external_libre_algorithm_title">Calibration par algorithme OOP.</string>
     <string name="libre_use_smoothed_data_summary">Utiliser une moyenne de 5 points pour obtenir des données Libre plus lisses.</string>
-    <string name="libre_use_smoothed_data_title">Données Freestyle Libre lissées.</string>
+    <string name="libre_use_smoothed_data_title">Lissage des données libre.</string>
     <string name="retrieve_blukon_history_title">Récupérer l\'historique du Freestyle Libre</string>
     <string name="retrieve_blukon_history_summary">Extraire l\'historique manqué du périphérique Blucon lors de la reconnexion au capteur.</string>
     <string name="interpret_share_raw">Si vous utilisez Share, xDrip affichera les valeurs quand elles sont normalement cachées sur le récepteur.</string>
@@ -642,9 +643,9 @@
     <string name="percentage_above_range">Pourcentage des valeurs plus haute que la plage.</string>
     <string name="show_standard_deviation">Voir la déviation standard des valeurs.</string>
     <string name="standard_deviation">Écart-type</string>
-    <string name="show_total_carbs">Montrer le total des Traitements de glucides</string>
+    <string name="show_total_carbs">Afficher le total de glucides saisis par traitements</string>
     <string name="total_carbs">Glucides totaux</string>
-    <string name="show_total_insulin">Montrer le total de traitements d\'insuline</string>
+    <string name="show_total_insulin">Afficher le total d\'insuline saisis par traitements</string>
     <string name="total_insulin">Insuline total</string>
     <string name="received_readings_percentage">Pourcentage des lectures du capteur reçus</string>
     <string name="received_realtime_readings_percentage">Pourcentage des lectures du capteur reçus en temps réel (non récupérées). Mode natif G5 seulement</string>
@@ -652,7 +653,7 @@
     <string name="realtime_capture_percentage">Pourcentage de capture de paquets en temps réel</string>
     <string name="show_calibration_accuracy">Afficher l\'évaluation de précision de calibration des 3 derniers jours</string>
     <string name="accuracy_evaluation">Évaluation de la précision</string>
-    <string name="show_extra_status_on_widget">Montrer aussi la ligne d\'état supplémentaire sur le widget</string>
+    <string name="show_extra_status_on_widget">Afficher aussi la ligne d\'état supplémentaire sur le widget</string>
     <string name="show_long_calibration_data">Voir la pente et l\'ordonnée à l\'origine en format long.</string>
     <string name="show_short_calibration_data">Voir la pente et l\'ordonnée à l\'origine en format court.</string>
     <string name="show_plugin_data">Afficher les données de pente et le glucose du plugin actif</string>
@@ -708,7 +709,7 @@
     <string name="skip_local_lan">Pour les serveurs locaux avec des adresses 192.168.x.x, ne pas essayer de charger quand il n’y a aucune connectivité réseau local.</string>
     <string name="skip_lan_uploads">Ne pas effectuer les chargements par LAN</string>
     <string name="mongo_load_transmitter_data_title">Charger les données de l\'émetteur Libre</string>
-    <string name="mongo_load_transmitter_data_summary">Permettre à plus d’un xDrip de se connecter aux périphériques BT et stocker les données qu’ils reçoivent vers le Cloud. Cela devrait permettre une couverture de toute la maison pour le Libre avec miaomiao, ou 2 parents utilisant le même dispositif BT de manière transparente.</string>
+    <string name="mongo_load_transmitter_data_summary">Permettre à plus d\'un xDrip de se connecter aux périphériques BT et stocker les données qu\'ils reçoivent vers le Cloud. Cela devrait permettre une couverture de toute la maison pour le Libre avec miaomiao, ou 2 parents utilisant le même dispositif BT de manière transparente.</string>
     <string name="influxdb_sync">Activer la synchronisation InfluxDB</string>
     <string name="influxdb_uri">InfluxDB Uri</string>
     <string name="influxdb_database_name">Nom de la base de données InfluxDB</string>
@@ -800,7 +801,7 @@
     <string name="display_calculations_everytime">Afficher les calculs de l\'insuline/glucides en permanence</string>
     <string name="always_show_bolus_wizard_preview">Toujours afficher l’aperçu d’assistant de Bolus</string>
     <string name="show_test_features">Afficher les fonctionnalités de test en alpha et supplémentaires</string>
-    <string name="show_reminder_features">Montrer les caractéristiques et menus de rappels</string>
+    <string name="show_reminder_features">Afficher les menus et fonctionnalités de Rappel</string>
     <string name="enable_reminder_features">Activer les fonctionnalités de rappel</string>
     <string name="display_mathamatical_simulations">Afficher les simulations mathématiques basées sur les données de profil et les logs de glucides/insuline</string>
     <string name="predictive_simulations">Simulations prédictives</string>
@@ -813,7 +814,7 @@
     <string name="send_snooze_to_all">Envoyer la mise en veille vers tous</string>
     <string name="confirm_remote_snoozes">Ouvrir une boîte de dialogue pour confirmer l\'envoi de chaque veille distante</string>
     <string name="confirm_sensing_snooze">Confirmer l\'envoi de mise en veille</string>
-    <string name="allow_remotes_silence">Autoriser les combinés distants à mettre sous silence les alarmes sur celle-ci</string>
+    <string name="allow_remotes_silence">Autoriser les appareils distants à mettre sous silence les alarmes sur celle-ci</string>
     <string name="acccept_remote_snoozes">Accepter les mises en veille distantes</string>
     <string name="send_remote_snooze">Envoyer une mise en veille à distance</string>
     <string name="only_accept_same_network">Accepter uniquement si le nom du réseau wifi distant commence par les mêmes lettres que les nôtres et correspond très étroitement</string>
@@ -829,7 +830,7 @@
     <string name="log_and_plot_motion">Loguer et grapher les déplacements</string>
     <string name="use_remote_motion_data">Données de mouvement prises à distance plutôt que depuis le téléphone local</string>
     <string name="use_remote_motion">Utiliser les données de mouvement distantes</string>
-    <string name="be_motion_master">Être le maître des données de mouvement, même si nous sommes un suiveur. Positionner ceci sur un seul combiné !</string>
+    <string name="be_motion_master">Être le maître des données de mouvement, même si nous sommes un suiveur. Ne positionner que sur un seul appareil!</string>
     <string name="act_as_motion_master">Agir comme maître du mouvement</string>
     <string name="vehicle_motion_extras">Lorsqu\'un véhicule est détecté, activer des fonctionnalités supplémentaires</string>
     <string name="enable_vehicle_mode">Activer le Mode Véhicule</string>
@@ -841,7 +842,7 @@
     <string name="repeat_sound">Répéter le son</string>
     <string name="enable_telemetry">Activer la télémétrie</string>
     <string name="send_data_to_developers">Envoyer des données aux développeurs sur les taux de réussite des différents périphériques</string>
-    <string name="try_to_work_around_noisy_readings_ultrasensitive">Commencer à contourner les lectures bruitées même sur des niveaux de bruit très bas (mode ingénierie uniquement)</string>
+    <string name="try_to_work_around_noisy_readings_ultrasensitive">Commencer à contourner les lectures fluctuantes même sur des niveaux de fluctuation très faibles (mode ingénierie uniquement)</string>
     <string name="sidiary_date_title">Exportation depuis quand?</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
@@ -981,7 +982,7 @@
     <string name="automatically_enable_when_connected_to_car_bluetooth">Activer automatiquement le mode véhicule quand connecté au bluetooth de la voiture</string>
     <string name="enable_speak_readings_when_in_vehicle">Activer la fonction de prononciation des valeurs en mode véhicule</string>
     <string name="bluetooth_watchdog_timers">Délai pour le garde-fou BT</string>
-    <string name="bluetooth_watchdog_timer_sums">Valeur d\'entrée en minutes</string>
+    <string name="bluetooth_watchdog_timer_sums">Saisir la valeur en minutes</string>
     <string name="basal_editor">Éditeur de basale - Sélectionner les heures à ajuster</string>
     <string name="sensor_is_still_warming_up_please_wait">Le capteur est encore en initialisation, veuillez patienter</string>
     <string name="number_wall_config">Configuration du mur de valeurs</string>
@@ -1034,7 +1035,7 @@
     <string name="summary_write_Battery_Information_for_additional_analytic">écrire les informations sur la batterie pour une analyse supplémentaire dans un fichier. Veuillez utiliser ceci uniquement si cela sera demandé par un développeur !</string>
     <string name="title_Batterylog">Log batterie</string>
     <string name="summary_Choose_to_display_the_bridge_battery_level">Choisir pour afficher le niveau de batterie du transmetteur</string>
-    <string name="title_Glucose_Retention">Rétention de glucose</string>
+    <string name="title_Glucose_Retention">Rétention des glycémies</string>
     <string name="summary_Erase_data_older_than_this_many_days">Effacer les données antérieures à ce nombre de jours. 0 = ne rien effacer</string>
     <string name="title_Other_misc_options">Autres options diverses</string>
     <string name="summary_allow_testing_with_dead_sensor">permet de tester avec un capteur mort</string>
@@ -1260,8 +1261,8 @@
     <string name="title_lefun_screen_heart_pressure">Afficher la pression cardiaque</string>
     <string name="title_lefun_screen_find_phone">Afficher Trouver le téléphone / Mettre en veille</string>
     <string name="title_lefun_screen_mac_address">Afficher l\'adresse MAC</string>
-    <string name="summary_allow_samsung_workaround">Utiliser des améliorations pour éviter le comportement androïd non standard des combinés Samsung. Sans cela, les collecteurs ne peuvent pas obtenir les données.</string>
-    <string name="title_allow_samsung_workaround">Améliorations Samsung</string>
+    <string name="summary_allow_samsung_workaround">Utiliser des contournements pour éviter le comportement android non standard des terminaux Samsung. Sans cela, les collecteurs ne peuvent pas obtenir les données.</string>
+    <string name="title_allow_samsung_workaround">Solutions de contournement Samsung</string>
     <string name="summary_medtrum_use_native">Utiliser la calibration de l\'émetteur au lieu de xDrip comme primaire</string>
     <string name="title_medtrum_use_native">Medtrum Natif</string>
     <string name="summary_medtrum_a_hex">Valeur hexa de test de diagnostic</string>
@@ -1457,7 +1458,7 @@
     <string name="do_you_want_to_use_this_entered_fingerstick_blood_glucose_test_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Voulez-vous utiliser ce résultat de test de glycémie capillaire pour calibrer ?\n\n(vous pouvez changer lorsque cette boîte de dialogue est affichée dans Paramètres)</string>
     <string name="yes_calibrate">OUI, calibrer</string>
     <string name="enable_automatic_calibration">Activer la calibration automatique</string>
-    <string name="entered_blood_tests_which_occur_during_flat_trend_periods_can_automatically_be_used_to_recalibrate_after_20_minutes_this_should_provide_the_most_accurate_method_to_calibrate_with__do_you_want_to_enable_this_feature">Les tests sanguins réalisés durant les périodes stables peuvent être utilisés automatiquement pour recalibrer après 20 minutes. Ceci devrait être la méthode de calibration la plus précise.\n\nVoulez-vous activer cette fonctionnalité ?</string>
+    <string name="entered_blood_tests_which_occur_during_flat_trend_periods_can_automatically_be_used_to_recalibrate_after_20_minutes_this_should_provide_the_most_accurate_method_to_calibrate_with__do_you_want_to_enable_this_feature">Les tests sanguins réalisés durant les périodes stables peuvent être utilisés pour recalibrer automatiquement 20 minutes après leur entrée. Ceci devrait être la méthode de calibration la plus précise.\n\nVoulez-vous activer cette fonctionnalité ?</string>
     <string name="yes_enable">OUI, activer</string>
     <string name="blood_test_action">Action de test sanguin</string>
     <string name="what_would_you_like_to_do">Que voulez-vous faire?</string>

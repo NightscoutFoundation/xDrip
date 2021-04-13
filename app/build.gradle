@@ -129,6 +129,35 @@ def generateVersionName = { ->
 
 }
 
+/**
+ * Reads a property from the project settings (Gradle properties), the system environment or
+ * from the file <code>local.properties</code>.
+ *
+ * @param propertyName the name of the property to read
+ * @return the property value or an empty string
+ */
+def getLocalProperty(String propertyName) {
+    def propVal = project.findProperty(propertyName)
+    if (propVal == null) {
+        propVal = System.getenv(propertyName)
+        if (propVal == null)
+            propVal = System.getenv(propertyName.toLowerCase())
+        if (propVal == null)
+            propVal = System.getenv(propertyName.toUpperCase())
+        if (propVal == null) {
+            def propsFile = rootProject.file('local.properties')
+            if (propsFile.exists()) {
+                def props = new Properties()
+                props.load(new FileInputStream(propsFile))
+                propVal = props[propertyName]
+            } else {
+                propVal = ""
+            }
+        }
+    }
+    return propVal
+}
+
 android {
     compileSdkVersion 29
 
@@ -157,8 +186,10 @@ android {
         //vectorDrawables.useSupportLibrary = true // broken in newer gradle versions
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
-        // workaround till #1596 gets merged
-        resValue "string", "google_maps_key", "AIzaSyDOa0FJV2h2qf0tJ-kSeX1Sk2f1-IbUOz4"
+
+        // To get a Google Maps API key, follow this link, follow the directions and press "Create" at the end:
+        // https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=7C:1E:BB:15:CE:A1:92:30:47:9D:D0:3D:89:F6:C6:51:7D:3C:1B:DD%3Bcom.eveningoutpost.dexdrip
+        manifestPlaceholders = [google_maps_key:getLocalProperty('google_maps_key')]
     }
 
     // The defaultConfig values above are fixed, so your incremental builds don't

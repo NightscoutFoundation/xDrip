@@ -1679,6 +1679,17 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     }
                 }
 
+
+                // don't show web deposit unless in engineering mode
+                if (!Pref.getBooleanDefaultFalse("engineering_mode")) {
+                    try {
+                        final PreferenceScreen screen = (PreferenceScreen) findPreference("cloud_data_sync");
+                        screen.removePreference(findPreference("cloud_storage_web_deposit"));
+                    } catch (Exception e) {
+                        //
+                    }
+                }
+
                // if (!Experience.gotData()) {
                //     try {
                //     collectionCategory.removePreference(runInForeground);

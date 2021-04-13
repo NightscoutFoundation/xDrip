@@ -85,9 +85,11 @@ import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -646,6 +648,11 @@ public class JoH {
 
     public static HashMap<String, Object> JsonStringtoMap(String json) {
         return new Gson().fromJson(json, new TypeToken<HashMap<String, Object>>() {
+        }.getType());
+    }
+
+    public static List<Float> JsonStringToFloatList(String json) {
+        return new Gson().fromJson(json, new TypeToken<ArrayList<Float>>() {
         }.getType());
     }
 

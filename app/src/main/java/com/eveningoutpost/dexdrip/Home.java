@@ -871,7 +871,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 if (exists == null) {
                     ArrayList<InsulinInjection> injections = new ArrayList<InsulinInjection>();
                     for (int i = 0; i < maxInsulinProfiles; i++)
-                        if (insulinset[i]) {
+                        if (insulinset[i] && thisinsulinprofile[i] != null) {
                             InsulinInjection injection = new InsulinInjection(thisinsulinprofile[i], thisinsulinnumber[i]);
                             injections.add(injection);
                         }
@@ -895,7 +895,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             WatchUpdaterService.sendWearToast(gs(R.string.treatment_processed), Toast.LENGTH_LONG);
             ArrayList<InsulinInjection> injections = new ArrayList<InsulinInjection>();
             for (int i = 0; i < maxInsulinProfiles; i++)
-                if (insulinset[i]) {
+                if (insulinset[i] && thisinsulinprofile[i] != null) {
                     InsulinInjection injection = new InsulinInjection(thisinsulinprofile[i], thisinsulinnumber[i]);
                     injections.add(injection);
                 }
@@ -1633,7 +1633,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             }
             ArrayList<InsulinInjection> injections = new ArrayList<InsulinInjection>();
             for (int i = 0; i < maxInsulinProfiles; i++)
-                if (insulinset[i]) {
+                if (insulinset[i] && thisinsulinprofile[i] != null) {
                     InsulinInjection injection = new InsulinInjection(thisinsulinprofile[i], thisinsulinnumber[i]);
                     injections.add(injection);
                 }
