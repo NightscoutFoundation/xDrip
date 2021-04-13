@@ -222,7 +222,11 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
             }
         }.start();
     }
-    private JSONObject extractParams(Bundle bundle) {
+    private JSONObject extractParams(final Bundle bundle) {
+        if (bundle == null) {
+            Log.e(TAG, "Null bundle passed to extract params");
+            return null;
+        }
         final String json = bundle.getString("json");
         if (json == null) {
             Log.e(TAG, "json == null returning");
