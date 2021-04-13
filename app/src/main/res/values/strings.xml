@@ -309,6 +309,7 @@
     <string name="upload_data_to_dex_servers">Upload data to Dexcoms Servers so you can use your data with Dexcoms apps</string>
     <string name="manage_followers">Manage Followers</string>
     <string name="manage_existing_followers">Manage your existing followers and invite new ones.</string>
+    <string name="invite_follower">Invite a Follower</string>
     <string name="glucose_calibration_and_other_alerts">Glucose, Calibration and Other alerts</string>
     <string name="alert_volume_profile">Alert Volume Profile</string>
     <string name="smart_alerting">Smart Alerting</string>
