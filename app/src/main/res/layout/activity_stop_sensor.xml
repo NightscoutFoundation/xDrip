@@ -4,7 +4,7 @@
     android:layout_width="match_parent" android:layout_height="match_parent"
     tools:context="com.eveningoutpost.dexdrip.Home">
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:weightSum="1"
@@ -22,23 +22,25 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="@string/stop_sensor"
+                android:text="WARNING"
                 android:id="@+id/textView3"
+                android:textColor="#ffff00"
                 android:layout_gravity="center_horizontal" />
 
             <TextView
+                android:id="@+id/stop_sensor_instructions"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/only_stop_your_sensor_when_you_actually_plan"
                 android:layout_below="@+id/textView"
                 android:layout_alignParentStart="true"
-                android:layout_marginTop="25dp"
-                android:id="@+id/stop_sensor_instructions"
                 android:layout_gravity="right"
+                android:layout_marginTop="25dp"
+                android:gravity="center_vertical|center_horizontal"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
-                android:gravity="center_vertical|center_horizontal" />
+                android:text="@string/only_stop_your_sensor_when_you_actually_plan"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#FFFF00" />
 
             <Button
                 android:layout_width="wrap_content"
