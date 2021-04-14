@@ -68,6 +68,7 @@ public class LibreTrendGraph extends BaseAppCompatActivity {
         
         double factor = libreTrendLatest.getFactor();
         if(factor == 0) {
+            Log.e(TAG, "getLatestBgForXMinutes factor is null returning.");
             return null;
 
         }
@@ -76,6 +77,7 @@ public class LibreTrendGraph extends BaseAppCompatActivity {
         for(int i = libreTrendLatest.id ; i >= 0 && count < NumberOfMinutes; i--) {
             count ++;
             ret.add(new Float(factor * LibreTrendPoints.get(i).rawSensorValue));
+            Log.e(TAG, "getLatestBgForXMinutes adding a point to the graph.");
         }
             
         return ret;
@@ -109,7 +111,7 @@ public class LibreTrendGraph extends BaseAppCompatActivity {
          
          LibreTrendLatest libreTrendLatest = LibreTrendUtil.getInstance().getLibreTrendLatest();
          if(libreTrendLatest == null || libreTrendLatest.getFactor() == 0) {
-             Log.e(TAG, "libreBlock exists but libreTrendLatest.glucoseLevelRaw is zero ");
+             Log.e(TAG, "libreBlock exists but libreTrendLatest.getFactor is zero ");
              return null;
          }
 

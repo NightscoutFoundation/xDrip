@@ -929,7 +929,7 @@ public class NFCReaderX {
         }
     }
     
-    static public List<GlucoseData> getTrend(LibreBlock libreBlock) {
+    static public List<GlucoseData> getLibreTrend(LibreBlock libreBlock) {
         if(libreBlock.byte_start != 0) {
             Log.i(TAG, "libreBlock does not start with 0, don't know how to parse it " + libreBlock.timestamp);
             return null;

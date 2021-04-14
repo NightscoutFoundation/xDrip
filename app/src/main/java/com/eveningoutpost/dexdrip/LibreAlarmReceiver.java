@@ -204,10 +204,8 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
         List<LibreTrendPoint> libreTrendPoints = libreTrendUtil.getData(JoH.tsl() - days_in_msec, JoH.tsl());
         readingData.ClearErrors(libreTrendPoints);
         if(use_smoothed_data) {
-            
-        } else {
-            // Not using smoothing, only remove error points. 
-        }
+            readingData.calculateSmoothDataImproved(libreTrendPoints);
+        } 
         
         CalculateFromDataTransferObject(readingData, use_smoothed_data, true);
     }

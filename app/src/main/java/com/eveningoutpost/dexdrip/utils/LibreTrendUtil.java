@@ -95,12 +95,16 @@ public class LibreTrendUtil {
     }
     
     public List<LibreTrendPoint> getData(long startTimestamp, long endTimestamp) {
-        Log.i(TAG, "Size of array is " + m_points.size() + " this = " + this);
+        Log.i(TAG, "Size of array is " + m_points.size() + " this = " + this + "m_libreTrendLatest.timestamp " + m_libreTrendLatest.timestamp);
         
         long startTime = Math.max(startTimestamp, m_libreTrendLatest.timestamp);
-        List<LibreBlock> latestBlocks = LibreBlock.getForTrend(startTime, endTimestamp);
+        // The extra 1 is to make sure we don't read the last packet again and again.
+        List<LibreBlock> latestBlocks = LibreBlock.getForTrend(startTime+1, endTimestamp);
         
         Log.i(TAG, "Size of latestBlocks is " + latestBlocks.size());
+        if(latestBlocks.size() > 0) {
+            Log.i(TAG, "Last packet timestamp is " + latestBlocks.get(latestBlocks.size()-1).timestamp);
+        }
         
         // Go for the last libreBlock and get calculated bg and timestamp.
         ListIterator<LibreBlock> li = latestBlocks.listIterator(latestBlocks.size());
@@ -121,7 +125,7 @@ public class LibreTrendUtil {
             }
             if(isLast) {
                 
-                List<GlucoseData> trend = NFCReaderX.getTrend(libreBlock);
+                List<GlucoseData> trend = NFCReaderX.getLibreTrend(libreBlock);
                 if(trend == null || trend.size() == 0){
                     Log.w(TAG, "Error: NFCReaderX.getTrend retuned null for latest block");
                     continue;
@@ -136,7 +140,7 @@ public class LibreTrendUtil {
             if(libreBlock.calculated_bg == 0 ) {
                 continue;
             }
-            List<GlucoseData> trend = NFCReaderX.getTrend(libreBlock);
+            List<GlucoseData> trend = NFCReaderX.getLibreTrend(libreBlock);
             if(trend == null || trend.size() == 0){
                 Log.e(TAG, "Error: NFCReaderX.getTrend returned null for latest block");
                 return null;
@@ -181,7 +185,7 @@ public class LibreTrendUtil {
             m_libreTrendLatest.SensorSN = libreBlock.reference;
         }
         
-        List<GlucoseData> trend = NFCReaderX.getTrend(libreBlock);
+        List<GlucoseData> trend = NFCReaderX.getLibreTrend(libreBlock);
         if(trend == null) {
             Log.i(TAG, "NFCReaderX.getTrend returned null, ignoring reading");
             return;

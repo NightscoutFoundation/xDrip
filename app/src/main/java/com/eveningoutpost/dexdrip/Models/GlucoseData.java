@@ -9,7 +9,7 @@ public class GlucoseData implements Comparable<GlucoseData> {
     public enum DataSource {NOT_SET, FARM, BLE};
 
     public long realDate;               // The time of this reading in ms
-    public long sensorTime;             // The counter in minutes from start of sensor.
+    public int sensorTime;             // The counter in minutes from start of sensor.
     public int glucoseLevel = -1;
     public int glucoseLevelRaw = -1;
     public int glucoseLevelRawSmoothed;
@@ -23,6 +23,12 @@ public class GlucoseData implements Comparable<GlucoseData> {
     public GlucoseData(int glucoseLevelRaw, long timestamp) {
         this.glucoseLevelRaw = glucoseLevelRaw;
         this.realDate = timestamp;
+    }
+
+    public String toString(){
+        return "{ sensorTime = " + sensorTime + " glucoseLevel = " + glucoseLevel +  " glucoseLevelRaw = " +   glucoseLevelRaw +
+                 " glucoseLevelRawSmoothed = " +   glucoseLevelRawSmoothed +  " flags = " +   flags +
+                " source = " +   source +  "}";
     }
 
     public String glucose(boolean mmol) {
