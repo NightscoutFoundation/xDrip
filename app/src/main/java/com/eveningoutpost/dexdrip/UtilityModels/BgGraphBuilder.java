@@ -677,7 +677,7 @@ public class BgGraphBuilder {
 
 
             if (prefs.getBoolean("show_libre_trend_line", false)) {
-                if (DexCollectionType.hasLibre()) {
+                if (DexCollectionType.hasLibre() || Home.hasLibreblock()) { //??? test this
                     lines.add(libreTrendLine());
                 }
             }
@@ -1941,6 +1941,10 @@ public class BgGraphBuilder {
 
     private Line libreTrendLine() {
         final List<PointValue> libreTrendValues =  LibreTrendGraph.getTrendDataPoints(doMgdl, (long)(start_time * FUZZER), (long)(end_time * FUZZER));
+        if(libreTrendValues != null) {
+            Log.e("yyyy", "LibreTrendGraph.getTrendDataPoints returned " + libreTrendValues.size() + " points between " + JoH.dateTimeText((long)(start_time * FUZZER)) + " to " + JoH.dateTimeText((long)(end_time * FUZZER)) +
+                    " " + start_time);
+        }
         final Line line = new Line(libreTrendValues);
         line.setHasPoints(true);
         line.setHasLines(false);

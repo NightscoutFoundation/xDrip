@@ -6,6 +6,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.utils.LibreTrendPoint;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -15,6 +16,8 @@ public class ReadingData {
     public List<GlucoseData> trend; // Per minute data.
     public List<GlucoseData> history;  // Per 15 minutes data.
     public byte[] raw_data;
+
+    static final int ERROR_INFLUENCE = 4; //  The influence of each error
 
     public ReadingData() {
         this.trend = new ArrayList<GlucoseData>();
@@ -110,28 +113,108 @@ public class ReadingData {
         Iterator<GlucoseData> it = history.iterator();
         while (it.hasNext()) {
             GlucoseData glucoseData = it.next();
-            if (libreTrendPoints.get((int)glucoseData.sensorTime).isError()) {
+            if (libreTrendPoints.get(glucoseData.sensorTime).isError()) {
                 it.remove();
             }
         }
 
         // For the per minute data, we are also going to check that the data from the last 4 minutes did not have an error.
+        HashSet<Integer> errorHash = calculateErrorSet(libreTrendPoints,  trend);
+
         it = trend.iterator();
         while (it.hasNext()) {
             GlucoseData glucoseData = it.next();
-            if(glucoseData.sensorTime < 4) {
-                // The first points are not intersting in any case.
-                continue;
+
+            if(errorHash.contains(glucoseData.sensorTime ) || libreTrendPoints.get(glucoseData.sensorTime).rawSensorValue == 0) {
+                Log.e(TAG, "Removing point glucoseData =  " + glucoseData.toString());
+                it.remove();
             }
-            boolean eroroFound = false;
-            for (int i = 0; i < 4 && !eroroFound; i++) {
+/*
+            for (int i = 0; i < ERROR_INFLUENCE && !errorFound; i++) {
                 if (libreTrendPoints.get((int) glucoseData.sensorTime - i ).isError()) {
-                    Log.e(TAG, "removnig point with flags = " + glucoseData.flags + " val = " + glucoseData.glucoseLevelRaw);
+                    Log.e(TAG, "removnig point glucoseData =  " + glucoseData.toString());
                     it.remove();
-                    eroroFound = true;
+                    errorFound = true;
                     continue;
                 }
             }
+
+ */
         }
+    }
+
+    // A helper function to calculate the errors and their influence on data.
+    static private  HashSet<Integer> calculateErrorSet(List<LibreTrendPoint> libreTrendPoints, List<GlucoseData> trend) {
+        // Create a set of all the points with errors. (without changing libreTrendPoints). Each point with an error
+        // has an influence to the next 4 points.
+        HashSet<Integer> errorHash = new HashSet<Integer>();
+        Iterator<GlucoseData> it = trend.iterator();
+
+        // Find the minimum values to look for error
+        int min = libreTrendPoints.size();
+        int max = 0;
+        while (it.hasNext()) {
+            GlucoseData glucoseData = it.next();
+            min = Math.min(min, glucoseData.sensorTime);
+            max = Math.max(max,  glucoseData.sensorTime);
+        }
+        min = Math.max(0, min - ERROR_INFLUENCE);
+        max = Math.min(libreTrendPoints.size(), max + ERROR_INFLUENCE);
+
+        for(int i = min; i < max ; i++) {
+            System.err.println("Checking glucoseData + for errors" + libreTrendPoints.get(i ));
+            if (libreTrendPoints.get(i ).isError()) {
+                System.err.println("error found" + libreTrendPoints.get(i ));
+                for (int j=0; j < ERROR_INFLUENCE; j++) {
+
+                    errorHash.add( i + j);
+                }
+            }
+        }
+        return errorHash;
+
+    }
+
+    public void calculateSmoothDataImproved(List<LibreTrendPoint> libreTrendPoints) {
+        // use the data on libreTrendPoints to do the calculations.
+        // Try to use the first 5 points to do the average if they exist and if not use up to 7 more points.
+
+        HashSet<Integer> errorHash = calculateErrorSet(libreTrendPoints,  trend);
+        Iterator<GlucoseData> it = trend.iterator();
+        while (it.hasNext()) {
+            GlucoseData glucoseData = it.next();
+            boolean remove = calculateSmoothDataPerPoint(glucoseData, libreTrendPoints, errorHash);
+            if(remove) {
+                it.remove();
+            }
+        }
+    }
+
+    // true means we need to remove this objects.
+    private boolean calculateSmoothDataPerPoint(GlucoseData glucoseData, List<LibreTrendPoint> libreTrendPoints, HashSet<Integer> errorHash) {
+        if(glucoseData.sensorTime < 7) {
+            // First values are not interesting, but would make the algorithm more complex.
+            return false;
+        }
+
+        int points_used = 0;
+        double sum = 0;
+
+        for(int i = 0; i < 7 && points_used < 5; i++) {
+            LibreTrendPoint libreTrendPoint = libreTrendPoints.get(glucoseData.sensorTime - i);
+            if(errorHash.contains(glucoseData.sensorTime - i) || libreTrendPoint.rawSensorValue == 0) {
+                continue;
+            }
+            sum += libreTrendPoint.rawSensorValue;
+            points_used++;
+        }
+        if(points_used > 0) {
+            glucoseData.glucoseLevelRawSmoothed = (int)(sum / points_used);
+        } else {
+            //glucoseData.glucoseLevelRawSmoothed = 0;
+            Log.e(TAG, "Removing object because it does not have any data " + glucoseData);
+            return true;
+        }
+        return false;
     }
 }

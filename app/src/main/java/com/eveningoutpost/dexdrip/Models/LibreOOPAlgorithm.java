@@ -317,7 +317,7 @@ public class LibreOOPAlgorithm {
         Log.e(TAG, "handleDecodedBleResult Created the following object " + readingData.toString());
         LibreAlarmReceiver.processReadingDataTransferObject(readingData, timestamp, SensorSN, true /*=allowupload*/, patchUid, null/*=patchInfo*/);
     }
-
+    
     public static ArrayList<GlucoseData> parseBleDataPerMinute(byte[] ble_data, Long captureDateTime) {
         int sensorTime = 256 * (ble_data[41] & 0xFF) + (ble_data[40] & 0xFF);
         ArrayList<GlucoseData> historyList = new ArrayList<>();
@@ -334,7 +334,12 @@ public class LibreOOPAlgorithm {
             int relative_time = LIBRE2_SHIFT[i];
             glucoseData.realDate = captureDateTime - relative_time * MINUTE; 
             glucoseData.sensorTime = sensorTime - relative_time;
-            Log.d(TAG, "Adding value with sensorTime" + glucoseData.sensorTime + " glucoseLevelRaw " + glucoseData.glucoseLevelRaw + " flags = " + glucoseData.flags);
+            if(glucoseData.sensorTime % 20 == 0) {
+                Log.e(TAG, "Forcing raw value to zero. " + glucoseData.toString());
+                glucoseData.glucoseLevelRaw = 0;
+            }
+
+            Log.d(TAG, "Adding value with sensorTime " + glucoseData.sensorTime + " glucoseLevelRaw " + glucoseData.glucoseLevelRaw + " flags = " + glucoseData.flags);
             trendList.add(glucoseData);
         }
         return trendList;
