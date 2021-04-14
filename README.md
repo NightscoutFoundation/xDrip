@@ -54,3 +54,4 @@ We are very happy if people want to collaborate with this project. Please contac
 
 ## Thanks
 None of this would be possible without all the hard work of the xDrip and Nightscout communities who have developed such excellent software and allowed us to build upon it.
+
