@@ -17,6 +17,7 @@
             android:orientation="vertical"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
+            android:background="#e8e800"
             android:gravity="center_horizontal">
             <TextView
                 android:layout_width="wrap_content"
@@ -24,6 +25,7 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="@string/stop_sensor"
                 android:id="@+id/textView3"
+                android:textColor="#dd0066"
                 android:layout_gravity="center_horizontal" />
 
             <TextView
@@ -33,11 +35,12 @@
                 android:text="@string/only_stop_your_sensor_when_you_actually_plan"
                 android:layout_below="@+id/textView"
                 android:layout_alignParentStart="true"
-                android:layout_marginTop="25dp"
+                android:layout_marginTop="60dp"
                 android:id="@+id/stop_sensor_instructions"
                 android:layout_gravity="right"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
+                android:textColor="#dd0066"
                 android:gravity="center_vertical|center_horizontal" />
 
             <Button
@@ -49,7 +52,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_alignEnd="@+id/textView3"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="30dp" />
+                android:layout_marginTop="150dp" />
 
             <Button
                 android:text="@string/dont_stop_just_reset_all_calibrations"
