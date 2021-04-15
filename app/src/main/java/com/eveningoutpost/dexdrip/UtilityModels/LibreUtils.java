@@ -170,7 +170,7 @@ public class LibreUtils {
             int value = (pozS[0] - '0') * 16 + (pozS[1] - '0') * 8 + (pozS[2] - '0') * 4 + (pozS[3] - '0') * 2 + (pozS[4] - '0') * 1;
             v += lookupTable[value];
         }
-        Log.e(TAG, "decodeSerialNumber=" + v);
+        Log.d(TAG, "decodeSerialNumber=" + v);
 
         return v;
     }

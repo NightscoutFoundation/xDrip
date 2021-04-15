@@ -315,7 +315,6 @@ public class NFCReaderX {
                     try {
                         // Protect against wifi reader and gmc reader coming at the same time.
                         synchronized (NFCReaderX.class) {
-                            mResult.CalculateSmothedData();
                             LibreAlarmReceiver.processReadingDataTransferObject( mResult, CaptureDateTime, tagId, allowUpload, patchUid, patchInfo );
                             Home.staticRefreshBGCharts();
                         }
@@ -786,7 +785,6 @@ public class NFCReaderX {
             glucoseData.flags = LibreOOPAlgorithm.readBits(data, i*6 + 124, 0xe , 0xc);
             glucoseData.temp = LibreOOPAlgorithm.readBits(data, i*6 + 124, 0x1a , 0xc);
             glucoseData.source = GlucoseData.DataSource.FARM;
-            Log.e("xxxx", "flags = " + glucoseData.flags);
 
             int time = Math.max(0, Math.abs((sensorTime - 3) / 15) * 15 - index * 15);
 
@@ -942,7 +940,7 @@ public class NFCReaderX {
             // This is the libre2 ble data
             result = LibreOOPAlgorithm.parseBleDataPerMinute(libreBlock.blockbytes, libreBlock.timestamp);
         } else {
-            Log.i(TAG, "libreBlock exists bue size is " + libreBlock.byte_end + " don't know how to parse it " + libreBlock.timestamp);
+            Log.i(TAG, "libreBlock exists but size is " + libreBlock.byte_end + " don't know how to parse it " + libreBlock.timestamp);
             return null;
         }
         if(result.size() == 0 ) {

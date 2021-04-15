@@ -258,7 +258,7 @@ public class LibreOOPAlgorithm {
         glucoseData.glucoseLevelRaw = (int)(oOPResults.currentBg * factor);
         readingData.history.add(glucoseData);
         
-        Log.e(TAG, "handleData Created the following object " + readingData.toString());
+        Log.d(TAG, "handleData Created the following object " + readingData.toString());
         LibreAlarmReceiver.CalculateFromDataTransferObject(readingData, false, use_raw);
     }
     
@@ -298,7 +298,7 @@ public class LibreOOPAlgorithm {
 
         int raw  = LibreOOPAlgorithm.readBits(ble_data, 0 , 0 , 0xe);
         int sensorTime = 256 * (ble_data[41] & 0xFF) + (ble_data[40] & 0xFF);
-        Log.e(TAG, "Creating BG time =  " + sensorTime + "raw = " + raw);
+        Log.e(TAG, "Creating BG time =  " + sensorTime + " raw = " + raw);
         
         ReadingData readingData= new ReadingData();
         readingData.trend = new ArrayList<GlucoseData>();
@@ -307,9 +307,6 @@ public class LibreOOPAlgorithm {
         readingData.trend = parseBleDataPerMinute(ble_data, timestamp);
 
         readingData.history = parseBleDataHistory(ble_data, timestamp);
-
-        //========= add code here for smoothing and gap closing.
-
 
         String SensorSN = LibreUtils.decodeSerialNumberKey(patchUid);
         
@@ -334,12 +331,16 @@ public class LibreOOPAlgorithm {
             int relative_time = LIBRE2_SHIFT[i];
             glucoseData.realDate = captureDateTime - relative_time * MINUTE; 
             glucoseData.sensorTime = sensorTime - relative_time;
-            if(glucoseData.sensorTime % 20 == 0) {
+            /*
+             * Enable this code in order to have a zero data simulation.
+            if(glucoseData.sensorTime % 20 == 0) { 
                 Log.e(TAG, "Forcing raw value to zero. " + glucoseData.toString());
                 glucoseData.glucoseLevelRaw = 0;
             }
-
             Log.d(TAG, "Adding value with sensorTime " + glucoseData.sensorTime + " glucoseLevelRaw " + glucoseData.glucoseLevelRaw + " flags = " + glucoseData.flags);
+            */
+
+            
             trendList.add(glucoseData);
         }
         return trendList;
@@ -352,7 +353,6 @@ public class LibreOOPAlgorithm {
             return new ArrayList<>();
         }
         int sensorTimeModulo = (sensorTime - 2) / 15 * 15;
-        //System.out.println("sensorTimeModulo = " + sensorTimeModulo);
         ArrayList<GlucoseData> historyList = new ArrayList<>();
 
         for (int i = 0; i < 3; i++) {
@@ -370,11 +370,6 @@ public class LibreOOPAlgorithm {
             }
             glucoseData.realDate = captureDateTime  + (final_time - sensorTime) * MINUTE;
             glucoseData.sensorTime = final_time;
-            if(i ==0 ) {
-                Log.d(TAG,"sensorTime = " + sensorTime + " sensorTimeModulo " + sensorTimeModulo +
-                        "  point =  " + (sensorTimeModulo - relative_time) + " value = " + glucoseData.glucoseLevelRaw +
-                        " flags = " + glucoseData.flags);
-            }
             historyList.add(glucoseData);
         }
         return historyList;

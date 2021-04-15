@@ -77,7 +77,7 @@ public class LibreTrendGraph extends BaseAppCompatActivity {
         for(int i = libreTrendLatest.id ; i >= 0 && count < NumberOfMinutes; i--) {
             count ++;
             ret.add(new Float(factor * LibreTrendPoints.get(i).rawSensorValue));
-            Log.e(TAG, "getLatestBgForXMinutes adding a point to the graph.");
+            //Log.e(TAG, "getLatestBgForXMinutes adding a point to the graph.");
         }
             
         return ret;
