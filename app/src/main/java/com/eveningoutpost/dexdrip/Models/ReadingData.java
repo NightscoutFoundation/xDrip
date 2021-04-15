@@ -129,17 +129,6 @@ public class ReadingData {
                 Log.e(TAG, "Removing point glucoseData =  " + glucoseData.toString());
                 it.remove();
             }
-/*
-            for (int i = 0; i < ERROR_INFLUENCE && !errorFound; i++) {
-                if (libreTrendPoints.get((int) glucoseData.sensorTime - i ).isError()) {
-                    Log.e(TAG, "removnig point glucoseData =  " + glucoseData.toString());
-                    it.remove();
-                    errorFound = true;
-                    continue;
-                }
-            }
-
- */
         }
     }
 
@@ -162,11 +151,8 @@ public class ReadingData {
         max = Math.min(libreTrendPoints.size(), max + ERROR_INFLUENCE);
 
         for(int i = min; i < max ; i++) {
-            System.err.println("Checking glucoseData + for errors" + libreTrendPoints.get(i ));
             if (libreTrendPoints.get(i ).isError()) {
-                System.err.println("error found" + libreTrendPoints.get(i ));
                 for (int j=0; j < ERROR_INFLUENCE; j++) {
-
                     errorHash.add( i + j);
                 }
             }

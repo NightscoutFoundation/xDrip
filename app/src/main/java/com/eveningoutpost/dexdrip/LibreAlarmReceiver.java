@@ -73,7 +73,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
         if (gd.glucoseLevelRaw > 0) {
             if(use_smoothed_data && gd.glucoseLevelRawSmoothed > 0) {
                 converted = convert_for_dex(gd.glucoseLevelRawSmoothed);
-                Log.e(TAG,"Using smoothed value " + converted + " instead of " + convert_for_dex(gd.glucoseLevelRaw) );
+                Log.d(TAG,"Using smoothed value " + converted + " instead of " + convert_for_dex(gd.glucoseLevelRaw) );
             } else {
                 converted = convert_for_dex(gd.glucoseLevelRaw);
             }
@@ -160,7 +160,6 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                                 try {
                                     final ReadingData.TransferObject object =
                                             new Gson().fromJson(data, ReadingData.TransferObject.class);
-                                    object.data.CalculateSmothedData();
                                     processReadingDataTransferObject(object.data, JoH.tsl(), "LibreAlarm", false, null, null);
                                     Log.d(TAG, "At End: Oldest : " + JoH.dateTimeText(oldest_cmp) + " Newest : " + JoH.dateTimeText(newest_cmp));
                                 } catch (Exception e) {
@@ -196,17 +195,16 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
             LibreOOPAlgorithm.sendData(readingData.raw_data, CaptureDateTime, tagid);
             return;
         }
-        // smooth data here - how do we get the data to smooth... 
-        boolean use_smoothed_data = Pref.getBooleanDefaultFalse("libre_use_smoothed_data");
+
         LibreTrendUtil libreTrendUtil = LibreTrendUtil.getInstance();
         // Get the data for the last 24 hours, as this affects the cache.
-        
         List<LibreTrendPoint> libreTrendPoints = libreTrendUtil.getData(JoH.tsl() - days_in_msec, JoH.tsl());
         readingData.ClearErrors(libreTrendPoints);
+
+        boolean use_smoothed_data = Pref.getBooleanDefaultFalse("libre_use_smoothed_data");
         if(use_smoothed_data) {
             readingData.calculateSmoothDataImproved(libreTrendPoints);
         } 
-        
         CalculateFromDataTransferObject(readingData, use_smoothed_data, true);
     }
         
@@ -233,7 +231,6 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                     JoH.static_toast_long(gs(R.string.sensor_clock_has_not_advanced));
                     Pref.setBoolean("nfc_age_problem", true);
                 }
-                Log.d(TAG, "Sensor age did not advanced to: " + thisSensorAge);
                 return; // do not try to insert again
             } else {
                 Log.wtf(TAG, "Sensor age has gone backwards!!! " + sensorAge);

@@ -36,12 +36,13 @@ public class LibreTrendPoint {
         if (source == GlucoseData.DataSource.FARM) {
             ret |= flags != 0x800;
         } else if (source == GlucoseData.DataSource.BLE) {
-            // Condition already checked
+            // Condition already checked (rawSensorValue == 0)
         } else {
             ret = false;
-            Log.e(TAG, "LibreTrendPoint.isError called but source not set " + source);
         }
-        Log.e(TAG, "LibreTrendPoint.isError returning " + ret + " flags = " + flags + " source = " + source);
+        if(ret) {
+            Log.e(TAG, "LibreTrendPoint.isError returning " + ret + " flags = " + flags + " source = " + source);
+        }
         return ret;
     }
 }
