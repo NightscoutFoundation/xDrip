@@ -898,9 +898,10 @@
     <string name="bluetooth_scan">Bluetooth Scan</string>
     <string name="level_alerts">Level Alerts</string>
     <string name="override_calibration">Override Calibration</string>
-    <string name="only_stop_your_sensor_when_you_actually_plan">There is no option to undo these actions.  Only stop your sensor if you actually plan to remove it.
-    Only clear calibrations if you want to start over with calibrations on your current sensor.
-        Clearing calibrations is pointless if you use a Dexcom tranmitter in native mode.
+    <string name="only_stop_your_sensor_when_you_actually_plan">There is no option to undo these actions.
+        Only stop your sensor if you actually intend to remove it.
+        Only clear calibrations if you intend to start over your calibrations of your current sensor.
+        Clearing calibrations is pointless if you use a Dexcom transmitter in native mode.
         If you have accidentally reached this page, just leave it without stopping sensor or clearing calibrations.
     </string>
     <string name="restart_collector">Restart Collector</string>
