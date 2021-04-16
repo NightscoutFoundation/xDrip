@@ -41,163 +41,177 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="left"
                 android:orientation="horizontal"
-                android:padding="5dp"
-                android:layout_gravity="center_horizontal">
+                android:padding="5dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:padding="5dp"
                     android:text="@string/absolute_s"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <TextView
                     android:id="@+id/textView_ranges_absolute"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:maxLines="1"
                     android:padding="5dp"
                     android:text="--/--/--"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="left"
                 android:orientation="horizontal"
-                android:padding="5dp"
-                android:layout_gravity="center_horizontal">
+                android:padding="5dp">
 
                 <TextView
                     android:id="@+id/textView11"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:padding="5dp"
                     android:text="@string/median_bg"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <TextView
                     android:id="@+id/textView_median"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:maxLines="1"
                     android:padding="5dp"
                     android:text="---"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="left"
                 android:orientation="horizontal"
-                android:padding="5dp"
-                android:layout_gravity="center_horizontal">
+                android:padding="5dp">
 
                 <TextView
                     android:id="@+id/textView13"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:padding="5dp"
                     android:text="@string/mean_bg"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <TextView
                     android:id="@+id/textView_mean"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:maxLines="1"
                     android:padding="5dp"
                     android:text="---"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="left"
                 android:orientation="horizontal"
-                android:padding="5dp"
-                android:layout_gravity="center_horizontal">
+                android:padding="5dp">
 
                 <TextView
                     android:id="@+id/textView14"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:padding="5dp"
                     android:text="@string/hba1c_est"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <TextView
                     android:id="@+id/textView_a1c"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:maxLines="2"
                     android:padding="5dp"
                     android:text= "-- mmol/mol\n --%"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="left"
                 android:orientation="horizontal"
-                android:padding="5dp"
-                android:layout_gravity="center_horizontal">
+                android:padding="5dp">
 
                 <TextView
                     android:id="@+id/textView17"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:padding="5dp"
                     android:text="@string/stddev"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <TextView
                     android:id="@+id/textView_stdev"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:maxLines="1"
                     android:padding="5dp"
                     android:text="---"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
             </LinearLayout>
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="left"
                 android:orientation="horizontal"
-                android:padding="5dp"
-                android:layout_gravity="center_horizontal">
+                android:padding="5dp">
 
                 <TextView
                     android:id="@+id/textView18"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:padding="5dp"
                     android:text="@string/relative_sd_cv"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
                 <TextView
                     android:id="@+id/textView_coefficient_of_variation"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:maxLines="1"
                     android:padding="5dp"
                     android:text= "--%"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
             </LinearLayout>
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="left"
                 android:orientation="horizontal"
-                android:padding="5dp"
-                android:layout_gravity="center_horizontal">
+                android:padding="5dp">
 
                 <TextView
                     android:id="@+id/textView19"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:padding="5dp"
-                    android:text="GVI: "
+                    android:text="GVI:"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
                 <TextView
                     android:id="@+id/textView_gvi"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:maxLines="1"
                     android:padding="5dp"
                     android:text= "--"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
