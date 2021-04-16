@@ -26,7 +26,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:padding="5dp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
                     android:text="@string/range_in_high_low"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -35,7 +36,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
-                    android:padding="5dp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
                     android:text="--%/--%/--%"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
             </LinearLayout>
@@ -51,7 +53,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:padding="5dp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
                     android:text="@string/absolute_s"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -60,7 +63,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
-                    android:padding="5dp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
                     android:text="--/--/--"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
             </LinearLayout>
@@ -77,7 +81,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:padding="5dp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
                     android:text="@string/median_bg"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -86,7 +91,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
-                    android:padding="5dp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
                     android:text="---"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
             </LinearLayout>
@@ -103,7 +109,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:padding="5dp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
                     android:text="@string/mean_bg"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -112,7 +119,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
-                    android:padding="5dp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
                     android:text="---"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
             </LinearLayout>
@@ -129,7 +137,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:padding="5dp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
                     android:text="@string/hba1c_est"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -138,7 +147,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="2"
-                    android:padding="5dp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
                     android:text="-- mmol/mol\n--%"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
             </LinearLayout>
@@ -155,7 +165,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:padding="5dp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
                     android:text="@string/stddev"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -164,7 +175,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
-                    android:padding="5dp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
                     android:text="---"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
             </LinearLayout>
@@ -181,7 +193,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:padding="5dp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
                     android:text="@string/relative_sd_cv"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -190,7 +203,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
-                    android:padding="5dp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
                     android:text="--%"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
             </LinearLayout>
@@ -207,7 +221,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:padding="5dp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
                     android:text="GVI:"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -216,7 +231,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
-                    android:padding="5dp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
                     android:text="--"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
             </LinearLayout>
