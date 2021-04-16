@@ -931,10 +931,14 @@
     <string name="test_message_sending">נסה שליחת הודעות</string>
     <string name="select_device">בחירת מכשיר</string>
     <string name="detect_car_audio">זהה אודיו ברכב</string>
+    <string name="enable_speak_readings_when_in_vehicle">אפשר תכונת הקראת קריאות במצב רכב</string>
     <string name="bluetooth_watchdog_timer_sums">הזן ערך בדקות</string>
     <string name="sensor_is_still_warming_up_please_wait">הסנסור עדיין מתחמם, אנא המתינו</string>
+    <string name="number_wall_config">הגדרת מספר מוצג</string>
+    <string name="summary_If_you_plan_to_only_use_a_Wear_collector_and_never_your_phone">אם אתה מתכוון להשתמש בשעון בלבד כאוסף ולא עם הטלפון כלל.</string>
     <string name="title_Smartwatch_Sensors">חיישנים בשעונים חכמים</string>
     <string name="title_Heart_Rate_Sensor">מד דופק</string>
+    <string name="title_When_changes_by">כאשר משתנה ב-</string>
     <string name="title_Identify_receiver">זיהוי מקלט</string>
     <string name="title_Accept_Calibrations">קבל כיולים</string>
     <string name="summary_Operate_a_local_web_server_for_interacting_with_Fitbit_Ionic_etc">הפעל שרת מקומי לאינטראקציה עם Fitbit Ionic וכו\'</string>

@@ -445,7 +445,7 @@
     <string name="bluetooth_wakelocks">Bluetooth Wakelocks</string>
     <string name="compatible_broadcast">Compatibele Broadcast</string>
     <string name="show_datatables">Show DataTables</string>
-    <string name="display_bridge_battery">Beeldscherm Bridge Battery</string>
+    <string name="display_bridge_battery">Geef Bridge-batterij weer</string>
     <string name="close_gatt_on_ble_disconnect">Sluit GATT op verbreken van BLE</string>
     <string name="disable_battery_warning">Uitschakelen Batterijwaarschuwing</string>
     <string name="additional_text_status">Extra tekst-status</string>
@@ -544,7 +544,7 @@
     <string name="predictive_model_inner_workings">Voorspellend model innerlijke werking</string>
     <string name="noise_model_inner_workings">Noise model innerlijke werking</string>
     <string name="glucose_number_from_filtered">Glucose nummer uit Filtered</string>
-    <string name="if_the_phone_has_text_to_speech">Als de telefoon heeft tekst-naar-spraak-mogelijkheden zal elke meting te spreken.</string>
+    <string name="if_the_phone_has_text_to_speech">Als de telefoon tekst-naar-spraak mogelijkheden heeft, spreekt hij elke nieuwe lezing uit.</string>
     <string name="upload_logs">Logboeken uploaden</string>
     <string name="short_off_text_for_switches">UIT</string>
     <string name="short_on_text_for_switches">OP</string>

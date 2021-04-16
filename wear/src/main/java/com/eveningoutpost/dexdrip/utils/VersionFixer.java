@@ -57,6 +57,7 @@ public class VersionFixer {
             PersistentStore.setString(PEER_VERSION, version);
             PersistentStore.setLong(PEER_VERSION_UPDATED, JoH.tsl());
             UserError.Log.d(TAG, "Updated peer version to: " + version);
+            AdbInstaller.pingIfNoDemigod(null);
             return true;
         } else {
             return false;
@@ -77,6 +78,16 @@ public class VersionFixer {
     }
 
     public static void runPackageInstaller(final byte[] buffer) {
+        if (buffer == null) return;
+        if (DemiGod.isPresent()) {
+            runDemiGodPackageInstaller(buffer);
+        } else {
+            UserError.Log.d(TAG, "Trying adb install");
+            AdbInstaller.install(buffer);
+        }
+    }
+
+    public static void runDemiGodPackageInstaller(final byte[] buffer) {
         if (buffer == null) return;
         try {
             UserError.Log.ueh(TAG, "Running demigod package installer with payload size: " + buffer.length);
@@ -165,8 +176,6 @@ public class VersionFixer {
     private static void resolveVersionDifference(String version) {
         UserError.Log.ueh(TAG, "Attempting to resolve version difference");
         // Check rom permission level
-        if (DemiGod.isPresent()) {
-            // send request for update - notify about download
             if (JoH.pratelimit("resolve-version-difference-download", 40000)) {
                 UserError.Log.e(TAG, "Wanting update of wear app for: " + version);
                 JoH.static_toast_long("Asking phone for updated wear app");
@@ -174,13 +183,6 @@ public class VersionFixer {
             } else {
                 UserError.Log.e(TAG,"Wanting update but not requesting due to rate limit");
             }
-            // notify or fix
-
-        } else {
-            // TODO ratelimit
-            UserError.Log.wtf(TAG, "Wear app needs updating");
-            JoH.static_toast_long("xDrip wear app needs updating");
-        }
     }
 
 
