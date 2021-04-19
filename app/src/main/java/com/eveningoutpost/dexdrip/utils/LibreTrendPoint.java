@@ -34,14 +34,14 @@ public class LibreTrendPoint {
     public boolean isError() {
         boolean ret = rawSensorValue == 0;
         if (source == GlucoseData.DataSource.FARM) {
-            ret |= flags != 0x800;
+            ret |= flags != 800;
         } else if (source == GlucoseData.DataSource.BLE) {
             // Condition already checked (rawSensorValue == 0)
         } else {
             ret = false;
         }
         if(ret) {
-            Log.e(TAG, "LibreTrendPoint.isError returning " + ret + " flags = " + flags + " source = " + source);
+            Log.e(TAG, "LibreTrendPoint.isError returning " + ret + " " + toString());
         }
         return ret;
     }
