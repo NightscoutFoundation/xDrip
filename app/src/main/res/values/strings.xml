@@ -1031,8 +1031,8 @@
     <string name="summary_Activate_heart_rate_sensor_if_available">Activate heart rate sensor if available</string>
     <string name="title_Heart_Rate_Sensor">Heart Rate Sensor</string>
     <string name="summary_Smooth_heart_rate_graph">Smooth heart rate graph</string>
-    <string name="title_When_changes_by">When changes by</string>
-    <string name="title_Or_per_number_of_minutes">Or per number of minutes</string>
+    <string name="title_When_changes_by">If changes by</string>
+    <string name="title_Or_per_number_of_minutes">How often minutes</string>
     <string name="title_Identify_receiver">Identify receiver</string>
     <string name="summary_Only_send_to_named_package">Only send to named package</string>
     <string name="title_Accept_Calibrations">Accept Calibrations</string>
