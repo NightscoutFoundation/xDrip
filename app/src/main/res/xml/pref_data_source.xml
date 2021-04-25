@@ -173,7 +173,7 @@
                     android:key="collection_preemptive_restart"
                     android:dependency="ob1_g5_use_transmitter_alg"
                     android:summary="@string/collection_summary_ob1_g5_preemptive_restart"
-                    android:title="@string/title_ob1_g5_preemptive_restart">
+                    android:title="@string/title_preemptive_restart_settings">
                 <CheckBoxPreference
                         android:defaultValue="false"
                         android:dependency="ob1_g5_use_transmitter_alg"
