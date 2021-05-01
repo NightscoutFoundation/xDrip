@@ -21,13 +21,11 @@
     <string name="navigation_drawer_open">Otwórz menu nawigacyjne</string>
     <string name="navigation_drawer_close">Zamknij menu nawigacyjne</string>
     <string name="title_activity_calibration_check_in">Kalibracja czujnika</string>
-    <string name="title_activity_usb_connected">Łączność przez USB</string>
     <string name="snooze">Uśpij</string>
     <string name="snooze_hint">Uśpij alarmy na x minut</string>
     <string name="ok">Ok</string>
     <string name="cancel">Anuluj</string>
     <string name="no">Nie</string>
-    <string name="pref_sensor_location_dont_ask_again"> Nie pytaj ponownie.</string>
     <string name="title_activity_error">"Lista błędów i zdarzeń"</string>
     <string name="title_activity_main">Ekran główny</string>
     <string name="title_activity_fake_numbers">Fałszywe Numery</string>
@@ -61,15 +59,12 @@
     <string name="pref_message_api_url">Wpisz główny adres URL. Zostanie on potem automatycznie rozszerzony przed wysyłaniem danych. API_SECRET powinno być identyczne z twoim hasłem podanym przy tworzeniu serwera nightscout.</string>
     <string name="pref_default_api_url">https://twojehaslo@{YOUR-SITE}.azurewebsites.net/api/v1/</string>
     <!-- wifi Settings -->
-    <string name="wifi_recievers_dialog_message">Lista oddzielona przecinkami  ip: port (na przykład 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
-    <string name="wifi_recievers_dialog_title">Wpisz adresy IP i porty odbiorników (w tym adresów MongoDB jeśli potrzebne)</string>
     <!-- Location Settings -->
     <string name="location_not_found_title">Lokalizacja nie jest Włączona</string>
     <string name="location_not_found_message">Aby uruchomić wyszukiwanie urządzeń Bluetooth lokalizacja musi być aktywna. xDrip nie potrzebuje twojej lokalizacji poza opcjonalną funkcją wysyłania wiadomości w nagłych przypadkach</string>
     <string name="location_yes">Włącz</string>
     <!-- broadcast settings -->
     <string name="pref_title_broadcast_enabled">Nadawaj lokalnie</string>
-    <string name="pref_summary_broadcast_enabled">Włącz lokalną transmisję danych, dzięki czemu inne aplikacje (np. NightWatch) mogą otrzymać nowe wartości</string>
     <string name="title_activity_share_test">Podziel test</string>
     <!-- pebble settings -->
     <string name="pref_pebble_trend_watchface">Użyj Pebble Trend Watchface</string>
@@ -80,7 +75,6 @@
     <string name="pref_pebble_display_low_line">Wyświetl linie dla niskich</string>
     <!-- Amazfit Settings -->
     <string name="pref_amazfit_enable">Włącz</string>
-    <string name="pref_amazfit_BG_alert_enable_summary">Wyślij aktywne alarmy o glikemii do smartwatcha</string>
     <string name="pref_amazfit_BG_alert_enable">Włącz</string>
     <string name="pref_amazfit_BG_alert_title">Alarmy glikemii</string>
     <string name="pref_amazfit_other_alert_enable_summary">Wyślij inne alarmy do smartwatcha</string>
@@ -96,7 +90,6 @@
     <string name="title_activity_alert_list">Lista alarmów</string>
     <string name="speaktreatment">Mów leczenie</string>
     <string name="title_activity_update">Doatępna jest nowa aktualizacja xDrip+</string>
-    <string name="title_activity_display_qrcode">Udostepnij ustawienia poprzez kod QR</string>
     <string name="title_activity_send_feed_back">Wyślij odpowiedź do Jamorham</string>
     <string name="title_activity_maps">Mapa Parakeet</string>
     <string name="title_activity_display_preferences">Pokaż Preferencje</string>
@@ -116,7 +109,6 @@
     <string name="share">Udostępnij</string>
     <string name="title_activity_profile_editor">Edytor profil leczenia</string>
     <string name="first_use_menu_to_scan">Najpierw użyj menu do skanowania urządzenia BT lub zmień źródło danych w ustawieniach!</string>
-    <string name="first_configure_ip_address">Najpierw skonfiguruj IP adress Wixel-wifi lub URL Parakeet</string>
     <string name="now_start_your_sensor">Teraz uruchom czujnik lub sprawdz ustawienia</string>
     <string name="please_wait_while_sensor_warms_up">Poczekaj czujnik się rozgrzewa! (</string>
     <string name="minutes_with_bracket">" minuty)"</string>
@@ -125,24 +117,17 @@
     <string name="please_enter_two_calibrations_to_get_started">Aby rozpocząć, proszę podać dwie kalibracje!</string>
     <string name="now_pair_with_your_dexcom_share">Teraz sparować z Dexcom Udostępnij</string>
     <string name="now_choose_start_sensor_in_settings">Teraz uruchom czujnik w ustawieniach</string>
-    <string name="double_check_dex_receiver_serial_number">Dwukrotnie Sprawdź Numer seryjny Dex receiver, powinien składać się z 10 znaków, nie należy zapominać liter</string>
-    <string name="please_set_dex_receiver_serial_number">Proszę ustawić numer seryjny Dex Receiver w ustawieniach aplikacji</string>
-    <string name="unfortunately_andoird_version_no_blueooth_low_energy">Niestety twoja wersja Android nie obsługuje Bluetooth Low Energy</string>
     <string name="waiting_for_packet">Oczekiwanie na pakiet</string>
     <string name="persistent_high_for_greater_than">Utrzymujący sie wysoki poziom dla&gt; </string>
     <string name="space_mins">" Min"</string>
     <string name="till">do</string>
     <string name="low_predicted">Niska przewidział</string>
     <string name="in">w</string>
-    <string name="yes_enter_setup_mode">Tak wejść w tryb konfiguracji</string>
-    <string name="nokeep_parakeet_as_it_is">Nie zmieniaj stanu Parakeet</string>
-    <string name="are_you_sure_you_want_switch_parakeet_to_setup">Czy na pewno chcesz, aby przełączyć do trybu serwisowego?\n\nNormalnie ta opcja służy do konfiguracji nadajnika poprzez wysyłanie kolejnych wiadomości tekstowych do Parakeet itp.</string>
     <string name="split_delete_or_do_nothing">Split, usunąć lub zrobić nic</string>
     <string name="split_this_block_in_two">Podzielona ten blok na dwie części</string>
     <string name="delete_this_time_block">Usuń ten blok czasowy</string>
     <string name="cancel_do_nothing">Anuluj - nic nie rób</string>
     <string name="added">Dodany</string>
-    <string name="checking_for_update">Sprawdzanie aktualizacji ..</string>
     <string name="signal_missed">Brak Sygnału</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} Minuty temu|1#{0, number, integer} Minuta temu|1&lt;{0, number, integer} Minuty temu}</string>
     <string name="space_minutes_ago">" Minuty temu"</string>
@@ -150,10 +135,8 @@
     <string name="show_parakeet_map">Pokaż położenie Parakeet</string>
     <string name="switch_parakeet_to_setup_mode">Przełączyć Parakeet w tryb serwisowy</string>
     <string name="view_events_log">Zobacz Event Log</string>
-    <string name="show_libre_trend">Pokaż trend z libre</string>
     <string name="share_config_via_qr_code">Udostepnij konfiguracje poprzez kod QR</string>
     <string name="check_for_updated_version">Sprawdź czy jest nowa wersja</string>
-    <string name="send_feedback_to_developer">Wyślij odpowiedź do dewelopera</string>
     <string name="home_screen">Ekran główny</string>
     <string name="event_logs">Dzienniki zdarzeń</string>
     <string name="calibration_graph">Wykres Kalibracji</string>
@@ -181,7 +164,6 @@
     <string name="send_feedback_message">Wyślij wiadomość Feedback</string>
     <string name="copying_settings">Ustawienia kopiowania</string>
     <string name="show_settings_qr_codes">Ustawienia dla kodów QR</string>
-    <string name="load_save_settings_to_sdcard">Otw. / Zap. ustaw. na karcie SD</string>
     <string name="alarms_and_alerts">Alarmy i alerty</string>
     <string name="alerts_and_notifications">Alerty i powiadomienia</string>
     <string name="glucose_level_alerts_list">Glukozy poziomu listy alertów</string>
@@ -197,8 +179,6 @@
     <string name="alarm_at_forecasted_low_mins">Alarm przy prognozowanych niskich w minutach</string>
     <string name="other_xdrip_plus_alerts">Inne alarmy xDrip+</string>
     <string name="xdrip_plus_display_settings">xDrip+ Ustawienia ekranu</string>
-    <string name="display_customisations">Pokaż dostosowywać</string>
-    <string name="insulin_carb_ratios_etc_for_models">Insulina, wskaźniki itp Carb dla modeli</string>
     <string name="grams_of_carbohydrate_one_unit_covers">Ile gram węglowodanów przypada na 1 jednostke insuliny</string>
     <string name="linear_model_carbs_absorbed_per_hour">Model liniowy - wchłanianie węglowodanów na godzinę</string>
     <string name="carb_absorption_rate">Szybkość wchłaniania węglowodanów</string>
@@ -211,10 +191,8 @@
     <string name="bg_data_table">Tabela BG</string>
     <string name="cannot_calibrate_right_now">Nie można skalibrować teraz</string>
     <string name="hardware_data_source">Sprzętowe źródło danych</string>
-    <string name="enter_ten_character_dexcom_receiver_serial">Wprowadź 10 znakowy numer seryjny Dexcom Receiver</string>
     <string name="dexcom_transmitter_id">Dexcom Nadajnik ID</string>
     <string name="run_collector_in_foreground">Uruchom Collector na pierwszym planie</string>
-    <string name="shows_a_persistent_notification">Pokazuje stałe powiadomienie, widoczne na ekranie blokady i zapobiega zabijaniu przez androida procesu.</string>
     <string name="list_of_receivers">Lista odbiorników</string>
     <string name="data_source_settings">Ustawienia źródła danych</string>
     <string name="smart_watch_features">Inteligentne funkcje zegarka</string>
@@ -226,7 +204,6 @@
     <string name="pebble_integration">Integracja z Pebble</string>
     <string name="send_data_to_pebble_watchface">Wysyłanie danych do Pebble Watchface.</string>
     <string name="pebble_watch_integration">Integracja z Pebble Watch</string>
-    <string name="standard_or_trend_pebble_watchface">Standard lub Trend pebble watchfaces</string>
     <string name="choose_pebble_watchface">Wybierz Pebble Watchface</string>
     <string name="message_to_display_when_bgl_hits">Komunikat będzie wyświetlany, gdy BGL przekroczy szczególną wartość</string>
     <string name="text_to_display_when_hitting_special_value">Tekst wyświetlany po osiągnięciu szczególnej wartości.</string>
@@ -252,7 +229,6 @@
     <string name="start_snoozed">Rozpocznij w stanie uśpionym</string>
     <string name="adjust_all_by_a_factor">Dostosuj wszystko przez współczynnik</string>
     <string name="reset">Resetuj</string>
-    <string name="customize_colours">Dostosuj kolory</string>
     <string name="xdrip_plus_color_settings">Ustawienia kolorów xDrip+</string>
     <string name="glucose_values_and_lines">Glikemia i linie</string>
     <string name="high_glucose_values">Wysoka wartość stężenia glukozy</string>
@@ -271,7 +247,6 @@
     <string name="units">jednostki</string>
     <string name="carbs">węglowodany</string>
     <string name="when">gdy</string>
-    <string name="speak_your_treatment">Mów leczenia np:\nxx jednostek insuliny / xx gram węglowodanów</string>
     <string name="speech_recognition_is_not_supported">Rozpoznawanie mowy nie jest obsługiwane</string>
     <string name="treatment_note">Leczenie Uwaga</string>
     <string name="could_not_export_database">Nie udało się wyeksportować bazy danych :(</string>
@@ -280,7 +255,6 @@
     <string name="done">Gotowe</string>
     <string name="entering_a_calibration_now_will_override_your_previously_entered_calibration">Wprowadzanie kalibracji teraz zastąpi podaną wcześniej kalibrację.</string>
     <string name="enter_blood_glucose_value">Wprowadź wartość glikemii</string>
-    <string name="this_does_not_get_used_for_anything_its_just_to_keep_track_of_differences_for_algorithem_improvement_purposes">To nie jest wykorzystywane do obliczeń, służy prostu aby śledzić różnice dla celów poprawy algorytmu</string>
     <string name="no_active_alert_exists">Brak aktywnych alarmów</string>
     <string name="active_alert_exists_named">Aktywny alert istnieje nazwie</string>
     <string name="bracket_not_snoozed">(nie uśpiony)</string>
@@ -302,10 +276,6 @@
     <string name="version_details">Szczegóły wersji</string>
     <string name="download_now">Pobierz teraz</string>
     <string name="automatically_check_for_updates">Automatyczne sprawdz czy jest nowa wersja</string>
-    <string name="here_you_can_save_the_settings_to_the_external_storage_sdcard">W tym miejscu możesz zapisać ustawienia do pamięci zewnętrznej (karty pamięci).\n\nPo zapisaniu do pamięci zewnętrznej inne aplikacje hipotetycznie będą mogły odczytać ustawienia które mogą zawierać wrażliwe informacje.\n\nW celu zachowania bezpieczeństwa radzimy, aby usunąć plik z ustawieniami po zaimportowaniu ich do xdrip.</string>
-    <string name="save_all_settings_to_sdcard">Zapisz wszystkie ustawienia na karcie SD</string>
-    <string name="load_all_settings_from_sdcard">Otwórz wszystkie ustawienia z karty SD</string>
-    <string name="delete_any_settings_on_sdcard">Usuń wszystkie ustawienia z karty SD</string>
     <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Za pomocą kodów QR przenieść ustawienia. Ustawienia-&gt; funkcja Auto Konfiguracji]]></string>
     <string name="xdrip_plus_security_key_settings_only">tylko xDrip Plus Ustawienia zabezpieczeń klucza</string>
     <string name="show_general_and_collection_settings">Wyswietl ustawienia ogólne i collection</string>
@@ -322,7 +292,6 @@
     <string name="glucose_history">Historia poziomu glukozy</string>
     <string name="import_database">Import bazy danych</string>
     <string name="sensor_table">Tabela Sensor</string>
-    <string name="bg_readings_table">Tabela Odczytów BG</string>
     <string name="long_press_to_split_or_delete">Długie naciśnięcie do Splitu lub Usuń</string>
     <string name="press_and_hold_on_the_background_to_split_or_delete">Wciśnij i przytrzymaj na tle podziału żeby usunąć lub podzielić blok czasowy</string>
     <string name="search">Szukanie</string>
@@ -335,24 +304,18 @@
     <string name="be_master_for_followers">Bądź podstawowym źródłem danych dla pozostałych</string>
     <string name="this_device_will_send_data_to_followers">To urządzenie przesyła dane do pozostałych odbiorców</string>
     <string name="send_parakeet_map_location_to_followers">Wyślij lokalizacjie Parakeet, do pozostałych odbiorców</string>
-    <string name="sync_parakeet_geolocation">Synchronizacja geolokalizacji Parakeet</string>
     <string name="disable_all_sync_features">Wyłącz wszystkie funkcje synchronizacji</string>
     <string name="temporary_work_around_disable_all_sync_detail">Tymczasowe rozwiązanie problemu, całkowicie zatrzymuje wszystkie synchronizacje. Może wymagać ponownego uruchomienia po ponownym włączeniu. Używaj z rozwagą!</string>
     <string name="automatic_updates_crash_reports_and_feedback">Aktualizacje automatyczne, raporty o awariach i opinia dla programisty</string>
     <string name="crowd_sourced_translation">Tłumaczenie przy użyciu Crowd-source</string>
     <string name="please_enter_your_question_or_comments_here">Proszę podać swoje pytanie lub komentarze.\n\nJeśli podasz adres e-mail można uzyskać odpowiedź.\n\n</string>
-    <string name="optional_contact_info_here_eg_email">Opcjonalnie Informacje kontaktowe tu np email</string>
     <string name="send_message">Wyślij wiadomość</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Proszę napisz, co myślisz o tej aplikacji.</string>
-    <string name="preferences_saved_in_sdcard_downloads">Ustawienia zapisane na karcie sd w Downloads</string>
-    <string name="could_not_write_to_sdcard_check_perms">Nie można zapisać na karte - sprawdź uprawnienia?</string>
     <string name="loaded_preferences_restarting">Załadowane Preferencje! - Ponowne uruchomienie</string>
     <string name="could_not_load_preferences_check_pers">Nie udało się załadować ustawień - sprawdź uprawnienia lub plik?</string>
     <string name="external_storage_not_writable">Pamięć zewnętrzna jest w trybie read-only</string>
     <string name="successfully_deleted">Pomyślnie usunięty</string>
     <string name="deletion_problem">Usuwanie problemu</string>
-    <string name="sdcard_not_writable_cannot_save">Karta SD nie zapisuje - nie można zapisać</string>
-    <string name="sdcard_not_readable">Nie mogę odczytać karty sd</string>
     <string name="loading_settings_from_xdrip_mainline">Ładowanie ustawień z xDrip Mainline</string>
     <string name="warning_settings_from_xdrip_and_plus_exist">Ustawienia ostrzegawcze z xDrip i xDrip+ istnieją - uruchamiam xDrip+</string>
     <string name="new_version_date_colon">"Nowa Wersja data: "</string>
@@ -367,7 +330,6 @@
     <string name="notify_when_predicted_low_time_reaches_threshold">Powiadom gdy przewidywany czas dla niskich wartosci osiągnie próg</string>
     <string name="predicted_low_sound">Dźwiek dla Przewidywanej Niskiej wartości</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Wybierz dźwięk alarmu używany do przewidywanego niskiego poziomu.</string>
-    <string name="notify_when_parakeet_device_stops_checking_in">Powiadom, jeśli urządzenie Parakeet przestanie nadawać</string>
     <string name="parakeet_related_alerts">Alerty związane z Parakeet</string>
     <string name="silent_alert_when_charging">Ciche ostrzeżenie podczas ładowania</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Przy starcie alarm jest uspiony przez pewien czas, po którym następuje uruchomienie.</string>
@@ -391,7 +353,6 @@
     <string name="display_slope_arrows">Wyświetl strzałki pokazujące kierunek zmian</string>
     <string name="vibrate_watch_to_alert_no_data">Włącz wibracje zegarka tak aby alarmował, że nie otrzymujesz żadnych danych glukozy</string>
     <string name="vibrate_when_missed_signal">Wibruj, gdy brak sygnału</string>
-    <string name="vibrate_when_no_bluetooth">Wibruj gdy nie ma bluetooth</string>
     <string name="special_glucose_value_to_display_message">Specjalna wartość glukozy, przy którym wyświetli się poniższy komunikat</string>
     <string name="bluetooth_wakelocks">Wakelocks Bluetooth</string>
     <string name="compatible_broadcast">Kompatybilny Broadcast</string>
@@ -410,12 +371,10 @@
     <string name="show_on_widget">Pokaż w postaci widget</string>
     <string name="calibration_data_long">Dane kalibracji (długie)</string>
     <string name="calibration_data_short">Dane kalibracji (krótkie)</string>
-    <string name="store_sensor_location_to_help">Zapisz położenie czujnika aby pomóc udoskonalić algorytm.</string>
     <string name="help_the_developers_improve_the_algorithm">Pomóż deweloperą poprawić algorytm xDrip.</string>
     <string name="help_the_community">Pomóż społeczności</string>
     <string name="double_tap_or_pinch_to_zoom">Dwukrotne stuknięcie lub pinch żeby powiększyć</string>
     <string name="start_sensor">Rozpocznij Sensor</string>
-    <string name="debug_and_other_misc_options">Debug i inne opcje</string>
     <string name="low_glucose_values">Niskie wartości glikemii</string>
     <string name="revert_to_default">Przywróć domyślne</string>
     <string name="filtered_values">Przefiltrowane wartości</string>
@@ -424,8 +383,6 @@
     <string name="predictive_color">Przewidywanie Kolor</string>
     <string name="predictive_color_dark">Przewidywanie Kolor Ciemny</string>
     <string name="average_and_target_lines">Średnie i docelowe Lines</string>
-    <string name="eight_hour_average_line">8 godzinna średnia Linia</string>
-    <string name="twenty_four_hour_average_line">Linia 24 godzinna średnia</string>
     <string name="glucose_target_line">Linia docelowa poziomu glukozy</string>
     <string name="annotations_and_dots">Adnotacje i kropki</string>
     <string name="blood_test_background">Badanie krwi, Tło</string>
@@ -490,8 +447,6 @@
     <string name="useful_for_noise_and_missed_readings">Przydatne dla hałasu i nieodebranych odczytów</string>
     <string name="the_standard_xdrip_calculated_value">Standardowe wartości obliczone przez xDrip</string>
     <string name="display_ideal_glucose_target_line">Wyświetl idealną docelową linie glukozy</string>
-    <string name="display_eight_hour_average_line">Wyświetl usrednioną linie (8 godzin)</string>
-    <string name="display_twenty_four_hour_average_line">Wyświetl linia średnią (24 godziny)</string>
     <string name="predictive_model_inner_workings">Predictive Model wewnętrzne funkcjonowanie</string>
     <string name="noise_model_inner_workings">Hałas wewnętrzne funkcjonowanie modelu</string>
     <string name="glucose_number_from_filtered">Numer Glukoza z filtrowanego</string>
@@ -515,19 +470,15 @@
     <string name="pref_dialog_influxdb_database">Baza danych</string>
     <string name="pref_dialog_influxdb_username">Użytkownik</string>
     <string name="pref_dialog_influxdb_password">Hasło</string>
-    <string name="use_tiny_dots">Użyj małego rozmiaru kropki</string>
     <string name="vibrate_alerts">Wibracje podczas alarmu</string>
     <string name="for_interacting_compatible_apps">Do interakcji z innymi kompatybilnymi aplikacjami</string>
     <string name="interapp_settings">Ustawienia innych aplikacji</string>
     <string name="accept_treatments">Akceptuj zabiegi</string>
     <string name="process_broadcasted_calibrations">Przetwarzaj kalibracje otrzymane z innych aplikacji</string>
-    <string name="spoken_readings_locale">Własna wersja językowa dla odczytów pomiarów, np. de lub en_IN</string>
     <string name="speak_glucose_twice">Dwukrotnie odczytaj na głos wartość glukozy</string>
     <string name="speak_readings_shortcut">Skrót do czytania pomiarów</string>
-    <string name="battery_optimization_off">Dla systemów Android 6+ upewnij się, że optymalizacja baterii jest wyłączona. Zalecane</string>
     <string name="advanced_bluetooth_settings">Zaawansowane ustawienia Bluetooth</string>
     <string name="bluetooth_settings">Ustawienia Bluetooth</string>
-    <string name="auto_turn_on_bluetooth">Automatycznie włącz Bluetooth, jeśli jest wyłączony, kiedy próbujemy połączyć się z urządzeniem Bluetooth</string>
     <string name="turn_bluetooth_on">Włącz Bluetooth</string>
     <string name="bluetooth_watchdog">Watchdog Bluetooth</string>
     <string name="g5_bluetooth_watchdog">G5 Bluetooth Watchdog</string>
@@ -543,7 +494,6 @@
     <string name="password">Hasło</string>
     <string name="glucose_meters">Glukometry</string>
     <string name="glucose_meter_options">Opcje dla bezprzewodowych glukometrów</string>
-    <string name="auto_connect_to_meter">Automatycznie podłącz i pobieraj dane z kompatybilnego glukometru</string>
     <string name="meter_connect_sound">Włącz to, aby odtwarzać dźwięki po połączeniu, rozłączeniu i synchronizacji danych</string>
     <string name="meter_connect_sound_effect">Efekty dźwiękowe</string>
     <string name="ask_for_calibration">Po otrzymaniu nowego wyniku glukozy zapytaj czy skalibrować z jego pomocą</string>
@@ -556,8 +506,6 @@
     <string name="hours_between_calibrations">Godziny między kalibracjami</string>
     <string name="repeat_alerts">Powtarzaj alarmy</string>
     <string name="alert_snooze">Uśpij alarm</string>
-    <string name="bg_falling_fast">Szybki spadek glikemii</string>
-    <string name="bg_rising_fast">Szybki wzrost glikemii</string>
     <string name="falling_threshold">próg spadku</string>
     <string name="rising_threshold">próg wzrostu</string>
     <string name="set_sound_for_bg_alerts">Ustaw dźwięk alarmów o stanie glikemii.</string>
@@ -567,9 +515,7 @@
     <string name="forcing_alternate_language">Obecnie wymusza użycie alternatywnego języka</string>
     <string name="chosse_language">Użyj określonego języka</string>
     <string name="show_range_on_widget">Pokaż górny i dolny limit na widżecie.</string>
-    <string name="wifi_name_must_match">Nazwa Wi-Fi musi się zgadzać</string>
     <string name="yes_send_it">TAK, wyślij to!</string>
-    <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
     <string name="bubble">Bubble</string>
     <string name="reminders">Przypomnienia</string>
@@ -577,7 +523,6 @@
     <string name="stop_sensor">Zatrzymaj Czujnik</string>
     <string name="dont_stop_just_reset_all_calibrations">Nie zatrzymuj, po prostu zresetuj wszystkie kalibracje</string>
     <string name="initial_calibration">Początkowa kalibracja</string>
-    <string name="calibration_can_not_be_blank">Kalibracja nie może być pusta</string>
     <string name="calibration_out_of_range">Kalibracja poza zakresem</string>
     <string name="note_search">Wyszukiwanie notatek</string>
     <string name="edit_note">Edytuj notatkę</string>
@@ -595,6 +540,5 @@
     <string name="didnt_find_any_glucose_readings_in_that_time_period">Nie znaleziono pomiarów glikemii w tym okresie</string>
     <string name="sensor_stopped">Czujnik zatrzymany</string>
     <string name="blood_glucose_graph">Wykres glukozy we krwi</string>
-    <string name="enable_streaming_never">Nigdy nie łącz z czujnikami libre2</string>
     <string name="enable_streaming_dialog_dont_ask_again">Nie pytaj ponownie</string>
 </resources>
