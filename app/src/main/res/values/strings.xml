@@ -1201,6 +1201,8 @@
     <string name="title_rest_api_extra_options">Extra Options</string>
     <string name="summary_send_bridge_battery_to_nightscout">Send your bridge battery level to Nightscout. Uncheck if your battery sensor is broken.</string>
     <string name="title_send_bridge_battery_to_nightscout">Upload bridge battery</string>
+    <string name="summary_send_dexcom_transmitter_battery_to_nightscout">Send Dexcom transmitter battery statistics to Nightscout. Includes all of the data shown on the Collector Status screen.</string>
+    <string name="title_send_dexcom_transmitter_battery_to_nightscout">Upload OB1G5/G6 transmitter battery</string>
     <string name="summary_send_treatments_to_nightscout">Send treatment data to Nightscout. Uncheck if your careportal is broken.</string>
     <string name="title_send_treatments_to_nightscout">Upload treatments</string>
     <string name="summary_warn_nightscout_failures">Display and sound a notification if Nightscout upload is failing.</string>

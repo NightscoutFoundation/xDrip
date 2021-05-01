@@ -63,6 +63,83 @@ public enum NightscoutBatteryDevice {
         String getDeviceName() {
             return "Parakeet";
         }
+    },
+    DEXCOM_TRANSMITTER {
+        /**
+         * This is used for checking if the battery value is stale.
+         */
+        @Override
+        int getBatteryLevel(Context mContext) {
+            Ob1DexTransmitterBattery b = new Ob1DexTransmitterBattery();
+            if (b.isPresent()) {
+                return b.voltageA();
+            }
+            return -1;
+        }
+
+        /**
+         * Returns a JSON blob such as:
+         * {
+         *     "days": 50,
+         *     "daysEstimate": "50" or "50 / 100" or "50 100",
+         *     "status": "UNKNOWN" or "BRICKED" or "LOW" or "OK",
+         *     "voltagea": 285,
+         *     "voltagea_warning": true,
+         *     "voltageb": 275,
+         *     "voltageb_warning": true,
+         *     "resistance": 100 or null,
+         *     "resistance_status": "GOOD" "NORMAL" "WARNING" "BAD" or "UNKNOWN",
+         *     "temperature": 75 or null,
+         *     "battery": "50 days (voltage: 285/275)"
+         * }
+         */
+        @Override
+        public JSONObject getUploaderJson(Context mContext) throws JSONException {
+            JSONObject uploader = new JSONObject();
+
+            Ob1DexTransmitterBattery b = new Ob1DexTransmitterBattery();
+
+            if (!b.isPresent()) return null;
+
+            uploader.put("days", b.days());
+            uploader.put("daysEstimate", b.daysEstimate());
+            uploader.put("status", b.status().name());
+            uploader.put("voltagea", b.voltageA());
+            if (b.voltageAWarning()) {
+                uploader.put("voltagea_warning", true);
+            }
+            uploader.put("voltageb", b.voltageB());
+            if (b.voltageBWarning()) {
+                uploader.put("voltageb_warning", true);
+            }
+            uploader.put("resistance", b.resistance());
+            if (b.resistanceStatus() != Ob1DexTransmitterBattery.ResistanceStatus.UNKNOWN) {
+                uploader.put("resistance_status", b.resistanceStatus().name());
+            }
+            uploader.put("temperature", b.temperature());
+
+            // What nightscout will normally show in the UI
+            uploader.put("battery", b.days() + " days (voltage: " + b.voltageA() + "/" + b.voltageB() + ")");
+
+            uploader.put("type", name());
+            return uploader;
+        }
+
+        /**
+         * Only sends to Nightscout when there is a change in the voltage A value.
+         */
+        @Override
+        boolean alwaysSendBattery() {
+            return false;
+        }
+
+        @Override
+        String getDeviceName() {
+            if (Ob1G5StateMachine.usingG6()) {
+                return "G6 Transmitter";
+            }
+            return "G5 Transmitter";
+        }
     };
 
 
@@ -75,13 +152,14 @@ public enum NightscoutBatteryDevice {
 
     /**
      * Returns the JSON object containing the battery details.
-     * Defaults to returning a JSONObject with integer key battery.
-     *
+     * Defaults to returning a JSONObject with integer key battery (required by Nightscout)
+     * and a string key type with the value of the enum (e.g. PHONE, DEXCOM_TRANSMITTER)
      * @param mContext is supplied so that the phone battery can be retrieved.
      */
     public JSONObject getUploaderJson(Context mContext) throws JSONException {
         JSONObject uploader = new JSONObject();
         uploader.put("battery", getBatteryLevel(mContext));
+        uploader.put("type", name());
         return uploader;
     }
 

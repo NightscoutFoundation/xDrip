@@ -1070,8 +1070,14 @@ public class NightscoutUploader {
                 || (Home.get_forced_wear() && DexCollectionType.getDexCollectionType().equals(DexCollectionType.DexcomG5))) {
             batteries.add(NightscoutBatteryDevice.BRIDGE);
         }
+
         if (DexCollectionType.hasWifi()) {
             batteries.add(NightscoutBatteryDevice.PARAKEET);
+        }
+
+        boolean sendDexcomTxBattery = Pref.getBooleanDefaultFalse("send_ob1dex_tx_battery_to_nightscout");
+        if (sendDexcomTxBattery) {
+            batteries.add(NightscoutBatteryDevice.DEXCOM_TRANSMITTER);
         }
 
         for (NightscoutBatteryDevice batteryType : batteries) {
@@ -1085,9 +1091,14 @@ public class NightscoutUploader {
 
                 final JSONArray array = new JSONArray();
                 final JSONObject json = new JSONObject();
+                final JSONObject uploader = batteryType.getUploaderJson(mContext);
+
+                if (uploader == null) {
+                    continue;
+                }
 
                 json.put("device", batteryType.getDeviceName());
-                json.put("uploader", batteryType.getUploaderJson(mContext));
+                json.put("uploader", uploader);
 
                 array.put(json);
 
