@@ -21,13 +21,11 @@
     <string name="navigation_drawer_open">Öppna navigeringspanel</string>
     <string name="navigation_drawer_close">Stäng navigeringspanel</string>
     <string name="title_activity_calibration_check_in">Kalibreringsaktivitet</string>
-    <string name="title_activity_usb_connected">USB-anslutningsaktivitet</string>
     <string name="snooze">Snooza</string>
     <string name="snooze_hint">Snooza i x minuter</string>
     <string name="ok">Ok</string>
     <string name="cancel">Avbryt</string>
     <string name="no">Nej</string>
-    <string name="pref_sensor_location_dont_ask_again"> Fråga inte i framtiden</string>
     <string name="title_activity_error">"Fel- och händelselista"</string>
     <string name="title_activity_main">Huvudaktivitet</string>
     <string name="title_activity_fake_numbers">Fejksiffror</string>
@@ -57,15 +55,12 @@
     <string name="pref_message_api_url">Detta bara roten/början av adressen, uppladdaren kommer automatiskt att sammanfoga den med /värden for POST-anropet.  API_SECRET på din server bör vara det samms som din lösenordsfras i denna inställning.</string>
     <string name="pref_default_api_url">https://lösenordsfras@{DIN-SAJT}.azurewebsites.net/api/v1/</string>
     <!-- wifi Settings -->
-    <string name="wifi_recievers_dialog_message">Kommaseparerad lista av IP-adresser och portar (till exempel 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
-    <string name="wifi_recievers_dialog_title">Ange IP-adresser och portar för mottagare (inklusive mongodb-adresser om det behövs)</string>
     <!-- Location Settings -->
     <string name="location_not_found_title">Plats är inte aktiverad</string>
     <string name="location_not_found_message">För att Bluetooth ska fungera med nyare enheter, måste platsdata vara aktiverat. xDrip sparar inte den plats och det kan stängas av efter att enheten har kopplats.</string>
     <string name="location_yes">Aktivera</string>
     <!-- broadcast settings -->
     <string name="pref_title_broadcast_enabled">Lokal delgivning</string>
-    <string name="pref_summary_broadcast_enabled">Aktivera lokal delgivning av data så andra program (t.ex.. Nightwatch) kan ta del av värden</string>
     <string name="title_activity_share_test">Testa delning</string>
     <!-- pebble settings -->
     <string name="pref_pebble_trend_watchface">Använd Pebble Trend Watchface</string>
@@ -82,7 +77,6 @@
     <string name="title_activity_alert_list">Larmlista</string>
     <string name="speaktreatment">Läs ut behandling</string>
     <string name="title_activity_update">xDrip+-uppdatering</string>
-    <string name="title_activity_display_qrcode">Dela inställningar med en QR-kod</string>
     <string name="title_activity_send_feed_back">Skicka feedback till Jamorham</string>
     <string name="title_activity_maps">Parakeet-karta</string>
     <string name="title_activity_display_preferences">Visa inställningar</string>
@@ -100,7 +94,6 @@
     <string name="add_note">Lägg till anteckning</string>
     <string name="title_activity_profile_editor">Behandlingsprofilsredigeraren</string>
     <string name="first_use_menu_to_scan">Börja med att söka efter din BT-enhet från menyn, eller ändra datakällan i inställningar!</string>
-    <string name="first_configure_ip_address">Ställ först in dina wifi wixel läsares ip-adresser eller parakeet-urler</string>
     <string name="now_start_your_sensor">Starta din sensor nu, eller kontrollera inställningarna</string>
     <string name="please_wait_while_sensor_warms_up">Vänta medan sensorn drar igång! (</string>
     <string name="minutes_with_bracket">" minuter)"</string>
@@ -109,23 +102,16 @@
     <string name="please_enter_two_calibrations_to_get_started">Vänligen mata in två kalibreringsvärden för att komma igång!</string>
     <string name="now_pair_with_your_dexcom_share">Para med din Dexcom Share nu</string>
     <string name="now_choose_start_sensor_in_settings">Starta sensorn från inställningarna nu</string>
-    <string name="double_check_dex_receiver_serial_number">Verifiera att ditt serienummerför Dex-mottagaren stämmer. Det bör vara 10 tecken, glöm inte bokstäverna</string>
-    <string name="please_set_dex_receiver_serial_number">Skriv in Dex-mottagarens serienummer i programinställningarna</string>
-    <string name="unfortunately_andoird_version_no_blueooth_low_energy">Tyvärr har din Android inte stöd för Bluetooth Low Energy</string>
     <string name="waiting_for_packet">Inväntar paket</string>
     <string name="persistent_high_for_greater_than">Beständig högt i &gt; </string>
     <string name="space_mins">" min"</string>
     <string name="low_predicted">Lågt förespås</string>
     <string name="in">om</string>
-    <string name="yes_enter_setup_mode">Ja starta inställningsläge</string>
-    <string name="nokeep_parakeet_as_it_is">Nej lämna Parakeet som det är</string>
-    <string name="are_you_sure_you_want_switch_parakeet_to_setup">Är du säker på att du vill ställa Parakeet i inställningsläge?\n\nNormalt görs det bara för att skicka textmeddelanden till Parakeet att konfigurera sändaren etc.</string>
     <string name="split_delete_or_do_nothing">Dela, radera eller gör inget</string>
     <string name="split_this_block_in_two">Dela detta block i tu</string>
     <string name="delete_this_time_block">Ta bort det här tidsblocket</string>
     <string name="cancel_do_nothing">Avbryt - gör ingenting</string>
     <string name="added">Tillagt</string>
-    <string name="checking_for_update">Söker efter uppdatering ..</string>
     <string name="signal_missed">Signal saknas</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} minuter sedan|1#{0, number, integer} minut sedan|1&lt;{0, number, integer} minuter sedan}</string>
     <string name="space_minutes_ago">" minuter sedan"</string>
@@ -135,7 +121,6 @@
     <string name="view_events_log">Visa händelselogg</string>
     <string name="share_config_via_qr_code">Dela inställningar med QR-kod</string>
     <string name="check_for_updated_version">Sök eftter uppdateringar</string>
-    <string name="send_feedback_to_developer">Skicka feedback till utvecklare</string>
     <string name="home_screen">Startskärm</string>
     <string name="calibration_graph">Kalibreringsgraf</string>
     <string name="glucose_units">Glukosenheter</string>
@@ -162,7 +147,6 @@
     <string name="send_feedback_message">Skicka feedbackmeddelande</string>
     <string name="copying_settings">Kopieringsinställningar</string>
     <string name="show_settings_qr_codes">Visa inställningar för QR-koder</string>
-    <string name="load_save_settings_to_sdcard">Ladda / spara inställningar till SD-kort</string>
     <string name="alarms_and_alerts">Larm och varningar</string>
     <string name="alerts_and_notifications">Varningar och meddelanden</string>
     <string name="glucose_level_alerts_list">Lista över glukosnivåvarningar</string>
@@ -178,8 +162,6 @@
     <string name="alarm_at_forecasted_low_mins">Larm vid förutspådd känning</string>
     <string name="other_xdrip_plus_alerts">Andra xDrip+-varningar</string>
     <string name="xdrip_plus_display_settings">xDrip+ Skärminställningar</string>
-    <string name="display_customisations">Utseendejusteringar</string>
-    <string name="insulin_carb_ratios_etc_for_models">Insulin-, kolhydratförhållanden mm för modeller</string>
     <string name="grams_of_carbohydrate_one_unit_covers">Gram kolhydrater en enhet hanterar</string>
     <string name="linear_model_carbs_absorbed_per_hour">Linjär modell kolhydrater som absorberas per timme</string>
     <string name="carb_absorption_rate">Kolhydratsupptagningsgrad</string>
@@ -192,10 +174,8 @@
     <string name="bg_data_table">BG-datatabell</string>
     <string name="cannot_calibrate_right_now">Just nu går det inte att kalibrera</string>
     <string name="hardware_data_source">Hårdvarudatakälla</string>
-    <string name="enter_ten_character_dexcom_receiver_serial">Ange Dex-mottagarens serienummer (10 tecken)</string>
     <string name="dexcom_transmitter_id">Dexcomsändar-ID</string>
     <string name="run_collector_in_foreground">Kör insamling i förgrunden</string>
-    <string name="shows_a_persistent_notification">Visar en graf på låsskärmen, vilket även förhindrar Android från att avsluta tjänsten.</string>
     <string name="list_of_receivers">Lista över mottagare</string>
     <string name="data_source_settings">Inställningar för datakällor</string>
     <string name="smart_watch_features">Smartklockefunktioner</string>
@@ -205,7 +185,6 @@
     <string name="pebble_integration">Pebble-integration</string>
     <string name="send_data_to_pebble_watchface">Skicka data till Pebbles urtavla.</string>
     <string name="pebble_watch_integration">Pebble Watch-integration</string>
-    <string name="standard_or_trend_pebble_watchface">Standard- eller Trendstenurtavla</string>
     <string name="choose_pebble_watchface">Välj Pebble Watchface</string>
     <string name="message_to_display_when_bgl_hits">Meddelande som ska visas när BGL når det särskilda värdet ovan</string>
     <string name="text_to_display_when_hitting_special_value">Meddelande som ska visas när man når särskilt värde</string>
@@ -231,7 +210,6 @@
     <string name="start_snoozed">Snooza</string>
     <string name="adjust_all_by_a_factor">Justera samtliga med ett reglage</string>
     <string name="reset">Återställ</string>
-    <string name="customize_colours">Justera färger</string>
     <string name="xdrip_plus_color_settings">xDrip+ färginställningar</string>
     <string name="glucose_values_and_lines">Glukosvärden och linjer</string>
     <string name="high_glucose_values">Högt glukosvärde</string>
@@ -250,7 +228,6 @@
     <string name="units">enheter</string>
     <string name="carbs">kolhydrater</string>
     <string name="when">när</string>
-    <string name="speak_your_treatment">Säg behandling högt t.ex.\nxx enheter insulin / xx gram kolhydrater</string>
     <string name="speech_recognition_is_not_supported">Taligenkänning stöds inte</string>
     <string name="treatment_note">Behandlingsanteckning</string>
     <string name="could_not_export_database">Det gick inte att exportera databasen :(</string>
@@ -259,7 +236,6 @@
     <string name="done">Utför</string>
     <string name="entering_a_calibration_now_will_override_your_previously_entered_calibration">Tidigare kalibrering kommer att ersättas, om du gör en ny nu.</string>
     <string name="enter_blood_glucose_value">Ange blodsockervärde</string>
-    <string name="this_does_not_get_used_for_anything_its_just_to_keep_track_of_differences_for_algorithem_improvement_purposes">Detta används inte praktiskt, utan endast för att förbättra vid förändringar i algoritmen.</string>
     <string name="no_active_alert_exists">Det finns ingen aktiv varning</string>
     <string name="active_alert_exists_named">En aktiv varning existerar namngiven</string>
     <string name="bracket_not_snoozed">(Ej snoozad)</string>
@@ -280,10 +256,6 @@
     <string name="version_details">Versionsinformation</string>
     <string name="download_now">Ladda ned nu</string>
     <string name="automatically_check_for_updates">Sök automatiskt efter uppdateringar</string>
-    <string name="here_you_can_save_the_settings_to_the_external_storage_sdcard">Här kan du spara dina inställningar till ett externt lagringsmedium (t ex SD-kort).\n\nKänslig data som sparas externt kan möjligen läsas av obehöriga som har tillgång till mediet.\n\nRadera inställningarna efter att du har återimporterat dem, om du är besvärad av detta.</string>
-    <string name="save_all_settings_to_sdcard">Exportera samtliga inställningar till SD-kort</string>
-    <string name="load_all_settings_from_sdcard">Läs in samtliga inställningar från SD-kort</string>
-    <string name="delete_any_settings_on_sdcard">Ta bort samtliga inställningar på SD-kort</string>
     <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Använd QR-koder för att överföra inställningar från av Inställningar&gt; Automatisk justering funktion]]></string>
     <string name="xdrip_plus_security_key_settings_only">xDrip+ säkerhetsnyckelinställningar endast</string>
     <string name="show_general_and_collection_settings">Visa allmänna och samlingsinställningar</string>
@@ -300,7 +272,6 @@
     <string name="glucose_history">Glukoshistoria</string>
     <string name="import_database">Importera databas</string>
     <string name="sensor_table">Sensortabell</string>
-    <string name="bg_readings_table">Tabell över BG-avläsningar</string>
     <string name="long_press_to_split_or_delete">Håll in länge för att deöa eller radera</string>
     <string name="press_and_hold_on_the_background_to_split_or_delete">Håll in länge på bakgrunden för att dela eller ta bort ett tidsblock</string>
     <string name="search">Sök</string>
@@ -313,24 +284,18 @@
     <string name="be_master_for_followers">Var kontrollenhet för andra följare</string>
     <string name="this_device_will_send_data_to_followers">Denna enhet kommer att skicka data till följare</string>
     <string name="send_parakeet_map_location_to_followers">Skicka Parakeet plats på kartan till följare</string>
-    <string name="sync_parakeet_geolocation">Synka Parakeet GeoLocation</string>
     <string name="disable_all_sync_features">Inaktivera alla synkroniseringsfunktioner</string>
     <string name="temporary_work_around_disable_all_sync_detail">Tillfällig fix som avbryter all synkronisering. Omstart kan krävas. Används med försiktighet!</string>
     <string name="automatic_updates_crash_reports_and_feedback">Automatiska uppdateringar, felrapporter och feedback till utvecklare</string>
     <string name="crowd_sourced_translation">Översatt av allmänheten</string>
     <string name="please_enter_your_question_or_comments_here">Ange en fråga eller kommentarer här.\n\nOm du anger en e-postadress kan du få ett svar.\n\n</string>
-    <string name="optional_contact_info_here_eg_email">Valfri kontaktinformation här, till exempel e-post</string>
     <string name="send_message">Skicka meddelande</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Ange vad du tycker om appen i allmänhet</string>
-    <string name="preferences_saved_in_sdcard_downloads">Inställninga som sparats i mappen Hämtningar på SD-kort</string>
-    <string name="could_not_write_to_sdcard_check_perms">Det gick inte att skriva till SD-kortet - Kontrollera behörigheter?</string>
     <string name="loaded_preferences_restarting">Laddat inställningar! - omstart</string>
     <string name="could_not_load_preferences_check_pers">Det gick inte att läsa in inställningarna - kontrollera behörigheterna eller filen?</string>
     <string name="external_storage_not_writable">Extern lagring är inte skrivbar</string>
     <string name="successfully_deleted">Raderat</string>
     <string name="deletion_problem">Raderingsproblem</string>
-    <string name="sdcard_not_writable_cannot_save">SD-kort inte skrivbart - kan spara inte</string>
-    <string name="sdcard_not_readable">SD-kortet är inte läsbart</string>
     <string name="loading_settings_from_xdrip_mainline">Laddar inställningar från xDrip mainline</string>
     <string name="warning_settings_from_xdrip_and_plus_exist">Inställningar för varningar finns från både xDrip och xDrip+ - laddar xDrip+</string>
     <string name="new_version_date_colon">"Datum för ny version: "</string>
@@ -345,7 +310,6 @@
     <string name="notify_when_predicted_low_time_reaches_threshold">Meddela när prognosen för lågt går under gränsen</string>
     <string name="predicted_low_sound">Ljus när lågt förutspås</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Välj vilket ljud som ska spelas när prognosen visar lågt.</string>
-    <string name="notify_when_parakeet_device_stops_checking_in">Meddela om parakeetenheter slutar rapportera</string>
     <string name="parakeet_related_alerts">Parakee-relaterade varningar</string>
     <string name="silent_alert_when_charging">Tysta varningar under laddning</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Varningar snoozar först och måste kvarstå ett tag innan de aktiveras på riktigt</string>
@@ -387,12 +351,10 @@
     <string name="show_on_widget">Visa på widget</string>
     <string name="calibration_data_long">Kalibreringsdata (lång)</string>
     <string name="calibration_data_short">Kalibreringsdata (kort)</string>
-    <string name="store_sensor_location_to_help">Registrera sensorns plats för att hjälpa till med att förbättra algoritmen</string>
     <string name="help_the_developers_improve_the_algorithm">Hjälp utvecklarna förbättra xDrip-algoritmen.</string>
     <string name="help_the_community">Hjälp communityn</string>
     <string name="double_tap_or_pinch_to_zoom">Dubbeltryck eller nyp att zooma.</string>
     <string name="start_sensor">Starta sensor</string>
-    <string name="debug_and_other_misc_options">Avlusning och diverse annat</string>
     <string name="low_glucose_values">Låga glukosvärden</string>
     <string name="revert_to_default">Återställ till standard</string>
     <string name="filtered_values">Filtrerade värden</string>
@@ -401,8 +363,6 @@
     <string name="predictive_color">Färg för förutspåenden</string>
     <string name="predictive_color_dark">Märk färg för förutspåenden</string>
     <string name="average_and_target_lines">Genomsnitts- och mållinjer</string>
-    <string name="eight_hour_average_line">8 timmars genomsnittslinje</string>
-    <string name="twenty_four_hour_average_line">24 timmars genomsnittslinje</string>
     <string name="glucose_target_line">Glukosmållinje</string>
     <string name="annotations_and_dots">Kommentarer och punkter</string>
     <string name="blood_test_background">Blodprovsbakgrund</string>
@@ -465,8 +425,6 @@
     <string name="useful_for_noise_and_missed_readings">Användbart för störningar och missade avläsningar</string>
     <string name="the_standard_xdrip_calculated_value">Standardberäkning av värden med xDrip</string>
     <string name="display_ideal_glucose_target_line">Visa linje för optimal glukos</string>
-    <string name="display_eight_hour_average_line">Visa genomsmittslinje över 8 timmar</string>
-    <string name="display_twenty_four_hour_average_line">Visa genomsmittslinje över 24 timmar</string>
     <string name="predictive_model_inner_workings">Förutspåendemodellens inre funktioner</string>
     <string name="noise_model_inner_workings">Störningsmodellens inre funktioner</string>
     <string name="glucose_number_from_filtered">Glukossiffra från filtrerad</string>
