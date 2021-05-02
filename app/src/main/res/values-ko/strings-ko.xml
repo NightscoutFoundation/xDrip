@@ -21,11 +21,13 @@
     <string name="navigation_drawer_open">탐색 창 열기</string>
     <string name="navigation_drawer_close">탐색 창 닫기</string>
     <string name="title_activity_calibration_check_in">혈당 보정</string>
+    <string name="title_activity_usb_connected">USB 연결</string>
     <string name="snooze">스누즈</string>
     <string name="snooze_hint">X 분 동안 스누즈 알림</string>
     <string name="ok">확인</string>
     <string name="cancel">취소</string>
     <string name="no">아니오</string>
+    <string name="pref_sensor_location_dont_ask_again"> 다시 묻지 않기</string>
     <string name="title_activity_error">"에러 및 이벤트 목록"</string>
     <string name="title_activity_main">메인 메뉴</string>
     <string name="title_activity_fake_numbers">가짜(fake) 번호</string>
@@ -50,11 +52,14 @@
     <string name="pref_dialog_api_url">Base API URL 입력</string>
     <string name="pref_message_api_url">Base URL는 POST하기 위해 자동으로 /를 붙여 줍니다. 서버의 API_SECRET는 세팅의 yourpassphrase와 일치해야합니다.</string>
     <!-- wifi Settings -->
+    <string name="wifi_recievers_dialog_message">콤마(,)로 구분된 IP:port(예를 들어 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
+    <string name="wifi_recievers_dialog_title">IP 주소와 수신기의 포트를 입력하세요.(필요하다면 MongoDB의 주소를 포함하여..)</string>
     <!-- Location Settings -->
     <string name="location_not_found_title">위치(location) 비활성화</string>
     <string name="location_not_found_message">새로운 장치가 동작하기 위해 불루투스를 검색하기 위해서는 위치(location)가 활성화 되어야 합니다. xDrip는 사용자의 위치를 추적하지 않고 페어링이 성공 후에는 비활성화 됩니다.</string>
     <string name="location_yes">사용</string>
     <!-- broadcast settings -->
+    <string name="pref_summary_broadcast_enabled">데이터의 local broadcast를 활성화 하면 다른 앱(예. NightWatch)에서 사용되어 새로운 값을 볼 수 있습니다.</string>
     <string name="title_activity_share_test">공유 테스트</string>
     <!-- pebble settings -->
     <string name="pref_pebble_trend_watchface">Pebble Trend Watchface 사용</string>
@@ -71,6 +76,7 @@
     <string name="title_activity_alert_list">알림 목록</string>
     <string name="speaktreatment">추가사항을 말하세요.</string>
     <string name="title_activity_update">xDrip+ 업데이트</string>
+    <string name="title_activity_display_qrcode">QR 코드를 통해 공유 설정</string>
     <string name="title_activity_send_feed_back">Jamorham에게 피드백 보내기</string>
     <string name="title_activity_maps">Parakeet map</string>
     <string name="title_activity_display_preferences">Display 환경 설정</string>
@@ -88,6 +94,7 @@
     <string name="add_note">메모 추가</string>
     <string name="title_activity_profile_editor">Treatment Profile 편집기</string>
     <string name="first_use_menu_to_scan">먼저 세팅에서 BT 장치를 위한 검색 메뉴를 사용하거나 Data Source를 변경하세요!</string>
+    <string name="first_configure_ip_address">먼저 wifi wixel reader의 IP 주소나 Parakeet URL을 구성하세요.</string>
     <string name="now_start_your_sensor">이제 센서를 시작하거나 세팅을 체크하세요.</string>
     <string name="please_wait_while_sensor_warms_up">이제 센서가 워밍업 하는 동안 기다리세요!</string>
     <string name="minutes_with_bracket">" 분)"</string>
@@ -96,17 +103,24 @@
     <string name="please_enter_two_calibrations_to_get_started">시작하기 위해서 2개의 보정값을 입력하세요.</string>
     <string name="now_pair_with_your_dexcom_share">이제 Dexcom Share로 페어링 하세요.</string>
     <string name="now_choose_start_sensor_in_settings">이제 세팅에서 시작 센서(Start sensor)를 선택하세요.</string>
+    <string name="double_check_dex_receiver_serial_number">Dexcom receiver의 시리얼 넘버를 다시 확인하세요. 10자 이여야 하고 문자를 잊지말고 입력하세요.</string>
+    <string name="please_set_dex_receiver_serial_number">앱 세팅에서 Dexcom receiver의 시리얼 넘버를 세팅하세요.</string>
+    <string name="unfortunately_andoird_version_no_blueooth_low_energy">불행하게도 당신의 안드로이드 버전은 BLE(Bluetooth Low Energy)를 지원하지 않습니다.</string>
     <string name="waiting_for_packet">패킷을 기다리는 중..</string>
     <string name="persistent_high_for_greater_than">지속적으로 높은&gt; </string>
     <string name="space_mins">" 분"</string>
     <string name="till">까지</string>
     <string name="low_predicted">저혈당으로 예측됨</string>
     <string name="in">...에서</string>
+    <string name="yes_enter_setup_mode">예, 세팅 모드에 들어가세요.</string>
+    <string name="nokeep_parakeet_as_it_is">Parakeet을 유지하지 마세요.</string>
+    <string name="are_you_sure_you_want_switch_parakeet_to_setup">셋업 모드를 위해 Parakeet으로 전환하기를 원합니까?\n\n일반적으로 그것이 여러가지를 듣기 위해 트랜스미터를 재구성하여 Parakeet에게 text messages를 보내지는데 사용되곤 합니다.</string>
     <string name="split_delete_or_do_nothing">분리, 삭제하거나 아무것도 하지 마세요.</string>
     <string name="split_this_block_in_two">이 블록을 두개로 나누세요.</string>
     <string name="delete_this_time_block">이 시간 블록을 지우세요.</string>
     <string name="cancel_do_nothing">취소 - 아무것도 하지 마세요.</string>
     <string name="added">추가됨</string>
+    <string name="checking_for_update">업데이트를 위해 확인 중..</string>
     <string name="signal_missed">신호 끊김</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} 몇분 전에|1#{0, number, integer} 분 전|1&lt;{0, number, integer} 몇분 전에}</string>
     <string name="space_minutes_ago">" 몇분 전에"</string>
@@ -116,6 +130,7 @@
     <string name="view_events_log">이벤트 로그 보기</string>
     <string name="share_config_via_qr_code">QR 코드를 통한 공유 구성</string>
     <string name="check_for_updated_version">업데이트 된 버전 확인</string>
+    <string name="send_feedback_to_developer">개발자에게 피드백 보내기</string>
     <string name="home_screen">홈 화면</string>
     <string name="calibration_graph">보정 그래프</string>
     <string name="glucose_units">혈당 단위</string>
@@ -142,6 +157,7 @@
     <string name="send_feedback_message">피드백 메시지 보내기</string>
     <string name="copying_settings">복사 세팅</string>
     <string name="show_settings_qr_codes">QR 코드 세팅 보기</string>
+    <string name="load_save_settings_to_sdcard">SDCARD에 로드/저장 세팅</string>
     <string name="alarms_and_alerts">알람 및 알림</string>
     <string name="alerts_and_notifications">알림 및 공지</string>
     <string name="glucose_level_alerts_list">혈당 수치 알림 목록</string>
@@ -157,6 +173,8 @@
     <string name="alarm_at_forecasted_low_mins">예측 낮은 분에 알람</string>
     <string name="other_xdrip_plus_alerts">다른 xDrip+ 알림</string>
     <string name="xdrip_plus_display_settings">xDrip+ 디스플레이 세팅</string>
+    <string name="display_customisations">디스플레이 사용자 세팅</string>
+    <string name="insulin_carb_ratios_etc_for_models">모델을 위한 인슐린, 탄수화물 비율 등</string>
     <string name="grams_of_carbohydrate_one_unit_covers">1단위로 커버되는 탄수화물 양</string>
     <string name="linear_model_carbs_absorbed_per_hour">선형적으로 시간당 흡수되는 탄수화물</string>
     <string name="carb_absorption_rate">탄수화물 흡수 속도</string>
@@ -169,8 +187,10 @@
     <string name="bg_data_table">BG 데이터 테이블</string>
     <string name="cannot_calibrate_right_now">지금 보정 할 수 없습니다.</string>
     <string name="hardware_data_source">하드웨어 데이터 소스</string>
+    <string name="enter_ten_character_dexcom_receiver_serial">Dexcom 리시버의 씨리얼 넘버 10자를 입력하세요.</string>
     <string name="dexcom_transmitter_id">Dexcom 트랜스미터 ID</string>
     <string name="run_collector_in_foreground">포그라운드에서 collector를 실행</string>
+    <string name="shows_a_persistent_notification">잠금 화면에 표시, 노티피케이션 영역에 지속적으로 그래프를 표시하고 서비스를 죽이는 안드로이드를 막을 수 있습니다.</string>
     <string name="list_of_receivers">Recievers 목록</string>
     <string name="data_source_settings">데이터 소스 세팅</string>
     <string name="smart_watch_features">스마트 와치 기능</string>
@@ -180,6 +200,7 @@
     <string name="pebble_integration">Pebble 연동</string>
     <string name="send_data_to_pebble_watchface">Pebble 와치 페이스에 데이터를 전송합니다.</string>
     <string name="pebble_watch_integration">Pebble 와치 연동</string>
+    <string name="standard_or_trend_pebble_watchface">표준 또는 추세 Pebble 와치 페이스</string>
     <string name="choose_pebble_watchface">Pebble 와치 페이스를 선택하세요.</string>
     <string name="message_to_display_when_bgl_hits">BGL 위의 특수 값을 칠 때 메시지 표시</string>
     <string name="text_to_display_when_hitting_special_value">특별한 혈당 수치일 때 출력할 메시지</string>
@@ -205,6 +226,7 @@
     <string name="start_snoozed">스누즈 시작</string>
     <string name="adjust_all_by_a_factor">인자(factor)로 모두 조절</string>
     <string name="reset">리셋</string>
+    <string name="customize_colours">색상 사용자 정의</string>
     <string name="xdrip_plus_color_settings">xDrip+ 색상 세팅</string>
     <string name="glucose_values_and_lines">혈당 수치 및 선</string>
     <string name="high_glucose_values">고혈당 수치</string>
@@ -223,6 +245,7 @@
     <string name="units">단위</string>
     <string name="carbs">탄수화물</string>
     <string name="when">시간</string>
+    <string name="speak_your_treatment">당신의 트리트먼트를 말하세요. :\nXX 단위 인슐린 / XX 그램 탄수화물</string>
     <string name="speech_recognition_is_not_supported">음성 인식은 지원되지 않습니다</string>
     <string name="treatment_note">트리트먼트 메모</string>
     <string name="could_not_export_database">데이터베이스를 내보낼 수 없습니다 :(</string>
@@ -231,6 +254,7 @@
     <string name="done">완료</string>
     <string name="entering_a_calibration_now_will_override_your_previously_entered_calibration">지금 보정값을 입력하면 이전에 입력한 보정값은 덮어쓰기 될 것입니다.</string>
     <string name="enter_blood_glucose_value">혈당을 입력하세요.</string>
+    <string name="this_does_not_get_used_for_anything_its_just_to_keep_track_of_differences_for_algorithem_improvement_purposes">이것은 아무곳에도 사용되지 않습니다. 단지 알고리즘의 성능 향상을 위해서만 사용됩니다.</string>
     <string name="no_active_alert_exists">활성화 된 알림이 없습니다.</string>
     <string name="active_alert_exists_named">활성 경고의 이름은 존재</string>
     <string name="bracket_not_snoozed">(스누즈 되지 않음)</string>
@@ -251,6 +275,10 @@
     <string name="version_details">버전 정보</string>
     <string name="download_now">지금 다운로드</string>
     <string name="automatically_check_for_updates">자동 업데이트 확인</string>
+    <string name="here_you_can_save_the_settings_to_the_external_storage_sdcard">당신은 외부 저장 장치(sdcard)에 설정을 저장할 수 있습니다.\n\n일단 외부 저장소에 저장되면 잠재적으로 어떤 앱에서도 민감한 내용을 포함하는 세팅 내용을 읽을 수 있습니다.\n\n이런 부분에 신경 쓰인다면 일단 가져오기를 한 후 세팅을 지우는 것을 조언합니다.</string>
+    <string name="save_all_settings_to_sdcard">SDCARD에 모든 세팅 저장하기</string>
+    <string name="load_all_settings_from_sdcard">SDCARD에서 모든 세팅 불러오기</string>
+    <string name="delete_any_settings_on_sdcard">SDCARD에서 세팅 삭제하기</string>
     <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[세팅 -&gt; 자동 구성 기능을 사용하여 세팅을 전달하는 QR 코드를 사용하세요.]]></string>
     <string name="xdrip_plus_security_key_settings_only">xDrip 플러스 보안 키 세팅</string>
     <string name="show_general_and_collection_settings">일반 및 컬렉션 세팅 보기</string>
@@ -267,6 +295,7 @@
     <string name="glucose_history">과거 혈당 보기</string>
     <string name="import_database">데이터베이스 가져오기</string>
     <string name="sensor_table">센서 테이블</string>
+    <string name="bg_readings_table">혈당 테이블</string>
     <string name="long_press_to_split_or_delete">분할하거나 삭제하기 위해 길게 누르세요.</string>
     <string name="press_and_hold_on_the_background_to_split_or_delete">시간 블럭을 분할하거나 삭제하기 위해서 배경화면을 누르거나 잡으세요.</string>
     <string name="search">검색</string>
@@ -279,18 +308,24 @@
     <string name="be_master_for_followers">팔로워를 위한 마스터 되기</string>
     <string name="this_device_will_send_data_to_followers">이 장치는 팔로워에게 데이터를 보낼 것입니다.</string>
     <string name="send_parakeet_map_location_to_followers">Parakeet map 위치를 팔로웨에게 보내세요.</string>
+    <string name="sync_parakeet_geolocation">Parakeet GeoLocation 동기화</string>
     <string name="disable_all_sync_features">모든 동기화 기능을 해제 하세요.</string>
     <string name="temporary_work_around_disable_all_sync_detail">임시 해결 방법 옵션은 완전히 모든 동기화를 중지합니다. 다시 활성화 된 후 재부팅이 필요합니다. 주의해서 사용하세요!</string>
     <string name="automatic_updates_crash_reports_and_feedback">자동 업데이트, 오류 보고서, 개발자에게 피드백</string>
     <string name="crowd_sourced_translation">번역 참여</string>
     <string name="please_enter_your_question_or_comments_here">여기에 질문이나 의견을 입력하세요.\n\n당신이 이메일 주소를 제공하는 경우 당신은 응답을 받을 것입니다.\n\n</string>
+    <string name="optional_contact_info_here_eg_email">여기에 추가적인 연락처 정보, 예를 들어 이메일</string>
     <string name="send_message">메시지 보내기</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">당신은 일반적으로 앱을 어떻게 생각하는지 알려주세요.</string>
+    <string name="preferences_saved_in_sdcard_downloads">Sdcard에 다운로드에 저장된 환경 설정</string>
+    <string name="could_not_write_to_sdcard_check_perms">SDCARD에 쓸 수 없습니다.- 권한을 확인할까요?</string>
     <string name="loaded_preferences_restarting">환경 설정 불러오기! - 다시 시작</string>
     <string name="could_not_load_preferences_check_pers">환경 설정을 불러올 수 없습니다. - 권한이나 파일을 체크할까요?</string>
     <string name="external_storage_not_writable">외부 저장 장치에 쓰기 가능 권한이 없습니다.</string>
     <string name="successfully_deleted">성공적으로 삭제되었습니다.</string>
     <string name="deletion_problem">삭제 문제</string>
+    <string name="sdcard_not_writable_cannot_save">SDCARD는 쓰기 권한이 없습니다. - 저장할 수 없습니다.</string>
+    <string name="sdcard_not_readable">읽을 수없는 SDCARD</string>
     <string name="loading_settings_from_xdrip_mainline">XDrip의 메인 라인으로부터 세팅을을 불러오는 중..</string>
     <string name="warning_settings_from_xdrip_and_plus_exist">XDrip과 xDrip+에서 경고 세팅이 존재합니다. - xDrip+를 불러오는 중</string>
     <string name="new_version_date_colon">"새 버전 날짜: "</string>
@@ -305,6 +340,7 @@
     <string name="notify_when_predicted_low_time_reaches_threshold">예측된 저혈당의 임계치에 도달하면 알려줍니다.</string>
     <string name="predicted_low_sound">저혈당 사운드</string>
     <string name="choose_sound_used_for_predicted_low_alarm">예측된 저혈당 알람을 위한 사운드를 선택하세요.</string>
+    <string name="notify_when_parakeet_device_stops_checking_in">Parakeet 장치를 체크하는 것을 멈췄을 때 알려줍니다.</string>
     <string name="parakeet_related_alerts">Parakeet 관련 알림</string>
     <string name="silent_alert_when_charging">충전 중일때 무음 알림</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">스누즈 알림이 시작되면 실제로 트리거 동안 지속해야만 합니다.</string>
@@ -346,10 +382,12 @@
     <string name="show_on_widget">위젯에 표시</string>
     <string name="calibration_data_long">(긴)보정 데이터</string>
     <string name="calibration_data_short">(짧은)보정 데이터</string>
+    <string name="store_sensor_location_to_help">알고리즘 개선을 돕기 위해 센서 위치를 저장하세요.</string>
     <string name="help_the_developers_improve_the_algorithm">개발자가 xDrip 알고리즘을 개선하도록 돕기</string>
     <string name="help_the_community">커뮤니티 도움말</string>
     <string name="double_tap_or_pinch_to_zoom">더블 탭 또는 핀치 확대합니다.</string>
     <string name="start_sensor">센서 시작하기</string>
+    <string name="debug_and_other_misc_options">디버그 및 다른 기타 옵션</string>
     <string name="low_glucose_values">저혈당 수치</string>
     <string name="revert_to_default">기본값으로 되돌리기</string>
     <string name="filtered_values">필터링 된 값</string>
@@ -358,6 +396,8 @@
     <string name="predictive_color">예측 색상</string>
     <string name="predictive_color_dark">진한 예측 색상</string>
     <string name="average_and_target_lines">평균 및 목표 라인</string>
+    <string name="eight_hour_average_line">8시간 평균 라인</string>
+    <string name="twenty_four_hour_average_line">24시간 평균 라인</string>
     <string name="glucose_target_line">혈당 목표 라인</string>
     <string name="annotations_and_dots">주석 및 점</string>
     <string name="blood_test_background">혈액 테스트 백그라운드</string>
@@ -420,6 +460,8 @@
     <string name="useful_for_noise_and_missed_readings">Noise와 누락된 혈당을 위해 유용함</string>
     <string name="the_standard_xdrip_calculated_value">계산된 표준 xDrip</string>
     <string name="display_ideal_glucose_target_line">이상적인 혈당 목표 라인 표시</string>
+    <string name="display_eight_hour_average_line">8시간 평균 라인 표시</string>
+    <string name="display_twenty_four_hour_average_line">24시간 평균 라인 표시</string>
     <string name="predictive_model_inner_workings">예측 모델 내부 동작</string>
     <string name="noise_model_inner_workings">Noise 모델 내부 동작</string>
     <string name="glucose_number_from_filtered">필터링된 혈당 갯수</string>
