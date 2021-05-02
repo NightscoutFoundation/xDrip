@@ -56,15 +56,6 @@ public class xdrip extends Application {
 
     }
 
-    public synchronized static void initCrashlytics(Context context) {
-        if ((!fabricInited && isWear2OrAbove() && !isRunningTest())) {
-            try {
-            } catch (Exception e) {
-                Log.e(TAG, e.toString());
-            }
-            fabricInited = true;
-        }
-    }
 
     public static Context getAppContext() {
         return xdrip.context;
