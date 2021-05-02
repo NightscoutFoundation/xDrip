@@ -25,6 +25,7 @@
     <string name="ok">OK</string>
     <string name="cancel">Mégse</string>
     <string name="no">Nem</string>
+    <string name="pref_sensor_location_dont_ask_again"> Ne kérdezz rá mégegyszer</string>
     <string name="title_activity_error">"Hiba- és eseménynapló"</string>
     <string name="title_activity_edit_alert">Riasztás beállítása</string>
     <string name="title_activity_double_calibration">Első kalibráció</string>
@@ -52,6 +53,7 @@
     <string name="location_yes">Bekapcsol</string>
     <!-- broadcast settings -->
     <string name="pref_title_broadcast_enabled">Helyi adatszórás</string>
+    <string name="pref_summary_broadcast_enabled">Engedélyezze, hogy más app (NightWatch, Android APS) megkaphassa az adatokat</string>
     <!-- pebble settings -->
     <string name="pref_pebble_trend_watchface">Pebble Trend óralap használata</string>
     <string name="pref_summary_pebble_trend_watchface">Pebble Trend óralap telepítése (kísérleti)</string>
@@ -64,12 +66,14 @@
     <string name="pref_amazfit_enable_summary">Amazfit adatkapcsolat engedélyezése</string>
     <string name="pref_amazfit_enable">Bekapcsol</string>
     <string name="pref_amazfit_tile">Amazfit szolgáltatás</string>
+    <string name="pref_amazfit_BG_alert_enable_summary">Aktív VC-érték riasztások küldése az órára</string>
     <string name="pref_amazfit_BG_alert_enable">Bekapcsol</string>
     <string name="pref_amazfit_BG_alert_title">VC-érték riasztás</string>
     <string name="pref_amazfit_other_alert_enable_summary">Egyéb riasztások küldése az órára</string>
     <string name="pref_amazfit_other_alert_enable">Bekapcsol</string>
     <string name="pref_amazfit_other_alert_title">További riasztások</string>
     <string name="pref_amazfit_watchface_graph_dots_title">Óralap pontozott vonallal</string>
+    <string name="pref_amazfit_watchface_graph_dots_summary">Kicsi helyett apró pontok</string>
     <string name="pref_amazfit_watchface_graph_enable">Bekapcsol</string>
     <string name="pref_amazfit_watchface_graph_title">Óralap grafikon</string>
     <string name="pref_amazfit_watchface_graph_enable_summary">Grafikon óralap hátterében mutatása</string>
@@ -88,6 +92,7 @@
     <string name="title_activity_alert_list">Riasztások listája</string>
     <string name="speaktreatment">Kezelés felolvasása</string>
     <string name="title_activity_update">Új xDrip verzió érhető el</string>
+    <string name="title_activity_display_qrcode">Beállítások megosztása QR kóddal</string>
     <string name="title_activity_send_feed_back">Üzenet a fejlesztőnek (Jamorham)</string>
     <string name="export_submenu">Import/Export funkciók</string>
     <string name="note_button">Jegyzetek gomb</string>
@@ -99,13 +104,18 @@
     <string name="please_enter_two_calibrations_to_get_started">Adjon meg két kalibrációs értéket az indításhoz!</string>
     <string name="now_pair_with_your_dexcom_share">Párosítás Dexcom Share-rel</string>
     <string name="now_choose_start_sensor_in_settings">Válassza ki a szenzorindítást a Beállításokban</string>
+    <string name="double_check_dex_receiver_serial_number">Ellenőrizze a Dexcom olvasó szériaszámát, tíz karakterből áll, ne feledje a betűket</string>
+    <string name="please_set_dex_receiver_serial_number">Kérem, adja meg a Dexcom olvasó szériaszámát a Beállításokban</string>
+    <string name="unfortunately_andoird_version_no_blueooth_low_energy">Sajnos a telefonja Android verziója nem támogatja a Bluetooth Low Energy-t</string>
     <string name="waiting_for_packet">Várakozás adatokra</string>
+    <string name="checking_for_update">Új verzió keresése..</string>
     <string name="expires_at">Lejár {0}</string>
     <string name="space_minutes_ago">" perccel ezelőtt"</string>
     <string name="space_minute_ago">" perccel ezelőtt"</string>
     <string name="view_events_log">Eseménynapló mutatása</string>
     <string name="share_config_via_qr_code">Beállítások megosztása QR kóddal</string>
     <string name="check_for_updated_version">Új verzió keresése</string>
+    <string name="send_feedback_to_developer">Visszajelzés küldése a fejlesztőnek</string>
     <string name="home_screen">Kezdőképernyő</string>
     <string name="event_logs">Eseménynapló</string>
     <string name="calibration_graph">Kalibrációs grafikon</string>
@@ -127,6 +137,7 @@
     <string name="automatic_crash_reporting">Automatikus hibajelentés</string>
     <string name="copying_settings">Beállítások másolása</string>
     <string name="show_settings_qr_codes">Beállítások mutatása QR kóddal</string>
+    <string name="load_save_settings_to_sdcard">Beállítások mentése/visszaállítása SD-kártyára/mappába</string>
     <string name="alarms_and_alerts">Riasztások és emlékeztetők</string>
     <string name="alerts_and_notifications">Riasztások és emlékeztetők</string>
     <string name="glucose_level_alerts_list">Vércukorszint riasztások listája</string>
@@ -142,12 +153,14 @@
     <string name="alarm_at_forecasted_low_mins">Riasztás várható hypo előtt X perccel</string>
     <string name="other_xdrip_plus_alerts">További xDrip+ riasztások</string>
     <string name="xdrip_plus_display_settings">xDrip+ kijelző beállítások</string>
+    <string name="display_customisations">Képernyő testreszabása</string>
     <string name="linear_model_carbs_absorbed_per_hour">Szénhidrát-felszívódás óránként (lineáris modell)</string>
     <string name="add_calibration">Kalibrálás</string>
     <string name="system_status">Rendszer állapota</string>
     <string name="settings">Beállítások</string>
     <string name="calibration_data_table">Kalibrációs adattábla</string>
     <string name="hardware_data_source">Adatforrás eszköz</string>
+    <string name="enter_ten_character_dexcom_receiver_serial">Adja meg a Dexcom olvasó tíz karakteres szériaszámát</string>
     <string name="dexcom_transmitter_id">Dexcom távadó ID</string>
     <string name="data_source_settings">Adatforrás beállítások</string>
     <string name="smart_watch_features">Okosórák</string>
@@ -175,6 +188,7 @@
     <string name="pebble_integration">Pebble integráció</string>
     <string name="send_data_to_pebble_watchface">Adatok Pebble óralapra.</string>
     <string name="pebble_watch_integration">Pebble integráció</string>
+    <string name="standard_or_trend_pebble_watchface">Standard vagy Trend Pebble óralap</string>
     <string name="choose_pebble_watchface">Pebble óralap kiválasztása</string>
     <string name="text_to_display_when_hitting_special_value">Megjelenítendő szöveg különleges érték elérésekor</string>
     <string name="special_value">Különleges érték</string>
@@ -196,6 +210,7 @@
     <string name="dont_alarm_during_phone_calls">Nincs riasztás telefonálás közben</string>
     <string name="start_snoozed">Szundizva indítás</string>
     <string name="pebble_and_android_wear_options">Beállítások okosórákhoz</string>
+    <string name="customize_colours">Színek beállítása</string>
     <string name="xdrip_plus_color_settings">xDrip+ színbeállítások</string>
     <string name="glucose_values_and_lines">VC-értékek és határvonalak</string>
     <string name="high_glucose_values">Magas VC-értékek</string>
@@ -204,6 +219,7 @@
     <string name="example_chart">Minta grafikon</string>
     <string name="treatments_prediction_curves">Kezelési/előrejelzési görbék</string>
     <string name="transmitter_battery">távadó töltöttsége</string>
+    <string name="speak_your_treatment">Kezelés felolvasása pl.:\nx.x egység inzulin / xx gram szénhidrát</string>
     <string name="speech_recognition_is_not_supported">Beszédfelismerés nem támogatott</string>
     <string name="treatment_note">Jegyzet kezelésről</string>
     <string name="accessibility_description">Az xDrip a lezárt képernyőn való megjelenítésre a kisegítő lehetőségeket használja. Ez akkor hasznos, ha a telefonja Always On Display funkcióval rendelkezik és azt be is kapcsolta. Az xDrip más módon nem használja az Androidot.</string>
@@ -228,6 +244,10 @@
     <string name="a_new_version_is_available">Új verzió érhető el</string>
     <string name="version_details">Verzió adatai</string>
     <string name="download_now">Letöltés most</string>
+    <string name="here_you_can_save_the_settings_to_the_external_storage_sdcard">Beállítások külső tárolóra mentése (SD-kártya).\n\nA mentés után bármely app hozzáférhet az akár érzékeny információkhoz.\n\nA beállításokat az importálásuk után célszerű törölni.</string>
+    <string name="save_all_settings_to_sdcard">Beállítások mentése SD-kártyára/mappába</string>
+    <string name="load_all_settings_from_sdcard">Beállítások visszaállítása SD-kártyáról/mappából</string>
+    <string name="delete_any_settings_on_sdcard">Minden mentett beállítás törlése SD-kártyán/mappában</string>
     <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Beállítások átadása QR kóddal: Beállítások menü -> Automatikus beállítás]]></string>
     <string name="sensor_is_ready_please_enter_double_calibration">Szenzor kész, adjon meg két kalibrációt az indításhoz</string>
     <string name="in_order_to_get_started_please_perform_two_finger">Az indítás befejezéséhez, adjon meg egy vagy két vércukorértéket!</string>
@@ -248,11 +268,16 @@
     <string name="disable_all_sync_features">Minden szinkronizáció leállítva</string>
     <string name="crowd_sourced_translation">Közösségi fordításhoz ugrás</string>
     <string name="please_enter_your_question_or_comments_here">Itt írja meg a kérdését, észrevételét.\n\nAdja meg az e-mail címét, hogy válaszolhassunk.\n\n</string>
+    <string name="optional_contact_info_here_eg_email">Adja meg az elérhetőségét, pl. e-mail címét</string>
     <string name="send_message">Üzenet küldése</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Kérem értékelje az alkalmazást</string>
+    <string name="preferences_saved_in_sdcard_downloads">Beállítások mentve: sdcard Download könyvtárba</string>
+    <string name="could_not_write_to_sdcard_check_perms">Hiba az SD-kártya írásakor - ellenőrizze az engedélyeket</string>
     <string name="could_not_load_preferences_check_pers">Beállítások betöltése sikertelen. Megvannak a szükséges engedélyek?</string>
     <string name="successfully_deleted">Sikeresen törölve</string>
     <string name="deletion_problem">Hiba törlésnél</string>
+    <string name="sdcard_not_writable_cannot_save">SD kártya nem írható - mentés sikertelen</string>
+    <string name="sdcard_not_readable">SD-kártya nem olvasható</string>
     <string name="new_version_date_colon">"Új verzió dátuma: "</string>
     <string name="old_version_date_colon">"Régi verzió dátuma: "</string>
     <string name="speak_your_note_text">Jegyzet felolvasása</string>
@@ -265,7 +290,9 @@
     <string name="notify_when_predicted_low_time_reaches_threshold">Jelzés, amikor a várható hypoig hátralevő idő eléri a határértéket</string>
     <string name="predicted_low_sound">Előrejelzett hypo hangja</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Válassza ki az előrejelzett hypo hangját.</string>
+    <string name="notify_when_parakeet_device_stops_checking_in">Jelzés, ha a Parakeet készülék nem jelentkezik be</string>
     <string name="parakeet_related_alerts">Parakeet riasztás</string>
+    <string name="raise_parakeet_notification_silently_when_charging">Töltés közben a Parakeet jelzés néma</string>
     <string name="silent_alert_when_charging">Nincs riasztás töltés közben</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Riasztás szundizva indul, és csak azután aktiválódik, hogy egy ideáig fennállt</string>
     <string name="alarms_silenced_during_telephone_calls">Riasztások némák telefonbeszélgetés alatt</string>
@@ -277,6 +304,8 @@
     <string name="displays_the_slope_arrows">Mutassa a trendnyilakat</string>
     <string name="display_slope_arrows">Mutassa a trendnyilakat</string>
     <string name="vibrate_watch_to_alert_no_data">Rezgés, ha nincsen VC-érték</string>
+    <string name="vibrate_watch_to_alert_no_bluetooth">Rezgés, ha BT kapcsolat megszakad</string>
+    <string name="vibrate_when_no_bluetooth">Rezgés, ha nincsen BT-kapcsolat</string>
     <string name="compatible_broadcast">Kompatibilitás megőrzése</string>
     <string name="disable_battery_warning">Akkuriasztás leállítva</string>
     <string name="additional_text_status">Kiegészítő adatok mutatása</string>
@@ -290,6 +319,7 @@
     <string name="calibration_data_long">Kalibrációs adatok (hosszú)</string>
     <string name="calibration_data_short">Kalibrációs adatok (rövid)</string>
     <string name="start_sensor">Szenzor indítása</string>
+    <string name="debug_and_other_misc_options">Hibakeresési és további beállítások</string>
     <string name="low_glucose_values">Alacsony VC-értékek</string>
     <string name="revert_to_default">Alapértelemezett</string>
     <string name="filtered_values">Zajszűrt VC-értékek</string>
@@ -298,6 +328,8 @@
     <string name="predictive_color">Előrejelzés színe</string>
     <string name="predictive_color_dark">Előrejelzés színe (sötét)</string>
     <string name="average_and_target_lines">Átlag- és célérték vonalak</string>
+    <string name="eight_hour_average_line">8 órás átlag vonalként</string>
+    <string name="twenty_four_hour_average_line">24 órás átlag vonalként</string>
     <string name="glucose_target_line">VC célérték</string>
     <string name="annotations_and_dots">Jegyzetek és pontok</string>
     <string name="blood_test_background">VC-teszt háttér</string>
@@ -333,6 +365,8 @@
     <string name="high">magas</string>
     <string name="high_alert">Riasztás (magas)</string>
     <string name="low_alert">Riasztás (alacsony)</string>
+    <string name="display_eight_hour_average_line">8 órás átlagvonal mutatása</string>
+    <string name="display_twenty_four_hour_average_line">24 órás átlagvonal mutatása</string>
     <string name="if_the_phone_has_text_to_speech">Ha a telefonnak van felolvasó funkciója, akkor minden új VC-értéket bemond.</string>
     <string name="upload_logs">Napló feltöltése</string>
     <string name="short_off_text_for_switches">KI</string>
@@ -351,19 +385,25 @@
     <string name="pref_message_influxdb_password">Jelszó az azonosításhoz. Azonosítás nélkül nem ajánlott az adatbázis használata.</string>
     <string name="watch_vibrate_active_alerts">Rezgés VC-érték riasztáskor</string>
     <string name="vibrate_alerts">Rezgés riasztáskor</string>
+    <string name="attach_to_button">Pebble-gombhoz rendelés bármely aktív riasztás szundiba küldéséhez. Távoli szundi funkcióhoz is.</string>
     <string name="for_interacting_compatible_apps">Más app-okkal való együttműködés</string>
     <string name="interapp_settings">Inter-App beállítások</string>
+    <string name="use_plugins_for_brodcast">A zajcsökkentett és a plugin-ekkel módosított VC-értékeket küldje</string>
     <string name="send_display_glucose">Kijelzett VC-értékek küldése</string>
     <string name="send_broadcasts_old_permission_model">Adatszórás a régi megosztási modell figyelmen kívül hagyásával</string>
     <string name="process_nsclient_treatments">Fogadja a kezelési adatokat a NSClient app-tól</string>
     <string name="accept_treatments">Kezelések fogadása</string>
     <string name="process_broadcasted_calibrations">Fogadja a kalibrációt más app-októl</string>
+    <string name="spoken_readings_locale">Nyelv beállítása felolvasáshoz, pl: hu vagy en_IN</string>
     <string name="speak_glucose_twice">Minden VC-érték felolvasása kétszer</string>
     <string name="short_speak_readings_shortcut">Parancsikon mutatása a ☰ menüben a felolvasás ki/be kapcsolásához</string>
     <string name="speak_readings_shortcut">Felolvasás parancsikon mutatása</string>
     <string name="advanced_bluetooth_settings">Haladó bluetooth beállítások</string>
     <string name="bluetooth_settings">Bluetooth beállítások</string>
     <string name="turn_bluetooth_on">Bluetooth bekapcsolása</string>
+    <string name="constantly_reset_bluetooth">Bluetooth folyamatos újraindítása</string>
+    <string name="experimental_transmitter_fpv_uav">A @FPV-UAV távadó támogatása kísérleti jelleggel - csak tesztüzem</string>
+    <string name="transmitter_pl_support">Távadó (PL) támogatás</string>
     <string name="send_logs_to_developer">Események és hibák listájának automatikus küldése a fejlesztőnek</string>
     <string name="show_datatables_in_app_drawer">Kalibrációs és VC-érték táblázatok mutatása a Navigációs menüben.</string>
     <string name="disable_log_transmitter_battery_warning">Alacsony távadótöltöttség figyelmeztetés kikapcsolása a kezdőképernyőn. (Csak DIY jelfogó esetén.)</string>
@@ -394,6 +434,7 @@
     <string name="advanced_calibration">Haladó kalibráció</string>
     <string name="extra_calibration_options">Extra kalibrációs lehetőség</string>
     <string name="experimental_calibration_plugin">Másodlagos kalibábrációs plugin (kísérleti)</string>
+    <string name="transmitter_id">Dexcom távadó ID, pl. 12AB3</string>
     <string name="g5_debug_settings">G5/G6 hibakeresési beállítások</string>
     <string name="g5_scan_constantly">Egyes készülékek jobban működnek folyamatos leolvasással. Ha leolvasás megbízható enélkül is, akkor ne engedélyezze és akkuidőt takarít meg</string>
     <string name="scan_for_g5_constantly">G5 folyamatos leolvasása</string>
@@ -401,9 +442,15 @@
     <string name="data_sync">Adatszinkronizáció</string>
     <string name="options_for_upload">Beállítások Nightscout, MongoDB vagy Dexcom Share feltöltéshez</string>
     <string name="cloud_upload">Felhőbe mentés</string>
+    <string name="enable_mongo_sync">Bekapcsolás</string>
+    <string name="mongo_db_uri">Mongo DB URI</string>
     <string name="skip_local_lan">Ne legyen feltöltés, ha nincsen helyi hálózati kapcsolat 192.168.x.x címzésű helyi kiszolgálók esetén.</string>
     <string name="skip_lan_uploads">LAN-feltöltés mellőzése</string>
+    <string name="mongo_load_transmitter_data_title">Libre távadó adatok feltöltése</string>
+    <string name="mongo_load_transmitter_data_summary">Engedély arra, hogy több xDrip app is csatlakozhasson ugyanahhoz a BT eszközhöz. Ez lehetővé teszi a MiaoMiao távadó Libre rendszer teljes lefedettségét vagy hogy egyszerre két személy csatlakozzon ugyanahhoz a BT eszközhöz.</string>
     <string name="influxdb_sync">Bekapcsolás</string>
+    <string name="influxdb_uri">InfluxDB URI</string>
+    <string name="influxdb_database_name">InfluxDB adatbázis neve</string>
     <string name="password">Jelszó</string>
     <string name="upload_to_dexcom">Engedélyezze a Dexcom szerverekre feltöltéshez</string>
     <string name="upload_to_dexcom_share">VC-értékek feltöltése</string>
@@ -414,8 +461,10 @@
     <string name="dexcom_user">Dexcom felhasználói fiók neve</string>
     <string name="dexcom_login_password">Az Ön jelszava a Dexcom oldalán</string>
     <string name="dexcom_password">Dexcom felhasználói fiók jelszava</string>
+    <string name="dexcom_receiver_serial">Dexcom olvasó sorozatszáma (10 karakter)</string>
     <string name="glucose_meters">Vércukormérők</string>
     <string name="glucose_meter_options">Beállítások vércukormérőkhöz</string>
+    <string name="auto_connect_to_meter">Automatikus csatlakozás a standardnak megfelelő vércukormérőkhöz (mint a Contour Next One), és adatok letöltése</string>
     <string name="use_bluetooth_meter">Bluetooth-os VC-mérő használata</string>
     <string name="scan_for_bluetooth_meter">Bluetooth-os VC-mérő keresése</string>
     <string name="meter_connect_sound">Engedélyezze, ha szeretne hangjelzést a VC-mérő csatlakozáskor, leváláskor vagy adattovábbitáskor</string>
@@ -426,6 +475,8 @@
     <string name="automatic_calibration">Automatikus kalibráció</string>
     <string name="volume_buttons_snooze">Az xDrip-ben a hangerőgombokkal szundizhatja a riasztásokat</string>
     <string name="buttons_silence_alarms">Riasztás némító gombok</string>
+    <string name="create_shortcut">Külön menüpontként a főmenübe</string>
+    <string name="shortcut_to_bg_alerts">VC-szint riasztás menüpont</string>
     <string name="suppress_alerts_missed_readings">Aktív és szundizott riasztások elvetése, ha meghatározott ideig nincsen VC adat</string>
     <string name="suppress_alerts_after">Aktív és szundizott riasztások elvetése ennyi perc után (min 10 p)</string>
     <string name="alert_calibration_request">Emlékeztető kalibráció szükségességekor</string>
@@ -444,6 +495,8 @@
     <string name="reraise_not_snoozed_sooner">Riasztás ismét, ha előtte nem volt szundi</string>
     <string name="alert_reraise_time">Riasztás ismétlési ideje</string>
     <string name="alert_seconds_reraise">Hány másodperc múlva ismétlődik a riasztás.</string>
+    <string name="bg_falling_fast">VC-érték gyorsan esik</string>
+    <string name="bg_rising_fast">VC-érték gyorsan emelkedik</string>
     <string name="falling_threshold">Esés sebessége</string>
     <string name="rising_threshold">Emelkedés sebessége</string>
     <string name="alert_sound">Riasztás hangja</string>
@@ -475,6 +528,7 @@
     <string name="be_motion_master">Legyen a mozgásadatok Master-eként beállítva, még ha a készülék követő is. Csak egyetlen készülékre állítható ez be!</string>
     <string name="enable_telemetry">Telemetria engedélyezése</string>
     <string name="send_data_to_developers">Adatküldés a fejlesztőnek a különböző eszközök működésének eredményéről</string>
+    <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
     <string name="bubble">Bubble</string>
     <string name="reminders">Emlékeztetők</string>
@@ -513,6 +567,7 @@
     <string name="level_at_which_noisy_data_should_not_be_broadcast">Zajszint beállítása, amely felett már nem küld értéket, hogy ne zavarja meg a vevő app-ot</string>
     <string name="glucose_units_mmol_or_mgdl">Vércukor mértékegysége mmol/l vagy mg/dl</string>
     <string name="is_your_typical_glucose_value">Vércukor értéke jobbára 5,5 (mmol/l) vagy 100 (mg/dl) körüli? Válasszon</string>
+    <string name="please_enter_printed_calibration_code">Adja meg a nyomtatott kalibrációs kód értéket (4 számjegy, pl. 5678)</string>
     <string name="you_can_easily_roll_back_dialog_msg">Ha nem tetszik az új xDrip verzió, visszatérhet az előzőhöz, ha újratelepíti a régi APK-t.\n\nEngedélyezi a frissítések keresését?</string>
     <string name="update_checking_enabled">Frissítéskeresés bekapcsolva!</string>
     <string name="warning_no_alert_will_be_played_in_silent_mode">Figyelmeztetés! A telefonja Néma üzemmódjában nem kap riasztást!!!</string>
@@ -521,10 +576,14 @@
     <string name="emergency_message_feature">Vészhelyzeti üzenetek bekapcsolása</string>
     <string name="text_messages_can_be_sent_with_your_location_if_you_do_not_respond_to_alarms_this_feature_is_experimental_and_may_not_be_reliable">Szöveges üzenet küldhető a helykoordinátáival, ha nem reagál a riasztásokra. Ez a funkció még kísérleti állapotú, nem megbízható.</string>
     <string name="your_name">Ön neve</string>
+    <string name="did_not_acknowledge_a_low_glucose_alert">%s nem reagált %s ideje az alacsony vércukorértékre</string>
+    <string name="did_not_acknowledge_a_high_glucose_alert">%s nem reagált %s ideje a magas vércukorértékre</string>
+    <string name="emergency_message_near_format_string">%s - %s %s %s %s közelében</string>
     <string name="choose_when_to_send_messages">Üzenet küldése, ha:</string>
     <string name="low_alert_not_acknowledged">Nem reagált az alacsony érték értesítésre</string>
     <string name="high_alert_not_acknowledged">Nem reagált a magas érték értesítésre</string>
     <string name="d_selected_contacts_for_text_messages_format">%d kiválasztott kontakt kapja az üzenetet</string>
+    <string name="xdrip_software_changed_format">xDrip app verzióváltás: %s --> %s</string>
     <string name="enable_speak_readings_when_in_vehicle">Felolvasás funkció bekapcsolása vezetés módban</string>
     <string name="sensor_is_still_warming_up_please_wait">Szenzor még nem indult el, kérem, várjon</string>
     <string name="summary_If_you_plan_to_only_use_a_Wear_collector_and_never_your_phone">Csak a WEAR-t használja kollektorként, a telefont soha.</string>
@@ -628,6 +687,7 @@
     <string name="summary_tidepool_dev_servers">Engedélyezése esetén a feltöltés a https://int-app.tidepool.org szerverre megy, és nem a https://app.tidepool.org/ szerverre</string>
     <string name="title_tidepool_dev_servers">Integrációs teszt szerver használata</string>
     <string name="title_tidepool">Tidepool</string>
+    <string name="load_save_settings_on_sdcard">Beállítások mentése/visszaállítása SD-kártyára/mappába</string>
     <string name="delete_all_bg_readings">Minden VC-érték törlése</string>
     <string name="debugging_test_feature">Tesztek hibakereséshez</string>
     <string name="send_bg_readings_to_backfill">VC-értékek visszatöltésre küldése</string>
@@ -640,10 +700,12 @@
     <string name="title_miband_screen_battery">Töltöttség muitatása</string>
     <string name="title_miband_show_date">Dátum mutatása a képernyőn</string>
     <string name="title_miband_visibility">MiBand láthatósága</string>
+    <string name="summary_miband_visibility">MiBand látható lesz más eszközönek</string>
     <string name="title_miband_switch_display_on_wrist">Csuklóemelésre képernyő bekapcsolása</string>
     <string name="title_miband_units">Mértékegységek</string>
     <string name="summary_miband_units">MiBand-en használt mértékegység kiválasztása </string>
     <string name="title_miband_goal_notification">Értesítés cél elérésekor</string>
+    <string name="summary_miband_goal_notification">MiBand rezegjen a cél elérésekor</string>
     <string name="title_miband_locale_24_hour">24 órás időformátum</string>
     <string name="summary_miband_locale_24_hour">24 órás időformátum mutatása</string>
     <string name="title_miband_nightmode_category">Ne zavarj mód beállításai</string>
@@ -654,8 +716,13 @@
     <string name="title_miband_interval_in_nightmode">Időköz</string>
     <string name="summary_miband_interval_in_nightmode">VC-érték szinkronizációs időtartamának beállítása</string>
     <string name="title_miband_colect_heartrate">Pulzusfigyelés</string>
+    <string name="summary_miband_colect_heartrate">Pulzusadatok gyűjtése MiBand-ről. Gyakorisága a MiFit vagy más app-ban állítható be</string>
     <string name="title_miband_authkey">Auth key</string>
+    <string name="summary_miband_authkey">MiBand auth key megadása (Útmutató a megismeréséhez: https://www.freemyband.com/)</string>
     <string name="summary_miband_mac">Hagyja üresen a felderítéséhez</string>
+    <string name="title_miband_send_readings_as_notification">VC-értékek értesítésként</string>
+    <string name="summary_miband_send_readings_as_notification">Értesítések használata a VC-értékek küldésére. Minden más funkcióval együtt is használható.
+        Ne engedélyezze, ha xDrip óralapot használ. (A MiFit alkalmazás törlése szükséges a felülírás elkerülése érdekében.)</string>
     <string name="title_miband_vibrate_on_readings">Rezgés VC-érték küldésekor</string>
     <string name="title_miband_send_calls">Hívások átküldése</string>
     <string name="summary_miband_send_calls">Hívás értesítések küldése MiBand-re</string>
@@ -671,9 +738,13 @@
     <string name="title_miband_screen_status">Státusz mutatása</string>
     <string name="title_miband_screen_heart_rate">Pulzus mutatása</string>
     <string name="title_miband_screen_timer">Időzítő mutatása</string>
+    <string name="title_miband_screen_nfc">NFC mutatása (ha van)</string>
     <string name="miband_watchface_istall_success">MiBand óralap feltöltve!</string>
     <string name="miband_watchface_istall_error">Hiba a MiBand óralap feltöltésekor</string>
+    <string name="miband_bg_dialog_title">Frissítse a VC-értékeket?</string>
     <string name="title_lefun_band">LeFun Band</string>
+    <string name="summary_lefun_enable">Adatok szinkronizálása LeFun Band-del</string>
+    <string name="title_lefun_enable">LeFun Band használata</string>
     <string name="title_lefun_mac">MAC-cím</string>
     <string name="summary_lefun_send_readings">Az óra dátum mezejében jeleníti meg a VC-értéket. mmol/l-ben jobb, lsd. dokumentációt</string>
     <string name="title_lefun_send_readings">VC-érték küldése</string>
@@ -788,10 +859,12 @@
     <string name="restore_backup">Biztonsági mentés visszaállítása?</string>
     <string name="restore">Visszaállítás</string>
     <string name="calibrate_sensor">Kalibrája a szenzort?</string>
+    <string name="we_have_some_readings__next_we_need_the_first_calibration_blood_test__ready_to_calibrate_now">VC-érték érkezett!\n\nKövetkező lépésként ujjbegyből mért VC-érték szükséges a kalibrációhoz.\n\nKészen áll a kalibrálásra?</string>
     <string name="confirm_delete">Törlés megerősítése</string>
     <string name="are_you_sure_you_want_to_delete_this_treatment">Biztosan törölni akarja ezt a kezelési jegyzetet?</string>
     <string name="no_data_received_from_master_yet">Még nem érkezett adat a Master-től</string>
     <string name="xdrip_will_not_work_below_android_version_42">Legalább Android 4.2 szükséges az xDrip használatához</string>
+    <string name="xdrip_oop2_not_installed">Libre2/Libre US szenzorok használatához szükséges az oop2 app.</string>
     <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Az akkuhasználat optimalizálását kapcsolja ki az xDrip esetében. Állítsa be!</string>
     <string name="setting_disabled_">Beállítás nem aktív :)</string>
     <string name="yes_please">Igen, kérem</string>
@@ -805,7 +878,13 @@
     <string name="not_so_quickly_wait_60_seconds">Ne ilyen gyorsan, kérem, várjon 60 mp-et</string>
     <string name="nfc_io_error">NFC IO hiba</string>
     <string name="nfc_error">NFC hiba</string>
+    <string name="please_wait">Kérem várjon...</string>
     <string name="didnt_find_any_glucose_readings_in_that_time_period">Ebben az időszakban nincsen VC-érték</string>
+    <string name="remote_snooze">Távoli szundi..</string>
+    <string name="follower_deleted_succesfully">Követő eltávolítva</string>
     <string name="failed_to_delete_follower">Követő eltávolítása sikertelen</string>
     <string name="authentication_failed_wrong_password">Sikertelen azonosítás. Eltévesztette a jelszót?</string>
+    <string name="pref_select_basal_insulinprofiles">bázisinzulin profil kiválasztása.</string>
+    <string name="pref_select_bolus_insulinprofiles">bólus inzulin profil kiválasztása, akár pen, akár pumpa...</string>
+    <string name="enable_streaming_dialog_text">Összekapcsolja az xDripet ezzel a szenzorral? Ezután a Libre olvasó és a LibreLink app nem kap riasztást. Nyomja meg az Igen gombot, olvassa le a szenzort a kapcsolódáshoz (Ha a patch-elt LibreLink-et akarja használni, ne kapcsolja össze őket.)</string>
 </resources>
