@@ -10,7 +10,6 @@
     <!-- broadcast settings -->
     <!-- pebble settings -->
     <!-- Amazfit Settings -->
-    <string name="dexcom_share_server_upload">Dexcom Share szerverre feltöltése</string>
     <string name="pref_summary_influxdb_enabled">Engedélyezze, ha privát InfluxDB adatbázist használ</string>
     <string name="pref_message_influxdb_username">Felhasználónév az azonosításhoz. Azonosítás nélkül nem ajánlott az adatbázis használata.</string>
     <string name="pref_dialog_influxdb_username">Felhasználónév</string>
@@ -18,7 +17,9 @@
     <string name="enable_mongo_sync">Bekapcsolás</string>
     <string name="influxdb_sync">Bekapcsolás</string>
     <string name="influxdb_database_name">InfluxDB adatbázis neve</string>
-    <string name="upload_to_dexcom_share">VC-értékek feltöltése Dexcom Share-ként</string>
+    <string name="upload_to_dexcom_share">VC-értékek feltöltése</string>
     <!-- trend arrow for speak -->
+    <string name="title_nsfollow_download_treatments">Kezelések letöltése</string>
+    <string name="are_you_sure_you_want_to_delete_this_treatment">Biztosan törölni akarja ezt a kezelési jegyzetet?</string>
     <string name="authentication_failed_wrong_password">Sikertelen azonosítás. Eltévesztette a jelszót?</string>
 </resources>

@@ -9,9 +9,9 @@ import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.getRawFirmwar
 
 public class FirmwareCapability {
 
-    private static final ImmutableSet<String> KNOWN_G5_FIRMWARES = ImmutableSet.of("1.0.0.13", "1.0.0.17", "1.0.4.10", "1.0.4.12");
+    private static final ImmutableSet<String> KNOWN_G5_FIRMWARES = ImmutableSet.of("1.0.0.13", "1.0.0.17", "1.0.4.10", "1.0.4.12", "1.0.4.14", "1.0.4.15");
     private static final ImmutableSet<String> KNOWN_G6_FIRMWARES = ImmutableSet.of("1.6.5.23", "1.6.5.25", "1.6.5.27");
-    private static final ImmutableSet<String> KNOWN_G6_REV2_FIRMWARES = ImmutableSet.of("2.18.2.67", "2.18.2.88", "2.18.2.98", "2.27.2.98");
+    private static final ImmutableSet<String> KNOWN_G6_REV2_FIRMWARES = ImmutableSet.of("2.18.2.67", "2.18.2.88", "2.18.2.98", "2.27.2.98", "2.27.2.103");
     private static final ImmutableSet<String> KNOWN_G6_REV2_RAW_FIRMWARES = ImmutableSet.of("2.18.2.67");
     private static final ImmutableSet<String> KNOWN_G6_PLUS_FIRMWARES = ImmutableSet.of("2.4.2.88");
     private static final ImmutableSet<String> KNOWN_TIME_TRAVEL_TESTED = ImmutableSet.of("1.6.5.25");
@@ -23,6 +23,7 @@ public class FirmwareCapability {
                 || KNOWN_G6_PLUS_FIRMWARES.contains(version)
                 || version.startsWith("1.6.5.")
                 || version.startsWith("2.18.")
+                || version.startsWith("2.27.")
                 || version.startsWith("2.4."));
     }
 
@@ -88,6 +89,19 @@ public class FirmwareCapability {
 
     public static boolean isTransmitterPreemptiveRestartCapable(final String tx_id) {
         return isFirmwarePreemptiveRestartCapable(getRawFirmwareVersionString(tx_id));
+    }
+
+    public static boolean isKnownFirmware(final String version) {
+        return (version == null || version.equals("")
+                || KNOWN_G5_FIRMWARES.contains(version)
+                || KNOWN_G6_FIRMWARES.contains(version)
+                || KNOWN_G6_REV2_FIRMWARES.contains(version)
+                || KNOWN_G6_PLUS_FIRMWARES.contains(version));
+    }
+
+    public static boolean isTransmitterKnownFirmware(final String tx_id) {
+        final String version = getRawFirmwareVersionString(tx_id);
+        return isKnownFirmware(version);
     }
 
     static long getWarmupPeriodForVersion(final String version) {
