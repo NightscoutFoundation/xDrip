@@ -42,6 +42,7 @@ public enum NightscoutBatteryDevice {
             return Build.MANUFACTURER + " " + Build.MODEL;
         }
     },
+
     BRIDGE {
         @Override
         int getBatteryLevel(Context mContext) {
@@ -53,6 +54,7 @@ public enum NightscoutBatteryDevice {
             return DexCollectionService.getBestLimitterHardwareName();
         }
     },
+
     PARAKEET {
         @Override
         int getBatteryLevel(Context mContext) {
@@ -64,9 +66,11 @@ public enum NightscoutBatteryDevice {
             return "Parakeet";
         }
     },
+
     DEXCOM_TRANSMITTER {
         /**
-         * This is used for checking if the battery value is stale.
+         * This is only used as a check before uploading that we were able to
+         * obtain data for the transmitter in NightscoutUploader.
          */
         @Override
         int getBatteryLevel(Context mContext) {
@@ -112,14 +116,17 @@ public enum NightscoutBatteryDevice {
             if (b.voltageBWarning()) {
                 uploader.put("voltageb_warning", true);
             }
-            uploader.put("resistance", b.resistance());
             if (b.resistanceStatus() != Ob1DexTransmitterBattery.ResistanceStatus.UNKNOWN) {
+                uploader.put("resistance", b.resistance());
                 uploader.put("resistance_status", b.resistanceStatus().name());
             }
             uploader.put("temperature", b.temperature());
 
             // What nightscout will normally show in the UI
             uploader.put("battery", b.days() + " days (voltage: " + b.voltageA() + "/" + b.voltageB() + ")");
+
+            // Epoch timestamp representing when the battery was last queried.
+            uploader.put("lastQueried", b.lastQueried());
 
             uploader.put("type", name());
             return uploader;

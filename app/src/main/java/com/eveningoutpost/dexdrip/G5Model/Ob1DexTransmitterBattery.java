@@ -4,6 +4,7 @@ package com.eveningoutpost.dexdrip.G5Model;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Services.G5BaseService;
 import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 
@@ -128,6 +129,10 @@ public class Ob1DexTransmitterBattery {
             return ResistanceStatus.GOOD;
         }
     };
+
+    public long lastQueried() {
+        return PersistentStore.getLong(G5BaseService.G5_BATTERY_FROM_MARKER + tx_id);
+    }
 
     public int temperature() {
         return battery.temperature;
