@@ -174,11 +174,7 @@ public class AlertPlayer {
             } catch (IllegalStateException e) {
                 UserError.Log.e(TAG, "Exception when stopping media player: " + e);
             }
-            try {
-                mediaPlayer.release();
-            } catch (IllegalStateException e) {
-                UserError.Log.e(TAG, "Exception releasing media player: " + e);
-            }
+            mediaPlayer.release();
             mediaPlayer = null;
         }
         revertCurrentVolume(streamType);
@@ -321,11 +317,7 @@ public class AlertPlayer {
 
         if (mediaPlayer != null) {
             Log.i(TAG, "ERROR, playFile:going to leak a mediaplayer !!!");
-            try {
-                mediaPlayer.release();
-            } catch (IllegalStateException e) {
-                //
-            }
+            mediaPlayer.release();
             mediaPlayer = null;
         }
 
@@ -363,11 +355,7 @@ public class AlertPlayer {
                 } catch (IllegalStateException e) {
                     //
                 }
-                try {
-                    mediaPlayer.release();
-                } catch (IllegalStateException e) {
-                    //
-                }
+                mediaPlayer.release();
                 mediaPlayer = null;
                 revertCurrentVolume(streamType);
             });
