@@ -722,7 +722,8 @@ public class Ob1G5StateMachine {
                                 UserError.Log.e(TAG, "Session start time reports: No session in progress");
                                 DexSessionKeeper.clearStart();
                             }
-                            if (Pref.getBooleanDefaultFalse("ob1_g5_preemptive_restart")) {
+                            if (Pref.getBooleanDefaultFalse("ob1_g5_preemptive_restart")
+                                    && FirmwareCapability.isTransmitterPreemptiveRestartCapable(getTransmitterID())) {
                                 int restartDaysThreshold = usingG6() ? 9 : 6;
                                 if (txtime.getSessionDuration() > Constants.DAY_IN_MS * restartDaysThreshold
                                         && txtime.getSessionDuration() < Constants.MONTH_IN_MS) {
