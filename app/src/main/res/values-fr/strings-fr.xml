@@ -998,7 +998,7 @@
     <string name="title_Heart_Rate_Sensor">Capteur de fréquence cardiaque</string>
     <string name="summary_Smooth_heart_rate_graph">Graphique de fréquence cardiaque lissé</string>
     <string name="title_When_changes_by">Lors de changements par</string>
-    <string name="title_Or_per_number_of_minutes">Où par nombre de minutes</string>
+    <string name="title_Or_per_number_of_minutes">Ou par nombre de minutes</string>
     <string name="title_Identify_receiver">Identifier le récepteur</string>
     <string name="summary_Only_send_to_named_package">Envoyer uniquement au package nommé</string>
     <string name="title_Accept_Calibrations">Accepter les Calibrations</string>
