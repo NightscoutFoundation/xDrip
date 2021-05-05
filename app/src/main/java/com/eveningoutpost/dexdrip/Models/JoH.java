@@ -1073,11 +1073,7 @@ public class JoH {
                 } catch (IllegalStateException e) {
                     //
                 }
-                try {
-                    player.release();
-                } catch (IllegalStateException e) {
-                    //
-                }
+                player.release();
             });
             player.start();
             return player;
