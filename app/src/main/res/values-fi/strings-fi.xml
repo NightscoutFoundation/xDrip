@@ -247,7 +247,7 @@
     <string name="smart_watch_features">Älykello-ominaisuudet</string>
     <string name="wear_integration">Wear OS tuki</string>
     <string name="send_data_to_android_wear_watch">Lähetä tiedot Android Wear -kellotauluun.</string>
-    <string name="android_wear_integration">Android Wear tuki</string>
+    <string name="android_wear_integration">Wear OS -tuki</string>
     <string name="pref_enable_wearG5">Käynnistä Wear tiedonkeruupalvelu</string>
     <string name="pref_summary_enable_wearG5">Yhdistä Wear bluetooth tiedonkerääjään kun puhelin on poissa kuuloetäisyydeltä</string>
     <string name="pref_force_wearG5">Pakota Wear tiedonkeruupalvelu</string>
@@ -260,7 +260,7 @@
     <string name="pref_node_wearG5">Laite jossa keruupalvelu on toiminnassa</string>
     <string name="pref_summary_node_wearG5">Pakota puhelin käyttämään tätä Wear keruupalvelua</string>
     <string name="pref_sync_wear_logs">Synkronoi Wear lokit</string>
-    <string name="pref_summary_sync_wear_logs">Lähetä Weak lokit tapahtumien katseluun</string>
+    <string name="pref_summary_sync_wear_logs">Lähetä Wear lokit tapahtumien katseluun</string>
     <string name="pref_wear_logs_prefix">Wear lokien etuliite</string>
     <string name="pref_summary_wear_logs_prefix">Etuliite Wear lokeissa</string>
     <string name="pref_show_treatments">Näytä hoitotapahtumat</string>
@@ -281,7 +281,7 @@
     <string name="less_common_settings">Harvemmin tarvittavat asetukset</string>
     <string name="view_recent_errors_warnings">Tuoreet virheet ja varoitukset</string>
     <string name="other_settings">Muut asetukset</string>
-    <string name="older_gratuitous_wakelocks">Vanhempi applikaation herätysmenetelmä, joka voi lisätä virrankulutusta, mutta voidaan tarvita Nightwatchilla tai Android Wear -kellolla</string>
+    <string name="older_gratuitous_wakelocks">Vanhempi applikaation herätysmenetelmä, joka voi lisätä virrankulutusta, mutta voidaan tarvita Nightwatchilla tai Wear OS -kellolla</string>
     <string name="use_excessive_wakelocks">Herätä applikaatio väkisin</string>
     <string name="speak_readings">Puhu lukemat</string>
     <string name="extra_status_line">Lisätty tilarivi</string>
