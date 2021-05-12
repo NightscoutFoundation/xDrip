@@ -40,7 +40,7 @@
                 android:layout_gravity="right"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
-                android:textColor="#0000ee"
+                android:textColor="#0000ff"
                 android:gravity="center_vertical|center_horizontal" />
 
             <Button
