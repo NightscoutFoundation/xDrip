@@ -60,7 +60,7 @@ public class CheckBridgeBattery {
                     
                     boolean sound = true;
                     boolean vibrate = true;
-                    if (Pref.getLong("alerts_disabled_until", 0) > new Date().getTime()) {
+                    if (Pref.getLong("alerts_disabled_until", 0) > JoH.tsl()) {
                         UserError.Log.d(TAG, "Not playing alert since Notifications are currently disabled!!");
                     	sound = false;
                     	vibrate = false;
