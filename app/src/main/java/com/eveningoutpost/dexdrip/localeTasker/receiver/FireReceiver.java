@@ -197,7 +197,7 @@ public final class FireReceiver extends BroadcastReceiver {
                                 JoH.static_toast_long("SNOOZE_LOW from Tasker for " + minutes + " min");
                             }
 
-                            SnoozeActivity.snoozeForType(minutes, SnoozeActivity.LOW_ALERTS_DISABLED_UNTIL, prefs);
+                            SnoozeActivity.snoozeForType(minutes, SnoozeActivity.SnoozeType.LOW_ALERTS, prefs);
                             break;
 
                         case "SNOOZE_HIGH":
@@ -219,7 +219,7 @@ public final class FireReceiver extends BroadcastReceiver {
                                 JoH.static_toast_long("SNOOZE_HIGH from Tasker for " + minutes + " min");
                             }
 
-                            SnoozeActivity.snoozeForType(minutes, SnoozeActivity.HIGH_ALERTS_DISABLED_UNTIL, prefs);
+                            SnoozeActivity.snoozeForType(minutes, SnoozeActivity.SnoozeType.HIGH_ALERTS, prefs);
                             break;
 
                             //opportunistic snooze that only does anything if an alert is active
