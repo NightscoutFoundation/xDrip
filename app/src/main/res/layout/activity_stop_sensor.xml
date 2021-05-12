@@ -8,6 +8,7 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:weightSum="1"
+    android:background="#e8e800"
     android:id="@+id/stop_sensor_container">
     <ScrollView
         android:layout_width="fill_parent"
@@ -17,7 +18,6 @@
             android:orientation="vertical"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:background="#e8e800"
             android:gravity="center_horizontal">
             <TextView
                 android:layout_width="wrap_content"
@@ -25,7 +25,7 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="@string/stop_sensor"
                 android:id="@+id/textView3"
-                android:textColor="#dd0066"
+                android:textColor="#0000ff"
                 android:layout_gravity="center_horizontal" />
 
             <TextView
@@ -35,12 +35,12 @@
                 android:text="@string/only_stop_your_sensor_when_you_actually_plan"
                 android:layout_below="@+id/textView"
                 android:layout_alignParentStart="true"
-                android:layout_marginTop="60dp"
+                android:layout_marginTop="25dp"
                 android:id="@+id/stop_sensor_instructions"
                 android:layout_gravity="right"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
-                android:textColor="#dd0066"
+                android:textColor="#0000ee"
                 android:gravity="center_vertical|center_horizontal" />
 
             <Button
@@ -52,7 +52,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_alignEnd="@+id/textView3"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="150dp" />
+                android:layout_marginTop="30dp" />
 
             <Button
                 android:text="@string/dont_stop_just_reset_all_calibrations"
