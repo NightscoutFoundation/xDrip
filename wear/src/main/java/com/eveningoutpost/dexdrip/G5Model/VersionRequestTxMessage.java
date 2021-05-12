@@ -2,26 +2,37 @@ package com.eveningoutpost.dexdrip.G5Model;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Services.G5CollectionService;
-
-import java.nio.ByteBuffer;
 
 /**
  * Created by jamorham on 25/11/2016.
  */
 
-public class VersionRequestTxMessage extends TransmitterMessage {
+public class VersionRequestTxMessage extends BaseMessage {
 
-    private final static String TAG = G5CollectionService.TAG; // meh
-    byte opcode = 0x4A;
-    private byte[] crc = CRC.calculate(opcode);
+    static final byte opcode0 = 0x20;
+    static final byte opcode1 = 0x4A;
+    static final byte opcode2 = 0x52;
 
     public VersionRequestTxMessage() {
-        data = ByteBuffer.allocate(3);
-        data.put(opcode);
-        data.put(crc);
-        byteSequence = data.array();
-        UserError.Log.e(TAG, "VersionTx dbg: " + JoH.bytesToHex(byteSequence));
+        this(0);
+    }
+
+    public VersionRequestTxMessage(final int version) {
+        byte this_opcode = 0;
+        switch (version) {
+            case 0:
+                this_opcode = opcode0;
+                break;
+            case 1:
+                this_opcode = opcode1;
+                break;
+            case 2:
+                this_opcode = opcode2;
+                break;
+
+        }
+        init(this_opcode, 3);
+        UserError.Log.d(TAG, "VersionTx (" + version + ") dbg: " + JoH.bytesToHex(byteSequence));
     }
 }
 

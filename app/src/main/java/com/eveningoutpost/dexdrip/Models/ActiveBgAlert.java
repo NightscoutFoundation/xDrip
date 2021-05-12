@@ -27,18 +27,18 @@ public class ActiveBgAlert extends Model {
     public String alert_uuid;
 
     @Column(name = "is_snoozed")
-    public boolean is_snoozed;
+    public volatile boolean is_snoozed;
 
     @Column(name = "last_alerted_at") // Do we need this
-    public Long last_alerted_at;
+    public volatile Long last_alerted_at;
 
     @Column(name = "next_alert_at")
-    public Long next_alert_at;
+    public volatile Long next_alert_at;
 
     // This is needed in order to have ascending alerts
     // we set the real value of it when is_snoozed is being turned to false
     @Column(name = "alert_started_at")
-    public Long alert_started_at;
+    public volatile Long alert_started_at;
 
 
     public boolean ready_to_alarm() {
@@ -111,7 +111,10 @@ public class ActiveBgAlert extends Model {
     }
 
     public static AlertType alertTypegetOnly() {
-        ActiveBgAlert aba = getOnly();
+        return alertTypegetOnly(getOnly());
+    }
+
+    public static AlertType alertTypegetOnly(final ActiveBgAlert aba) {
 
         if (aba == null) {
             Log.v(TAG, "ActiveBgAlert: alertTypegetOnly returning null");
@@ -168,7 +171,7 @@ public class ActiveBgAlert extends Model {
     // This function is called from ClockTick, when we play
     // If we were snoozed, we update the snooze to false, and update the start time.
     // return the time in minutes from the time playing the alert has started
-    public int getUpdatePlayTime() {
+    public int getAndUpdateAlertingMinutes() {
         if(is_snoozed) {
             is_snoozed = false;
             alert_started_at = new Date().getTime();

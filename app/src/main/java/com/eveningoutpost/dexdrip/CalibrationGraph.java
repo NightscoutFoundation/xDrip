@@ -16,6 +16,7 @@ import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
@@ -33,7 +34,7 @@ import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.LineChartView;
 
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPluginFromPreferences;
-
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 public class CalibrationGraph extends ActivityWithMenu {
     //public static String menu_name = "Calibration Graph";
@@ -41,7 +42,7 @@ public class CalibrationGraph extends ActivityWithMenu {
     private LineChartData data;
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private final static String plugin_color = "#88CCFF00";
-    private final boolean doMgdl = Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl");
+    private final boolean doMgdl = Pref.getString("units", "mgdl").equals("mgdl");
     private final boolean show_days_since = true; // could make this switchable if desired
     private final double start_x = 50; // raw range
     private double end_x = 300; //  raw range
@@ -190,7 +191,7 @@ public class CalibrationGraph extends ActivityWithMenu {
         List<Line> lines = new ArrayList<>();
         lines.add(line);
 
-        if (Home.getPreferencesBooleanDefaultFalse("engineering_mode")) {
+        if (Pref.getBooleanDefaultFalse("engineering_mode")) {
 
             // actual raw
             Line lineb = new Line(valuesb);
@@ -219,7 +220,7 @@ public class CalibrationGraph extends ActivityWithMenu {
     public boolean onCreateOptionsMenu(Menu menu) {
 
         //Just generate the menu in engineering mode
-        if (!Home.getPreferencesBooleanDefaultFalse("engineering_mode")) {
+        if (!Pref.getBooleanDefaultFalse("engineering_mode")) {
             return false;
         }
 
@@ -270,7 +271,7 @@ public class CalibrationGraph extends ActivityWithMenu {
                             CalibrationSendQueue.addToQueue(calibration, getApplicationContext());
                             recreate();
                         } else {
-                            JoH.static_toast_long("Input not found! Cancelled!");
+                            JoH.static_toast_long(gs(R.string.input_not_found_cancelled));
                         }
                     }
                 })
@@ -278,7 +279,7 @@ public class CalibrationGraph extends ActivityWithMenu {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        JoH.static_toast_long("Cancelled!");
+                        JoH.static_toast_long(gs(R.string.cancelled));
                     }
                 })
                 .show();
@@ -303,7 +304,7 @@ public class CalibrationGraph extends ActivityWithMenu {
                             CalibrationSendQueue.addToQueue(calibration, getApplicationContext());
                             recreate();
                         } else {
-                            JoH.static_toast_long("Input not found! Cancelled!");
+                            JoH.static_toast_long(gs(R.string.input_not_found_cancelled));
                         }
                     }
                 })
@@ -311,7 +312,7 @@ public class CalibrationGraph extends ActivityWithMenu {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        JoH.static_toast_long("Cancelled!");
+                        JoH.static_toast_long(gs(R.string.cancelled));
                     }
                 })
                 .show();

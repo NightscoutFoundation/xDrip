@@ -1,12 +1,18 @@
 package com.eveningoutpost.dexdrip.Models;
 
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.BatteryManager;
 import android.os.Build;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.UtilityModels.BridgeBattery;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
+import com.eveningoutpost.dexdrip.UtilityModels.desertsync.RouteTools;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
+import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -18,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
+
 /**
  * Created by jamorham on 20/01/2017.
  */
@@ -25,7 +33,8 @@ import java.util.Map;
 public class RollCall {
 
     private static final String TAG = "RollCall";
-    private static HashMap<String, RollCall> indexed;
+    private static final int MAX_SSID_LENGTH = 20;
+    private static volatile HashMap<String, RollCall> indexed;
 
     @Expose
     String device_manufactuer;
@@ -41,6 +50,14 @@ public class RollCall {
     String xdrip_version;
     @Expose
     String role;
+    @Expose
+    String ssid;
+    @Expose
+    String mhint;
+    @Expose
+    int battery = -1;
+    @Expose
+    int bridge_battery = -1;
 
     // not set by instantiation
     @Expose
@@ -48,6 +65,7 @@ public class RollCall {
     @Expose
     Long last_seen;
 
+    final long created = JoH.tsl();
 
     public RollCall() {
         this.device_manufactuer = Build.MANUFACTURER;
@@ -64,6 +82,74 @@ public class RollCall {
         } else {
             this.role = "None";
         }
+
+        if (DesertSync.isEnabled()) {
+            try {
+                this.ssid = wifiString();
+            } catch (Exception e) {
+                //
+            }
+            try {
+                if (this.role.equals("Master")) {
+                    this.mhint = RouteTools.getBestInterfaceAddress();
+                }
+            } catch (Exception e) {
+                //
+            }
+        }
+    }
+
+    // populate with values from this device
+    public RollCall populate() {
+        this.battery = getBatteryLevel();
+        this.bridge_battery = BridgeBattery.getBestBridgeBattery();
+        return this;
+    }
+
+    private boolean batteryValid() {
+        return battery != -1;
+    }
+
+    private boolean bridgeBatteryValid() {
+        return bridge_battery > 0;
+    }
+
+    private static String wifiString() {
+        String ssid = JoH.getWifiSSID();
+        if (ssid != null && ssid.length() > MAX_SSID_LENGTH) {
+            ssid = ssid.substring(0, 20);
+        }
+        return ssid;
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private static int getBatteryLevel() {
+        final Intent batteryIntent = xdrip.getAppContext().registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        try {
+            final int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+            final int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+            if (level == -1 || scale == -1) {
+                return -1;
+            }
+            return (int) (((float) level / (float) scale) * 100.0f);
+        } catch (NullPointerException e) {
+            return -1;
+        }
+    }
+
+
+    private String getRemoteIpStatus() {
+        if (mhint != null) {
+            return "\n" + mhint;
+        }
+        return "";
+    }
+
+    private String getRemoteWifiIndicate(final String our_wifi_ssid) {
+        if (emptyString(our_wifi_ssid)) return "";
+        if (emptyString(ssid)) return "";
+        if (!our_wifi_ssid.equals(ssid)) return "\n" + ssid;
+        return "";
     }
 
     public String toS() {
@@ -91,7 +177,13 @@ public class RollCall {
         final Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
                 .create();
-        return gson.fromJson(json, RollCall.class);
+        try {
+            return gson.fromJson(json, RollCall.class);
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Got exception processing fromJson() " + e);
+            UserError.Log.e(TAG, "json = " + json);
+            return null;
+        }
     }
 
     public synchronized static void Seen(String item_json) {
@@ -148,6 +240,23 @@ public class RollCall {
         UserError.Log.d(TAG, "Loaded: count: " + hashmap.size());
     }
 
+    public static String getBestMasterHintIP() {
+        // TODO some intelligence regarding wifi ssid
+        //final String our_wifi_ssid = wifiString();
+        if (indexed == null) loadIndex();
+        RollCall bestMatch = null;
+        for (Map.Entry entry : indexed.entrySet()) {
+            final RollCall rc = (RollCall) entry.getValue();
+            if (!rc.role.equals("Master")) continue;
+            if (emptyString(rc.mhint)) continue;
+            if (bestMatch == null || rc.last_seen > bestMatch.last_seen) {
+                bestMatch = rc;
+            }
+        }
+        UserError.Log.d(TAG, "Returning best master hint ip: " + (bestMatch != null ? bestMatch.toS() : "no match"));
+        return bestMatch != null ? bestMatch.mhint : null;
+    }
+
 
     public static void pruneOld(int depth) {
         if (indexed == null) loadIndex();
@@ -172,29 +281,29 @@ public class RollCall {
 
     // data for MegaStatus
     public static List<StatusItem> megaStatus() {
-        final List<StatusItem> l = new ArrayList<>();
         if (indexed == null) loadIndex();
         GcmActivity.requestRollCall();
         // TODO sort data
         final boolean engineering = Home.get_engineering_mode();
-
+        final boolean desert_sync = DesertSync.isEnabled();
+        final String our_wifi_ssid = desert_sync ? wifiString() : "";
         final List<StatusItem> lf = new ArrayList<>();
         for (Map.Entry entry : indexed.entrySet()) {
-            RollCall rc = (RollCall) entry.getValue();
-            lf.add(new StatusItem(rc.role + (engineering ? ("\n" + JoH.niceTimeSince(rc.last_seen) + " ago") : ""), rc.bestName()));
+            final RollCall rc = (RollCall) entry.getValue();
+            // TODO refactor with stringbuilder
+            lf.add(new StatusItem(rc.role + (desert_sync ? rc.getRemoteWifiIndicate(our_wifi_ssid) : "") + (engineering ? ("\n" + JoH.niceTimeSince(rc.last_seen) + " ago") : ""), rc.bestName() + (desert_sync ? rc.getRemoteIpStatus() : "") + (engineering && rc.batteryValid() ? ("\n" + rc.battery + "%") : "") + (engineering && rc.bridgeBatteryValid() ? (" " + rc.bridge_battery+"%") : "")));
         }
 
         Collections.sort(lf, new Comparator<StatusItem>() {
             public int compare(StatusItem left, StatusItem right) {
-                int val = right.name.replaceFirst("\n.*$","").compareTo(left.name.replaceFirst("\n.*$","")); // descending sort ignore second line
+                int val = right.name.replaceFirst("\n.*$", "").compareTo(left.name.replaceFirst("\n.*$", "")); // descending sort ignore second line
                 if (val == 0) val = left.value.compareTo(right.value); // ascending sort
                 return val;
             }
         });
         // TODO could scan for duplicates and append serial to bestName
 
-        l.addAll(lf);
-        return l;
+        return new ArrayList<>(lf);
     }
 
 }

@@ -21,31 +21,33 @@ import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.LineChartView;
 
+import static com.eveningoutpost.dexdrip.ui.helpers.UiHelper.convertDpToPixel;
+
 /**
  * Created by matthiasgranberry on 5/4/15.
  */
 public class BgSparklineBuilder {
     private Context mContext;
 
-    private static final String TAG = "BgSparklineBuilder";
+    protected static final String TAG = "BgSparklineBuilder";
     private static final int NOTIFICATION_WIDTH_DP = 230; // 476 width minus 8 padding on each side is the native
                                                           // resolution, but use less for lower memory requirements
     private static final int NOTIFICATION_HEIGHT_DP = 128;
 
-    private int width;
-    private int height;
-    private BgGraphBuilder bgGraphBuilder;
-    private LineChartView chart;
-    private long end = new Date().getTime() / BgGraphBuilder.FUZZER;
-    private long start = end - (60000*180 / BgGraphBuilder.FUZZER); // 3h
-    private boolean showLowLine = false;
-    private boolean showHighLine = false;
-    private boolean showAxes = false;
-    private boolean useSmallDots = true;
-    private boolean useTinyDots = false;
-    private boolean showFiltered = false;
-    private int backgroundColor = Color.TRANSPARENT;
-    private final static int SCALE_TRIGGER = 84;
+    protected int width;
+    protected int height;
+    protected BgGraphBuilder bgGraphBuilder;
+    protected LineChartView chart;
+    protected long end = new Date().getTime() / BgGraphBuilder.FUZZER;
+    protected long start = end - (60000*180 / BgGraphBuilder.FUZZER); // 3h
+    protected boolean showLowLine = false;
+    protected boolean showHighLine = false;
+    protected boolean showAxes = false;
+    protected boolean useSmallDots = true;
+    protected boolean useTinyDots = false;
+    protected boolean showFiltered = false;
+    protected int backgroundColor = Color.TRANSPARENT;
+    protected final static int SCALE_TRIGGER = 84;
 
     public BgSparklineBuilder setStart(long start) {
         this.start = start / BgGraphBuilder.FUZZER;
@@ -144,7 +146,7 @@ public class BgSparklineBuilder {
     /**
      * Draw the view into a bitmap.
      */
-    private Bitmap getViewBitmap(View v) {
+    protected Bitmap getViewBitmap(View v) {
         v.clearFocus();
         v.setPressed(false);
 
@@ -178,13 +180,6 @@ public class BgSparklineBuilder {
         v.setDrawingCacheBackgroundColor(color);
 
         return bitmap;
-    }
-
-    private int convertDpToPixel(float dp){
-        Resources resources = mContext.getResources();
-        DisplayMetrics metrics = resources.getDisplayMetrics();
-        int px = (int) (dp * (metrics.densityDpi / 160f));
-        return px;
     }
 
     public Bitmap build() {
@@ -269,7 +264,7 @@ public class BgSparklineBuilder {
         }
     }
 
-    private Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+    protected Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
         if (bm==null) return null;
         int width = bm.getWidth();
         int height = bm.getHeight();

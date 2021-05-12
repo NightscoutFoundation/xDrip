@@ -5,11 +5,9 @@ import java.util.Date;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -26,7 +24,7 @@ import com.eveningoutpost.dexdrip.Models.AlertType;
 //KS import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
-import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 //KS import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
 
@@ -49,7 +47,7 @@ public class SnoozeActivity extends Activity {//ActivityWithMenu {
 
     NumberPicker snoozeValue;
 
-    static final int infiniteSnoozeValueInMinutes = 5256000;//10 years
+    static final long infiniteSnoozeValueInMinutes = 5256000;//10 years
     //static final int snoozeValues[] = new int []{5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 75, 90, 105, 120, 150, 180, 240, 300, 360, 420, 480, 540, 600};
     static final int snoozeValues[] = new int []{ 10, 15, 20, 30, 40, 50, 60, 75, 90, 120, 150, 180, 240, 300, 360, 420, 480, 540, 600};
 
@@ -330,7 +328,7 @@ public class SnoozeActivity extends Activity {//ActivityWithMenu {
         }
         long now = new Date().getTime();
         if(activeBgAlert == null ) {
-            sendRemoteSnooze.setVisibility(Home.getPreferencesBooleanDefaultFalse("send_snooze_to_remote") ? View.VISIBLE : View.GONE);
+            sendRemoteSnooze.setVisibility(Pref.getBooleanDefaultFalse("send_snooze_to_remote") ? View.VISIBLE : View.GONE);
             if (prefs.getLong("alerts_disabled_until", 0) > now
                     ||
                     (prefs.getLong("low_alerts_disabled_until", 0) > now

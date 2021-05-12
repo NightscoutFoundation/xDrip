@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.UtilityModels.pebble;
 import android.content.SharedPreferences;
 
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 
 /**
@@ -14,11 +15,11 @@ public class PebbleUtil {
 
     public static PebbleDisplayType pebbleDisplayType = PebbleDisplayType.None;
 
-    public static int getCurrentPebbleSyncType(SharedPreferences sharedPreferences) {
+    public static int getCurrentPebbleSyncType() {
         String value = "1";
 
         try {
-            value = sharedPreferences.getString("broadcast_to_pebble_type", sharedPreferences.getBoolean("broadcast_to_pebble", false) ? "2" : "1");
+            value = Pref.getString("broadcast_to_pebble_type", Pref.getBoolean("broadcast_to_pebble", false) ? "2" : "1");
         } catch (ClassCastException ex) {
           //  UserError.Log.w(TAG, "");
         }

@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -16,6 +15,7 @@ import android.widget.Toast;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.NotificationChannels;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.XdripNotificationCompat;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.utils.Preferences;
@@ -159,7 +159,7 @@ public class ParakeetHelper {
 
 
     private static void sendNotification(String body, String title) {
-        if (Home.getPreferencesBooleanDefaultFalse("parakeet_status_alerts")) {
+        if (Pref.getBooleanDefaultFalse("parakeet_status_alerts")) {
             Intent intent = new Intent(xdrip.getAppContext(), Home.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             PendingIntent pendingIntent = PendingIntent.getActivity(xdrip.getAppContext(), 0 /* Request code */, intent,
@@ -175,7 +175,7 @@ public class ParakeetHelper {
                  //   .setSound(defaultSoundUri)
                     .setContentIntent(pendingIntent);
 
-            if (!((PowerStateReceiver.is_power_connected()) && (Home.getPreferencesBooleanDefaultFalse("parakeet_charge_silent"))))
+            if (!((PowerStateReceiver.is_power_connected()) && (Pref.getBooleanDefaultFalse("parakeet_charge_silent"))))
             {
                 notificationBuilder.setSound(defaultSoundUri);
             }

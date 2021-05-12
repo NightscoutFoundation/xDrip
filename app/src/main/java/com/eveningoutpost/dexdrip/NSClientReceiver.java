@@ -14,6 +14,7 @@ import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,6 +22,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.UUID;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 
 /**
@@ -43,20 +45,16 @@ public class NSClientReceiver extends BroadcastReceiver {
         //  BundleScrubber.scrub(bundle);
         final String action = intent.getAction();
 
-
         if ((bundle != null) && (debug)) {
-            for (String key : bundle.keySet()) {
-                Object value = bundle.get(key);
-                if (value != null) {
-                    Log.d(TAG, String.format("%s %s (%s)", key,
-                            value.toString(), value.getClass().getName()));
-                }
-            }
+            UserError.Log.d(TAG, "Action: " + action);
+            JoH.dumpBundle(bundle, TAG);
         }
+
+        if (action == null) return;
 
         switch (action) {
             case Intents.ACTION_NEW_SGV:
-                if (Home.get_follower()) {
+                if (Home.get_follower() && prefs.getBoolean("accept_nsclient_sgv", true)) {
                     if (bundle == null) break;
                     final String sgvs_json = bundle.getString("sgvs", "");
                     if (sgvs_json.length() > 0) {
@@ -111,7 +109,7 @@ public class NSClientReceiver extends BroadcastReceiver {
 
                 // if you specify the units field as either mgdl or mmol then conversion will be done if local units don't match
 
-                if (Home.getPreferencesBooleanDefaultFalse("accept_broadcast_calibrations")) {
+                if (Pref.getBooleanDefaultFalse("accept_broadcast_calibrations")) {
 
                     final long calibration_timestamp = bundle.getLong("timestamp", -1);
                     double glucose_number = bundle.getDouble("glucose_number", -1);
@@ -122,11 +120,11 @@ public class NSClientReceiver extends BroadcastReceiver {
                     if (glucose_number > 0) {
 
                         if (timeoffset < 0) {
-                            Home.toaststaticnext("Got calibration in the future - cannot process!");
+                            Home.toaststaticnext(gs(R.string.got_calibration_in_the_future__cannot_process));
                             break;
                         }
 
-                        final String local_units = Home.getPreferencesStringWithDefault("units", "mgdl");
+                        final String local_units = Pref.getString("units", "mgdl");
                         if (units.equals("mgdl") && (!local_units.equals("mgdl"))) {
                             glucose_number = glucose_number * Constants.MGDL_TO_MMOLL;
                             Log.d(TAG, "Converting from mgdl to mmol: " + JoH.qs(glucose_number, 2));
@@ -138,10 +136,12 @@ public class NSClientReceiver extends BroadcastReceiver {
                         UserError.Log.ueh(TAG, "Processing broadcasted calibration: " + JoH.qs(glucose_number, 2) + " offset ms: " + JoH.qs(timeoffset, 0));
                         final Intent calintent = new Intent(xdrip.getAppContext(), AddCalibration.class);
                         calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        calintent.putExtra("timestamp",JoH.tsl());
                         calintent.putExtra("bg_string", JoH.qs(glucose_number));
                         calintent.putExtra("bg_age", Long.toString(timeoffset / 1000));
                         calintent.putExtra("allow_undo", "true");
                         calintent.putExtra("note_only", "false");
+                        calintent.putExtra("cal_source", "NSClientReceiver");
                         Home.startIntentThreadWithDelayedRefresh(calintent);
                     } else {
                         Log.e(TAG,"Received broadcast calibration without glucose number");
@@ -171,8 +171,8 @@ public class NSClientReceiver extends BroadcastReceiver {
 
     private void process_TREATMENT_json(String treatment_json) {
         try {
-            Log.i(TAG, "Processing treatment from NS");
-            Treatments.pushTreatmentFromJson(toTreatmentJSON(JoH.JsonStringtoMap(treatment_json)));
+            Log.i(TAG, "Processing treatment from NS: "+treatment_json);
+            Treatments.pushTreatmentFromJson(toTreatmentJSON(JoH.JsonStringtoMap(treatment_json)), true); // warning marked as from interactive - watch out for feedback loops
         } catch (Exception e) {
             Log.e(TAG, "Got exception processing treatment from NS client " + e.toString());
         }
@@ -244,6 +244,9 @@ public class NSClientReceiver extends BroadcastReceiver {
             }
             if (trt_map.containsKey("insulin")) {
                 jsonObject.put("insulin", trt_map.get("insulin"));
+            }
+            if (trt_map.containsKey("insulinJSON")) {
+                jsonObject.put("insulinInjections", trt_map.get("insulinJSON"));
             }
             if (trt_map.containsKey("notes")) {
                 jsonObject.put("notes", trt_map.get("notes"));

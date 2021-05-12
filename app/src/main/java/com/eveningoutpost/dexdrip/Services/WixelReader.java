@@ -1,10 +1,8 @@
 package com.eveningoutpost.dexdrip.Services;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.PowerManager;
-import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
@@ -18,12 +16,12 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.ParakeetHelper;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.MockDataSource;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.Mdns;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -55,36 +53,22 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
     private static final HashMap<String, String> hostStatus = new HashMap<>();
     private static final HashMap<String, Long> hostStatusTime = new HashMap<>();
 
-    private final Context mContext;
-    private PowerManager.WakeLock wakeLock;
+    private static final Gson gson = JoH.defaultGsonInstance();
 
     private final static long DEXCOM_PERIOD = 300000;
-
-    private static int lockCounter = 0;
 
     // This variables are for fake function only
     static int i = 0;
     static int added = 5;
 
     WixelReader(Context ctx) {
-        mContext = ctx.getApplicationContext();
-        PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
-        wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "WifiReader");
         Log.d(TAG, "WixelReader init");
     }
 
-    private void getwakelock() {
-        wakeLock.acquire();
-        lockCounter++;
-        Log.d(TAG, "wakelock acquired " + lockCounter);
-        if (lockCounter > 5) Home.toaststaticnext("Wixel Reader WakeLock bug " + lockCounter);
-    }
-
-    public static boolean IsConfigured(Context ctx) {
+    public static boolean IsConfigured() {
         if ((DexCollectionType.getDexCollectionType() == DexCollectionType.Mock) && (Home.get_engineering_mode()))
             return true;
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
-        String recieversIpAddresses = prefs.getString("wifi_recievers_addresses", "");
+        final String recieversIpAddresses = Pref.getString("wifi_recievers_addresses", "");
         return !recieversIpAddresses.equals("");
     }
 
@@ -99,7 +83,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
 
     // last in the array, is first in time
     private static List<TransmitterRawData> Merge2Lists(List<TransmitterRawData> list1, List<TransmitterRawData> list2) {
-        List<TransmitterRawData> merged = new LinkedList<TransmitterRawData>();
+        final List<TransmitterRawData> merged = new LinkedList<>();
         while (true) {
             if (list1.size() == 0 && list2.size() == 0) {
                 break;
@@ -113,10 +97,17 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
                 break;
             }
             if (almostEquals(list1.get(0), list2.get(0))) {
-                list2.remove(0);
-                merged.add(list1.remove(0));
+                // favour records which have real parakeet geolocation
+                if (hasGeoLocation(list1.get(0))) {
+                    list2.remove(0);
+                    merged.add(list1.remove(0));
+                } else {
+                    list1.remove(0);
+                    merged.add(list2.remove(0));
+                }
                 continue;
             }
+
             if (list1.get(0).RelativeTime > list2.get(0).RelativeTime) {
                 merged.add(list1.remove(0));
             } else {
@@ -125,6 +116,10 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
 
         }
         return merged;
+    }
+
+    private static boolean hasGeoLocation(TransmitterRawData record) {
+        return record != null && record.GeoLocation != null && record.GeoLocation.length() > 0 && !record.GeoLocation.equals("-15,-15");
     }
 
     private static List<TransmitterRawData> MergeLists(List<List<TransmitterRawData>> allTransmitterRawData) {
@@ -138,21 +133,20 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
     }
 
     private static List<TransmitterRawData> readFake() {
-        final Gson gson = new GsonBuilder().create();
         final TransmitterRawData trd = gson.fromJson(MockDataSource.getFakeWifiData(), TransmitterRawData.class);
         trd.CaptureDateTime = System.currentTimeMillis() - trd.RelativeTime;
-        List<TransmitterRawData> l = new ArrayList<>();
+        final List<TransmitterRawData> l = new ArrayList<>();
         l.add(trd);
         return l;
     }
 
     private static List<TransmitterRawData> ReadHost(String hostAndIp, int numberOfRecords) {
         int port;
-        System.out.println("Reading From " + hostAndIp);
+        //System.out.println("Reading From " + hostAndIp);
         Log.i(TAG, "Reading From " + hostAndIp);
         String[] hosts = hostAndIp.split(":");
         if (hosts.length != 2) {
-            System.out.println("Invalid hostAndIp " + hostAndIp);
+          //  System.out.println("Invalid hostAndIp " + hostAndIp);
             Log.e(TAG, "Invalid hostAndIp " + hostAndIp);
 
             return null;
@@ -166,7 +160,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
             return null;
 
         }
-        if (port < 10 || port > 65536) {
+        if (port < 10 || port > 65535) {
             System.out.println("Invalid port " + hosts[1]);
             Log.e(TAG, "Invalid hostAndIp " + hostAndIp);
             statusLog(hosts[0], JoH.hourMinuteString() + " Invalid Host/Port: " + hostAndIp);
@@ -174,7 +168,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
 
         }
         System.out.println("Reading from " + hosts[0] + " " + port);
-        List<TransmitterRawData> ret;
+        final List<TransmitterRawData> ret;
         try {
             ret = Read(hosts[0], port, numberOfRecords);
         } catch (Exception e) {
@@ -200,7 +194,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
             return null;
 
         }
-        String collection = dbury.substring(indexOfSlash + 1);
+        final String collection = dbury.substring(indexOfSlash + 1);
         dbury = dbury.substring(0, indexOfSlash);
 
         // Make sure that we have another /, since this is used in the constructor.
@@ -212,7 +206,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
             return null;
         }
 
-        MongoWrapper mt = new MongoWrapper(dbury, collection, "CaptureDateTime", "MachineNameNotUsed");
+        final MongoWrapper mt = new MongoWrapper(dbury, collection, "CaptureDateTime", "MachineNameNotUsed");
         List<TransmitterRawData> rd = mt.ReadFromMongo(numberOfRecords);
         if (rd != null) {
             long newest_timestamp = 0;
@@ -229,7 +223,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
 
     // read from http source like cloud hosted parakeet receiver.cgi / json.get
     private static List<TransmitterRawData> readHttpJson(String url, int numberOfRecords) {
-        List<TransmitterRawData> trd_list = new LinkedList<TransmitterRawData>();
+        final List<TransmitterRawData> trd_list = new LinkedList<>();
         int processNumberOfRecords = numberOfRecords;
         // get more records to ensure we can handle coexistence of parakeet and usb-python-wixel
         // TODO make this work on preference option for the feature
@@ -245,13 +239,12 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
                 httpClient.setWriteTimeout(20, TimeUnit.SECONDS);
             }
 
-            Gson gson = new GsonBuilder().create();
 
             // simple HTTP GET request
             // n=numberOfRecords for backfilling
             // r=sequence number to avoid any cache
             // expecting json reply like the standard json server in dexterity / python pi usb / parakeet
-            Request request = new Request.Builder()
+            final Request request = new Request.Builder()
 
                     // Mozilla header facilitates compression
                     .header("User-Agent", "Mozilla/5.0")
@@ -260,7 +253,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
                             + "&r=" + Long.toString((System.currentTimeMillis() / 1000) % 9999999))
                     .build();
 
-            Response response = httpClient.newCall(request).execute();
+            final Response response = httpClient.newCall(request).execute();
             // if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
             if (response.isSuccessful()) {
 
@@ -277,7 +270,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
                         continue;
                     }
 
-                    TransmitterRawData trd = gson.fromJson(data, TransmitterRawData.class);
+                    final TransmitterRawData trd = gson.fromJson(data, TransmitterRawData.class);
                     trd.CaptureDateTime = System.currentTimeMillis() - trd.RelativeTime;
 
                     // Versions of the Python USB script after 20th May 2016 will
@@ -285,9 +278,9 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
                     // themselves from actual parakeet data even though both can coexist on the
                     // parakeet web service.
 
-                    if (JoH.ratelimit("parakeet-check-notification", 9)) {
+                   // if (JoH.ratelimit("parakeet-check-notification", 9)) {
                         ParakeetHelper.checkParakeetNotifications(trd.CaptureDateTime, trd.GeoLocation);
-                    }
+                    //}
                     if ((trd.GeoLocation != null)) {
                         if (!trd.GeoLocation.equals("-15,-15")) {
                             try {
@@ -357,7 +350,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
             return null;
 
         }
-        List<TransmitterRawData> mergedData = MergeLists(allTransmitterRawData);
+        final List<TransmitterRawData> mergedData = MergeLists(allTransmitterRawData);
 
         int retSize = Math.min(numberOfRecords, mergedData.size());
         TransmitterRawData[] trd_array = new TransmitterRawData[retSize];
@@ -375,7 +368,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
         final List<TransmitterRawData> trd_list = new LinkedList<TransmitterRawData>();
         Log.i(TAG, "Read called: " + hostName + " port: " + port);
 
-        final boolean skip_lan = Home.getPreferencesBooleanDefaultFalse("skip_lan_uploads_when_no_lan");
+        final boolean skip_lan = Pref.getBooleanDefaultFalse("skip_lan_uploads_when_no_lan");
 
         if (skip_lan && (hostName.endsWith(".local")) && !JoH.isLANConnected()) {
             Log.d(TAG, "Skipping due to no lan: " + hostName);
@@ -389,7 +382,6 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
 
         try {
 
-            final Gson gson = new GsonBuilder().create();
 
             // An example of using gson.
             final ComunicationHeader ch = new ComunicationHeader(numberOfRecords);
@@ -509,13 +501,13 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
     }
 
     public Void doInBackground(String... urls) {
+        final PowerManager.WakeLock wl = JoH.getWakeLock("WifiReader", 120000);
         try {
-            getwakelock();
+            //getwakelock();
             readData();
         } finally {
-            wakeLock.release();
-            lockCounter--;
-            Log.d(TAG, "wakelock released " + lockCounter);
+            JoH.releaseWakeLock(wl);
+           // Log.d(TAG, "wakelock released " + lockCounter);
         }
         return null;
     }
@@ -549,14 +541,14 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
 
         String recieversIpAddresses;
 
-        if (!WixelReader.IsConfigured(mContext)) {
+        if (!WixelReader.IsConfigured()) {
             return;
         }
 
         if ((DexCollectionType.getDexCollectionType() == DexCollectionType.Mock) && Home.get_engineering_mode()) {
             recieversIpAddresses = "fake://FAKE_DATA";
         } else {
-            recieversIpAddresses = Home.getPreferencesStringWithDefault("wifi_recievers_addresses", "");
+            recieversIpAddresses = Pref.getString("wifi_recievers_addresses", "");
         }
 
         // How many packets should we read? we look at the maximum time between last calibration and last reading time
@@ -598,7 +590,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
 
 
                 if (LastReading.UploaderBatteryLife > 0) {
-                    PreferenceManager.getDefaultSharedPreferences(mContext).edit().putInt("parakeet_battery", LastReading.UploaderBatteryLife).apply();
+                    Pref.setInt("parakeet_battery", LastReading.UploaderBatteryLife);
                     CheckBridgeBattery.checkParakeetBattery();
                     if (Home.get_master()) {
                         GcmActivity.sendParakeetBattery(LastReading.UploaderBatteryLife);
@@ -616,7 +608,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
         if (transmitterData != null) {
             final Sensor sensor = Sensor.currentSensor();
             if (sensor != null) {
-                BgReading bgReading = BgReading.create(transmitterData.raw_data, filtered_data, mContext, CaptureTime);
+                BgReading bgReading = BgReading.create(transmitterData.raw_data, filtered_data, null, CaptureTime);
 
                 //sensor.latest_battery_level = (sensor.latest_battery_level!=0)?Math.min(sensor.latest_battery_level, transmitterData.sensor_battery_level):transmitterData.sensor_battery_level;
                 sensor.latest_battery_level = transmitterData.sensor_battery_level; // don't lock it only going downwards

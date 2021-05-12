@@ -278,17 +278,21 @@
 
                     <LinearLayout
                         android:orientation="horizontal"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="20dp">
+                        android:layout_width="fill_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:paddingTop="20dp"
+                        >
 
                         <TextView
                             android:id="@+id/view_alert_override_silent"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:gravity="left"
                             android:text="@string/override_phone_silent_mode_colon"
                             android:textSize="15sp"
+                            android:gravity="left"
+                            android:layout_centerVertical="true"
+                            android:layout_weight="1"
                             />
 
                         <CheckBox
@@ -296,15 +300,67 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text=""
-                            android:textSize="15sp"/>
+                            android:textSize="15sp"
+                            android:gravity="right"
+                            android:layout_centerVertical="true"
+                            android:layout_weight="0" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0dp"
+                        android:id="@+id/layout_silent_mode_warning">
+
+                        <TextView
+                            android:layout_marginTop="0dp"
+                            android:id="@+id/view_silent_mode_warning"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center_horizontal"
+                            android:text="@string/warning_no_alert_will_be_played_in_silent_mode"
+                            android:textSize="15sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="fill_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:paddingTop="20dp"
+                        >
+
+                        <TextView
+                            android:id="@+id/view_alert_force_speaker"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/force_speaker_colon"
+                            android:textSize="15sp"
+                            android:gravity="left"
+                            android:layout_centerVertical="true"
+                            android:layout_weight="1"
+                            />
+
+                        <CheckBox
+                            android:id="@+id/check_force_speaker"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:textSize="15sp"
+                            android:gravity="right"
+                            android:layout_centerVertical="true"
+                            android:layout_weight="0" />
 
                     </LinearLayout>
 
                     <LinearLayout
                         android:orientation="horizontal"
-                        android:layout_width="wrap_content"
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:paddingTop="20dp">
+                        android:gravity="center_vertical"
+                        android:paddingTop="10dp">
 
                         <TextView
                             android:id="@+id/view_alert_vibrate"
@@ -313,6 +369,8 @@
                             android:gravity="left"
                             android:text="@string/vibrate_on_alert"
                             android:textSize="15sp"
+                            android:layout_alignParentLeft="true"
+                            android:layout_weight="1"
                             />
 
                         <CheckBox
@@ -320,15 +378,19 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text=""
-                            android:textSize="15sp"/>
+                            android:textSize="15sp"
+                            android:gravity="right"
+                            android:layout_alignParentRight="true"
+                            android:layout_weight="0" />
 
                     </LinearLayout>
-                    
+
                     <LinearLayout
                         android:orientation="horizontal"
-                        android:layout_width="wrap_content"
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:paddingTop="20dp">
+                        android:gravity="center_vertical"
+                        android:paddingTop="10dp">
 
                         <TextView
                             android:id="@+id/view_alert_disable"
@@ -337,6 +399,8 @@
                             android:gravity="left"
                             android:text="@string/disable_alert"
                             android:textSize="15sp"
+                            android:layout_alignParentLeft="true"
+                            android:layout_weight="1"
                             />
 
                         <CheckBox
@@ -344,7 +408,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text=""
-                            android:textSize="15sp"/>
+                            android:textSize="15sp"
+                            android:gravity="right"
+                            android:layout_alignParentRight="true"
+                            android:layout_weight="0" />
 
                     </LinearLayout>
                 </LinearLayout>

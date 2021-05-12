@@ -28,15 +28,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.SendFeedBack;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.FormEncodingBuilder;
@@ -51,6 +53,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -58,7 +61,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 
-public class LanguageEditor extends AppCompatActivity {
+public class LanguageEditor extends BaseAppCompatActivity {
 
     private static final String TAG = "jamorhamlanguage";
     private static final String EMAIL_KEY = "___EMAIL_KEY:";
@@ -73,6 +76,7 @@ public class LanguageEditor extends AppCompatActivity {
     private static Button undoBtn;
 
     private boolean show_only_customized = false;
+    private boolean show_only_untranslated = false;
     protected static String last_filter = "";
 
     private static Map<String, LanguageItem> user_edits = new HashMap<>();
@@ -185,11 +189,11 @@ public class LanguageEditor extends AppCompatActivity {
         forceRefresh();
 
         // handle case where we don't know about any translations for current language
-        if (languageItemList.size() == 0) {
+        if (languageItemList.size() == 0 || Locale.getDefault().toString().startsWith("en")) {
             if (Locale.getDefault().toString().startsWith("en")) {
                 android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder(this);
 
-                if (!Home.getPreferencesBoolean("force_english", false)) {
+                if (!Pref.getBoolean("force_english", false)) {
                     alertDialogBuilder.setMessage("To access translation features your phone or tablet must be set to a language other than English.\n\nTo achieve this, use the phone's system settings to change Language."); // don't extract/translate this string
                 } else {
                     alertDialogBuilder.setMessage("To access translation features your phone or tablet must be set to a language other than English.\n\nTo achieve this, disable the Force English option within xDrip+ display settings."); // don't extract/translate this string
@@ -227,7 +231,9 @@ public class LanguageEditor extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        if (languageItemList.size() > 0) showcasemenu(SHOWCASE_LANGUAGE_INTRO);
+        if ((languageItemList.size() > 0) && (!Locale.getDefault().toString().startsWith("en"))) {
+            showcasemenu(SHOWCASE_LANGUAGE_INTRO);
+        }
     }
 
     @Override
@@ -282,6 +288,13 @@ public class LanguageEditor extends AppCompatActivity {
         forceRefresh();
     }
 
+    public void languageShowOnlyUntranslated(MenuItem v) {
+        v.setChecked(!v.isChecked());
+        show_only_untranslated = v.isChecked();
+        applyFilter(last_filter);
+        forceRefresh();
+    }
+
     private void applyFilter(String filter) {
         last_filter = filter;
         // create initial backup if no filter yet applied
@@ -301,12 +314,18 @@ public class LanguageEditor extends AppCompatActivity {
                     || item.english_text.toLowerCase().contains(filter)
                     || item.local_text.toLowerCase().contains(filter)
                     || item.item_name.toLowerCase().contains(filter)) {
-                if ((!show_only_customized) || (item.customized)) filteredItemList.add(item);
+                if ((!show_only_untranslated) || isUntranslated(item)) {
+                    if ((!show_only_customized) || (item.customized)) filteredItemList.add(item);
+                }
             }
         }
         languageItemList.clear();
         languageItemList.addAll(filteredItemList);
         forceRefresh();
+    }
+
+    private boolean isUntranslated(LanguageItem item) {
+        return item.english_text.equals(item.local_text);
     }
 
     private void getEmailAddress() {
@@ -369,7 +388,7 @@ public class LanguageEditor extends AppCompatActivity {
         builder.setPositiveButton("I ASSIGN COPYRIGHT TO THE PROJECT", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                LanguageStore.putString(CONSENT_KEY, "Agreed:"+JoH.ts());
+                LanguageStore.putString(CONSENT_KEY, "Agreed:" + JoH.ts());
                 saveData();
             }
         });
@@ -414,7 +433,6 @@ public class LanguageEditor extends AppCompatActivity {
         }
 
 
-
         final OkHttpClient client = new OkHttpClient();
         final String send_url = mContext.getString(R.string.wserviceurl) + "/joh-langdata";
 
@@ -428,8 +446,8 @@ public class LanguageEditor extends AppCompatActivity {
             final RequestBody formBody = new FormEncodingBuilder()
                     .add("locale", Locale.getDefault().toString())
                     .add("contact", email)
-                    .add("name",name)
-                    .add("consent",consent)
+                    .add("name", name)
+                    .add("consent", consent)
                     .add("data", data)
                     .build();
             new Thread(new Runnable() {
@@ -481,7 +499,7 @@ public class LanguageEditor extends AppCompatActivity {
                         Log.d(TAG, "Data to save: " + data);
                         uploadData(data);
                     }
-                } else{
+                } else {
                     getConsent();
                 }
             } else {
@@ -494,14 +512,13 @@ public class LanguageEditor extends AppCompatActivity {
 
     private String getJsonToSave() {
 
-        Gson gson = new GsonBuilder()
+        final Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
                 //.registerTypeAdapter(Date.class, new DateTypeAdapter())
                 .serializeSpecialFloatingPointValues()
                 .create();
 
-        final String data = gson.toJson(user_edits.values());
-        return data;
+        return gson.toJson(user_edits.values());
     }
 
 
@@ -534,6 +551,15 @@ public class LanguageEditor extends AppCompatActivity {
     private List<LanguageItem> loadData(boolean buttons) {
         final List<LanguageItem> mylanguageItemList = new ArrayList<>();
 
+        // create string name hashset of things we want to be able to translate
+        final StringTokenizer tokenizer = new StringTokenizer(getString(R.string.internal_translatable_index), ",");
+        final List<String> tokenizer_list = new ArrayList<>();
+        while (tokenizer.hasMoreTokens()) {
+            tokenizer_list.add(tokenizer.nextToken());
+        }
+        final ImmutableSet<String> translatable_index_names = ImmutableSet.copyOf(tokenizer_list);
+        tokenizer_list.clear();
+
         final Field[] fields = R.string.class.getFields();
         for (final Field field : fields) {
             final String name = field.getName(); //name of string
@@ -542,7 +568,7 @@ public class LanguageEditor extends AppCompatActivity {
                 int id = field.getInt(R.string.class); //id of string
                 final String local_text = getResources().getString(id);
                 final String english_text = getStringFromLocale(id, Locale.ENGLISH);
-                if (!local_text.equals(english_text) && !name.startsWith("abc_") && !name.startsWith("common_") && !name.startsWith("twofortyfouram_") && !name.startsWith("zxing_")) {
+                if ((!local_text.equals(english_text) || translatable_index_names.contains(name)) && !name.startsWith("abc_") && !name.startsWith("common_") && !name.startsWith("twofortyfouram_") && !name.startsWith("zxing_")) {
                     // Log.d(TAG, "name: " + name + " / reflect id:" + id + " english:" + english_text + " / local:" + local_text);
                     final String alternate_text = LanguageStore.getString(name);
                     final boolean customized = (alternate_text.length() > 0);

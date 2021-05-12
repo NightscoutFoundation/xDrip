@@ -1,9 +1,5 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Services.G5CollectionService;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Locale;
@@ -13,11 +9,9 @@ import java.util.Locale;
  */
 
 
-public class VersionRequestRxMessage extends TransmitterMessage {
+public class VersionRequestRxMessage extends BaseMessage {
 
-    private final static String TAG = G5CollectionService.TAG; // meh
-
-    public static final byte opcode = 0x4B;
+    public static final byte opcode = 0x21;
 
     public int status;
     public String firmware_version_string;
@@ -47,15 +41,4 @@ public class VersionRequestRxMessage extends TransmitterMessage {
                 TransmitterStatus.getBatteryLevel(status).toString(), firmware_version_string, bluetooth_firmware_version_string, other_firmware_version, hardwarev, asic);
     }
 
-    private static String dottedStringFromData(ByteBuffer data, int length) {
-
-        final byte[] bytes = new byte[length];
-        data.get(bytes);
-        final StringBuilder sb = new StringBuilder(100);
-        for (byte x : bytes) {
-            if (sb.length() > 0) sb.append(".");
-            sb.append(String.format(Locale.US, "%d", (x & 0xff)));
-        }
-        return sb.toString();
-    }
 }

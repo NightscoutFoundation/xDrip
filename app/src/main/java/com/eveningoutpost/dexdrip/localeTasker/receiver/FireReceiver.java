@@ -16,7 +16,6 @@
 package com.eveningoutpost.dexdrip.localeTasker.receiver;
 
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -25,19 +24,22 @@ import android.os.PowerManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.localeTasker.Constants;
 import com.eveningoutpost.dexdrip.localeTasker.bundle.BundleScrubber;
 import com.eveningoutpost.dexdrip.localeTasker.bundle.PluginBundleManager;
 import com.eveningoutpost.dexdrip.localeTasker.ui.EditActivity;
+import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.Arrays;
 import java.util.Locale;
+
+import static com.eveningoutpost.dexdrip.utils.BgToSpeech.BG_TO_SPEECH_PREF;
 
 
 /**
@@ -117,10 +119,11 @@ public final class FireReceiver extends BroadcastReceiver {
                             final Intent calintent = new Intent();
                             calintent.setClassName(xdrip.getAppContext().getString(R.string.local_target_package), "com.eveningoutpost.dexdrip.AddCalibration");
                             calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
+                            calintent.putExtra("timestamp", JoH.tsl());
                             calintent.putExtra("bg_string", message_array[1]);
                             calintent.putExtra("bg_age", message_array[2]);
                             calintent.putExtra("from_external", "true");
+                            calintent.putExtra("cal_source", "FireReceiver");
                             context.startActivity(calintent);
 
                             break;
@@ -148,7 +151,7 @@ public final class FireReceiver extends BroadcastReceiver {
                             final String[] volumeArray = xdrip.getAppContext().getResources().getStringArray(R.array.BgAlertProfileValues);
                             if (message_array.length > 1) {
                                 if (Arrays.asList(volumeArray).contains(message_array[1])) {
-                                    Home.setPreferencesString("bg_alert_profile", message_array[1]);
+                                    Pref.setString("bg_alert_profile", message_array[1]);
                                     JoH.static_toast_long("Volume Profile changed by Tasker to: "+message_array[1]);
                                 } else {
                                     JoH.static_toast_long("Invalid volume parameter: one of: " + Arrays.asList(volumeArray).toString());
@@ -159,8 +162,13 @@ public final class FireReceiver extends BroadcastReceiver {
                             break;
 
                         case "SNOOZE":
-                            AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1);
+                            AlertPlayer.defaultSnooze();
                             JoH.static_toast_long("SNOOZE from Tasker");
+                            break;
+
+                            //opportunistic snooze that only does anything if an alert is active
+                        case "OSNOOZE":
+                            AlertPlayer.getPlayer().OpportunisticSnooze();
                             break;
 
                         case "RESTART":
@@ -179,6 +187,36 @@ public final class FireReceiver extends BroadcastReceiver {
                                 }
                             }
                            break;
+
+                        case "SPEAK":
+                            if (message_array.length > 1) {
+                                switch (message_array[1].toUpperCase()) {
+                                    case "NOW":
+                                        BgToSpeech.speakNow(0);
+                                        JoH.static_toast_long("Speak Now by Tasker");
+                                        break;
+                                    case "ON":
+                                        Pref.setBoolean(BG_TO_SPEECH_PREF, true);
+                                        JoH.static_toast_long("Speech On by Tasker");
+                                        break;
+                                    case "OFF":
+                                        Pref.setBoolean(BG_TO_SPEECH_PREF, false);
+                                        JoH.static_toast_long("Speech Off by Tasker");
+                                        break;
+                                    case "ALERTON":
+                                        Pref.setBoolean("speak_alerts", true);
+                                        JoH.static_toast_long("Speech Alert On by Tasker");
+                                        break;
+                                    case "ALERTOFF":
+                                        Pref.setBoolean("speak_alerts", false);
+                                        JoH.static_toast_long("Speech Alert Off by Tasker");
+                                        break;
+                                    default:
+                                        JoH.static_toast_long("Unknown parameter to tasker speak command");
+                                }
+                            }
+                            break;
+
 
 
 //                    case "PREFS":
@@ -231,8 +269,12 @@ public final class FireReceiver extends BroadcastReceiver {
                             break;
                     }
 
+                } else {
+                    Log.e(TAG,"Message is empty!");
                 }
 
+            } else {
+                Log.e(TAG,"Bundle is invalid!");
             }
         } finally {
             JoH.releaseWakeLock(wl);

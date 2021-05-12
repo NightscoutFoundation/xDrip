@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileItem;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -79,7 +80,7 @@ public class Profile {
         return 0.3; // how much can the liver block carbs going in to blood stream?
     }
 
-    static double getCarbRatio(double when) {
+    public static double getCarbRatio(double when) {
         return findItemListElementForTime(when).carb_ratio;
         //return the_carb_ratio; // g per unit
     }
@@ -137,20 +138,20 @@ public class Profile {
     }
 
     public static void validateTargetRange() {
-        final double default_target_glucose = tolerantParseDouble(Home.getPreferencesStringWithDefault("plus_target_range", Double.toString(5.5 / scale_factor)));
-        if (default_target_glucose > tolerantParseDouble(Home.getPreferencesStringWithDefault("highValue", Double.toString(5.5 / scale_factor)))) {
-            Home.setPreferencesString("plus_target_range", JoH.qs(default_target_glucose * Constants.MGDL_TO_MMOLL, 1));
+        final double default_target_glucose = tolerantParseDouble(Pref.getString("plus_target_range", Double.toString(5.5 / scale_factor)));
+        if (default_target_glucose > tolerantParseDouble(Pref.getString("highValue", Double.toString(5.5 / scale_factor)))) {
+            Pref.setString("plus_target_range", JoH.qs(default_target_glucose * Constants.MGDL_TO_MMOLL, 1));
             UserError.Log.i(TAG, "Converted initial value of target glucose to mmol");
         }
     }
 
     static double getTargetRangeInMmol(double when) {
-        // return tolerantParseDouble(Home.getPreferencesStringWithDefault("plus_target_range",Double.toString(5.5 / scale_factor)));
+        // return tolerantParseDouble(Home.getString("plus_target_range",Double.toString(5.5 / scale_factor)));
         return getTargetRangeInUnits(when) / scale_factor;
     }
 
     public static double getTargetRangeInUnits(double when) {
-        return tolerantParseDouble(Home.getPreferencesStringWithDefault("plus_target_range", Double.toString(5.5 / scale_factor)));
+        return tolerantParseDouble(Pref.getString("plus_target_range", Double.toString(5.5 / scale_factor)));
         //return getTargetRangeInMmol(when) * scale_factor; // TODO deal with rounding errors here? (3 decimal places?)
     }
 
@@ -197,11 +198,11 @@ public class Profile {
     }
 
     public static void reloadPreferences() {
-        Log.d(TAG,"Reloaded profile preferences");
+        Log.d(TAG, "Reloaded profile preferences");
         reloadPreferences(PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext()));
     }
 
-    public static synchronized  void reloadPreferences(SharedPreferences prefs) {
+    public static synchronized void reloadPreferences(SharedPreferences prefs) {
         validateTargetRange();
         try {
             Profile.setSensitivityDefault(tolerantParseDouble(prefs.getString("profile_insulin_sensitivity_default", "0")));
@@ -240,4 +241,10 @@ public class Profile {
         return Double.parseDouble(str.replace(",", "."));
 
     }
+
+    // TODO placeholder
+    public static double getBasalRate(final long when) {
+        return 0d;
+    }
+
 }

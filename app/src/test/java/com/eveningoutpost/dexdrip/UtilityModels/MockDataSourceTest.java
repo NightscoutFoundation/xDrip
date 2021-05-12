@@ -4,22 +4,17 @@ package com.eveningoutpost.dexdrip.UtilityModels;
  * Created by jamorham on 10/10/2017.
  */
 
+import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.Services.TransmitterRawData;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-@RunWith(RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
-public class MockDataSourceTest {
+public class MockDataSourceTest extends RobolectricTestWithConfig {
 
     static final int RAW_LOWER_BOUND = 50000;
     static final int RAW_UPPER_BOUND = 150000;
@@ -29,12 +24,8 @@ public class MockDataSourceTest {
         System.out.println(msg);
     }
 
-    @Before
-    public void setUp() throws Exception {
-    }
-
     @Test
-    public void test_getFakeWifiData() throws Exception {
+    public void test_getFakeWifiData() {
         final String str = MockDataSource.getFakeWifiData();
         log("Mock Data: " + str);
 

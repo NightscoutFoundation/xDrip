@@ -23,7 +23,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Do not hit start sensor unless the sensor is already embedded and the transmitter is connected.\n\n"
+                    android:text="@string/do_not_hit_start_long"
                     android:id="@+id/textView"
                     android:layout_above="@+id/startNewSensor"
                     android:layout_toStartOf="@+id/startNewSensor"
@@ -39,7 +39,7 @@
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Start Sensor"
+                    android:text="@string/start_sensor"
                     android:id="@+id/startNewSensor"
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"

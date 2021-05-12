@@ -6,17 +6,23 @@
         android:title="@string/search"
         android:icon="@android:drawable/ic_menu_search"
         app:actionViewClass="android.support.v7.widget.SearchView"
-        app:showAsAction="always|collapseActionView"/>#
+        app:showAsAction="always|collapseActionView"/>
+    <item android:id="@+id/showonlyuntranslated"
+        android:title="@string/show_only_untranslated"
+        android:checkable="true"
+        android:orderInCategory="1"
+        android:onClick="languageShowOnlyUntranslated"
+        app:showAsAction="never"/>
     <item android:id="@+id/showonlycustomized"
         android:title="@string/show_only_customized_entries"
         android:checkable="true"
-        android:orderInCategory="1"
+        android:orderInCategory="2"
         android:onClick="languageShowOnlyCustomized"
         app:showAsAction="never"/>
     <item android:id="@+id/reseteverything"
         android:title="@string/reset_all_language_data"
         android:checkable="false"
-        android:orderInCategory="2"
+        android:orderInCategory="3"
         android:onClick="languageResetEverything"
         app:showAsAction="never"/>
 </menu>

@@ -144,5 +144,54 @@ public class MongoWrapper {
 
      }
 
+     // records will be marked by their timestamp
+     public List<LibreWifiData> ReadFromMongoLibre(int numberOfRecords) {
+        System.out.println( "Starting to read from mongodb");
+
+        List<LibreWifiData> trd_list = new LinkedList<LibreWifiData>();
+        DBCollection coll;
+        LibreWifiData lastTrd = null;
+        try {
+            coll = openMongoDb();
+            BasicDBObject query = new BasicDBObject("BlockBytes", new BasicDBObject("$exists", true));
+            DBCursor cursor = coll.find(query);
+            cursor.sort(new BasicDBObject("CaptureDateTime", -1));
+            try {
+                while(cursor.hasNext() && trd_list.size() < numberOfRecords) {
+                    //System.out.println(cursor.next());
+                    Log.d(TAG, "Read a libre object from mongodb");
+                    LibreWifiData trd = new LibreWifiData((BasicDBObject)cursor.next());
+                    // Do our best to fix the relative time...
+                    trd.RelativeTime = new Date().getTime() - trd.CaptureDateTime;
+                    // since we are reading it from the db, it was uploaded...
+                    trd.Uploaded = 1;
+                    if(!LibreWifiReader.almostEquals(lastTrd, trd)) {
+                        lastTrd = trd;
+                        trd_list.add(0,trd);
+                        System.out.println( trd.toString());
+                    } else {
+                         Log.e(TAG, "Error, read a value from mongo, but it seems duplicate" + trd.toString());
+                    }
+                }
+             } finally {
+                cursor.close();
+             }
+
+        } catch (UnknownHostException e) {
+            Log.e(TAG, "ReadFromMongo: caught UnknownHostException! ", e);
+            return null;
+        } catch (MongoException e) {
+            Log.e(TAG, "ReadFromMongo: caught MongoException! " , e);
+            return trd_list;
+        } catch (Exception e) {
+              Log.e(TAG, "ReadFromMongo: caught Exception! " , e);
+              closeMongoDb();
+            return null;
+        }finally {
+            closeMongoDb();
+        }
+        return trd_list;
+
+     }
 
 }

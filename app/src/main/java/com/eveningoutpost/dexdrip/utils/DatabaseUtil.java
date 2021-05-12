@@ -11,9 +11,9 @@ import android.widget.Toast;
 
 import com.activeandroid.Cache;
 import com.activeandroid.Configuration;
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -98,7 +98,7 @@ public class DatabaseUtil {
                         zipOutputStream.write(buffer, 0, count);
                     }
                     if (!zipFilename.contains("b4import"))
-                        Home.setPreferencesString("last-saved-database-zip", zipFilename);
+                        Pref.setString("last-saved-database-zip", zipFilename);
                 } else {
                     toastText(context, "Problem: No current DB found!");
                     Log.d(TAG, "Problem: No current DB found");
@@ -285,6 +285,7 @@ public class DatabaseUtil {
                         if (notes == null) notes = "";
                         if (valueIE.equals("0")) valueIE = "";
                         if (valueCHO.equals("0")) valueCHO = "";
+                        notes= notes.replaceAll("\n","||"); //convert linefeed to SiDiary conform expression
                         if (!valueIE.equals("") || !valueCHO.equals("") || !notes.equals("")) {
                             date.setTime(timestamp);
                             printStream.println(df.format(date) + ";;" + valueCHO + ";" + valueIE + ";" + notes);

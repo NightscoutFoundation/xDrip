@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -27,6 +28,7 @@ import com.eveningoutpost.dexdrip.Models.Profile;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.github.amlcurran.showcaseview.ShowcaseView;
@@ -42,7 +44,7 @@ import java.util.List;
  * Created by jamorham on 21/06/2016.
  */
 
-public class ProfileEditor extends AppCompatActivity {
+public class ProfileEditor extends BaseAppCompatActivity {
 
     private static final String TAG = "jamorhamprofile";
     private final List<ProfileItem> profileItemList = new ArrayList<>();
@@ -73,7 +75,7 @@ public class ProfileEditor extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mContext = this;
-        doMgdl = (Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl"));
+        doMgdl = (Pref.getString("units", "mgdl").equals("mgdl"));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_editor);
 
@@ -127,8 +129,8 @@ public class ProfileEditor extends AppCompatActivity {
 
         if (profileItemList.size() == 0) {
             profileItemList.add(new ProfileItem(0, END_OF_DAY,
-                    JoH.tolerantParseDouble(Home.getPreferencesStringWithDefault("profile_carb_ratio_default", "10")),
-                    JoH.tolerantParseDouble(Home.getPreferencesStringWithDefault("profile_insulin_sensitivity_default", "0.1"))));
+                    JoH.tolerantParseDouble(Pref.getString("profile_carb_ratio_default", "10"), 10d),
+                    JoH.tolerantParseDouble(Pref.getString("profile_insulin_sensitivity_default", "0.1"), 0.1d)));
         }
 
         updateAdjustmentFactor(1.0);
@@ -314,8 +316,8 @@ public class ProfileEditor extends AppCompatActivity {
         String data = gson.toJson(profileItemListTmp);
         if (for_real) {
             saveBtn.setVisibility(View.INVISIBLE);
-            Home.setPreferencesString("saved_profile_list_json", data);
-            Home.setPreferencesString("saved_profile_list_json_working", "");
+            Pref.setString("saved_profile_list_json", data);
+            Pref.setString("saved_profile_list_json_working", "");
             Log.d(TAG, "Saved final data");
             UserError.Log.uel(TAG, "Saved Treatment Profile data, timeblocks:" + profileItemListTmp.size());
             updateAdjustmentFactor(1.0); // reset it
@@ -323,7 +325,7 @@ public class ProfileEditor extends AppCompatActivity {
             Profile.invalidateProfile();
 
         } else {
-            Home.setPreferencesString("saved_profile_list_json_working", data);
+            Pref.setString("saved_profile_list_json_working", data);
             saveBtn.setVisibility(View.VISIBLE);
             undoBtn.setVisibility(View.VISIBLE);
             Log.d(TAG, "Saved working data");
@@ -331,7 +333,7 @@ public class ProfileEditor extends AppCompatActivity {
     }
 
     private void clearWorkingData() {
-        Home.setPreferencesString("saved_profile_list_json_working", "");
+        Pref.setString("saved_profile_list_json_working", "");
     }
 
     public void profileCancelButton(View myview) {
@@ -371,16 +373,16 @@ public class ProfileEditor extends AppCompatActivity {
                 .create();
         final String data = gson.toJson(mydata);
 
-        Home.setPreferencesString("saved_profile_list_json", data);
-        Home.setPreferencesString("saved_profile_list_json_working", "");
+        Pref.setString("saved_profile_list_json", data);
+        Pref.setString("saved_profile_list_json_working", "");
         UserError.Log.uel(TAG, "Converted Profile data with multiplier: " + ((multiplier == Dex_Constants.MG_DL_TO_MMOL_L) ? " to mmol/l" : "to mg/dl"));
     }
 
     public static List<ProfileItem> loadData(boolean buttons) {
         final List<ProfileItem> myprofileItemList = new ArrayList<>();
-        String data = Home.getPreferencesStringWithDefault("saved_profile_list_json_working", "");
+        String data = Pref.getString("saved_profile_list_json_working", "");
         if (data.length() == 0) {
-            data = Home.getPreferencesStringWithDefault("saved_profile_list_json", "");
+            data = Pref.getString("saved_profile_list_json", "");
 
             if (buttons) {
                 saveBtn.setVisibility(View.INVISIBLE);
@@ -407,9 +409,9 @@ public class ProfileEditor extends AppCompatActivity {
         }
         if (myprofileItemList.size() == 0) {
             try {
-                Log.d(TAG,"Creating default profile entries: sens default: "+Home.getPreferencesStringWithDefault("profile_insulin_sensitivity_default", "0.1"));
-                ProfileItem item = new ProfileItem(0, END_OF_DAY, Double.parseDouble(Home.getPreferencesStringWithDefault("profile_carb_ratio_default", "10")),
-                        Double.parseDouble(Home.getPreferencesStringWithDefault("profile_insulin_sensitivity_default", "0.1")));
+                Log.d(TAG,"Creating default profile entries: sens default: "+ Pref.getString("profile_insulin_sensitivity_default", "0.1"));
+                ProfileItem item = new ProfileItem(0, END_OF_DAY, Double.parseDouble(Pref.getString("profile_carb_ratio_default", "10")),
+                        Double.parseDouble(Pref.getString("profile_insulin_sensitivity_default", "0.1")));
                 myprofileItemList.add(item);
             } catch (Exception e) {
                 Home.toaststatic("Problem with default insulin parameters");

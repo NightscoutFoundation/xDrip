@@ -1,45 +1,36 @@
 package com.eveningoutpost.dexdrip.Models;
 
-import com.eveningoutpost.dexdrip.BuildConfig;
-import com.eveningoutpost.dexdrip.MockModel;
+import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 
 /**
  * Created by jamorham on 01/10/2017.
  */
-@RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, manifest = "../../../../../src/test/java/com/eveningoutpost/dexdrip/TestingManifest.xml")
-public class ProcessInitialDataQualityTest {
+
+// TODO this doesn't test whether SensorSanity exclusions are properly processed
+public class ProcessInitialDataQualityTest extends RobolectricTestWithConfig {
+
+    // if we have a record which is on an exact millisecond boundary and test it and it passes the test
+    // 1ms later it will fail the test resulting in the assertion sometimes incorrectly labelling as a
+    // mismatched result because the clock can tick over 1ms between the time we first tested and when we
+    // compare the results of that test. To avoid this (even on slow systems) we add in a grace period
+    private static final long COMPUTATION_GRACE_TIME = Constants.SECOND_IN_MS;
 
     private static void log(String msg) {
         System.out.println(msg);
     }
 
-    @Before
-    public void setUp() throws Exception {
-    }
-
     @Test
-    public void testGetInitialDataQuality() throws Exception {
-
-        // check we can mock ActiveAndroid which depends on Android framework
-        final MockModel m = new MockModel();
-        assertThat("ActiveAndroid Mock Model can be created", m != null, is(true));
-        assertThat("ActiveAndroid Mock Model can be created", m.intField == 0, is(true));
-
+    public void testGetInitialDataQuality() {
         // result object store
         ProcessInitialDataQuality.InitialDataQuality test;
 
@@ -71,11 +62,11 @@ public class ProcessInitialDataQualityTest {
                 if (i < 3) assertThat("Empty input should fail", test.pass, is(false));
                 assertThat("There should be some advice on loop " + i, test.advice.length() > 0, is(true));
 
-
-                if ((JoH.msSince(bgReadingList.get(bgReadingList.size() - 1).timestamp) > Constants.STALE_CALIBRATION_CUT_OFF) || (i < 3)) {
-                    assertThat("Stale data should fail", test.pass, is(false));
+                final long ms_since = (JoH.msSince(bgReadingList.get(bgReadingList.size() - 1).timestamp));
+                if ((ms_since > Constants.STALE_CALIBRATION_CUT_OFF + COMPUTATION_GRACE_TIME) || (i < 3)) {
+                    assertThat("Stale data should fail: i:" + i + " tm:" + ms_since, test.pass, is(false));
                 }
-                if ((JoH.msSince(bgReadingList.get(bgReadingList.size() - 1).timestamp) <= Constants.STALE_CALIBRATION_CUT_OFF) && (bgReadingList.size() >= 3)) {
+                if ((ms_since <= Constants.STALE_CALIBRATION_CUT_OFF) && (bgReadingList.size() >= 3)) {
                     assertThat("Good data should pass", test.pass, is(true));
                 }
 

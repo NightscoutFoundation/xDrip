@@ -1,7 +1,9 @@
 xDrip+ Wear Setup and Troubleshooting Guide
 ======================================
 **Table of Contents**
+- [Choosing a Watch](#choosing-a-watch)
 - [Enable xDrip+ Android Wear Integration](#enable-xdrip-android-wear-integration)
+    - [Patching Watch Firmware](#patching-watch-firmware)
     - [Collector](#collector)
         - [xDrip+ System Status](#xdrip-system-status)
     - [Initial Wear Enablement Requests Location Permission](#initial-wear-enablement-requests-location-permission)
@@ -26,8 +28,21 @@ xDrip+ Wear Setup and Troubleshooting Guide
     - [Confirm Location Permission is enabled in Watch Settings](#confirm-location-permission-is-enabled-in-watch-settings)
     - [Debugging Android Wear](#debugging-android-wear)
 
+# Choosing a Watch
+
+Watch | Watch OS? | Works as collector? | extra info
+----- | --------- | ------------------- | ----------
+Sony Smartwatch 3 (SWR50) | WearOS 1.6 | Yes: 5 minute intervals | 
+Asus Zenwatch 2 | WearOS 2 | Yes: 5 minutes if patched, 10 minutes if not | [patch the firmware](https://github.com/NightscoutFoundation/xDrip/wiki/Patching-Android-Wear-devices-for-use-with-the-G5)
+Asus Zenwatch 3 | WearOS 2  | Yes: 5 minutes if patched, 10 minutes if not | [patch the firmware](https://github.com/NightscoutFoundation/xDrip/wiki/Patching-Android-Wear-devices-for-use-with-the-G5)
+Huawei Watch | WearOS 2  | Yes: 5 minutes if patched, 10 minutes if not | [patch the firmware](https://github.com/NightscoutFoundation/xDrip/wiki/Patching-Android-Wear-devices-for-use-with-the-G5)
+Huawei Watch 2 | WearOS 2  | Yes: 5 minutes if patched, 10 minutes if not | [patch the firmware](https://github.com/NightscoutFoundation/xDrip/wiki/Patching-Android-Wear-devices-for-use-with-the-G5)
+LG G Watch | WearOS 2  | Yes: 5 minutes if patched, 10 minutes if not | [patch the firmware](https://github.com/NightscoutFoundation/xDrip/wiki/Patching-Android-Wear-devices-for-use-with-the-G5)
+Polar M600 | WearOS 2  | Yes: 5 minutes if patched, 10 minutes if not | [patch the firmware](https://github.com/NightscoutFoundation/xDrip/wiki/Patching-Android-Wear-devices-for-use-with-the-G5)
+
+
 # Enable xDrip+ Android Wear Integration
-xDrip+ supports wear integration through its wear app.  The xDrip+ wear app is installed with the standard xDrip+ apk. On **Android Wear 1.x** watches, the wear component gets synced automatically to the watch. On **Android Wear 2.0** watches you need to install (activate) the wear component separately from the Play-Store on the _watch_ (under the section "Apps on your phone") after installing xDrip+ on the phone. The latest release supports a standalone mode which allows the wear app to communicate directly with the Bluetooth Collector, whether it is a Dexcom G5, a Dexcom G4 + xBridge, or a Libre LimiTTer.
+xDrip+ supports wear integration through its wear app.  The xDrip+ wear app is installed with the standard xDrip+ apk. On **Android Wear 1.x** watches, the wear component gets synced automatically to the watch. On **Android Wear 2.0** watches you need to install (activate) the wear component separately from the Play-Store on the _watch_ (under the section "Apps on your phone") after installing xDrip+ on the phone. The latest release supports a standalone mode which allows the wear app to communicate directly with the Bluetooth Collector, whether it is a Dexcom G5, a Dexcom G4 + xBridge, Dexcom Share, or a Libre LimiTTer.
 
 
 The wear standalone feature is enabled via the following xDrip+ Settings located under **Smart Watch Features**, and corresponding watch **XDrip Prefs** settings.
@@ -60,6 +75,9 @@ These settings are listed in order of dependency.  Note, the Watch's **XDrip BT 
 
   Force Wear may also provide better BT connectivity over that provided by the smartphone.  As an example, some users find that the SW3 provides better BT connectivity than their Samsung Galaxy Note 4 smartphone.
 
+### Patching Watch Firmware
+
+Out of the box, only the Sony SW3 works as a collector with the G5 Transmitter. Most other smart-watches have a bug which prevents their bluetooth working correctly. This bug can be fixed and there are patches available for a number of watch models. See this page for details: https://github.com/NightscoutFoundation/xDrip/wiki/Patching-Android-Wear-devices-for-use-with-the-G5
 
 ### Collector
 
@@ -177,15 +195,22 @@ The following image shows xDrip+ app Battery Alert under **Extra Alerts (xDrip+)
 
 #### XDrip Watchface Settings
 The following new preferences are supported:
+  - Refresh On Change - Refresh face on each data change.  When disabled, face is refreshed only each minute, potentially saving battery usage.
+  - Show Treatments - Show Treatment points on graph.  When disabled, treatments will not be displayed, potentially saving battery usage.
+  - 24 HR Format - Format time using 24 Hour Format.  When enabled, uses less face real estate, potentially useful for circular faces.
+  - Show Date - Show Date on face.
+  - Override Locale - Override watch with phone locale, used to format date.
+  - Show Toasts - Show Steps and Extra Status toast popup messages.
   - Show Steps - Show Step Counter on all XDrip watchfaces.  Steps reset to 0 at midnight. To enable xDrip+ synchronization, you must switch **Use Wear Health Data** on under xDrip+ **Smart Watch Features**. When enabled, wear steps will be synced to xDrip+.
   - Step Delay - Select time delay from the list preferences.  Step Delay is maximum reporting latency. Events are batched up until this "maximum" latency has lapsed. Once lapsed all batched up events will occur sequentially.
   This is a way to save power consumption so that each event does not interrupt the processer. If you find 10 seconds uses too much power you can select a larger latency. This will of course effect the frequency at which the display of the steps is updated on the watch. Defaults to 10 seconds.  To conserve wear battery, select 5 minutes.
+  - Heart Rate - Show last BPM is supported by device.
   - Show Status - Show Loop Status on the XDrip, XDrip(Large) and XDrip (BigChart)watchfaces.  This will display the HAPP status message containing Basal%, IOB, COB.
   - Opaque Card - Show notifications cards with opaque background.  This will allow cards to be read more easily in ambient mode.
   - Small Font - Fontsize of small text in status and delta time fields on the XDrip and XDrip(Large) watchfaces.
   - Show Bridge Battery - Show bridge battery usage on the XDrip and XDrip(Large) watchfaces.  This setting will only be displayed when the BT Collector uses a battery, for example, LimiTTer or Wixel/xBridge.
 
-The following images show watchface preferences under XDrip Watchface Settings.
+The following images show some of the watchface preferences under XDrip Watchface Settings.
 
 <img align="middle" src="./images/prefs-watchface-settings.png" title="XDrip Watchface Settings">
 
@@ -196,6 +221,31 @@ The following images show an example of an alert displayed with Opaque Card enab
 The following images show required xDrip+ preferences and examples of Watch Steps synced with xDrip+.
 
 <img align="middle" src="./images/prefs-phone-sync-steps.png" title="XDrip Phone and Watchface Step Counter">
+
+#### Use Android Wear complication since Wear 2.0
+
+You can also install Watchfaces supporting ```complication```, for example:
+
+https://play.google.com/store/apps/details?id=co.smartwatchface.watch.face.aviator.android.wear&hl=en_US
+
+How-to use:
+* long press on watchface
+* open settings
+* complication
+* 3rd party
+* select where to place complication
+* select xdrip pref
+
+If placing right or left, it looks like this:
+
+<img align="middle" src="./images/wear-complication-short.png" title="Wear complication short">
+
+* If under xdrip settings you have selected ```Loop status``` and placing up or bottom, it looks like this:
+
+<img align="middle" src="./images/wear-complication-long.png" title="Wear complication long">
+
+If getting "Null, Null" displayed, try to add a blood calibration (see https://github.com/NightscoutFoundation/xDrip/issues/651)
+
 
 #### Watchface Tap Feature
 Watchface tap feature is now implemented for the following preferences:
@@ -402,3 +452,22 @@ Enter the following cmd to generate a logcat log, where -s arg is your watch dev
 D:\Android\sdk\platform-tools>adb devices
 D:\Android\sdk\platform-tools>adb -s 14502D1AF252D74 logcat > wear.log
 ```
+
+
+### Help my NFC patched Sony SmartWatch 3 doesn't work with xDrip as a collector
+
+The problem typically is the version of Google Play Services on the watch. You need at least 9.x installed.
+
+On the watch check the version with `Settings` -> `About` -> `Versions`
+
+If your google play services version is less than 9, then you should install version 9.
+
+This is available from unofficial sources which you can find by googling, for example:
+
+https://www.apkmirror.com/apk/google-inc/google-play-services-android-wear/google-play-services-android-wear-9-8-41-release/google-play-services-9-8-41-534-130237018-android-apk-download/
+
+To install, connect your watch via usb and make sure adb debugging is enabled. You should be familiar with this process from how you originally installed the custom NFC firmware.
+
+use the command:
+
+`adb install -r downloaded-filename.apk`

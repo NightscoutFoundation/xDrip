@@ -13,22 +13,17 @@ import com.activeandroid.util.SQLiteUtils;
 //KS import com.eveningoutpost.dexdrip.GlucoseMeter.GlucoseReadingRx;
 import com.eveningoutpost.dexdrip.Home;
 //KS import com.eveningoutpost.dexdrip.Services.SyncService;
-import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 //KS import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 //KS import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 //KS import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 //KS import com.eveningoutpost.dexdrip.messages.BloodTestMessage;
 //KS import com.eveningoutpost.dexdrip.messages.BloodTestMultiMessage;
-import com.eveningoutpost.dexdrip.xdrip;
-import com.google.common.math.DoubleMath;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
-import com.squareup.wire.Wire;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -177,7 +172,7 @@ public class BloodTest extends Model {
 
     public static BloodTest createFromCal(double bg, double timeoffset, String source, String suggested_uuid) {
         UserError.Log.d(TAG, "createFromCal call create");
-        final String unit = Home.getPreferencesStringWithDefault("units", "mgdl");
+        final String unit = Pref.getString("units", "mgdl");
 
         if (unit.compareTo("mgdl") != 0) {
             bg = bg * Constants.MMOLL_TO_MGDL;
@@ -398,7 +393,7 @@ public class BloodTest extends Model {
     }
 /*//KS
     synchronized static void opportunisticCalibration() {
-        if (Home.getPreferencesBooleanDefaultFalse("bluetooth_meter_for_calibrations_auto")) {
+        if (Pref.getBooleanDefaultFalse("bluetooth_meter_for_calibrations_auto")) {
             final BloodTest bt = lastValid();
             if (bt == null) {
                 Log.d(TAG, "opportunistic: No blood tests");
@@ -521,7 +516,7 @@ public class BloodTest extends Model {
     }
 
     public static String accuracyAsString(double avg) {
-        final boolean domgdl = Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl");
+        final boolean domgdl = Pref.getString("units", "mgdl").equals("mgdl");
         // +- symbol
         return "\u00B1" + (!domgdl ? JoH.qs(avg * Constants.MGDL_TO_MMOLL, 2) + " mmol" : JoH.qs(avg, 1) + " mgdl");
     }
@@ -558,6 +553,10 @@ public class BloodTest extends Model {
             }
         }
         patched = true;
+    }
+
+    public static void opportunisticCalibration() {
+        // stub placeholder on wear
     }
 }
 

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".EventLogActivity">
+
+    <data>
+
+        <import type="me.tatarka.bindingcollectionadapter2.LayoutManagers" />
+
+        <variable
+            name="viewModel"
+            type="com.eveningoutpost.dexdrip.EventLogActivity.ViewModel" />
+
+
+    </data>
+
+    <!--
+    <android.support.v4.widget.DrawerLayout
+         android:id="@+id/drawer_layout"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent">
+         -->
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/log_main_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:keepScreenOn="true">
+
+        <LinearLayout
+            android:id="@+id/severityHolder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:layout_weight="100"
+            android:gravity="bottom|center_horizontal"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <CheckBox
+                android:id="@+id/lowSeverityCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="@{viewModel.severity(1)}"
+                android:onCheckedChanged="@{(v,b) -> viewModel.setSeverity(v,b,1)}"
+                android:text="Low" />
+
+            <CheckBox
+                android:id="@+id/midSeverityCheckbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="@{viewModel.severity(2)}"
+                android:onCheckedChanged="@{(v,b) -> viewModel.setSeverity(v,b,2)}"
+                android:text="Mid" />
+
+            <CheckBox
+                android:id="@+id/highSeverityCheckbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="@{viewModel.severity(3)}"
+                android:onCheckedChanged="@{(v,b) -> viewModel.setSeverity(v,b,3)}"
+                android:text="High" />
+
+            <CheckBox
+                android:id="@+id/userEventLowCheckbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:checked="@{viewModel.severity(5)}"
+                android:onCheckedChanged="@{(v,b) -> viewModel.setSeverity(v,b,5)}"
+                android:text="EL" />
+
+            <CheckBox
+                android:id="@+id/userEventHighCheckbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="@{viewModel.severity(6)}"
+                android:onCheckedChanged="@{(v,b) -> viewModel.setSeverity(v,b,6)}"
+                android:text="EH" />
+
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/event_log_loading"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/event_log_buttons"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:showIfTrue="@{viewModel.showLoading}" />
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/event_log_recycler"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="0dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:onViewAttachedToWindow="@{viewModel::initRecycler}"
+            android:paddingBottom="0dp"
+            app:adapter="@{viewModel.adapterChain}"
+            app:itemBinding="@{viewModel.itemBinding}"
+            app:items="@{viewModel.visible}"
+            app:layoutManager="@{LayoutManagers.linear()}"
+            app:layout_constraintBottom_toTopOf="@+id/event_log_buttons"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/severityHolder">
+
+        </android.support.v7.widget.RecyclerView>
+
+        <LinearLayout
+            android:id="@+id/event_log_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_weight="100"
+            android:gravity="center_vertical|center_horizontal"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <Button
+                android:id="@+id/event_upload_logs_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="uploadEventLogs"
+                android:text="@string/upload_logs"
+                android:textAlignment="center" />
+
+            <Button
+                android:id="@+id/button28"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="@{(v) -> viewModel.scrollToTop()}"
+                android:text="@string/top"
+                app:invisibleIfFalse="@{viewModel.showScrollToTop}" />
+
+        </LinearLayout>
+
+
+
+
+    </android.support.constraint.ConstraintLayout>
+
+    <!--
+      <fragment
+          android:id="@+id/navigation_drawer"
+          android:name="com.eveningoutpost.dexdrip.NavigationDrawerFragment"
+          class="com.eveningoutpost.dexdrip.NavigationDrawerFragment"
+          android:layout_width="@dimen/navigation_drawer_width"
+          android:layout_height="match_parent"
+          android:layout_gravity="start"
+          android:layout_marginTop="?attr/actionBarSize"
+          tools:layout="@layout/fragment_navigation_drawer" />
+  </android.support.v4.widget.DrawerLayout>
+  -->
+
+
+</layout>

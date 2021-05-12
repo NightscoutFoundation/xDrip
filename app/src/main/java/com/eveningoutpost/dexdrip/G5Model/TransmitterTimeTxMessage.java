@@ -6,8 +6,8 @@ import java.nio.ByteBuffer;
  * Created by joeginley on 3/28/16.
  */
 public class TransmitterTimeTxMessage extends TransmitterMessage {
-    byte opcode = 0x24;
-    byte[] crc = CRC.calculate(opcode);
+    public static final byte opcode = 0x24;
+    private final static byte[] crc = CRC.calculate(opcode);
 
     public TransmitterTimeTxMessage() {
         data = ByteBuffer.allocate(3);

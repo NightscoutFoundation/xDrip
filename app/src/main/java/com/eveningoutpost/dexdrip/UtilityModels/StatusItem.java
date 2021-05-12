@@ -1,19 +1,42 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import android.graphics.Color;
+import android.support.annotation.ColorInt;
+
+import com.google.common.base.MoreObjects;
+
+import java.util.HashMap;
+
+import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.BAD;
+import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.CRITICAL;
+import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.GOOD;
+import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.NORMAL;
+import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.NOTICE;
+
 /**
  * Created by jamorham on 14/01/2017.
  * <p>
  * For representing row items suitable for MegaStatus
  */
-
 public class StatusItem {
 
     public enum Highlight {
-        NORMAL,
-        GOOD,
-        BAD,
-        NOTICE,
-        CRITICAL
+        NORMAL(Color.TRANSPARENT),
+        GOOD(Color.parseColor("#003000")),
+        BAD(Color.parseColor("#480000")),
+        NOTICE(Color.parseColor("#403000")),
+        CRITICAL(Color.parseColor("#770000"));
+
+        int colorHint;
+
+        Highlight(int colorHint) {
+            this.colorHint = colorHint;
+        }
+
+        @ColorInt
+        public int color() {
+            return colorHint;
+        }
     }
 
     public String name;
@@ -22,13 +45,12 @@ public class StatusItem {
     public String button_name;
     public Runnable runnable;
 
-
     public StatusItem(String name, String value) {
-        this(name, value, Highlight.NORMAL);
+        this(name, value, NORMAL);
     }
 
     public StatusItem() {
-        this("line-break", "", Highlight.NORMAL);
+        this("line-break", "", NORMAL);
     }
 
     public StatusItem(String name, Highlight highlight) {
@@ -36,7 +58,7 @@ public class StatusItem {
     }
 
     public StatusItem(String name, Runnable runnable) {
-        this("button-break", "", Highlight.NORMAL, name, runnable);
+        this("button-break", "", NORMAL, name, runnable);
     }
 
     public StatusItem(String name, String value, Highlight highlight) {
@@ -52,7 +74,7 @@ public class StatusItem {
     }
 
     public StatusItem(String name, Integer value) {
-        this(name, value, Highlight.NORMAL);
+        this(name, value, NORMAL);
     }
 
     public StatusItem(String name, Integer value, Highlight highlight) {
@@ -60,5 +82,4 @@ public class StatusItem {
         this.value = Integer.toString(value);
         this.highlight = highlight;
     }
-
 }

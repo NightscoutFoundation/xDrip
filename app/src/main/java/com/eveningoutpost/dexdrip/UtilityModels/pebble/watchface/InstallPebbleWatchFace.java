@@ -14,11 +14,10 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
@@ -28,11 +27,13 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import static com.eveningoutpost.dexdrip.xdrip.gs;
+
 /**
  * Created by jamorham on 22/04/2016.
  * modified by Andy, to be able to add additional PebbleWtatchFace, which can just extend this
  */
-public class InstallPebbleWatchFace extends AppCompatActivity {
+public class InstallPebbleWatchFace extends BaseAppCompatActivity {
 
     private final static int MY_PERMISSIONS_REQUEST_STORAGE = 99;
     private static String TAG = "InstallPebbleWatchFace";
@@ -62,7 +63,7 @@ public class InstallPebbleWatchFace extends AppCompatActivity {
                     Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
                 final Activity activity = this;
-                JoH.show_ok_dialog(activity, "Please Allow Permission", "Need storage permission to install watchface", new Runnable() {
+                JoH.show_ok_dialog(activity, gs(R.string.please_allow_permission), "Need storage permission to install watchface", new Runnable() {
                     @Override
                     public void run() {
                         ActivityCompat.requestPermissions(activity,
@@ -149,7 +150,7 @@ public class InstallPebbleWatchFace extends AppCompatActivity {
         builder.setTitle("Pebble Install");
         builder.setMessage("Install Pebble Watchface?");
 
-        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(gs(R.string.yes), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
                 installFile();
@@ -157,7 +158,7 @@ public class InstallPebbleWatchFace extends AppCompatActivity {
             }
         });
 
-        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(gs(R.string.no), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();

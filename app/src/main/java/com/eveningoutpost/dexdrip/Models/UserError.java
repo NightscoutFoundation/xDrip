@@ -3,18 +3,21 @@ package com.eveningoutpost.dexdrip.Models;
 import android.os.AsyncTask;
 import android.provider.BaseColumns;
 
+import com.activeandroid.Cache;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
-import com.bugfender.sdk.Bugfender;
-import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.xdrip;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.google.gson.annotations.Expose;
 
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
+
+//import com.bugfender.sdk.Bugfender;
 
 /**
  * Created by Emma Black on 8/3/15.
@@ -42,7 +45,7 @@ public class UserError extends Model {
 
     @Expose
     @Column(name = "timestamp", index = true)
-    public double timestamp; // Time the error was raised
+    public long timestamp; // Time the error was raised
 
     //todo: rather than include multiples of the same error, should we have a "Count" and just increase that on duplicates?
     //or rather, perhaps we should group up the errors
@@ -60,7 +63,7 @@ public class UserError extends Model {
         this.message = message;
         this.timestamp = new Date().getTime();
         this.save();
-        if (xdrip.useBF) {
+       /* if (xdrip.useBF) {
             switch (severity) {
                 case 2:
                 case 3:
@@ -74,7 +77,7 @@ public class UserError extends Model {
                     Bugfender.d(shortError, message);
                     break;
             }
-        }
+        }*/
     }
 
     public UserError(String shortError, String message) {
@@ -97,11 +100,22 @@ public class UserError extends Model {
         return new UserError(6, shortError, message);
     }
 
+    // TODO move time calc stuff to JOH, wrap it here with our timestamp
+    public String bestTime() {
+        final long since = JoH.msSince(timestamp);
+        if (since < Constants.DAY_IN_MS) {
+            return JoH.hourMinuteString(timestamp);
+        } else {
+            return JoH.dateTimeText(timestamp);
+        }
+    }
+
 
     public static void cleanup() {
        new Cleanup().execute(deletable());
     }
 
+    // used in unit testing
     public static void cleanup(long timestamp) {
         List<UserError> userErrors = new Select()
                 .from(UserError.class)
@@ -111,6 +125,22 @@ public class UserError extends Model {
         if (userErrors != null) Log.d(TAG, "cleanup UserError size=" + userErrors.size());
         new Cleanup().execute(userErrors);
     }
+
+    public static void cleanupByTimeAndClause(final long timestamp, final String clause) {
+        new Delete().from(UserError.class)
+                .where("timestamp < ?", timestamp)
+                .where(clause)
+                .execute();
+    }
+
+    public synchronized static void cleanupRaw() {
+        final long timestamp = JoH.tsl();
+        cleanupByTimeAndClause(timestamp - Constants.DAY_IN_MS, "severity < 3");
+        cleanupByTimeAndClause(timestamp - Constants.DAY_IN_MS * 3, "severity = 3");
+        cleanupByTimeAndClause(timestamp - Constants.DAY_IN_MS * 7, "severity > 3");
+        Cache.clear();
+    }
+
 
     public static List<UserError> all() {
         return new Select()
@@ -153,8 +183,58 @@ public class UserError extends Model {
                 .from(UserError.class)
                 .where("severity in ("+levelsString.substring(0,levelsString.length() - 1)+")")
                 .orderBy("timestamp desc")
+                .limit(10000)//too many data can kill akp
                 .execute();
     }
+
+    public static List<UserError> bySeverityNewerThanID(long id, Integer[] levels, int limit) {
+        String levelsString = " ";
+        for (int level : levels) {
+            levelsString += level + ",";
+        }
+        Log.d("UserError", "severity in (" + levelsString.substring(0, levelsString.length() - 1) + ")");
+        return new Select()
+                .from(UserError.class)
+                .where("_ID > ?", id)
+                .where("severity in (" + levelsString.substring(0, levelsString.length() - 1) + ")")
+                .orderBy("timestamp desc")
+                .limit(limit)
+                .execute();
+    }
+
+    public static List<UserError> newerThanID(long id, int limit) {
+        return new Select()
+                .from(UserError.class)
+                .where("_ID > ?", id)
+                .orderBy("timestamp desc")
+                .limit(limit)
+                .execute();
+    }
+
+    public static List<UserError> olderThanID(long id, int limit) {
+        return new Select()
+                .from(UserError.class)
+                .where("_ID < ?", id)
+                .orderBy("timestamp desc")
+                .limit(limit)
+                .execute();
+    }
+
+    public static List<UserError> bySeverityOlderThanID(long id, Integer[] levels, int limit) {
+        String levelsString = " ";
+        for (int level : levels) {
+            levelsString += level + ",";
+        }
+        Log.d("UserError", "severity in (" + levelsString.substring(0, levelsString.length() - 1) + ")");
+        return new Select()
+                .from(UserError.class)
+                .where("_ID < ?", id)
+                .where("severity in (" + levelsString.substring(0, levelsString.length() - 1) + ")")
+                .orderBy("timestamp desc")
+                .limit(limit)
+                .execute();
+    }
+
 
     public static UserError getForTimestamp(UserError error) {
         try {
@@ -267,7 +347,7 @@ public class UserError extends Model {
         static Hashtable <String, Integer> extraTags;
         ExtraLogTags () {
             extraTags = new Hashtable <String, Integer>();
-            String extraLogs = Home.getPreferencesStringDefaultBlank("extra_tags_for_logging");
+            String extraLogs = Pref.getStringDefaultBlank("extra_tags_for_logging");
             readPreference(extraLogs);
         }
         
@@ -324,8 +404,8 @@ public class UserError extends Model {
             Log.e(TAG, "Unknown level for tag " + tag + " please use d v or i");
         }
         
-        static boolean shouldLogTag(String tag, int level) {
-            Integer levelForTag = extraTags.get(tag.toLowerCase());
+        static boolean shouldLogTag(final String tag, final int level) {
+            final Integer levelForTag = extraTags.get(tag != null ? tag.toLowerCase() : "");
             return levelForTag != null && level >= levelForTag;
         }
         

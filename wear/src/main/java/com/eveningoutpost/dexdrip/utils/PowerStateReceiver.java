@@ -3,7 +3,9 @@ package com.eveningoutpost.dexdrip.utils;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.BatteryManager;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.xdrip;
@@ -38,10 +40,29 @@ public class PowerStateReceiver extends BroadcastReceiver {
         return getInternalPrefsBoolean(PREFS_POWER_STATE);
     }
 
+    public static int getBatteryLevel() {
+        return getBatteryLevel(xdrip.getAppContext());
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    public static int getBatteryLevel(Context context) {
+        final Intent batteryIntent = context.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        try {
+            int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+            int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+            if (level == -1 || scale == -1) {
+                return 50;
+            }
+            return (int) (((float) level / (float) scale) * 100.0f);
+        } catch (NullPointerException e) {
+            return 50;
+        }
+    }
+
     @Override
     public void onReceive(Context context, Intent intent) {
         final String action = intent.getAction();
-
+        if (action == null) return;
         if (action.equals(Intent.ACTION_POWER_CONNECTED)) {
             setInternalPrefsBoolean(PREFS_POWER_STATE, true);
             Log.d(TAG, "Power connected");

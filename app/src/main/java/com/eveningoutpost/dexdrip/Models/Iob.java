@@ -10,7 +10,6 @@ public class Iob {
     public double cob = 0;
     public double rawCarbImpact = 0;
     public double jCarbImpact = 0;
-    public double activity = 0;
     public double jActivity = 0;
 }
 

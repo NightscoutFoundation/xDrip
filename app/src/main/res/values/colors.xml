@@ -10,4 +10,5 @@
     <color name="year">#999999</color>
     <color name="title">#62a262</color>
     <color name="yellow100">#fff9c4</color>
+    <color name="darker_white">#d3d3d3</color>
 </resources>

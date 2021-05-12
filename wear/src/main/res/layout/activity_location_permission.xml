@@ -22,7 +22,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
+            android:textSize="12sp"
             android:paddingBottom="18dp"
             android:textColor="#000000"
             android:text="@string/location_permission_text"/>
@@ -47,9 +47,9 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
+                android:textSize="12sp"
                 android:textColor="#0086D4"
-                android:text="Enable Permission"/>
+                android:text="@string/enable_permission"/>
 
 
         </LinearLayout>

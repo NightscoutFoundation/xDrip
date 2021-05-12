@@ -11,8 +11,8 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.BestGlucose;
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.google.gson.annotations.Expose;
 
 import java.util.ArrayList;
@@ -133,7 +133,7 @@ public class Accuracy extends PlusModel {
 
     public static String evaluateAccuracy(long period) {
         // TODO CACHE ?
-        final boolean domgdl = Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl");
+        final boolean domgdl = Pref.getString("units", "mgdl").equals("mgdl");
         final Map<String, Double> totals = new HashMap<>();
         final Map<String, Double> signed_totals = new HashMap<>();
         final Map<String, Integer> count = new HashMap<>();

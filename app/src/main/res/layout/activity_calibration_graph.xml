@@ -32,7 +32,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:id="@+id/CalibrationGraphHeader"
-                    android:text="calibration graph (no calibration)"
+                    android:text="@string/calibration_graph_no_calibration"
                     android:layout_centerHorizontal="true" />
 
                 <TextView
@@ -41,7 +41,7 @@
                     android:layout_below="@+id/CalibrationGraphHeader"
                     android:layout_centerHorizontal="true"
                     android:id="@+id/calibrationPluginHeader"
-                    android:text="calibration plugin header"
+                    android:text="@string/calibration_plugin_header"
                     android:textColor="@color/yellow100" />
             </RelativeLayout>
 

@@ -2,15 +2,16 @@ package com.eveningoutpost.dexdrip.Models;
 
 import android.provider.BaseColumns;
 
-import com.eveningoutpost.dexdrip.GcmActivity;
-import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.GcmActivity;
+import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.google.gson.annotations.Expose;
@@ -18,6 +19,7 @@ import com.google.gson.annotations.Expose;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -32,6 +34,7 @@ public class TransmitterData extends Model {
     @Column(name = "timestamp", index = true)
     public long timestamp;
 
+    // TODO these should be int or long surely
     @Expose
     @Column(name = "raw_data")
     public double raw_data;
@@ -49,7 +52,9 @@ public class TransmitterData extends Model {
     public String uuid;
 
     public static synchronized TransmitterData create(byte[] buffer, int len, Long timestamp) {
-        if (len < 6) { return null; }
+        if (len < 6) {
+            return null;
+        }
         final TransmitterData transmitterData = new TransmitterData();
         try {
             if ((buffer[0] == 0x11 || buffer[0] == 0x15) && buffer[1] == 0x00) {
@@ -81,9 +86,9 @@ public class TransmitterData extends Model {
                     transmitterData.sensor_battery_level = Integer.parseInt(data[1]);
                     if (data.length > 2) {
                         try {
-                            Home.setPreferencesInt("bridge_battery", Integer.parseInt(data[2]));
+                            Pref.setInt("bridge_battery", Integer.parseInt(data[2]));
                             if (Home.get_master()) {
-                                GcmActivity.sendBridgeBattery(Home.getPreferencesInt("bridge_battery", -1));
+                                GcmActivity.sendBridgeBattery(Pref.getInt("bridge_battery", -1));
                             }
                             CheckBridgeBattery.checkBridgeBattery();
                         } catch (Exception e) {
@@ -91,12 +96,12 @@ public class TransmitterData extends Model {
                         }
                         if (data.length > 3) {
                             if ((DexCollectionType.getDexCollectionType() == DexCollectionType.LimiTTer)
-                                    && (!Home.getPreferencesBooleanDefaultFalse("use_transmiter_pl_bluetooth"))) {
+                                    && (!Pref.getBooleanDefaultFalse("use_transmiter_pl_bluetooth"))) {
                                 try {
                                     // reported sensor age in minutes
                                     final Integer sensorAge = Integer.parseInt(data[3]);
                                     if ((sensorAge > 0) && (sensorAge < 200000))
-                                        Home.setPreferencesInt("nfc_sensor_age", sensorAge);
+                                        Pref.setInt("nfc_sensor_age", sensorAge);
                                 } catch (Exception e) {
                                     Log.e(TAG, "Got exception processing field 4 in classic limitter protocol: " + e);
                                 }
@@ -129,9 +134,8 @@ public class TransmitterData extends Model {
             transmitterData.uuid = UUID.randomUUID().toString();
             transmitterData.save();
             return transmitterData;
-        }catch(Exception e)
-        {
-            Log.e(TAG, "Got exception processing fields in protocol: " + e);
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception processing fields in protocol: " + e + " " + HexDump.dumpHexString(buffer));
         }
         return null;
     }
@@ -174,6 +178,14 @@ public class TransmitterData extends Model {
                 .executeSingle();
     }
 
+    public static List<TransmitterData> last(int count) {
+        return new Select()
+                .from(TransmitterData.class)
+                .orderBy("_ID desc")
+                .limit(count)
+                .execute();
+    }
+
     public static TransmitterData lastByTimestamp() {
         return new Select()
                 .from(TransmitterData.class)
@@ -214,6 +226,13 @@ public class TransmitterData extends Model {
             return null;
         }
     }
+    
+    public static TransmitterData byid(long id) {
+        return new Select()
+                .from(TransmitterData.class)
+                .where("_ID = ?", id)
+                .executeSingle();
+    }
 
     public static void updateTransmitterBatteryFromSync(final int battery_level) {
         try {
@@ -235,6 +254,24 @@ public class TransmitterData extends Model {
         } catch (Exception e) {
             Log.e(TAG,"Got exception updating sensor battery from sync: "+e.toString());
         }
+    }
+
+    private static double roundRaw(TransmitterData td) {
+        return JoH.roundDouble(td.raw_data,3);
+    }
+    private static double roundFiltered(TransmitterData td) {
+        return JoH.roundDouble(td.filtered_data,3);
+    }
+
+    public static boolean unchangedRaw() {
+        final List<TransmitterData> items = last(3);
+        if (items != null && items.size() == 3) {
+            return (roundRaw(items.get(0)) == roundRaw(items.get(1))
+                    && roundRaw(items.get(0)) == roundRaw(items.get(2))
+                    && roundFiltered(items.get(0)) == roundFiltered(items.get(1))
+                    && roundFiltered(items.get(0)) == roundFiltered(items.get(2)));
+        }
+        return false;
     }
 
 }

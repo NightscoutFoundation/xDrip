@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip;
 
 import java.text.DateFormat;
+import java.text.MessageFormat;
 import java.util.Date;
 
 import android.app.Dialog;
@@ -8,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -26,8 +26,10 @@ import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 public class SnoozeActivity extends ActivityWithMenu {
     //public static String menu_name = "Snooze Alert";
@@ -48,7 +50,7 @@ public class SnoozeActivity extends ActivityWithMenu {
 
     NumberPicker snoozeValue;
 
-    static final int infiniteSnoozeValueInMinutes = 5256000;//10 years
+    static final long infiniteSnoozeValueInMinutes = 5256000;//10 years
     //static final int snoozeValues[] = new int []{5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 75, 90, 105, 120, 150, 180, 240, 300, 360, 420, 480, 540, 600};
     static final int snoozeValues[] = new int []{ 10, 15, 20, 30, 40, 50, 60, 75, 90, 120, 150, 180, 240, 300, 360, 420, 480, 540, 600};
 
@@ -82,7 +84,7 @@ public class SnoozeActivity extends ActivityWithMenu {
         if (above) {
             return 120;
         }
-        return 30;
+        return 35;
     }
 
     static void SetSnoozePickerValues(NumberPicker picker, boolean above, int default_snooze) {
@@ -278,9 +280,8 @@ public class SnoozeActivity extends ActivityWithMenu {
     }
 
     public void recheckAlerts() {
-        Context context = getApplicationContext();
-        context.startService(new Intent(context, Notifications.class));
-        context.startService(new Intent(context, MissedReadingService.class));
+        Notifications.start();
+        JoH.startService(MissedReadingService.class); // TODO this should be rate limited or similar as it is polled in various locations leading to excessive cpu
     }
 
     public void showDisableEnableButtons() {
@@ -328,7 +329,7 @@ public class SnoozeActivity extends ActivityWithMenu {
         }
         long now = new Date().getTime();
         if(activeBgAlert == null ) {
-            sendRemoteSnooze.setVisibility(Home.getPreferencesBooleanDefaultFalse("send_snooze_to_remote") ? View.VISIBLE : View.GONE);
+            sendRemoteSnooze.setVisibility(Pref.getBooleanDefaultFalse("send_snooze_to_remote") ? View.VISIBLE : View.GONE);
             if (prefs.getLong("alerts_disabled_until", 0) > now
                     ||
                     (prefs.getLong("low_alerts_disabled_until", 0) > now
@@ -346,10 +347,8 @@ public class SnoozeActivity extends ActivityWithMenu {
         } else {
             sendRemoteSnooze.setVisibility(View.GONE);
             if(!aba.ready_to_alarm()) {
-                status = "Active alert exists named \"" + activeBgAlert.name
-                        + (aba.is_snoozed?"\" Alert snoozed until ":"\" Alert will rerise at ")
-                        + DateFormat.getTimeInstance(DateFormat.MEDIUM).format(new Date(aba.next_alert_at)) +
-                        " (" + (aba.next_alert_at - now) / 60000 + " minutes left)";
+                status = MessageFormat.format("Active alert exists named \"{0}\" {1,choice,0#Alert will rerise at|1#Alert snoozed until} {2,time} ({3} minutes left)",
+                        activeBgAlert.name, aba.is_snoozed ? 1 : 0 , new Date(aba.next_alert_at),(aba.next_alert_at - now) / 60000);
             } else {
                 status = getString(R.string.active_alert_exists_named)+" \"" + activeBgAlert.name + "\" "+getString(R.string.bracket_not_snoozed);
             }
@@ -358,21 +357,18 @@ public class SnoozeActivity extends ActivityWithMenu {
 
         //check if there are disabled alerts and if yes add warning
         if (prefs.getLong("alerts_disabled_until", 0) > now) {
-            String textToAdd = (prefs.getLong("alerts_disabled_until", 0) > now + (infiniteSnoozeValueInMinutes - 365 * 24 * 60) * 60 * 1000)
-                    //if alerts would have been disabled "until you re-enable", and this test is done less than 365 * 24 * 60 minutes later, then this test will give true
-                    ? "you re-enable":DateFormat.getTimeInstance(DateFormat.MEDIUM).format(new Date(prefs.getLong("alerts_disabled_until", 0)));
+            String textToAdd = MessageFormat.format("{0,choice,0#{1,time}|1#you re-enable}",
+                    (prefs.getLong("alerts_disabled_until", 0) > now + (infiniteSnoozeValueInMinutes - 365 * 24 * 60) * 60 * 1000) ? 1 : 0 , new Date(prefs.getLong("alerts_disabled_until", 0)));
             status = getString(R.string.all_alerts_disabled_until) + textToAdd;
         } else {
             if (prefs.getLong("low_alerts_disabled_until", 0) > now) {
-                String textToAdd = (prefs.getLong("low_alerts_disabled_until", 0) > now + (infiniteSnoozeValueInMinutes - 365 * 24 * 60) * 60 * 1000)
-                        //if low alerts would have been disabled "until you re-enable", and this test is done less than 365 * 24 * 60 minutes later, then this test will give true
-                        ? "you re-enable":DateFormat.getTimeInstance(DateFormat.MEDIUM).format(new Date(prefs.getLong("low_alerts_disabled_until", 0)));
+                String textToAdd = MessageFormat.format("{0,choice,0#{1,time}|1#you re-enable}",
+                        (prefs.getLong("low_alerts_disabled_until", 0) > now + (infiniteSnoozeValueInMinutes - 365 * 24 * 60) * 60 * 1000) ? 1 : 0 , new Date(prefs.getLong("low_alerts_disabled_until", 0)));
                 status += "\n\n"+getString(R.string.low_alerts_disabled_until) + textToAdd;
             }
             if (prefs.getLong("high_alerts_disabled_until", 0) > now) {
-                String textToAdd = (prefs.getLong("high_alerts_disabled_until", 0) > now + (infiniteSnoozeValueInMinutes - 365 * 24 * 60) * 60 * 1000)
-                        //if high alerts would have been disabled "until you re-enable", and this test is done less than 365 * 24 * 60 minutes later, then this test will give true
-                        ? "you re-enable":DateFormat.getTimeInstance(DateFormat.MEDIUM).format(new Date(prefs.getLong("high_alerts_disabled_until", 0)));
+                String textToAdd = MessageFormat.format("{0,choice,0#{1,time}|1#you re-enable}",
+                        (prefs.getLong("high_alerts_disabled_until", 0) > now + (infiniteSnoozeValueInMinutes - 365 * 24 * 60) * 60 * 1000) ? 1 : 0 , new Date(prefs.getLong("high_alerts_disabled_until", 0)));
                 status += "\n\n"+getString(R.string.high_alerts_disabled_until) + textToAdd;
             }
         }
@@ -382,7 +378,7 @@ public class SnoozeActivity extends ActivityWithMenu {
     }
 
     public void setSendRemoteSnoozeOnClick(View v) {
-        JoH.static_toast_short("Remote snooze..");
+        JoH.static_toast_short(gs(R.string.remote_snooze));
         AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1);
     }
 

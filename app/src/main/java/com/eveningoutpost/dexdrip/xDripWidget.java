@@ -7,19 +7,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Bundle;
 import android.os.PowerManager;
-import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.RemoteViews;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSparklineBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.ColorCache;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.UtilityModels.StatusLine;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 
+import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -74,25 +78,62 @@ public class xDripWidget extends AppWidgetProvider {
         }
     }
 
+    @Override
+    public void onAppWidgetOptionsChanged(Context context,
+                                          AppWidgetManager appWidgetManager,
+                                          int appWidgetId, Bundle newOptions) {
+        // update look after resize
+        int maxWidth = newOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH);
+        int maxHeight = newOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT);
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.x_drip_widget);
+        displayCurrentInfo(appWidgetManager, appWidgetId, context, views, maxWidth, maxHeight);
+        try {
+            appWidgetManager.updateAppWidget(appWidgetId, views);
+            // needed to catch RuntimeException and DeadObjectException
+        } catch (Exception e) {
+            Log.e(TAG, "Got Rexception in widget update: " + e);
+        }
+    }
+
+    public static RemoteViews displayCurrentInfo(final Context context, final int maxWidth, final int maxHeight) {
+        final RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.x_drip_widget);
+        displayCurrentInfo(null, 0, context, views, maxWidth, maxHeight);
+        return views;
+    }
 
     private static void displayCurrentInfo(AppWidgetManager appWidgetManager, int appWidgetId, Context context, RemoteViews views) {
+        displayCurrentInfo(appWidgetManager, appWidgetId, context, views, -1, -1);
+    }
+
+    private static void displayCurrentInfo(AppWidgetManager appWidgetManager, int appWidgetId, Context context, RemoteViews views, int maxWidth, int maxHeight) {
         BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(context);
         BgReading lastBgreading = BgReading.lastNoSenssor();
 
-        final boolean showLines = Home.getPreferencesBoolean("widget_range_lines", false);
-        final boolean showExstraStatus = Home.getPreferencesBoolean("extra_status_line", false) && Home.getPreferencesBoolean("widget_status_line", false);
+        final boolean showLines = Pref.getBoolean("widget_range_lines", false);
+        final boolean showExstraStatus = Pref.getBoolean("extra_status_line", false) && Pref.getBoolean("widget_status_line", false);
 
         if (lastBgreading != null) {
             double estimate = 0;
             double estimated_delta = -9999;
             try {
-                int height = appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT);
-                int width = appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH);
-                views.setImageViewBitmap(R.id.widgetGraph, new BgSparklineBuilder(context)
-                        .setBgGraphBuilder(bgGraphBuilder)
-                        //.setShowFiltered(Home.getPreferencesBooleanDefaultFalse("show_filtered_curve"))
-                        .setBackgroundColor(ColorCache.getCol(ColorCache.X.color_widget_chart_background))
-                        .setHeight(height).setWidth(width).showHighLine(showLines).showLowLine(showLines).build());
+                int height = maxHeight == -1 ? appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT) : maxHeight;
+                int width = maxWidth == -1 ? appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH) : maxWidth;
+                if (width >= 100 && !Pref.getBooleanDefaultFalse("widget_hide_graph")) {
+                    // render bg graph if the widget has enough space to be useful
+                    views.setImageViewBitmap(R.id.widgetGraph, new BgSparklineBuilder(context)
+                            .setBgGraphBuilder(bgGraphBuilder)
+                            //.setShowFiltered(Home.getBooleanDefaultFalse("show_filtered_curve"))
+                            //.setBackgroundColor(ColorCache.getCol(ColorCache.X.color_widget_chart_background))
+                            .setHeight(height)
+                            .setWidth(width)
+                            .showHighLine(showLines).showLowLine(showLines).build());
+                    views.setViewVisibility(R.id.widgetGraph, View.VISIBLE);
+                } else {
+                    // hide bg graph
+                    views.setViewVisibility(R.id.widgetGraph, View.INVISIBLE);
+                }
+
+                views.setInt(R.id.xDripwidget, "setBackgroundColor", ColorCache.getCol(ColorCache.X.color_widget_chart_background));
 
                 final BestGlucose.DisplayGlucose dg = (use_best_glucose) ? BestGlucose.getDisplayGlucose() : null;
                 estimate = (dg != null) ? dg.mgdl : lastBgreading.calculated_value;
@@ -111,12 +152,12 @@ public class xDripWidget extends AppWidgetProvider {
 
                     }
                     // TODO functionize this check as it is in multiple places
-                    if (Home.getPreferencesBooleanDefaultFalse("display_glucose_from_plugin") && (PluggableCalibration.getCalibrationPluginFromPreferences() != null)) {
+                    if (Pref.getBooleanDefaultFalse("display_glucose_from_plugin") && (PluggableCalibration.getCalibrationPluginFromPreferences() != null)) {
                         extrastring += " " + context.getString(R.string.p_in_circle);
                     }
                 } else {
                     // TODO make a couple of getters in dg for these functions
-                    extrastring = " "+dg.extra_string + ((dg.from_plugin) ? " " + context.getString(R.string.p_in_circle) : "");
+                    extrastring = " " + dg.extra_string + ((dg.from_plugin) ? " " + context.getString(R.string.p_in_circle) : "");
                     estimated_delta = dg.delta_mgdl;
                     // TODO properly illustrate + standardize warning level
                     if (dg.warning > 1) slope_arrow = "";
@@ -143,8 +184,18 @@ public class xDripWidget extends AppWidgetProvider {
 
                     views.setInt(R.id.widgetBg, "setPaintFlags", 0);
                 }
-                views.setTextViewText(R.id.widgetBg, stringEstimate);
-                views.setTextViewText(R.id.widgetArrow, slope_arrow);
+                if (Sensor.isActive() || Home.get_follower()) {
+                    views.setTextViewText(R.id.widgetBg, stringEstimate);
+                    views.setTextViewText(R.id.widgetArrow, slope_arrow);
+                    if (stringEstimate.length() > 3) {  // affects mmol xx.x
+                        views.setFloat(R.id.widgetBg, "setTextSize", 45);
+                    } else {
+                        views.setFloat(R.id.widgetBg, "setTextSize", 55);
+                    }
+                } else {
+                    views.setTextViewText(R.id.widgetBg, "");
+                    views.setTextViewText(R.id.widgetArrow, "");
+                }
 
                 // is it really necessary to read this data once here and again in unitizedDeltaString?
                 // couldn't we just use the unitizedDeltaString to detect the error condition?
@@ -163,21 +214,19 @@ public class xDripWidget extends AppWidgetProvider {
                     views.setTextViewText(R.id.widgetDelta, bgGraphBuilder.unitizedDeltaStringRaw(true, true, estimated_delta));
                 }
 
-                // TODO use dg preformatted localized string
+                // render information about last value age
                 int timeAgo = (int) Math.floor((new Date().getTime() - lastBgreading.timestamp) / (1000 * 60));
-                if (timeAgo == 1) {
-                    views.setTextViewText(R.id.readingAge, timeAgo + " Minute ago" + extrastring);
-                } else {
-                    views.setTextViewText(R.id.readingAge, timeAgo + " Minutes ago" + extrastring);
-                }
+                final String fmt = context.getString(R.string.minutes_ago);
+                final String minutesAgo = MessageFormat.format(fmt, timeAgo);
+                views.setTextViewText(R.id.readingAge, minutesAgo + extrastring);
                 if (timeAgo > 15) {
                     views.setTextColor(R.id.readingAge, Color.parseColor("#FFBB33"));
                 } else {
                     views.setTextColor(R.id.readingAge, Color.WHITE);
                 }
 
-                if(showExstraStatus) {
-                    views.setTextViewText(R.id.widgetStatusLine, Home.extraStatusLine());
+                if (showExstraStatus) {
+                    views.setTextViewText(R.id.widgetStatusLine, StatusLine.extraStatusLine());
                     views.setViewVisibility(R.id.widgetStatusLine, View.VISIBLE);
                 } else {
                     views.setTextViewText(R.id.widgetStatusLine, "");

@@ -2,7 +2,7 @@ package com.eveningoutpost.dexdrip.ui;
 
 import android.databinding.ObservableArrayMap;
 
-import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +27,12 @@ public abstract class BaseShelf implements ViewShelf {
     // live read an item
     public boolean get(String id) {
         return included.get(id);
+    }
+
+    // live read an item
+    public boolean getDefaultFalse(String id) {
+        final Boolean result = included.get(id);
+        return result == null ? false : result;
     }
 
     // live set an item
@@ -57,12 +63,12 @@ public abstract class BaseShelf implements ViewShelf {
 
     // implementation for saving to persistent store
     private void spb(String id, boolean value) {
-        Home.setPreferencesBoolean(PREFS_PREFIX + id, value);
+        Pref.setBoolean(PREFS_PREFIX + id, value);
     }
 
     // implementation for loading from persistent store
     private boolean gpb(String id) {
-        return Home.getPreferencesBoolean(PREFS_PREFIX + id, defaults.containsKey(id) ? defaults.get(id) : false);
+        return Pref.getBoolean(PREFS_PREFIX + id, defaults.containsKey(id) ? defaults.get(id) : false);
     }
 
 

@@ -1,13 +1,10 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.BatteryManager;
-import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
@@ -17,21 +14,27 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
-//KS import com.eveningoutpost.dexdrip.GcmActivity;
-//KS import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.ListenerService;
 import com.eveningoutpost.dexdrip.Models.BgReading;
-//KS import com.eveningoutpost.dexdrip.Models.Calibration;
-import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.PebbleMovement;
-import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Services.CustomComplicationProviderService;
+import com.eveningoutpost.dexdrip.stats.StatsResult;
+import com.eveningoutpost.dexdrip.xdrip;
+import com.google.android.gms.wearable.DataMap;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
+//KS import com.eveningoutpost.dexdrip.GcmActivity;
+//KS import com.eveningoutpost.dexdrip.Home;
+//KS import com.eveningoutpost.dexdrip.Models.Calibration;
 //KS following are not used on watch
 /*
 import com.eveningoutpost.dexdrip.Services.SyncService;
@@ -44,16 +47,6 @@ import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xDripWidget;
 */
-import com.eveningoutpost.dexdrip.Services.CustomComplicationProviderService;
-import com.eveningoutpost.dexdrip.stats.StatsResult;
-import com.eveningoutpost.dexdrip.xdrip;
-import com.google.android.gms.wearable.DataMap;
-
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Created by Emma Black on 11/7/14.
@@ -83,6 +76,18 @@ public class BgSendQueue extends Model {
                     .execute();
         }
     */
+
+    @Deprecated
+    public static void emptyQueue() {
+        try {
+            new Delete()
+                    .from(BgSendQueue.class)
+                    .execute();
+        } catch (Exception e) {
+            // failed
+        }
+    }
+
     public static List<BgSendQueue> mongoQueue() {
         return new Select()
                 .from(BgSendQueue.class)
@@ -111,18 +116,19 @@ public class BgSendQueue extends Model {
         handleNewBgReading(bgReading, operation_type, context, is_follower, false);
     }
 
-    public static void handleNewBgReading(BgReading bgReading, String operation_type, Context context, boolean is_follower, boolean quick) {
+    public static void handleNewBgReading(BgReading bgReading, String operation_type, final Context context, boolean is_follower, boolean quick) {
         PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "sendQueue");
         wakeLock.acquire(120000);
         try {
 
+            Notifications.start();
             CustomComplicationProviderService.refresh();
 
             if (!is_follower) addToQueue(bgReading, operation_type);
 
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
             // all this other UI stuff probably shouldn't be here but in lieu of a better method we keep with it..
 
@@ -244,14 +250,20 @@ public class BgSendQueue extends Model {
             */
 
             // if executing on watch; send to watchface
-            if (prefs.getBoolean("enable_wearG5", false)) {//KS
-                Log.d("BgSendQueue", "handleNewBgReading Broadcast BG data to watch");
-                resendData(context);
-                if (prefs.getBoolean("force_wearG5", false)) {
-                    //ListenerService.requestData(context);//Gets called by watchface in missedReadingAlert so not needed here
-                    ListenerService.SendData(context, ListenerService.SYNC_ALL_DATA, null);//Do not need to request data from phone using requestData which performs a resend
+            Inevitable.task("bg-send-queue", 1000, new Runnable() {
+                @Override
+                public void run() {
+                    if (prefs.getBoolean("enable_wearG5", false)) {//KS
+                        Log.d("BgSendQueue", "handleNewBgReading Broadcast BG data to watch");
+                        resendData(context);
+                        if (prefs.getBoolean("force_wearG5", false)) {
+                            //ListenerService.requestData(context);//Gets called by watchface in missedReadingAlert so not needed here
+                            ListenerService.SendData(context, ListenerService.SYNC_ALL_DATA, null);//Do not need to request data from phone using requestData which performs a resend
+                        }
+                    }
                 }
-            }
+            });
+
 
 
         } finally {
@@ -273,7 +285,7 @@ public class BgSendQueue extends Model {
         resendData(context, battery);
     }
 
-    //KS start from WatchUpdaterService
+    //KS start from WatchUpdaterService - updates watchface data
     public static void resendData(Context context, int battery) {//KS
         Log.d("BgSendQueue", "resendData enter battery=" + battery);
         long startTime = new Date().getTime() - (60000 * 60 * 24);
@@ -318,6 +330,7 @@ public class BgSendQueue extends Model {
         final long t = System.currentTimeMillis();
         final PebbleMovement pm = PebbleMovement.last();
         final boolean show_steps = prefs.getBoolean("showSteps", true);
+        final boolean show_heart_rate = prefs.getBoolean("showHeartRate", true);
         final boolean use_wear_health = prefs.getBoolean("use_wear_health", true);
         if (use_wear_health || show_steps) {
             boolean sameDay = pm != null ? ListenerService.isSameDay(t, pm.timestamp) : false;
@@ -330,6 +343,14 @@ public class BgSendQueue extends Model {
                 dataMap.putInt("steps", pm.metric);
                 dataMap.putLong("steps_timestamp", pm.timestamp);
                 Log.d("BgSendQueue", "getSensorSteps isSameDay true pm.timestamp=" + JoH.dateTimeText(pm.timestamp) + " metric=" + pm.metric);
+            }
+        }
+
+        if (use_wear_health && show_heart_rate) {
+            final HeartRate lastHeartRateReading = HeartRate.last();
+            if (lastHeartRateReading != null) {
+                dataMap.putInt("heart_rate", lastHeartRateReading.bpm);
+                dataMap.putLong("heart_rate_timestamp", lastHeartRateReading.timestamp);
             }
         }
         return dataMap;
@@ -453,7 +474,7 @@ public class BgSendQueue extends Model {
                 || prefs.getBoolean("status_line_accuracy", false)
                 || prefs.getBoolean("status_line_capture_percentage", false)) {
 
-            final StatsResult statsResult = new StatsResult(prefs, Home.getPreferencesBooleanDefaultFalse("extra_status_stats_24h"));
+            final StatsResult statsResult = new StatsResult(prefs, Pref.getBooleanDefaultFalse("extra_status_stats_24h"));
 
             if (prefs.getBoolean("status_line_avg", false)) {
                 if (extraline.length() != 0) extraline.append(' ');
@@ -535,7 +556,7 @@ public class BgSendQueue extends Model {
             }
 
             // If we are using the plugin as the primary then show xdrip original as well
-            if (Home.getPreferencesBooleanDefaultFalse("display_glucose_from_plugin") || Home.getPreferencesBooleanDefaultFalse("use_pluggable_alg_as_primary")) {
+            if (Pref.getBooleanDefaultFalse("display_glucose_from_plugin") || Pref.getBooleanDefaultFalse("use_pluggable_alg_as_primary")) {
                 final CalibrationAbstract plugin_xdrip = getCalibrationPlugin(PluggableCalibration.Type.xDripOriginal); // make sure do this only once
                 if (plugin_xdrip != null) {
                     final CalibrationAbstract.CalibrationData pcalibration = plugin_xdrip.getCalibrationData();

@@ -6,6 +6,9 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.xdrip;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.INCOMPATIBLE_BASE_ID;
 
 /**
@@ -17,9 +20,6 @@ public class IncompatibleApps {
     private static final String NOTIFY_MARKER = "-NOTIFY";
     private static final int RENOTIFY_TIME = 86400 * 30;
 
-    private static final String offical_msg = "The official app";
-    private static final String use_conflict_msg = "may try to access the transmitter device too and this can cause problems with both apps.";
-
     public static void notifyAboutIncompatibleApps() {
         final Context context = xdrip.getAppContext();
         int id = INCOMPATIBLE_BASE_ID;
@@ -29,7 +29,7 @@ public class IncompatibleApps {
         package_name = "com.ambrosia.linkblucon";
         if (InstalledApps.checkPackageExists(context, package_name)) {
             if (JoH.pratelimit(package_name + NOTIFY_MARKER, RENOTIFY_TIME)) {
-                id = notify(context.getString(R.string.blukon), package_name, offical_msg + " " + use_conflict_msg, id);
+                id = notify(context.getString(R.string.blukon), package_name, xdrip.getAppContext().getString(R.string.offical_msg) + " " + xdrip.getAppContext().getString(R.string.use_conflict_msg), id);
             }
         }
 
@@ -37,7 +37,20 @@ public class IncompatibleApps {
         package_name = "it.ct.glicemia";
         if (InstalledApps.checkPackageExists(context, package_name)) {
             if (JoH.pratelimit(package_name + NOTIFY_MARKER, RENOTIFY_TIME)) {
-                id = notify("Glimp", package_name, "Glimp" + " " + use_conflict_msg + "\n\nYou can adjust Glimp Settings: options -> devices -> unselect Bluetooth option", id);
+                id = notify("Glimp", package_name, "Glimp" + " " + xdrip.getAppContext().getString(R.string.use_conflict_msg) + "\n\n" + xdrip.getAppContext().getString(R.string.use_confict_msg_glimp), id);
+            }
+        }
+
+        final List<String> medtrumApps = new ArrayList<>();
+        medtrumApps.add("com.medtrum.easysenseforandroidmmol");
+        medtrumApps.add("com.medtrum.easysenseforandroidmgdl");
+        medtrumApps.add("com.medtrum.easysenseforandroid");
+
+        for (String package_name_medtrum : medtrumApps) {
+            if (InstalledApps.checkPackageExists(context, package_name_medtrum)) {
+                if (JoH.pratelimit(package_name_medtrum + NOTIFY_MARKER, RENOTIFY_TIME)) {
+                    id = notify("EasySense", package_name_medtrum, "EasySense" + " " + xdrip.getAppContext().getString(R.string.use_conflict_msg), id);
+                }
             }
         }
 

@@ -38,7 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 public class SystemStatus extends ActivityWithMenu {
     private static final int SMALL_SCREEN_WIDTH = 300;
@@ -234,7 +234,7 @@ public class SystemStatus extends ActivityWithMenu {
 
     private void setConnectionStatusFollower() {
         if (GcmListenerSvc.lastMessageReceived == 0) {
-            connection_status.setText("No data");
+            connection_status.setText(getApplicationContext().getString(R.string.no_data));
         } else {
             connection_status.setText((JoH.qs((JoH.ts() - GcmListenerSvc.lastMessageReceived) / 60000, 0)) + " mins ago");
         }
@@ -244,7 +244,7 @@ public class SystemStatus extends ActivityWithMenu {
         {
             connection_status.setText(ParakeetHelper.parakeetStatusString());
         } else {
-            connection_status.setText("No data");
+            connection_status.setText(getApplicationContext().getString(R.string.no_data));
         }
     }
 
@@ -258,9 +258,9 @@ public class SystemStatus extends ActivityWithMenu {
             }
         }
         if(connected) {
-            connection_status.setText("Connected");
+            connection_status.setText(getApplicationContext().getString(R.string.connected));
         } else {
-            connection_status.setText("Not Connected");
+            connection_status.setText(getApplicationContext().getString(R.string.not_connected));
         }
 
         String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
@@ -286,7 +286,7 @@ public class SystemStatus extends ActivityWithMenu {
                     }
                 }
             } else {
-                connection_status.setText("No bluetooth");
+                connection_status.setText(getApplicationContext().getString(R.string.no_bluetooth));
             }
         }
     }
@@ -345,7 +345,7 @@ public class SystemStatus extends ActivityWithMenu {
         restart_collection_service.setOnClickListener(new View.OnClickListener() {
             public void onClick(final View v) {
                 v.setEnabled(false);
-                JoH.static_toast_short("Restarting Collector!");
+                JoH.static_toast_short(gs(R.string.restarting_collector));
                 v.setAlpha(0.2f);
                 CollectionServiceStarter.restartCollectionService(getApplicationContext());
                 set_current_values();

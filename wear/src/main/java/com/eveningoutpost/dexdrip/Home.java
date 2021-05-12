@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.ustwo.clockwise.common.WatchMode;
 
@@ -35,7 +36,6 @@ public class Home extends BaseWatchFace {
     private static String nexttoast;//KS
     private static boolean is_follower = false;
     private static boolean is_follower_set = false;
-    private static SharedPreferences prefs;
     private long chartTapTime = 0l;
     private long fontsizeTapTime = 0l;
 
@@ -47,7 +47,6 @@ public class Home extends BaseWatchFace {
         Home.context = getApplicationContext();
         xdrip.checkAppContext(getApplicationContext());
         set_is_follower(); // not sure if we actually need this and associated logic? (jamorham)
-        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         layoutView = inflater.inflate(R.layout.activity_home, null);
@@ -122,9 +121,11 @@ public class Home extends BaseWatchFace {
 
     @Override
     protected void setColorDark() {
+        final boolean matchingDividerBar = Pref.getBooleanDefaultFalse("use_black_divider");
         try {
-            mLinearLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_statusView));
+          //mLinearLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_statusView));
             mTime.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
+            mDate.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
             mRelativeLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_background));
             if (sgvLevel == 1) {
                 mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_highColor));
@@ -159,6 +160,14 @@ public class Home extends BaseWatchFace {
 
             mStatus.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mStatus_home));
 
+            mLinearLayout.setBackgroundColor(matchingDividerBar ? Color.BLACK : Color.WHITE);
+
+            mTimestamp.setTextColor(ContextCompat.getColor(getApplicationContext(), matchingDividerBar ? R.color.dark_mTime : R.color.dark_mStatus_home));
+            mUploaderBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), matchingDividerBar ? R.color.dark_mTime : R.color.dark_mStatus_home));
+            mUploaderXBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), matchingDividerBar ? R.color.dark_mTime : R.color.dark_mStatus_home));
+            mStatus.setTextColor(ContextCompat.getColor(getApplicationContext(), matchingDividerBar ? R.color.dark_mTime : R.color.dark_mStatus_home));
+
+
             if (chart != null) {
                 highColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_highColor);
                 lowColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_lowColor);
@@ -175,14 +184,15 @@ public class Home extends BaseWatchFace {
     protected void setColorLowRes() {
         try {
             mTime.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
+            mDate.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
             mRelativeLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_background));
             mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
             mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
             mDirection.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
-            mTimestamp.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTimestamp1_home));
-            mUploaderBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBattery));
-            mUploaderXBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBattery));
-            mStatus.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mStatus_home));
+            mTimestamp.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
+            mUploaderBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
+            mUploaderXBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
+            mStatus.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
             if (chart != null) {
                 highColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor);
                 lowColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor);
@@ -190,6 +200,10 @@ public class Home extends BaseWatchFace {
                 pointSize = 2;
                 setupCharts();
             }
+
+            mLinearLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_background));
+
+
         } catch (NullPointerException e) {
             Log.e(TAG, "Null pointer exception in setColorLowRes: " + e);
         }
@@ -199,6 +213,8 @@ public class Home extends BaseWatchFace {
     @Override
     protected void setColorBright() {
         try {
+
+            final boolean matchingDividerBar = !Pref.getBooleanDefaultFalse("use_black_divider");
             if (getCurrentWatchMode() == WatchMode.INTERACTIVE) {
                 mLinearLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.light_stripe_background));
                 mRelativeLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.light_background));
@@ -236,6 +252,18 @@ public class Home extends BaseWatchFace {
                 mStatus.setTextColor(Color.WHITE);
 
                 mTime.setTextColor(Color.BLACK);
+                mDate.setTextColor(Color.BLACK);
+
+                mLinearLayout.setBackgroundColor(Color.BLACK);
+
+
+                mLinearLayout.setBackgroundColor(matchingDividerBar ? Color.BLACK : Color.WHITE);
+
+                mTimestamp.setTextColor(ContextCompat.getColor(getApplicationContext(), matchingDividerBar ? R.color.dark_mTime : R.color.dark_mStatus_home));
+                mUploaderBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), matchingDividerBar ? R.color.dark_mTime : R.color.dark_mStatus_home));
+                mUploaderXBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), matchingDividerBar ? R.color.dark_mTime : R.color.dark_mStatus_home));
+                mStatus.setTextColor(ContextCompat.getColor(getApplicationContext(), matchingDividerBar ? R.color.dark_mTime : R.color.dark_mStatus_home));
+
                 if (chart != null) {
                     highColor = ContextCompat.getColor(getApplicationContext(), R.color.light_highColor);
                     lowColor = ContextCompat.getColor(getApplicationContext(), R.color.light_lowColor);
@@ -276,6 +304,10 @@ public class Home extends BaseWatchFace {
         messageIntent.putExtra(extra, text);
         Log.d(TAG, "startHomeWithExtra extra=" + extra + " text=" + text);
         LocalBroadcastManager.getInstance(xdrip.getAppContext()).sendBroadcast(messageIntent);
+    }
+
+    public static void staticBlockUI(Context context, boolean state) {
+        // stub placeholder
     }
 
     public static void toaststatic(final String msg) {
@@ -321,141 +353,30 @@ public class Home extends BaseWatchFace {
     }
 
     public static boolean get_engineering_mode() {
-        return Home.getPreferencesBooleanDefaultFalse("engineering_mode");
+        return Pref.getBooleanDefaultFalse("engineering_mode");
     }
 
     public static boolean get_forced_wear() {
-        return getPreferencesBooleanDefaultFalse("enable_wearG5") &&
-                getPreferencesBooleanDefaultFalse("force_wearG5");
+        return Pref.getBooleanDefaultFalse("enable_wearG5") &&
+                Pref.getBooleanDefaultFalse("force_wearG5");
     }
 
 
-    public static boolean getPreferencesBoolean(final String pref, boolean def) {
-        if ((prefs == null) && (xdrip.getAppContext() != null)) {
-            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
-        }
-        if ((prefs != null) && (prefs.getBoolean(pref, def))) return true;
-        return false;
-    }
-
-    public static long getPreferencesLong(final String pref, final long def) {
-        if ((prefs == null) && (xdrip.getAppContext() != null)) {
-            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
-        }
-        if (prefs != null) {
-            return prefs.getLong(pref, def);
-        }
-        return def;
-    }
-
-    public static boolean getPreferencesBooleanDefaultFalse(final String pref) {
-        if ((prefs == null) && (xdrip.getAppContext() != null)) {
-            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
-        }
-        if ((prefs != null) && (prefs.getBoolean(pref, false))) {
-            return true;
-        }
-        return false;
-    }
-
-    public static String getPreferencesStringDefaultBlank(final String pref) {
-        if ((prefs == null) && (xdrip.getAppContext() != null)) {
-            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
-        }
-        if (prefs != null) {
-            return prefs.getString(pref, "");
-        }
-        return "";
-    }
-
-    public static String getPreferencesStringWithDefault(final String pref, final String def) {
-        if ((prefs == null) && (xdrip.getAppContext() != null)) {
-            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
-        }
-        if (prefs != null) {
-            return prefs.getString(pref, def);
-        }
-        return "";
-    }
-
-    public static int getPreferencesInt(final String pref, final int def) {
-        if ((prefs == null) && (xdrip.getAppContext() != null)) {
-            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
-        }
-        if (prefs != null) {
-            return prefs.getInt(pref, def);
-        }
-        return def;
-    }
-
-    public static boolean setPreferencesBoolean(final String pref, final boolean lng) {
-        if ((prefs == null) && (xdrip.getAppContext() != null)) {
-            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
-        }
-        if (prefs != null) {
-            prefs.edit().putBoolean(pref, lng).apply();
-            return true;
-        }
-        return false;
-    }
-
-    public static boolean setPreferencesInt(final String pref, final int num) {
-        if ((prefs == null) && (xdrip.getAppContext() != null)) {
-            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
-        }
-        if (prefs != null) {
-            prefs.edit().putInt(pref, num).apply();
-            return true;
-        }
-        return false;
-    }
-
-    public static boolean setPreferencesString(final String pref, final String str) {
-        if ((prefs == null) && (xdrip.getAppContext() != null)) {
-            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
-        }
-        if (prefs != null) {
-            prefs.edit().putString(pref, str).apply();
-            return true;
-        }
-        return false;
-    }
-
-    public static boolean removePreferencesItem(final String pref) {
-        if ((prefs == null) && (xdrip.getAppContext() != null)) {
-            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
-        }
-        if (prefs != null) {
-            prefs.edit().remove(pref).apply();
-            return true;
-        }
-        return false;
-    }
 
     public static double convertToMgDlIfMmol(double value) {
-        if (!getPreferencesStringWithDefault("units", "mgdl").equals("mgdl")) {
+        if (!Pref.getString("units", "mgdl").equals("mgdl")) {
             return value * com.eveningoutpost.dexdrip.UtilityModels.Constants.MMOLL_TO_MGDL;
         } else {
             return value; // no conversion needed
         }
     }
 
-    public static boolean setPreferencesLong(final String pref, final long lng) {
-        if ((prefs == null) && (xdrip.getAppContext() != null)) {
-            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
-        }
-        if (prefs != null) {
-            prefs.edit().putLong(pref, lng).apply();
-            return true;
-        }
-        return false;
-    }
 
     public static long stale_data_millis()
     {
         if (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm) return (60000 * 13);
         if (DexCollectionType.getDexCollectionType() == DexCollectionType.DexcomG5 &&
-            Home.getPreferencesBooleanDefaultFalse("engineering_mode")) return (60000 * 5);
+            Pref.getBooleanDefaultFalse("engineering_mode")) return (60000 * 5);
         return (60000 * 11);
     }
 
@@ -470,7 +391,7 @@ public class Home extends BaseWatchFace {
                 Log.d(TAG, "Requesting ignore battery optimization");
 
                 // if (PersistentStore.incrementLong("asked_battery_optimization") < 40) {
-                // JoH.show_ok_dialog(this, "Please Allow Permission", "xDrip+ needs whitelisting for proper performance", new Runnable() {
+                // JoH.show_ok_dialog(this, gs(R.string.please_allow_permission), gs(R.string.xdrip_needs_whitelisting_for_proper_performance), new Runnable() {
 
                 //     @Override
                 //    public void run() {
@@ -499,6 +420,9 @@ public class Home extends BaseWatchFace {
     // just for code compatibility
     public static boolean get_master() {
         return false;
+    }
+
+    public static void staticRefreshBGCharts() {
     }
 }
 

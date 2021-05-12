@@ -7,35 +7,30 @@ import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import lombok.NoArgsConstructor;
+
 /**
  * Created by jamorham on 25/11/2016.
  *
- * Alternate mechanism for reading data cribbed from LoopKit
- * totally experimental and untested
+ * Alternate mechanism for reading data using the transmitter's internal algorithm.
+ *
+ * initial packet structure cribbed from Loopkit
  */
 
-public class GlucoseRxMessage extends TransmitterMessage {
+@NoArgsConstructor
+public class GlucoseRxMessage extends BaseGlucoseRxMessage {
 
     private final static String TAG = G5CollectionService.TAG; // meh
 
     public static final byte opcode = 0x31;
-    public TransmitterStatus status;
-    public int status_raw;
-    public int timestamp;
-    public int unfiltered;
-    public int filtered;
-    public int sequence; // : UInt32
-    public boolean glucoseIsDisplayOnly; // : Bool
-    public int glucose; // : UInt16
-    public int state; //: UInt8
-    public int trend; // : Int8
 
 
     public GlucoseRxMessage(byte[] packet) {
-        UserError.Log.e(TAG, "GlucoseRX dbg: " + JoH.bytesToHex(packet));
+        UserError.Log.d(TAG, "GlucoseRX dbg: " + JoH.bytesToHex(packet));
         if (packet.length >= 14) {
-            // TODO check CRC??
-            if (packet[0] == opcode) {
+            data = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN);
+            if ((data.get() == opcode) && checkCRC(packet)) {
+
                 data = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN);
 
                 status_raw = data.get(1);
@@ -58,11 +53,14 @@ public class GlucoseRxMessage extends TransmitterMessage {
                     unfiltered = glucose;
                 }
 
-                UserError.Log.e(TAG, "GlucoseRX: seq" + sequence + " ts:" + timestamp + " sg:" + glucose + " do:" + glucoseIsDisplayOnly + " ss:" + status + " sr:" + status_raw + " st:" + state + " tr:" + trend);
+                UserError.Log.d(TAG, "GlucoseRX: seq:" + sequence + " ts:" + timestamp + " sg:" + glucose + " do:" + glucoseIsDisplayOnly + " ss:" + status + " sr:" + status_raw + " st:" + CalibrationState.parse(state) + " tr:" + getTrend());
 
             }
         } else {
-            UserError.Log.e(TAG, "GlucoseRxMessage packet length received wrong: " + packet.length);
+            UserError.Log.d(TAG, "GlucoseRxMessage packet length received wrong: " + packet.length);
         }
+
     }
+
+
 }

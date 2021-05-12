@@ -14,7 +14,6 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
-import com.activeandroid.query.Select;
 //KS import com.eveningoutpost.dexdrip.GcmActivity;
 import com.activeandroid.util.SQLiteUtils;
 import com.eveningoutpost.dexdrip.Home;
@@ -28,6 +27,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 //KS import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -687,7 +687,7 @@ public class Calibration extends Model {
             return new LiParameters();
         }
 
-        if (Home.getPreferencesBooleanDefaultFalse("engineering_mode") && Home.getPreferencesBooleanDefaultFalse("old_school_calibration_mode")) {
+        if (Pref.getBooleanDefaultFalse("engineering_mode") && Pref.getBooleanDefaultFalse("old_school_calibration_mode")) {
             JoH.static_toast_long("Using old pre-2017 calibration mode!");
             return new DexOldSchoolParameters();
         }
@@ -805,7 +805,7 @@ public class Calibration extends Model {
                         bgReading.filtered_calculated_value = newYvalue;
                     }
                     bgReading.calculated_value = newYvalue;
-                    BgReading.updateCalculatedValue(bgReading);
+                    BgReading.updateCalculatedValueToWithinMinMax(bgReading);
                     bgReading.save();
                 }
             } catch (NullPointerException e) {

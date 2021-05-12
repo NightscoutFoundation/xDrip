@@ -6,7 +6,7 @@ import android.os.Bundle;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.SyncingService;
 
-public class UsbConnectedActivity extends Activity {
+public class UsbConnectedActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

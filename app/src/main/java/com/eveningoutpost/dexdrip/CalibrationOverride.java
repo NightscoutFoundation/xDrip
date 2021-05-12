@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
@@ -16,14 +17,14 @@ import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
 import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
+import com.eveningoutpost.dexdrip.calibrations.NativeCalibrationPipe;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
-
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 public class CalibrationOverride extends ActivityWithMenu {
-        Button button;
-    public static final String menu_name = "Override Calibration";
+    Button button;
     private static final String TAG = "OverrideCalib";
 
     @Override
@@ -40,7 +41,7 @@ public class CalibrationOverride extends ActivityWithMenu {
 
     @Override
     public String getMenuName() {
-        return menu_name;
+        return getString(R.string.override_calibration);
     }
 
     public void addListenerOnButton() {
@@ -70,7 +71,8 @@ public class CalibrationOverride extends ActivityWithMenu {
                             if (calibration != null) {
                                 UndoRedo.addUndoCalibration(calibration.uuid);
                                 GcmActivity.pushCalibration(string_value, "0");
-
+                               // Ob1G5StateMachine.addCalibration((int)calibration.bg, calibration.timestamp);
+                                NativeCalibrationPipe.addCalibration((int)calibration.bg, calibration.timestamp);
                                 //startWatchUpdaterService(v.getContext(), WatchUpdaterService.ACTION_SYNC_CALIBRATION, TAG);
 
                             } else {
@@ -81,7 +83,7 @@ public class CalibrationOverride extends ActivityWithMenu {
                             startActivity(tableIntent);
                             finish();
                         } catch (NumberFormatException e) {
-                            value.setError("Number error: " + e);
+                            value.setError(gs(R.string.number_error_) + e);
                         }
                     } else {
                         value.setError("Calibration Can Not be blank");

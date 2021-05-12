@@ -20,7 +20,6 @@ package com.eveningoutpost.dexdrip.Services;
 
 import android.app.PendingIntent;
 import android.content.ComponentName;
-import android.os.Bundle;
 import android.support.wearable.complications.ComplicationData;
 import android.support.wearable.complications.ComplicationManager;
 import android.support.wearable.complications.ComplicationProviderService;
@@ -34,7 +33,9 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.unitizedDeltaString;
@@ -108,14 +109,14 @@ public class CustomComplicationProviderService extends ComplicationProviderServi
                         this, thisProvider, complicationId);
 
         String numberText = "";
-        BgReading bgReading = BgReading.last(false);
+        BgReading bgReading = BgReading.last(true);
         if ((bgReading == null) || (JoH.msSince(bgReading.timestamp) >= FRESH_MS)) {
             try {
                 ActiveAndroid.clearCache(); // we may be in another process!
             } catch (Exception e) {
                 Log.d(TAG, "Couldn't clear cache: " + e);
             }
-            bgReading = BgReading.last(false);
+            bgReading = BgReading.last(true);
         }
 
         boolean is_stale = false;
@@ -124,7 +125,7 @@ public class CustomComplicationProviderService extends ComplicationProviderServi
             numberText = "null";
         } else {
             if (JoH.msSince(bgReading.timestamp) < STALE_MS) {
-                numberText = bgReading.displayValue(this) + " " + bgReading.slopeArrow();
+                numberText = bgReading.displayValue(this) + " " + bgReading.displaySlopeArrow();
             } else {
                 numberText = "old " + niceTimeSinceBgReading(bgReading);
                 is_stale = true;
@@ -197,7 +198,7 @@ public class CustomComplicationProviderService extends ComplicationProviderServi
     }
 
     private static String getDeltaText(BgReading bgReading, boolean is_stale) {
-        final boolean doMgdl = Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl");
+        final boolean doMgdl = Pref.getString("units", "mgdl").equals("mgdl");
         return (!is_stale ? (bgReading != null ? unitizedDeltaString(false, false, Home.get_follower(), doMgdl) : "null") : "");
     }
 
@@ -210,11 +211,17 @@ public class CustomComplicationProviderService extends ComplicationProviderServi
     }
 
     public static void refresh() {
-        if (JoH.ratelimit("complication-refresh", 5)) {
-            final ComponentName componentName = new ComponentName(xdrip.getAppContext(), "com.eveningoutpost.dexdrip.Services.CustomComplicationProviderService");
-            final ProviderUpdateRequester providerUpdateRequester = new ProviderUpdateRequester(xdrip.getAppContext(), componentName);
-            providerUpdateRequester.requestUpdateAll();
-        }
+        Inevitable.task("refresh-complication", 500, new Runnable() {
+            @Override
+            public void run() {
+                if (JoH.ratelimit("complication-refresh", 5)) {
+                    Log.d(TAG, "Complication refresh() executing");
+                    final ComponentName componentName = new ComponentName(xdrip.getAppContext(), "com.eveningoutpost.dexdrip.Services.CustomComplicationProviderService");
+                    final ProviderUpdateRequester providerUpdateRequester = new ProviderUpdateRequester(xdrip.getAppContext(), componentName);
+                    providerUpdateRequester.requestUpdateAll();
+                }
+            }
+        });
         Log.d(TAG, "Complication refresh() called");
     }
 }

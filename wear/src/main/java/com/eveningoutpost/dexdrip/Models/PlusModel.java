@@ -9,10 +9,8 @@ import com.activeandroid.util.SQLiteUtils;
 
 public class PlusModel extends Model {
 
-    private static boolean patched = false;
-
-    protected synchronized static void fixUpTable(String[] schema) {
-        if (patched) return;
+    protected synchronized static boolean fixUpTable(String[] schema, boolean patched) {
+        if (patched) return true;
 
         for (String patch : schema) {
             try {
@@ -21,7 +19,7 @@ public class PlusModel extends Model {
                 //
             }
         }
-        patched = true;
+        return true;
     }
 
 }

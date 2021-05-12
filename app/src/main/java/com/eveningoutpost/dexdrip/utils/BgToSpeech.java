@@ -1,205 +1,162 @@
 package com.eveningoutpost.dexdrip.utils;
 
-import android.content.ActivityNotFoundException;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.media.AudioManager;
-import android.preference.PreferenceManager;
-import android.speech.tts.TextToSpeech;
-
 import com.eveningoutpost.dexdrip.BestGlucose;
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.UtilityModels.SpeechUtil;
+import com.eveningoutpost.dexdrip.UtilityModels.VehicleMode;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.text.DecimalFormat;
-import java.util.Locale;
+
+import static com.eveningoutpost.dexdrip.UtilityModels.SpeechUtil.TWICE_DELIMITER;
 
 /**
  * Created by adrian on 07/09/15.
+ * <p>
+ * Updated 27/12/17 by jamorham to use SpeechUtil
+ * <p>
+ * Designed to speak glucose readings when enabled, call the "speak" method with the value, timestamp and optional trend name
+ * <p>
  */
-public class BgToSpeech {
+public class BgToSpeech implements NamedSliderProcessor {
 
-    private static BgToSpeech instance;
-    private final Context context;
+    public static final String BG_TO_SPEECH_PREF = "bg_to_speech";
+    private static final double MAX_THRESHOLD_MINUTES = (8 * 60) + 1;
+    private static final double MAX_THRESHOLD_MGDL = 100;
 
-    private TextToSpeech tts = null;
     private static final String TAG = "BgToSpeech";
 
-    public synchronized static BgToSpeech setupTTS(Context context) {
-
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        if (!prefs.getBoolean("bg_to_speech", false)) {
-            return null;
-        }
-
-        if (instance == null) {
-            instance = new BgToSpeech(context);
-            return instance;
-        } else {
-            tearDownTTS();
-            instance = new BgToSpeech(context);
-            return instance;
-        }
+    private static int getMinutesSliderValue(int position) {
+        return (int) LogSlider.calc(0, 300, 4, MAX_THRESHOLD_MINUTES, position);
     }
 
-    public synchronized static void tearDownTTS() {
-        if (instance != null) {
-            instance.tearDown();
-            instance = null;
-        } else {
-            // Log.e(TAG, "tearDownTTS() called but instance is null!");
-        }
+    private static int getThresholdSliderValue(int position) {
+        return (int) LogSlider.calc(0, 300, 4, MAX_THRESHOLD_MGDL, position);
     }
 
-    public static synchronized void speak(final double value, long timestamp) {
-        if (instance == null) {
-            try {
-                setupTTS(xdrip.getAppContext());
-            } catch (Exception e) {
-                Log.e(TAG, "Got exception trying to on demand set up instance: " + e);
-            }
-        }
-        if (instance == null) {
-            Log.e(TAG, "speak() called but instance is null!");
-        } else {
-            instance.speakInternal(value, timestamp);
-        }
-    }
+    // speak a bg reading if its timestamp is current, include the delta name if preferences dictate
+    public static void speak(final double value, long timestamp, String delta_name) {
 
-    private void tearDown() {
-        if (tts != null) {
-            try {
-                tts.shutdown();
-            } catch (IllegalArgumentException e) {
-                Log.e(TAG, "Got exception shutting down service: " + e);
-            }
-            tts = null;
-        }
-    }
-
-    private BgToSpeech(Context context) {
-        this.context = context;
-        this.tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-
-                Log.d(TAG, "Calling onInit(), tts = " + tts);
-                if (status == TextToSpeech.SUCCESS && tts != null) {
-
-                    //try local language
-
-                    Locale loc = Locale.getDefault();
-                    try {
-                        final String tts_language = Home.getPreferencesStringDefaultBlank("speak_readings_custom_language").trim();
-                        if (tts_language.length() > 1) {
-                            final String[] lang_components = tts_language.split("_");
-                            String country = (lang_components.length > 1) ? lang_components[1] : "";
-                            loc = new Locale(lang_components[0], country, "");
-                        }
-                    } catch (Exception e) {
-                        Log.e(TAG, "Exception trying to use custom language: " + e);
-                    }
-
-                    Log.d(TAG, "status == TextToSpeech.SUCCESS + loc " + loc);
-                    int result;
-                    try {
-                        result = tts.setLanguage(loc);
-                    } catch (IllegalArgumentException e) {
-                        // can end up here with Locales like "OS"
-                        Log.e(TAG, "Got TTS set language error: " + e.toString());
-                        result = TextToSpeech.LANG_MISSING_DATA;
-                    } catch (Exception e) {
-                        // can end up here with deep errors from tts system
-                        Log.e(TAG, "Got TTS set language deep error: " + e.toString());
-                        result = TextToSpeech.LANG_MISSING_DATA;
-                    }
-
-                    if (result == TextToSpeech.LANG_MISSING_DATA
-                            || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                        Log.e(TAG, "Default system language is not supported");
-                        try {
-                            result = tts.setLanguage(Locale.ENGLISH);
-                        } catch (IllegalArgumentException e) {
-                            // can end up here with parcel Locales like "OS"
-                            Log.e(TAG, "Got TTS set default language error: " + e.toString());
-                            result = TextToSpeech.LANG_MISSING_DATA;
-                        } catch (Exception e) {
-                            // can end up here with deep errors from tts system
-                            Log.e(TAG, "Got TTS set default language deep error: " + e.toString());
-                            result = TextToSpeech.LANG_MISSING_DATA;
-                        }
-                    }
-                    //try any english
-                    if (result == TextToSpeech.LANG_MISSING_DATA
-                            || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                        Log.e(TAG, "English is not supported");
-                        tts = null;
-                    }
-                } else {
-                    Log.e(TAG, "status != TextToSpeech.SUCCESS; status: " + status);
-                    tts = null;
-                }
-            }
-        });
-    }
-
-    private void speakInternal(final double value, long timestamp) {
-
-        // SHIELDING
-        if (timestamp < System.currentTimeMillis() - 4 * 60 * 1000) {
-            // don't read old values.
+        // don't read out old values.
+        if (JoH.msSince(timestamp) > 4 * Constants.MINUTE_IN_MS) {
             return;
         }
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        if (!prefs.getBoolean("bg_to_speech", false) || isOngoingCall()) {
+        // TODO As we check for this in new data observer should we only check for ongoing call here?
+        // check if speech is enabled and extra check for ongoing call
+        if (!(Pref.getBooleanDefaultFalse(BG_TO_SPEECH_PREF) || VehicleMode.shouldSpeak()) || JoH.isOngoingCall()) {
             return;
         }
 
-        if (tts == null) {
-            Log.wtf(TAG, "TTS is null in speakInternal");
-            return;
-        }
-        // ACTUAL TTS:
-        try {
-            final int result = tts.speak(calculateText(value, prefs), TextToSpeech.QUEUE_FLUSH, null);
-            if (result == TextToSpeech.SUCCESS) {
-                Log.d(TAG, "successfully spoken");
-            } else {
-                Log.d(TAG, "error " + result + ". trying again with new tts-object.");
-                JoH.runOnUiThreadDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            tts.speak(calculateText(value, prefs), TextToSpeech.QUEUE_FLUSH, null);
-                        } catch (Exception e) {
-                            Log.e(TAG, "Got exception TTS delayed: " + e);
-                        }
-                    }
-                }, 2000);
+        // check constraints
+        final long change_time = getMinutesSliderValue(Pref.getInt("speak_readings_change_time", 0)) * Constants.MINUTE_IN_MS;
 
+        boolean conditions_met = false;
+
+        if (lastSpokenSince() < change_time) {
+            UserError.Log.d(TAG, "Not speaking due to change time threshold: " + JoH.niceTimeScalar(change_time) + " vs " + JoH.niceTimeScalar(lastSpokenSince()));
+
+        } else {
+            UserError.Log.d(TAG, "Speaking due to change time threshold: " + JoH.niceTimeScalar(change_time) + " vs " + JoH.niceTimeScalar(lastSpokenSince()));
+            conditions_met = true;
+        }
+
+        if (!conditions_met) {
+            if (!thresholdExceeded(value)) {
+                UserError.Log.d(TAG, "Not speaking due to change delta threshold: " + value);
+                return;
             }
-        } catch (IllegalStateException e) {
-            Log.e(TAG, "IllegalStateException in TTS: " + e.toString());
-        } catch (IllegalArgumentException e) {
-            Log.e(TAG, "IllegalArgumentException in TTS: " + e.toString());
         }
+
+
+        updateLastSpokenSince();
+        realSpeakNow(value, timestamp, delta_name);
+
     }
 
-    private String calculateText(double value, SharedPreferences prefs) {
-        final boolean doMgdl = (prefs.getString("units", "mgdl").equals("mgdl"));
-        final boolean bg_to_speech_repeat_twice = (prefs.getBoolean("bg_to_speech_repeat_twice", false));
+    private static final String LAST_SPOKEN_TIME = "last-spoken-reading-time";
+
+    private static long lastSpokenSince() {
+        return JoH.msSince(PersistentStore.getLong(LAST_SPOKEN_TIME));
+    }
+
+    private static void updateLastSpokenSince() {
+        PersistentStore.setLong(LAST_SPOKEN_TIME, JoH.tsl());
+    }
+
+    private static final String LAST_SPOKEN_VALUE = "last-spoken-value";
+
+    private static boolean thresholdExceeded(double value) {
+        final long change_delta = getThresholdSliderValue(Pref.getInt("speak_readings_change_threshold", 0));
+        final double abs_delta = Math.abs(value - PersistentStore.getDouble(LAST_SPOKEN_VALUE));
+        if (abs_delta > change_delta) {
+            UserError.Log.uel(TAG, "Threshold EXCEEDED: Current change delta: " + abs_delta + " vs " + change_delta + " @ " + value);
+            PersistentStore.setDouble(LAST_SPOKEN_VALUE, value);
+            return true;
+        }
+        UserError.Log.d(TAG, "Threshold not exceeded: Current change delta: " + abs_delta + " vs " + change_delta + " @ " + value);
+        return false;
+    }
+
+    // always speak the value passed
+    public static void realSpeakNow(final double value, long timestamp, String delta_name) {
+        final String text_to_speak = calculateText(value, Pref.getBooleanDefaultFalse("bg_to_speech_trend") ? delta_name : null);
+        UserError.Log.d(TAG, "Attempting to speak BG reading of: " + text_to_speak);
+
+        SpeechUtil.say(text_to_speak);
+    }
+
+    private static String mungeDeltaName(String delta_name) {
+
+
+        switch (delta_name) {
+            case "DoubleDown":
+                delta_name = xdrip.getAppContext().getString(R.string.DoubleDown);
+                break;
+            case "SingleDown":
+                delta_name = xdrip.getAppContext().getString(R.string.SingleDown);
+                break;
+            case "FortyFiveDown":
+                delta_name = xdrip.getAppContext().getString(R.string.FortyFiveDown);
+                break;
+            case "Flat":
+                delta_name = xdrip.getAppContext().getString(R.string.Flat);
+                break;
+            case "FortyFiveUp":
+                delta_name = xdrip.getAppContext().getString(R.string.FortyFiveUp);
+                break;
+            case "SingleUp":
+                delta_name = xdrip.getAppContext().getString(R.string.SingleUp);
+                break;
+            case "DoubleUp":
+                delta_name = xdrip.getAppContext().getString(R.string.DoubleUp);
+                break;
+            case "NOT COMPUTABLE":
+                delta_name = "";
+                break;
+
+            // do we need a default or just pass thru?
+        }
+        return delta_name;
+    }
+
+    private static String calculateText(double value, String delta_name) {
+
+        final boolean doMgdl = (Pref.getString("units", "mgdl").equals("mgdl"));
+        final boolean bg_to_speech_repeat_twice = (Pref.getBooleanDefaultFalse("bg_to_speech_repeat_twice"));
         String text = "";
 
-        DecimalFormat df = new DecimalFormat("#");
+        // TODO does some of this need unifying from best glucose etc?
+        final DecimalFormat df = new DecimalFormat("#");
         if (value >= 400) {
-            text = "high";
+            text = xdrip.getAppContext().getString(R.string.high);
         } else if (value >= 40) {
             if (doMgdl) {
                 df.setMaximumFractionDigits(0);
@@ -209,53 +166,59 @@ public class BgToSpeech {
                 df.setMinimumFractionDigits(1);
                 text = df.format(value * Constants.MGDL_TO_MMOLL);
                 try {
-                    if (tts == null) setupTTS(xdrip.getAppContext());
-                    if (tts.getLanguage().getLanguage().startsWith("en")) {
+                    // we check the locale but it may not actually be available if the instance isn't created yet
+                    if (SpeechUtil.getLocale().getLanguage().startsWith("en")) {
                         // in case the text has a comma in current locale but TTS defaults to English
                         text = text.replace(",", ".");
                     }
-                    if (bg_to_speech_repeat_twice) text = text + " ... ... ... " + text;
                 } catch (NullPointerException e) {
                     Log.e(TAG, "Null pointer for TTS in calculateText");
                 }
             }
+            if (delta_name != null) text += " " + mungeDeltaName(delta_name);
+            if (bg_to_speech_repeat_twice) text = text + TWICE_DELIMITER + text;
         } else if (value > 12) {
-            text = "low";
+            text = xdrip.getAppContext().getString(R.string.low);
         } else {
-            text = "error";
+            text = xdrip.getAppContext().getString(R.string.error);
         }
-        Log.d(TAG, "text: " + text);
+        Log.d(TAG, "calculated text: " + text);
         return text;
     }
 
-
-    static void installTTSData(Context ctx) {
-        try {
-            Intent intent = new Intent();
-            intent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            ctx.startActivity(intent);
-        } catch (ActivityNotFoundException e) {
-            Log.e(TAG, "Could not install TTS data: " + e.toString());
-        }
+    // shutdown instance - used for changing language/settings
+    public static void tearDownTTS() {
+        SpeechUtil.shutdown();
     }
 
-    private boolean isOngoingCall() {
-        AudioManager manager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        return (manager.getMode() == AudioManager.MODE_IN_CALL);
-    }
 
+    // TODO grace period and 20 minute safety when testSpeech is called needs either a rework or rethink as it is ignored by SpeakNow now and the grace parameter is no longer needed
+    // hopefully say a test reading
     public static void testSpeech() {
-        BgToSpeech.setupTTS(xdrip.getAppContext()); // try to initialize now
+        speakNow(1200000);
+    }
+
+    // speak the most recent reading, with 0 grace only if in time
+    public static void speakNow(long grace) {
         final BgReading bgReading = BgReading.last();
         if (bgReading != null) {
             final BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
             if (dg != null) {
-                BgToSpeech.speak(dg.mgdl, dg.timestamp + 1200000);
+                BgToSpeech.realSpeakNow(dg.mgdl, dg.timestamp + grace, dg.delta_name);
             } else {
-                BgToSpeech.speak(bgReading.calculated_value, bgReading.timestamp + 1200000);
+                BgToSpeech.realSpeakNow(bgReading.calculated_value, bgReading.timestamp + grace, bgReading.slopeName());
             }
         }
     }
 
+    @Override
+    public int interpolate(String name, int position) {
+        switch (name) {
+            case "time":
+                return getMinutesSliderValue(position);
+            case "threshold":
+                return getThresholdSliderValue(position);
+        }
+        throw new RuntimeException("name not matched in interpolate");
+    }
 }

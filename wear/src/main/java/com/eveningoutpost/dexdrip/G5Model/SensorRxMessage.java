@@ -10,7 +10,7 @@ import java.nio.ByteOrder;
 /**
  * Created by jcostik1 on 3/26/16.
  */
-public class SensorRxMessage extends TransmitterMessage {
+public class SensorRxMessage extends BaseMessage {
     public static final byte opcode = 0x2f;
     public TransmitterStatus status;
     public int timestamp;

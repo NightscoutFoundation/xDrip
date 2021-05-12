@@ -40,7 +40,7 @@ public class NotificationChannels {
     public static final String BG_PREDICTED_LOW_CHANNEL = "bgPredictedLowChannel";
     public static final String BG_PERSISTENT_HIGH_CHANNEL = "bgPersistentHighChannel";
     public static final String CALIBRATION_CHANNEL = "calibrationChannel";
-    //public static final String ONGOING_CHANNEL = "ongoingChannel";
+    public static final String ONGOING_CHANNEL = "ongoingChannel";
 
     // get a localized string for each channel / group name
     public static String getString(String id) {
@@ -64,6 +64,7 @@ public class NotificationChannels {
         map.put(BG_PREDICTED_LOW_CHANNEL, xdrip.getAppContext().getString(R.string.low_predicted));
         map.put(BG_PERSISTENT_HIGH_CHANNEL, xdrip.getAppContext().getString(R.string.persistent_high_alert));
         map.put(CALIBRATION_CHANNEL, xdrip.getAppContext().getString(R.string.calibration_alerts));
+        map.put(ONGOING_CHANNEL, "Ongoing Notification");
     }
 
 
@@ -146,6 +147,14 @@ public class NotificationChannels {
 
     }
 
+    private static boolean addChannelGroup() {
+        // If notifications are grouped, the BG number icon doesn't update
+        if (Pref.getBooleanDefaultFalse("use_number_icon")) {
+            return false;
+        }
+        return Pref.getBooleanDefaultFalse("notification_channels_grouping");
+    }
+
     @TargetApi(26)
     public static NotificationChannel getChan(NotificationCompat.Builder wip) {
 
@@ -185,7 +194,11 @@ public class NotificationChannels {
 
         // mirror the settings from the previous channel
         channel.setSound(template.getSound(), generic_audio);
-        channel.setGroup(template.getGroup());
+        if (addChannelGroup()) {
+            channel.setGroup(template.getGroup());
+        } else {
+            channel.setGroup(channel.getId());
+        }
         channel.setDescription(template.getDescription());
         channel.setVibrationPattern(template.getVibrationPattern());
         template.setLightColor(wip.mNotification.ledARGB);
@@ -199,4 +212,63 @@ public class NotificationChannels {
         getNotifManager().createNotificationChannel(channel);
         return channel;
     }
+
+    @TargetApi(26)
+    public static NotificationChannel getChan(Notification.Builder wip) {
+
+        final Notification temp = wip.build();
+        if (temp.getChannelId() == null) return null;
+
+        // create generic audio attributes
+        final AudioAttributes generic_audio = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
+                .build();
+
+        // create notification channel for hashing purposes from the existing notification builder
+        NotificationChannel template = new NotificationChannel(
+                temp.getChannelId(),
+                getString(temp.getChannelId()),
+                NotificationManager.IMPORTANCE_DEFAULT);
+
+
+        // mirror the notification parameters in the channel
+        template.setGroup(temp.getChannelId());
+        template.setVibrationPattern(temp.vibrate);
+        template.setSound(temp.sound, generic_audio);
+        template.setLightColor(temp.ledARGB);
+        if ((temp.ledOnMS != 0) && (temp.ledOffMS != 0))
+            template.enableLights(true); // weird how this doesn't work like vibration pattern
+        template.setDescription(temp.getChannelId() + " " + wip.hashCode());
+
+        // get a nice string to identify the hash
+        final String mhash = my_text_hash(template);
+
+        // create another notification channel using the hash because id is immutable
+        final NotificationChannel channel = new NotificationChannel(
+                template.getId() + mhash,
+                getString(temp.getChannelId()) + mhash,
+                NotificationManager.IMPORTANCE_DEFAULT);
+
+        // mirror the settings from the previous channel
+        channel.setSound(template.getSound(), generic_audio);
+        if (addChannelGroup()) {
+            channel.setGroup(template.getGroup());
+        } else {
+            channel.setGroup(channel.getId());
+        }
+        channel.setDescription(template.getDescription());
+        channel.setVibrationPattern(template.getVibrationPattern());
+        template.setLightColor(temp.ledARGB);
+        if ((temp.ledOnMS != 0) && (temp.ledOffMS != 0))
+            template.enableLights(true); // weird how this doesn't work like vibration pattern
+        template.setDescription(temp.getChannelId() + " " + wip.hashCode());
+
+        // create a group to hold this channel if one doesn't exist or update text
+        getNotifManager().createNotificationChannelGroup(new NotificationChannelGroup(channel.getGroup(), getString(channel.getGroup())));
+        // create this channel if it doesn't exist or update text
+        getNotifManager().createNotificationChannel(channel);
+        return channel;
+    }
+
 }

@@ -19,10 +19,13 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 //import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 //import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 //import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 import java.util.Date;
+
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getLocalServiceCollectingState;
 
 //import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 
@@ -64,7 +67,7 @@ public class MissedReadingService extends IntentService {
         }*/
 
         if ((prefs.getBoolean("aggressive_service_restart", false) || DexCollectionType.isFlakey())) {//!Home.get_enable_wear() &&
-            if (!BgReading.last_within_millis(stale_millis) && Sensor.isActive()) {
+            if (!BgReading.last_within_millis(stale_millis) && Sensor.isActive() && (!getLocalServiceCollectingState())) {
                 if (JoH.ratelimit("aggressive-restart", aggressive_backoff_timer)) {
                     Log.e(TAG, "Aggressively restarting collector service due to lack of reception: backoff: "+aggressive_backoff_timer);
                     if (aggressive_backoff_timer < 1200) aggressive_backoff_timer+=60;
@@ -78,7 +81,7 @@ public class MissedReadingService extends IntentService {
         //BluetoothGlucoseMeter.immortality();
 
         bg_missed_alerts =  prefs.getBoolean("bg_missed_alerts", false);//KS TODO bg_missed_alerts pref not supported
-        if (!bg_missed_alerts || !Home.getPreferencesBoolean("bg_notifications", false)) {
+        if (!bg_missed_alerts || !Pref.getBoolean("bg_notifications", false)) {
             // we should not do anything in this case. if the ui, changes will be called again
             return;
         }

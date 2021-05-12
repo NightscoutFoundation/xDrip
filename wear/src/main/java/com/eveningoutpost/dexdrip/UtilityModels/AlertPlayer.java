@@ -1,9 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-import android.app.Notification;
 import android.app.NotificationManager;
-import android.support.v4.app.ListFragment;
-import android.support.v4.app.NotificationCompat;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -15,23 +12,29 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 
-//KS import com.eveningoutpost.dexdrip.EditAlertActivity;
-//KS import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.ListenerService;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
-//KS import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
-import static com.eveningoutpost.dexdrip.ListenerService.SendData;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+
+import static com.eveningoutpost.dexdrip.ListenerService.SendData;
+import static com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer.getAlertPlayerStreamType;
+
+//KS import com.eveningoutpost.dexdrip.EditAlertActivity;
+//KS import com.eveningoutpost.dexdrip.GcmActivity;
+//KS import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
 
 // A helper class to create the mediaplayer on the UI thread.
 // This is needed in order for the callbackst to work.
@@ -41,7 +44,7 @@ class MediaPlayerCreaterHelper {
 
     final Object lock1_ = new Object();
     boolean mplayerCreated_ = false;
-    MediaPlayer mediaPlayer_ = null;
+    volatile MediaPlayer mediaPlayer_ = null;
     
     MediaPlayer createMediaPlayer(Context ctx) {
         if (isUiThread()) {
@@ -80,6 +83,11 @@ class MediaPlayerCreaterHelper {
              Log.e(TAG, "Cought exception", e);
         }
 
+        try {
+            mediaPlayer_.setAudioStreamType(getAlertPlayerStreamType());
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Set mediaplayer stream type: " + e);
+        }
         return mediaPlayer_;
     }
     
@@ -88,14 +96,15 @@ class MediaPlayerCreaterHelper {
     }
 }
 
+
 public class AlertPlayer {
 
-    static AlertPlayer singletone;
+    private static volatile AlertPlayer singletone;
 
     private final static String TAG = AlertPlayer.class.getSimpleName();
-    private MediaPlayer mediaPlayer;
-    int volumeBeforeAlert = -1;
-    int volumeForThisAlert = -1;
+    private volatile MediaPlayer mediaPlayer;
+    private int volumeBeforeAlert = -1;
+    private int volumeForThisAlert = -1;
 
     final static int ALERT_PROFILE_HIGH = 1;
     final static int ALERT_PROFILE_ASCENDING = 2;
@@ -105,21 +114,25 @@ public class AlertPlayer {
 
     final static int  MAX_VIBRATING = 2;
     final static int  MAX_ASCENDING = 5;
-    private static final String WEARABLE_SNOOZE_ALERT = "/xdrip_plus_snooze_payload";
 
+    private static synchronized void createPlayer() {
+        if (singletone == null) {
+            singletone = new AlertPlayer();
+        }
+    }
 
     public static AlertPlayer getPlayer() {
-        if(singletone == null) {
-            Log.i(TAG,"getPlayer: Creating a new AlertPlayer");
-            singletone = new AlertPlayer();
+        if (singletone == null) {
+            Log.i(TAG, "getPlayer: Creating a new AlertPlayer");
+            createPlayer();
         } else {
-            Log.i(TAG,"getPlayer: Using existing AlertPlayer");
+            Log.i(TAG, "getPlayer: Using existing AlertPlayer");
         }
         return singletone;
     }
 
     public synchronized void startAlert(Context ctx, boolean trendingToAlertEnd, AlertType newAlert, String bgValue) {
-        startAlert(ctx, trendingToAlertEnd, newAlert, bgValue, Home.getPreferencesBooleanDefaultFalse("start_snoozed")); // for start snoozed by default!
+        startAlert(ctx, trendingToAlertEnd, newAlert, bgValue, Pref.getBooleanDefaultFalse("start_snoozed")); // for start snoozed by default!
     }
 
     public synchronized  void startAlert(Context ctx, boolean trendingToAlertEnd, AlertType newAlert, String bgValue , boolean start_snoozed)  {
@@ -164,9 +177,9 @@ public class AlertPlayer {
     //  default signature for user initiated interactive snoozes only
     public synchronized void Snooze(Context ctx, int repeatTime) {
         Snooze(ctx, repeatTime, true);
-        if (Home.get_forced_wear() && Home.getPreferencesBooleanDefaultFalse("bg_notifications") ) {
-            SendData(ctx, WEARABLE_SNOOZE_ALERT, ("" + repeatTime).getBytes(StandardCharsets.UTF_8));
-        }
+        //   if (Home.get_forced_wear() && Pref.getBooleanDefaultFalse("bg_notifications") ) {
+        SendData(ctx, ListenerService.WEARABLE_SNOOZE_ALERT, ("" + repeatTime).getBytes(StandardCharsets.UTF_8));
+        //   }
     }
 
     public synchronized void Snooze(Context ctx, int repeatTime, boolean from_interactive) {
@@ -205,7 +218,12 @@ public class AlertPlayer {
         activeBgAlert.snooze(repeatTime);
     }
 
- // Check the state and alrarm if needed
+    public static int getAlertPlayerStreamType() {
+        return AudioManager.STREAM_ALARM;
+    }
+
+
+    // Check the state and alrarm if needed
     public void ClockTick(Context ctx, boolean trendingToAlertEnd, String bgValue)
     {
         if (trendingToAlertEnd) {
@@ -399,7 +417,7 @@ public class AlertPlayer {
 
     public static boolean notSilencedDueToCall()
     {
-        return !(Home.getPreferencesBooleanDefaultFalse("no_alarms_during_calls") && (JoH.isOngoingCall()));
+        return !(Pref.getBooleanDefaultFalse("no_alarms_during_calls") && (JoH.isOngoingCall()));
     }
 
     private void Vibrate(Context ctx, AlertType alert, String bgValue, Boolean overrideSilent, int timeFromStartPlaying) {
@@ -408,7 +426,7 @@ public class AlertPlayer {
         String content = "BG LEVEL ALERT: " + bgValue + "  (@" + JoH.hourMinuteString() + ")";
         Intent intent = new Intent(ctx, SnoozeActivity.class);
 
-        boolean localOnly = (Home.get_forced_wear() && Home.getPreferencesBooleanDefaultFalse("bg_notifications"));//KS
+        boolean localOnly = (Home.get_forced_wear() && Pref.getBooleanDefaultFalse("bg_notifications"));//KS
         Log.d(TAG, "NotificationCompat.Builder localOnly=" + localOnly);
         NotificationCompat.Builder  builder = new NotificationCompat.Builder(ctx)//KS Notification
                 .setSmallIcon(R.drawable.ic_launcher)//KS ic_action_communication_invert_colors_on
@@ -422,6 +440,15 @@ public class AlertPlayer {
         NotificationManager mNotifyMgr = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         //mNotifyMgr.cancel(Notifications.exportAlertNotificationId); // this appears to confuse android wear version 2.0.0.141773014.gms even though it shouldn't - can we survive without this?
         mNotifyMgr.notify(Notifications.exportAlertNotificationId, builder.build());
+        if (Pref.getBooleanDefaultFalse("alert_use_sounds")) {
+            try {
+                if (JoH.ratelimit("wear-alert-sound", 10)) {
+                    JoH.playResourceAudio(R.raw.warning);
+                }
+            } catch (Exception e) {
+                //
+            }
+        }
     }
 
     private void VibrateAudio(Context ctx, AlertType alert, String bgValue, Boolean overrideSilent, int timeFromStartPlaying) {
@@ -445,7 +472,7 @@ public class AlertPlayer {
         String content = "BG LEVEL ALERT: " + bgValue + "  (@" + JoH.hourMinuteString() + ")";
         Intent intent = new Intent(ctx, SnoozeActivity.class);
 
-        boolean localOnly = (Home.get_forced_wear() && Home.getPreferencesBooleanDefaultFalse("bg_notifications"));//KS
+        boolean localOnly = (Home.get_forced_wear() && Pref.getBooleanDefaultFalse("bg_notifications"));//KS
         Log.d(TAG, "NotificationCompat.Builder localOnly=" + localOnly);
         NotificationCompat.Builder  builder = new NotificationCompat.Builder(ctx)//KS Notification
             .setSmallIcon(R.drawable.ic_launcher)//KS ic_action_communication_invert_colors_on
@@ -518,7 +545,7 @@ public class AlertPlayer {
         mNotifyMgr.notify(Notifications.exportAlertNotificationId, builder.build());
 
         /* //KS not used on watch
-        if (Home.getPreferencesBooleanDefaultFalse("broadcast_to_pebble") && (Home.getPreferencesBooleanDefaultFalse("pebble_vibe_alerts"))) {
+        if (Pref.getBooleanDefaultFalse("broadcast_to_pebble") && (Pref.getBooleanDefaultFalse("pebble_vibe_alerts"))) {
             if (JoH.ratelimit("pebble_vibe_start", 59)) {
                 ctx.startService(new Intent(ctx, PebbleWatchSync.class));
             }

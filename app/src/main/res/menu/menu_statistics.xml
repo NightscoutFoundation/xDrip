@@ -2,19 +2,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:id="@+id/action_toggle_fullscreen"
-        android:title="Full Screen mode"
+        android:title="@string/title_full_screen_mode"
         android:onClick="toggleStatisticsFullScreenMode"
         android:checkable="true"
         android:orderInCategory="1"
         android:visible="true"/>
     <item android:id="@+id/action_toggle_printing"
-        android:title="Colors for printing"
+        android:title="@string/title_colors_for_printing"
         android:onClick="toggleStatisticsPrintingMode"
         android:checkable="true"
         android:orderInCategory="1"
         android:visible="true"/>
     <item android:id="@+id/share_this_screen"
-        android:title="Share / Save this screen"
+        android:title="@string/title_share_save_this_screen"
         android:onClick="statisticsShare"
         android:checkable="false"
         android:orderInCategory="1"

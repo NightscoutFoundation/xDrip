@@ -30,3 +30,30 @@ class ComunicationHeader {
         return new GsonBuilder().create().toJson(this);
     }
 }
+
+class ComunicationHeaderV2 {
+
+
+    @Expose
+    int version;
+    @Expose
+    int numberOfRecords;
+    
+    // Only send packets that are newer than this time
+    @Expose
+    long fromTime;
+    
+    // bluetooth device addresses
+    @Expose
+    String btAddresses;
+
+
+    ComunicationHeaderV2(int numberOfRecords) {
+        this.numberOfRecords = numberOfRecords;
+        this.version = 2;
+    }
+
+    String toJson() {
+        return new GsonBuilder().create().toJson(this);
+    }
+}

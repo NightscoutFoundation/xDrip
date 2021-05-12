@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.eveningoutpost.dexdrip.ErrorsActivity;
 import com.eveningoutpost.dexdrip.GcmActivity;
@@ -21,7 +22,9 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
+import com.eveningoutpost.dexdrip.UtilityModels.VehicleMode;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.utils.WebAppHelper;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -128,7 +131,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
     }
 
     public synchronized void start(boolean no_rate_limit) {
-        if (Home.getPreferencesBoolean("use_remote_motion", false)) {
+        if (Pref.getBoolean("use_remote_motion", false)) {
             Log.d(TAG, "Not starting as we are expecting remote instead of local motion");
             return;
         }
@@ -172,7 +175,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
 
     private static void setInternalPrefsString(String name, String value) {
         init_prefs();
-        prefs.edit().putString(name, value).commit(); // TODO check if commit needed
+        prefs.edit().putString(name, value).apply();
     }
 
     private static long getInternalPrefsLong(String name) {
@@ -226,7 +229,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
         final String msg = "Had to disable motion tracking feature as it did not seem to be working and may be incompatible with your phone. Please report this to the developers using the send logs feature: " + requested + " vs " + received + " " + JoH.getDeviceDetails();
         UserError.Log.wtf(TAG, msg);
         UserError.Log.ueh(TAG, msg);
-        Home.setPreferencesBoolean("motion_tracking_enabled", false);
+        Pref.setBoolean("motion_tracking_enabled", false);
         evaluateRequestReceivedCounters(true, context); // mark for disable
         setInternalPrefsLong(REQUESTED, 0);
         setInternalPrefsLong(RECEIVED, 0);
@@ -252,12 +255,13 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
         final double ratio = ((received_all_time * 100) / requested_all_time);
         if (d)
             Log.d(TAG, "evaluteRequestReceived: " + requested_all_time + "/" + received_all_time + " " + JoH.qs(ratio, 2));
-        // TODO use persistent rate limit
+        /*
+        disabled as was for early debug only
         if (JoH.ratelimit("evalute-request-received", 86400) || (disable)) {
-            if (Home.getPreferencesBoolean("enable_crashlytics", true)) {
+            if (Pref.getBoolean("enable_crashlytics", true)) {
                 new WebAppHelper(null).executeOnExecutor(xdrip.executor, xdrip.getAppContext().getString(R.string.wserviceurl) + "/joh-mreport/" + (disable ? 1 : 0) + "/" + requested_all_time + "/" + received_all_time + "/" + JoH.qs(ratio, 0) + "/" + JoH.base64encode(JoH.getDeviceDetails()));
             }
-        }
+        }*/
 
         // mutually exclusive logic
         if ((!disable) && (requested_all_time > 100) && (ratio < 90 ) && (!PowerStateReceiver.is_power_connected()) && (JoH.isAnyNetworkConnected()) && (JoH.ratelimit("disable_motion", 86400))) {
@@ -272,12 +276,15 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
         setInternalPrefsLong(RECEIVED, 0);
     }
 
+    // TODO refactor all the actual vehicle mode handling in to its own class
+    // TODO would reversing the order of these items be more efficient?
     public static boolean is_in_vehicle_mode() {
-        return Home.getPreferencesBoolean("motion_tracking_enabled", false) && Home.getPreferencesBoolean("vehicle_mode_enabled", false) && getInternalPrefsString(PREFS_MOTION_VEHICLE_MODE).equals("true");
+        return (Pref.getBooleanDefaultFalse("motion_tracking_enabled") || VehicleMode.viaCarAudio())
+                && VehicleMode.isEnabled() && getInternalPrefsString(PREFS_MOTION_VEHICLE_MODE).equals("true");
     }
 
     public static boolean raise_limit_due_to_vehicle_mode() {
-        return is_in_vehicle_mode() && (Home.getPreferencesBoolean("raise_low_limit_in_vehicle_mode", false));
+        return is_in_vehicle_mode() && (Pref.getBoolean("raise_low_limit_in_vehicle_mode", false));
     }
 
     public static void set_vehicle_mode(boolean value) {
@@ -291,6 +298,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
                 UserError.Log.ueh(TAG, "Exiting vehicle mode after: " + duration + " minutes");
             }
         }
+        VehicleMode.sendBroadcast();
     }
 
     private static int get_vehicle_mode_minutes() {
@@ -418,7 +426,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
         }
     }
 
-    private void stopUpdates() {
+    private synchronized void stopUpdates() {
         try {
             if (d) Log.d(TAG, "stopUpdates called");
             ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(mApiClient, get_pending_intent());
@@ -433,7 +441,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
     }
 
     private void restart(int frequency) {
-        if (Home.getPreferencesBoolean("use_remote_motion", false)) {
+        if (Pref.getBoolean("use_remote_motion", false)) {
             if (d) Log.d(TAG, "Not re-starting as we are expecting remote instead of local motion");
             return;
         }
@@ -486,7 +494,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
                 final PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
                 JoH.showNotification("Google Update Needed","Google Play Services update download needed for Motion. Download update via Google Play Store and try motion again after installed.",contentIntent,60302,true,true,true);
                 UserError.Log.ueh(TAG,"Google Play Services updated needed for motion - disabling motion for now");
-                Home.setPreferencesBoolean("motion_tracking_enabled", false);
+                Pref.setBoolean("motion_tracking_enabled", false);
 
             }
             start();
@@ -508,7 +516,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
             } else if (intent.getStringExtra(RECHECK_VEHICLE_MODE) != null) {
                 checkVehicleRepeatNotification();
             } else if (ActivityRecognitionResult.hasResult(intent)) {
-                if ((Home.getPreferencesBooleanDefaultFalse("motion_tracking_enabled"))) {
+                if ((Pref.getBooleanDefaultFalse("motion_tracking_enabled"))) {
                     if (mApiClient == null) start();
                     ActivityRecognitionResult result = ActivityRecognitionResult.extractResult(intent);
                     final int topConfidence = handleDetectedActivities(result.getProbableActivities(), true, 0);
@@ -519,12 +527,15 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
                     if ((received > MAX_RECEIVED) || (topConfidence > 90))
                         stopUpdates(); // one hit only
                 } else {
-                    UserError.Log.wtf(TAG, "Received ActivityRecognition we were not expecting!"); /// DEEEBUG
+                    if (JoH.ratelimit("not-expected-activity", 1200)) {
+                        UserError.Log.e(TAG, "Received ActivityRecognition we were not expecting!"); /// DEEEBUG
+                        stop();
+                    }
                 }
             } else {
                 // spoof from intent
                 final String payload = intent.getStringExtra(INCOMING_ACTIVITY_ACTION);
-                if ((payload != null) && (Home.getPreferencesBoolean("use_remote_motion", false))) {
+                if ((payload != null) && (Pref.getBoolean("use_remote_motion", false))) {
                     try {
                         final String amup[] = payload.split("\\^");
                         final long timestamp = Long.parseLong(amup[0]);
@@ -566,11 +577,11 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
 
                 if (((topActivity.getConfidence() > 89) || ((lastactivity != null) && (topActivity.getType() == lastactivity.getType()) && ((lastactivity.getConfidence() + topActivity.getConfidence()) > 150)))
                         && ((activityState == null) || (activityState.getType() != topActivity.getType()))) {
-                    if (Home.getPreferencesBoolean("motion_tracking_enabled", false)) {
+                    if (Pref.getBoolean("motion_tracking_enabled", false)) {
                         UserError.Log.ueh(TAG, "Changed activity state from " + ((activityState == null) ? "null" : activityState.toString()) + " to: " + topActivity.toString());
                         activityState = topActivity;
 
-                        if (Home.getPreferencesBoolean("plot_motion", true))
+                        if (Pref.getBoolean("plot_motion", true))
                             saveUpdatedActivityState(timestamp);
 
                         switch (topActivity.getType()) {
@@ -580,7 +591,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
                                 // confidence condition above overrides this for non consolidated entries
                                 if (topActivity.getConfidence() >= 75) {
 
-                                    if (!is_in_vehicle_mode()) set_vehicle_mode(true);
+                                    if (!VehicleMode.isVehicleModeActive()) VehicleMode.setVehicleModeActive(true);
                                     // also checks if vehicle mode enabled on this handset if get != set
                                     if (is_in_vehicle_mode()) {
                                         raise_vehicle_notification("In Vehicle Mode: " + JoH.dateTimeText(JoH.tsl()));
@@ -596,7 +607,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
                                 break;
                         }
 
-                        if ((from_local) && Home.getPreferencesBoolean("motion_tracking_enabled", false) && (Home.getPreferencesBoolean("act_as_motion_master", false))) {
+                        if ((from_local) && Pref.getBoolean("motion_tracking_enabled", false) && (Pref.getBoolean("act_as_motion_master", false))) {
                             if (d) Log.d(TAG, "Sending update: " + activityState.getType());
                             GcmActivity.sendMotionUpdate(JoH.tsl(), activityState.getType());
                         }
@@ -620,7 +631,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         builder.setContentText(msg);
         builder.setSmallIcon(R.drawable.ic_launcher);
-        if (Home.getPreferencesBoolean("play_sound_in_vehicle_mode", false)) {
+        if (VehicleMode.shouldPlaySound()) {
             setInternalPrefsLong(VEHICLE_MODE_LAST_ALERT, JoH.tsl());
             builder.setSound(Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getPackageName() + "/" + R.raw.labbed_musical_chime));
         }
@@ -634,9 +645,9 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
     }
 
     private void checkVehicleRepeatNotification() {
-        if (Home.getPreferencesBoolean("play_sound_in_vehicle_mode", false)) {
+        if (Pref.getBoolean("play_sound_in_vehicle_mode", false)) {
             if (is_in_vehicle_mode()) {
-                if (Home.getPreferencesBoolean("repeat_sound_in_vehicle_mode", true)) {
+                if (Pref.getBoolean("repeat_sound_in_vehicle_mode", true)) {
                     if (get_minutes_since_last_alert() > 90) {
                         raise_vehicle_notification("Still in Vehicle mode, duration: " + get_vehicle_mode_minutes() + " mins");
                     }
@@ -697,11 +708,25 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
         public ArrayList<motionData> entries;
 
         motionDataWrapper() {
-            entries = new ArrayList<motionData>();
+            entries = new ArrayList<>();
         }
     }
 
     public static class motionData {
+
+        private static final SparseArray<String> classification = new SparseArray<>();
+
+        static {
+            classification.put(DetectedActivity.IN_VEHICLE, "in vehicle");
+            classification.put(DetectedActivity.ON_BICYCLE, "on bicycle");
+            classification.put(DetectedActivity.ON_FOOT, "on foot");
+            classification.put(DetectedActivity.RUNNING, "running");
+            classification.put(DetectedActivity.STILL, "still");
+            classification.put(DetectedActivity.TILTING, "tilting");
+            classification.put(DetectedActivity.UNKNOWN, "unknown");
+            classification.put(DetectedActivity.WALKING, "walking");
+        }
+
         @Expose
         public long timestamp;
         @Expose
@@ -710,6 +735,11 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
         public motionData(long timestamp, int activity) {
             this.timestamp = timestamp;
             this.activity = activity;
+        }
+
+        public String toPrettyType() {
+            final String value = classification.get(this.activity);
+            return value != null ? value : "unclassified " + activity;
         }
 
     }

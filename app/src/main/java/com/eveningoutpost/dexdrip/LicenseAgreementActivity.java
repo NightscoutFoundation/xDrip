@@ -13,11 +13,10 @@ import android.widget.CheckBox;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
 
-public class LicenseAgreementActivity extends AppCompatActivity {
+public class LicenseAgreementActivity extends BaseAppCompatActivity {
     boolean IUnderstand;
     boolean appended = false;
     CheckBox agreeCheckBox;
@@ -30,13 +29,20 @@ public class LicenseAgreementActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         IUnderstand = prefs.getBoolean("I_understand", false);
-        setContentView(R.layout.activity_license_agreement);
-        JoH.fixActionBar(this);
-        findViewById(R.id.googlelicenses).setAlpha(0.5f);
-        agreeCheckBox = (CheckBox) findViewById(R.id.agreeCheckBox);
-        agreeCheckBox.setChecked(IUnderstand);
-        saveButton = (Button) findViewById(R.id.saveButton);
-        addListenerOnButton();
+        try {
+            setContentView(R.layout.activity_license_agreement);
+
+            JoH.fixActionBar(this);
+            findViewById(R.id.googlelicenses).setAlpha(0.5f);
+            agreeCheckBox = (CheckBox) findViewById(R.id.agreeCheckBox);
+            agreeCheckBox.setChecked(IUnderstand);
+            saveButton = (Button) findViewById(R.id.saveButton);
+            addListenerOnButton();
+
+        } catch (UnsupportedOperationException e) {
+            JoH.static_toast_long("Unable to display license agreement? blocked by user? Cannot continue");
+            finish();
+        }
       /*  try {
             final int gplaystatus = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getApplicationContext());
             if (gplaystatus != ConnectionResult.SUCCESS) {

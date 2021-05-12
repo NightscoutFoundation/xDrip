@@ -16,6 +16,7 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -29,6 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 /**
  * Created by jamorham on 18/02/2017.
@@ -54,10 +57,11 @@ public class Mdns {
     }
 
     private static final HashMap<String, LookUpInfo> iplookup = new HashMap<>();
-    private static boolean hunt_running = false;
+    private static volatile boolean hunt_running = false;
+    private static int errorCounter = 0;
 
     private final AtomicInteger outstanding = new AtomicInteger();
-    private long locked_until = 0;
+    private volatile long locked_until = 0;
     private NsdManager mNsdManager;
     private static NsdManager.DiscoveryListener mDiscoveryListener;
     private NsdManager.ResolveListener mResolveListener;
@@ -67,6 +71,10 @@ public class Mdns {
     private static final long NORMAL_RESOLVE_TIMEOUT_MS = 5000;
     private static final long WAIT_FOR_REPLIES_TIMEOUT_MS = 10000;
 
+    // In order for this to work on a rpi do:
+    // On the file /etc/avahi/avahi-daemon.conf change
+    // publish-workstation=yes
+    // and restart the service (sudo /etc/init.d/avahi-daemon restart)
     private static final String SERVICE_TYPE = "_workstation._tcp.";
     private static final String TAG = "Mdns-discovery";
     private static final boolean d = true;
@@ -177,6 +185,8 @@ public class Mdns {
 
         } catch (InterruptedException e) {
             UserError.Log.e(TAG, "Interrupted waiting to resolver lock!");
+        } catch (IllegalArgumentException e) {
+            UserError.Log.e(TAG, "got illegal argument exception in singleResolveService: ", e);
         }
     }
 
@@ -210,6 +220,7 @@ public class Mdns {
 
                 final String type = service.getServiceType();
 
+                UserError.Log.d(TAG, "onServiceFound " + type + service.getServiceName());
                 if (type.equals(SERVICE_TYPE)) {
                     final String name = service.getServiceName();
                     final LookUpInfo li = iplookup.get(shortenName(name));
@@ -264,6 +275,16 @@ public class Mdns {
             public void onResolveFailed(NsdServiceInfo serviceInfo, int errorCode) {
                 if (JoH.quietratelimit("mdns-error", 30))
                     UserError.Log.e(TAG, "Resolve failed " + errorCode);
+                if (errorCode == 3) {
+                    errorCounter++;
+                    if (errorCounter > 5) {
+                        errorCounter = 0;
+                        if (JoH.pratelimit("mdns-total-restart", 86400)) {
+                            UserError.Log.wtf(TAG, "Had to do a complete restart due to MDNS failures");
+                            android.os.Process.killProcess(android.os.Process.myPid());
+                        }
+                    }
+                }
                 try {
                     mNsdManager.stopServiceDiscovery(mDiscoveryListener);
                 } catch (Exception e) {
@@ -310,7 +331,7 @@ public class Mdns {
                             public void run() {
 
                                 // TODO: probe port 50005?
-                                final String receiver_list = Home.getPreferencesStringDefaultBlank("wifi_recievers_addresses").trim().toLowerCase();
+                                final String receiver_list = Pref.getStringDefaultBlank("wifi_recievers_addresses").trim().toLowerCase();
                                 final String new_receiver = entry.getKey().toLowerCase() + ".local" + ":50005";
 
                                 if (!receiver_list.contains(entry.getKey().toLowerCase() + ".local")) {
@@ -322,7 +343,7 @@ public class Mdns {
                                                 case DialogInterface.BUTTON_POSITIVE:
                                                     String new_receiver_list = (receiver_list.length() > 0) ? receiver_list + "," + new_receiver : new_receiver;
                                                     UserError.Log.d(TAG, "Updating receiver list to: " + new_receiver_list);
-                                                    Home.setPreferencesString("wifi_recievers_addresses", new_receiver_list);
+                                                    Pref.setString("wifi_recievers_addresses", new_receiver_list);
                                                     JoH.static_toast_long("Added receiver: " + JoH.ucFirst(entry.getKey()));
                                                     break;
                                             }
@@ -331,7 +352,7 @@ public class Mdns {
                                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
                                     builder.setTitle("Add " + JoH.ucFirst(entry.getKey()) + " to list of receivers?");
                                     builder.setMessage("Is this device running a collector?\n\n" + entry.getKey() + ".local can be automatically added to list of receivers").setPositiveButton("Add", dialogClickListener)
-                                            .setNegativeButton("No", dialogClickListener).show();
+                                            .setNegativeButton(gs(R.string.no), dialogClickListener).show();
                                 } else {
                                     // remove item
                                     final DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
@@ -341,7 +362,7 @@ public class Mdns {
                                                 case DialogInterface.BUTTON_POSITIVE:
                                                     String new_receiver_list = receiver_list.replace(new_receiver, "").replace(",,", ",").replaceFirst(",$", "").replaceFirst("^,", "");
                                                     UserError.Log.d(TAG, "Updating receiver list to: " + new_receiver_list);
-                                                    Home.setPreferencesString("wifi_recievers_addresses", new_receiver_list);
+                                                    Pref.setString("wifi_recievers_addresses", new_receiver_list);
                                                     JoH.static_toast_long("Removed receiver: " + JoH.ucFirst(entry.getKey()));
                                                     break;
                                             }
@@ -350,7 +371,7 @@ public class Mdns {
                                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
                                     builder.setTitle("Remove " + JoH.ucFirst(entry.getKey()) + " from list of receivers?");
                                     builder.setPositiveButton("Remove", dialogClickListener)
-                                            .setNegativeButton("No", dialogClickListener).show();
+                                            .setNegativeButton(gs(R.string.no), dialogClickListener).show();
                                 }
 
 

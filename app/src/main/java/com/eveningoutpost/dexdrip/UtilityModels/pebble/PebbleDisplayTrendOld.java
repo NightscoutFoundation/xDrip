@@ -13,6 +13,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSparklineBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.SimpleImageEncoder;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
@@ -39,6 +40,7 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
 
     private final static String TAG = PebbleDisplayTrendOld.class.getSimpleName();
 
+  /*
     public static final int TREND_BEGIN_KEY = 7;
     public static final int TREND_DATA_KEY = 8;
     public static final int TREND_END_KEY = 9;
@@ -51,8 +53,8 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
     public static final int SYNC_KEY = 1000;
     public static final int PLATFORM_KEY = 1001;
     public static final int VERSION_KEY = 1002;
-
-    public static final int CHUNK_SIZE = 100;
+*/
+    private static final int CHUNK_SIZE = 100;
     public static final boolean d = false;
 
     private static byte last_collect_health_key_byte = 0x1A;
@@ -149,25 +151,28 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
 
     private void evaluateDataFromPebble(PebbleDictionary data) {
 
-        if (data.size() > 0) {
-            pebble_sync_value = data.getUnsignedIntegerAsLong(SYNC_KEY);
-            pebble_platform = data.getUnsignedIntegerAsLong(PLATFORM_KEY);
-            pebble_app_version = data.getString(VERSION_KEY);
-            Log.d(TAG, "receiveData: pebble_sync_value=" + pebble_sync_value + ", pebble_platform=" + pebble_platform + ", pebble_app_version=" + pebble_app_version);
+        try {
+            if (data.size() > 0) {
+                pebble_sync_value = data.getUnsignedIntegerAsLong(SYNC_KEY);
+                pebble_platform = data.getUnsignedIntegerAsLong(PLATFORM_KEY);
+                pebble_app_version = data.getString(VERSION_KEY);
+                Log.d(TAG, "receiveData: pebble_sync_value=" + pebble_sync_value + ", pebble_platform=" + pebble_platform + ", pebble_app_version=" + pebble_app_version);
 
-            switch ((int)pebble_platform) {
-                case 0:
-                    if (PebbleUtil.pebbleDisplayType != PebbleDisplayType.TrendClassic) {
-                        PebbleUtil.pebbleDisplayType = PebbleDisplayType.TrendClassic;
-                        //JoH.static_toast_short("Switching to Pebble Classic Trend");
-                        Log.d(TAG,"Changing to Classic Trend due to platform id");
-                    }
-                    break;
+                switch ((int) pebble_platform) {
+                    case 0:
+                        if (PebbleUtil.pebbleDisplayType != PebbleDisplayType.TrendClassic) {
+                            PebbleUtil.pebbleDisplayType = PebbleDisplayType.TrendClassic;
+                            //JoH.static_toast_short("Switching to Pebble Classic Trend");
+                            Log.d(TAG, "Changing to Classic Trend due to platform id");
+                        }
+                        break;
+                }
 
+            } else {
+                Log.d(TAG, "receiveData: pebble_app_version not known");
             }
-
-        } else {
-            Log.d(TAG, "receiveData: pebble_app_version not known");
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Got exception trying to parse data from pebble: " + e);
         }
     }
 
@@ -239,10 +244,9 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
                     this.dictionary.addString(BG_DELTA_KEY, "No Signal");
                 } else {
                     this.dictionary.addString(BG_DELTA_KEY, getBgDelta());
-
-                    if (((BgGraphBuilder.bwp_last_insulin != null) && (JoH.msSince(BgGraphBuilder.bwp_last_insulin_timestamp) < Constants.MINUTE_IN_MS * 11))
+                    if (((keyStore.getS("bwp_last_insulin") != null) && (JoH.msSince(keyStore.getL("bwp_last_insulin_timestamp")) < Constants.MINUTE_IN_MS * 11))
                             && getBooleanValue("pebble_show_bwp")) {
-                        this.dictionary.addString(BG_DELTA_KEY, PEBBLE_BWP_SYMBOL + BgGraphBuilder.bwp_last_insulin); // 😐
+                        this.dictionary.addString(BG_DELTA_KEY, PEBBLE_BWP_SYMBOL + keyStore.getS("bwp_last_insulin")); // 😐
                     }
 
                 }
@@ -337,8 +341,8 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
                         .showHighLine(highLine)
                         .showLowLine(lowLine)
                        // .showAxes(true)
-                        .setTinyDots(Home.getPreferencesBooleanDefaultFalse("pebble_tiny_dots"))
-                        .setShowFiltered(Home.getPreferencesBooleanDefaultFalse("pebble_filtered_line"))
+                        .setTinyDots(Pref.getBooleanDefaultFalse("pebble_tiny_dots"))
+                        .setShowFiltered(Pref.getBooleanDefaultFalse("pebble_filtered_line"))
                                 //.setSmallDots()
                         .build();
 
@@ -501,57 +505,60 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
             if (lock.tryLock(60, TimeUnit.SECONDS)) {
                 try {
 
-                        if (PebbleKit.isWatchConnected(this.context)) {
-                            if (d) Log.d(TAG, "Sendstep: " + sendStep);
-                            if (sendStep == 5) {
-                                sendStep = 0;
-                                done = false;
-                                clearDictionary();
+                    if (PebbleKit.isWatchConnected(this.context)) {
+                        if (d) Log.d(TAG, "Sendstep: " + sendStep);
+                        if (sendStep == 5) {
+                            sendStep = 0;
+                            done = false;
+                            clearDictionary();
+                        }
+
+                        if (d)
+                            Log.i(TAG, "sendData: messageInTransit= " + messageInTransit + ", transactionFailed= " + transactionFailed + ", sendStep= " + sendStep);
+                        if (sendStep == 0 && !messageInTransit && !transactionOk && !transactionFailed) {
+
+                            if (use_best_glucose) {
+                                this.dg = BestGlucose.getDisplayGlucose();
+                            } else {
+                                this.bgReading = BgReading.last();
                             }
 
-                            if (d) Log.i(TAG, "sendData: messageInTransit= " + messageInTransit + ", transactionFailed= " + transactionFailed + ", sendStep= " + sendStep);
-                            if (sendStep == 0 && !messageInTransit && !transactionOk && !transactionFailed) {
+                            sendingData = true;
+                            buildDictionary();
+                            sendDownload();
+                        }
 
-                                if (use_best_glucose) {
-                                    this.dg = BestGlucose.getDisplayGlucose();
+
+                        if (sendStep == 0 && !messageInTransit && transactionOk && !transactionFailed) {
+                            if (d) Log.i(TAG, "sendData: sendStep 0 complete, clearing dictionary");
+                            clearDictionary();
+                            transactionOk = false;
+                            sendStep = 1;
+                        }
+                        if (sendStep > 0 && sendStep < 5) {
+                            if (!doWeDisplayTrendData()) {
+                                if (didTrend) {
+                                    sendTrendToPebble(true); // clear trend image
                                 } else {
-                                    this.bgReading = BgReading.last();
-                                    }
-
-                                sendingData = true;
-                                buildDictionary();
-                                sendDownload();
-                            }
-
-
-                            if (sendStep == 0 && !messageInTransit && transactionOk && !transactionFailed) {
-                                if (d) Log.i(TAG, "sendData: sendStep 0 complete, clearing dictionary");
-                                clearDictionary();
-                                transactionOk = false;
-                                sendStep = 1;
-                            }
-                            if (sendStep > 0 && sendStep < 5) {
-                                if (!doWeDisplayTrendData()) {
-                                    if (didTrend) {
-                                        sendTrendToPebble(true); // clear trend image
-                                    } else {
-                                        sendStep = 5;
-                                    }
-                                } else {
-                                    sendTrendToPebble(false);
+                                    sendStep = 5;
                                 }
-                            }
-
-                            if (sendStep == 5) {
-                                if (d) Log.i(TAG, "sendData: finished sending.  sendStep = " + sendStep);
-                                done = true;
-                                transactionFailed = false;
-                                transactionOk = false;
-                                messageInTransit = false;
-                                sendingData = false;
+                            } else {
+                                sendTrendToPebble(false);
                             }
                         }
 
+                        if (sendStep == 5) {
+                            if (d)
+                                Log.i(TAG, "sendData: finished sending.  sendStep = " + sendStep);
+                            done = true;
+                            transactionFailed = false;
+                            transactionOk = false;
+                            messageInTransit = false;
+                            sendingData = false;
+                        }
+                    }
+                } catch (final NullPointerException e) {
+                    Log.e(TAG, "Got null pointer error " + e);
                 } finally {
                     lock.unlock();
                 }

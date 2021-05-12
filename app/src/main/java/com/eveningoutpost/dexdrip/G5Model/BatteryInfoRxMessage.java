@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 
@@ -13,7 +12,7 @@ import java.util.Locale;
  */
 
 
-public class BatteryInfoRxMessage extends TransmitterMessage {
+public class BatteryInfoRxMessage extends BaseMessage {
 
     private final static String TAG = G5CollectionService.TAG; // meh
 
@@ -27,18 +26,25 @@ public class BatteryInfoRxMessage extends TransmitterMessage {
     public int temperature;
 
     public BatteryInfoRxMessage(byte[] packet) {
-        if (packet.length >= 12) {
+        if (packet.length >= 10) {
             data = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN);
             if (data.get() == opcode) {
                 status = data.get();
                 voltagea = getUnsignedShort(data);
                 voltageb = getUnsignedShort(data);
-                resist = getUnsignedShort(data);
+                if (packet.length != 10) {
+                    resist = getUnsignedShort(data);
+                }
                 runtime = getUnsignedByte(data);
+                if (packet.length == 10) {
+                    runtime = -1; // this byte isn't runtime on rev2
+                }
                 temperature = data.get(); // not sure if signed or not, but <0c or >127C seems unlikely!
             } else {
                 UserError.Log.wtf(TAG, "Invalid opcode for BatteryInfoRxMessage");
             }
+        } else {
+            UserError.Log.wtf(TAG, "Invalid length for BatteryInfoMessage: " + packet.length);
         }
     }
 
