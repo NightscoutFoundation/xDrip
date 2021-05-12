@@ -263,6 +263,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
             Log.e(TAG, "LibreWifiHeader = " + libre_wifi_data_array);
 
             for (LibreWifiData libre_wifi_data : libre_wifi_data_array) {
+                libre_wifi_data.RelativeTime = JoH.tsl() - libre_wifi_data.CaptureDateTime;
 
                 if (newest_timestamp < libre_wifi_data.CaptureDateTime) {
                     statusLog(url, JoH.hourMinuteString() + " OK data from:", libre_wifi_data.CaptureDateTime);
@@ -339,7 +340,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
 
         //      System.out.println("Final Results========================================================================");
         //       for (int i= 0; i < trd_array.length; i++) {
-        //           System.out.println( trd_array[i].toTableString());
+        //           System.out.println( trd_array[i].toString());
         //      }
         return trd_array;
 
@@ -543,7 +544,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
         if (LibreWifiDataArr == null || LibreWifiDataArr.length == 0) {
             return;
         }
-        Log.d(TAG, "After verification ..." + LibreWifiDataArr);
+        Log.d(TAG, "After verification ... size = " + LibreWifiDataArr.length);
         // Last in the array is the most updated reading we have.
         for (LibreWifiData LastReading : LibreWifiDataArr) {
             // Last in the array is the most updated reading we have.
