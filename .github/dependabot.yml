@@ -9,3 +9,5 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
+    # Allow unlimitted number of open pull requests for gradle dependencies
+    open-pull-requests-limit: 0
