@@ -98,7 +98,7 @@ public class StartNewSensor extends ActivityWithMenu {
                 JoH.static_toast_long("Need to connect to transmitter once before we can start sensor");
                 MegaStatus.startStatus(MegaStatus.G5_STATUS);
             } else {
-                realStartSensor();   // If we're using native mode, don't bother asking about insertion time
+                startSensorOrAskForG6Code();   // If we're using native mode, don't bother asking about insertion time
             }
         } else {
             final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -107,7 +107,7 @@ public class StartNewSensor extends ActivityWithMenu {
             builder.setPositiveButton(gs(R.string.yes_today), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
-                    askSesorInsertionTime();
+                    askSensorInsertionTime();
                 }
             });
             builder.setNegativeButton(gs(R.string.not_today), new DialogInterface.OnClickListener() {
@@ -115,7 +115,7 @@ public class StartNewSensor extends ActivityWithMenu {
                     dialog.dismiss();
                     if (DexCollectionType.hasLibre()) {
                         ucalendar.add(Calendar.DAY_OF_MONTH, -1);
-                        realStartSensor();
+                        startSensorOrAskForG6Code();
                     } else {
                         final DatePickerFragment datePickerFragment = new DatePickerFragment();
                         datePickerFragment.setAllowFuture(false);
@@ -129,9 +129,9 @@ public class StartNewSensor extends ActivityWithMenu {
                                 ucalendar.set(year, month, day);
                                 // Long enough in the past for age adjustment to be meaningless? Skip asking time
                                 if ((!Home.get_engineering_mode()) && (JoH.tsl() - ucalendar.getTimeInMillis() > (AGE_ADJUSTMENT_TIME + (1000 * 60 * 60 * 24)))) {
-                                    realStartSensor();
+                                    startSensorOrAskForG6Code();
                                 } else {
-                                    askSesorInsertionTime();
+                                    askSensorInsertionTime();
                                 }
                             }
                         });
@@ -144,7 +144,7 @@ public class StartNewSensor extends ActivityWithMenu {
         }
     }
 
-    private void askSesorInsertionTime() {
+    private void askSensorInsertionTime() {
         final Calendar calendar = Calendar.getInstance();
 
         TimePickerFragment timePickerFragment = new TimePickerFragment();
@@ -160,18 +160,40 @@ public class StartNewSensor extends ActivityWithMenu {
                     ucalendar.add(Calendar.HOUR_OF_DAY, -1); // hack for warmup time
                 }
 
-                realStartSensor();
+                startSensorOrAskForG6Code();
             }
         });
         timePickerFragment.show(activity.getFragmentManager(), "TimePicker");
     }
 
-    private void realStartSensor() {
+    private void startSensorOrAskForG6Code() {
         if (Ob1G5CollectionService.usingCollector() && Ob1G5StateMachine.usingG6()) {
-            G6CalibrationCodeDialog.ask(this, this::realRealStartSensor);
+            G6CalibrationCodeDialog.ask(this, this::startSensorAndSetIntent);
         } else {
-            realRealStartSensor();
+            startSensorAndSetIntent();
         }
+    }
+
+    private void startSensorAndSetIntent() {
+        long startTime = ucalendar.getTime().getTime();
+        Log.d(TAG, "Starting sensor time: " + JoH.dateTimeText(ucalendar.getTime().getTime()));
+
+        if (new Date().getTime() + 15 * 60000 < startTime) {
+            Toast.makeText(this, gs(R.string.error_sensor_start_time_in_future), Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        startSensorForTime(startTime);
+
+        Intent intent;
+        if (Pref.getBoolean("store_sensor_location", false) && Experience.gotData()) {
+            intent = new Intent(getApplicationContext(), NewSensorLocation.class);
+        } else {
+            intent = new Intent(getApplicationContext(), Home.class);
+        }
+
+        startActivity(intent);
+        finish();
     }
 
     /**
@@ -192,6 +214,7 @@ public class StartNewSensor extends ActivityWithMenu {
         // reverse libre hacky workaround
         long modifiedStartTime = DexCollectionType.hasLibre() ? (startTime + 3600000) : startTime;
 
+        // Add treatment entry in db
         Treatments.SensorStart(modifiedStartTime, "Started by xDrip");
 
         CollectionServiceStarter.restartCollectionServiceBackground();
@@ -200,28 +223,6 @@ public class StartNewSensor extends ActivityWithMenu {
         JoH.clearCache();
         Home.staticRefreshBGCharts();
 
-    }
-
-    private void realRealStartSensor() {
-        long startTime = ucalendar.getTime().getTime();
-        Log.d(TAG, "Starting sensor time: " + JoH.dateTimeText(ucalendar.getTime().getTime()));
-
-        if (new Date().getTime() + 15 * 60000 < startTime) {
-            Toast.makeText(this, gs(R.string.error_sensor_start_time_in_future), Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        startSensorForTime(startTime);
-
-        Intent intent;
-        if (Pref.getBoolean("store_sensor_location", false) && Experience.gotData()) {
-            intent = new Intent(getApplicationContext(), NewSensorLocation.class);
-        } else {
-            intent = new Intent(getApplicationContext(), Home.class);
-        }
-
-        startActivity(intent);
-        finish();
     }
 
     @Override
