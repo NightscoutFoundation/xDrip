@@ -152,14 +152,29 @@
                     android:layout_height="wrap_content"
                     app:showIfTrue="@{!vm.showButton}" />
 
-                <Button
-                    android:layout_width="200dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
 
-                    android:onClick="@{() -> vm.depositButton()}"
-                    android:text="Deposit Data"
-                    app:showIfTrue="@{vm.showButton}" />
+                    <Button
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+
+                        android:onClick="@{() -> vm.depositButtonG()}"
+                        android:text="Deposit Glucose"
+                        app:showIfTrue="@{vm.showButton}" />
+
+                    <Button
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:onClick="@{() -> vm.depositButtonT()}"
+                        android:text="Deposit Treatment"
+                        app:showIfTrue="@{vm.showButton}" />
+                </LinearLayout>
 
 
                 <Button
