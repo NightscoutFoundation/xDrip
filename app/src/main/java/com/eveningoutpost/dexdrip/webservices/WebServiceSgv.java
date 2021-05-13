@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,15 +40,19 @@ import static com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService.g
 
 public class WebServiceSgv extends BaseWebService {
 
-    private static String TAG = "WebServiceSgv";
-
+    private static final String TAG = "WebServiceSgv";
     private static List<BgReading> cachedReadings = null;
-    private static Map<String, JSONObject> cachedJson = new HashMap<>();
 
+    private static final Map<String, JSONObject> cachedJson = new LinkedHashMap<String, JSONObject>() {
+        // Prevent the cache from growing too large. 1000 entries is about 3.5 days
+        @Override
+        protected boolean removeEldestEntry(Entry eldest) {
+            return size() > 1000;
+        }
+    };
 
     // process the request and produce a response object
     public WebResponse request(String query) {
-
         int steps_result_code = 0; // result code for any steps cgi parameters, 200 = good
         int heart_result_code = 0; // result code for any heart cgi parameters, 200 = good
         int tasker_result_code = 0; // result code for any heart cgi parameters, 200 = good
@@ -59,7 +64,6 @@ public class WebServiceSgv extends BaseWebService {
         final Map<String, String> cgi = getQueryParameters(query);
 
         int count = 24;
-
         if (cgi.containsKey("count")) {
             try {
                 count = Integer.valueOf(cgi.get("count"));
@@ -106,68 +110,58 @@ public class WebServiceSgv extends BaseWebService {
             brief = true;
         }
 
-
         final JSONArray reply = new JSONArray();
 
         // whether to include data which doesn't match the current sensor
         final boolean ignore_sensor = Home.get_follower() || cgi.containsKey("all_data");
-
 
         // Store a cache of the last BgReading.latest() query for the duration in which there is no
         // new latest reading. Since obtaining the latest reading is fast, but a larger number of
         // readings is significantly slower, this optimizes the most often use case.
         List<BgReading> bgr = BgReading.latest(1, ignore_sensor);
         BgReading latestReading = null;
-        if (bgr != null) {
-            Iterator<BgReading> it = bgr.iterator();
-            latestReading = it.hasNext() ? it.next() : null;
+        if (bgr != null && bgr.size() > 0) {
+            latestReading = bgr.iterator().next();
         }
 
         List<BgReading> readings;
-        if (this.cachedReadings != null && latestReading != null &&
-            this.cachedReadings.size() > 0 && latestReading.uuid.equals(this.cachedReadings.iterator().next().uuid) &&
-            count <= this.cachedReadings.size())
+        if (cachedReadings != null && cachedReadings.size() > 0 && count <= cachedReadings.size() &&
+            latestReading != null && latestReading.uuid.equals(cachedReadings.iterator().next().uuid))
         {
-            if (count == this.cachedReadings.size()) {
+            if (count == cachedReadings.size()) {
                 UserError.Log.d(TAG, "Using cached readings");
-                readings = this.cachedReadings;
+                readings = cachedReadings;
             } else {
-                UserError.Log.d(TAG, "Copying "+count+" of "+this.cachedReadings.size()+" cached readings");
+                UserError.Log.d(TAG, "Copying " + count + " of " + cachedReadings.size() + " cached readings");
                 readings = new ArrayList<>();
-                Iterator<BgReading> it = this.cachedReadings.iterator();
+                Iterator<BgReading> it = cachedReadings.iterator();
                 for (int i=0; i<count; i++) {
                     readings.add(it.next());
                 }
             }
         } else {
-            UserError.Log.d(TAG, "Fetching latest "+count+" readings from BgReading");
+            UserError.Log.d(TAG, "Fetching latest " + count + " readings from BgReading");
             readings = BgReading.latest(count, ignore_sensor);
-            this.cachedReadings = readings;
-        }
-
-        // Prevent the cache from growing too large. 1000 entries is about 3.5 days
-        if (cachedJson.size() > 1000) {
-            cachedJson.clear();
+            cachedReadings = readings;
         }
 
         if (readings != null) {
-            String unitsHint = Pref.getString("units", "mgdl").equals("mgdl") ? "mgdl" : "mmol";
             int withCache = 0;
             int withManual = 0;
             // populate json structures
             try {
-
                 final String collector_device = DexCollectionType.getBestCollectorHardwareName();
-                String external_status_line = getLastStatusLine();
 
                 // for each reading produce a json record
                 for (BgReading reading : readings) {
-                    if (cachedJson.containsKey(reading.uuid)) {
+                    JSONObject item;
+                    if (!brief && cachedJson.containsKey(reading.uuid)) {
                         reply.put(cachedJson.get(reading.uuid));
                         withCache++;
                         continue;
                     }
-                    final JSONObject item = new JSONObject();
+
+                    item = new JSONObject();
                     if (!brief) {
                         item.put("_id", reading.uuid);
                         item.put("device", collector_device);
@@ -177,11 +171,13 @@ public class WebServiceSgv extends BaseWebService {
 
                     item.put("date", reading.timestamp);
                     item.put("sgv", (int) reading.getDg_mgdl());
+
                     try {
                         item.put("delta", new BigDecimal(reading.getDg_slope() * 5 * 60 * 1000).setScale(3, BigDecimal.ROUND_HALF_UP));
                     } catch (NumberFormatException e) {
                         UserError.Log.e(TAG, "Could not pass delta to webservice as was invalid number");
                     }
+
                     item.put("direction", reading.getDg_deltaName());
                     item.put("noise", reading.noiseValue());
 
@@ -191,59 +187,69 @@ public class WebServiceSgv extends BaseWebService {
                         item.put("rssi", 100);
                         item.put("type", "sgv");
                     }
-                    if (units_indicator > 0) {
-                        item.put("units_hint", unitsHint);
-                        units_indicator = 0;
+
+                    if (!brief) {
+                        cachedJson.put(reading.uuid, item);
                     }
-
-                    // emit the external status line once if present
-                    if (external_status_line.length() > 0) {
-                        item.put("aaps", external_status_line);
-                        item.put("aaps-ts", getLastStatusLineTime());
-                        external_status_line = "";
-                    }
-
-                    // emit result code from steps if present
-                    if (steps_result_code > 0) {
-                        item.put("steps_result", steps_result_code);
-                        steps_result_code = 0;
-                    }
-
-                    // emit result code from heart if present
-                    if (heart_result_code > 0) {
-                        item.put("heart_result", heart_result_code);
-                        heart_result_code = 0;
-                    }
-
-                    // emit result code from tasker if present
-                    if (tasker_result_code > 0) {
-                        item.put("tasker_result", tasker_result_code);
-                        tasker_result_code = 0;
-                    }
-
-                    // emit nano-status string if present
-                    if (collector_status_string != null) {
-                        item.put("collector_status", collector_status_string);
-                        collector_status_string = null;
-                    }
-
-                    // TODO uploader battery
-
-                    // emit sensor status/age message if present
-                    if (sensor_status_string != null) {
-                        item.put("sensor_status", sensor_status_string);
-                        sensor_status_string = null;
-                    }
-
-                    cachedJson.put(reading.uuid, item);
                     withManual++;
                     reply.put(item);
                 }
 
-                Log.d(TAG, "Processed "+withCache+" cached entries and "+withManual+" manual entries");
-                Log.d(TAG, "Output: " + reply.toString());
+                UserError.Log.d(TAG, "Processed "+withCache+" cached entries and "+withManual+" manual entries");
+                UserError.Log.d(TAG, "Output: " + reply.toString());
             } catch (JSONException e) {
                 UserError.Log.wtf(TAG, "Got json exception: " + e);
+            }
+        }
+
+        // Add special fields for first SGV entry
+        if (reply.length() > 0) {
+            try {
+                // Copy the first item only to a new JSONObject as to not
+                // add these items to the cached json object
+                JSONObject origItem = reply.getJSONObject(0);
+                JSONObject item = new JSONObject(origItem.toString());
+                if (units_indicator > 0) {
+                    String unitsHint = Pref.getString("units", "mgdl").equals("mgdl") ? "mgdl" : "mmol";
+                    item.put("units_hint", unitsHint);
+                }
+
+                // emit the external status line once if present
+                String external_status_line = getLastStatusLine();
+                if (external_status_line.length() > 0) {
+                    item.put("aaps", external_status_line);
+                    item.put("aaps-ts", getLastStatusLineTime());
+                }
+
+                // emit result code from steps if present
+                if (steps_result_code > 0) {
+                    item.put("steps_result", steps_result_code);
+                }
+
+                // emit result code from heart if present
+                if (heart_result_code > 0) {
+                    item.put("heart_result", heart_result_code);
+                }
+
+                // emit result code from tasker if present
+                if (tasker_result_code > 0) {
+                    item.put("tasker_result", tasker_result_code);
+                }
+
+                // emit nano-status string if present
+                if (collector_status_string != null) {
+                    item.put("collector_status", collector_status_string);
+                }
+
+                // TODO uploader battery
+
+                // emit sensor status/age message if present
+                if (sensor_status_string != null) {
+                    item.put("sensor_status", sensor_status_string);
+                }
+                reply.put(0, item);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
 

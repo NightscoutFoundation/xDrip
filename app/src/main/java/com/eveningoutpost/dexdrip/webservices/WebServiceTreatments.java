@@ -28,23 +28,18 @@ import static com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService.g
 
 
 /**
- * Created by jwoglom
- * <p>
- * emulates the Nightscout /api/v1/treatments.json endpoint at treatments.json
- * <p>
+ * Emulates the Nightscout /api/v1/treatments.json endpoint at treatments.json
+ *
+ * @author James Woglom (j@wogloms.net)
  */
 
 public class WebServiceTreatments extends BaseWebService {
 
-    private static String TAG = "WebServiceTreatments";
-
+    private static final String TAG = "WebServiceTreatments";
     private static List<Treatments> cachedTreatments = null;
 
-
     public WebResponse request(String query) {
-
         final Map<String, String> cgi = getQueryParameters(query);
-
         int count = 24;
 
         if (cgi.containsKey("count")) {
@@ -53,63 +48,65 @@ public class WebServiceTreatments extends BaseWebService {
                 count = Math.min(count, 100);
                 count = Math.max(count, 1);
                 UserError.Log.d(TAG, "Treatment count request for: " + count + " entries");
-            } catch (Exception e) {
-                // meh
+            } catch (NumberFormatException e) {
+                UserError.Log.wtf(TAG, "Invalid treatment count request for: " + count + " entries");
             }
         }
-
-        final JSONArray reply = new JSONArray();
-
 
         // Store a cache of the last Treatments.latest() query for the duration in which there is no
         // new latest treatment. Since obtaining the latest treatment is fast, but a larger number of
         // treatments is significantly slower, this optimizes the most often use case.
-        Iterator<Treatments> it = Treatments.latest(1).iterator();
-        Treatments latestTreatment = it.hasNext() ? it.next() : null;
+        Treatments latestTreatment = null;
+        List<Treatments> latestList = Treatments.latest(1);
+        if (latestList != null && !latestList.isEmpty()) {
+            latestTreatment = latestList.iterator().next();
+        }
 
+        // Check whether there are any cached treatments, and if so whether the latest cached
+        // treatment matches the UUID of the most recent treatment. Use the cache if we can,
+        // otherwise fill cachedTreatments with new treatments from the database.
         List<Treatments> treatments;
-        if (this.cachedTreatments != null && latestTreatment != null &&
-            this.cachedTreatments.size() > 0 && latestTreatment.uuid.equals(this.cachedTreatments.iterator().next().uuid) &&
-            count <= this.cachedTreatments.size())
+        if (cachedTreatments != null && cachedTreatments.size() > 0 && count <= cachedTreatments.size() &&
+            latestTreatment != null && latestTreatment.uuid.equals(cachedTreatments.iterator().next().uuid))
         {
-            if (count == this.cachedTreatments.size()) {
+            if (count == cachedTreatments.size()) {
                 UserError.Log.d(TAG, "Using cached treatments");
-                treatments = this.cachedTreatments;
+                treatments = cachedTreatments;
             } else {
-                UserError.Log.d(TAG, "Copying "+count+" of "+this.cachedTreatments.size()+" cached treatments");
+                UserError.Log.d(TAG, "Copying " + count + " of " + cachedTreatments.size() + " cached treatments");
                 treatments = new ArrayList<>();
-                it = this.cachedTreatments.iterator();
+                Iterator<Treatments> it = cachedTreatments.iterator();
                 for (int i=0; i<count; i++) {
                     treatments.add(it.next());
                 }
             }
         } else {
-            UserError.Log.d(TAG, "Fetching latest "+count+" entries from Treatments");
+            UserError.Log.d(TAG, "Fetching latest " + count + " entries from Treatments");
             treatments = Treatments.latest(count);
-            this.cachedTreatments = treatments;
+            cachedTreatments = treatments;
         }
 
-        if (treatments != null) {
-            // populate json structures
-            try {
-                for (Treatments treatment : treatments) {
-                    final JSONObject item = new JSONObject();
+        final JSONArray reply = new JSONArray();
 
-                    item.put("_id", treatment.uuid);
-                    item.put("created_at", treatment.timestamp);
-                    item.put("eventType", treatment.eventType);
-                    item.put("enteredBy", treatment.enteredBy);
-                    item.put("notes", treatment.notes);
-                    item.put("carbs", treatment.carbs);
-                    item.put("insulin", treatment.insulin);
+        // populate json structures
+        try {
+            for (Treatments treatment : treatments) {
+                final JSONObject item = new JSONObject();
 
-                    reply.put(item);
-                }
+                item.put("_id", treatment.uuid);
+                item.put("created_at", treatment.timestamp);
+                item.put("eventType", treatment.eventType);
+                item.put("enteredBy", treatment.enteredBy);
+                item.put("notes", treatment.notes);
+                item.put("carbs", treatment.carbs);
+                item.put("insulin", treatment.insulin);
 
-                Log.d(TAG, "Output: " + reply.toString());
-            } catch (JSONException e) {
-                UserError.Log.wtf(TAG, "Got json exception: " + e);
+                reply.put(item);
             }
+
+            Log.d(TAG, "Treatment output: " + reply.toString());
+        } catch (JSONException e) {
+            UserError.Log.wtf(TAG, "Got json exception: " + e);
         }
 
         // whether to send empty string instead of empty json array
@@ -119,6 +116,4 @@ public class WebServiceTreatments extends BaseWebService {
             return new WebResponse(reply.toString());
         }
     }
-
-
 }
