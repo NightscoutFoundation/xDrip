@@ -8,6 +8,8 @@ import android.content.Context;
 import android.provider.BaseColumns;
 import android.util.Pair;
 
+import androidx.annotation.Nullable;
+
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
@@ -59,7 +61,11 @@ import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
 @Table(name = "Treatments", id = BaseColumns._ID)
 public class Treatments extends Model {
     private static final String TAG = "jamorham " + Treatments.class.getSimpleName();
+
+    public static final String SENSOR_START_EVENT_TYPE = "Sensor Start";
+    public static final String SENSOR_STOP_EVENT_TYPE = "Sensor Stop";
     private static final String DEFAULT_EVENT_TYPE = "<none>";
+
     public final static String XDRIP_TAG = "xdrip";
 
     //public static double activityMultipler = 8.4; // somewhere between 8.2 and 8.8
@@ -356,20 +362,54 @@ public class Treatments extends Model {
         return treatment;
     }
 
-    public static synchronized Treatments SensorStart(long timestamp) {
-        if (timestamp == 0) {
+    /**
+     * Returns a newly created treatment entry in the database for Sensor Start,
+     * and pushes the new treatment to followers.
+     * @param timestamp is optional, defaults to right now
+     * @param notes is optional
+     */
+    public static synchronized Treatments SensorStart(@Nullable Long timestamp, @Nullable String notes) {
+        if (timestamp == null || timestamp == 0) {
             timestamp = new Date().getTime();
         }
 
-        final Treatments Treatment = new Treatments();
-        Treatment.enteredBy = XDRIP_TAG;
-        Treatment.eventType = "Sensor Start";
-        Treatment.created_at = DateUtil.toISOString(timestamp);
-        Treatment.timestamp = timestamp;
-        Treatment.uuid = UUID.randomUUID().toString();
-        Treatment.save();
-        pushTreatmentSync(Treatment);
-        return Treatment;
+        final Treatments treatment = new Treatments();
+        treatment.enteredBy = XDRIP_TAG;
+        treatment.eventType = SENSOR_START_EVENT_TYPE;
+        treatment.created_at = DateUtil.toISOString(timestamp);
+        treatment.timestamp = timestamp;
+        treatment.uuid = UUID.randomUUID().toString();
+        if (notes != null && notes.length() > 0) {
+            treatment.notes = notes;
+        }
+        treatment.save();
+        pushTreatmentSync(treatment);
+        return treatment;
+    }
+
+    /**
+     * Returns a newly created treatment entry in the database for Sensor Stop,
+     * and pushes the new treatment to followers.
+     * @param timestamp is optional, defaults to right now
+     * @param notes is optional
+     */
+    public static synchronized Treatments SensorStop(@Nullable Long timestamp, @Nullable String notes) {
+        if (timestamp == null || timestamp == 0) {
+            timestamp = new Date().getTime();
+        }
+
+        final Treatments treatment = new Treatments();
+        treatment.enteredBy = XDRIP_TAG;
+        treatment.eventType = SENSOR_STOP_EVENT_TYPE;
+        treatment.created_at = DateUtil.toISOString(timestamp);
+        treatment.timestamp = timestamp;
+        treatment.uuid = UUID.randomUUID().toString();
+        if (notes != null && notes.length() > 0) {
+            treatment.notes = notes;
+        }
+        treatment.save();
+        pushTreatmentSync(treatment);
+        return treatment;
     }
 
     private static void pushTreatmentSync(Treatments treatment) {
@@ -444,6 +484,15 @@ public class Treatments extends Model {
         return new Select()
                 .from(Treatments.class)
                 .where("enteredBy NOT LIKE '" + XDRIP_TAG + "%'")
+                .orderBy("_ID DESC")
+                .executeSingle();
+    }
+
+    public static Treatments lastEventTypeFromXdrip(String eventType) {
+        fixUpTable();
+        return new Select()
+                .from(Treatments.class)
+                .where("enteredBy LIKE '" + XDRIP_TAG + "%' and eventType = ?", eventType)
                 .orderBy("_ID DESC")
                 .executeSingle();
     }

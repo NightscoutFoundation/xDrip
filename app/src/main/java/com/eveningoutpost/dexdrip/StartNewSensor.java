@@ -174,7 +174,9 @@ public class StartNewSensor extends ActivityWithMenu {
         }
     }
 
-
+    /**
+     * Sends command to G5/G6 sensor for sensor start and adds a Sensor Start entry in the xDrip db
+     */
     public static void startSensorForTime(long startTime) {
         Sensor.create(startTime);
         UserError.Log.ueh("NEW SENSOR", "Sensor started at " + JoH.dateTimeText(startTime));
@@ -188,7 +190,9 @@ public class StartNewSensor extends ActivityWithMenu {
        // JoH.scheduleNotification(xdrip.getAppContext(), "Sensor should be ready", xdrip.getAppContext().getString(R.string.please_enter_two_calibrations_to_get_started), 60 * 130, Home.SENSOR_READY_ID);
 
         // reverse libre hacky workaround
-        Treatments.SensorStart((DexCollectionType.hasLibre() ? startTime + (3600000) : startTime));
+        long modifiedStartTime = DexCollectionType.hasLibre() ? (startTime + 3600000) : startTime;
+
+        Treatments.SensorStart(modifiedStartTime, "Started by xDrip");
 
         CollectionServiceStarter.restartCollectionServiceBackground();
 
