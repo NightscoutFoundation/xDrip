@@ -48,12 +48,33 @@ public class StopSensor extends ActivityWithMenu {
 
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                stop();
-                JoH.startActivity(Home.class);
-                finish();
+                confirm_stop();
             }
 
         });
+    }
+
+    public void confirm_stop() {
+        final AlertDialog.Builder build_stop = new AlertDialog.Builder(this);
+        build_stop.setTitle(gs(R.string.are_you_sure));
+        build_stop.setMessage(gs(R.string.do_you_want_to_end_session));
+        build_stop.setNegativeButton(gs(R.string.no), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                JoH.startActivity(Home.class);
+            }
+        });
+        build_stop.setPositiveButton(gs(R.string.yes), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                stop();
+                dialog.dismiss();
+                JoH.startActivity(Home.class);
+                finish();
+            }
+        });
+        build_stop.create().show();
     }
 
     public synchronized static void stop() {
