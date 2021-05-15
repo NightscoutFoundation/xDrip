@@ -49,7 +49,7 @@ public class WebServiceTreatments extends BaseWebService {
                 count = Math.max(count, 1);
                 UserError.Log.d(TAG, "Treatment count request for: " + count + " entries");
             } catch (NumberFormatException e) {
-                UserError.Log.wtf(TAG, "Invalid treatment count request for: " + count + " entries");
+                UserError.Log.w(TAG, "Invalid treatment count request for: " + count + " entries");
             }
         }
 
@@ -67,8 +67,7 @@ public class WebServiceTreatments extends BaseWebService {
         // otherwise fill cachedTreatments with new treatments from the database.
         List<Treatments> treatments;
         if (cachedTreatments != null && cachedTreatments.size() > 0 && count <= cachedTreatments.size() &&
-            latestTreatment != null && latestTreatment.uuid.equals(cachedTreatments.iterator().next().uuid))
-        {
+            latestTreatment != null && latestTreatment.uuid.equals(cachedTreatments.iterator().next().uuid)) {
             if (count == cachedTreatments.size()) {
                 UserError.Log.d(TAG, "Using cached treatments");
                 treatments = cachedTreatments;
@@ -106,7 +105,7 @@ public class WebServiceTreatments extends BaseWebService {
 
             Log.d(TAG, "Treatment output: " + reply.toString());
         } catch (JSONException e) {
-            UserError.Log.wtf(TAG, "Got json exception: " + e);
+            UserError.Log.w(TAG, "Got json exception: " + e);
         }
 
         // whether to send empty string instead of empty json array

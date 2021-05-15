@@ -126,8 +126,7 @@ public class WebServiceSgv extends BaseWebService {
 
         List<BgReading> readings;
         if (cachedReadings != null && cachedReadings.size() > 0 && count <= cachedReadings.size() &&
-            latestReading != null && latestReading.uuid.equals(cachedReadings.iterator().next().uuid))
-        {
+            latestReading != null && latestReading.uuid.equals(cachedReadings.iterator().next().uuid)) {
             if (count == cachedReadings.size()) {
                 UserError.Log.d(TAG, "Using cached readings");
                 readings = cachedReadings;
