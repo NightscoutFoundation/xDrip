@@ -73,6 +73,7 @@ import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_FIRMWARE_MARK
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.android_wear;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.getTransmitterID;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.onlyUsingNativeMode;
+import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.resetSomeInternalState;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.wear_broadcast;
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PERIOD;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
@@ -1143,6 +1144,29 @@ public class Ob1G5StateMachine {
         }
     }
 
+    private static void postExtension() {
+        Inevitable.task("post-extension", 2000, () -> {
+            DexSyncKeeper.clear(getTransmitterID());
+            emptyQueue();
+            resetSomeInternalState();
+        });
+    }
+
+    public static void enableExtensionParameter() {
+        if (acceptCommands()) {
+            enqueueUniqueCommand(new ExtensionTxMessage(ExtensionTxMessage.PARAM_ENABLE), "Enable extension")
+                    .setDontRetry()
+                    .setPreWrite(Ob1G5StateMachine::postExtension);
+        }
+    }
+
+    public static void disableExtensionParameter() {
+        if (acceptCommands()) {
+            enqueueUniqueCommand(new ExtensionTxMessage(ExtensionTxMessage.PARAM_DISABLE), "Disable extension")
+                    .setDontRetry()
+                    .setPreWrite(Ob1G5StateMachine::postExtension);
+        }
+    }
 
     public static void restartSensorWithTimeTravel() {
         restartSensorWithTimeTravel(tsl() -
@@ -1220,6 +1244,7 @@ public class Ob1G5StateMachine {
                     changed = true;
                     reprocessTxMessage(unit.msg);
                     if (unit.retry < 5 && JoH.msSince(unit.timestamp) < HOUR_IN_MS * 8) {
+                        unit.preWrite();
                         connection.writeCharacteristic(Control, nn(unit.msg.byteSequence))
                                 .timeout(2, TimeUnit.SECONDS)
                                 .subscribe(value -> {
@@ -1230,14 +1255,19 @@ public class Ob1G5StateMachine {
                                         UserError.Log.d(TAG, "Sleeping post execute: " + unit.text + " " + guardTime + "ms");
                                         JoH.threadSleep(guardTime);
                                     }
+                                    unit.postWrite();
                                     throw new OperationSuccess("Completed: " + unit.text);
 
                                 }, throwable -> {
                                     if (!(throwable instanceof OperationSuccess)) {
-                                        unit.retry++;
-                                        UserError.Log.d(TAG, "Re-adding: " + unit.text);
-                                        synchronized (commandQueue) {
-                                            commandQueue.push(unit);
+                                        if (!unit.dontRetry) {
+                                            unit.retry++;
+                                            UserError.Log.d(TAG, "Re-adding: " + unit.text);
+                                            synchronized (commandQueue) {
+                                                commandQueue.push(unit);
+                                            }
+                                        } else {
+                                            UserError.Log.d(TAG, "Not re-adding " + unit.text);
                                         }
                                         UserError.Log.d(TAG, "Failure: " + unit.text + " " + JoH.dateTimeText(tsl()));
                                         if (throwable instanceof BleDisconnectedException) {

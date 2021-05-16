@@ -17,6 +17,7 @@ import com.eveningoutpost.dexdrip.ui.dialog.GenericConfirmDialog;
 import android.support.annotation.RequiresApi;
 import lombok.RequiredArgsConstructor;
 
+import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
 import static com.eveningoutpost.dexdrip.deposit.WebDeposit.getSerialInfo;
 
 // jamorham
@@ -79,9 +80,9 @@ public class DepositActivity extends AppCompatActivity {
         }
 
 
-        F success =
+        F successG =
                 s -> {
-                    UserError.Log.d("Deposit Success", s);
+                    UserError.Log.d("Deposit Success G", s);
                     showButton.set(true);
                     if (s.equals("OK")) {
                         UserError.Log.d("Deposit Success", "Deposit worked");
@@ -92,6 +93,19 @@ public class DepositActivity extends AppCompatActivity {
                         statusString.set("Failed with message: " + s);
                     }
                 };
+
+        F successT =
+                s -> {
+                    UserError.Log.d("Deposit Success T", s);
+                    showButton.set(true);
+                    if (s.equals("OK")) {
+                        UserError.Log.d("Deposit Success", "Deposit worked");
+                        statusString.set("Succeeded Ok!");
+                    } else {
+                        statusString.set("Failed with message: " + s);
+                    }
+                };
+
 
         F failure =
                 s -> {
@@ -108,7 +122,7 @@ public class DepositActivity extends AppCompatActivity {
 
         private void getNextTimeBlock() {
             startTime.set(WebDeposit.getNextTime());
-            endTime.set(Math.min(startTime.get() + Constants.MONTH_IN_MS, JoH.tsl() - Constants.HOUR_IN_MS * 8));
+            endTime.set(Math.min(startTime.get() + Constants.MONTH_IN_MS, tsl() - Constants.HOUR_IN_MS * 8));
         }
 
         public synchronized void resetButton() {
@@ -123,13 +137,14 @@ public class DepositActivity extends AppCompatActivity {
                     });
         }
 
-        public synchronized void depositButton() {
+        public synchronized void depositButtonG() {
             showButton.set(false);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                new Thread(() -> WebDeposit.doUpload(startTime.get(), endTime.get(), success, failure, status)).start();
-            } else {
-                JoH.static_toast_long("Needs Android 7 or above");
-            }
+                new Thread(() -> WebDeposit.doUploadByType("G", startTime.get(), endTime.get(), successG, failure, status)).start();
+        }
+
+        public synchronized void depositButtonT() {
+            showButton.set(false);
+                new Thread(() -> WebDeposit.doUploadByType("T", tsl()-Constants.MONTH_IN_MS * 3, tsl(), successT, failure, status)).start();
         }
     }
 }
