@@ -171,6 +171,32 @@ public class RouterFinderTest extends RobolectricTestWithConfig {
         assertWithMessage("treatments with no count contains expected JSON")
                 .that(new String(response.bytes))
                 .isEqualTo(expectedResponse.toString());
+
+        // Ensure that all 3 treatments were cached
+        assertWithMessage("all 3 treatments were cached")
+                .that(WebServiceTreatments.cachedTreatments)
+                .hasSize(3);
+
+        // Add a new treatment that is newer than the others
+        Treatments treatmentD = Treatments.create(24, 4, time + 1000);
+
+        // Test treatments.json with all 4 treatments
+        expectedResponse = new JSONArray();
+        expectedResponse.put(buildExpectedTreatmentJSON(treatmentD));
+        expectedResponse.put(buildExpectedTreatmentJSON(treatmentA));
+        expectedResponse.put(buildExpectedTreatmentJSON(treatmentB));
+        expectedResponse.put(buildExpectedTreatmentJSON(treatmentC));
+
+        response = routeFinder.handleRoute("treatments.json");
+        validResponse("treatments with newer treatment", response);
+        assertWithMessage("treatments with newer treatment contains expected JSON")
+                .that(new String(response.bytes))
+                .isEqualTo(expectedResponse.toString());
+
+        // Ensure that all 4 treatments were cached
+        assertWithMessage("all 4 treatments were cached")
+                .that(WebServiceTreatments.cachedTreatments)
+                .hasSize(4);
     }
 
     private JSONObject buildExpectedTreatmentJSON(Treatments treatment) {
@@ -224,17 +250,14 @@ public class RouterFinderTest extends RobolectricTestWithConfig {
                 .that(new String(response.bytes))
                 .isEqualTo(expectedResponse.toString());
 
-        // Test sgv.json with all 3 readings
-        expectedResponse = new JSONArray();
-        expectedResponse.put(buildExpectedBgReadingJSON(readingA, false, true));
-        expectedResponse.put(buildExpectedBgReadingJSON(readingB, false, false));
-        expectedResponse.put(buildExpectedBgReadingJSON(readingC, false, false));
+        // Ensure that 1 BgReading was cached
+        assertWithMessage("1 bgreading was cached")
+                .that(WebServiceSgv.cachedReadings)
+                .hasSize(1);
 
-        response = routeFinder.handleRoute("sgv.json");
-        validResponse("sgv with no count", response);
-        assertWithMessage("sgv with no count contains expected JSON")
-                .that(new String(response.bytes))
-                .isEqualTo(expectedResponse.toString());
+        assertWithMessage("JSON for only 1 sgv was cached")
+                .that(WebServiceSgv.cachedJson)
+                .hasSize(1);
 
         // Test sgv.json?brief_mode=1
         expectedResponse = new JSONArray();
@@ -247,6 +270,34 @@ public class RouterFinderTest extends RobolectricTestWithConfig {
         assertWithMessage("sgv with brief mode contains expected JSON")
                 .that(new String(response.bytes))
                 .isEqualTo(expectedResponse.toString());
+
+        // Ensure that all 3 BgReadings were cached
+        assertWithMessage("all 3 bgreadings were cached")
+                .that(WebServiceSgv.cachedReadings)
+                .hasSize(3);
+
+        // Ensure that JSON for no more SGVs have been cached
+        // (with brief_mode, JSON is not cached)
+        assertWithMessage("brief_mode did not add to cached sgv JSON")
+                .that(WebServiceSgv.cachedJson)
+                .hasSize(1);
+
+        // Test sgv.json with all 3 readings
+        expectedResponse = new JSONArray();
+        expectedResponse.put(buildExpectedBgReadingJSON(readingA, false, true));
+        expectedResponse.put(buildExpectedBgReadingJSON(readingB, false, false));
+        expectedResponse.put(buildExpectedBgReadingJSON(readingC, false, false));
+
+        response = routeFinder.handleRoute("sgv.json");
+        validResponse("sgv with no count", response);
+        assertWithMessage("sgv with no count contains expected JSON")
+                .that(new String(response.bytes))
+                .isEqualTo(expectedResponse.toString());
+
+        // Ensure that JSON for all 3 sgvs were cached
+        assertWithMessage("JSON for all 3 sgvs were cached")
+                .that(WebServiceSgv.cachedJson)
+                .hasSize(3);
 
         // Test sgv.json?collector=1
         expectedResponse = new JSONArray();

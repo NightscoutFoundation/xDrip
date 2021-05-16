@@ -2,6 +2,8 @@ package com.eveningoutpost.dexdrip.webservices;
 
 import android.util.Log;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.DateUtil;
@@ -41,9 +43,12 @@ import static com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService.g
 public class WebServiceSgv extends BaseWebService {
 
     private static final String TAG = "WebServiceSgv";
-    private static List<BgReading> cachedReadings = null;
 
-    private static final Map<String, JSONObject> cachedJson = new LinkedHashMap<String, JSONObject>() {
+    @VisibleForTesting
+    static List<BgReading> cachedReadings = null;
+
+    @VisibleForTesting
+    static final Map<String, JSONObject> cachedJson = new LinkedHashMap<String, JSONObject>() {
         // Prevent the cache from growing too large. 1000 entries is about 3.5 days
         @Override
         protected boolean removeEldestEntry(Entry eldest) {

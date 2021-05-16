@@ -2,6 +2,8 @@ package com.eveningoutpost.dexdrip.webservices;
 
 import android.util.Log;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.DateUtil;
@@ -36,7 +38,9 @@ import static com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService.g
 public class WebServiceTreatments extends BaseWebService {
 
     private static final String TAG = "WebServiceTreatments";
-    private static List<Treatments> cachedTreatments = null;
+
+    @VisibleForTesting
+    static List<Treatments> cachedTreatments = null;
 
     public WebResponse request(String query) {
         final Map<String, String> cgi = getQueryParameters(query);
