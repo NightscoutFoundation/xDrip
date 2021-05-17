@@ -56,6 +56,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static com.eveningoutpost.dexdrip.xdrip.gs;
+
 import static android.support.v4.content.WakefulBroadcastReceiver.completeWakefulIntent;
 import static com.eveningoutpost.dexdrip.Models.JoH.isAnyNetworkConnected;
 import static com.eveningoutpost.dexdrip.Models.JoH.showNotification;
@@ -542,8 +544,12 @@ public class GcmListenerSvc extends JamListenerSvc {
                 } else if (action.equals("ssom")) {
                     if (Home.get_master()) {
                         if (payload.equals("challenge string")) {
-                            UserError.Log.e(TAG, "Stopping sensor by remote");
-                            StopSensor.stop();
+                            if (Pref.getBoolean("plus_accept_follower_actions", true)) {
+                                UserError.Log.e(TAG, "Stopping sensor by remote");
+                                StopSensor.stop();
+                            } else {
+                                UserError.Log.wtf(TAG, gs(R.string.not_follower_switch));
+                            }
                         } else {
                             UserError.Log.wtf(TAG, "Challenge string failed in ssom");
                         }
@@ -581,14 +587,14 @@ public class GcmListenerSvc extends JamListenerSvc {
             return;
         }
         LibreBlock.Save(lb);
-        
+
         PersistentStore.setString("LibreSN", lb.reference);
-        
+
         if(Home.get_master()) {
             if (SensorSanity.checkLibreSensorChangeIfEnabled(lb.reference)) {
                 Log.e(TAG, "Problem with Libre Serial Number - not processing");
             }
-            
+
             NFCReaderX.HandleGoodReading(lb.reference, lb.blockbytes, lb.timestamp, false, lb.patchUid,  lb.patchInfo);
         }
     }
