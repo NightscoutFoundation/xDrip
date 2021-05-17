@@ -77,18 +77,23 @@ public class NavDrawerBuilder {
                                 && !Ob1G5CollectionService.isG5WantingCalibration()) { //Put steps in place to discourage over calibration
                                     this.nav_drawer_options.add(context.getString(R.string.override_calibration));
                                     this.nav_drawer_intents.add(new Intent(context, CalibrationOverride.class));
-                                } else {
+                                } else { // G5 or old G6 after initial calibration and long enough after previous calibration
                                     this.nav_drawer_options.add(context.getString(R.string.add_calibration));
                                     this.nav_drawer_intents.add(new Intent(context, AddCalibration.class));
                                 }
-                            } else {
+                            } else {  // G5 or old G6 not long after a calibration
                                 this.nav_drawer_options.add(context.getString(R.string.cannot_calibrate_right_now));
                                 this.nav_drawer_intents.add(new Intent(context, Home.class));
                             }
                         } else {
                             if (BgReading.isDataSuitableForDoubleCalibration() || Ob1G5CollectionService.isG5WantingInitialCalibration()) {
-                                this.nav_drawer_options.add(context.getString(R.string.initial_calibration));
-                                this.nav_drawer_intents.add(new Intent(context, DoubleCalibrationActivity.class));
+                                if (last_two_bgReadings.size() > 1) {  // Firefly after second reading, now, gets add calibration.
+                                    this.nav_drawer_options.add(context.getString(R.string.add_calibration));
+                                    this.nav_drawer_intents.add(new Intent(context, AddCalibration.class));
+                                } else {    // G5 or non-native G6 after warm-up still get the option to perform initial calibration
+                                    this.nav_drawer_options.add(context.getString(R.string.initial_calibration));
+                                    this.nav_drawer_intents.add(new Intent(context, DoubleCalibrationActivity.class));
+                                }
                             }
                         }
                     }
