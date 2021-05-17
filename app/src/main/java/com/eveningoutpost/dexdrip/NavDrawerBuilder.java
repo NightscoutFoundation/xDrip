@@ -69,28 +69,28 @@ public class NavDrawerBuilder {
             if (is_active_sensor) {
                 if (!CollectionServiceStarter.isBTShare(context)) {
                     if (last_two_bgReadings.size() > 1 || Ob1G5CollectionService.isG5WantingCalibration()) {
-                        if ((last_two_calibrations.size() > 1) && !Ob1G5CollectionService.isG5WantingInitialCalibration()) {
+                        if ((last_two_calibrations.size() > 1) && !Ob1G5CollectionService.isG5WantingInitialCalibration()) { //This only happens after initial calibration.
                             // TODO tighten this time limit
                             if (bGreadings_in_last_30_mins.size() >= 2) {
                                 long time_now = JoH.tsl();
                                 if ((time_now - last_two_calibrations.get(0).timestamp < (1000 * 60 * 60))
-                                && !Ob1G5CollectionService.isG5WantingCalibration()) { //Put steps in place to discourage over calibration
+                                        && !Ob1G5CollectionService.isG5WantingCalibration()) { //Put steps in place to discourage over calibration
                                     this.nav_drawer_options.add(context.getString(R.string.override_calibration));
                                     this.nav_drawer_intents.add(new Intent(context, CalibrationOverride.class));
                                 } else { // G5 or old G6 after initial calibration and long enough after previous calibration
                                     this.nav_drawer_options.add(context.getString(R.string.add_calibration));
                                     this.nav_drawer_intents.add(new Intent(context, AddCalibration.class));
                                 }
-                            } else {  // G5 or old G6 not long after a calibration
+                            } else {  //G5 or old G6 not long after a calibration
                                 this.nav_drawer_options.add(context.getString(R.string.cannot_calibrate_right_now));
                                 this.nav_drawer_intents.add(new Intent(context, Home.class));
                             }
-                        } else {
+                        } else { //This only happens if there has been no initial calibration.
                             if (BgReading.isDataSuitableForDoubleCalibration() || Ob1G5CollectionService.isG5WantingInitialCalibration()) {
-                                if (last_two_bgReadings.size() > 1) {  // Firefly after second reading, now, gets add calibration.
+                                if (last_two_bgReadings.size() > 1) { //Firefly after third reading
                                     this.nav_drawer_options.add(context.getString(R.string.add_calibration));
                                     this.nav_drawer_intents.add(new Intent(context, AddCalibration.class));
-                                } else {    // G5 or non-native G6 after warm-up still get the option to perform initial calibration
+                                } else { //G5 or non-native G6 after warm-up before initial calibration
                                     this.nav_drawer_options.add(context.getString(R.string.initial_calibration));
                                     this.nav_drawer_intents.add(new Intent(context, DoubleCalibrationActivity.class));
                                 }
