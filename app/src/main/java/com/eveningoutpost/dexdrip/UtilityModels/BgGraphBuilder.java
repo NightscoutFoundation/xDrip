@@ -104,7 +104,7 @@ public class BgGraphBuilder {
     //private final int numValues = (60 / 5) * 24;
     public double end_time = (new Date().getTime() + (60000 * 10)) / FUZZER;
     public double predictive_end_time;
-    public double start_time = end_time - ((60000 * 60 * 24)) / FUZZER;
+    public double start_time = end_time - ((60000 * 60 * 25)) / FUZZER;
 
 
     private final static double timeshift = 500_000;
@@ -175,7 +175,7 @@ public class BgGraphBuilder {
     }
 
     public BgGraphBuilder(Context context, long end) {
-        this(context, end - (60000 * 60 * 24), end);
+        this(context, end - (60000 * 60 * 25), end);
     }
 
     public BgGraphBuilder(Context context, long start, long end) {
