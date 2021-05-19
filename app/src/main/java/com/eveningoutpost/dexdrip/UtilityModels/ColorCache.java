@@ -42,6 +42,7 @@ public class ColorCache {
     public enum X {
 
         color_high_values("color_high_values"),
+        color_bad_values("color_bad_values"),
         color_inrange_values("color_inrange_values"),
         color_low_values("color_low_values"),
         color_filtered("color_filtered"),
