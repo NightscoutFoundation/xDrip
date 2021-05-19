@@ -77,20 +77,20 @@ public class NavDrawerBuilder {
                                         && !Ob1G5CollectionService.isG5WantingCalibration()) { //Put steps in place to discourage over calibration
                                     this.nav_drawer_options.add(context.getString(R.string.override_calibration));
                                     this.nav_drawer_intents.add(new Intent(context, CalibrationOverride.class));
-                                } else { // G5 or old G6 after initial calibration and long enough after previous calibration
+                                } else { //G5, old G6, or Firefly, in no-code mode, after initial calibration and long enough after previous calibration
                                     this.nav_drawer_options.add(context.getString(R.string.add_calibration));
                                     this.nav_drawer_intents.add(new Intent(context, AddCalibration.class));
                                 }
-                            } else {  //G5 or old G6 not long after a calibration
+                            } else {  //G5, old G6 or Firefly, in no-code mode, not long after a calibration
                                 this.nav_drawer_options.add(context.getString(R.string.cannot_calibrate_right_now));
                                 this.nav_drawer_intents.add(new Intent(context, Home.class));
                             }
-                        } else { //This only happens if there has been no initial calibration.
+                        } else { //If the has been no two initial calibrations
                             if (BgReading.isDataSuitableForDoubleCalibration() || Ob1G5CollectionService.isG5WantingInitialCalibration()) {
-                                if (last_two_bgReadings.size() > 1) { //Firefly after third reading
+                                if (last_two_bgReadings.size() > 1) { //Firefly G6, in factory calibration mode, after third reading
                                     this.nav_drawer_options.add(context.getString(R.string.add_calibration));
                                     this.nav_drawer_intents.add(new Intent(context, AddCalibration.class));
-                                } else { //G5 or non-native G6 after warm-up before initial calibration
+                                } else { //G5 or non-native G6 or Firefly G6, in no-code mode, after warm-up before initial calibration
                                     this.nav_drawer_options.add(context.getString(R.string.initial_calibration));
                                     this.nav_drawer_intents.add(new Intent(context, DoubleCalibrationActivity.class));
                                 }
