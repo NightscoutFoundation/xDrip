@@ -548,7 +548,7 @@ public class GcmListenerSvc extends JamListenerSvc {
                                 UserError.Log.e(TAG, "Stopping sensor by remote");
                                 StopSensor.stop();
                             } else {
-                                UserError.Log.wtf(TAG, gs(R.string.not_follower_switch));
+                                UserError.Log.wtf(TAG, "Stop sensor by follower rejected because follower actions are disabled");
                             }
                         } else {
                             UserError.Log.wtf(TAG, "Challenge string failed in ssom");
@@ -579,7 +579,7 @@ public class GcmListenerSvc extends JamListenerSvc {
 
     private void HandleLibreBlock(String payload) {
         LibreBlock lb = LibreBlock.createFromExtendedJson(payload);
-        if(lb == null) {
+        if (lb == null) {
             return;
         }
         if (LibreBlock.getForTimestamp(lb.timestamp) != null) {
@@ -590,12 +590,12 @@ public class GcmListenerSvc extends JamListenerSvc {
 
         PersistentStore.setString("LibreSN", lb.reference);
 
-        if(Home.get_master()) {
+        if (Home.get_master()) {
             if (SensorSanity.checkLibreSensorChangeIfEnabled(lb.reference)) {
                 Log.e(TAG, "Problem with Libre Serial Number - not processing");
             }
 
-            NFCReaderX.HandleGoodReading(lb.reference, lb.blockbytes, lb.timestamp, false, lb.patchUid,  lb.patchInfo);
+            NFCReaderX.HandleGoodReading(lb.reference, lb.blockbytes, lb.timestamp, false, lb.patchUid, lb.patchInfo);
         }
     }
 

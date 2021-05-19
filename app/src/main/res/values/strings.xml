@@ -1389,7 +1389,6 @@
     <string name="eula">EULA</string>
     <string name="summary_plus_accept_follower_actions">Treatments, Calibrations and Sensor Stop from followers will be accepted</string>
     <string name="title_plus_accept_follower_actions">Accept follower actions</string>
-    <string name="not_follower_switch">Stop sensor by follower rejected because follower actions are disabled</string>
     <string name="summary_plus_whole_house">Participate in a Whole House Network</string>
     <string name="title_plus_whole_house">Whole House</string>
     <string name="summary_libre_whole_house_collector">This phone will be a collector in a whole house network</string>
