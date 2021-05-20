@@ -1,5 +1,9 @@
 ANDROID_HOME=$(PWD)/../android
 export ANDROID_HOME
+
+GIT_DISCOVERY_ACROSS_FILESYSTEM=y
+export GIT_DISCOVERY_ACROSS_FILESYSTEM
+
 SDKS = "platforms;android-26" "build-tools;27.0.3" "extras;google;m2repository"
 ANDROID_SDK_ZIP=sdk-tools-linux-4333796.zip
 
@@ -7,7 +11,15 @@ DEBUG_APK = app/build/outputs/apk/debug/app-debug.apk
 RELEASE_APK = app/build/outputs/apk/release/app-release-unsigned.apk
 
 .DEFAULT_GOAL = app-release-unsigned.apk
-.PHONY: assembleRelease clean clean-global-caches install
+.PHONY: assembleRelease clean clean-global-caches install tasks
+
+gradle := $(shell [ "$(which gradle >/dev/null)" ] && echo gradle || echo bash gradlew)
+
+exec:
+	@if [ "$(sh)" ]; then sh -c "$(sh)"; else exec bash; fi
+
+tasks:
+	$(gradle) tasks
 
 install: app-release-unsigned.apk
 	adb install $^
@@ -18,7 +30,7 @@ app-release-unsigned.apk: $(RELEASE_APK)
 $(RELEASE_APK): assembleRelease
 
 assembleRelease: | installed-android-sdk-stamp
-	bash gradlew assembleRelease
+	$(gradle) assembleRelease
 
 BUILD_DIRS = app/build/ build/ localeapi/build/ wear/build/
 clean:
