@@ -1,10 +1,14 @@
 ANDROID_HOME=$(PWD)/../android
 export ANDROID_HOME
 
+BUILD_TOOLS_VERSION := $(shell sed -n 's/^ *- build-tools-//p' .travis.yml)
+ANDROID_PLATFORM_VERSION := $(shell sed -n 's/^ *- yes | sdkmanager "platforms;android-\([0-9]*\)"/\1/p' .travis.yml || echo 26)
+
+
 GIT_DISCOVERY_ACROSS_FILESYSTEM=y
 export GIT_DISCOVERY_ACROSS_FILESYSTEM
 
-SDKS = "platforms;android-26" "build-tools;27.0.3" "extras;google;m2repository"
+SDKS = "platforms;android-$(ANDROID_PLATFORM_VERSION)" "build-tools;$(BUILD_TOOLS_VERSION)" "extras;google;m2repository"
 ANDROID_SDK_ZIP=sdk-tools-linux-4333796.zip
 
 DEBUG_APK = app/build/outputs/apk/debug/app-debug.apk
