@@ -69,7 +69,7 @@ public class NavDrawerBuilder {
             if (is_active_sensor) {
                 if (!CollectionServiceStarter.isBTShare(context)) {
                     if (last_two_bgReadings.size() > 1 || Ob1G5CollectionService.isG5WantingCalibration()) {
-                        if ((last_two_calibrations.size() > 1) && !Ob1G5CollectionService.isG5WantingInitialCalibration()) { //This only happens after initial calibration.
+                        if ((last_two_calibrations.size() > 1) && !Ob1G5CollectionService.isG5WantingInitialCalibration()) { //After two successful initial calibrations
                             // TODO tighten this time limit
                             if (bGreadings_in_last_30_mins.size() >= 2) {
                                 long time_now = JoH.tsl();
@@ -85,7 +85,7 @@ public class NavDrawerBuilder {
                                 this.nav_drawer_options.add(context.getString(R.string.cannot_calibrate_right_now));
                                 this.nav_drawer_intents.add(new Intent(context, Home.class));
                             }
-                        } else { //If the has been no two initial calibrations
+                        } else { //If there has been no two initial calibrations
                             if (BgReading.isDataSuitableForDoubleCalibration() || Ob1G5CollectionService.isG5WantingInitialCalibration()) {
                                 if (last_two_bgReadings.size() > 1) { //Firefly G6, in factory calibration mode, after third reading
                                     this.nav_drawer_options.add(context.getString(R.string.add_calibration));
