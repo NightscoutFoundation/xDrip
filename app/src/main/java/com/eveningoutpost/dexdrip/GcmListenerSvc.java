@@ -545,10 +545,10 @@ public class GcmListenerSvc extends JamListenerSvc {
                     if (Home.get_master()) {
                         if (payload.equals("challenge string")) {
                             if (Pref.getBoolean("plus_accept_follower_actions", true)) {
-                                UserError.Log.e(TAG, "Stopping sensor by remote");
+                                UserError.Log.i(TAG, "Stopping sensor by remote");
                                 StopSensor.stop();
                             } else {
-                                UserError.Log.wtf(TAG, "Stop sensor by follower rejected because follower actions are disabled");
+                                UserError.Log.w(TAG, "Stop sensor by follower rejected because follower actions are disabled");
                             }
                         } else {
                             UserError.Log.wtf(TAG, "Challenge string failed in ssom");
