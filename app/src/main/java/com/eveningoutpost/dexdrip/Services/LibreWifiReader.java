@@ -163,7 +163,6 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
             Log.e(TAG, "Invalid hostAndIp " + hostAndIp);
             statusLog(hostAndIp, JoH.hourMinuteString() + " Invalid Host/Port: " + hostAndIp);
             return null;
-
         }
         System.out.println("Reading from " + hosts[0] + " " + port);
         final List<LibreWifiData> ret;
@@ -173,13 +172,10 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
             // We had some error, need to move on...
             System.out.println("read from host failed cought expation" + hostAndIp);
             Log.e(TAG, "read from host failed " + hostAndIp, e);
-
             return null;
-
         }
         return ret;
     }
-
 
     private static List<LibreWifiData> ReadFromMongo(String dbury, int numberOfRecords) {
         Log.i(TAG, "Reading From " + dbury);
@@ -190,7 +186,6 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
             Log.e(TAG, "Error bad dburi. Did not find a collection name starting with / " + dbury);
             // in order for the user to understand that there is a problem, we return null
             return null;
-
         }
         final String collection = dbury.substring(indexOfSlash + 1);
         dbury = dbury.substring(0, indexOfSlash);
@@ -224,7 +219,6 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
         final long time_start = JoH.tsl();
         final List<LibreWifiData> trd_list = new LinkedList<LibreWifiData>();
         try {
-
             if (httpClient == null) {
                 httpClient = new OkHttpClient();
                 // suitable for GPRS
@@ -233,10 +227,8 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
                 httpClient.setWriteTimeout(20, TimeUnit.SECONDS);
             }
 
-
             // simple HTTP GET request
             // n=numberOfRecords for backfilling
-            // r=sequence number to avoid any cache
             // expecting json reply like the standard json server in dexterity / python pi usb / parakeet
             final Request request = new Request.Builder()
                     // Mozilla header facilitates compression
@@ -272,7 +264,6 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
                 }
             }
             return trd_list;
-
         } catch (SocketTimeoutException s) {
             Log.e(TAG, "Socket timed out! " + url + " : " + s.toString() + " after: " + JoH.msSince(time_start));
             statusLog(url, JoH.hourMinuteString() + " " + s.toString());
@@ -282,10 +273,8 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
         } catch (Exception e) {
             Log.e(TAG, "Got exception " + url + " " + e.toString());
         }
-
         return trd_list;
     }
-
 
     // format of string is ip1:port1,ip2:port2;
     public static LibreWifiData[] Read(String hostsNames, int numberOfRecords) {
@@ -320,7 +309,6 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
             //System.out.println("Could not read anything from " + hostsNames);
             Log.e(TAG, "Could not read anything from " + hostsNames);
             return null;
-
         }
         final List<LibreWifiData> mergedData = MergeLists(allTransmitterRawData);
 
@@ -333,7 +321,6 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
         //           System.out.println( trd_array[i].toString());
         //      }
         return trd_array;
-
     }
 
     public static List<LibreWifiData> ReadV2(String hostName, int port, int numberOfRecords) {
@@ -353,16 +340,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
         long newest_timestamp = 0;
 
         try {
-
-
-            // An example of using gson.
             final ComunicationHeaderV2 ch = new ComunicationHeaderV2(numberOfRecords);
-            //ch.version = 2;
-            //ch.numberOfRecords = numberOfRecords;
-            // String flat = gson.toJson(ch);
-            //ComunicationHeader ch2 = gson.fromJson(flat, ComunicationHeader.class);
-            //System.out.println("Results code" + flat + ch2.version);
-
             // Real client code
             final InetSocketAddress ServerAddress = new InetSocketAddress(Mdns.genericResolver(hostName), port);
             currentAddress = ServerAddress.getAddress().getHostAddress();
@@ -375,10 +353,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
             final Socket MySocket = new Socket();
             MySocket.connect(ServerAddress, 10000);
 
-            //System.out.println("After the new socket \n");
             MySocket.setSoTimeout(3000);
-
-            //System.out.println("client connected... " );
 
             final PrintWriter out = new PrintWriter(MySocket.getOutputStream(), true);
             final BufferedReader in = new BufferedReader(new InputStreamReader(MySocket.getInputStream()));
@@ -439,7 +414,6 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
     }
 
     static Long timeForNextRead() {
-
         LibreBlock libreBlock = LibreBlock.getLatestForTrend(0L, JoH.tsl() + 5 * 60000); // Allow some packets from the future.
         if (libreBlock == null) {
             // We did not receive a packet, well someone hopefully is looking at data, return relatively fast
@@ -575,15 +549,12 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
                         Log.e(TAG, "Problem with Libre Serial Number - not processing");
                         return;
                     }
-
-
                 } else {
                     Log.e(TAG, "Recieved a pacjet with bad checksum");
                 }
             }
         }
     }
-
 
     // data for MegaStatus
     static List<StatusItem> megaStatus() {
