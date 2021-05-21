@@ -56,8 +56,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static com.eveningoutpost.dexdrip.xdrip.gs;
-
 import static android.support.v4.content.WakefulBroadcastReceiver.completeWakefulIntent;
 import static com.eveningoutpost.dexdrip.Models.JoH.isAnyNetworkConnected;
 import static com.eveningoutpost.dexdrip.Models.JoH.showNotification;
