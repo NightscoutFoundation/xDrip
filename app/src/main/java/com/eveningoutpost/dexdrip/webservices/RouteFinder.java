@@ -33,6 +33,11 @@ public class RouteFinder {
 
         // support for nightscout style sgv.json endpoint
         routes.add(new RouteInfo("sgv.json", "WebServiceSgv"));
+        routes.add(new RouteInfo("api/v1/entries/sgv.json", "WebServiceSgv"));
+
+        // support for nightscout style treatments.json endpoint
+        routes.add(new RouteInfo("treatments.json", "WebServiceTreatments"));
+        routes.add(new RouteInfo("api/v1/treatments.json", "WebServiceTreatments"));
 
         // support for nightscout style barebones status.json endpoint
         routes.add(new RouteInfo("status.json", "WebServiceStatus"));

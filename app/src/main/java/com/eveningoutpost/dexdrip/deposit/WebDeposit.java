@@ -11,11 +11,11 @@ import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.tidepool.InfoInterceptor;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 import android.support.annotation.RequiresApi;
+import org.json.JSONArray;
 import lombok.val;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -31,7 +31,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.OkHttpWrapper.enableTls12OnPreLollipop;
-import static com.eveningoutpost.dexdrip.deposit.ReadingsToJson.getJsonForStartEnd;
+
 
 /**
  * jamorham
@@ -63,6 +63,10 @@ public class WebDeposit {
 
         @POST("/create/{sn}")
         Call<DepositReply1> upload(@Header("Authorization") String token, @Path("sn") String id, @Body RequestBody body);
+
+        @POST("/create/treatment/{id1}/{id2}/{id3}")
+        Call<DepositReply1> uploadTreatment(@Header("Authorization") String token, @Path("id1") String id1, @Path("id2") String id2, @Path("id3") String id3, @Body RequestBody body);
+
     }
 
 
@@ -99,6 +103,16 @@ public class WebDeposit {
         return Pref.getString(WEB_DEPOSIT_SERIAL, "Invalid");
     }
 
+    static String getSerialInfo(final int pos) {
+        val serial = Pref.getString(WEB_DEPOSIT_SERIAL, "Invalid");
+        val serialA = serial.split(" ");
+        try {
+            return serialA[pos];
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
     static long getNextTime() {
         return Math.max(JoH.tsl() - Constants.MONTH_IN_MS * 4, Pref.getLong(WEB_DEPOSIT_POSITION, 0));
     }
@@ -107,22 +121,39 @@ public class WebDeposit {
         Pref.setLong(WEB_DEPOSIT_POSITION, time);
     }
 
+    static IWebDeposit getService() {
+        retrofit = null; // Always remake retrofit so we can load new base url
+        return getRetrofitInstance().create(IWebDeposit.class);
+    }
 
-    static void doUpload(final long start, final long end, final F successCallback, final F failCallback, final F statusCallBack) {
-        UserError.Log.d(TAG, "doUpload called");
+    static void doUploadByType(final String type, final long start, final long end, final F successCallback, final F failCallback, final F statusCallBack) {
+        UserError.Log.d(TAG, "doUpload called: "+type);
 
         statusCallBack.apply("Getting data");
-        val data = getJsonForStartEnd(start, end);
+
+        JSONArray data;
+
+        if ("T".equals(type)) {
+            data = TreatmentsToJson.getJsonForStartEnd(start, end);
+        } else if ("G".equals(type)) {
+            data = ReadingsToJson.getJsonForStartEnd(start, end);
+        } else {
+            throw new RuntimeException("Invalid type passed: " + type);
+        }
 
         if (data.length() < 100) {
-            failCallback.apply("Not enough data to deposit");
+            failCallback.apply("Not enough data to deposit (" + data.length() + ")");
             return;
         }
 
-        retrofit = null; // Always remake retrofit so we can load new base url
-        val service = getRetrofitInstance().create(IWebDeposit.class);
         val body = RequestBody.create(MediaType.parse("application/json"), data.toString().getBytes(StandardCharsets.UTF_8));
-        val call = service.upload("no auth token", getSerialInfo(), body);
+        Call<DepositReply1> call;
+
+        if ("T".equals(type)) {
+            call = getService().uploadTreatment("no auth token", getSerialInfo(1), getSerialInfo(2), getSerialInfo(3), body);
+        } else {
+            call = getService().upload("no auth token", getSerialInfo(0), body);
+        }
 
         statusCallBack.apply("Uploading data, records: " + data.length());
         call.enqueue(new DepositCallback<DepositReply1>(TAG, successCallback)

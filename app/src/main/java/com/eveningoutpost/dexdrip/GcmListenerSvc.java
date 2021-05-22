@@ -542,8 +542,12 @@ public class GcmListenerSvc extends JamListenerSvc {
                 } else if (action.equals("ssom")) {
                     if (Home.get_master()) {
                         if (payload.equals("challenge string")) {
-                            UserError.Log.e(TAG, "Stopping sensor by remote");
-                            StopSensor.stop();
+                            if (Pref.getBoolean("plus_accept_follower_actions", true)) {
+                                UserError.Log.i(TAG, "Stopping sensor by remote");
+                                StopSensor.stop();
+                            } else {
+                                UserError.Log.w(TAG, "Stop sensor by follower rejected because follower actions are disabled");
+                            }
                         } else {
                             UserError.Log.wtf(TAG, "Challenge string failed in ssom");
                         }
@@ -573,7 +577,7 @@ public class GcmListenerSvc extends JamListenerSvc {
 
     private void HandleLibreBlock(String payload) {
         LibreBlock lb = LibreBlock.createFromExtendedJson(payload);
-        if(lb == null) {
+        if (lb == null) {
             return;
         }
         if (LibreBlock.getForTimestamp(lb.timestamp) != null) {
@@ -581,15 +585,15 @@ public class GcmListenerSvc extends JamListenerSvc {
             return;
         }
         LibreBlock.Save(lb);
-        
+
         PersistentStore.setString("LibreSN", lb.reference);
-        
-        if(Home.get_master()) {
+
+        if (Home.get_master()) {
             if (SensorSanity.checkLibreSensorChangeIfEnabled(lb.reference)) {
                 Log.e(TAG, "Problem with Libre Serial Number - not processing");
             }
-            
-            NFCReaderX.HandleGoodReading(lb.reference, lb.blockbytes, lb.timestamp, false, lb.patchUid,  lb.patchInfo);
+
+            NFCReaderX.HandleGoodReading(lb.reference, lb.blockbytes, lb.timestamp, false, lb.patchUid, lb.patchInfo);
         }
     }
 
