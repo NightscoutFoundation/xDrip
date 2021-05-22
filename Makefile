@@ -4,6 +4,8 @@ export ANDROID_HOME
 BUILD_TOOLS_VERSION != sed -n 's/^ *- build-tools-//p' .travis.yml
 ANDROID_PLATFORM_VERSION != (sed -n 's/^ *- yes | sdkmanager "platforms;android-\([0-9]*\)"/\1/p' .travis.yml; echo 26) | head -n1
 
+sdkmanager != which sdkmanager >/dev/null && echo sdkmanager || echo $(ANDROID_HOME)/tools/bin/sdkmanager
+
 GIT_DISCOVERY_ACROSS_FILESYSTEM=y
 export GIT_DISCOVERY_ACROSS_FILESYSTEM
 
@@ -50,8 +52,6 @@ $(ANDROID_HOME):
 unzipped-tools-stamp: ../$(ANDROID_CLI_TOOLS_ZIP)
 	unzip -d $(ANDROID_HOME) $^
 	touch $@
-
-sdkmanager = $(ANDROID_HOME)/tools/bin/sdkmanager
 
 $(sdkmanager): | installed-sdkmanager-stamp
 
