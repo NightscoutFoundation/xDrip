@@ -4,6 +4,7 @@ export ANDROID_HOME
 BUILD_TOOLS_VERSION != sed -n 's/^ *- build-tools-//p' .travis.yml
 ANDROID_PLATFORM_VERSION != (sed -n 's/^ *- yes | sdkmanager "platforms;android-\([0-9]*\)"/\1/p' .travis.yml; echo 26) | head -n1
 
+gradle != which gradle >/dev/null && echo gradle || echo bash gradlew
 sdkmanager != which sdkmanager >/dev/null && echo sdkmanager || echo $(ANDROID_HOME)/tools/bin/sdkmanager
 
 GIT_DISCOVERY_ACROSS_FILESYSTEM=y
@@ -17,8 +18,6 @@ RELEASE_APK = app/build/outputs/apk/release/app-release-unsigned.apk
 
 .DEFAULT_GOAL = app-release-unsigned.apk
 .PHONY: assembleRelease clean clean-global-caches install tasks
-
-gradle := $(shell [ "$(which gradle >/dev/null)" ] && echo gradle || echo bash gradlew)
 
 exec:
 	@if [ "$(sh)" ]; then sh -c "$(sh)"; else exec bash; fi
