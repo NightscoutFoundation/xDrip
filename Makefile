@@ -7,9 +7,6 @@ ANDROID_PLATFORM_VERSION != (sed -n 's/^ *- yes | sdkmanager "platforms;android-
 gradle != which gradle >/dev/null && echo gradle || echo bash gradlew
 sdkmanager != which sdkmanager >/dev/null && echo sdkmanager || echo $(ANDROID_HOME)/tools/bin/sdkmanager
 
-GIT_DISCOVERY_ACROSS_FILESYSTEM=y
-export GIT_DISCOVERY_ACROSS_FILESYSTEM
-
 SDKS = "platforms;android-$(ANDROID_PLATFORM_VERSION)" "build-tools;$(BUILD_TOOLS_VERSION)" "extras;google;m2repository"
 ANDROID_CLI_TOOLS_ZIP=commandlinetools-linux-7302050_latest.zip
 
