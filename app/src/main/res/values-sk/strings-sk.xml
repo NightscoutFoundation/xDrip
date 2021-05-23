@@ -130,6 +130,7 @@
     <string name="possible_bad_calibration">Pravdepodobne chybná kalibrácia. Vypi pohár vody, umy si ruky a skús kalibráciu opäť za pár minút!</string>
     <string name="please_wait_need_two_readings_first">Počkaj chvíľu. Sú potrebné aspoň 2 hodnoty z vysielača.</string>
     <string name="please_enter_two_calibrations_to_get_started">Zadaj dve počiatočné kalibrácie!</string>
+    <string name="now_pair_with_your_dexcom_share">Teraz prepojit s tvojim Dexcom Share</string>
     <string name="now_choose_start_sensor_in_settings">V nastaveniach zvoľ Spustiť senzor</string>
     <string name="waiting_for_packet">Čaká sa na dáta</string>
     <string name="persistent_high_for_greater_than">Pretrvavajúca vysoká&gt; </string>
