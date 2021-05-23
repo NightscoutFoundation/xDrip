@@ -4,7 +4,9 @@ package com.eveningoutpost.dexdrip.UtilityModels;
  * Various constants
  */
 public class Constants {
-    public static final double MMOLL_TO_MGDL = 18.0182;
+    // Based on the molar mass of glucose (see e.g. https://pubchem.ncbi.nlm.nih.gov/compound/glucose).
+    // Note: some apps (and older versions of xDrip+) use the value 18.0182.
+    public static final double MMOLL_TO_MGDL = 18.0156;
     public static final double MGDL_TO_MMOLL = 1 / MMOLL_TO_MGDL;
 
 
