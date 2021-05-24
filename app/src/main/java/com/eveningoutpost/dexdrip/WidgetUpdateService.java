@@ -36,16 +36,19 @@ public class WidgetUpdateService extends Service {
         @Override
         public void onReceive(Context ctx, Intent intent) {
             final PowerManager.WakeLock wl = JoH.getWakeLock("xdrip-widget-bcast", 20000);
-            //Log.d(TAG, "onReceive("+intent.getAction()+")");
-            if (intent.getAction().compareTo(Intent.ACTION_TIME_TICK) == 0) {
-                updateCurrentBgInfo();
-            } else if (intent.getAction().compareTo(Intent.ACTION_SCREEN_ON) == 0) {
-                enableClockTicks();
-                updateCurrentBgInfo();
-            } else if (intent.getAction().compareTo(Intent.ACTION_SCREEN_OFF) == 0) {
-                disableClockTicks();
+            try {
+                //Log.d(TAG, "onReceive("+intent.getAction()+")");
+                if (intent.getAction().compareTo(Intent.ACTION_TIME_TICK) == 0) {
+                    updateCurrentBgInfo();
+                } else if (intent.getAction().compareTo(Intent.ACTION_SCREEN_ON) == 0) {
+                    enableClockTicks();
+                    updateCurrentBgInfo();
+                } else if (intent.getAction().compareTo(Intent.ACTION_SCREEN_OFF) == 0) {
+                    disableClockTicks();
+                }
+            } finally {
+                JoH.releaseWakeLock(wl);
             }
-            JoH.releaseWakeLock(wl);
         }
     };
 

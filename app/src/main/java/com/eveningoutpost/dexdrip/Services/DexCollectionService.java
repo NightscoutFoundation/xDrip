@@ -320,15 +320,13 @@ public class DexCollectionService extends Service implements BtCallBack {
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
         @Override
         public synchronized void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-            final PowerManager.WakeLock wl = JoH.getWakeLock("bluetooth-gatt", 60000);
-
             mStatus = status; // for display in system status
-
             if (status == 133) {
                 error133++;
             } else {
                 error133 = 0;
             }
+            final PowerManager.WakeLock wl = JoH.getWakeLock("bluetooth-gatt", 60000);
             try {
                 if (Pref.getBoolean("bluetooth_excessive_wakelocks", true)) {
                   /*  PowerManager powerManager = (PowerManager) mContext.getSystemService(POWER_SERVICE);
@@ -382,6 +380,14 @@ public class DexCollectionService extends Service implements BtCallBack {
                 return;
             }
             final PowerManager.WakeLock wl = JoH.getWakeLock("bluetooth-onservices", 60000);
+            try {
+                onServicesDiscoveredWithWakeLockHeld(gatt, status);
+            } finally {
+                JoH.releaseWakeLock(wl);
+            }
+        }
+
+        private void onServicesDiscoveredWithWakeLockHeld(BluetoothGatt gatt, int status) {
             Log.d(TAG, "onServicesDiscovered received status: " + status);
 
             if (prefs.getBoolean(PREF_DEX_COLLECTION_BONDING, false)) {
@@ -413,7 +419,6 @@ public class DexCollectionService extends Service implements BtCallBack {
                 final BluetoothGattCharacteristic gattCharacteristic = gattService.getCharacteristic(xDripDataCharacteristic);
                 if (gattCharacteristic == null) {
                     Log.w(TAG, "onServicesDiscovered: characteristic " + xDripDataCharacteristic + " not found");
-                    JoH.releaseWakeLock(wl);
                     Log.d(TAG, "onServicesDiscovered: returning due to null xDrip characteristic");
                     return;
                 }
@@ -469,7 +474,6 @@ public class DexCollectionService extends Service implements BtCallBack {
                 final BluetoothGattCharacteristic nrfGattCharacteristic = nrfGattService.getCharacteristic(nrfDataRXCharacteristic);
                 if (nrfGattCharacteristic == null) {
                     Log.w(TAG, "onServicesDiscovered: characteristic " + nrfGattCharacteristic + " not found");
-                    JoH.releaseWakeLock(wl);
                     Log.d(TAG, "onServicesDiscovered: returning due to null nrf characteristic");
                     return;
                 } else {
@@ -493,7 +497,6 @@ public class DexCollectionService extends Service implements BtCallBack {
                     mCharacteristicSend = nrfGattService.getCharacteristic(nrfDataTXCharacteristic);
                     if (mCharacteristicSend == null) {
                         Log.w(TAG, "onServicesDiscovered: nrf characteristic " + mCharacteristicSend + " not found");
-                        JoH.releaseWakeLock(wl);
                         return;
                     }
                     if (blueReader.isblueReader()) {
@@ -546,7 +549,6 @@ public class DexCollectionService extends Service implements BtCallBack {
                 if (mCharacteristic == null) {
                     Log.w(TAG, "onServicesDiscovered: blukon characteristic " + mCharacteristic + " not found");
                     // WHAT TO DO HERE?
-                    JoH.releaseWakeLock(wl);
                     return;
                 }
 
@@ -578,7 +580,6 @@ public class DexCollectionService extends Service implements BtCallBack {
                 mCharacteristicSend = blukonService.getCharacteristic(UUID.fromString(HM10Attributes.BLUKON_UART_TX));
                 if (mCharacteristicSend == null) {
                     Log.w(TAG, "onServicesDiscovered: blukon send characteristic " + mCharacteristicSend + " not found");
-                    JoH.releaseWakeLock(wl);
                     return;
                 }
                 status("Enabled " + getString(R.string.blukon));
@@ -595,7 +596,6 @@ public class DexCollectionService extends Service implements BtCallBack {
                 mCharacteristic = Libre2Service.getCharacteristic(UUID.fromString(HM10Attributes.LIBRE2_DATA_CHARACTERISTIC));
                 if (mCharacteristic == null) {
                     Log.w(TAG, "onServicesDiscovered: libre2 characteristic  not found");
-                    JoH.releaseWakeLock(wl);
                     return;
                 }
                 
@@ -617,7 +617,6 @@ public class DexCollectionService extends Service implements BtCallBack {
                 mCharacteristicSend = Libre2Service.getCharacteristic(UUID.fromString(HM10Attributes.LIBRE2_LOGIN_CHARACTERISTIC));
                 if (mCharacteristicSend == null) {
                     Log.w(TAG, "onServicesDiscovered: Libre2 login characteristic not found");
-                    JoH.releaseWakeLock(wl);
                     return;
                 }
                 status("Enabled " + getString(R.string.blukon)); //??? change to libre2
@@ -705,7 +704,6 @@ public class DexCollectionService extends Service implements BtCallBack {
             // waitFor(300);
             Log.d(TAG, "Services discovered release");
             checkImmediateSend(); // TODO maybe find a better home for this
-            JoH.releaseWakeLock(wl);
         }
 
         @Override
@@ -1155,6 +1153,14 @@ public class DexCollectionService extends Service implements BtCallBack {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("dexcollect-service", 120000);
+        try {
+            return onStartCommandWithWakeLockHeld(intent, flags, startId);
+        } finally {
+            JoH.releaseWakeLock(wl);
+        }
+    }
+
+    private int onStartCommandWithWakeLockHeld(Intent intent, int flags, int startId) {
         if (retry_time > 0 && failover_time > 0) {
             final long requested_wake_time = Math.min(retry_time, failover_time);
             final long wakeup_jitter = JoH.msSince(requested_wake_time);
@@ -1182,14 +1188,12 @@ public class DexCollectionService extends Service implements BtCallBack {
         } else {
             status("Stopping");
             stopSelf();
-            JoH.releaseWakeLock(wl);
             return START_NOT_STICKY;
         }
         lastdata = null;
         DisconnectReceiver.addCallBack(this, TAG);
         checkConnection();
         watchdog();
-        JoH.releaseWakeLock(wl);
         return START_STICKY;
     }
 

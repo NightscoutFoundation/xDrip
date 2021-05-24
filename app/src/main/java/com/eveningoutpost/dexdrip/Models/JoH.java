@@ -62,6 +62,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.XdripNotificationCompat;
 import com.eveningoutpost.dexdrip.utils.BestGZIPOutputStream;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
+import com.eveningoutpost.dexdrip.utils.framework.WakeLockThread;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.common.primitives.Bytes;
 import com.google.common.primitives.UnsignedInts;
@@ -1581,29 +1582,24 @@ public class JoH {
     }
 
     public synchronized static void restartBluetooth(final Context context, final int startInMs) {
-        new Thread() {
+        new WakeLockThread("restart-bluetooth", 60000) {
             @Override
-            public void run() {
-                final PowerManager.WakeLock wl = getWakeLock("restart-bluetooth", 60000);
+            public void runWithWakeLock() {
                 Log.d(TAG, "Restarting bluetooth");
-                try {
-                    if (startInMs > 0) {
-                        try {
-                            Thread.sleep(startInMs);
-                        } catch (InterruptedException e) {
-                            Log.d(TAG, "Got interrupted waiting to start resetBluetooth");
-                        }
-                    }
-                    setBluetoothEnabled(context, false);
+                if (startInMs > 0) {
                     try {
-                        Thread.sleep(6000);
+                        Thread.sleep(startInMs);
                     } catch (InterruptedException e) {
-                        Log.d(TAG, "Got interrupted in resetBluetooth");
+                        Log.d(TAG, "Got interrupted waiting to start resetBluetooth");
                     }
-                    setBluetoothEnabled(context, true);
-                } finally {
-                    releaseWakeLock(wl);
                 }
+                setBluetoothEnabled(context, false);
+                try {
+                    Thread.sleep(6000);
+                } catch (InterruptedException e) {
+                    Log.d(TAG, "Got interrupted in resetBluetooth");
+                }
+                setBluetoothEnabled(context, true);
             }
         }.start();
     }

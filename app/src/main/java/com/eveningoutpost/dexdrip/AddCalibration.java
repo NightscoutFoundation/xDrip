@@ -20,6 +20,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
 import com.eveningoutpost.dexdrip.calibrations.NativeCalibrationPipe;
+import com.eveningoutpost.dexdrip.utils.framework.WakeLockThread;
 
 import java.util.UUID;
 
@@ -87,12 +88,9 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                     if (!TextUtils.isEmpty(string_value)) {
                         if (!TextUtils.isEmpty(bg_age)) {
                             final double calValue = Double.parseDouble(string_value);
-                            new Thread() {
+                            new WakeLockThread("xdrip-autocalibt", 60000) {
                                 @Override
-                                public void run() {
-
-                                    final PowerManager.WakeLock wlt = JoH.getWakeLock("xdrip-autocalibt", 60000);
-
+                                public void runWithWakeLock() {
                                     long bgAgeNumber = Long.parseLong(bg_age);
 
                                     if ((bgAgeNumber >= 0) && (bgAgeNumber < 86400)) {
@@ -156,8 +154,6 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                                     } else {
                                         Log.wtf("CALERROR", "bg age either in future or older than 1 day: " + bgAgeNumber);
                                     }
-
-                                    JoH.releaseWakeLock(wlt);
                                 }
                             }.start();
 

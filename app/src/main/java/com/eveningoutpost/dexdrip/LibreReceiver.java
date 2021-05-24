@@ -18,6 +18,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.utils.framework.WakeLockThread;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -45,10 +46,9 @@ public class LibreReceiver extends BroadcastReceiver {
     public void onReceive(final Context context, final Intent intent) {
         if(DexCollectionType.getDexCollectionType() != DexCollectionType.LibreReceiver)
             return;
-        new Thread() {
+        new WakeLockThread("libre-receiver", 60000) {
             @Override
-            public void run() {
-                PowerManager.WakeLock wl = JoH.getWakeLock("libre-receiver", 60000);
+            public void runWithWakeLock() {
                 synchronized (lock) {
                     try {
 
@@ -96,7 +96,6 @@ public class LibreReceiver extends BroadcastReceiver {
                         }
                     } finally {
                         JoH.benchmark("NSEmulator process");
-                        JoH.releaseWakeLock(wl);
                     }
                 } // lock
             }

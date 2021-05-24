@@ -124,10 +124,8 @@ public class Notifications extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-
-        final PowerManager.WakeLock wl = JoH.getWakeLock("NotificationsService", 60000);
-
         boolean unclearReading;
+        final PowerManager.WakeLock wl = JoH.getWakeLock("NotificationsService", 60000);
         try {
             Log.d("Notifications", "Running Notifications Intent Service");
             final Context context = getApplicationContext();

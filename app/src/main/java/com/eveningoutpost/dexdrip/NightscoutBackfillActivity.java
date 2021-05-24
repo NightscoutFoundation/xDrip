@@ -17,6 +17,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.profileeditor.DatePickerFragment;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileAdapter;
+import com.eveningoutpost.dexdrip.utils.framework.WakeLockThread;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -99,41 +100,36 @@ public class NightscoutBackfillActivity extends AppCompatActivity implements Nav
         locked = JoH.tsl();
         doitButton.setVisibility(View.INVISIBLE);
         JoH.static_toast_long(gs(R.string.please_wait));
-        new Thread(new Runnable() {
+        new WakeLockThread("nightscout-backfill", 600000) {
             @Override
-            public void run() {
-                final PowerManager.WakeLock wl = JoH.getWakeLock("nightscout-backfill", 600000);
-                try {
-                    final List<BgReading> the_readings = BgReading.latestForGraphAsc(500000, calendar.getTimeInMillis(), JoH.tsl());
-                    if ((the_readings != null) && (the_readings.size() > 0)) {
-                        PersistentStore.setBoolean(UploaderTask.BACKFILLING_BOOSTER, true);
-                        long bgcount = the_readings.size();
-                        long trcount = 0;
-                        for (BgReading bg : the_readings) {
-                            UploaderQueue.newEntry("update", bg);
-                        }
-
-                        final List<Treatments> the_treatments = Treatments.latestForGraph(50000, calendar.getTimeInMillis(), JoH.tsl());
-                        if ((the_treatments != null) && (the_treatments.size() > 0)) {
-                            trcount = the_treatments.size();
-                            for (Treatments tr : the_treatments) {
-                                UploaderQueue.newEntry("update", tr);
-                            }
-                        }
-
-                        // TODO Calibrations? Blood tests?
-
-                        JoH.static_toast_long("Queued " + bgcount + " glucose readings and " + trcount + " treatments!");
-                        SyncService.startSyncService(500);
-                        locked = 0; // clear lock
-                    } else {
-                        JoH.static_toast_long(gs(R.string.didnt_find_any_glucose_readings_in_that_time_period));
+            public void runWithWakeLock() {
+                final List<BgReading> the_readings = BgReading.latestForGraphAsc(500000, calendar.getTimeInMillis(), JoH.tsl());
+                if ((the_readings != null) && (the_readings.size() > 0)) {
+                    PersistentStore.setBoolean(UploaderTask.BACKFILLING_BOOSTER, true);
+                    long bgcount = the_readings.size();
+                    long trcount = 0;
+                    for (BgReading bg : the_readings) {
+                        UploaderQueue.newEntry("update", bg);
                     }
-                } finally {
-                    JoH.releaseWakeLock(wl);
+
+                    final List<Treatments> the_treatments = Treatments.latestForGraph(50000, calendar.getTimeInMillis(), JoH.tsl());
+                    if ((the_treatments != null) && (the_treatments.size() > 0)) {
+                        trcount = the_treatments.size();
+                        for (Treatments tr : the_treatments) {
+                            UploaderQueue.newEntry("update", tr);
+                        }
+                    }
+
+                    // TODO Calibrations? Blood tests?
+
+                    JoH.static_toast_long("Queued " + bgcount + " glucose readings and " + trcount + " treatments!");
+                    SyncService.startSyncService(500);
+                    locked = 0; // clear lock
+                } else {
+                    JoH.static_toast_long(gs(R.string.didnt_find_any_glucose_readings_in_that_time_period));
                 }
             }
-        }).start();
+        }.start();
 
         finish();
     }

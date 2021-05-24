@@ -112,7 +112,13 @@ public class WifiCollectionService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("xdrip-wificolsvc-onStart", 60000);
-
+        try {
+            return onStartCommandWithWakeLockHeld(intent, flags, startId);
+        } finally {
+            if (wl.isHeld()) wl.release();
+        }
+    }
+    private int onStartCommandWithWakeLockHeld(Intent intent, int flags, int startId) {
         if (requested_wake_time > 0) {
             JoH.persistentBuggySamsungCheck();
             final long wakeup_jitter = JoH.msSince(requested_wake_time);
@@ -135,11 +141,9 @@ public class WifiCollectionService extends Service {
         } else {
             lastState = "Stopping " + JoH.hourMinuteString();
             stopSelf();
-            if (wl.isHeld()) wl.release();
             return START_NOT_STICKY;
         }
         lastState = "Started " + JoH.hourMinuteString();
-        if (wl.isHeld()) wl.release();
         return START_STICKY;
     }
 

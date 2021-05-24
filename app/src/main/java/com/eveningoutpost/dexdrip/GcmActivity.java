@@ -34,6 +34,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.DisplayQRCode;
 import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
+import com.eveningoutpost.dexdrip.utils.framework.WakeLockThread;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -544,10 +545,9 @@ public class GcmActivity extends FauxActivity {
 
     static synchronized void syncBGTable2() {
         if (!Sensor.isActive()) return;
-        new Thread() {
+        new WakeLockThread("syncBGTable", 300000) {
             @Override
-            public void run() {
-                final PowerManager.WakeLock wl = JoH.getWakeLock("syncBGTable", 300000);
+            public void runWithWakeLock() {
                 //if ((JoH.ts() - last_sync_fill) > (60 * 1000 * (5 + bg_sync_backoff))) {
                 if (JoH.pratelimit("last-sync-fill", 60 * (5 + bg_sync_backoff))) {
                     last_sync_fill = JoH.tsl();
@@ -576,7 +576,6 @@ public class GcmActivity extends FauxActivity {
                 } else {
                     Log.d(TAG, "Ignoring recent sync request, backoff: " + bg_sync_backoff);
                 }
-                JoH.releaseWakeLock(wl);
             }
         }.start();
     }

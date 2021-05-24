@@ -142,6 +142,8 @@ public class DisplayQRCode extends BaseAppCompatActivity {
 
 
     public static synchronized void uploadBytes(byte[] result, final int callback_option) {
+        // FIXME: This wakelock should probably only be acquired in the case where we
+        // actually get to the try block below?
         final PowerManager.WakeLock wl = JoH.getWakeLock("uploadBytes", 1200000);
         if ((result != null) && (result.length > 0)) {
             final byte[] mykey = CipherUtils.getRandomKey();

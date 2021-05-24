@@ -167,11 +167,14 @@ public class Mdns {
             int spinner = 0;
             while (locked_until > JoH.tsl()) {
                 PowerManager.WakeLock wlx = JoH.getWakeLock("mdns-resolve", 200);
-                spinner++;
-                if ((spinner % 10) == 0)
-                    UserError.Log.d(TAG, "Waiting on Lock: " + JoH.niceTimeTill(locked_until));
-                Thread.sleep(100);
-                JoH.releaseWakeLock(wlx);
+                try {
+                    spinner++;
+                    if ((spinner % 10) == 0)
+                        UserError.Log.d(TAG, "Waiting on Lock: " + JoH.niceTimeTill(locked_until));
+                    Thread.sleep(100);
+                } finally {
+                    JoH.releaseWakeLock(wlx);
+                }
             }
             // TODO wly timeout excessive and not cancelled
             PowerManager.WakeLock wly = JoH.getWakeLock("mdns-resolve-x", 2000);

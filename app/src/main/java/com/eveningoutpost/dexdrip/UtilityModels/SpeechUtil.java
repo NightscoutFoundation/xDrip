@@ -9,6 +9,7 @@ import android.speech.tts.TextToSpeech;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.utils.framework.WakeLockThread;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.Locale;
@@ -46,9 +47,9 @@ public class SpeechUtil {
     @SuppressWarnings("WeakerAccess")
     public static void say(final String text, long delay, int retry) {
 
-        new Thread(() -> {
-            final PowerManager.WakeLock wl = JoH.getWakeLock("SpeechUtil", (int) Constants.SECOND_IN_MS * 60);
-            try {
+        new WakeLockThread("SpeechUtil", (int) Constants.SECOND_IN_MS * 60) {
+            @Override
+            protected void runWithWakeLock() {
                 if (tts == null) {
                     initialize();
                 }
@@ -110,11 +111,8 @@ public class SpeechUtil {
                 } else {
                     UserError.Log.d(TAG, "Successfully spoke: " + text);
                 }
-
-            } finally {
-                JoH.releaseWakeLock(wl);
             }
-        }).start();
+        }.start();
 
     }
 

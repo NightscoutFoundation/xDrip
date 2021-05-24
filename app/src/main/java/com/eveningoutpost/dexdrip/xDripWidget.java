@@ -39,14 +39,15 @@ public class xDripWidget extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("xdrip-widget-onupdate", 20000);
-        final int N = appWidgetIds.length;
-        for (int i = 0; i < N; i++) {
-
-            //update the widget
-            updateAppWidget(context, appWidgetManager, appWidgetIds[i]);
-
+        try {
+            final int N = appWidgetIds.length;
+            for (int i = 0; i < N; i++) {
+                //update the widget
+                updateAppWidget(context, appWidgetManager, appWidgetIds[i]);
+            }
+        } finally {
+            JoH.releaseWakeLock(wl);
         }
-        JoH.releaseWakeLock(wl);
     }
 
     @Override

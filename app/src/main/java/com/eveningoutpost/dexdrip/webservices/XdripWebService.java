@@ -15,6 +15,7 @@ import com.eveningoutpost.dexdrip.utils.TriState;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
+import com.google.common.io.Closeables;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -225,9 +226,9 @@ public class XdripWebService implements Runnable {
      * @throws IOException
      */
     private void handle(Socket socket) throws IOException {
-        final PowerManager.WakeLock wl = JoH.getWakeLock("webservice-handler", 20000);
         BufferedReader reader = null;
         PrintStream output = null;
+        final PowerManager.WakeLock wl = JoH.getWakeLock("webservice-handler", 20000);
         try {
             socket.setSoTimeout((int) (Constants.SECOND_IN_MS * 10));
             try {
@@ -347,13 +348,18 @@ public class XdripWebService implements Runnable {
             UserError.Log.wtf(TAG, "Got null pointer exception: " + e);
 
         } finally {
-            if (output != null) {
-                output.close();
+            // Note: Could also use Closeables.close(..., false) instead of try/finally if we
+            // don't care about IOException thrown by close().
+            try {
+                if (output != null) {
+                    output.close();
+                }
+                if (reader != null) {
+                    reader.close();
+                }
+            } finally {
+                JoH.releaseWakeLock(wl);
             }
-            if (reader != null) {
-                reader.close();
-            }
-            JoH.releaseWakeLock(wl);
         }
     }
 

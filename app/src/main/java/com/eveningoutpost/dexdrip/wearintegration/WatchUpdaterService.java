@@ -921,6 +921,14 @@ public class WatchUpdaterService extends WearableListenerService implements
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("watchupdate-onstart", 60000);
+        try {
+            return onStartCommandWithWakeLockHeld(intent, flags, startId);
+        } finally {
+            JoH.releaseWakeLock(wl);
+        }
+    }
+
+    private int onStartCommandWithWakeLockHeld(Intent intent, int flags, int startId) {
         wear_integration = mPrefs.getBoolean("wear_sync", false);
 
         String action = null;
@@ -1035,11 +1043,9 @@ public class WatchUpdaterService extends WearableListenerService implements
             Log.i(TAG, "Stopping service");
             startBtService();
             stopSelf();
-            JoH.releaseWakeLock(wl);
             return START_NOT_STICKY;
         }
 
-        JoH.releaseWakeLock(wl);
         return START_STICKY;
     }
 
@@ -1447,7 +1453,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                                     JoH.static_toast_long("Sending latest version to watch");
                                 }
                                 final int finalStartAt = startAt;
-                                new Thread(new Runnable() {
+                                new Thread() {
                                     @Override
                                     public void run() {
                                         if (mWearNodeId == null) {
@@ -1525,7 +1531,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                                             Log.d(TAG, "VUP: Could not send wearable apk as nodeid is currently null");
                                         }
                                     }
-                                }).start();
+                                }.start();
                             }
                         } else {
                             Log.d(TAG, "Unknown wearable path: " + event.getPath());

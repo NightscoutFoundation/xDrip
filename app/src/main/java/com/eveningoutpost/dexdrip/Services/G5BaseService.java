@@ -19,7 +19,7 @@ import com.google.android.gms.wearable.DataMap;
 
 public abstract class G5BaseService extends Service {
 
-
+    // TODO: Should probably only acquire this during onCreate()?
     private final PowerManager.WakeLock wl = JoH.getWakeLock("g5-base-bt", 100);
 
     public static final int G6_SCALING = 34;

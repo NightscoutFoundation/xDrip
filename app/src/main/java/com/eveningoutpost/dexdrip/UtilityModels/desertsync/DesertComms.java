@@ -10,6 +10,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
+import com.eveningoutpost.dexdrip.utils.framework.WakeLockThread;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.google.gson.annotations.Expose;
 
@@ -28,10 +29,8 @@ import okhttp3.Response;
 import static com.eveningoutpost.dexdrip.Models.JoH.cancelNotification;
 import static com.eveningoutpost.dexdrip.Models.JoH.defaultGsonInstance;
 import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
-import static com.eveningoutpost.dexdrip.Models.JoH.getWakeLock;
 import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.Models.JoH.pratelimit;
-import static com.eveningoutpost.dexdrip.Models.JoH.releaseWakeLock;
 import static com.eveningoutpost.dexdrip.Models.JoH.showNotification;
 import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DESERT_MASTER_UNREACHABLE;
@@ -168,24 +167,22 @@ public class DesertComms {
 
     @SuppressWarnings("NonAtomicOperationOnVolatileField")
     private static void runInBackground() {
+        if (queue.size() == 0) return;
 
         // TODO we should probably do this in parallel for prospective followers
-        new Thread(() -> {
-            if (queue.size() == 0) return;
-            final PowerManager.WakeLock wl = getWakeLock("DesertComms send", 60000);
-            UserError.Log.d(TAG, "Queue size: " + queue.size());
-            try {
+        new WakeLockThread("DesertComms send", 60000) {
+            @Override
+            protected void runWithWakeLock() {
+                if (queue.size() == 0) return;
+                UserError.Log.d(TAG, "Queue size: " + queue.size());
                 final String result = httpNext();
                 //UserError.Log.d(TAG, "Result: " + result);
                 checkCommsFailures(result == null);
                 if (((result != null) && queue.size() > 0) || Home.get_master()) {
                     runInBackground();
                 }
-            } finally {
-                releaseWakeLock(wl);
             }
-        }).start();
-
+        }.start();
     }
 
     private static String httpNext() {

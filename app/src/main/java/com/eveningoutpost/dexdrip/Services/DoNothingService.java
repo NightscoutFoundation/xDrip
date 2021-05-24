@@ -87,6 +87,8 @@ public class DoNothingService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        // Note: We can't use try/finally to release the wakelock here because there's a hack
+        // that sometimes releases it on a background thread instead.
         final PowerManager.WakeLock wl = JoH.getWakeLock("donothing-follower", 60000);
         lastState = "Trying to start " + JoH.hourMinuteString();
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
@@ -116,7 +118,8 @@ public class DoNothingService extends Service {
 
         if (CollectionServiceStarter.isFollower(getApplicationContext()) ||
                 CollectionServiceStarter.isLibre2App(getApplicationContext())) {
-            new Thread(new Runnable() {
+            new Thread() {
+                @Override
                 public void run() {
                     final int minsago = GcmListenerSvc.lastMessageMinutesAgo();
                     //Log.d(TAG, "Tick: minutes ago: " + minsago);
@@ -144,7 +147,7 @@ public class DoNothingService extends Service {
                     setFailOverTimer();
                     JoH.releaseWakeLock(wl);
                 }
-            }).start();
+            }.start();
         } else {
             stopSelf();
             JoH.releaseWakeLock(wl);

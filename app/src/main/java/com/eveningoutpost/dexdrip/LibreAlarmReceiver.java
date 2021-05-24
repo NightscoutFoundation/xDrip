@@ -24,6 +24,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.utils.framework.WakeLockThread;
 import com.google.gson.Gson;
 
 import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
@@ -104,10 +105,9 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, final Intent intent) {
-        new Thread() {
+        new WakeLockThread("librealarm-receiver", 60000) {
             @Override
-            public void run() {
-                final PowerManager.WakeLock wl = JoH.getWakeLock("librealarm-receiver", 60000);
+            public void runWithWakeLock() {
                 synchronized (lock) {
                     try {
 
@@ -172,7 +172,6 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                         }
                     } finally {
                         JoH.benchmark("LibreReceiver process");
-                        JoH.releaseWakeLock(wl);
                     }
                 } // lock
             }

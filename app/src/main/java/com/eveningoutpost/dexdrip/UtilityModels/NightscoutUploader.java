@@ -29,6 +29,7 @@ import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.Mdns;
+import com.eveningoutpost.dexdrip.utils.framework.WakeLockThread;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
@@ -236,24 +237,19 @@ public class NightscoutUploader {
     }
 
     public boolean downloadRest(final long sleep) {
-        new Thread(new Runnable() {
+        new WakeLockThread("ns-download-rest", 180000) {
             @Override
-            public void run() {
-                final PowerManager.WakeLock wl = JoH.getWakeLock("ns-download-rest", 180000);
+            public void runWithWakeLock() {
                 try {
-                    try {
-                        if (sleep > 0) Thread.sleep(sleep);
-                    } catch (InterruptedException e) {
-                        //
-                    }
-                    if (doRESTtreatmentDownload(prefs)) {
-                        Home.staticRefreshBGCharts();
-                    }
-                } finally {
-                    JoH.releaseWakeLock(wl);
+                    if (sleep > 0) Thread.sleep(sleep);
+                } catch (InterruptedException e) {
+                    //
+                }
+                if (doRESTtreatmentDownload(prefs)) {
+                    Home.staticRefreshBGCharts();
                 }
             }
-        }).start();
+        }.start();
         return true;
     }
 

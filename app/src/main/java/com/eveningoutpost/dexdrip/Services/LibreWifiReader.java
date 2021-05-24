@@ -405,8 +405,8 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
     }
 
     public Void doInBackground(String... urls) {
-        final PowerManager.WakeLock wl = JoH.getWakeLock("LibreWifiReader", 120000);
         Log.e(TAG, "doInBackground called");
+        final PowerManager.WakeLock wl = JoH.getWakeLock("LibreWifiReader", 120000);
         try {
             synchronized (LibreWifiReader.class) {
                 readData();

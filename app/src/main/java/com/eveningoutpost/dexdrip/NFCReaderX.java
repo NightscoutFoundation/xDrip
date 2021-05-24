@@ -44,6 +44,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm.SensorType;
+import com.eveningoutpost.dexdrip.utils.framework.WakeLockThread;
 
 
 import java.io.IOException;
@@ -308,19 +309,14 @@ public class NFCReaderX {
             }
             
             final ReadingData mResult = parseData(0, tagId, data1, CaptureDateTime);
-            new Thread() {
+            new WakeLockThread("processTransferObject", 60000) {
                 @Override
-                public void run() {
-                    final PowerManager.WakeLock wl = JoH.getWakeLock("processTransferObject", 60000);
-                    try {
-                        // Protect against wifi reader and gmc reader coming at the same time.
-                        synchronized (NFCReaderX.class) {
-                            mResult.CalculateSmothedData();
-                            LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult), CaptureDateTime, tagId, allowUpload, patchUid, patchInfo );
-                            Home.staticRefreshBGCharts();
-                        }
-                    } finally {
-                        JoH.releaseWakeLock(wl);
+                public void runWithWakeLock() {
+                    // Protect against wifi reader and gmc reader coming at the same time.
+                    synchronized (NFCReaderX.class) {
+                        mResult.CalculateSmothedData();
+                        LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult), CaptureDateTime, tagId, allowUpload, patchUid, patchInfo );
+                        Home.staticRefreshBGCharts();
                     }
                 }
             }.start();

@@ -20,6 +20,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.PumpStatus;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.utils.framework.WakeLockThread;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,13 +44,11 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, final Intent intent) {
-        new Thread() {
+        new WakeLockThread("nsemulator-receiver", 60000) {
             @Override
-            public void run() {
-                PowerManager.WakeLock wl = JoH.getWakeLock("nsemulator-receiver", 60000);
+            public void runWithWakeLock() {
                 synchronized (lock) {
                     try {
-
                         Log.d(TAG, "NSEmulator onReceiver: " + intent.getAction());
                         JoH.benchmark(null);
                         // check source
@@ -216,7 +215,6 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
                         }
                     } finally {
                         JoH.benchmark("NSEmulator process");
-                        JoH.releaseWakeLock(wl);
                     }
                 } // lock
             }

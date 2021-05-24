@@ -133,16 +133,18 @@ public class SystemStatusFragment extends Fragment {
     }
 
     private void requestWearCollectorStatus() {
-        final PowerManager.WakeLock wl = JoH.getWakeLock("ACTION_STATUS_COLLECTOR",120000);
         if (Home.get_enable_wear()) {
-            if (DexCollectionType.getDexCollectionType().equals(DexcomG5)) {
-                startWatchUpdaterService(safeGetContext(), WatchUpdaterService.ACTION_STATUS_COLLECTOR, TAG, "getBatteryStatusNow", G5CollectionService.getBatteryStatusNow);
-            }
-            else {
-                startWatchUpdaterService(safeGetContext(), WatchUpdaterService.ACTION_STATUS_COLLECTOR, TAG);
+            final PowerManager.WakeLock wl = JoH.getWakeLock("ACTION_STATUS_COLLECTOR",120000);
+            try {
+                if (DexCollectionType.getDexCollectionType().equals(DexcomG5)) {
+                    startWatchUpdaterService(safeGetContext(), WatchUpdaterService.ACTION_STATUS_COLLECTOR, TAG, "getBatteryStatusNow", G5CollectionService.getBatteryStatusNow);
+                } else {
+                    startWatchUpdaterService(safeGetContext(), WatchUpdaterService.ACTION_STATUS_COLLECTOR, TAG);
+                }
+            } finally {
+                JoH.releaseWakeLock(wl);
             }
         }
-        JoH.releaseWakeLock(wl);
     }
 
     @Override
