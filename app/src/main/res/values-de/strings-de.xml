@@ -8,6 +8,7 @@
     <string name="menu_refresh">Aktualisieren</string>
     <string name="menu_export_database">Datenbank exportieren</string>
     <string name="menu_export_csv_sidiary">Export als CSV (SiDiary-Format)</string>
+    <string name="menu_import_db">Datenbank importieren</string>
     <string name="error_bluetooth_not_supported">Fehler: Bluetooth wird von diesem Gerät nicht unterstützt</string>
     <string name="unknown_device">Gerät nicht erkannt</string>
     <string name="connecting_to_device">Verbinde mit Gerät</string>
