@@ -143,6 +143,14 @@ public class VoiceCommands {
                 JoH.static_toast_long(allWords);
                 GcmActivity.push_start_master_sensor();
                 break;
+            case "enable extension parameter":
+                Ob1G5StateMachine.enableExtensionParameter();
+                JoH.static_toast_long("Enabling extension parameter");
+                break;
+            case "disable extension parameter":
+                Ob1G5StateMachine.disableExtensionParameter();
+                JoH.static_toast_long("Disabling extension parameter");
+                break;
             case "test medtrum calibrate":
                 MedtrumCollectionService.calibratePing();
                 break;

@@ -47,8 +47,10 @@ import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.RxBleProvider;
+import com.eveningoutpost.dexdrip.UtilityModels.SendFeedBack;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight;
+import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.WholeHouse;
 import com.eveningoutpost.dexdrip.ui.helpers.Span;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -952,10 +954,10 @@ public class Ob1G5CollectionService extends G5BaseService {
             final IntentFilter pairingRequestFilter = new IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST);
             pairingRequestFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY - 1);
             try {
-                if (Build.VERSION.SDK_INT < 29) {
+                if (Build.VERSION.SDK_INT < 26) {
                     registerReceiver(mPairingRequestRecevier, pairingRequestFilter);
                 } else {
-                    UserError.Log.d(TAG, "Not registering pairing receiver on Android 10+");
+                    UserError.Log.d(TAG, "Not registering pairing receiver on Android 8+");
                 }
             } catch (Exception e) {
                 UserError.Log.e(TAG, "Could not register pairing request receiver:" + e);
@@ -1551,9 +1553,9 @@ public class Ob1G5CollectionService extends G5BaseService {
                                 changeState(GET_DATA);
                             }
                         } else if (parcel_device.getBondState() == BluetoothDevice.BOND_BONDING) {
-                            if (Build.VERSION.SDK_INT >= 29) {
+                            if (Build.VERSION.SDK_INT >= 26) {
                                 JoH.playResourceAudio(R.raw.bt_meter_connect);
-                                UserError.Log.uel(TAG, "Prompting user to notice pairing request with sound - On Android 10+ you have to manually pair when requested");
+                                UserError.Log.uel(TAG, "Prompting user to notice pairing request with sound - On Android 8+ you have to manually pair when requested");
                             }
                         }
                     }
@@ -1905,6 +1907,15 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
     }
 
+    private static void handleUnknownFirmwareClick() {
+        UserError.Log.d(TAG, "handleUnknownFirmwareClick()");
+        if (UpdateActivity.testAndSetNightly(true)) {
+            val vr1 = (VersionRequest1RxMessage) Ob1G5StateMachine.getFirmwareXDetails(getTransmitterID(), 1);
+            UserError.Log.d(TAG, "Starting feedback activity");
+            xdrip.getAppContext().startActivity(new Intent(xdrip.getAppContext(), SendFeedBack.class).putExtra("generic_text", "Automated Report of unknown firmware version\n" + vr1.toString()).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        }
+    }
+
     // data for MegaStatus
     public static List<StatusItem> megaStatus() {
 
@@ -1993,8 +2004,9 @@ public class Ob1G5CollectionService extends G5BaseService {
         try {
             if (vr1 != null) {
                 val known = FirmwareCapability.isKnownFirmware(vr1.firmware_version_string);
-                val unknown = !known ? (" " + "Unknown!" + "\n" + "Please report") : "";
-                l.add(new StatusItem("Firmware Version", vr1.firmware_version_string + unknown, !known ? CRITICAL : FirmwareCapability.isG6Rev2(vr1.firmware_version_string) ? NOTICE : NORMAL));
+                val unknown = !known ? (" " + "Unknown!" + "\n" + (UpdateActivity.testAndSetNightly(false) ? "Tap to report" : "Tap to use nightly version")) : "";
+
+                l.add(new StatusItem("Firmware Version", vr1.firmware_version_string + unknown, !known ? CRITICAL : NORMAL, !known ? "long-press" : null, !known ? (Runnable) Ob1G5CollectionService::handleUnknownFirmwareClick : null));
                 //l.add(new StatusItem("Build Version", "" + vr1.build_version));
                 if (vr1.version_code != 3) {
                     l.add(new StatusItem("Compat Version", "" + vr1.version_code, Highlight.BAD));
