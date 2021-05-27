@@ -85,7 +85,7 @@ public class NavDrawerBuilder {
                                 this.nav_drawer_options.add(context.getString(R.string.cannot_calibrate_right_now));
                                 this.nav_drawer_intents.add(new Intent(context, Home.class));
                             }
-                        } else { //If there has been no two initial calibrations
+                        } else { //If there haven't been two initial calibrations
                             if (BgReading.isDataSuitableForDoubleCalibration() || Ob1G5CollectionService.isG5WantingInitialCalibration()) {
                                 if (last_two_bgReadings.size() > 1) { //Firefly G6, in factory calibration mode, after third reading
                                     this.nav_drawer_options.add(context.getString(R.string.add_calibration));
