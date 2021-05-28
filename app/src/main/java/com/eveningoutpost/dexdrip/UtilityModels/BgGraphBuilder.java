@@ -232,8 +232,8 @@ public class BgGraphBuilder {
         this.highMark = tolerantParseDouble(prefs.getString("highValue", "170"), 170);
         this.lowMark = tolerantParseDouble(prefs.getString("lowValue", "70"), 70);
         this.doMgdl = (prefs.getString("units", "mgdl").equals("mgdl"));
-        defaultMinY = unitized(40);
-        defaultMaxY = unitized(250);
+        defaultMinY = unitized(70);
+        defaultMaxY = unitized(180);
         pointSize = isXLargeTablet(context) ? 5 : 3;
         axisTextSize = isXLargeTablet(context) ? 20 : Axis.DEFAULT_TEXT_SIZE_SP;
         previewAxisTextSize = isXLargeTablet(context) ? 12 : 5;
