@@ -53,7 +53,7 @@
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
                         app:colorpicker_showHex="false" />
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
-                        android:defaultValue="#006293"
+                        android:defaultValue="#ffffff"
                         android:key="color_bad_values"
                         android:title="@string/bad_glucose_values"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
