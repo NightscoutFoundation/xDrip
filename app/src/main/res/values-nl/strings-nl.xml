@@ -58,12 +58,14 @@
     <string name="pref_message_api_url">Dit is alleen de basis-URL, de uploader zal automatisch / items voor de POST toevoegen.  API_SECRET op de server moet overeenkomen met uw wachtwoordzin in deze instelling.</string>
     <string name="pref_default_api_url">https://yourpassphrase@{UW-SITE}.azurewebsites.net/api/v1/</string>
     <!-- wifi Settings -->
+    <string name="wifi_recievers_dialog_message">Door komma\'s gescheiden lijst van ip: poort (bijvoorbeeld 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
     <!-- Location Settings -->
     <string name="location_not_found_title">Locatie is niet ingeschakeld</string>
     <string name="location_not_found_message">Om Bluetooth-detectie te laten werken op nieuwere apparaten, moet de locatie zijn ingeschakeld. xDrip volgt uw locatie niet, behalve met de optionele noodberichtfunctie</string>
     <string name="location_yes">Inschakelen</string>
     <!-- broadcast settings -->
     <string name="pref_title_broadcast_enabled">Lokaal uitzenden</string>
+    <string name="pref_summary_broadcast_enabled">Schakel lokale uitzending van gegevens in zodat andere apps (bijv. NightWatch) naar nieuwe waarden kunnen luisteren</string>
     <string name="title_activity_share_test">Deel Test</string>
     <!-- pebble settings -->
     <string name="pref_pebble_trend_watchface">Gebruik de wijzerplaat van Pebble Trend</string>
