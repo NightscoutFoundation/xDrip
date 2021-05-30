@@ -35,6 +35,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 class LibreTrendLatest {
     long timestamp = 0;
     int id = 0;
+
     // bg and glucoseLevelRaw might be from a previous point that we have data for.
     private double bg = 0;
     private int glucoseLevelRaw;
@@ -51,6 +52,22 @@ class LibreTrendLatest {
         this.glucoseLevelRaw = glucoseLevelRaw;
         this.bg = bg;
     }
+
+    void updateLastReading(LibreBlock libreBlock) {
+        List<GlucoseData> trend = NFCReaderX.getLibreTrend(libreBlock);
+        if(trend.size() == 0 || trend.get(0).glucoseLevelRaw == 0 || libreBlock.timestamp < timestamp) {
+            return;
+        }
+        this.timestamp = libreBlock.timestamp;
+        this.bg = libreBlock.calculated_bg;
+        this.id = trend.get(0).sensorTime;
+        this.glucoseLevelRaw = trend.get(0).glucoseLevelRaw;
+    }
+
+
+    public String toString() {
+        return "{ timestamp " + JoH.dateTimeText(timestamp) + " id " + id + " bg " + bg + " glucoseLevelRaw " + glucoseLevelRaw + " SensorSN " + SensorSN + "}";
+    }
 }
 
 public class LibreTrendUtil {
@@ -63,7 +80,11 @@ public class LibreTrendUtil {
     private LibreTrendLatest m_libreTrendLatest;
     
     ArrayList<LibreTrendPoint> m_points;
-    
+
+    public void updateLastReading(LibreBlock libreBlock) {
+        m_libreTrendLatest.updateLastReading(libreBlock);
+    }
+
     public synchronized static LibreTrendUtil getInstance() {
         if(singleton == null) {
            singleton = new LibreTrendUtil();

@@ -13,6 +13,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
+import com.eveningoutpost.dexdrip.utils.LibreTrendUtil;
 import com.google.gson.annotations.Expose;
 
 import java.io.BufferedReader;
@@ -113,7 +114,6 @@ public class LibreBlock  extends PlusModel {
     }
 
     public static LibreBlock create(String reference, long timestamp, byte[] blocks, int byte_start, byte[] patchUid, byte[] patchInfo) {
-        UserError.Log.e(TAG,"Backtrack: "+JoH.backTrace());
         if (reference == null) {
             UserError.Log.e(TAG, "Cannot save block with null reference");
             return null;
@@ -206,9 +206,10 @@ public class LibreBlock  extends PlusModel {
         if (libreBlock == null) {
             return;
         }
-        Log.e(TAG, "Updating bg for timestamp " + timestamp);
+        Log.d(TAG, "Updating bg for timestamp " + JoH.dateTimeText(timestamp) + " bg = " + calculated_value);
         libreBlock.calculated_bg = calculated_value;
         libreBlock.save();
+        LibreTrendUtil.getInstance().updateLastReading(libreBlock);
     }
     
     public static LibreBlock findByUuid(String uuid) {

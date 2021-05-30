@@ -73,7 +73,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
         if (gd.glucoseLevelRaw > 0) {
             if(use_smoothed_data && gd.glucoseLevelRawSmoothed > 0) {
                 converted = convert_for_dex(gd.glucoseLevelRawSmoothed);
-                Log.d(TAG,"Using smoothed value " + converted + " instead of " + convert_for_dex(gd.glucoseLevelRaw) );
+                Log.d(TAG,"Using smoothed value " + converted + " instead of " + convert_for_dex(gd.glucoseLevelRaw) + gd );
             } else {
                 converted = convert_for_dex(gd.glucoseLevelRaw);
             }

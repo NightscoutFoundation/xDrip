@@ -196,17 +196,17 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
 
                                 break;
                             case Intents.XDRIP_DECODE_FARM_RESULT:
-                                Log.e(TAG, "recieved message XDRIP_DECODE_FARM_RESULT");
+                                Log.i(TAG, "recieved message XDRIP_DECODE_FARM_RESULT");
                                 handleOop2DecodeFarmResult(bundle);
                                 break;
                                 
                             case Intents.XDRIP_DECODE_BLE_RESULT:
-                                Log.e(TAG, "recieved message XDRIP_DECODE_BLE_RESULT");
+                                Log.i(TAG, "recieved message XDRIP_DECODE_BLE_RESULT");
                                 handleOop2DecodeBleResult(bundle);
                                 break;
                                 
                             case Intents.XDRIP_BLUETOOTH_ENABLE_RESULT:
-                                Log.e(TAG, "recieved message XDRIP_BLUETOOTH_ENABLE_RESULT");
+                                Log.i(TAG, "recieved message XDRIP_BLUETOOTH_ENABLE_RESULT");
                                 handleOop2BlutoothEnableResult(bundle);
                                 break;
 
