@@ -1358,6 +1358,10 @@
     <string name="title_show_medtrum_secondary">Medtrum Secondary</string>
     <string name="summary_illustrate_backfilled_data">Indicate backfilled data on chart</string>
     <string name="title_illustrate_backfilled_data">Show backfilled Data</string>
+    <string name="summary_lower_default_ymax">Lower the default Y axis maximum to 180 mg/dL or 10 mmol/L</string>
+    <string name="title_lower_default_ymax">Lower default yMax</string>
+    <string name="summary_raise_default_ymin">Raise the default Y axis minimum to 70 mg/dL or 3.9 mmol/L</string>
+    <string name="title_raise_default_ymin">Raise default yMin</string>
     <string name="summary_high_priority_notifications">Show notifications and graph at the top (also useful on lockscreen)</string>
     <string name="title_high_priority_notifications">High Priority Notifications</string>
     <string name="summary_public_notifications">Show notification content on secure lockscreen</string>
