@@ -80,9 +80,9 @@ class DexOldSchoolParameters extends SlopeParameters {
 class DexParametersAdrian extends SlopeParameters {
 
     /*
-     * Other default vlaues and thresholds that can be only activated in settings, when in engineering mode.
-     * promoted to be the regular defaults 20th March 2017
-     * */
+    * Other default vlaues and thresholds that can be only activated in settings, when in engineering mode.
+    * promoted to be the regular defaults 20th March 2017
+    * */
 
     DexParametersAdrian() {
         LOW_SLOPE_1 = 0.75;
@@ -291,7 +291,7 @@ public class Calibration extends Model {
         final List<BgReading> bgReadings = BgReading.latest_by_size(3);
 
         // don't allow initial calibration if data would be stale (but still use data for native mode)
-        if ((bgReadings == null) || (bgReadings.size() != 3) || !isDataSuitableForDoubleCalibration()) {
+            if ((bgReadings == null) || (bgReadings.size() != 3) || !isDataSuitableForDoubleCalibration() ){
 
             if (Ob1G5CollectionService.usingNativeMode()) {
                 JoH.static_toast_long("Sending Blood Tests to Transmitter"); // TODO extract string
@@ -516,7 +516,7 @@ public class Calibration extends Model {
 
     public static Calibration getByTimestamp(double timestamp) {//KS
         Sensor sensor = Sensor.currentSensor();
-        if (sensor == null) {
+        if(sensor == null) {
             return null;
         }
         return new Select()
@@ -579,14 +579,14 @@ public class Calibration extends Model {
                 bgReading = BgReading.last(is_follower);
             } else {
                 // get closest bg reading we can find with a cut off at 15 minutes max time
-                bgReading = BgReading.getForPreciseTimestamp(new Date().getTime() - ((timeoffset - estimatedInterstitialLagSeconds) * 1000), (15 * 60 * 1000));
+                bgReading = BgReading.getForPreciseTimestamp(new Date().getTime() - ((timeoffset - estimatedInterstitialLagSeconds) * 1000 ), (15 * 60 * 1000));
             }
             if (bgReading != null) {
-                if (SensorSanity.isRawValueSane(bgReading.raw_data, DexCollectionType.getDexCollectionType(), true) || Ob1G5CollectionService.usingNativeMode()) { // Raw OK, or native mode
+                if (SensorSanity.isRawValueSane(bgReading.raw_data, DexCollectionType.getDexCollectionType(), true)) {
                     calibration.sensor = sensor;
                     calibration.bg = bg;
                     calibration.check_in = false;
-                    calibration.timestamp = new Date().getTime() - (timeoffset * 1000); // potential historical bg readings
+                    calibration.timestamp = new Date().getTime() - (timeoffset * 1000); //  potential historical bg readings
                     calibration.raw_value = bgReading.raw_data;
                     calibration.adjusted_raw_value = bgReading.age_adjusted_raw_value;
                     calibration.sensor_uuid = sensor.uuid;
@@ -611,7 +611,7 @@ public class Calibration extends Model {
                     calibration.sensor_age_at_time_of_estimation = calibration.timestamp - sensor.started_at;
                     calibration.uuid = UUID.randomUUID().toString();
 
-                    if (!SensorSanity.isRawValueSane(calibration.estimate_raw_at_time_of_calibration, true) && !Ob1G5CollectionService.usingNativeMode()) { // Only return null if raw fails in non-native mode
+                    if (!SensorSanity.isRawValueSane(calibration.estimate_raw_at_time_of_calibration, true)) {
                         JoH.static_toast_long("Estimated raw value out of range - cannot calibrate");
                         return null;
                     }
@@ -764,9 +764,9 @@ public class Calibration extends Model {
 
                 // sanity check result
                 if (Double.isInfinite(calibration.slope)
-                        || (Double.isNaN(calibration.slope))
-                        || (Double.isInfinite(calibration.intercept))
-                        || (Double.isNaN(calibration.intercept))) {
+                        ||(Double.isNaN(calibration.slope))
+                        ||(Double.isInfinite(calibration.intercept))
+                        ||(Double.isNaN(calibration.intercept))) {
                     calibration.sensor_confidence = 0;
                     calibration.slope_confidence = 0;
                     Home.toaststaticnext("Got invalid impossible slope calibration!");
@@ -806,7 +806,7 @@ public class Calibration extends Model {
     @NonNull
     private static SlopeParameters getSlopeParameters() {
 
-        if (CollectionServiceStarter.isLibre2App((Context) null)) {
+        if (CollectionServiceStarter.isLibre2App((Context)null)) {
             return new Li2AppParameters();
         }
 
@@ -1013,9 +1013,10 @@ public class Calibration extends Model {
             CalibrationSendQueue.addToQueue(calibration, xdrip.getAppContext());
             newFingerStickData();
         } else {
-            Log.d(TAG, "Could not find calibration to clear: " + uuid);
+            Log.d(TAG,"Could not find calibration to clear: "+uuid);
         }
     }
+
 
 
     public String toS() {
@@ -1059,7 +1060,7 @@ public class Calibration extends Model {
     public static void upsertFromMaster(Calibration jsonCalibration) {
 
         if (jsonCalibration == null) {
-            Log.wtf(TAG, "Got null calibration from json");
+            Log.wtf(TAG,"Got null calibration from json");
             return;
         }
         try {
@@ -1222,7 +1223,7 @@ public class Calibration extends Model {
     }
 
     public static List<Calibration> latestForGraph(int number, long startTime) {
-        return latestForGraph(number, startTime, (long) JoH.ts());
+        return latestForGraph(number, startTime, (long)JoH.ts());
     }
 
     public static List<Calibration> latestForGraph(int number, long startTime, long endTime) {
@@ -1300,8 +1301,8 @@ public class Calibration extends Model {
         return new Select()
                 .from(Calibration.class)
                 .where("sensor_uuid = ? ", sensor.uuid)
-                .orderBy("timestamp desc")
-                .limit(limit)
+                 .orderBy("timestamp desc")
+                 .limit(limit)
                 .execute();
     }
 
@@ -1409,7 +1410,5 @@ abstract class SlopeParameters {
         return DEFAULT_HIGH_SLOPE_LOW;
     }
 
-    public double restrictIntercept(double intercept) {
-        return intercept;
-    }
+    public double restrictIntercept(double intercept) { return  intercept; }
 }
