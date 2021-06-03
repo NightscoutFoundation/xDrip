@@ -97,6 +97,7 @@
     <string name="pref_amazfit_watchface_settings">Óralap beállítások (gyorsítják a merülést)</string>
     <string name="pref_amazfit_widget_settings">Widget beállítások (gyorsítják a merülést)</string>
     <string name="toast_crash">Hiba történt :( A hiba javítása érdekben jelentés ment a fejlesztőnek.</string>
+    <string name="taskerConfiguration">Tasker beállítások</string>
     <string name="add_widget">Widget hozzáadása</string>
     <string name="title_activity_alert_list">Riasztások listája</string>
     <string name="speaktreatment">Kezelés felolvasása</string>
@@ -105,10 +106,16 @@
     <string name="title_activity_send_feed_back">Üzenet a fejlesztőnek (Jamorham)</string>
     <string name="title_activity_display_preferences">Beállítások mutatása</string>
     <string name="export_submenu">Import/Export funkciók</string>
+    <string name="action_resend_to_watch">VC-érték ismételt küldése az órára</string>
+    <string name="action_open_watch_setting">Beállítások megnyitása a WEAR-ben (órán)</string>
+    <string name="action_sync_watch_db">WEAR DB visszaállítása</string>
+    <string name="erase">Törlés</string>
     <string name="note_button">Jegyzetek gomb</string>
     <string name="add_note">Jegyzet hozzáadása</string>
     <string name="blood_test">VC teszt</string>
     <string name="share">Megosztás</string>
+    <string name="title_activity_profile_editor">Kezelés módosítása</string>
+    <string name="now_start_your_sensor">Indítsa el a szenzort vagy ellenőrizze a Beállításokat</string>
     <string name="please_wait_while_sensor_warms_up">Kérem, várjon, míg a szenzor elindul! (</string>
     <string name="minutes_with_bracket">" perc)"</string>
     <string name="possible_bad_calibration">Valószínűleg hibás kalibrálás. Kérem, igyon egy pohár vizet, mossa meg a kezét, majd néhány perc múlva próbálja újra!</string>
@@ -120,7 +127,9 @@
     <string name="please_set_dex_receiver_serial_number">Kérem, adja meg a Dexcom olvasó szériaszámát a Beállításokban</string>
     <string name="unfortunately_andoird_version_no_blueooth_low_energy">Sajnos a telefonja Android verziója nem támogatja a Bluetooth Low Energy-t</string>
     <string name="waiting_for_packet">Várakozás adatokra</string>
+    <string name="persistent_high_for_greater_than">Folyamatos magas érték &gt; </string>
     <string name="space_mins">" perc"</string>
+    <string name="delete_this_time_block">Időszak törlése</string>
     <string name="cancel_do_nothing">Mégsem - ne csinálj semmit</string>
     <string name="added">Hozzáadva</string>
     <string name="checking_for_update">Új verzió keresése..</string>
@@ -130,7 +139,9 @@
     <string name="expires_at">Lejár {0}</string>
     <string name="space_minutes_ago">" perccel ezelőtt"</string>
     <string name="space_minute_ago">" perccel ezelőtt"</string>
+    <string name="switch_parakeet_to_setup_mode">Parakeet Setup módba helyezése</string>
     <string name="view_events_log">Eseménynapló mutatása</string>
+    <string name="show_libre_trend">Libre trend mutatása</string>
     <string name="share_config_via_qr_code">Beállítások megosztása QR kóddal</string>
     <string name="check_for_updated_version">Új verzió keresése</string>
     <string name="send_feedback_to_developer">Visszajelzés küldése a fejlesztőnek</string>
@@ -178,6 +189,7 @@
     <string name="other_xdrip_plus_alerts">További xDrip+ riasztások</string>
     <string name="xdrip_plus_display_settings">xDrip+ kijelző beállítások</string>
     <string name="display_customisations">Képernyő testreszabása</string>
+    <string name="insulin_carb_ratios_etc_for_models">Inzulin, CH arány stb. modellezéshez</string>
     <string name="grams_of_carbohydrate_one_unit_covers">1 egység által lefedett CH mennyiség (g)</string>
     <string name="linear_model_carbs_absorbed_per_hour">Szénhidrát-felszívódás óránként (lineáris modell)</string>
     <string name="carb_absorption_rate">CH felszívódási sebesség</string>
@@ -186,6 +198,7 @@
     <string name="settings">Beállítások</string>
     <string name="calibration_data_table">Kalibrációs adattábla</string>
     <string name="bg_data_table">VC-érték adattábla</string>
+    <string name="cannot_calibrate_right_now">Kalibrálás most nem lehetséges</string>
     <string name="hardware_data_source">Adatforrás eszköz</string>
     <string name="enter_ten_character_dexcom_receiver_serial">Adja meg a Dexcom olvasó tíz karakteres szériaszámát</string>
     <string name="dexcom_transmitter_id">Dexcom távadó ID</string>
@@ -328,7 +341,9 @@
     <string name="please_indicate_what_you_think_of_the_app_generally">Kérem értékelje az alkalmazást</string>
     <string name="preferences_saved_in_sdcard_downloads">Beállítások mentve: sdcard Download könyvtárba</string>
     <string name="could_not_write_to_sdcard_check_perms">Hiba az SD-kártya írásakor - ellenőrizze az engedélyeket</string>
+    <string name="loaded_preferences_restarting">Beállítások betöltve! - Újraindítás</string>
     <string name="could_not_load_preferences_check_pers">Beállítások betöltése sikertelen. Megvannak a szükséges engedélyek?</string>
+    <string name="external_storage_not_writable">Külső tárhely nem írható</string>
     <string name="successfully_deleted">Sikeresen törölve</string>
     <string name="deletion_problem">Hiba törlésnél</string>
     <string name="sdcard_not_writable_cannot_save">SD kártya nem írható - mentés sikertelen</string>
@@ -409,11 +424,13 @@
     <string name="display_raw_plot_data">Szűretlen (raw) adatok mutatása</string>
     <string name="show_graph_target_line">Cél VC-érték vonal mutatása</string>
     <string name="show_graph_recent_average">Jelenlegi átlag mutatása</string>
+    <string name="parakeet_and_extra_features">Parakeet és további tesztfunkciók</string>
     <string name="insulin_duration_hours">Inzulin hatástartam órában</string>
     <string name="default_liver_sensitivity_ratio">Máj érzékenység</string>
     <string name="key_is_used_instead_of_google_account">Google azonosítás helyett használatos</string>
     <string name="sync_using_custom_security_key">Szinkronizáció egyéni biztonsági kulccsal</string>
     <string name="handset_group_security_key">Telefon-csoport biztonsági kulcsa</string>
+    <string name="handset_sync_grouping_key">Telefon-csoport szinkronizációs kulcsa</string>
     <string name="alert_name_colon">Riasztás neve:</string>
     <string name="threshold_colon">Határérték:</string>
     <string name="default_snooze_colon">Alap szundi (p):</string>
@@ -547,6 +564,7 @@
     <string name="experimental_calibration_plugin">Másodlagos kalibábrációs plugin (kísérleti)</string>
     <string name="old_school_calibration_mode">Régi kalibrációs módszer</string>
     <string name="how_receive_data">Hogy kapja a Dexcom/Transmitter adatait?</string>
+    <string name="nfc_options">Beállítások NFC-s szenzorok telefonnal szkenneléséhez</string>
     <string name="nfc_scan_features">NFC-Scan beállítások</string>
     <string name="use_nfc_feature">NFC használata</string>
     <string name="allow_sensor_scanning">Szenzor szkennelésének engedélyezése, ha az app fut. Historikus adatokat visszatölti. Kísérleti funkció! A szenzor károsodását okozhatja. Tesztelje telefonját egy majdnem lejárt szenzorral. Ne feledje!</string>
@@ -656,9 +674,14 @@
     <string name="default_liver_maximum_impact">Máj maximális hatása (0-1)</string>
     <string name="remote_snoozes">Távoli szundi indítása és fogadása</string>
     <string name="remote_snoozing">Távoli szundi</string>
+    <string name="snoozes_will_silence_all">A készüléken kiadott szundival a csoportban levő összes készülék szundiba kerül, ha azon az alábbiakban aktiválja</string>
     <string name="confirm_remote_snoozes">Párbeszéd ablak minden távoli szundi megerősítsére</string>
+    <string name="confirm_sensing_snooze">Távoli szundi megerőítése</string>
+    <string name="allow_remotes_silence">Engedélyezi, hogy másik telefon az ezen a készüléken futó riasztást szundiba küldje</string>
     <string name="acccept_remote_snoozes">Távoli szundi fogadása</string>
     <string name="send_remote_snooze">Távoli szundi indítása</string>
+    <string name="only_accept_same_network">Csak akkor fogadja a szundit, ha a WIFI-hálózat neve a két készüléken azonos betűkkel kezdődik és nagyon hasonló</string>
+    <string name="wifi_name_must_match">WIFI névnek egyeznie kell</string>
     <string name="confirm_remote_snooze">Távoli szundi elfogadása</string>
     <string name="yes_send_it">Igen, küldés!</string>
     <string name="movement_detection_and_vehicle_mode">Mozgásérzékelés és jármű mód</string>
