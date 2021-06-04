@@ -371,6 +371,13 @@
     <string name="keep_snoozing_if_glucose_is_heading_in_right_direction">Szundi fenntartása, ha a vércukor érték a megfelelő irányba változik</string>
     <string name="dont_alert_if_glucose_in_right_direction">Nincs riasztás, ha a vércukor érték a megfelelő irányba változik</string>
     <string name="calibration_request_sound">Kalibrációs emlékeztető hangja</string>
+    <string name="display_filtered_line">Szűrt adatok mutatása</string>
+    <string name="displays_the_high_line">Magasérték vonal mutatása</string>
+    <string name="displays_the_low_line">Alacsonyérték vonal mutatása</string>
+    <string name="set_the_trend_period_to_display">Előrejelzés időszakának beállítása</string>
+    <string name="trend_time_period">Előrejelzés időszaka</string>
+    <string name="displays_the_delta_value">Delta érték mutatása</string>
+    <string name="display_delta">Delta érték mutatása</string>
     <string name="displays_the_delta_units">Delta érték mutatása</string>
     <string name="display_delta_units">Delta érték mutatása</string>
     <string name="displays_the_slope_arrows">Mutassa a trendnyilakat</string>
@@ -389,6 +396,7 @@
     <string name="low_percentage">Alacsonyak aránya</string>
     <string name="the_current_time">Az aktuális idő.</string>
     <string name="time">Idő</string>
+    <string name="show_extra_line">Extra vonal megmutatása</string>
     <string name="show_on_widget">Mutassa widget-en</string>
     <string name="calibration_data_long">Kalibrációs adatok (hosszú)</string>
     <string name="calibration_data_short">Kalibrációs adatok (rövid)</string>
@@ -450,6 +458,7 @@
     <string name="create_high_alert">Magas érték riasztás beállítása</string>
     <string name="long_press_an_existing_alert_to_edit">(Nyomja hosszan a Riasztás beállításához)</string>
     <string name="high">magas</string>
+    <string name="alert">riasztás</string>
     <string name="high_alert">Riasztás (magas)</string>
     <string name="low_alert">Riasztás (alacsony)</string>
     <string name="after_calibration_rewrite_history">Kalibrálás után a raw grafikon simítása a kalibrációhoz</string>
@@ -468,6 +477,7 @@
     <string name="install_pebble_apps">Pebble App-ok telepítése</string>
     <string name="sliding_24_hour_window_summary">Utolsó 24 óra használata a statisztikákhoz, éjféltől számítás helyett</string>
     <string name="sliding_24_hour_window">Csúszóablak</string>
+    <string name="delete">Törlés</string>
     <string name="notify_when_wear_low_battery">Erőltetés megszüntetése xDrip alacsony akkuszint riasztásakor!</string>
     <string name="notify_disable_wearG5_on_missedreadings">Erőltetés megszüntetése %1$d perc adathiány után!</string>
     <string name="label_show_insulin">U:%1$su</string>
@@ -484,6 +494,7 @@
     <string name="pref_dialog_influxdb_username">Felhasználónév</string>
     <string name="pref_message_influxdb_password">Jelszó az azonosításhoz. Azonosítás nélkül nem ajánlott az adatbázis használata.</string>
     <string name="pref_dialog_influxdb_password">Jelszó</string>
+    <string name="use_tiny_dots">Apró pontméret használata</string>
     <string name="watch_vibrate_active_alerts">Rezgés VC-érték riasztáskor</string>
     <string name="vibrate_alerts">Rezgés riasztáskor</string>
     <string name="attach_to_button">Pebble-gombhoz rendelés bármely aktív riasztás szundiba küldéséhez. Távoli szundi funkcióhoz is.</string>
@@ -571,6 +582,7 @@
     <string name="sensor_age_or_expiry">Szenzor kora vagy lejárata</string>
     <string name="show_expiry_time">Szenzorlejárat megjelenítése 14,5 nappal számítva</string>
     <string name="show_sensor_age">Szenzor életkor megjelenítése a főképernyőn</string>
+    <string name="beep_when_scanning_within_app">Csippanás xDrip app-pal szkenneléskor</string>
     <string name="transmitter_id">Dexcom távadó ID, pl. 12AB3</string>
     <string name="advanced_g5_settings">G5 haladó beállítások</string>
     <string name="g5_debug_settings">G5/G6 hibakeresési beállítások</string>
@@ -621,6 +633,7 @@
     <string name="alert_calibration_request">Emlékeztető kalibráció szükségességekor</string>
     <string name="calibrations_request_time_time_difference">Hány óra teljen el két kalibráció között</string>
     <string name="hours_between_calibrations">Kalibráció periódusa</string>
+    <string name="calibrations_sound">Kalibráláskérést jelző hang beállítása.</string>
     <string name="override_silent_mode">Néma üzemmód felülírása</string>
     <string name="even_when_charging">Töltés közben is</string>
     <string name="no_calibration_requests_charging">Telefon töltése közben is emlékeztessen a kalibrációra</string>
@@ -639,6 +652,7 @@
     <string name="bg_rising_fast">VC-érték gyorsan emelkedik</string>
     <string name="falling_threshold">Esés sebessége</string>
     <string name="rising_threshold">Emelkedés sebessége</string>
+    <string name="set_sound_for_bg_alerts">VC-szint riasztás hang beállítása.</string>
     <string name="alert_sound">Riasztás hangja</string>
     <string name="override_silent_mode_these">Néma üzemmód felülírása</string>
     <string name="persistent_repeat_max">Ismétlés max ennyi perc után (p)</string>
@@ -683,6 +697,7 @@
     <string name="only_accept_same_network">Csak akkor fogadja a szundit, ha a WIFI-hálózat neve a két készüléken azonos betűkkel kezdődik és nagyon hasonló</string>
     <string name="wifi_name_must_match">WIFI névnek egyeznie kell</string>
     <string name="confirm_remote_snooze">Távoli szundi elfogadása</string>
+    <string name="are_you_sure_you_wish_to_snooze_all_other_devices_in_your_sync_group">Biztos benne, hogy szundiba küldi az összes telefont a csoportban?</string>
     <string name="yes_send_it">Igen, küldés!</string>
     <string name="movement_detection_and_vehicle_mode">Mozgásérzékelés és jármű mód</string>
     <string name="xdrip_motion_tracking">xDrip+ mozgásérzékelés</string>
@@ -788,6 +803,11 @@
     <string name="glucose_units_mmol_or_mgdl">Vércukor mértékegysége mmol/l vagy mg/dl</string>
     <string name="is_your_typical_glucose_value">Vércukor értéke jobbára 5,5 (mmol/l) vagy 100 (mg/dl) körüli? Válasszon</string>
     <string name="settings_updated_to_mmol">mmol/l-re átállítva</string>
+    <string name="external_calibration_app">Külső kalibrációs app</string>
+    <string name="use_app_for_calibration">app használata kalibrációhoz?</string>
+    <string name="code_accepted">Kód elfogadva</string>
+    <string name="invalid_or_unsupported_code">Érvénytelen vagy nem támogatott kód!</string>
+    <string name="g6_sensor_code">G6 szenzor kód</string>
     <string name="please_enter_printed_calibration_code">Adja meg a nyomtatott kalibrációs kód értéket (4 számjegy, pl. 5678)</string>
     <string name="enable_update_checks">Engedélyezi a frissítések keresését?</string>
     <string name="you_can_easily_roll_back_dialog_msg">Ha nem tetszik az új xDrip verzió, visszatérhet az előzőhöz, ha újratelepíti a régi APK-t.\n\nEngedélyezi a frissítések keresését?</string>
@@ -823,6 +843,7 @@
     <string name="bluetooth_watchdog_timers">Bluetooth Watchdog időtáv</string>
     <string name="bluetooth_watchdog_timer_sums">Percben adja meg</string>
     <string name="sensor_is_still_warming_up_please_wait">Szenzor még nem indult el, kérem, várjon</string>
+    <string name="number_wall_config">VC-érték a záróképernyőn</string>
     <string name="summary_If_you_plan_to_only_use_a_Wear_collector_and_never_your_phone">Csak a WEAR-t használja kollektorként, a telefont soha.</string>
     <string name="title_Only_use_Wear">WEAR kizárólagos használata</string>
     <string name="summary_Show_Bolus_Wizard_Preview_Insulin_value_on_watch_when_appropriate">Mutassa az óra a Bólus-varázsló által javasolt inzulin mennyiséget</string>
@@ -864,6 +885,7 @@
     <string name="title_Batterylog">Akku log</string>
     <string name="title_Glucose_Retention">VC-értékek tárolási ideje</string>
     <string name="summary_Erase_data_older_than_this_many_days">Ennél több napos adatok törlése. 0 = SEMMIT sem töröl</string>
+    <string name="title_Other_misc_options">További vegyes beállítások</string>
     <string name="title_You_have_no_reminders_yet">Még nincsenek emlékeztetői</string>
     <string name="message_reminders_explanation">Az emlékeztetők segítenek nem elfelejteni például cserélni a pumpa helyét.\n\nLehetnek ismétlődőek, az ismétlés ciklusa pedig tetszés szerint állítható. Az emlékeztetők halaszthatók (szundi), vagy átütemezhetőek.\n\nKattintson a + gombra az Emlékeztető hozzáadásához.</string>
     <string name="title_swipe_reminder">Csúsztatás balra vagy jobbra</string>
@@ -884,6 +906,7 @@
     <string name="weekdays">Hétköznapon</string>
     <string name="weekends">Hétvégén</string>
     <string name="mega_priority">Nagyon fontos</string>
+    <string name="xdrip_reminders">xDrip+ emlékeztetők</string>
     <string name="button_15_min">15 perc</string>
     <string name="button_2_hour">2 óra</string>
     <string name="button_1_day">1 nap</string>
@@ -896,17 +919,23 @@
     <string name="unit_second">másodperc</string>
     <string name="unit_minute">perc</string>
     <string name="unit_hour">óra</string>
+    <string name="unit_day">nap\"</string>
+    <string name="unit_week">hét\"</string>
+    <string name="unit_seconds">másodperc</string>
+    <string name="unit_minutes">perc</string>
     <string name="unit_hours">óra</string>
     <string name="quiet_at_night">Éjjel csendes</string>
     <string name="alerts_disabled">Riasztások leállítva</string>
     <string name="restart_in_the_morning">Reggel újrakezdje</string>
     <string name="advanced_mode">Haladó mód</string>
     <string name="reminder_title">Emlékeztető szövege</string>
+    <string name="what_time_of_day_question">Milyen napszakban?</string>
     <string name="all_alerts_currently_disabled">MINDEN RIASZTÁS LEÁLLÍTVA JELENLEG</string>
     <string name="low_and_high_alerts_currently_disabled">ALACSONY ÉS MAGAS RIASZTÁS LEÁLLÍTVA JELENLEG</string>
     <string name="low_alerts_currently_disabled">ALACSONY RIASZTÁS LEÁLLÍTVA JELENLEG</string>
     <string name="high_alerts_currently_disabled">MAGAS RIASZTÁS LEÁLLÍTVA JELENLEG</string>
     <string name="bg_reading_missed">VC-érték hiányzik</string>
+    <string name="not_connected">Nincs csatlakozva</string>
     <string name="no_data">Nincs adat</string>
     <string name="no_bluetooth">Nincs Bluetooth</string>
     <string name="connection_status_long">Kapcsolat állapota:   </string>
@@ -1169,13 +1198,17 @@
     <string name="__data_source_disabled">\n ADATFORRÁS LEÁLLÍTVA</string>
     <string name="data_source_is_set_to_">Adatforrásként kiválasztva: </string>
     <string name="do_you_want_to_use_this_entered_fingerstick_blood_glucose_test_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Szeretné a megadott vércukor értéket kalibrációhoz használni?\n\n(ezt megváltoztathatja, ha ez az ablak megjelenik a Beállításokban)</string>
+    <string name="yes_calibrate">IGEN, kalibrálás</string>
     <string name="enable_automatic_calibration">Automatikus kalibrálás engedélyezése</string>
     <string name="entered_blood_tests_which_occur_during_flat_trend_periods_can_automatically_be_used_to_recalibrate_after_20_minutes_this_should_provide_the_most_accurate_method_to_calibrate_with__do_you_want_to_enable_this_feature">A lapos trendgörbéhez adott vércukor értékek 20 perc után automatikusan használhatók kalibráláshoz. Ez a módszer vezet a legpontosabb kalibrációhoz.\n\nBekaplcsoja ezt a funkciót?</string>
+    <string name="yes_enable">IGEN, engedélyés</string>
+    <string name="what_would_you_like_to_do">Mit szeretne tenni?</string>
     <string name="nothing">Semmi</string>
     <string name="are_you_sure_you_want_to_delete_this_blood_test_result">Biztosan törli ezt a VC mérési értéket?</string>
     <string name="yes_delete">Igen, törlés</string>
     <string name="deleted">Törölve!</string>
     <string name="maybe_later">Talán később</string>
+    <string name="yes_do_it">IGEN, mehet</string>
     <string name="restore_backup">Biztonsági mentés visszaállítása?</string>
     <string name="do_you_want_to_restore_the_backup_file_">Visszaállítás ebből a fájlból: </string>
     <string name="restore">Visszaállítás</string>
@@ -1184,7 +1217,10 @@
     <string name="confirm_delete">Törlés megerősítése</string>
     <string name="are_you_sure_you_want_to_delete_this_treatment">Biztosan törölni akarja ezt a kezelési jegyzetet?</string>
     <string name="no_data_received_from_master_yet">Még nem érkezett adat a Master-től</string>
+    <string name="last_from_master_">Utolsó a mastertől: </string>
+    <string name="prepare_to_test">Felkészülni a tesztre!</string>
     <string name="after_you_click_ok_look_for_a_number_icon_in_the_notification_area_if_you_see_123_then_the_test_has_succeeded__on_some_phones_this_test_will_crash_the_phone__after_30_seconds_we_will_shut_off_the_notification_if_your_phone_does_not_recover_after_this_then_hold_the_power_button_to_reboot_it">Az OK-ra nyomás után ellenőrizze az értesítési mezőt.\nSikeres a teszt, ha látja az 123-at.\n\nEgyes készülékeken rendszerösszeomlást okozhat.\n\n30 másodperc után az értesítés kikapcsol. Ha a készülék elakad, a ki-be kapcsoló gomb folyamatos nyomva tartásával indítsa újra.</string>
+    <string name="running_test_with_number_123">Tesztelés ezzel a számmal: 123</string>
     <string name="xdrip_will_not_work_below_android_version_42">Legalább Android 4.2 szükséges az xDrip használatához</string>
     <string name="xdrip_oop2_not_installed">Libre2/Libre US szenzorok használatához szükséges az oop2 app.</string>
     <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Az akkuhasználat optimalizálását kapcsolja ki az xDrip esetében. Állítsa be!</string>
@@ -1197,7 +1233,12 @@
     <string name="treatment_processed">Kezelés feldolgozva</string>
     <string name="deleting_all_bg_readings">Minden VC-érték törlése!</string>
     <string name="could_not_export_csv_">CSV export sikertelen :(</string>
+    <string name="phone_has_no_nfc_reader">A telefonon nincsen NFC olvasó</string>
+    <string name="nfc_is_not_enabled">NFC nincs engedélyezve</string>
     <string name="not_so_quickly_wait_60_seconds">Ne ilyen gyorsan, kérem, várjon 60 mp-et</string>
+    <string name="nfc_invalid_data__try_again">Érvénytelen NFC adatok - próbálja újra</string>
+    <string name="nfc_invalid_data">Érvénytelen NFC adatok</string>
+    <string name="scanned_ok">Sikeres szkennelés!</string>
     <string name="nfc_io_error">NFC IO hiba</string>
     <string name="nfc_error">NFC hiba</string>
     <string name="please_wait">Kérem várjon...</string>
