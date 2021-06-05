@@ -853,7 +853,7 @@
     <string name="confirm_remote_snooze">Confirm Remote Snooze</string>
     <string name="are_you_sure_you_wish_to_snooze_all_other_devices_in_your_sync_group">Are you sure you wish to snooze all other devices in your sync group?</string>
     <string name="yes_send_it">YES, send it!</string>
-
+    <string name="title_time_span">Time span available on screen</string>
 
     <string name="movement_detection_and_vehicle_mode">Movement detection and vehicle mode</string>
     <string name="xdrip_motion_tracking">xDrip+ Motion Tracking</string>

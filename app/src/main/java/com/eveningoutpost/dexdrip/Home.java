@@ -2192,7 +2192,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     private void setHoursViewPort() {
         final Viewport moveViewPort = new Viewport(chart.getMaximumViewport());
-        float hour_width = moveViewPort.width() / 24;
+        float hour_width = moveViewPort.width() / BgGraphBuilder.time_span;
         holdViewport.left = moveViewPort.right - hour_width * hours;
         holdViewport.right = moveViewPort.right;
         holdViewport.top = moveViewPort.top;

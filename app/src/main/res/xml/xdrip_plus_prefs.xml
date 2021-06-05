@@ -426,6 +426,13 @@
                     android:key="illustrate_remote_data"
                     android:summary="Show data received remotely (diagnostic only)"
                     android:title="Illustrate remote data" />
+                <ListPreference
+                    android:key="time_span"
+                    android:title="@string/title_time_span"
+                    android:summary="%s"
+                    android:entries="@array/time_span_entries"
+                    android:entryValues="@array/time_span_values"
+                    android:defaultValue="24" />
             </PreferenceScreen>
 
             <CheckBoxPreference
