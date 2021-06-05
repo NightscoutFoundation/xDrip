@@ -49,7 +49,7 @@ public class StopSensor extends ActivityWithMenu {
     public void addListenerOnButton() {
         button = (Button)findViewById(R.id.stop_sensor);
         val activity = this;
-        button.setOnClickListener(v -> GenericConfirmDialog.show(activity, gs(R.string.are_you_sure), "Do you want to stop this sensor session?", () -> {
+        button.setOnClickListener(v -> GenericConfirmDialog.show(activity, gs(R.string.are_you_sure), gs(R.string.sensor_stop_confirm), () -> {
             stop();
             JoH.startActivity(Home.class);
             finish();
