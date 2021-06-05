@@ -53,7 +53,9 @@
     <string name="pref_title_api_enabled">Bekapcsolva</string>
     <string name="pref_summary_api_enabled">A REST-API standard kapcsolódási mód a Nightscout-hoz</string>
     <string name="pref_title_api_url">Alap URL</string>
-    <string name="pref_dialog_api_url">Adja meg a Base API URL-t</string>
+    <string name="pref_dialog_api_url">Adja meg az alap API URL-t</string>
+    <string name="pref_message_api_url">Ez csak az alap URL, a feltöltő automatikusan hozzáilleszti a a POST bejegyzéseit. A szerveren levő API_SECRET értéke meg kell egyezzen a yourpassphrase-zel.</string>
+    <string name="pref_default_api_url">https://yourpassphrase@{YOUR-SITE}.azurewebsites.net/api/v1/</string>
     <!-- wifi Settings -->
     <!-- Location Settings -->
     <string name="location_not_found_title">Helymeghatározás nincs engedélyezve</string>
@@ -104,17 +106,26 @@
     <string name="title_activity_update">Új xDrip verzió érhető el</string>
     <string name="title_activity_display_qrcode">Beállítások megosztása QR kóddal</string>
     <string name="title_activity_send_feed_back">Üzenet a fejlesztőnek (Jamorham)</string>
+    <string name="title_activity_maps">Parakeet térkép</string>
     <string name="title_activity_display_preferences">Beállítások mutatása</string>
     <string name="export_submenu">Import/Export funkciók</string>
     <string name="action_resend_to_watch">VC-érték ismételt küldése az órára</string>
     <string name="action_open_watch_setting">Beállítások megnyitása a WEAR-ben (órán)</string>
     <string name="action_sync_watch_db">WEAR DB visszaállítása</string>
     <string name="erase">Törlés</string>
+    <string name="interface_tips_from_start">Ismét mutasson minden gyorstippet</string>
     <string name="note_button">Jegyzetek gomb</string>
+    <string name="showcase_note_long">Jegyzet gomb jelenleg beszédfelismerésre állítva.\n\nHosszan nyomja a billentyű használatához vagy módosítsa a beállításokat.</string>
+    <string name="redo_button">Művelet visszaállítása</string>
+    <string name="showcase_redo">A korábban visszavont kezelések, kalibrálások vagy jegyzetek visszaállíthatóak.\n\nEz 30 percig lehetséges</string>
+    <string name="undo_button">Művelet visszavonása</string>
+    <string name="showcase_undo">Visszavonás, amellyel a megadott kezelési feljegyzés, kalibrálás vagy jegyzet törölhető.\n\nEz 30 percig lehetséges</string>
     <string name="add_note">Jegyzet hozzáadása</string>
     <string name="blood_test">VC teszt</string>
     <string name="share">Megosztás</string>
     <string name="title_activity_profile_editor">Kezelés módosítása</string>
+    <string name="first_use_menu_to_scan">Először keresse meg a BT-eszközt, vagy változtassa meg az adatforrást a beállításokban!</string>
+    <string name="first_configure_ip_address">Először konfigurálnia kell a wifi wixelt IP-címek vagy parakeet URL segítségével</string>
     <string name="now_start_your_sensor">Indítsa el a szenzort vagy ellenőrizze a Beállításokat</string>
     <string name="please_wait_while_sensor_warms_up">Kérem, várjon, míg a szenzor elindul! (</string>
     <string name="minutes_with_bracket">" perc)"</string>
@@ -129,6 +140,9 @@
     <string name="waiting_for_packet">Várakozás adatokra</string>
     <string name="persistent_high_for_greater_than">Folyamatos magas érték &gt; </string>
     <string name="space_mins">" perc"</string>
+    <string name="yes_enter_setup_mode">Igen, beállítási mód indítása</string>
+    <string name="nokeep_parakeet_as_it_is">Parakeet-et változatlanul hagyni</string>
+    <string name="are_you_sure_you_want_switch_parakeet_to_setup">Parakeet beállítási mód indítása?\n\ Általában erre csak a Parakeet újrakonfigurálásához van szükség (Transmitter-ID, stb.).</string>
     <string name="delete_this_time_block">Időszak törlése</string>
     <string name="cancel_do_nothing">Mégsem - ne csinálj semmit</string>
     <string name="added">Hozzáadva</string>
@@ -139,7 +153,8 @@
     <string name="expires_at">Lejár {0}</string>
     <string name="space_minutes_ago">" perccel ezelőtt"</string>
     <string name="space_minute_ago">" perccel ezelőtt"</string>
-    <string name="switch_parakeet_to_setup_mode">Parakeet Setup módba helyezése</string>
+    <string name="show_parakeet_map">Parakeet térkép mutatása</string>
+    <string name="switch_parakeet_to_setup_mode">Parakeet beállítási módba helyezése</string>
     <string name="view_events_log">Eseménynapló mutatása</string>
     <string name="show_libre_trend">Libre trend mutatása</string>
     <string name="share_config_via_qr_code">Beállítások megosztása QR kóddal</string>
@@ -225,6 +240,7 @@
     <string name="pref_sync_wear_logs">Wear logok szinkronizálása</string>
     <string name="pref_summary_sync_wear_logs">WEAR logok átadása xDrip-nek</string>
     <string name="pref_wear_logs_prefix">WEAR log fájlnév előtag</string>
+    <string name="pref_summary_wear_logs_prefix">Előtag WEAR log fájlnévhez</string>
     <string name="pref_show_treatments">Kezelések mutatása</string>
     <string name="pref_summary_show_treatments">Kezelések mutatása a grafikonoon</string>
     <string name="pref_use_wear_health">WEAR egészségügyi adatok használata</string>
@@ -234,6 +250,7 @@
     <string name="pebble_watch_integration">Pebble integráció</string>
     <string name="standard_or_trend_pebble_watchface">Standard vagy Trend Pebble óralap</string>
     <string name="choose_pebble_watchface">Pebble óralap kiválasztása</string>
+    <string name="message_to_display_when_bgl_hits">Különleges VC-érték elérésekor megjelenítendő üzenet</string>
     <string name="text_to_display_when_hitting_special_value">Megjelenítendő szöveg különleges érték elérésekor</string>
     <string name="special_value">Különleges érték</string>
     <string name="history">Korábbi adatok</string>
@@ -242,6 +259,8 @@
     <string name="less_common_settings">Haladó beállítások</string>
     <string name="view_recent_errors_warnings">Utolsó hibák/riasztások mutatása</string>
     <string name="other_settings">Egyéb beállítások</string>
+    <string name="older_gratuitous_wakelocks">Régebbi wakelockok, amelyekre szükség lehet a NightWatch vagy az Android Wear esetében, de nagyon merítik az akkumulátort</string>
+    <string name="use_excessive_wakelocks">Túlzott wakelockok használata</string>
     <string name="speak_readings">Eredmények felolvasása</string>
     <string name="extra_status_line">Extra állapotvonalak</string>
     <string name="dexcom_share_server_upload">Dexcom Share szerverre feltöltés</string>
@@ -253,6 +272,7 @@
     <string name="smart_alerting">Okos riasztás</string>
     <string name="dont_alarm_during_phone_calls">Nincs riasztás telefonálás közben</string>
     <string name="start_snoozed">Szundizva indítás</string>
+    <string name="adjust_all_by_a_factor">Általános tényezővel beállítás</string>
     <string name="reset">Visszaállítás</string>
     <string name="pebble_and_android_wear_options">Beállítások okosórákhoz</string>
     <string name="customize_colours">Színek beállítása</string>
@@ -260,6 +280,7 @@
     <string name="glucose_values_and_lines">VC-értékek és határvonalak</string>
     <string name="high_glucose_values">Magas VC-értékek</string>
     <string name="in_range_glucose_values">Céltartományon belüli VC-értékek</string>
+    <string name="default_color_selected">Alapértelmezett szín</string>
     <string name="xdrip_plus_extra_settings">xDrip+ egyéb beállítások</string>
     <string name="example_chart">Minta grafikon</string>
     <string name="treatments_prediction_curves">Kezelési/előrejelzési görbék</string>
@@ -285,10 +306,12 @@
     <string name="enter_blood_glucose_value">Mért vércukor érték</string>
     <string name="no_active_alert_exists">Nincsen aktív riasztás</string>
     <string name="active_alert_exists_named">Már van ilyen nevű riasztás</string>
+    <string name="bracket_not_snoozed">(nincs szundizva)</string>
     <string name="all_alerts_disabled_until">"Minden riasztás leáll eddig "</string>
     <string name="low_alerts_disabled_until">"Alacsony riasztás leáll eddig "</string>
     <string name="high_alerts_disabled_until">"Magas riasztás leáll eddig "</string>
     <string name="default_snooze">Alap szundi hossza (perc):</string>
+    <string name="until_you_reenable">Az ismételt bekapcsolásig</string>
     <string name="set">Beállít</string>
     <string name="disable_low_alerts">Alacsony riasztások leállítása</string>
     <string name="re_enable_low_alerts">Alacsony riasztások visszaállítása</string>
@@ -314,6 +337,7 @@
     <string name="in_order_to_get_started_please_perform_two_finger">Az indítás befejezéséhez, adjon meg egy vagy két vércukorértéket!</string>
     <string name="enter_first_bg_value">Adja meg az első vércukor értéket</string>
     <string name="enter_second_bg_value">Adja meg a második vércukor értéket</string>
+    <string name="language_editor">Nyelvi szerkesztő</string>
     <string name="configure_missed_readings">Elmulasztott VC-érték riasztás beállítása</string>
     <string name="install_pebble_snooze_control_app">Pebble Snooze-Control App telepítése</string>
     <string name="install_pebble_classic_trend_watchface">Pebble Classic Trend óralap telepítése</string>
@@ -372,6 +396,7 @@
     <string name="dont_alert_if_glucose_in_right_direction">Nincs riasztás, ha a vércukor érték a megfelelő irányba változik</string>
     <string name="calibration_request_sound">Kalibrációs emlékeztető hangja</string>
     <string name="display_filtered_line">Szűrt adatok mutatása</string>
+    <string name="show_tiny_dots_instead">Kicsi helyett apró pontok mutatása a grafikonon</string>
     <string name="displays_the_high_line">Magasérték vonal mutatása</string>
     <string name="displays_the_low_line">Alacsonyérték vonal mutatása</string>
     <string name="set_the_trend_period_to_display">Előrejelzés időszakának beállítása</string>
@@ -385,6 +410,7 @@
     <string name="vibrate_watch_to_alert_no_data">Rezgés, ha nincsen VC-érték</string>
     <string name="vibrate_watch_to_alert_no_bluetooth">Rezgés, ha BT kapcsolat megszakad</string>
     <string name="vibrate_when_no_bluetooth">Rezgés, ha nincsen BT-kapcsolat</string>
+    <string name="special_glucose_value_to_display_message">Különleges VC-érték, amelykor az alábbi üzenet jelenik meg</string>
     <string name="compatible_broadcast">Kompatibilitás megőrzése</string>
     <string name="show_datatables">Adattáblák mutatása</string>
     <string name="close_gatt_on_ble_disconnect">GATT bezárása, ha nincs BLE kapcsolat</string>
@@ -461,6 +487,7 @@
     <string name="alert">riasztás</string>
     <string name="high_alert">Riasztás (magas)</string>
     <string name="low_alert">Riasztás (alacsony)</string>
+    <string name="parakeet_battery">Parakeet akku</string>
     <string name="after_calibration_rewrite_history">Kalibrálás után a raw grafikon simítása a kalibrációhoz</string>
     <string name="rewrite_history">Grafikon frissítése</string>
     <string name="grid_time_lines_visible">Idő segédvonalak mutatása</string>
@@ -800,6 +827,7 @@
     <string name="use_librealarm">Használja a LibreAlarm app-ot adatforrásként?</string>
     <string name="noise_blocking">Zajkorlát</string>
     <string name="level_at_which_noisy_data_should_not_be_broadcast">Zajszint beállítása, amely felett már nem küld értéket, hogy ne zavarja meg a vevő app-ot</string>
+    <string name="low_parakeet_battery">Parakeet töltöttség alacsony</string>
     <string name="glucose_units_mmol_or_mgdl">Vércukor mértékegysége mmol/l vagy mg/dl</string>
     <string name="is_your_typical_glucose_value">Vércukor értéke jobbára 5,5 (mmol/l) vagy 100 (mg/dl) körüli? Válasszon</string>
     <string name="settings_updated_to_mmol">mmol/l-re átállítva</string>
@@ -1082,6 +1110,7 @@
     <string name="title_color_basal_tbr">Bázis inzulin (TBR)</string>
     <string name="title_color_smb_icon">Bólus inzulin (SBM) ikon</string>
     <string name="title_color_smb_line">Bólus inzulin (SBM) vonal</string>
+    <string name="summary_xdrip_plus_graph_display_settings">Grafikon elemek beállítása</string>
     <string name="title_xdrip_plus_graph_display_settings">Grafikonbeállítások</string>
     <string name="summary_show_basal_line">Külső adatforrásból származó bázis inzulin mutatása</string>
     <string name="title_show_basal_line">Bázis inzulin (TBR) mutatása</string>
@@ -1248,6 +1277,7 @@
     <string name="follower_deleted_succesfully">Követő eltávolítva</string>
     <string name="failed_to_delete_follower">Követő eltávolítása sikertelen</string>
     <string name="authentication_failed_wrong_password">Sikertelen azonosítás. Eltévesztette a jelszót?</string>
+    <string name="blood_glucose_graph">Vércukor grafikon</string>
     <string name="pref_enable_insulinprofiles">egyszerre maximum hármat engedélyezhet</string>
     <string name="pref_select_basal_insulinprofiles">bázisinzulin profil kiválasztása.</string>
     <string name="pref_select_bolus_insulinprofiles">bólus inzulin profil kiválasztása, akár pen, akár pumpa...</string>
