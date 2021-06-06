@@ -1800,7 +1800,8 @@ public class Ob1G5CollectionService extends G5BaseService {
     public static boolean isG5WantingInitialCalibration() {
         loadCalibrationStateAsRequired();
         return lastSensorStatus != null
-                && lastSensorState == CalibrationState.NeedsFirstCalibration
+                && (lastSensorState == CalibrationState.NeedsFirstCalibration ||
+                    lastSensorState == CalibrationState.NeedsDifferentCalibration)
                 && usingNativeMode();
     }
 
