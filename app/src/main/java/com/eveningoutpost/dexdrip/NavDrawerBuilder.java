@@ -89,6 +89,9 @@ public class NavDrawerBuilder {
                             if (BgReading.isDataSuitableForDoubleCalibration() || Ob1G5CollectionService.isG5WantingInitialCalibration()) {
                                 this.nav_drawer_options.add(context.getString(R.string.initial_calibration));
                                 this.nav_drawer_intents.add(new Intent(context, DoubleCalibrationActivity.class));
+                            } else if (Ob1G5CollectionService.isG5WantingCalibration()) {
+                                this.nav_drawer_options.add(context.getString(R.string.add_calibration));
+                                this.nav_drawer_intents.add(new Intent(context, DoubleCalibrationActivity.class));
                             }
                         }
                     }
