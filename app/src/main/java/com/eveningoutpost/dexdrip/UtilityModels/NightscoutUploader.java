@@ -429,7 +429,7 @@ public class NightscoutUploader {
 
 
             } catch (Exception e) {
-                String msg = "Unable to do REST API Download " + e + " " + e.getMessage() + " url: ";
+                String msg = "Unable to do REST API Download " + e + e.getMessage() + " url: ";
                 handleRestFailure(msg);
             }
         }
