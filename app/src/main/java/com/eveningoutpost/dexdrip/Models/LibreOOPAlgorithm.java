@@ -39,7 +39,6 @@ class UnlockBuffers {
 
 public class LibreOOPAlgorithm {
     private static final String TAG = "LibreOOPAlgorithm";
-    private static final int MINUTE = 60000;
     // This are the shifts of the libre different buffers
     static final int[] LIBRE2_SHIFT = {0, 2, 4, 6, 7, 12, 15};
     
@@ -329,7 +328,7 @@ public class LibreOOPAlgorithm {
             glucoseData.source = GlucoseData.DataSource.BLE;
 
             int relative_time = LIBRE2_SHIFT[i];
-            glucoseData.realDate = captureDateTime - relative_time * MINUTE; 
+            glucoseData.realDate = captureDateTime - relative_time * Constants.MINUTE_IN_MS;
             glucoseData.sensorTime = sensorTime - relative_time;
             /*
              * Enable this code in order to have a zero data simulation.
@@ -368,7 +367,7 @@ public class LibreOOPAlgorithm {
             if(final_time < 0) {
                 break;
             }
-            glucoseData.realDate = captureDateTime  + (final_time - sensorTime) * MINUTE;
+            glucoseData.realDate = captureDateTime  + (final_time - sensorTime) * Constants.MINUTE_IN_MS;
             glucoseData.sensorTime = final_time;
             historyList.add(glucoseData);
         }
@@ -387,9 +386,9 @@ public class LibreOOPAlgorithm {
     static long lastSentData = 0;
     static ArrayBlockingQueue<UnlockBuffers> UnlockBlockingQueue = new ArrayBlockingQueue<UnlockBuffers>(1);
     
-    static public void handleOop2DecryptFarmResult(String tagId, long CaptureDateTime, byte[] buffer, byte []patchUid,  byte []patchInfo ) {
+    static public void handleOop2DecodeFarmResult(String tagId, long CaptureDateTime, byte[] buffer, byte []patchUid,  byte []patchInfo ) {
         lastRecievedData = JoH.tsl();
-        Log.e(TAG, "handleOop2DecryptFarmResult - data " + JoH.bytesToHex(buffer));
+        Log.e(TAG, "handleOop2DecodeFarmResult - data " + JoH.bytesToHex(buffer));
         NFCReaderX.HandleGoodReading(tagId, buffer, CaptureDateTime, false , patchUid, patchInfo, true );
     }
     

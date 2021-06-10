@@ -57,7 +57,6 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
     private static final Object lock = new Object();
     private static long sensorAge = 0;
     private static long timeShiftNearest = -1;
-    private static final long days_in_msec =  24 * 60* 60 * 1000;
 
     public static void clearSensorStats() {
         Pref.setInt("nfc_sensor_age", 0); // reset for nfc sensors
@@ -198,7 +197,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
 
         LibreTrendUtil libreTrendUtil = LibreTrendUtil.getInstance();
         // Get the data for the last 24 hours, as this affects the cache.
-        List<LibreTrendPoint> libreTrendPoints = libreTrendUtil.getData(JoH.tsl() - days_in_msec, JoH.tsl());
+        List<LibreTrendPoint> libreTrendPoints = libreTrendUtil.getData(JoH.tsl() - Constants.DAY_IN_MS, JoH.tsl());
         readingData.ClearErrors(libreTrendPoints);
 
         boolean use_smoothed_data = Pref.getBooleanDefaultFalse("libre_use_smoothed_data");

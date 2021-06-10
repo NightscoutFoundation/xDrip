@@ -282,7 +282,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
         byte[] farm_data = Base64.decode(decoded_buffer, Base64.NO_WRAP);
         byte []patchUid = Base64.decode(patchUidString, Base64.NO_WRAP);
         byte []patchInfo = Base64.decode(patchInfoString, Base64.NO_WRAP);
-        LibreOOPAlgorithm.handleOop2DecryptFarmResult(tagId, CaptureDateTime, farm_data, patchUid, patchInfo);
+        LibreOOPAlgorithm.handleOop2DecodeFarmResult(tagId, CaptureDateTime, farm_data, patchUid, patchInfo);
     }
     
     private void handleOop2DecodeBleResult(Bundle bundle) {
