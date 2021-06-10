@@ -424,6 +424,12 @@
                     android:key="illustrate_remote_data"
                     android:summary="Show data received remotely (diagnostic only)"
                     android:title="Illustrate remote data" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="engineering_mode"
+                    android:key="lower_fuzzer"
+                    android:summary="@string/summary_lower_fuzzer"
+                    android:title="@string/title_lower_fuzzer" />
             </PreferenceScreen>
 
             <CheckBoxPreference
