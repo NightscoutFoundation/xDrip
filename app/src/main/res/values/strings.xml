@@ -1604,4 +1604,6 @@
     <string name="enable_streaming_dialog_dont_ask_again">Don\'t ask me that again</string>
     <string name="enable_streaming_dialog_text">Do you want to connect xDrip with this sensor? This will stop Libre reader and LibreLink from receiving alerts. Press yes and scan again to connect (choose don\'t connect if you want to run xDrip with the patched app)</string>
     <string name="enable_streaming_dialog_title">Connecting Libre sensor to Bluetooth</string>
+    <string name="title_lower_fuzzer">Lower FUZZER</string>
+    <string name="summary_lower_fuzzer">Lower the FUZZER value from 2.5 minutes to 37.5 seconds</string>
 </resources>
