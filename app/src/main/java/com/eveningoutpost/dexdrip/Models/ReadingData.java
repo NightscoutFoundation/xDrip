@@ -17,9 +17,9 @@ public class ReadingData {
     public List<GlucoseData> history;  // Per 15 minutes data.
     public byte[] raw_data;
 
-    static final private byte ERROR_INFLUENCE = 4; //  The influence of each error
-    static final private byte PREFERRED_AVERAGE = 5; //  Try to use 5 numbers for the average
-    static final private byte MAX_DISTANCE_FOR_SMOOTHING = 7; //  If points have been removed, use up to 7 numbers for the average.
+    private static final byte ERROR_INFLUENCE = 4; //  The influence of each error
+    private static final byte PREFERRED_AVERAGE = 5; //  Try to use 5 numbers for the average
+    private static final byte MAX_DISTANCE_FOR_SMOOTHING = 7; //  If points have been removed, use up to 7 numbers for the average.
 
     public ReadingData() {
         this.trend = new ArrayList<GlucoseData>();
