@@ -1386,5 +1386,14 @@
     <string name="pref_enable_insulinprofiles">egyszerre maximum hármat engedélyezhet</string>
     <string name="pref_select_basal_insulinprofiles">bázisinzulin profil kiválasztása.</string>
     <string name="pref_select_bolus_insulinprofiles">bólus inzulin profil kiválasztása, akár pen, akár pumpa...</string>
+    <string name="enable_streaming_summary">csatlakozás a Libre 2 szenzorhoz a szkennelés után. Eztán a Libre olvasóra és a LibreLink app-ra nem megy riasztás</string>
+    <string name="enable_streaming_title">Bluetooth csatlakozás indítása a Libre 2 szenzorhoz</string>
+    <string name="enable_streaming_always_allow">Mindig csatlakozzon a Libre 2 szenzorhoz</string>
+    <string name="enable_streaming_ask_each_time">mindig kérdezzen rá</string>
+    <string name="enable_streaming_never">Sohase csatlakozzon a Libre 2 szenzorhoz</string>
+    <string name="enable_streaming_dialog_yes">csatlakozzon ehhez a Libre 2 szenzorhoz</string>
+    <string name="enable_streaming_dialog_no">Ne csatlakozzon ehhez a Libre 2 szenzorhoz </string>
+    <string name="enable_streaming_dialog_dont_ask_again">Ne kérdezzen rá többet</string>
+    <string name="enable_streaming_dialog_title">Csatlakozzon Libre szenzorhoz BT-szal</string>
     <string name="enable_streaming_dialog_text">Összekapcsolja az xDripet ezzel a szenzorral? Ezután a Libre olvasó és a LibreLink app nem kap riasztást. Nyomja meg az Igen gombot, olvassa le a szenzort a kapcsolódáshoz (Ha a patch-elt LibreLink-et akarja használni, ne kapcsolja össze őket.)</string>
 </resources>
