@@ -180,10 +180,10 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
         }.start();
     }
 
-    public static void processReadingDataTransferObject(ReadingData readingData, long CaptureDateTime, String tagid, boolean allowUpload, byte []patchUid,  byte []patchInfo) {
-    	Log.i(TAG, "Data that was recieved from librealarm is " + HexDump.dumpHexString(readingData.raw_data));
-    	// Save raw block record (we start from block 0)
-        LibreBlock libreBlock = LibreBlock.createAndSave(tagid, CaptureDateTime, readingData.raw_data, 0, allowUpload, patchUid,  patchInfo);
+    public static void processReadingDataTransferObject(ReadingData readingData, long CaptureDateTime, String tagid, boolean allowUpload, byte[] patchUid, byte[] patchInfo) {
+        Log.d(TAG, "Data that was recieved from librealarm is " + HexDump.dumpHexString(readingData.raw_data));
+        // Save raw block record (we start from block 0)
+        LibreBlock libreBlock = LibreBlock.createAndSave(tagid, CaptureDateTime, readingData.raw_data, 0, allowUpload, patchUid, patchInfo);
 
         if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             if(readingData.raw_data == null) {

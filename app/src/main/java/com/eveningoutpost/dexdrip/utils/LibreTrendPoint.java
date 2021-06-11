@@ -7,13 +7,12 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 public class LibreTrendPoint {
     long sensorTime; // The number of minutes from sensor start.
     public long rawSensorValue; // The raw value of the sensor
-    int flags; // The flags that was received from the sensor (if any).
+    int flags; // The flags that were received from the sensor (if any).
     public GlucoseData.DataSource source; // Did we read this data from
                                           // bluetooth or NFC? This affects the
                                           // way that flags are interputed.
 
     static final String TAG = "LibreTrendPoint";
-
 
     public LibreTrendPoint(){}
 
@@ -33,7 +32,7 @@ public class LibreTrendPoint {
 
     public boolean isError() {
         boolean ret = rawSensorValue == 0;
-        if (source == GlucoseData.DataSource.FARM) {
+        if (source == GlucoseData.DataSource.FRAM) {
             ret |= flags != 800;
         } else if (source == GlucoseData.DataSource.BLE) {
             // Condition already checked (rawSensorValue == 0)
@@ -46,4 +45,3 @@ public class LibreTrendPoint {
         return ret;
     }
 }
-

@@ -784,7 +784,7 @@ public class NFCReaderX {
                     getGlucoseRaw(new byte[]{data[(i * 6 + 125)], data[(i * 6 + 124)]}, thirteen_bit_mask);
             glucoseData.flags = LibreOOPAlgorithm.readBits(data, i*6 + 124, 0xe , 0xc);
             glucoseData.temp = LibreOOPAlgorithm.readBits(data, i*6 + 124, 0x1a , 0xc);
-            glucoseData.source = GlucoseData.DataSource.FARM;
+            glucoseData.source = GlucoseData.DataSource.FRAM;
 
             int time = Math.max(0, Math.abs((sensorTime - 3) / 15) * 15 - index * 15);
 
@@ -808,7 +808,7 @@ public class NFCReaderX {
                     getGlucoseRaw(new byte[]{data[(i * 6 + 29)], data[(i * 6 + 28)]}, thirteen_bit_mask);
             glucoseData.flags = LibreOOPAlgorithm.readBits(data, i*6 + 28, 0xe , 0xc);
             glucoseData.temp = LibreOOPAlgorithm.readBits(data, i*6 + 28, 0x1a , 0xc);
-            glucoseData.source = GlucoseData.DataSource.FARM;
+            glucoseData.source = GlucoseData.DataSource.FRAM;
             int time = Math.max(0, sensorTime - index);
 
             glucoseData.realDate = sensorStartTime + time * MINUTE;

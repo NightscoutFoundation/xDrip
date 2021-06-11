@@ -29,9 +29,9 @@ public class ReadingDataTest extends RobolectricTestWithConfig {
         while (libreTrendPoints.size() < 16 * 24 * 60) {
             libreTrendPoints.add(libreTrendPoints.size(), new LibreTrendPoint());
         }
-        LibreTrendPoint libreTrendPoint = new LibreTrendPoint(1000, 1230, 800, GlucoseData.DataSource.FARM);
+        LibreTrendPoint libreTrendPoint = new LibreTrendPoint(1000, 1230, 800, GlucoseData.DataSource.FRAM);
         libreTrendPoints.set((int) libreTrendPoint.getSensorTime(), libreTrendPoint);
-        libreTrendPoint = new LibreTrendPoint(1015, 1230, 0x700, GlucoseData.DataSource.FARM);
+        libreTrendPoint = new LibreTrendPoint(1015, 1230, 0x700, GlucoseData.DataSource.FRAM);
         libreTrendPoints.set((int) libreTrendPoint.getSensorTime(), libreTrendPoint);
 
         readingData.ClearErrors(libreTrendPoints);
@@ -57,9 +57,9 @@ public class ReadingDataTest extends RobolectricTestWithConfig {
             libreTrendPoints.get((int)readingData.trend.get(i).sensorTime).rawSensorValue = 220;
         }
 
-        LibreTrendPoint libreTrendPoint = new LibreTrendPoint(1000, 1230, 800, GlucoseData.DataSource.FARM);
+        LibreTrendPoint libreTrendPoint = new LibreTrendPoint(1000, 1230, 800, GlucoseData.DataSource.FRAM);
         libreTrendPoints.set((int)libreTrendPoint.getSensorTime(), libreTrendPoint);
-        libreTrendPoint = new LibreTrendPoint(1005, 1230, 0x700, GlucoseData.DataSource.FARM);
+        libreTrendPoint = new LibreTrendPoint(1005, 1230, 0x700, GlucoseData.DataSource.FRAM);
         libreTrendPoints.set((int)libreTrendPoint.getSensorTime(), libreTrendPoint);
 
         readingData.ClearErrors(libreTrendPoints);
@@ -86,11 +86,11 @@ public class ReadingDataTest extends RobolectricTestWithConfig {
             libreTrendPoints.get((int)readingData.trend.get(i).sensorTime).rawSensorValue = 220;
         }
 
-        LibreTrendPoint libreTrendPoint = new LibreTrendPoint(1000, 1230, 800, GlucoseData.DataSource.FARM);
+        LibreTrendPoint libreTrendPoint = new LibreTrendPoint(1000, 1230, 800, GlucoseData.DataSource.FRAM);
         libreTrendPoints.set((int)libreTrendPoint.getSensorTime(), libreTrendPoint);
-        libreTrendPoint = new LibreTrendPoint(1003, 1230, 0x700, GlucoseData.DataSource.FARM);
+        libreTrendPoint = new LibreTrendPoint(1003, 1230, 0x700, GlucoseData.DataSource.FRAM);
         libreTrendPoints.set((int)libreTrendPoint.getSensorTime(), libreTrendPoint);
-        libreTrendPoint = new LibreTrendPoint(1005, 1230, 0x700, GlucoseData.DataSource.FARM);
+        libreTrendPoint = new LibreTrendPoint(1005, 1230, 0x700, GlucoseData.DataSource.FRAM);
         libreTrendPoints.set((int)libreTrendPoint.getSensorTime(), libreTrendPoint);
 
         readingData.ClearErrors(libreTrendPoints);
@@ -360,13 +360,13 @@ public class ReadingDataTest extends RobolectricTestWithConfig {
         libreTrendPoint = new LibreTrendPoint(1000 , 100, 0x700, GlucoseData.DataSource.BLE);
         assertWithMessage("rawsensorvalue").that(libreTrendPoint.isError()).isFalse();
 
-        libreTrendPoint = new LibreTrendPoint(1000 , 0, 0x700, GlucoseData.DataSource.FARM);
+        libreTrendPoint = new LibreTrendPoint(1000 , 0, 0x700, GlucoseData.DataSource.FRAM);
         assertWithMessage("rawsensorvalue").that(libreTrendPoint.isError()).isTrue();
 
-        libreTrendPoint = new LibreTrendPoint(1000 , 100, 0x700, GlucoseData.DataSource.FARM);
+        libreTrendPoint = new LibreTrendPoint(1000 , 100, 0x700, GlucoseData.DataSource.FRAM);
         assertWithMessage("rawsensorvalue").that(libreTrendPoint.isError()).isTrue();
 
-        libreTrendPoint = new LibreTrendPoint(1000 , 100, 800, GlucoseData.DataSource.FARM);
+        libreTrendPoint = new LibreTrendPoint(1000 , 100, 800, GlucoseData.DataSource.FRAM);
         assertWithMessage("rawsensorvalue").that(libreTrendPoint.isError()).isFalse();
 
         libreTrendPoint = new LibreTrendPoint();

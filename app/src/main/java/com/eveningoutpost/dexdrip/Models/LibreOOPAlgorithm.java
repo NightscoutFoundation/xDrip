@@ -330,16 +330,6 @@ public class LibreOOPAlgorithm {
             int relative_time = LIBRE2_SHIFT[i];
             glucoseData.realDate = captureDateTime - relative_time * Constants.MINUTE_IN_MS;
             glucoseData.sensorTime = sensorTime - relative_time;
-            /*
-             * Enable this code in order to have a zero data simulation.
-            if(glucoseData.sensorTime % 20 == 0) { 
-                Log.e(TAG, "Forcing raw value to zero. " + glucoseData.toString());
-                glucoseData.glucoseLevelRaw = 0;
-            }
-            Log.d(TAG, "Adding value with sensorTime " + glucoseData.sensorTime + " glucoseLevelRaw " + glucoseData.glucoseLevelRaw + " flags = " + glucoseData.flags);
-            */
-
-            
             trendList.add(glucoseData);
         }
         return trendList;
@@ -386,16 +376,16 @@ public class LibreOOPAlgorithm {
     static long lastSentData = 0;
     static ArrayBlockingQueue<UnlockBuffers> UnlockBlockingQueue = new ArrayBlockingQueue<UnlockBuffers>(1);
     
-    static public void handleOop2DecodeFarmResult(String tagId, long CaptureDateTime, byte[] buffer, byte []patchUid,  byte []patchInfo ) {
+    static public void handleOop2DecodeFramResult(String tagId, long CaptureDateTime, byte[] buffer, byte []patchUid,  byte []patchInfo ) {
         lastRecievedData = JoH.tsl();
-        Log.e(TAG, "handleOop2DecodeFarmResult - data " + JoH.bytesToHex(buffer));
+        Log.e(TAG, "handleOop2DecodeFramResult - data " + JoH.bytesToHex(buffer));
         NFCReaderX.HandleGoodReading(tagId, buffer, CaptureDateTime, false , patchUid, patchInfo, true );
     }
     
     
-    static public void  handleOop2BlutoothEnableResult(byte[] bt_unlock_buffer, byte[] nfc_unlock_buffer, byte[] patchUid, byte[] patchInfo, String device_name) {
+    static public void handleOop2BluetoothEnableResult(byte[] bt_unlock_buffer, byte[] nfc_unlock_buffer, byte[] patchUid, byte[] patchInfo, String device_name) {
         lastRecievedData = JoH.tsl();
-        Log.e(TAG, "handleOop2BlutoothEnableResult - data bt_unlock_buffer " + JoH.bytesToHex(bt_unlock_buffer) + "\n nfc_unlock_buffer "+ JoH.bytesToHex(nfc_unlock_buffer));
+        Log.e(TAG, "handleOop2BluetoothEnableResult - data bt_unlock_buffer " + JoH.bytesToHex(bt_unlock_buffer) + "\n nfc_unlock_buffer "+ JoH.bytesToHex(nfc_unlock_buffer));
         UnlockBlockingQueue.clear();
         try {
             UnlockBlockingQueue.add(new UnlockBuffers(bt_unlock_buffer, nfc_unlock_buffer, device_name));

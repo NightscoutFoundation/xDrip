@@ -17,9 +17,9 @@ public class ReadingData {
     public List<GlucoseData> history;  // Per 15 minutes data.
     public byte[] raw_data;
 
-    static final int ERROR_INFLUENCE = 4; //  The influence of each error
-    static final int PREFERED_AVERAGE = 5; //  Try to use 5 numbers for the average
-    static final int MAX_DISTANCE_FOR_SMOOTHING = 7; //  If points have been removed, use up to 7 numbers for the average.
+    static final private byte ERROR_INFLUENCE = 4; //  The influence of each error
+    static final private byte PREFERRED_AVERAGE = 5; //  Try to use 5 numbers for the average
+    static final private byte MAX_DISTANCE_FOR_SMOOTHING = 7; //  If points have been removed, use up to 7 numbers for the average.
 
     public ReadingData() {
         this.trend = new ArrayList<GlucoseData>();
@@ -188,7 +188,7 @@ public class ReadingData {
         int points_used = 0;
         double sum = 0;
 
-        for(int i = 0; i < MAX_DISTANCE_FOR_SMOOTHING && points_used < PREFERED_AVERAGE; i++) {
+        for(int i = 0; i < MAX_DISTANCE_FOR_SMOOTHING && points_used < PREFERRED_AVERAGE; i++) {
             LibreTrendPoint libreTrendPoint = libreTrendPoints.get(glucoseData.sensorTime - i);
             if(errorHash.contains(glucoseData.sensorTime - i) || libreTrendPoint.rawSensorValue == 0) {
                 Log.d(TAG, "Not using point because it is in error" + libreTrendPoint);
