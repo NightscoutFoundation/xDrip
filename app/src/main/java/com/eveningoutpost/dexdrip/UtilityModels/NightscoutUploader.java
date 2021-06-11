@@ -429,7 +429,7 @@ public class NightscoutUploader {
 
 
             } catch (Exception e) {
-                String msg = "Unable to do REST API Download " + e + e.getMessage() + " url: ";
+                String msg = "Unable to do REST API Download " + e + e.getMessage();
                 handleRestFailure(msg);
             }
         }
@@ -489,7 +489,7 @@ public class NightscoutUploader {
                     last_success_time = JoH.tsl();
                     last_exception_count = 0;
                 } catch (Exception e) {
-                    String msg = "Unable to do REST API Upload: " + e.getMessage() + " url: " + " marking record: " + (any_successes ? "succeeded" : "failed");
+                    String msg = "Unable to do REST API Upload: " + e.getMessage() + " marking record: " + (any_successes ? "succeeded" : "failed");
                     handleRestFailure(msg);
                 }
             }
