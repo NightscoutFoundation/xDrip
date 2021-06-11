@@ -14,7 +14,7 @@ public class LibreWifiData {
     }
     
     @Expose
-    String BlockBytes; // The base 64 encoded FARM
+    String BlockBytes; // The base 64 encoded FRAM
     
     @Expose
     Long CaptureDateTime;

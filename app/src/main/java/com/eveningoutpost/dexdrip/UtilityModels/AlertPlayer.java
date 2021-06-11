@@ -225,18 +225,25 @@ public class AlertPlayer {
             return;
         }
         if (repeatTime == -1) {
-            // try to work out default
-            AlertType alert = ActiveBgAlert.alertTypegetOnly();
-            if (alert != null) {
-                repeatTime = alert.default_snooze;
-                Log.d(TAG, "Selecting default snooze time: " + repeatTime);
-            } else {
-                repeatTime = 30; // pick a number if we cannot even find the default
-                Log.e(TAG, "Cannot even find default snooze time so going with: " + repeatTime);
-            }
+            repeatTime = GuessDefaultSnoozeTime();
         }
         activeBgAlert.snooze(repeatTime);
         if (from_interactive) GcmActivity.sendSnoozeToRemote();
+    }
+
+    public synchronized int GuessDefaultSnoozeTime() {
+        int repeatTime;
+        // try to work out default
+        AlertType alert = ActiveBgAlert.alertTypegetOnly();
+        if (alert != null) {
+            repeatTime = alert.default_snooze;
+            Log.d(TAG, "Selecting default snooze time: " + repeatTime);
+        } else {
+            repeatTime = 30; // pick a number if we cannot even find the default
+            Log.e(TAG, "Cannot even find default snooze time so going with: " + repeatTime);
+        }
+
+        return repeatTime;
     }
 
     public synchronized void PreSnooze(Context ctx, String uuid, int repeatTime) {
