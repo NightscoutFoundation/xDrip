@@ -95,6 +95,8 @@ public class BgGraphBuilder {
     private static long noise_processed_till_timestamp = -1;
     private final static String TAG = "jamorham graph";
     //private final static int pluginColor = Color.parseColor("#AA00FFFF"); // temporary
+    public static int default_ymax = getDefaultyMax();
+    public static int default_ymin = getDefaultyMin();
 
     private final static int pluginSize = 2;
     final int pointSize;
@@ -168,6 +170,26 @@ public class BgGraphBuilder {
     public static double last_bg_estimate = -99999;
     private KeyStore keyStore = FastStore.getInstance();
 
+    public static int getDefaultyMax() {
+        int value = 250;
+        try {
+            value = Integer.parseInt(Pref.getString("default_ymax", "250"));
+        } catch (NumberFormatException e) {
+            UserError.Log.e(TAG, "Cannot process default ymax value: " + e);
+        }
+        return value;
+    }
+
+    public static int getDefaultyMin() {
+        int value = 40;
+        try {
+            value = Integer.parseInt(Pref.getString("default_ymin", "40"));
+        } catch (NumberFormatException e) {
+            UserError.Log.e(TAG, "Cannot process default ymin value: " + e);
+        }
+        return value;
+    }
+
     private final boolean showSMB = Pref.getBoolean("show_smb_icons", true);
 
     public BgGraphBuilder(Context context) {
@@ -233,10 +255,8 @@ public class BgGraphBuilder {
         this.highMark = tolerantParseDouble(prefs.getString("highValue", "170"), 170);
         this.lowMark = tolerantParseDouble(prefs.getString("lowValue", "70"), 70);
         this.doMgdl = (prefs.getString("units", "mgdl").equals("mgdl"));
-        defaultMinY = unitized(40);
-        if (prefs.getBoolean("raise_default_ymin", false)) defaultMinY = unitized(70);
-        defaultMaxY = unitized(250);
-        if (prefs.getBoolean("lower_default_ymax", false)) defaultMaxY = unitized(180);
+        defaultMinY = unitized(default_ymin);
+        defaultMaxY = unitized(default_ymax);
         pointSize = isXLargeTablet(context) ? 5 : 3;
         axisTextSize = isXLargeTablet(context) ? 20 : Axis.DEFAULT_TEXT_SIZE_SP;
         previewAxisTextSize = isXLargeTablet(context) ? 12 : 5;

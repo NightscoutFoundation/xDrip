@@ -202,5 +202,31 @@
         <item>JamTrendArrow2bImpl</item>
         <item>JamTrendArrow3Impl</item>
     </string-array>
+    
+    <string-array name="ymax_entries">
+        <item>190 mg/dL or 10.6 mmol/L</item>
+        <item>210 mg/dL or 11.7 mmol/L</item>
+        <item>230 mg/dL or 12.8 mmol/L</item>
+        <item>250 mg/dL or 13.9 mmol/L</item>
+    </string-array>
+    <string-array name="ymax_values">
+        <item>190</item>
+        <item>210</item>
+        <item>230</item>
+        <item>250</item>
+    </string-array>
+
+    <string-array name="ymin_entries">
+        <item>40 mg/dL or 2.2 mmol/L</item>
+        <item>50 mg/dL or 2.8 mmol/L</item>
+        <item>60 mg/dL or 3.3 mmol/L</item>
+        <item>70 mg/dL or 3.9 mmol/L</item>
+    </string-array>
+    <string-array name="ymin_values">
+        <item>40</item>
+        <item>50</item>
+        <item>60</item>
+        <item>70</item>
+    </string-array>
 
 </resources>

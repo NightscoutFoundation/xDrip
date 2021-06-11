@@ -424,14 +424,20 @@
                     android:key="illustrate_remote_data"
                     android:summary="Show data received remotely (diagnostic only)"
                     android:title="Illustrate remote data" />
-                <CheckBoxPreference
-                    android:key="lower_default_ymax"
-                    android:summary="@string/summary_lower_default_ymax"
-                    android:title="@string/title_lower_default_ymax" />
-                <CheckBoxPreference
-                    android:key="raise_default_ymin"
-                    android:summary="@string/summary_raise_default_ymin"
-                    android:title="@string/title_raise_default_ymin" />
+                <ListPreference
+                    android:key="default_ymax"
+                    android:summary="%s"
+                    android:title="@string/title_lower_default_ymax"
+                    android:entries="@array/ymax_entries"
+                    android:entryValues="@array/ymax_values"
+                    android:defaultValue="250" />
+                <ListPreference
+                    android:key="default_ymin"
+                    android:summary="%s"
+                    android:title="@string/title_raise_default_ymin"
+                    android:entries="@array/ymin_entries"
+                    android:entryValues="@array/ymin_values"
+                    android:defaultValue="40" />
             </PreferenceScreen>
 
             <CheckBoxPreference
