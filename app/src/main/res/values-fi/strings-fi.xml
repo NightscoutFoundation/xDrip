@@ -1035,8 +1035,6 @@
     <string name="manual_overwrite_not_possible">Muutoksia ei voi tehdä käsin!</string>
     <string name="upload_even_when_using_mobile_data">Lähetä myös kun käytössä on mobiilidata</string>
     <string name="use_mobile_data">Käytä mobiilidataa</string>
-    <string name="summary_cloud_storage_api_download_enable">Yritä myös ladata tietoja Nightscoutista</string>
-    <string name="title_cloud_storage_api_download_enable">Tietojen lataaminen</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Kalibroi uusilla verensokerituloksilla pyytämättä vahvistusta, jos olosuhteet näyttävät hyviltä (kokeellinen ominaisuus)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automaattinen kalibrointi</string>
     <string name="title_rest_api_extra_options">Lisävalinnat</string>
