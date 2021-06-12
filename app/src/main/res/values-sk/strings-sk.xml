@@ -798,8 +798,6 @@
     <string name="xdrip_needs_whitelisting_for_proper_performance">xDrip+ potrebuje pre svoju prácu bežať na pozadí. Povoľte mu to Androide.</string>
     <string name="manual_overwrite_not_possible">Ručné prepísanie nie je možné!</string>
     <string name="use_mobile_data">Používať mobilné dáta</string>
-    <string name="summary_cloud_storage_api_download_enable">Z Nightscout dáta aj získavaj</string>
-    <string name="title_cloud_storage_api_download_enable">Stiahnuť údaje</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatická kalibrácia</string>
     <string name="title_rest_api_extra_options">Ďalšie možnosti</string>
     <string name="summary_send_bridge_battery_to_nightscout">Zasielať úroveň batérie do Nightscout. Odškrtnite ak je senzor batérie nefunkčný.</string>
