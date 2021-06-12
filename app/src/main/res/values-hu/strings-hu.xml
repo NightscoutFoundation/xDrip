@@ -267,6 +267,7 @@
     <string name="upload_data_to_dex_servers">Töltse fel az adait a Dexcom szerverére, hogy a Dexcom app-ok használhassák</string>
     <string name="manage_followers">Követők kezelése</string>
     <string name="manage_existing_followers">Követők kezelése és újak meghívása.</string>
+    <string name="invite_follower">Követő meghívása</string>
     <string name="glucose_calibration_and_other_alerts">VC-érték, kalibráció és egyéb riasztások</string>
     <string name="alert_volume_profile">Riasztáshang beállítása</string>
     <string name="smart_alerting">Okos riasztás</string>
@@ -963,6 +964,14 @@
     <string name="title_You_have_no_reminders_yet">Még nincsenek emlékeztetői</string>
     <string name="message_reminders_explanation">Az emlékeztetők segítenek nem elfelejteni például cserélni a pumpa helyét.\n\nLehetnek ismétlődőek, az ismétlés ciklusa pedig tetszés szerint állítható. Az emlékeztetők halaszthatók (szundi), vagy átütemezhetőek.\n\nKattintson a + gombra az Emlékeztető hozzáadásához.</string>
     <string name="title_swipe_reminder">Csúsztatás balra vagy jobbra</string>
+    <string name="title_reminder_snooze_undo">Emlékeztető szundi panel - visszavonás</string>
+    <string name="message_snooze_explanaition_undo">A Visszavonás gomb az emlékeztetőt visszaállítja az oldalra húzás előtti állapotba.</string>
+    <string name="title_snooze_trash">Emlékeztető szundi panel - kuka</string>
+    <string name="message_snooze_trash">A Kuka gombbal véglegesen törli az emlékeztetőt!</string>
+    <string name="title_snooze_hide">Emlékeztető szundi panel - elrejtés</string>
+    <string name="message_snooze_hide">Az Elrejt gomb elrejti az emlékeztetőt</string>
+    <string name="title_snooze_times">Emlékeztető szundi panel - időszak</string>
+    <string name="message_snooze_times">A különböző értékű gombokkal módosíthatja a szundi időtartamát.</string>
     <string name="title_which_day">Melyik nap?</string>
     <string name="title_what_time_day">Mikor a nap folyamán?</string>
     <string name="title_add_reminder">Emlékeztető hozzáadása</string>
@@ -1327,10 +1336,14 @@
     <string name="it_looks_like_you_maybe_have_a_settings_backup_shall_we_try_to_restore_it">Elmentett xDrip beállításokat találtunk a telefonján, visszaállítsuk?</string>
     <string name="restore_settings">Beállítások visszaállítása</string>
     <string name="libre">Libre</string>
+    <string name="what_type_of_libre_bridge_device_do_you_use">Milyen Libre transzmittert használ?</string>
     <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Bluetooth-transzmitter: Blucon, Bubble, LimiTTer, Bluereader, Tomato stb.</string>
     <string name="libre_patched">Libre2 Patched</string>
+    <string name="librealarm_app_using_sony_smartwatch">LibreAlarm App: Sony Smartwatch-ot használ</string>
     <string name="__data_source_disabled">\n ADATFORRÁS LEÁLLÍTVA</string>
     <string name="data_source_is_set_to_">Adatforrásként kiválasztva: </string>
+    <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Törölni és visszaállítani akarja ennek a szenzornak a kalibrációit?</string>
+    <string name="sensor_stop_confirm">Leállítja a szenzort?</string>
     <string name="do_you_want_to_use_this_entered_fingerstick_blood_glucose_test_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Szeretné a megadott vércukor értéket kalibrációhoz használni?\n\n(ezt megváltoztathatja, ha ez az ablak megjelenik a Beállításokban)</string>
     <string name="yes_calibrate">IGEN, kalibrálás</string>
     <string name="enable_automatic_calibration">Automatikus kalibrálás engedélyezése</string>
@@ -1343,6 +1356,7 @@
     <string name="deleted">Törölve!</string>
     <string name="maybe_later">Talán később</string>
     <string name="yes_do_it">IGEN, mehet</string>
+    <string name="ooops_this_device_doesnt_seem_to_have_a_wifi_settings_page">Opppá! Ennek a készüléknek nincsen WIFI-beállítások panele!</string>
     <string name="restore_backup">Biztonsági mentés visszaállítása?</string>
     <string name="do_you_want_to_restore_the_backup_file_">Visszaállítás ebből a fájlból: </string>
     <string name="restore">Visszaállítás</string>
@@ -1355,6 +1369,8 @@
     <string name="prepare_to_test">Felkészülni a tesztre!</string>
     <string name="after_you_click_ok_look_for_a_number_icon_in_the_notification_area_if_you_see_123_then_the_test_has_succeeded__on_some_phones_this_test_will_crash_the_phone__after_30_seconds_we_will_shut_off_the_notification_if_your_phone_does_not_recover_after_this_then_hold_the_power_button_to_reboot_it">Az OK-ra nyomás után ellenőrizze az értesítési mezőt.\nSikeres a teszt, ha látja az 123-at.\n\nEgyes készülékeken rendszerösszeomlást okozhat.\n\n30 másodperc után az értesítés kikapcsol. Ha a készülék elakad, a ki-be kapcsoló gomb folyamatos nyomva tartásával indítsa újra.</string>
     <string name="running_test_with_number_123">Tesztelés ezzel a számmal: 123</string>
+    <string name="unusual_internal_context_problem__please_report">Szokatlan belső programhiba - kérem, jelentse</string>
+    <string name="cannot_start__please_report_context_problem">Nem lehet indítani - kérem jelentse</string>
     <string name="xdrip_will_not_work_below_android_version_42">Legalább Android 4.2 szükséges az xDrip használatához</string>
     <string name="xdrip_oop2_not_installed">Libre2/Libre US szenzorok használatához szükséges az oop2 app.</string>
     <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Az akkuhasználat optimalizálását kapcsolja ki az xDrip esetében. Állítsa be!</string>
@@ -1369,7 +1385,10 @@
     <string name="could_not_export_csv_">CSV export sikertelen :(</string>
     <string name="phone_has_no_nfc_reader">A telefonon nincsen NFC olvasó</string>
     <string name="nfc_is_not_enabled">NFC nincs engedélyezve</string>
+    <string name="phone_nfc_is_having_problems">A készülék NFC olvasója hibát jelez!</string>
     <string name="not_so_quickly_wait_60_seconds">Ne ilyen gyorsan, kérem, várjon 60 mp-et</string>
+    <string name="nfc_diag_timeout">NFC időtúllépés</string>
+    <string name="nfc_read_timeout">NFC olvasási időtúllépés</string>
     <string name="nfc_invalid_data__try_again">Érvénytelen NFC adatok - próbálja újra</string>
     <string name="nfc_invalid_data">Érvénytelen NFC adatok</string>
     <string name="scanned_ok">Sikeres szkennelés!</string>
@@ -1378,10 +1397,16 @@
     <string name="please_wait">Kérem várjon...</string>
     <string name="didnt_find_any_glucose_readings_in_that_time_period">Ebben az időszakban nincsen VC-érték</string>
     <string name="remote_snooze">Távoli szundi..</string>
+    <string name="sensor_stopped">Szenzor leállítva</string>
     <string name="restarting_collector">Kollektor újraindítása!</string>
     <string name="follower_deleted_succesfully">Követő eltávolítva</string>
     <string name="failed_to_delete_follower">Követő eltávolítása sikertelen</string>
+    <string name="no_sensor_found">Szenzor nem található</string>
+    <string name="checksum_failed__retrying">Ellenőrző összeg hibás - ismétlés</string>
+    <string name="scanning">Szkennelés</string>
     <string name="authentication_failed_wrong_password">Sikertelen azonosítás. Eltévesztette a jelszót?</string>
+    <string name="share_login_data_isnt_valid">Hibás Share bejelentkezési adatok (felhasználónév vagy jelszó)</string>
+    <string name="connectivity_problem_reaching_share_servers">Kapcsolódási hiba a Share szerverhez</string>
     <string name="blood_glucose_graph">Vércukor grafikon</string>
     <string name="pref_enable_insulinprofiles">egyszerre maximum hármat engedélyezhet</string>
     <string name="pref_select_basal_insulinprofiles">bázisinzulin profil kiválasztása.</string>
@@ -1394,6 +1419,6 @@
     <string name="enable_streaming_dialog_yes">csatlakozzon ehhez a Libre 2 szenzorhoz</string>
     <string name="enable_streaming_dialog_no">Ne csatlakozzon ehhez a Libre 2 szenzorhoz </string>
     <string name="enable_streaming_dialog_dont_ask_again">Ne kérdezzen rá többet</string>
-    <string name="enable_streaming_dialog_title">Csatlakozzon Libre szenzorhoz BT-szal</string>
     <string name="enable_streaming_dialog_text">Összekapcsolja az xDripet ezzel a szenzorral? Ezután a Libre olvasó és a LibreLink app nem kap riasztást. Nyomja meg az Igen gombot, olvassa le a szenzort a kapcsolódáshoz (Ha a patch-elt LibreLink-et akarja használni, ne kapcsolja össze őket.)</string>
+    <string name="enable_streaming_dialog_title">Csatlakozzon Libre szenzorhoz BT-szal</string>
 </resources>
