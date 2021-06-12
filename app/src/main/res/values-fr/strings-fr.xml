@@ -8,7 +8,6 @@
     <string name="menu_refresh">Rafraîchir</string>
     <string name="menu_export_database">Exporter la base de données</string>
     <string name="menu_export_csv_sidiary">Exporter en CSV (format SiDiary)</string>
-    <string name="menu_import_db">Importer la base de données</string>
     <string name="error_bluetooth_not_supported">Erreur: Bluetooth n’est pas pris en charge par ce dispositif</string>
     <string name="unknown_device">Dispositif non reconnu</string>
     <string name="connecting_to_device">Connection au périphérique</string>
@@ -21,13 +20,11 @@
     <string name="navigation_drawer_open">Ouvrir la fenêtre de navigation</string>
     <string name="navigation_drawer_close">Fermer la fenêtre de navigation</string>
     <string name="title_activity_calibration_check_in">Activité de Calibration</string>
-    <string name="title_activity_usb_connected">Activité USB Connecté</string>
     <string name="snooze">Mise en veille</string>
     <string name="snooze_hint">Arrêter l\'alerte pendant x minutes</string>
     <string name="ok">D\'accord</string>
     <string name="cancel">Annuler</string>
     <string name="no">Non</string>
-    <string name="pref_sensor_location_dont_ask_again"> Ne pas me demander à nouveau</string>
     <string name="title_activity_error">"Événements et erreurs"</string>
     <string name="title_activity_main">Activité principale</string>
     <string name="title_activity_fake_numbers">Nombres fictifs</string>
@@ -61,15 +58,12 @@
     <string name="pref_message_api_url">Cela ne que l\'URL de base, le téléchargeur ajoutera automatiquement / entrées pour le POST. API_SECRET sur le serveur doit correspondre à yourpassphrase dans ce cadre.</string>
     <string name="pref_default_api_url">https://yourpassphrase@{VOTRE-SITE}.azurewebsites.net/api/v1/</string>
     <!-- wifi Settings -->
-    <string name="wifi_recievers_dialog_message">Liste des ip:port séparés par des virgules (exemple : 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
-    <string name="wifi_recievers_dialog_title">Entrer les adresses ip et ports des récepteurs (y compris les adresses MongoDB si nécessaire)</string>
     <!-- Location Settings -->
     <string name="location_not_found_title">La localisation n\'est pas activée</string>
     <string name="location_not_found_message">Afin que la recherche par Bluetooth puisse marcher sur les nouveaux appareils, la localisation doit être activée. xDrip ne suit pas votre position, sauf lorsque vous activez l\'option Message d\'Urgence</string>
     <string name="location_yes">Activer</string>
     <!-- broadcast settings -->
     <string name="pref_title_broadcast_enabled">Diffusion locale</string>
-    <string name="pref_summary_broadcast_enabled">Activer la diffusion locale de données pour que d\'autres applications (par exemple NightWatch) puisse écouter les nouvelles valeurs</string>
     <string name="title_activity_share_test">Test Share</string>
     <!-- pebble settings -->
     <string name="pref_pebble_trend_watchface">Utiliser le cadran Pebble Tendances</string>
@@ -89,7 +83,6 @@
     <string name="pref_amazfit_other_alert_enable">Activer</string>
     <string name="pref_amazfit_other_alert_title">Autres alertes</string>
     <string name="pref_amazfit_watchface_graph_dots_title">Points de graphique du cadran</string>
-    <string name="pref_amazfit_watchface_graph_dots_summary">Affiche des minuscules points au lieu de petits points</string>
     <string name="pref_amazfit_watchface_graph_enable">Activer</string>
     <string name="pref_amazfit_watchface_graph_title">Graphique de cadran</string>
     <string name="pref_amazfit_watchface_graph_enable_summary">Affiche le graphique en arrière-plan du cadran</string>
@@ -111,7 +104,6 @@
     <string name="title_activity_alert_list">Liste d\'alertes</string>
     <string name="speaktreatment">Prononcer le traitement</string>
     <string name="title_activity_update">Mise à jour xDrip+ disponible</string>
-    <string name="title_activity_display_qrcode">Partager les paramètres via le code QR</string>
     <string name="title_activity_send_feed_back">Envoyer des commentaires à Jamorham</string>
     <string name="title_activity_maps">Carte Parakeet</string>
     <string name="title_activity_display_preferences">Préférences d\'affichage</string>
@@ -132,7 +124,6 @@
     <string name="share">Partager</string>
     <string name="title_activity_profile_editor">Editeur de profil de traitement</string>
     <string name="first_use_menu_to_scan">Utilisez d\'abord le menu pour scanner votre appareil BT ou modifier la source de données dans les paramètres!</string>
-    <string name="first_configure_ip_address">Configurez d\'abord l\'adresse IP de votre lecteur wixel ou l\'url Parakeet</string>
     <string name="now_start_your_sensor">Maintenant, démarrer votre capteur ou vérifier les paramètres</string>
     <string name="please_wait_while_sensor_warms_up">S\'il vous plaît patienter pendant que le capteur se réchauffe! (</string>
     <string name="minutes_with_bracket">" minutes)"</string>
@@ -141,8 +132,6 @@
     <string name="please_enter_two_calibrations_to_get_started">S\'il vous plaît effectuez deux calibrations pour commencer!</string>
     <string name="now_pair_with_your_dexcom_share">Maintenant jumeler avec votre Dexcom Share</string>
     <string name="now_choose_start_sensor_in_settings">Maintenant, choisissez démarrer votre capteur dans vos paramètres</string>
-    <string name="double_check_dex_receiver_serial_number">Vérifier le numéro de série du récepteur Dex, il devrait être de 10 caractères, ne pas oublier les lettres</string>
-    <string name="unfortunately_andoird_version_no_blueooth_low_energy">Malheureusement votre version Android ne supporte pas le Bluetooth Low Energy</string>
     <string name="waiting_for_packet">En attente de paquets</string>
     <string name="persistent_high_for_greater_than">Haut persistante pour &gt; </string>
     <string name="space_mins">" mins"</string>
@@ -1052,8 +1041,6 @@
     <string name="manual_overwrite_not_possible">L\'écrasement manuel n\'est pas possible !</string>
     <string name="upload_even_when_using_mobile_data">Charger même en utilisant les données mobiles</string>
     <string name="use_mobile_data">Utiliser les données mobiles</string>
-    <string name="summary_cloud_storage_api_download_enable">Essayer également de télécharger des données depuis Nightscout</string>
-    <string name="title_cloud_storage_api_download_enable">Télécharger les données</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Calibrer en utilisant de nouvelles lectures de glycémie si les conditions semblent correctes sans demander confirmation (expérimental)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Calibration automatique</string>
     <string name="title_rest_api_extra_options">Options supplémentaires</string>
