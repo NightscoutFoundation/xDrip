@@ -1041,8 +1041,6 @@
     <string name="manual_overwrite_not_possible">Substituição manual não é possível!</string>
     <string name="upload_even_when_using_mobile_data">Enviar mesmo quando em dados móveis</string>
     <string name="use_mobile_data">Usar dados móveis</string>
-    <string name="summary_cloud_storage_api_download_enable">Também tentar descarregar dados do Nightscout</string>
-    <string name="title_cloud_storage_api_download_enable">Descarregar dados</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Calibrar utilizando valores novos de glicemia capilar se em condições aparentemente corretas para o fazer sem pedir confirmação (experimental)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Calibração Automática</string>
     <string name="title_rest_api_extra_options">Opções Extra</string>
