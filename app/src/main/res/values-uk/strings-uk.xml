@@ -1041,8 +1041,6 @@
     <string name="manual_overwrite_not_possible">Ручна зміна не можлива</string>
     <string name="upload_even_when_using_mobile_data">Завантажувати навіть при використанні мобільних даних</string>
     <string name="use_mobile_data">Використовувати мобільні дані</string>
-    <string name="summary_cloud_storage_api_download_enable">Намагатися, також, завантажувати дані з Nightscout</string>
-    <string name="title_cloud_storage_api_download_enable">Завантажувати дані</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Калібрувати використовуючи нові показники глюкози без запиту підтвердження при сприятливих умовах (експериментальна функція)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Автоматичне калібрування</string>
     <string name="title_rest_api_extra_options">Додаткові параметри</string>
