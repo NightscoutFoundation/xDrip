@@ -1039,8 +1039,6 @@
     <string name="manual_overwrite_not_possible">Suprascrierea manuală nu este posibilă!</string>
     <string name="upload_even_when_using_mobile_data">Transferă chiar și atunci când utilizați date mobile</string>
     <string name="use_mobile_data">Utilizează datele mobile</string>
-    <string name="summary_cloud_storage_api_download_enable">De asemenea, încercă să descărcarce date de la Nightscout</string>
-    <string name="title_cloud_storage_api_download_enable">Descărcare date</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Calibrare utilizând valorile noi ale glicemiei dacă condițiile par corecte, fără a cere confirmare (experimental)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Calibrare Automată</string>
     <string name="title_rest_api_extra_options">Opţiuni suplimentare</string>
