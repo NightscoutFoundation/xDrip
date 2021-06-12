@@ -8,7 +8,6 @@
     <string name="menu_refresh">Aktualisieren</string>
     <string name="menu_export_database">Datenbank exportieren</string>
     <string name="menu_export_csv_sidiary">Export als CSV (SiDiary-Format)</string>
-    <string name="menu_import_db">Datenbank importieren</string>
     <string name="error_bluetooth_not_supported">Fehler: Bluetooth wird von diesem Gerät nicht unterstützt</string>
     <string name="unknown_device">Gerät nicht erkannt</string>
     <string name="connecting_to_device">Verbinde mit Gerät</string>
@@ -261,6 +260,7 @@
     <string name="upload_data_to_dex_servers">Daten zum Dexcom-Server hochladen, damit Du Deine Daten mit den offiziellen Dexcom-Apps nutzen kannst</string>
     <string name="manage_followers">Follower verwalten</string>
     <string name="manage_existing_followers">Follower verwalten und neue hinzufügen.</string>
+    <string name="invite_follower">Follower einladen</string>
     <string name="glucose_calibration_and_other_alerts">Glukose-, Kalibrierungs- und andere Benachrichtigungen</string>
     <string name="alert_volume_profile">Lautstärke-Profil (Alarme)</string>
     <string name="smart_alerting">Intelligente Warnungen</string>
@@ -1042,8 +1042,6 @@
     <string name="manual_overwrite_not_possible">Manuelles Überschreiben nicht möglich!</string>
     <string name="upload_even_when_using_mobile_data">Auch hochladen wenn mobile Daten verwendet werden</string>
     <string name="use_mobile_data">Mobile Daten verwenden</string>
-    <string name="summary_cloud_storage_api_download_enable">Versuche Daten von Nightscout herunterzuladen</string>
-    <string name="title_cloud_storage_api_download_enable">Daten herunterladen</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Ohne zu fragen mit einem neuen Blutzuckerwert kalibrieren, wenn die Bedingungen gut scheinen (experimentell)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatische Kalibrierung</string>
     <string name="title_rest_api_extra_options">Zusätzliche Optionen</string>
