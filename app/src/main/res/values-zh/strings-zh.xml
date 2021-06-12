@@ -1034,8 +1034,6 @@
     <string name="manual_overwrite_not_possible">不可能手动覆盖！</string>
     <string name="upload_even_when_using_mobile_data">使用移动数据时也可以上传</string>
     <string name="use_mobile_data">使用移动数据</string>
-    <string name="summary_cloud_storage_api_download_enable">也尝试从nightscout下载数据</string>
-    <string name="title_cloud_storage_api_download_enable">下载数据</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">如果条件显示正确，则无需请求确认（实验）就可以使用新的血糖数据校准</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">自动校准</string>
     <string name="title_rest_api_extra_options">附加选项</string>
