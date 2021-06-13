@@ -10,6 +10,7 @@ We will encourage you to open an issue if it is not already known and there is n
 * If it is a bug, please try to explain how to reproduce it, roughly which settings you are using, what you are seeing or not seeing. Screenshots welcomed.
 * If it relates to a new feature, please explain the rationale for the feature, use cases and detail your suggestion.
 
+<br/>
 
 # Contributing patches to xDrip
 
@@ -35,12 +36,14 @@ Try not to bundle different patches together and keep the change set to the mini
 
 Maintainers are not always immediately aware of pull request submissions, which is another reason why it helps to have discussed your work prior to submission. Feel free to ask about the progress of processing your PR as maintainers may not realise a PR is awaiting action.
 
+<br/>
 
 # Translations
 Please use [xDrip+ on Crowdin](https://crowdin.com/project/xdrip) if you have any questions about translations, or like to add a language or contribute to an existing language.
 
+<br/>
 
-
+___
 Nightscout xDrip is maintained by volunteers.
 
 
