@@ -1,7 +1,7 @@
 # Reporting Issues with xDrip
-Before opening an issue, please connect with us by posting in the support channels:
-https://www.facebook.com/groups/xDripG5
-https://gitter.im/jamorham/xDrip-plus
+Before opening an issue, please connect with us by posting in the support channels:  
+https://www.facebook.com/groups/xDripG5  
+https://gitter.im/jamorham/xDrip-plus  
 We will encourage you to open an issue if it is not already known and there is no work-around.
 
 
