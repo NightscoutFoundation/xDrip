@@ -1,4 +1,9 @@
 # Reporting Issues with xDrip
+Before opening an issue, please connect with us by posting in the support channels:
+https://www.facebook.com/groups/xDripG5
+https://gitter.im/jamorham/xDrip-plus
+We will encourage you to open an issue if it is not already known and there is no work-around.
+
 
 ### Please try to provide as much information as possible when raising an issue:
 
@@ -29,6 +34,12 @@ Make sure any pull request has a clear title and a good description.
 Try not to bundle different patches together and keep the change set to the minimum required. Even unrelated changes to whitespace have to be reviewed in case a random keystroke broke something. The less lines there are to review, the clearer the patch will be to any reviewer.
 
 Maintainers are not always immediately aware of pull request submissions, which is another reason why it helps to have discussed your work prior to submission. Feel free to ask about the progress of processing your PR as maintainers may not realise a PR is awaiting action.
+
+
+#Translations
+Please use [xDrip+ on Crowdin](https://crowdin.com/project/xdrip) if you have any questions about translations, or like to add a language or contribute to an existing language.
+
+
 
 Nightscout xDrip is maintained by volunteers.
 
