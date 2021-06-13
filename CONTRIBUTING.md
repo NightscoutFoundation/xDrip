@@ -36,7 +36,7 @@ Try not to bundle different patches together and keep the change set to the mini
 Maintainers are not always immediately aware of pull request submissions, which is another reason why it helps to have discussed your work prior to submission. Feel free to ask about the progress of processing your PR as maintainers may not realise a PR is awaiting action.
 
 
-#Translations
+# Translations
 Please use [xDrip+ on Crowdin](https://crowdin.com/project/xdrip) if you have any questions about translations, or like to add a language or contribute to an existing language.
 
 
