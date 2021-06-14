@@ -192,6 +192,10 @@ public class JoH {
         return (tsl() - when);
     }
 
+    public static long msSince(long end, long start) {
+        return (end - start);
+    }
+
     public static long msTill(long when) {
         return (when - tsl());
     }

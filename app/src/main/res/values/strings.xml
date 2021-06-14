@@ -1194,8 +1194,8 @@
     <string name="manual_overwrite_not_possible">Manual overwrite not possible!</string>
     <string name="upload_even_when_using_mobile_data">Upload even when using mobile data</string>
     <string name="use_mobile_data">Use mobile data</string>
-    <string name="summary_cloud_storage_api_download_enable">Also try to download data from Nightscout</string>
-    <string name="title_cloud_storage_api_download_enable">Download data</string>
+    <string name="summary_cloud_storage_api_download_enable">Also try to download treatments from Nightscout</string>
+    <string name="title_cloud_storage_api_download_enable">Download treatments</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Calibrate using new blood glucose readings if the conditions appear right to do so without asking confirmation (experimental)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatic Calibration</string>
     <string name="title_rest_api_extra_options">Extra Options</string>
