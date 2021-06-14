@@ -785,7 +785,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 }
                 final int result = ref.interpolate(name, (int)value);
 
-                preference.setTitle(preference.getTitle().toString().replaceAll("  \\([a-z0-9A-Z \\.]+\\)$", "") + " (" + (unitize ? BgGraphBuilder.unitized_string_static_no_interpretation_short(result) : result) + ")");
+                preference.setTitle(preference.getTitle().toString().replaceAll("  \\([a-z0-9A-Z \\.]+\\)$", "") + "  (" + (unitize ? BgGraphBuilder.unitized_string_static_no_interpretation_short(result) : result) + ")");
                 if (do_update) {
                     preference.getEditor().putInt(preference.getKey(), (int) value).apply(); // update prefs now
                 }
