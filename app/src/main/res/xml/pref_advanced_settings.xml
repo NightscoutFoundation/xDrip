@@ -850,16 +850,16 @@
                 android:key="speak_readings_change_threshold"
                 android:max="300"
                 android:min="0"
-                android:summary=""
-                android:title="@string/title_When_changes_by" />
+                android:summary="@string/title_When_changes_by"
+                android:title="" />
             <SeekBarPreference
                 android:defaultValue="0"
                 android:dependency="bg_to_speech"
                 android:key="speak_readings_change_time"
                 android:max="300"
                 android:min="0"
-                android:summary=""
-                android:title="@string/title_Or_per_number_of_minutes" />
+                android:summary="@string/title_Or_per_number_of_minutes"
+                android:title="" />
             <SwitchPreference
                 android:defaultValue="false"
                 android:key="speak_alerts"
