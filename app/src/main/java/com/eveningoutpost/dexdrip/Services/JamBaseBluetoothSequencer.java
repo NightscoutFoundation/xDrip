@@ -548,7 +548,7 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
 
     public synchronized void changeState(final String new_state) {
         final String state = I.state;
-        if (state == null) return;
+        if (state == null || new_state == null) return;
         if ((state.equals(new_state)) && !state.equals(INIT) && !state.equals(SLEEP)) {
             if (!state.equals(CLOSE)) {
                 UserError.Log.d(TAG, "Already in state: " + new_state.toUpperCase() + " changing to CLOSE");

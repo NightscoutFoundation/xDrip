@@ -18,8 +18,8 @@
     <string name="title_activity_new_sensor_location">Ny sensorplats</string>
     <string name="title_activity_stop_sensor">Stoppa sensor</string>
     <string name="title_activity_nav_drawer">Navpanel</string>
-    <string name="navigation_drawer_open">Öppna navigeringspanelen</string>
-    <string name="navigation_drawer_close">Stäng navigeringspanelen</string>
+    <string name="navigation_drawer_open">Öppna navigeringspanel</string>
+    <string name="navigation_drawer_close">Stäng navigeringspanel</string>
     <string name="title_activity_calibration_check_in">Kalibreringsaktivitet</string>
     <string name="title_activity_usb_connected">USB-anslutningsaktivitet</string>
     <string name="snooze">Snooza</string>

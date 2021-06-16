@@ -46,6 +46,8 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.UUID;
 
+import lombok.val;
+
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
 import static java.lang.StrictMath.abs;
@@ -175,7 +177,12 @@ public class Treatments extends Model {
     // take a simple insulin value and produce a list assuming it is bolus insulin - for legacy conversion
     static private List<InsulinInjection> convertLegacyDoseToBolusInjectionList(final double insulinSum) {
         final ArrayList<InsulinInjection> injections = new ArrayList<>();
-        injections.add(new InsulinInjection(InsulinManager.getBolusProfile(), insulinSum));
+        val profile = InsulinManager.getBolusProfile();
+        if (profile != null) {
+            injections.add(new InsulinInjection(profile, insulinSum));
+        } else {
+            UserError.Log.e(TAG, "bolus profile is null");
+        }
         return injections;
     }
 

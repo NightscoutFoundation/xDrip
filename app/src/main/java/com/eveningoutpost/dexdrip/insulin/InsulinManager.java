@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class InsulinManager {
     private static final String TAG = "InsulinManager";
     private static ArrayList<Insulin> profiles;
-    private static Insulin basalProfile, bolusProfile;
+    private static volatile Insulin basalProfile, bolusProfile;
 
     class insulinDataWrapper {
         public ArrayList<insulinData> profiles;

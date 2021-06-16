@@ -20,7 +20,7 @@ public class InsulinInjection {
     public InsulinInjection(final Insulin p, final double u) {
         profile = p;
         units = u;
-        insulin = p.getName();
+        insulin = (p != null) ? p.getName() : "unknown";
     }
 
 

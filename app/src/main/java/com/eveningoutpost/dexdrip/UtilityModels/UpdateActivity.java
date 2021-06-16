@@ -17,6 +17,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -47,6 +48,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import lombok.val;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -185,6 +187,23 @@ public class UpdateActivity extends BaseAppCompatActivity {
                 httpClient = null; // for GC
             }).start();
         }
+    }
+
+    public static void forceUpdateCheckNow() {
+        JoH.static_toast_long(xdrip.gs(R.string.checking_for_update));
+        UpdateActivity.last_check_time = -2;
+        UpdateActivity.checkForAnUpdate(xdrip.getAppContext());
+    }
+
+    public static boolean testAndSetNightly(final boolean set) {
+        val update_channel = "update_channel";
+        val nightly_channel = "nightly";
+        val nightly = Pref.getString(update_channel, "").matches(nightly_channel);
+        if (!nightly && set) {
+            Pref.setString(update_channel, nightly_channel);
+            UpdateActivity.forceUpdateCheckNow();
+        }
+        return nightly;
     }
 
     private static String getDownloadFolder() {
@@ -460,10 +479,19 @@ public class UpdateActivity extends BaseAppCompatActivity {
                             } catch (Exception e) {
                                 Log.e(TAG, "Download manager error: " + e);
                             }
-
+                            final String mimeType = "application/vnd.android.package-archive";
                             final Intent installapk = new Intent(Intent.ACTION_VIEW);
                             installapk.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            installapk.setDataAndType(Uri.fromFile(dest_file), "application/vnd.android.package-archive");
+
+                            // despite reference documentation to the contrary this is required
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                installapk.setDataAndType(FileProvider.getUriForFile(getApplicationContext(),
+                                        BuildConfig.APPLICATION_ID + ".provider", dest_file), mimeType);
+                            } else {
+                                installapk.setDataAndType(Uri.fromFile(dest_file), mimeType);
+                            }
+                            installapk.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                            UserError.Log.d(TAG,"Attempting to install application");
                             startActivity(installapk);
                             finish();
                         } catch (Exception e) {

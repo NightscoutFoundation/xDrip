@@ -122,6 +122,8 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import static com.eveningoutpost.dexdrip.xdrip.gs;
+
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
  * handset devices, settings are presented as a single list. On tablets,
@@ -1677,6 +1679,17 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     }
                 }
 
+
+                // don't show web deposit unless in engineering mode
+                if (!Pref.getBooleanDefaultFalse("engineering_mode")) {
+                    try {
+                        final PreferenceScreen screen = (PreferenceScreen) findPreference("cloud_data_sync");
+                        screen.removePreference(findPreference("cloud_storage_web_deposit"));
+                    } catch (Exception e) {
+                        //
+                    }
+                }
+
                // if (!Experience.gotData()) {
                //     try {
                //     collectionCategory.removePreference(runInForeground);
@@ -2429,7 +2442,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 }
 
 
-            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            builder.setPositiveButton(gs(R.string.yes), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
 
@@ -2455,13 +2468,13 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                             builder.setTitle("Snooze Control Install");
                             builder.setMessage("Install Pebble Snooze Button App?");
                             // inner
-                            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                            builder.setPositiveButton(gs(R.string.yes), new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
                                     context.startActivity(new Intent(context, InstallPebbleSnoozeControlApp.class));
                                 }
                             });
-                            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            builder.setNegativeButton(gs(R.string.no), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
@@ -2473,7 +2486,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 // outer
                 }});
 
-            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            builder.setNegativeButton(gs(R.string.no), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();

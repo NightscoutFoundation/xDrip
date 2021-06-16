@@ -1,13 +1,31 @@
 buildscript {
     repositories {
-        maven { url 'https://maven.fabric.io/public' }
+        google()
+        jcenter()
     }
 
     dependencies {
-        classpath 'io.fabric.tools:gradle:1.+'
+        if (getGradle().getStartParameter().getTaskRequests().toString().contains("Release]")) {
+            println("Enabling New Relic")
+            classpath "com.newrelic.agent.android:agent-gradle-plugin:5.27.1"
+        }
     }
 }
 apply plugin: 'com.android.application'
+
+
+if (project.file('local.gradle').exists()) {
+    apply from: 'local.gradle'
+}
+
+
+if (getGradle().getStartParameter().getTaskRequests().toString().contains("Release]")) {
+    apply plugin: 'newrelic'
+    newrelic {
+        variantMapsEnabled false
+        uploadMapsForVariant ''
+    }
+}
 //apply plugin: 'me.tatarka.retrolambda'
 //apply plugin: 'io.fabric'
 
@@ -22,7 +40,6 @@ repositories {
     maven {
         url "https://maven.google.com"
     }
-    maven { url 'https://maven.fabric.io/public' }
     maven {
         url "https://raw.github.com/embarkmobile/zxing-android-minimal/mvn-repo/maven-repository/"
     }
@@ -112,6 +129,35 @@ def generateVersionName = { ->
 
 }
 
+/**
+ * Reads a property from the project settings (Gradle properties), the system environment or
+ * from the file <code>local.properties</code>.
+ *
+ * @param propertyName the name of the property to read
+ * @return the property value or an empty string
+ */
+def getLocalProperty(String propertyName) {
+    def propVal = project.findProperty(propertyName)
+    if (propVal == null) {
+        propVal = System.getenv(propertyName)
+        if (propVal == null)
+            propVal = System.getenv(propertyName.toLowerCase())
+        if (propVal == null)
+            propVal = System.getenv(propertyName.toUpperCase())
+        if (propVal == null) {
+            def propsFile = rootProject.file('local.properties')
+            if (propsFile.exists()) {
+                def props = new Properties()
+                props.load(new FileInputStream(propsFile))
+                propVal = props[propertyName]
+            } else {
+                propVal = ""
+            }
+        }
+    }
+    return propVal
+}
+
 android {
     compileSdkVersion 29
 
@@ -141,6 +187,22 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
+        // To get a Google Maps API key, follow this link, follow the directions and press "Create" at the end:
+        // https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=7C:1E:BB:15:CE:A1:92:30:47:9D:D0:3D:89:F6:C6:51:7D:3C:1B:DD%3Bcom.eveningoutpost.dexdrip
+        manifestPlaceholders = [google_maps_key:getLocalProperty('google_maps_key')]
+    }
+
+    // The defaultConfig values above are fixed, so your incremental builds don't
+    // need to rebuild the manifest (and therefore the whole APK, slowing build times).
+    // But for release builds, it's okay. So the following script iterates through
+    // all the known variants, finds those that are "release" build types, and
+    // changes those properties to something dynamic.
+    applicationVariants.all { variant ->
+        if (variant.buildType.name == "release") {
+            variant.outputs.each { output ->
+                output.versionNameOverride = generateVersionName()
+            }
+        }
     }
 
     testOptions {
@@ -187,27 +249,47 @@ android {
             versionNameSuffix "-debug"
             debuggable true
         }
-    }
-}
-
-// auto test rig
-task AutoInstall(type: Exec) {
-    commandLine "bash", "$projectDir/autoinstallviausb"
-}
-
-// auto tester
-tasks.whenTaskAdded { task ->
-    if (task.name == 'assembleRelease') {
-        if (System.getenv('USERDOMAIN') == "PC-PC") {
-            task.finalizedBy 'AutoTestRig'
-            AutoTestRig.outputs.upToDateWhen { false }
+        dev {
+            minifyEnabled false
+            shrinkResources false
+            useProguard false
+            ext.enableCrashlytics = false
+            ext.alwaysUpdateBuildId = false
+            versionNameSuffix "-debug"
+            debuggable true
+            signingConfig debug.signingConfig
+            matchingFallbacks = ['debug', 'release']
         }
     }
+
+    flavorDimensions "version"
+    productFlavors {
+        // When building a variant that uses this flavor, the following configurations
+        // override those in the defaultConfig block.
+        fast {
+            // To avoid using legacy multidex when building from the command line,
+            // set minSdkVersion to 21 or higher. When using Android Studio 2.3 or higher,
+            // the build automatically avoids legacy multidex when deploying to a device running
+            // API level 21 or higher—regardless of what you set as your minSdkVersion.
+            minSdkVersion 21
+            versionNameSuffix "-dev"
+            buildConfigField "int", "buildVersion", "2021010100"
+            buildConfigField "String", "buildUUID", "\"0f79a60a-5616-99be-8eb1-a430edcfd9fd\""
+            buildConfigField "long", "buildTimestamp", "1609459200L"
+            resConfigs "en", "xxhdpi"
+        }
+
+        prod {
+            // If you've configured the defaultConfig block for the release version of
+            // your app, you can leave this block empty and Gradle uses configurations in
+            // the defaultConfig block instead. You still need to create this flavor.
+            // Otherwise, all variants use the "dev" flavor configurations.
+        }
+    }
+
 }
 
-task AutoTestRig()  {
-    dependsOn(AutoInstall)
-}
+
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
@@ -246,8 +328,9 @@ dependencies {
     implementation "com.google.android.gms:play-services-gcm:10.2.1"
     implementation 'com.squareup.wire:wire-runtime:2.2.0'
     implementation 'com.squareup.okhttp:okhttp:2.7.5'
-    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.1'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
+    implementation "com.newrelic.agent.android:android-agent:5.27.1"
     //implementation 'com.jakewharton.retrofit:retrofit1-okhttp3-client:1.1.0'
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
@@ -261,7 +344,7 @@ dependencies {
     implementation 'io.reactivex:rxjava:1.3.3'
     implementation 'com.activeandroid:thread-safe-active-android:3.1.1'
     //implementation 'com.github.lecho:hellocharts-android:v1.5.8'
-    implementation "com.polidea.rxandroidble2:rxandroidble:1.11.1"
+    implementation "com.polidea.rxandroidble2:rxandroidble:1.12.1"
     implementation 'com.google.guava:guava:24.1-android'
     implementation 'com.embarkmobile:zxing-android-minimal:2.0.0@aar'
     implementation 'com.embarkmobile:zxing-android-integration:2.0.0@aar'
@@ -273,13 +356,10 @@ dependencies {
     implementation 'me.tatarka.bindingcollectionadapter2:bindingcollectionadapter-recyclerview:2.2.0'
     implementation 'org.slf4j:slf4j-api:1.7.7'
     implementation 'org.apache.commons:commons-math3:3.6'
-    implementation('com.crashlytics.sdk.android:crashlytics:2.6.6@aar') {
-        transitive = true
-    }
     implementation 'uk.com.robust-it:cloning:1.9.5'
     implementation 'com.github.amlcurran.showcaseview:library:5.4.3'
     // implementation 'com.itextpdf:itextg:5.5.9'
-
+    implementation 'com.github.jamorham:QR-Code-generator:d0454644af'
     // Pebble-Trend, needs to be checked if really needed
     //implementation 'com.android.support:multidex:1.0.1'
     implementation 'ar.com.hjg:pngj:2.1.0'

@@ -11,6 +11,7 @@ import java.util.Arrays;
 
 import lombok.val;
 
+import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
 import static com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry.isEnabled;
 import static com.eveningoutpost.dexdrip.watch.thinjam.BlueJayInfo.getInfo;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.FEATURE_TJ_AUDIO_I;
@@ -99,7 +100,7 @@ public class BlueJay {
     }
 
     public static String getAuthKey(final String mac) {
-        if (mac == null) return null;
+        if (emptyString(mac)) return null;
         return Pref.getString(PREF_BLUEJAY_AUTH + JoH.macFormat(mac).toUpperCase(), null);
     }
 
@@ -125,7 +126,7 @@ public class BlueJay {
     }
 
     public static String getIdentityKey(final String mac) {
-        if (mac == null) return null;
+        if (emptyString(mac)) return null;
         return Pref.getString(PREF_BLUEJAY_IDENTITY + JoH.macFormat(mac).toUpperCase(), null);
     }
 

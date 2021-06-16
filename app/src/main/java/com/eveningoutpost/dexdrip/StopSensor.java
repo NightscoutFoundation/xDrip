@@ -16,7 +16,11 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.NanoStatus;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
+import com.eveningoutpost.dexdrip.ui.dialog.GenericConfirmDialog;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
+
+import lombok.val;
+
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 public class StopSensor extends ActivityWithMenu {
@@ -43,17 +47,13 @@ public class StopSensor extends ActivityWithMenu {
     }
 
     public void addListenerOnButton() {
-
         button = (Button)findViewById(R.id.stop_sensor);
-
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                stop();
-                JoH.startActivity(Home.class);
-                finish();
-            }
-
-        });
+        val activity = this;
+        button.setOnClickListener(v -> GenericConfirmDialog.show(activity, gs(R.string.are_you_sure), gs(R.string.sensor_stop_confirm), () -> {
+            stop();
+            JoH.startActivity(Home.class);
+            finish();
+        }));
     }
 
     public synchronized static void stop() {
@@ -79,14 +79,14 @@ public class StopSensor extends ActivityWithMenu {
         builder.setTitle(gs(R.string.are_you_sure));
         builder.setMessage(gs(R.string.do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor));
 
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(gs(R.string.no), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
 
             }
         });
 
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(gs(R.string.yes), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Calibration.invalidateAllForSensor();

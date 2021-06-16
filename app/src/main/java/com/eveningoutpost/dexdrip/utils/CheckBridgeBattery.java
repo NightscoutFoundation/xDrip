@@ -57,9 +57,18 @@ public class CheckBridgeBattery {
                 if (JoH.pratelimit("bridge-battery-warning", repeat_seconds)) {
                     notification_showing = true;
                     lowbattery = true;
+                    
+                    boolean sound = true;
+                    boolean vibrate = true;
+                    if (Pref.getLong("alerts_disabled_until", 0) > JoH.tsl()) {
+                        UserError.Log.d(TAG, "Not playing alert since Notifications are currently disabled!!");
+                    	sound = false;
+                    	vibrate = false;
+                    }
+                    
                     final PendingIntent pendingIntent = android.app.PendingIntent.getActivity(xdrip.getAppContext(), 0, new Intent(xdrip.getAppContext(), Home.class), android.app.PendingIntent.FLAG_UPDATE_CURRENT);
                     showNotification("Low bridge battery", "Bridge battery dropped to: " + this_level + "%",
-                            pendingIntent, NOTIFICATION_ITEM, NotificationChannels.LOW_BRIDGE_BATTERY_CHANNEL, true, true, null, null, null);
+                            pendingIntent, NOTIFICATION_ITEM, NotificationChannels.LOW_BRIDGE_BATTERY_CHANNEL, sound, vibrate, null, null, null);
                 }
             } else {
                 if (notification_showing) {

@@ -1,12 +1,9 @@
 package com.eveningoutpost.dexdrip.Tables;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.app.ListActivity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +13,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
-//import com.eveningoutpost.dexdrip.NavigationDrawerFragment;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
@@ -25,6 +21,8 @@ import com.eveningoutpost.dexdrip.xdrip;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+//import com.eveningoutpost.dexdrip.NavigationDrawerFragment;
 
 
 public class BgReadingTable extends ListActivity {//implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -148,8 +146,8 @@ public class BgReadingTable extends ListActivity {//implements NavigationDrawerF
                     };
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    builder.setMessage("Flag reading as \"bad\".\nFlagged readings have no impact on the statistics.").setPositiveButton("Yes", dialogClickListener)
-                            .setNegativeButton("No", dialogClickListener).show();
+                    builder.setMessage("Flag reading as \"bad\".\nFlagged readings have no impact on the statistics.").setPositiveButton(gs(R.string.yes), dialogClickListener)
+                            .setNegativeButton(gs(R.string.no), dialogClickListener).show();
                     return true;
                 }
             });*/

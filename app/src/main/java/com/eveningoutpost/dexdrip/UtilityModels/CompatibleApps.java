@@ -106,7 +106,7 @@ public class CompatibleApps extends BroadcastReceiver {
         }
 
         if (!Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
-            final String[] oop_package_names = {"info.nightscout.deeplearning", "com.hg4.oopalgorithm.oopalgorithm", "org.andesite.lucky8"};
+            final String[] oop_package_names = {"info.nightscout.deeplearning", "com.hg4.oopalgorithm.oopalgorithm", "com.hg4.oopalgorithm.oopalgorithm2", "org.andesite.lucky8"};
             final StringBuilder sb = new StringBuilder();
             for (String package_name_o : oop_package_names) {
                 if (InstalledApps.checkPackageExists(context, package_name_o)) {
@@ -138,10 +138,10 @@ public class CompatibleApps extends BroadcastReceiver {
     private static void enableAndroid10Workarounds() {
         if (Build.VERSION.SDK_INT >= 29) {
             if (!PersistentStore.getBoolean(ANDROID_10_WORKAROUND_MARKER, false)) {
-                UserError.Log.ueh(CompatibleApps.class.getSimpleName(),"Enabling default workarounds for Android 10+ setting minimize scanning to enabled");
+                UserError.Log.ueh(CompatibleApps.class.getSimpleName(),"Enabling default workarounds for Android 10+ setting minimize/avoid scanning to enabled");
                 Pref.setBoolean("ob1_minimize_scanning", true);
-               // Pref.setBoolean("ob1_avoid_scanning", true);
-                PersistentStore.setBoolean(ANDROID_10_WORKAROUND_MARKER,true);
+                Pref.setBoolean("ob1_avoid_scanning", true);
+                PersistentStore.setBoolean(ANDROID_10_WORKAROUND_MARKER, true);
             }
         }
     }

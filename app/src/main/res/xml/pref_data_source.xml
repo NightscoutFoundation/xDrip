@@ -22,6 +22,13 @@
                 android:key="use_nfc_scan"
                 android:summary="@string/allow_sensor_scanning"
                 android:title="@string/use_nfc_feature" />
+            <ListPreference
+	            android:defaultValue="enable_streaming_ask"
+	            android:entries="@array/EnableStreamingMethods"
+	            android:entryValues="@array/EnableStreamingValues"
+	            android:key="libre2_enable_bluetooth_streaming"
+	            android:summary="@string/enable_streaming_summary"
+	            android:title="@string/enable_streaming_title" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="nfc_show_age"
@@ -220,9 +227,9 @@
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="ob1_minimize_scanning"
-                    android:enabled="false"
+                    android:enabled="true"
                     android:key="ob1_avoid_scanning"
-                    android:summary="Avoid scanning as much as possible (not used in this version)"
+                    android:summary="Avoid scanning as much as possible (reduces battery usage further)"
                     android:title="Avoid Scanning" />
             <CheckBoxPreference
                 android:defaultValue="false"
