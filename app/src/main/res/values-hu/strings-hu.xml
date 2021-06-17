@@ -739,6 +739,7 @@
     <string name="enable_reminder_features">Emlékeztető használata </string>
     <string name="display_mathamatical_simulations">Profilokon, CH/inzulin arányokon és matematikai szimuláción alapuló értékek mutatása</string>
     <string name="predictive_simulations">Előrejelző szimulációk</string>
+    <string name="low_prediction_values">Beállítások alacsony érték jelzéshez</string>
     <string name="target_glucose_default">Cél VC-érték</string>
     <string name="default_liver_maximum_impact">Máj maximális hatása (0-1)</string>
     <string name="remote_snoozes">Távoli szundi indítása és fogadása</string>
