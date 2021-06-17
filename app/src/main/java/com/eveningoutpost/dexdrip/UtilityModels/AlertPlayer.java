@@ -319,7 +319,7 @@ public class AlertPlayer {
         return false;
     }
 
-    private synchronized void playFile(final Context ctx, final String fileName, final float volumeFrac, final boolean forceSpeaker, final boolean overrideSilentMode) {
+    public synchronized void playFile(final Context ctx, final String fileName, final float volumeFrac, final boolean forceSpeaker, final boolean overrideSilentMode) {
         Log.i(TAG, "playFile: called fileName = " + fileName);
         if (volumeFrac <= 0) {
             UserError.Log.e(TAG, "Not playing file " + fileName + " as requested volume is " + volumeFrac);
@@ -609,7 +609,7 @@ public class AlertPlayer {
     }
 
     // True means play the file false means only vibrate.
-    private boolean isLoudPhone(Context ctx) {
+    public boolean isLoudPhone(Context ctx) {
         final AudioManager am = (AudioManager)ctx.getSystemService(Context.AUDIO_SERVICE);
         try {
             switch (am.getRingerMode()) {
