@@ -923,7 +923,7 @@ public class Calibration extends Model {
                             bgReading.filtered_calculated_value = new_calculated_value;
                         }
                         bgReading.calculated_value = new_calculated_value;
-                        
+
                         Log.v(TAG, String.format("Previous value: %.2f, New value: %.2f", oldYValue, bgReading.calculated_value));
 
                         bgReading.save();
