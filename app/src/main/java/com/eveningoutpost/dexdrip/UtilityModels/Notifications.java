@@ -82,6 +82,7 @@ public class Notifications extends IntentService {
     private static final boolean use_best_glucose = true;
 
     private static String last_noise_string = "Startup";
+    private static boolean AlertPlayerInstead = false; // Set this for alerts that must use AlertPlayer instead of the default
 
 
     Context mContext;
@@ -899,7 +900,9 @@ public class Notifications extends IntentService {
 
     public static void bgMissedAlert(Context context) {
         long otherAlertReraiseSec = MissedReadingService.getOtherAlertReraiseSec(context, "bg_missed_alerts");
+        AlertPlayerInstead = true; // This alert will be using AlertPlayer
         OtherAlert(context, "bg_missed_alerts", context.getString(R.string.bg_reading_missed) + "  (@" + JoH.hourMinuteString() + ")", missedAlertNotificationId, NotificationChannels.BG_MISSED_ALERT_CHANNEL, true, otherAlertReraiseSec);
+        AlertPlayerInstead = false; // Reset back to default (Builder)
     }
 
     public static void ob1SessionRestartRequested() {
@@ -1017,11 +1020,19 @@ public class Notifications extends IntentService {
             }
             mBuilder.setVibrate(vibratePattern);
             mBuilder.setLights(0xff00ff00, 300, 1000);
-            if (AlertPlayer.notSilencedDueToCall()) {
-                if (otherAlertsOverrideSilent && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    mBuilder.setSound(Uri.parse(otherAlertsSound), AudioAttributes.USAGE_ALARM);
-                } else {
-                    mBuilder.setSound(Uri.parse(otherAlertsSound));
+            if (!AlertPlayerInstead) { // Use the default (Builder)
+                if (AlertPlayer.notSilencedDueToCall()) {
+                    if (otherAlertsOverrideSilent && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        mBuilder.setSound(Uri.parse(otherAlertsSound), AudioAttributes.USAGE_ALARM);
+                    } else {
+                        mBuilder.setSound(Uri.parse(otherAlertsSound));
+                    }
+                }
+            } else { // Use AlertPlayer
+                if (AlertPlayer.notSilencedDueToCall()) { // Not on a call
+                    if (otherAlertsOverrideSilent || AlertPlayer.getPlayer().isLoudPhone(context)) { // Override silent mode is on or DND is off
+                        AlertPlayer.getPlayer().playFile(context, "alertType", (float) 0.7, true, otherAlertsOverrideSilent);
+                    }
                 }
             }
             NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
