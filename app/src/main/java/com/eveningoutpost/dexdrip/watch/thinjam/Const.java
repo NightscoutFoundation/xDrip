@@ -59,8 +59,14 @@ public class Const {
     public static final byte PUSH_OPCODE_B1_LONG = 2;
     public static final byte PUSH_OPCODE_BACKFILL = 3;
     public static final byte PUSH_OPCODE_CHOICE = 4;
-
+    public static final byte PUSH_OPCODE_ASSET_REQ = 5;
     public static final byte PUSH_OPCODE_BULK_ERROR = 6;
+    public static final byte PUSH_OPCODE_C_INFO = 7;
+    public static final byte PUSH_OPCODE_I_INFO = 8;
+    public static final byte PUSH_OPCODE_T_INFO = 9;
+    public static final byte PUSH_OPCODE_H_INFO = 10;
+    public static final byte PUSH_OPCODE_B_INFO = 11;
+
 
     public static final String[] errorText = {
             "OK",

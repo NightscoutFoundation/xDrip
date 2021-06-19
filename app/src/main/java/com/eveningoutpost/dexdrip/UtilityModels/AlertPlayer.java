@@ -225,18 +225,25 @@ public class AlertPlayer {
             return;
         }
         if (repeatTime == -1) {
-            // try to work out default
-            AlertType alert = ActiveBgAlert.alertTypegetOnly();
-            if (alert != null) {
-                repeatTime = alert.default_snooze;
-                Log.d(TAG, "Selecting default snooze time: " + repeatTime);
-            } else {
-                repeatTime = 30; // pick a number if we cannot even find the default
-                Log.e(TAG, "Cannot even find default snooze time so going with: " + repeatTime);
-            }
+            repeatTime = GuessDefaultSnoozeTime();
         }
         activeBgAlert.snooze(repeatTime);
         if (from_interactive) GcmActivity.sendSnoozeToRemote();
+    }
+
+    public synchronized int GuessDefaultSnoozeTime() {
+        int repeatTime;
+        // try to work out default
+        AlertType alert = ActiveBgAlert.alertTypegetOnly();
+        if (alert != null) {
+            repeatTime = alert.default_snooze;
+            Log.d(TAG, "Selecting default snooze time: " + repeatTime);
+        } else {
+            repeatTime = 30; // pick a number if we cannot even find the default
+            Log.e(TAG, "Cannot even find default snooze time so going with: " + repeatTime);
+        }
+
+        return repeatTime;
     }
 
     public synchronized void PreSnooze(Context ctx, String uuid, int repeatTime) {
@@ -312,7 +319,7 @@ public class AlertPlayer {
         return false;
     }
 
-    private synchronized void playFile(final Context ctx, final String fileName, final float volumeFrac, final boolean forceSpeaker, final boolean overrideSilentMode) {
+    public synchronized void playFile(final Context ctx, final String fileName, final float volumeFrac, final boolean forceSpeaker, final boolean overrideSilentMode) {
         Log.i(TAG, "playFile: called fileName = " + fileName);
         if (volumeFrac <= 0) {
             UserError.Log.e(TAG, "Not playing file " + fileName + " as requested volume is " + volumeFrac);
@@ -602,7 +609,7 @@ public class AlertPlayer {
     }
 
     // True means play the file false means only vibrate.
-    private boolean isLoudPhone(Context ctx) {
+    public boolean isLoudPhone(Context ctx) {
         final AudioManager am = (AudioManager)ctx.getSystemService(Context.AUDIO_SERVICE);
         try {
             switch (am.getRingerMode()) {

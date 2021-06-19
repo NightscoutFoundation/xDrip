@@ -50,6 +50,13 @@
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
                         app:colorpicker_showHex="false" />
+                    <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#ffffff"
+                        android:key="color_bad_values"
+                        android:title="@string/bad_glucose_values"
+                        app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
+                        app:colorpicker_selectNoneButtonText="@string/revert_to_default"
+                        app:colorpicker_showHex="false" />
 
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#a0a0a0"
@@ -438,6 +445,19 @@
                     android:entries="@array/ymin_entries"
                     android:entryValues="@array/ymin_values"
                     android:defaultValue="40" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="engineering_mode"
+                    android:key="lower_fuzzer"
+                    android:summary="@string/summary_lower_fuzzer"
+                    android:title="@string/title_lower_fuzzer" />
+                <ListPreference
+                    android:key="time_span"
+                    android:title="@string/title_time_span"
+                    android:summary="%s"
+                    android:entries="@array/time_span_entries"
+                    android:entryValues="@array/time_span_values"
+                    android:defaultValue="24" />
             </PreferenceScreen>
 
             <CheckBoxPreference
