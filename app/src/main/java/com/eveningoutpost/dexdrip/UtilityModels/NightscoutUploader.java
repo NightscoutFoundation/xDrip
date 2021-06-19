@@ -479,19 +479,9 @@ public class NightscoutUploader {
                         doStatusUpdate(nightscoutService, retrofit.baseUrl().url().toString(), hashedSecret); // update status if needed
                         new_data |= downloadTreatments(nightscoutService, hashedSecret, baseURI, uri);
                         new_data |= downloadDeviceStatus(nightscoutService, hashedSecret, baseURI, uri);
-
-
-                            new_data = NightscoutTreatments.processTreatmentResponse(response);
-                            PersistentStore.setString(LAST_MODIFIED_KEY, last_modified_string);
-                            checkGzipSupport(r);
-                        } else {
-                            Log.d(TAG, "Failed to get treatments from the base URL");
-                        }
-
                     } else {
                         Log.d(TAG, "hashedSecret is null");
                     }
-                    
                 } else {
                     Log.d(TAG, "Old api version not supported");
                 }
