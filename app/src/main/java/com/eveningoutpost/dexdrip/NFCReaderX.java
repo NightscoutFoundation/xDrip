@@ -84,7 +84,8 @@ public class NFCReaderX {
     // Never in production. Used to emulate German sensor behavior.
     public static boolean use_fake_de_data() {
         //Pref.setBoolean("use_fake_de_data", true);
-        return Pref.getBooleanDefaultFalse("use_fake_de_data");
+        Log.e(TAG, "Not using fake data");
+        return false;//Pref.getBooleanDefaultFalse("use_fake_de_data");
     }
 
     static boolean enable_bluetooth_ask_user = false;
@@ -602,6 +603,7 @@ public class NFCReaderX {
                         }
                         Log.d(TAG, "patchInfo = " + HexDump.dumpHexString(patchInfo));
                         byte []patchUid = tag.getId();
+                        Log.d(TAG, "patchUid = " + HexDump.dumpHexString(patchUid));
                         if(use_fake_de_data()) {
                             patchUid = de_new_patch_uid;
                             patchInfo = de_new_patch_info;
@@ -650,7 +652,7 @@ public class NFCReaderX {
                                 if (d)
                                     Log.d(TAG, HexDump.dumpHexString(replyBlock, 0, replyBlock.length));
                                 if (replyBlock.length != correct_reply_size) {
-                                    Log.e(TAG, "Incorrect block size: " + replyBlock.length + " vs " + correct_reply_size);
+                                    Log.e(TAG, "Incorrect block size (multiply): " + replyBlock.length + " vs " + correct_reply_size);
                                     JoH.static_toast_short(gs(R.string.nfc_invalid_data__try_again));
                                     if (!addressed) {
                                         if (PersistentStore.incrementLong("nfc-address-failures") > 2) {

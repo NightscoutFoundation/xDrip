@@ -74,33 +74,36 @@ public class LibreBluetooth {
             //Log.e(TAG,"Getting out, since not enough data s_acumulatedSize = " + s_acumulatedSize);
             return;
         }
-        
 
         PersistentStore.setLong("libre-reading-timestamp", JoH.tsl());
         
         Log.e(TAG, "We have all the data that we need " + s_acumulatedSize + HexDump.dumpHexString(s_full_data));
-        if( !Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
-            // Send to OOP2 for drcryption.
-            LibreOOPAlgorithm.logIfOOP2NotAlive();
-            
-            Libre2SensorData currentSensorData = Libre2SensorData.getSensorData(false);
-            if(currentSensorData == null || currentSensorData.patchUid_ == null) {
-                Log.e(TAG, "areWeDone - we have the data but patchUid == null");
-                return;
-            }
 
-            byte []patchUid = currentSensorData.patchUid_;
-            if(NFCReaderX.use_fake_de_data()) {
-                patchUid =  new byte[]{(byte)0xd6, (byte)0xf1, (byte)0x0f, (byte)0x01, (byte)0x00, (byte)0xa4, (byte)0x07, (byte)0xe0};
-            }
-            
-            Log.e(TAG, "areWeDone patchUid = " + HexDump.dumpHexString(patchUid));
-            
-            LibreOOPAlgorithm.sendBleData(s_full_data, JoH.tsl(), patchUid);
+        SendData(s_full_data, JoH.tsl());
+        s_acumulatedSize = 0;
+    }
+
+    static public void SendData(byte []data, long timestamp) {
+        if( Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+            return;
+        }
+        // Send to OOP2 for drcryption.
+        LibreOOPAlgorithm.logIfOOP2NotAlive();
+
+        Libre2SensorData currentSensorData = Libre2SensorData.getSensorData(false);
+        if(currentSensorData == null || currentSensorData.patchUid_ == null) {
+            Log.e(TAG, "SendData - we have the data but patchUid == null");
+            return;
         }
 
-        s_acumulatedSize = 0;
+        byte []patchUid = currentSensorData.patchUid_;
+        if(NFCReaderX.use_fake_de_data()) {
+            patchUid =  new byte[]{(byte)0xd6, (byte)0xf1, (byte)0x0f, (byte)0x01, (byte)0x00, (byte)0xa4, (byte)0x07, (byte)0xe0};
+        }
 
+        Log.e(TAG, "SendData patchUid = " + HexDump.dumpHexString(patchUid));
+
+        LibreOOPAlgorithm.sendBleData(data, timestamp, patchUid);
     }
 
     static void initBuffer(int expectedSize) {
