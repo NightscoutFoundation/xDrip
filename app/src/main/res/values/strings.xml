@@ -487,6 +487,7 @@
     <string name="start_sensor">Start Sensor</string>
     <string name="debug_and_other_misc_options">Debug and other misc. options</string>
     <string name="low_glucose_values">Low Glucose Values</string>
+    <string name="bad_glucose_values">Bad Glucose Values</string>
     <string name="revert_to_default">Revert to Default</string>
     <string name="filtered_values">Filtered Values</string>
     <string name="treatment_color">Treatment Color</string>
