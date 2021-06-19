@@ -78,8 +78,10 @@ import com.rits.cloning.Cloner;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -1654,12 +1656,16 @@ public class DexCollectionService extends Service implements BtCallBack {
     }
 
     private void sendReply(BridgeResponse reply) {
-        for (ByteBuffer byteBuffer : reply.getSend()) {
+        sendReply(reply.getSend());
+    }
+
+    private void sendReply(AbstractList <ByteBuffer> byteBuffers){
+        for (ByteBuffer byteBuffer : byteBuffers) {
             Log.d(TAG, "Sending reply message");
             sendBtMessage(byteBuffer);
         }
     }
-
+    
     public synchronized void setSerialDataToTransmitterRawData(byte[] buffer, int len) {
 
         last_time_seen = JoH.tsl();
@@ -1689,6 +1695,13 @@ public class DexCollectionService extends Service implements BtCallBack {
                 JoH.static_toast_long(reply.getError_message());
                 error(reply.getError_message());
             }
+            if (reply.StillWaitingForData()){
+                Log.d(TAG, "Arming the timer, asking to send again...");
+                Inevitable.task("send-tomato-init", 5000, () -> {Log.d(TAG, "Asking for sending data again"); sendReply(Tomato.resetTomatoState());});
+            } else if(reply.GotAllData()) {
+                Inevitable.kill("send-tomato-init");
+            }
+            
             gotValidPacket();
 
         }else if (Bubble.isBubble()) {

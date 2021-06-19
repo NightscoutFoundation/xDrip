@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+﻿﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <string name="title_activity_bluetooth_scan">Bluetooth Scan</string>
@@ -487,6 +487,7 @@
     <string name="start_sensor">Start Sensor</string>
     <string name="debug_and_other_misc_options">Debug and other misc. options</string>
     <string name="low_glucose_values">Low Glucose Values</string>
+    <string name="bad_glucose_values">Bad Glucose Values</string>
     <string name="revert_to_default">Revert to Default</string>
     <string name="filtered_values">Filtered Values</string>
     <string name="treatment_color">Treatment Color</string>
@@ -853,7 +854,7 @@
     <string name="confirm_remote_snooze">Confirm Remote Snooze</string>
     <string name="are_you_sure_you_wish_to_snooze_all_other_devices_in_your_sync_group">Are you sure you wish to snooze all other devices in your sync group?</string>
     <string name="yes_send_it">YES, send it!</string>
-
+    <string name="title_time_span">Time span available on screen</string>
 
     <string name="movement_detection_and_vehicle_mode">Movement detection and vehicle mode</string>
     <string name="xdrip_motion_tracking">xDrip+ Motion Tracking</string>
@@ -1194,8 +1195,8 @@
     <string name="manual_overwrite_not_possible">Manual overwrite not possible!</string>
     <string name="upload_even_when_using_mobile_data">Upload even when using mobile data</string>
     <string name="use_mobile_data">Use mobile data</string>
-    <string name="summary_cloud_storage_api_download_enable">Also try to download data from Nightscout</string>
-    <string name="title_cloud_storage_api_download_enable">Download data</string>
+    <string name="summary_cloud_storage_api_download_enable">Also try to download treatments from Nightscout</string>
+    <string name="title_cloud_storage_api_download_enable">Download treatments</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Calibrate using new blood glucose readings if the conditions appear right to do so without asking confirmation (experimental)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatic Calibration</string>
     <string name="title_rest_api_extra_options">Extra Options</string>
