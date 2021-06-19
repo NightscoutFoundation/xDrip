@@ -82,7 +82,7 @@ import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 
 public class BgGraphBuilder {
-    public static final int FUZZER = (1000 * 30 * 5); // 2.5 minutes
+    public static final int FUZZER = (Pref.getBoolean("lower_fuzzer", false)) ? 500 * 15 * 5 : 1000 * 30 * 5; // 37.5 seconds : 2.5 minutes
     public final static long DEXCOM_PERIOD = 300_000; // 5 minutes
     public final static double NOISE_TRIGGER = 10;
     public final static double NOISE_TRIGGER_ULTRASENSITIVE = 1;
@@ -467,7 +467,8 @@ public class BgGraphBuilder {
 
             final List<HeartRate> heartRates = HeartRate.latestForGraph(2000, loaded_start, loaded_end);
 
-            final long condenseCutoffMs = Pref.getBooleanDefaultFalse("smooth_heartrate") ? (10 * Constants.MINUTE_IN_MS) : FUZZER;
+//            final long condenseCutoffMs = Pref.getBooleanDefaultFalse("smooth_heartrate") ? (10 * Constants.MINUTE_IN_MS) : FUZZER;
+            final long condenseCutoffMs = Pref.getBooleanDefaultFalse("smooth_heartrate") ? (10 * Constants.MINUTE_IN_MS) : 1000 * 30 * 5;
             final List<HeartRate> condensedHeartRateList = new ArrayList<>();
             for (HeartRate thisHeartRateRecord : heartRates) {
                 final int condensedListSize = condensedHeartRateList.size();
@@ -1452,7 +1453,8 @@ public class BgGraphBuilder {
                             final double lowMarkIndicator = (lowMark - (lowMark / 4));
                             //if (d) Log.d(TAG, "Poly predict: "+JoH.qs(polyPredict)+" @ "+JoH.qsz(iob.timestamp));
                             while (plow_timestamp > plow_now) {
-                                plow_timestamp = plow_timestamp - FUZZER;
+//                                plow_timestamp = plow_timestamp - FUZZER;
+                                plow_timestamp = plow_timestamp - (1000 * 30 * 5);
                                 polyPredicty = poly.predict(plow_timestamp);
                                 if (polyPredicty > (lowMark + offset)) {
                                     PointValue zv = new PointValue((float) (plow_timestamp / FUZZER), (float) polyPredicty);
