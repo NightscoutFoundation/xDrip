@@ -55,7 +55,7 @@ class LibreTrendLatest {
 
     void updateLastReading(LibreBlock libreBlock) {
         List<GlucoseData> trend = NFCReaderX.getLibreTrend(libreBlock);
-        if(trend.size() == 0 || trend.get(0).glucoseLevelRaw == 0 || libreBlock.timestamp < timestamp) {
+        if(trend == null || trend.size() == 0 || trend.get(0).glucoseLevelRaw == 0 || libreBlock.timestamp < timestamp) {
             return;
         }
         this.timestamp = libreBlock.timestamp;

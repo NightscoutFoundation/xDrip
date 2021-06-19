@@ -12,6 +12,7 @@ import com.squareup.okhttp.Response;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.MapsActivity;
+import com.eveningoutpost.dexdrip.Models.LibreBluetooth;
 import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
@@ -532,25 +533,33 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
                 if (LastReading.patchInfo != null && (!LastReading.patchInfo.isEmpty())) {
                     patchInfo = Base64.decode(LastReading.patchInfo, Base64.DEFAULT);
                 }
-                boolean checksum_ok = NFCReaderX.HandleGoodReading(LastReading.SensorId, data, LastReading.CaptureDateTime, false, patchUid, patchInfo);
-                if (checksum_ok) {
-                    Log.d(TAG, "checksum ok updating LastReportedTime to " + JoH.dateTimeText(LastReading.CaptureDateTime));
-                    // TODO use battery, and other interesting data.
-                    LastReportedTime = LastReading.CaptureDateTime;
 
-                    PersistentStore.setString("Tomatobattery", Integer.toString(LastReading.TomatoBatteryLife));
-                    Pref.setInt("bridge_battery", LastReading.TomatoBatteryLife);
-                    PersistentStore.setString("TomatoHArdware", LastReading.HwVersion);
-                    PersistentStore.setString("TomatoFirmware", LastReading.FwVersion);
-                    Log.i(TAG, "LastReading.SensorId " + LastReading.SensorId);
-                    PersistentStore.setString("LibreSN", LastReading.SensorId);
 
-                    if (SensorSanity.checkLibreSensorChangeIfEnabled(LastReading.SensorId)) {
-                        Log.e(TAG, "Problem with Libre Serial Number - not processing");
-                        return;
-                    }
+                if(data.length == 46) {
+                    // This is the libre 2 case
+                    LibreBluetooth.SendData(data, LastReading.CaptureDateTime);
                 } else {
-                    Log.e(TAG, "Recieved a pacjet with bad checksum");
+                    // This is the libre 1 case
+                    boolean checksum_ok = NFCReaderX.HandleGoodReading(LastReading.SensorId, data, LastReading.CaptureDateTime, false, patchUid, patchInfo);
+                    if (checksum_ok) {
+                        Log.d(TAG, "checksum ok updating LastReportedTime to " + JoH.dateTimeText(LastReading.CaptureDateTime));
+                        // TODO use battery, and other interesting data.
+                        LastReportedTime = LastReading.CaptureDateTime;
+
+                        PersistentStore.setString("Tomatobattery", Integer.toString(LastReading.TomatoBatteryLife));
+                        Pref.setInt("bridge_battery", LastReading.TomatoBatteryLife);
+                        PersistentStore.setString("TomatoHArdware", LastReading.HwVersion);
+                        PersistentStore.setString("TomatoFirmware", LastReading.FwVersion);
+                        Log.i(TAG, "LastReading.SensorId " + LastReading.SensorId);
+                        PersistentStore.setString("LibreSN", LastReading.SensorId);
+
+                        if (SensorSanity.checkLibreSensorChangeIfEnabled(LastReading.SensorId)) {
+                            Log.e(TAG, "Problem with Libre Serial Number - not processing");
+                            return;
+                        }
+                    } else {
+                        Log.e(TAG, "Recieved a pacjet with bad checksum");
+                    }
                 }
             }
         }
