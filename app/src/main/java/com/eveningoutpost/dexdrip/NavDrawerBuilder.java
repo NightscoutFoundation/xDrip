@@ -6,6 +6,9 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
 
+import com.eveningoutpost.dexdrip.G5Model.FirmwareCapability;
+import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
+import com.eveningoutpost.dexdrip.G5Model.VersionRequestRxMessage;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -16,6 +19,7 @@ import com.eveningoutpost.dexdrip.Tables.BgReadingTable;
 import com.eveningoutpost.dexdrip.Tables.CalibrationDataTable;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Experience;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.stats.StatsActivity;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.Preferences;
@@ -33,6 +37,9 @@ public class NavDrawerBuilder {
     private boolean is_active_sensor = Sensor.isActive();
     public final List<Intent> nav_drawer_intents = new ArrayList<>();
     public final List<String> nav_drawer_options = new ArrayList<>();
+    // Firmware version
+    public static String transmitterID = Pref.getString("dex_txid", "NULL");
+    final VersionRequestRxMessage vr = (VersionRequestRxMessage) Ob1G5StateMachine.getFirmwareXDetails(transmitterID, 0);
 
     private static boolean use_note_search = false;
 
@@ -69,26 +76,31 @@ public class NavDrawerBuilder {
             if (is_active_sensor) {
                 if (!CollectionServiceStarter.isBTShare(context)) {
                     if (last_two_bgReadings.size() > 1 || Ob1G5CollectionService.isG5WantingCalibration()) {
-                        if ((last_two_calibrations.size() > 1) && !Ob1G5CollectionService.isG5WantingInitialCalibration()) {
+                        if ((last_two_calibrations.size() > 1) && !Ob1G5CollectionService.isG5WantingInitialCalibration()) { //After two successful initial calibrations
                             // TODO tighten this time limit
                             if (bGreadings_in_last_30_mins.size() >= 2) {
                                 long time_now = JoH.tsl();
                                 if ((time_now - last_two_calibrations.get(0).timestamp < (1000 * 60 * 60))
-                                && !Ob1G5CollectionService.isG5WantingCalibration()) { //Put steps in place to discourage over calibration
+                                        && !Ob1G5CollectionService.isG5WantingCalibration()) { //Put steps in place to discourage over calibration
                                     this.nav_drawer_options.add(context.getString(R.string.override_calibration));
                                     this.nav_drawer_intents.add(new Intent(context, CalibrationOverride.class));
-                                } else {
+                                } else { //G5, old G6, or Firefly in no-code mode, after initial calibration and long enough after previous calibration
                                     this.nav_drawer_options.add(context.getString(R.string.add_calibration));
                                     this.nav_drawer_intents.add(new Intent(context, AddCalibration.class));
                                 }
-                            } else {
+                            } else {  //G5, old G6 or Firefly in no-code mode, not long after a calibration
                                 this.nav_drawer_options.add(context.getString(R.string.cannot_calibrate_right_now));
                                 this.nav_drawer_intents.add(new Intent(context, Home.class));
                             }
-                        } else {
+                        } else { //If there haven't been two initial calibrations
                             if (BgReading.isDataSuitableForDoubleCalibration() || Ob1G5CollectionService.isG5WantingInitialCalibration()) {
-                                this.nav_drawer_options.add(context.getString(R.string.initial_calibration));
-                                this.nav_drawer_intents.add(new Intent(context, DoubleCalibrationActivity.class));
+                                if (vr != null && FirmwareCapability.isG6Rev2(vr.firmware_version_string) && last_two_bgReadings.size() > 1) { //A Firefly G6 after third reading
+                                    this.nav_drawer_options.add(context.getString(R.string.add_calibration));
+                                    this.nav_drawer_intents.add(new Intent(context, AddCalibration.class));
+                                } else { //G5 or non-Firefly G6 or Firefly G6 in no-code mode, after warm-up before initial calibration
+                                    this.nav_drawer_options.add(context.getString(R.string.initial_calibration));
+                                    this.nav_drawer_intents.add(new Intent(context, DoubleCalibrationActivity.class));
+                                }
                             }
                         }
                     }
