@@ -44,7 +44,11 @@ public class FirmwareCapability {
     }
 
     public static boolean isFirmwareTemperatureCapable(final String version) {
-        return !isG6Rev2(version) && !isG6Plus(version);
+        return !isG6Plus(version);
+    }
+
+    public static boolean isFirmwareResistanceCapable(final String Version) {
+        return !isG6Rev2(Version) && !isG6Plus(Version);
     }
 
     private static boolean isFirmwarePredictiveCapable(final String version) {
