@@ -81,6 +81,8 @@ public interface Intents {
     String BT_UNLOCK_BUFFER = "BtUnlockBuffer";
     String NFC_UNLOCK_BUFFER = "NfcUnlockBuffer";
     String DEVICE_NAME = "DeviceName";
+    String DEVICE_MAC_ADDRESS = "MacAddress";
+    String BT_UNLOCK_BUFFER_ARRAY = "BtUnlockBufferArray";
     
     String TAG_ID = "TagId";
     String ROW_ID = "RowId";

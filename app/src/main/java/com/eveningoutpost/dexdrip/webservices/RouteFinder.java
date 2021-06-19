@@ -51,6 +51,8 @@ public class RouteFinder {
         // tasker interface
         routes.add(new RouteInfo("tasker/", "WebServiceTasker"));
 
+        // libre2 start connection code.
+        routes.add(new RouteInfo("Libre2ConnectCode.json", "Libre2ConnectCode"));
     }
 
     // process a received route
