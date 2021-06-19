@@ -1103,7 +1103,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     }
 
     public void crowdTranslate(MenuItem x) {
-       // startActivity(new Intent(this, LanguageEditor.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        // startActivity(new Intent(this, LanguageEditor.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://crowdin.com/project/xdrip")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 
@@ -1163,9 +1163,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         thiscarbsnumber = 0;
         thisInsulinSumNumber = 0;
         insulinsumset = false;
-        for (int i = 0; i < MAX_INSULIN_PROFILES; i++)
-        {
-            Log.d(TAG,"INSULINSET: "+i+" "+thisinsulinnumber.length+" "+insulinset.length);
+        for (int i = 0; i < MAX_INSULIN_PROFILES; i++) {
+            Log.d(TAG, "INSULINSET: " + i + " " + thisinsulinnumber.length + " " + insulinset.length);
             thisinsulinnumber[i] = 0;
             insulinset[i] = false;
         }
@@ -2014,7 +2013,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             Viewport moveViewPort = new Viewport(chart.getMaximumViewport());
             float tempwidth = (float) moveViewPort.width() / 4;
             holdViewport.left = moveViewPort.right - tempwidth;
-            holdViewport.right = moveViewPort.right + (moveViewPort.width() / 24);
+            holdViewport.right = moveViewPort.right + (moveViewPort.width() / BgGraphBuilder.time_span);
             holdViewport.top = moveViewPort.top;
             holdViewport.bottom = moveViewPort.bottom;
             chart.setCurrentViewport(holdViewport);
@@ -2027,10 +2026,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     setHoursViewPort();
                 } else {
                     hours = DEFAULT_CHART_HOURS;
+                    setHoursViewPort();
                 }
 
             } else {
                 hours = DEFAULT_CHART_HOURS;
+                setHoursViewPort();
             }
             previewChart.setVisibility(homeShelf.get("chart_preview") ? View.VISIBLE : View.GONE);
         }
@@ -2091,7 +2092,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     }
 
     private static void setHasLibreblock() {
-        has_libreblock =  LibreBlock.getLatestForTrend() != null;
+        has_libreblock = LibreBlock.getLatestForTrend() != null;
         has_libreblock_set = true;
     }
 
@@ -2099,7 +2100,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (!has_libreblock_set) setHasLibreblock();
         return has_libreblock;
     }
-    
+
     public static boolean get_is_libre_whole_house_collector() {
         return Pref.getBooleanDefaultFalse("libre_whole_house_collector");
     }
@@ -2192,7 +2193,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     private void setHoursViewPort() {
         final Viewport moveViewPort = new Viewport(chart.getMaximumViewport());
-        float hour_width = moveViewPort.width() / 24;
+        float hour_width = moveViewPort.width() / BgGraphBuilder.time_span;
         holdViewport.left = moveViewPort.right - hour_width * hours;
         holdViewport.right = moveViewPort.right;
         holdViewport.top = moveViewPort.top;
@@ -2331,7 +2332,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
         if (isWifiWixel || isWifiBluetoothWixel || isWifiandBTLibre || isWifiLibre || collector.equals(DexCollectionType.Mock)) {
             updateCurrentBgInfoForWifiWixel(collector, notificationText);
-        } else if (is_follower || collector.equals(DexCollectionType.NSEmulator) || collector.equals(DexCollectionType.NSFollow) || collector.equals(DexCollectionType.SHFollow) ||collector.equals(DexCollectionType.LibreReceiver)) {
+        } else if (is_follower || collector.equals(DexCollectionType.NSEmulator) || collector.equals(DexCollectionType.NSFollow) || collector.equals(DexCollectionType.SHFollow) || collector.equals(DexCollectionType.LibreReceiver)) {
             displayCurrentInfo();
             Inevitable.task("home-notifications-start", 5000, Notifications::start);
         } else if (!alreadyDisplayedBgInfoCommon && (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm || collector == DexCollectionType.Medtrum)) {
@@ -2475,9 +2476,9 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (alreadyDisplayedBgInfoCommon) return; // with bluetooth and wifi, skip second time
         alreadyDisplayedBgInfoCommon = true;
 
-        if(get_is_libre_whole_house_collector()) {
+        if (get_is_libre_whole_house_collector()) {
             Long lastReading = PersistentStore.getLong("libre-reading-timestamp");
-            if(lastReading == 0) {
+            if (lastReading == 0) {
                 notificationText.setText(R.string.in_libre_all_house_mode_no_readings_collected_yet);
             } else {
                 int minutes = (int) (JoH.tsl() - lastReading) / (60 * 1000);

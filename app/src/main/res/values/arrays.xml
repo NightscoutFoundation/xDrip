@@ -42,7 +42,7 @@
         <item>Disabled</item>
     </string-array>
 
-     <string-array name="EnableStreamingMethods">
+    <string-array name="EnableStreamingMethods">
         <item>@string/enable_streaming_always_allow</item>
         <item>@string/enable_streaming_ask_each_time</item>
         <item>@string/enable_streaming_never</item>
@@ -53,7 +53,7 @@
         <item>enable_streaming_ask</item>
         <item>enable_streaming_never</item>
     </string-array>
-    
+
     <string-array name="SendToPebbleChoice">
 
         <item>Standard Watchface (old)</item>
@@ -175,7 +175,7 @@
         <item>Default xDrip+ reminder sound</item>
     </string-array>
 
-<!--    TODO abstract noise values to single source -->
+    <!--    TODO abstract noise values to single source -->
     <string-array name="NoiseLevelBlock">
         <item>Send even Extremely noisy signals</item>
         <item>Only block noise level Extreme</item>
@@ -201,6 +201,21 @@
         <item>JamTrendArrow2Impl</item>
         <item>JamTrendArrow2bImpl</item>
         <item>JamTrendArrow3Impl</item>
+    </string-array>
+
+    <string-array name="time_span_entries">
+        <item>12 hrs</item>
+        <item>24 hrs</item>
+        <item>25 hrs</item>
+        <item>30 hrs</item>
+        <item>36 hrs</item>
+    </string-array>
+    <string-array name="time_span_values">
+        <item>12</item>
+        <item>24</item>
+        <item>25</item>
+        <item>30</item>
+        <item>36</item>
     </string-array>
 
 </resources>

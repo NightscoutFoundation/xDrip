@@ -95,6 +95,7 @@ public class BgGraphBuilder {
     private static long noise_processed_till_timestamp = -1;
     private final static String TAG = "jamorham graph";
     //private final static int pluginColor = Color.parseColor("#AA00FFFF"); // temporary
+    public static int time_span = getTimeSpan();
 
     private final static int pluginSize = 2;
     final int pointSize;
@@ -104,11 +105,11 @@ public class BgGraphBuilder {
     //private final int numValues = (60 / 5) * 24;
     public double end_time = (new Date().getTime() + (60000 * 10)) / FUZZER;
     public double predictive_end_time;
-    public double start_time = end_time - ((60000 * 60 * 24)) / FUZZER;
+    public double start_time = end_time - (60000 * 60 * time_span) / FUZZER;
 
 
     private final static double timeshift = 500_000;
-    private static final int NUM_VALUES = (60 / 5) * 24;
+    private static final int NUM_VALUES = (60 / 5) * time_span;
 
     // flag to indicate if readings data has been adjusted
     private static boolean plugin_adjusted = false;
@@ -169,6 +170,17 @@ public class BgGraphBuilder {
     public static double last_bg_estimate = -99999;
     private KeyStore keyStore = FastStore.getInstance();
 
+    public static int getTimeSpan() {
+        int value = 24;
+        try {
+            value = Integer.parseInt(Pref.getString("time_span", "24"));
+        } catch (NumberFormatException e) {
+            UserError.Log.e(TAG, "Cannot process time span value: " + e);
+        }
+        return value;
+
+    }
+
     private final boolean showSMB = Pref.getBoolean("show_smb_icons", true);
 
     public BgGraphBuilder(Context context) {
@@ -176,7 +188,7 @@ public class BgGraphBuilder {
     }
 
     public BgGraphBuilder(Context context, long end) {
-        this(context, end - (60000 * 60 * 24), end);
+        this(context, end - (60000 * 60 * time_span), end);
     }
 
     public BgGraphBuilder(Context context, long start, long end) {
@@ -2103,7 +2115,7 @@ public class BgGraphBuilder {
     /////////VIEWPORT RELATED//////////////
     public Viewport advanceViewport(Chart chart, Chart previewChart, float hours) {
         viewport = new Viewport(previewChart.getMaximumViewport());
-        viewport.inset((float) ((86400000 / hours) / FUZZER), 0);
+        viewport.inset((float) ((time_span * 60 * 60 * 1000 / hours) / FUZZER), 0);
         double distance_to_move = ((new Date().getTime()) / FUZZER) - viewport.left - (((viewport.right - viewport.left) / 2));
         viewport.offset((float) distance_to_move, 0);
         return viewport;
