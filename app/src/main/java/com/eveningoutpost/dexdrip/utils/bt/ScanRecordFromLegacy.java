@@ -33,19 +33,23 @@ public class ScanRecordFromLegacy {
     private static final int DATA_TYPE_LOCAL_NAME_SHORT = 0x08;
     private static final int DATA_TYPE_LOCAL_NAME_COMPLETE = 0x09;
     private static final int DATA_TYPE_TX_POWER_LEVEL = 0x0A;
-    private static final int DATA_TYPE_SERVICE_DATA = 0x16;
+    private static final int DATA_TYPE_SERVICE_DATA_16_BIT = 0x16;
+    private static final int DATA_TYPE_SERVICE_DATA_32_BIT = 0x20;
+    private static final int DATA_TYPE_SERVICE_DATA_128_BIT = 0x21;
+    private static final int DATA_TYPE_SERVICE_SOLICITATION_UUIDS_16_BIT = 0x14;
+    private static final int DATA_TYPE_SERVICE_SOLICITATION_UUIDS_32_BIT = 0x1F;
+    private static final int DATA_TYPE_SERVICE_SOLICITATION_UUIDS_128_BIT = 0x15;
     private static final int DATA_TYPE_MANUFACTURER_SPECIFIC_DATA = 0xFF;
 
-    public static final ParcelUuid BASE_UUID =
-            ParcelUuid.fromString("00000000-0000-1000-8000-00805F9B34FB");
+    public static final UUID BASE_UUID =
+            UUID.fromString("00000000-0000-1000-8000-00805F9B34FB");
+
     /** Length of bytes for 16 bit UUID */
     public static final int UUID_BYTES_16_BIT = 2;
     /** Length of bytes for 32 bit UUID */
     public static final int UUID_BYTES_32_BIT = 4;
     /** Length of bytes for 128 bit UUID */
     public static final int UUID_BYTES_128_BIT = 16;
-
-    private static final String UUID_BASE_FORMAT = "%08x-0000-1000-8000-00805f9b34fb";
 
     public static ScanRecord parseFromBytes(byte[] scanRecord) {
         if (scanRecord == null) {
@@ -54,7 +58,8 @@ public class ScanRecordFromLegacy {
 
         int currentPos = 0;
         int advertiseFlag = -1;
-        List<ParcelUuid> serviceUuids = new ArrayList<ParcelUuid>();
+        List<ParcelUuid> serviceUuids = new ArrayList<>();
+        List<ParcelUuid> serviceSolicitationUuids = new ArrayList<>();
         String localName = null;
         int txPowerLevel = Integer.MIN_VALUE;
 
@@ -91,6 +96,18 @@ public class ScanRecordFromLegacy {
                         parseServiceUuid(scanRecord, currentPos, dataLength,
                                 UUID_BYTES_128_BIT, serviceUuids);
                         break;
+                    case DATA_TYPE_SERVICE_SOLICITATION_UUIDS_16_BIT:
+                        parseServiceSolicitationUuid(scanRecord, currentPos, dataLength,
+                                UUID_BYTES_16_BIT, serviceSolicitationUuids);
+                        break;
+                    case DATA_TYPE_SERVICE_SOLICITATION_UUIDS_32_BIT:
+                        parseServiceSolicitationUuid(scanRecord, currentPos, dataLength,
+                                UUID_BYTES_32_BIT, serviceSolicitationUuids);
+                        break;
+                    case DATA_TYPE_SERVICE_SOLICITATION_UUIDS_128_BIT:
+                        parseServiceSolicitationUuid(scanRecord, currentPos, dataLength,
+                                UUID_BYTES_128_BIT, serviceSolicitationUuids);
+                        break;
                     case DATA_TYPE_LOCAL_NAME_SHORT:
                     case DATA_TYPE_LOCAL_NAME_COMPLETE:
                         localName = new String(
@@ -99,10 +116,15 @@ public class ScanRecordFromLegacy {
                     case DATA_TYPE_TX_POWER_LEVEL:
                         txPowerLevel = scanRecord[currentPos];
                         break;
-                    case DATA_TYPE_SERVICE_DATA:
-                        // The first two bytes of the service data are service data UUID in little
-                        // endian. The rest bytes are service data.
+                    case DATA_TYPE_SERVICE_DATA_16_BIT:
+                    case DATA_TYPE_SERVICE_DATA_32_BIT:
+                    case DATA_TYPE_SERVICE_DATA_128_BIT:
                         int serviceUuidLength = UUID_BYTES_16_BIT;
+                        if (fieldType == DATA_TYPE_SERVICE_DATA_32_BIT) {
+                            serviceUuidLength = UUID_BYTES_32_BIT;
+                        } else if (fieldType == DATA_TYPE_SERVICE_DATA_128_BIT) {
+                            serviceUuidLength = UUID_BYTES_128_BIT;
+                        }
                         byte[] serviceDataUuidBytes = extractBytes(scanRecord, currentPos,
                                 serviceUuidLength);
                         ParcelUuid serviceDataUuid = parseUuidFrom(serviceDataUuidBytes);
@@ -130,13 +152,13 @@ public class ScanRecordFromLegacy {
                 serviceUuids = null;
             }
 
-            return new ScanRecordImplCompatLocal(serviceUuids, manufacturerData, serviceData,
+            return new ScanRecordImplCompatLocal(serviceUuids, serviceSolicitationUuids, manufacturerData, serviceData,
                     advertiseFlag, txPowerLevel, localName, scanRecord);
         } catch (Exception e) {
             //  RxBleLog.e(e, "unable to parse scan record: " + Arrays.toString(scanRecord));
             // As the record is invalid, ignore all the parsed results for this packet
             // and return an empty record with raw scanRecord bytes in results
-            return new ScanRecordImplCompatLocal(null, null, null, -1, Integer.MIN_VALUE, null, scanRecord);
+            return new ScanRecordImplCompatLocal(null, null, null, null, -1, Integer.MIN_VALUE, null, scanRecord);
         }
     }
 
@@ -168,8 +190,8 @@ public class ScanRecordFromLegacy {
             shortUuid += (uuidBytes[2] & 0xFF) << 16;
             shortUuid += (uuidBytes[3] & 0xFF) << 24;
         }
-        long msb = BASE_UUID.getUuid().getMostSignificantBits() + (shortUuid << 32);
-        long lsb = BASE_UUID.getUuid().getLeastSignificantBits();
+        long msb = BASE_UUID.getMostSignificantBits() + (shortUuid << 32);
+        long lsb = BASE_UUID.getLeastSignificantBits();
         return new ParcelUuid(new UUID(msb, lsb));
     }
 
@@ -180,6 +202,20 @@ public class ScanRecordFromLegacy {
             byte[] uuidBytes = extractBytes(scanRecord, currentPos,
                     uuidLength);
             serviceUuids.add(parseUuidFrom(uuidBytes));
+            dataLength -= uuidLength;
+            currentPos += uuidLength;
+        }
+        return currentPos;
+    }
+
+    /**
+     * Parse service Solicitation UUIDs.
+     */
+    private static int parseServiceSolicitationUuid(byte[] scanRecord, int currentPos,
+                                                    int dataLength, int uuidLength, List<ParcelUuid> serviceSolicitationUuids) {
+        while (dataLength > 0) {
+            byte[] uuidBytes = extractBytes(scanRecord, currentPos, uuidLength);
+            serviceSolicitationUuids.add(parseUuidFrom(uuidBytes));
             dataLength -= uuidLength;
             currentPos += uuidLength;
         }

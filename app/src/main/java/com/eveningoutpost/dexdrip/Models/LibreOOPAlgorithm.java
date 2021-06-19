@@ -39,6 +39,8 @@ class UnlockBuffers {
 
 public class LibreOOPAlgorithm {
     private static final String TAG = "LibreOOPAlgorithm";
+    // This are the shifts of the libre different buffers
+    static final int[] LIBRE2_SHIFT = {0, 2, 4, 6, 7, 12, 15};
     
     public enum SensorType
     {
@@ -212,9 +214,9 @@ public class LibreOOPAlgorithm {
             return;
         }
         boolean use_raw = Pref.getBooleanDefaultFalse("calibrate_external_libre_algorithm");
-        ReadingData.TransferObject libreAlarmObject = new ReadingData.TransferObject();
-        libreAlarmObject.data = new ReadingData();
-        libreAlarmObject.data.trend = new ArrayList<GlucoseData>();
+        ReadingData readingData = new ReadingData();
+
+        readingData.trend = new ArrayList<GlucoseData>();
         
         double factor = 1;
         if(use_raw) {
@@ -229,21 +231,21 @@ public class LibreOOPAlgorithm {
         glucoseData.realDate = oOPResults.timestamp;
         glucoseData.glucoseLevel = (int)(oOPResults.currentBg * factor);
         glucoseData.glucoseLevelRaw = (int)(oOPResults.currentBg * factor);
-        
-        libreAlarmObject.data.trend.add(glucoseData);
+
+        readingData.trend.add(glucoseData);
         
         // TODO: Add here data of last 10 minutes or whatever.
         
         
-       // Add the historic data
-        libreAlarmObject.data.history = new ArrayList<GlucoseData>();
+        // Add the historic data
+        readingData.history = new ArrayList<GlucoseData>();
         for(HistoricBg historicBg : oOPResults.historicBg) {
             if(historicBg.quality == 0) {
                 glucoseData = new GlucoseData();
                 glucoseData.realDate = oOPResults.timestamp + (historicBg.time - oOPResults.currentTime) * 60000;
                 glucoseData.glucoseLevel = (int)(historicBg.bg * factor);
                 glucoseData.glucoseLevelRaw = (int)(historicBg.bg * factor);
-                libreAlarmObject.data.history.add(glucoseData);
+                readingData.history.add(glucoseData);
             }
         }
         
@@ -253,10 +255,10 @@ public class LibreOOPAlgorithm {
         glucoseData.realDate = oOPResults.timestamp;
         glucoseData.glucoseLevel = (int)(oOPResults.currentBg * factor);
         glucoseData.glucoseLevelRaw = (int)(oOPResults.currentBg * factor);
-        libreAlarmObject.data.history.add(glucoseData);
+        readingData.history.add(glucoseData);
         
-        Log.e(TAG, "handleData Created the following object " + libreAlarmObject.toString());
-        LibreAlarmReceiver.CalculateFromDataTransferObject(libreAlarmObject, use_raw);
+        Log.d(TAG, "handleData Created the following object " + readingData.toString());
+        LibreAlarmReceiver.CalculateFromDataTransferObject(readingData, false, use_raw);
     }
     
     public static SensorType getSensorType(byte []SensorInfo) {
@@ -295,29 +297,73 @@ public class LibreOOPAlgorithm {
 
         int raw  = LibreOOPAlgorithm.readBits(ble_data, 0 , 0 , 0xe);
         int sensorTime = 256 * (ble_data[41] & 0xFF) + (ble_data[40] & 0xFF);
-        Log.e(TAG, "Creating BG time =  " + sensorTime + "raw = " + raw);
+        Log.e(TAG, "Creating BG time =  " + sensorTime + " raw = " + raw);
         
-        ReadingData.TransferObject libreAlarmObject = new ReadingData.TransferObject();
-        libreAlarmObject.data = new ReadingData();
-        libreAlarmObject.data.trend = new ArrayList<GlucoseData>();
+        ReadingData readingData= new ReadingData();
+        readingData.trend = new ArrayList<GlucoseData>();
 
-        libreAlarmObject.data.raw_data = ble_data;
-        
-        // Add the first object, that is the current time
-        GlucoseData glucoseData = new GlucoseData();
-        glucoseData.sensorTime = sensorTime;
-        glucoseData.realDate = timestamp;
-        glucoseData.glucoseLevel = raw;
-        glucoseData.glucoseLevelRaw = raw;
-        
-        libreAlarmObject.data.trend.add(glucoseData);
+        readingData.raw_data = ble_data;
+        readingData.trend = parseBleDataPerMinute(ble_data, timestamp);
+
+        readingData.history = parseBleDataHistory(ble_data, timestamp);
+
         String SensorSN = LibreUtils.decodeSerialNumberKey(patchUid);
         
         // TODO: Add here data of last 10 minutes or whatever.
-        Log.e(TAG, "handleDecodedBleResult Created the following object " + libreAlarmObject.toString());
-        LibreAlarmReceiver.processReadingDataTransferObject(libreAlarmObject, timestamp, SensorSN, true /*=allowupload*/, patchUid, null/*=patchInfo*/);   
+        Log.e(TAG, "handleDecodedBleResult Created the following object " + readingData.toString());
+        LibreAlarmReceiver.processReadingDataTransferObject(readingData, timestamp, SensorSN, true /*=allowupload*/, patchUid, null/*=patchInfo*/);
     }
     
+    public static ArrayList<GlucoseData> parseBleDataPerMinute(byte[] ble_data, Long captureDateTime) {
+        int sensorTime = 256 * (ble_data[41] & 0xFF) + (ble_data[40] & 0xFF);
+        ArrayList<GlucoseData> historyList = new ArrayList<>();
+        
+        ArrayList<GlucoseData> trendList = new ArrayList<>();
+        for (int i = 0; i < 7; i++) {
+            GlucoseData glucoseData = new GlucoseData();
+            
+            glucoseData.glucoseLevelRaw = LibreOOPAlgorithm.readBits(ble_data, i * 4 , 0 , 0xe);
+            glucoseData.temp = LibreOOPAlgorithm.readBits(ble_data, i * 4, 0xe, 0xc) << 2;
+            glucoseData.flags =  LibreOOPAlgorithm.readBits(ble_data, i * 4 , 0x1a , 0x6);
+            glucoseData.source = GlucoseData.DataSource.BLE;
+
+            int relative_time = LIBRE2_SHIFT[i];
+            glucoseData.realDate = captureDateTime - relative_time * Constants.MINUTE_IN_MS;
+            glucoseData.sensorTime = sensorTime - relative_time;
+            trendList.add(glucoseData);
+        }
+        return trendList;
+    }
+    
+    public static ArrayList<GlucoseData> parseBleDataHistory(byte[] ble_data, Long captureDateTime) {
+        int sensorTime = 256 * (ble_data[41] & 0xFF) + (ble_data[40] & 0xFF);
+        //System.out.println("sensorTime = " + sensorTime);
+        if(sensorTime < 3) {
+            return new ArrayList<>();
+        }
+        int sensorTimeModulo = (sensorTime - 2) / 15 * 15;
+        ArrayList<GlucoseData> historyList = new ArrayList<>();
+
+        for (int i = 0; i < 3; i++) {
+            GlucoseData glucoseData = new GlucoseData();
+
+            glucoseData.glucoseLevelRaw = readBits(ble_data, (i+7) * 4 , 0 , 0xe);
+            glucoseData.temp = LibreOOPAlgorithm.readBits(ble_data, (i+7) * 4, 0xe, 0xc) << 2;
+            glucoseData.flags =  LibreOOPAlgorithm.readBits(ble_data, (i+7) * 4 , 0x1a , 0x6);
+            glucoseData.source = GlucoseData.DataSource.BLE;
+
+            int relative_time = i*15;
+            int final_time = sensorTimeModulo - relative_time;
+            if(final_time < 0) {
+                break;
+            }
+            glucoseData.realDate = captureDateTime  + (final_time - sensorTime) * Constants.MINUTE_IN_MS;
+            glucoseData.sensorTime = final_time;
+            historyList.add(glucoseData);
+        }
+        return historyList;
+    }
+
     
     // Functions that are used for an external decoder.
     static public boolean isDecodeableData(byte []patchInfo) {
@@ -330,16 +376,16 @@ public class LibreOOPAlgorithm {
     static long lastSentData = 0;
     static ArrayBlockingQueue<UnlockBuffers> UnlockBlockingQueue = new ArrayBlockingQueue<UnlockBuffers>(1);
     
-    static public void handleOop2DecryptFarmResult(String tagId, long CaptureDateTime, byte[] buffer, byte []patchUid,  byte []patchInfo ) {
+    static public void handleOop2DecodeFramResult(String tagId, long CaptureDateTime, byte[] buffer, byte []patchUid,  byte []patchInfo ) {
         lastRecievedData = JoH.tsl();
-        Log.e(TAG, "handleOop2PingResult - data" + JoH.bytesToHex(buffer));
+        Log.e(TAG, "handleOop2DecodeFramResult - data " + JoH.bytesToHex(buffer));
         NFCReaderX.HandleGoodReading(tagId, buffer, CaptureDateTime, false , patchUid, patchInfo, true );
     }
     
     
-    static public void  handleOop2BlutoothEnableResult(byte[] bt_unlock_buffer, byte[] nfc_unlock_buffer, byte[] patchUid, byte[] patchInfo, String device_name) {
+    static public void handleOop2BluetoothEnableResult(byte[] bt_unlock_buffer, byte[] nfc_unlock_buffer, byte[] patchUid, byte[] patchInfo, String device_name) {
         lastRecievedData = JoH.tsl();
-        Log.e(TAG, "handleOop2BlutoothEnableResult - data bt_unlock_buffer " + JoH.bytesToHex(bt_unlock_buffer) + "\n nfc_unlock_buffer "+ JoH.bytesToHex(nfc_unlock_buffer));
+        Log.e(TAG, "handleOop2BluetoothEnableResult - data bt_unlock_buffer " + JoH.bytesToHex(bt_unlock_buffer) + "\n nfc_unlock_buffer "+ JoH.bytesToHex(nfc_unlock_buffer));
         UnlockBlockingQueue.clear();
         try {
             UnlockBlockingQueue.add(new UnlockBuffers(bt_unlock_buffer, nfc_unlock_buffer, device_name));
