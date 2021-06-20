@@ -277,7 +277,11 @@ public class NFCReaderX {
     
     // returns true if checksum passed.
     public static boolean HandleGoodReading(final String tagId, byte[] data1, final long CaptureDateTime, final boolean allowUpload, byte []patchUid,  byte []patchInfo, boolean decripted_data ) {
-        Log.e(TAG, "HandleGoodReading called");
+        Log.e(TAG, "HandleGoodReading called dat1 len = " + data1.length);
+        if(data1.length > 0x158) {
+            // It seems that some times we read a buffer that is bigger than 0x158, but we should only use the first 0x158 bytes.
+            data1 = java.util.Arrays.copyOfRange(data1, 0, 0x158);
+        }
         SendLibrereading(tagId, data1, CaptureDateTime, patchUid, patchInfo);
         
         if(LibreOOPAlgorithm.isDecodeableData(patchInfo) && decripted_data == false 
