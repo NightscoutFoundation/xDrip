@@ -288,7 +288,7 @@
                 android:key="g5-battery-warning-level"
                 android:title="@string/title_g5_battery_warning_level"
                 android:defaultValue="300"
-                android:numeric="integer"
+                android:inputType="number"
                 />
             </PreferenceCategory>
 
