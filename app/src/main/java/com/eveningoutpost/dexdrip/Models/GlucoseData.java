@@ -1,19 +1,23 @@
 
 package com.eveningoutpost.dexdrip.Models;
 
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+
 import java.text.DecimalFormat;
 
 // class from LibreAlarm
 
 public class GlucoseData implements Comparable<GlucoseData> {
+    public enum DataSource {NOT_SET, FRAM, BLE};
 
-    public long realDate;
-    public String sensorId;
-    public long sensorTime;
+    public long realDate;               // The time of this reading in ms
+    public int sensorTime;             // The counter in minutes from start of sensor.
     public int glucoseLevel = -1;
     public int glucoseLevelRaw = -1;
-    public long phoneDatabaseId;
     public int glucoseLevelRawSmoothed;
+    public int flags;
+    public int temp;
+    public DataSource source;
 
     public GlucoseData(){}
 
@@ -23,12 +27,18 @@ public class GlucoseData implements Comparable<GlucoseData> {
         this.realDate = timestamp;
     }
 
+    public String toString() {
+        return "{ sensorTime = " + sensorTime + " glucoseLevel = " + glucoseLevel + " glucoseLevelRaw = " + glucoseLevelRaw +
+                " glucoseLevelRawSmoothed = " + glucoseLevelRawSmoothed + " flags = " + flags +
+                " source = " + source + "}";
+    }
+
     public String glucose(boolean mmol) {
         return glucose(glucoseLevel, mmol);
     }
 
     public static String glucose(int mgdl, boolean mmol) {
-        return mmol ? new DecimalFormat("##.0").format(mgdl/18f) : String.valueOf(mgdl);
+        return mmol ? new DecimalFormat("##.0").format(mgdl/ Constants.MMOLL_TO_MGDL) : String.valueOf(mgdl);
     }
 
     @Override

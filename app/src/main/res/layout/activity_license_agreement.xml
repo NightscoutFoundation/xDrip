@@ -66,7 +66,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/translation_credits"
+                    android:text=""
                     android:id="@+id/translator_credits"
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentEnd="true"

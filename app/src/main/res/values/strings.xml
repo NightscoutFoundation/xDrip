@@ -1194,8 +1194,8 @@
     <string name="manual_overwrite_not_possible">Manual overwrite not possible!</string>
     <string name="upload_even_when_using_mobile_data">Upload even when using mobile data</string>
     <string name="use_mobile_data">Use mobile data</string>
-    <string name="summary_cloud_storage_api_download_enable">Also try to download data from Nightscout</string>
-    <string name="title_cloud_storage_api_download_enable">Download data</string>
+    <string name="summary_cloud_storage_api_download_enable">Also try to download treatments from Nightscout</string>
+    <string name="title_cloud_storage_api_download_enable">Download treatments</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Calibrate using new blood glucose readings if the conditions appear right to do so without asking confirmation (experimental)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatic Calibration</string>
     <string name="title_rest_api_extra_options">Extra Options</string>
@@ -1387,7 +1387,7 @@
     <string name="summary_show_home_on_boot">Bring up xDrip screen automatically after device boots</string>
     <string name="title_show_home_on_boot">Show xDrip on Boot</string>
     <string name="eula">EULA</string>
-    <string name="summary_plus_accept_follower_actions">Treatments and Calibrations from followers will be accepted</string>
+    <string name="summary_plus_accept_follower_actions">Treatments, Calibrations and other actions from followers will be accepted</string>
     <string name="title_plus_accept_follower_actions">Accept follower actions</string>
     <string name="summary_plus_whole_house">Participate in a Whole House Network</string>
     <string name="title_plus_whole_house">Whole House</string>
@@ -1496,6 +1496,7 @@
     <string name="__do_you_want_to_change_settings_or_start_sensor">\n\nDo you want to change settings or start sensor?</string>
     <string name="change_settings">Change settings</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Do you want to delete and reset the calibrations for this sensor?</string>
+    <string name="sensor_stop_confirm">Do you want to stop the sensor?</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">You have an old experimental glucose prediction setting enabled.\n\nThis is NOT RECOMMENDED and could mess things up badly.\n\nShall I disable this for you?</string>
     <string name="settings_issue">Settings Issue!</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Do you want to use this synced finger-stick blood glucose result to calibrate with?\n\n(you can change when this dialog is displayed in Settings)</string>

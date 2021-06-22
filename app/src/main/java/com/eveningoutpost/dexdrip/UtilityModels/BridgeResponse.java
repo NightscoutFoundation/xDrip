@@ -15,6 +15,8 @@ public class BridgeResponse {
     private final LinkedList<ByteBuffer> send;
     private String error_message;
     private long delay;
+    private boolean still_waiting_for_data = false;
+    private boolean got_all_data = false;
 
     public BridgeResponse() {
         send = new LinkedList<>();
@@ -31,6 +33,22 @@ public class BridgeResponse {
     public boolean shouldDelay() {
         return delay > 0;
     }
+    
+    public boolean StillWaitingForData() {
+        return still_waiting_for_data;
+    }
+    public void SetStillWaitingForData() {
+        still_waiting_for_data = true;
+    }
+    
+    public boolean GotAllData() {
+        return got_all_data;
+    }
+    
+    public void SetGotAllData() {
+        got_all_data = true;
+    }
+    
 }
 
 

@@ -27,7 +27,12 @@ public class PushRx extends BaseRx {
         Charging(Const.PUSH_OPCODE_CHARGE),
         LongPress1(Const.PUSH_OPCODE_B1_LONG),
         BackFill(Const.PUSH_OPCODE_BACKFILL),
-        Choice(Const.PUSH_OPCODE_CHOICE);
+        Choice(Const.PUSH_OPCODE_CHOICE),
+        AssetRequest(Const.PUSH_OPCODE_ASSET_REQ),
+        CarbInfo(Const.PUSH_OPCODE_C_INFO),
+        InsulinInfo(Const.PUSH_OPCODE_I_INFO),
+        TemperatureInfo(Const.PUSH_OPCODE_T_INFO),
+        HeartRateInfo(Const.PUSH_OPCODE_H_INFO);
 
         byte value;
 
@@ -66,11 +71,33 @@ public class PushRx extends BaseRx {
     @Expose
     public final Type type;
     @Expose
-    public final int value;
+    public final long value;
 
     public String text;
 
     public List<BackFillRecord> backfills = null;
+
+    public int getValue() {
+        return (int) value;
+    }
+
+    public int getAge() {
+        return (int) (value >> 16) * 1000;
+    }
+
+    public long getTimestamp() {
+        return JoH.tsl() - getAge();
+    }
+
+    public double getNumber() {
+        int value = (int) (this.value & 0xFFFF);
+        final boolean isDecimal = (value & 0x8000) != 0;
+        value &= 0x7FFF;
+        if (isDecimal) {
+            return value / 10d;
+        }
+        return value;
+    }
 
     public static boolean isPushMessage(final byte[] bytes) {
         return bytes != null && bytes.length >= 4 && bytes[0] == Const.OPCODE_PUSH_RX && bytes[1] == Const.OPCODE_PUSH_RX;
@@ -89,25 +116,33 @@ public class PushRx extends BaseRx {
                 val opcode2 = push.data.get();
                 val type2 = push.data.get();
 
-                if (push.type == Type.BackFill) {
-                    val numOfRecords = push.data.get();
-                    push.backfills = new ArrayList<>(numOfRecords);
-                    for (int i = 0; i < numOfRecords; i++) {
-                        val trend = push.data.get();        // TODO validate sign etc
-                        val secondsAgo = push.getUnsignedShort();
-                        val mgdl = push.getUnsignedShort();
-                        push.backfills.add(new BackFillRecord(secondsAgo, mgdl, trend));
-                        //UserError.Log.d("BlueJayParse",push.backfills.get(push.backfills.size()-1).toS());
-                    }
-                } else if (push.type == Type.Choice) {
-                    val choice = push.data.get();
-                    val str = new byte[push.data.remaining()];
-                    push.data.get(str);
-                    try {
-                        push.text = new String(str, "UTF-8").replace("\0", "");
-                    } catch (UnsupportedEncodingException e) {
-                        // should never happen
-                    }
+                switch (push.type) {
+                    case BackFill:
+                        val numOfRecords = push.data.get();
+                        push.backfills = new ArrayList<>(numOfRecords);
+                        for (int i = 0; i < numOfRecords; i++) {
+                            val trend = push.data.get();        // TODO validate sign etc
+                            val secondsAgo = push.getUnsignedShort();
+                            val mgdl = push.getUnsignedShort();
+                            push.backfills.add(new BackFillRecord(secondsAgo, mgdl, trend));
+                            //UserError.Log.d("BlueJayParse",push.backfills.get(push.backfills.size()-1).toS());
+                        }
+                        break;
+                    case Choice:
+                        val choice = push.data.get();
+                        val str = new byte[push.data.remaining()];
+                        push.data.get(str);
+                        try {
+                            push.text = new String(str, "UTF-8").replace("\0", "");
+                        } catch (UnsupportedEncodingException e) {
+                            // should never happen
+                        }
+                        break;
+                    case AssetRequest:
+                        return new PushRx(push.type, ((bytes[3] & 0xFF) | ((bytes[4] & 0xFF) << 8)));
+                    case CarbInfo:
+                    case InsulinInfo:
+                        return new PushRx(push.type, push.getUnsignedInt(3));
                 }
             }
             return push;

@@ -103,6 +103,10 @@ public class Tomato {
                 Log.e(TAG, "Starting to acumulate data expectedSize = " + expectedSize);
                 InitBuffer(expectedSize + TOMATO_PATCH_INFO);
                 addData(buffer);
+                if((JoH.ratelimit("tomato-full-retry",60)
+                        || JoH.ratelimit("tomato-full-retry2",60))) {
+                    reply.SetStillWaitingForData();
+                }
                 s_state = TOMATO_STATES.RECIEVING_DATA;
                 return reply;
                 
@@ -118,17 +122,15 @@ public class Tomato {
             //Log.e(TAG, "received more data s_acumulatedSize = " + s_acumulatedSize + " current buffer size " + buffer.length);
             try {
                 addData(buffer);
+                if(s_recviedEnoughData) {
+                    reply.SetGotAllData();
+                }
+                
             } catch (RuntimeException e) {
                 // if the checksum failed lets ask for the data set again but not more than once per minute
                 if (e.getMessage().equals(CHECKSUM_FAILED)) {
-                   if (JoH.ratelimit("tomato-full-retry",60)
-                           || JoH.ratelimit("tomato-full-retry2",60)) {
-                       reply.getSend().clear();
-                       reply.getSend().addAll(Tomato.resetTomatoState());
-                       reply.setDelay(8000);
-                       reply.setError_message(gs(R.string.checksum_failed__retrying));
-                       Log.d(TAG,"Asking for retry of data");
-                   }
+                   // Nothing that needs to be done here since we will now ask for a new reading, if we don't get all data.
+
                 } else if (e.getMessage().equals(SERIAL_FAILED)) {
                     reply.setError_message("Sensor Serial Problem");
                 } else throw e;
@@ -240,7 +242,7 @@ public class Tomato {
         return resetTomatoState();
     }
 
-    private static ArrayList<ByteBuffer> resetTomatoState() {
+    public static ArrayList<ByteBuffer> resetTomatoState() {
         ArrayList<ByteBuffer> ret = new ArrayList<>();
 
         s_state = TOMATO_STATES.REQUEST_DATA_SENT;
