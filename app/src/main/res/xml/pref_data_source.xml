@@ -133,7 +133,7 @@
             android:title="Share Username" />
         <EditTextPreference
             android:defaultValue=""
-            android:inputType="textNoSuggestions|textVisiblePassword"
+            android:inputType="textNoSuggestions|textPassword"
             android:key="shfollow_pass"
             android:maxLines="1"
             android:singleLine="true"
