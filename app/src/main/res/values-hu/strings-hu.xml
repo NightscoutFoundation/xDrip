@@ -143,8 +143,10 @@
     <string name="yes_enter_setup_mode">Igen, beállítási mód indítása</string>
     <string name="nokeep_parakeet_as_it_is">Parakeet-et változatlanul hagyni</string>
     <string name="are_you_sure_you_want_switch_parakeet_to_setup">Parakeet beállítási mód indítása?\n\ Általában erre csak a Parakeet újrakonfigurálásához van szükség (Transmitter-ID, stb.).</string>
+    <string name="split_delete_or_do_nothing">Felosztás, törlés vagy elvetés</string>
+    <string name="split_this_block_in_two">Időszak két részre osztása</string>
     <string name="delete_this_time_block">Időszak törlése</string>
-    <string name="cancel_do_nothing">Mégsem - ne csinálj semmit</string>
+    <string name="cancel_do_nothing">Mégsem - elvetés</string>
     <string name="added">Hozzáadva</string>
     <string name="checking_for_update">Új verzió keresése..</string>
     <string name="signal_missed">Nem érkezett adat</string>
@@ -348,6 +350,8 @@
     <string name="glucose_history">Szenzorglükóz történet</string>
     <string name="import_database">Adatbázis importálása</string>
     <string name="bg_readings_table">VC-érték adattábla</string>
+    <string name="long_press_to_split_or_delete">Szerkesztéshez vagy törléshez nyomja hosszan</string>
+    <string name="press_and_hold_on_the_background_to_split_or_delete">Nyomja és tartsa az időszak felosztásához vagy törléséhez</string>
     <string name="search">Keresés</string>
     <string name="reset_all_language_data">Nyelvi beállítások viasszaálltása</string>
     <string name="get_notified_of_new_apk_releases">Értesítés új xDrip verzióról</string>
@@ -512,6 +516,7 @@
     <string name="install_pebble_apps">Pebble App-ok telepítése</string>
     <string name="sliding_24_hour_window_summary">Utolsó 24 óra használata a statisztikákhoz, éjféltől számítás helyett</string>
     <string name="sliding_24_hour_window">Csúszóablak</string>
+    <string name="split">Felosztás</string>
     <string name="delete">Törlés</string>
     <string name="notify_when_wear_low_battery">Erőltetés megszüntetése xDrip alacsony akkuszint riasztásakor!</string>
     <string name="notify_disable_wearG5_on_missedreadings">Erőltetés megszüntetése %1$d perc adathiány után!</string>
@@ -1319,7 +1324,7 @@
     <string name="use_internal_downloader">Belső letöltő használata</string>
     <string name="summary">Összefoglaló</string>
     <string name="auto_refresh">Automatikus frissítés</string>
-    <string name="set_up_desert_sync_follower">Desert Sync követő beállítása</string>
+    <string name="set_up_desert_sync_follower">Száraz szinkronizációs követő beállítása</string>
     <string name="version">Verzió:</string>
     <string name="sensor_start">Szenzor indítva: </string>
     <string name="bluetooth_device">Bluetooth eszköz:   </string>
