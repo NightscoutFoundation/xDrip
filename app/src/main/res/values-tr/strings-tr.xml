@@ -21,7 +21,7 @@
     <string name="navigation_drawer_open">Gezinti çubuğunu aç</string>
     <string name="navigation_drawer_close">Gezinti çubuğunu kapat</string>
     <string name="title_activity_calibration_check_in">Kalibrasyon</string>
-    <string name="title_activity_usb_connected">Usb Bağlantılı aktivite</string>
+    <string name="title_activity_usb_connected">USB Bağlantılı aktivite</string>
     <string name="snooze">Ertele</string>
     <string name="snooze_hint">Alarmı x dakika kadar ertele</string>
     <string name="ok">TAMAM</string>
