@@ -21,7 +21,7 @@
     <string name="navigation_drawer_open">Open de navigatielade</string>
     <string name="navigation_drawer_close">Sluit de navigatielade</string>
     <string name="title_activity_calibration_check_in">Kalibratie Activiteit</string>
-    <string name="title_activity_usb_connected">Usb-verbonden activiteit</string>
+    <string name="title_activity_usb_connected">USB-verbonden activiteit</string>
     <string name="snooze">Sluimeren</string>
     <string name="snooze_hint">Sluimer de waarschuwing gedurende x minuten</string>
     <string name="ok">Oké</string>
