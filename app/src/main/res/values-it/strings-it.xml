@@ -21,7 +21,7 @@
     <string name="navigation_drawer_open">Apri Area Navigazione</string>
     <string name="navigation_drawer_close">Chiudi Area Navigazione</string>
     <string name="title_activity_calibration_check_in">Calibrazioni</string>
-    <string name="title_activity_usb_connected">Attività Connessioni Usb</string>
+    <string name="title_activity_usb_connected">Attività Connessioni USB</string>
     <string name="snooze">Sospendi Allarme</string>
     <string name="snooze_hint">Allarme sospeso per x minuti</string>
     <string name="ok">Ok</string>
