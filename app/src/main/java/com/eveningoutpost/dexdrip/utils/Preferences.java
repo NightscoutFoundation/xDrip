@@ -419,7 +419,22 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         };
     }
 
-
+    @Override
+    public void onStop() { // Everything here runs when xDrip is minimized or stopped.
+        super.onStop();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        try {
+            if (!prefs.getBoolean("engineering_mode", false)) { // If engineering mode has been disabled
+                try {
+                    prefs.edit().putBoolean("lower_fuzzer", false).apply(); // Disable lower_fuzzer
+                } catch (Exception e) {
+                    //
+                }
+            }
+        } catch (Exception e) {
+            //
+        }
+    }
 
 
     @Override
