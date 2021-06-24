@@ -162,7 +162,7 @@
     <string name="checking_for_update">Sprawdzanie aktualizacji ..</string>
     <string name="signal_missed">Brak Sygnału</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} Minuty temu|1#{0, number, integer} Minuta temu|1&lt;{0, number, integer} Minuty temu}</string>
-    <string name="expires_days">{0, wybór,0#Sensor wygasł!|1#Koniec za {0, number} dzień|1&lt;Koniec za {0, number} dni}</string>
+    <string name="expires_days">{0, choice,0#Sensor wygasł!|1#Koniec za {0, number} dzień|1&lt;Koniec za {0, number} dni}</string>
     <string name="expires_at">Koniec {0}</string>
     <string name="space_minutes_ago">" Minuty temu"</string>
     <string name="space_minute_ago">" Minuta temu"</string>
