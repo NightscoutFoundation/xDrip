@@ -1469,7 +1469,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             case "carbs":
                 if (!carbsset && (thisnumber > 0)) {
                     thiscarbsnumber = thisnumber;
-                    textCarbohydrates.setText((int) thisnumber + " carbs");
+                    textCarbohydrates.setText((int)thisnumber + " g carbs");
                     carbsset = true;
                     Log.d(TAG, "Carbs eaten: " + thisnumber);
                     btnCarbohydrates.setVisibility(View.VISIBLE);
