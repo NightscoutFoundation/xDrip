@@ -856,11 +856,11 @@
     <string name="emergency_message_feature">Funkcia núdzových správ</string>
     <string name="text_messages_can_be_sent_with_your_location_if_you_do_not_respond_to_alarms_this_feature_is_experimental_and_may_not_be_reliable">Keď nezareaguješ na výstrahy môžu byť odoslané textové správy s tvojou polohou. Táto možnosť je experimentálna a nemusí byť spoľahlivá.</string>
     <string name="your_name">Tvoje meno</string>
-    <string name="did_not_acknowledge_a_low_glucose_alert">%s nepotvrdil výstrahu nízkej glykémie počas %s</string>
-    <string name="did_not_acknowledge_a_high_glucose_alert">%s nepotvrdil výstrahu vysokej glykémie počas %s</string>
+    <string name="did_not_acknowledge_a_low_glucose_alert">%1$s nepotvrdil výstrahu nízkej glykémie počas %2$s</string>
+    <string name="did_not_acknowledge_a_high_glucose_alert">%1$s nepotvrdil výstrahu vysokej glykémie počas %2$s</string>
     <string name="is_requesting_assistance">%s vyžaduje pomoc</string>
     <string name="is_testing_the_assistance_request_feature">%s testuje funkciu vyžiadania pomoci</string>
-    <string name="emergency_message_near_format_string">%s blízko %s %s %s %s</string>
+    <string name="emergency_message_near_format_string">%1$s blízko %2$s %3$s %4$s %5$s</string>
     <string name="choose_when_to_send_messages">Vyber kedy poslať správu:</string>
     <string name="low_alert_not_acknowledged">Výstraha nízkej glykémie nie je potvrdená</string>
     <string name="high_alert_not_acknowledged">Výstraha vysokej glykémie nie je potvrdená</string>
