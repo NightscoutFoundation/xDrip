@@ -918,7 +918,7 @@
     <string name="emergency_message_feature">Značajke hitnih poruka</string>
     <string name="text_messages_can_be_sent_with_your_location_if_you_do_not_respond_to_alarms_this_feature_is_experimental_and_may_not_be_reliable">Tekstualne poruke mogu biti poslane s vašom lokacijom ukoliko ne reagirate na alarm. Ova značajka je eksperimentalna te je moguće nepouzdana.</string>
     <string name="your_name">Vaše ime</string>
-    <string name="emergency_message_near_format_string">%s blizu %s %s %s %s</string>
+    <string name="emergency_message_near_format_string">%1$s blizu %2$s %3$s %4$s %5$s</string>
     <string name="bluetooth_watchdog_timers">Vrijednost brojača vremena za BT Watchdog</string>
     <string name="bluetooth_watchdog_timer_sums">Unos vrijednosti u minutama</string>
     <string name="summary_Accept_connections_from_any_network_instead_of_just_internally">Prihvati spajanja sa bilo koje mreže umjesto samo interno unutar ovog uređaja. Postoje sigurnosne implikacije omogućavanja ovoga! Zajednička lozinka će se zahtijevati ukoliko ovo bude postavljeno.</string>
