@@ -709,7 +709,7 @@
     <string name="your_name">Twoje imię</string>
     <string name="low_alert_not_acknowledged">Alarm o niskim poziomie nie został potwierdzony</string>
     <string name="high_alert_not_acknowledged">Alarm o wysokim poziomie nie został potwierdzony</string>
-    <string name="xdrip_software_changed_format">Wersja oprogramowania xDrip zmieniona z: %s na %s</string>
+    <string name="xdrip_software_changed_format">Wersja oprogramowania xDrip zmieniona z: %1$s na %2$s</string>
     <string name="select_device">Wybierz urządzenie</string>
     <string name="title_Accept_Calibrations">Akceptuj kalibracje</string>
     <string name="title_Pump_Status">Status pompy</string>
