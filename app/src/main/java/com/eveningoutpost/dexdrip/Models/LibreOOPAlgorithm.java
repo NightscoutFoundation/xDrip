@@ -403,7 +403,9 @@ public class LibreOOPAlgorithm {
                                                        ArrayList<byte []> unlockBufferArray, int unlockCount) {
         lastRecievedData = JoH.tsl();
         Log.e(TAG, "handleOop2BluetoothEnableResult - data bt_unlock_buffer " + JoH.bytesToHex(bt_unlock_buffer) + "\n nfc_unlock_buffer "+ JoH.bytesToHex(nfc_unlock_buffer));
-        Log.e(TAG, "handleOop2BluetoothEnableResult big buffer first " + JoH.bytesToHex(unlockBufferArray.get(0))); //???? size is zero
+        if (unlockBufferArray!= null && unlockBufferArray.size() > 0) {
+            Log.e(TAG, "handleOop2BluetoothEnableResult big buffer first " + JoH.bytesToHex(unlockBufferArray.get(0))); //???? size is zero
+        }
         UnlockBlockingQueue.clear();
         try {
             UnlockBlockingQueue.add(new UnlockBuffers(bt_unlock_buffer, nfc_unlock_buffer, device_name, unlockBufferArray, unlockCount));
