@@ -1352,9 +1352,11 @@ public class DexCollectionService extends Service implements BtCallBack {
                     if (mBluetoothAdapter.isEnabled() && mBluetoothAdapter.getRemoteDevice(deviceAddress) != null) {
                         if (useScanning()) {
                             status(gs(R.string.scanning) + (Home.get_engineering_mode() ? ": " + deviceAddress : ""));
+                            Log.i(TAG, "scanning for addresses " + deviceAddress);
                             scanMeister.setAddress(deviceAddress).addCallBack(this, TAG).scan();
                         } else {
                             status("Connecting" + (Home.get_engineering_mode() ? ": " + deviceAddress : ""));
+                            Log.i(TAG, "Connecting to addresses " + deviceAddress);
                             connect(deviceAddress);
                         }
                         mStaticState = mConnectionState;
