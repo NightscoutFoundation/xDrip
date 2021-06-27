@@ -630,7 +630,11 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
                         if (I.reconnectConstraint != null) {
                             if (I.reconnectConstraint.checkAndAddIfAcceptable(1)) {
                                 UserError.Log.d(TAG, "Attempting auto-reconnect");
-                                changeState(CONNECT_NOW);
+                                if (JoH.isBluetoothEnabled(xdrip.getAppContext())) {
+                                    changeState(CONNECT_NOW);
+                                } else {
+                                    Inevitable.task("Auto-reconnect", 8000, () -> changeState(CONNECT_NOW)); // delay for bluetooth cycling
+                                }
                             } else {
                                 UserError.Log.d(TAG, "Not attempting auto-reconnect due to constraint");
                             }
