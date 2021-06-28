@@ -6,6 +6,7 @@ import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Blukon;
 import com.eveningoutpost.dexdrip.UtilityModels.BridgeResponse;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.LibreUtils;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -159,18 +160,18 @@ public class Tomato {
     
     static void AreWeDone() {
         // Give both versions a chance to work.
-        final int extended_length = 344 + TOMATO_HEADER_LENGTH + 1 + TOMATO_PATCH_INFO;
+        final int extended_length = Constants.LIBRE_1_2_FRAM_SIZE + TOMATO_HEADER_LENGTH + 1 + TOMATO_PATCH_INFO;
         if(s_recviedEnoughData && (s_acumulatedSize != extended_length))  {
             // This reading already ended
             Log.e(TAG,"Getting out, as s_recviedEnoughData and we have too much data already s_acumulatedSize = " + s_acumulatedSize);
             return;
         }
 
-        if(s_acumulatedSize < 344 + TOMATO_HEADER_LENGTH + 1 ) {
+        if(s_acumulatedSize < Constants.LIBRE_1_2_FRAM_SIZE + TOMATO_HEADER_LENGTH + 1 ) {
             //Log.e(TAG,"Getting out, since not enough data s_acumulatedSize = " + s_acumulatedSize);
             return;   
         }
-        byte[] data = Arrays.copyOfRange(s_full_data, TOMATO_HEADER_LENGTH, TOMATO_HEADER_LENGTH+344);
+        byte[] data = Arrays.copyOfRange(s_full_data, TOMATO_HEADER_LENGTH, TOMATO_HEADER_LENGTH+Constants.LIBRE_1_2_FRAM_SIZE);
         s_recviedEnoughData = true;
         
         long now = JoH.tsl();
@@ -180,7 +181,7 @@ public class Tomato {
         byte []patchInfo = null;
         if(s_acumulatedSize >= extended_length) {
             patchUid = Arrays.copyOfRange(s_full_data, 5, 13);
-            patchInfo = Arrays.copyOfRange(s_full_data, TOMATO_HEADER_LENGTH+ 344 + 1 , TOMATO_HEADER_LENGTH + 344 + 1+ TOMATO_PATCH_INFO);
+            patchInfo = Arrays.copyOfRange(s_full_data, TOMATO_HEADER_LENGTH+ Constants.LIBRE_1_2_FRAM_SIZE + 1 , TOMATO_HEADER_LENGTH + Constants.LIBRE_1_2_FRAM_SIZE + 1+ TOMATO_PATCH_INFO);
         }
         Log.d(TAG, "patchUid = " + HexDump.dumpHexString(patchUid));
         Log.d(TAG, "patchInfo = " + HexDump.dumpHexString(patchInfo));
@@ -220,7 +221,7 @@ public class Tomato {
             return;
         }
         // We have all the data
-        if(s_full_data.length < 344 + TOMATO_HEADER_LENGTH + 1) {
+        if(s_full_data.length < Constants.LIBRE_1_2_FRAM_SIZE + TOMATO_HEADER_LENGTH + 1) {
             Log.e(TAG, "We have all the data, but it is not enough... s_full_data.length = " + s_full_data.length );
             return;
         }

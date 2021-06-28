@@ -38,6 +38,7 @@ import com.eveningoutpost.dexdrip.Models.ReadingData;
 import com.eveningoutpost.dexdrip.Models.SensorSanity;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.LibreUtils;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -277,7 +278,11 @@ public class NFCReaderX {
     
     // returns true if checksum passed.
     public static boolean HandleGoodReading(final String tagId, byte[] data1, final long CaptureDateTime, final boolean allowUpload, byte []patchUid,  byte []patchInfo, boolean decripted_data ) {
-        Log.e(TAG, "HandleGoodReading called");
+        Log.e(TAG, "HandleGoodReading called dat1 len = " + data1.length);
+        if(data1.length > Constants.LIBRE_1_2_FRAM_SIZE) {
+            // It seems that some times we read a buffer that is bigger than 0x158, but we should only use the first 0x158 bytes.
+            data1 = java.util.Arrays.copyOfRange(data1, 0, Constants.LIBRE_1_2_FRAM_SIZE);
+        }
         SendLibrereading(tagId, data1, CaptureDateTime, patchUid, patchInfo);
         
         if(LibreOOPAlgorithm.isDecodeableData(patchInfo) && decripted_data == false 
@@ -933,7 +938,7 @@ public class NFCReaderX {
             return null;
         }
         List<GlucoseData> result;
-        if(libreBlock.byte_end == 344) {
+        if(libreBlock.byte_end == Constants.LIBRE_1_2_FRAM_SIZE) {
             result = parseData(0, "", libreBlock.blockbytes, libreBlock.timestamp).trend;
         }
         else if(libreBlock.byte_end == 44) {

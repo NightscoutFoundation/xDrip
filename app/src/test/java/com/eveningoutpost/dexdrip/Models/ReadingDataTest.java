@@ -369,6 +369,9 @@ public class ReadingDataTest extends RobolectricTestWithConfig {
         libreTrendPoint = new LibreTrendPoint(1000 , 100, 800, GlucoseData.DataSource.FRAM);
         assertWithMessage("rawsensorvalue").that(libreTrendPoint.isError()).isFalse();
 
+        libreTrendPoint = new LibreTrendPoint(1000 , 100, 0, GlucoseData.DataSource.FRAM);
+        assertWithMessage("rawsensorvalue").that(libreTrendPoint.isError()).isFalse();
+
         libreTrendPoint = new LibreTrendPoint();
         assertWithMessage("Empty point has no error.").that(libreTrendPoint.isError()).isFalse();
     }
