@@ -5,6 +5,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.BridgeResponse;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.LibreUtils;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -153,7 +154,7 @@ public class Bubble {
         String SensorSn = PersistentStore.getString("LibreSN");
 
 
-        byte[] data = Arrays.copyOfRange(s_full_data, 0, 344);
+        byte[] data = Arrays.copyOfRange(s_full_data, 0, Constants.LIBRE_1_2_FRAM_SIZE);
 //        Log.e(TAG,HexDump.toHexString(data));
         // Set the time of the current reading
         PersistentStore.setLong("libre-reading-timestamp", JoH.tsl());
