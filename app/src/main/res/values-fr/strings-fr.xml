@@ -143,7 +143,7 @@
     <string name="please_enter_two_calibrations_to_get_started">S\'il vous plaît effectuez deux calibrations pour commencer!</string>
     <string name="now_pair_with_your_dexcom_share">Maintenant jumeler avec votre Dexcom Share</string>
     <string name="now_choose_start_sensor_in_settings">Maintenant, choisissez démarrer votre capteur dans vos paramètres</string>
-    <string name="double_check_dex_receiver_serial_number">Vérifier le numéro de série du récepteur Dex. Il devrait être de 10 caractères. Ne pas oublier les lettres</string>
+    <string name="double_check_dex_receiver_serial_number">Vérifier le numéro de série du récepteur Dex, il devrait être de 10 caractères, ne pas oublier les lettres</string>
     <string name="please_set_dex_receiver_serial_number">S\'il vous plaît configurer votre numéro de série Dex Receiver dans les paramètres de l\'App</string>
     <string name="unfortunately_andoird_version_no_blueooth_low_energy">Malheureusement votre version Android ne supporte pas le Bluetooth Low Energy</string>
     <string name="waiting_for_packet">En attente de paquets</string>
@@ -177,7 +177,7 @@
     <string name="libre_last_x_minutes_graph">Graphe des dernières %d minutes du Libre</string>
     <string name="share_config_via_qr_code">Partager la config via le code QR</string>
     <string name="check_for_updated_version">Vérifier les mises à jour</string>
-    <string name="send_feedback_to_developer">Envoyer un mot au développeur</string>
+    <string name="send_feedback_to_developer">Envoyer des messages au développeur</string>
     <string name="home_screen">Écran d\'accueil</string>
     <string name="event_logs">Journal des événements</string>
     <string name="calibration_graph">Graphe de calibration</string>
@@ -289,6 +289,7 @@
     <string name="upload_data_to_dex_servers">Chargement des données vers les serveurs Dexcoms afin que vous puissiez utiliser vos données avec des applications Dexcoms</string>
     <string name="manage_followers">Gérer les Abonnés</string>
     <string name="manage_existing_followers">Gérer vos Abonnés existants et inviter de nouveaux.</string>
+    <string name="invite_follower">Inviter un Suiveur</string>
     <string name="glucose_calibration_and_other_alerts">Glycémie, calibration et autres alertes</string>
     <string name="alert_volume_profile">Profil de volume d\'alerte</string>
     <string name="smart_alerting">Alertes intelligentes</string>
@@ -959,20 +960,20 @@
     <string name="emergency_message_feature">Fonction Message d\'urgence</string>
     <string name="text_messages_can_be_sent_with_your_location_if_you_do_not_respond_to_alarms_this_feature_is_experimental_and_may_not_be_reliable">Des Sms peuvent être envoyés avec votre localisation si vous ne répondez pas aux alarmes. Cette fonctionnalité est expérimentale et peut ne pas être fiable.</string>
     <string name="your_name">Votre nom</string>
-    <string name="did_not_acknowledge_a_low_glucose_alert">%s n\'a pas reconnu une alerte de glycémie faible depuis %s</string>
-    <string name="did_not_acknowledge_a_high_glucose_alert">%s n\'a pas reconnu une alerte de glycémie élevé depuis %s</string>
-    <string name="has_not_had_glucose_data_received_for">%s n\'a pas reçu de données de glycémie depuis %s</string>
-    <string name="phone_has_not_been_used_for">Le téléphone %s n\'a pas été utilisé depuis %s</string>
+    <string name="did_not_acknowledge_a_low_glucose_alert">%1$s n\'a pas reconnu une alerte de glycémie faible depuis %2$s</string>
+    <string name="did_not_acknowledge_a_high_glucose_alert">%1$s n\'a pas reconnu une alerte de glycémie élevé depuis %2$s</string>
+    <string name="has_not_had_glucose_data_received_for">%1$s n\'a pas reçu de données de glycémie depuis %2$s</string>
+    <string name="phone_has_not_been_used_for">Le téléphone %1$s n\'a pas été utilisé depuis %2$s</string>
     <string name="is_requesting_assistance">%s demande assistance</string>
     <string name="is_testing_the_assistance_request_feature">%s teste la fonction de demande d\'assistance</string>
-    <string name="emergency_message_near_format_string">%s près de %s %s %s %s</string>
+    <string name="emergency_message_near_format_string">%1$s près de %2$s %3$s %4$s %5$s</string>
     <string name="choose_when_to_send_messages">Choisir quand envoyer les messages :</string>
     <string name="low_alert_not_acknowledged">Alerte basse non acceptée</string>
     <string name="high_alert_not_acknowledged">Alerte haute non acceptée</string>
     <string name="device_inactivity">Inactivité du périphérique</string>
     <string name="test_message_sending">Tester l\'envoi de message</string>
     <string name="d_selected_contacts_for_text_messages_format">%d contacts sélectionnés pour les messages texte</string>
-    <string name="xdrip_software_changed_format">Version du logiciel xDrip passée de %s à %s</string>
+    <string name="xdrip_software_changed_format">Version du logiciel xDrip passée de %1$s à %2$s</string>
     <string name="when_connected_to_the_audio_device_shown_below_switch_to_vehicle_mode">Passer en mode véhicule lorsque connecté au périphérique audio ci-dessous.</string>
     <string name="select_device">Sélectionner le périphérique</string>
     <string name="no_bluetooth_audio_found">Aucun audio bluetooth trouvé</string>
@@ -1342,7 +1343,7 @@
     <string name="summary_show_home_on_boot">Afficher l\'écran xDrip automatiquement après le démarrage de l\'appareil</string>
     <string name="title_show_home_on_boot">Afficher xDrip au démarrage</string>
     <string name="eula">EULA</string>
-    <string name="summary_plus_accept_follower_actions">Les traitements et les calibrations des abonnés seront acceptés</string>
+    <string name="summary_plus_accept_follower_actions">Les traitements et les étalonnages des abonnés seront acceptés</string>
     <string name="title_plus_accept_follower_actions">Accepter les actions des abonnés</string>
     <string name="summary_plus_whole_house">Participer au réseau de la maison</string>
     <string name="title_plus_whole_house">Maison entière</string>
@@ -1451,6 +1452,7 @@
     <string name="__do_you_want_to_change_settings_or_start_sensor">\n\nVoulez-vous changer les paramètres ou démarrer le capteur ?</string>
     <string name="change_settings">Modifier les paramètres</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Voulez-vous supprimer et réinitialiser les calibrations de ce capteur ?</string>
+    <string name="sensor_stop_confirm">Voulez-vous arrêter le capteur ?</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Vous avez un ancien paramètre expérimental de prédiction de la glycémie activé.\n\nCe N\'est PAS RECOMMANDÉ et pourrait causer des dégâts.\n\nPuis-je de désactiver pour vous?</string>
     <string name="settings_issue">Problème des paramètres !</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Voulez-vous utiliser ce résultat de glycémie capillaire synchronisé pour calibrer?\n\n(vous pouvez changer lorsque cette boîte de dialogue est affichée dans Paramètres)</string>
@@ -1556,6 +1558,6 @@
     <string name="enable_streaming_dialog_yes">Se connecter à ce Freestyle Libre2</string>
     <string name="enable_streaming_dialog_no">Ne pas se connecter à ce Freestyle Libre 2 </string>
     <string name="enable_streaming_dialog_dont_ask_again">Ne plus me le demander</string>
-    <string name="enable_streaming_dialog_title">Connexion du Freestyle Libre 2 au Bluetooth</string>
     <string name="enable_streaming_dialog_text">Voulez-vous connecter xDrip à ce capteur ? Cela empêchera le lecteur Freestyle Libre 2 et l\'application LibreLink de recevoir les alertes. Appuyez sur oui et scannez vous à nouveau pour vous connecter (choisissez de ne pas vous connecter si vous voulez exécuter xDrip avec l\'application patchée)</string>
+    <string name="enable_streaming_dialog_title">Connexion du Freestyle Libre 2 au Bluetooth</string>
 </resources>

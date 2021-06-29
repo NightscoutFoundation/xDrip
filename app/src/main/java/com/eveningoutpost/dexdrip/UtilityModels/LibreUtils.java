@@ -61,7 +61,7 @@ public class LibreUtils {
     }
 
     public static boolean verify(byte[] data) {
-        if(data.length < 344) {
+        if(data.length < Constants.LIBRE_1_2_FRAM_SIZE) {
             Log.e(TAG, "Must have at least 344 bytes for libre data");
             return false;
         }
