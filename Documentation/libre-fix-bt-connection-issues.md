@@ -1,4 +1,5 @@
 # If you have a lot of missed readings:
+
 You can try other settings:
 * Solution 0:
   * Make sure xDrip is not being killed by OS
@@ -18,11 +19,13 @@ You can try other settings:
   * Enable or disable ```Always discover services```
   
 # On each try, make sure to:
+
 * reset your device
 * reboot phone
 * use the latest xDrip app
 
-# Provide more info so that we can support you
+# Provide more info so that we can support you:
+
 * solution 1:
   * Enable engineering mode
     * Look here: https://github.com/NightscoutFoundation/xDrip/wiki/Engineering-Mode
