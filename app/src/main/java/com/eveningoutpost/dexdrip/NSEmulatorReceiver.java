@@ -196,17 +196,17 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
 
                                 break;
                             case Intents.XDRIP_DECODE_FARM_RESULT:
-                                Log.e(TAG, "recieved message XDRIP_DECODE_FARM_RESULT");
-                                handleOop2DecodeFarmResult(bundle);
+                                Log.i(TAG, "recieved message XDRIP_DECODE_FARM_RESULT");
+                                handleOop2DecodeFramResult(bundle);
                                 break;
                                 
                             case Intents.XDRIP_DECODE_BLE_RESULT:
-                                Log.e(TAG, "recieved message XDRIP_DECODE_BLE_RESULT");
+                                Log.i(TAG, "recieved message XDRIP_DECODE_BLE_RESULT");
                                 handleOop2DecodeBleResult(bundle);
                                 break;
                                 
                             case Intents.XDRIP_BLUETOOTH_ENABLE_RESULT:
-                                Log.e(TAG, "recieved message XDRIP_BLUETOOTH_ENABLE_RESULT");
+                                Log.i(TAG, "recieved message XDRIP_BLUETOOTH_ENABLE_RESULT");
                                 handleOop2BlutoothEnableResult(bundle);
                                 break;
 
@@ -249,7 +249,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
         
     }
     
-    private void handleOop2DecodeFarmResult(Bundle bundle) {
+    private void handleOop2DecodeFramResult(Bundle bundle) {
         if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             Log.e(TAG, "External OOP algorithm is on, ignoring decoded data.");
             return;
@@ -279,10 +279,10 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
         }
         
         // Does this throws exception???
-        byte[] farm_data = Base64.decode(decoded_buffer, Base64.NO_WRAP);
+        byte[] fram_data = Base64.decode(decoded_buffer, Base64.NO_WRAP);
         byte []patchUid = Base64.decode(patchUidString, Base64.NO_WRAP);
         byte []patchInfo = Base64.decode(patchInfoString, Base64.NO_WRAP);
-        LibreOOPAlgorithm.handleOop2DecryptFarmResult(tagId, CaptureDateTime, farm_data, patchUid, patchInfo);
+        LibreOOPAlgorithm.handleOop2DecodeFramResult(tagId, CaptureDateTime, fram_data, patchUid, patchInfo);
     }
     
     private void handleOop2DecodeBleResult(Bundle bundle) {
@@ -348,7 +348,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
         byte[] nfc_unlock_buffer = Base64.decode(nfcUnlockBufferString, Base64.NO_WRAP);
         byte []patchUid = Base64.decode(patchUidString, Base64.NO_WRAP);
         byte []patchInfo = Base64.decode(patchInfoString, Base64.NO_WRAP);
-        LibreOOPAlgorithm.handleOop2BlutoothEnableResult(bt_unlock_buffer, nfc_unlock_buffer, patchUid, patchInfo, deviceName);
+        LibreOOPAlgorithm.handleOop2BluetoothEnableResult(bt_unlock_buffer, nfc_unlock_buffer, patchUid, patchInfo, deviceName);
     }
 
 

@@ -15,8 +15,9 @@ public class BulkUpRequestTx extends BaseTx {
 
     private boolean noAck = false;
     public BulkUpRequestTx(final int type, final int id, final int length, final byte[] initialData, boolean noAck) {
-
-        if (initialData == null || initialData.length < length) return; // fail to initialize if data invalid
+        if (initialData == null || ((id & 0x80)==0 && initialData.length < length)) {
+            return; // fail to initialize if data invalid
+        }
 
         this.noAck = noAck;
         init(OPCODE_BULK_UP_REQUEST, 19);
@@ -24,7 +25,7 @@ public class BulkUpRequestTx extends BaseTx {
         data.put((byte) (type | (noAck ? 0x80 : 0))); // 1 = window
         data.put((byte) id); // window id etc
         data.putShort((short) length);
-        bytesIncluded = data.remaining();
+        bytesIncluded = Math.min(data.remaining(), initialData.length);
         data.put(initialData, 0, bytesIncluded);
     }
 
@@ -43,6 +44,14 @@ public class BulkUpRequestTx extends BaseTx {
         } else {
             return OPCODE_INVALID;
         }
+    }
+
+    public static int encodeLength(final int sequence, final int length) {
+        if (sequence == 0) return length;
+        if (length > 256 || length == 0 || sequence > 255) {
+            throw new RuntimeException("Length or sequence out of range: " + length + " " + sequence);
+        }
+        return (sequence << 8 | (length - 1));
     }
 
 }

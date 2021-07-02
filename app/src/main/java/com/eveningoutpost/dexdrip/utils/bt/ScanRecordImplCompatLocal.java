@@ -19,6 +19,9 @@ public class ScanRecordImplCompatLocal implements ScanRecord {
     @Nullable
     private final List<ParcelUuid> serviceUuids;
 
+    @Nullable
+    private final List<ParcelUuid> serviceSolicitationUuids;
+
     private final SparseArray<byte[]> manufacturerSpecificData;
 
     private final Map<ParcelUuid, byte[]> serviceData;
@@ -34,6 +37,7 @@ public class ScanRecordImplCompatLocal implements ScanRecord {
 
     public ScanRecordImplCompatLocal(
             @Nullable List<ParcelUuid> serviceUuids,
+            @Nullable List<ParcelUuid> serviceSolicitationUuids,
             SparseArray<byte[]> manufacturerData,
             Map<ParcelUuid, byte[]> serviceData,
             int advertiseFlags,
@@ -42,6 +46,7 @@ public class ScanRecordImplCompatLocal implements ScanRecord {
             byte[] bytes
     ) {
         this.serviceUuids = serviceUuids;
+        this.serviceSolicitationUuids = serviceSolicitationUuids;
         this.manufacturerSpecificData = manufacturerData;
         this.serviceData = serviceData;
         this.deviceName = localName;
@@ -65,6 +70,15 @@ public class ScanRecordImplCompatLocal implements ScanRecord {
     @Nullable
     public List<ParcelUuid> getServiceUuids() {
         return serviceUuids;
+    }
+
+    /**
+     * Returns a list of service solicitation UUIDs within the advertisement that are used to identify the
+     * bluetooth GATT services the peripheral requires on the Central.
+     */
+    @Nullable
+    public List<ParcelUuid> getServiceSolicitationUuids() {
+        return serviceSolicitationUuids;
     }
 
     /**
