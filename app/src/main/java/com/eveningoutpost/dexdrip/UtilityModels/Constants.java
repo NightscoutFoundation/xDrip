@@ -63,4 +63,5 @@ public class Constants {
     public static final int HEART_RATE_JOB_ID = 60920012;
     public static final int APK_DOWNLOAD_JOB_ID = 60920014;
 
+    public static final int LIBRE_1_2_FRAM_SIZE = 344;
 }

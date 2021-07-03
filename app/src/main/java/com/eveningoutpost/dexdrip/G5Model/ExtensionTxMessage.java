@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.G5Model;
 // jamorham
 
 public class ExtensionTxMessage extends BaseMessage {
-    static final byte opcode = (byte) 0xF0;
+    static final byte opcode = (byte) 0x42;
 
     public static final int PARAM_ENABLE = 1;
     public static final int PARAM_DISABLE = 2;

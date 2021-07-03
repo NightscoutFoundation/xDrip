@@ -776,6 +776,7 @@
     <string name="collector_battery_alerts">Alerte despre bateria aparatului colector</string>
     <string name="low_battery_percentage">Procentaj baterie scazută</string>
     <string name="notify_data_arrives_master"><![CDATA[Notifică când datele sosesc de la master dacă intervalul este > 20 de minute.]]></string>
+    <string name="follower_chime_new">Alertă Urmaritor pentru valoare nouă</string>
     <string name="carb_ratio">Raport carbohidrați/insulină</string>
     <string name="enable_dedicated_insulin_profiles">Configurare profil insulină</string>
     <string name="desc_enable_dedicated_insulin_profiles">Aici se pot activa sau configura diverse profiluri de insulină</string>
@@ -958,20 +959,20 @@
     <string name="emergency_message_feature">Caracteristici ale Mesajului de Urgenţă</string>
     <string name="text_messages_can_be_sent_with_your_location_if_you_do_not_respond_to_alarms_this_feature_is_experimental_and_may_not_be_reliable">Mesajele text pot fi trimise cu locația dvs. dacă nu răspundeți la alarme. Această funcție este experimentală și este posibil să nu fie de încredere.</string>
     <string name="your_name">Numele tău</string>
-    <string name="did_not_acknowledge_a_low_glucose_alert">%s nu a confirmat o alertă de hipoglicemie de %s</string>
-    <string name="did_not_acknowledge_a_high_glucose_alert">%s nu a confirmat o alertă de hiperglicemie de %s</string>
-    <string name="has_not_had_glucose_data_received_for">%s nu a primit date despre glicemie de %s</string>
-    <string name="phone_has_not_been_used_for">Telefonul %s nu a fost folosit de %s</string>
+    <string name="did_not_acknowledge_a_low_glucose_alert">%1$s nu a confirmat o alertă de hipoglicemie de %2$s</string>
+    <string name="did_not_acknowledge_a_high_glucose_alert">%1$s nu a confirmat o alertă de hiperglicemie de %2$s</string>
+    <string name="has_not_had_glucose_data_received_for">%1$s nu a primit date despre glicemie de %2$s</string>
+    <string name="phone_has_not_been_used_for">Telefonul %1$s nu a fost folosit de %2$s</string>
     <string name="is_requesting_assistance">%s solicită asistență</string>
     <string name="is_testing_the_assistance_request_feature">%s testează funcția de cerere de asistență</string>
-    <string name="emergency_message_near_format_string">%s aproape %s %s %s %s</string>
+    <string name="emergency_message_near_format_string">%1$s aproape %2$s %3$s %4$s %5$s</string>
     <string name="choose_when_to_send_messages">Alege când să trimiți mesajele:</string>
     <string name="low_alert_not_acknowledged">Alerta Hipo nu a fost acceptată</string>
     <string name="high_alert_not_acknowledged">Alerta Hiper nu a fost acceptată</string>
     <string name="device_inactivity">Inactivitate dispozitiv</string>
     <string name="test_message_sending">Trimitere Mesaj de Test</string>
     <string name="d_selected_contacts_for_text_messages_format">%d contacte selectate pentru mesaje text</string>
-    <string name="xdrip_software_changed_format">Versiunea software a xDrip a fost schimbată de la: %s la %s</string>
+    <string name="xdrip_software_changed_format">Versiunea software a xDrip a fost schimbată de la: %1$s la %2$s</string>
     <string name="when_connected_to_the_audio_device_shown_below_switch_to_vehicle_mode">Comutați la Modul Vehicul când este conectat la dispozitivul audio afișat mai jos.</string>
     <string name="select_device">Selectează Dispozitivul</string>
     <string name="no_bluetooth_audio_found">Nu s-a găsit niciun audio bluetooth</string>
@@ -1090,6 +1091,7 @@
     <string name="hours">Ore</string>
     <string name="weeks">Săptămâni</string>
     <string name="repeat">Repetă</string>
+    <string name="chime_only">Doar Sonerie</string>
     <string name="alternating">Alternativ</string>
     <string name="weekdays">Zile din săptămână</string>
     <string name="weekends">În weekenduri</string>
@@ -1554,6 +1556,6 @@
     <string name="enable_streaming_dialog_yes">conectează-te la acest senzor libre2</string>
     <string name="enable_streaming_dialog_no">Nu te conecta la acest senzor libre2 </string>
     <string name="enable_streaming_dialog_dont_ask_again">Nu mă mai întreba asta din nou</string>
-    <string name="enable_streaming_dialog_title">Conectarea senzorului libre la bluetooth</string>
     <string name="enable_streaming_dialog_text">Doriți să conectați xDrip cu acest senzor? Acest lucru va face ca cititorul libre și librelink să nu mai primească alerte. Apăsați Da și scanați din nou pentru a vă conecta (alegeți să nu vă conectați dacă doriți să rulați xDrip cu aplicația modificată)</string>
+    <string name="enable_streaming_dialog_title">Conectarea senzorului libre la bluetooth</string>
 </resources>

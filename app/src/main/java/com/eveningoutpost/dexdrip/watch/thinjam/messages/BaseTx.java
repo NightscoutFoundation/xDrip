@@ -67,6 +67,9 @@ public abstract class BaseTx {
         return data.getInt() & 0xffffffffL;
     }
 
+    public long getUnsignedInt(int position) {
+        return data.getInt(position) & 0xffffffffL;
+    }
 
     public String toS() {
         return JoH.defaultGsonInstance().toJson(this);

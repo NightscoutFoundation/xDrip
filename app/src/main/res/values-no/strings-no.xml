@@ -24,6 +24,7 @@
     <string name="title_activity_usb_connected">USB-tilkoblet aktivitet</string>
     <string name="snooze">Slumre</string>
     <string name="snooze_hint">Utsett varsling i x minutter</string>
+    <string name="ok">OK</string>
     <string name="cancel">Avbryt</string>
     <string name="no">Nei</string>
     <string name="pref_sensor_location_dont_ask_again"> Ikke spør meg igjen</string>
@@ -39,8 +40,12 @@
     <string name="scan_share2_barcode">Skan Delingsstrekkode</string>
     <string name="pref_share2_scan_barcode_summary">Eller skanne strekkoden på mottakeren</string>
     <!-- MongoDB Settings -->
+    <string name="pref_title_mongodb">MongoDB</string>
+    <string name="pref_summary_mongodb_enabled">Direkte opplasting av database, ikke anbefalt for Nightscout</string>
+    <string name="pref_title_mongodb_uri">URI</string>
     <string name="pref_dialog_mongodb_uri">Skriv MongoDB URI\"</string>
     <string name="pref_message_mongodb_uri">Erstatt eksempelverdier i {}ene med dine riktige verdier</string>
+    <string name="pref_default_mongodb_uri">mongodb://{user}:{password}@{host}.mongolab.com:{11111}/{database}</string>
     <string name="pref_title_mongodb_collection">Samlingsnavn</string>
     <string name="pref_dialog_mongodb_collection">Skriv inn navnet på samlingen</string>
     <string name="pref_message_mongodb_collection">Dette er navnet på samlingen hvor CGM data vil bli lagret</string>
@@ -50,9 +55,11 @@
     <!-- API Settings -->
     <string name="pref_title_api">Nightscout-synkronisering (REST)</string>
     <string name="pref_title_api_enabled">Aktivert</string>
+    <string name="pref_summary_api_enabled">REST API er standard metode for å koble til Nightscout</string>
     <string name="pref_title_api_url">Base-URL</string>
     <string name="pref_dialog_api_url">Skriv inn Base-URL for API</string>
     <string name="pref_message_api_url">Dette er bare Base-URL, opplaster vil automatisk legge til /oppføringer for POST. API_SECRET på serveren skal samsvare med yourpassphrase i denne innstillingen.</string>
+    <string name="pref_default_api_url">https://dittpassord@{YOUR-SITE}.azurewebsites.net/api/v1/</string>
     <!-- wifi Settings -->
     <string name="wifi_recievers_dialog_message">Kommaseparert liste av ip:port (for eksempel 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
     <string name="wifi_recievers_dialog_title">Skriv inn IP-adresser og porter mottakere (inkludert mongodb adresser hvis nødvendig)</string>
@@ -72,6 +79,22 @@
     <string name="pref_pebble_display_high_line">Vis Høy Linje</string>
     <string name="pref_pebble_display_low_line">Vis Lav Linje</string>
     <!-- Amazfit Settings -->
+    <string name="amazfit_sync_service">AmazFit Sync Service</string>
+    <string name="pref_amazfit_enable_summary">Skru på Amazfit Data støtte</string>
+    <string name="pref_amazfit_enable">Skru på</string>
+    <string name="pref_amazfit_tile">Amazfit Service</string>
+    <string name="pref_amazfit_BG_alert_enable_summary">Sender aktive BG varsler til Smartklokke</string>
+    <string name="pref_amazfit_BG_alert_enable">Aktiver</string>
+    <string name="pref_amazfit_BG_alert_title">BS varsler</string>
+    <string name="pref_amazfit_other_alert_enable_summary">Sender andre varsler til smartklokke</string>
+    <string name="pref_amazfit_other_alert_enable">Aktiver</string>
+    <string name="pref_amazfit_other_alert_title">Andre varsler</string>
+    <string name="pref_amazfit_watchface_graph_dots_summary">Viser tinyz prikker i stedet for små</string>
+    <string name="pref_amazfit_watchface_graph_enable">Aktiver</string>
+    <string name="pref_amazfit_watchface_graph_hours_summary">angi hvor mange timer i grafen</string>
+    <string name="pref_amazfit_widget_graph_hours_summary">angi hvor mange timer i grafen</string>
+    <string name="pref_amazfit_widget_graph_dots_summary">Viser mini prikker i stedet for små</string>
+    <string name="pref_amazfit_widget_graph_enable">Aktiver</string>
     <string name="toast_crash">Noe gikk galt :( en rapport har blitt sendt for å hjelpe til å løse problemet.</string>
     <string name="taskerConfigInstruction">Bare klikk på Tick-ikonet her for å bekrefte. Du bør ikke trenger å endre konfigurasjonen.</string>
     <string name="taskerConfiguration">Tasker-konfigurasjon</string>
@@ -129,15 +152,20 @@
     <string name="checking_for_update">Ser etter oppdatering..</string>
     <string name="signal_missed">Mistet Signal</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} Minutter siden|1#{0, number, integer} Minutt siden|1&lt;{0, number, integer} Minutter siden}</string>
+    <string name="expires_at">Slutter {0}</string>
     <string name="space_minutes_ago">" Minutter siden"</string>
     <string name="space_minute_ago">" Minutt siden"</string>
     <string name="show_parakeet_map">Vis Parakeet kart</string>
     <string name="switch_parakeet_to_setup_mode">Bytt Parakeet til oppsettsmodus</string>
     <string name="view_events_log">Se Aktivitetslogg</string>
+    <string name="show_libre_trend">Vis libre trend</string>
+    <string name="libre_15_minutes_graph">Libre 15 minutters graf</string>
+    <string name="libre_last_x_minutes_graph">Libre siste %d minutters graf</string>
     <string name="share_config_via_qr_code">Del konfigurasjon med QR-kode</string>
     <string name="check_for_updated_version">Sjekk om det finnes oppdatert versjon</string>
     <string name="send_feedback_to_developer">Send tilbakemelding til utvikleren</string>
     <string name="home_screen">Startskjermen</string>
+    <string name="event_logs">Hendelseslogg</string>
     <string name="calibration_graph">Kalibreringsgraf</string>
     <string name="glucose_units">Glukoseenheter</string>
     <string name="mmol_or_mgdl_high_and_low">mmol/l eller mg/dl høyt og lavt</string>
@@ -187,6 +215,7 @@
     <string name="calculate_including_glucose_trend">Beregn inkludert glukosetrend</string>
     <string name="use_trend_momentum">Bruk momenttrend</string>
     <string name="add_calibration">Legg til kalibrering</string>
+    <string name="system_status">Systemstatus</string>
     <string name="settings">Innstillinger</string>
     <string name="calibration_data_table">Kalibrerings Datatabell</string>
     <string name="bg_data_table">BG Datatabell</string>
@@ -253,6 +282,7 @@
     <string name="start_snoozed">Start Utsatt</string>
     <string name="adjust_all_by_a_factor">Juster alle med en faktor</string>
     <string name="reset">Tilbakestill</string>
+    <string name="pebble_and_android_wear_options">Alternativer for ulike klokker</string>
     <string name="customize_colours">Tilpass farger</string>
     <string name="xdrip_plus_color_settings">xDrip+ fargeinnstillinger</string>
     <string name="glucose_values_and_lines">Glukoseverdier og linjer</string>
@@ -275,6 +305,7 @@
     <string name="speak_your_treatment">Snakk inn behandlingen f.eks:\nx.x enheter insulin / xx gram karbohydrater</string>
     <string name="speech_recognition_is_not_supported">Talegjenkjenning er ikke støttet</string>
     <string name="treatment_note">Behandlingnotat</string>
+    <string name="accessibility_description">xDrip bruker funksjonen Tilgjengelighet bare for å justere skjermen når enheten er låst. Dette er sannsynligvis nyttig hvis du har en telefon med funksjonen \"Alltid på\" og har den aktivert. xDrip samhandler ikke med Android på noen annen måte.</string>
     <string name="could_not_export_database">Kunne ikke eksportere Database :(</string>
     <string name="exported_to">"Eksportert til "</string>
     <string name="default_to_voice_input_next_time">Bruk talegjenkjenning neste gang</string>
@@ -371,6 +402,7 @@
     <string name="choose_sound_used_for_predicted_low_alarm">Velg alarmlyd for beregnet lav.</string>
     <string name="notify_when_parakeet_device_stops_checking_in">Gi beskjed når parakeet enheten slutter å sjekker inn</string>
     <string name="parakeet_related_alerts">Parakeet relaterte varsler</string>
+    <string name="raise_parakeet_notification_silently_when_charging">Aktiver parakeet varsel stille under lading</string>
     <string name="silent_alert_when_charging">Vibrasjon ved lading</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Varsler starte Utsatt og må vedvare en stund å faktisk aktivere</string>
     <string name="alarms_silenced_during_telephone_calls">Alarmer dempet under telefonsamtaler</string>
@@ -417,6 +449,7 @@
     <string name="help_the_developers_improve_the_algorithm">Hjelp utviklerne å forbedre xDrip algoritmen.</string>
     <string name="help_the_community">Hjelpe samfunnet</string>
     <string name="double_tap_or_pinch_to_zoom">Dobbelttrykk eller knip for å zoome.</string>
+    <string name="start_sensor">Start sensor</string>
     <string name="debug_and_other_misc_options">Feilsøking og andre diverse alternativer</string>
     <string name="low_glucose_values">Lave glukoseverdier</string>
     <string name="revert_to_default">Gå tilbake til standard</string>
@@ -509,12 +542,17 @@
     <string name="title_activity_btglucose_meter">Scan</string>
     <string name="notify_when_wear_low_battery">Deaktiverer tungen innsamlingstjeneste for Wear, siden Wear har lavt batteri!</string>
     <string name="notify_disable_wearG5_on_missedreadings">Deaktiverer tungen innsamlingstjeneste for Wear på grunn av  %1$d minutter med mistede avlesninger på klokken!</string>
+    <string name="label_show_insulin">U:%1$su</string>
     <string name="label_show_carbs">Karbohydrater:%1$sg</string>
+    <string name="label_show_royceratio">C/I:%1$s</string>
     <string name="label_show_steps">Skritt:%1$d</string>
+    <string name="label_show_steps_km">km:%1$s</string>
+    <string name="label_show_steps_mi">mi:%1$s</string>
     <string name="pref_summary_influxdb_enabled">Hvis du bruken en private InfluxDB database, bør denne være aktivert</string>
     <string name="pref_message_influxdb_uri">Butt ut eksempelverdier i {}\' med dine egne verdier</string>
     <string name="pref_dialog_influxdb_uri">InfluxDB URI</string>
     <string name="pref_message_influxdb_database">Database for å lagre målinger. Husk å lage denne på serveren.</string>
+    <string name="pref_dialog_influxdb_database">Database</string>
     <string name="pref_message_influxdb_username">Brukernavn for autentisering. Det er anbefalt å ikke tillate bruk uten autentisering.</string>
     <string name="pref_dialog_influxdb_username">Bruker</string>
     <string name="pref_message_influxdb_password">Passord for autentisering. Det er anbefalt å ikke tillate bruk uten autentisering.</string>
@@ -750,6 +788,7 @@
     <string name="acccept_remote_snoozes">Aksepter utsettelse fra andre</string>
     <string name="only_accept_same_network">Bare aksepter hvis den andre enhetens trådløsnett starter med samme bokstaver som vår og er ganske like</string>
     <string name="wifi_name_must_match">Trådløsnavn på stemme</string>
+    <string name="yes_send_it">JA, send den!</string>
     <string name="movement_detection_and_vehicle_mode">Oppdag bevegelse og bilmodus</string>
     <string name="xdrip_motion_tracking">xDrip+ følger bevegelser</string>
     <string name="detect_motion_types">Bruk sensorer for å oppdage bevegelsestype</string>
@@ -770,7 +809,11 @@
     <string name="repeat_sound">Repeter lyd</string>
     <string name="enable_telemetry">Aktiver telemetri</string>
     <string name="send_data_to_developers">Send data til utviklerne om suksessforhold for forskjellige enheter.</string>
+    <string name="try_to_work_around_noisy_readings_ultrasensitive">Prøv å fikse data med støy selv ved lave støyverdier (Kun i Teknisk modus)</string>
     <string name="sidiary_date_title">Eksporter data fra når?</string>
+    <string name="blukon">Blucon</string>
+    <string name="tomato">Tomato</string>
+    <string name="bubble">Boble</string>
     <string name="use_gravity_sensor_to_rotate_items">Bruk tyngdekraftsensor for å rotere</string>
     <string name="low_bridge_battery">Bro har lavt batteri</string>
     <string name="reminders">Påminnelser</string>
@@ -778,6 +821,7 @@
     <string name="install_text_to_speech_data_question">Installer tekst-til-tale data?</string>
     <string name="after_installation_of_languages_you_might_have_to">(Etter installasjon av språk må du kanskje trykke \"Start innsamler på nytt\" i Systemstatus.)</string>
     <string name="stop_sensor">Stopp Sensor</string>
+    <string name="dont_stop_just_reset_all_calibrations">Ikke stopp, bare tilbakestill alle kalibreringer</string>
     <string name="initial_calibration">Initiell kalibrering</string>
     <string name="calibration_can_not_be_blank">Kalibrering kan ikke være tom</string>
     <string name="invalid_calibration_number">Ugyldig kalibreringsverdi!</string>
@@ -795,5 +839,20 @@
     <string name="other_notes">Andre notater:</string>
     <string name="delete_future_data">Slett data i fremditen</string>
     <string name="show_only_untranslated">Vis bare uoversatte</string>
+    <string name="data_collector_running">Datasamling pågår</string>
     <!-- trend arrow for speak -->
+    <string name="DoubleDown">Dobbel ned</string>
+    <string name="SingleDown">Enkelt ned</string>
+    <string name="FortyFiveDown">Litt ned</string>
+    <string name="Flat">Flat</string>
+    <string name="FortyFiveUp">Litt opp</string>
+    <string name="SingleUp">Enkelt opp</string>
+    <string name="DoubleUp">Dobbel opp</string>
+    <string name="Speech_speed">Talehastighet</string>
+    <string name="advanced_bluereader_settings_summary">Avanserte blueReader innstillinger</string>
+    <string name="advanced_bluereader_settings">Innstillinger for blueReader</string>
+    <string name="bluereader_turnoff_sum">Skru av blueReader hvis batterinivå er lavere enn valgt verdi</string>
+    <string name="summary_bluetooth_meter_for_calibrations_auto">Kalibrer med nye blodsukkermålinger hvis tilstanden synes riktig uten å be om samtykke (eksperimentell)</string>
+    <string name="title_bluetooth_meter_for_calibrations_auto">Automatisk kalibrering</string>
+    <string name="enable_streaming_dialog_dont_ask_again"> Ikke spør meg igjen</string>
 </resources>

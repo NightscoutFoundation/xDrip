@@ -21,7 +21,7 @@
     <string name="navigation_drawer_open">Gezinti çubuğunu aç</string>
     <string name="navigation_drawer_close">Gezinti çubuğunu kapat</string>
     <string name="title_activity_calibration_check_in">Kalibrasyon</string>
-    <string name="title_activity_usb_connected">Usb Bağlantılı aktivite</string>
+    <string name="title_activity_usb_connected">USB Bağlantılı aktivite</string>
     <string name="snooze">Ertele</string>
     <string name="snooze_hint">Alarmı x dakika kadar ertele</string>
     <string name="ok">TAMAM</string>
@@ -83,6 +83,13 @@
     <string name="pref_amazfit_enable_summary">Amazfit veri desteğini etkinleştir</string>
     <string name="pref_amazfit_enable">Etkinleştir</string>
     <string name="pref_amazfit_tile">Amazfit Servisi</string>
+    <string name="pref_amazfit_BG_alert_enable">Etkinleştir</string>
+    <string name="pref_amazfit_BG_alert_title">KŞ Uyarıları</string>
+    <string name="pref_amazfit_other_alert_enable_summary">Diğer uyarıları akıllı telefona gönder</string>
+    <string name="pref_amazfit_other_alert_enable">Etkinleştir</string>
+    <string name="pref_amazfit_other_alert_title">Diğer Uyarılar</string>
+    <string name="pref_amazfit_watchface_graph_enable">Etkinleştir</string>
+    <string name="pref_amazfit_widget_graph_enable">Etkinleştir</string>
     <string name="toast_crash">Bir şeyler ters gitti :( sorunun giderilebilmesi için bir rapor gönderildi.</string>
     <string name="taskerConfigInstruction">Onaylamak için Onay simgesini tıklamanız yeterlidir. Yapılandırma dizesini değiştirmenize gerek yok.</string>
     <string name="taskerConfiguration">Tasker yapılandırması</string>
@@ -387,6 +394,7 @@
     <string name="choose_sound_used_for_predicted_low_alarm">Tahmin edilen düşük alarm için kullanılacak sesi seçin.</string>
     <string name="notify_when_parakeet_device_stops_checking_in">Parakeet cihazı kontrol etmeyi durdurduğunda bildir</string>
     <string name="parakeet_related_alerts">Parakeet ile ilgili uyarılar</string>
+    <string name="raise_parakeet_notification_silently_when_charging">Şarj ederken parakeet bildirimini sessize al</string>
     <string name="silent_alert_when_charging">Şarj olurken sessiz uyarı</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Uyarılar sessizce başlar ve bir süre sonra etkinleştir</string>
     <string name="alarms_silenced_during_telephone_calls">Telefon görüşmeleri sırasında uyarıları sustur</string>
@@ -654,7 +662,7 @@
     <string name="use_multi_block">Daha hızlı multi-block okuma yöntemini kullan</string>
     <string name="use_any_tag">Any-tag optimize edilmiş okuma yöntemini kullan</string>
     <string name="low_level_value">Düşük düzey tanı/prototip değeri</string>
-    <string name="transmitter_id">Dexcom Verici Kımlığı, örneğin 12AB3</string>
+    <string name="transmitter_id">Dexcom Transmitter Kımlığı, örneğin 12AB3</string>
     <string name="advanced_g5_settings">Nadir durumlar için gelişmiş G5 ayarları</string>
     <string name="g5_debug_settings">G5/G6 hata ayıklama ayarları</string>
     <string name="g5_scan_constantly">Bazı cihazlar sürekli tararken daha iyi çalışır, diğerleri değil. Bu ayar seçili değilse ve okuma güvenilir ise, pil ömrünü uzatmış olmanız gerekir. Normalde bunu devre dışı bıırakmak en iyisidir</string>
@@ -918,20 +926,20 @@
     <string name="emergency_message_feature">Acil Durum Mesaj Özelliği</string>
     <string name="text_messages_can_be_sent_with_your_location_if_you_do_not_respond_to_alarms_this_feature_is_experimental_and_may_not_be_reliable">Alarmlara cevap vermezseniz, metin mesajları konumunuzla birlikte gönderilebilir. Bu özellik deneyseldir ve güvenilir olmayabilir.</string>
     <string name="your_name">Adınız</string>
-    <string name="did_not_acknowledge_a_low_glucose_alert">%s, %s için düşük glikoz uyarısını onaylamadı</string>
-    <string name="did_not_acknowledge_a_high_glucose_alert">%s, %s için yüksek glikoz uyarısını onaylamadı</string>
-    <string name="has_not_had_glucose_data_received_for">%s için %s glikoz verisi almadı</string>
-    <string name="phone_has_not_been_used_for">%s telefon %s için kullanılmadı</string>
+    <string name="did_not_acknowledge_a_low_glucose_alert">%1$s, %2$s için düşük glikoz uyarısını onaylamadı</string>
+    <string name="did_not_acknowledge_a_high_glucose_alert">%1$s, %2$s için yüksek glikoz uyarısını onaylamadı</string>
+    <string name="has_not_had_glucose_data_received_for">%1$s için %2$s glikoz verisi almadı</string>
+    <string name="phone_has_not_been_used_for">%1$s telefon %2$s için kullanılmadı</string>
     <string name="is_requesting_assistance">%s destek işlevi isteğini test ediyor</string>
     <string name="is_testing_the_assistance_request_feature">%s destek işlevi isteğini test ediyor</string>
-    <string name="emergency_message_near_format_string">%s yakınında %s %s %s %s</string>
+    <string name="emergency_message_near_format_string">%1$s yakınında %2$s %3$s %4$s %5$s</string>
     <string name="choose_when_to_send_messages">Mesajların ne zaman gönderileceğini seçin:</string>
     <string name="low_alert_not_acknowledged">Hiperglisemi (Düşük) Uyarı onaylanmadı</string>
     <string name="high_alert_not_acknowledged">Hiperglisemi (Yüksek) Uyarı onaylanmadı</string>
     <string name="device_inactivity">Cihaz hareketsiz</string>
     <string name="test_message_sending">Test Mesajı Gönderiliyor</string>
     <string name="d_selected_contacts_for_text_messages_format">Metin mesajları için %d seçili kişi</string>
-    <string name="xdrip_software_changed_format">xDrip yazılım sürümü şu adresten değiştirildi: %s şuna %s</string>
+    <string name="xdrip_software_changed_format">xDrip yazılım sürümü şu adresten değiştirildi: %1$s şuna %2$s</string>
     <string name="when_connected_to_the_audio_device_shown_below_switch_to_vehicle_mode">Aşağıda gösterilen ses cihazına bağlandığında Araç Moduna geçin.</string>
     <string name="select_device">Cihaz seçin</string>
     <string name="no_bluetooth_audio_found">Bluetooth ses cihazı bulunamadı</string>
@@ -1107,4 +1115,14 @@
     <string name="need_contacts_permission_to_select_message_recipients">Mesaj alıcılarını seçmek için irtibat, kontak izinlerine ihtiyacınız var</string>
     <string name="need_storage_permission_to_access_all_ringtones">Tüm zil seslerine erişmek için depolama iznine, yetkisine ihtiyacınız var</string>
     <string name="xdrip_needs_whitelisting_for_proper_performance">xDrip+ uygun performans için beyaz listelemeye (Whitelisting) ihtiyaç duyuyor</string>
+    <string name="summary_bluetooth_meter_for_calibrations_auto">Koşullar onaylamadan doğru şekilde görünüyorsa, yeni kan şekeri 	
+ölçümlerini kullanarak kalibre edin (deneysel)</string>
+    <string name="title_bluetooth_meter_for_calibrations_auto">Otomatik kalibrasyon</string>
+    <string name="yes_please">Evet, Lütfen</string>
+    <string name="automated_calibration_enabled">Otomatik kalibrasyon etkin</string>
+    <string name="treatment_cancelled">Tedavi iptal edildi</string>
+    <string name="treatment_time_wrong">Tedavi zamanı yanlış</string>
+    <string name="treatment_error">Tedavi hatası</string>
+    <string name="scanning">Taranıyor</string>
+    <string name="enable_streaming_dialog_dont_ask_again"> Bunu bir daha sorma</string>
 </resources>

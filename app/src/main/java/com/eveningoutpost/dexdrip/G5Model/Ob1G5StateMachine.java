@@ -1147,6 +1147,7 @@ public class Ob1G5StateMachine {
     private static void postExtension() {
         Inevitable.task("post-extension", 2000, () -> {
             DexSyncKeeper.clear(getTransmitterID());
+            clearStoredFirmwareBytes(getTransmitterID());
             emptyQueue();
             resetSomeInternalState();
         });
@@ -1506,6 +1507,11 @@ public class Ob1G5StateMachine {
         return true;
     }
 
+    public static void clearStoredFirmwareBytes(String transmitterId) {
+        for (int type = 1; type < 3; type++) {
+            PersistentStore.removeItem(G5_FIRMWARE_MARKER + transmitterId + "-" + type);
+        }
+    }
 
     public synchronized static boolean setStoredBatteryBytes(String transmitterId, byte[] data) {
         UserError.Log.e(TAG, "Store: BatteryRX dbg: " + JoH.bytesToHex(data));

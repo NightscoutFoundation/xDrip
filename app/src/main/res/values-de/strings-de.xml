@@ -108,7 +108,7 @@
     <string name="toast_crash">Da ist etwas schief gegangen :( Ein Bericht über das Problem wurde an die Entwickler versendet.</string>
     <string name="taskerConfigInstruction">Einfach mit einem Klick auf den Haken bestätigen. Die Konfigurationszeile muss nicht geändert werden.</string>
     <string name="taskerConfiguration">Tasker-Konfiguration</string>
-    <string name="finish_preferences_activity">finish_preferences_activity</string>
+    <string name="finish_preferences_activity">fertige Einstellungen_Aktivität</string>
     <string name="add_widget">Widget hinzufügen</string>
     <string name="title_activity_alert_list">Liste der Warnungen</string>
     <string name="speaktreatment">Behandlung sprechen</string>
@@ -289,6 +289,7 @@
     <string name="upload_data_to_dex_servers">Daten zum Dexcom-Server hochladen, damit Du Deine Daten mit den offiziellen Dexcom-Apps nutzen kannst</string>
     <string name="manage_followers">Follower verwalten</string>
     <string name="manage_existing_followers">Follower verwalten und neue hinzufügen.</string>
+    <string name="invite_follower">Follower einladen</string>
     <string name="glucose_calibration_and_other_alerts">Glukose-, Kalibrierungs- und andere Benachrichtigungen</string>
     <string name="alert_volume_profile">Lautstärke-Profil (Alarme)</string>
     <string name="smart_alerting">Intelligente Warnungen</string>
@@ -959,20 +960,20 @@
     <string name="emergency_message_feature">Notfallnachrichtenfunktion</string>
     <string name="text_messages_can_be_sent_with_your_location_if_you_do_not_respond_to_alarms_this_feature_is_experimental_and_may_not_be_reliable">Text-Nachrichten können mit Deinem Standort gesendet werden, wenn Du nicht auf Alarme reagierst. Diese Funktion ist experimentell und möglicherweise nicht zuverlässig.</string>
     <string name="your_name">Dein Name</string>
-    <string name="did_not_acknowledge_a_low_glucose_alert">%s reagierte für %s nicht auf einen niedrigen Zuckerwert</string>
-    <string name="did_not_acknowledge_a_high_glucose_alert">%s reagierte für %s nicht auf einen hohen Zuckerwert</string>
-    <string name="has_not_had_glucose_data_received_for">%s hat für %s keine Glukose-Daten empfangen</string>
-    <string name="phone_has_not_been_used_for">%s hat für %s sein Telefon nicht verwendet</string>
+    <string name="did_not_acknowledge_a_low_glucose_alert">%1$s reagierte für %2$s nicht auf einen niedrigen Zuckerwert</string>
+    <string name="did_not_acknowledge_a_high_glucose_alert">%1$s reagierte für %2$s nicht auf einen hohen Zuckerwert</string>
+    <string name="has_not_had_glucose_data_received_for">%1$s hat für %2$s keine Glukose-Daten empfangen</string>
+    <string name="phone_has_not_been_used_for">%1$s hat für %2$s sein Telefon nicht verwendet</string>
     <string name="is_requesting_assistance">%s fragt nach Unterstützung</string>
     <string name="is_testing_the_assistance_request_feature">%s testet die Anfrage nach Unterstützungs Funktion</string>
-    <string name="emergency_message_near_format_string">%s in der Nähe von %s %s %s %s</string>
+    <string name="emergency_message_near_format_string">%1$s in der Nähe von %2$s %3$s %4$s %5$s</string>
     <string name="choose_when_to_send_messages">Wähle aus wann Nachrichten gesendet werden sollen:</string>
     <string name="low_alert_not_acknowledged">Nichtwahrnehmung von Niedrig-Alarmen</string>
     <string name="high_alert_not_acknowledged">Nichtwahrnehmung von Hoch-Alarmen</string>
     <string name="device_inactivity">Geräteinaktivität</string>
     <string name="test_message_sending">Sende Testnachricht</string>
     <string name="d_selected_contacts_for_text_messages_format">%d ausgewählte Kontakte für Text-Nachrichten</string>
-    <string name="xdrip_software_changed_format">xDrip+ Software-Version geändert von: %s zu %s</string>
+    <string name="xdrip_software_changed_format">xDrip+ Software-Version geändert von: %1$s zu %2$s</string>
     <string name="when_connected_to_the_audio_device_shown_below_switch_to_vehicle_mode">Wechsele zu Fahrzeug-Modus wenn folgendes Audio-Gerät verbunden wurde.</string>
     <string name="select_device">Gerät auswählen</string>
     <string name="no_bluetooth_audio_found">Kein Bluetooth-Audio-Gerät gefunden</string>
@@ -1263,6 +1264,7 @@
     <string name="title_lefun_screen_mac_address">MAC-Adresse anzeigen</string>
     <string name="summary_allow_samsung_workaround">Verwende Workarounds, um abweichendes Android-Verhalten bei Samsung-Geräten zu vermeiden. Ohne dies erhalten Datensammler normalerweise keine Daten.</string>
     <string name="title_allow_samsung_workaround">Samsung Workarounds</string>
+    <string name="summary_medtrum_use_native">Verwenden Sie für die Primärübertragung die Senderkalibrierung anstelle von xDrip</string>
     <string name="title_medtrum_use_native">Medtrum Native</string>
     <string name="summary_medtrum_a_hex">Wert des Hex-Diagnosetests</string>
     <string name="title_medtrum_a_hex">Medtrum Debug</string>
@@ -1289,6 +1291,7 @@
     <string name="title_using_g6">Unterstützung für G6</string>
     <string name="summary_ob1_g5_allow_resetbond">Der OB1 Kollektor kann die Kopplung aufheben, wenn er glaubt, dass die Verschlüsselung fehlgeschlagen ist. Wenn Unpairing zum Problem wird, deaktivierebbdiese Option. Wenn du danach die Verbindung vollständig verlierst, stelle sicher, dass sie aktiviert ist.</string>
     <string name="title_ob1_g5_allow_resetbond">OB1-Entkoppelung erlauben</string>
+    <string name="summary_ob1_initiate_bonding_flag">Der OB1-Kollektor kann eine Verklebung initiieren.</string>
     <string name="title_ob1_initiate_bonding_flag">OB1 Verbindungsaufbau erlauben</string>
     <string name="title_old_g5_options">Alte G5 Kollektor-Einstellungen</string>
     <string name="title_g5g6_battery_options">G5/G6 Akku-Optionen</string>
@@ -1308,6 +1311,7 @@
     <string name="summary_show_smb_icons">Den Graph durch Symbole für kleine Boli aufräumen</string>
     <string name="title_show_smb_icons">Zeige Micro-Bolus-Symbole</string>
     <string name="summary_show_medtrum_secondary">Zeige alternative Glukosepunkte</string>
+    <string name="title_show_medtrum_secondary">Medtrum Sekundär</string>
     <string name="summary_illustrate_backfilled_data">Kennzeichne nachgetragene Daten im Graph</string>
     <string name="title_illustrate_backfilled_data">Zeige nachgetragene Daten</string>
     <string name="summary_high_priority_notifications">Zeige Benachrichtigungen und Graph oben (auch auf Sperrbildschirm sinnvoll)</string>
@@ -1345,7 +1349,10 @@
     <string name="title_plus_whole_house">Whole-House</string>
     <string name="summary_libre_whole_house_collector">Dieses Telefon wird ein Collector im Whole-House-Netzwerk sein</string>
     <string name="title_libre_whole_house_collector">Libre-Whole-House</string>
+    <string name="summary_xdrip_plus_desert_sync_settings">Off-Raster folgen</string>
+    <string name="title_xdrip_plus_desert_sync_settings">Wüsten-Sync</string>
     <string name="summary_desert_sync_enabled">Lokale Synchronisation (ohne Internet) aktiviert</string>
+    <string name="title_desert_sync_enabled">Wüsten-Sync</string>
     <string name="title_desert_sync_master_ip">Master-IP-Adresse</string>
     <string name="summary_send_sync_show_qr">Barcode für Follower um diese automatisch zu konfigurieren</string>
     <string name="title_send_sync_show_qr">Zeige QR-Code</string>
@@ -1373,6 +1380,8 @@
     <string name="title_pendiq_pin">Pen-Pincode</string>
     <string name="summary_use_notification_channels">Verwende die Android 8+ Benachrichtigungskanal-Funktion</string>
     <string name="title_use_notification_channels">Benachrichtigungskanäle</string>
+    <string name="summary_ongoing_notification_channel">Kann bei einigen Geräten Umgebungsanzeigen benachrichtigungen auslösen. Muss getestet werden!</string>
+    <string name="title_ongoing_notification_channel">Verwenden Sie den laufenden Benachrichtigungskanal</string>
     <string name="summary_notification_channels_grouping">Ob Benachrichtigungen gruppiert werden sollen. Inkompatibel mit \"Nummern-Symbol im Benachrichtigungsbereich\"</string>
     <string name="title_notification_channels_grouping">Gruppiere Benachrichtigungen</string>
     <string name="summary_play_sound_for_initial_calibration">Ton abspielen, wenn die initiale Kalibrierung angefordert wird</string>
@@ -1394,6 +1403,7 @@
     <string name="nothing_found">nichts gefunden</string>
     <string name="do_not_hit_start_long">Sensor nicht starten, falls der Sensor noch nicht platziert und der Transmitter verbunden ist.</string>
     <string name="calibration_graph_no_calibration">Kalibrierungsdiagramm (keine Kalibration)</string>
+    <string name="calibration_plugin_header">kalibrierungs-Plugin-Header</string>
     <string name="usb_device_was_not_recognized">USB-Gerät wurde nicht erkannt</string>
     <string name="followers_name">Name des Followers:</string>
     <string name="your_display_name">Dein angezeigter Name:</string>
@@ -1406,6 +1416,7 @@
     <string name="title">Titel</string>
     <string name="summary">Zusammenfassung</string>
     <string name="auto_refresh">Automatisch aktualisieren</string>
+    <string name="set_up_desert_sync_follower">Desert Sync-Follower einrichten</string>
     <string name="version">Version:</string>
     <string name="sensor_start">Sensorstart:</string>
     <string name="plug_in_your_dexcom_reciever">Schließe den Dexcom-Empfänger an, tippe den Button und drücke die Daumen!</string>
@@ -1413,9 +1424,10 @@
     <string name="progress">Fortschritt</string>
     <string name="bluetooth_device">Bluetooth-Gerät:</string>
     <string name="transmitter_battery_status">Transmitter-Batterie:</string>
+    <string name="top">Oben</string>
     <string name="connect_device_usb_otg">Schließe dein Gerät bitte per USB OTG Kabel an.</string>
     <string name="connection_status">Verbindungsstatus:</string>
-    <string name="range_in_high_low">Bereich: (innerhalb/hoch/niedrig)</string>
+    <string name="range_in_high_low">Ziel: (innerh./hoch/tief)</string>
     <string name="absolute_s">Absolute #s:</string>
     <string name="median_bg">Median-BZ:</string>
     <string name="mean_bg">BZ-Mittelwert:</string>
@@ -1440,6 +1452,7 @@
     <string name="__do_you_want_to_change_settings_or_start_sensor">\n\nMöchtest du Einstellungen ändern oder einen Sensor starten?</string>
     <string name="change_settings">Einstellungen ändern</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Möchtest du die Kalibrierung für diesen Sensor löschen und zurücksetzen?</string>
+    <string name="sensor_stop_confirm">Möchtest du den Sensor stoppen?</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Du hast eine alte experimentelle Glukose-Vorhersageeinstellung aktiviert.\n\nDies ist NICHT EMPFOHLEN und könnte alles durcheinander bringen.\n\nSoll ich sie für dich deaktivieren?</string>
     <string name="settings_issue">Problem mit den Einstellungen!</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Möchtest du die synchronisierte blutige Messung zur Kalibrierung verwenden?\n\n(Kannst du ändern, wenn dieser Dialog in den Einstellungen angezeigt wird)</string>
@@ -1449,6 +1462,7 @@
     <string name="enable_automatic_calibration">Automatische Kalibrierung aktivieren</string>
     <string name="entered_blood_tests_which_occur_during_flat_trend_periods_can_automatically_be_used_to_recalibrate_after_20_minutes_this_should_provide_the_most_accurate_method_to_calibrate_with__do_you_want_to_enable_this_feature">Eingegebene blutige Messungen bei flacher Trendkurve können nach 20 Minuten automatisch zur Kalibrierung verwendet werden. Dies sollte die genaueste Methode zur Kalibrierung sein.\n\nMöchtest du diese Funktion aktivieren?</string>
     <string name="yes_enable">JA, aktivieren</string>
+    <string name="blood_test_action">Bluttest Aktion</string>
     <string name="what_would_you_like_to_do">Was möchtest du tun?</string>
     <string name="nothing">Nichts</string>
     <string name="are_you_sure_you_want_to_delete_this_blood_test_result">Bist du sicher, dass du diese blutige Messung entfernen möchtest?</string>
@@ -1538,6 +1552,6 @@
     <string name="enable_streaming_dialog_yes">verbinde mit diesem Libre2-Sensor</string>
     <string name="enable_streaming_dialog_no">Nicht mit diesem Libre2-Sensor verbinden </string>
     <string name="enable_streaming_dialog_dont_ask_again">Nicht erneut fragen</string>
-    <string name="enable_streaming_dialog_title">Verbinde Libre-Sensor mit Bluetooth</string>
     <string name="enable_streaming_dialog_text">Möchtest Du xDrip mit diesem Sensor verbinden? Das Libre Lesegerät und die Libre Link-App werden dann keine Alarme mehr empfangen. Drücke \"Ja\" und scanne erneut für eine Verbindung (wähle \"nicht verbinden\", wenn Du xDrip mit der gepatchten Libre-App benutzt)</string>
+    <string name="enable_streaming_dialog_title">Verbinde Libre-Sensor mit Bluetooth</string>
 </resources>
