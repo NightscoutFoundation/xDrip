@@ -24,15 +24,11 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
 import com.eveningoutpost.dexdrip.calibrations.NativeCalibrationPipe;
 
-import com.eveningoutpost.dexdrip.G5Model.VersionRequestRxMessage;
-import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
-
 import java.util.UUID;
 
+import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.getTransmitterID;
+
 public class AddCalibration extends AppCompatActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
-    // Firmware version
-    public static String transmitterID = Pref.getString("dex_txid", "NULL");
-    final VersionRequestRxMessage vr = (VersionRequestRxMessage) Ob1G5StateMachine.getFirmwareXDetails(transmitterID, 0);
     // Unit used
     final String unit = Pref.getString("units", "mgdl");
 
@@ -207,7 +203,7 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                             final double calValue = JoH.tolerantParseDouble(string_value);
 
                             if (!Home.get_follower()) {
-                                if (vr != null && FirmwareCapability.isG6Rev2(vr.firmware_version_string)) { // Firefly only
+                                if (FirmwareCapability.isTransmitterRawIncapable(getTransmitterID())) { // Firefly only
                                     double bg = calValue;
                                     if (unit.compareTo("mgdl") != 0) {
                                         bg = bg * Constants.MMOLL_TO_MGDL;
