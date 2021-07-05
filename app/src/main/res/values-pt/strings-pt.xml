@@ -847,6 +847,7 @@
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
     <string name="bubble">Bubble</string>
+    <string name="atom">Atom</string>
     <string name="use_gravity_sensor_to_rotate_items">Usar Sensor Gravidade para rodar</string>
     <string name="low_bridge_battery">Bridge bateria fraca</string>
     <string name="reminders">Lembretes</string>
