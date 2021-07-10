@@ -39,39 +39,72 @@
     <string name="prefs_auto_config_summary">Automatski konfiguriraj koristeći barkod.</string>
     <string name="scan_share2_barcode">Skeniraj dijeljeni barkod</string>
     <string name="pref_share2_scan_barcode_summary">Ili skeniraj barkod dijeljenog prijamnika</string>
+    <!-- MongoDB Settings -->
     <string name="pref_title_mongodb">MongoDB</string>
-    <string name="pref_summary_mongodb_enabled">Ukoliko koristite MongoLab i Azure ovo bi trebalo uključiti</string>
-    <string name="pref_title_mongodb_uri">URI</string>
-    <string name="pref_dialog_mongodb_uri">Unesi MongoDB URI"</string>
+    <string name="pref_summary_mongodb_enabled">Direktno stavljanje u bazu, nije preppručeno za Nightscout</string>
+    <string name="pref_title_mongodb_uri">URI adresa</string>
+    <string name="pref_dialog_mongodb_uri">Unesi MongoDB URI\"</string>
     <string name="pref_message_mongodb_uri">Zamijenite vrijednosti iz primjera u {} sa svojim ispravnim vrijednostima</string>
     <string name="pref_default_mongodb_uri">mongodb://{korisnik}:{lozinka}@{host}.mongolab.com:{11111}/{baza}</string>
     <string name="pref_title_mongodb_collection">Ime kolekcije</string>
     <string name="pref_dialog_mongodb_collection">Unesi ime kolekcije</string>
     <string name="pref_message_mongodb_collection">Ovo je ime kolekcije gdje će CGM podaci biti pohranjeni</string>
     <string name="pref_title_mongodb_device_status_collection">Ime kolekcije statusa uređaja</string>
-    <string name="pref_dialog_mongodb_device_status_collection">Unesi ime kolekcije statusa uređaja"</string>
+    <string name="pref_dialog_mongodb_device_status_collection">Unesi ime kolekcije statusa uređaja\"</string>
     <string name="pref_message_mongodb_device_status_collection">Ovo je ime kolekcije gdje će biti pohranjeni podaci o bateriji i drugim uređajima</string>
+    <!-- API Settings -->
     <string name="pref_title_api">Nightscout sinkronizacija (REST-API)</string>
     <string name="pref_title_api_enabled">Omogućeno</string>
-    <string name="pref_summary_api_enabled">REST API je alternativa direktnom mongodb učitavanju</string>
+    <string name="pref_summary_api_enabled">REST API je standardni način povezivanja na Nightscout</string>
     <string name="pref_title_api_url">Bazični URL</string>
     <string name="pref_dialog_api_url">Unesi bazični API URL</string>
     <string name="pref_message_api_url">Ovo je samo bazični URL, sustav uploada će automatski dodati unose za POST.  API_SECRET na serveru se mora slagati s vašim tajnim ključem iz ove postavke.</string>
     <string name="pref_default_api_url">https://tajnikljuc@{NAZIV-SAJTA}.azurewebsites.net/api/v1/</string>
+    <!-- wifi Settings -->
     <string name="wifi_recievers_dialog_message">Zarezom odvojena lista oblika ip:port (primjerice 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
     <string name="wifi_recievers_dialog_title">Unesi ip adrese i portove prijamnika (uključujući mongodb adresu ukoliko je potrebno)</string>
+    <!-- Location Settings -->
     <string name="location_not_found_title">Lokacija nije omogućena</string>
     <string name="location_not_found_message">Da bi Bluetooth pronalaženje radilo na novijim uređajima, lokacija mora biti omogućena. xDrip ne prati vašu lokaciju i ova postavka može biti onemogućeno nakon uspješnog uparivanja.</string>
     <string name="location_yes">Omogući</string>
+    <!-- broadcast settings -->
     <string name="pref_title_broadcast_enabled">Lokalno odašiljanje</string>
     <string name="pref_summary_broadcast_enabled">Omogući lokalno odašiljanje podataka tako da ostale aplikacije (npr. NightWatch) mogu zaprimati nove vrijednosti</string>
     <string name="title_activity_share_test">Dijeli Test</string>
+    <!-- pebble settings -->
     <string name="pref_pebble_trend_watchface">Koristi Pebble Trend Watchface</string>
     <string name="pref_summary_pebble_trend_watchface">Koristi/instaliraj Pebble Trend Watchface (eksperimentalno)</string>
     <string name="pref_pebble_display_trend">Prikaži trend</string>
     <string name="pref_summary_display_trend">Prikaži trend GUK-a na xDrip Pebble watchface.</string>
     <string name="pref_pebble_display_high_line">Prikaži liniju Visoko</string>
     <string name="pref_pebble_display_low_line">Prikaži liniju Nisko</string>
+    <!-- Amazfit Settings -->
+    <string name="amazfit_sync_service">AmazFit usluga sinkronizacije</string>
+    <string name="pref_amazfit_enable_summary">Uključi AmazFit podatkovnu podršku</string>
+    <string name="pref_amazfit_enable">Uključi</string>
+    <string name="pref_amazfit_tile">Amazfit usluga</string>
+    <string name="pref_amazfit_BG_alert_enable_summary">Šalje aktivna upozorenja o GUK-u na pametni sat</string>
+    <string name="pref_amazfit_BG_alert_enable">Uključi</string>
+    <string name="pref_amazfit_BG_alert_title">GUK upozorenja</string>
+    <string name="pref_amazfit_other_alert_enable_summary">Šalje ostala upozorenja na pametni sat</string>
+    <string name="pref_amazfit_other_alert_enable">Uključi</string>
+    <string name="pref_amazfit_other_alert_title">Ostala upozorenja</string>
+    <string name="pref_amazfit_watchface_graph_dots_title">Točkasti grafikon na pametnom satu</string>
+    <string name="pref_amazfit_watchface_graph_dots_summary">Prikazuje sićušne točkice umjesto malenih</string>
+    <string name="pref_amazfit_watchface_graph_enable">Uključi</string>
+    <string name="pref_amazfit_watchface_graph_title">Gtafikon na pametnom satu</string>
+    <string name="pref_amazfit_watchface_graph_enable_summary">Prikazuje grafikon u pozadini pametnog sata</string>
+    <string name="pref_amazfit_watchface_graph_hours_title">Gtafikon na pametnom satu</string>
+    <string name="pref_amazfit_watchface_graph_hours_summary">postavi koliko mnogo sati u grafikonu</string>
+    <string name="pref_amazfit_widget_graph_hours_title">Widget grafikon</string>
+    <string name="pref_amazfit_widget_graph_hours_summary">postavi koliko mnogo sati u grafikonu</string>
+    <string name="pref_amazfit_widget_graph_dots_title">Widget grafikon točkice</string>
+    <string name="pref_amazfit_widget_graph_dots_summary">Prikazuje sićušne točkice umjesto malenih</string>
+    <string name="pref_amazfit_widget_graph_enable">Uključi</string>
+    <string name="pref_amazfit_widget_graph_title">Widget grafikon</string>
+    <string name="pref_amazfit_widget_graph_enable_summary">Prikazuje grafikon u widgetu</string>
+    <string name="pref_amazfit_watchface_settings">Postavke prikaza sučelja pametnog sata (može trebati više baterije)</string>
+    <string name="pref_amazfit_widget_settings">Postavke prikaza sučelja pametnog sata (može trebati više baterije)</string>
     <string name="toast_crash">Nešto je pošlo po zlu :( poslano je izvješće kako bi pomoglo popravku problema.</string>
     <string name="taskerConfigInstruction">Samo ovdje kliknite ikonu Tick za potvrdu. Ne biste trebali promijeniti konfiguraciju.</string>
     <string name="taskerConfiguration">Konfiguracija Tasker</string>
@@ -114,7 +147,7 @@
     <string name="please_set_dex_receiver_serial_number">Molimo podesite serijski broj vašeg Dexcom primača (receivera) u postavkama aplikacije</string>
     <string name="unfortunately_andoird_version_no_blueooth_low_energy">Nažalost vaša android verzija ne podržava Bluetooth Low Energy</string>
     <string name="waiting_for_packet">Čekam na paket</string>
-    <string name="persistent_high_for_greater_than">Dugotrajno Visoko > </string>
+    <string name="persistent_high_for_greater_than">Dugotrajno Visoko &gt; </string>
     <string name="space_mins">" min"</string>
     <string name="till">do</string>
     <string name="low_predicted">Predviđeno Nisko</string>
@@ -129,15 +162,19 @@
     <string name="added">Dodano</string>
     <string name="checking_for_update">Provjera ažuriranja..</string>
     <string name="signal_missed">Signal propušten</string>
+    <string name="minutes_ago">{0, choice,0#{0, number, integer} min. prije|1#{0, number, integer} min. prije|1&lt;{0, number, integer} min. prije}</string>
     <string name="space_minutes_ago">" min. prije"</string>
     <string name="space_minute_ago">" min. prije"</string>
     <string name="show_parakeet_map">Prikaži Parakeet kartu</string>
     <string name="switch_parakeet_to_setup_mode">Prebaci Parakeet u način za promjenu postavki</string>
     <string name="view_events_log">Pogledaj zapise događaja</string>
+    <string name="libre_15_minutes_graph">Libre 15-minutni graf</string>
+    <string name="libre_last_x_minutes_graph">Libre graf zadnjih %d minuta</string>
     <string name="share_config_via_qr_code">Dijeli postavke preko QR koda</string>
     <string name="check_for_updated_version">Provjeri ažuriranja - noviju verziju</string>
     <string name="send_feedback_to_developer">Pošalji povratnu informaciju - poruku programeru</string>
     <string name="home_screen">Početni ekran</string>
+    <string name="event_logs">Zapisi o događajima</string>
     <string name="calibration_graph">Graf baždarenja</string>
     <string name="glucose_units">Jedinice glukoze</string>
     <string name="mmol_or_mgdl_high_and_low">mmol/l ili mg/dl Visoko i Nisko</string>
@@ -254,7 +291,7 @@
     <string name="start_snoozed">Započni odgađanje</string>
     <string name="adjust_all_by_a_factor">Podesi sve za faktor</string>
     <string name="reset">Vrati na početak</string>
-    <string name="pebble_and_android_wear_options">Pebble i Android Wear opcije</string>
+    <string name="pebble_and_android_wear_options">Opcije za različite satove</string>
     <string name="customize_colours">Prilagodi boje</string>
     <string name="xdrip_plus_color_settings">xDrip+ postavke boja</string>
     <string name="glucose_values_and_lines">Vrijednosti glukoze i linije</string>
@@ -459,8 +496,8 @@
     <string name="default_liver_sensitivity_ratio">Početne postavke omjera osjetljivosti jetre</string>
     <string name="key_is_used_instead_of_google_account">Ključ koji se koristi umjesto Google korisničkog računa</string>
     <string name="sync_using_custom_security_key">Sinkroniziraj koristeći prilagođeni sigurnosni ključ</string>
-    <string name="handset_group_security_key">Handset Group Security Sync Key</string>
-    <string name="handset_sync_grouping_key">Handset sync grouping key</string>
+    <string name="handset_group_security_key">Sigurnosni ključ sinkronizacije grupe uređaja</string>
+    <string name="handset_sync_grouping_key">Ključ sinkronizacije grupe uređaja</string>
     <string name="alert_name_colon">Naziv upozorenja:</string>
     <string name="threshold_colon">Prag:</string>
     <string name="default_snooze_colon">Početne postavke odgađanja:</string>
@@ -503,8 +540,8 @@
     <string name="glucose_number_from_filtered">Visina glukoze iz filtriranog</string>
     <string name="if_the_phone_has_text_to_speech">Ukoliko telefon ima tekst-u-govor mogućnosti izgovarati će svako novo očitanje.</string>
     <string name="upload_logs">Pošalji zapise</string>
-    <string name="short_off_text_for_switches">OFF</string>
-    <string name="short_on_text_for_switches">ON</string>
+    <string name="short_off_text_for_switches">Isključi</string>
+    <string name="short_on_text_for_switches">Uključi</string>
     <string name="install_pebble_apps">Instaliraj Pebble applikacije</string>
     <string name="sliding_24_hour_window_summary">Koristi zadnjih 24 sata umjesto vremena od ponoći za statistiku.</string>
     <string name="sliding_24_hour_window">Klizajući prozor</string>
@@ -513,7 +550,6 @@
     <string name="title_activity_btglucose_meter">Skeniranje mjerača</string>
     <string name="notify_when_wear_low_battery">Isključivanje prisiljavanja usluge Wear prikupljanja zbog slabe baterije Wear-a!</string>
     <string name="notify_disable_wearG5_on_missedreadings">Isključivanje prisiljavanja usluge Wear prikupljanja zbog %1$d min. propuštenih očitanja na satu!</string>
-    <string name="format_decimal_treatments" translatable="false">#.##</string>
     <string name="label_show_insulin">U:%1$su</string>
     <string name="label_show_carbs">Ugljikohidrati:%1$sg</string>
     <string name="label_show_royceratio">UH/I:%1$s</string>
@@ -521,17 +557,12 @@
     <string name="label_show_steps_km">km:%1$s</string>
     <string name="label_show_steps_mi">mi:%1$s</string>
     <string name="pref_summary_influxdb_enabled">Ukoliko koristite privatnu InfluxDB bazu podataka, ovo bi trebalo omogućiti</string>
-    <string name="pref_title_influxdb" translatable="false">InfluxDB</string>
-    <string name="pref_default_influxdb_uri" translatable="false">https://{host}:{port}</string>
     <string name="pref_message_influxdb_uri">Zamijenite vrijednosti iz primjera u zagradama {} sa vašim ispravnim vrijednostima</string>
     <string name="pref_dialog_influxdb_uri">Unesite InfluxDB URI</string>
-    <string name="pref_default_influxdb_database" translatable="false">xdrip</string>
     <string name="pref_message_influxdb_database">Baza podataka služi za pohranu mjerenja. Sjetite se kreirati ju na serveru.</string>
     <string name="pref_dialog_influxdb_database">Baza podataka</string>
-    <string name="pref_default_influxdb_username" translatable="false">root</string>
     <string name="pref_message_influxdb_username">Korisničko ime za autorizaciju. Preporuka je da se ne dozvoljava korištenje bez autorizacije.</string>
     <string name="pref_dialog_influxdb_username">Korisnik</string>
-    <string name="pref_default_influxdb_password" translatable="false">root</string>
     <string name="pref_message_influxdb_password">Lozinka za autorizaciju. Preporuka je da se ne dozvoljava korištenje bez autorizacije.</string>
     <string name="pref_dialog_influxdb_password">Lozinka</string>
     <string name="use_tiny_dots">Koristi sićušne točkice</string>
@@ -572,9 +603,11 @@
     <string name="repeatedly_restart_collection_service">Opetovano isponova pokreći kolektorski servis na svaku najavu propuštenih podataka. Omogućiti samo ukoliko dolazi do propuštanja podataka.</string>
     <string name="aggressive_service_restarts">Agresivno ponovno pokretanja servisa</string>
     <string name="predictive_readings_old">Stara metoda - nije preporučeno! Pokušava prediktirati očitanja svake minute bazirano na nekoliko posljednjih vrijednosti.</string>
-    <string name="use_external_blukon_algorithm_summary">Korištenje blukon algoritma izvan procesa.</string>
     <string name="display_predictive_values">Prikaži prediktirane vrijednosti</string>
-    <string name="use_external_blukon_algorithm">Blukon algoritam izvan procesa.</string>
+    <string name="calibrate_external_libre_algorithm_summary">Primjeni xDrip metode kalibracije na OOP podatke.</string>
+    <string name="calibrate_external_libre_algorithm_title">OOP algoritam kalibracije.</string>
+    <string name="retrieve_blukon_history_title">Dohvaćanje Libre povijesti</string>
+    <string name="retrieve_blukon_history_summary">Dohvaćanje propuštene povijesti s Blukon uređaja pri ponovnom spajanju sa senzorom.</string>
     <string name="interpret_share_raw">Ukoliko se koristi Share, xDrip će prikazati vrijednosti koje su uobičajeno skrivene na primaču (receiveru).</string>
     <string name="interpret_raw">Interpretiraj sirove vrijednosti</string>
     <string name="use_infrequent_calibrations">Ukoliko je potrebno, kolisti baždarenja iz prijeašnjeg vremena, npr. ako su baždarenja rijetko rađena.</string>
@@ -594,9 +627,7 @@
     <string name="options_for_extra_line">Opcije za dodatnu liniju</string>
     <string name="todays_average_value">Današnja prosječna vrijednost.</string>
     <string name="ac1_estimation_dcct">A1c procjena u DCCT formatu (%)</string>
-    <string name="a1c_dcct" translatable="false">A1c DCCT</string>
     <string name="ac1_estimation_ifcc">A1c procjena u IFCC formatu (mmol/mol)</string>
-    <string name="a1c_ifcc" translatable="false">A1c IFCC</string>
     <string name="percentage_in_range">Postotak vrijednosti unutar raspona.</string>
     <string name="percentage_below_range">Postotak vrijednosti ispod raspona.</string>
     <string name="percentage_above_range">Postotak vrijednosti iznad raspona.</string>
@@ -607,7 +638,9 @@
     <string name="show_total_insulin">Prikaži ukupno inzulina u tretmanu</string>
     <string name="total_insulin">Ukupno inzulina</string>
     <string name="received_readings_percentage">Postotak primljenih očitanja senzora</string>
+    <string name="received_realtime_readings_percentage">Postotak očitanja senzora dobivenih u stvarnom vremenu (ne naknadno dopunjenih). ISKLJUČIVO G5 izvorni način rada</string>
     <string name="capture_percentage">Postotak uhvaćenih paketa</string>
+    <string name="realtime_capture_percentage">Postotak uhvaćenih paketa u stvarnom vremenu</string>
     <string name="show_calibration_accuracy">Prikaži procjenu preciznosti baždarenja u zadnja 3 dana</string>
     <string name="accuracy_evaluation">Procjena preciznosti</string>
     <string name="show_extra_status_on_widget">Također prikaži dodatnu statusnu liniju na widgetu</string>
@@ -662,11 +695,11 @@
     <string name="options_for_upload">Opcije za Nightscout, MongoDB ili Dexcom Share upload</string>
     <string name="cloud_upload">Upload u oblak (cloud)</string>
     <string name="enable_mongo_sync">Omogući Nightscout Mongo DB sinkronizaciju</string>
-    <string name="mongo_db_uri">Mongo DB Uri</string>
+    <string name="mongo_db_uri">Mongo DB URI adresa</string>
     <string name="skip_local_lan">Za lokalne server sa 192.168.x.x adresama, preskoči upload kada nema spoja na lokalnu mrežu.</string>
     <string name="skip_lan_uploads">Preskoči LAN upload</string>
     <string name="influxdb_sync">Omogući InfluxDB sinkronizaciju</string>
-    <string name="influxdb_uri">InfluxDB Uri</string>
+    <string name="influxdb_uri">InfluxDB URI adresa</string>
     <string name="influxdb_database_name">InfluxDB ime baze podataka</string>
     <string name="user">Korisnik</string>
     <string name="password">Lozinka</string>
@@ -733,6 +766,8 @@
     <string name="notify_data_arrives_master"><![CDATA[Obavijesti kada podaci dolaze od glavnog (master) uređaja ukoliko je interval > 20 min.]]></string>
     <string name="follower_chime_new">Novi sljedbenik (follower) zvoni</string>
     <string name="carb_ratio">Ugljikohidratni omjer</string>
+    <string name="enable_dedicated_insulin_profiles">Konfiguriranje profila inzulina</string>
+    <string name="desc_enable_dedicated_insulin_profiles">Ovdje je moguće omogućiti ili konfigurirati različite profile inzulina</string>
     <string name="insulin_sensitivity">Inzulinska osjetljivost</string>
     <string name="secondary_plugin_glucose_value">Vrijednost sekundarnog plugina glukoze</string>
     <string name="step_counter_1st_color">Pedometar - brojač koraka 1. boja</string>
@@ -769,8 +804,12 @@
     <string name="confirm_sensing_snooze">Potvrdi slanje odgode</string>
     <string name="allow_remotes_silence">Dozvoli udaljenim uređajima da utišaju alarme na ovom uređaju</string>
     <string name="acccept_remote_snoozes">Prihvaćaj udaljena odgađanja</string>
+    <string name="send_remote_snooze">Pošalji udaljeno stišavanje</string>
     <string name="only_accept_same_network">Prihvati samo ukoliko ime udaljene wifi mreže počinje istim slovima kao i naše te se slaže vrlo blisko</string>
     <string name="wifi_name_must_match">Wifi ime se mora podudarati</string>
+    <string name="confirm_remote_snooze">Pošalji udaljeno stišavanje</string>
+    <string name="are_you_sure_you_wish_to_snooze_all_other_devices_in_your_sync_group">Jeste li sugurni da želite stišati sve druge uređaje u vašoj sinhronizacijskoj grupi?</string>
+    <string name="yes_send_it">Da, pošalji!</string>
     <string name="movement_detection_and_vehicle_mode">Otkrivanje kretanja i način rada u vozilu</string>
     <string name="xdrip_motion_tracking">xDrip+ praćenje kretanja</string>
     <string name="detect_motion_types">Koristi senzore za otkrivanje vrsti kretanja</string>
@@ -791,9 +830,10 @@
     <string name="repeat_sound">Ponavljaj zvuk</string>
     <string name="enable_telemetry">Omogući telemetriju</string>
     <string name="send_data_to_developers">Programerima pošalji podatke o stopi uspješnosti različitih uređaja</string>
-    <string name="try_to_work_around_noisy_readings_ultrasensitive">Počni ispravljati očitanja sa šumovima čak i na vrlo niskim razinama šumova (jedino inženjerski način rada)</string>
     <string name="sidiary_date_title">Izvezi počevši od kada?</string>
     <string name="blukon">Blucon</string>
+    <string name="tomato">Tomato</string>
+    <string name="bubble">Mjehurić</string>
     <string name="use_gravity_sensor_to_rotate_items">Koristi senzor gravitacije za rotaciju elemenata</string>
     <string name="low_bridge_battery">Bridge baterija je slaba</string>
     <string name="reminders">Podsjetnici</string>
@@ -801,6 +841,7 @@
     <string name="install_text_to_speech_data_question">Instaliraj Tekst-U-Govor za podatke?</string>
     <string name="after_installation_of_languages_you_might_have_to">(Nakon instalacije jezike moguće je da treba pritisnuti \"Ponovno pokreni kolektor\" u statusu sustava.)</string>
     <string name="stop_sensor">Zaustavi senzor</string>
+    <string name="dont_stop_just_reset_all_calibrations">Nemoj zaustaviti, samo poništi sve kalibracije</string>
     <string name="initial_calibration">Početno baždarenje</string>
     <string name="calibration_can_not_be_blank">Baždarenje ne može biti prazno</string>
     <string name="invalid_calibration_number">Neispravan broj pri baždarenju!</string>
@@ -824,4 +865,70 @@
     <string name="received_enough_good_data_to_calibrate">Primljeno je dovoljno dobrih podataka za baždarenje</string>
     <string name="play_sound_when_ready_for_calibration">Oglasi zvuk kada bude spremno za baždarenje</string>
     <string name="receiving_data_from_collector">Primanje podataka od  %s Collector</string>
+    <!-- trend arrow for speak -->
+    <string name="DoubleDown">Pada brzo</string>
+    <string name="SingleDown">Pada</string>
+    <string name="FortyFiveDown">Pada lagano</string>
+    <string name="Flat">Ravno</string>
+    <string name="FortyFiveUp">Raste lagano</string>
+    <string name="SingleUp">Raste</string>
+    <string name="DoubleUp">Raste brzo</string>
+    <string name="Speak_trend_arrow_name">Govori trend strelice</string>
+    <string name="Speak_everything_twice">Govori sve dvaput</string>
+    <string name="Speech_speed">Brzina govora</string>
+    <string name="Speech_pitch">Ton govora</string>
+    <string name="Speak_Alerts">Govori upozorenja</string>
+    <string name="Speak_Alerts_Summary">Također pružaj neke govorne poruke upozorenja</string>
+    <string name="advanced_bluereader_settings_summary">Napredne blueReader postavke</string>
+    <string name="advanced_bluereader_settings">blueReader postavke</string>
+    <string name="bluereader_restdays_onhome">Ostatak dana na Home ekranu</string>
+    <string name="blueReader_turnoffvalue">Vrijednost u %</string>
+    <string name="bluereaderoff">blueReader će biti ugašen ukoliko je baterija ispod </string>
+    <string name="offical_msg">Službena aplikacija</string>
+    <string name="yes">Da</string>
+    <string name="xdrip_compatible_features">xDrip + %s značajke</string>
+    <string name="garmin">Garmin</string>
+    <string name="fitbit">Fitbit</string>
+    <string name="set_data_source_to">Postavi izvor podataka na: %s?</string>
+    <string name="are_you_sure">Jeste li sigurni?</string>
+    <string name="bluetooth_wixel">Bluetooth Wixel</string>
+    <string name="parakeet_wifi">Parakeet / Wifi</string>
+    <string name="other">Ostalo</string>
+    <string name="start_source_setup_wizard">Pokreni čarobnjak za postavljanje izvora</string>
+    <string name="hour_format">%s sati</string>
+    <string name="enable_local_broadcast">Omogućiti lokalno odašiljanje?</string>
+    <string name="broadcast_only_to">Odašilji samo na?</string>
+    <string name="androidaps">AndroidAPS</string>
+    <string name="androidwear">Android Wear OS</string>
+    <string name="librealarm">LibreAlarm</string>
+    <string name="use_librealarm">Koristi LibreAlarm aplikaciju kao izvor podataka?</string>
+    <string name="settings_updated_to_mmol">Postavke promijenjene u mmol/L</string>
+    <string name="code_accepted">Kod prihvaćen</string>
+    <string name="g6_sensor_code">G6 senzor kod</string>
+    <string name="enable_update_checks">Omogućiti provjere ažuriranja?</string>
+    <string name="you_can_easily_roll_back_dialog_msg">Ukoliko niste zadovoljni sa novom verzijom aplikacije xDrip, možete se jednostavno vratiti na prijašnje verzije jednostavno ponovno pokrečući APK instalaciju za prijašnju verziju iz vašeg Downloads foldera.\n\nŽelite li omogućiti provjeru ažuriranja?</string>
+    <string name="hey_fam">Hej Fam...</string>
+    <string name="you_have_update_checks_off">Provjere ažuriranja su isključenje!\n\nTrudimo se kroz vrijeme popraviti bugove i greške te dodati nove značajke xDrip+ aplikacije.\n\nSvakih 60 dana ovaj podsjetnik će se pojaviti kako bi vas pitao želite li uključiti provjere ažuriranja.</string>
+    <string name="update_checking_enabled">Provjera ažuriranja je uključena!</string>
+    <string name="cancel_alarm">Otkazati alarm?</string>
+    <string name="please_confirm_to_cancel_the_alert">Molimo potvrdite otkazivanje upozorenja?</string>
+    <string name="yes_cancel">Da, otkaži</string>
+    <string name="zero_zero_zero_zero">0000</string>
+    <string name="emergency_messages">Hitne poruke</string>
+    <string name="emergency_message_feature">Značajke hitnih poruka</string>
+    <string name="text_messages_can_be_sent_with_your_location_if_you_do_not_respond_to_alarms_this_feature_is_experimental_and_may_not_be_reliable">Tekstualne poruke mogu biti poslane s vašom lokacijom ukoliko ne reagirate na alarm. Ova značajka je eksperimentalna te je moguće nepouzdana.</string>
+    <string name="your_name">Vaše ime</string>
+    <string name="emergency_message_near_format_string">%1$s blizu %2$s %3$s %4$s %5$s</string>
+    <string name="bluetooth_watchdog_timers">Vrijednost brojača vremena za BT Watchdog</string>
+    <string name="bluetooth_watchdog_timer_sums">Unos vrijednosti u minutama</string>
+    <string name="summary_Accept_connections_from_any_network_instead_of_just_internally">Prihvati spajanja sa bilo koje mreže umjesto samo interno unutar ovog uređaja. Postoje sigurnosne implikacije omogućavanja ovoga! Zajednička lozinka će se zahtijevati ukoliko ovo bude postavljeno.</string>
+    <string name="summary_Shared_Secret_for_open_web_service">Zajednička lozinka dijeljenja za otvaranje web servisa (treba odgovarati vašem Nightscout API secret - lozinki)</string>
+    <string name="title_xDrip_Web_Service_Secret">lozinka za xDrip web servis</string>
+    <string name="title_Batterylog">Zapisi o bateriji</string>
+    <string name="alerts_disabled">Upozorenja onemogućena</string>
+    <string name="without_location_scan_doesnt_work">Bez dozvole za lokaciju Android Bluetooth skeniranje ne može raditi</string>
+    <string name="without_location_permission_emergency_cannot_get_location">Bez dozvole za lokaciju hitne poruke ne mogu koristiti podatak o lokaciji</string>
+    <string name="summary_bluetooth_meter_for_calibrations_auto">Baždari bez traženja potvrde korsiteći nova očitanja glukoze u krvi ukoliko se uvjeti za to čine odgovarajućima (eksperimentalno)</string>
+    <string name="title_bluetooth_meter_for_calibrations_auto">Automatsko baždarenje</string>
+    <string name="enable_streaming_dialog_dont_ask_again"> Ne ponavljaj ovo pitanje</string>
 </resources>

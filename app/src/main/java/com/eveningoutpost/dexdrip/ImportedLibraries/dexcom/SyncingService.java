@@ -9,6 +9,8 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
+
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalRecord;
@@ -141,7 +143,7 @@ public class SyncingService extends IntentService {
                 Log.w("CALIBRATION-CHECK-IN: ", "Failed to acquire serial device");
             }
         } finally {
-            wl.release();
+            JoH.releaseWakeLock(wl);
         }
     }
 

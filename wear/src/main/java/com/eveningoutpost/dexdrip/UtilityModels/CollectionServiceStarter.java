@@ -248,6 +248,11 @@ public class CollectionServiceStarter {
         this.mContext = context;
     }
 
+    public static void restartCollectionServiceBackground() {
+        Inevitable.task("restart-collection-service",500,() -> restartCollectionService(xdrip.getAppContext()));
+    }
+
+
     public static void restartCollectionService(Context context) {
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);
         collectionServiceStarter.stopBtShareService();

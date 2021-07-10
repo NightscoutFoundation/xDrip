@@ -42,6 +42,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.SensorStatus;
 import com.eveningoutpost.dexdrip.databinding.ActivitySystemStatusBinding;
 import com.eveningoutpost.dexdrip.ui.MicroStatus;
 import com.eveningoutpost.dexdrip.ui.MicroStatusImpl;
@@ -58,7 +59,7 @@ import java.util.Set;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
-
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 public class SystemStatusFragment extends Fragment {
     private static final int SMALL_SCREEN_WIDTH = 300;
@@ -276,22 +277,7 @@ public class SystemStatusFragment extends Fragment {
 
 
     private void setSensorStatus() {
-        StringBuilder sensor_status = new StringBuilder();
-        if (Sensor.isActive()) {
-            Sensor sens = Sensor.currentSensor();
-            Date date = new Date(sens.started_at);
-            DateFormat df = new SimpleDateFormat();
-            sensor_status.append(df.format(date));
-            sensor_status.append(" (");
-            sensor_status.append((System.currentTimeMillis() - sens.started_at) / (1000 * 60 * 60 * 24));
-            sensor_status.append("d ");
-            sensor_status.append(((System.currentTimeMillis() - sens.started_at) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            sensor_status.append("h)");
-        } else {
-            sensor_status.append("not available");
-        }
-        sensor_status_view.setText(sensor_status.toString());
-
+        sensor_status_view.setText(SensorStatus.status());
     }
 
 
@@ -349,7 +335,7 @@ public class SystemStatusFragment extends Fragment {
 
     private void setConnectionStatusFollower() {
         if (GcmListenerSvc.lastMessageReceived == 0) {
-            connection_status.setText("No data");
+            connection_status.setText(safeGetContext().getString(R.string.no_data));
         } else {
             connection_status.setText((JoH.qs((JoH.ts() - GcmListenerSvc.lastMessageReceived) / 60000, 0)) + " mins ago");
         }
@@ -359,7 +345,7 @@ public class SystemStatusFragment extends Fragment {
         if (ParakeetHelper.isParakeetCheckingIn()) {
             connection_status.setText(ParakeetHelper.parakeetStatusString());
         } else {
-            connection_status.setText("No data");
+            connection_status.setText(safeGetContext().getString(R.string.no_data));
         }
     }
 
@@ -379,9 +365,9 @@ public class SystemStatusFragment extends Fragment {
             }
         }
         if (connected) {
-            connection_status.setText("Connected");
+            connection_status.setText(safeGetContext().getString(R.string.connected));
         } else {
-            connection_status.setText("Not Connected");
+            connection_status.setText(safeGetContext().getString(R.string.not_connected));
         }
 
         String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
@@ -407,7 +393,7 @@ public class SystemStatusFragment extends Fragment {
                     }
                 }
             } else {
-                connection_status.setText("No bluetooth");
+                connection_status.setText(safeGetContext().getString(R.string.no_bluetooth)); 
             }
         }
     }
@@ -466,7 +452,7 @@ public class SystemStatusFragment extends Fragment {
         restart_collection_service.setOnClickListener(new View.OnClickListener() {
             public void onClick(final View v) {
                 v.setEnabled(false);
-                JoH.static_toast_short("Restarting Collector!");
+                JoH.static_toast_short(gs(R.string.restarting_collector));
                 v.setAlpha(0.2f);
                 startWatchUpdaterService(safeGetContext(), WatchUpdaterService.ACTION_START_COLLECTOR, TAG);
                 CollectionServiceStarter.restartCollectionService(safeGetContext());

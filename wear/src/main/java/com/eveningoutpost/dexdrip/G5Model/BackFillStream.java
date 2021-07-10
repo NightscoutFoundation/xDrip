@@ -16,7 +16,7 @@ import lombok.Data;
 
 import static com.eveningoutpost.dexdrip.G5Model.DexTimeKeeper.fromDexTimeCached;
 
-public class BackFillStream extends TransmitterMessage {
+public class BackFillStream extends BaseMessage {
 
     private int last_sequence = 0;
 
@@ -69,13 +69,16 @@ public class BackFillStream extends TransmitterMessage {
                     break;
 
                 case Errors:
+                    /* This preference option has never been available outside of unit testing
+                       and can now be removed.
                     if (Pref.getBooleanDefaultFalse("ob1_g5_use_errored_data")) {
                         insertBackfillItem(backsies, dexTime, glucose, trend);
                     }
+                    */
                     break;
 
                 case InsufficientCalibration:
-                    if (Pref.getBooleanDefaultFalse("ob1_g5_use_insufficiently_calibrated")) {
+                    if (Pref.getBoolean("ob1_g5_use_insufficiently_calibrated", true)) {
                         insertBackfillItem(backsies, dexTime, glucose, trend);
                     }
                     break;

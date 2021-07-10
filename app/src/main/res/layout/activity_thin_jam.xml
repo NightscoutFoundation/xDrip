@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="me.tatarka.bindingcollectionadapter2.LayoutManagers" />
+
+        <variable
+            name="vm"
+            type="com.eveningoutpost.dexdrip.ui.activities.ThinJamActivity.ViewModel" />
+
+        <variable
+            name="prefs"
+            type="com.eveningoutpost.dexdrip.UtilityModels.PrefsViewImpl" />
+
+    </data>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:keepScreenOn="true">
+
+        <LinearLayout
+            android:id="@+id/tjScanList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:showIfTrue="@{vm.items.size() > 0}">
+
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:paddingBottom="10dp"
+                app:itemBinding="@{vm.itemBinding}"
+                app:items="@{vm.items}"
+                app:layoutManager="@{LayoutManagers.linear()}" />
+
+            <ImageButton
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="@{vm::goBack}"
+                app:showIfTrue="@{vm.showBack()}"
+                app:srcCompat="@android:drawable/ic_media_rew" />
+
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/tjConnectedDevice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tjScanList"
+            android:layout_centerHorizontal="true"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:fontFamily="monospace"
+            android:text="@{vm.connectedDevice, default=`No device`}"
+            android:textColor="@color/yellow100"
+            android:textStyle="normal"
+            tools:layout_editor_absoluteY="20dp" />
+
+        <TextView
+            android:id="@+id/tjstatuswindow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tjConnectedDevice"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:fontFamily="sans-serif"
+            android:text="@{vm.status, default=`Idle`}"
+            android:textStyle="normal" />
+
+        <TextView
+            android:id="@+id/tjLogText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tjConnectedDevice"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:gravity="bottom"
+            android:maxLines="20"
+            android:scrollbars="vertical"
+            android:text="@{vm.textWindow, default=`textWindow`}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:layout_editor_absoluteY="74dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:orientation="vertical">
+
+            <LinearLayout
+                showIfTrue="@{safeUnbox(vm.progressBar) > 0}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="36dp"
+                    android:layout_marginStart="36dp"
+                    android:fontFamily="monospace"
+                    android:text="Flashing device - do not interrupt!"
+                    android:textAlignment="center"
+                    android:textColor="@color/yellow100"
+                    android:textStyle="normal" />
+
+                <ProgressBar
+                    android:id="@+id/progressBar3"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    showIfTrue="@{safeUnbox(vm.progressBar) > 0}"
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
+                    android:layout_marginEnd="36dp"
+                    android:layout_marginStart="36dp"
+                    android:progress="@{safeUnbox(vm.progressBar)}" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="@{() -> vm.scan(false)}"
+                    android:onLongClick="@{() -> vm.scan(true)}"
+                    android:text="Scan" />
+                <Button
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_weight="1"
+                    android:onClick="@{()->vm.doAction(`showqrcode`)}"
+                    android:onLongClick="@{()->vm.doAction(`easyauth`)}"
+                    android:text="QR"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="@{() -> vm.doAction(`reboot`)}"
+                    android:onLongClick="@{() -> vm.doAction(`factoryreset`)}"
+                    android:text="REBOOT" />
+
+
+                <Button
+                    android:id="@+id/button32"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="@{() -> vm.doAction(`updateconfig`)}"
+                    android:onLongClick="@{() -> vm.doAction(`asktxid`)}"
+                    android:text="CONFIG" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="@{() -> vm.doAction(`launchstatus`)}"
+                    android:text="Status" />
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="@{() -> vm.doAction(`launchsettings`)}"
+                    android:text="Settings" />
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="@{() -> vm.doAction(`launchhelp`)}"
+                    android:text="Web Help" />
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+
+</layout>

@@ -129,6 +129,14 @@ public class Pref {
         }
     }
 
+    public static double getStringToDouble(final String pref, final double defaultValue) {
+        try {
+            return JoH.tolerantParseDouble(getString(pref, Double.toString(defaultValue)), defaultValue);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
     public static boolean setInt(final String pref, final int num) {
         initializePrefs();
         if (prefs != null) {

@@ -107,7 +107,11 @@ public class ColorPicker extends ColorPreference {
         //Log.d(TAG, "default value: " + defaultValue.toString());
         if (restorePersistedValue) {
             // Restore existing state
-            mCurrentValue = this.getPersistedInt(DEFAULT_VALUE);
+            try {
+                mCurrentValue = this.getPersistedInt(DEFAULT_VALUE);
+            } catch (ClassCastException e) {
+                Log.e(TAG, "Cannot cast - invalid preference type saved? Should be Int!! ", e);
+            }
         } else {
             // Set default state from the XML attribute
             mCurrentValue = (Integer) defaultValue;

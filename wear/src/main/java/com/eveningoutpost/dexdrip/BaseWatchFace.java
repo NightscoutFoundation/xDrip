@@ -33,6 +33,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Services.HeartRateService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.google.android.gms.wearable.DataMap;
 import com.ustwo.clockwise.common.WatchFaceTime;
@@ -64,6 +65,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     public LinearLayout mDirectionDelta;
     public LinearLayout mStepsLinearLayout;
     public LinearLayout mMenuLinearLayout;
+    public LinearLayout mSecondaryLayout;
     public String mExtraStatusLine = "";
     public String mStepsToast = "";
     public int mStepsCount = 0;
@@ -714,8 +716,10 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
 
     }
 
-    protected void onWatchModeChanged(WatchMode watchMode) {
 
+    @Override
+    protected void onWatchModeChanged(WatchMode watchMode) {
+        Log.d(TAG,"OnWatchModeChanged: "+watchMode);
         if(lowResMode ^ isLowRes(watchMode)){ //if there was a change in lowResMode
             lowResMode = isLowRes(watchMode);
             setColor();
@@ -726,7 +730,9 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     }
 
     private boolean isLowRes(WatchMode watchMode) {
-        return (watchMode == WatchMode.LOW_BIT) || (watchMode == WatchMode.LOW_BIT_BURN_IN) || (watchMode == WatchMode.LOW_BIT_BURN_IN);
+        return (watchMode == WatchMode.LOW_BIT)
+                || (watchMode == WatchMode.LOW_BIT_BURN_IN)
+                || (watchMode == WatchMode.BURN_IN && Pref.getBoolean("use_low_bit_mode", true));
     }
 
 

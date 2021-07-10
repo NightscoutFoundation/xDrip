@@ -11,13 +11,13 @@
         android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.eveningoutpost.dexdrip.CalibrationCheckInActivity">
 
-        <TextView android:text="Plug in your dexcom reciever then hit this button and cross your fingers!" android:layout_width="wrap_content"
+        <TextView android:text="@string/plug_in_your_dexcom_reciever" android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/check_in_text" />
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Check in Dexcom calibrations"
+            android:text="@string/check_in_dexcom_calibrations"
             android:id="@+id/check_in_calibrations"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="53dp" />

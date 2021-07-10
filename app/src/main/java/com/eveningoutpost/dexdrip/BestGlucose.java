@@ -80,17 +80,23 @@ public class BestGlucose {
             return this.stale;
         }
 
+        // return boolean if data would be considered stale
+        public boolean isReallyStale() {
+                return this.mssince > (Home.stale_data_millis()*3);
+        }
+
+
         // is this value above the "High" preference value
         public boolean isHigh() {
             if (this.highMark == null)
-                this.highMark = JoH.tolerantParseDouble(prefs.getString("highValue", "170"));
+                this.highMark = JoH.tolerantParseDouble(prefs.getString("highValue", "170"), 170d);
             return this.unitized_value >= this.highMark;
         }
 
         // is this value below the "Low" preference value
         public boolean isLow() {
             if (this.lowMark == null)
-                this.lowMark = JoH.tolerantParseDouble(prefs.getString("lowValue", "70"));
+                this.lowMark = JoH.tolerantParseDouble(prefs.getString("lowValue", "70"), 70d);
             return this.unitized_value <= this.lowMark;
         }
 
@@ -117,6 +123,10 @@ public class BestGlucose {
         // set the whole spannable string to whatever this span is
         private void wholeSpan(SpannableString ret, Object what) {
             ret.setSpan(what, 0, ret.length(), 0);
+        }
+
+        public String humanSummary() {
+            return unitized + " " + (doMgDl ? "mg/dl" : "mmol/l") + (isStale() ? ", " + minutesAgo(true).toLowerCase() : "");
         }
 
     }

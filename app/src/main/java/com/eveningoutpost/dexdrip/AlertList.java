@@ -38,6 +38,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 public class AlertList extends ActivityWithMenu {
     ListView listViewLow;
@@ -271,7 +272,7 @@ public class AlertList extends ActivityWithMenu {
             return "";
         } catch (SecurityException e) {
             // need external storage permission?
-            checkStoragePermissions("Need permission to access audio files");
+            checkStoragePermissions(gs(R.string.need_permission_to_access_audio_files));
             return "";
         }
     }
@@ -285,7 +286,7 @@ public class AlertList extends ActivityWithMenu {
                     android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
                 final Activity activity = this;
-                JoH.show_ok_dialog(activity, "Please Allow Permission", msg, () -> ActivityCompat.requestPermissions(activity,
+                JoH.show_ok_dialog(activity, gs(R.string.please_allow_permission), msg, () -> ActivityCompat.requestPermissions(activity,
                         new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_STORAGE));
                 return false;
             }

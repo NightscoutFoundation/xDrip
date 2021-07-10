@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.DesertSync;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Reminder;
 import com.eveningoutpost.dexdrip.Models.Sensor;
@@ -19,11 +20,16 @@ import com.eveningoutpost.dexdrip.Models.UserNotification;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
+import com.eveningoutpost.dexdrip.UtilityModels.NanoStatus;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
+import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
+import com.eveningoutpost.dexdrip.ui.LockScreenWallPaper;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.watch.lefun.LeFun;
+import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -54,6 +60,7 @@ public class MissedReadingService extends IntentService {
 
             final long stale_millis = Home.stale_data_millis();
 
+
             // send to pebble
             if (Pref.getBoolean("broadcast_to_pebble", false) && (PebbleUtil.getCurrentPebbleSyncType() != 1) && !BgReading.last_within_millis(stale_millis)) {
                 if (JoH.ratelimit("peb-miss", 120)) {
@@ -63,13 +70,17 @@ public class MissedReadingService extends IntentService {
                 // update pebble even when we don't have data to ensure missed readings show
             }
 
+            if (LeFunEntry.isEnabled() && (!BgReading.last_within_millis(stale_millis))) {
+                LeFun.showLatestBG();
+            }
+
 
             if ((Pref.getBoolean("aggressive_service_restart", false) || DexCollectionType.isFlakey())) {//!Home.get_enable_wear() &&
                 if (!BgReading.last_within_millis(stale_millis) && sensorActive && (!getLocalServiceCollectingState())) {
                     if (JoH.ratelimit("aggressive-restart", aggressive_backoff_timer)) {
                         Log.e(TAG, "Aggressively restarting collector service due to lack of reception: backoff: " + aggressive_backoff_timer);
                         if (aggressive_backoff_timer < 1200) aggressive_backoff_timer += 60;
-                        CollectionServiceStarter.restartCollectionService();
+                        CollectionServiceStarter.restartCollectionServiceBackground();
                     } else {
                         aggressive_backoff_timer = 120; // reset
                     }
@@ -80,6 +91,10 @@ public class MissedReadingService extends IntentService {
             Reminder.processAnyDueReminders();
             BluetoothGlucoseMeter.immortality();
             XdripWebService.immortality(); //
+            InPenEntry.immortality();
+            DesertSync.pullAsEnabled();
+            NanoStatus.keepFollowerUpdated();
+            LockScreenWallPaper.timerPoll();
 
             // TODO functionalize the actual checking
             bg_missed_alerts = Pref.getBoolean("bg_missed_alerts", false);
@@ -109,6 +124,7 @@ public class MissedReadingService extends IntentService {
             final int bg_missed_minutes = Pref.getStringToInt("bg_missed_minutes", 30);
             final long now = JoH.tsl();
 
+            // check if readings have been missed
             if (BgReading.getTimeSinceLastReading() >= (bg_missed_minutes * 1000 * 60) &&
                     Pref.getLong("alerts_disabled_until", 0) <= now &&
                     (BgReading.getTimeSinceLastReading() < (Constants.HOUR_IN_MS * 6)) &&
@@ -138,7 +154,7 @@ public class MissedReadingService extends IntentService {
     }
 
     private void checkBackAfterSnoozeTime(Context context, long now) {
-        // This is not 100% acurate, need to take in account also the time of when this alert was snoozed.
+        // This is not 100% accurate, need to take in account also the time of when this alert was snoozed.
         UserNotification userNotification = UserNotification.GetNotificationByType("bg_missed_alerts");
         if (userNotification == null) {
             // No active alert exists, should not happen, we have just created it.

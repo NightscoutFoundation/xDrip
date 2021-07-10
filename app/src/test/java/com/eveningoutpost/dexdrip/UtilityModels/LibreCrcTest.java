@@ -21,9 +21,9 @@ public class LibreCrcTest extends RobolectricTestWithConfig {
                 (byte) 0x1b, (byte) 0xd9, (byte) 0xd3, (byte) 0xc4, (byte) 0xc1, (byte) 0x4a, (byte) 0x1f,
                 (byte) 0x24, (byte) 0xc4, 0x15, (byte) 0xde, (byte) 0xab, (byte) 0xa4, 0x66};
 
-        assertWithMessage("1 byte not processed A").that(LibreCrc.computeCRC16(testa, 0, 1)).isEqualTo(65535);
-        assertWithMessage("1 byte not processed B").that(LibreCrc.computeCRC16(testb, 0, 1)).isEqualTo(65535);
-        assertWithMessage("Example data test").that(LibreCrc.computeCRC16(testb, 0, testb.length - 2)).isEqualTo(19459);
+        assertWithMessage("1 byte not processed A").that(LibreUtils.computeCRC16(testa, 0, 1)).isEqualTo(65535);
+        assertWithMessage("1 byte not processed B").that(LibreUtils.computeCRC16(testb, 0, 1)).isEqualTo(65535);
+        assertWithMessage("Example data test").that(LibreUtils.computeCRC16(testb, 0, testb.length - 2)).isEqualTo(19459);
 
 
     }

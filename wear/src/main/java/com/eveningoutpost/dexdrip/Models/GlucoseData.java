@@ -13,6 +13,7 @@ public class GlucoseData implements Comparable<GlucoseData> {
     public int glucoseLevel = -1;
     public int glucoseLevelRaw = -1;
     public long phoneDatabaseId;
+    public int glucoseLevelRawSmoothed;
 
     public GlucoseData(){}
 

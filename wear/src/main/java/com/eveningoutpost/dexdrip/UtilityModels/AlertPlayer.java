@@ -440,6 +440,15 @@ public class AlertPlayer {
         NotificationManager mNotifyMgr = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         //mNotifyMgr.cancel(Notifications.exportAlertNotificationId); // this appears to confuse android wear version 2.0.0.141773014.gms even though it shouldn't - can we survive without this?
         mNotifyMgr.notify(Notifications.exportAlertNotificationId, builder.build());
+        if (Pref.getBooleanDefaultFalse("alert_use_sounds")) {
+            try {
+                if (JoH.ratelimit("wear-alert-sound", 10)) {
+                    JoH.playResourceAudio(R.raw.warning);
+                }
+            } catch (Exception e) {
+                //
+            }
+        }
     }
 
     private void VibrateAudio(Context ctx, AlertType alert, String bgValue, Boolean overrideSilent, int timeFromStartPlaying) {

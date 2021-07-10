@@ -32,8 +32,8 @@ public class WebServiceStatus extends BaseWebService {
             settings.put("units", using_mgdl ? "mg/dl" : "mmol");
 
             // thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}
-            double highMark = tolerantParseDouble(Pref.getString("highValue", "170"));
-            double lowMark = tolerantParseDouble(Pref.getString("lowValue", "70"));
+            double highMark = tolerantParseDouble(Pref.getString("highValue", "170"), 170d);
+            double lowMark = tolerantParseDouble(Pref.getString("lowValue", "70"), 70d);
 
             if (!using_mgdl) {
                 // if we're using mmol then the marks will be in mmol but should be expressed in mgdl

@@ -3,14 +3,18 @@ package com.eveningoutpost.dexdrip.Models;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.NFCReaderX;
+import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.UtilityModels.Blukon;
 import com.eveningoutpost.dexdrip.UtilityModels.BridgeResponse;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.LibreUtils;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 /**
  * Created by Tzachi Dar on 7.3.2018.
  */
@@ -19,12 +23,14 @@ public class Tomato {
     private static final String TAG = "DexCollectionService";//?????"Tomato";
 
     private static final String CHECKSUM_FAILED = "checksum failed";
+    private static final String SERIAL_FAILED = "serial failed";
 
     private enum TOMATO_STATES {
         REQUEST_DATA_SENT,
         RECIEVING_DATA
     }
     private final static int TOMATO_HEADER_LENGTH = 18;
+    private final static int TOMATO_PATCH_INFO = 6;
 
     
     static volatile TOMATO_STATES s_state;
@@ -41,7 +47,8 @@ public class Tomato {
             return false;
         }
 
-        return activeBluetoothDevice.name.contentEquals("miaomiao");
+        return activeBluetoothDevice.name.startsWith("miaomiao")
+                || activeBluetoothDevice.name.toLowerCase().startsWith("watlaa");
     }
 
     public static BridgeResponse decodeTomatoPacket(byte[] buffer, int len) {
@@ -84,7 +91,7 @@ public class Tomato {
             
             if(buffer.length == 1 && buffer[0] == 0x34) {
                 Log.e(TAG, "No sensor has been found");
-                reply.setError_message("No sensor found");
+                reply.setError_message(gs(R.string.no_sensor_found));
               return reply;
             }
             
@@ -95,8 +102,12 @@ public class Tomato {
                 // &0xff is needed to convert to hex.
                 int expectedSize = 256 * (int)(buffer[1] & 0xFF) + (int)(buffer[2] & 0xFF);
                 Log.e(TAG, "Starting to acumulate data expectedSize = " + expectedSize);
-                InitBuffer(expectedSize);
+                InitBuffer(expectedSize + TOMATO_PATCH_INFO);
                 addData(buffer);
+                if((JoH.ratelimit("tomato-full-retry",60)
+                        || JoH.ratelimit("tomato-full-retry2",60))) {
+                    reply.SetStillWaitingForData();
+                }
                 s_state = TOMATO_STATES.RECIEVING_DATA;
                 return reply;
                 
@@ -112,17 +123,17 @@ public class Tomato {
             //Log.e(TAG, "received more data s_acumulatedSize = " + s_acumulatedSize + " current buffer size " + buffer.length);
             try {
                 addData(buffer);
+                if(s_recviedEnoughData) {
+                    reply.SetGotAllData();
+                }
+                
             } catch (RuntimeException e) {
                 // if the checksum failed lets ask for the data set again but not more than once per minute
                 if (e.getMessage().equals(CHECKSUM_FAILED)) {
-                   if (JoH.ratelimit("tomato-full-retry",60)
-                           || JoH.ratelimit("tomato-full-retry2",60)) {
-                       reply.getSend().clear();
-                       reply.getSend().addAll(Tomato.resetTomatoState());
-                       reply.setDelay(8000);
-                       reply.setError_message("Checksum failed - retrying");
-                       Log.d(TAG,"Asking for retry of data");
-                   }
+                   // Nothing that needs to be done here since we will now ask for a new reading, if we don't get all data.
+
+                } else if (e.getMessage().equals(SERIAL_FAILED)) {
+                    reply.setError_message("Sensor Serial Problem");
                 } else throw e;
             }
 
@@ -137,7 +148,7 @@ public class Tomato {
     static void addData(byte[] buffer) {
         if(s_acumulatedSize + buffer.length > s_full_data.length) {
             Log.e(TAG, "Error recieving too much data. exiting. s_acumulatedSize = " + s_acumulatedSize + 
-                    "buffer.length = " + buffer.length + " s_full_data.length " + s_full_data.length);
+                    " buffer.length = " + buffer.length + " s_full_data.length " + s_full_data.length);
             //??? send something to start back??
             return;
             
@@ -148,27 +159,51 @@ public class Tomato {
     }
     
     static void AreWeDone() {
-        if(s_recviedEnoughData) {
+        // Give both versions a chance to work.
+        final int extended_length = Constants.LIBRE_1_2_FRAM_SIZE + TOMATO_HEADER_LENGTH + 1 + TOMATO_PATCH_INFO;
+        if(s_recviedEnoughData && (s_acumulatedSize != extended_length))  {
             // This reading already ended
+            Log.e(TAG,"Getting out, as s_recviedEnoughData and we have too much data already s_acumulatedSize = " + s_acumulatedSize);
             return;
         }
 
-        if(s_acumulatedSize < 344 + TOMATO_HEADER_LENGTH + 1) {
+        if(s_acumulatedSize < Constants.LIBRE_1_2_FRAM_SIZE + TOMATO_HEADER_LENGTH + 1 ) {
+            //Log.e(TAG,"Getting out, since not enough data s_acumulatedSize = " + s_acumulatedSize);
             return;   
         }
-        byte[] data = Arrays.copyOfRange(s_full_data, TOMATO_HEADER_LENGTH, TOMATO_HEADER_LENGTH+344);
+        byte[] data = Arrays.copyOfRange(s_full_data, TOMATO_HEADER_LENGTH, TOMATO_HEADER_LENGTH+Constants.LIBRE_1_2_FRAM_SIZE);
         s_recviedEnoughData = true;
         
         long now = JoH.tsl();
-        boolean checksum_ok = NFCReaderX.HandleGoodReading("tomato", data, now);
+        // Important note, the actual serial number is 8 bytes long and starts at addresses 5.
+        final String SensorSn = LibreUtils.decodeSerialNumberKey(Arrays.copyOfRange(s_full_data, 5, 13));
+        byte []patchUid = null;
+        byte []patchInfo = null;
+        if(s_acumulatedSize >= extended_length) {
+            patchUid = Arrays.copyOfRange(s_full_data, 5, 13);
+            patchInfo = Arrays.copyOfRange(s_full_data, TOMATO_HEADER_LENGTH+ Constants.LIBRE_1_2_FRAM_SIZE + 1 , TOMATO_HEADER_LENGTH + Constants.LIBRE_1_2_FRAM_SIZE + 1+ TOMATO_PATCH_INFO);
+        }
+        Log.d(TAG, "patchUid = " + HexDump.dumpHexString(patchUid));
+        Log.d(TAG, "patchInfo = " + HexDump.dumpHexString(patchInfo));
+        PersistentStore.setString("Tomatobattery", Integer.toString(s_full_data[13]));
+        Pref.setInt("bridge_battery", s_full_data[13]);
+        // Set the time of the current reading
+        PersistentStore.setLong("libre-reading-timestamp", JoH.tsl());
+        boolean checksum_ok = NFCReaderX.HandleGoodReading(SensorSn, data, now, true, patchUid, patchInfo);
         Log.e(TAG, "We have all the data that we need " + s_acumulatedSize + " checksum_ok = " + checksum_ok + HexDump.dumpHexString(data));
 
         if(!checksum_ok) {
             throw new RuntimeException(CHECKSUM_FAILED);
         }
-        PersistentStore.setString("Tomatobattery", Integer.toString(s_full_data[13]));
+
+        if (SensorSanity.checkLibreSensorChangeIfEnabled(SensorSn)) {
+            Log.e(TAG,"Problem with Libre Serial Number - not processing");
+            throw new RuntimeException(SERIAL_FAILED);
+        }
+
         PersistentStore.setString("TomatoHArdware",HexDump.toHexString(s_full_data,16,2));
         PersistentStore.setString("TomatoFirmware",HexDump.toHexString(s_full_data,14,2));
+        PersistentStore.setString("LibreSN", SensorSn);
 
         
     }
@@ -186,7 +221,7 @@ public class Tomato {
             return;
         }
         // We have all the data
-        if(s_full_data.length < 344 + TOMATO_HEADER_LENGTH + 1) {
+        if(s_full_data.length < Constants.LIBRE_1_2_FRAM_SIZE + TOMATO_HEADER_LENGTH + 1) {
             Log.e(TAG, "We have all the data, but it is not enough... s_full_data.length = " + s_full_data.length );
             return;
         }
@@ -208,7 +243,7 @@ public class Tomato {
         return resetTomatoState();
     }
 
-    private static ArrayList<ByteBuffer> resetTomatoState() {
+    public static ArrayList<ByteBuffer> resetTomatoState() {
         ArrayList<ByteBuffer> ret = new ArrayList<>();
 
         s_state = TOMATO_STATES.REQUEST_DATA_SENT;

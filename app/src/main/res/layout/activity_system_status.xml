@@ -40,7 +40,7 @@
                     android:id="@+id/textViewLabelVersionName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Version:   "
+                    android:text="@string/version"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <TextView
@@ -87,7 +87,7 @@
                     android:id="@+id/textView7"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Bluetooth Device:   "
+                    android:text="@string/bluetooth_device"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <TextView
@@ -112,7 +112,7 @@
                     android:layout_gravity="center_vertical"
                     android:paddingTop="10dp"
 
-                    android:text="Connection Status:   "
+                    android:text="@string/connection_status_long"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <TextView
@@ -134,7 +134,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Sensor Start:  "
+                    android:text="@string/sensor_start"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <TextView
@@ -156,7 +156,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Transmitter Battery:  "
+                    android:text="@string/transmitter_battery_status"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <TextView

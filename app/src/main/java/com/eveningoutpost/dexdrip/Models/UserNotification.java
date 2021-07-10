@@ -8,11 +8,12 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Emma Black on 11/29/14.
@@ -104,12 +105,13 @@ public class UserNotification extends Model {
                     .orderBy("_ID desc")
                     .executeSingle();
         } else {
-            final String timestamp = Pref.getStringDefaultBlank("UserNotification:timestamp:" + type);
+            final String timestamp = PersistentStore.getString("UserNotification:timestamp:" + type);
             if (timestamp.equals("")) return null;
-            final String message = Pref.getStringDefaultBlank("UserNotification:message:" + type);
+            final String message = PersistentStore.getString("UserNotification:message:" + type);
             if (message.equals("")) return null;
             UserNotification userNotification = new UserNotification();
-            userNotification.timestamp = Double.parseDouble(timestamp);
+            userNotification.timestamp = JoH.tolerantParseDouble(timestamp, -1);
+            if (userNotification.timestamp == -1) return null; // bad data
             userNotification.message = message;
             Log.d(TAG, "Workaround for: " + type + " " + userNotification.message + " timestamp: " + userNotification.timestamp);
             return userNotification;
@@ -123,7 +125,7 @@ public class UserNotification extends Model {
                 userNotification.delete();
             }
         } else {
-            Pref.setString("UserNotification:timestamp:" + type, "");
+            PersistentStore.setString("UserNotification:timestamp:" + type, "");
         }
     }
     
@@ -169,8 +171,8 @@ public class UserNotification extends Model {
                 break;
             default:
                 Log.d(TAG, "Saving workaround for: " + type + " " + message);
-                Pref.setString("UserNotification:timestamp:" + type, JoH.qs(timestamp));
-                Pref.setString("UserNotification:message:" + type, message);
+                PersistentStore.setString("UserNotification:timestamp:" + type, String.format(Locale.US, "%d", (long) timestamp));
+                PersistentStore.setString("UserNotification:message:" + type, message);
                 return null;
         }
         userNotification.save();

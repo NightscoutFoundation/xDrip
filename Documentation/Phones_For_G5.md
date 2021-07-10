@@ -1,5 +1,7 @@
 # Phones which have achieved high capture rate
 
+## THIS FILE IS FOR ARCHIVE PURPOSES ONLY NOW - IT IS BELIEVED THAT ALMOST ALL PHONES WORK CORRECTLY ONCE ANY SPECIFIC MANUFACTURER POWER SAVING FEATURES ARE DISABLED FOR XDRIP
+
 The following phone models have reported getting a capture rate of 90%-100%
 
 In theory, using the same phone with the same Android version should allow you to also potentially achieve the same high capture rate. This is a guide only, it may or may not work for you. There are no guarantees.
@@ -7,6 +9,8 @@ In theory, using the same phone with the same Android version should allow you t
 
 Phone Model | Android Version | Mode
 --- | --- | ---
+Google Pixel 2 | 9 |
+Google Pixel 2XL | 9 |
 Google Pixel | 7.1.1 |
 Google Pixel | 7.1.2 |
 Google Pixel XL | 7.1.1
@@ -48,6 +52,7 @@ Melrose S9 | 4.4.2 | OB1
 Samsung A3 2017 | 6.0.1 | OB1
 ZTE Axon 7 Mini | 7.1.1 | OB1
 ZTE Axon 7 | 7.1.2 | OB1
+Xiaomi Mi Mix 2 | Lineage OS 15.1 | OB1
 
 ## Tips
 

@@ -2,18 +2,15 @@ package com.eveningoutpost.dexdrip.wearintegration;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.content.WakefulBroadcastReceiver;
 
+import com.eveningoutpost.dexdrip.Models.APStatus;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.NewDataObserver;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-
-import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 
 /**
  * Created by adrian on 14/02/16.
@@ -33,9 +30,17 @@ public class ExternalStatusService extends IntentService {
         setIntentRedelivery(true);
     }
 
+    private static boolean isCurrent(long timestamp) {
+        return JoH.msSince(timestamp) < Constants.HOUR_IN_MS * 5;
+    }
+
+    private static boolean isCurrent() {
+        return isCurrent(getLastStatusLineTime());
+    }
+
     @NonNull
     public static String getLastStatusLine() {
-        if (JoH.msSince(getLastStatusLineTime()) < Constants.HOUR_IN_MS * 8) {
+        if (isCurrent()) {
             return PersistentStore.getString(EXTERNAL_STATUS_STORE);
         } else {
             return ""; // ignore if more than 8 hours old
@@ -57,24 +62,40 @@ public class ExternalStatusService extends IntentService {
             if (action == null) return;
 
             if (ACTION_NEW_EXTERNAL_STATUSLINE.equals(action)) {
-                String statusline = intent.getStringExtra(EXTRA_STATUSLINE);
-                if (statusline != null) {
-
-                    if (statusline.length() > MAX_LEN) {
-                        statusline = statusline.substring(0, MAX_LEN);
-                    }
-
-                    // store the data
-                    PersistentStore.setString(EXTERNAL_STATUS_STORE, statusline);
-                    PersistentStore.setLong(EXTERNAL_STATUS_STORE_TIME, JoH.tsl());
-
-                    // notify observers
-                    NewDataObserver.newExternalStatus();
-
-                }
+                final String statusLine = intent.getStringExtra(EXTRA_STATUSLINE);
+                update(JoH.tsl(), statusLine, true);
             }
         } finally {
             WakefulBroadcastReceiver.completeWakefulIntent(intent);
+        }
+    }
+
+
+    public static void update(long timestamp, String statusline, boolean receivedLocally) {
+        if (statusline != null) {
+
+            if (statusline.length() > MAX_LEN) {
+                statusline = statusline.substring(0, MAX_LEN);
+            }
+
+            // store the data
+            if (isCurrent(timestamp)) {
+                PersistentStore.setString(EXTERNAL_STATUS_STORE, statusline);
+                PersistentStore.setLong(EXTERNAL_STATUS_STORE_TIME, timestamp);
+            }
+
+            if (statusline.length() > 0) {
+                final Integer percent = getTBRInt();
+                if (percent != null) {
+                    APStatus.createEfficientRecord(timestamp, percent);
+                } else {
+                    UserError.Log.wtf(TAG, "Could not parse TBR from: " + statusline);
+                }
+            }
+
+            // notify observers
+            NewDataObserver.newExternalStatus(receivedLocally);
+
         }
     }
 
@@ -107,6 +128,14 @@ public class ExternalStatusService extends IntentService {
         } else if (check.length() == 0)
             return "100%";
         else return "???";
+    }
+
+    public static Integer getTBRInt() {
+        try {
+            return Integer.parseInt(getTBR().replace("%", ""));
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
 

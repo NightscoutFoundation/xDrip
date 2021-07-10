@@ -6,6 +6,8 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.UtilityModels.Blukon;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 /**
  * Created by Emma Black on 11/3/14.
@@ -59,4 +61,24 @@ public class ActiveBluetoothDevice extends Model {
         return (activeBluetoothDevice != null && activeBluetoothDevice.connected);
     }
 
+    public static synchronized void setDevice(String name, String address) {
+        ActiveBluetoothDevice btDevice;
+        synchronized (ActiveBluetoothDevice.table_lock) {
+             btDevice = new Select().from(ActiveBluetoothDevice.class)
+                    .orderBy("_ID desc")
+                    .executeSingle();
+        }
+        Pref.setString("last_connected_device_address", address);
+        Blukon.clearPin();
+        if (btDevice == null) {
+            ActiveBluetoothDevice newBtDevice = new ActiveBluetoothDevice();
+            newBtDevice.name = name;
+            newBtDevice.address = address;
+            newBtDevice.save();
+        } else {
+            btDevice.name = name;
+            btDevice.address = address;
+            btDevice.save();
+        }
+    }
 }

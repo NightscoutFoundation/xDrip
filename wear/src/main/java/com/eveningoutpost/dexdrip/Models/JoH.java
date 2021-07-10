@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.Models;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -75,6 +76,8 @@ import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -108,6 +111,7 @@ public class JoH {
     private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
     private final static String TAG = "jamorham JoH";
     private final static boolean debug_wakelocks = false;
+    private final static int PAIRING_VARIANT_PASSKEY = 1; // hidden in api
 
     private static double benchmark_time = 0;
     private static Map<String, Double> benchmarks = new HashMap<String, Double>();
@@ -419,6 +423,20 @@ public class JoH {
         }
     }
 
+    public static void dumpBundle(Bundle bundle, String tag) {
+        if (bundle != null) {
+            for (String key : bundle.keySet()) {
+                Object value = bundle.get(key);
+                if (value != null) {
+                    UserError.Log.d(tag, String.format("%s %s (%s)", key,
+                            value.toString(), value.getClass().getName()));
+                }
+            }
+        } else {
+            UserError.Log.d(tag, "Bundle is empty");
+        }
+    }
+
     /*KS// compare stored byte array hashes
     public static synchronized boolean differentBytes(String name, byte[] bytes) {
         final String id = "differentBytes-" + name;
@@ -668,6 +686,15 @@ public class JoH {
     public static double tolerantParseDouble(String str) throws NumberFormatException {
         return Double.parseDouble(str.replace(",", "."));
 
+    }
+
+    public static double tolerantParseDouble(final String str, final double def) {
+        if (str == null) return def;
+        try {
+            return Double.parseDouble(str.replace(",", "."));
+        } catch (NumberFormatException e) {
+            return def;
+        }
     }
 
     public static PowerManager.WakeLock getWakeLock(final String name, int millis) {
@@ -1035,6 +1062,9 @@ public class JoH {
         }
     }
 
+    public static void startService(Class c) {
+        xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), c));
+    }
 
     public static void startActivity(Class c) {
         xdrip.getAppContext().startActivity(getStartActivityIntent(c));
@@ -1230,12 +1260,17 @@ public class JoH {
     }
 
     @TargetApi(19)
-    public static boolean doPairingRequest(Context context, BroadcastReceiver broadcastReceiver, Intent intent, String mBluetoothDeviceAddress, String pinHint) {
+    public static boolean doPairingRequest(Context context, BroadcastReceiver broadcastReceiver, Intent intent, final String mBluetoothDeviceAddress, final String pinHint) {
         if (BluetoothDevice.ACTION_PAIRING_REQUEST.equals(intent.getAction())) {
             final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
             if (device != null) {
                 int type = intent.getIntExtra(BluetoothDevice.EXTRA_PAIRING_VARIANT, BluetoothDevice.ERROR);
                 if ((mBluetoothDeviceAddress != null) && (device.getAddress().equals(mBluetoothDeviceAddress))) {
+
+                    if (type == PAIRING_VARIANT_PASSKEY && pinHint != null) {
+                        return false;
+                    }
+
                     if ((type == PAIRING_VARIANT_PIN) && (pinHint != null)) {
                         device.setPin(convertPinToBytes(pinHint));
                         Log.d(TAG, "Setting pairing pin to " + pinHint);
@@ -1243,17 +1278,16 @@ public class JoH {
                     }
                     try {
                         UserError.Log.e(TAG, "Pairing type: " + type);
-                        if (type != PAIRING_VARIANT_PIN) {
+                        if (type != PAIRING_VARIANT_PIN && type != PAIRING_VARIANT_PASSKEY) {
                             device.setPairingConfirmation(true);
                             JoH.static_toast_short("xDrip Pairing");
                             broadcastReceiver.abortBroadcast();
                         } else {
-                            Log.d(TAG,"Attempting to passthrough PIN pairing");
+                            Log.d(TAG, "Attempting to passthrough PIN pairing");
                         }
 
                     } catch (Exception e) {
                         UserError.Log.e(TAG, "Could not set pairing confirmation due to exception: " + e);
-                        vibrateNotice();
                         if (JoH.ratelimit("failed pair confirmation", 200)) {
                             // BluetoothDevice.PAIRING_VARIANT_CONSENT)
                             if (type == 3) {
@@ -1452,6 +1486,23 @@ public class JoH {
         return false;
     }
 
+    public static boolean createSpecialBond(final String thisTAG, final BluetoothDevice device){
+        try {
+            Log.e(thisTAG,"Attempting special bond");
+            Class[] argTypes = new Class[] { int.class };
+            final Method method = device.getClass().getMethod("createBond", argTypes);
+            if (method != null) {
+                return (Boolean) method.invoke(device, 2);
+            } else {
+                Log.e(thisTAG,"CANNOT FIND SPECIAL BOND METHOD!!");
+            }
+        }
+        catch (Exception e) {
+            Log.e(thisTAG, "An exception occured while creating special bond: "+e);
+        }
+        return false;
+    }
+
     public static ByteBuffer bArrayAsBuffer(byte[] bytes) {
         final ByteBuffer bb = ByteBuffer.allocate(bytes.length);
         bb.put(bytes);
@@ -1571,11 +1622,36 @@ public class JoH {
         }
     }
 
+    public static double roundDouble(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException("Invalid decimal places");
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
+
     public static void clearCache() {
         try {
             ActiveAndroid.clearCache();
         } catch (Exception e) {
             Log.e(TAG, "Error clearing active android cache: " + e);
         }
+    }
+
+    public static boolean isServiceRunningInForeground(Class<?> serviceClass) {
+        final ActivityManager manager = (ActivityManager) xdrip.getAppContext().getSystemService(Context.ACTIVITY_SERVICE);
+        try {
+            for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+                if (serviceClass.getName().equals(service.service.getClassName())) {
+                    return service.foreground;
+                }
+            }
+            return false;
+        } catch (NullPointerException e) {
+            return false;
+        }
+    }
+
+    public static boolean emptyString(final String str) {
+        return str == null || str.length() == 0;
     }
 }

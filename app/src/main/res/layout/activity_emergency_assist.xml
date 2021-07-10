@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:appx="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="me.tatarka.bindingcollectionadapter2.LayoutManagers" />
+
+        <variable
+            name="prefs"
+            type="com.eveningoutpost.dexdrip.UtilityModels.PrefsViewImpl" />
+
+        <variable
+            name="sprefs"
+            type="com.eveningoutpost.dexdrip.UtilityModels.PrefsViewString" />
+
+        <variable
+            name="model"
+            type="com.eveningoutpost.dexdrip.eassist.EmergencyAssist" />
+
+        <variable
+            name="contactModel"
+            type="com.eveningoutpost.dexdrip.eassist.EmergencyAssistActivity.ContactModel" />
+
+        <variable
+            name="activity"
+            type="com.eveningoutpost.dexdrip.eassist.EmergencyAssistActivity" />
+
+    </data>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:descendantFocusability="beforeDescendants"
+            android:focusableInTouchMode="true"
+            android:orientation="vertical">
+
+
+            <Switch
+                android:id="@+id/emergencyAssistOnOff"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
+                android:hint="Turn feature off/on"
+                android:switchMinWidth="55dp"
+                android:text="@string/emergency_message_feature"
+                android:textSize="18sp"
+                appx:checked="@={prefs[`emergency_assist_enabled`]}"
+                appx:onCheckedChanged="@{() -> activity.masterEnable()}" />
+
+            <TextView
+                android:id="@+id/eaIntroText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:text="@string/text_messages_can_be_sent_with_your_location_if_you_do_not_respond_to_alarms_this_feature_is_experimental_and_may_not_be_reliable"
+                android:textColor="@color/yellow100" />
+
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:hint="@string/your_name"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:lines="1"
+                android:maxLines="1"
+                android:text="@={model.username}" />
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="10dp"
+                appx:cardBackgroundColor="#dadada"
+                appx:cardCornerRadius="7dp"
+                appx:cardElevation="3dp">
+
+                <TextView
+                    android:id="@+id/previewText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:text="@{model.lastExtendedText, default=`Preview Text`}"
+                    android:textColor="#000000"
+                    android:textStyle="italic" />
+            </android.support.v7.widget.CardView>
+
+            <View
+                android:id="@+id/divider1"
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_margin="5dp"
+                android:background="#484848" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="5dp"
+                android:text="@{String.format(@string/d_selected_contacts_for_text_messages_format, contactModel.items.size()), default=`0 selected contacts for text messages`}"
+                android:textColor="@{contactModel.items.size() > 0 ? @android:color/white : @android:color/holo_red_dark}" />
+
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="10dp"
+                android:scrollbars="vertical"
+                appx:itemBinding="@{contactModel.itemBinding}"
+                appx:items="@{contactModel.items}"
+                appx:layoutManager="@{LayoutManagers.linear()}" />
+
+
+            <ImageButton
+                android:id="@+id/addContactButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_weight="1"
+                android:onClick="chooseContact"
+                appx:srcCompat="@drawable/ic_group_add_grey_500_24dp" />
+
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_margin="5dp"
+                android:background="#484848" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="10dp"
+                android:text="@string/choose_when_to_send_messages"
+                android:textSize="18sp" />
+
+            <Switch
+                android:id="@+id/switch2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_weight="1"
+                android:text="@string/low_alert_not_acknowledged"
+                appx:boldIfTrue="@{prefs[`emergency_assist_low_alert`]}"
+                appx:checked="@={prefs[`emergency_assist_low_alert`]}" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                appx:showIfTrueAnimated="@{prefs[`emergency_assist_low_alert`]}">
+
+                <SeekBar
+                    android:id="@+id/seekBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_weight="1"
+                    android:max="360"
+                    android:thumb="@drawable/ic_av_timer_white_36dp"
+                    android:thumbTint="@color/accent_material_dark"
+                    appx:progressString="@={sprefs[`emergency_assist_low_alert_minutes`]}" />
+
+                <TextView
+                    android:id="@+id/textView22"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:minWidth="100dp"
+                    android:text="@{activity.prettyMinutes(sprefs[`emergency_assist_low_alert_minutes`])}" />
+            </LinearLayout>
+
+
+            <Switch
+                android:id="@+id/switch3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="5dp"
+                android:text="@string/high_alert_not_acknowledged"
+                appx:boldIfTrue="@{prefs[`emergency_assist_high_alert`]}"
+                appx:checked="@={prefs[`emergency_assist_high_alert`]}" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                appx:showIfTrueAnimated="@{prefs[`emergency_assist_high_alert`]}">
+
+                <SeekBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_weight="1"
+                    android:max="720"
+                    android:thumb="@drawable/ic_av_timer_white_36dp"
+                    android:thumbTint="@color/accent_material_dark"
+                    appx:progressString="@={sprefs[`emergency_assist_high_alert_minutes`]}" />
+
+                <TextView
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:minWidth="100dp"
+                    android:text="@{activity.prettyMinutes(sprefs[`emergency_assist_high_alert_minutes`])}" />
+
+            </LinearLayout>
+
+            <Switch
+                android:id="@+id/switch4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="5dp"
+                android:text="@string/device_inactivity"
+                appx:boldIfTrue="@{prefs[`emergency_assist_inactivity`]}"
+                appx:checked="@={prefs[`emergency_assist_inactivity`]}" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                appx:showIfTrueAnimated="@{prefs[`emergency_assist_inactivity`]}">
+
+                <SeekBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_weight="1"
+                    android:max="2880"
+                    android:thumb="@drawable/ic_av_timer_white_36dp"
+                    android:thumbTint="@color/accent_material_dark"
+                    appx:progressString="@={sprefs[`emergency_assist_inactivity_minutes`]}" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:minWidth="100dp"
+                    android:text="@{activity.prettyMinutes(sprefs[`emergency_assist_inactivity_minutes`])}" />
+
+            </LinearLayout>
+
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_margin="5dp"
+                android:background="#484848" />
+
+            <Button
+                android:id="@+id/button29"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:onClick="testButton"
+                android:text="@string/test_message_sending"
+                appx:invisibleIfFalse="@{contactModel.items.size > 0}" />
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_margin="5dp"
+                android:background="#484848" />
+        </LinearLayout>
+    </ScrollView>
+
+
+</layout>

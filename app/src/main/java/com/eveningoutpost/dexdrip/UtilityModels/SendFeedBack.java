@@ -14,6 +14,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
 import com.squareup.okhttp.FormEncodingBuilder;
@@ -34,7 +35,7 @@ import okio.Okio;
 
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
 
-public class SendFeedBack extends AppCompatActivity {
+public class SendFeedBack extends BaseAppCompatActivity {
 
     private static final String TAG = "jamorham feedback";
     private static final String FEEDBACK_CONTACT_REFERENCE = "feedback-contact-reference";
@@ -74,7 +75,7 @@ public class SendFeedBack extends AppCompatActivity {
                 final String str2 = bundle.getString("generic_text");
                 if (str2 != null) {
                     log_data = str2;
-                    ((EditText) findViewById(R.id.yourText)).setText("\n\nPlease describe what you think these logs may show? Explain the problem if there is one.\n\nAttached " + log_data.length() + " characters of log data. (hidden)\n\n");
+                    ((EditText) findViewById(R.id.yourText)).setText(log_data.length() > 300 ? "\n\nPlease describe what you think these logs may show? Explain the problem if there is one.\n\nAttached " + log_data.length() + " characters of log data. (hidden)\n\n" : log_data);
                     type_of_message = "Log Push";
                     myrating.setVisibility(View.GONE);
                     ratingtext.setVisibility(View.GONE);

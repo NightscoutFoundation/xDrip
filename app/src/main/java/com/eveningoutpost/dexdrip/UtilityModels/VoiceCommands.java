@@ -5,13 +5,21 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 import android.app.Activity;
 
 import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
+import com.eveningoutpost.dexdrip.GcmActivity;
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.DesertSync;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.Services.G5BaseService;
+import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
+import com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService;
+import com.eveningoutpost.dexdrip.profileeditor.BasalProfileEditor;
+import com.eveningoutpost.dexdrip.ui.activities.DatabaseAdmin;
+import com.eveningoutpost.dexdrip.ui.dialog.G6CalibrationCodeDialog;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
 
@@ -30,8 +38,6 @@ public class VoiceCommands {
         } else if (allWords.contentEquals("enable engineering mode")) {
             Pref.setBoolean("engineering_mode", true);
             JoH.static_toast_long("Engineering mode enabled - be careful");
-
-
         } else if (get_engineering_mode() && allWords.contentEquals("enable fake data source")) {
             Pref.setString(DexCollectionType.DEX_COLLECTION_METHOD, DexCollectionType.Mock.toString());
             JoH.static_toast_long("YOU ARE NOW USING FAKE DATA!!!");
@@ -41,18 +47,28 @@ public class VoiceCommands {
         } else if (get_engineering_mode() && allWords.equals("repair fake data source")) {
             JoH.static_toast_long("Repairing fake data source");
             MockDataSource.fixRaw();
-
-        } else if (get_engineering_mode() && allWords.contentEquals("hard reset transmitter")) {
-            G5BaseService.hardResetTransmitterNow = true;
+        } else if (allWords.contentEquals("set sensor code")) {
+            G6CalibrationCodeDialog.ask(mActivity, null);
+        } else if (allWords.contentEquals("multiple start")) {
+                Ob1G5StateMachine.twoPartUpdate();
+                JoH.static_toast_long("Multiple start test");
+        } else if (allWords.contentEquals("hard reset transmitter")) {
+            G5BaseService.setHardResetTransmitterNow();
             JoH.static_toast_long("Will attempt to reset transmitter on next poll!! Can take 15 minutes to process");
+        } else if (allWords.contentEquals("remove transmitter bonding")) {
+            Ob1G5CollectionService.unBondAndStop = true;
+            JoH.static_toast_long("Attempt to unbond and shutdown collector");
+        } else if (allWords.contentEquals("clear transmitter queue")) {
+            Ob1G5StateMachine.emptyQueue();
+            JoH.static_toast_long("Clearing transmitter command queue");
         } else if (allWords.contentEquals("reset heart rate sync")) {
-            PersistentStore.setLong("nightscout-rest-heartrate-synced-time",0);
+            PersistentStore.setLong("nightscout-rest-heartrate-synced-time", 0);
             JoH.static_toast_long("Cleared heart rate sync data");
         } else if (allWords.contentEquals("reset step count sync")) {
-            PersistentStore.setLong("nightscout-rest-steps-synced-time",0);
+            PersistentStore.setLong("nightscout-rest-steps-synced-time", 0);
             JoH.static_toast_long("Cleared step count sync data");
         } else if (allWords.contentEquals("reset motion count sync")) {
-            PersistentStore.setLong("nightscout-rest-motion-synced-time",0);
+            PersistentStore.setLong("nightscout-rest-motion-synced-time", 0);
             JoH.static_toast_long("Cleared motion count sync data");
         } else if (allWords.contentEquals("vehicle mode test")) {
             ActivityRecognizedService.spoofActivityRecogniser(mActivity, JoH.tsl() + "^" + 0);
@@ -75,6 +91,8 @@ public class VoiceCommands {
             SdcardImportExport.deletePersistentStore();
         } else if (allWords.contentEquals("delete uploader queue")) {
             UploaderQueue.emptyQueue();
+        } else if (allWords.contentEquals("basal profile editor") || allWords.contentEquals("basil profile editor")) {
+            JoH.startActivity(BasalProfileEditor.class);
         } else if (allWords.contentEquals("clear battery warning")) {
             try {
                 final Sensor sensor = Sensor.currentSensor();
@@ -85,12 +103,21 @@ public class VoiceCommands {
             } catch (Exception e) {
                 // do nothing
             }
+        } else if (get_engineering_mode() && allWords.contentEquals("enable dead sensor")) {
+            Pref.setBoolean("allow_testing_with_dead_sensor", true);
+            JoH.static_toast_long("testing with dead sensor enabled - be careful");
+        } else if (allWords.contentEquals("disable dead sensor")) {
+            Pref.setBoolean("allow_testing_with_dead_sensor", false);
+            JoH.static_toast_long("testing with dead sensor disabled");
         }
 
         switch (allWords) {
             case "restart g5 session":
                 Ob1G5StateMachine.restartSensorWithTimeTravel();
                 JoH.static_toast_long("Attempting to restart sensor session");
+                break;
+            case "restart g5 session nearly ended":
+                Ob1G5StateMachine.restartSensorWithTimeTravel((JoH.tsl() - Constants.DAY_IN_MS * 1) + Constants.MINUTE_IN_MS * 20);
                 break;
             case "stop g5 session":
                 Ob1G5StateMachine.stopSensor();
@@ -100,10 +127,42 @@ public class VoiceCommands {
                 Ob1G5StateMachine.startSensor(JoH.tsl());
                 JoH.static_toast_long("Attempting to start sensor session");
                 break;
-
             case "clear last update check time":
                 UpdateActivity.clearLastCheckTime();
                 JoH.static_toast_long(allWords);
+                break;
+            case "clean up excessive high readings":
+                BgReading.cleanupOutOfRangeValues();
+                Home.staticRefreshBGChartsOnIdle();
+                break;
+            case "stop sensor on master":
+                JoH.static_toast_long(allWords);
+                GcmActivity.push_stop_master_sensor();
+                break;
+            case "start sensor on master":
+                JoH.static_toast_long(allWords);
+                GcmActivity.push_start_master_sensor();
+                break;
+            case "enable extension parameter":
+                Ob1G5StateMachine.enableExtensionParameter();
+                JoH.static_toast_long("Enabling extension parameter");
+                break;
+            case "disable extension parameter":
+                Ob1G5StateMachine.disableExtensionParameter();
+                JoH.static_toast_long("Disabling extension parameter");
+                break;
+            case "test medtrum calibrate":
+                MedtrumCollectionService.calibratePing();
+                break;
+            case "delete all desert sync data":
+                JoH.static_toast_long("deleted all desert sync data");
+                DesertSync.deleteAll();
+                break;
+            case "start usb configuration":
+                JoH.startActivity(MtpConfigureActivity.class);
+                break;
+            case "database administration":
+                JoH.startActivity(DatabaseAdmin.class);
                 break;
         }
 

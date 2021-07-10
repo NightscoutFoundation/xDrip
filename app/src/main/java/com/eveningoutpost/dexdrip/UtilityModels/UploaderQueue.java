@@ -12,12 +12,18 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.LibreBlock;
+import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.tidepool.TidepoolEntry;
+import com.eveningoutpost.dexdrip.tidepool.TidepoolStatus;
+import com.eveningoutpost.dexdrip.tidepool.TidepoolUploader;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -161,6 +167,10 @@ public class UploaderQueue extends Model {
             result.reference_uuid = obj instanceof Calibration ? ((Calibration) obj).uuid : null;
         if (result.reference_uuid == null)
             result.reference_uuid = obj instanceof BloodTest ? ((BloodTest) obj).uuid : null;
+        if (result.reference_uuid == null)
+            result.reference_uuid = obj instanceof TransmitterData ? ((TransmitterData) obj).uuid : null;
+        if (result.reference_uuid == null)
+            result.reference_uuid = obj instanceof LibreBlock ? ((LibreBlock) obj).uuid : null;
 
         if (result.reference_uuid == null) {
             Log.d(TAG, "reference_uuid was null so refusing to create new entry");
@@ -182,6 +192,16 @@ public class UploaderQueue extends Model {
         return result;
     }
 
+    public static void newTransmitterDataEntry(String action, Model obj) {
+    	if(!Pref.getBooleanDefaultFalse("mongo_load_transmitter_data")) {
+    		return;
+    	}
+    	newEntry(action, obj);
+    	// For libre us sensors, we have a reading, it might not create a BG entry, but we still need
+    	// to upload it.
+    	startSyncService(3000); // sync in 3 seconds
+    }
+    
     // TODO remove duplicated functionality, replace with generic multi-purpose method
     public static UploaderQueue newEntryForWatch(String action, Model obj) {
         UserError.Log.d(TAG, "new entry called for watch");
@@ -427,6 +447,9 @@ public class UploaderQueue extends Model {
                             if (JoH.ratelimit("nightscout-manual-poll", 15)) {
                                 startSyncService(100);
                                 JoH.static_toast_short("Polling");
+                                if (TidepoolEntry.enabled()) {
+                                    TidepoolUploader.doLogin(true);
+                                }
                             }
                         }
                     }));
@@ -511,6 +534,12 @@ public class UploaderQueue extends Model {
         if (NightscoutUploader.last_exception_time > 0) {
             l.add(new StatusItem("REST-API problem\n" + JoH.dateTimeText(NightscoutUploader.last_exception_time) + " (" + NightscoutUploader.last_exception_count + ")", NightscoutUploader.last_exception, JoH.msSince(NightscoutUploader.last_exception_time) < (Constants.MINUTE_IN_MS * 6) ? StatusItem.Highlight.BAD : StatusItem.Highlight.NORMAL));
         }
+
+
+        if (TidepoolEntry.enabled()) {
+            l.addAll(TidepoolStatus.megaStatus());
+        }
+
 
         if (last_cleanup > 0)
             l.add(new StatusItem("Last clean up", JoH.niceTimeSince(last_cleanup) + " ago"));

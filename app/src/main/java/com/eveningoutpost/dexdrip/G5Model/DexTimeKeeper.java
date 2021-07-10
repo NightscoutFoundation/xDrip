@@ -18,7 +18,12 @@ public class DexTimeKeeper {
     private static String lastTransmitterId = null;
 
     // update the activation time stored for a transmitter
-    public static void updateAge(String transmitterId, int dexTimeStamp) {
+    public static void updateAge(final String transmitterId, final int dexTimeStamp) {
+        updateAge(transmitterId, dexTimeStamp, false);
+    }
+
+    // update the activation time stored for a transmitter
+    public static void updateAge(final String transmitterId, final int dexTimeStamp, final boolean absolute) {
 
         if ((transmitterId == null) || (transmitterId.length() != 6)) {
             UserError.Log.e(TAG, "Invalid dex transmitter in updateAge: " + transmitterId);
@@ -26,10 +31,13 @@ public class DexTimeKeeper {
         }
         if (dexTimeStamp < 1) {
             UserError.Log.e(TAG, "Invalid dex timestamp in updateAge: " + dexTimeStamp);
+            if (dexTimeStamp == 0 && absolute) {
+                DexResetHelper.offer("Your transmitter clock has stopped or never started. Do you want to hard reset it?");
+            }
             return;
         }
-
-        final long activation_time = JoH.tsl() - ((long) dexTimeStamp * 1000);
+        final long longDexTimeStamp = (long) dexTimeStamp;
+        final long activation_time = JoH.tsl() - (longDexTimeStamp * 1000L);
 
         if (activation_time > JoH.tsl()) {
             UserError.Log.wtf(TAG, "Transmitter activation time is in the future. Not possible to update: " + dexTimeStamp);
@@ -55,7 +63,9 @@ public class DexTimeKeeper {
         final long transmitter_start_timestamp = PersistentStore.getLong(DEX_XMIT_START + transmitterId);
 
         if (transmitter_start_timestamp < OLDEST_ALLOWED) {
-            UserError.Log.e(TAG, "No valid timestamp stored for transmitter: " + transmitterId);
+            if (JoH.ratelimit("no-valid-dex-timestamp-log", 60)) {
+                UserError.Log.e(TAG, "No valid timestamp stored for transmitter: " + transmitterId);
+            }
             return -1;
         }
 
@@ -65,7 +75,7 @@ public class DexTimeKeeper {
             return -4;
         }
         lastTransmitterId = transmitterId;
-        return (int) (ms_since / 1000);
+        return (int) (ms_since / 1000L);
     }
 
     public static long fromDexTimeCached(int dexTimeStamp) {
@@ -81,7 +91,7 @@ public class DexTimeKeeper {
         lastTransmitterId = transmitterId;
         final long transmitter_start_timestamp = PersistentStore.getLong(DEX_XMIT_START + transmitterId);
         if (transmitter_start_timestamp > 0) {
-            return transmitter_start_timestamp + ((long) dexTimeStamp * 1000);
+            return transmitter_start_timestamp + (((long) dexTimeStamp) * 1000L);
         } else {
             return -1;
         }
@@ -94,6 +104,10 @@ public class DexTimeKeeper {
         return (valid_time >= 0) && (valid_time < DEX_TRANSMITTER_LIFE_SECONDS);
     }
 
+    public static int getTransmitterAgeInDays(final String transmitterId) {
+        final int valid_time = getDexTime(transmitterId, JoH.tsl());
+        return (valid_time >= 0) ? valid_time / 86400 : -1;
+    }
 
     public static String extractForStream(String transmitterId) {
         if (transmitterId == null || transmitterId.length() == 0) return null;

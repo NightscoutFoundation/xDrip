@@ -18,6 +18,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.SensorPermissionActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -96,7 +97,7 @@ public class HeartRateService extends IntentService {
                                 }
                                 scheduleWakeUp(next_reading_period, "got reading - await next, elevated: " + elevated + " period: " + next_reading_period);
                                 if (JoH.ratelimit("heart-resync", 20)) {
-                                    ListenerService.requestData(xdrip.getAppContext()); // force sync
+                                    Inevitable.task("request-data", 1000, () -> ListenerService.requestData(xdrip.getAppContext())); // force sync
                                 }
                                 //
                             }
@@ -165,7 +166,7 @@ public class HeartRateService extends IntentService {
     public static synchronized DataMap getWearHeartSensorData(int count, long last_send_time, int min_count) {
         UserError.Log.d(TAG, "getWearHeartSensorData last_send_time:" + JoH.dateTimeText(last_send_time));
 
-        if ((count !=0) || (JoH.ratelimit("heartrate-datamap",5))) {
+        if ((count != 0) || (JoH.ratelimit("heartrate-datamap", 5))) {
             HeartRate last_log = HeartRate.last();
             if (last_log != null) {
                 UserError.Log.d(TAG, "getWearHeartSensorData last_log.timestamp:" + JoH.dateTimeText((long) last_log.timestamp));
@@ -194,7 +195,7 @@ public class HeartRateService extends IntentService {
             }
             return null;
         } else {
-            UserError.Log.d(TAG,"Ratelimitted getWearHeartSensorData");
+            UserError.Log.d(TAG, "Ratelimitted getWearHeartSensorData");
             return null;
         }
     }
@@ -210,12 +211,24 @@ public class HeartRateService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         // service created
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            HeartRateJobService.enqueueWork();
+        } else {
+            realOnHandleIntent(intent);
+        }
+    }
+
+
+    protected void realOnHandleIntent(Intent intent) {
+        // service created
+        UserError.Log.d(TAG, "RealOnHandleIntentEnter");
         final PowerManager.WakeLock wl = JoH.getWakeLock("heartrate-service", 60000);
         try {
             checkWhatToDo();
         } finally {
             JoH.releaseWakeLock(wl);
         }
+        UserError.Log.d(TAG, "RealOnHandleIntentExit");
     }
 
     private void checkWhatToDo() {
@@ -303,6 +316,11 @@ public class HeartRateService extends IntentService {
             // last reading was elevated but this one isn't so clear the marker
             PersistentStore.setBoolean(ELEVATED_MARKER, false);
         }
+    }
+
+    public HeartRateService setInjectable() {
+        attachBaseContext(xdrip.getAppContext());
+        return this;
     }
 
 

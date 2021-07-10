@@ -10,7 +10,7 @@ import lombok.Getter;
 /**
  * Created by joeginley on 3/28/16.
  */
-public class TransmitterTimeRxMessage extends TransmitterMessage {
+public class TransmitterTimeRxMessage extends BaseMessage {
     public static final byte opcode = 0x25;
     @Getter
     private TransmitterStatus status;

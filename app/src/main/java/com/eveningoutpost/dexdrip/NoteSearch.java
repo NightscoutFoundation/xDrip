@@ -59,13 +59,7 @@ public class NoteSearch extends ListActivityWithMenu {
     private Cursor dbCursor;
 
     private static final String TAG = "NoteSearch";
-    //Strings TODO: move to strings.xml (omitted during dev to avoid merge conflicts)
-    private static final String LOAD_MORE = "load more";
-    private static final String SEARCHING = "searching...";
-    private static final String COLLECTING = "collecting...";
-    private static final String CARBS = "carbs";
-    private static final String INSULIN = "insulin";
-    private static final String NOTHING = "nothing found";
+
     private long last_keypress_time = -1;
     private static final long KEY_PAUSE = 500; // latency we use to initiate searches
 
@@ -170,7 +164,7 @@ public class NoteSearch extends ListActivityWithMenu {
 
         if (from_interactive) hideKeyboard();
         resultListAdapter.clear();
-        if (from_interactive) JoH.static_toast_short(COLLECTING);
+        if (from_interactive) JoH.static_toast_short(getString(R.string.collecting));
 
         SQLiteDatabase db = Cache.openDatabase();
 
@@ -195,12 +189,12 @@ public class NoteSearch extends ListActivityWithMenu {
         }
 
         if (i == 0){
-            if (from_interactive) JoH.static_toast_short(NOTHING);
+            if (from_interactive) JoH.static_toast_short(getString(R.string.nothing_found));
         }
         if (dbCursor.isAfterLast()) {
             dbCursor.close();
         } else {
-            SearchResult result = new SearchResult(0, LOAD_MORE, 0, 0, null);
+            SearchResult result = new SearchResult(0, getString(R.string.load_more), 0, 0, null);
             result.setLoadMoreActionFlag();
             resultListAdapter.addSingle(result);
         }
@@ -225,7 +219,7 @@ public class NoteSearch extends ListActivityWithMenu {
 
 
         resultListAdapter.clear();
-        if (from_interactive) JoH.static_toast_short(SEARCHING);
+        if (from_interactive) JoH.static_toast_short(getString(R.string.searching));
 
         SQLiteDatabase db = Cache.openDatabase();
 
@@ -254,12 +248,12 @@ public class NoteSearch extends ListActivityWithMenu {
         }
 
         if (i == 0 && from_interactive){
-            JoH.static_toast_short(NOTHING);
+            JoH.static_toast_short(getString(R.string.nothing_found));
         }
         if (dbCursor.isAfterLast()) {
             dbCursor.close();
         } else {
-            SearchResult result = new SearchResult(0, LOAD_MORE, 0, 0, null);
+            SearchResult result = new SearchResult(0, getString(R.string.load_more), 0, 0, null);
             result.setLoadMoreActionFlag();
             resultListAdapter.addSingle(result);
         }
@@ -397,7 +391,7 @@ public class NoteSearch extends ListActivityWithMenu {
         if (dbCursor.isAfterLast()) {
             dbCursor.close();
         } else {
-            SearchResult result = new SearchResult(0, LOAD_MORE, 0, 0, null);
+            SearchResult result = new SearchResult(0, getString(R.string.load_more), 0, 0, null);
             result.setLoadMoreActionFlag();
             resultListAdapter.addSingle(result);
         }
@@ -503,10 +497,10 @@ public class NoteSearch extends ListActivityWithMenu {
             this.uuid = uuid;
             this.otherTreatments = "";
             if (carbs != 0) {
-                otherTreatments += CARBS + ": " + carbs;
+                otherTreatments += getString(R.string.carbs) + ": " + carbs;
             }
             if (insulin != 0) {
-                otherTreatments += " " + INSULIN + ": " + insulin;
+                otherTreatments += " " + getString(R.string.insulin) + ": " + insulin;
             }
         }
 

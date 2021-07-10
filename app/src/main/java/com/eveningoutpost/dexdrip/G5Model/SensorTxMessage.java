@@ -10,7 +10,7 @@ import java.nio.ByteOrder;
 /**
  * Created by jcostik1 on 3/26/16.
  */
-public class SensorTxMessage extends TransmitterMessage {
+public class SensorTxMessage extends BaseMessage {
     byte opcode = 0x2e;
     byte[] crc = CRC.calculate(opcode);
 

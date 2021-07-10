@@ -33,10 +33,13 @@ import android.widget.Toast;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.Blukon;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.cgm.medtrum.Medtrum;
 import com.eveningoutpost.dexdrip.utils.AndroidBarcode;
 import com.eveningoutpost.dexdrip.utils.ListActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.LocationHelper;
@@ -54,6 +57,8 @@ import java.util.Map;
 import lecho.lib.hellocharts.util.ChartUtils;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
+import static com.eveningoutpost.dexdrip.cgm.medtrum.Medtrum.getDeviceInfoStringFromLegacy;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 @TargetApi(android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BluetoothScan extends ListActivityWithMenu {
@@ -154,7 +159,7 @@ public class BluetoothScan extends ListActivityWithMenu {
 
     private boolean doScan() {
         BluetoothManager bluetooth_manager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        Toast.makeText(this, "Scanning", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, gs(R.string.scanning), Toast.LENGTH_LONG).show();
         if (bluetooth_manager == null) {
             Toast.makeText(this, "This device does not seem to support bluetooth", Toast.LENGTH_LONG).show();
             return true;
@@ -205,7 +210,13 @@ public class BluetoothScan extends ListActivityWithMenu {
                 @Override
                 public void run() {
                     is_scanning = false;
-                    if (bluetooth_adapter != null) bluetooth_adapter.stopLeScan(mLeScanCallback);
+                    try {
+                        if ((bluetooth_adapter != null) && (mLeScanCallback != null)) {
+                            bluetooth_adapter.stopLeScan(mLeScanCallback);
+                        }
+                    } catch (NullPointerException e) {
+                        // concurrency pain
+                    }
                     invalidateOptionsMenu();
                 }
             }, SCAN_PERIOD);
@@ -215,7 +226,11 @@ public class BluetoothScan extends ListActivityWithMenu {
         } else {
             is_scanning = false;
             if (bluetooth_adapter != null && bluetooth_adapter.isEnabled()) {
-                bluetooth_adapter.stopLeScan(mLeScanCallback);
+                try {
+                    bluetooth_adapter.stopLeScan(mLeScanCallback);
+                } catch (NullPointerException e) {
+                    // concurrency related
+                }
             }
         }
         invalidateOptionsMenu();
@@ -284,7 +299,12 @@ public class BluetoothScan extends ListActivityWithMenu {
                     public void run() {
                         is_scanning = false;
                         if (bluetooth_adapter != null && bluetooth_adapter.isEnabled()) {
-                            lollipopScanner.stopScan(mScanCallback);
+                            try {
+                                lollipopScanner.stopScan(mScanCallback);
+                            } catch (IllegalStateException e) {
+                                JoH.static_toast_long(e.toString());
+                                UserError.Log.e(TAG, "error stopping scan: " + e.toString());
+                            }
                         }
                         invalidateOptionsMenu();
                     }
@@ -365,7 +385,8 @@ public class BluetoothScan extends ListActivityWithMenu {
             if (device.getName().toLowerCase().contains("limitter")
                     && (adverts.containsKey(device.getAddress())
                     && ((new String(adverts.get(device.getAddress()), "UTF-8").contains("eLeR"))
-                    || (new String(adverts.get(device.getAddress()), "UTF-8").contains("data"))))) {
+                    || (new String(adverts.get(device.getAddress()), "UTF-8").contains("data"))))||
+                    device.getName().toLowerCase().contains("limitterd")) {
                 String msg = "Auto-detected transmiter_pl device!";
                 Log.e(TAG, msg);
                 JoH.static_toast_long(msg);
@@ -419,7 +440,8 @@ public class BluetoothScan extends ListActivityWithMenu {
                     prefs.edit().putString("dex_collection_method", "LimiTTer").apply();
                 }
                 returnToHome();
-            } else if (device.getName().toLowerCase().contains("miaomiao")) {
+            } else if ((device.getName().toLowerCase().contains("miaomiao"))
+                    || (device.getName().toLowerCase().startsWith("watlaa"))) {
                 if (!(CollectionServiceStarter.isLimitter() || CollectionServiceStarter.isWifiandBTLibre())) {
                     prefs.edit().putString("dex_collection_method", "LimiTTer").apply();
                 }
@@ -442,6 +464,14 @@ public class BluetoothScan extends ListActivityWithMenu {
                             }
                         });
 
+            } else if (device.getName().matches("MT")) {
+                if (Medtrum.saveSerialFromLegacy(adverts.get(device.getAddress()))) {
+                    JoH.static_toast_long("Set Medtrum serial number");
+                    CollectionServiceStarter.restartCollectionServiceBackground();
+                    returnToHome();
+                } else {
+                    JoH.static_toast_long("Failed to find Medtrum serial number");
+                }
             } else {
                 returnToHome();
             }
@@ -452,12 +482,16 @@ public class BluetoothScan extends ListActivityWithMenu {
     }
 
     public void returnToHome() {
-        if (is_scanning) {
-            bluetooth_adapter.stopLeScan(mLeScanCallback);
-            is_scanning = false;
+        try {
+            if (is_scanning) {
+                is_scanning = false;
+                bluetooth_adapter.stopLeScan(mLeScanCallback);
+            }
+        } catch (NullPointerException e) {
+            // meh
         }
-        Intent intent = new Intent(this, Home.class);
-        CollectionServiceStarter.restartCollectionService(getApplicationContext());
+        Inevitable.task("restart-collector", 2000, () -> CollectionServiceStarter.restartCollectionService(getApplicationContext()));
+        final Intent intent = new Intent(this, Home.class);
         startActivity(intent);
         finish();
     }
@@ -587,22 +621,33 @@ public class BluetoothScan extends ListActivityWithMenu {
                 viewHolder = (ViewHolder) view.getTag();
             }
 
-            BluetoothDevice device = mLeDevices.get(i);
-            final String deviceName = device.getName();
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-            if (prefs.getString("last_connected_device_address", "").compareTo(device.getAddress()) == 0) {
-                viewHolder.deviceName.setTextColor(ChartUtils.COLOR_BLUE);
-                viewHolder.deviceAddress.setTextColor(ChartUtils.COLOR_BLUE);
-            }
-            viewHolder.deviceName.setText(deviceName);
-            viewHolder.deviceAddress.setText(device.getAddress());
-            if (adverts.containsKey(device.getAddress())) {
-                try {
-                    if (Pref.getBooleanDefaultFalse("engineering_mode")) {
-                        viewHolder.deviceAddress.append("   " + new String(adverts.get(device.getAddress()), "UTF-8"));
+            final BluetoothDevice device = mLeDevices.get(i);
+            if (device != null) {
+                String deviceName = device.getName();
+                if (deviceName == null) {
+                    deviceName = "";
+                }
+                //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                if (Pref.getString("last_connected_device_address", "").equalsIgnoreCase(device.getAddress())) {
+                    viewHolder.deviceName.setTextColor(ChartUtils.COLOR_BLUE);
+                    viewHolder.deviceAddress.setTextColor(ChartUtils.COLOR_BLUE);
+                }
+                viewHolder.deviceName.setText(deviceName);
+                viewHolder.deviceAddress.setText(device.getAddress());
+                if (adverts.containsKey(device.getAddress())) {
+                    if (deviceName.equals("MT")) {
+                        final String medtrum = getDeviceInfoStringFromLegacy(adverts.get(device.getAddress()));
+                        if (medtrum != null) {
+                            viewHolder.deviceName.setText(medtrum);
+                        }
                     }
-                } catch (UnsupportedEncodingException e) {
-                    //
+                    try {
+                        if (Pref.getBooleanDefaultFalse("engineering_mode")) {
+                            viewHolder.deviceAddress.append("   " + new String(adverts.get(device.getAddress()), "UTF-8"));
+                        }
+                    } catch (UnsupportedEncodingException e) {
+                        //
+                    }
                 }
             }
             return view;

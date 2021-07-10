@@ -80,7 +80,7 @@ public class Profile {
         return 0.3; // how much can the liver block carbs going in to blood stream?
     }
 
-    static double getCarbRatio(double when) {
+    public static double getCarbRatio(double when) {
         return findItemListElementForTime(when).carb_ratio;
         //return the_carb_ratio; // g per unit
     }
@@ -198,11 +198,11 @@ public class Profile {
     }
 
     public static void reloadPreferences() {
-        Log.d(TAG,"Reloaded profile preferences");
+        Log.d(TAG, "Reloaded profile preferences");
         reloadPreferences(PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext()));
     }
 
-    public static synchronized  void reloadPreferences(SharedPreferences prefs) {
+    public static synchronized void reloadPreferences(SharedPreferences prefs) {
         validateTargetRange();
         try {
             Profile.setSensitivityDefault(tolerantParseDouble(prefs.getString("profile_insulin_sensitivity_default", "0")));
@@ -241,4 +241,10 @@ public class Profile {
         return Double.parseDouble(str.replace(",", "."));
 
     }
+
+    // TODO placeholder
+    public static double getBasalRate(final long when) {
+        return 0d;
+    }
+
 }

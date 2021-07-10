@@ -89,7 +89,7 @@
             <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Use internal downloader"
+                android:text="@string/use_internal_downloader"
                 android:id="@+id/internaldownloadercheckBox"
                 android:layout_gravity="center_horizontal"
                 android:checked="true"
@@ -107,7 +107,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="progress"
+                android:text="@string/progress"
                 android:id="@+id/progresstext"
                 android:layout_marginTop="10dp"
                 android:layout_alignBottom="@+id/progressBar"

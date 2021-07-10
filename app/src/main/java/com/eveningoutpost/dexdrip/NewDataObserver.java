@@ -6,10 +6,23 @@ import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.ShareModels.BgUploader;
 import com.eveningoutpost.dexdrip.ShareModels.Models.ShareUploadPayload;
+import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
+import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.UtilityModels.VehicleMode;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
+import com.eveningoutpost.dexdrip.tidepool.TidepoolEntry;
+import com.eveningoutpost.dexdrip.ui.LockScreenWallPaper;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.watch.lefun.LeFun;
+import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
+import com.eveningoutpost.dexdrip.watch.miband.MiBandEntry;
+import com.eveningoutpost.dexdrip.watch.thinjam.BlueJay;
+import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
+import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayRemote;
+import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
@@ -33,14 +46,22 @@ public class NewDataObserver {
 
         sendToPebble();
         sendToWear();
+        sendToAmazfit();
+        sendToLeFun();
+        sendToMiBand();
+        sendToBlueJay();
+        sendToRemoteBlueJay();
+        Notifications.start();
         uploadToShare(bgReading, is_follower);
         textToSpeech(bgReading, null);
         LibreBlock.UpdateBgVal(bgReading.timestamp, bgReading.calculated_value);
+        LockScreenWallPaper.setIfEnabled();
+        TidepoolEntry.newData();
 
     }
 
     // when we receive a new external status broadcast
-    public static void newExternalStatus() {
+    public static void newExternalStatus(boolean receivedLocally) {
 
         final String statusLine = ExternalStatusService.getLastStatusLine();
         if (statusLine.length() > 0) {
@@ -50,7 +71,15 @@ public class NewDataObserver {
             }
             // send to pebble
             sendToPebble();
-            // TODO should we also be syncing wear here?
+            sendToAmazfit();
+            sendStatusToBlueJay();
+
+            // don't send via GCM if received via GCM!
+            if (receivedLocally) {
+                // SEND TO GCM
+                GcmActivity.push_external_status_update(JoH.tsl(), statusLine);
+
+            }
         }
 
     }
@@ -59,6 +88,43 @@ public class NewDataObserver {
     private static void sendToPebble() {
         if (Pref.getBooleanDefaultFalse("broadcast_to_pebble") && (PebbleUtil.getCurrentPebbleSyncType() != 1)) {
             JoH.startService(PebbleWatchSync.class);
+        }
+    }
+
+    // send data to Amazfit if enabled
+    private static void sendToAmazfit() {
+        if (Pref.getBoolean("pref_amazfit_enable_key", true)) {
+            Amazfitservice.start("xDrip_synced_SGV_data");
+        }
+    }
+
+    private static void sendToLeFun() {
+        if (LeFunEntry.isEnabled()) {
+            Inevitable.task("poll-le-fun-for-bg", DexCollectionType.hasBluetooth() ? 2000 : 500, LeFun::showLatestBG); // delay enough for BT to finish on collector
+        }
+    }
+
+    private static void sendToMiBand() {
+        if (MiBandEntry.isEnabled()) {
+            Inevitable.task("poll-miband-for-bg", DexCollectionType.hasBluetooth() ? 2000 : 500, MiBandEntry::showLatestBG); // delay enough for BT to finish on collector
+        }
+    }
+
+    private static void sendToBlueJay() {
+        if (BlueJayEntry.isEnabled()) {
+            Inevitable.task("poll-bluejay-for-bg", DexCollectionType.hasBluetooth() ? 2000 : 500, BlueJay::showLatestBG); // delay enough for BT to finish on collector
+        }
+    }
+
+    private static void sendStatusToBlueJay() {
+        if (BlueJayEntry.isEnabled()) {
+            Inevitable.task("poll-bluejay-for-status", 1000, BlueJay::showStatusLine);
+        }
+    }
+
+    private static void sendToRemoteBlueJay() {
+        if (BlueJayEntry.isRemoteEnabled()) {
+            Inevitable.task("poll-bluejay-remote-for-bg", DexCollectionType.hasBluetooth() ? 2000 : 500, BlueJayRemote::sendLatestBG); // delay enough for BT to finish on collector
         }
     }
 
@@ -77,7 +143,7 @@ public class NewDataObserver {
     // speak value
     private static void textToSpeech(BgReading bgReading, BestGlucose.DisplayGlucose dg) {
         //Text to speech
-        if (Pref.getBooleanDefaultFalse("bg_to_speech")) {
+        if (Pref.getBooleanDefaultFalse("bg_to_speech") || VehicleMode.shouldSpeak()) {
             if (dg == null) dg = BestGlucose.getDisplayGlucose();
             if (dg != null) {
                 BgToSpeech.speak(dg.mgdl, dg.timestamp, dg.delta_name);

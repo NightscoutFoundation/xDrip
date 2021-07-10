@@ -147,7 +147,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:onClick="@{(v) -> viewModel.scrollToTop()}"
-                android:text="Top"
+                android:text="@string/top"
                 app:invisibleIfFalse="@{viewModel.showScrollToTop}" />
 
         </LinearLayout>

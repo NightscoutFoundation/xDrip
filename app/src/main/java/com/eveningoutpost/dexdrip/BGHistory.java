@@ -220,6 +220,10 @@ public class BGHistory extends ActivityWithMenu {
             sb.append('\n');
             sb.append(statsResult.getCapturePercentage(true));
             sb.append(' ');
+            if (statsResult.canShowRealtimeCapture()) {
+                sb.append(statsResult.getRealtimeCapturePercentage(true));
+                sb.append(' ');
+            }
 
             statisticsTextView.setText(sb);
             statisticsTextView.setVisibility(View.VISIBLE);

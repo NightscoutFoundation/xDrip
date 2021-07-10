@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.eveningoutpost.dexdrip.ui.activities.NumberWallPreview.ViewModel" />
+
+        <variable
+            name="prefs"
+            type="com.eveningoutpost.dexdrip.UtilityModels.PrefsViewImpl" />
+
+        <variable
+            name="sprefs"
+            type="com.eveningoutpost.dexdrip.UtilityModels.PrefsViewString" />
+
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:background="@{vm.background}"
+        tools:context=".ui.activities.NumberWallPreview">
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:alpha="0.9"
+            app:cardCornerRadius="15dp"
+            app:cardElevation="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="24dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="24dp"
+                android:gravity="right"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <SeekBar
+                    android:id="@+id/widthSeekBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginTop="8dp"
+
+                    android:max="360"
+                    android:thumb="@drawable/expand_text_icon"
+                    android:thumbTint="@color/accent_material_dark"
+
+                    app:layout_constraintBottom_toTopOf="@+id/heightSeekBar"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_chainStyle="spread_inside"
+                    app:progressString="@={sprefs[vm.PREF_numberwall_x_param]}"
+                    tools:layout_editor_absoluteX="10dp" />
+
+                <SeekBar
+                    android:id="@+id/heightSeekBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginTop="8dp"
+                    android:max="360"
+                    android:thumb="@drawable/expand_vertical_icon"
+                    android:thumbTint="@color/accent_material_dark"
+                    app:layout_constraintBottom_toTopOf="@+id/spacerSeekBar"
+                    app:layout_constraintTop_toBottomOf="@+id/widthSeekBar"
+                    app:layout_constraintVertical_chainStyle="spread_inside"
+                    app:progressString="@={sprefs[vm.PREF_numberwall_y_param]}"
+                    tools:layout_editor_absoluteX="0dp" />
+
+                <SeekBar
+                    android:id="@+id/spacerSeekBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:layout_marginTop="8dp"
+                    android:max="90"
+                    android:thumb="@drawable/expand_horizontal_icon"
+                    android:thumbTint="@color/accent_material_dark"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:progressString="@={sprefs[vm.PREF_numberwall_s_param]}"
+                    tools:layout_editor_absoluteX="0dp" />
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/imageButton11"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:onLongClick="@{vm::paletteImageButtonLongClick}"
+                        android:onClick="@{() -> vm.paletteImageButtonClick()}"
+                        app:srcCompat="@drawable/palette" />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1" >
+                    </Space>
+                    <ImageButton
+                        android:id="@+id/imageButton10"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="false"
+                        android:onClick="@{() -> vm.folderImageButtonClick()}"
+                        android:src="@{sprefs[vm.PREF_numberwall_background] == `` ? @drawable/folder_image : @drawable/image_cancel, default = @drawable/folder_image}"
+                        tools:scaleType="fitCenter" />
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1" >
+                    </Space>
+                    <ImageButton
+                        android:id="@+id/imageButton9"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:onClick="@{() -> prefs.togglebool(vm.PREF_numberwall_multi_param)}"
+                        android:scaleType="fitCenter"
+                        android:src="@{safeUnbox(prefs[vm.PREF_numberwall_multi_param]) ? @drawable/multi_numbers : @drawable/numbers, default = @drawable/multi_numbers}" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

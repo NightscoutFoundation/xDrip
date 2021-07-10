@@ -17,6 +17,14 @@
             name="ui"
             type="com.eveningoutpost.dexdrip.ui.UiPing" />
 
+        <variable
+            name="nano"
+            type="com.eveningoutpost.dexdrip.UtilityModels.NanoStatus" />
+
+        <variable
+            name="expiry"
+            type="com.eveningoutpost.dexdrip.UtilityModels.NanoStatus" />
+
         <import type="android.view.View" />
     </data>
 
@@ -75,24 +83,57 @@
                     android:gravity="left|top"
                     android:paddingEnd="10dp"
                     android:paddingStart="10dp"
-                    android:text="Alerts"
+                    android:text="@string/alerts"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="#C30909" />
 
 
-                <TextView
-                    android:id="@+id/currentBgValueRealTime"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="-10dp"
-                    android:background="@android:color/transparent"
-                    android:gravity="right"
-                    android:paddingEnd="20dp"
-                    android:paddingTop="0dp"
-                    android:text=""
-                    android:textSize="50sp" />
+                    android:layout_margin="0dp"
+                    android:padding="0dp"
+                    android:id="@+id/layoutCurrentBgValueRealTime"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/currentBgValueRealTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="-10dp"
+                        android:layout_toStartOf="@+id/trendArrow"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:gravity="right"
+                        android:paddingEnd="20dp"
+                        android:paddingTop="0dp"
+                        android:text="13.3"
+                        android:textSize="50sp" />
+
+                    <ImageView
+                        android:id="@+id/trendArrow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginRight="25dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="18dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:gravity="right"
+                        android:inflatedId="@+id/trendArrowView"
+                        android:paddingBottom="0dp"
+                        android:paddingEnd="0dp"
+                        android:paddingStart="0dp"
+                        android:paddingTop="0dp"
+
+                        app:srcCompat="@drawable/ic_arrow_forward_color_24dp"
+                        app:showIfTrue="@{safeUnbox(vs.included[`graphic_trend_arrow`])}" />
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/extraStatusLine"
@@ -150,19 +191,18 @@
                     android:id="@+id/btnTreatment"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignEnd="@+id/currentBgValueRealTime"
-                    android:layout_below="@+id/currentBgValueRealTime"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginRight="6dp"
+                    android:layout_below="@+id/layoutCurrentBgValueRealTime"
+                    android:layout_alignEnd="@+id/layoutCurrentBgValueRealTime"
                     android:layout_marginTop="1dp"
+                    android:layout_marginRight="6dp"
                     android:background="@android:color/transparent"
                     android:contentDescription="@string/speaktreatment"
                     android:gravity="right"
                     android:nestedScrollingEnabled="false"
-                    android:paddingBottom="1dp"
                     android:paddingLeft="2dp"
-                    android:paddingRight="4dp"
                     android:paddingTop="2dp"
+                    android:paddingRight="4dp"
+                    android:paddingBottom="1dp"
                     android:src="@drawable/ic_eyedropper_variant_grey600_24dp" />
 
                 <ImageButton
@@ -301,24 +341,90 @@
                     android:textStyle="bold" />
 
                 <ImageButton
-                    android:id="@+id/buttonInsulin"
+                    android:id="@+id/buttonInsulin0"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignStart="@+id/buttonCarbs"
-                    android:layout_below="@+id/buttonCarbs"
+                    android:layout_below="@+id/textCarbohydrate"
+                    android:layout_alignLeft="@+id/buttonCarbs"
                     android:src="@drawable/ic_colorize_white_48dp" />
 
+
                 <TextView
-                    android:id="@+id/textInsulinUnits"
+                    android:id="@+id/textInsulinSumUnits"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/buttonInsulin"
-                    android:layout_marginBottom="12dp"
-                    android:layout_toEndOf="@+id/buttonInsulin"
+                    android:layout_below="@+id/textCarbohydrate"
+                    android:layout_alignLeft="@+id/textCarbohydrate"
                     android:background="@android:color/transparent"
                     android:text="14 units"
                     android:textColor="@android:color/holo_green_light"
                     android:textSize="22dp"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/buttonInsulin1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/textInsulinSumUnits"
+                    android:layout_alignLeft="@+id/buttonCarbs"
+                    android:src="@drawable/ic_colorize_white_48dp" />
+
+                <TextView
+                    android:id="@+id/textInsulin1Units"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/buttonInsulin1"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginBottom="12dp"
+                    android:layout_toEndOf="@+id/buttonInsulin1"
+                    android:background="@android:color/transparent"
+                    android:text="14 units"
+                    android:textColor="@android:color/holo_green_light"
+                    android:textSize="18dp"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/buttonInsulin2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/buttonInsulin1"
+                    android:layout_alignLeft="@+id/buttonInsulin1"
+                    android:src="@drawable/ic_colorize_white_48dp" />
+
+                <TextView
+                    android:id="@+id/textInsulin2Units"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/buttonInsulin2"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginBottom="12dp"
+                    android:layout_toEndOf="@+id/buttonInsulin2"
+                    android:background="@android:color/transparent"
+                    android:text="14 units"
+                    android:textColor="@android:color/holo_green_light"
+                    android:textSize="18dp"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/buttonInsulin3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/buttonInsulin2"
+                    android:layout_alignLeft="@+id/buttonInsulin2"
+                    android:src="@drawable/ic_colorize_white_48dp" />
+
+                <TextView
+                    android:id="@+id/textInsulin3Units"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/buttonInsulin3"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginBottom="12dp"
+                    android:layout_toEndOf="@+id/buttonInsulin3"
+                    android:background="@android:color/transparent"
+                    android:text="14 units"
+                    android:textColor="@android:color/holo_green_light"
+                    android:textSize="18dp"
                     android:textStyle="bold" />
 
                 <ImageButton
@@ -425,13 +531,46 @@
             </RelativeLayout>
 
             <LinearLayout
+                android:id="@+id/nanoStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal"
+                app:showIfTrue="@{safeUnbox(vs.included[`collector_nano_status`])}">
+
+
+                <TextView
+                    android:id="@+id/nanoStatusText"
+                    android:layout_width="0dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@{nano.color_watch, default=`Nano Status`}"
+                    app:showIfTrue="@{nano.color_watch.length() > 0}"/>
+
+                <TextView
+                    android:id="@+id/ExpiryStatusText"
+                    android:layout_width="0dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@{expiry.color_watch, default=`Expiry Status`}"
+                    app:showIfTrue="@{(safeUnbox(vs.included[`sensor_expiry`])) &amp;&amp; (expiry.color_watch.length() > 0)}"/>
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/sourcewizard"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:gravity="center_horizontal"
                 android:orientation="horizontal"
-                android:visibility="@{safeUnbox(vs.included[`source_wizard`]) ? View.VISIBLE: View.GONE}">
+                app:showIfTrue="@{safeUnbox(vs.included[`source_wizard`])}">
+
 
                 <Button
                     android:id="@+id/sourceWizardButton"
@@ -456,6 +595,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:longClickable="true"
+                    android:textSize="14sp"
+                    android:minWidth="0dp"
                     android:onClick="timeButtonClick"
                     android:onLongClick="@{home::timeButtonLongClick}"
                     android:text="@{@string/hour_format(24)}"
@@ -466,7 +607,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:longClickable="true"
+                    android:textSize="14sp"
                     android:onClick="timeButtonClick"
+                    android:minWidth="0dp"
                     android:onLongClick="@{home::timeButtonLongClick}"
                     android:text="@{@string/hour_format(12)}"
                     app:button_indicate="@{home.isHourLocked(12, ui.ping)}" />
@@ -476,6 +619,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:longClickable="true"
+                    android:textSize="14sp"
+                    android:minWidth="0dp"
                     android:onClick="timeButtonClick"
                     android:onLongClick="@{home::timeButtonLongClick}"
                     android:text="@{@string/hour_format(6)}"
@@ -486,6 +631,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:longClickable="true"
+                    android:textSize="14sp"
+                    android:minWidth="0dp"
                     android:onClick="timeButtonClick"
                     android:onLongClick="@{home::timeButtonLongClick}"
                     android:text="@{@string/hour_format(3)}"

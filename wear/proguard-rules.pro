@@ -105,4 +105,9 @@
 -keepclassmembers class com.eveningoutpost.dexdrip.** {
    public static boolean isRunning();
    public static boolean isCollecting();
+   public static ** nanoStatus();
 }
+-keep class com.google.android.gms.measurement.AppMeasurement { *; }
+-keep class com.google.android.gms.measurement.AppMeasurement$OnEventListener { *; }
+# TODO is this not too much ?
+-keep class com.google.android.gms.** { *; }

@@ -5,7 +5,7 @@ import java.nio.ByteOrder;
 
 // created by jamorham
 
-public class BackFillRxMessage extends TransmitterMessage {
+public class BackFillRxMessage extends BaseMessage {
 
     public static final int opcode = 0x51;
     private static final int length = 20;

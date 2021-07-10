@@ -68,8 +68,8 @@ public class NavDrawerBuilder {
 
             if (is_active_sensor) {
                 if (!CollectionServiceStarter.isBTShare(context)) {
-                    if (last_two_bgReadings.size() > 1) {
-                        if (last_two_calibrations.size() > 1) {
+                    if (last_two_bgReadings.size() > 1 || Ob1G5CollectionService.isG5WantingCalibration()) {
+                        if ((last_two_calibrations.size() > 1) && !Ob1G5CollectionService.isG5WantingInitialCalibration()) {
                             // TODO tighten this time limit
                             if (bGreadings_in_last_30_mins.size() >= 2) {
                                 long time_now = JoH.tsl();

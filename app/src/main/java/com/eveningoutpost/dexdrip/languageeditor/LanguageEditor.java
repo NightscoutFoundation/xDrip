@@ -28,6 +28,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
@@ -60,7 +61,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 
-public class LanguageEditor extends AppCompatActivity {
+public class LanguageEditor extends BaseAppCompatActivity {
 
     private static final String TAG = "jamorhamlanguage";
     private static final String EMAIL_KEY = "___EMAIL_KEY:";

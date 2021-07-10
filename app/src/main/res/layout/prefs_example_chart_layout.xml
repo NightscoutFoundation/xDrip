@@ -9,14 +9,14 @@
         style="@android:style/TextAppearance.DeviceDefault.SearchResult.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Title" />
+        android:text="@string/title" />
 
     <TextView
         android:id="@android:id/summary"
         style="@android:style/TextAppearance.DeviceDefault.SearchResult.Subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Summary" />
+        android:text="@string/summary" />
 
     <lecho.lib.hellocharts.view.LineChartView
         android:id="@+id/example_linechart"

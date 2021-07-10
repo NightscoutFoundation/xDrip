@@ -31,7 +31,16 @@ public enum CalibrationState {
     UnusualCalibration(0x0d, "Unusual Calibration"),
     InsufficientCalibration(0x0e, "Insufficient Calibration"),
     Ended(0x0f, "Ended"),
-    Errors(0x12, "Errors");
+    SensorFailed3(0x10, "Sensor Failed 3"),
+    TransmitterProblem(0x11, "Transmitter Problem"),
+    Errors(0x12, "Sensor Errors"),
+    SensorFailed4(0x13, "Sensor Failed 4"),
+    SensorFailed5(0x14, "Sensor Failed 5"),
+    SensorFailed6(0x15, "Sensor Failed 6"),
+    SensorFailedStart(0x16, "Sensor Failed Start"),
+    SensorStarted(0xC1, "Sensor Started"),
+    SensorStopped(0xC2, "Sensor Stopped"),
+    CalibrationSent(0xC3, "Calibration Sent");
 
     @Getter
     byte value;
@@ -40,7 +49,10 @@ public enum CalibrationState {
 
 
     private static final SparseArray<CalibrationState> lookup = new SparseArray<>();
-    private static final ImmutableSet<CalibrationState> stopped = ImmutableSet.of(Stopped, Ended, SensorFailed, SensorFailed2);
+    private static final ImmutableSet<CalibrationState> failed = ImmutableSet.of(SensorFailed, SensorFailed2, SensorFailed3, SensorFailed4, SensorFailed5, SensorFailed6, SensorFailedStart);
+    private static final ImmutableSet<CalibrationState> stopped = ImmutableSet.of(Stopped, Ended, SensorFailed, SensorFailed2, SensorFailed3, SensorFailed4, SensorFailed5, SensorFailed6, SensorFailedStart);
+    private static final ImmutableSet<CalibrationState> transitional = ImmutableSet.of(WarmingUp, SensorStarted, SensorStopped, CalibrationSent);
+
 
     CalibrationState(int value, String text) {
         this.value = (byte) value;
@@ -89,7 +101,7 @@ public enum CalibrationState {
     }
 
     public boolean sensorFailed() {
-        return this == SensorFailed || this == SensorFailed2;
+        return failed.contains(this);
     }
 
     public boolean ended() {
@@ -100,10 +112,17 @@ public enum CalibrationState {
         return this == WarmingUp;
     }
 
-    public boolean readyForBackfill() {
-        return this != WarmingUp && this != Stopped && this != Unknown && this != NeedsFirstCalibration && this != NeedsSecondCalibration;
+    public boolean transitional() { return transitional.contains(this); }
+
+    public boolean ok() {
+        return this == Ok;
     }
 
+    public boolean readyForBackfill() {
+        return this != WarmingUp && this != Stopped && this != Unknown && this != NeedsFirstCalibration && this != NeedsSecondCalibration && this != Errors;
+    }
+
+    // TODO i18n
     public String getExtendedText() {
         switch (this) {
             case Ok:
@@ -114,7 +133,11 @@ public enum CalibrationState {
                 }
             case WarmingUp:
                 if (DexSessionKeeper.isStarted()) {
-                    return getText() + "\n" + DexSessionKeeper.prettyTime() + " left";
+                    if (DexSessionKeeper.warmUpTimeValid()) {
+                        return getText() + "\n" + DexSessionKeeper.prettyTime() + " left";
+                    } else {
+                        return getText();
+                    }
                 } else {
                     return getText();
                 }

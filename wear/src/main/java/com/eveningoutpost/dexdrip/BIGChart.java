@@ -229,6 +229,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
         sharedPrefs.edit().putString("chart_timeframe", "" + timeframe).commit();
     }
 
+    @Override
     protected void onWatchModeChanged(WatchMode watchMode) {
 
         if(lowResMode ^ isLowRes(watchMode)){ //if there was a change in lowResMode

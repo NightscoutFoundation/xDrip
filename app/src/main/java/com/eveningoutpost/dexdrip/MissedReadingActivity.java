@@ -115,8 +115,9 @@ public class MissedReadingActivity extends ActivityWithMenu {
         prefs.edit().putBoolean("bg_missed_alerts", checkboxEnableAlert.isChecked()).apply();
         prefs.edit().putBoolean("missed_readings_all_day", checkboxAllDay.isChecked()).apply();
         prefs.edit().putBoolean("bg_missed_alerts_enable_alerts_reraise", checkboxEnableReraise.isChecked()).apply();
-        
-        context.startService(new Intent(context, MissedReadingService.class));
+
+        MissedReadingService.delayedLaunch();
+      //  context.startService(new Intent(context, MissedReadingService.class));
     }
 
     @Override

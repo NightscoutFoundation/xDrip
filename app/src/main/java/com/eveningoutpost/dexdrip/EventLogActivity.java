@@ -9,7 +9,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -31,9 +30,12 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.SendFeedBack;
 import com.eveningoutpost.dexdrip.databinding.ActivityEventLogBinding;
+import com.eveningoutpost.dexdrip.ui.helpers.BitmapUtil;
 import com.eveningoutpost.dexdrip.utils.ExtensionMethods;
+import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +47,8 @@ import me.tatarka.bindingcollectionadapter2.BindingRecyclerViewAdapter;
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
 import me.tatarka.bindingcollectionadapter2.collections.MergeObservableList;
 
+import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
+
 /*
  * New style event log viewer
  *
@@ -52,7 +56,7 @@ import me.tatarka.bindingcollectionadapter2.collections.MergeObservableList;
  *
  */
 @ExtensionMethod({java.util.Arrays.class, ExtensionMethods.class})
-public class EventLogActivity extends AppCompatActivity {
+public class EventLogActivity extends BaseAppCompatActivity {
 
     private static final List<Integer> severitiesList = new ArrayList<>();
     private static final boolean D = false;
@@ -102,11 +106,26 @@ public class EventLogActivity extends AppCompatActivity {
         refreshData();
 
         getOlderData();
+
+    }
+
+    // check if should stream wear logs
+    private boolean shouldStreamWearLogs() {
+        return Pref.getBooleanDefaultFalse("wear_sync") && Pref.getBooleanDefaultFalse("sync_wear_logs");
+    }
+
+    // ask for wear updated logs
+    private void getWearData() {
+        startWatchUpdaterService(this, WatchUpdaterService.ACTION_SYNC_LOGS, TAG);
     }
 
     // load in bulk of remaining data
     private void getOlderData() {
 
+        if (model.initial_items.size() == 0) {
+            UserError.Log.d(TAG, "No initial items loaded yet to find index from");
+            return;
+        }
         final long highestId = model.initial_items.get(model.initial_items.size() - 1).getId();
 
         final Thread t = new Thread(() -> {
@@ -147,6 +166,9 @@ public class EventLogActivity extends AppCompatActivity {
         new Thread(() -> {
             int c;
             int turbo = 0;
+
+            final boolean streamWearLogs = shouldStreamWearLogs();
+
             while (runRefresh) {
                 if (D) UserError.Log.d(TAG, "refreshing data " + highest_id);
                 if (refreshData()) {
@@ -157,6 +179,9 @@ public class EventLogActivity extends AppCompatActivity {
                     JoH.threadSleep(100);
                     turbo--;
                 } else {
+                    if (streamWearLogs && JoH.quietratelimit("stream-wear-logs", 2)) {
+                        getWearData();
+                    }
                     // long sleep
                     c = 0;
                     while (c < 2 && runRefresh) {
@@ -320,7 +345,9 @@ public class EventLogActivity extends AppCompatActivity {
             JoH.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    streamed_items.addAll(0, newItems);
+                    synchronized (items) {
+                        streamed_items.addAll(0, newItems);
+                    }
                     refreshNewItems(newItems.size());
                     if (isAtTop()) {
                         // If unmoved or already at top then scroll to new values
@@ -381,13 +408,15 @@ public class EventLogActivity extends AppCompatActivity {
         void filter(final String filter) {
             currentFilter = filter.or(getCurrentFilter()).toLowerCase().trim();
             visible.clear();
-            // skip filter on initial defaults for speed
-            if (isDefaultFilters()) {
-                visible.addAll(items);
-            } else {
-                for (UserError item : items) {
-                    if (filterMatch(item)) {
-                        visible.add(item);
+            synchronized (items) {
+                // skip filter on initial defaults for speed
+                if (isDefaultFilters()) {
+                    visible.addAll(items);
+                } else {
+                    for (UserError item : items) {
+                        if (filterMatch(item)) {
+                            visible.add(item);
+                        }
                     }
                 }
             }
@@ -399,13 +428,15 @@ public class EventLogActivity extends AppCompatActivity {
             currentFilter = filter.or(getCurrentFilter()).toLowerCase().trim();
             int c = 0;
             int added = 0;
-            for (UserError item : items) {
-                if (filterMatch(item)) {
-                    visible.add(0, item);
-                    added++;
+            synchronized (items) {
+                for (UserError item : items) {
+                    if (filterMatch(item)) {
+                        visible.add(0, item);
+                        added++;
+                    }
+                    c++;
+                    if (c >= count) break;
                 }
-                c++;
-                if (c >= count) break;
             }
             adapterChain.notifyItemRangeChanged(0, added);
             // avoid duplicate titles
@@ -452,10 +483,12 @@ public class EventLogActivity extends AppCompatActivity {
         // scroll to top and update button visibility accordingly with smooth option
         public void scrollToTop(boolean smooth) {
             showScrollToTop.set(false);
-            if (smooth) {
-                recyclerView.smoothScrollToPosition(0);
-            } else {
-                recyclerView.scrollToPosition(0);
+            if (recyclerView != null) {
+                if (smooth) {
+                    recyclerView.smoothScrollToPosition(0);
+                } else {
+                    recyclerView.scrollToPosition(0);
+                }
             }
         }
 
@@ -535,7 +568,8 @@ public class EventLogActivity extends AppCompatActivity {
 
         // reformat text size for long messages
         public float textSize(String message) {
-            final float scale = 4f;
+            //   final float scale = 4f;
+            final float scale = 2.0f * BitmapUtil.getScreenDensity();
             if (message.length() > 100) return 5f * scale;
             return 7f * scale;
         }

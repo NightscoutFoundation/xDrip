@@ -131,7 +131,7 @@ public class ShareRest {
             final OkHttpClient okHttpClient = new OkHttpClient();
             okHttpClient.networkInterceptors().add(new Interceptor() {
                 @Override
-                public Response intercept(Chain chain) throws IOException {
+                public synchronized Response intercept(Chain chain) throws IOException {
                     try {
                         // Add user-agent and relevant headers.
                         Request original = chain.request();

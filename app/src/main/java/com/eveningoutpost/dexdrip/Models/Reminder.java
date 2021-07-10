@@ -1,8 +1,6 @@
 package com.eveningoutpost.dexdrip.Models;
 
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.provider.BaseColumns;
 
 import com.activeandroid.Model;
@@ -10,11 +8,11 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Reminders;
-import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.xdrip;
+import com.eveningoutpost.dexdrip.utils.HomeWifi;
 import com.google.gson.annotations.Expose;
 
 import java.util.Calendar;
@@ -56,9 +54,12 @@ public class Reminder extends Model {
             "ALTER TABLE Reminder ADD COLUMN alternating INTEGER DEFAULT 0",
             "ALTER TABLE Reminder ADD COLUMN alternate INTEGER DEFAULT 0",
             "ALTER TABLE Reminder ADD COLUMN chime INTEGER DEFAULT 0",
+            "ALTER TABLE Reminder ADD COLUMN homeonly INTEGER DEFAULT 0",
+            "ALTER TABLE Reminder ADD COLUMN speak INTEGER DEFAULT 0",
             "CREATE INDEX index_Reminder_next_due on Reminder(next_due)",
             "CREATE INDEX index_Reminder_enabled on Reminder(enabled)",
             "CREATE INDEX index_Reminder_weekdays on Reminder(weekdays)",
+            "CREATE INDEX index_Reminder_homeonly on Reminder(homeonly)",
             "CREATE INDEX index_Reminder_weekends on Reminder(weekends)",
             "CREATE INDEX index_Reminder_priority on Reminder(priority)",
             "CREATE INDEX index_Reminder_timestamp on Reminder(timestamp)",
@@ -96,6 +97,14 @@ public class Reminder extends Model {
     @Expose
     @Column(name = "weekends", index = true)
     public boolean weekends;
+
+    @Expose
+    @Column(name = "homeonly", index = true)
+    public boolean homeonly;
+
+    @Expose
+    @Column(name = "speak")
+    public boolean speak;
 
     @Expose
     @Column(name = "repeating")
@@ -264,6 +273,7 @@ public class Reminder extends Model {
         reminder.alternating = false;
         reminder.alternate = false;
         reminder.chime_only = false;
+        reminder.homeonly = false;
         reminder.ideal_time = JoH.hourMinuteString();
         reminder.priority = 5; // default
         reminder.save();
@@ -291,7 +301,7 @@ public class Reminder extends Model {
     public static synchronized void processAnyDueReminders() {
         if (JoH.quietratelimit("reminder_due_check", 10)) {
             if (!Pref.getBooleanDefaultFalse(REMINDERS_ALL_DISABLED)
-            && (!Pref.getBooleanDefaultFalse(REMINDERS_NIGHT_DISABLED) || !isNight())){
+                    && (!Pref.getBooleanDefaultFalse(REMINDERS_NIGHT_DISABLED) || !isNight())) {
                 final Reminder due_reminder = getNextActiveReminder();
                 if (due_reminder != null) {
                     UserError.Log.d(TAG, "Found due reminder! " + due_reminder.title);
@@ -303,9 +313,9 @@ public class Reminder extends Model {
                     // temporary testing logic
                     final int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
                     if (hour == 10) {
-                        if (JoH.pratelimit("restart-reminders",7200)) {
-                            UserError.Log.d(TAG,"Re-enabling reminders as its morning time");
-                           Pref.setBoolean(REMINDERS_ALL_DISABLED,false);
+                        if (JoH.pratelimit("restart-reminders", 7200)) {
+                            UserError.Log.d(TAG, "Re-enabling reminders as its morning time");
+                            Pref.setBoolean(REMINDERS_ALL_DISABLED, false);
                         }
                     }
                 }
@@ -315,6 +325,7 @@ public class Reminder extends Model {
 
     public static Reminder getNextActiveReminder() {
         fixUpTable(schema);
+        final boolean onHomeWifi = !HomeWifi.isSet() || HomeWifi.isConnected();
         final long now = JoH.tsl();
         final Reminder reminder = new Select()
                 .from(Reminder.class)
@@ -322,6 +333,8 @@ public class Reminder extends Model {
                 .where("next_due < ?", now)
                 .where("snoozed_till < ?", now)
                 .where("last_fired < (? - (600000 * alerted_times))", now)
+                // if on home wifi or not set then anything otherwise only home only = false
+                .where(onHomeWifi ? "homeonly > -1 " : "homeonly = 0")
                 .orderBy("enabled desc, priority desc, next_due asc")
                 .executeSingle();
         return reminder;
@@ -338,15 +351,26 @@ public class Reminder extends Model {
 
     public synchronized static void firstInit(Context context) {
         fixUpTable(schema);
-        final Reminder reminder = new Select()
-                .from(Reminder.class)
-                .where("enabled = ?", true)
-                .executeSingle();
-        if (reminder != null) {
-            PendingIntent serviceIntent = PendingIntent.getService(xdrip.getAppContext(), 0, new Intent(xdrip.getAppContext(), MissedReadingService.class), PendingIntent.FLAG_UPDATE_CURRENT);
-            JoH.wakeUpIntent(xdrip.getAppContext(), Constants.MINUTE_IN_MS, serviceIntent);
-            UserError.Log.d(TAG, "Starting missed readings service");
-        }
+      /*  Inevitable.task("reminders-first-init", 2000, new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final Reminder reminder = new Select()
+                            .from(Reminder.class)
+                            .where("enabled = ?", true)
+                            .executeSingle();
+                    if (reminder != null) {
+                        // PendingIntent serviceIntent = PendingIntent.getService(xdrip.getAppContext(), 0, new Intent(xdrip.getAppContext(), MissedReadingService.class), PendingIntent.FLAG_UPDATE_CURRENT);
+                        // PendingIntent serviceIntent = WakeLockTrampoline.getPendingIntent(MissedReadingService.class);
+                        //  JoH.wakeUpIntent(xdrip.getAppContext(), Constants.MINUTE_IN_MS, serviceIntent);
+                        //  UserError.Log.ueh(TAG, "Starting missed readings service");
+                    }
+                } catch (NullPointerException e) {
+                    UserError.Log.wtf(TAG, "Got nasty initial concurrency exception: " + e);
+                }
+            }
+        });
+        */
     }
 
     public static Reminder byid(long id) {

@@ -5,7 +5,7 @@ import android.content.Context;
 
 
 /**
- * Created by Emma Black on 12/25/14.
+ * jamorham
  *
  * On Android Wear this code has no effect and is here just for code compatibility
  *
@@ -23,6 +23,10 @@ public class ForegroundServiceStarter {
 
     public void stop() {
 
+    }
+
+    public static boolean shouldRunCollectorInForeground() {
+        return false; // we may need to revisit this if there are performance issues on android 8 on wear
     }
 
 }

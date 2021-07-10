@@ -103,7 +103,7 @@
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:onClick="setSendRemoteSnoozeOnClick"
-                        android:text="Send Remote Snooze"
+                        android:text="@string/send_remote_snooze"
                         android:backgroundTint="@color/colorPrimaryDark" />
                 </LinearLayout>
             </LinearLayout>

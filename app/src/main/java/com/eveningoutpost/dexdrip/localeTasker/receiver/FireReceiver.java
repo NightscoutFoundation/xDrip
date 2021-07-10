@@ -19,13 +19,16 @@ package com.eveningoutpost.dexdrip.localeTasker.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.SnoozeActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -92,6 +95,8 @@ public final class FireReceiver extends BroadcastReceiver {
                     final String[] message_array = message.split("\\s+"); // split by space
                     Log.d(TAG,"Received tasker message: "+message);
 
+                    final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+
                     // Commands recognised:
                     //
 
@@ -119,10 +124,11 @@ public final class FireReceiver extends BroadcastReceiver {
                             final Intent calintent = new Intent();
                             calintent.setClassName(xdrip.getAppContext().getString(R.string.local_target_package), "com.eveningoutpost.dexdrip.AddCalibration");
                             calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
+                            calintent.putExtra("timestamp", JoH.tsl());
                             calintent.putExtra("bg_string", message_array[1]);
                             calintent.putExtra("bg_age", message_array[2]);
                             calintent.putExtra("from_external", "true");
+                            calintent.putExtra("cal_source", "FireReceiver");
                             context.startActivity(calintent);
 
                             break;
@@ -161,8 +167,59 @@ public final class FireReceiver extends BroadcastReceiver {
                             break;
 
                         case "SNOOZE":
-                            AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1);
-                            JoH.static_toast_long("SNOOZE from Tasker");
+                            // default: snoozes the length of the current alert, or the default alert length
+                            int minutes = -1;
+                            if (message_array.length > 1) {
+                                minutes = Integer.valueOf(message_array[1]);
+                                JoH.static_toast_long("SNOOZE from Tasker for "+minutes+" min");
+                            } else {
+                                JoH.static_toast_long("SNOOZE from Tasker");
+                            }
+                            AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), minutes);
+                            break;
+
+                        case "SNOOZE_LOW":
+                            // default: snoozes the length of the current alert, or the default alert length
+                            minutes = AlertPlayer.getPlayer().GuessDefaultSnoozeTime();
+
+                            // If a specific number of minutes is given, use it.
+                            // If -1, enables this alert indefinitely.
+                            // If 0, disables an already configured alert.
+                            if (message_array.length > 1) {
+                                minutes = Integer.valueOf(message_array[1]);
+                            }
+
+                            if (minutes == -1) {
+                                JoH.static_toast_long("SNOOZE_LOW from Tasker enabled indefinitely (until disabled)");
+                            } else if (minutes == 0) {
+                                JoH.static_toast_long("SNOOZE_LOW from Tasker disabled");
+                            } else {
+                                JoH.static_toast_long("SNOOZE_LOW from Tasker for " + minutes + " min");
+                            }
+
+                            SnoozeActivity.snoozeForType(minutes, SnoozeActivity.SnoozeType.LOW_ALERTS, prefs);
+                            break;
+
+                        case "SNOOZE_HIGH":
+                            // default: snoozes the length of the current alert, or the default alert length
+                            minutes = AlertPlayer.getPlayer().GuessDefaultSnoozeTime();
+
+                            // If a specific number of minutes is given, use it.
+                            // If -1, enables this alert indefinitely.
+                            // If 0, disables an already configured alert.
+                            if (message_array.length > 1) {
+                                minutes = Integer.valueOf(message_array[1]);
+                            }
+
+                            if (minutes == -1) {
+                                JoH.static_toast_long("SNOOZE_HIGH from Tasker enabled indefinitely (until disabled)");
+                            } else if (minutes == 0) {
+                                JoH.static_toast_long("SNOOZE_HIGH from Tasker disabled");
+                            } else {
+                                JoH.static_toast_long("SNOOZE_HIGH from Tasker for " + minutes + " min");
+                            }
+
+                            SnoozeActivity.snoozeForType(minutes, SnoozeActivity.SnoozeType.HIGH_ALERTS, prefs);
                             break;
 
                             //opportunistic snooze that only does anything if an alert is active

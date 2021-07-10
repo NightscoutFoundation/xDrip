@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.List;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 
 /**
  * Created by Emma Black on 11/29/14.
@@ -140,9 +140,9 @@ public class UserNotification extends Model {
                     .orderBy("_ID desc")
                     .executeSingle();
         } else {
-            final String timestamp = Pref.getStringDefaultBlank("UserNotification:timestamp:" + type);
+            final String timestamp = PersistentStore.getString("UserNotification:timestamp:" + type);
             if (timestamp.equals("")) return null;
-            final String message = Pref.getStringDefaultBlank("UserNotification:message:" + type);
+            final String message = PersistentStore.getString("UserNotification:message:" + type);
             if (message.equals("")) return null;
             UserNotification userNotification = new UserNotification();
             userNotification.timestamp = Double.parseDouble(timestamp);
@@ -160,7 +160,7 @@ public class UserNotification extends Model {
                 userNotification.delete();
             }
         } else {
-            Pref.setString("UserNotification:timestamp:" + type, "");
+            PersistentStore.setString("UserNotification:timestamp:" + type, "");
         }
     }
     
@@ -206,8 +206,8 @@ public class UserNotification extends Model {
                 break;
             default:
                 Log.d(TAG, "Saving workaround for: " + type + " " + message);
-                Pref.setString("UserNotification:timestamp:" + type, JoH.qs(timestamp));
-                Pref.setString("UserNotification:message:" + type, message);
+                PersistentStore.setString("UserNotification:timestamp:" + type, JoH.qs(timestamp));
+                PersistentStore.setString("UserNotification:message:" + type, message);
                 return null;
         }
         userNotification.save();

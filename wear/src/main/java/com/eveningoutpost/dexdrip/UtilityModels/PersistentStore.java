@@ -25,29 +25,33 @@ import com.google.common.primitives.Bytes;
 
 public class PersistentStore {
 
-    // TODO optimize init_prefs
-
     private static final String DATA_STORE_INTERNAL = "persist_internal_store";
     private static SharedPreferences prefs;
     private static final boolean d = false; // debug flag
 
-    static {
-        init_prefs();
-    }
-
-    private static void init_prefs() {
-        if (prefs == null) prefs = xdrip.getAppContext()
-                .getSharedPreferences(DATA_STORE_INTERNAL, Context.MODE_PRIVATE);
-    }
-
-    public static String getString(String name) {
-        init_prefs();
+    public static String getString(final String name) {
         return prefs.getString(name, "");
     }
 
-    public static void setString(String name, String value) {
-        init_prefs();
+    static {
+        try {
+            prefs = xdrip.getAppContext()
+                    .getSharedPreferences(DATA_STORE_INTERNAL, Context.MODE_PRIVATE);
+        } catch (NullPointerException e) {
+            android.util.Log.e("PersistentStore", "Failed to get context on init!!! nothing will work");
+        }
+    }
+
+    public static void setString(final String name, String value) {
         prefs.edit().putString(name, value).apply();
+    }
+
+    // if string is different to what we have stored then update and return true
+    public static boolean updateStringIfDifferent(final String name, final String current) {
+        if (current == null) return false; // can't handle nulls
+        if (PersistentStore.getString(name).equals(current)) return false;
+        PersistentStore.setString(name, current);
+        return true;
     }
 
     public static void appendString(String name, String value) {
@@ -68,27 +72,31 @@ public class PersistentStore {
         return JoH.base64decodeBytes(getString(name));
     }
 
+    public static byte getByte(String name) {
+        return (byte)getLong(name);
+    }
+
     public static void setBytes(String name, byte[] value) {
         setString(name, JoH.base64encodeBytes(value));
     }
 
+    public static void setByte(String name, byte value) {
+        setLong(name, value);
+    }
+
     public static long getLong(String name) {
-        init_prefs();
         return prefs.getLong(name, 0);
     }
 
     public static float getFloat(String name) {
-        init_prefs();
         return prefs.getFloat(name, 0);
     }
 
     public static void setLong(String name, long value) {
-        init_prefs();
         prefs.edit().putLong(name, value).apply();
     }
 
     public static void setFloat(String name, float value) {
-        init_prefs();
         prefs.edit().putFloat(name, value).apply();
     }
 
@@ -101,17 +109,14 @@ public class PersistentStore {
     }
 
     public static boolean getBoolean(String name) {
-        init_prefs();
         return prefs.getBoolean(name, false);
     }
 
     public static boolean getBoolean(String name, boolean value) {
-        init_prefs();
         return prefs.getBoolean(name, value);
     }
 
     public static void setBoolean(String name, boolean value) {
-        init_prefs();
         prefs.edit().putBoolean(name, value).apply();
     }
 
@@ -127,7 +132,6 @@ public class PersistentStore {
 
     @SuppressLint("ApplySharedPref")
     public static void commit() {
-        init_prefs();
         prefs.edit().commit();
     }
 }

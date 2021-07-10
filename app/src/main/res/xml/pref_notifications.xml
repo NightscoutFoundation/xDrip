@@ -79,8 +79,22 @@
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="use_notification_channels"
-                    android:summary="Use the Android 8+ notification channel feature"
-                    android:title="Notification Channels" />
+                    android:summary="@string/summary_use_notification_channels"
+                    android:title="@string/title_use_notification_channels" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="use_notification_channels"
+                    android:key="ongoing_notification_channel"
+                    android:summary="@string/summary_ongoing_notification_channel"
+                    android:title="@string/title_ongoing_notification_channel" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="use_notification_channels"
+                    android:key="notification_channels_grouping"
+                    android:summary="@string/summary_notification_channels_grouping"
+                    android:title="@string/title_notification_channels_grouping" />
 
             </PreferenceScreen>
 
@@ -135,8 +149,8 @@
                 <SwitchPreference
                     android:defaultValue="true"
                     android:key="play_sound_for_initial_calibration"
-                    android:summary="Play sound when Initial Calibration is requested"
-                    android:title="Initial Alert" />
+                    android:summary="@string/summary_play_sound_for_initial_calibration"
+                    android:title="@string/title_play_sound_for_initial_calibration" />
             </PreferenceScreen>
 
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
@@ -152,7 +166,7 @@
                 android:key="other_alerts_screen"
                 android:title="@string/other_alerts">
 
-                <PreferenceCategory android:title="Noisy Readings">
+                <PreferenceCategory android:title="@string/category_noisy_readings">
                     <CheckBoxPreference
                         android:defaultValue="false"
                         android:key="bg_unclear_readings_alerts"
@@ -186,7 +200,7 @@
                         android:defaultValue="60" />
                 </PreferenceCategory>
 
-                <PreferenceCategory android:title="Falling/Rising BG">
+                <PreferenceCategory android:title="@string/category_falling_rising_bg">
                     <CheckBoxPreference
                         android:defaultValue="false"
                         android:key="falling_alert"
@@ -212,7 +226,7 @@
                 </PreferenceCategory>
 
 
-                <PreferenceCategory android:title="Alert Preferences (for these alerts)">
+                <PreferenceCategory android:title="@string/category_alert_prefs">
                     <RingtonePreference
                         android:defaultValue="content://settings/system/alarm_alert"
                         android:key="other_alerts_sound"
@@ -230,7 +244,7 @@
                 android:key="smart_alerts_screen"
                 android:title="@string/extra_alerts_xdrip_plus">
                 <PreferenceCategory
-                    android:summary="When above High level for too long and not heading downwards"
+                    android:summary="@string/summary_persistent_high_alert"
                     android:title="@string/persistent_high_alert">
                     <SwitchPreference
                         android:defaultValue="false"

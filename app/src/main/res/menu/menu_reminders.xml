@@ -5,7 +5,7 @@
         android:id="@+id/reminders_atnight"
         android:checkable="true"
         android:orderInCategory="1"
-        android:title="Quiet at Night"
+        android:title="@string/quiet_at_night"
         android:visible="true"
         android:onClick="onRemindNightClick"
         />
@@ -14,7 +14,7 @@
         android:id="@+id/reminders_disabled"
         android:checkable="true"
         android:orderInCategory="1"
-        android:title="Alerts disabled"
+        android:title="@string/alerts_disabled"
         android:visible="true"
         android:onClick="onAllDisabledClick"
         />
@@ -23,7 +23,7 @@
         android:id="@+id/reminders_restart"
         android:checkable="true"
         android:orderInCategory="1"
-        android:title="Restart in the Morning"
+        android:title="@string/restart_in_the_morning"
         android:visible="true"
         android:onClick="onRestartTomorrowClick"
         />
@@ -32,9 +32,16 @@
         android:id="@+id/reminders_advanced"
         android:checkable="true"
         android:orderInCategory="1"
-        android:title="Advanced Mode"
+        android:title="@string/advanced_mode"
         android:visible="true"
         android:onClick="onRemindersAdvancedClick"
+        />
+
+    <item
+        android:id="@+id/reminders_home_network"
+        android:title="Set Home Network"
+        android:visible="true"
+        android:onClick="onRemindersHomeNetworkClick"
         />
 
 </menu>

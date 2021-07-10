@@ -285,6 +285,7 @@ public class DatabaseUtil {
                         if (notes == null) notes = "";
                         if (valueIE.equals("0")) valueIE = "";
                         if (valueCHO.equals("0")) valueCHO = "";
+                        notes= notes.replaceAll("\n","||"); //convert linefeed to SiDiary conform expression
                         if (!valueIE.equals("") || !valueCHO.equals("") || !notes.equals("")) {
                             date.setTime(timestamp);
                             printStream.println(df.format(date) + ";;" + valueCHO + ";" + valueIE + ";" + notes);

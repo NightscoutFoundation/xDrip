@@ -2,10 +2,13 @@ package com.eveningoutpost.dexdrip.Models;
 
 import com.activeandroid.query.Delete;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 import org.junit.After;
 import org.junit.Test;
+
+import java.util.Locale;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -180,9 +183,9 @@ public class UserNotificationTest extends RobolectricTestWithConfig {
         // :: Verify
         assertThat(userNotification).isNull();
 
-        assertThat(Pref.getString("UserNotification:timestamp:" + type, "Not Set"))
+        assertThat(PersistentStore.getString("UserNotification:timestamp:" + type))
                 .isEqualTo(JoH.qs(timestamp));
-        assertThat(Pref.getString("UserNotification:message:" + type, "Not Set"))
+        assertThat(PersistentStore.getString("UserNotification:message:" + type))
                 .isEqualTo(message);
     }
 
@@ -387,5 +390,11 @@ public class UserNotificationTest extends RobolectricTestWithConfig {
         UserNotification calibrationAlert = UserNotification.GetNotificationByType("testAlert");
         assertThat(calibrationAlert).isNotNull();
         assertThat(calibrationAlert.timestamp).isWithin(0).of(initialTimestamp);
+    }
+
+    @Test
+    public void formatTest() {
+        final double tval = 2738568152156d;
+        assertThat(Double.parseDouble(String.format(Locale.US, "%d", (long)tval))).isEqualTo(tval);
     }
 }

@@ -1,19 +1,23 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
 
 import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.Services.G5BaseService;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -22,9 +26,14 @@ import static com.eveningoutpost.dexdrip.UtilityModels.Constants.COMPATIBLE_BASE
 
 /**
  * Created by jamorham on 01/11/2017.
+ *
+ * Prompt helpfully about other compatible apps within the device ecosystem.
+ *
  */
 
 public class CompatibleApps extends BroadcastReceiver {
+
+    public static final String EXTERNAL_ALG_PACKAGES = "EXTERNAL_ALG_PACKAGES";
 
     private static final String NOTIFY_MARKER = "-NOTIFY";
     private static final int RENOTIFY_TIME = 86400 * 30;
@@ -68,6 +77,23 @@ public class CompatibleApps extends BroadcastReceiver {
                     id = notify(gs(R.string.androidaps), gs(R.string.enable_local_broadcast), id, Feature.ENABLE_ANDROIDAPS_FEATURE1);
                 }
             }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                if (!Pref.getString("local_broadcast_specific_package_destination", "").contains(package_name)) {
+                    if (JoH.pratelimit(package_name + NOTIFY_MARKER + "2", RENOTIFY_TIME)) {
+                        id = notify(gs(R.string.androidaps), gs(R.string.broadcast_only_to), id, Feature.ENABLE_ANDROIDAPS_FEATURE2);
+                    }
+                }
+            }
+        }
+
+        package_name = "net.dinglisch.android.tasker";
+        if (InstalledApps.checkPackageExists(context, package_name) || InstalledApps.checkPackageExists(context, package_name + "m")) {
+            if (!Pref.getString("local_broadcast_specific_package_destination", "").contains(package_name)) {
+                if (JoH.pratelimit(package_name + NOTIFY_MARKER, RENOTIFY_TIME)) {
+                    id = notify("Tasker", gs(R.string.enable_local_broadcast), id, Feature.ENABLE_TASKER);
+                }
+            }
         }
 
         package_name = "com.pimpimmobile.librealarm";
@@ -80,9 +106,12 @@ public class CompatibleApps extends BroadcastReceiver {
         }
 
         if (!Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
-            final String[] oop_package_names = {"info.nightscout.deeplearning", "com.hg4.oopalgorithm.oopalgorithm", "org.andesite.lucky8"};
+            final String[] oop_package_names = {"info.nightscout.deeplearning", "com.hg4.oopalgorithm.oopalgorithm", "com.hg4.oopalgorithm.oopalgorithm2", "org.andesite.lucky8"};
+            final StringBuilder sb = new StringBuilder();
             for (String package_name_o : oop_package_names) {
                 if (InstalledApps.checkPackageExists(context, package_name_o)) {
+                    if (sb.length() > 0) sb.append(",");
+                    sb.append(package_name_o);
                     if (JoH.pratelimit(package_name_o + NOTIFY_MARKER, RENOTIFY_TIME)) {
                         final String short_package = package_name_o.substring(package_name_o.lastIndexOf(".") + 1).toUpperCase();
                         id = notify(gs(R.string.external_calibration_app),
@@ -91,12 +120,39 @@ public class CompatibleApps extends BroadcastReceiver {
                     }
                 }
             }
+            if (sb.length() > 0) {
+                PersistentStore.setString(EXTERNAL_ALG_PACKAGES, sb.toString());
+            }
         }
 
+        checkMemoryConstraints();
+        enableAndroid10Workarounds();
         // TODO add pebble
 
         // TODO add more here
 
+    }
+
+    private static final String ANDROID_10_WORKAROUND_MARKER = "ANDROID_10_WORKAROUND_MARKER";
+
+    private static void enableAndroid10Workarounds() {
+        if (Build.VERSION.SDK_INT >= 29) {
+            if (!PersistentStore.getBoolean(ANDROID_10_WORKAROUND_MARKER, false)) {
+                UserError.Log.ueh(CompatibleApps.class.getSimpleName(),"Enabling default workarounds for Android 10+ setting minimize/avoid scanning to enabled");
+                Pref.setBoolean("ob1_minimize_scanning", true);
+                Pref.setBoolean("ob1_avoid_scanning", true);
+                PersistentStore.setBoolean(ANDROID_10_WORKAROUND_MARKER, true);
+            }
+        }
+    }
+
+
+    private static void checkMemoryConstraints() {
+        final ActivityManager actManager = (ActivityManager) xdrip.getAppContext().getSystemService(Context.ACTIVITY_SERVICE);
+        final ActivityManager.MemoryInfo memInfo = new ActivityManager.MemoryInfo();
+        actManager.getMemoryInfo(memInfo);
+        final long totalMemory = memInfo.totalMem;
+        // TODO react to total memory
     }
 
     private static String gs(int id) {
@@ -113,7 +169,7 @@ public class CompatibleApps extends BroadcastReceiver {
         return id + 4;
     }
 
-    public static void showNotification(String title, String content, PendingIntent intent, PendingIntent intent2, PendingIntent contentIntent, int notificationId) {
+    public static void showNotification(String title, String content, PendingIntent yesIntent, PendingIntent noIntent, PendingIntent contentIntent, int notificationId) {
 
         final NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(xdrip.getAppContext(), null)
                 .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
@@ -121,8 +177,8 @@ public class CompatibleApps extends BroadcastReceiver {
                 .setContentText(content)
                 .setContentIntent(contentIntent)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
-                .addAction(R.drawable.tick_icon_small, gs(R.string.yes), intent)
-                .addAction(android.R.drawable.ic_delete, gs(R.string.no), intent2);
+                .addAction(R.drawable.tick_icon_small, gs(R.string.yes), yesIntent)
+                .addAction(android.R.drawable.ic_delete, gs(R.string.no), noIntent);
 
         final NotificationManager mNotifyMgr = (NotificationManager) xdrip.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -133,7 +189,7 @@ public class CompatibleApps extends BroadcastReceiver {
         }
     }
 
-    private static PendingIntent createActionIntent(int parent_id, int id, Feature action) {
+    public static PendingIntent createActionIntent(int parent_id, int id, Feature action) {
         return PendingIntent.getBroadcast(xdrip.getAppContext(), id,
                 new Intent(xdrip.getAppContext(), CompatibleApps.class)
                         .putExtra("action", action)
@@ -142,7 +198,7 @@ public class CompatibleApps extends BroadcastReceiver {
                 PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    private static PendingIntent createChoiceIntent(int parent_id, int id, Feature action, String title, String msg) {
+    public static PendingIntent createChoiceIntent(int parent_id, int id, Feature action, String title, String msg) {
         return PendingIntent.getBroadcast(xdrip.getAppContext(), id,
                 new Intent(xdrip.getAppContext(), CompatibleApps.class)
                         .putExtra("action", Feature.CHOICE)
@@ -230,6 +286,19 @@ public class CompatibleApps extends BroadcastReceiver {
                         enableBoolean("broadcast_data_through_intents", "Local Broadcast Enabled!", intent);
                         break;
 
+                    case ENABLE_ANDROIDAPS_FEATURE2:
+                        final String msg = "Enabling broadcast to info.nightscout.androidaps !";
+                        addStringtoSpaceDelimitedPreference("local_broadcast_specific_package_destination", "info.nightscout.androidaps");
+                        JoH.static_toast_long(msg);
+                        cancelSourceNotification(intent);
+                        break;
+
+                    case ENABLE_TASKER:
+                        addStringtoSpaceDelimitedPreference("local_broadcast_specific_package_destination", "net.dinglisch.android.tasker net.dinglisch.android.taskerm");
+                        JoH.static_toast_long("Setting specific package broadcast for Tasker");
+                        cancelSourceNotification(intent);
+                        break;
+
                     case ENABLE_LIBRE_ALARM:
                         DexCollectionType.setDexCollectionType(DexCollectionType.LibreAlarm);
                         cancelSourceNotification(intent);
@@ -241,6 +310,10 @@ public class CompatibleApps extends BroadcastReceiver {
 
                     case ENABLE_WEAR_OS_SYNC:
                         enableBoolean("wear_sync", "Enabled Wear OS Sync!", intent);
+                        break;
+
+                    case HARD_RESET_TRANSMITTER:
+                        G5BaseService.setHardResetTransmitterNow();
                         break;
 
                     default:
@@ -260,16 +333,37 @@ public class CompatibleApps extends BroadcastReceiver {
         cancelSourceNotification(intent);
     }
 
-    private enum Feature {
+    private void addStringtoSpaceDelimitedPreference(final String key, final String parameter) {
+
+        String value = Pref.getString(key, "");
+        if (value.length() > 3) {
+            for (final String this_value : value.split(" ")) {
+                if (this_value != null && this_value.length() > 3) {
+                    if (this_value.equals(parameter)) {
+                        return; //already present in string
+                    }
+                }
+            }
+            value += " " + parameter;
+        } else {
+            value = parameter;
+        }
+        Pref.setString(key, value);
+    }
+
+    public enum Feature {
         UNKNOWN,
         CHOICE,
         CANCEL,
         ENABLE_GARMIN_FEATURES,
         ENABLE_ANDROIDAPS_FEATURE1,
+        ENABLE_ANDROIDAPS_FEATURE2,
         ENABLE_FITBIT_FEATURES,
         ENABLE_LIBRE_ALARM,
         ENABLE_OOP,
         ENABLE_WEAR_OS_SYNC,
+        HARD_RESET_TRANSMITTER,
+        ENABLE_TASKER,
         FEATURE_X
     }
 

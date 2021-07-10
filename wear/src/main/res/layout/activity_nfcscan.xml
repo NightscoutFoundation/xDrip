@@ -23,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="xDrip+ Scanning NFC"
+            android:text="@string/xdrip_scanning_nfc"
             android:id="@+id/textView18"
             android:layout_gravity="center_horizontal"
 

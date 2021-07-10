@@ -46,6 +46,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
+import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 import java.text.DecimalFormat;
@@ -56,6 +57,7 @@ import java.util.Date;
 import java.util.List;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 public class EditAlertActivity extends ActivityWithMenu {
     //public static String menu_name = "Edit Alert";
@@ -92,8 +94,10 @@ public class EditAlertActivity extends ActivityWithMenu {
 
     private String audioPath;
 
+    private LinearLayout layoutSilentModeWarning;
     private TextView viewAlertOverrideText;
-    private CheckBox checkboxAlertOverride;
+    private CheckBox checkboxOverrideSilent;
+    private CheckBox checkboxForceSpeaker;
     private boolean doMgdl;
 
     private String uuid;
@@ -167,8 +171,10 @@ public class EditAlertActivity extends ActivityWithMenu {
         editSnooze = (EditText) findViewById(R.id.edit_snooze);
         reraise = (EditText) findViewById(R.id.reraise);
 
+        layoutSilentModeWarning = (LinearLayout) findViewById(R.id.layout_silent_mode_warning);
         viewAlertOverrideText = (TextView) findViewById(R.id.view_alert_override_silent);
-        checkboxAlertOverride = (CheckBox) findViewById(R.id.check_override_silent);
+        checkboxOverrideSilent = (CheckBox) findViewById(R.id.check_override_silent);
+        checkboxForceSpeaker = (CheckBox) findViewById(R.id.check_force_speaker);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         addListenerOnButtons();
 
@@ -222,7 +228,8 @@ public class EditAlertActivity extends ActivityWithMenu {
             checkboxAllDay.setChecked(true);
             checkboxVibrate.setChecked(true);
             checkboxDisabled.setChecked(false);
-            checkboxAlertOverride.setChecked(true);
+            checkboxOverrideSilent.setChecked(true);
+            checkboxForceSpeaker.setChecked(true);
 
             audioPath = "";
             alertMp3File.setText(shortPath(audioPath));
@@ -239,8 +246,8 @@ public class EditAlertActivity extends ActivityWithMenu {
             alertReraise = 1;
         } else {
             // We are editing an alert
-            AlertType at = AlertType.get_alert(uuid);
-            if(at==null) {
+            AlertType alertType = AlertType.get_alert(uuid);
+            if(alertType==null) {
                 Log.wtf(TAG, "Error editing alert, when that alert does not exist...");
                 Intent returnIntent = new Intent();
                 setResult(RESULT_CANCELED, returnIntent);
@@ -248,27 +255,28 @@ public class EditAlertActivity extends ActivityWithMenu {
                 return;
             }
 
-            above = at.above;
-            alertText.setText(at.name);
-            alertThreshold.setText(unitsConvert2Disp(doMgdl, at.threshold));
-            checkboxAllDay.setChecked(at.all_day);
-            checkboxVibrate.setChecked(at.vibrate);
-            checkboxDisabled.setChecked(!at.active);
-            checkboxAlertOverride.setChecked(at.override_silent_mode);
-            defaultSnooze = at.default_snooze;
+            above = alertType.above;
+            alertText.setText(alertType.name);
+            alertThreshold.setText(unitsConvert2Disp(doMgdl, alertType.threshold));
+            checkboxAllDay.setChecked(alertType.all_day);
+            checkboxVibrate.setChecked(alertType.vibrate);
+            checkboxDisabled.setChecked(!alertType.active);
+            checkboxOverrideSilent.setChecked(alertType.override_silent_mode);
+            checkboxForceSpeaker.setChecked(alertType.force_speaker);
+            defaultSnooze = alertType.default_snooze;
             if(defaultSnooze == 0) {
                 SnoozeActivity.getDefaultSnooze(above);
             }
 
-            audioPath = getExtra(savedInstanceState, "audioPath" ,at.mp3_file);
+            audioPath = getExtra(savedInstanceState, "audioPath" ,alertType.mp3_file);
             alertMp3File.setText(shortPath(audioPath));
 
             status = "editing " + (above ? "high" : "low") + " alert";
-            startHour = AlertType.time2Hours(at.start_time_minutes);
-            startMinute = AlertType.time2Minutes(at.start_time_minutes);
-            endHour = AlertType.time2Hours(at.end_time_minutes);
-            endMinute = AlertType.time2Minutes(at.end_time_minutes);
-            alertReraise = at.minutes_between;
+            startHour = AlertType.time2Hours(alertType.start_time_minutes);
+            startMinute = AlertType.time2Minutes(alertType.start_time_minutes);
+            endHour = AlertType.time2Hours(alertType.end_time_minutes);
+            endMinute = AlertType.time2Minutes(alertType.end_time_minutes);
+            alertReraise = alertType.minutes_between;
 
             if(uuid.equals(AlertType.LOW_ALERT_55)) {
                 // This is the 55 alert, can not be edited
@@ -277,7 +285,8 @@ public class EditAlertActivity extends ActivityWithMenu {
                 buttonalertMp3.setEnabled(false);
                 checkboxAllDay.setEnabled(false);
                 checkboxVibrate.setEnabled(false);
-                checkboxAlertOverride.setEnabled(false);
+                checkboxOverrideSilent.setEnabled(false);
+                checkboxForceSpeaker.setEnabled(false);
                 reraise.setEnabled(false);
             }
         }
@@ -288,7 +297,7 @@ public class EditAlertActivity extends ActivityWithMenu {
         setPreSnoozeSpinner();
         enableAllDayControls();
         setDisabledView();
-        enableVibrateControls();
+        showHideSilentModeWarning();
 
 
     }
@@ -368,15 +377,10 @@ public class EditAlertActivity extends ActivityWithMenu {
             }
     	}
     }
-    
 
-    void enableVibrateControls() {
-        boolean overrideSilence = checkboxAlertOverride.isChecked();
-        if(overrideSilence) {
-            checkboxAlertOverride.setText("");
-        } else {
-            checkboxAlertOverride.setText("Warning, no alert will be played at phone silent/vibrate mode!!!");
-        }
+
+    void showHideSilentModeWarning() {
+        layoutSilentModeWarning.setVisibility(checkboxOverrideSilent.isChecked() ? View.GONE : View.VISIBLE);
     }
 
     private boolean verifyThreshold(double threshold, boolean allDay, int startTime, int endTime) {
@@ -539,18 +543,20 @@ public class EditAlertActivity extends ActivityWithMenu {
                 }
                 boolean vibrate = checkboxVibrate.isChecked();
                 
-                boolean overrideSilentMode = checkboxAlertOverride.isChecked();
+                boolean overrideSilentMode = checkboxOverrideSilent.isChecked();
+                boolean forceSpeaker = checkboxForceSpeaker.isChecked();
 
                 String mp3_file = audioPath;
                 if (uuid != null) {
-                    AlertType.update_alert(uuid, alertText.getText().toString(), above, threshold, allDay, alertReraise, mp3_file, timeStart, timeEnd, overrideSilentMode, defaultSnooze, vibrate, !disabled);
+                    AlertType.update_alert(uuid, alertText.getText().toString(), above, threshold, allDay, alertReraise, mp3_file, timeStart, timeEnd, overrideSilentMode, forceSpeaker, defaultSnooze, vibrate, !disabled);
                 }  else {
-                    AlertType.add_alert(null, alertText.getText().toString(), above, threshold, allDay, alertReraise, mp3_file, timeStart, timeEnd, overrideSilentMode, defaultSnooze, vibrate, !disabled);
+                    AlertType.add_alert(null, alertText.getText().toString(), above, threshold, allDay, alertReraise, mp3_file, timeStart, timeEnd, overrideSilentMode, forceSpeaker, defaultSnooze, vibrate, !disabled);
                 }
 
                 startWatchUpdaterService(mContext, WatchUpdaterService.ACTION_SYNC_ALERTTYPE, TAG);
                 Intent returnIntent = new Intent();
                 setResult(RESULT_OK,returnIntent);
+                BlueJayEntry.startWithRefreshIfEnabled();
                 finish();
             }
 
@@ -624,10 +630,10 @@ public class EditAlertActivity extends ActivityWithMenu {
         });
 
         
-        checkboxAlertOverride.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        checkboxOverrideSilent.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             //          @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                enableVibrateControls();
+                showHideSilentModeWarning();
             }
         });
 
@@ -768,17 +774,11 @@ public class EditAlertActivity extends ActivityWithMenu {
     }
 
     public static boolean isPathRingtone(Context context, String path) {
-        if(path == null) {
-            return false;
-        }
-        if(path.length() == 0) {
+        if (path == null || path.isEmpty()) {
             return false;
         }
         Ringtone ringtone = RingtoneManager.getRingtone(context, Uri.parse(path));
-        if(ringtone == null) {
-            return false;
-        }
-        return true;
+        return ringtone != null;
     }
 
     public String shortPath(String path) {
@@ -882,7 +882,7 @@ public class EditAlertActivity extends ActivityWithMenu {
                     android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
                 final Activity activity = this;
-                JoH.show_ok_dialog(activity, "Please Allow Permission", "Need storage permission to access all ringtones", new Runnable() {
+                JoH.show_ok_dialog(activity, gs(R.string.please_allow_permission), gs(R.string.need_storage_permission_to_access_all_ringtones), new Runnable() {
                     @Override
                     public void run() {
                         ActivityCompat.requestPermissions(activity,
@@ -929,7 +929,8 @@ public class EditAlertActivity extends ActivityWithMenu {
             return;
         }
         boolean vibrate = checkboxVibrate.isChecked();
-        boolean overrideSilentMode = checkboxAlertOverride.isChecked();
+        boolean overrideSilentMode = checkboxOverrideSilent.isChecked();
+        boolean forceSpeaker = checkboxForceSpeaker.isChecked();
         String mp3_file = audioPath;
         try {
             int defaultSnooze = safeGetDefaultSnooze();
@@ -942,7 +943,7 @@ public class EditAlertActivity extends ActivityWithMenu {
                 JoH.static_toast_long("Volume Profile is set to silent!");
             }
 
-            AlertType.testAlert(alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd, overrideSilentMode, defaultSnooze, vibrate, mContext);
+            AlertType.testAlert(alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd, overrideSilentMode, forceSpeaker, defaultSnooze, vibrate, mContext);
         } catch (NullPointerException e) {
             JoH.static_toast_long("Snooze value is not a number - cannot test");
         }

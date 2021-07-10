@@ -58,13 +58,20 @@ public class CheckBridgeBattery {
     }
 
     public static int getBatteryLevel(Context context) {
-        Intent batteryIntent = context.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-        int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-        int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-        if (level == -1 || scale == -1) {
+        try {
+            Intent batteryIntent = context.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+            int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+            int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+            if (level == -1 || scale == -1) {
+                return 50;
+            }
+            return (int) (((float) level / (float) scale) * 100.0f);
+        } catch (NullPointerException e) {
+            if (JoH.ratelimit("battery-read-error", 3600)) {
+                UserError.Log.e(TAG, "Cannot read battery levels!");
+            }
             return 50;
         }
-        return (int) (((float) level / (float) scale) * 100.0f);
     }
 
     public static void testHarness() {

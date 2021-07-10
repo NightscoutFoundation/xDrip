@@ -28,7 +28,7 @@
             android:id="@+id/reminder_edit_new"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Reminder title"
+            android:hint="@string/reminder_title"
             android:layout_below="@+id/reminder_edit_alt_title"
             android:inputType="text|textCapWords"
             android:lines="4"
@@ -51,7 +51,7 @@
                 android:layout_centerVertical="true"
 
                 android:layout_weight="1"
-                android:text="Hours" />
+                android:text="@string/hours" />
 
             <RadioButton
                 android:id="@+id/reminderDayButton"
@@ -61,7 +61,7 @@
 
                 android:layout_weight="1"
                 android:checked="false"
-                android:text="Days" />
+                android:text="@string/days" />
 
             <RadioButton
                 android:id="@+id/reminderWeekButton"
@@ -70,7 +70,7 @@
                 android:layout_centerVertical="true"
 
                 android:layout_weight="1"
-                android:text="Weeks" />
+                android:text="@string/weeks" />
 
         </RadioGroup>
 
@@ -118,13 +118,13 @@
             android:layout_marginEnd="13dp"
             android:layout_toStartOf="@+id/reminderDownButton"
             android:checked="true"
-            android:text="Repeat" />
+            android:text="@string/repeat" />
 
         <CheckBox
             android:id="@+id/chimeonlycheckbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Chime only"
+            android:text="@string/chime_only"
             android:layout_marginStart="8dp"
             android:layout_below="@+id/reminderUpButton"
             android:layout_alignParentStart="true" />
@@ -133,7 +133,7 @@
             android:id="@+id/alternatingcheckbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Alternating"
+            android:text="@string/alternating"
             android:layout_below="@+id/reminder_edit_new"
             android:layout_alignStart="@+id/chimeonlycheckbox" />
 
@@ -166,10 +166,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/reminderRepeatcheckBox"
-
-
             android:checked="true"
-            android:text="Weekdays" />
+            android:text="@string/weekdays" />
 
         <CheckBox
             android:id="@+id/weekEndsCheckbox"
@@ -179,17 +177,37 @@
             android:layout_below="@+id/reminderRepeatcheckBox"
             android:layout_toEndOf="@+id/weekDaysCheckbox"
             android:checked="true"
-            android:text="Weekends" />
+            android:text="@string/weekends" />
 
         <CheckBox
-            android:id="@+id/highPriorityCheckbox"
+            android:id="@+id/homeOnlyCheckbox"
             android:layout_marginLeft="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/reminderRepeatcheckBox"
             android:layout_toEndOf="@+id/weekEndsCheckbox"
             android:checked="false"
-            android:text="Mega-priority" />
+            android:text="At Home Only"/>
+
+        <CheckBox
+            android:id="@+id/speakCheckbox"
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/weekEndsCheckbox"
+            android:layout_toLeftOf="@+id/homeOnlyCheckbox"
+            android:checked="false"
+            android:text="Speak"/>
+
+        <CheckBox
+            android:id="@+id/highPriorityCheckbox"
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/homeOnlyCheckbox"
+            android:layout_toEndOf="@+id/weekEndsCheckbox"
+            android:checked="false"
+            android:text="@string/mega_priority" />
     </RelativeLayout>
 
 

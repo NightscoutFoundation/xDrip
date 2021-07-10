@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.text.SpannableString;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -22,6 +23,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.Mdns;
+import com.eveningoutpost.dexdrip.utils.framework.WakeLockTrampoline;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.ArrayList;
@@ -165,7 +167,8 @@ public class WifiCollectionService extends Service {
                 retry_in = WixelReader.timeForNextRead();
             }
             Log.d(TAG, "setFailoverTimer: Fallover Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
-            requested_wake_time = JoH.wakeUpIntent(this, retry_in, PendingIntent.getService(this, Constants.WIFI_COLLECTION_SERVICE_ID, new Intent(this, this.getClass()), 0));
+            //requested_wake_time = JoH.wakeUpIntent(this, retry_in, PendingIntent.getService(this, Constants.WIFI_COLLECTION_SERVICE_ID, new Intent(this, this.getClass()), 0));
+            requested_wake_time = JoH.wakeUpIntent(this, retry_in, WakeLockTrampoline.getPendingIntent(this.getClass(), Constants.WIFI_COLLECTION_SERVICE_ID));
             PersistentStore.setLong(WIFI_COLLECTION_WAKEUP, requested_wake_time);
         } else {
             stopSelf();
@@ -186,5 +189,10 @@ public class WifiCollectionService extends Service {
             task = new WixelReader(getApplicationContext());
         }
         task.executeOnExecutor(xdrip.executor);
+    }
+
+    // data for NanoStatus
+    public static SpannableString nanoStatus() {
+        return null;
     }
 }

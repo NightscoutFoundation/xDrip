@@ -4,7 +4,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 
 // created by jamorham
 
-public class SessionStopTxMessage extends TransmitterMessage {
+public class SessionStopTxMessage extends BaseMessage {
 
     final byte opcode = 0x28;
     final int length = 7;

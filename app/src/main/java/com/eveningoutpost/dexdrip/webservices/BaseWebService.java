@@ -1,5 +1,8 @@
 package com.eveningoutpost.dexdrip.webservices;
 
+import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +18,10 @@ import java.util.StringTokenizer;
 public abstract class BaseWebService {
 
     public abstract WebResponse request(String query);
+
+    public WebResponse request(final String query, final InetAddress source) {
+        return request(query);
+    }
 
     // web error helpers
     WebResponse webError(String msg, int resultCode) {
@@ -77,6 +84,14 @@ public abstract class BaseWebService {
             return query.substring(start, query.length());
         } catch (Exception e) {
             return "";
+        }
+    }
+
+    static String urlDecode(final String msg) {
+        try {
+            return URLDecoder.decode(msg, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return null; // TODO best response?
         }
     }
 

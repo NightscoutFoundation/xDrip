@@ -29,3 +29,33 @@
 -dontwarn sun.misc.**
 -dontnote **rx.Observable.**
 -dontnote **
+
+-keepclassmembers class com.eveningoutpost.dexdrip.** {
+   public static boolean isRunning();
+   public static boolean isCollecting();
+   public static ** nanoStatus();
+}
+
+-dontnote rx.internal.util.PlatformDependent
+-dontnote rx.**
+-dontnote **rx.Observable.**
+-dontnote com.squareup.**
+
+-dontwarn java.lang.invoke.*
+-dontwarn **$$Lambda$*
+
+-dontwarn com.google.devtools.build
+-dontwarn com.google.devtools.build.android.desugar.runtime.**
+
+-keep class com.eveningoutpost.dexdrip.test.**
+-keep class android.support.test.internal** { *; }
+-keep class android.support.test.** { *; }
+-keep class com.schibsted.spain.barista.** { *; }
+-keep class org.junit.** { *; }
+-keep @org.junit.runner.RunWith public class *
+-keep class androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
+-keep class org.robolectric.RobolectricTestRunner
+
+-keep class com.newrelic.** { *; }
+-dontwarn com.newrelic.**
+-keepattributes Exceptions, Signature, InnerClasses, LineNumberTable, SourceFile, EnclosingMethod

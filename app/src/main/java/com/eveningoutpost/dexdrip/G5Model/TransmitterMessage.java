@@ -18,7 +18,7 @@ public class TransmitterMessage {
     long postExecuteGuardTime = 50;
 
     @Expose
-    public byte[] byteSequence = null;
+    public volatile byte[] byteSequence = null;
     public ByteBuffer data = null;
 
 

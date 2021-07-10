@@ -1,7 +1,5 @@
 package com.eveningoutpost.dexdrip.Models;
 
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 
 import com.activeandroid.Model;
@@ -11,6 +9,7 @@ import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.SensorSendQueue;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -21,6 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -74,32 +74,27 @@ public class Sensor extends Model {
         return sensor;
     }
 
-    // Used by xDripViewer
-    public static void createUpdate(long started_at, long stopped_at,  int latest_battery_level, String uuid) {
-
-        Sensor sensor = getByTimestamp(started_at);
-        if (sensor != null) {
-            Log.d("SENSOR", "updatinga an existing sensor");
-        } else {
-            Log.d("SENSOR", "creating a new sensor");
-            sensor = new Sensor();
+    public static Sensor createDefaultIfMissing() {
+        final Sensor sensor = currentSensor();
+        if (sensor == null) {
+            Sensor.create(JoH.tsl());
         }
-        sensor.started_at = started_at;
-        sensor.stopped_at = stopped_at;
-        sensor.latest_battery_level = latest_battery_level;
-        sensor.uuid = uuid;
-        sensor.save();
+        return currentSensor();
     }
 
-    public static void stopSensor() {
-        Sensor sensor = currentSensor();
-        if(sensor == null) {
+    public synchronized static void stopSensor() {
+        final Sensor sensor = currentSensor();
+        if (sensor == null) {
             return;
         }
-        sensor.stopped_at = new Date().getTime();
-        Log.i("SENSOR", "Sensor stopped at " + sensor.stopped_at);
+        sensor.stopped_at = JoH.tsl();
+        UserError.Log.ueh("SENSOR", "Sensor stopped at " + JoH.dateTimeText(sensor.stopped_at));
         sensor.save();
+        if (currentSensor() != null) {
+            UserError.Log.wtf(TAG, "Failed to update sensor stop in database");
+        }
         SensorSendQueue.addToQueue(sensor);
+        JoH.clearCache();
 
     }
 
@@ -111,6 +106,22 @@ public class Sensor extends Model {
                 .create();
         Log.d("SENSOR", "Sensor toS uuid=" + this.uuid + " started_at=" + this.started_at + " active=" + this.isActive() + " battery=" + this.latest_battery_level + " location=" + this.sensor_location + " stopped_at=" + this.stopped_at);
         return gson.toJson(this);
+    }
+
+    public static Sensor lastStopped() {
+        Sensor sensor = new Select()
+                .from(Sensor.class)
+                .where("started_at != 0")
+                .where("stopped_at != 0")
+                .orderBy("_ID desc")
+                .limit(1)
+                .executeSingle();
+        return sensor;
+    }
+
+    public static boolean stoppedRecently() {
+        final Sensor last = lastStopped();
+        return last != null && last.stopped_at < JoH.tsl() && (JoH.msSince(last.stopped_at) < (Constants.HOUR_IN_MS * 2));
     }
 
     public static Sensor currentSensor() {
@@ -260,5 +271,14 @@ public class Sensor extends Model {
         }
     }
 
+
+    public static void shutdownAllSensors() {
+        final List<Sensor> l = new Select().from(Sensor.class).execute();
+        for (final Sensor s : l) {
+            s.stopped_at = s.started_at;
+            s.save();
+            System.out.println(s.toJSON());
+        }
+    }
 }
 

@@ -17,6 +17,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -27,6 +28,7 @@ import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -46,15 +48,16 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import lombok.val;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.OkHttpWrapper.enableTls12OnPreLollipop;
 
-public class UpdateActivity extends AppCompatActivity {
+public class UpdateActivity extends BaseAppCompatActivity {
 
-    private static final String autoUpdatePrefsName = "auto_update_download";
+    public static final String AUTO_UPDATE_PREFS_NAME = "auto_update_download";
     private static final String useInternalDownloaderPrefsName = "use_internal_downloader";
     private static final String last_update_check_time = "last_update_check_time";
     private static final String TAG = "jamorham update";
@@ -79,7 +82,7 @@ public class UpdateActivity extends AppCompatActivity {
 
     public static void checkForAnUpdate(final Context context) {
         if (prefs == null) prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        if ((last_check_time != -1) && (!prefs.getBoolean(autoUpdatePrefsName, true))) return;
+        if ((last_check_time != -1) && (!prefs.getBoolean(AUTO_UPDATE_PREFS_NAME, true))) return;
         if (last_check_time == 0)
             last_check_time = prefs.getLong(last_update_check_time, 0);
         if (((JoH.tsl() - last_check_time) > 86300000) || (debug)) {
@@ -186,6 +189,23 @@ public class UpdateActivity extends AppCompatActivity {
         }
     }
 
+    public static void forceUpdateCheckNow() {
+        JoH.static_toast_long(xdrip.gs(R.string.checking_for_update));
+        UpdateActivity.last_check_time = -2;
+        UpdateActivity.checkForAnUpdate(xdrip.getAppContext());
+    }
+
+    public static boolean testAndSetNightly(final boolean set) {
+        val update_channel = "update_channel";
+        val nightly_channel = "nightly";
+        val nightly = Pref.getString(update_channel, "").matches(nightly_channel);
+        if (!nightly && set) {
+            Pref.setString(update_channel, nightly_channel);
+            UpdateActivity.forceUpdateCheckNow();
+        }
+        return nightly;
+    }
+
     private static String getDownloadFolder() {
         return Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOWNLOADS).toString();
@@ -214,11 +234,11 @@ public class UpdateActivity extends AppCompatActivity {
         updateMessageText = (TextView) findViewById(R.id.updatemessage);
 
         Switch autoUpdateSwitch = (Switch) findViewById(R.id.autoupdate);
-        autoUpdateSwitch.setChecked(prefs.getBoolean(autoUpdatePrefsName, true));
+        autoUpdateSwitch.setChecked(prefs.getBoolean(AUTO_UPDATE_PREFS_NAME, true));
         autoUpdateSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                prefs.edit().putBoolean(autoUpdatePrefsName, isChecked).commit();
+                prefs.edit().putBoolean(AUTO_UPDATE_PREFS_NAME, isChecked).commit();
                 Log.d(TAG, "Auto Updates IsChecked:" + isChecked);
             }
         });
@@ -459,10 +479,19 @@ public class UpdateActivity extends AppCompatActivity {
                             } catch (Exception e) {
                                 Log.e(TAG, "Download manager error: " + e);
                             }
-
+                            final String mimeType = "application/vnd.android.package-archive";
                             final Intent installapk = new Intent(Intent.ACTION_VIEW);
                             installapk.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            installapk.setDataAndType(Uri.fromFile(dest_file), "application/vnd.android.package-archive");
+
+                            // despite reference documentation to the contrary this is required
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                installapk.setDataAndType(FileProvider.getUriForFile(getApplicationContext(),
+                                        BuildConfig.APPLICATION_ID + ".provider", dest_file), mimeType);
+                            } else {
+                                installapk.setDataAndType(Uri.fromFile(dest_file), mimeType);
+                            }
+                            installapk.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                            UserError.Log.d(TAG,"Attempting to install application");
                             startActivity(installapk);
                             finish();
                         } catch (Exception e) {
