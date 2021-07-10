@@ -414,6 +414,7 @@
     <string name="displays_the_slope_arrows">Mutassa a trendnyilakat</string>
     <string name="display_slope_arrows">Mutassa a trendnyilakat</string>
     <string name="vibrate_watch_to_alert_no_data">Rezgés, ha nincsen VC-érték</string>
+    <string name="vibrate_when_missed_signal">Rezgés, elmulasztott VC-érték esetén</string>
     <string name="vibrate_watch_to_alert_no_bluetooth">Rezgés, ha BT kapcsolat megszakad</string>
     <string name="vibrate_when_no_bluetooth">Rezgés, ha nincsen BT-kapcsolat</string>
     <string name="special_glucose_value_to_display_message">Különleges VC-érték, amelykor az alábbi üzenet jelenik meg</string>
@@ -632,6 +633,7 @@
     <string name="nfc_scanning_xdrip_open">NFC szkennelés csak akkor, ha xDrip+ előtérben van</string>
     <string name="nfc_scanning_launcher">NFC szkennelés az android kezdőképernyőről is</string>
     <string name="scan_when_app_closed">NFC szkennelés, ha xDrip nem fut</string>
+    <string name="vibrate_scanning_status">Szkennelés állapotjelzése rezgéssel</string>
     <string name="beep_when_scanning_within_app">Csippanás xDrip app-pal szkenneléskor</string>
     <string name="use_multi_block">Használja a gyorsabb multi-blokk olvasást</string>
     <string name="use_any_tag">Any-tag optimalizált olvasás</string>
