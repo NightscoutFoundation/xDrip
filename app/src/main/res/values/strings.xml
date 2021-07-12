@@ -444,7 +444,7 @@
     <string name="predicted_high_sound">Predicted High Sound</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Choose sound used for predicted low alarm.</string>
     <string name="choose_sound_used_for_predicted_high_alarm">Choose sound used for predicted high alarm.</string>
-    <string name="notify_when_parakeet_device_stops_checking_in">Notify when parakeet device stops checking in</string>
+    <string name="notify_when_parakeet_device_stops_checking_in">Notify when Parakeet device stops checking in</string>
     <string name="parakeet_related_alerts">Parakeet related alerts</string>
     <string name="raise_parakeet_notification_silently_when_charging">Raise Parakeet notification silently when charging</string>
     <string name="silent_alert_when_charging">Silent alert when charging</string>
