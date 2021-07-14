@@ -1421,35 +1421,39 @@ public class BgGraphBuilder {
                 // low estimator
                 // work backwards to see whether we think a low is estimated
                 low_occurs_at = -1;
-                if (predict_lows && prediction_enabled && poly != null) {
-                    final double offset = ActivityRecognizedService.raise_limit_due_to_vehicle_mode() ?
-                            unitized(ActivityRecognizedService.getVehicle_mode_adjust_mgdl()) : 0;
-                    final double plow_now = JoH.ts();
-                    double plow_timestamp = plow_now + LOW_MAX_LOOKAHEAD; // max look-ahead
-                    double polyPredicty = poly.predict(plow_timestamp);
-                    Log.d(TAG, "Low predictor at max lookahead is: " + JoH.qs(polyPredicty));
-                    low_occurs_at_processed_till_timestamp = highest_bgreading_timestamp; // store that we have processed up to this timestamp
-                    if (polyPredicty <= (lowMark + offset)) {
-                        low_occurs_at = plow_timestamp;
-                        final double lowMarkIndicator = (lowMark - (lowMark / 4));
-                        //if (d) Log.d(TAG, "Poly predict: "+JoH.qs(polyPredict)+" @ "+JoH.qsz(iob.timestamp));
-                        while (plow_timestamp > plow_now) {
-                            plow_timestamp = plow_timestamp - FUZZER;
-                            polyPredicty = poly.predict(plow_timestamp);
-                            if (polyPredicty > (lowMark + offset)) {
-                                PointValue zv = new PointValue((float) (plow_timestamp / FUZZER), (float) polyPredicty);
-                                polyBgValues.add(zv);
-                            } else {
-                                low_occurs_at = plow_timestamp;
-                                if (polyPredicty > lowMarkIndicator) {
-                                    polyBgValues.add(new PointValue((float) (plow_timestamp / FUZZER), (float) polyPredicty));
+                try {
+                    if (predict_lows && prediction_enabled && poly != null) {
+                        final double offset = ActivityRecognizedService.raise_limit_due_to_vehicle_mode() ?
+                                unitized(ActivityRecognizedService.getVehicle_mode_adjust_mgdl()) : 0;
+                        final double plow_now = JoH.ts();
+                        double plow_timestamp = plow_now + LOW_MAX_LOOKAHEAD; // max look-ahead
+                        double polyPredicty = poly.predict(plow_timestamp);
+                        Log.d(TAG, "Low predictor at max lookahead is: " + JoH.qs(polyPredicty));
+                        low_occurs_at_processed_till_timestamp = highest_bgreading_timestamp; // store that we have processed up to this timestamp
+                        if (polyPredicty <= (lowMark + offset)) {
+                            low_occurs_at = plow_timestamp;
+                            final double lowMarkIndicator = (lowMark - (lowMark / 4));
+                            //if (d) Log.d(TAG, "Poly predict: "+JoH.qs(polyPredict)+" @ "+JoH.qsz(iob.timestamp));
+                            while (plow_timestamp > plow_now) {
+                                plow_timestamp = plow_timestamp - FUZZER;
+                                polyPredicty = poly.predict(plow_timestamp);
+                                if (polyPredicty > (lowMark + offset)) {
+                                    PointValue zv = new PointValue((float) (plow_timestamp / FUZZER), (float) polyPredicty);
+                                    polyBgValues.add(zv);
+                                } else {
+                                    low_occurs_at = plow_timestamp;
+                                    if (polyPredicty > lowMarkIndicator) {
+                                        polyBgValues.add(new PointValue((float) (plow_timestamp / FUZZER), (float) polyPredicty));
+                                    }
                                 }
                             }
+                            Log.i(TAG, "LOW PREDICTED AT: " + JoH.dateTimeText((long) low_occurs_at));
+                            predictivehours = Math.max(predictivehours, (int) ((low_occurs_at - plow_now) / (60 * 60 * 1000)) + 1);
+                            lowPredicted = true;
                         }
-                        Log.i(TAG, "LOW PREDICTED AT: " + JoH.dateTimeText((long) low_occurs_at));
-                        predictivehours = Math.max(predictivehours, (int) ((low_occurs_at - plow_now) / (60 * 60 * 1000)) + 1);
-                        lowPredicted = true;
                     }
+                } catch (NullPointerException ex) {
+                    // ignore
                 }
 
                 // high estimator
