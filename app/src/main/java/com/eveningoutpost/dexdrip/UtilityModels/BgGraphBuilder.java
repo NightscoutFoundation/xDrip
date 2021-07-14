@@ -84,6 +84,8 @@ import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 public class BgGraphBuilder {
     public static final int FUZZER = (1000 * 30 * 5); // 2.5 minutes
     public final static long DEXCOM_PERIOD = 300_000; // 5 minutes
+    public final static int LOW_MAX_LOOKAHEAD = 99 * 1000 * 60; // 99 minutes
+    public final static int HIGH_MAX_LOOKAHEAD = 30 * 1000 * 60; // 30 minutes
     public final static double NOISE_TRIGGER = 10;
     public final static double NOISE_TRIGGER_ULTRASENSITIVE = 1;
     public final static double NOISE_TOO_HIGH_FOR_PREDICT = 60;
@@ -1419,71 +1421,64 @@ public class BgGraphBuilder {
                 // low estimator
                 // work backwards to see whether we think a low is estimated
                 low_occurs_at = -1;
-                try {
-                    if ((predict_lows) && (prediction_enabled) && (poly != null)) {
-                        final double offset = ActivityRecognizedService.raise_limit_due_to_vehicle_mode() ? unitized(ActivityRecognizedService.getVehicle_mode_adjust_mgdl()) : 0;
-                        final double plow_now = JoH.ts();
-                        int low_lookahead_mins = 99;
-                        double plow_timestamp = plow_now + (1000 * 60 * low_lookahead_mins); // max look-ahead
-                        double polyPredicty = poly.predict(plow_timestamp);
-                        Log.d(TAG, "Low predictor at max lookahead is: " + JoH.qs(polyPredicty));
-                        low_occurs_at_processed_till_timestamp = highest_bgreading_timestamp; // store that we have processed up to this timestamp
-                        if (polyPredicty <= (lowMark + offset)) {
-                            low_occurs_at = plow_timestamp;
-                            final double lowMarkIndicator = (lowMark - (lowMark / 4));
-                            //if (d) Log.d(TAG, "Poly predict: "+JoH.qs(polyPredict)+" @ "+JoH.qsz(iob.timestamp));
-                            while (plow_timestamp > plow_now) {
-                                plow_timestamp = plow_timestamp - FUZZER;
-                                polyPredicty = poly.predict(plow_timestamp);
-                                if (polyPredicty > (lowMark + offset)) {
-                                    PointValue zv = new PointValue((float) (plow_timestamp / FUZZER), (float) polyPredicty);
-                                    polyBgValues.add(zv);
-                                } else {
-                                    low_occurs_at = plow_timestamp;
-                                    if (polyPredicty > lowMarkIndicator) {
-                                        polyBgValues.add(new PointValue((float) (plow_timestamp / FUZZER), (float) polyPredicty));
-                                    }
+                if (predict_lows && prediction_enabled && poly != null) {
+                    final double offset = ActivityRecognizedService.raise_limit_due_to_vehicle_mode() ?
+                            unitized(ActivityRecognizedService.getVehicle_mode_adjust_mgdl()) : 0;
+                    final double plow_now = JoH.ts();
+                    double plow_timestamp = plow_now + LOW_MAX_LOOKAHEAD; // max look-ahead
+                    double polyPredicty = poly.predict(plow_timestamp);
+                    Log.d(TAG, "Low predictor at max lookahead is: " + JoH.qs(polyPredicty));
+                    low_occurs_at_processed_till_timestamp = highest_bgreading_timestamp; // store that we have processed up to this timestamp
+                    if (polyPredicty <= (lowMark + offset)) {
+                        low_occurs_at = plow_timestamp;
+                        final double lowMarkIndicator = (lowMark - (lowMark / 4));
+                        //if (d) Log.d(TAG, "Poly predict: "+JoH.qs(polyPredict)+" @ "+JoH.qsz(iob.timestamp));
+                        while (plow_timestamp > plow_now) {
+                            plow_timestamp = plow_timestamp - FUZZER;
+                            polyPredicty = poly.predict(plow_timestamp);
+                            if (polyPredicty > (lowMark + offset)) {
+                                PointValue zv = new PointValue((float) (plow_timestamp / FUZZER), (float) polyPredicty);
+                                polyBgValues.add(zv);
+                            } else {
+                                low_occurs_at = plow_timestamp;
+                                if (polyPredicty > lowMarkIndicator) {
+                                    polyBgValues.add(new PointValue((float) (plow_timestamp / FUZZER), (float) polyPredicty));
                                 }
                             }
-                            Log.i(TAG, "LOW PREDICTED AT: " + JoH.dateTimeText((long) low_occurs_at));
-                            predictivehours = Math.max(predictivehours, (int) ((low_occurs_at - plow_now) / (60 * 60 * 1000)) + 1);
-                            lowPredicted = true;
                         }
+                        Log.i(TAG, "LOW PREDICTED AT: " + JoH.dateTimeText((long) low_occurs_at));
+                        predictivehours = Math.max(predictivehours, (int) ((low_occurs_at - plow_now) / (60 * 60 * 1000)) + 1);
+                        lowPredicted = true;
                     }
-
-                } catch (NullPointerException e) {
-                    //Log.d(TAG,"Error with low prediction trend: "+e.toString());
                 }
 
                 // high estimator
                 // same logic as low estimator above
-                {
-                    // we shouldn't be able to predict a high and a low at the same time
-                    if (predict_highs && prediction_enabled && (poly != null) && !lowPredicted) {
-                        final double phigh_now = JoH.ts();
-                        int high_lookahead_mins = 30;
-                        double phigh_timestamp = phigh_now + (1000 * 60 * high_lookahead_mins);
-                        double polyPredicty = poly.predict(phigh_timestamp);
-                        Log.d(TAG, "High predictor at max lookahead is: " + JoH.qs(polyPredicty));
-                        high_occurs_at_processed_till_timestamp = highest_bgreading_timestamp;
-                        if (polyPredicty >= highMark) {
-                            high_occurs_at = phigh_timestamp;
-                            final double highMarkIndicator = (highMark - (highMark / 4));
-                            while (phigh_timestamp > phigh_now) {
-                                phigh_timestamp = phigh_timestamp - FUZZER;
-                                polyPredicty = poly.predict(phigh_timestamp);
-                                if (polyPredicty < highMark) {
+
+                // we shouldn't be able to predict a high and a low at the same time
+                if (predict_highs && prediction_enabled && poly != null && !lowPredicted) {
+                    final double phigh_now = JoH.ts();
+                    double phigh_timestamp = phigh_now + HIGH_MAX_LOOKAHEAD;
+                    double polyPredicty = poly.predict(phigh_timestamp);
+                    Log.d(TAG, "High predictor at max lookahead is: " + JoH.qs(polyPredicty));
+                    high_occurs_at_processed_till_timestamp = highest_bgreading_timestamp;
+                    if (polyPredicty >= highMark) {
+                        high_occurs_at = phigh_timestamp;
+                        final double highMarkIndicator = (highMark - (highMark / 4));
+                        while (phigh_timestamp > phigh_now) {
+                            phigh_timestamp = phigh_timestamp - FUZZER;
+                            polyPredicty = poly.predict(phigh_timestamp);
+                            if (polyPredicty < highMark) {
+                                polyBgValues.add(new PointValue((float)(phigh_timestamp / FUZZER), (float)polyPredicty));
+                            } else {
+                                high_occurs_at = phigh_timestamp;
+                                if (polyPredicty < highMarkIndicator) {
                                     polyBgValues.add(new PointValue((float)(phigh_timestamp / FUZZER), (float)polyPredicty));
-                                } else {
-                                    high_occurs_at = phigh_timestamp;
-                                    if (polyPredicty < highMarkIndicator) {
-                                        polyBgValues.add(new PointValue((float)(phigh_timestamp / FUZZER), (float)polyPredicty));
-                                    }
                                 }
                             }
-                            Log.i(TAG, "HIGH PREDICTED AT: " + JoH.dateTimeText((long)high_occurs_at));
-                            predictivehours = Math.max(predictivehours, (int) ((high_occurs_at - phigh_now) / (60 * 60 * 1000)) + 1);
                         }
+                        Log.i(TAG, "HIGH PREDICTED AT: " + JoH.dateTimeText((long)high_occurs_at));
+                        predictivehours = Math.max(predictivehours, (int) ((high_occurs_at - phigh_now) / (60 * 60 * 1000)) + 1);
                     }
                 }
 

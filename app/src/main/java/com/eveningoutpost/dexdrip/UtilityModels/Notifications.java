@@ -774,9 +774,7 @@ public class Notifications extends IntentService {
     }
 
     private void evaluateLowPredictionAlarm() {
-
         if (!prefs.getBoolean("predict_lows_alarm", false)) return;
-
 
         // force BgGraphBuilder to calculate `low_occurs_at` and `last_noise`
         // Workaround trying to resolve race conditions as by design they are static but updated/read asynchronously.
@@ -811,9 +809,7 @@ public class Notifications extends IntentService {
     }
 
     private void evaluateHighPredictionAlarm() {
-
         if (!prefs.getBoolean("predict_highs_alarm", false)) return;
-
 
         // force BgGraphBuilder to calculate `high_occurs_at` and `last_noise`
         // Workaround trying to resolve race conditions as by design they are static but updated/read asynchronously.
