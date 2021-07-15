@@ -112,7 +112,6 @@ public class Atom {
         }
 
         if (first == 0xBF) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Log.e(TAG, "No sensor has been found");
             reply.setError_message(gs(R.string.no_sensor_found));
             s_full_data = null;
