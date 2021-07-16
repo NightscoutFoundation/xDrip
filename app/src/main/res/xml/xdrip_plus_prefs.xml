@@ -326,7 +326,7 @@
 
 
                 <CheckBoxPreference
-                    android:defaultValue="true"
+                    android:defaultValue="false"
                     android:key="rewrite_history"
                     android:summary="@string/after_calibration_rewrite_history"
                     android:title="@string/rewrite_history" />

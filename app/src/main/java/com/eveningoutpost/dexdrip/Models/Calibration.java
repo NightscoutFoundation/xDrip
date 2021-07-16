@@ -551,7 +551,7 @@ public class Calibration extends Model {
     public static Calibration create(double bg, long timeoffset, Context context, boolean note_only, long estimatedInterstitialLagSeconds) {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         final String unit = prefs.getString("units", "mgdl");
-        final boolean adjustPast = prefs.getBoolean("rewrite_history", true);
+        final boolean adjustPast = prefs.getBoolean("rewrite_history", false);
 
         final Double result = getConvertedBg(bg);
         if (result == null) {
