@@ -39,8 +39,8 @@
     <string name="pref_header_cloud_storage">Cloud Storage</string>
     <string name="auto_configure_title">Auto configure</string>
     <string name="prefs_auto_config_summary">Auto configure using a QR code.</string>
-    <string name="scan_share2_barcode">Scan Share QR code</string>
-    <string name="pref_share2_scan_barcode_summary">Or scan the QR code on the share receiver</string>
+    <string name="scan_share2_barcode">Scan Share Receiver barcode</string>
+    <string name="pref_share2_scan_barcode_summary">Or scan the barcode on the Dexcom G4 Share Receiver</string>
 
     <!-- MongoDB Settings -->
     <string name="pref_title_mongodb">MongoDB</string>
