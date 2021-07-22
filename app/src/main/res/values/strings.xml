@@ -537,7 +537,7 @@
     <string name="override_phone_silent_mode_colon">Override phone Silent Mode:</string>
     <string name="vibrate_on_alert">Vibrate on alert</string>
     <string name="test_alert">test alert</string>
-    <string name="disable_alert">disable alert</string>
+    <string name="disable_alert">Disable alert</string>
     <string name="save_alert">save alert</string>
     <string name="remove_alert">remove alert</string>
     <string name="snooze_alert_before_it_fires">snooze alert before it fires</string>
