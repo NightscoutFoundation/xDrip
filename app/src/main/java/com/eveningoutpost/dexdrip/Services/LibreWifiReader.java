@@ -25,6 +25,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.ParakeetHelper;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.UtilityModels.desertsync.RouteTools;
 import com.eveningoutpost.dexdrip.UtilityModels.MockDataSource;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -61,7 +62,9 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
 
     private static final Gson gson = JoH.defaultGsonInstance();
 
-    private final static long DEXCOM_PERIOD = 300000;
+    private final static long LIBRE_1_PERIOD = 300000;
+    private final static long LIBRE_2_PERIOD = 61000;
+
     private static OkHttpClient httpClient;
 
     // This variables are for fake function only
@@ -70,6 +73,10 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
 
     LibreWifiReader(Context ctx) {
         Log.d(TAG, "LibreWifiReader init");
+    }
+
+    static boolean isLibre2() {
+        return PersistentStore.getStringToInt("LibreVersion", 1) == 2;
     }
 
     static boolean almostEquals(LibreWifiData e1, LibreWifiData e2) {
@@ -359,6 +366,9 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
             final PrintWriter out = new PrintWriter(MySocket.getOutputStream(), true);
             final BufferedReader in = new BufferedReader(new InputStreamReader(MySocket.getInputStream()));
 
+            String myIpAddresses = RouteTools.getBestInterfaceAddress();
+            ch.xDripIpAddresses = myIpAddresses != null ? myIpAddresses : "";
+
             out.println(ch.toJson());
 
             String full_data = "";
@@ -429,13 +439,14 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
             return 60 * 1000L;
         }
 
-        if (gapTime < DEXCOM_PERIOD) {
+        long sensro_period = isLibre2() ? LIBRE_2_PERIOD : LIBRE_1_PERIOD;
+        if (gapTime < sensro_period) {
             // We have received the last packet...
             // 300000 - gaptime is when we expect to have the next packet.
-            return (DEXCOM_PERIOD - gapTime) + 2000;
+            return (sensro_period - gapTime) + 2000;
         }
 
-        gapTime = gapTime % DEXCOM_PERIOD;
+        gapTime = gapTime % sensro_period;
         Log.d(TAG, "modulus gapTime = " + gapTime);
         if (gapTime < 10000) {
             // A new packet should arrive any second now
@@ -446,7 +457,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
             return 30000L;
         }
 
-        return (DEXCOM_PERIOD - gapTime) + 2000;
+        return (sensro_period - gapTime) + 2000;
     }
 
     public Void doInBackground(String... urls) {
@@ -475,7 +486,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
             Log.e(TAG, "LastReportedTime = " + JoH.dateTimeText(LastReportedTime));
 
             // jamorham fix to avoid going twice to network when we just got a packet
-            if ((new Date().getTime() - LastReportedTime) < DEXCOM_PERIOD - 2000) {
+            if ((new Date().getTime() - LastReportedTime) < 60000 - 2000) {
                 Log.d(TAG, "Already have a recent packet - returning");
                 if (JoH.ratelimit("deferred-msg", 60)) {
                     statusLog(" Deferred", "Already have recent reading");
@@ -498,7 +509,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
         } else {
             recieversIpAddresses = Pref.getString("wifi_recievers_addresses", "");
         }
-        int packetsToRead = 1;
+        int packetsToRead = isLibre2() ? 5 : 1;
         Log.d(TAG, "reading " + packetsToRead + " packets");
         LibreWifiData[] LibreWifiDataArr = Read(recieversIpAddresses, packetsToRead);
 
@@ -518,7 +529,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
 
             Log.d(TAG, "checking packet from " + JoH.dateTimeText(LastReading.CaptureDateTime));
 
-            if ((LastReading.CaptureDateTime > LastReportedTime + 4 * 60000) &&
+            if ((LastReading.CaptureDateTime > LastReportedTime + 55000) &&
                     LastReading.CaptureDateTime < new Date().getTime() + 120000) {
                 // We have a real new reading...
                 Log.d(TAG, "will call with packet from " + JoH.dateTimeText(LastReading.CaptureDateTime));
@@ -538,6 +549,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
                 if(data.length == 46) {
                     // This is the libre 2 case
                     LibreBluetooth.SendData(data, LastReading.CaptureDateTime);
+                    LastReportedTime = LastReading.CaptureDateTime;
                 } else {
                     // This is the libre 1 case
                     boolean checksum_ok = NFCReaderX.HandleGoodReading(LastReading.SensorId, data, LastReading.CaptureDateTime, false, patchUid, patchInfo);

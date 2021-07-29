@@ -47,6 +47,9 @@ class ComunicationHeaderV2 {
     @Expose
     String btAddresses;
 
+    // Used with libre2 in order to allow the raspberry pis to conntect with xDrip.
+    @Expose
+    String xDripIpAddresses;
 
     ComunicationHeaderV2(int numberOfRecords) {
         this.numberOfRecords = numberOfRecords;

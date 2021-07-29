@@ -16,6 +16,8 @@ import com.eveningoutpost.dexdrip.UtilityModels.LibreUtils;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
+import com.eveningoutpost.dexdrip.NFCReaderX;
+
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -37,7 +39,7 @@ class UnlockBuffers {
     public byte [] btUnlockBuffer;
     public byte [] nfcUnlockBuffer;
     public String deviceName;
-    public ArrayList<byte []> unlockBufferArray;
+    public ArrayList<byte []> unlockBufferArray;// ?? change to map
     public int unlockCount;
 }
 
@@ -326,8 +328,8 @@ public class LibreOOPAlgorithm {
 
         String SensorSN = LibreUtils.decodeSerialNumberKey(patchUid);
         
-        // TODO: Add here data of last 10 minutes or whatever.
         Log.e(TAG, "handleDecodedBleResult Created the following object " + readingData.toString());
+        NFCReaderX.SendLibrereading(SensorSN, readingData.raw_data, timestamp, patchUid, null);
         LibreAlarmReceiver.processReadingDataTransferObject(readingData, timestamp, SensorSN, true /*=allowupload*/, patchUid, null/*=patchInfo*/);
     }
     
