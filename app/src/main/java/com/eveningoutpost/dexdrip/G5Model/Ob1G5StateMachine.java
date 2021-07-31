@@ -624,12 +624,14 @@ public class Ob1G5StateMachine {
                                         } else {
                                             if (!parent.lastSensorState.sensorStarted()) {
                                                 UserError.Log.uel(TAG, "Stopping sensor session due to repeated restart failure");
+                                                Treatments.sensorStop(null, "Stopped due to repeated start failure");
                                                 Sensor.stopSensor();
                                             }
                                         }
                                     } else {
                                         if (!parent.lastSensorState.sensorStarted()) {
                                             UserError.Log.uel(TAG, "Stopping sensor session due to start failure");
+                                            Treatments.sensorStop(null, "Stopped due to start failure");
                                             Sensor.stopSensor();
                                         }
                                     }

@@ -38,6 +38,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.BroadcastGlucose;
@@ -1717,9 +1718,11 @@ public class Ob1G5CollectionService extends G5BaseService {
             final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_STARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
             JoH.showNotification(state.getText(), "Sensor Stopped", pi, G5_SENSOR_STARTED, true, true, false);
             UserError.Log.ueh(TAG, "Native Sensor is now Stopped: " + state.getExtendedText());
+            Treatments.sensorStop(null, "Stopped by transmitter: " + state.getExtendedText());
         } else if (is_started && !was_started) {
             JoH.cancelNotification(G5_SENSOR_STARTED);
             UserError.Log.ueh(TAG, "Native Sensor is now Started: " + state.getExtendedText());
+            Treatments.sensorStartIfNeeded();
         }
 
         if (is_failed && !was_failed) {
