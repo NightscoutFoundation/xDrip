@@ -12,7 +12,7 @@ buildscript {
     }
 }
 apply plugin: 'com.android.application'
-
+apply from: 'token-replace.gradle'
 
 if (project.file('local.gradle').exists()) {
     apply from: 'local.gradle'
@@ -307,11 +307,11 @@ dependencies {
 
     // use specific version of data binding until google resolves the bugs with mixed case package names
     //noinspection GradleDependency
-    implementation 'com.android.databinding:adapters:3.1.4'
+    //implementation 'com.android.databinding:adapters:3.1.4'
     //noinspection GradleDependency
-    implementation 'com.android.databinding:library:3.1.4'
+    //implementation 'com.android.databinding:library:3.1.4'
     //noinspection GradleDependency
-    implementation 'com.android.databinding:baseLibrary:3.1.4'
+    //implementation 'com.android.databinding:baseLibrary:3.1.4'
     //////
 
     implementation 'com.android.support:appcompat-v7:26.1.0'
