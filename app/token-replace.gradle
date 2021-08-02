@@ -19,6 +19,8 @@ replaceAndroidTokenPreprocessorSettings {
     replace '".GlucoseMeter.': '".glucosemeter.'
     replace '".Services.': '".services.'
     replace '".Models.': '".models.'
+    replace '".Tables.': '".tables.'
+    replace '".ImportedLibraries.': '".importedlibraries.'
 
 }
 
