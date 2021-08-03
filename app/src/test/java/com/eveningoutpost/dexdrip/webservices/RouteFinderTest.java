@@ -25,7 +25,7 @@ import static com.google.common.truth.Truth.assertWithMessage;
 /**
  * Created by jamorham on 17/01/2018.
  */
-public class RouterFinderTest extends RobolectricTestWithConfig {
+public class RouteFinderTest extends RobolectricTestWithConfig {
 
     private static void log(String msg) {
         System.out.println(msg);
@@ -118,6 +118,14 @@ public class RouterFinderTest extends RobolectricTestWithConfig {
         response = routeFinder.handleRoute(subroute);
         validResponse(subroute, response);
         // TODO look for output markers
+
+        // sgv with server exception
+        subroute = "sgv.json?test_trigger_exception=1";
+        response = routeFinder.handleRoute(subroute);
+        responseWithStatusCode(subroute, response, 500);
+        assertWithMessage(subroute + " instance error text")
+                .that(new String(response.bytes))
+                .startsWith("Exception in "+WebServiceSgv.class.toString());
     }
 
     @Test
@@ -374,6 +382,9 @@ public class RouterFinderTest extends RobolectricTestWithConfig {
     }
 
     private void validResponse(String subroute, WebResponse response) {
+        responseWithStatusCode(subroute, response, 200);
+    }
+    private void responseWithStatusCode(String subroute, WebResponse response, int status) {
         assertWithMessage(subroute + " instance null data response")
                 .that(response)
                 .isNotNull();
@@ -383,7 +394,7 @@ public class RouterFinderTest extends RobolectricTestWithConfig {
 
         assertWithMessage(subroute + " result code")
                 .that(response.resultCode)
-                .isEqualTo(200);
+                .isEqualTo(status);
         assertWithMessage(subroute + " instance data length")
                 .that(response.bytes.length)
                 .isAtLeast(1);
