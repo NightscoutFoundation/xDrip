@@ -492,7 +492,7 @@
     <string name="filtered_values">Filtered Values</string>
     <string name="treatment_color">Insulin On Board Color</string>
     <string name="treatment_color_dark">Insulin Activity Color</string>
-    <string name="predictive_color">BG Prediction Color</string>
+    <string name="predictive_color">Glucose Prediction Color</string>
     <string name="predictive_color_dark">COB Prediction Color</string>
     <string name="average_and_target_lines">Average and Target Lines</string>
     <string name="eight_hour_average_line">8-Hour Average Line</string>
