@@ -27,7 +27,7 @@
     <string name="ok">Ok</string>
     <string name="cancel">Abbrechen</string>
     <string name="no">Nein</string>
-    <string name="pref_sensor_location_dont_ask_again"> Nicht erneut fragen</string>
+    <string name="pref_sensor_location_dont_ask_again">Nicht erneut fragen</string>
     <string name="title_activity_error">"Fehler- und Ereignisliste"</string>
     <string name="title_activity_main">Hauptbildschirm</string>
     <string name="title_activity_fake_numbers">Simulierte Zahlen</string>
@@ -61,7 +61,7 @@
     <string name="pref_message_api_url">Dies ist nur die Basis URL, /entries wird automatisch angefügt. API_SECRET auf dem Server sollte mit yourpassphrase in den Einstellung übereinstimmen.</string>
     <string name="pref_default_api_url">https://{DEINE_API_PASSPHRASE}@{DEINE-SEITE}.azurewebsites.net/api/v1/</string>
     <!-- wifi Settings -->
-    <string name="wifi_recievers_dialog_message">Durch Kommata getrennte Liste von IP:Port (zB. 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
+    <string name="wifi_recievers_dialog_message">Durch Kommata getrennte Liste von IP:Port (z. B. 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
     <string name="wifi_recievers_dialog_title">IP-Adressen und Ports der Empfänger eingeben (einschließlich MongoDB Adressen, sofern erforderlich)</string>
     <!-- Location Settings -->
     <string name="location_not_found_title">Standortdienst ist nicht aktiviert</string>
@@ -69,7 +69,7 @@
     <string name="location_yes">Aktivieren</string>
     <!-- broadcast settings -->
     <string name="pref_title_broadcast_enabled">Lokaler Broadcast</string>
-    <string name="pref_summary_broadcast_enabled">Lokalen Broadcast von Daten aktivieren, so dass andere Anwendungen (z. B. Nightwatch) neue Werte empfangen können.</string>
+    <string name="pref_summary_broadcast_enabled">Lokalen Broadcast von Daten aktivieren, so dass andere Anwendungen (z. B. Nightwatch) neue Werte empfangen können</string>
     <string name="title_activity_share_test">Share-Test</string>
     <!-- pebble settings -->
     <string name="pref_pebble_trend_watchface">Pebble Trend Watchface nutzen</string>
@@ -134,7 +134,7 @@
     <string name="share">Teilen</string>
     <string name="title_activity_profile_editor">Behandlungen ändern</string>
     <string name="first_use_menu_to_scan">Zuerst sollte nach dem BT-Gerät gescannt werden oder die Datenquelle in den Einstellungen geändert werden.</string>
-    <string name="first_configure_ip_address">Zuerst sollte das Wifi-Wixel über IP-Adressen oder Parakeet-URL konfiguriert werden.</string>
+    <string name="first_configure_ip_address">Zuerst sollte das Wifi-Wixel über IP-Adressen oder Parakeet-URL konfiguriert werden</string>
     <string name="now_start_your_sensor">Jetzt den Sensor starten oder Einstellungen überprüfen.</string>
     <string name="please_wait_while_sensor_warms_up">Bitte warten, während der Sensor startet! (</string>
     <string name="minutes_with_bracket">" Minuten)"</string>
@@ -145,7 +145,7 @@
     <string name="now_choose_start_sensor_in_settings">Jetzt bitte Sensorstart in den Einstellungen auswählen</string>
     <string name="double_check_dex_receiver_serial_number">Bitte Seriennummer des Dexcom Empfängers doppelt prüfen! (10 Zeichen mit Buchstaben)</string>
     <string name="please_set_dex_receiver_serial_number">Bitte Seriennummer des Dexcom-Empfängers in den App-Einstellungen ändern</string>
-    <string name="unfortunately_andoird_version_no_blueooth_low_energy">Leider unterstützt Deine Android-Version kein Low-Energy-Bluetooth (BLE)</string>
+    <string name="unfortunately_andoird_version_no_blueooth_low_energy">Leider unterstützt deine Android-Version kein Low-Energy-Bluetooth (BLE)</string>
     <string name="waiting_for_packet">Warten auf Daten...</string>
     <string name="persistent_high_for_greater_than">Dauerhaft Hoch für &gt; </string>
     <string name="space_mins">" Min"</string>
@@ -205,7 +205,7 @@
     <string name="send_feedback_message">Feedback senden</string>
     <string name="copying_settings">Einstellungen kopieren</string>
     <string name="show_settings_qr_codes">Einstellungen per QR-Code anzeigen</string>
-    <string name="load_save_settings_to_sdcard">Einstellungen auf/von SD-Karte laden/speichern</string>
+    <string name="load_save_settings_to_sdcard">Einstellungen von/auf SD-Karte laden/speichern</string>
     <string name="alarms_and_alerts">Warnungen</string>
     <string name="alerts_and_notifications">Benachrichtigungen</string>
     <string name="glucose_level_alerts_list">Glukose-Alarm-Liste</string>
