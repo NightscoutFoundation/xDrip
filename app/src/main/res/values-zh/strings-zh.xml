@@ -163,6 +163,7 @@
     <string name="checking_for_update">正在检查更新..</string>
     <string name="signal_missed">信号丢失了</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} 分钟前|1#{0, number, integer} 分钟前|1&lt;{0, number, integer} 分钟前}</string>
+    <string name="expires_days">{0, choice,0#传感器过期！|1#结束于{0, number} 天后|1&lt;结束于 {0, number} 天后}</string>
     <string name="space_minutes_ago">" 分钟以前"</string>
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"瞬感室内全覆盖模式：尚未收集任何读数。"</string>
     <string name="in_libre_all_house_mode_last_data_collected">"瞬感室内全覆盖模式：最近读数 "</string>
@@ -1196,6 +1197,7 @@
     <string name="title_miband_visibility">使小米手环搜索可见</string>
     <string name="summary_miband_visibility">小米手环将会被其他设备搜索到</string>
     <string name="title_miband_units">单位</string>
+    <string name="summary_miband_units">选择手环中使用的距离单位 </string>
     <string name="title_miband_goal_notification">达标通知</string>
     <string name="summary_miband_goal_notification">当您完成目标时将会收到来自小米手环的震动</string>
     <string name="title_miband_locale_24_hour">24小时制</string>
@@ -1207,7 +1209,10 @@
     <string name="title_miband_nightmode_end">夜间模式结束时间</string>
     <string name="title_miband_interval_in_nightmode">同步频率</string>
     <string name="title_miband_colect_heartrate">收集心率数据</string>
+    <string name="summary_miband_colect_heartrate">将从手环收集心率数据。更新间隔可以在 MiFit 或任何第三方应用程序中配置</string>
     <string name="title_miband_authkey">认证密钥</string>
+    <string name="summary_miband_send_calls">发送电话提醒到手环 (Android 6+)</string>
+    <string name="title_miband_graph_treatment_enable">显示药剂</string>
     <string name="title_lefun_band">Lefun智能手表</string>
     <string name="summary_lefun_enable">同步数据到LeFun健身</string>
     <string name="title_lefun_enable">使用LeFun</string>
@@ -1315,6 +1320,7 @@
     <string name="title_plus_accept_follower_actions">接受分享者的操作</string>
     <string name="summary_plus_whole_house">参加整体网络</string>
     <string name="title_plus_whole_house">整个房子</string>
+    <string name="title_libre_whole_house_collector">瞬感全屋模式</string>
     <string name="summary_xdrip_plus_desert_sync_settings">关闭网络跟踪</string>
     <string name="title_xdrip_plus_desert_sync_settings">放弃同步</string>
     <string name="summary_desert_sync_enabled">启用本地非互联网同步设施</string>
