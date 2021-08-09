@@ -170,8 +170,18 @@
     <string name="show_libre_trend">Покажи Libre тенденция</string>
     <string name="libre_15_minutes_graph">Libre 15 минутна графа</string>
     <string name="libre_last_x_minutes_graph">Libre графа последните за последните %d мин</string>
+    <string name="calibration_graph">Графика за калибрация</string>
+    <string name="glucose_units">Единици на КЗ</string>
+    <string name="mmol_or_mgdl_high_and_low">mmol/l или mg/dl горна и долна граница</string>
+    <string name="general_settings">Общи Настройки</string>
+    <string name="high_value">Горна граница</string>
+    <string name="low_value">Долна граница</string>
     <string name="end_user_license_agreement">Лицензионно споразумение с крайния потребител</string>
     <string name="save">Запази</string>
+    <string name="view_important_warning">Преглед на важни известия</string>
+    <string name="view_google_licenses">Google лиценз</string>
+    <string name="not_for_medical_use">Не е за медицинско предназначение - инструмент само за проучване</string>
+    <string name="low_level_prediction_values">Стойности на предсказание за ниска КЗ</string>
     <string name="settings_for_syncing">Настройки за синхронизация между слушалки</string>
     <string name="xdrip_plus_sync_settings">xDrip+ синхронизиращи настройки</string>
     <string name="xdrip_plus_update_settings">xDrip+ Ъпдейт настройки</string>
@@ -184,6 +194,7 @@
     <string name="show_settings_qr_codes">Покажи QR код за настройките</string>
     <string name="load_save_settings_to_sdcard">Зареди / Запази настройки на SD карта</string>
     <string name="pref_message_influxdb_uri">Замени примерните стойности в {} с твоите реални стойности</string>
+    <string name="low_prediction_values">Стойности на предсказание за ниска КЗ</string>
     <string name="stop_sensor">Спри сензора</string>
     <string name="initial_calibration">Първоначална калибрация</string>
     <string name="bluetooth_scan">Bluetooth сканиране</string>
@@ -199,4 +210,6 @@
     <string name="enable_streaming_dialog_dont_ask_again">Не ме питай повече</string>
     <string name="enable_streaming_dialog_text">Искате ли да свържите xDrip с този сензор? Това ще преустанови Libre четецът и LibreLink приложението да получават аларми. Натисни да и сканиране отново за да се свържеш (избери не се свързвай, ако искате да свъжите xDrip с кракнатата аппликация на Patched Libre app)</string>
     <string name="enable_streaming_dialog_title">Свържи Libre сонзор към Bluetooth</string>
+    <string name="title_lower_fuzzer">Намалете стойността на FUZZER</string>
+    <string name="summary_lower_fuzzer">Намалете стойността на FUZZER от 2,5 минути на 37,5 секунди</string>
 </resources>
