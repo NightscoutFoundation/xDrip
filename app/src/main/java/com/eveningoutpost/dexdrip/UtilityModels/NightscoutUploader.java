@@ -58,12 +58,15 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.CipherSuite;
+import okhttp3.Handshake;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
+import okhttp3.TlsVersion;
 import okio.BufferedSink;
 import okio.GzipSink;
 import okio.Okio;
@@ -168,7 +171,9 @@ public class NightscoutUploader {
             mContext = context;
             prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
             final OkHttpClient.Builder okHttp3Builder = enableTls12OnPreLollipop(new OkHttpClient.Builder());
-
+            if (UserError.ExtraLogTags.shouldLogTag(TAG, android.util.Log.VERBOSE)) {
+                okHttp3Builder.addInterceptor(new SSLHandshakeInterceptor());
+            }
             if (USE_GZIP) okHttp3Builder.addInterceptor(new GzipRequestInterceptor());
             okHttp3Builder.connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
             okHttp3Builder.writeTimeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS);
@@ -1357,6 +1362,28 @@ public class NightscoutUploader {
         if (supportsGzip(id) != value) {
             UserError.Log.e(TAG, "Setting GZIP support: " + id + " " + value);
             PersistentStore.setBoolean(END_SUPPORTS_GZIP_MARKER + id, value);
+        }
+    }
+
+    /** Prints TLS Version and Cipher Suite for SSL Calls through OkHttp3 */
+    public class SSLHandshakeInterceptor implements Interceptor {
+
+        @Override
+        public okhttp3.Response intercept(Chain chain) throws IOException {
+            final okhttp3.Response response = chain.proceed(chain.request());
+            printTlsAndCipherSuiteInfo(response);
+            return response;
+        }
+
+        private void printTlsAndCipherSuiteInfo(okhttp3.Response response) {
+            if (response != null) {
+                Handshake handshake = response.handshake();
+                if (handshake != null) {
+                    final CipherSuite cipherSuite = handshake.cipherSuite();
+                    final TlsVersion tlsVersion = handshake.tlsVersion();
+                    Log.v(TAG, "TLS: " + tlsVersion + ", CipherSuite: " + cipherSuite);
+                }
+            }
         }
     }
 
