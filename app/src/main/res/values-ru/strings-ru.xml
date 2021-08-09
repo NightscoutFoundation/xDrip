@@ -1559,4 +1559,6 @@
     <string name="enable_streaming_dialog_dont_ask_again">Больше не спрашивать</string>
     <string name="enable_streaming_dialog_text">Вы хотите подключить xDrip к этому датчику? Данное действие сделает невозможным получение сигналов тревоги на ридере и в приложении LibreLink. Нажмите \"да\" и просканируйте датчик еще раз, чтобы создать подключение (выберите \"не подключать\", если планируете использовать xDrip с \"пропатченным\" приложением LibreLink)</string>
     <string name="enable_streaming_dialog_title">Подключение датчика Libre к Bluetooth</string>
+    <string name="title_lower_fuzzer">Уменьшить FUZZER</string>
+    <string name="summary_lower_fuzzer">Уменьшить значение Fuzzer с 2,5 минуты до 37,5 секунды</string>
 </resources>
