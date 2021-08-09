@@ -79,6 +79,8 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
+import static com.eveningoutpost.dexdrip.UtilityModels.OkHttpWrapper.enableTls12OnPreLollipop;
+
 /**
  * THIS CLASS WAS BUILT BY THE NIGHTSCOUT GROUP FOR THEIR NIGHTSCOUT ANDROID UPLOADER
  * https://github.com/nightscout/android-uploader/
@@ -165,7 +167,7 @@ public class NightscoutUploader {
         public NightscoutUploader(Context context) {
             mContext = context;
             prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-            final OkHttpClient.Builder okHttp3Builder = new OkHttpClient.Builder();
+            final OkHttpClient.Builder okHttp3Builder = enableTls12OnPreLollipop(new OkHttpClient.Builder());
 
             if (USE_GZIP) okHttp3Builder.addInterceptor(new GzipRequestInterceptor());
             okHttp3Builder.connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
