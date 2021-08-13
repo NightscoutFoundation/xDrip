@@ -610,7 +610,9 @@ public class Ob1G5StateMachine {
                                 UserError.Log.ueh(TAG, "Session Start failed info: " + JoH.dateTimeText(session_start.getSessionStart()) + " " + JoH.dateTimeText(session_start.getRequestedStart()) + " " + JoH.dateTimeText(session_start.getTransmitterTime()));
                                 if (session_start.isFubar()) {
                                     final long tk = DexTimeKeeper.getDexTime(getTransmitterID(), tsl());
-                                    if (tk > 0) {
+                                    if (tk > 0 & FirmwareCapability.isTransmitterRawIncapable(getTransmitterID())) { // Firefly, which cannot be hard reset
+                                        UserError.Log.e(TAG, "Unusual session start failure");
+                                    } else if (tk > 0) {
                                         DexResetHelper.offer("Unusual session start failure, is transmitter crashed? Try Hard Reset?");
                                     } else {
                                         UserError.Log.e(TAG, "No reset as TimeKeeper reports invalid: " + tk);
