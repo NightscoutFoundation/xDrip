@@ -327,6 +327,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:10.2.1'
     implementation "com.google.android.gms:play-services-gcm:10.2.1"
     implementation 'com.squareup.wire:wire-runtime:2.2.0'
+    implementation 'com.squareup.okhttp:okhttp:2.7.5'
     implementation 'com.squareup.okhttp3:okhttp:3.12.13'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.12.13'
     implementation "com.newrelic.agent.android:android-agent:5.27.1"
