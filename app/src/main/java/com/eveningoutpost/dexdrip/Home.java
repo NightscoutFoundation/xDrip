@@ -809,6 +809,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     alert.show();
                 }
                 // offer choice to enable auto-calibration mode if not already enabled on pratelimit
+            } else if (calibration_type.equals("never")) {
+                Log.d(TAG, "Creating bloodtest record");
+                BloodTest.createFromCal(glucosenumber, timeoffset, "Manual Entry");
+                GcmActivity.syncBloodTests();
             } else {
                 // if use for calibration == "no" then this is a "note_only" type, otherwise it isn't
                 calintent.putExtra("note_only", calibration_type.equals("never") ? "true" : "false");
