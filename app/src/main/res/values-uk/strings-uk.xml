@@ -289,6 +289,7 @@
     <string name="upload_data_to_dex_servers">Завантажувати дані на сервери Dexcom, щоб мати можливість використовувати дані в додатках Dexcom</string>
     <string name="manage_followers">Управління фоловерами</string>
     <string name="manage_existing_followers">Управління існуючими фоловерами і запрошення нових</string>
+    <string name="invite_follower">Запросити фоловера</string>
     <string name="glucose_calibration_and_other_alerts">Глікемія, калібрування та інші сповіщення</string>
     <string name="alert_volume_profile">Профіль гучності сповіщень</string>
     <string name="smart_alerting">Смарт-сповіщення</string>
@@ -1450,6 +1451,7 @@
     <string name="__do_you_want_to_change_settings_or_start_sensor">\n\nХочете змінити налаштування або запустити сенсор?</string>
     <string name="change_settings">Змінити налаштування</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Хочете видалити або скинути калібрування сенсора?</string>
+    <string name="sensor_stop_confirm">Ви бажаєте зупинити сенсор?</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Активований старий експериментальний алгоритм прогнозування глюкози.\n\nЦе НЕ РЕКОМЕНДУЄТЬСЯ, оскільки може серйозно нашкодити.\n\nВимкнути даний алгоритм?</string>
     <string name="settings_issue">Проблема з налаштуваннями</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Ви хочете використовувати ці синхронізовані дані глюкометра для калібрування?\n\n(ці налаштування можуть бути змінені в Параметрах)</string>

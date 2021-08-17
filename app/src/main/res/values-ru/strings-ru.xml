@@ -222,7 +222,7 @@
     <string name="other_xdrip_plus_alerts">Другие оповещения xDrip+</string>
     <string name="xdrip_plus_display_settings">Настройки отображения xDrip+</string>
     <string name="display_customisations">Настройки отображения</string>
-    <string name="insulin_carb_ratios_etc_for_models">Инсулин, углеводные коэффициенты и т.д. для моделирований</string>
+    <string name="insulin_carb_ratios_etc_for_models">Настройки инсулина, углеводов и т.д. для моделей</string>
     <string name="grams_of_carbohydrate_one_unit_covers">Кол-во углеводов (грамм), утилизируемое 1 ед. инсулина</string>
     <string name="linear_model_carbs_absorbed_per_hour">Линейная модель количества усваиваемых углеводов в час</string>
     <string name="carb_absorption_rate">Коэффициент усваиваемости углеводов</string>
@@ -289,6 +289,7 @@
     <string name="upload_data_to_dex_servers">Загружать данные на серверы Dexcom, чтобы вы имели возможность использовать данные в приложениях Dexcom</string>
     <string name="manage_followers">Управление фолловерами</string>
     <string name="manage_existing_followers">Управление существующими фолловерами и приглашение новых.</string>
+    <string name="invite_follower">Пригласить фолловера</string>
     <string name="glucose_calibration_and_other_alerts">Гликемия, калибровка и др. оповещения</string>
     <string name="alert_volume_profile">Профиль громкости оповещений</string>
     <string name="smart_alerting">Смарт-оповещения</string>
@@ -1450,6 +1451,7 @@
     <string name="__do_you_want_to_change_settings_or_start_sensor">\n\nХотите изменить настройки или запустить сенсор?</string>
     <string name="change_settings">Изменить настройки</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Хотите удалить или сбросить калибровки сенсора?</string>
+    <string name="sensor_stop_confirm">Вы хотите остановить датчик?</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Активирована старая экспериментальная настройка прогнозирования глюкозы.\n\nЭто НЕ РЕКОМЕНДУЕТСЯ и может серьезно навредить.\n\nОтключить данную настройку?</string>
     <string name="settings_issue">Проблема с настройками!</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Вы хотите использовать эти синхронизированные данные глюкометра для калибровки?\n\n(эти настройки могут быть изменены в Параметрах)</string>
@@ -1557,4 +1559,6 @@
     <string name="enable_streaming_dialog_dont_ask_again">Больше не спрашивать</string>
     <string name="enable_streaming_dialog_text">Вы хотите подключить xDrip к этому датчику? Данное действие сделает невозможным получение сигналов тревоги на ридере и в приложении LibreLink. Нажмите \"да\" и просканируйте датчик еще раз, чтобы создать подключение (выберите \"не подключать\", если планируете использовать xDrip с \"пропатченным\" приложением LibreLink)</string>
     <string name="enable_streaming_dialog_title">Подключение датчика Libre к Bluetooth</string>
+    <string name="title_lower_fuzzer">Уменьшить FUZZER</string>
+    <string name="summary_lower_fuzzer">Уменьшить значение Fuzzer с 2,5 минуты до 37,5 секунды</string>
 </resources>

@@ -1560,4 +1560,6 @@
     <string name="enable_streaming_dialog_dont_ask_again">Ne plus me le demander</string>
     <string name="enable_streaming_dialog_text">Voulez-vous connecter xDrip à ce capteur ? Cela empêchera le lecteur Freestyle Libre 2 et l\'application LibreLink de recevoir les alertes. Appuyez sur oui et scannez vous à nouveau pour vous connecter (choisissez de ne pas vous connecter si vous voulez exécuter xDrip avec l\'application patchée)</string>
     <string name="enable_streaming_dialog_title">Connexion du Freestyle Libre 2 au Bluetooth</string>
+    <string name="title_lower_fuzzer">Réduire FUZZER</string>
+    <string name="summary_lower_fuzzer">Réduire la valeur de FUZZER de 2,5 minutes à 37,5 secondes</string>
 </resources>

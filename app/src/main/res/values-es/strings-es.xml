@@ -1560,4 +1560,6 @@
     <string name="enable_streaming_dialog_dont_ask_again">No volver a preguntarme</string>
     <string name="enable_streaming_dialog_text">¿Quiere conectar xDrip con este sensor? Esto provocará que el lector Libre y LibreLink dejen de recibir alertas. Pulse sí y busque de nuevo para conectar (elija no conectar si quiere ejecutar xDrip con la aplicación modificada)</string>
     <string name="enable_streaming_dialog_title">Conectando sensor Libre a Bluetooth</string>
+    <string name="title_lower_fuzzer">Baja FUZZER</string>
+    <string name="summary_lower_fuzzer">Bajar el valor de FUZZER de 2.5 minutos a 37.5 segundos</string>
 </resources>

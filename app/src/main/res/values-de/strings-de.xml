@@ -27,7 +27,7 @@
     <string name="ok">Ok</string>
     <string name="cancel">Abbrechen</string>
     <string name="no">Nein</string>
-    <string name="pref_sensor_location_dont_ask_again"> Nicht erneut fragen</string>
+    <string name="pref_sensor_location_dont_ask_again">Nicht erneut fragen</string>
     <string name="title_activity_error">"Fehler- und Ereignisliste"</string>
     <string name="title_activity_main">Hauptbildschirm</string>
     <string name="title_activity_fake_numbers">Simulierte Zahlen</string>
@@ -61,7 +61,7 @@
     <string name="pref_message_api_url">Dies ist nur die Basis URL, /entries wird automatisch angefügt. API_SECRET auf dem Server sollte mit yourpassphrase in den Einstellung übereinstimmen.</string>
     <string name="pref_default_api_url">https://{DEINE_API_PASSPHRASE}@{DEINE-SEITE}.azurewebsites.net/api/v1/</string>
     <!-- wifi Settings -->
-    <string name="wifi_recievers_dialog_message">Durch Kommata getrennte Liste von IP:Port (zB. 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
+    <string name="wifi_recievers_dialog_message">Durch Kommata getrennte Liste von IP:Port (z. B. 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
     <string name="wifi_recievers_dialog_title">IP-Adressen und Ports der Empfänger eingeben (einschließlich MongoDB Adressen, sofern erforderlich)</string>
     <!-- Location Settings -->
     <string name="location_not_found_title">Standortdienst ist nicht aktiviert</string>
@@ -69,7 +69,7 @@
     <string name="location_yes">Aktivieren</string>
     <!-- broadcast settings -->
     <string name="pref_title_broadcast_enabled">Lokaler Broadcast</string>
-    <string name="pref_summary_broadcast_enabled">Lokalen Broadcast von Daten aktivieren, so dass andere Anwendungen (z. B. Nightwatch) neue Werte empfangen können.</string>
+    <string name="pref_summary_broadcast_enabled">Lokalen Broadcast von Daten aktivieren, so dass andere Anwendungen (z. B. Nightwatch) neue Werte empfangen können</string>
     <string name="title_activity_share_test">Share-Test</string>
     <!-- pebble settings -->
     <string name="pref_pebble_trend_watchface">Pebble Trend Watchface nutzen</string>
@@ -134,7 +134,7 @@
     <string name="share">Teilen</string>
     <string name="title_activity_profile_editor">Behandlungen ändern</string>
     <string name="first_use_menu_to_scan">Zuerst sollte nach dem BT-Gerät gescannt werden oder die Datenquelle in den Einstellungen geändert werden.</string>
-    <string name="first_configure_ip_address">Zuerst sollte das Wifi-Wixel über IP-Adressen oder Parakeet-URL konfiguriert werden.</string>
+    <string name="first_configure_ip_address">Zuerst sollte das Wifi-Wixel über IP-Adressen oder Parakeet-URL konfiguriert werden</string>
     <string name="now_start_your_sensor">Jetzt den Sensor starten oder Einstellungen überprüfen.</string>
     <string name="please_wait_while_sensor_warms_up">Bitte warten, während der Sensor startet! (</string>
     <string name="minutes_with_bracket">" Minuten)"</string>
@@ -145,7 +145,7 @@
     <string name="now_choose_start_sensor_in_settings">Jetzt bitte Sensorstart in den Einstellungen auswählen</string>
     <string name="double_check_dex_receiver_serial_number">Bitte Seriennummer des Dexcom Empfängers doppelt prüfen! (10 Zeichen mit Buchstaben)</string>
     <string name="please_set_dex_receiver_serial_number">Bitte Seriennummer des Dexcom-Empfängers in den App-Einstellungen ändern</string>
-    <string name="unfortunately_andoird_version_no_blueooth_low_energy">Leider unterstützt Deine Android-Version kein Low-Energy-Bluetooth (BLE)</string>
+    <string name="unfortunately_andoird_version_no_blueooth_low_energy">Leider unterstützt deine Android-Version kein Low-Energy-Bluetooth (BLE)</string>
     <string name="waiting_for_packet">Warten auf Daten...</string>
     <string name="persistent_high_for_greater_than">Dauerhaft Hoch für &gt; </string>
     <string name="space_mins">" Min"</string>
@@ -154,7 +154,7 @@
     <string name="in">in</string>
     <string name="yes_enter_setup_mode">Ja, Setup-Modus starten</string>
     <string name="nokeep_parakeet_as_it_is">Parakeet unverändert lassen</string>
-    <string name="are_you_sure_you_want_switch_parakeet_to_setup">Parakeet Setup-Modus starten?\n\Gewöhnlich ist dies nur erforderlich, um den Parakeet neu zu konfigurieren (Transmitter-ID, etc.)</string>
+    <string name="are_you_sure_you_want_switch_parakeet_to_setup">Parakeet Setup-Modus starten?\n\nGewöhnlich ist dies nur erforderlich, um den Parakeet neu zu konfigurieren (Transmitter-ID, etc.).</string>
     <string name="split_delete_or_do_nothing">Split, löschen oder nichts tun</string>
     <string name="split_this_block_in_two">Block in zwei teilen</string>
     <string name="delete_this_time_block">Zeitblock entfernen</string>
@@ -205,7 +205,7 @@
     <string name="send_feedback_message">Feedback senden</string>
     <string name="copying_settings">Einstellungen kopieren</string>
     <string name="show_settings_qr_codes">Einstellungen per QR-Code anzeigen</string>
-    <string name="load_save_settings_to_sdcard">Einstellungen auf/von SD-Karte laden/speichern</string>
+    <string name="load_save_settings_to_sdcard">Einstellungen von/auf SD-Karte laden/speichern</string>
     <string name="alarms_and_alerts">Warnungen</string>
     <string name="alerts_and_notifications">Benachrichtigungen</string>
     <string name="glucose_level_alerts_list">Glukose-Alarm-Liste</string>
@@ -241,7 +241,7 @@
     <string name="shows_a_persistent_notification">Zeigt dauerhaft einen Benachrichtigungsgraph auf dem Lock-Screen, damit der Dienst nicht beendet wird.</string>
     <string name="list_of_receivers">Liste der Empfänger</string>
     <string name="extra_tags_for_logging">Zusätzliche Tags für die Protokollierung</string>
-    <string name="extra_tags_dialog_message">Die hier eingegebenen Tags werden in xDrip protokolliert. Format ist tag:Ebene. Stufe kann v, d oder i sein. Zum Beispiel bgreading:i, DexCollectionService:v. Diese Tags werden mit niedriger Priorität protokolliert in der Fehler- und Ereignisliste.</string>
+    <string name="extra_tags_dialog_message">Die hier eingegebenen Tags werden in xDrip protokolliert. Format ist tag:level. Level kann v, d oder i sein. Zum Beispiel bgreading:i, DexCollectionService:v. Diese Tags werden mit niedriger Priorität protokolliert in der Fehler- und Ereignisliste.</string>
     <string name="extra_tags_dialog_title">Gib weitere Tags ein, die protokolliert werden sollen</string>
     <string name="data_source_settings">Einstellung der Datenquelle</string>
     <string name="smart_watch_features">Smart Watch Eigenschaften</string>
@@ -349,7 +349,7 @@
     <string name="version_details">Version Details</string>
     <string name="download_now">Jetzt herunterladen</string>
     <string name="automatically_check_for_updates">Automatisch nach Updates suchen</string>
-    <string name="here_you_can_save_the_settings_to_the_external_storage_sdcard">Einstellungen auf externem Speicher sichern (SD-Karte).\n\nNach der Speicherung kann jede App auf (sensitive) Informationen zugreifen.\n\nDie Einstellungen sollten nach dem Import zugüg gelöscht werden.</string>
+    <string name="here_you_can_save_the_settings_to_the_external_storage_sdcard">Einstellungen auf externem Speicher sichern (SD-Karte).\n\nNach der Speicherung kann jede App auf (sensitive) Informationen zugreifen.\n\nDie Einstellungen sollten deshalb nach dem Import zügig gelöscht werden.</string>
     <string name="save_all_settings_to_sdcard">Alle Einstellungen auf SD-Karte speichern</string>
     <string name="load_all_settings_from_sdcard">Einstellungen von SD-Karte laden</string>
     <string name="delete_any_settings_on_sdcard">Alle Einstellungen von der SD-Karte löschen</string>
@@ -389,7 +389,7 @@
     <string name="automatic_updates_crash_reports_and_feedback">Automatische Updates, Fehlerberichte und Feedback an Entwickler senden</string>
     <string name="crowd_sourced_translation">Übersetzung der Crowd</string>
     <string name="please_enter_your_question_or_comments_here">Bitte Frage oder Kommentare hier eingeben.\n\Durch Angabe einer E-Mail-Adresse kann eine Antwort direkt erhalten werden.\n\n</string>
-    <string name="optional_contact_info_here_eg_email">Optionale Informationen (E-Mail)</string>
+    <string name="optional_contact_info_here_eg_email">Optionale Informationen (z. B. E-Mail)</string>
     <string name="send_message">Nachricht senden</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Bitte bewerte die App</string>
     <string name="preferences_saved_in_sdcard_downloads">Einstellungen auf SD-Karte unter Downloads gespeichert</string>
@@ -440,7 +440,7 @@
     <string name="display_slope_arrows">Zeige Trendpfeile</string>
     <string name="vibrate_watch_to_alert_no_data">Watch vibrieren lassen, wenn keine Glukosedaten empfangen werden</string>
     <string name="vibrate_when_missed_signal">Vibrieren bei verpassten Daten</string>
-    <string name="vibrate_watch_to_alert_no_bluetooth">Uhr-Vibration als Alarmierung wenn Bluetooth getrennt wurde</string>
+    <string name="vibrate_watch_to_alert_no_bluetooth">Uhr-Vibration als Alarm wenn Bluetooth getrennt wurde</string>
     <string name="vibrate_when_no_bluetooth">Vibrieren wenn kein Bluetooth</string>
     <string name="special_glucose_value_to_display_message">Spezielle Glukosewert für die Meldung</string>
     <string name="bluetooth_wakelocks">Bluetooth Wakelocks</string>
@@ -540,7 +540,7 @@
     <string name="useful_for_noise_and_missed_readings">Nützlich für verrauschte oder verpasste Werte</string>
     <string name="the_standard_xdrip_calculated_value">Berechnete standard xDrip-Werte</string>
     <string name="display_ideal_glucose_target_line">Zeige ideale Glukosegerade</string>
-    <string name="display_eight_hour_average_line">Zeige 8 Stunden Durchschnittslinie</string>
+    <string name="display_eight_hour_average_line">Zeige 8-Stunden-Durchschnittslinie</string>
     <string name="display_twenty_four_hour_average_line">Zeige 24 Stunden-Durchschnittslinie</string>
     <string name="predictive_model_inner_workings">Vorhersagemodell (Erweiterte Anzeige)</string>
     <string name="noise_model_inner_workings">Rauschmodell (Erweiterte Anzeige)</string>
@@ -1157,8 +1157,8 @@
     <string name="manual_overwrite_not_possible">Manuelles Überschreiben nicht möglich!</string>
     <string name="upload_even_when_using_mobile_data">Auch hochladen wenn mobile Daten verwendet werden</string>
     <string name="use_mobile_data">Mobile Daten verwenden</string>
-    <string name="summary_cloud_storage_api_download_enable">Versuche Daten von Nightscout herunterzuladen</string>
-    <string name="title_cloud_storage_api_download_enable">Daten herunterladen</string>
+    <string name="summary_cloud_storage_api_download_enable">Versuche Behandlungen von Nightscout herunterzuladen</string>
+    <string name="title_cloud_storage_api_download_enable">Behandlungen herunterladen</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Ohne zu fragen mit einem neuen Blutzuckerwert kalibrieren, wenn die Bedingungen gut scheinen (experimentell)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatische Kalibrierung</string>
     <string name="title_rest_api_extra_options">Zusätzliche Optionen</string>
@@ -1505,7 +1505,7 @@
     <string name="librealarm_data_format_appears_incompatible_protocol_changed_or_no_data">LibreAlarm-Datenformat scheint nicht kompatibel zu sein!? Protokoll geändert oder keine Daten?</string>
     <string name="please_update_librealarm_to_use_oop_algorithm">Bitte aktualisieren Sie LibreAlarm um den OOP-Algorithmus zu verwenden</string>
     <string name="sensor_clock_has_not_advanced">Sensoruhr ist stehen geblieben!</string>
-    <string name="sensor_age_has_gone_backwards">Das Sensoralter hat sich verringert!!</string>
+    <string name="sensor_age_has_gone_backwards">Das Sensoralter hat sich verringert!</string>
     <string name="phone_has_no_nfc_reader">Telefon hat keinen NFC-Reader</string>
     <string name="nfc_is_not_enabled">NFC ist nicht aktiviert</string>
     <string name="phone_nfc_is_having_problems">NFC des Telefons hat Probleme!</string>
