@@ -198,7 +198,7 @@
     <string name="automatic_crash_reporting">Automatikus hibajelentés</string>
     <string name="send_feedback_message">Visszajelzés küldése</string>
     <string name="copying_settings">Beállítások másolása</string>
-    <string name="show_settings_qr_codes">Beállítások átadása kóddal</string>
+    <string name="show_settings_qr_codes">Beállítások átadása QR-kóddal</string>
     <string name="load_save_settings_to_sdcard">Beállítások mentése/visszaállítása SD-kártyára/mappába</string>
     <string name="alarms_and_alerts">Riasztások és emlékeztetők</string>
     <string name="alerts_and_notifications">Riasztások és emlékeztetők</string>
