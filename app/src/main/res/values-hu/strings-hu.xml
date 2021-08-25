@@ -1390,7 +1390,7 @@
     <string name="transmitter_battery_status">Távadó töltöttsége:  </string>
     <string name="connect_device_usb_otg">Kérjük, csatlakoztassa készülékét USB OTG kábellel.</string>
     <string name="connection_status">Kapcsolat állapota:</string>
-    <string name="range_in_high_low">Tartományban: (OK, Ma, Ala)</string>
+    <string name="range_in_high_low">Tartományban: (OK/Ma/Ala)</string>
     <string name="absolute_s">VC-érték (db):</string>
     <string name="median_bg">Medián VC:</string>
     <string name="mean_bg">Átlagos VC:</string>
