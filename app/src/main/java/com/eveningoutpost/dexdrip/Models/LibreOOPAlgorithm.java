@@ -39,7 +39,7 @@ class UnlockBuffers {
     public byte [] btUnlockBuffer;
     public byte [] nfcUnlockBuffer;
     public String deviceName;
-    public ArrayList<byte []> unlockBufferArray;// ?? change to map
+    public ArrayList<byte []> unlockBufferArray;
     public int unlockCount;
 }
 
@@ -145,7 +145,7 @@ public class LibreOOPAlgorithm {
         UnlockBuffers ret;
         UnlockBlockingQueue.clear();
         try {
-            ret = UnlockBlockingQueue.poll(2, TimeUnit.SECONDS);
+            ret = UnlockBlockingQueue.poll(9, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             Log.e(TAG, "Interuptted exception", e);
             return null;
@@ -153,7 +153,8 @@ public class LibreOOPAlgorithm {
         if(ret == null) {
             Log.e(TAG, "waitForUnlockPayload (sendGetBlutoothEnablePayload) returning null");
         } else {
-            Log.e(TAG, "waitForUnlockPayload (sendGetBlutoothEnablePayload) got data payload is " + JoH.bytesToHex(ret.btUnlockBuffer) + " "+  JoH.bytesToHex(ret.nfcUnlockBuffer));
+            Log.e(TAG, "waitForUnlockPayload (sendGetBlutoothEnablePayload) got data payload is " + JoH.bytesToHex(ret.btUnlockBuffer) + " "+  JoH.bytesToHex(ret.nfcUnlockBuffer)  +
+                    " unlockBufferArray = " + ret.unlockBufferArray);
         }
         return ret;
     }
@@ -176,11 +177,19 @@ public class LibreOOPAlgorithm {
         bundle.putByteArray(Intents.LIBRE_PATCH_INFO_BUFFER, currentSensorData.patchInfo_);
         bundle.putInt(Intents.ENABLE_TIME, currentSensorData.enableTime_);
         bundle.putInt(Intents.CONNECTION_INDEX, currentSensorData.connectionIndex_);
+        bundle.putInt(Intents.BT_UNLOCK_BUFFER_COUNT, 2000);
+
         sendIntent(Intents.XDRIP_PLUS_BLUETOOTH_ENABLE, bundle);
 
-        //???????????? set it here
-
-        return waitForUnlockPayload();
+        UnlockBuffers unlockBuffers=  waitForUnlockPayload();
+        if(unlockBuffers != null && unlockBuffers.unlockBufferArray != null) {
+            // store the array in the cache.
+            Libre2SensorData.saveBtUnlockArray(unlockBuffers.unlockBufferArray, currentSensorData.connectionIndex_);
+        }
+        return unlockBuffers;
+    }
+    static public  byte[] getCachedBtUnlokKey(boolean increaseConnectionIndex) {
+        return Libre2SensorData.getCachedBtUnlokKey(increaseConnectionIndex);
     }
     
     static public  Pair<byte[], String> nfcSendgetBlutoothEnablePayload() {
@@ -193,6 +202,10 @@ public class LibreOOPAlgorithm {
     }
 
     static public  byte[] btSendgetBlutoothEnablePayload(boolean increaseConnectionIndex) {
+        byte[] btUnlockBuffer = LibreOOPAlgorithm.getCachedBtUnlokKey(increaseConnectionIndex);
+        if(btUnlockBuffer != null) {
+            return btUnlockBuffer;
+        }
         UnlockBuffers unlockBuffers = sendGetBlutoothEnablePayload(increaseConnectionIndex);
         if(unlockBuffers == null) {
             Log.e(TAG, "btSendgetBlutoothEnablePayload returning null");
@@ -406,7 +419,7 @@ public class LibreOOPAlgorithm {
         lastRecievedData = JoH.tsl();
         Log.e(TAG, "handleOop2BluetoothEnableResult - data bt_unlock_buffer " + JoH.bytesToHex(bt_unlock_buffer) + "\n nfc_unlock_buffer "+ JoH.bytesToHex(nfc_unlock_buffer));
         if (unlockBufferArray!= null && unlockBufferArray.size() > 0) {
-            Log.e(TAG, "handleOop2BluetoothEnableResult big buffer first " + JoH.bytesToHex(unlockBufferArray.get(0))); //???? size is zero
+            Log.e(TAG, "handleOop2BluetoothEnableResult big buffer first " + JoH.bytesToHex(unlockBufferArray.get(0)));
         }
         UnlockBlockingQueue.clear();
         try {

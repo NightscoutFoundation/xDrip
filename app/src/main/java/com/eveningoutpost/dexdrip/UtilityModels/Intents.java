@@ -78,6 +78,7 @@ public interface Intents {
     String PATCH_INFO = "PatchInfo";
     String ENABLE_TIME = "EnableTime";
     String CONNECTION_INDEX = "ConnectionIndex";
+    String BT_UNLOCK_BUFFER_COUNT = "BtUnlockBufferCount";
     String BT_UNLOCK_BUFFER = "BtUnlockBuffer";
     String NFC_UNLOCK_BUFFER = "NfcUnlockBuffer";
     String DEVICE_NAME = "DeviceName";
