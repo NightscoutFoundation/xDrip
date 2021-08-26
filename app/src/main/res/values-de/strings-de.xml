@@ -623,7 +623,7 @@
     <string name="interpret_raw">Rohwerte interpretieren</string>
     <string name="use_infrequent_calibrations">Falls nötig, benutze Kalibrierungen von weiter weg, z.B., wenn selten Kalibrierungen eingegeben werden.</string>
     <string name="infrequent_calibrations">Seltene Kalibrierungen</string>
-    <string name="extra_logging">Extra Loggingeinstellugen</string>
+    <string name="extra_logging">Extra Logging-Einstellungen</string>
     <string name="send_logs_to_developer">Sende Events- und Fehlerlogs automatisch an die Entwickler.</string>
     <string name="enable_remote_logging">Remote-Logging aktivieren</string>
     <string name="set_logging_appid">Setze die Logging-AppID</string>
