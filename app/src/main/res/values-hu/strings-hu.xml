@@ -1432,6 +1432,7 @@
     <string name="your_wifi_is_set_to_sleep_when_the_phone_screen_is_off__this_may_cause_problems_if_you_dont_have_cellular_data_or_have_devices_on_your_local_network__would_you_like_to_go_to_the_settings_page_to_set__always_keep_wifi_on_during_sleep">A WiFi úgy van beállítva, hogy alvó üzemmódban maradjon, amikor a telefon képernyője ki van kapcsolva.\n\nEz problémákat okozhat, ha nincs mobil adatforgalma, vagy ha a helyi hálózaton vannak készülékek.\n\nBeállítja a telefonján, hogy:\n\n\nWi-Fi ébren tartása alvó módban?</string>
     <string name="maybe_later">Talán később</string>
     <string name="yes_do_it">IGEN, mehet</string>
+    <string name="recommend_that_you_change_wifi_to_always_be_on_during_sleep">Javaslat a WIFI aktiválására alvó üzemmódban</string>
     <string name="ooops_this_device_doesnt_seem_to_have_a_wifi_settings_page">Opppá! Ennek a készüléknek nincsen WIFI-beállítások panele!</string>
     <string name="restore_backup">Biztonsági mentés visszaállítása?</string>
     <string name="do_you_want_to_restore_the_backup_file_">Visszaállítás ebből a fájlból: </string>
