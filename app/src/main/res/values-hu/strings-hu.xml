@@ -965,6 +965,7 @@
     <string name="enable_speak_readings_when_in_vehicle">Felolvasás funkció bekapcsolása vezetés módban</string>
     <string name="bluetooth_watchdog_timers">Bluetooth Watchdog időtáv</string>
     <string name="bluetooth_watchdog_timer_sums">Percben adja meg</string>
+    <string name="basal_editor">Bázis inzulin beállítása - időpontok kiválasztása</string>
     <string name="sensor_is_still_warming_up_please_wait">Szenzor még nem indult el, kérem, várjon</string>
     <string name="number_wall_config">VC-érték a záróképernyőn</string>
     <string name="summary_If_you_plan_to_only_use_a_Wear_collector_and_never_your_phone">Csak a WEAR-t használja kollektorként, a telefont soha.</string>
@@ -1429,10 +1430,11 @@
     <string name="are_you_sure_you_want_to_delete_this_blood_test_result">Biztosan törli ezt a VC mérési értéket?</string>
     <string name="yes_delete">Igen, törlés</string>
     <string name="deleted">Törölve!</string>
+    <string name="wifi_sleep_policy_issue">WIFI készenléti mód beállítási probléma</string>
     <string name="your_wifi_is_set_to_sleep_when_the_phone_screen_is_off__this_may_cause_problems_if_you_dont_have_cellular_data_or_have_devices_on_your_local_network__would_you_like_to_go_to_the_settings_page_to_set__always_keep_wifi_on_during_sleep">A WiFi úgy van beállítva, hogy alvó üzemmódban maradjon, amikor a telefon képernyője ki van kapcsolva.\n\nEz problémákat okozhat, ha nincs mobil adatforgalma, vagy ha a helyi hálózaton vannak készülékek.\n\nBeállítja a telefonján, hogy:\n\n\nWi-Fi ébren tartása alvó módban?</string>
     <string name="maybe_later">Talán később</string>
     <string name="yes_do_it">IGEN, mehet</string>
-    <string name="recommend_that_you_change_wifi_to_always_be_on_during_sleep">Javaslat a WIFI aktiválására alvó üzemmódban</string>
+    <string name="recommend_that_you_change_wifi_to_always_be_on_during_sleep">Javaslat a WIFI aktiválására készenléti üzemmódban</string>
     <string name="ooops_this_device_doesnt_seem_to_have_a_wifi_settings_page">Opppá! Ennek a készüléknek nincsen WIFI-beállítások panele!</string>
     <string name="restore_backup">Biztonsági mentés visszaállítása?</string>
     <string name="do_you_want_to_restore_the_backup_file_">Visszaállítás ebből a fájlból: </string>
@@ -1508,4 +1510,6 @@
     <string name="enable_streaming_dialog_dont_ask_again">Ne kérdezzen rá többet</string>
     <string name="enable_streaming_dialog_text">Összekapcsolja az xDripet ezzel a szenzorral? Ezután a Libre olvasó és a LibreLink app nem kap riasztást. Nyomja meg az Igen gombot, olvassa le a szenzort a kapcsolódáshoz (Ha a patch-elt LibreLink-et akarja használni, ne kapcsolja össze őket.)</string>
     <string name="enable_streaming_dialog_title">Csatlakozzon Libre szenzorhoz BT-szal</string>
+    <string name="title_lower_fuzzer">FUZZER csökkentése</string>
+    <string name="summary_lower_fuzzer">A FUZZER értékének csökkentése 2,5 percről 37,5 mp-re</string>
 </resources>
