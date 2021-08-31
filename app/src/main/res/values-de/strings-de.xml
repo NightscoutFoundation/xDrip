@@ -578,7 +578,7 @@
     <string name="attach_to_button">Verknüpfe es mit einem Pebble-Knopf um einen aktiven Alarm sofort von deiner Uhr aus snoozen zu können. Auch für die Remote-Snoozing-Funktion.</string>
     <string name="for_interacting_compatible_apps">Zum Interagieren mit anderen kompatiblen Apps</string>
     <string name="interapp_settings">Inter-App Einstellungen</string>
-    <string name="use_plugins_for_brodcast">Benutze Rauschglättung und plugins etc. (falls aktiviert) für den gebroadcasteten Wert.</string>
+    <string name="use_plugins_for_brodcast">Benutze Rauschglättung und Plugins etc. (falls aktiviert) für den gebroadcasteten Wert</string>
     <string name="send_display_glucose">Sende den angezeigten Glukosewert</string>
     <string name="send_broadcasts_old_permission_model">Broadcasts senden ohne das ältere Rechtemodel zu beachten.</string>
     <string name="process_nsclient_treatments">Verarbeite von der NSClient App empfangene Behandlungsdaten.</string>
@@ -588,7 +588,7 @@
     <string name="speak_glucose_twice">Sprich den Glukosewert jedesmal zwei mal</string>
     <string name="short_speak_readings_shortcut">Zeige eine Verknüfpung im ☰ Menü zur Sprachausgabe von Werten</string>
     <string name="speak_readings_shortcut">Werte-Vorlesen-Verknüpfung</string>
-    <string name="battery_optimization_off">Stelle auf Android 6+ sicher, dass die Akku-Optimierung ausgeschaltet ist. Empfohlene Einstellung</string>
+    <string name="battery_optimization_off">Stelle auf Android 6+ sicher, dass die Akku-Optimierung ausgeschaltet ist (empfohlene Einstellung).</string>
     <string name="battery_optimization_on">Nicht nach der Batterie-Optimierung fragen. Nicht empfohlen</string>
     <string name="battery_optimization_prompt">Batterie-Optimierungs-Aufforderung</string>
     <string name="advanced_bluetooth_settings">Erweiterte Bluetootheinstellungen</string>
