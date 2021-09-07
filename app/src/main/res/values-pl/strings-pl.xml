@@ -760,6 +760,8 @@
     <string name="alert_noisy_values">Alarm po x minutach niedokładnych wartości</string>
     <string name="alert_snooze">Uśpij alarm</string>
     <string name="alert_minutes_reraise">Liczba minut przed zgłoszeniem tego samego ostrzeżenia po jego uśpieniu.</string>
+    <string name="reraise_before_snooze">Odnów alarm przed czasem drzemki</string>
+    <string name="reraise_not_snoozed_sooner">Odnów alarm jeżeli nie został uśpiony przed końcem drzemki</string>
     <string name="alert_reraise_time">Interwał odtwarzania alarmu</string>
     <string name="alert_seconds_reraise">Liczba SEKUND, które muszą upłynąć, zanim pojawi się ten sam alarm.</string>
     <string name="bg_falling_fast">Szybki spadek glikemii</string>
@@ -835,6 +837,7 @@
     <string name="enable_vehicle_mode">Włącz tryb pojazdu</string>
     <string name="increase_low_alarms_vehicle_mode">Zwiększ poziom, na którym będą uruchamiane alarmy o niskim poziomie w trybie pojazdu</string>
     <string name="raise_low_threshold">Zwiększenie dolnej granicy glikemii</string>
+    <string name="notification_sound_vehicle_mode">Dźwięk powiadomienia przy wykryciu trybu pojazdu</string>
     <string name="play_sound">Odtwórz dźwięk</string>
     <string name="repeat_sound">Powtórz dźwięk</string>
     <string name="enable_telemetry">Włącz telemetrię</string>
