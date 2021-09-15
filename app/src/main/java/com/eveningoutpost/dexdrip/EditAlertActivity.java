@@ -588,30 +588,12 @@ public class EditAlertActivity extends ActivityWithMenu {
 
         buttonalertMp3.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                builder.setTitle("What type of Alert?")
-                        .setItems(R.array.alertType, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                if (which == 0) {
-                                    Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
-                                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Select tone for Alerts:");
-                                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true);
-                                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
-                                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALL);
-                                    startActivityForResult(intent, 999);
-                                } else if (which == 1) {
-                                    if (checkPermissions()) {
-                                      chooseFile();
-                                    }
-                                } else {
-                                    // Xdrip default was chossen, we live the file name as empty.
-                                    audioPath = "";
-                                    alertMp3File.setText(shortPath(audioPath));
-                                }
-                            }
-                        });
-                AlertDialog dialog = builder.create();
-                dialog.show();
+                Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Select tone for Alerts:");
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true);
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALL);
+                startActivityForResult(intent, 999);
             }
        }); //- See more at: http://blog.kerul.net/2011/12/pick-file-using-intentactiongetcontent.html#sthash.c8xtIr1Y.dpuf
 
