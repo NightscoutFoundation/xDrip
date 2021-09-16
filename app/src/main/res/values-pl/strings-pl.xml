@@ -852,7 +852,7 @@
     <string name="low_bridge_battery">Niski poziom baterii mostka</string>
     <string name="reminders">Przypomnienia</string>
     <string name="error">błąd</string>
-    <string name="install_text_to_speech_data_question">Zainstalować dane zamiany tekstu na mowę?</string>
+    <string name="install_text_to_speech_data_question">Zainstalować dane do zamiany tekstu na mowę?</string>
     <string name="after_installation_of_languages_you_might_have_to">(Po instalacji języków, może będziesz musiał nacisnąć \"Zrestartuj Kolektor\" w Status Systemu.)</string>
     <string name="stop_sensor">Zatrzymaj Czujnik</string>
     <string name="dont_stop_just_reset_all_calibrations">Nie zatrzymuj, po prostu zresetuj wszystkie kalibracje</string>
@@ -1013,8 +1013,8 @@
     <string name="summary_Display_pump_status_information_if_available">Wyświetl informacje o stanie pompy, jeśli są dostępne</string>
     <string name="title_Pump_Status">Status pompy</string>
     <string name="summary_Show_treatment_carb_insulin_ratio">Pokaż współczynnik węgl/ins dla zabiegu</string>
-    <string name="title_Carb_Insulin_Ratio">Współczynnik stężenia węglowodanów/insuliny</string>
-    <string name="summary_Ask_for_a_second_optional_initial_calibration_blood_test">Zapytaj o drugi fakultatywny wstępny test kalibracyjny krwi</string>
+    <string name="title_Carb_Insulin_Ratio">Stosunek węgl/insuliny</string>
+    <string name="summary_Ask_for_a_second_optional_initial_calibration_blood_test">Zapytaj o drugi opcjonalny wstępny wynik z krwi do kalibracji</string>
     <string name="title_Double_Calibrations">Podwójne kalibracje</string>
     <string name="summary_Enable_to_allow_variable_slopes_with_Libre_collection_methods">Włącz, aby zezwolić na zmienne nachylenia z metodami zbierania Libre</string>
     <string name="summary_Allow_initial_calibration_no_good_enough_data">Zezwalaj na początkową kalibrację, nawet jeśli nie mamy wystarczająco dobrych danych. Przez to kalibracja może być niedokładna!</string>
