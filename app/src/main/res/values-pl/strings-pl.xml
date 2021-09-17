@@ -108,7 +108,7 @@
     <string name="toast_crash">Coś poszło nie tak :( raport został wysłany, aby pomóc rozwiązać problem.</string>
     <string name="taskerConfigInstruction">Wystarczy kliknąć ikonę Tick tutaj, aby potwierdzić. Nie ma potrzeby, aby zmienić ciąg konfiguracji.</string>
     <string name="taskerConfiguration">Tasker Konfiguracja</string>
-    <string name="finish_preferences_activity">Zakończ działanie preferencji</string>
+    <string name="finish_preferences_activity">Finish preferences activity</string>
     <string name="add_widget">Dodaj widget</string>
     <string name="title_activity_alert_list">Lista alarmów</string>
     <string name="speaktreatment">Wymów zabieg</string>
@@ -172,9 +172,9 @@
     <string name="show_parakeet_map">Pokaż położenie Parakeet</string>
     <string name="switch_parakeet_to_setup_mode">Przełączyć Parakeet w tryb serwisowy</string>
     <string name="view_events_log">Zobacz Event Log</string>
-    <string name="show_libre_trend">Pokaż trend z libre</string>
+    <string name="show_libre_trend">Pokaż trend z Libre</string>
     <string name="libre_15_minutes_graph">Wykres ostatnich 15 minut z libre</string>
-    <string name="libre_last_x_minutes_graph">Wykres ostatnich %d minut z libre</string>
+    <string name="libre_last_x_minutes_graph">Wykres ostatnich %d minut z Libre</string>
     <string name="share_config_via_qr_code">Udostepnij konfiguracje poprzez kod QR</string>
     <string name="check_for_updated_version">Sprawdź czy jest nowa wersja</string>
     <string name="send_feedback_to_developer">Wyślij odpowiedź do dewelopera</string>
@@ -1099,6 +1099,8 @@
     <string name="quiet_at_night">Cicho w nocy</string>
     <string name="alerts_disabled">Alerty wyłączone</string>
     <string name="restart_in_the_morning">Restartuj rano</string>
+    <string name="advanced_mode">Tryb zaawansowany</string>
+    <string name="reminder_title">Tytuł przypomnienia</string>
     <string name="all_alerts_currently_disabled">WSZYSTKIE ALARMY OBECNIE WYŁĄCZONE</string>
     <string name="low_and_high_alerts_currently_disabled">ALARMY O NISKIM I WYSOKIM POZIOMIE OBECNIE WYŁĄCZONE</string>
     <string name="low_alerts_currently_disabled">ALARMY O NISKIM POZIOMIE OBECNIE WYŁĄCZONE</string>
@@ -1106,6 +1108,7 @@
     <string name="not_connected">Nie połączono</string>
     <string name="no_data">Brak danych</string>
     <string name="no_bluetooth">Brak bluetooth</string>
+    <string name="connection_status_long">Status połączenia:   </string>
     <string name="without_location_scan_doesnt_work">Bez uprawnień lokalizacji, Androidowe skanowanie Bluetooth nie działa</string>
     <string name="android_10_need_background_location">Android 10 i wyższe wersje potrzebują uprawnień do lokalizacji w tle żeby działał Bluetooth</string>
     <string name="force_speaker_colon">Wymuś działanie głośnika</string>
@@ -1125,6 +1128,7 @@
     <string name="need_contacts_permission_to_select_message_recipients">Potrzebujesz uprawnień kontaktów, aby wybrać odbiorców wiadomości</string>
     <string name="need_storage_permission_to_access_all_ringtones">Potrzebujesz uprawnień do pamięci, aby uzyskać dostęp do wszystkich dzwonków</string>
     <string name="xdrip_needs_whitelisting_for_proper_performance">xDrip+ potrzebuje dodania do białej listy dla poprawnej wydajności</string>
+    <string name="manual_overwrite_not_possible">Ręczne nadpisanie nie jest możliwe!</string>
     <string name="use_mobile_data">Użyj transmisji danych</string>
     <string name="summary_cloud_storage_api_download_enable">Spróbuj również pobrać zabiegi z Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Pobierz zabiegi</string>
@@ -1166,6 +1170,7 @@
     <string name="summary_miband_colect_heartrate">Włącza mierzenie tętna za pomocą opaski. Interwał aktualizacji można skonfigurować w MiFit lub dowolnej aplikacji zewnętrznej</string>
     <string name="title_miband_authkey">Klucz uwierzytelniania</string>
     <string name="summary_miband_authkey">Ustaw klucz autoryzacji dla miband4 (Aby uzyskać klucz autoryzacyjny, postępuj zgodnie z instrukcjami na https://www.freemyband.com/)</string>
+    <string name="title_miband_vibrate_on_readings">Wibruj przy odczytach</string>
     <string name="title_miband_graph_enable">Włącz wykres</string>
     <string name="title_miband_general_settings_category">Ustawienia ogólne</string>
     <string name="title_miband_screen_notifications">Pokazuj powiadomienia</string>
@@ -1176,7 +1181,9 @@
     <string name="title_miband_screen_heart_rate">Pokazuj puls</string>
     <string name="miband_watchface_istall_success">Tarcza zegarowa MiBand została poprawnie przesłana!</string>
     <string name="miband_watchface_istall_error">Wystąpił błąd podczas przesyłania tarczy zegarowej MiBand</string>
+    <string name="miband_bg_dialog_title">Zaktualizować teraz dane glikemii?</string>
     <string name="title_lefun_mac">Adres Mac</string>
+    <string name="title_lefun_option_shake_snoozes">Wstrząśnij aby uśpić</string>
     <string name="title_lefun_screens_features">Ekrany i funkcje Lefun</string>
     <string name="title_features">Funkcje</string>
     <string name="title_lefun_feature_lift_to_wak">Podnieś, by wybudzić</string>
