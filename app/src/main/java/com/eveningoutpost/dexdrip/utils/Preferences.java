@@ -434,6 +434,28 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     //
                 }
             }
+            if (!prefs.getBoolean("enable_experiment", false)) { // If Experiment is disabled
+                try { // Apply recommended settings
+                    prefs.edit().putBoolean("automatically_turn_bluetooth_on", true).apply(); // Enable auto Bluetooth
+                    prefs.edit().putBoolean("bluetooth_watchdog", true).apply(); // Enable Bluetooth watchdog
+                    prefs.edit().putBoolean("bluetooth_allow_background_scans", true).apply(); // Enable background scan
+                    prefs.edit().putBoolean("bluetooth_frequent_reset", false).apply(); // Disable constant Bluetooth reset
+                    prefs.edit().putBoolean("use_transmiter_pl_bluetooth", false).apply(); // Disable TX PL support
+                    prefs.edit().putBoolean("use_rfduino_bluetooth", false).apply(); // Disable RF Duino
+                    prefs.edit().putBoolean("pref_dex_collection_polling", false).apply(); // Disable xBridge polling mode
+                    prefs.edit().putBoolean("run_service_in_foreground", true).apply(); // Enable running collector in foreground
+                    prefs.edit().putBoolean("requested_ignore_battery_optimizations_new", false).apply(); // Ensure bat optimization is disabled
+                    prefs.edit().putBoolean("allow_samsung_workaround", true).apply(); // Allow Samsung workaround
+                    prefs.edit().putBoolean("use_ob1_g5_collector_service", true).apply(); // Enable OB1
+                    prefs.edit().putBoolean("ob1_g5_fallback_to_xdrip", false).apply(); // Disable fallback
+                    prefs.edit().putBoolean("ob1_initiate_bonding_flag", true).apply(); // Enable allow initiate bonding
+                    prefs.edit().putBoolean("always_get_new_keys", true).apply(); // Enable Authenticate G5 b4 each read
+                    prefs.edit().putBoolean("always_unbond_G5", false).apply(); // Disable unbond G5 b4 each read
+                    prefs.edit().putBoolean("aggressive_service_restart", true).apply(); // Enable aggressive service restarts
+                } catch (Exception e) {
+                    //
+                }
+            }
         } catch (Exception e) {
             //
         }

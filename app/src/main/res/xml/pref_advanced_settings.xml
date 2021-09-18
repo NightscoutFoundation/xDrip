@@ -1226,11 +1226,13 @@
                 android:summary="@string/advanced_bluetooth_settings"
                 android:title="@string/bluetooth_settings">
                 <CheckBoxPreference
+                    android:dependency="enable_experiment"
                     android:defaultValue="true"
                     android:key="automatically_turn_bluetooth_on"
                     android:summary="@string/auto_turn_on_bluetooth"
                     android:title="@string/turn_bluetooth_on" />
                 <CheckBoxPreference
+                    android:dependency="enable_experiment"
                     android:defaultValue="true"
                     android:key="bluetooth_watchdog"
                     android:summary="@string/reset_bluetooth"
@@ -1264,6 +1266,7 @@
                     android:summary="@string/summary_Use_and_trust_Android_bluetooth_auto_connect_feature"
                     android:title="@string/title_Trust_Auto_Connect" />
                 <CheckBoxPreference
+                    android:dependency="enable_experiment"
                     android:defaultValue="true"
                     android:key="bluetooth_allow_background_scans"
                     android:summary="Use Android 8+ background scanning feature"
@@ -1274,21 +1277,25 @@
                     android:summary="@string/older_bluetooth_wakelocks"
                     android:title="@string/bluetooth_wakelocks" />
                 <CheckBoxPreference
+                    android:dependency="enable_experiment"
                     android:defaultValue="false"
                     android:key="bluetooth_frequent_reset"
                     android:summary="@string/reset_bluetooth_on_off"
                     android:title="@string/constantly_reset_bluetooth" />
                 <CheckBoxPreference
+                    android:dependency="enable_experiment"
                     android:defaultValue="false"
                     android:key="use_transmiter_pl_bluetooth"
                     android:summary="@string/experimental_transmitter_fpv_uav"
                     android:title="@string/transmitter_pl_support" />
                 <CheckBoxPreference
+                    android:dependency="enable_experiment"
                     android:defaultValue="false"
                     android:key="use_rfduino_bluetooth"
                     android:summary="@string/experimental_rdfuino_support"
                     android:title="@string/rfduino_support" />
                 <CheckBoxPreference
+                    android:dependency="enable_experiment"
                     android:defaultValue="false"
                     android:key="pref_dex_collection_polling"
                     android:summary="@string/summary_Experimental_support_for_xBridge_polling_feature"
@@ -1355,6 +1362,7 @@
             </PreferenceScreen>
 
             <CheckBoxPreference
+                android:dependency="enable_experiment"
                 android:defaultValue="true"
                 android:key="aggressive_service_restart"
                 android:summary="@string/repeatedly_restart_collection_service"
@@ -1426,6 +1434,7 @@
                 android:summary=""
                 android:title="@string/title_Other_misc_options">
                 <CheckBoxPreference
+                    android:dependency="enable_experiment"
                     android:defaultValue="true"
                     android:key="run_service_in_foreground"
                     android:summary="@string/shows_a_persistent_notification"
@@ -1437,12 +1446,14 @@
                     android:summary="@string/allow_unsafe_settings"
                     android:title="@string/engineering_mode" />
                 <CheckBoxPreference
+                    android:dependency="enable_experiment"
                     android:defaultValue="false"
                     android:key="requested_ignore_battery_optimizations_new"
                     android:summaryOff="@string/battery_optimization_off"
                     android:summaryOn="@string/battery_optimization_on"
                     android:title="@string/battery_optimization_prompt" />
                 <CheckBoxPreference
+                    android:dependency="enable_experiment"
                     android:defaultValue="true"
                     android:key="allow_samsung_workaround"
                     android:summary="@string/summary_allow_samsung_workaround"
@@ -1498,6 +1509,11 @@
                     android:key="allow_testing_with_dead_sensor"
                     android:summary="@string/summary_allow_testing_with_dead_sensor"
                     android:title="@string/title_NOT_FOR_PRODUCTION_USE" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="enable_experiment"
+                    android:summary="@string/summary_enable_experiments"
+                    android:title="@string/title_enable_experiments" />
 
             </PreferenceScreen>
             <PreferenceCategory
