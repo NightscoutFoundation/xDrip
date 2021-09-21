@@ -166,7 +166,7 @@
     <string name="show_parakeet_map">Parakeet térkép mutatása</string>
     <string name="switch_parakeet_to_setup_mode">Parakeet beállítási módba helyezése</string>
     <string name="view_events_log">Eseménynapló mutatása</string>
-    <string name="show_libre_trend">Libre trend mutatása</string>
+    <string name="show_libre_trend">Libre trend (percenkénti adatok) mutatása</string>
     <string name="libre_15_minutes_graph">Libre 15 perces grafikon</string>
     <string name="libre_last_x_minutes_graph">Libre utolsó %d perc grafikon</string>
     <string name="share_config_via_qr_code">Beállítások megosztása QR kóddal</string>
