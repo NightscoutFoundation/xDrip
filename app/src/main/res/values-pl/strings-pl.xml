@@ -1018,6 +1018,7 @@
     <string name="title_Double_Calibrations">Podwójne kalibracje</string>
     <string name="summary_Enable_to_allow_variable_slopes_with_Libre_collection_methods">Włącz, aby zezwolić na zmienne nachylenia z metodami zbierania Libre</string>
     <string name="summary_Allow_initial_calibration_no_good_enough_data">Zezwalaj na początkową kalibrację, nawet jeśli nie mamy wystarczająco dobrych danych. Przez to kalibracja może być niedokładna!</string>
+    <string name="title_xBridge_Polling_Mode">xBridge+ Tryb Odpytywania</string>
     <string name="title_Allow_blucon_unbonding">Zezwól na odłączenie blucon</string>
     <string name="title_NOT_FOR_PRODUCTION_USE">NIEPRZEZNACZONE DO STOSOWANIA PRODUKCYJNEGO</string>
     <string name="title_You_have_no_reminders_yet">Nie masz jeszcze przypomnień</string>
