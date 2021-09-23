@@ -510,7 +510,7 @@ public class AlertPlayer {
             }
         }
 
-        // We use timeFromStartPlaying as a way to force vibrating/ non vibrating...
+        // Use timeFromStartPlaying to control the ascending profile volume
         if (profile != ALERT_PROFILE_ASCENDING) {
             // We start from the non ascending part...
             minsFromStartPlaying = MAX_ASCENDING_MINUTES;
@@ -534,9 +534,10 @@ public class AlertPlayer {
                 .setDeleteIntent(snoozeIntent(context, minsFromStartPlaying));
 
         if (profile != ALERT_PROFILE_VIBRATE_ONLY && profile != ALERT_PROFILE_SILENT) {
-            if (minsFromStartPlaying >= MAX_VIBRATING_MINUTES) {
-                // Before this, we only vibrate...
-                float volumeFrac = (float) (minsFromStartPlaying - MAX_VIBRATING_MINUTES) / (MAX_ASCENDING_MINUTES - MAX_VIBRATING_MINUTES);
+            if (minsFromStartPlaying >= 0) {
+                // No reason to only vibrate as the vibrate_only profile is not selected
+                float volumeFrac = (float) (minsFromStartPlaying + 1) / 6;
+                /** The ascending volume starts at 20%, and increases by 20% once every minute. */
                 volumeFrac = Math.min(volumeFrac, 1);
                 if (profile == ALERT_PROFILE_MEDIUM) {
                     volumeFrac = (float) 0.7;
