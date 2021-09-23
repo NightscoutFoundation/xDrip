@@ -537,7 +537,7 @@ public class AlertPlayer {
             if (minsFromStartPlaying >= 0) {
                 // No reason to only vibrate as the vibrate_only profile is not selected
                 float volumeFrac = (float) (minsFromStartPlaying + 1) / 6;
-                /** The ascending volume starts at 20%, and increases by 20% once every minute. */
+                /** The ascending volume starts at 17%, and increases by 17% once every minute. */
                 volumeFrac = Math.min(volumeFrac, 1);
                 if (profile == ALERT_PROFILE_MEDIUM) {
                     volumeFrac = (float) 0.7;
