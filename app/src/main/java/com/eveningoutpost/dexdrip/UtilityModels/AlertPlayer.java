@@ -510,7 +510,7 @@ public class AlertPlayer {
             }
         }
 
-        // Use timeFromStartPlaying to control the ascending profile volume
+        // Use timeFromStartPlaying to control the ascending volume profile
         if (profile != ALERT_PROFILE_ASCENDING) {
             // We start from the non ascending part...
             minsFromStartPlaying = MAX_ASCENDING_MINUTES;
