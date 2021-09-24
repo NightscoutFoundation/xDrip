@@ -1004,7 +1004,7 @@
     <string name="title_Accept_Calibrations">Akceptuj kalibracje</string>
     <string name="summary_Operate_a_local_web_server_for_interacting_with_Fitbit_Ionic_etc">Uruchom lokalny serwer w celu interakcji z aplikacją Fitbit Ionic itp.</string>
     <string name="title_xDrip_Web_Service">Serwis web xDrip</string>
-    <string name="summary_Accept_connections_from_any_network_instead_of_just_internally">Akceptuj połączenia z dowolnej sieci zamiast jedynie z wewnątrz urządzenia. Ta opcja wpływa na obniżenie bezpieczeństwa! Współdzielony sekret będzie wymagany, jeśli zostanie ustawiony.</string>
+    <string name="summary_Accept_connections_from_any_network_instead_of_just_internally">Akceptuj połączenia z dowolnej sieci zamiast jedynie z wewnątrz tego urządzenia. Ta opcja wpływa na obniżenie bezpieczeństwa! Współdzielony sekret będzie wymagany, jeśli zostanie ustawiony.</string>
     <string name="title_Open_Web_Service">Otwarty serwis web</string>
     <string name="summary_Shared_Secret_for_open_web_service">Współdzielony sekret dla otwartej usługi sieciowej (powinien odpowiadać twojemu kluczowi API Nightscout)</string>
     <string name="title_xDrip_Web_Service_Secret">Klucz serwisu web xDrip</string>
@@ -1257,6 +1257,7 @@
     <string name="auto_refresh">Automatyczne odświeżanie</string>
     <string name="version">Wersja:</string>
     <string name="sensor_start">Uruchomienie czujnika:</string>
+    <string name="progress">postęp</string>
     <string name="transmitter_battery_status">Bateria nadajnika:  </string>
     <string name="connection_status">Status połączenia:</string>
     <string name="range_in_high_low">Zakres: (w/wyżej/niżej)</string>
