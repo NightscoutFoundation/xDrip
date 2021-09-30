@@ -1544,7 +1544,7 @@
     <string name="pref_enable_insulinprofiles">Aktiviere mindestens ein Profil, maximal drei</string>
     <string name="pref_select_basal_insulinprofiles">Wähle das Basalratenprofil.</string>
     <string name="pref_select_bolus_insulinprofiles">wähle dein Bolus-Insulin-Profil, auch verwendet für Pumpe und Pen...</string>
-    <string name="enable_streaming_summary">verbinde Libre2-Sensoren nach dem Scannen. Das Libre-Lesegerät und die LibreLink-App werden dann keine Alarme mehr empfangen</string>
+    <string name="enable_streaming_summary">Verbinde Libre2 Sensoren nach dem Scannen. Das Libre Lesegerät und die LibreLink App werden dann keine Alarme mehr empfangen</string>
     <string name="enable_streaming_title">Starte Bluetooth-Verbindung mit Libre2-Sensoren</string>
     <string name="enable_streaming_always_allow">Immer mit Libre2-Sensoren verbinden</string>
     <string name="enable_streaming_ask_each_time">jedes Mal nachfragen</string>
@@ -1552,6 +1552,6 @@
     <string name="enable_streaming_dialog_yes">Verbinde mit diesem Libre2-Sensor</string>
     <string name="enable_streaming_dialog_no">Nicht mit diesem Libre2-Sensor verbinden </string>
     <string name="enable_streaming_dialog_dont_ask_again">Nicht erneut fragen</string>
-    <string name="enable_streaming_dialog_text">Möchtest Du xDrip mit diesem Sensor verbinden? Das Libre Lesegerät und die Libre Link-App werden dann keine Alarme mehr empfangen. Drücke \"Ja\" und scanne erneut für eine Verbindung (wähle \"nicht verbinden\", wenn Du xDrip mit der gepatchten Libre-App benutzt)</string>
+    <string name="enable_streaming_dialog_text">Möchtest du xDrip mit diesem Sensor verbinden? Das Libre Lesegerät und die LibreLink App werden dann keine Alarme mehr empfangen. Drücke \"Ja\" und scanne erneut für eine Verbindung (wähle \"nicht verbinden\", wenn du xDrip mit der gepatchten Libre App nutzen möchtest)</string>
     <string name="enable_streaming_dialog_title">Verbinde Libre-Sensor mit Bluetooth</string>
 </resources>
