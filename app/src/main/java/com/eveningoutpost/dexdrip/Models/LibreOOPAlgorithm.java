@@ -151,21 +151,21 @@ public class LibreOOPAlgorithm {
             return null;
         }
         if(ret == null) {
-            Log.e(TAG, "waitForUnlockPayload (sendGetBlutoothEnablePayload) returning null");
+            Log.e(TAG, "waitForUnlockPayload (sendGetBluetoothEnablePayload) returning null");
         } else {
-            Log.e(TAG, "waitForUnlockPayload (sendGetBlutoothEnablePayload) got data payload is " + JoH.bytesToHex(ret.btUnlockBuffer) + " "+  JoH.bytesToHex(ret.nfcUnlockBuffer)  +
+            Log.e(TAG, "waitForUnlockPayload (sendGetBluetoothEnablePayload) got data payload is " + JoH.bytesToHex(ret.btUnlockBuffer) + " "+  JoH.bytesToHex(ret.nfcUnlockBuffer)  +
                     " unlockBufferArray = " + ret.unlockBufferArray);
         }
         return ret;
     }
     
-    static public  UnlockBuffers sendGetBlutoothEnablePayload(boolean increaseConnectionIndex) {
+    static public  UnlockBuffers sendGetBluetoothEnablePayload(boolean increaseConnectionIndex) {
         Libre2SensorData currentSensorData = Libre2SensorData.getSensorData(increaseConnectionIndex);
         if(currentSensorData == null) {
-            Log.e(TAG, "sendGetBlutoothEnablePayload currentSensorData == null");
+            Log.e(TAG, "sendGetBluetoothEnablePayload currentSensorData == null");
             return null;
         }
-        Log.e(TAG, "sendGetBlutoothEnablePayload called enableTime_ = " + currentSensorData.enableTime_ +
+        Log.e(TAG, "sendGetBluetoothEnablePayload called enableTime_ = " + currentSensorData.enableTime_ +
                 " connectionIndex_ " + currentSensorData.connectionIndex_ + 
                  " patchUid " + JoH.bytesToHex(currentSensorData.patchUid_) +
                  " patchInfo " + JoH.bytesToHex(currentSensorData.patchInfo_) +
@@ -188,27 +188,27 @@ public class LibreOOPAlgorithm {
         }
         return unlockBuffers;
     }
-    static public  byte[] getCachedBtUnlokKey(boolean increaseConnectionIndex) {
-        return Libre2SensorData.getCachedBtUnlokKey(increaseConnectionIndex);
+    static public  byte[] getCachedBtUnlockKey(boolean increaseConnectionIndex) {
+        return Libre2SensorData.getCachedBtUnlockKey(increaseConnectionIndex);
     }
     
-    static public  Pair<byte[], String> nfcSendgetBlutoothEnablePayload() {
-        UnlockBuffers unlockBuffers = sendGetBlutoothEnablePayload(false);
+    static public  Pair<byte[], String> nfcSendgetBluetoothEnablePayload() {
+        UnlockBuffers unlockBuffers = sendGetBluetoothEnablePayload(false);
         if(unlockBuffers == null) {
-            Log.e(TAG, "nfcSendgetBlutoothEnablePayload returning null");
+            Log.e(TAG, "nfcSendgetBluetoothEnablePayload returning null");
             return null;
         }
         return new Pair(unlockBuffers.nfcUnlockBuffer, unlockBuffers.deviceName);
     }
 
-    static public  byte[] btSendgetBlutoothEnablePayload(boolean increaseConnectionIndex) {
-        byte[] btUnlockBuffer = LibreOOPAlgorithm.getCachedBtUnlokKey(increaseConnectionIndex);
+    static public  byte[] btSendgetBluetoothEnablePayload(boolean increaseConnectionIndex) {
+        byte[] btUnlockBuffer = LibreOOPAlgorithm.getCachedBtUnlockKey(increaseConnectionIndex);
         if(btUnlockBuffer != null) {
             return btUnlockBuffer;
         }
-        UnlockBuffers unlockBuffers = sendGetBlutoothEnablePayload(increaseConnectionIndex);
+        UnlockBuffers unlockBuffers = sendGetBluetoothEnablePayload(increaseConnectionIndex);
         if(unlockBuffers == null) {
-            Log.e(TAG, "btSendgetBlutoothEnablePayload returning null");
+            Log.e(TAG, "btSendgetBluetoothEnablePayload returning null");
             return null;
         }
         return unlockBuffers.btUnlockBuffer;
@@ -419,7 +419,7 @@ public class LibreOOPAlgorithm {
         lastRecievedData = JoH.tsl();
         Log.e(TAG, "handleOop2BluetoothEnableResult - data bt_unlock_buffer " + JoH.bytesToHex(bt_unlock_buffer) + "\n nfc_unlock_buffer "+ JoH.bytesToHex(nfc_unlock_buffer));
         if (unlockBufferArray!= null && unlockBufferArray.size() > 0) {
-            Log.e(TAG, "handleOop2BluetoothEnableResult big buffer first " + JoH.bytesToHex(unlockBufferArray.get(0)));
+            Log.d(TAG, "handleOop2BluetoothEnableResult big buffer first " + JoH.bytesToHex(unlockBufferArray.get(0)));
         }
         UnlockBlockingQueue.clear();
         try {

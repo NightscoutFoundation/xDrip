@@ -208,7 +208,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
                                 
                             case Intents.XDRIP_BLUETOOTH_ENABLE_RESULT:
                                 Log.i(TAG, "recieved message XDRIP_BLUETOOTH_ENABLE_RESULT");
-                                handleOop2BlutoothEnableResult(bundle);
+                                handleOop2BluetoothEnableResult(bundle);
                                 break;
 
                             default:
@@ -317,7 +317,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
         LibreOOPAlgorithm.handleDecodedBleResult(CaptureDateTime, ble_data, patchUid);
     }
     
-    private void handleOop2BlutoothEnableResult(Bundle bundle) {
+    private void handleOop2BluetoothEnableResult(Bundle bundle) {
         if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             Log.e(TAG, "External OOP algorithm is on, ignoring data.");
             return;

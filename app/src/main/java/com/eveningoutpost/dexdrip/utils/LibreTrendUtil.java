@@ -74,7 +74,7 @@ public class LibreTrendUtil {
 
     private static LibreTrendUtil singleton;
     private static final String TAG = "LibreTrendGraph";
-    private static final boolean debug_per_minute = true;
+    private static final boolean debug_per_minute = false;
     final int MAX_POINTS = 16 * 24 * 60; // Assume that there will not be data for longer than 14 days + some extra.
 
     private LibreTrendLatest m_libreTrendLatest;

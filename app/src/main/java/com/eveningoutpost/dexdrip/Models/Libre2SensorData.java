@@ -63,6 +63,7 @@ public class Libre2SensorData {
         return libre2SensorData;
     }
 
+    // This function only updates the unlockBufferArray
     static synchronized void saveBtUnlockArray( ArrayList<byte[]> unlockBufferArray, int connectionIndex) {
         if(currentSensorData == null) {
             String json = PersistentStore.getString(SENSOR_DATA_KAY);
@@ -79,7 +80,7 @@ public class Libre2SensorData {
         PersistentStore.setString(SENSOR_DATA_KAY, currentSensorData.toJson());
     }
 
-    static synchronized public byte[] getCachedBtUnlokKey(boolean increaseConnectionIndex) {
+    static synchronized public byte[] getCachedBtUnlockKey(boolean increaseConnectionIndex) {
         if(currentSensorData == null) {
             String json = PersistentStore.getString(SENSOR_DATA_KAY);
             currentSensorData = createFromJson(json);

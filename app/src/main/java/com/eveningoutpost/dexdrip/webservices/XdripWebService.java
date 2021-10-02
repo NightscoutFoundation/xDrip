@@ -270,7 +270,7 @@ public class XdripWebService implements Runnable {
             boolean headersOnly = false;
             int lineCount = 0;
             while (!TextUtils.isEmpty(line = reader.readLine()) && lineCount < 50) {
-                UserError.Log.e(TAG, line);
+
                 if (line.startsWith("GET /") || line.startsWith("HEAD /")) {
                     int start = line.indexOf('/') + 1;
                     int end = line.indexOf(' ', start);
@@ -284,7 +284,6 @@ public class XdripWebService implements Runnable {
                 } else if (line.toLowerCase().startsWith(("api-secret"))) {
                     final String requestSecret[] = line.split(": ");
                     if (requestSecret.length < 2) continue;
-                    UserError.Log.e(TAG,"hashedSecret = " + hashedSecret + " requestSecret " + requestSecret[1] + " " + line );
                     secretCheckResult.set(hashedSecret != null && hashedSecret.equalsIgnoreCase(requestSecret[1]));
                     break; // last and only header checked and will appear after GET request
                 }
@@ -303,9 +302,9 @@ public class XdripWebService implements Runnable {
             final WebResponse response;
 
             if (secretCheckResult.isFalse() || (authNeeded && !secretCheckResult.isTrue())) {
-                final String failureMessage = "AAAAAAuthentication failed - check api-secret\n"
-                        + "\n" + (authNeeded ? "secret is required " : "ssssssecret is not required")
-                        + "\n" + secretCheckResult.trinary("no secret supplied", "supplied secret matches", "supplied sssssssecret doesn't match")
+                final String failureMessage = "Authentication failed - check api-secret\n"
+                        + "\n" + (authNeeded ? "secret is required " : "secret is not required")
+                        + "\n" + secretCheckResult.trinary("no secret supplied", "supplied secret matches", "supplied secret doesn't match")
                         + "\n" + "Your address: " + socket.getInetAddress().toString()
                         + "\n\n";
                 if (JoH.ratelimit("web-auth-failure", 10)) {

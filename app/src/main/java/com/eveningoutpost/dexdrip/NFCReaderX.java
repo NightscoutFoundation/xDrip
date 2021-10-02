@@ -85,8 +85,8 @@ public class NFCReaderX {
     // Never in production. Used to emulate German sensor behavior.
     public static boolean use_fake_de_data() {
         //Pref.setBoolean("use_fake_de_data", true);
-        Log.e(TAG, "Not using fake data");
-        return false;//Pref.getBooleanDefaultFalse("use_fake_de_data");
+        //Log.e(TAG, "Not using fake data");
+        return Pref.getBooleanDefaultFalse("use_fake_de_data");
     }
 
     static boolean enable_bluetooth_ask_user = false;
@@ -486,7 +486,7 @@ public class NFCReaderX {
 
             Libre2SensorData.setLibre2SensorData(patchUid, patchInfo, 42, 1 , "");
             // This is the nfc command to enable streaming
-            Pair<byte[], String> unlockData = LibreOOPAlgorithm.nfcSendgetBlutoothEnablePayload();
+            Pair<byte[], String> unlockData = LibreOOPAlgorithm.nfcSendgetBluetoothEnablePayload();
             if (unlockData == null) {
                 Log.e(TAG, "unlockData is null, not enabeling streaming");
                 return;
@@ -514,7 +514,7 @@ public class NFCReaderX {
                     break;
                 } catch (IOException e) {
                     if ((System.currentTimeMillis() > time_patch + 2000)) {
-                        Log.e(TAG, "enablestraming command read timeout");
+                        Log.e(TAG, "enable streaming command read timeout");
                         JoH.static_toast_short(gs(R.string.nfc_read_timeout));
                         vibrate(context, 3);
                         return;

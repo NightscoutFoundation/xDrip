@@ -5,32 +5,24 @@ import android.os.AsyncTask;
 import android.os.PowerManager;
 import android.util.Base64;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
-import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.MapsActivity;
 import com.eveningoutpost.dexdrip.Models.LibreBluetooth;
 import com.eveningoutpost.dexdrip.NFCReaderX;
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
-import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.SensorSanity;
-import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.ParakeetHelper;
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.desertsync.RouteTools;
 import com.eveningoutpost.dexdrip.UtilityModels.MockDataSource;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
-import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.Mdns;
 import com.google.gson.Gson;
@@ -228,11 +220,11 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
         final List<LibreWifiData> trd_list = new LinkedList<LibreWifiData>();
         try {
             if (httpClient == null) {
-                httpClient = new OkHttpClient();
-                // suitable for GPRS
-                httpClient.setConnectTimeout(30, TimeUnit.SECONDS);
-                httpClient.setReadTimeout(60, TimeUnit.SECONDS);
-                httpClient.setWriteTimeout(20, TimeUnit.SECONDS);
+                httpClient = new OkHttpClient.Builder()
+                        .connectTimeout(30, TimeUnit.SECONDS)
+                        .writeTimeout(20, TimeUnit.SECONDS)
+                        .readTimeout(60, TimeUnit.SECONDS)
+                        .build();
             }
 
             // simple HTTP GET request
@@ -435,18 +427,18 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
         Log.d(TAG, "gapTime = " + gapTime);
         if (gapTime < 0) {
             // There is some confusion here (clock was readjusted?)
-            Log.e(TAG, "gapTime <= null returning 60000");
+            Log.e(TAG, "gapTime <= 0 returning 60000");
             return 60 * 1000L;
         }
 
-        long sensro_period = isLibre2() ? LIBRE_2_PERIOD : LIBRE_1_PERIOD;
-        if (gapTime < sensro_period) {
+        long sensor_period = isLibre2() ? LIBRE_2_PERIOD : LIBRE_1_PERIOD;
+        if (gapTime < sensor_period) {
             // We have received the last packet...
             // 300000 - gaptime is when we expect to have the next packet.
-            return (sensro_period - gapTime) + 2000;
+            return (sensor_period - gapTime) + 2000;
         }
 
-        gapTime = gapTime % sensro_period;
+        gapTime = gapTime % sensor_period;
         Log.d(TAG, "modulus gapTime = " + gapTime);
         if (gapTime < 10000) {
             // A new packet should arrive any second now
@@ -457,7 +449,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
             return 30000L;
         }
 
-        return (sensro_period - gapTime) + 2000;
+        return (sensor_period - gapTime) + 2000;
     }
 
     public Void doInBackground(String... urls) {
@@ -486,7 +478,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
             Log.e(TAG, "LastReportedTime = " + JoH.dateTimeText(LastReportedTime));
 
             // jamorham fix to avoid going twice to network when we just got a packet
-            if ((new Date().getTime() - LastReportedTime) < 60000 - 2000) {
+            if ((new Date().getTime() - LastReportedTime) < Constants.MINUTE_IN_MS - 2000) {
                 Log.d(TAG, "Already have a recent packet - returning");
                 if (JoH.ratelimit("deferred-msg", 60)) {
                     statusLog(" Deferred", "Already have recent reading");
@@ -529,8 +521,8 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
 
             Log.d(TAG, "checking packet from " + JoH.dateTimeText(LastReading.CaptureDateTime));
 
-            if ((LastReading.CaptureDateTime > LastReportedTime + 55000) &&
-                    LastReading.CaptureDateTime < new Date().getTime() + 120000) {
+            if ((LastReading.CaptureDateTime > LastReportedTime +  Constants.MINUTE_IN_MS - 5000) &&
+                    LastReading.CaptureDateTime < new Date().getTime() + 2 *  Constants.MINUTE_IN_MS) {
                 // We have a real new reading...
                 Log.d(TAG, "will call with packet from " + JoH.dateTimeText(LastReading.CaptureDateTime));
 

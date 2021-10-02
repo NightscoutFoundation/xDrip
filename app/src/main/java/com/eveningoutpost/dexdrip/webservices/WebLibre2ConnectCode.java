@@ -41,9 +41,9 @@ public class WebLibre2ConnectCode extends BaseWebService {
             }
             final String deviceAddress = btDevice.address;
 
-            byte[] btUnlockBuffer = LibreOOPAlgorithm.btSendgetBlutoothEnablePayload(!readOnly);
+            byte[] btUnlockBuffer = LibreOOPAlgorithm.btSendgetBluetoothEnablePayload(!readOnly);
             if(btUnlockBuffer == null) {
-                UserError.Log.e(TAG, "btSendgetBlutoothEnablePayload returned null");
+                UserError.Log.e(TAG, "btSendgetBluetoothEnablePayload returned null");
                 return new WebResponse(reply.toString()); // I wonder how this will work with the recieving side???
             }
             reply.put(Intents.BT_UNLOCK_BUFFER, Base64.encodeToString(btUnlockBuffer, Base64.NO_WRAP));
