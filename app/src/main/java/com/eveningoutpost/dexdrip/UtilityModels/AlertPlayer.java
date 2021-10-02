@@ -115,6 +115,7 @@ public class AlertPlayer {
     // when ascending how many minutes since alert started do we wait before escalating
     final static int MAX_VIBRATING_MINUTES = 2;
     final static int MAX_ASCENDING_MINUTES = 5;
+    public int Vibrating_Calc = Pref.getBoolean("delay_ascending_3min", true)? MAX_VIBRATING_MINUTES : -1; // Set to 2 if enabled and -1 if disabled
 
     public int streamType = AudioManager.STREAM_MUSIC;
 
@@ -258,7 +259,7 @@ public class AlertPlayer {
         activeBgAlert.snooze(repeatTime);
     }
 
-    // Check the state and alrarm if needed
+    // Check the state and alarm if needed
     public void ClockTick(Context ctx, boolean trendingToAlertEnd, String bgValue)
     {
         if (trendingToAlertEnd) {
@@ -510,7 +511,7 @@ public class AlertPlayer {
             }
         }
 
-        // Use timeFromStartPlaying to control the ascending volume profile
+        // Use timeFromStartPlaying to control the ascending volume
         if (profile != ALERT_PROFILE_ASCENDING) {
             // We start from the non ascending part...
             minsFromStartPlaying = MAX_ASCENDING_MINUTES;
@@ -534,10 +535,10 @@ public class AlertPlayer {
                 .setDeleteIntent(snoozeIntent(context, minsFromStartPlaying));
 
         if (profile != ALERT_PROFILE_VIBRATE_ONLY && profile != ALERT_PROFILE_SILENT) {
-            if (minsFromStartPlaying >= 0) {
-                // No reason to only vibrate as the vibrate_only profile is not selected
-                float volumeFrac = (float) (minsFromStartPlaying + 1) / 6;
-                /** The ascending volume starts at 17%, and increases by 17% once every minute. */
+            if (minsFromStartPlaying >= MAX_VIBRATING_MINUTES || (minsFromStartPlaying > Vibrating_Calc && !Pref.getBoolean("delay_ascending_3min", true))) {
+                float volumeFrac = (float) (minsFromStartPlaying - Vibrating_Calc) / (MAX_ASCENDING_MINUTES - Vibrating_Calc);
+                /** If delay_ascending_3min is enabled, the ascending volume starts at 33% with a 3-minute delay and increases by 33% every minute.
+                 *  If delay_ascending_3min is disabled, the ascending volume starts at 17% with no delay and increases by 17% once every minute. */
                 volumeFrac = Math.min(volumeFrac, 1);
                 if (profile == ALERT_PROFILE_MEDIUM) {
                     volumeFrac = (float) 0.7;
