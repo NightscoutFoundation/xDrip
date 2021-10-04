@@ -98,7 +98,7 @@ public class Atom {
         if (first == 0x82) {
             int expectedSize = lens + ATOM_FOOTER;
             if (s_full_data == null) {
-                InitBuffer(expectedSize)
+                InitBuffer(expectedSize);
             }
             addData(buffer);
             return reply;
