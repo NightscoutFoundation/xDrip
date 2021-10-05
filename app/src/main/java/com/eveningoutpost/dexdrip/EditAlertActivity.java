@@ -588,14 +588,28 @@ public class EditAlertActivity extends ActivityWithMenu {
 
         buttonalertMp3.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
-                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Select tone for Alerts:");
-                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true);
-                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
-                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALL);
-                startActivityForResult(intent, 999);
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                builder.setTitle("")
+                        .setItems(R.array.alertType, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (which == 0) {
+                                    Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
+                                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Select tone for Alerts:");
+                                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true);
+                                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
+                                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALL);
+                                    startActivityForResult(intent, 999);
+                                } else {
+                                    // Xdrip default was chosen; we leave the file name empty.
+                                    audioPath = "";
+                                    alertMp3File.setText(shortPath(audioPath));
+                                }
+                            }
+                        });
+                AlertDialog dialog = builder.create();
+                dialog.show();
             }
-       }); //- See more at: http://blog.kerul.net/2011/12/pick-file-using-intentactiongetcontent.html#sthash.c8xtIr1Y.dpuf
+        }); //- See more at: http://blog.kerul.net/2011/12/pick-file-using-intentactiongetcontent.html#sthash.c8xtIr1Y.dpuf
 
         checkboxAllDay.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             //          @Override
