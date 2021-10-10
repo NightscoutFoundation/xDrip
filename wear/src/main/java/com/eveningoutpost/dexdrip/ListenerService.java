@@ -2417,7 +2417,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                     bgData.save();
                                 } else {
                                     if (bgData.source_info != null && (bgData.source_info.contains("Native") || bgData.source_info.contains("Follow"))) {
-                                        UserError.Log.d(TAG, "Saving BgData without calibration as source info is native");
+                                        UserError.Log.d(TAG, "Saving BgData without calibration as source info is native or follow");
                                         bgData.sensor = sensor;
                                         bgData.sensor_uuid = sensor.uuid;
                                         changed = true;

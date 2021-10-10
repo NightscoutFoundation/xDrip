@@ -199,6 +199,8 @@ public class NSClientReceiver extends BroadcastReceiver {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("uuid", UUID.randomUUID().toString());
+            //TODO: Determine impact of making this not-null - scan all code
+            jsonObject.put("source_info", "NSClient Follow");
 
             jsonObject.put("timestamp", sgv_map.get("mills"));
             jsonObject.put("calculated_value", sgv_map.get("mgdl"));
