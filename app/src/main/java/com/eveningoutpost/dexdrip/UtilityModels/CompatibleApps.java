@@ -105,13 +105,13 @@ public class CompatibleApps extends BroadcastReceiver {
             }
         }
 
-        if (!Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
-            final String[] oop_package_names = {"info.nightscout.deeplearning", "com.hg4.oopalgorithm.oopalgorithm", "com.hg4.oopalgorithm.oopalgorithm2", "org.andesite.lucky8"};
-            final StringBuilder sb = new StringBuilder();
-            for (String package_name_o : oop_package_names) {
-                if (InstalledApps.checkPackageExists(context, package_name_o)) {
-                    if (sb.length() > 0) sb.append(",");
-                    sb.append(package_name_o);
+        final String[] oop_package_names = {"info.nightscout.deeplearning", "com.hg4.oopalgorithm.oopalgorithm", "com.hg4.oopalgorithm.oopalgorithm2", "org.andesite.lucky8"};
+        final StringBuilder sb = new StringBuilder();
+        for (String package_name_o : oop_package_names) {
+            if (InstalledApps.checkPackageExists(context, package_name_o)) {
+                if (sb.length() > 0) sb.append(",");
+                sb.append(package_name_o);
+                if (!Pref.getBooleanDefaultFalse("external_blukon_algorithm") && !package_name_o.equals("com.hg4.oopalgorithm.oopalgorithm2") ) {
                     if (JoH.pratelimit(package_name_o + NOTIFY_MARKER, RENOTIFY_TIME)) {
                         final String short_package = package_name_o.substring(package_name_o.lastIndexOf(".") + 1).toUpperCase();
                         id = notify(gs(R.string.external_calibration_app),
@@ -120,9 +120,9 @@ public class CompatibleApps extends BroadcastReceiver {
                     }
                 }
             }
-            if (sb.length() > 0) {
-                PersistentStore.setString(EXTERNAL_ALG_PACKAGES, sb.toString());
-            }
+        }
+        if (sb.length() > 0) {
+            PersistentStore.setString(EXTERNAL_ALG_PACKAGES, sb.toString());
         }
 
         checkMemoryConstraints();
