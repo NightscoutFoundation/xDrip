@@ -65,6 +65,9 @@ public class SourceWizard {
             libre.addChild(new Item(gs(R.string.libre_patched), DexCollectionType.LibreReceiver, R.drawable.libre_icon_image));
 
         }
+
+        root.addChild(new Item("xDrip+ Sync Follower", DexCollectionType.Follower, R.drawable.xdripfollow_icon));
+
         Tree<Item> other = root.addChild(new Item(gs(R.string.other), gs(R.string.which_type_of_device), R.drawable.wikimedia_question_mark));
         {
             other.addChild(new Item("640G / 670G", DexCollectionType.NSEmulator, R.drawable.mm600_series));
