@@ -17,7 +17,11 @@
     <string name="title_activity_start_new_sensor">Εκκίνηση καινούριου αισθητήρα</string>
     <string name="title_activity_new_sensor_location">Τοποθεσία καινούργιου αισθητήρα</string>
     <string name="title_activity_stop_sensor">Διακοπή αισθητήρα</string>
+    <string name="title_activity_nav_drawer">Μενού περιήγησης</string>
+    <string name="navigation_drawer_open">Άνοιξε το μενού περιήγησης</string>
+    <string name="navigation_drawer_close">Κλείσε το μενού περιήγησης</string>
     <string name="title_activity_calibration_check_in">Δραστηριότητα Βαθμονόμησης</string>
+    <string name="title_activity_usb_connected">Δραστηριότητα συνδεδεμένων USB</string>
     <string name="snooze">Αναβολή</string>
     <string name="snooze_hint">Αναβολή ειδοποίησης για x λεπτά</string>
     <string name="ok">Εντάξει</string>
@@ -34,10 +38,12 @@
     <string name="auto_configure_title">Αυτόματη ρύθμιση</string>
     <string name="prefs_auto_config_summary">Αυτόματη ρύθμιση παραμέτρων χρησιμοποιώντας barcode.</string>
     <string name="scan_share2_barcode">Σάρωση Κοινοποίησης Barcode</string>
+    <string name="pref_share2_scan_barcode_summary">Ή σκάναρε το barcode στο δέκτη διαμοιρασμού</string>
     <!-- MongoDB Settings -->
     <string name="pref_title_mongodb">MongoDB</string>
     <string name="pref_summary_mongodb_enabled">Απευθείας μεταφόρτωση βάσης δεδομένων, δεν συνιστάται για Nightscout</string>
     <string name="pref_title_mongodb_uri">URI</string>
+    <string name="pref_dialog_mongodb_uri">Εισήγαγε MongoDB UR</string>
     <string name="pref_message_mongodb_uri">Αντικαταστήστε τις τιμές παραδειγμάτων σε {} με τις σωστές τιμές σας</string>
     <string name="pref_default_mongodb_uri">mongodb://{user}:{password}@{host}.mongolab.com:{11111}/{database}</string>
     <string name="pref_title_mongodb_collection">Όνομα συλλογής</string>
