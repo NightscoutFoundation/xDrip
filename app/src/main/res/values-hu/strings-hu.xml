@@ -771,8 +771,8 @@
     <string name="step_counter_2nd_color">Lépésszámláló 2. szín</string>
     <string name="flair_colors">Megkülönböztető színek</string>
     <string name="use_flair_colors">Egyedi színek használata</string>
-    <string name="upper_title_bar_flair">xDrip állapotsor színe</string>
-    <string name="lower_button_bar_falir">Navigációs sáv színe</string>
+    <string name="upper_title_bar_flair">Felső állapotsor színe</string>
+    <string name="lower_button_bar_falir">Alsó gombsáv színe</string>
     <string name="force_english_text">Mindenképpen angol nyelv</string>
     <string name="using_local_language">Jelenleg a készüléke beállítása szerinti nyelvet használja</string>
     <string name="forcing_alternate_language">Jelenleg az alternatív nyelvet használja</string>
