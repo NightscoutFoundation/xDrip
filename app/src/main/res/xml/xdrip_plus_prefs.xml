@@ -609,7 +609,7 @@
             android:key="xdrip_plus_profile_category"
             android:title="@string/xdrip_plus_prediction_settings">
             <SwitchPreference
-                android:defaultValue="true"
+                android:defaultValue="false"
                 android:key="simulations_enabled"
                 android:summary="@string/display_mathamatical_simulations"
                 android:switchTextOff="@string/short_off_text_for_switches"
