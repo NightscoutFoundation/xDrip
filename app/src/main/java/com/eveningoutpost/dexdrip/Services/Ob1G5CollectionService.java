@@ -38,6 +38,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.BroadcastGlucose;
@@ -1717,9 +1718,11 @@ public class Ob1G5CollectionService extends G5BaseService {
             final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_STARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
             JoH.showNotification(state.getText(), "Sensor Stopped", pi, G5_SENSOR_STARTED, true, true, false);
             UserError.Log.ueh(TAG, "Native Sensor is now Stopped: " + state.getExtendedText());
+            Treatments.sensorStop(null, "Stopped by transmitter: " + state.getExtendedText());
         } else if (is_started && !was_started) {
             JoH.cancelNotification(G5_SENSOR_STARTED);
             UserError.Log.ueh(TAG, "Native Sensor is now Started: " + state.getExtendedText());
+            Treatments.sensorStartIfNeeded();
         }
 
         if (is_failed && !was_failed) {
@@ -2092,8 +2095,10 @@ public class Ob1G5CollectionService extends G5BaseService {
             l.add(new StatusItem("Transmitter Days", ((bt.runtime > -1) ? bt.runtime : "") + ((timekeeperDays > -1) ? ((FirmwareCapability.isTransmitterG6Rev2(tx_id) ? " " : " / ") + timekeeperDays) : "") + ((last_transmitter_timestamp > 0) ? " / " + JoH.qs((double) last_transmitter_timestamp / 86400, 1) : "")));
             l.add(new StatusItem("Voltage A", bt.voltagea, bt.voltagea < LOW_BATTERY_WARNING_LEVEL ? BAD : NORMAL));
             l.add(new StatusItem("Voltage B", bt.voltageb, bt.voltageb < (LOW_BATTERY_WARNING_LEVEL - 10) ? BAD : NORMAL));
-            if (vr != null && FirmwareCapability.isFirmwareTemperatureCapable(vr.firmware_version_string)) {
+            if (vr != null && FirmwareCapability.isFirmwareResistanceCapable(vr.firmware_version_string)) {
                 l.add(new StatusItem("Resistance", bt.resist, bt.resist > 1400 ? BAD : (bt.resist > 1000 ? NOTICE : (bt.resist > 750 ? NORMAL : Highlight.GOOD))));
+            }
+            if (vr != null && FirmwareCapability.isFirmwareTemperatureCapable(vr.firmware_version_string)) {
                 l.add(new StatusItem("Temperature", bt.temperature + " \u2103"));
             }
         }

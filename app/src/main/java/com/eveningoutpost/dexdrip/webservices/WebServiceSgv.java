@@ -111,6 +111,10 @@ public class WebServiceSgv extends BaseWebService {
             sensor_status_string = SensorStatus.status();
         }
 
+        if (cgi.containsKey("test_trigger_exception")) {
+            throw new RuntimeException("This is a test exception");
+        }
+
         if (cgi.containsKey("brief_mode")) {
             brief = true;
         }

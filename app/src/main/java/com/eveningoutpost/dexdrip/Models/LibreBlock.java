@@ -101,7 +101,7 @@ public class LibreBlock  extends PlusModel {
         final LibreBlock lb = create(reference, timestamp, blocks, byte_start, patchUid, patchInfo);
         if (lb != null) {
             lb.save();
-            if(byte_start == 0 && blocks.length == 344 && allowUpload) {
+            if(byte_start == 0 && blocks.length == Constants.LIBRE_1_2_FRAM_SIZE && allowUpload) {
                 Log.d(TAG, "sending new item to queue");
                 UploaderQueue.newTransmitterDataEntry("create" ,lb);
             }
@@ -161,7 +161,7 @@ public class LibreBlock  extends PlusModel {
         // Using this syntax since there is no way to tell the DB which index to use.
         // Using ActiveAndroid method would take up to 8 seconds to complete.
         try (Cursor cursor = db.rawQuery("select * from libreblock  INDEXED BY  index_LibreBlock_timestamp " +
-                "WHERE bytestart == 0 AND (byteend == 344 OR byteend == 44) " +
+                "WHERE bytestart == 0 AND (byteend == " + Constants.LIBRE_1_2_FRAM_SIZE + " OR byteend == 44) " +
                 "AND timestamp BETWEEN " + start_time + " AND " + end_time +
                 " ORDER BY timestamp DESC LIMIT 1", null)) {
 
@@ -185,7 +185,7 @@ public class LibreBlock  extends PlusModel {
         // the wrong key was used for the query, and it takes 2-3 minutes.
         List<LibreBlock> res = new ArrayList<LibreBlock>();
         for (LibreBlock lb: res1) {
-            if (lb.byte_start == 0 && (lb.byte_end == 344 || lb.byte_end == 44)) {
+            if (lb.byte_start == 0 && (lb.byte_end == Constants.LIBRE_1_2_FRAM_SIZE || lb.byte_end == 44)) {
                 res.add(lb);
             }
         }
@@ -253,6 +253,8 @@ public class LibreBlock  extends PlusModel {
          @Expose
          public int Bubblebattery;
          @Expose
+         public int Atombattery;
+         @Expose
          public int nfc_sensor_age;
          @Expose
          public LibreBlock libreBlock;
@@ -263,6 +265,7 @@ public class LibreBlock  extends PlusModel {
         elb.bridge_battery = Pref.getInt("bridge_battery", 0);
         elb.Tomatobattery = PersistentStore.getStringToInt("Tomatobattery", 0);
         elb.Bubblebattery = PersistentStore.getStringToInt("Bubblebattery", 0);
+        elb.Atombattery = PersistentStore.getStringToInt("Atombattery", 0);
         elb.nfc_sensor_age = Pref.getInt("nfc_sensor_age", 0);
         elb.libreBlock = this;
         return JoH.defaultGsonInstance().toJson(elb);
@@ -284,6 +287,7 @@ public class LibreBlock  extends PlusModel {
         Pref.setInt("bridge_battery", elb.bridge_battery);
         PersistentStore.setString("Tomatobattery", Integer.toString(elb.Tomatobattery));
         PersistentStore.setString("Bubblebattery", Integer.toString(elb.Bubblebattery));
+        PersistentStore.setString("Atombattery", Integer.toString(elb.Atombattery));
         Pref.setInt("nfc_sensor_age", elb.nfc_sensor_age);
         return elb.libreBlock;
     }

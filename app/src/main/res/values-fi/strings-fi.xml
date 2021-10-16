@@ -8,7 +8,7 @@
     <string name="menu_refresh">Päivitä</string>
     <string name="menu_export_database">Vie tietokanta</string>
     <string name="menu_export_csv_sidiary">Vie CSV (SiDiary muodossa)</string>
-    <string name="menu_import_db">Tuo tietokanta</string>
+    <string name="menu_import_db">Palauta tietokanta</string>
     <string name="error_bluetooth_not_supported">Virhe: Tämä laite ei tue Bluetoothia</string>
     <string name="unknown_device">Tunnistamaton laite</string>
     <string name="connecting_to_device">Yhdistetään laitteeseen</string>
@@ -27,7 +27,7 @@
     <string name="ok">OK</string>
     <string name="cancel">Peruuta</string>
     <string name="no">Ei</string>
-    <string name="pref_sensor_location_dont_ask_again"> Älä kysy enää uudestaan</string>
+    <string name="pref_sensor_location_dont_ask_again"> Älä kysy uudestaan</string>
     <string name="title_activity_error">"Virhe- ja tapahtumalista"</string>
     <string name="title_activity_main">Pääaktiviteetti</string>
     <string name="title_activity_fake_numbers">Keksittyjä numeroita</string>
@@ -69,7 +69,7 @@
     <string name="location_yes">Käytä</string>
     <!-- broadcast settings -->
     <string name="pref_title_broadcast_enabled">Kuuluta paikallisesti</string>
-    <string name="pref_summary_broadcast_enabled">Ota käyttöön paikallinen tietojen kuulutus muita ohjelmistoja kuten NightWatchia varten</string>
+    <string name="pref_summary_broadcast_enabled">Ota käyttöön tietojen paikallinen lähetys muille sovelluksille kuten NightWatchille</string>
     <string name="title_activity_share_test">Share koe</string>
     <!-- pebble settings -->
     <string name="pref_pebble_trend_watchface">Käytä Pebble Trend kellotaulua</string>
@@ -289,6 +289,7 @@
     <string name="upload_data_to_dex_servers">Lähetä tiedot Dexcomin Palvelimelle jotta voit käyttää tietojasi Dexcomin sovelluksilla</string>
     <string name="manage_followers">Hallitse seuraajia</string>
     <string name="manage_existing_followers">Hallitse nykyisiä seuraajia ja kutsu uusia.</string>
+    <string name="invite_follower">Kutsu seuraaja</string>
     <string name="glucose_calibration_and_other_alerts">Glukoosi, kalibrointi ja muut hälytykset</string>
     <string name="alert_volume_profile">Hälytyksen äänenvoimakkuusprofiili</string>
     <string name="smart_alerting">Älykkäät varoitukset</string>
@@ -319,6 +320,7 @@
     <string name="speak_your_treatment">Puhu hoitotapahtuma, esim:\nxx yksikköä insuliinia / xx grammaa hiilihydraatteja</string>
     <string name="speech_recognition_is_not_supported">Puheentunnistusta ei tueta</string>
     <string name="treatment_note">Hoitoa koskeva merkintä</string>
+    <string name="accessibility_description">xDrip käyttää Esteettömyysominaisuutta vain säätääksesi näyttöä, kun laite on lukittu. Tämä on todennäköisesti hyödyllistä vain, jos sinulla on puhelin \"Always On Display\"-ominaisuudella ja olet ottanut sen käyttöön. xDrip ei anna tietoja Androidille muulla tavoin.</string>
     <string name="could_not_export_database">Tietokantaa ei voitu tallentaa :(</string>
     <string name="exported_to">"Tallennetaan kohteeseen "</string>
     <string name="default_to_voice_input_next_time">Käytä ensi kerralla puhesyöttöä</string>
@@ -366,7 +368,7 @@
     <string name="install_pebble_trend_watchface">Asenna Pebble Trend -kellotaulu</string>
     <string name="install_pebble_watchface">Asenna Pebble -kellotaulu</string>
     <string name="glucose_history">Glukoosihistoria</string>
-    <string name="import_database">Tuo tietokanta</string>
+    <string name="import_database">Palauta tietokanta</string>
     <string name="sensor_table">Sensoritaulukko</string>
     <string name="bg_readings_table">VS-arvojen Taulukko</string>
     <string name="long_press_to_split_or_delete">Jaa tai poista painamalla pitkään</string>
@@ -693,6 +695,7 @@
     <string name="g5_scan_constantly">Jotkin laitteet toimivat paremmin, kun jatkuvan skannauksen valinta on päällä, toiset eivät. Jos sensorin lukeminen onnistuu luotettavasti ilman tätä valintaa, poista se käytöstä, sillä tämä lisää virrankulutusta.</string>
     <string name="scan_for_g5_constantly">Skannaa G5-lähetintä jatkuvasti</string>
     <string name="g5_force_ui_thread">Tämä on ratkaisevan tärkeä valinta joidenkin Android-laitteiden yhdistämisessä, mutta se voi aiheuttaa lukemien jäämistä välistä muiden kuormittavien toimintojen aikana.</string>
+    <string name="force_g5_ui_thread">Pakota G5 käyttöliittymän säikeeseen</string>
     <string name="authentificate_before_reading">Todenna G5 ennen jokaista lukua</string>
     <string name="g5_full_authentification">Tämä suorittaa täyden todennuksen jokaisella lukuyrityksellä. Välttämätön G5-lähettimen uudemmilla laiteohjelmistoilla.</string>
     <string name="unbond_g5_before_read">Katkaise G5-yhteys ennen jokaista lukukertaa</string>
@@ -840,6 +843,7 @@
     <string name="repeat_sound">Toista ääni</string>
     <string name="enable_telemetry">Salli telemetria</string>
     <string name="send_data_to_developers">Lähetä tietoja sovelluskehittäjille eri laitteiden onnistumisasteista</string>
+    <string name="try_to_work_around_noisy_readings_ultrasensitive">Aloita sensorin häiriölukemien korjaaminen jo hyvin pienillä häiriötasoilla (vain ohjelmistokehitystila)</string>
     <string name="sidiary_date_title">Tietojen vienti mistä alkaen?</string>
     <string name="blukon">BluCon</string>
     <string name="tomato">Tomato</string>
@@ -867,6 +871,7 @@
     <string name="restart_collector">Käynnistä kerääjä uudelleen</string>
     <string name="forget_device">Unohda laite</string>
     <string name="other_notes">Muut merkinnät:</string>
+    <string name="delete_future_data">Poista tulevat tiedot</string>
     <string name="show_only_untranslated">Näytä vain kääntämättömät</string>
     <string name="collecting_initial_readings">Ensimmäisiä lukemia kerätään</string>
     <string name="data_collector_running">Tietojen kerääjä toiminnassa</string>
@@ -911,6 +916,7 @@
     <string name="enable_local_web_server_feature_fitbit">Ota käyttöön paikallinen web-palvelin Fitbitin kellotaulua varten?</string>
     <string name="set_data_source_to">Aseta tietolähde: %s ?</string>
     <string name="are_you_sure">Oletko varma?</string>
+    <string name="g4_share_receiver">G4 Jakajan vastaanotin</string>
     <string name="bluetooth_wixel">Bluetooth Wixel</string>
     <string name="parakeet_wifi">Parakeet / Wifi</string>
     <string name="other">Muu</string>
@@ -954,20 +960,20 @@
     <string name="emergency_message_feature">Viestit hätätilanteessa -ominaisuus</string>
     <string name="text_messages_can_be_sent_with_your_location_if_you_do_not_respond_to_alarms_this_feature_is_experimental_and_may_not_be_reliable">Sovellus voi lähettää sijaintitietosi sisältäviä tekstiviestejä, ellet vastaa hälytyksiin. Tämä on kokeellinen ominaisuus eikä välttämättä toimi luotettavasti.</string>
     <string name="your_name">Nimesi</string>
-    <string name="did_not_acknowledge_a_low_glucose_alert">%s ei ole kuitannut alhaisen verensokerin hälytystä ajassa %s</string>
-    <string name="did_not_acknowledge_a_high_glucose_alert">%s ei ole kuitannut korkean verensokerin hälytystä ajassa %s</string>
-    <string name="has_not_had_glucose_data_received_for">%s ei ole saanut verensokeritietoja ajassa %s</string>
-    <string name="phone_has_not_been_used_for">%s puhelinta ei ole käytetty ajassa %s</string>
+    <string name="did_not_acknowledge_a_low_glucose_alert">%1$s ei ole kuitannut alhaisen verensokerin hälytystä ajassa %2$s</string>
+    <string name="did_not_acknowledge_a_high_glucose_alert">%1$s ei ole kuitannut korkean verensokerin hälytystä ajassa %2$s</string>
+    <string name="has_not_had_glucose_data_received_for">%1$s ei ole saanut verensokeritietoja ajassa %2$s</string>
+    <string name="phone_has_not_been_used_for">%1$s puhelinta ei ole käytetty ajassa %2$s</string>
     <string name="is_requesting_assistance">%s pyytää apua</string>
     <string name="is_testing_the_assistance_request_feature">%s kokeilee avunpyyntö-ominaisuutta</string>
-    <string name="emergency_message_near_format_string">%s lähellä %s %s %s %s</string>
+    <string name="emergency_message_near_format_string">%1$s lähellä %2$s %3$s %4$s %5$s</string>
     <string name="choose_when_to_send_messages">Valitse milloin viestejä lähetetään:</string>
     <string name="low_alert_not_acknowledged">Matalan hälytystä ei kuitattu</string>
     <string name="high_alert_not_acknowledged">Korkean hälytystä ei kuitattu</string>
     <string name="device_inactivity">Laitteen passiivisuus</string>
     <string name="test_message_sending">Testaa viestin lähetystä</string>
     <string name="d_selected_contacts_for_text_messages_format">%d valitut yhteystiedot tekstiviestejä varten</string>
-    <string name="xdrip_software_changed_format">xDrip ohjelmiston versio vaihdettu: %s -> %s</string>
+    <string name="xdrip_software_changed_format">xDrip ohjelmiston versio vaihdettu: %1$s -> %2$s</string>
     <string name="when_connected_to_the_audio_device_shown_below_switch_to_vehicle_mode">Käännä ajoneuvotila päälle, kun alla näkyvä äänentoistolaite on yhdistetty.</string>
     <string name="select_device">Valitse laite</string>
     <string name="no_bluetooth_audio_found">Bluetooth äänilaitetta ei löytynyt</string>
@@ -992,8 +998,8 @@
     <string name="summary_Activate_heart_rate_sensor_if_available">Käynnistä sykeanturi jos saatavilla</string>
     <string name="title_Heart_Rate_Sensor">Sykemittari</string>
     <string name="summary_Smooth_heart_rate_graph">Tasoita sykkeen kuvaajaa</string>
-    <string name="title_When_changes_by">Kun muutoksia on tehty</string>
-    <string name="title_Or_per_number_of_minutes">Tai minuutteina</string>
+    <string name="title_When_changes_by">Kun arvo on muuttunut</string>
+    <string name="title_Or_per_number_of_minutes">Aikaväli minuuttia</string>
     <string name="title_Identify_receiver">Tunnista vastaanotin</string>
     <string name="summary_Only_send_to_named_package">Lähetä vain nimettyyn pakettiin</string>
     <string name="title_Accept_Calibrations">Hyväksy kalibroinnit</string>
@@ -1019,6 +1025,8 @@
     <string name="title_Use_scanning">Käytä skannausta</string>
     <string name="summary_Use_and_trust_Android_bluetooth_auto_connect_feature">Käytä ja luota, että Androidin Bluetoothin automaattinen yhdistäminen toimii</string>
     <string name="title_Trust_Auto_Connect">Luota automaattiseen yhdistämiseen</string>
+    <string name="summary_Experimental_support_for_xBridge_polling_feature">Kokeellinen tuki xBridge+ säännöllisen kyselyn ominaisuus</string>
+    <string name="title_xBridge_Polling_Mode">xBridge+ säännöllisen kyselyn-tila</string>
     <string name="summary_Probe_Bluetooth_services_on_every_connect">Kokeile Bluetooth-palveluiden toiminta jokaisessa yhteydenmuodostuksessa</string>
     <string name="title_Always_discover_services">Löydä aina palveluita</string>
     <string name="summary_Only_suitable_for_phones_which_support_automatic_pairing">Soveltuu vain automaattista parittamista tukeville puhelimille</string>
@@ -1401,6 +1409,7 @@
     <string name="your_display_name">Oma näyttönimesi:</string>
     <string name="followers_email">Seuraajan sähköposti:</string>
     <string name="send_invite">Lähetä kutsu</string>
+    <string name="description_sensor_location">Tulevaisuudessa xDrip haluaisi lähettää sensorin dataa kehittäjille nimettömästi, jotta kalibrointialgoritmia voitaisiin parantaa. Jos hyväksyt tämän, sinulta pyydetään vahvistusta ennen jokaista tiedonsiirtoa. Tietoja ei koskaan lähetetä ilman lupaasi. Jotta oppisimme ymmärtämään ja hienosäätämään kalibrointia, haluaisimme tietää, mihin sensori on asetettu. Paina takaisin-painiketta, jos et halua lähettää tietoja.</string>
     <string name="save_sensor_location">Tallenna sensorin sijainti</string>
     <string name="alerts">Hälytykset</string>
     <string name="use_internal_downloader">Käytä xDripin sisäistä lataajaa</string>
@@ -1443,6 +1452,7 @@
     <string name="__do_you_want_to_change_settings_or_start_sensor">\n\nHaluatko muuttaa asetuksia tai aloittaa sensorin?</string>
     <string name="change_settings">Muuta asetuksia</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Haluatko nollata tämän sensorin kalibroinnit?</string>
+    <string name="sensor_stop_confirm">Haluatko pysäyttää sensorin?</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Olet ottanut käyttöön vanhan ja kokeellisen verensokeriennustuksen asetukset.\n\nTätä EI SUOSITELLA, sillä se voi sekoittaa asioita.\n\nPoistetaanko tämä käytöstä?</string>
     <string name="settings_issue">Asetuksissa ongelma!</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Haluatko kalibroida tällä langattoman verensokerimittarin tuloksella?\n\n(voit muuttaa asetuksista, milloin tämä kysymys näytetään)</string>
@@ -1524,6 +1534,8 @@
     <string name="checksum_failed__retrying">Tarkistussumma epäonnistui - yritetään uudelleen</string>
     <string name="scanning">Etsitään...</string>
     <string name="authentication_failed_wrong_password">Tunnistautuminen epäonnistui. Väärä salasana?</string>
+    <string name="share_login_data_isnt_valid">Jakopalveluun kirjautuminen ei toimi - tarkista käyttäjätunnus / salasana</string>
+    <string name="connectivity_problem_reaching_share_servers">Yhteysongelma jakopalveluiden kanssa</string>
     <string name="ob1_session_restarted_title">Sensorin istunto käynnistettiin uudelleen</string>
     <string name="ob1_session_restarted_msg">Sensorin istunto käynnistettiin ennakoivasti uudelleen. Tarkista seuraavat sensorilukemat ja kalibroi tarpeen vaatiessa.</string>
     <string name="ob1_session_restarted_note">Sensorin istunto käynnistettiin uudelleen</string>
@@ -1546,6 +1558,6 @@
     <string name="enable_streaming_dialog_yes">yhdistä tähän libre2-sensoriin</string>
     <string name="enable_streaming_dialog_no">Älä yhdistä tähän libre2-sensoriin </string>
     <string name="enable_streaming_dialog_dont_ask_again">Älä kysy tätä uudelleen</string>
-    <string name="enable_streaming_dialog_title">Yhdistetään Libre-sensori Bluetoothiin</string>
     <string name="enable_streaming_dialog_text">Haluatko yhdistää tämän sensorin xDripiin? Tämä estää hälytykset Libren lukijassa ja LibreLinkissä. Paina Kyllä ja skannaa uudelleen yhdistääksesi (valitse Älä yhdistä, jos haluat käyttää xDripiä muokatun LibreLink-sovelluksen kanssa)</string>
+    <string name="enable_streaming_dialog_title">Yhdistetään Libre-sensori Bluetoothiin</string>
 </resources>

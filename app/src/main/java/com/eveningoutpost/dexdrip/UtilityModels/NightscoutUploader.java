@@ -58,12 +58,15 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.CipherSuite;
+import okhttp3.Handshake;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
+import okhttp3.TlsVersion;
 import okio.BufferedSink;
 import okio.GzipSink;
 import okio.Okio;
@@ -78,6 +81,8 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+
+import static com.eveningoutpost.dexdrip.UtilityModels.OkHttpWrapper.enableTls12OnPreLollipop;
 
 /**
  * THIS CLASS WAS BUILT BY THE NIGHTSCOUT GROUP FOR THEIR NIGHTSCOUT ANDROID UPLOADER
@@ -165,8 +170,10 @@ public class NightscoutUploader {
         public NightscoutUploader(Context context) {
             mContext = context;
             prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-            final OkHttpClient.Builder okHttp3Builder = new OkHttpClient.Builder();
-
+            final OkHttpClient.Builder okHttp3Builder = enableTls12OnPreLollipop(new OkHttpClient.Builder());
+            if (UserError.ExtraLogTags.shouldLogTag(TAG, android.util.Log.VERBOSE)) {
+                okHttp3Builder.addInterceptor(new SSLHandshakeInterceptor());
+            }
             if (USE_GZIP) okHttp3Builder.addInterceptor(new GzipRequestInterceptor());
             okHttp3Builder.connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
             okHttp3Builder.writeTimeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS);
@@ -299,7 +306,7 @@ public class NightscoutUploader {
         try {
             uri = new URI(baseURI);
         } catch (URISyntaxException e) {
-            Log.e(TAG, "Error URISyntaxException for " + baseURI, e);
+            Log.e(TAG, "Error URISyntaxException for the base URL", e);
             return baseURI;
         }
         String host = uri.getHost();
@@ -419,7 +426,7 @@ public class NightscoutUploader {
                             PersistentStore.setString(LAST_MODIFIED_KEY, last_modified_string);
                             checkGzipSupport(r);
                         } else {
-                            Log.d(TAG, "Failed to get treatments from: " + baseURI);
+                            Log.d(TAG, "Failed to get treatments from the base URL");
                         }
 
                     } else {
@@ -429,7 +436,7 @@ public class NightscoutUploader {
 
 
             } catch (Exception e) {
-                String msg = "Unable to do REST API Download " + e + " " + e.getMessage() + " url: " + baseURI;
+                String msg = "Unable to do REST API Download " + e + e.getMessage();
                 handleRestFailure(msg);
             }
         }
@@ -489,7 +496,7 @@ public class NightscoutUploader {
                     last_success_time = JoH.tsl();
                     last_exception_count = 0;
                 } catch (Exception e) {
-                    String msg = "Unable to do REST API Upload: " + e.getMessage() + " url: " + baseURI + " marking record: " + (any_successes ? "succeeded" : "failed");
+                    String msg = "Unable to do REST API Upload: " + e.getMessage() + " marking record: " + (any_successes ? "succeeded" : "failed");
                     handleRestFailure(msg);
                 }
             }
@@ -1355,6 +1362,28 @@ public class NightscoutUploader {
         if (supportsGzip(id) != value) {
             UserError.Log.e(TAG, "Setting GZIP support: " + id + " " + value);
             PersistentStore.setBoolean(END_SUPPORTS_GZIP_MARKER + id, value);
+        }
+    }
+
+    /** Prints TLS Version and Cipher Suite for SSL Calls through OkHttp3 */
+    public class SSLHandshakeInterceptor implements Interceptor {
+
+        @Override
+        public okhttp3.Response intercept(Chain chain) throws IOException {
+            final okhttp3.Response response = chain.proceed(chain.request());
+            printTlsAndCipherSuiteInfo(response);
+            return response;
+        }
+
+        private void printTlsAndCipherSuiteInfo(okhttp3.Response response) {
+            if (response != null) {
+                Handshake handshake = response.handshake();
+                if (handshake != null) {
+                    final CipherSuite cipherSuite = handshake.cipherSuite();
+                    final TlsVersion tlsVersion = handshake.tlsVersion();
+                    Log.v(TAG, "TLS: " + tlsVersion + ", CipherSuite: " + cipherSuite);
+                }
+            }
         }
     }
 

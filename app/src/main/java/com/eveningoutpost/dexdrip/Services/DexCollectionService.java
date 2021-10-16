@@ -44,6 +44,7 @@ import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
+import com.eveningoutpost.dexdrip.Models.Atom;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Bubble;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -78,8 +79,10 @@ import com.rits.cloning.Cloner;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -403,7 +406,7 @@ public class DexCollectionService extends Service implements BtCallBack {
 
             final BluetoothGattService gattService = mBluetoothGatt.getService(xDripDataService);
             if (gattService == null) {
-                if (!(static_use_blukon || blueReader.isblueReader() || Tomato.isTomato()||Bubble.isBubble() || LibreBluetooth.isLibreBluettoh())) {
+                if (!(static_use_blukon || blueReader.isblueReader() || Tomato.isTomato()||Bubble.isBubble()||Atom.isAtom() || LibreBluetooth.isLibreBluettoh())) {
                     Log.w(TAG, "onServicesDiscovered: xdrip service " + xDripDataService + " not found"); //TODO the selection of nrf is not active at the beginning,so this error will be trown one time unneeded, mey to be optimized.
                     // TODO this should be reworked to be an efficient selector
                     listAvailableServices(mBluetoothGatt);
@@ -528,6 +531,22 @@ public class DexCollectionService extends Service implements BtCallBack {
                                     JoH.threadSleep(150);
                                 }
                                 Log.d(TAG, "bubble initialized and data requested");
+                            }
+                        });
+
+                        servicesDiscovered = DISCOVERED.NULL; // reset this state
+                    }else if (Atom.isAtom()) {
+                        status("Enabled atom");
+                        Log.d(TAG, "Queueing atom initialization..");
+                        Inevitable.task("initialize-atom", 4000, new Runnable() {
+                            @Override
+                            public void run() {
+                                final List<ByteBuffer> buffers = Atom.initialize();
+                                for (ByteBuffer buffer : buffers) {
+                                    sendBtMessage(buffer);
+                                    JoH.threadSleep(150);
+                                }
+                                Log.d(TAG, "atom initialized and data requested");
                             }
                         });
 
@@ -899,6 +918,8 @@ public class DexCollectionService extends Service implements BtCallBack {
             return xdrip.getAppContext().getString(R.string.tomato);
         } else if (static_use_nrf && Bubble.isBubble()) {
             return xdrip.getAppContext().getString(R.string.bubble);
+        }else if (static_use_nrf && Atom.isAtom()) {
+            return xdrip.getAppContext().getString(R.string.atom);
         } else if (static_use_blukon) {
             return xdrip.getAppContext().getString(R.string.blukon);
         } else if (static_use_transmiter_pl_bluetooth) {
@@ -1097,7 +1118,12 @@ public class DexCollectionService extends Service implements BtCallBack {
             l.add(new StatusItem("Bubble Firmware", PersistentStore.getString("BubbleFirmware")));
             l.add(new StatusItem("Libre SN", PersistentStore.getString("LibreSN")));
         }
-
+        if (Atom.isAtom()) {
+            l.add(new StatusItem("Atom Battery", PersistentStore.getString("Atombattery")));
+            l.add(new StatusItem("Atom Hardware", PersistentStore.getString("AtomHArdware")));
+            l.add(new StatusItem("Atom Firmware", PersistentStore.getString("AtomFirmware")));
+            l.add(new StatusItem("Libre SN", PersistentStore.getString("LibreSN")));
+        }
         if (static_use_blukon) {
             l.add(new StatusItem("Battery", Pref.getInt("bridge_battery", 0) + "%"));
             l.add(new StatusItem("Sensor age", JoH.qs(((double) Pref.getInt("nfc_sensor_age", 0)) / 1440, 1) + "d"));
@@ -1350,9 +1376,11 @@ public class DexCollectionService extends Service implements BtCallBack {
                     if (mBluetoothAdapter.isEnabled() && mBluetoothAdapter.getRemoteDevice(deviceAddress) != null) {
                         if (useScanning()) {
                             status(gs(R.string.scanning) + (Home.get_engineering_mode() ? ": " + deviceAddress : ""));
+                            Log.i(TAG, "scanning for addresses " + deviceAddress);
                             scanMeister.setAddress(deviceAddress).addCallBack(this, TAG).scan();
                         } else {
                             status("Connecting" + (Home.get_engineering_mode() ? ": " + deviceAddress : ""));
+                            Log.i(TAG, "Connecting to addresses " + deviceAddress);
                             connect(deviceAddress);
                         }
                         mStaticState = mConnectionState;
@@ -1654,12 +1682,16 @@ public class DexCollectionService extends Service implements BtCallBack {
     }
 
     private void sendReply(BridgeResponse reply) {
-        for (ByteBuffer byteBuffer : reply.getSend()) {
+        sendReply(reply.getSend());
+    }
+
+    private void sendReply(AbstractList <ByteBuffer> byteBuffers){
+        for (ByteBuffer byteBuffer : byteBuffers) {
             Log.d(TAG, "Sending reply message");
             sendBtMessage(byteBuffer);
         }
     }
-
+    
     public synchronized void setSerialDataToTransmitterRawData(byte[] buffer, int len) {
 
         last_time_seen = JoH.tsl();
@@ -1689,12 +1721,32 @@ public class DexCollectionService extends Service implements BtCallBack {
                 JoH.static_toast_long(reply.getError_message());
                 error(reply.getError_message());
             }
+            if (reply.StillWaitingForData()){
+                Log.d(TAG, "Arming the timer, asking to send again...");
+                Inevitable.task("send-tomato-init", 5000, () -> {Log.d(TAG, "Asking for sending data again"); sendReply(Tomato.resetTomatoState());});
+            } else if(reply.GotAllData()) {
+                Inevitable.kill("send-tomato-init");
+            }
+            
             gotValidPacket();
 
         }else if (Bubble.isBubble()) {
             final BridgeResponse reply = Bubble.decodeBubblePacket(buffer, len);
             if (reply.shouldDelay()) {
                 Inevitable.task("send-bubble-reply", reply.getDelay(), () -> sendReply(reply));
+            } else {
+                sendReply(reply);
+            }
+            if (reply.hasError()) {
+                JoH.static_toast_long(reply.getError_message());
+                error(reply.getError_message());
+            }
+            gotValidPacket();
+
+        }else if (Atom.isAtom()) {
+            final BridgeResponse reply = Atom.decodeAtomPacket(buffer, len);
+            if (reply.shouldDelay()) {
+                Inevitable.task("send-atom-reply", reply.getDelay(), () -> sendReply(reply));
             } else {
                 sendReply(reply);
             }

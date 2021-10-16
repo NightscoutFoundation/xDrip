@@ -880,6 +880,7 @@
     <string name="blukon">BluCon</string>
     <string name="tomato">Tomato</string>
     <string name="bubble">Bubble</string>
+    <string name="atom">Atom</string>
     <string name="use_gravity_sensor_to_rotate_items">Use Gravity Sensor to rotate items</string>
     <string name="low_bridge_battery">Low bridge battery</string>
     <string name="reminders">Reminders</string>
@@ -1606,4 +1607,6 @@
     <string name="enable_streaming_dialog_dont_ask_again">Don\'t ask me that again</string>
     <string name="enable_streaming_dialog_text">Do you want to connect xDrip with this sensor? This will stop Libre reader and LibreLink from receiving alerts. Press yes and scan again to connect (choose don\'t connect if you want to run xDrip with the patched app)</string>
     <string name="enable_streaming_dialog_title">Connecting Libre sensor to Bluetooth</string>
+    <string name="title_lower_fuzzer">Lower FUZZER</string>
+    <string name="summary_lower_fuzzer">Lower the FUZZER value from 2.5 minutes to 37.5 seconds</string>
 </resources>

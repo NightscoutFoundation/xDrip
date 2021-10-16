@@ -68,13 +68,13 @@ public class LibreOOPAlgorithm {
             return;
         }
         
-        if(fullData.length < 344) {
+        if(fullData.length < Constants.LIBRE_1_2_FRAM_SIZE) {
             Log.e(TAG, "sendData called with data size too small. " + fullData.length);
             return;
         }
         Log.i(TAG, "Sending full data to OOP Algorithm data-len = " + fullData.length);
         
-        fullData = java.util.Arrays.copyOfRange(fullData, 0, 0x158);
+        fullData = java.util.Arrays.copyOfRange(fullData, 0, Constants.LIBRE_1_2_FRAM_SIZE);
         Log.i(TAG, "Data that will be sent is " + HexDump.dumpHexString(fullData));
         
         Intent intent = new Intent(Intents.XDRIP_PLUS_LIBRE_DATA);

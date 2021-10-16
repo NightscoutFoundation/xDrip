@@ -33,7 +33,8 @@ public class LibreTrendPoint {
     public boolean isError() {
         boolean ret = rawSensorValue == 0;
         if (source == GlucoseData.DataSource.FRAM) {
-            ret |= flags != 800;
+            // For libre2, it seems that flags ==0 is also a valid value.
+            ret |= (flags != 800) && (flags != 0);
         } else if (source == GlucoseData.DataSource.BLE) {
             // Condition already checked (rawSensorValue == 0)
         } else {

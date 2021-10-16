@@ -11,6 +11,7 @@ import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
@@ -65,6 +66,8 @@ public class StopSensor extends ActivityWithMenu {
         JoH.clearCache();
         LibreAlarmReceiver.clearSensorStats();
         PluggableCalibration.invalidateAllCaches();
+
+        Treatments.sensorStop(null, "Stopped by xDrip");
 
         Ob1G5StateMachine.stopSensor();
 

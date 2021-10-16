@@ -289,6 +289,7 @@
     <string name="upload_data_to_dex_servers">Завантажувати дані на сервери Dexcom, щоб мати можливість використовувати дані в додатках Dexcom</string>
     <string name="manage_followers">Управління фоловерами</string>
     <string name="manage_existing_followers">Управління існуючими фоловерами і запрошення нових</string>
+    <string name="invite_follower">Запросити фоловера</string>
     <string name="glucose_calibration_and_other_alerts">Глікемія, калібрування та інші сповіщення</string>
     <string name="alert_volume_profile">Профіль гучності сповіщень</string>
     <string name="smart_alerting">Смарт-сповіщення</string>
@@ -398,7 +399,7 @@
     <string name="external_storage_not_writable">Зовнішній накопичувач не є перезаписуваним</string>
     <string name="successfully_deleted">Успішно видалено</string>
     <string name="deletion_problem">Помилка видалення</string>
-    <string name="sdcard_not_writable_cannot_save">SD-карта не являється перезаписуваною – збереження неможливе!</string>
+    <string name="sdcard_not_writable_cannot_save">SD-карта не являється перезаписуваною – збереження неможливе</string>
     <string name="sdcard_not_readable">SD-карта не читається</string>
     <string name="loading_settings_from_xdrip_mainline">Завантаження налаштувань з основної гілки xDrip+</string>
     <string name="warning_settings_from_xdrip_and_plus_exist">Налаштування попереджень xDrip і xDrip+ вже існують – завантаження xDrip+</string>
@@ -959,20 +960,20 @@
     <string name="emergency_message_feature">Активація екстрених повідомлень</string>
     <string name="text_messages_can_be_sent_with_your_location_if_you_do_not_respond_to_alarms_this_feature_is_experimental_and_may_not_be_reliable">Функція відправки текстових повідомлень з інформацією про місцезнаходження пристрою в разі відсутності реакції на сигнали тривоги (експериментальна функція, може працювати некоректно)</string>
     <string name="your_name">Ваше ім\'я</string>
-    <string name="did_not_acknowledge_a_low_glucose_alert">%s не підтвердив повідомлення про низьку глюкозу для %s</string>
-    <string name="did_not_acknowledge_a_high_glucose_alert">%s не підтвердив повідомлення про високу глюкозу для %s</string>
-    <string name="has_not_had_glucose_data_received_for">%s не вдалося отримати дані про рівень глюкози для %s</string>
-    <string name="phone_has_not_been_used_for">Телефон %s не використовувалася протягом %s</string>
+    <string name="did_not_acknowledge_a_low_glucose_alert">%1$s не підтвердив повідомлення про низьку глюкозу для %2$s</string>
+    <string name="did_not_acknowledge_a_high_glucose_alert">%1$s не підтвердив повідомлення про високу глюкозу для %2$s</string>
+    <string name="has_not_had_glucose_data_received_for">%1$s не вдалося отримати дані про рівень глюкози для %2$s</string>
+    <string name="phone_has_not_been_used_for">Телефон %1$s не використовувалася протягом %2$s</string>
     <string name="is_requesting_assistance">%s запит про допомогу</string>
     <string name="is_testing_the_assistance_request_feature">%s тестує функцію запиту допомоги</string>
-    <string name="emergency_message_near_format_string">%s в районі %s %s %s %s</string>
+    <string name="emergency_message_near_format_string">%1$s в районі %2$s %3$s %4$s %5$s</string>
     <string name="choose_when_to_send_messages">Відправляти повідомлення в разі: </string>
     <string name="low_alert_not_acknowledged">Непідтверджений сигнал тривоги нижньої границі</string>
     <string name="high_alert_not_acknowledged">Непідтверджений сигнал тривоги верхньої границі</string>
     <string name="device_inactivity">Бездіяльність пристрою</string>
     <string name="test_message_sending">Відправка тестового повідомлення</string>
     <string name="d_selected_contacts_for_text_messages_format">%d контактів вибрано для відправки повідомлень</string>
-    <string name="xdrip_software_changed_format">Версія xDrip+ оновлена з %s на %s</string>
+    <string name="xdrip_software_changed_format">Версія xDrip+ оновлена з %1$s на %2$s</string>
     <string name="when_connected_to_the_audio_device_shown_below_switch_to_vehicle_mode">Переключитися в режим у автомобілі при підключенні до аудіопристрою, вказаного нижче</string>
     <string name="select_device">Виберіть пристрій</string>
     <string name="no_bluetooth_audio_found">Аудіопристрої Bluetooth не знайдені</string>
@@ -1450,6 +1451,7 @@
     <string name="__do_you_want_to_change_settings_or_start_sensor">\n\nХочете змінити налаштування або запустити сенсор?</string>
     <string name="change_settings">Змінити налаштування</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Хочете видалити або скинути калібрування сенсора?</string>
+    <string name="sensor_stop_confirm">Ви бажаєте зупинити сенсор?</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Активований старий експериментальний алгоритм прогнозування глюкози.\n\nЦе НЕ РЕКОМЕНДУЄТЬСЯ, оскільки може серйозно нашкодити.\n\nВимкнути даний алгоритм?</string>
     <string name="settings_issue">Проблема з налаштуваннями</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Ви хочете використовувати ці синхронізовані дані глюкометра для калібрування?\n\n(ці налаштування можуть бути змінені в Параметрах)</string>
@@ -1555,6 +1557,6 @@
     <string name="enable_streaming_dialog_yes">Підключитися до цього сенсора Libre 2</string>
     <string name="enable_streaming_dialog_no">Не підключатися до цього сенсора Libre 2</string>
     <string name="enable_streaming_dialog_dont_ask_again">Більше не запитувати</string>
-    <string name="enable_streaming_dialog_title">Підключення сенсора Libre 2 до Bluetooth</string>
     <string name="enable_streaming_dialog_text">Ви хочете підключити xDrip+ до цього сенсора? Дана дія унеможливить отримання сигналів тривоги на рідері і в додатку LibreLink. Натисніть Так та проскануйте сенсор ще раз, щоб створити підключення (виберіть Не підключати якщо плануєте використовувати xDrip з додатком LibrePatched)</string>
+    <string name="enable_streaming_dialog_title">Підключення сенсора Libre 2 до Bluetooth</string>
 </resources>
