@@ -908,7 +908,6 @@ public class Calibration extends Model {
             try {
                 final Calibration latestCalibration = Calibration.lastValid();
                 int i = 0;
-                boolean syncAdjustedReadings = false;
                 boolean uploadAdjusted = Pref.getBoolean("upload_modified_bgreadings", false);
                 if (uploadAdjusted) {
                     Log.v(TAG, "Adjusted readings will be uploaded to NS");
@@ -930,14 +929,13 @@ public class Calibration extends Model {
                         BgReading.pushBgReadingSyncToWatch(bgReading, false);
                         if (uploadAdjusted) {
                             UploaderQueue.newEntry("update", bgReading);
-                            syncAdjustedReadings = true;
                         }
                         i++;
                     } else {
                         Log.d(TAG, "History Rewrite: Ignoring BgReading without calibration from: " + JoH.dateTimeText(bgReading.timestamp));
                     }
                 }
-                if (syncAdjustedReadings) {
+                if (uploadAdjusted && i > 0) {
                     SyncService.startSyncService(3000); // sync in 3 seconds
                 }
             } catch (NullPointerException e) {
