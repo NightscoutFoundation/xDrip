@@ -932,7 +932,7 @@ public class Calibration extends Model {
                             UploaderQueue.newEntry("update", bgReading);
                             syncAdjustedReadings = true;
                         }
-                        i += 1;
+                        i++;
                     } else {
                         Log.d(TAG, "History Rewrite: Ignoring BgReading without calibration from: " + JoH.dateTimeText(bgReading.timestamp));
                     }
