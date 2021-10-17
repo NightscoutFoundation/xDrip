@@ -91,7 +91,7 @@ public class NSClientReceiver extends BroadcastReceiver {
                                 process_TREATMENT_json(jsonArray.getString(i));
                             }
                         } catch (JSONException e) {
-                            Log.e(TAG, "Json exception with sgvs: " + e.toString());
+                            Log.e(TAG, "Json exception with treatments: " + e.toString());
                         }
                     }
                 } else {
