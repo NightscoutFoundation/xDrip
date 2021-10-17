@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.os.PowerManager;
 import android.util.Base64;
 
+import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -368,6 +369,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
 
             String myIpAddresses = RouteTools.getBestInterfaceAddress();
             ch.xDripIpAddresses = myIpAddresses != null ? myIpAddresses : "";
+            ch.btAddresses = ActiveBluetoothDevice.btDeviceAddresses();
 
             out.println(ch.toJson());
 
