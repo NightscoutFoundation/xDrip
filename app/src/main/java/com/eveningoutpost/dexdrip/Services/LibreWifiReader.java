@@ -10,6 +10,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.LibreBluetooth;
 import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -360,6 +361,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
 
             String myIpAddresses = RouteTools.getBestInterfaceAddress();
             ch.xDripIpAddresses = myIpAddresses != null ? myIpAddresses : "";
+            ch.btAddresses = ActiveBluetoothDevice.btDeviceAddresses();
 
             out.println(ch.toJson());
 
