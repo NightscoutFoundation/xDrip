@@ -25,6 +25,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 import static com.eveningoutpost.dexdrip.Models.BgReading.bgReadingInsertFromJson;
@@ -207,7 +208,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
                                 
                             case Intents.XDRIP_BLUETOOTH_ENABLE_RESULT:
                                 Log.i(TAG, "recieved message XDRIP_BLUETOOTH_ENABLE_RESULT");
-                                handleOop2BlutoothEnableResult(bundle);
+                                handleOop2BluetoothEnableResult(bundle);
                                 break;
 
                             default:
@@ -316,7 +317,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
         LibreOOPAlgorithm.handleDecodedBleResult(CaptureDateTime, ble_data, patchUid);
     }
     
-    private void handleOop2BlutoothEnableResult(Bundle bundle) {
+    private void handleOop2BluetoothEnableResult(Bundle bundle) {
         if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             Log.e(TAG, "External OOP algorithm is on, ignoring data.");
             return;
@@ -325,30 +326,41 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
         if(json_object == null) {
             return;
         }
-        String btUunlockBufferString;
+        String btUnlockBufferString;
         String nfcUnlockBufferString;
         String patchUidString;
         String patchInfoString;
         String deviceName;
+        JSONArray btUnlockBufferArray;
+        int unlockCount = -1;
+        ArrayList<byte []> unlockBufferArray = new ArrayList<byte []>();
 
         
         try {
-            btUunlockBufferString = json_object.getString(Intents.BT_UNLOCK_BUFFER);
+            btUnlockBufferString = json_object.getString(Intents.BT_UNLOCK_BUFFER);
             nfcUnlockBufferString = json_object.getString(Intents.NFC_UNLOCK_BUFFER);
             patchUidString = json_object.getString(Intents.PATCH_UID);
             patchInfoString = json_object.getString(Intents.PATCH_INFO);
             deviceName = json_object.getString(Intents.DEVICE_NAME);
+            if(json_object.has(Intents.CONNECTION_INDEX)) {
+                unlockCount = json_object.getInt(Intents.CONNECTION_INDEX);
+                btUnlockBufferArray = json_object.getJSONArray(Intents.BT_UNLOCK_BUFFER_ARRAY);
+                for (int i = 0; i < btUnlockBufferArray.length(); i++) {
+                    String btUnlockBuffer = btUnlockBufferArray.getString(i);
+                    unlockBufferArray.add(Base64.decode(btUnlockBuffer, Base64.NO_WRAP));
+                }
+            }
         } catch (JSONException e) {
             Log.e(TAG, "Error JSONException ", e);
             return;
         }
 
-        // Does this throws exception???
-        byte[] bt_unlock_buffer = Base64.decode(btUunlockBufferString, Base64.NO_WRAP);
+        byte[] bt_unlock_buffer = Base64.decode(btUnlockBufferString, Base64.NO_WRAP);
         byte[] nfc_unlock_buffer = Base64.decode(nfcUnlockBufferString, Base64.NO_WRAP);
         byte []patchUid = Base64.decode(patchUidString, Base64.NO_WRAP);
         byte []patchInfo = Base64.decode(patchInfoString, Base64.NO_WRAP);
-        LibreOOPAlgorithm.handleOop2BluetoothEnableResult(bt_unlock_buffer, nfc_unlock_buffer, patchUid, patchInfo, deviceName);
+
+        LibreOOPAlgorithm.handleOop2BluetoothEnableResult(bt_unlock_buffer, nfc_unlock_buffer, patchUid, patchInfo, deviceName, unlockBufferArray, unlockCount);
     }
 
 

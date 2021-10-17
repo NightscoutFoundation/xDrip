@@ -202,6 +202,7 @@ public class LibreBlock  extends PlusModel {
     }
 
     public static void UpdateBgVal(long timestamp, double calculated_value) {
+        Log.d(TAG, "UpdateBgVal called " + JoH.dateTimeText(timestamp) + " bgval = " + calculated_value);
         LibreBlock libreBlock = getForTimestamp(timestamp);
         if (libreBlock == null) {
             return;
