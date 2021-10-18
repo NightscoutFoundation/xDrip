@@ -9,4 +9,5 @@
     <!-- Amazfit Settings -->
     <string name="retrieve_blukon_history_summary">Retrieve missed history from Blucon device when reconnecting to sensor.</string>
     <!-- trend arrow for speak -->
+    <string name="when">time</string>
 </resources>
