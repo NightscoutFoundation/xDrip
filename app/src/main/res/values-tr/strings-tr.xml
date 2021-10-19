@@ -62,7 +62,7 @@
     <string name="pref_default_api_url">https://parolanız@{sayfanız}.azurewebsites.net/api/v1/</string>
     <!-- wifi Settings -->
     <string name="wifi_recievers_dialog_message">Virgülle ayrılmış ip:port listesi (örneğin 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
-    <string name="wifi_recievers_dialog_title">Alıcıların ip adresi ve port numarasına girin (gerekirse mongodb adresierinide dahil edin)</string>
+    <string name="wifi_recievers_dialog_title">Alıcıların ip adresi ve port numarasını girin (gerekirse mongodb adreslerini de dahil edin)</string>
     <!-- Location Settings -->
     <string name="location_not_found_title">Konum Etkin Değil</string>
     <string name="location_not_found_message">Bluetooth keşfinin daha yeni cihazlarda çalışması için, konumun etkinleştirilmesi gerekir. xDrip, isteğe bağlı Acil Durum Mesaj özelliği dışında konumunuzu takip etmez</string>
@@ -190,7 +190,7 @@
     <string name="save">Kaydet</string>
     <string name="view_important_warning">Önemli Uyarıyı Görüntüle</string>
     <string name="view_google_licenses">Google Lisansını görüntüle</string>
-    <string name="not_for_medical_use">Tıbbi kullanım için değildir - sadece araştırma aracıdır</string>
+    <string name="not_for_medical_use">Tıbbi kullanım için değildir - sadece araştırma amaçlıdır</string>
     <string name="deel_settings_for_algs">Algoritmalar için gelişmiş ayarlar</string>
     <string name="low_level_prediction_values">Düşük değerler için tahmin</string>
     <string name="glucose_drop_for_one_unit">1 Ünite için Glikoz azalımı</string>
@@ -203,7 +203,7 @@
     <string name="send_crash_errors_to_developer">Geliştirici için kilitlenme hataları gönder</string>
     <string name="automatic_crash_reporting">Otomatik Kilitlenme Raporlaması</string>
     <string name="send_feedback_message">Geri Bildirim İletisi Gönder</string>
-    <string name="copying_settings">Ayarları kopyalıyor</string>
+    <string name="copying_settings">Ayarları Kopyala</string>
     <string name="show_settings_qr_codes">Ayarları QR kodları ile göster</string>
     <string name="load_save_settings_to_sdcard">Ayarları SD karta yükle / kaydet</string>
     <string name="alarms_and_alerts">Alarmlar ve uyarılar</string>
@@ -1221,8 +1221,8 @@
     <string name="title_miband_authkey">Yetki Anahtarı</string>
     <string name="summary_miband_authkey">MiBand4 için doğrulama anahtarını ayarlama (Doğrulama anahtarı için https://www.freemyband.com/ daki açıklamaları takip edin)</string>
     <string name="summary_miband_mac">Otomatik arama için boş bırakın</string>
-    <string name="title_miband_send_readings_as_notification">KŞ değerlerini bildirim olarak alma</string>
-    <string name="summary_miband_send_readings_as_notification">KŞ değerlerini mibandınıza bildirim olarak alırsınız. Tüm miband özelliklerinin kullanılması için tarih değiştirilmeyecektir. xDrip saatarayüzü\'nü kullanabilmeniz için bu seçeneği kapalı yapın. (Tarih hatası nedeniyle bildirim alamama ihtimaline karşı resmi mifit uygulamasının kaldırılması gerekir.)</string>
+    <string name="title_miband_send_readings_as_notification">KŞ\'ni bildirim olarak al</string>
+    <string name="summary_miband_send_readings_as_notification">KŞ değerlerini mibandınıza bildirim olarak alırsınız. Tüm miband özelliklerinin kullanılması için tarih değiştirilmemelidir. xDrip saatarayüzü\'nü kullanabilmeniz için bu seçeneği kapalı yapın. (Tarih hatası nedeniyle bildirim alamama ihtimaline karşı resmi mifit uygulamasının kaldırın.)</string>
     <string name="title_miband_vibrate_on_readings">Okumalarda titreşimle uyar</string>
     <string name="title_miband_send_calls">Çağrıları Gönder</string>
     <string name="summary_miband_send_calls">Çağrı bildirimlerini mibanda gönderir (Android 6+)</string>
