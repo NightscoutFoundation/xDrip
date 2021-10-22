@@ -1360,13 +1360,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         allWords = allWords.replaceAll(":", "."); // fix real times
         allWords = allWords.replaceAll("(\\d)([a-zA-Z])", "$1 $2"); // fix like 22mm
 
-/** The following line converts 1.234 carbs to 1.2 34 carbs.  It inserts a space between 1.2 and 34.  This results in an array of two words
- *  to be converted into an array of 3 words.  This then results in carb entry with more than 2 decimal points to be unintentionally
- *  converted into an integer containing the last 2 decimal points of the original fractional number.
- *  I am commenting it out and will ask the developers if it is really needed.
- *  Navid  August 10, 2021
-*/
-//        allWords = allWords.replaceAll("([0-9]\\.[0-9])([0-9][0-9])", "$1 $2"); // fix multi number order like blood 3.622 grams
+        allWords = allWords.replaceAll("([a-zA-Z]+ \\d{1,3}(?:\\.\\d)*)(\\d+(?:\\.\\d)* [a-zA-Z]+)", "$1 $2"); // fix multi number order like blood 3.622 grams
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             allWords = allWords.replaceAll(new String(RTL_BYTES, StandardCharsets.UTF_8), "");
         }
