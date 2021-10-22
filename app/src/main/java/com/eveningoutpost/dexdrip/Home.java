@@ -1359,7 +1359,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         allWords = allWords.trim();
         allWords = allWords.replaceAll(":", "."); // fix real times
         allWords = allWords.replaceAll("(\\d)([a-zA-Z])", "$1 $2"); // fix like 22mm
-
         allWords = allWords.replaceAll("([a-zA-Z]+ \\d{1,3}(?:\\.\\d)*)(\\d+(?:\\.\\d)* [a-zA-Z]+)", "$1 $2"); // fix multi number order like blood 3.622 grams
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             allWords = allWords.replaceAll(new String(RTL_BYTES, StandardCharsets.UTF_8), "");
