@@ -137,7 +137,7 @@
     <string name="first_configure_ip_address">İlk önce wifi okuyucu ip adreslerinizi veya parakeet url\'nizi yapılandırın</string>
     <string name="now_start_your_sensor">Şimdi sensörünüzü başlatın veya Ayarlar\'ı kontrol edin</string>
     <string name="please_wait_while_sensor_warms_up">Sensör ısınırken lütfen bekleyin! (</string>
-    <string name="minutes_with_bracket">" dakikalar)"</string>
+    <string name="minutes_with_bracket">" dakika)"</string>
     <string name="possible_bad_calibration">Olası kötü kalibrasyon eğimi, lütfen bir bardak su alınız, ellerinizi yıkayınız, birkaç dakika içinde tekrar deneyin!</string>
     <string name="please_wait_need_two_readings_first">Lütfen bekleyiniz, önce vericiden 2 defa okumaya ihtiyacınız var.</string>
     <string name="please_enter_two_calibrations_to_get_started">Başlamak için lütfen iki kalibrasyon girin!</string>
@@ -174,7 +174,7 @@
     <string name="view_events_log">Olay Günlüklerini Görüntüle</string>
     <string name="show_libre_trend">Libre trendini göster</string>
     <string name="libre_15_minutes_graph">Libre 15 dakika grafiği</string>
-    <string name="libre_last_x_minutes_graph">Libre son %d dakikalar grafiği</string>
+    <string name="libre_last_x_minutes_graph">Libre son %d dakika grafiği</string>
     <string name="share_config_via_qr_code">QR kodu ile paylaşın</string>
     <string name="check_for_updated_version">Güncellenmiş sürümü kontrol et</string>
     <string name="send_feedback_to_developer">Geliştiriciye Geri Bildirim Gönder</string>
@@ -255,8 +255,8 @@
     <string name="pref_disable_wearG5_on_lowbattery">Düşük Pilde zorlamayı iptal et</string>
     <string name="pref_summary_disable_wearG5_on_lowbattery">Düşük Pil Uyarısında, Wear Collection Hizmeti Zorlayı Devre Dışı Bırak</string>
     <string name="pref_disable_wearG5_on_missedreadings">Kaçırılan Veriler üzerinde zorlamayı devre dışı bırak</string>
-    <string name="pref_summary_disable_wearG5_on_missedreadings">Wear\'den son okumadan dakikalarca bu yana Wear Collection Hizmetini zorla devre dışı bırakıldı</string>
-    <string name="pref_disable_wearG5_on_missedreadings_level">Wear den son okumadan bu yana geçen dakikalar</string>
+    <string name="pref_summary_disable_wearG5_on_missedreadings">Wear\'den son okumadan bu yana, Zorla Wear Toplama Hizmetini Devre Dışı Bırakır</string>
+    <string name="pref_disable_wearG5_on_missedreadings_level">Wear den son okumadan bu yana geçen dakika</string>
     <string name="pref_node_wearG5">Çalışmakta olan Cihazın Collection hizmeti</string>
     <string name="pref_summary_node_wearG5">Wear Collection hizmetini kullanması için telefonu zorlayın</string>
     <string name="pref_sync_wear_logs">Wear log\'u senkronize et</string>
