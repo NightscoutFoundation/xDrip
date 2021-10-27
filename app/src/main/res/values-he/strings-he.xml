@@ -687,6 +687,7 @@
     <string name="vibrate_scanning_status">רטוט כדי לסמן את מצב הסריקה</string>
     <string name="beep_when_scanning_within_app">צפצף כשסורקים בתוך xDrip+</string>
     <string name="use_multi_block">השתמש בשיטת קריאה Multi-block המהירה יותר</string>
+    <string name="use_any_tag">השתמש בשיטת קריאה מותאמת לכל תג</string>
     <string name="low_level_value">ערך אבטיפוס\\דיאגנוסטיקה ברמה נמוכה</string>
     <string name="transmitter_id">מספר המשדר של הדקסקום, לדוגמה 12AB3</string>
     <string name="advanced_g5_settings">הגדרות G5 מתקדמות עבור מצבים נדירים</string>
