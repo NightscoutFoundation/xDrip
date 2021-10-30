@@ -1,5 +1,9 @@
 package com.eveningoutpost.dexdrip.ui.activities;
 
+import static com.eveningoutpost.dexdrip.ui.NumberGraphic.isLockScreenBitmapTiled;
+import static com.eveningoutpost.dexdrip.ui.helpers.BitmapUtil.getScreenHeight;
+import static com.eveningoutpost.dexdrip.ui.helpers.BitmapUtil.getScreenWidth;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -30,15 +34,10 @@ import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
-import static com.eveningoutpost.dexdrip.ui.NumberGraphic.isLockScreenBitmapTiled;
-import static com.eveningoutpost.dexdrip.ui.helpers.BitmapUtil.getScreenHeight;
-import static com.eveningoutpost.dexdrip.ui.helpers.BitmapUtil.getScreenWidth;
-
 /**
  * jamorham
- *
+ * <p>
  * Configuration page for Number Wall feature
- *
  */
 
 public class NumberWallPreview extends AppCompatActivity {
@@ -74,7 +73,8 @@ public class NumberWallPreview extends AppCompatActivity {
 
             final Uri pickedImage = data.getData();
             if (pickedImage != null) {
-                binding.getSprefs().put(ViewModel.PREF_numberwall_background, pickedImage.toString());
+                String path = BitmapUtil.copyBackgroundImage(pickedImage);
+                binding.getSprefs().put(ViewModel.PREF_numberwall_background, path);
                 binding.getVm().refreshBitmap();
             }
         }
@@ -120,7 +120,7 @@ public class NumberWallPreview extends AppCompatActivity {
                         intent.setType("image/*");
                         startActivityForResult(intent, LOAD_IMAGE_RESULTS);
                     } else {
-                        if (JoH.ratelimit("need-file-permission",10)) {
+                        if (JoH.ratelimit("need-file-permission", 10)) {
                             //JoH.static_toast_short("Need file permission");
                         }
                     }
