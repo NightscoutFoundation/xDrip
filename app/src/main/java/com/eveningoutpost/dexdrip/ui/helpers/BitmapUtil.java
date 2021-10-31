@@ -27,10 +27,10 @@ import java.util.Date;
 public class BitmapUtil {
 
     // note: this recycles the source bitmap - TODO make this more generic
-    public static Bitmap getTiled(final Bitmap source, final int xSize, final int ySize, final boolean tile, final String backgroundFile) {
+    public static Bitmap getTiled(final Bitmap source, final int xSize, final int ySize, final boolean tile, final String background_file) {
         Bitmap tiledBitmap = null;
-        if (backgroundFile != null) {
-            tiledBitmap = getBackgroundBitmap(xSize, ySize, backgroundFile);
+        if (background_file != null) {
+            tiledBitmap = getBackgroundBitmap(xSize, ySize, background_file);
         }
         if (tiledBitmap == null) {
             tiledBitmap = Bitmap.createBitmap(xSize, ySize, Bitmap.Config.ARGB_8888);
@@ -44,47 +44,47 @@ public class BitmapUtil {
                 drawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
                 drawable.draw(canvas);
             } else {
-                double yRatio = JoH.tolerantParseDouble(Pref.getString("numberwall_y_param", ""), 50d) / 100d; // TODO move to method signature
-                int yOffset = Math.max(0, (int) ((getScreenDpi() * yRatio * 1.2d) - (getScreenDpi() * 0.30d)));
-                final double spacerRatio = JoH.tolerantParseDouble(Pref.getString("numberwall_s_param", ""), 10d) / 100d;
-                int xOffset = Math.max(0, (int) ((getScreenDpi() * spacerRatio * 1.2d) - (getScreenDpi() * 0.30d)));
+                double y_ratio = JoH.tolerantParseDouble(Pref.getString("numberwall_y_param", ""), 50d) / 100d; // TODO move to method signature
+                int yoffset = Math.max(0, (int) ((getScreenDpi() * y_ratio * 1.2d) - (getScreenDpi() * 0.30d)));
+                final double spacer_ratio = JoH.tolerantParseDouble(Pref.getString("numberwall_s_param", ""), 10d) / 100d;
+                int xoffset = Math.max(0, (int) ((getScreenDpi() * spacer_ratio * 1.2d) - (getScreenDpi() * 0.30d)));
 
-                canvas.drawBitmap(source, xOffset, yOffset, new Paint());
+                canvas.drawBitmap(source, xoffset, yoffset, new Paint());
             }
             source.recycle();
         } // returns blank bitmap if source is null
         return tiledBitmap;
     }
 
-    public static Bitmap getBackgroundBitmap(final int xSize, final int ySize, final String backgroundFile) {
+    public static Bitmap getBackgroundBitmap(final int xSize, final int ySize, final String background_file) {
         Bitmap tiledBitmap = null;
         try {
-            tiledBitmap = BitmapLoader.bitmapFromBundleCache(backgroundFile);
+            tiledBitmap = BitmapLoader.bitmapFromBundleCache(background_file);
             if (tiledBitmap == null) {
                 android.util.Log.d("NumberWall", "Regenerating image");
 
-                final Uri backgroundUri = Uri.parse(backgroundFile);
+                final Uri background_uri = Uri.parse(background_file);
 
-                Bitmap imageBitmap = null;
-                if (backgroundFile.startsWith("content://")) {
-                    FileDescriptor fileDescriptor = xdrip.getAppContext().getContentResolver().openFileDescriptor(backgroundUri, "r").getFileDescriptor();
-                    imageBitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+                Bitmap image_bitmap = null;
+                if (background_file.startsWith("content://")) {
+                    FileDescriptor fileDescriptor = xdrip.getAppContext().getContentResolver().openFileDescriptor(background_uri, "r").getFileDescriptor();
+                    image_bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor);
                 } else {
-                    File file = new File(backgroundFile);
+                    File file = new File(background_file);
                     FileInputStream in = new FileInputStream(file);
-                    imageBitmap = BitmapFactory.decodeStream(in);
+                    image_bitmap = BitmapFactory.decodeStream(in);
                     in.close();
                 }
 
-                Bitmap rotatedBitmap = imageBitmap;
-                final Matrix imageMatrix = new Matrix();
+                Bitmap rotated_bitmap = image_bitmap;
+                final Matrix image_matrix = new Matrix();
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
                     ExifInterface exif = null;
-                    if (backgroundFile.startsWith("content://")) {
-                        FileDescriptor fileDescriptor = xdrip.getAppContext().getContentResolver().openFileDescriptor(backgroundUri, "r").getFileDescriptor(); // reset
+                    if (background_file.startsWith("content://")) {
+                        FileDescriptor fileDescriptor = xdrip.getAppContext().getContentResolver().openFileDescriptor(background_uri, "r").getFileDescriptor(); // reset
                         exif = new ExifInterface(fileDescriptor);
                     } else {
-                        File file = new File(backgroundFile);
+                        File file = new File(background_file);
                         FileInputStream in = new FileInputStream(file);
                         exif = new ExifInterface(in);
                         in.close();
@@ -93,14 +93,14 @@ public class BitmapUtil {
                     android.util.Log.d("NumberWall", "Rotation: " + rotation);
 
                     if (rotation != 0) {
-                        imageMatrix.preRotate(rotation);
-                        rotatedBitmap = Bitmap.createBitmap(imageBitmap, 0, 0, imageBitmap.getWidth(), imageBitmap.getHeight(), imageMatrix, true);
-                        imageBitmap.recycle();
+                        image_matrix.preRotate(rotation);
+                        rotated_bitmap = Bitmap.createBitmap(image_bitmap, 0, 0, image_bitmap.getWidth(), image_bitmap.getHeight(), image_matrix, true);
+                        image_bitmap.recycle();
                     }
                 }
 
-                tiledBitmap = getBestCroppedScaled(rotatedBitmap, xSize, ySize);
-                BitmapLoader.saveBitmapAsBundle(backgroundFile, Bitmap.createBitmap(tiledBitmap));
+                tiledBitmap = getBestCroppedScaled(rotated_bitmap, xSize, ySize);
+                BitmapLoader.saveBitmapAsBundle(background_file, Bitmap.createBitmap(tiledBitmap));
             } else {
                 tiledBitmap = Bitmap.createBitmap(tiledBitmap); // make a copy
                 android.util.Log.d("NumberWall", "cache hit");
