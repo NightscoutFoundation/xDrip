@@ -370,7 +370,7 @@
     <string name="glucose_history">Glikoz Geçmişi</string>
     <string name="import_database">Veritabanını İçe Aktar</string>
     <string name="sensor_table">Sensör Tablosu</string>
-    <string name="bg_readings_table">Kan şekeri Ölçüm Tablosu</string>
+    <string name="bg_readings_table">Kan Şekeri Tablosu</string>
     <string name="long_press_to_split_or_delete">Bölmek veya Silmek için uzunca basılı tutun</string>
     <string name="press_and_hold_on_the_background_to_split_or_delete">Bir zaman bloğunu Bölme veya Silme için arka plan üzerinde basılı tutun</string>
     <string name="search">Arama</string>
@@ -389,10 +389,10 @@
     <string name="automatic_updates_crash_reports_and_feedback">Otomatik Güncellemeler, kilitlenme raporları ve Geliştiriciye Geri Bildirim</string>
     <string name="crowd_sourced_translation">Crowd-sourced çevirisi</string>
     <string name="please_enter_your_question_or_comments_here">Lütfen sorularınızı veya yorumlarınızı buraya girin.\n\nEğer bir e-posta adresi girerseniz yanıt alabilirsiniz.\n\n</string>
-    <string name="optional_contact_info_here_eg_email">Burada isteğe bağlı iletişim bilgileri, örn. e-posta</string>
+    <string name="optional_contact_info_here_eg_email">İsteğe bağlı iletişim bilgileri, örn. e-posta</string>
     <string name="send_message">Mesaj Gönder</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Lütfen genel olarak uygulama hakkında ne düşündüğünüzü belirtin</string>
-    <string name="preferences_saved_in_sdcard_downloads">İndirilenler altındaki Sd karta kaydedilen ayarlar</string>
+    <string name="preferences_saved_in_sdcard_downloads">Kaydedilen tercihleri SD karttan indirme</string>
     <string name="could_not_write_to_sdcard_check_perms">Sdcard\'a yazılamadı - izin haklarını kontrol edin?</string>
     <string name="loaded_preferences_restarting">Ayarlar yüklendi! - Tekrar başlatılıyor</string>
     <string name="could_not_load_preferences_check_pers">Tercihler yüklenemedi - izinleri veya dosyayı kontrol edin?</string>
@@ -440,8 +440,8 @@
     <string name="display_slope_arrows">Gidişat Eğimlerini Göster</string>
     <string name="vibrate_watch_to_alert_no_data">Herhangi bir glikoz verisi elde edilemediğinde sizi uyarmak için saati titreştir</string>
     <string name="vibrate_when_missed_signal">Eksik sinyal olduğunda titreş</string>
-    <string name="vibrate_watch_to_alert_no_bluetooth">Bluetooth bağlantısı kesildiğinde uyarmak için izle titreş</string>
-    <string name="vibrate_when_no_bluetooth">Bluetooth olmadığında titreşim</string>
+    <string name="vibrate_watch_to_alert_no_bluetooth">Bluetooth bağlantısı kesildiğinde uyarmak için saati titreştir</string>
+    <string name="vibrate_when_no_bluetooth">Bluetooth olmadığında titreştir</string>
     <string name="special_glucose_value_to_display_message">Aşağıdaki iletiyi görüntülemek için özel glikoz değeri</string>
     <string name="bluetooth_wakelocks">Bluetooth Wakelocks</string>
     <string name="compatible_broadcast">Uyumlu yayın</string>
@@ -586,7 +586,7 @@
     <string name="process_broadcasted_calibrations">Diğer uygulamalardan alınan kalibrasyon verilerini kullan</string>
     <string name="spoken_readings_locale">Sözlü Okumalar için Özel Yerel Ayar, örn.: de veya en_IN</string>
     <string name="speak_glucose_twice">Her seferinde Glikoz değerini iki kez oku</string>
-    <string name="short_speak_readings_shortcut">Menüsünde ☰ Okunan değerleri konuş değiştirmek kısayolunu göster</string>
+    <string name="short_speak_readings_shortcut">☰ Menüsünde okunan değerleri konuş kısayolunu gösterir</string>
     <string name="speak_readings_shortcut">Değerleri Okuma kısayolu</string>
     <string name="battery_optimization_off">Android 6+\'da pil optimizasyonunun kapalı olduğundan emin olun. Tavsiye edilen</string>
     <string name="battery_optimization_on">Pil optimizasyonunu sorma. Tavsiye edilmez</string>
@@ -946,7 +946,7 @@
     <string name="code_accepted">Kod kabul edildi</string>
     <string name="invalid_or_unsupported_code">Geçersiz veya desteklenmeyen kod!</string>
     <string name="g6_sensor_code">G6 Sensör kodu</string>
-    <string name="please_enter_printed_calibration_code">Lütfen yazdırılan kalibrasyon kod numarasını, 4 hanesini giriniz, örn: 5678</string>
+    <string name="please_enter_printed_calibration_code">Lütfen sensördeki kalibrasyon kodunu giriniz, 4hane örn: 5678</string>
     <string name="enable_update_checks">Güncelleme kontrollerini etkinleştirilsin mi?</string>
     <string name="you_can_easily_roll_back_dialog_msg">XDrip\'ın yeni sürümünü beğenmediyseniz, eski sürüm için APK yükleyicisini Yeniden Yükleme klasörünüzde yeniden yükleyerek önceki sürümlere kolayca geri dönebilirsiniz.\n\nGüncelleme kontrollerini etkinleştirmek ister misiniz?</string>
     <string name="hey_fam">Fam.. Merhaba</string>
@@ -1000,8 +1000,8 @@
     <string name="summary_Activate_heart_rate_sensor_if_available">Mümkünse kalp ritim sensörünü etkinleştirin</string>
     <string name="title_Heart_Rate_Sensor">Kalp Ritim Sensörü</string>
     <string name="summary_Smooth_heart_rate_graph">Pürüzsüz kalp atış hızı eğrisi</string>
-    <string name="title_When_changes_by">Tarafından değiştirildiği taktirde</string>
-    <string name="title_Or_per_number_of_minutes">Dakika başına veya</string>
+    <string name="title_When_changes_by">KŞ Değiştiğinde</string>
+    <string name="title_Or_per_number_of_minutes">Dakikada bir</string>
     <string name="title_Identify_receiver">Alıcı tanımlayın</string>
     <string name="summary_Only_send_to_named_package">Sadece adlandırılmış paket isimlerine gönderin</string>
     <string name="title_Accept_Calibrations">Kalibrasyonları Kabul Et</string>
