@@ -29,7 +29,10 @@ import com.eveningoutpost.dexdrip.ui.LockScreenWallPaper;
 import com.eveningoutpost.dexdrip.ui.NumberGraphic;
 import com.eveningoutpost.dexdrip.ui.dialog.ColorPreferenceDialog;
 import com.eveningoutpost.dexdrip.ui.helpers.BitmapUtil;
+import com.eveningoutpost.dexdrip.utils.FileUtils;
 import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
+
+import java.io.File;
 
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +46,7 @@ import lombok.RequiredArgsConstructor;
 public class NumberWallPreview extends AppCompatActivity {
 
     private static final String TAG = "NumberWallPreview";
+    private static final String FOLDER_NAME = "numberWall";
     private static final int LOAD_IMAGE_RESULTS = 35021;
     private static final int ASK_FILE_PERMISSION = 35020;
 
@@ -73,7 +77,8 @@ public class NumberWallPreview extends AppCompatActivity {
 
             final Uri pickedImage = data.getData();
             if (pickedImage != null) {
-                String path = BitmapUtil.copyBackgroundImage(pickedImage);
+                File destinationFolder = new File(this.getFilesDir().getAbsolutePath() + File.separator + FOLDER_NAME);
+                String path = BitmapUtil.copyBackgroundImage(pickedImage, destinationFolder);
                 binding.getSprefs().put(ViewModel.PREF_numberwall_background, path);
                 binding.getVm().refreshBitmap();
             }
@@ -127,6 +132,8 @@ public class NumberWallPreview extends AppCompatActivity {
                 }
             } else {
                 binding.getSprefs().put(PREF_numberwall_background, null);
+                File backgroundFolder = new File(activity.getFilesDir().getAbsolutePath() + File.separator + FOLDER_NAME);
+                FileUtils.deleteDirWithFiles(backgroundFolder);
                 refreshBitmap();
             }
         }

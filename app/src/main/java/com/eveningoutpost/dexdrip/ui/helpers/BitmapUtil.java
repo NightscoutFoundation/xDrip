@@ -120,8 +120,7 @@ public class BitmapUtil {
         return tiledBitmap;
     }
 
-    public static String copyBackgroundImage(Uri sourceUri) {
-        File destinationFolder = new File(xdrip.getAppContext().getFilesDir().getAbsolutePath() + File.separator + "numberWall");
+    public static String copyBackgroundImage(Uri sourceUri, File destinationFolder) {
         // delete directory with older files
         FileUtils.deleteDirWithFiles(destinationFolder);
         // recreate directory
