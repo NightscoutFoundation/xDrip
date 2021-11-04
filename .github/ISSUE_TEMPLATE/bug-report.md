@@ -12,6 +12,7 @@ label: bug
 - Add screenshots only if necessary, e.g. write the version number instead of adding a screenshot of the system status page.
 
 ### Subject of the issue
+Link to the discussion thread:
 A clear and concise description of what the bug is.
 Example: The BG graph shows negative data points between 3 and 5 am, which is incorrect and can only be an artefact.
 
