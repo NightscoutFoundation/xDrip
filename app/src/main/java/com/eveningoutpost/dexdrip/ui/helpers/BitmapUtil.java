@@ -15,6 +15,7 @@ import android.net.Uri;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utils.FileUtils;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.File;
@@ -58,6 +59,7 @@ public class BitmapUtil {
 
     public static Bitmap getBackgroundBitmap(final int xSize, final int ySize, final String background_file) {
         Bitmap tiledBitmap = null;
+        FileInputStream inputStream = null;
         try {
             tiledBitmap = BitmapLoader.bitmapFromBundleCache(background_file);
             if (tiledBitmap == null) {
@@ -71,9 +73,9 @@ public class BitmapUtil {
                     image_bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor);
                 } else {
                     File file = new File(background_file);
-                    FileInputStream in = new FileInputStream(file);
-                    image_bitmap = BitmapFactory.decodeStream(in);
-                    in.close();
+                    inputStream = new FileInputStream(file);
+                    image_bitmap = BitmapFactory.decodeStream(inputStream);
+                    inputStream.close();
                 }
 
                 Bitmap rotated_bitmap = image_bitmap;
@@ -84,10 +86,8 @@ public class BitmapUtil {
                         FileDescriptor fileDescriptor = xdrip.getAppContext().getContentResolver().openFileDescriptor(background_uri, "r").getFileDescriptor(); // reset
                         exif = new ExifInterface(fileDescriptor);
                     } else {
-                        File file = new File(background_file);
-                        FileInputStream in = new FileInputStream(file);
-                        exif = new ExifInterface(in);
-                        in.close();
+                        inputStream = new FileInputStream(background_file);
+                        exif = new ExifInterface(inputStream);
                     }
                     int rotation = exifOrientationToDegrees(exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL));
                     android.util.Log.d("NumberWall", "Rotation: " + rotation);
@@ -108,30 +108,50 @@ public class BitmapUtil {
         } catch (Exception e) {
             // cannot load bitmap
             android.util.Log.e("NumberWall", "Cannot load bitmap: " + e);
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    android.util.Log.e("NumberWall", "Error closing input stream", e);
+                }
+            }
         }
         return tiledBitmap;
     }
 
     public static String copyBackgroundImage(Uri sourceUri) {
         File destinationFolder = new File(xdrip.getAppContext().getFilesDir().getAbsolutePath() + File.separator + "numberWall");
+        // delete directory with older files
+        FileUtils.deleteDirWithFiles(destinationFolder);
+        // recreate directory
         destinationFolder.mkdirs();
         String destinationFileName = "background" + new Date().getTime() + ".png"; // unique name to avoid caching
         File destination = new File(destinationFolder, destinationFileName);
 
         Bitmap sourceImage = BitmapUtil.getBackgroundBitmap(getScreenWidth(), getScreenHeight(), sourceUri.toString());
+        String output = destination.getPath();
         if (sourceImage != null) {
+            FileOutputStream out = null;
             try {
-                FileOutputStream out = new FileOutputStream(destination);
+                out = new FileOutputStream(destination);
                 sourceImage.compress(Bitmap.CompressFormat.PNG, 100, out);
                 out.flush();
-                out.close();
             } catch (IOException e) {
                 android.util.Log.e("NumberWall", "Error copying background image", e);
                 // fallback to original
-                return sourceUri.toString();
+                output = sourceUri.toString();
+            } finally {
+                if (out != null) {
+                    try {
+                        out.close();
+                    } catch (IOException e) {
+                        android.util.Log.e("NumberWall", "Error closing output stream", e);
+                    }
+                }
             }
         }
-        return destination.getPath();
+        return output;
     }
 
 
