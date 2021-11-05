@@ -148,7 +148,7 @@
     <string name="unfortunately_andoird_version_no_blueooth_low_energy">Ne yazık ki, android sürümünüz Bt düşük güç tüketim (Bluetooth Low Energy) teknolojisini desteklemiyor</string>
     <string name="waiting_for_packet">Paket veri bekleniyor</string>
     <string name="persistent_high_for_greater_than">&gt; için sürekli yüksek </string>
-    <string name="space_mins">" mins"</string>
+    <string name="space_mins">" dk"</string>
     <string name="till">dek</string>
     <string name="low_predicted">Düşük öngörüldü</string>
     <string name="in">içerisinde</string>
@@ -475,7 +475,7 @@
     <string name="predictive_color_dark">Öngörü için Koyu Renk</string>
     <string name="average_and_target_lines">Ortalama ve Hedef Çizgileri</string>
     <string name="eight_hour_average_line">8 Saat Ortalama Çizgi</string>
-    <string name="twenty_four_hour_average_line">24 Saat Ortalama Hat</string>
+    <string name="twenty_four_hour_average_line">24 Saat Ortalama Çizgi</string>
     <string name="glucose_target_line">Glikoz hedef Çizgisi</string>
     <string name="annotations_and_dots">Ek Açıklamalar ve Noktalar</string>
     <string name="blood_test_background">Kan testi arka plan</string>
@@ -575,7 +575,7 @@
     <string name="use_tiny_dots">Minik nokta boyutunu kullan</string>
     <string name="watch_vibrate_active_alerts">Aktif glikoz uyarılarıda saati titreştir</string>
     <string name="vibrate_alerts">Titreşimli uyarı</string>
-    <string name="attach_to_button">Herhangi bir aktif uyarıyı saatinizi anında ertelemek için bir pebble düğmesine iliştirin. Ayrıca Uzak Erteleme özelliği için.</string>
+    <string name="attach_to_button">Herhangi bir aktif uyarıyı saatinizi anında ertelemek için bir pebble düğmesine iliştirin. Ayrıca Uzaktan Erteleme özelliği için.</string>
     <string name="for_interacting_compatible_apps">Diğer uyumlu uygulamalarla etkileşim kurmak için</string>
     <string name="interapp_settings">Inter-app ayarları</string>
     <string name="use_plugins_for_brodcast">Yayınlanan değer için gürültü düzeltme ve eklentileri vb. (Etkinleştirilmişse) kullanın</string>
@@ -588,8 +588,8 @@
     <string name="speak_glucose_twice">Her seferinde Glikoz değerini iki kez oku</string>
     <string name="short_speak_readings_shortcut">☰ Menüsünde okunan değerleri konuş kısayolunu gösterir</string>
     <string name="speak_readings_shortcut">Değerleri Okuma kısayolu</string>
-    <string name="battery_optimization_off">Android 6+\'da pil optimizasyonunun kapalı olduğundan emin olun. Tavsiye edilen</string>
-    <string name="battery_optimization_on">Pil optimizasyonunu sorma. Tavsiye edilmez</string>
+    <string name="battery_optimization_off">Android 6+\'da pil optimizasyonunun kapalı olduğundan emin olun. (Tavsiye edilen)</string>
+    <string name="battery_optimization_on">Pil optimizasyonunu sorma. (Tavsiye edilmez)</string>
     <string name="battery_optimization_prompt">Pil optimizasyonu isteği</string>
     <string name="advanced_bluetooth_settings">Gelişmiş Bluetooth ayarları</string>
     <string name="bluetooth_settings">Bluetooth ayarları</string>
@@ -601,8 +601,8 @@
     <string name="g5_bluetooth_watchdog">G5 Bluetooth Watchdog</string>
     <string name="close_gatt">Bluetooth watchdog sık sık etkinleşirse, yardımcı olup olmadığını görmek için bu seçeneğin işaretini kaldırabilirsiniz</string>
     <string name="older_bluetooth_wakelocks">Eski bluetooth wakelocks,ekstra pil kullanımına neden olabilir ancak bluetooth veri toplaması için de gerekli olabilir</string>
-    <string name="reset_bluetooth_on_off">Birkaç dakikada bir kapatıp açarak Bluetooth\'u sıfırlayın! Sadece test ediyorsanız seçin. Bluetooth oynamak başka bir şeyi etkileyebilir.</string>
-    <string name="constantly_reset_bluetooth">Bluetooth\'u sıkca sıfırla</string>
+    <string name="reset_bluetooth_on_off">Birkaç dakikada bir kapatıp açarak Bluetooth\'u sıfırlayın! Sadece test ediyorsanız seçin. Bluetooth kullanan diğer cihazları etkileyebilir.</string>
+    <string name="constantly_reset_bluetooth">Bluetooth\'u sıkça sıfırla</string>
     <string name="experimental_transmitter_fpv_uav">\@FPV-UAV\'dan \'Transmiter\' cihazı için deneysel destek - sadece test</string>
     <string name="transmitter_pl_support">Transmiter (PL) desteği</string>
     <string name="experimental_rdfuino_support">Tomasz Stachowicz\'den rfduino için deneysel destek</string>
@@ -621,7 +621,7 @@
     <string name="retrieve_blukon_history_summary">Sensöre tekrar bağlanınıldığında, Blukon cihazından eksik geçmişi al.</string>
     <string name="interpret_share_raw">Share\'i kullanırsanız, xDrip normalde alıcıda (receiverda) saklı olan değerleri görüntüler.</string>
     <string name="interpret_raw">Ham değerleri yorumlama</string>
-    <string name="use_infrequent_calibrations">Gerekirse, kalibrasyonlar nadiren girildiğinde, örneğin daha uzaktaki kalibrasyonları kullan.</string>
+    <string name="use_infrequent_calibrations">Gerekirse daha önceki kalibrasyonları kullanın, örn. kalibrasyonlar seyrek olarak sağlanıyorsa.</string>
     <string name="infrequent_calibrations">Seyrek kalibrasyon</string>
     <string name="extra_logging">Ekstra Günlük Ayarları</string>
     <string name="send_logs_to_developer">Olayları ve hata günlüklerini otomatik olarak geliştiricilere gönder</string>
@@ -689,7 +689,7 @@
     <string name="use_multi_block">Daha hızlı multi-block okuma yöntemini kullan</string>
     <string name="use_any_tag">Any-tag optimize edilmiş okuma yöntemini kullan</string>
     <string name="low_level_value">Düşük düzey tanı/prototip değeri</string>
-    <string name="transmitter_id">Dexcom Transmitter Kımlığı, örneğin 12AB3</string>
+    <string name="transmitter_id">Dexcom Verici Kimliği, örneğin 12AB3</string>
     <string name="advanced_g5_settings">Nadir durumlar için gelişmiş G5 ayarları</string>
     <string name="g5_debug_settings">G5/G6 hata ayıklama ayarları</string>
     <string name="g5_scan_constantly">Bazı cihazlar sürekli tararken daha iyi çalışır, diğerleri değil. Bu ayar seçili değilse ve okuma güvenilir ise, pil ömrünü uzatmış olmanız gerekir. Normalde bunu devre dışı bıırakmak en iyisidir</string>
@@ -744,7 +744,7 @@
     <string name="volume_buttons_snooze">Ses artırma veya azaltma düğmesine basıldığında, uygulama aktif bir alarmı erteleyecektir</string>
     <string name="buttons_silence_alarms">Uyarıları sessize almak için düğmeler</string>
     <string name="create_shortcut">Ana navigasyondan kş seviye ekranına kısayol oluştur</string>
-    <string name="shortcut_to_bg_alerts">Kısayol Kan Şekeri düzeyi uyarıları</string>
+    <string name="shortcut_to_bg_alerts">KŞ alarmları kısayolu</string>
     <string name="suppress_alerts_missed_readings">Önceden tanımlanmış cevapsız okumalar süresinden sonra ertelenen ve aktif uyarıları bastır</string>
     <string name="suppress_alerts_after">Ertelenmiş ve aktif alarmları .. dakika sonraya bastır (en az 10)</string>
     <string name="alert_calibration_request">Kalibrasyon istendiğinde uyar</string>
@@ -765,8 +765,8 @@
     <string name="reraise_not_snoozed_sooner">Ertelenmediyse uyarıyı yeniden etkinleştir</string>
     <string name="alert_reraise_time">Alarm çalma aralığı</string>
     <string name="alert_seconds_reraise">Aynı alarm çalmadan önce geçmesi gereken saniye sayısı.</string>
-    <string name="bg_falling_fast">Kan Şekeri hızlı düşüyor</string>
-    <string name="bg_rising_fast">Kan Şekeri hızlı yükseliyor</string>
+    <string name="bg_falling_fast">KŞ hızlı düşüyor</string>
+    <string name="bg_rising_fast">KŞ hızlı yükseliyor</string>
     <string name="falling_threshold">alçalma eşiği</string>
     <string name="rising_threshold">yükselme eşiği</string>
     <string name="set_sound_for_bg_alerts">KŞ uyarıları için kullanılacak sesi ayarlayın.</string>
