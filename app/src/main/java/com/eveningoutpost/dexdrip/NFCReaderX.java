@@ -85,8 +85,10 @@ public class NFCReaderX {
     // Never in production. Used to emulate German sensor behavior.
     public static boolean use_fake_de_data() {
         //Pref.setBoolean("use_fake_de_data", true);
-        //Log.e(TAG, "Not using fake data");
-        return Pref.getBooleanDefaultFalse("use_fake_de_data");
+        //
+        boolean ret =  Pref.getBooleanDefaultFalse("use_fake_de_data");
+        Log.e(TAG, "using fake data = " + ret);
+        return ret;
     }
 
     static boolean enable_bluetooth_ask_user = false;
@@ -251,7 +253,7 @@ public class NFCReaderX {
         }
     }
 
-    public static void SendLibrereading(final String tagId, byte[] data1, final long CaptureDateTime, byte []patchUid,  byte []patchInfo){
+    public static void SendLibrereadingToFollowers(final String tagId, byte[] data1, final long CaptureDateTime, byte []patchUid,  byte []patchInfo){
         if(!Home.get_master()) {
             return;
         }
@@ -287,13 +289,13 @@ public class NFCReaderX {
 
         if(LibreOOPAlgorithm.isDecodeableData(patchInfo) && decripted_data == false
                 && !Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
-            // Send to OOP2 for drcryption.
+            // Send to OOP2 for decryption.
             LibreOOPAlgorithm.logIfOOP2NotAlive();
             LibreOOPAlgorithm.sendData(data1, CaptureDateTime, patchUid, patchInfo, tagId);
             return true;
         }
 
-        SendLibrereading(tagId, data1, CaptureDateTime, patchUid, patchInfo);
+        SendLibrereadingToFollowers(tagId, data1, CaptureDateTime, patchUid, patchInfo);
 
         if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             // If oop is used, there is no need to  do the checksum It will be done by the oop.
@@ -797,8 +799,8 @@ public class NFCReaderX {
             //       getGlucose(new byte[]{data[(i * 6 + 125)], data[(i * 6 + 124)]});
 
             // If the data is decoded for some reason, we might have a wrong index.
-
-            if(i * 6 + 125 >= data.length) {
+            // The 6 is because we read up to 6 bytes.
+            if(i * 6 + 124 + 6 >= data.length) {
                 Log.e(TAG, "Failing to parse data from " + JoH.dateTimeText(CaptureDateTime));
                 return null;
             }
@@ -968,7 +970,7 @@ public class NFCReaderX {
         }
         else if(libreBlock.byte_end == 44) {
             // This is the libre2 ble data
-            result = LibreOOPAlgorithm.parseBleDataPerMinute(libreBlock.blockbytes, libreBlock.timestamp);
+            result = LibreOOPAlgorithm.parseBleDataPerMinute(libreBlock.blockbytes, null, libreBlock.timestamp);
         } else {
             Log.i(TAG, "libreBlock exists but size is " + libreBlock.byte_end + " don't know how to parse it " + libreBlock.timestamp);
             return null;

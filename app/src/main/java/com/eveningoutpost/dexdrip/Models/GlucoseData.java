@@ -10,9 +10,10 @@ import java.text.DecimalFormat;
 public class GlucoseData implements Comparable<GlucoseData> {
     public enum DataSource {NOT_SET, FRAM, BLE};
 
-    public long realDate;               // The time of this reading in ms
-    public int sensorTime;             // The counter in minutes from start of sensor.
-    public int glucoseLevel = -1;
+    public long realDate;                 // The time of this reading in ms
+    public int sensorTime;                // The counter in minutes from start of sensor.
+    public int glucoseLevel = -1;         // The bg value that was calculated by the oop algorithm.
+    public int glucoseLevelSmoothed = -1; // The smoothed bg value that was calculated by the oop algorithm.
     public int glucoseLevelRaw = -1;
     public int glucoseLevelRawSmoothed;
     public int flags;
@@ -30,7 +31,7 @@ public class GlucoseData implements Comparable<GlucoseData> {
     public String toString() {
         return "{ sensorTime = " + sensorTime + " glucoseLevel = " + glucoseLevel + " glucoseLevelRaw = " + glucoseLevelRaw +
                 " glucoseLevelRawSmoothed = " + glucoseLevelRawSmoothed + " flags = " + flags +
-                " source = " + source + "}";
+                " source = " + source + "  glucoseLevel " + glucoseLevel + " glucoseLevelSmoothed " +  glucoseLevelSmoothed + "}";
     }
 
     public String glucose(boolean mmol) {

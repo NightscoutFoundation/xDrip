@@ -118,6 +118,7 @@ public class LibreTrendUtil {
     }
     
     public List<LibreTrendPoint> getData(long startTimestamp, long endTimestamp, boolean calculate_factor) {
+        startTimestamp = 0;
         Log.i(TAG, "getData called startTimestamp = " + JoH.dateTimeText(startTimestamp) + " endTimestamp = " +   JoH.dateTimeText(endTimestamp) +
         " Size of array is " + m_points.size() + " this = " + this + " m_libreTrendLatest.timestamp " + JoH.dateTimeText(m_libreTrendLatest.timestamp) );
         
