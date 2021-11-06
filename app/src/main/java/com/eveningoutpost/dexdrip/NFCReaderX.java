@@ -287,7 +287,7 @@ public class NFCReaderX {
 
         if(LibreOOPAlgorithm.isDecodeableData(patchInfo) && decripted_data == false
                 && !Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
-            // Send to OOP2 for drcryption.
+            // Send to OOP2 for decryption.
             LibreOOPAlgorithm.logIfOOP2NotAlive();
             LibreOOPAlgorithm.sendData(data1, CaptureDateTime, patchUid, patchInfo, tagId);
             return true;
@@ -797,8 +797,8 @@ public class NFCReaderX {
             //       getGlucose(new byte[]{data[(i * 6 + 125)], data[(i * 6 + 124)]});
 
             // If the data is decoded for some reason, we might have a wrong index.
-
-            if(i * 6 + 125 >= data.length) {
+            // The 6 is because we read up to 6 bytes.
+            if(i * 6 + 124 + 6 >= data.length) {
                 Log.e(TAG, "Failing to parse data from " + JoH.dateTimeText(CaptureDateTime));
                 return null;
             }
