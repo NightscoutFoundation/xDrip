@@ -1165,6 +1165,8 @@
     <string name="title_rest_api_extra_options">Options supplémentaires</string>
     <string name="summary_send_bridge_battery_to_nightscout">Envoyer votre niveau de batterie du transmetteur à Nightscout. Décocher si votre capteur de batterie ne marche pas.</string>
     <string name="title_send_bridge_battery_to_nightscout">Charger la batterie du transmetteur</string>
+    <string name="summary_send_dexcom_transmitter_battery_to_nightscout">Envoyer les statistiques de la batterie Dexcom à Nightscout. Inclut toutes les données affichées sur l\'écran Statut du Collecteur.</string>
+    <string name="title_send_dexcom_transmitter_battery_to_nightscout">Envoyer le niveau de batterie du transmetteur OB1G5/G6</string>
     <string name="summary_send_treatments_to_nightscout">Envoyer des données de traitement à Nightscout. Décochez si votre portail ne marche pas.</string>
     <string name="title_send_treatments_to_nightscout">Charger les traitements</string>
     <string name="summary_warn_nightscout_failures">Afficher et émettre une notification si le chargement vers Nightscout échoue.</string>
