@@ -1138,6 +1138,8 @@
     <string name="title_rest_api_extra_options">További beállítások</string>
     <string name="summary_send_bridge_battery_to_nightscout">A transzmitter töltöttségének feltöltése a Nightscoutba. Ne engedélyezze, ha az akku hibás.</string>
     <string name="title_send_bridge_battery_to_nightscout">Transzmitter töltöttség feltöltése</string>
+    <string name="summary_send_dexcom_transmitter_battery_to_nightscout">OB1G5/G6 távadó akku adatok feltöltése Nightscout-ba. Ez a Kollektor állapot képernyő összes adatát jelenti.</string>
+    <string name="title_send_dexcom_transmitter_battery_to_nightscout">OB1G5/G6 távadó adatok feltöltése</string>
     <string name="summary_send_treatments_to_nightscout">Kezelési adatok küldése Nightscout-ba. Ne használja, ha a Careportal-ja nem működik.</string>
     <string name="title_send_treatments_to_nightscout">Kezelések feltöltése</string>
     <string name="summary_warn_nightscout_failures">Értesítés és hangjelzés, ha a Nightscout feltöltés sikertelen.</string>
