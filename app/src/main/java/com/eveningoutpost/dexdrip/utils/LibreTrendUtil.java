@@ -12,6 +12,7 @@ import com.eveningoutpost.dexdrip.Models.GlucoseData;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.ReadingData;
 
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.utils.LibreTrendPoint;
 
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
@@ -83,7 +84,10 @@ public class LibreTrendUtil {
 
     public void updateLastReading(LibreBlock libreBlock) {
         // Before we update m_libreTrendLatest we call getData as it affects the cache.
-        getData(m_libreTrendLatest.timestamp, libreBlock.timestamp, false);
+        // If there is no timestamp, only take the last 60 minutes.
+        long startTime = m_libreTrendLatest.timestamp > 0 ? m_libreTrendLatest.timestamp :
+                libreBlock.timestamp - 60 * Constants.MINUTE_IN_MS;
+        getData(startTime, libreBlock.timestamp, false);
         m_libreTrendLatest.updateLastReading(libreBlock);
     }
 
