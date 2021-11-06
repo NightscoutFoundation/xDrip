@@ -882,6 +882,8 @@
     <string name="error_sensor_start_time_in_future">FEL: SENSORSTARTTID I FRAMTIDEN</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Kalibrera med nya glukosvärden om omständigheterna tillåter utan att tillfråga (experimentellt)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatisk kalibrering</string>
+    <string name="summary_send_dexcom_transmitter_battery_to_nightscout">Skicka statistik om sändarens batteri till Nightscout. Innefattar all data som visas på sttusskärmen för inhämtaren.</string>
+    <string name="title_send_dexcom_transmitter_battery_to_nightscout">Ladda upp batteridata för OB1G5/G6-sändare</string>
     <string name="summary_ob1_g5_restart_sensor">Starta automatiskt om en sensor när den stoppas</string>
     <string name="title_ob1_g5_restart_sensor">Starta om sensor</string>
     <string name="summary_ob1_g5_preemptive_restart">Starta om en sensor i förebyggande syfte dag 6/9 för att undvika uppvärmningstiden</string>
