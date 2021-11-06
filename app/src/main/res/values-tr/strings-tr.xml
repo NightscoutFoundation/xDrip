@@ -267,7 +267,7 @@
     <string name="pref_summary_show_treatments">Grafikte Tedavi noktalarını göster</string>
     <string name="pref_use_wear_health">Wear Health Verilerini kullan</string>
     <string name="pref_summary_use_wear_health">Mevcut olduğunda Adım sayacının verilerini toplayın ve görüntüleyin</string>
-    <string name="pebble_integration">Pebble entegrasyon</string>
+    <string name="pebble_integration">Pebble entegrasyonu</string>
     <string name="send_data_to_pebble_watchface">Pebble Watchface\'ye veri yolla.</string>
     <string name="pebble_watch_integration">Pebble saati entegrasyonu</string>
     <string name="standard_or_trend_pebble_watchface">Standart veya trend ile pebble watchfaces</string>
@@ -352,7 +352,7 @@
     <string name="here_you_can_save_the_settings_to_the_external_storage_sdcard">Buradan ayarları harici depolama birimine (sdcard) kaydedebilirsiniz.\n\nDış depolama birimine kaydedilmişse, herhangi bir uygulamanın hassas bilgiler içerebilecek ayarları okuması olasıdır.\n\nŞayet bu konuda çekinceniz varsa ayarları içe aktardıktan sonra silmeniz önerilir.</string>
     <string name="save_all_settings_to_sdcard">Tüm ayarları SD karta kaydet</string>
     <string name="load_all_settings_from_sdcard">SD karttan tüm ayarları yükle</string>
-    <string name="delete_any_settings_on_sdcard">SD kartta tüm ayarları sil</string>
+    <string name="delete_any_settings_on_sdcard">Ayarlar klasörünü sil (Download/xDrip-export)</string>
     <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Ayarlar -> Otomatik Yapılandırma özelliği\'ni kullanarak ayarları aktarmak için QR kodlarını kullanın]]></string>
     <string name="xdrip_plus_security_key_settings_only">xDrip+ yalnızca Güvenlik Tuş Ayarları</string>
     <string name="show_general_and_collection_settings">Genel ve Okuma ayarlarını göster</string>
@@ -736,8 +736,8 @@
     <string name="meter_connect_sound_effect">Ses efekti göstergeleri</string>
     <string name="ask_for_calibration">Yeni bir kan şekeri sonucu alındığında, bunun kalibrasyon için kullanılmasının gerekip gerekmediğini sor</string>
     <string name="use_meter_for_calibrations">Kalibrasyonlar için glikometre\'yi kullan</string>
-    <string name="auto_calibration_good_conditions">Koşullar onaylamadan doğru şekilde görünüyorsa, yeni kan şekeri 	
-ölçümlerini kullanarak kalibre edin (deneysel)</string>
+    <string name="auto_calibration_good_conditions">\"Koşullar onaylamadan doğru şekilde görünüyorsa, yeni kan şekeri 	
+ölçümlerini kullanarak kalibre edin (deneysel)\"</string>
     <string name="automatic_calibration">Otomatik kalibrasyon</string>
     <string name="maximum_value">Hedef alanınızın üst sınırı.</string>
     <string name="minimum_value">Hedef alanınızın alt sınırı.</string>
@@ -1161,12 +1161,14 @@
     <string name="use_mobile_data">Mobil veri kullan</string>
     <string name="summary_cloud_storage_api_download_enable">Tedavi verilerini Nightscout\'tan xDrip\'e indirmeyi deneyin</string>
     <string name="title_cloud_storage_api_download_enable">Tedavileri indirin</string>
-    <string name="summary_bluetooth_meter_for_calibrations_auto">Koşullar onaylamadan doğru şekilde görünüyorsa, yeni kan şekeri 	
-ölçümlerini kullanarak kalibre edin (deneysel)</string>
+    <string name="summary_bluetooth_meter_for_calibrations_auto">\"Koşullar onaylamadan doğru şekilde görünüyorsa, yeni kan şekeri 	
+ölçümlerini kullanarak kalibre edin (deneysel)\"</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Otomatik kalibrasyon</string>
     <string name="title_rest_api_extra_options">Ekstra Seçenekler</string>
     <string name="summary_send_bridge_battery_to_nightscout">Bridge cihazı pil seviyenizi Nightscout\'a gönderin. Pil sensörünüz bozuk ya da yoksa işaretlemeyin.</string>
     <string name="title_send_bridge_battery_to_nightscout">Bridge cihazı pil bilgisi yükleme</string>
+    <string name="summary_send_dexcom_transmitter_battery_to_nightscout">Dexcom verici pil istatistiklerini Nightscout\'a gönderin. Toplayıcı Durumu ekranında gösterilen tüm verileri içerir.</string>
+    <string name="title_send_dexcom_transmitter_battery_to_nightscout">OB1G5/G6 verici pil bilgisini NS\'a yükle</string>
     <string name="summary_send_treatments_to_nightscout">Tedavi verilerini Nightscout\'a gönderin. Careportal çalışmıyorsa işaretlemeyin.</string>
     <string name="title_send_treatments_to_nightscout">Tedavileri yükle</string>
     <string name="summary_warn_nightscout_failures">Nightscout yüklemesi başarısız olursa bir görüntü ve ses bildirimi ver.</string>
