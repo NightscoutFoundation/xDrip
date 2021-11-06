@@ -133,6 +133,7 @@
     <string name="statistics">Στατιστικά</string>
     <string name="less_common_settings">Λιγότερο συχνές ρυθμίσεις</string>
     <string name="other_settings">Άλλες ρυθμίσεις</string>
+    <string name="invite_follower">Προσκαλέστε έναν Ακόλουθο</string>
     <string name="xdrip_plus_color_settings">xDrip + ρυθμίσεις χρωμάτων</string>
     <string name="example_chart">Παράδειγμα Γραφήματος</string>
     <string name="carbs_per_unit">Υδατάνθρακες ανά μονάδα</string>
@@ -200,6 +201,8 @@
     <string name="new_sensor_started">Ο ΝΕΟΣ ΑΙΣΘΗΤΗΡΑΣ ΞΕΚΙΝΗΣΕ</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Αυτόματη Βαθμονόμηση</string>
     <string name="title_rest_api_extra_options">Περισσότερες επιλογές</string>
+    <string name="summary_send_dexcom_transmitter_battery_to_nightscout">Στείλτε τα στατιστικά μπαταρίας του πομπού Dexcom στο Nightscout. Συμπεριλαμβάνει όλα τα δεδομένα που προβάλλονται στην οθόνη \"Κατάσταση Συλλέκτη\".</string>
+    <string name="title_send_dexcom_transmitter_battery_to_nightscout">Ανεβάστε OB1G5/G6 μπαταρία πομπού</string>
     <string name="title_tidepool_username">Όνομα Χρήστη</string>
     <string name="summary_tidepool_password">Ο κωδικός πρόσβασης σου για την Tidepool</string>
     <string name="title_tidepool_password">Κωδικός Πρόσβασης</string>
@@ -258,6 +261,7 @@
     <string name="important_warning">Σημαντική Προειδοποίηση!</string>
     <string name="i_agree">ΣΥΜΦΩΝΩ</string>
     <string name="libre">Libre</string>
+    <string name="sensor_stop_confirm">Θέλετε να σταματήσετε το σένσορα;</string>
     <string name="deleted">Η διαγραφή ολοκληρώθηκε!</string>
     <string name="confirm_delete">Επιβεβαίωση Διαγραφής</string>
     <string name="could_not_export_csv_">Αδυναμία εξαγωγής του αρχείου CSV</string>
