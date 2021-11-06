@@ -578,7 +578,7 @@
     <string name="attach_to_button">Dowiąż do przycisku Pebble, aby wyciszyć wszystkie aktywne alarmy przy pomocy zegarka; również dla funkcji zdalnego wyciszenia.</string>
     <string name="for_interacting_compatible_apps">Do interakcji z innymi kompatybilnymi aplikacjami</string>
     <string name="interapp_settings">Ustawienia innych aplikacji</string>
-    <string name="use_plugins_for_brodcast">Użyj wygładzania odczytów i wtyczek itp. (jeśli włączone) dla nadawanej danych</string>
+    <string name="use_plugins_for_brodcast">Użyj wygładzania odczytów i wtyczek itp. (jeśli są włączone) dla nadawanej wartości</string>
     <string name="send_display_glucose">Wysyłaj wyświetlany poziom glukozy</string>
     <string name="send_broadcasts_old_permission_model">Wyślij transmisje bez blokowania do starszego modelu uprawnień</string>
     <string name="process_nsclient_treatments">Przetwórz dane zabiegu otrzymane z aplikacji NSClient</string>
@@ -599,9 +599,8 @@
     <string name="bluetooth_watchdog">Watchdog Bluetooth</string>
     <string name="reset_bluetooth_g5">Zresetuj Bluetooth poprzez wyłączenie i włączenie w sposób pozwalający utrzymać działanie źródła danych G5. Bez tego kolektor G5 może się nie działać.</string>
     <string name="g5_bluetooth_watchdog">G5 Bluetooth Watchdog</string>
-    <string name="close_gatt">Jeśli watchdog Bluetooth często się aktywuje, możesz spróbować odznaczyć tę opcję, aby sprawdzić, czy pomaga</string>
+    <string name="close_gatt">Jeśli watchdog Bluetooth często się aktywuje, możesz spróbować odznaczyć tę opcję, aby sprawdzić, czy to pomaże</string>
     <string name="older_bluetooth_wakelocks">Starsza metoda wybudzania Bluetooth, która może spowodować dodatkowe zużycie baterii, ale czasem może być potrzebna do poprawnego odbioru Bluetooth</string>
-    <string name="reset_bluetooth_on_off">Resetuj Bluetooth, wyłączając i włączając co kilka minut! Zaznacz tylko, jeśli podczas testów. Może to zakłócić inne aplikacje używające Bluetooth.</string>
     <string name="constantly_reset_bluetooth">Stale resetuj Bluetooth</string>
     <string name="experimental_transmitter_fpv_uav">Wsparcie eksperymentalne dla urządzenia \"Transmitter\" z @FPV-UAV - tylko testy</string>
     <string name="transmitter_pl_support">Wsparcie dla \"Transmitter (PL)\"</string>
@@ -843,7 +842,6 @@
     <string name="repeat_sound">Powtórz dźwięk</string>
     <string name="enable_telemetry">Włącz telemetrię</string>
     <string name="send_data_to_developers">Wyślij programistom dane o wskaźniku sukcesów różnych urządzeń</string>
-    <string name="try_to_work_around_noisy_readings_ultrasensitive">Pracuj na niedokładnych odczytach nawet przy niskim poziomie niedokładności (tylko w trybie inżynierskim)</string>
     <string name="sidiary_date_title">Od kiedy rozpocząć export?</string>
     <string name="blukon">BluCon</string>
     <string name="tomato">Tomato</string>
