@@ -93,8 +93,10 @@ public class NFCReaderX {
     // Never in production. Used to emulate German sensor behavior.
     public static boolean use_fake_de_data() {
         //Pref.setBoolean("use_fake_de_data", true);
-        //Log.e(TAG, "Not using fake data");
-        return Pref.getBooleanDefaultFalse("use_fake_de_data");
+        //
+        boolean ret =  Pref.getBooleanDefaultFalse("use_fake_de_data");
+        Log.d(TAG, "using fake data = " + ret);
+        return ret;
     }
 
     static boolean enable_bluetooth_ask_user = false;
@@ -260,7 +262,7 @@ public class NFCReaderX {
         }
     }
 
-    public static void SendLibrereading(final String tagId, byte[] data1, final long CaptureDateTime, byte[] patchUid, byte[] patchInfo) {
+    public static void SendLibrereadingToFollowers(final String tagId, byte[] data1, final long CaptureDateTime, byte []patchUid,  byte []patchInfo){
         if (!Home.get_master()) {
             return;
         }
@@ -302,7 +304,7 @@ public class NFCReaderX {
             return true;
         }
 
-        SendLibrereading(tagId, data1, CaptureDateTime, patchUid, patchInfo);
+        SendLibrereadingToFollowers(tagId, data1, CaptureDateTime, patchUid, patchInfo);
 
         if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             // If oop is used, there is no need to  do the checksum It will be done by the oop.
@@ -997,7 +999,7 @@ public class NFCReaderX {
             result = reading_data.trend;
         } else if (libreBlock.byte_end == 44) {
             // This is the libre2 ble data
-            result = LibreOOPAlgorithm.parseBleDataPerMinute(libreBlock.blockbytes, libreBlock.timestamp);
+            result = LibreOOPAlgorithm.parseBleDataPerMinute(libreBlock.blockbytes, null, libreBlock.timestamp);
         } else {
             Log.i(TAG, "libreBlock exists but size is " + libreBlock.byte_end + " don't know how to parse it " + libreBlock.timestamp);
             return null;

@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.LIBRE_MULTIPLIER;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
@@ -146,10 +147,6 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
 
                                 Log.d(TAG, "Receiving LIBRE_ALARM broadcast");
 
-                                oldest_cmp = oldest;
-                                newest_cmp = newest;
-                                Log.d(TAG, "At Start: Oldest : " + JoH.dateTimeText(oldest_cmp) + " Newest : " + JoH.dateTimeText(newest_cmp));
-
                                 final String data = bundle.getString("data");
                                 final int bridge_battery = bundle.getInt("bridge_battery");
                                 if (bridge_battery > 0) {
@@ -157,10 +154,15 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                                     CheckBridgeBattery.checkBridgeBattery();
                                 }
                                 try {
+
                                     final ReadingData.TransferObject object =
                                             new Gson().fromJson(data, ReadingData.TransferObject.class);
-                                    processReadingDataTransferObject(object.data, JoH.tsl(), "LibreAlarm", false, null, null);
-                                    Log.d(TAG, "At End: Oldest : " + JoH.dateTimeText(oldest_cmp) + " Newest : " + JoH.dateTimeText(newest_cmp));
+                                    if(object.data.raw_data == null) {
+                                        Log.e(TAG, "Please update LibreAlarm to use OOP algorithm");
+                                        JoH.static_toast_long(gs(R.string.please_update_librealarm_to_use_oop_algorithm));
+                                        break;
+                                    }
+                                    NFCReaderX.HandleGoodReading("LibreAlarm", object.data.raw_data, JoH.tsl(), false, null, null);
                                 } catch (Exception e) {
                                     Log.wtf(TAG, "Could not process data structure from LibreAlarm: " + e.toString());
                                     JoH.static_toast_long(gs(R.string.librealarm_data_format_appears_incompatible_protocol_changed_or_no_data));
@@ -185,26 +187,21 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
         // Save raw block record (we start from block 0)
         LibreBlock libreBlock = LibreBlock.createAndSave(tagid, CaptureDateTime, readingData.raw_data, 0, allowUpload, patchUid, patchInfo);
 
-        if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
-            if (readingData.raw_data == null) {
-                Log.e(TAG, "Please update LibreAlarm to use OOP algorithm");
-                JoH.static_toast_long(gs(R.string.please_update_librealarm_to_use_oop_algorithm));
-                return;
-            }
-            LibreOOPAlgorithm.sendData(readingData.raw_data, CaptureDateTime, tagid);
-            return;
-        }
-
         LibreTrendUtil libreTrendUtil = LibreTrendUtil.getInstance();
         // Get the data for the last 24 hours, as this affects the cache.
         List<LibreTrendPoint> libreTrendPoints = libreTrendUtil.getData(JoH.tsl() - Constants.DAY_IN_MS, JoH.tsl(), true);
+
         readingData.ClearErrors(libreTrendPoints);
+        // This is not a perfect solution, but it should work well in almost all casses except restart.
+        // (after restart we will only have data of one reading).
+        readingData.copyBgVals(libreTrendPoints);
 
         boolean use_smoothed_data = Pref.getBooleanDefaultFalse("libre_use_smoothed_data");
-        if (use_smoothed_data) {
-            readingData.calculateSmoothDataImproved(libreTrendPoints);
-        }
-        CalculateFromDataTransferObject(readingData, use_smoothed_data, true);
+        if(use_smoothed_data) {
+            boolean BgValSmoothing = true; //???????????????????????????????????
+            readingData.calculateSmoothDataImproved(libreTrendPoints , BgValSmoothing);
+        } 
+        CalculateFromDataTransferObject(readingData, use_smoothed_data, false);  //??? might be false? true ?
     }
 
     public static void CalculateFromDataTransferObject(ReadingData readingData, boolean use_smoothed_data, boolean use_raw) {
@@ -257,7 +254,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                     if (use_raw) {
                         createBGfromGD(gd, use_smoothed_data, false); // not quick for recent
                     } else {
-                        BgReading.bgReadingInsertFromInt(gd.glucoseLevel, gd.realDate, true);
+                        BgReading.bgReadingInsertFromInt(use_smoothed_data? gd.glucoseLevelSmoothed :gd.glucoseLevel, gd.realDate, true);
                     }
                 }
             } else {

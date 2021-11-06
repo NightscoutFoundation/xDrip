@@ -334,33 +334,33 @@ public class LibreOOPAlgorithm {
         }
         return res;
     }
-
-    public static void handleDecodedBleResult(long timestamp, byte[] ble_data, byte[] patchUid) {
+    
+    public static void handleDecodedBleResult(long timestamp, byte[] ble_data, byte []patchUid, int[] trend_bg_vals, int[] history_bg_vals) {
         lastRecievedData = JoH.tsl();
         int raw = LibreOOPAlgorithm.readBits(ble_data, 0, 0, 0xe);
         int sensorTime = 256 * (ble_data[41] & 0xFF) + (ble_data[40] & 0xFF);
         Log.e(TAG, "Creating BG time =  " + sensorTime + " raw = " + raw);
 
         ReadingData readingData = new ReadingData();
-        readingData.trend = new ArrayList<GlucoseData>();
-
         readingData.raw_data = ble_data;
-        readingData.trend = parseBleDataPerMinute(ble_data, timestamp);
+        // Add bg values inside trend and history.
+        readingData.trend = parseBleDataPerMinute(ble_data, trend_bg_vals ,timestamp);
 
-        readingData.history = parseBleDataHistory(ble_data, timestamp);
+        readingData.history = parseBleDataHistory(ble_data, history_bg_vals, timestamp);
 
         String SensorSN = LibreUtils.decodeSerialNumberKey(patchUid);
 
         Log.e(TAG, "handleDecodedBleResult Created the following object " + readingData.toString());
-        NFCReaderX.SendLibrereading(SensorSN, readingData.raw_data, timestamp, patchUid, null);
+        NFCReaderX.SendLibrereadingToFollowers(SensorSN, readingData.raw_data, timestamp, patchUid, null);
         LibreAlarmReceiver.processReadingDataTransferObject(readingData, timestamp, SensorSN, true /*=allowupload*/, patchUid, null/*=patchInfo*/);
     }
-
-    public static ArrayList<GlucoseData> parseBleDataPerMinute(byte[] ble_data, Long captureDateTime) {
+    
+    public static ArrayList<GlucoseData> parseBleDataPerMinute(byte[] ble_data, int[] trend_bg_vals, Long captureDateTime) {
         int sensorTime = 256 * (ble_data[41] & 0xFF) + (ble_data[40] & 0xFF);
 
         ArrayList<GlucoseData> trendList = new ArrayList<>();
-        for (int i = 0; i < 7; i++) {
+        final int DATA_SIZE = 7;
+        for (int i = 0; i < DATA_SIZE; i++) {
             GlucoseData glucoseData = new GlucoseData();
 
             glucoseData.glucoseLevelRaw = LibreOOPAlgorithm.readBits(ble_data, i * 4, 0, 0xe);
@@ -371,14 +371,17 @@ public class LibreOOPAlgorithm {
             int relative_time = LIBRE2_SHIFT[i];
             glucoseData.realDate = captureDateTime - relative_time * Constants.MINUTE_IN_MS;
             glucoseData.sensorTime = sensorTime - relative_time;
-            if (verifyTime(glucoseData.sensorTime, "parseBleDataPerMinute ", ble_data)) {
+            if(trend_bg_vals != null  && trend_bg_vals.length == DATA_SIZE ) {
+                glucoseData.glucoseLevel = trend_bg_vals[i];
+            }
+            if(verifyTime( glucoseData.sensorTime, "parseBleDataPerMinute ", ble_data)) {
                 trendList.add(glucoseData);
             }
         }
         return trendList;
     }
-
-    public static ArrayList<GlucoseData> parseBleDataHistory(byte[] ble_data, Long captureDateTime) {
+    
+    public static ArrayList<GlucoseData> parseBleDataHistory(byte[] ble_data, int []history_bg_vals, Long captureDateTime) {
         int sensorTime = 256 * (ble_data[41] & 0xFF) + (ble_data[40] & 0xFF);
         //System.out.println("sensorTime = " + sensorTime);
         if (sensorTime < 3) {
@@ -387,7 +390,9 @@ public class LibreOOPAlgorithm {
         int sensorTimeModulo = (sensorTime - 2) / 15 * 15;
         ArrayList<GlucoseData> historyList = new ArrayList<>();
 
-        for (int i = 0; i < 3; i++) {
+        final int DATA_SIZE = 3;
+
+        for (int i = 0; i < DATA_SIZE; i++) {
             GlucoseData glucoseData = new GlucoseData();
 
             glucoseData.glucoseLevelRaw = readBits(ble_data, (i + 7) * 4, 0, 0xe);
@@ -400,9 +405,13 @@ public class LibreOOPAlgorithm {
             if (final_time < 0) {
                 break;
             }
-            glucoseData.realDate = captureDateTime + (final_time - sensorTime) * Constants.MINUTE_IN_MS;
+
+            glucoseData.realDate = captureDateTime  + (final_time - sensorTime) * Constants.MINUTE_IN_MS;
             glucoseData.sensorTime = final_time;
-            if (verifyTime(final_time, "parseBleDataHistory", ble_data)) {
+            if(history_bg_vals != null  && history_bg_vals.length == DATA_SIZE ) {
+                glucoseData.glucoseLevel = history_bg_vals[i];
+            }
+            if(verifyTime( final_time, "parseBleDataHistory", ble_data)) {
                 historyList.add(glucoseData);
             }
         }
