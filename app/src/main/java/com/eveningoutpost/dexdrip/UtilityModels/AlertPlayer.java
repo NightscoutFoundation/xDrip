@@ -115,7 +115,7 @@ public class AlertPlayer {
     // when ascending how many minutes since alert started do we wait before escalating
     final static int MAX_VIBRATING_MINUTES = 2;
     final static int MAX_ASCENDING_MINUTES = 5;
-    public int Vibrating_Calc = Pref.getBoolean("delay_ascending_3min", true) ? MAX_VIBRATING_MINUTES : -1; // Set to 2 if enabled and -1 if disabled
+    public int Vibrating_Calc = Pref.getBoolean("delay_ascending_3min", true) ? MAX_VIBRATING_MINUTES : -1; // Set to MAX_VIBRATING_MINUTES if enabled and -1 if disabled
 
     public int streamType = AudioManager.STREAM_MUSIC;
 
