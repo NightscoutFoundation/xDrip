@@ -180,7 +180,7 @@ public class ReadingData {
 
     }
 
-    public void calculateSmoothDataImproved(List<LibreTrendPoint> libreTrendPoints) {
+    public void calculateSmoothDataImproved(List<LibreTrendPoint> libreTrendPoints, boolean BgValSmoothing) {
         // use the data on libreTrendPoints to do the calculations.
         // Try to use the first 5 points to do the average if they exist and if not use up to 7 more points.
 
@@ -188,7 +188,7 @@ public class ReadingData {
         Iterator<GlucoseData> it = trend.iterator();
         while (it.hasNext()) {
             GlucoseData glucoseData = it.next();
-            boolean remove = calculateSmoothDataPerPoint(glucoseData, libreTrendPoints, errorHash);
+            boolean remove = calculateSmoothDataPerPoint(glucoseData, libreTrendPoints, BgValSmoothing, errorHash);
             if(remove) {
                 it.remove();
             }
@@ -196,7 +196,7 @@ public class ReadingData {
     }
 
     // true means we need to remove this objects.
-    private boolean calculateSmoothDataPerPoint(GlucoseData glucoseData, List<LibreTrendPoint> libreTrendPoints, HashSet<Integer> errorHash) {
+    private boolean calculateSmoothDataPerPoint(GlucoseData glucoseData, List<LibreTrendPoint> libreTrendPoints, boolean BgValSmoothing, HashSet<Integer> errorHash) {
         if(glucoseData.sensorTime < MAX_DISTANCE_FOR_SMOOTHING) {
             // First values are not interesting, but would make the algorithm more complex.
             return false;
@@ -204,6 +204,8 @@ public class ReadingData {
 
         int points_used = 0;
         double sum = 0;
+        double sumBg = 0;
+        int points_used_bg = 0;
 
         for(int i = 0; i < MAX_DISTANCE_FOR_SMOOTHING && points_used < PREFERRED_AVERAGE; i++) {
             LibreTrendPoint libreTrendPoint = libreTrendPoints.get(glucoseData.sensorTime - i);
@@ -212,11 +214,18 @@ public class ReadingData {
                 continue;
             }
             sum += libreTrendPoint.rawSensorValue;
-            Log.d(TAG, "Using  point for some" + libreTrendPoint);
             points_used++;
+            Log.d(TAG, "Using  point for some" + libreTrendPoint);
+
+            if(BgValSmoothing && libreTrendPoint.glucoseLevel > 0) {
+                sumBg += libreTrendPoint.glucoseLevel;
+                points_used_bg++;
+            }
         }
-        if(points_used > 0) {
+        if(points_used > 0 &&
+                (BgValSmoothing == false || points_used_bg > 0)) {
             glucoseData.glucoseLevelRawSmoothed = (int)(sum / points_used);
+            glucoseData.glucoseLevelSmoothed = (int)(sumBg / points_used_bg) ;
             Log.d(TAG, "setting smooth data based on " +points_used + " points " + glucoseData);
         } else {
             //glucoseData.glucoseLevelRawSmoothed = 0;
@@ -224,5 +233,18 @@ public class ReadingData {
             return true;
         }
         return false;
+    }
+
+    public void copyBgVals(List<LibreTrendPoint> libreTrendPoints) {
+        //
+        // List<GlucoseData> trend
+        // }
+        for (GlucoseData glucoseData : trend) {
+            if(glucoseData.sensorTime < 0 || glucoseData.sensorTime >= libreTrendPoints.size()) {
+                Log.e(TAG, "invalid sensorTime " + glucoseData);
+                continue;
+            }
+            libreTrendPoints.get(glucoseData.sensorTime).glucoseLevel = glucoseData.glucoseLevel;
+        }
     }
 }
