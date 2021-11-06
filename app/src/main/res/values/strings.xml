@@ -223,7 +223,7 @@
     <string name="send_feedback_message">Send Feedback Message</string>
     <string name="copying_settings">Copying Settings</string>
     <string name="show_settings_qr_codes">Show Settings QR codes</string>
-    <string name="load_save_settings_to_sdcard">Load / Save settings to SD card</string>
+    <string name="load_save_settings_to_sdcard">Load / Save settings</string>
     <string name="alarms_and_alerts">Alarms and Alerts</string>
     <string name="alerts_and_notifications">Alerts and Notifications</string>
     <string name="glucose_level_alerts_list">Glucose Level Alerts List</string>
@@ -369,10 +369,10 @@
     <string name="version_details">Version details</string>
     <string name="download_now">Download Now</string>
     <string name="automatically_check_for_updates">Automatically check for updates</string>
-    <string name="here_you_can_save_the_settings_to_the_external_storage_sdcard">Here you can save the settings to the external storage (SD card).\n\nOnce saved to the external storage it is potentially possible for any app to read the settings which might contain sensitive information.\n\nYou are advised to delete the settings once you have imported them again if you are concerned about this.</string>
-    <string name="save_all_settings_to_sdcard">Save all Settings to SD card</string>
-    <string name="load_all_settings_from_sdcard">Load all Settings from SD card</string>
-    <string name="delete_any_settings_on_sdcard">Delete any settings on SD card</string>
+    <string name="here_you_can_save_the_settings_to_the_external_storage_sdcard">Here, you can save the settings to the internal storage (Download/xDrip-export/com.eveningoutpost.dexdrip_preferences.xml).\n\nOnce saved to a file, it is potentially possible for any app to read the settings which might contain sensitive information.\n\nYou are advised to delete the settings once you have imported them again if you are concerned about this.</string>
+    <string name="save_all_settings_to_sdcard">Save all Settings to the settings file</string>
+    <string name="load_all_settings_from_sdcard">Load all settings from the settings file</string>
+    <string name="delete_any_settings_on_sdcard">Delete settings folder (Download/xDrip-export)</string>
     <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Use QR codes to transfer settings using Settings->Auto Configure feature]]></string>
     <string name="xdrip_plus_security_key_settings_only">xDrip Plus Security Key Settings only</string>
     <string name="show_general_and_collection_settings">Show General and Collection Settings</string>
@@ -396,7 +396,7 @@
     <string name="search">Search</string>
     <string name="reset_all_language_data">Reset ALL language data</string>
     <string name="show_only_customized_entries">Show only customized entries</string>
-    <string name="settings_on_external_storage">Settings on external storage</string>
+    <string name="settings_on_external_storage">Load/Save settings</string>
     <string name="get_notified_of_new_apk_releases">Get notified of new apk releases</string>
     <string name="choose_stable_beta_or_alpha_releases">Choose Stable, Beta or Alpha releases</string>
     <string name="web_feedback_form_for_sending_messages">Web feedback form for sending messages and ratings of xDrip+ to the developers</string>
@@ -1202,6 +1202,8 @@
     <string name="title_rest_api_extra_options">Extra Options</string>
     <string name="summary_send_bridge_battery_to_nightscout">Send your bridge battery level to Nightscout. Uncheck if your battery sensor is broken.</string>
     <string name="title_send_bridge_battery_to_nightscout">Upload bridge battery</string>
+    <string name="summary_send_dexcom_transmitter_battery_to_nightscout">Send Dexcom transmitter battery statistics to Nightscout. Includes all of the data shown on the Collector Status screen.</string>
+    <string name="title_send_dexcom_transmitter_battery_to_nightscout">Upload OB1G5/G6 transmitter battery</string>
     <string name="summary_send_treatments_to_nightscout">Send treatment data to Nightscout. Uncheck if your careportal is broken.</string>
     <string name="title_send_treatments_to_nightscout">Upload treatments</string>
     <string name="summary_warn_nightscout_failures">Display and sound a notification if Nightscout upload is failing.</string>
@@ -1222,7 +1224,7 @@
     <string name="title_tidepool_dev_servers">Use Integration (test) servers</string>
     <string name="title_tidepool">Tidepool</string>
     <string name="show_help">Show Help</string>
-    <string name="load_save_settings_on_sdcard">Load / Save Settings on SD card</string>
+    <string name="load_save_settings_on_sdcard">Load / Save Settings</string>
     <string name="delete_all_bg_readings">Delete All BG readings</string>
     <string name="debugging_test_feature">Debugging test feature</string>
     <string name="sync_treatments">Sync Treatments</string>
