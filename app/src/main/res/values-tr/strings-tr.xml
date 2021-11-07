@@ -885,7 +885,7 @@
     <string name="DoubleDown">Çift Aşağıya Doğru</string>
     <string name="SingleDown">Tek Aşağıya Doğru</string>
     <string name="FortyFiveDown">Hafif Düşmekte</string>
-    <string name="Flat">Değişmiyor</string>
+    <string name="Flat">Durağan</string>
     <string name="FortyFiveUp">Hafif Yükselmekte</string>
     <string name="SingleUp">Tek Yukarıya Doğru</string>
     <string name="DoubleUp">Çift Yukarıya Doğru</string>
