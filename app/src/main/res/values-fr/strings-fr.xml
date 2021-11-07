@@ -134,7 +134,7 @@
     <string name="share">Partager</string>
     <string name="title_activity_profile_editor">Editeur de profil de traitement</string>
     <string name="first_use_menu_to_scan">Utilisez d\'abord le menu pour scanner votre appareil BT ou modifier la source de données dans les paramètres!</string>
-    <string name="first_configure_ip_address">Configurez d\'abord l\'adresse IP de votre lecteur wixel ou l\'url Parakeet</string>
+    <string name="first_configure_ip_address">Configurez d\'abord l\'adresse IP de votre lecteur WiFi Wixel ou l\'url Parakeet</string>
     <string name="now_start_your_sensor">Maintenant, démarrer votre capteur ou vérifier les paramètres</string>
     <string name="please_wait_while_sensor_warms_up">S\'il vous plaît patienter pendant que le capteur se réchauffe! (</string>
     <string name="minutes_with_bracket">" minutes)"</string>
@@ -1165,7 +1165,7 @@
     <string name="title_rest_api_extra_options">Options supplémentaires</string>
     <string name="summary_send_bridge_battery_to_nightscout">Envoyer votre niveau de batterie du transmetteur à Nightscout. Décocher si votre capteur de batterie ne marche pas.</string>
     <string name="title_send_bridge_battery_to_nightscout">Charger la batterie du transmetteur</string>
-    <string name="summary_send_dexcom_transmitter_battery_to_nightscout">Envoyer les statistiques de la batterie Dexcom à Nightscout. Inclut toutes les données affichées sur l\'écran Statut du Collecteur.</string>
+    <string name="summary_send_dexcom_transmitter_battery_to_nightscout">Envoyer les statistiques de la batterie du Dexcom à Nightscout. Inclut toutes les données affichées sur l\'écran Statut du Collecteur.</string>
     <string name="title_send_dexcom_transmitter_battery_to_nightscout">Envoyer le niveau de batterie du transmetteur OB1G5/G6</string>
     <string name="summary_send_treatments_to_nightscout">Envoyer des données de traitement à Nightscout. Décochez si votre portail ne marche pas.</string>
     <string name="title_send_treatments_to_nightscout">Charger les traitements</string>
