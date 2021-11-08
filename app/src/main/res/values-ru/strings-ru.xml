@@ -108,7 +108,7 @@
     <string name="toast_crash">Что-то пошло не так :( Разработчикам был отправлен отчет об ошибке в целях поиска и решения проблемы.</string>
     <string name="taskerConfigInstruction">Просто нажмите на галочку здесь, чтобы подтвердить действие. Вносить изменения в строку конфигурации не требуется.</string>
     <string name="taskerConfiguration">Конфигурация Tasker</string>
-    <string name="finish_preferences_activity">fin_preferences_activity</string>
+    <string name="finish_preferences_activity">Завершить работу установок</string>
     <string name="add_widget">Добавить виджет</string>
     <string name="title_activity_alert_list">Журнал оповещений</string>
     <string name="speaktreatment">Голосовой ввод значений</string>
@@ -289,7 +289,7 @@
     <string name="upload_data_to_dex_servers">Загружать данные на серверы Dexcom, чтобы вы имели возможность использовать данные в приложениях Dexcom</string>
     <string name="manage_followers">Управление фолловерами</string>
     <string name="manage_existing_followers">Управление существующими фолловерами и приглашение новых.</string>
-    <string name="invite_follower">Пригласить фолловера</string>
+    <string name="invite_follower">Добавить фолловера</string>
     <string name="glucose_calibration_and_other_alerts">Гликемия, калибровка и др. оповещения</string>
     <string name="alert_volume_profile">Профиль громкости оповещений</string>
     <string name="smart_alerting">Смарт-оповещения</string>
@@ -415,7 +415,7 @@
     <string name="notify_when_predicted_low_time_reaches_threshold">Оповещать, если достигнуто пороговое значение прогнозируемого времени до гипогликемии</string>
     <string name="predicted_low_sound">Звук прогнозируемой гипогликемии</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Выбрать звук оповещения о прогнозируемой гипогликемии.</string>
-    <string name="notify_when_parakeet_device_stops_checking_in">Уведомлять, когда устройство Parakeet прекращает обнаруживаться</string>
+    <string name="notify_when_parakeet_device_stops_checking_in">Уведомлять, когда связь с устройством Parakeet потеряна</string>
     <string name="parakeet_related_alerts">Оповещения Parakeet</string>
     <string name="raise_parakeet_notification_silently_when_charging">Включать уведомление Parakeet без звука при зарядке</string>
     <string name="silent_alert_when_charging">Беззвучные оповещения во время зарядки</string>
@@ -575,7 +575,7 @@
     <string name="use_tiny_dots">Использовать крошечный размер точек</string>
     <string name="watch_vibrate_active_alerts">Вибрация на часах при наличии активных оповещений о гликемии</string>
     <string name="vibrate_alerts">Вибрировать при уведомлении</string>
-    <string name="attach_to_button">Прикрепите это ко кнопке Pebble, чтобы мгновенно откладывать любую активную тревогу с ваших часов. То же для функции удаленного откладывания.</string>
+    <string name="attach_to_button">Назначьте эту функцию к кнопке Pebble, чтобы мгновенно откладывать любую активную тревогу с ваших часов. То же для функции удаленного откладывания.</string>
     <string name="for_interacting_compatible_apps">Для взаимодействия с иными совместимыми приложениями</string>
     <string name="interapp_settings">Настройки интеграций с приложениями</string>
     <string name="use_plugins_for_brodcast">Использовать сглаживание шумов и плагины (если включено) для транслируемого значения</string>
@@ -588,12 +588,12 @@
     <string name="speak_glucose_twice">Произносить каждое новое значение глюкозы дважды</string>
     <string name="short_speak_readings_shortcut">Отображать в ☰ меню ярлык \'Произносить значения\'</string>
     <string name="speak_readings_shortcut">Ярлык в меню - \'Произносить значения\'</string>
-    <string name="battery_optimization_off">На Android 6+ убедитесь, что оптимизация энергосбережения отключена. Рекомендуется</string>
-    <string name="battery_optimization_on">Не продолжать спрашивать об оптимизации энергосбережения. Не рекомендуется</string>
+    <string name="battery_optimization_off">На Android 6+ убедитесь, что оптимизация энергосбережения отключена (рекомендуется).</string>
+    <string name="battery_optimization_on">Не спрашивать об оптимизации энергосбережения (не рекомендуется).</string>
     <string name="battery_optimization_prompt">Запрос оптимизации использования батареи</string>
     <string name="advanced_bluetooth_settings">Расширенные настройки Bluetooth</string>
     <string name="bluetooth_settings">Настройки Bluetooth</string>
-    <string name="auto_turn_on_bluetooth">Автоматически включать Bluetooth, если он был отключен, когда мы пытаемся подключиться к Bluetooth-устройству</string>
+    <string name="auto_turn_on_bluetooth">Автоматически включать Bluetooth, если он был отключен при попытке подключиться к Bluetooth-устройству</string>
     <string name="turn_bluetooth_on">Включить Bluetooth</string>
     <string name="reset_bluetooth">Перезапускать Bluetooth при отсутствии данных более 20 минут</string>
     <string name="bluetooth_watchdog">Мониторинг состояния Bluetooth</string>
@@ -848,6 +848,7 @@
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
     <string name="bubble">Bubble</string>
+    <string name="atom">Atom</string>
     <string name="use_gravity_sensor_to_rotate_items">Использовать гироскоп для ориентации</string>
     <string name="low_bridge_battery">Низкий уровень заряда трансмиттера</string>
     <string name="reminders">Напоминания</string>
@@ -1275,7 +1276,7 @@
     <string name="summary_use_ob1_g5_collector_service">Полностью переписан, должен работать на Android 4.4-9, поддерживает нативный режим и другое</string>
     <string name="title_use_ob1_g5_collector_service">Использовать службу сбора данных OB1</string>
     <string name="summary_ob1_g5_use_transmitter_alg">По возможности использовать внутренний алгоритм передатчика для расчета значений глюкозы.</string>
-    <string name="title_ob1_g5_use_transmitter_alg">Втсроенный алгоритм</string>
+    <string name="title_ob1_g5_use_transmitter_alg">Встроенный алгоритм</string>
     <string name="summary_ob1_g5_restart_sensor">Автоматически перезапускать сенсор при остановке</string>
     <string name="title_ob1_g5_restart_sensor">Перезапускать сенсор</string>
     <string name="summary_ob1_g5_preemptive_restart">Перезапускать сенсор заранее перед окончанием сессии в дни 6/9 во избежание повторной адаптации</string>

@@ -17,7 +17,11 @@
     <string name="title_activity_start_new_sensor">Εκκίνηση καινούριου αισθητήρα</string>
     <string name="title_activity_new_sensor_location">Τοποθεσία καινούργιου αισθητήρα</string>
     <string name="title_activity_stop_sensor">Διακοπή αισθητήρα</string>
+    <string name="title_activity_nav_drawer">Μενού περιήγησης</string>
+    <string name="navigation_drawer_open">Άνοιξε το μενού περιήγησης</string>
+    <string name="navigation_drawer_close">Κλείσε το μενού περιήγησης</string>
     <string name="title_activity_calibration_check_in">Δραστηριότητα Βαθμονόμησης</string>
+    <string name="title_activity_usb_connected">Δραστηριότητα συνδεδεμένων USB</string>
     <string name="snooze">Αναβολή</string>
     <string name="snooze_hint">Αναβολή ειδοποίησης για x λεπτά</string>
     <string name="ok">Εντάξει</string>
@@ -34,15 +38,19 @@
     <string name="auto_configure_title">Αυτόματη ρύθμιση</string>
     <string name="prefs_auto_config_summary">Αυτόματη ρύθμιση παραμέτρων χρησιμοποιώντας barcode.</string>
     <string name="scan_share2_barcode">Σάρωση Κοινοποίησης Barcode</string>
+    <string name="pref_share2_scan_barcode_summary">Ή σκάναρε το barcode στο δέκτη διαμοιρασμού</string>
     <!-- MongoDB Settings -->
     <string name="pref_title_mongodb">MongoDB</string>
     <string name="pref_summary_mongodb_enabled">Απευθείας μεταφόρτωση βάσης δεδομένων, δεν συνιστάται για Nightscout</string>
     <string name="pref_title_mongodb_uri">URI</string>
+    <string name="pref_dialog_mongodb_uri">Εισήγαγε MongoDB UR</string>
     <string name="pref_message_mongodb_uri">Αντικαταστήστε τις τιμές παραδειγμάτων σε {} με τις σωστές τιμές σας</string>
     <string name="pref_default_mongodb_uri">mongodb://{user}:{password}@{host}.mongolab.com:{11111}/{database}</string>
     <string name="pref_title_mongodb_collection">Όνομα συλλογής</string>
+    <string name="pref_dialog_mongodb_collection">Εισάγετε όνομα συλλογής</string>
     <string name="pref_message_mongodb_collection">Αυτό είναι το όνομα της συλλογής όπου θα αποθηκεύονται τα δεδομένα CGM</string>
     <string name="pref_title_mongodb_device_status_collection">Όνομα συλλογής κατάστασης συσκευής</string>
+    <string name="pref_message_mongodb_device_status_collection">Όνομα συλλογής όπου θα αποθηκεύονται τα δεδομένα μπαταρίας και άλλων συσκευών</string>
     <!-- API Settings -->
     <string name="pref_title_api">Συγχρονισμός Nightscout (REST-API)</string>
     <string name="pref_title_api_enabled">Ενεργό</string>
@@ -63,6 +71,7 @@
     <string name="pref_amazfit_enable">Ενεργοποίηση</string>
     <string name="pref_amazfit_BG_alert_enable">Ενεργοποίηση</string>
     <string name="pref_amazfit_other_alert_enable">Ενεργοποίηση</string>
+    <string name="pref_amazfit_other_alert_title">Άλλες Ειδοποιήσεις</string>
     <string name="pref_amazfit_watchface_graph_enable">Ενεργοποίηση</string>
     <string name="pref_amazfit_widget_graph_enable">Ενεργοποίηση</string>
     <string name="taskerConfigInstruction">Απλά κάντε κλικ στο εικονίδιο Tick εδώ για να επιβεβαιώσετε. Δεν θα πρέπει να αλλάξετε τη συμβολοσειρά ρυθμίσεων.</string>
@@ -84,10 +93,19 @@
     <string name="add_note">Προσθήκη σημείωσης</string>
     <string name="blood_test">Μέτρηση σακχάρου (με αίμα)</string>
     <string name="share">Κοινοποίηση</string>
+    <string name="title_activity_profile_editor">Επεξεργασία Προφίλ Θεραπείας</string>
+    <string name="first_use_menu_to_scan">Χρησιμοποιήστε πρώτα το μενού για σάρωση της BT συσκευής σας ή αλλάξτε την Πηγή Δεδομένων στις Ρυθμίσεις!</string>
+    <string name="possible_bad_calibration">Πιθανώς κακή κλίση βαθμονόμισης, παρακαλώ πιείτε ένα ποτήρι νερό, πλύνετε τα χέρια σας και ξαναρυθμίστε σε λίγα λεπτά!</string>
+    <string name="please_enter_two_calibrations_to_get_started">Παρακαλώ εισάγετε δύο βαθμονομήσεις για να ξεκινήσετε!</string>
+    <string name="now_pair_with_your_dexcom_share">Τώρα κάνετε σύζευξη με το Dexcom Share</string>
+    <string name="now_choose_start_sensor_in_settings">Τώρα επιλέξτε να ξεκινήσετε τον αισθητήρα σας στις ρυθμίσεις</string>
+    <string name="waiting_for_packet">Αναμονή για πακέτο</string>
     <string name="space_mins">" λεπτά"</string>
     <string name="till">μέχρι</string>
     <string name="low_predicted">Προβλέπονται χαμηλές τιμές σακχάρου</string>
     <string name="in">σε</string>
+    <string name="yes_enter_setup_mode">Ναι, έισοδος σε λειτουργία setup</string>
+    <string name="nokeep_parakeet_as_it_is">Όχι, κρατήστε το Parakeet όπως είναι</string>
     <string name="added">Προστέθηκε</string>
     <string name="checking_for_update">Έλεγχος για ενημερώσεις...</string>
     <string name="space_minutes_ago">" λεπτά πριν"</string>
@@ -102,11 +120,15 @@
     <string name="low_value">Χαμηλή Τιμή</string>
     <string name="save">Αποθήκευση</string>
     <string name="copying_settings">Αντιγραφή ρυθμίσεων</string>
+    <string name="other_alerts">Άλλες Ειδοποιήσεις</string>
+    <string name="extra_alerts_xdrip_plus">Επιπλέον Ειδοποιήσεις (xDrip+)</string>
+    <string name="forecasted_low_alert">Προβλεπόμενη Χαμηλή Ειδοποίηση</string>
     <string name="add_calibration">Προσθήκη Βαθμονόμησης</string>
     <string name="system_status">Κατάσταση Συστήματος</string>
     <string name="settings">Ρυθμίσεις</string>
     <string name="calibration_data_table">Πίνακας Δεδομένων Βαθμονόμησης</string>
     <string name="dexcom_transmitter_id">Αναγνωριστικό (ID) Πομπού Dexcom</string>
+    <string name="pref_show_treatments">Εμφάνιση Θεραπειών</string>
     <string name="history">Ιστορικό</string>
     <string name="statistics">Στατιστικά</string>
     <string name="less_common_settings">Λιγότερο συχνές ρυθμίσεις</string>

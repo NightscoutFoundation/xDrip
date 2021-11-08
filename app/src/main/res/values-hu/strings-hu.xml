@@ -166,7 +166,7 @@
     <string name="show_parakeet_map">Parakeet térkép mutatása</string>
     <string name="switch_parakeet_to_setup_mode">Parakeet beállítási módba helyezése</string>
     <string name="view_events_log">Eseménynapló mutatása</string>
-    <string name="show_libre_trend">Libre trend mutatása</string>
+    <string name="show_libre_trend">Libre trend (percenkénti adatok) mutatása</string>
     <string name="libre_15_minutes_graph">Libre 15 perces grafikon</string>
     <string name="libre_last_x_minutes_graph">Libre utolsó %d perc grafikon</string>
     <string name="share_config_via_qr_code">Beállítások megosztása QR kóddal</string>
@@ -198,7 +198,7 @@
     <string name="automatic_crash_reporting">Automatikus hibajelentés</string>
     <string name="send_feedback_message">Visszajelzés küldése</string>
     <string name="copying_settings">Beállítások másolása</string>
-    <string name="show_settings_qr_codes">Beállítások átadása kóddal</string>
+    <string name="show_settings_qr_codes">Beállítások átadása QR-kóddal</string>
     <string name="load_save_settings_to_sdcard">Beállítások mentése/visszaállítása SD-kártyára/mappába</string>
     <string name="alarms_and_alerts">Riasztások és emlékeztetők</string>
     <string name="alerts_and_notifications">Riasztások és emlékeztetők</string>
@@ -771,8 +771,8 @@
     <string name="step_counter_2nd_color">Lépésszámláló 2. szín</string>
     <string name="flair_colors">Megkülönböztető színek</string>
     <string name="use_flair_colors">Egyedi színek használata</string>
-    <string name="upper_title_bar_flair">xDrip állapotsor színe</string>
-    <string name="lower_button_bar_falir">Navigációs sáv színe</string>
+    <string name="upper_title_bar_flair">Felső állapotsor színe</string>
+    <string name="lower_button_bar_falir">Alsó gombsáv színe</string>
     <string name="force_english_text">Mindenképpen angol nyelv</string>
     <string name="using_local_language">Jelenleg a készüléke beállítása szerinti nyelvet használja</string>
     <string name="forcing_alternate_language">Jelenleg az alternatív nyelvet használja</string>
@@ -832,6 +832,7 @@
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
     <string name="bubble">Bubble</string>
+    <string name="atom">Atom</string>
     <string name="use_gravity_sensor_to_rotate_items">Használja a G-szenzort a nézet elforgatásához</string>
     <string name="low_bridge_battery">Alacsony transzmitter töltöttség</string>
     <string name="reminders">Emlékeztetők</string>
@@ -965,6 +966,7 @@
     <string name="enable_speak_readings_when_in_vehicle">Felolvasás funkció bekapcsolása vezetés módban</string>
     <string name="bluetooth_watchdog_timers">Bluetooth Watchdog időtáv</string>
     <string name="bluetooth_watchdog_timer_sums">Percben adja meg</string>
+    <string name="basal_editor">Bázis inzulin beállítása - időpontok kiválasztása</string>
     <string name="sensor_is_still_warming_up_please_wait">Szenzor még nem indult el, kérem, várjon</string>
     <string name="number_wall_config">VC-érték a záróképernyőn</string>
     <string name="summary_If_you_plan_to_only_use_a_Wear_collector_and_never_your_phone">Csak a WEAR-t használja kollektorként, a telefont soha.</string>
@@ -1390,7 +1392,7 @@
     <string name="transmitter_battery_status">Távadó töltöttsége:  </string>
     <string name="connect_device_usb_otg">Kérjük, csatlakoztassa készülékét USB OTG kábellel.</string>
     <string name="connection_status">Kapcsolat állapota:</string>
-    <string name="range_in_high_low">Tartományban: (OK, Ma, Ala)</string>
+    <string name="range_in_high_low">Tartományban: (OK/Ma/Ala)</string>
     <string name="absolute_s">VC-érték (db):</string>
     <string name="median_bg">Medián VC:</string>
     <string name="mean_bg">Átlagos VC:</string>
@@ -1429,9 +1431,11 @@
     <string name="are_you_sure_you_want_to_delete_this_blood_test_result">Biztosan törli ezt a VC mérési értéket?</string>
     <string name="yes_delete">Igen, törlés</string>
     <string name="deleted">Törölve!</string>
+    <string name="wifi_sleep_policy_issue">WIFI készenléti mód beállítási probléma</string>
     <string name="your_wifi_is_set_to_sleep_when_the_phone_screen_is_off__this_may_cause_problems_if_you_dont_have_cellular_data_or_have_devices_on_your_local_network__would_you_like_to_go_to_the_settings_page_to_set__always_keep_wifi_on_during_sleep">A WiFi úgy van beállítva, hogy alvó üzemmódban maradjon, amikor a telefon képernyője ki van kapcsolva.\n\nEz problémákat okozhat, ha nincs mobil adatforgalma, vagy ha a helyi hálózaton vannak készülékek.\n\nBeállítja a telefonján, hogy:\n\n\nWi-Fi ébren tartása alvó módban?</string>
     <string name="maybe_later">Talán később</string>
     <string name="yes_do_it">IGEN, mehet</string>
+    <string name="recommend_that_you_change_wifi_to_always_be_on_during_sleep">Javaslat a WIFI aktiválására készenléti üzemmódban</string>
     <string name="ooops_this_device_doesnt_seem_to_have_a_wifi_settings_page">Opppá! Ennek a készüléknek nincsen WIFI-beállítások panele!</string>
     <string name="restore_backup">Biztonsági mentés visszaállítása?</string>
     <string name="do_you_want_to_restore_the_backup_file_">Visszaállítás ebből a fájlból: </string>
@@ -1493,6 +1497,10 @@
     <string name="ob1_session_restarted_title">Szenzor újraindítva</string>
     <string name="ob1_session_restarted_msg">A szenzor munkamenet elővigyázatosságból újraindult. Kérjük, ellenőrizze, hogy a következő mért értékek hihetőek-e, és szükség esetén kalibráljon</string>
     <string name="ob1_session_restarted_note">Szenzor újra lett indítva</string>
+    <string name="title_ob1_g5_preemptive_restart_extended_time_travel">Szenzor használati idő növelése (\"időutazás\")</string>
+    <string name="title_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares">Szenzor használati idő növelése hosszabban (\"időutazás\")</string>
+    <string name="summary_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares">Szenzor használati idő növelése minden firmware verzióval (csak fejlesztői módban)</string>
+    <string name="title_ob1_g5_preemptive_restart_alert">Riasztás a szenzor elővigyázatosságból való újraindulásakor</string>
     <string name="blood_glucose_graph">Vércukor grafikon</string>
     <string name="pref_enable_insulinprofiles">egyszerre maximum hármat engedélyezhet</string>
     <string name="pref_select_basal_insulinprofiles">bázisinzulin profil kiválasztása.</string>
@@ -1507,4 +1515,6 @@
     <string name="enable_streaming_dialog_dont_ask_again">Ne kérdezzen rá többet</string>
     <string name="enable_streaming_dialog_text">Összekapcsolja az xDripet ezzel a szenzorral? Ezután a Libre olvasó és a LibreLink app nem kap riasztást. Nyomja meg az Igen gombot, olvassa le a szenzort a kapcsolódáshoz (Ha a patch-elt LibreLink-et akarja használni, ne kapcsolja össze őket.)</string>
     <string name="enable_streaming_dialog_title">Csatlakozzon Libre szenzorhoz BT-szal</string>
+    <string name="title_lower_fuzzer">FUZZER csökkentése</string>
+    <string name="summary_lower_fuzzer">A FUZZER értékének csökkentése 2,5 percről 37,5 mp-re</string>
 </resources>

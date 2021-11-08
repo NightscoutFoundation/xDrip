@@ -576,7 +576,7 @@
     <string name="vibrate_alerts">רטוט בזמן ההתראות</string>
     <string name="attach_to_button">חברו לכפתור ב-Pebble כדי להשתיק התראות פעילות מהשעון. מתאים גם להשתקה מרחוק.</string>
     <string name="for_interacting_compatible_apps">הגדרות אינטראקציה עם אפליקציות תואמות</string>
-    <string name="interapp_settings">הגדרות לשיתוף פעולה בין אפליקציות</string>
+    <string name="interapp_settings">הגדרות לשיתוף פעולה בין יישומים</string>
     <string name="use_plugins_for_brodcast">משתמש בעיבוד רעש בערכים ותוספים (אם מופעלים) לשידור ערכים</string>
     <string name="send_display_glucose">שלח גלוקוז מוצג</string>
     <string name="send_broadcasts_old_permission_model">שדר ללא שימוש בדגם ההרשאות הישן</string>
@@ -843,6 +843,7 @@
     <string name="blukon">BluCon</string>
     <string name="tomato">מיאומיאו</string>
     <string name="bubble">Bubble</string>
+    <string name="atom">Atom</string>
     <string name="use_gravity_sensor_to_rotate_items">השתמש בחיישן כח המשיכה כדי לסובב פריטים</string>
     <string name="low_bridge_battery">סוללת מכשיר גישור נמוכה</string>
     <string name="reminders">תזכורות</string>

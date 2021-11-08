@@ -147,6 +147,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
         faux_bgr.put("timestamp", timestamp);
         faux_bgr.put("calculated_value", sgv);
         faux_bgr.put("filtered_calculated_value", sgv);
+        faux_bgr.put("source_info", "NSEmulator Follow");
         // sanity checking???
         // fake up some extra data
         faux_bgr.put("raw_data", sgv);

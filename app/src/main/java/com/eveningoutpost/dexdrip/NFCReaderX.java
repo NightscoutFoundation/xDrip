@@ -85,6 +85,7 @@ public class NFCReaderX {
     // Never in production. Used to emulate German sensor behavior.
     public static boolean use_fake_de_data() {
         //Pref.setBoolean("use_fake_de_data", true);
+        //Log.e(TAG, "Not using fake data");
         return Pref.getBooleanDefaultFalse("use_fake_de_data");
     }
 
@@ -283,16 +284,17 @@ public class NFCReaderX {
             // It seems that some times we read a buffer that is bigger than 0x158, but we should only use the first 0x158 bytes.
             data1 = java.util.Arrays.copyOfRange(data1, 0, Constants.LIBRE_1_2_FRAM_SIZE);
         }
-        SendLibrereading(tagId, data1, CaptureDateTime, patchUid, patchInfo);
-        
-        if(LibreOOPAlgorithm.isDecodeableData(patchInfo) && decripted_data == false 
+
+        if(LibreOOPAlgorithm.isDecodeableData(patchInfo) && decripted_data == false
                 && !Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             // Send to OOP2 for drcryption.
             LibreOOPAlgorithm.logIfOOP2NotAlive();
             LibreOOPAlgorithm.sendData(data1, CaptureDateTime, patchUid, patchInfo, tagId);
             return true;
         }
-        
+
+        SendLibrereading(tagId, data1, CaptureDateTime, patchUid, patchInfo);
+
         if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             // If oop is used, there is no need to  do the checksum It will be done by the oop.
             // (or actually we don't know how to do it, for us 14/de sensors).
@@ -320,8 +322,10 @@ public class NFCReaderX {
                     try {
                         // Protect against wifi reader and gmc reader coming at the same time.
                         synchronized (NFCReaderX.class) {
-                            LibreAlarmReceiver.processReadingDataTransferObject( mResult, CaptureDateTime, tagId, allowUpload, patchUid, patchInfo );
-                            Home.staticRefreshBGCharts();
+                            if(mResult != null) {
+                                LibreAlarmReceiver.processReadingDataTransferObject(mResult, CaptureDateTime, tagId, allowUpload, patchUid, patchInfo);
+                                Home.staticRefreshBGCharts();
+                            }
                         }
                     } finally {
                         JoH.releaseWakeLock(wl);
@@ -468,6 +472,10 @@ public class NFCReaderX {
         }
 
         void startLibre2Streaming(NfcV nfcvTag, byte[] patchUid, byte[] patchInfo) throws InterruptedException {
+            // Since this is libre2 we can remove the physical devices battery.
+            Pref.setInt("bridge_battery", 0);
+            PersistentStore.setString("Tomatobattery", "0");
+            PersistentStore.setString("Bubblebattery", "0");
             if(!enableBluetoothAllowed(context)) {
                 Log.e(TAG, "Sensor is libre 2, enabeling BT not allowed");
                 return;
@@ -478,7 +486,7 @@ public class NFCReaderX {
 
             Libre2SensorData.setLibre2SensorData(patchUid, patchInfo, 42, 1 , "");
             // This is the nfc command to enable streaming
-            Pair<byte[], String> unlockData = LibreOOPAlgorithm.nfcSendgetBlutoothEnablePayload();
+            Pair<byte[], String> unlockData = LibreOOPAlgorithm.nfcSendgetBluetoothEnablePayload();
             if (unlockData == null) {
                 Log.e(TAG, "unlockData is null, not enabeling streaming");
                 return;
@@ -506,7 +514,7 @@ public class NFCReaderX {
                     break;
                 } catch (IOException e) {
                     if ((System.currentTimeMillis() > time_patch + 2000)) {
-                        Log.e(TAG, "enablestraming command read timeout");
+                        Log.e(TAG, "enable streaming command read timeout");
                         JoH.static_toast_short(gs(R.string.nfc_read_timeout));
                         vibrate(context, 3);
                         return;
@@ -525,7 +533,6 @@ public class NFCReaderX {
                 Log.e(TAG, "enable streaming returned bad data. BT will not work." + HexDump.dumpHexString(res));
             }
         }
-
 
         @Override
         protected Tag doInBackground(Tag... params) {
@@ -607,6 +614,7 @@ public class NFCReaderX {
                         }
                         Log.d(TAG, "patchInfo = " + HexDump.dumpHexString(patchInfo));
                         byte []patchUid = tag.getId();
+                        Log.d(TAG, "patchUid = " + HexDump.dumpHexString(patchUid));
                         if(use_fake_de_data()) {
                             patchUid = de_new_patch_uid;
                             patchInfo = de_new_patch_info;
@@ -619,6 +627,9 @@ public class NFCReaderX {
                         }
                         if(sensorType == SensorType.Libre2) {
                             startLibre2Streaming(nfcvTag, patchUid, patchInfo);
+                            PersistentStore.setString("LibreVersion", "2");
+                        } else {
+                            PersistentStore.setString("LibreVersion", "1");
                         }
                         
                         if (multiblock) {
@@ -655,7 +666,7 @@ public class NFCReaderX {
                                 if (d)
                                     Log.d(TAG, HexDump.dumpHexString(replyBlock, 0, replyBlock.length));
                                 if (replyBlock.length != correct_reply_size) {
-                                    Log.e(TAG, "Incorrect block size: " + replyBlock.length + " vs " + correct_reply_size);
+                                    Log.e(TAG, "Incorrect block size (multiply): " + replyBlock.length + " vs " + correct_reply_size);
                                     JoH.static_toast_short(gs(R.string.nfc_invalid_data__try_again));
                                     if (!addressed) {
                                         if (PersistentStore.incrementLong("nfc-address-failures") > 2) {
@@ -785,6 +796,13 @@ public class NFCReaderX {
             // glucoseData.glucoseLevel =
             //       getGlucose(new byte[]{data[(i * 6 + 125)], data[(i * 6 + 124)]});
 
+            // If the data is decoded for some reason, we might have a wrong index.
+
+            if(i * 6 + 125 >= data.length) {
+                Log.e(TAG, "Failing to parse data from " + JoH.dateTimeText(CaptureDateTime));
+                return null;
+            }
+
             glucoseData.glucoseLevelRaw =
                     getGlucoseRaw(new byte[]{data[(i * 6 + 125)], data[(i * 6 + 124)]}, thirteen_bit_mask);
             glucoseData.flags = LibreOOPAlgorithm.readBits(data, i*6 + 124, 0xe , 0xc);
@@ -808,7 +826,10 @@ public class NFCReaderX {
             GlucoseData glucoseData = new GlucoseData();
             // glucoseData.glucoseLevel =
             //         getGlucose(new byte[]{data[(i * 6 + 29)], data[(i * 6 + 28)]});
-
+            if(i * 6 + 29 >= data.length) {
+                Log.e(TAG, "Failing to parse data from " + JoH.dateTimeText(CaptureDateTime));
+                return null;
+            }
             glucoseData.glucoseLevelRaw =
                     getGlucoseRaw(new byte[]{data[(i * 6 + 29)], data[(i * 6 + 28)]}, thirteen_bit_mask);
             glucoseData.flags = LibreOOPAlgorithm.readBits(data, i*6 + 28, 0xe , 0xc);
@@ -939,7 +960,11 @@ public class NFCReaderX {
         }
         List<GlucoseData> result;
         if(libreBlock.byte_end == Constants.LIBRE_1_2_FRAM_SIZE) {
-            result = parseData(0, "", libreBlock.blockbytes, libreBlock.timestamp).trend;
+            ReadingData reading_data = parseData(0, "", libreBlock.blockbytes, libreBlock.timestamp);
+            if(reading_data == null) {
+                return null;
+            }
+            result = reading_data.trend;
         }
         else if(libreBlock.byte_end == 44) {
             // This is the libre2 ble data

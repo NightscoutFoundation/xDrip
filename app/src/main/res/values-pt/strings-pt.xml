@@ -289,6 +289,7 @@
     <string name="upload_data_to_dex_servers">Enviar dados para os servidores da Dexcom para que possa usá-los nas apps Dexcom</string>
     <string name="manage_followers">Gerir Seguidores</string>
     <string name="manage_existing_followers">Gerir seguidores e convidar novos.</string>
+    <string name="invite_follower">Convidar seguidor</string>
     <string name="glucose_calibration_and_other_alerts">Glicemia, Calibração e Outros alertas</string>
     <string name="alert_volume_profile">Perfil de Volume de Alerta</string>
     <string name="smart_alerting">Alertas Inteligentes</string>
@@ -1451,6 +1452,7 @@
     <string name="__do_you_want_to_change_settings_or_start_sensor">\n\nAlterar as Configurações ou Iniciar Sensor?</string>
     <string name="change_settings">Alterar Definições</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Eliminar e Reiniciar as Calibrações para este Sensor?</string>
+    <string name="sensor_stop_confirm">Quer terminar o sensor?</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Possui uma antiga previsão experimental de glicose ativada.\n\nIsso NÃO é RECOMENDADO e pode confundir muito as coisas.\n\nPretende desativar?</string>
     <string name="settings_issue">Problema de Configurações!</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Pretende usar este teste capilar inserido para calibrar?\n\n(Pode alterar quando esta caixa de diálogo é exibida nas Configurações)</string>
