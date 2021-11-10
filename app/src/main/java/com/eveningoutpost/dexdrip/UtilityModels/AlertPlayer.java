@@ -538,8 +538,8 @@ public class AlertPlayer {
             // While minsFromStartPlaying <= MAX_VIBRATING_MINUTES, we only vibrate ...
             volumeFrac = Math.max(volumeFrac, 0); // Limit volumeFrac to values greater than and equal to 0
             volumeFrac = Math.min(volumeFrac, 1); // Limit volumeFrac to values less than and equal to 1
-            if (!Pref.getBoolean("delay_ascending_3min", true) && volumeFrac < 0.25) {
-                volumeFrac = (float) 0.25; // If delay_ascending_3min is disabled, we never only vibrate.
+            if (!Pref.getBoolean("delay_ascending_3min", true) && volumeFrac < 0.3) {
+                volumeFrac = (float) 0.3; // If delay_ascending_3min is disabled, we never only vibrate.
             }
             if (profile == ALERT_PROFILE_MEDIUM) {
                 volumeFrac = (float) 0.7;
