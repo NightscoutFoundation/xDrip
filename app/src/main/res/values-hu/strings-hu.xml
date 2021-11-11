@@ -344,8 +344,8 @@
     <string name="automatically_check_for_updates">Frissítések automatikus keresése</string>
     <string name="here_you_can_save_the_settings_to_the_external_storage_sdcard">Beállítások külső tárolóra mentése (SD-kártya).\n\nA mentés után bármely app hozzáférhet az akár érzékeny információkhoz.\n\nA beállításokat az importálásuk után célszerű törölni.</string>
     <string name="save_all_settings_to_sdcard">Beállítások fájlba mentése</string>
-    <string name="load_all_settings_from_sdcard">Beállítások visszaállítása SD-kártyáról/mappából</string>
-    <string name="delete_any_settings_on_sdcard">Minden mentett beállítás törlése SD-kártyán/mappában</string>
+    <string name="load_all_settings_from_sdcard">Beállítások visszaállítása fájlból</string>
+    <string name="delete_any_settings_on_sdcard">Beállítások mappa törlése (Download/xDrip-export)</string>
     <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Beállítások átadása QR kóddal: Beállítások menü -> Automatikus beállítás]]></string>
     <string name="xdrip_plus_security_key_settings_only">Csak xDrip+ biztonsági kulcs</string>
     <string name="show_general_and_collection_settings">Általános és kollektor beállítások</string>
