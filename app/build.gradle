@@ -1,4 +1,7 @@
 buildscript {
+    repositories {
+        mavenCentral()
+    }
     dependencies {
         if (getGradle().getStartParameter().getTaskRequests().toString().contains("Release]")) {
             println("Enabling New Relic")
