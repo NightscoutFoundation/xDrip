@@ -8,6 +8,8 @@ buildscript {
 }
 apply plugin: 'com.android.application'
 apply from: 'token-replace.gradle'
+apply from: '../dependencies.gradle'
+
 
 if (project.file('local.gradle').exists()) {
     apply from: 'local.gradle'
@@ -382,12 +384,12 @@ dependencies {
     //androidTestImplementation 'com.android.support.test.espresso:espresso-web:3.0.1'
 
     // you will want to install the android studio lombok plugin
-    compileOnly 'org.projectlombok:lombok:1.18.10'
-    annotationProcessor "org.projectlombok:lombok:1.18.10"
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor "org.projectlombok:lombok"
 
     // use lombok in unit tests
-    testCompileOnly 'org.projectlombok:lombok:1.18.10'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.10'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
 tasks.withType(Test) {

@@ -71,6 +71,7 @@ def generateVersionName = { ->
 
 apply plugin: 'com.android.application'
 apply from: '../app/token-replace.gradle'
+apply from: '../dependencies.gradle'
 
 android {
     compileSdkVersion 29
@@ -205,9 +206,9 @@ dependencies {
 
     implementation 'uk.com.robust-it:cloning:1.9.5'
     // you will want to install the android studio lombok plugin
-    compileOnly 'org.projectlombok:lombok:1.18.10'
-    annotationProcessor "org.projectlombok:lombok:1.18.10"
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor "org.projectlombok:lombok"
     // use lombok in unit tests
-    testCompileOnly 'org.projectlombok:lombok:1.18.10'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.10'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 }
