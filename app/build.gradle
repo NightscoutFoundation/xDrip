@@ -219,6 +219,8 @@ android {
 
     packagingOptions {
         exclude 'META-INF/INDEX.LIST'
+        exclude 'META-INF/NOTICE.md'
+        exclude 'META-INF/LICENSE.md'
     }
 
     compileOptions {
@@ -304,6 +306,11 @@ dependencies {
     implementation project(':localeapi')
     //implementation 'com.nispok:snackbar:2.10.8'
 
+    // add missing JAXB dependencies for JDK 9+
+    if (JavaVersion.current().ordinal() >= JavaVersion.VERSION_1_9.ordinal()) {
+        annotationProcessor 'jakarta.xml.bind:jakarta.xml.bind-api:2.3.3'
+        annotationProcessor 'org.glassfish.jaxb:jaxb-runtime:2.3.5'
+    }
 
     // use specific version of data binding until google resolves the bugs with mixed case package names
     //noinspection GradleDependency
