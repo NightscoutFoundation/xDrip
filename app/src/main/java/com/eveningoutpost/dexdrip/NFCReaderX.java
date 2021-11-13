@@ -45,6 +45,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm.SensorType;
+import com.eveningoutpost.dexdrip.utils.LibreTrendUtil;
 
 
 import java.io.IOException;
@@ -770,6 +771,14 @@ public class NFCReaderX {
         }
 
     }
+    public static boolean verifyTime(long time, String caller, byte[] extra_data) {
+        if((time < 0 ) || time >= LibreTrendUtil.MAX_POINTS) {
+            // This is an illegal value
+            Log.e(TAG, "We have an illegal time at " + caller + " " + time + JoH.bytesToHex(extra_data));
+            return false;
+        }
+        return true;
+    }
 
     public static ReadingData parseData(int attempt, String tagId, byte[] data, Long CaptureDateTime) {
 
@@ -813,7 +822,9 @@ public class NFCReaderX {
 
             glucoseData.realDate = sensorStartTime + time * MINUTE;
             glucoseData.sensorTime = time;
-            historyList.add(glucoseData);
+            if(verifyTime(time, "parseData history", data)) {
+                historyList.add(glucoseData);
+            }
         }
 
 
@@ -839,7 +850,9 @@ public class NFCReaderX {
 
             glucoseData.realDate = sensorStartTime + time * MINUTE;
             glucoseData.sensorTime = time;
-            trendList.add(glucoseData);
+            if(verifyTime(time, "parseData trendList", data)) {
+                trendList.add(glucoseData);
+            }
         }
 
 
