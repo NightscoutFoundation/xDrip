@@ -780,8 +780,11 @@ public class NFCReaderX {
         return true;
     }
 
+    // Sensor structure is described at  https://github.com/UPetersen/LibreMonitor/wiki
     public static ReadingData parseData(int attempt, String tagId, byte[] data, Long CaptureDateTime) {
-
+        final int FRAM_RECORD_SIZE = 6;
+        final int TREND_START = 28;
+        final int HISTORY_START = 124;
         int indexTrend = data[26] & 0xFF;
 
         int indexHistory = data[27] & 0xFF; // double check this bitmask? should be lower?
@@ -790,32 +793,25 @@ public class NFCReaderX {
 
         long sensorStartTime = CaptureDateTime - sensorTime * MINUTE;
 
-        // option to use 13 bit mask
-        //final boolean thirteen_bit_mask = Pref.getBooleanDefaultFalse("testing_use_thirteen_bit_mask");
-        final boolean thirteen_bit_mask = true;
-
         ArrayList<GlucoseData> historyList = new ArrayList<>();
-
 
         // loads history values (ring buffer, starting at index_trent. byte 124-315)
         for (int index = 0; index < 32; index++) {
             int i = indexHistory - index - 1;
             if (i < 0) i += 32;
             GlucoseData glucoseData = new GlucoseData();
-            // glucoseData.glucoseLevel =
-            //       getGlucose(new byte[]{data[(i * 6 + 125)], data[(i * 6 + 124)]});
 
             // If the data is decoded for some reason, we might have a wrong index.
             // The 6 is because we read up to 6 bytes.
-            if(i * 6 + 124 + 6 >= data.length) {
+            if(i * FRAM_RECORD_SIZE + HISTORY_START + FRAM_RECORD_SIZE >= data.length) {
                 Log.e(TAG, "Failing to parse data from " + JoH.dateTimeText(CaptureDateTime));
                 return null;
             }
 
             glucoseData.glucoseLevelRaw =
-                    getGlucoseRaw(new byte[]{data[(i * 6 + 125)], data[(i * 6 + 124)]}, thirteen_bit_mask);
-            glucoseData.flags = LibreOOPAlgorithm.readBits(data, i*6 + 124, 0xe , 0xc);
-            glucoseData.temp = LibreOOPAlgorithm.readBits(data, i*6 + 124, 0x1a , 0xc);
+                    getGlucoseRaw(new byte[]{data[(i * FRAM_RECORD_SIZE + HISTORY_START + 1)], data[(i * FRAM_RECORD_SIZE + HISTORY_START)]});
+            glucoseData.flags = LibreOOPAlgorithm.readBits(data, i * FRAM_RECORD_SIZE + HISTORY_START, 0xe , 0xc);
+            glucoseData.temp = LibreOOPAlgorithm.readBits(data, i * FRAM_RECORD_SIZE + HISTORY_START, 0x1a , 0xc);
             glucoseData.source = GlucoseData.DataSource.FRAM;
 
             int time = Math.max(0, Math.abs((sensorTime - 3) / 15) * 15 - index * 15);
@@ -835,16 +831,14 @@ public class NFCReaderX {
             int i = indexTrend - index - 1;
             if (i < 0) i += 16;
             GlucoseData glucoseData = new GlucoseData();
-            // glucoseData.glucoseLevel =
-            //         getGlucose(new byte[]{data[(i * 6 + 29)], data[(i * 6 + 28)]});
-            if(i * 6 + 29 >= data.length) {
+            if(i * FRAM_RECORD_SIZE + TREND_START + FRAM_RECORD_SIZE >= data.length) {
                 Log.e(TAG, "Failing to parse data from " + JoH.dateTimeText(CaptureDateTime));
                 return null;
             }
             glucoseData.glucoseLevelRaw =
-                    getGlucoseRaw(new byte[]{data[(i * 6 + 29)], data[(i * 6 + 28)]}, thirteen_bit_mask);
-            glucoseData.flags = LibreOOPAlgorithm.readBits(data, i*6 + 28, 0xe , 0xc);
-            glucoseData.temp = LibreOOPAlgorithm.readBits(data, i*6 + 28, 0x1a , 0xc);
+                    getGlucoseRaw(new byte[]{data[(i * FRAM_RECORD_SIZE + TREND_START + 1)], data[(i * FRAM_RECORD_SIZE + TREND_START)]});
+            glucoseData.flags = LibreOOPAlgorithm.readBits(data, i * FRAM_RECORD_SIZE + TREND_START, 0xe , 0xc);
+            glucoseData.temp = LibreOOPAlgorithm.readBits(data, i * FRAM_RECORD_SIZE + TREND_START, 0x1a , 0xc);
             glucoseData.source = GlucoseData.DataSource.FRAM;
             int time = Math.max(0, sensorTime - index);
 
@@ -862,12 +856,8 @@ public class NFCReaderX {
     }
 
 
-    private static int getGlucoseRaw(byte[] bytes, boolean thirteen) {
-        if (thirteen) {
+    private static int getGlucoseRaw(byte[] bytes) {
             return ((256 * (bytes[0] & 0xFF) + (bytes[1] & 0xFF)) & 0x1FFF);
-        } else {
-            return ((256 * (bytes[0] & 0xFF) + (bytes[1] & 0xFF)) & 0x0FFF);
-        }
     }
 
     public static void vibrate(Context context, int pattern) {
