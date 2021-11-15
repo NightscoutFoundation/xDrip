@@ -1609,4 +1609,5 @@
     <string name="enable_streaming_dialog_title">Connecting Libre sensor to Bluetooth</string>
     <string name="title_lower_fuzzer">Lower FUZZER</string>
     <string name="summary_lower_fuzzer">Lower the FUZZER value from 2.5 minutes to 37.5 seconds</string>
+    <string name="without_camera_permission_cannot_scan_barcode">Without camera permission we cannot scan a barcode</string>
 </resources>

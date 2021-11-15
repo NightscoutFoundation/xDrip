@@ -579,7 +579,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".deposit.DepositActivity"></activity>
+        <activity android:name=".deposit.DepositActivity" />
+        <activity android:name=".utils.AndroidBarcode" />
         <activity
             android:name=".utils.SdcardImportExport"
             android:configChanges="orientation|screenSize"
