@@ -163,7 +163,7 @@
     <string name="checking_for_update">Güncellemeler kontrol ediliyor..</string>
     <string name="signal_missed">Sinyal Yok</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} Dakika önce|1#{0, number, integer} Dakika önce|1&lt;{0, number, integer} Dakika önce}</string>
-    <string name="expires_days">{0, tercih,0#Sensör süresi doldu!|1#{0, number} gün sonra bitecek|1&lt;{0, number} gün sonra bitecek}</string>
+    <string name="expires_days">{0, choice,0#Sensör süresi doldu!|1#{0, number} gün sonra bitecek|1&lt;{0, number} gün sonra bitecek}</string>
     <string name="expires_at">Biter {0}</string>
     <string name="space_minutes_ago">" Dakika önce"</string>
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"Libre tüm ev modunda: henüz okuma olmadı."</string>
