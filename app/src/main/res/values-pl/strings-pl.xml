@@ -370,7 +370,7 @@
     <string name="glucose_history">Historia poziomu glukozy</string>
     <string name="import_database">Import bazy danych</string>
     <string name="sensor_table">Tabela Sensor</string>
-    <string name="bg_readings_table">Tabela Odczytów glikemii</string>
+    <string name="bg_readings_table">Tabela Odczytów Glikemii</string>
     <string name="long_press_to_split_or_delete">Długie naciśnięcie do Splitu lub Usuń</string>
     <string name="press_and_hold_on_the_background_to_split_or_delete">Wciśnij i przytrzymaj na tle podziału żeby usunąć lub podzielić blok czasowy</string>
     <string name="search">Szukanie</string>
@@ -657,7 +657,7 @@
     <string name="show_long_calibration_data">Pokaż nachylenie i odciętą w długiej formie.</string>
     <string name="show_short_calibration_data">Pokaż nachylenie i odciętą w krótkiej formie.</string>
     <string name="show_plugin_data">Pokaż nachylenie i dane glikemii z aktywnej wtyczki</string>
-    <string name="calibration_plugin">Wtyczka kalibracji</string>
+    <string name="calibration_plugin">Wtyczka do kalibracji</string>
     <string name="advanced_calibration">Zaawansowana Kalibracja</string>
     <string name="extra_calibration_options">Dodatkowe opcje dotyczące kalibracji</string>
     <string name="choose_use_treament_bg">Wybierz, czy skalibrować wartością glikemii z wprowadzonego zabiegu</string>
@@ -665,7 +665,7 @@
     <string name="experimental_calibration_plugin">Eksperymentalna dodatkowa wtyczka kalibracji</string>
     <string name="show_plugin_results_on_graph">Pokaż wyniki glukozy z wtyczki na głównym wykresie</string>
     <string name="plugin_plot_on_graph">Pokazuj dane ze wtyczek na wykresie</string>
-    <string name="use_plugin_glucose">Użyj glukozy ze wtyczki</string>
+    <string name="use_plugin_glucose">Użyj glukozy z wtyczki</string>
     <string name="main_glucose_plugin">Główny numer wyświetlania glukozy pochodzi z wtyczki!</string>
     <string name="plugin_override_all">Wtyczka nadpisuje wszystkie inne</string>
     <string name="all_new_glucose_data_plugin">WSZYSTKIE nowe dane dotyczące glukozy zostaną obliczone i zapisane z wybranej wtyczki, a nie ze standardowego algorytmu xDrip. To jest nieprzetestowane i może być niedokładne i błędne. Używaj ze szczególną ostrożnością.</string>
@@ -761,7 +761,7 @@
     <string name="alert_minutes_reraise">Liczba minut przed zgłoszeniem tego samego ostrzeżenia po jego uśpieniu.</string>
     <string name="reraise_before_snooze">Odnów alarm przed czasem drzemki</string>
     <string name="reraise_not_snoozed_sooner">Odnów alarm jeżeli nie został uśpiony przed końcem drzemki</string>
-    <string name="alert_reraise_time">Interwał odtwarzania alarmu</string>
+    <string name="alert_reraise_time">Interwał wznowienia alarmu</string>
     <string name="alert_seconds_reraise">Liczba SEKUND, które muszą upłynąć, zanim pojawi się ten sam alarm.</string>
     <string name="bg_falling_fast">Szybki spadek glikemii</string>
     <string name="bg_rising_fast">Szybki wzrost glikemii</string>
@@ -1096,7 +1096,7 @@
     <string name="unit_days">dni\"</string>
     <string name="unit_weeks">tygodnie\"</string>
     <string name="quiet_at_night">Cicho w nocy</string>
-    <string name="alerts_disabled">Alerty wyłączone</string>
+    <string name="alerts_disabled">Alarmy wyłączone</string>
     <string name="restart_in_the_morning">Restartuj rano</string>
     <string name="advanced_mode">Tryb zaawansowany</string>
     <string name="reminder_title">Tytuł przypomnienia</string>
