@@ -745,7 +745,7 @@
     <string name="shortcut_to_bg_alerts">Skrót do alarmów poziomu glikemii</string>
     <string name="suppress_alerts_missed_readings">Wyłączanie uśpionych i aktywnych alarmów po zdefiniowanym okresie braku odczytów</string>
     <string name="suppress_alerts_after">Wyłączanie uśpionych i aktywnych alarmów po ... minutach (minimum 10)</string>
-    <string name="alert_calibration_request">Powiadomienie o konieczności wykonania kalibracji</string>
+    <string name="alert_calibration_request">Alarm o konieczności wykonania kalibracji</string>
     <string name="calibrations_request_time_time_difference">Ile godzin między żądaniami kalibracji</string>
     <string name="hours_between_calibrations">Godziny między kalibracjami</string>
     <string name="calibrations_sound">Ustaw dźwięk używany do żądań kalibracji.</string>
@@ -981,7 +981,7 @@
     <string name="enable_speak_readings_when_in_vehicle">Włącz funkcję czytania glukozy na głos gdy w trybie pojazdu</string>
     <string name="bluetooth_watchdog_timers">Wartość timera watchdoga BT</string>
     <string name="bluetooth_watchdog_timer_sums">Wartość wejściowa w minutach</string>
-    <string name="basal_editor">Edytor bazy insuliny - Wybierz godziny do dostosowania</string>
+    <string name="basal_editor">Edytor insuliny bazowej - Wybierz godziny do dostosowania</string>
     <string name="sensor_is_still_warming_up_please_wait">Czujnik się uruchamia, proszę czekać</string>
     <string name="number_wall_config">Konfiguracja wyświetlania glikemii</string>
     <string name="summary_If_you_plan_to_only_use_a_Wear_collector_and_never_your_phone">Jeśli zamierzasz korzystać tylko z kolektora Wear i nigdy z telefonu.</string>
@@ -1043,7 +1043,7 @@
     <string name="alert_until_dismissed">do czasu odrzucenia</string>
     <string name="and_then_repeat">i następnie będzie się powtarzał</string>
     <string name="will_not_repeat">i nie powtórzy się po tym</string>
-    <string name="Please_Allow_Permission">Proszę zezwolić na uprawnienia</string>
+    <string name="Please_Allow_Permission">Proszę przyznaj uprawnienia</string>
     <string name="need_storage_permission">Potrzeba uprawnień do pamięci aby uzyskać dostęp do wszystkich dźwięków dzwonka</string>
     <string name="select_file_reminder_sound">Wybierz plik dla dźwięku przypomnienia</string>
     <string name="select_tone_alert">Wybierz dźwięk dla powiadomienia:</string>
@@ -1113,7 +1113,7 @@
     <string name="force_speaker_colon">Wymuś działanie głośnika</string>
     <string name="choose_data_source">Wybierz źródło danych</string>
     <string name="which_system_do_you_use">Którego z systemów używasz?</string>
-    <string name="please_allow_permission">Proszę zezwolić na uprawnienia</string>
+    <string name="please_allow_permission">Proszę przyznaj uprawnienia</string>
     <string name="location_permission_needed_to_use_bluetooth">Wymagane uprawnienie lokalizacji do korzystania z Bluetooth!</string>
     <string name="did_you_insert_it_today">Czy zamontowałeś go dzisiaj?</string>
     <string name="we_need_to_know_when_the_sensor_was_inserted_to_improve_calculation_accuracy__was_it_inserted_today">Musimy wiedzieć, kiedy czujnik został zamocowany, aby poprawić dokładność obliczeń.\n\nCzy został zamocowany dzisiaj?</string>
