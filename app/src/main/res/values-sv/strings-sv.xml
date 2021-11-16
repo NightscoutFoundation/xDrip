@@ -467,6 +467,7 @@
     <string name="start_sensor">Starta sensor</string>
     <string name="debug_and_other_misc_options">Avlusning och diverse annat</string>
     <string name="low_glucose_values">Låga glukosvärden</string>
+    <string name="bad_glucose_values">Dåliga glukosvärden</string>
     <string name="revert_to_default">Återställ till standard</string>
     <string name="filtered_values">Filtrerade värden</string>
     <string name="treatment_color">Behandlingsfärg</string>
@@ -890,4 +891,5 @@
     <string name="bluetooth_device">Blåtandsenhet:   </string>
     <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Blåtandsbryggenhet: Blucon, Bubble, LimiTTer, Bluereader, Tomato mm</string>
     <string name="enable_streaming_dialog_dont_ask_again"> Fråga inte i framtiden</string>
+    <string name="without_camera_permission_cannot_scan_barcode">Utan tillåtelse att använda kameran kan vi inte skanna en streckkod</string>
 </resources>
