@@ -72,8 +72,7 @@ public class BitmapUtil {
                     FileDescriptor fileDescriptor = xdrip.getAppContext().getContentResolver().openFileDescriptor(background_uri, "r").getFileDescriptor();
                     image_bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor);
                 } else {
-                    File file = new File(background_file);
-                    inputStream = new FileInputStream(file);
+                    inputStream = new FileInputStream(background_file);
                     image_bitmap = BitmapFactory.decodeStream(inputStream);
                     inputStream.close();
                 }
@@ -128,7 +127,7 @@ public class BitmapUtil {
         String destinationFileName = "background" + new Date().getTime() + ".png"; // unique name to avoid caching
         File destination = new File(destinationFolder, destinationFileName);
 
-        Bitmap sourceImage = BitmapUtil.getBackgroundBitmap(getScreenWidth(), getScreenHeight(), sourceUri.toString());
+        Bitmap sourceImage = getBackgroundBitmap(getScreenWidth(), getScreenHeight(), sourceUri.toString());
         String output = destination.getPath();
         if (sourceImage != null) {
             FileOutputStream out = null;
