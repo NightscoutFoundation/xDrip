@@ -467,6 +467,7 @@
     <string name="start_sensor">Démarrer le capteur</string>
     <string name="debug_and_other_misc_options">Debug et autres options</string>
     <string name="low_glucose_values">Valeurs Hypoglycémies</string>
+    <string name="bad_glucose_values">Mauvaises valeurs glycémiques</string>
     <string name="revert_to_default">Revenir aux valeurs par défaut</string>
     <string name="filtered_values">Valeurs filtrées</string>
     <string name="treatment_color">Couleur de Traitement</string>
@@ -1565,4 +1566,5 @@
     <string name="enable_streaming_dialog_title">Connexion du Freestyle Libre 2 au Bluetooth</string>
     <string name="title_lower_fuzzer">Réduire FUZZER</string>
     <string name="summary_lower_fuzzer">Réduire la valeur de FUZZER de 2,5 minutes à 37,5 secondes</string>
+    <string name="without_camera_permission_cannot_scan_barcode">Impossible de scanner le code-barres sans la permission caméra</string>
 </resources>
