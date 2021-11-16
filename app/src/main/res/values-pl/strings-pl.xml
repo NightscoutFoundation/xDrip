@@ -370,7 +370,7 @@
     <string name="glucose_history">Historia poziomu glukozy</string>
     <string name="import_database">Import bazy danych</string>
     <string name="sensor_table">Tabela Sensor</string>
-    <string name="bg_readings_table">Tabela Odczytów glikemii</string>
+    <string name="bg_readings_table">Tabela Odczytów Glikemii</string>
     <string name="long_press_to_split_or_delete">Długie naciśnięcie do Splitu lub Usuń</string>
     <string name="press_and_hold_on_the_background_to_split_or_delete">Wciśnij i przytrzymaj na tle podziału żeby usunąć lub podzielić blok czasowy</string>
     <string name="search">Szukanie</string>
@@ -474,8 +474,8 @@
     <string name="predictive_color">Przewidywanie Kolor</string>
     <string name="predictive_color_dark">Przewidywanie Kolor Ciemny</string>
     <string name="average_and_target_lines">Średnie i docelowe Lines</string>
-    <string name="eight_hour_average_line">8 godzinna średnia linia</string>
-    <string name="twenty_four_hour_average_line">24 godzinna średnia linia</string>
+    <string name="eight_hour_average_line">Linia średniej z 8 godzin</string>
+    <string name="twenty_four_hour_average_line">Linia średniej z 24 godzin</string>
     <string name="glucose_target_line">Linia docelowa poziomu glukozy</string>
     <string name="annotations_and_dots">Adnotacje i kropki</string>
     <string name="blood_test_background">Badanie krwi, Tło</string>
@@ -578,7 +578,7 @@
     <string name="attach_to_button">Dowiąż do przycisku Pebble, aby wyciszyć wszystkie aktywne alarmy przy pomocy zegarka; również dla funkcji zdalnego wyciszenia.</string>
     <string name="for_interacting_compatible_apps">Do interakcji z innymi kompatybilnymi aplikacjami</string>
     <string name="interapp_settings">Ustawienia innych aplikacji</string>
-    <string name="use_plugins_for_brodcast">Użyj wygładzania odczytów i wtyczek itp. (jeśli włączone) dla nadawanej danych</string>
+    <string name="use_plugins_for_brodcast">Użyj wygładzania odczytów i wtyczek itp. (jeśli są włączone) dla nadawanej wartości</string>
     <string name="send_display_glucose">Wysyłaj wyświetlany poziom glukozy</string>
     <string name="send_broadcasts_old_permission_model">Wyślij transmisje bez blokowania do starszego modelu uprawnień</string>
     <string name="process_nsclient_treatments">Przetwórz dane zabiegu otrzymane z aplikacji NSClient</string>
@@ -599,9 +599,8 @@
     <string name="bluetooth_watchdog">Watchdog Bluetooth</string>
     <string name="reset_bluetooth_g5">Zresetuj Bluetooth poprzez wyłączenie i włączenie w sposób pozwalający utrzymać działanie źródła danych G5. Bez tego kolektor G5 może się nie działać.</string>
     <string name="g5_bluetooth_watchdog">G5 Bluetooth Watchdog</string>
-    <string name="close_gatt">Jeśli watchdog Bluetooth często się aktywuje, możesz spróbować odznaczyć tę opcję, aby sprawdzić, czy pomaga</string>
+    <string name="close_gatt">Jeśli watchdog Bluetooth często się aktywuje, możesz spróbować odznaczyć tę opcję, aby sprawdzić, czy to pomaże</string>
     <string name="older_bluetooth_wakelocks">Starsza metoda wybudzania Bluetooth, która może spowodować dodatkowe zużycie baterii, ale czasem może być potrzebna do poprawnego odbioru Bluetooth</string>
-    <string name="reset_bluetooth_on_off">Resetuj Bluetooth, wyłączając i włączając co kilka minut! Zaznacz tylko, jeśli podczas testów. Może to zakłócić inne aplikacje używające Bluetooth.</string>
     <string name="constantly_reset_bluetooth">Stale resetuj Bluetooth</string>
     <string name="experimental_transmitter_fpv_uav">Wsparcie eksperymentalne dla urządzenia \"Transmitter\" z @FPV-UAV - tylko testy</string>
     <string name="transmitter_pl_support">Wsparcie dla \"Transmitter (PL)\"</string>
@@ -658,7 +657,7 @@
     <string name="show_long_calibration_data">Pokaż nachylenie i odciętą w długiej formie.</string>
     <string name="show_short_calibration_data">Pokaż nachylenie i odciętą w krótkiej formie.</string>
     <string name="show_plugin_data">Pokaż nachylenie i dane glikemii z aktywnej wtyczki</string>
-    <string name="calibration_plugin">Wtyczka kalibracji</string>
+    <string name="calibration_plugin">Wtyczka do kalibracji</string>
     <string name="advanced_calibration">Zaawansowana Kalibracja</string>
     <string name="extra_calibration_options">Dodatkowe opcje dotyczące kalibracji</string>
     <string name="choose_use_treament_bg">Wybierz, czy skalibrować wartością glikemii z wprowadzonego zabiegu</string>
@@ -666,7 +665,7 @@
     <string name="experimental_calibration_plugin">Eksperymentalna dodatkowa wtyczka kalibracji</string>
     <string name="show_plugin_results_on_graph">Pokaż wyniki glukozy z wtyczki na głównym wykresie</string>
     <string name="plugin_plot_on_graph">Pokazuj dane ze wtyczek na wykresie</string>
-    <string name="use_plugin_glucose">Użyj glukozy ze wtyczki</string>
+    <string name="use_plugin_glucose">Użyj glukozy z wtyczki</string>
     <string name="main_glucose_plugin">Główny numer wyświetlania glukozy pochodzi z wtyczki!</string>
     <string name="plugin_override_all">Wtyczka nadpisuje wszystkie inne</string>
     <string name="all_new_glucose_data_plugin">WSZYSTKIE nowe dane dotyczące glukozy zostaną obliczone i zapisane z wybranej wtyczki, a nie ze standardowego algorytmu xDrip. To jest nieprzetestowane i może być niedokładne i błędne. Używaj ze szczególną ostrożnością.</string>
@@ -762,7 +761,7 @@
     <string name="alert_minutes_reraise">Liczba minut przed zgłoszeniem tego samego ostrzeżenia po jego uśpieniu.</string>
     <string name="reraise_before_snooze">Odnów alarm przed czasem drzemki</string>
     <string name="reraise_not_snoozed_sooner">Odnów alarm jeżeli nie został uśpiony przed końcem drzemki</string>
-    <string name="alert_reraise_time">Interwał odtwarzania alarmu</string>
+    <string name="alert_reraise_time">Interwał wznowienia alarmu</string>
     <string name="alert_seconds_reraise">Liczba SEKUND, które muszą upłynąć, zanim pojawi się ten sam alarm.</string>
     <string name="bg_falling_fast">Szybki spadek glikemii</string>
     <string name="bg_rising_fast">Szybki wzrost glikemii</string>
@@ -843,7 +842,6 @@
     <string name="repeat_sound">Powtórz dźwięk</string>
     <string name="enable_telemetry">Włącz telemetrię</string>
     <string name="send_data_to_developers">Wyślij programistom dane o wskaźniku sukcesów różnych urządzeń</string>
-    <string name="try_to_work_around_noisy_readings_ultrasensitive">Pracuj na niedokładnych odczytach nawet przy niskim poziomie niedokładności (tylko w trybie inżynierskim)</string>
     <string name="sidiary_date_title">Od kiedy rozpocząć export?</string>
     <string name="blukon">BluCon</string>
     <string name="tomato">Tomato</string>
@@ -1098,7 +1096,7 @@
     <string name="unit_days">dni\"</string>
     <string name="unit_weeks">tygodnie\"</string>
     <string name="quiet_at_night">Cicho w nocy</string>
-    <string name="alerts_disabled">Alerty wyłączone</string>
+    <string name="alerts_disabled">Alarmy wyłączone</string>
     <string name="restart_in_the_morning">Restartuj rano</string>
     <string name="advanced_mode">Tryb zaawansowany</string>
     <string name="reminder_title">Tytuł przypomnienia</string>
@@ -1200,7 +1198,7 @@
     <string name="title_lefun_screen_step_distance">Pokaż dystans kroków</string>
     <string name="title_lefun_screen_step_calories">Pokaż kalorie kroków</string>
     <string name="title_lefun_screen_heart_rate">Pokaż puls</string>
-    <string name="title_lefun_screen_heart_pressure">Pokaż ciścienie</string>
+    <string name="title_lefun_screen_heart_pressure">Pokaż ciśnienie krwi</string>
     <string name="title_lefun_screen_find_phone">Pokaż Znajdź telefon / drzemkę</string>
     <string name="title_lefun_screen_mac_address">Pokaż adres MAC</string>
     <string name="summary_allow_samsung_workaround">Użyj obejść, aby uniknąć niestandardowych zachowań Androida w telefonach Samsung. Bez tego kolektory zazwyczaj nie otrzymują danych.</string>

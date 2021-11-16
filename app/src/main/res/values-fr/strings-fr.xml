@@ -134,7 +134,7 @@
     <string name="share">Partager</string>
     <string name="title_activity_profile_editor">Editeur de profil de traitement</string>
     <string name="first_use_menu_to_scan">Utilisez d\'abord le menu pour scanner votre appareil BT ou modifier la source de données dans les paramètres!</string>
-    <string name="first_configure_ip_address">Configurez d\'abord l\'adresse IP de votre lecteur wixel ou l\'url Parakeet</string>
+    <string name="first_configure_ip_address">Configurez d\'abord l\'adresse IP de votre lecteur WiFi Wixel ou l\'url Parakeet</string>
     <string name="now_start_your_sensor">Maintenant, démarrer votre capteur ou vérifier les paramètres</string>
     <string name="please_wait_while_sensor_warms_up">S\'il vous plaît patienter pendant que le capteur se réchauffe! (</string>
     <string name="minutes_with_bracket">" minutes)"</string>
@@ -152,9 +152,9 @@
     <string name="till">jusqu\'à</string>
     <string name="low_predicted">Prediction d\'hypoglycémie</string>
     <string name="in">dans</string>
-    <string name="yes_enter_setup_mode">Oui entrer en mode de configuration</string>
+    <string name="yes_enter_setup_mode">Oui, entrer en mode de configuration</string>
     <string name="nokeep_parakeet_as_it_is">Non, garder Parakeet comme il est</string>
-    <string name="are_you_sure_you_want_switch_parakeet_to_setup">Etes-vous sûr de vouloir mettre le Parakeet en mode de configuration?\n\nNormalement, c\'est seulement utilisé pour envoyer d\'autres messages textes au Parakeet pour reconfigurer l\'émetteur sur lequel il écoute, etc.</string>
+    <string name="are_you_sure_you_want_switch_parakeet_to_setup">Êtes-vous sûr de vouloir mettre le Parakeet en mode de configuration?\n\nNormalement, c\'est seulement utilisé pour envoyer d\'autres messages textes au Parakeet pour reconfigurer l\'émetteur sur lequel il écoute, etc.</string>
     <string name="split_delete_or_do_nothing">Couper, supprimer ou ne rien faire</string>
     <string name="split_this_block_in_two">Diviser ce bloc en deux</string>
     <string name="delete_this_time_block">Supprimer ce bloc de temps</string>
@@ -241,7 +241,7 @@
     <string name="shows_a_persistent_notification">Affiche un graphique de notification persistant, visible sur l\'écran verrouillée et empêche android de mettre fin au service.</string>
     <string name="list_of_receivers">Liste des récepteurs</string>
     <string name="extra_tags_for_logging">Balises supplémentaires pour le log</string>
-    <string name="extra_tags_dialog_message">Les balises saisies ici seront enregistrées dans xDrip. Format est tag: niveau. Le niveau peut être v, d, i. Par exemple bgreading: i, DexCollectionService: v. Cette balises seront enregistrées avec une faible priorité à l\'erreur et la liste d\'événements.</string>
+    <string name="extra_tags_dialog_message">Les balises saisies ici seront enregistrées dans xDrip. Le format est tag:niveau. Le niveau peut être v, d, i. Par exemple bgreading:i, DexCollectionService:v. Cette balises seront enregistrées avec une faible priorité en Erreur dans la liste d\'événements.</string>
     <string name="extra_tags_dialog_title">Entrez les mots clés pour être enregistré</string>
     <string name="data_source_settings">Paramètres de la source de données</string>
     <string name="smart_watch_features">Options montre intelligente</string>
@@ -317,7 +317,7 @@
     <string name="units">unités</string>
     <string name="carbs">glucides</string>
     <string name="when">quand</string>
-    <string name="speak_your_treatment">Prononcer votre traitement par exemple:\nxx unités d\'insuline / xx grammes de glucides</string>
+    <string name="speak_your_treatment">Prononcer votre traitement par exemple:\nx.x unités d\'insulines / xx grammes de glucides</string>
     <string name="speech_recognition_is_not_supported">La reconnaissance vocale n\'est pas pris en charge</string>
     <string name="treatment_note">Remarque sur le traitement</string>
     <string name="accessibility_description">xDrip utilise la fonction d\'Accessibilité seulement pour régler l\'écran lorsque l\'appareil est verrouillé. Ceci n\'est probablement utile que si vous avez un téléphone avec la fonction Always On Display et que vous l\'avez activée. xDrip n\'interagit pas avec Android d\'une autre manière.</string>
@@ -327,7 +327,7 @@
     <string name="done">Terminé</string>
     <string name="entering_a_calibration_now_will_override_your_previously_entered_calibration">La saisie d\'une calibration va maintenant remplacer votre calibration précédente.</string>
     <string name="enter_blood_glucose_value">Entrer la valeur de glycémie</string>
-    <string name="this_does_not_get_used_for_anything_its_just_to_keep_track_of_differences_for_algorithem_improvement_purposes">Cela ne se sert à rien,  simplement utilisé pour garder la trace des différences pour l\'amélioration de l\'algorithme</string>
+    <string name="this_does_not_get_used_for_anything_its_just_to_keep_track_of_differences_for_algorithem_improvement_purposes">Cela ne se sert à rien, simplement utilisé pour garder la trace des différences pour l\'amélioration de l\'algorithme</string>
     <string name="no_active_alert_exists">Aucune alerte active existe</string>
     <string name="active_alert_exists_named">L\'alerte Active existe nommée</string>
     <string name="bracket_not_snoozed">(non mis en veille)</string>
@@ -848,6 +848,7 @@
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
     <string name="bubble">Bubble</string>
+    <string name="atom">Atom</string>
     <string name="use_gravity_sensor_to_rotate_items">Utiliser le capteur de gravité pour faire pivoter les éléments</string>
     <string name="low_bridge_battery">Batterie transmetteur faible</string>
     <string name="reminders">Rappels</string>
@@ -1164,6 +1165,8 @@
     <string name="title_rest_api_extra_options">Options supplémentaires</string>
     <string name="summary_send_bridge_battery_to_nightscout">Envoyer votre niveau de batterie du transmetteur à Nightscout. Décocher si votre capteur de batterie ne marche pas.</string>
     <string name="title_send_bridge_battery_to_nightscout">Charger la batterie du transmetteur</string>
+    <string name="summary_send_dexcom_transmitter_battery_to_nightscout">Envoyer les statistiques de la batterie du Dexcom à Nightscout. Inclut toutes les données affichées sur l\'écran Statut du Collecteur.</string>
+    <string name="title_send_dexcom_transmitter_battery_to_nightscout">Envoyer le niveau de batterie du transmetteur OB1G5/G6</string>
     <string name="summary_send_treatments_to_nightscout">Envoyer des données de traitement à Nightscout. Décochez si votre portail ne marche pas.</string>
     <string name="title_send_treatments_to_nightscout">Charger les traitements</string>
     <string name="summary_warn_nightscout_failures">Afficher et émettre une notification si le chargement vers Nightscout échoue.</string>

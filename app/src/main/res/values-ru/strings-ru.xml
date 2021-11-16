@@ -1165,6 +1165,8 @@
     <string name="title_rest_api_extra_options">Дополнительные параметры</string>
     <string name="summary_send_bridge_battery_to_nightscout">Передавать данные о заряде батареи бриджа в Nightscout. Отключите если датчик батареи неисправен.</string>
     <string name="title_send_bridge_battery_to_nightscout">Загружать данные состояния батареи BT-передатчика</string>
+    <string name="summary_send_dexcom_transmitter_battery_to_nightscout">Отправлять статистику батареи трансмиттера Dexcom в Nightscout. Включает все данные, отображаемые на экране Состояние коллектора.</string>
+    <string name="title_send_dexcom_transmitter_battery_to_nightscout">Отправлять уровень батареи трансмиттера OB1G5/G6</string>
     <string name="summary_send_treatments_to_nightscout">Загружать введённые пользователем значения (дозы инсулина, углеводы) в Nightscout. Не выбирайте эту опцию, если ваш Care Portal не работает.</string>
     <string name="title_send_treatments_to_nightscout">Загружать пользовательские значения</string>
     <string name="summary_warn_nightscout_failures">Отобразить уведомление и подать звуковой сигнал, если загрузка данных в Nightscout не удалась.</string>
