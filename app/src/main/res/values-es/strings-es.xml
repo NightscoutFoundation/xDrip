@@ -69,7 +69,7 @@
     <string name="location_yes">Activar</string>
     <!-- broadcast settings -->
     <string name="pref_title_broadcast_enabled">Transmitir localmente</string>
-    <string name="pref_summary_broadcast_enabled">Activar la difusión local de datos para que otras aplicaciones (por ejemplo. NightWatch) puedan recibir nuevos valores</string>
+    <string name="pref_summary_broadcast_enabled">Activar la transmisión local de datos, para que otras aplicaciones (por ejemplo, NightWatch) puedan recibir nuevos valores</string>
     <string name="title_activity_share_test">Compartir prueba</string>
     <!-- pebble settings -->
     <string name="pref_pebble_trend_watchface">Usar la esfera Pebble Trend</string>
@@ -108,7 +108,7 @@
     <string name="toast_crash">Algo salió mal :( se envió un informe para ayudar a solucionar el problema.</string>
     <string name="taskerConfigInstruction">Sólo haga clic en la casilla para confirmar. No debería requerir cambiar la cadena de configuración.</string>
     <string name="taskerConfiguration">Configurar Tasker</string>
-    <string name="finish_preferences_activity">finalizar la actividad de preferencias</string>
+    <string name="finish_preferences_activity">Finalizar la actividad de preferencias</string>
     <string name="add_widget">Añadir Widget</string>
     <string name="title_activity_alert_list">Lista de Alertas</string>
     <string name="speaktreatment">Decir tratamientos</string>
@@ -160,7 +160,7 @@
     <string name="delete_this_time_block">Eliminar este bloque de tiempo</string>
     <string name="cancel_do_nothing">Cancelar - no hacer nada</string>
     <string name="added">Añadido</string>
-    <string name="checking_for_update">Comprobando actualización.</string>
+    <string name="checking_for_update">Comprobando actualización...</string>
     <string name="signal_missed">Señal Perdida</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} Minutos antes|1#{0, number, integer} Minuto antes|1&lt;{0, number, integer} Minutos antes}</string>
     <string name="expires_days">{0, choice,0#¡El sensor expiró!|1#Termina en {0, number} día|1&lt;Termina en {0, number} días}</string>
@@ -376,7 +376,7 @@
     <string name="search">Buscar</string>
     <string name="reset_all_language_data">Restablecer todos los datos de la lengua</string>
     <string name="show_only_customized_entries">Mostrar sólo las entradas personalizadas</string>
-    <string name="settings_on_external_storage">Configuración de almacenamiento externo</string>
+    <string name="settings_on_external_storage">Configurar el almacenamiento externo</string>
     <string name="get_notified_of_new_apk_releases">Ser notificado de nuevos lanzamientos apk</string>
     <string name="choose_stable_beta_or_alpha_releases">Elija versión estable, beta o alfa</string>
     <string name="web_feedback_form_for_sending_messages">Formulario de contacto web para el envío de mensajes y valoraciones de xDrip+ para los desarrolladores</string>
@@ -1165,6 +1165,8 @@
     <string name="title_rest_api_extra_options">Opciones Extras</string>
     <string name="summary_send_bridge_battery_to_nightscout">Subir nivel de batería del colector a Nightscout. Desactiva si la batería del sensor no funciona.</string>
     <string name="title_send_bridge_battery_to_nightscout">Subir batería del colector</string>
+    <string name="summary_send_dexcom_transmitter_battery_to_nightscout">Enviar las estadísticas de la batería del transmisor de Dexcom a NightScout. Incluye todos los datos mostrados en la pantalla del \"Estado del Colector\" (Collector Status).</string>
+    <string name="title_send_dexcom_transmitter_battery_to_nightscout">Subir la batería del transmisor OB1 G5/G6</string>
     <string name="summary_send_treatments_to_nightscout">Subir datos de tratamiento a Nightscout. Desactive si su portal de atención no funciona.</string>
     <string name="title_send_treatments_to_nightscout">Subir tratamientos</string>
     <string name="summary_warn_nightscout_failures">Mostrar una notificación y dar una alarma si la subida a Nightscout falla.</string>

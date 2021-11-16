@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="menu_scan">Skeniraj</string>
+    <string name="menu_stop">Ustavi</string>
+    <string name="menu_refresh">Osveži</string>
+    <string name="menu_export_database">Izvozi bazo podatkov</string>
+    <string name="menu_export_csv_sidiary">Izvozi podatke (CSV, SiDiary format)</string>
+    <string name="menu_import_db">Uvozi bazo podatkov</string>
     <!-- MongoDB Settings -->
     <!-- API Settings -->
     <!-- wifi Settings -->

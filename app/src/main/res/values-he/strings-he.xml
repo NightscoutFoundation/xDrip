@@ -687,6 +687,7 @@
     <string name="vibrate_scanning_status">רטוט כדי לסמן את מצב הסריקה</string>
     <string name="beep_when_scanning_within_app">צפצף כשסורקים בתוך xDrip+</string>
     <string name="use_multi_block">השתמש בשיטת קריאה Multi-block המהירה יותר</string>
+    <string name="use_any_tag">השתמש בשיטת קריאה מותאמת לכל תג</string>
     <string name="low_level_value">ערך אבטיפוס\\דיאגנוסטיקה ברמה נמוכה</string>
     <string name="transmitter_id">מספר המשדר של הדקסקום, לדוגמה 12AB3</string>
     <string name="advanced_g5_settings">הגדרות G5 מתקדמות עבור מצבים נדירים</string>
@@ -1129,6 +1130,8 @@
     <string name="title_rest_api_extra_options">אפשרויות נוספות</string>
     <string name="summary_send_bridge_battery_to_nightscout">שלח את רמת הסוללה של מכשיר הגישור לנייטסקאוט. כבו אפשרות זו אם חיישן הסוללה לא עובד.</string>
     <string name="title_send_bridge_battery_to_nightscout">העלה את רמת סוללת מכשיר הגישור</string>
+    <string name="summary_send_dexcom_transmitter_battery_to_nightscout">מעלה את נתוני הסוללה של משדר ה-Dexcom ל-Nightscout. נכללים כל הנתונים שמוצגים במסך סטטוס האוסף.</string>
+    <string name="title_send_dexcom_transmitter_battery_to_nightscout">העלה את אחוזי סוללת משדר OB1 G5/G6 ל-Nightscout</string>
     <string name="title_send_treatments_to_nightscout">העלה טיפולים</string>
     <string name="summary_warn_nightscout_failures">הצג והשמע הודעה אם העלאה לנייטסקאוט נכשלת.</string>
     <string name="title_warn_nightscout_failures">התראה על כשלונות</string>
