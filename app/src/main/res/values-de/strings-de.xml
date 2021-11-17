@@ -578,7 +578,7 @@
     <string name="attach_to_button">Verknüpfe es mit einem Pebble-Knopf um einen aktiven Alarm sofort von deiner Uhr aus snoozen zu können. Auch für die Remote-Snoozing-Funktion.</string>
     <string name="for_interacting_compatible_apps">Zum Interagieren mit anderen kompatiblen Apps</string>
     <string name="interapp_settings">Inter-App Einstellungen</string>
-    <string name="use_plugins_for_brodcast">Benutze Rauschglättung und plugins etc. (falls aktiviert) für den gebroadcasteten Wert.</string>
+    <string name="use_plugins_for_brodcast">Benutze Rauschglättung und Plugins etc. (falls aktiviert) für den gebroadcasteten Wert</string>
     <string name="send_display_glucose">Sende den angezeigten Glukosewert</string>
     <string name="send_broadcasts_old_permission_model">Broadcasts senden ohne das ältere Rechtemodel zu beachten.</string>
     <string name="process_nsclient_treatments">Verarbeite von der NSClient App empfangene Behandlungsdaten.</string>
@@ -588,7 +588,7 @@
     <string name="speak_glucose_twice">Sprich den Glukosewert jedesmal zwei mal</string>
     <string name="short_speak_readings_shortcut">Zeige eine Verknüfpung im ☰ Menü zur Sprachausgabe von Werten</string>
     <string name="speak_readings_shortcut">Werte-Vorlesen-Verknüpfung</string>
-    <string name="battery_optimization_off">Stelle auf Android 6+ sicher, dass die Akku-Optimierung ausgeschaltet ist. Empfohlene Einstellung</string>
+    <string name="battery_optimization_off">Stelle auf Android 6+ sicher, dass die Akku-Optimierung ausgeschaltet ist (empfohlene Einstellung).</string>
     <string name="battery_optimization_on">Nicht nach der Batterie-Optimierung fragen. Nicht empfohlen</string>
     <string name="battery_optimization_prompt">Batterie-Optimierungs-Aufforderung</string>
     <string name="advanced_bluetooth_settings">Erweiterte Bluetootheinstellungen</string>
@@ -599,7 +599,7 @@
     <string name="bluetooth_watchdog">Bluetooth-Watchdog</string>
     <string name="reset_bluetooth_g5">Setze Bluetooth zurück, in dem es an und wieder ausgeschaltet wird, damit die G5-Datenquelle funktioniert. Ohne dies wird der G5-Kollektor vielleicht versagen.</string>
     <string name="g5_bluetooth_watchdog">G5 Bluetooth-Watchdog</string>
-    <string name="close_gatt">Wenn der Bluetooth-Watchdog oft aktiviert wird, dann könnte es helfen, diese Option abzuwählen.</string>
+    <string name="close_gatt">Wenn der Bluetooth-Watchdog oft aktiviert wird, dann könnte es helfen, diese Option abzuwählen</string>
     <string name="older_bluetooth_wakelocks">Ältere Bluetooth-Wakelocks, die mehr Batterie verbrauchen können, aber möglicherweise für den Bluetoothempfang nötig sind.</string>
     <string name="reset_bluetooth_on_off">Setze Bluetooth zurück indem es alle paar Minuten and und wieder ausgeschaltet wird! Wähle dies nur zum Testen aus. Dies kann Anderes von der Bluetooth-Nutzung abhalten.</string>
     <string name="constantly_reset_bluetooth">Bluetooth ständig zurücksetzen</string>
@@ -610,7 +610,7 @@
     <string name="repeatedly_restart_collection_service">Den Kollektor-Dienst automatisch neu starten, sobald es Anzeichen für verpasste Werte gibt. Aktiviere dies nur, wenn du Datenverluste hast.</string>
     <string name="aggressive_service_restarts">Aggressive Dienstneustarts</string>
     <string name="predictive_readings_old">Alte Methode - Nicht empfohlen! Versucht jede Minute einen Wert - basierend auf den letzten paar Werten - vorherzusagen.</string>
-    <string name="use_external_blukon_algorithm_summary">Verwende externen Libre-Algorithmus (bluecon/NFC/LibreAlarm)</string>
+    <string name="use_external_blukon_algorithm_summary">Verwende externen Libre-Algorithmus (OOP, Bluecon/NFC/LibreAlarm).</string>
     <string name="display_predictive_values">Vorhergesagte Werte anzeigen.</string>
     <string name="use_external_blukon_algorithm">Externer Libre-Algorithmus.</string>
     <string name="calibrate_external_libre_algorithm_summary">Verwende xDrip-Kalibrierungsmethoden für OOP-Daten.</string>
@@ -618,12 +618,12 @@
     <string name="libre_use_smoothed_data_summary">Verwende Durchschnittswerte von 5 Punkten, um geglättete Libre-Daten zu erhalten.</string>
     <string name="libre_use_smoothed_data_title">Glätte Libre-Daten.</string>
     <string name="retrieve_blukon_history_title">Empfange historische Libre-Daten</string>
-    <string name="retrieve_blukon_history_summary">Empfange verpasste Werte vom Bluekon-Empfänger wenn er sich wieder verbindet.</string>
+    <string name="retrieve_blukon_history_summary">Empfange verpasste Werte vom BlueCon-Empfänger wenn er sich wieder verbindet.</string>
     <string name="interpret_share_raw">Falls du Share benutzt, wird xDrip Werte anzeigen, die normalerweise auf dem Empfänger versteckt sind.</string>
     <string name="interpret_raw">Rohwerte interpretieren</string>
-    <string name="use_infrequent_calibrations">Falls nötig, benutze Kalibrierungen von weiter weg, z.B., wenn selten Kalibrierungen eingegeben werden.</string>
+    <string name="use_infrequent_calibrations">Falls nötig, benutze Kalibrierungen von vor längerer Zeit, z.B., wenn selten Kalibrierungen eingegeben werden.</string>
     <string name="infrequent_calibrations">Seltene Kalibrierungen</string>
-    <string name="extra_logging">Extra Loggingeinstellugen</string>
+    <string name="extra_logging">Extra Logging-Einstellungen</string>
     <string name="send_logs_to_developer">Sende Events- und Fehlerlogs automatisch an die Entwickler.</string>
     <string name="enable_remote_logging">Remote-Logging aktivieren</string>
     <string name="set_logging_appid">Setze die Logging-AppID</string>
@@ -689,7 +689,7 @@
     <string name="use_multi_block">Benutze die schnellere Multi-Block Lesemethode</string>
     <string name="use_any_tag">Benutze die Any-Tag-optimierte Lesemethode</string>
     <string name="low_level_value">Systemnaher Diagnose-/Prototypwert</string>
-    <string name="transmitter_id">ID Deines Dexcom-Transmitters, z.B. 12AB3</string>
+    <string name="transmitter_id">ID deines Dexcom-Transmitters, z.B. 12AB3</string>
     <string name="advanced_g5_settings">Erweiterte G5-Einstellungen für seltene Situationen</string>
     <string name="g5_debug_settings">G5 Debugeinstellungen</string>
     <string name="g5_scan_constantly">Einige Geräte funktionieren besser, wenn sie konstant scannen, andere nicht. Falls das Lesen zuverlässig funktioniert, wenn diese Einstellung nicht ausgewählt ist, solltest du eine längere Batterielaufzeit haben. Normalerweise ist es am besten, dies deaktiviert zu lassen.</string>
@@ -705,8 +705,8 @@
     <string name="data_sync">Datensynchronisation</string>
     <string name="options_for_upload">Optionen fürs Nightscout, MongoDB oder Dexcom Share Uploading</string>
     <string name="cloud_upload">Cloud-Upload</string>
-    <string name="enable_mongo_sync">Nightscout Mongo DB Synchronisation aktivieren</string>
-    <string name="mongo_db_uri">Mongo DB URI</string>
+    <string name="enable_mongo_sync">Nightscout MongoDB Synchronisation aktivieren</string>
+    <string name="mongo_db_uri">MongoDB URI</string>
     <string name="skip_local_lan">Überspringe Uploads für lokale Server mit 192.168.x.x Adressen, wenn keine Verbindung zu einem lokalen Netzwerk besteht.</string>
     <string name="skip_lan_uploads">LAN-Uploads überspringen</string>
     <string name="mongo_load_transmitter_data_title">Lade Daten des Libre-Transmitters hoch</string>
@@ -729,7 +729,7 @@
     <string name="dexcom_test_mode_serial">10 Zeichen lange Testmodus-Seriennummer</string>
     <string name="glucose_meters">Blutzuckermessgräte</string>
     <string name="glucose_meter_options">Optionen für kabellose Blutzuckermessgeräte</string>
-    <string name="auto_connect_to_meter">Automatisch mit einem standardkonformen Blutzuckermessgerät - wie dem Contour Next One - verbinden und Daten empfangen.</string>
+    <string name="auto_connect_to_meter">Automatisch mit einem standardkonformen Blutzuckermessgerät - wie dem Contour Next One - verbinden und Daten empfangen</string>
     <string name="use_bluetooth_meter">Benutze das Bluetooth-Messgerät</string>
     <string name="scan_for_bluetooth_meter">Nach einem Bluetooth-Messgerät scannen</string>
     <string name="meter_connect_sound">Aktivieren, damit Soundeffekte abgespielt werden, wenn das Messgerät sich verbindet/trennt oder wenn Daten synchronisiert werden</string>
@@ -804,7 +804,7 @@
     <string name="show_test_features">Zeige Extra- und Alpha-Testfunktionen</string>
     <string name="show_reminder_features">Zeige Erinnerungsmenüs und -funktionen.</string>
     <string name="enable_reminder_features">Reminder-Funktionen aktivieren</string>
-    <string name="display_mathamatical_simulations">Mathematische Simulationen basierend auf den Profildaten und Kohlenhydrat-/Insulinlogs anzeigen.</string>
+    <string name="display_mathamatical_simulations">Mathematische Simulationen basierend auf den Profildaten und Kohlenhydrat-/Insulinlogs anzeigen</string>
     <string name="predictive_simulations">Vorhersage-Simulationen</string>
     <string name="low_prediction_values">Unterzucker-Vorhersagewerte</string>
     <string name="target_glucose_default">Ziel-Glukosestandard</string>
@@ -818,7 +818,7 @@
     <string name="allow_remotes_silence">Anderen Mobilgeräten erlauben, Alarme auf diesem Gerät verstummen zu lassen.</string>
     <string name="acccept_remote_snoozes">Remote-Schlummern/Snoozes annehmen</string>
     <string name="send_remote_snooze">Sende Remote-Snooze</string>
-    <string name="only_accept_same_network">Nur akzeptieren, wenn das entfernte WLAN-Netzwerk mit demselben Buchstaben beginnt wie unseres oder die beiden sich sehr ähneln.</string>
+    <string name="only_accept_same_network">Nur akzeptieren, wenn das entfernte WLAN-Netzwerk mit demselben Buchstaben beginnt wie unseres und die beiden sich sehr ähneln</string>
     <string name="wifi_name_must_match">WLAN-Name muss übereinstimmen</string>
     <string name="confirm_remote_snooze">Bestätige Remote-Snooze</string>
     <string name="are_you_sure_you_wish_to_snooze_all_other_devices_in_your_sync_group">Sind Sie sicher, dass Sie alle anderen Geräte in Ihrer Synchronisierungsgruppe schlummern (snooze) möchten?</string>
@@ -1023,7 +1023,7 @@
     <string name="title_Bypass_quality_check">Qualitätsüberprüfung umgehen</string>
     <string name="summary_Scan_before_connecting_on_xBridge_and_Libre_bluetooth">Scanne vor der Verbindung zu xBridge und Libre-Bluetooth</string>
     <string name="title_Use_scanning">Verwende Scannen</string>
-    <string name="summary_Use_and_trust_Android_bluetooth_auto_connect_feature">Verwende und vertraue der automatischen Android-Wiederverbindungs-Funktion</string>
+    <string name="summary_Use_and_trust_Android_bluetooth_auto_connect_feature">Verwende und vertraue der automatischen Bluetooth-Wiederverbindungs-Funktion</string>
     <string name="title_Trust_Auto_Connect">Vertraue Auto-Wiederverbindung</string>
     <string name="summary_Experimental_support_for_xBridge_polling_feature">Experimentelle Unterstützung für xBridge+ Abruf-Funktion</string>
     <string name="title_xBridge_Polling_Mode">xBridge+ Abruf-Modus</string>
@@ -1356,7 +1356,7 @@
     <string name="title_desert_sync_master_ip">Master-IP-Adresse</string>
     <string name="summary_send_sync_show_qr">Barcode für Follower um diese automatisch zu konfigurieren</string>
     <string name="title_send_sync_show_qr">Zeige QR-Code</string>
-    <string name="summary_desert_use_https">Fügen eine weitere Ebene der Verschlüsselung für geteilte Netzwerke hinzu, z. B. öffentliche WLANs</string>
+    <string name="summary_desert_use_https">Füge eine weitere Ebene der Verschlüsselung für geteilte Netzwerke hinzu, z. B. öffentliche WLANs</string>
     <string name="title_desert_use_https">Nutze HTTPS</string>
     <string name="title_xdrip_plus_experimental">Experimentelle Funktionen</string>
     <string name="summary_inpen_screen">Lade Dosen herunter</string>
@@ -1419,7 +1419,7 @@
     <string name="set_up_desert_sync_follower">Desert Sync-Follower einrichten</string>
     <string name="version">Version:</string>
     <string name="sensor_start">Sensorstart:</string>
-    <string name="plug_in_your_dexcom_reciever">Schließe den Dexcom-Empfänger an, tippe den Button und drücke die Daumen!</string>
+    <string name="plug_in_your_dexcom_reciever">Schließe den Dexcom-Empfänger an, tippe diesen Button und drücke die Daumen!</string>
     <string name="check_in_dexcom_calibrations">Dexcom-Kalibrierungen übernehmen</string>
     <string name="progress">Fortschritt</string>
     <string name="bluetooth_device">Bluetooth-Gerät:</string>
@@ -1541,17 +1541,17 @@
     <string name="title_ob1_g5_preemptive_restart_alert">Alarmiere bei vorbeugendem Neustart</string>
     <string name="summary_ob1_g5_preemptive_restart_alert">Alarmiere, wenn die Sitzung vorbeugend neu gestartet wird</string>
     <string name="blood_glucose_graph">Blutzuckerdiagramm</string>
-    <string name="pref_enable_insulinprofiles">aktiviere mindestens ein Profil, maximal drei</string>
-    <string name="pref_select_basal_insulinprofiles">wähle das Basalratenprofil.</string>
+    <string name="pref_enable_insulinprofiles">Aktiviere mindestens ein Profil, maximal drei</string>
+    <string name="pref_select_basal_insulinprofiles">Wähle das Basalratenprofil.</string>
     <string name="pref_select_bolus_insulinprofiles">wähle dein Bolus-Insulin-Profil, auch verwendet für Pumpe und Pen...</string>
-    <string name="enable_streaming_summary">verbinde Libre2-Sensoren nach dem Scannen. Das Libre-Lesegerät und die LibreLink-App werden dann keine Alarme mehr empfangen</string>
+    <string name="enable_streaming_summary">Verbinde Libre2 Sensoren nach dem Scannen. Das Libre Lesegerät und die LibreLink App werden dann keine Alarme mehr empfangen</string>
     <string name="enable_streaming_title">Starte Bluetooth-Verbindung mit Libre2-Sensoren</string>
     <string name="enable_streaming_always_allow">Immer mit Libre2-Sensoren verbinden</string>
     <string name="enable_streaming_ask_each_time">jedes Mal nachfragen</string>
     <string name="enable_streaming_never">Niemals mit Libre2-Sensoren verbinden</string>
-    <string name="enable_streaming_dialog_yes">verbinde mit diesem Libre2-Sensor</string>
+    <string name="enable_streaming_dialog_yes">Verbinde mit diesem Libre2-Sensor</string>
     <string name="enable_streaming_dialog_no">Nicht mit diesem Libre2-Sensor verbinden </string>
     <string name="enable_streaming_dialog_dont_ask_again">Nicht erneut fragen</string>
-    <string name="enable_streaming_dialog_text">Möchtest Du xDrip mit diesem Sensor verbinden? Das Libre Lesegerät und die Libre Link-App werden dann keine Alarme mehr empfangen. Drücke \"Ja\" und scanne erneut für eine Verbindung (wähle \"nicht verbinden\", wenn Du xDrip mit der gepatchten Libre-App benutzt)</string>
+    <string name="enable_streaming_dialog_text">Möchtest du xDrip mit diesem Sensor verbinden? Das Libre Lesegerät und die LibreLink App werden dann keine Alarme mehr empfangen. Drücke \"Ja\" und scanne erneut für eine Verbindung (wähle \"nicht verbinden\", wenn du xDrip mit der gepatchten Libre App nutzen möchtest)</string>
     <string name="enable_streaming_dialog_title">Verbinde Libre-Sensor mit Bluetooth</string>
 </resources>

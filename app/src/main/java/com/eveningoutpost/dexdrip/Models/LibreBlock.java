@@ -202,6 +202,7 @@ public class LibreBlock  extends PlusModel {
     }
 
     public static void UpdateBgVal(long timestamp, double calculated_value) {
+        Log.d(TAG, "UpdateBgVal called " + JoH.dateTimeText(timestamp) + " bgval = " + calculated_value);
         LibreBlock libreBlock = getForTimestamp(timestamp);
         if (libreBlock == null) {
             return;
@@ -253,6 +254,8 @@ public class LibreBlock  extends PlusModel {
          @Expose
          public int Bubblebattery;
          @Expose
+         public int Atombattery;
+         @Expose
          public int nfc_sensor_age;
          @Expose
          public LibreBlock libreBlock;
@@ -263,6 +266,7 @@ public class LibreBlock  extends PlusModel {
         elb.bridge_battery = Pref.getInt("bridge_battery", 0);
         elb.Tomatobattery = PersistentStore.getStringToInt("Tomatobattery", 0);
         elb.Bubblebattery = PersistentStore.getStringToInt("Bubblebattery", 0);
+        elb.Atombattery = PersistentStore.getStringToInt("Atombattery", 0);
         elb.nfc_sensor_age = Pref.getInt("nfc_sensor_age", 0);
         elb.libreBlock = this;
         return JoH.defaultGsonInstance().toJson(elb);
@@ -284,6 +288,7 @@ public class LibreBlock  extends PlusModel {
         Pref.setInt("bridge_battery", elb.bridge_battery);
         PersistentStore.setString("Tomatobattery", Integer.toString(elb.Tomatobattery));
         PersistentStore.setString("Bubblebattery", Integer.toString(elb.Bubblebattery));
+        PersistentStore.setString("Atombattery", Integer.toString(elb.Atombattery));
         Pref.setInt("nfc_sensor_age", elb.nfc_sensor_age);
         return elb.libreBlock;
     }
