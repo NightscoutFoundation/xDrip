@@ -71,6 +71,23 @@ class LibreTrendLatest {
     }
 }
 
+class LazyLibreList extends ArrayList<LibreTrendPoint> {
+
+    public LazyLibreList(int max_points) {
+        super(max_points);
+    }
+
+    @Override
+    public LibreTrendPoint get(int index) {
+        LibreTrendPoint v = super.get(index);
+        if (v == null) {
+            v = new LibreTrendPoint();
+            super.set(index, v);
+        }
+        return v;
+    }
+}
+
 public class LibreTrendUtil {
 
     private static LibreTrendUtil singleton;
@@ -105,10 +122,7 @@ public class LibreTrendUtil {
     }
     
     void ResetPoints() {
-        m_points = new ArrayList<LibreTrendPoint>(MAX_POINTS);
-        while(m_points.size() < MAX_POINTS) {
-            m_points.add(m_points.size(), new LibreTrendPoint());
-        }
+        m_points = new LazyLibreList(MAX_POINTS);
     }
     
     void Reset() {
