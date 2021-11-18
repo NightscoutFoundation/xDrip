@@ -1611,4 +1611,8 @@
     <string name="title_lower_fuzzer">Lower FUZZER</string>
     <string name="summary_lower_fuzzer">Lower the FUZZER value from 2.5 minutes to 37.5 seconds</string>
     <string name="without_camera_permission_cannot_scan_barcode">Without camera permission we cannot scan a barcode</string>
+    <string name="choose_sound_file">Choose File</string>
+    <string name="default_xdrip_sound">Default xDrip sound</string>
+    <string name="choose_alert_sound_file">BG Level Sound</string>
+    <string name="select_new_sound">Select new sound source</string>
 </resources>
