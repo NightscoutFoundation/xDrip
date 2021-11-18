@@ -529,11 +529,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
                             intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
                             intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALL);
                             startActivityForResult(intent, REQUEST_CODE_CHOOSE_RINGTONE);
-                        } else if (which == 1) {
-                            if (checkPermissions()) {
-                                chooseFile();
-                            }
-                        } else {
+                        }  else {
                             JoH.static_toast_long(xdrip.getAppContext().getString(R.string.using_default_sound));
                             selectedSound = null;
                             playSelectedSound();
