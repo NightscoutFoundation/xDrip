@@ -163,9 +163,9 @@
         <item>3</item>
     </string-array>
 
-    <string-array name="alertType">
-        <item>System Sound/Alarm</item>
-        <item>Default xDrip sound</item>
+    <string-array name="alertSound">
+        <item>@string/choose_sound_file</item>
+        <item>@string/default_xdrip_sound</item>
     </string-array>
 
     <string-array name="reminderAlertType">
