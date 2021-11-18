@@ -1,9 +1,5 @@
 package com.eveningoutpost.dexdrip.ui.activities;
 
-import static com.eveningoutpost.dexdrip.ui.NumberGraphic.isLockScreenBitmapTiled;
-import static com.eveningoutpost.dexdrip.ui.helpers.BitmapUtil.getScreenHeight;
-import static com.eveningoutpost.dexdrip.ui.helpers.BitmapUtil.getScreenWidth;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -36,6 +32,10 @@ import java.io.File;
 
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+
+import static com.eveningoutpost.dexdrip.ui.NumberGraphic.isLockScreenBitmapTiled;
+import static com.eveningoutpost.dexdrip.ui.helpers.BitmapUtil.getScreenHeight;
+import static com.eveningoutpost.dexdrip.ui.helpers.BitmapUtil.getScreenWidth;
 
 /**
  * jamorham
