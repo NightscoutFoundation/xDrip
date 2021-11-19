@@ -399,7 +399,7 @@
     <string name="external_storage_not_writable">Pamięć zewnętrzna jest w trybie read-only</string>
     <string name="successfully_deleted">Pomyślnie usunięty</string>
     <string name="deletion_problem">Usuwanie problemu</string>
-    <string name="sdcard_not_writable_cannot_save">Karta SD nie jest zapisywalna - nie można zapisać</string>
+    <string name="sdcard_not_writable_cannot_save">Karta SD nie pozwala na zapis</string>
     <string name="sdcard_not_readable">Nie mogę odczytać karty sd</string>
     <string name="loading_settings_from_xdrip_mainline">Ładowanie ustawień z xDrip Mainline</string>
     <string name="warning_settings_from_xdrip_and_plus_exist">Ustawienia ostrzegawcze z xDrip i xDrip+ istnieją - uruchamiam xDrip+</string>
@@ -745,14 +745,14 @@
     <string name="shortcut_to_bg_alerts">Skrót do alarmów poziomu glikemii</string>
     <string name="suppress_alerts_missed_readings">Wyłączanie uśpionych i aktywnych alarmów po zdefiniowanym okresie braku odczytów</string>
     <string name="suppress_alerts_after">Wyłączanie uśpionych i aktywnych alarmów po ... minutach (minimum 10)</string>
-    <string name="alert_calibration_request">Alarm o konieczności wykonania kalibracji</string>
+    <string name="alert_calibration_request">Powiadomienie o konieczności wykonania kalibracji</string>
     <string name="calibrations_request_time_time_difference">Ile godzin między żądaniami kalibracji</string>
     <string name="hours_between_calibrations">Godziny między kalibracjami</string>
     <string name="calibrations_sound">Ustaw dźwięk używany do żądań kalibracji.</string>
     <string name="override_silent_mode">Nadpisz tryb wyciszone dźwięki w telefonie</string>
     <string name="even_when_charging">Nawet podczas ładowania</string>
     <string name="no_calibration_requests_charging">Odznacz aby nie prosić o kalibrację podczas ładowania telefonu</string>
-    <string name="keep_alert_no_calibration">Alarmuj jeśli nie wykonano kalibracji</string>
+    <string name="keep_alert_no_calibration">Nie przestawaj alarmować jeśli nie wykonano kalibracji</string>
     <string name="repeat_alerts">Powtarzaj alarmy</string>
     <string name="calibration_minutes_reraise">Liczba minut, po których pojawi się ponownie żądanie kalibracji.</string>
     <string name="alert_repeat_minutes">Minuty pomiędzy powtarzaniem alarmu</string>
@@ -948,7 +948,7 @@
     <string name="you_have_update_checks_off">Sprawdzanie aktualizacji zostało wyłączone!\n\nZ czasem próbujemy naprawić błędy i dodać nowe funkcje do xDrip+.\n\nCo 60 dni to przypomnienie pojawi się żeby zapytać czy chcesz włączyć sprawdzanie aktualizacji.</string>
     <string name="update_checking_enabled">Sprawdzanie aktualizacji włączone!</string>
     <string name="cancel_alarm">Anulować alarm?</string>
-    <string name="please_confirm_to_cancel_the_alert">Potwierdź, aby anulować alert?</string>
+    <string name="please_confirm_to_cancel_the_alert">Potwierdź, aby anulować alarm?</string>
     <string name="yes_cancel">Tak Anuluj</string>
     <string name="warning_no_alert_will_be_played_in_silent_mode">Ostrzeżenie, żaden alarm nie zostanie odtworzony gdy telefon będzie w trybie cichym/wibracji!!!</string>
     <string name="automatic_message_from_xdrip">automatyczna wiadomość od xDrip+</string>
@@ -1016,8 +1016,11 @@
     <string name="title_Double_Calibrations">Podwójne kalibracje</string>
     <string name="summary_Enable_to_allow_variable_slopes_with_Libre_collection_methods">Włącz, aby zezwolić na zmienne nachylenia z metodami zbierania Libre</string>
     <string name="summary_Allow_initial_calibration_no_good_enough_data">Zezwalaj na początkową kalibrację, nawet jeśli nie mamy wystarczająco dobrych danych. Przez to kalibracja może być niedokładna!</string>
+    <string name="title_Bypass_quality_check">Pomiń kontrolę jakości</string>
+    <string name="title_Use_scanning">Użyj skanowania</string>
     <string name="title_xBridge_Polling_Mode">xBridge+ Tryb Odpytywania</string>
     <string name="title_Allow_blucon_unbonding">Zezwól na odłączenie blucon</string>
+    <string name="summary_Erase_data_older_than_this_many_days">Usuwaj dane starsze niż ta liczba dni. 0 = nic nie usuwaj</string>
     <string name="title_NOT_FOR_PRODUCTION_USE">NIEPRZEZNACZONE DO STOSOWANIA PRODUKCYJNEGO</string>
     <string name="title_You_have_no_reminders_yet">Nie masz jeszcze przypomnień</string>
     <string name="message_reminders_explanation">Przypomnienia mogą być używane do takich rzeczy jak zmiany wkłucia lub cokolwiek innego.\n\nMogą być cykliczne, być ustawione na różne okresy. Być uśpione, przesunięte, przełożone itp.\n\nKliknij przycisk +, aby dodać przypomnienie.</string>
@@ -1128,6 +1131,7 @@
     <string name="need_storage_permission_to_access_all_ringtones">Potrzebujesz uprawnień do pamięci, aby uzyskać dostęp do wszystkich dzwonków</string>
     <string name="xdrip_needs_whitelisting_for_proper_performance">xDrip+ potrzebuje dodania do białej listy dla poprawnej wydajności</string>
     <string name="manual_overwrite_not_possible">Ręczne nadpisanie nie jest możliwe!</string>
+    <string name="upload_even_when_using_mobile_data">Prześlij nawet podczas korzystania z danych mobilnych</string>
     <string name="use_mobile_data">Użyj transmisji danych</string>
     <string name="summary_cloud_storage_api_download_enable">Spróbuj również pobrać zabiegi z Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Pobierz zabiegi</string>
@@ -1148,6 +1152,7 @@
     <string name="delete_all_bg_readings">Usuń WSZYSTKIE odczyty glikemii</string>
     <string name="sync_treatments">Synchronizuj zabiegi</string>
     <string name="send_bg_readings_to_backfill">Wyślij odczyty glikemii do uzupełnienia</string>
+    <string name="return_to_home_screen">Powrót do ekranu głównego</string>
     <string name="title_miband">MiBand</string>
     <string name="title_miband_enable">Użyj opaski MiBand</string>
     <string name="title_miband_screens_features">Ekrany i funkcje MiBand</string>
@@ -1163,6 +1168,7 @@
     <string name="summary_miband_locale_24_hour">Pokaż zegar 24-godzinny</string>
     <string name="title_miband_nightmode_category">Ustawienia trybu nocnego</string>
     <string name="title_miband_nightmode_enabled">Włącz ustawienia trybu nocnego</string>
+    <string name="summary_miband_nightmode_enabled">Zmniejsz jasność ekranu opaski w wybranym czasie</string>
     <string name="title_miband_nightmode_start">Początek trybu nocnego</string>
     <string name="title_miband_nightmode_end">Koniec trybu nocnego</string>
     <string name="title_miband_interval_in_nightmode">Interwał</string>
@@ -1182,9 +1188,11 @@
     <string name="title_miband_screen_more">Pokaż więcej</string>
     <string name="title_miband_screen_status">Pokaż status</string>
     <string name="title_miband_screen_heart_rate">Pokazuj puls</string>
+    <string name="title_miband_screen_timer">Pokaż minutnik</string>
     <string name="miband_watchface_istall_success">Tarcza zegarowa MiBand została poprawnie przesłana!</string>
     <string name="miband_watchface_istall_error">Wystąpił błąd podczas przesyłania tarczy zegarowej MiBand</string>
     <string name="miband_bg_dialog_title">Zaktualizować teraz dane glikemii?</string>
+    <string name="title_lefun_band">Opaska Lefun</string>
     <string name="title_lefun_mac">Adres Mac</string>
     <string name="title_lefun_send_readings">Wyślij odczyty</string>
     <string name="title_lefun_option_shake_snoozes">Wstrząśnij aby uśpić</string>
