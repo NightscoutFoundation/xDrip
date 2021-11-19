@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply from: '../app/token-replace.gradle'
-apply from: '../dependencies.gradle'
 apply from: '../common.gradle'
 
 android {

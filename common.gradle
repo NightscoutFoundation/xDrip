@@ -8,7 +8,7 @@ configurations.all {
 
 ext.generateVersionNumberString = { ->
     StringBuilder stringBuilder = new StringBuilder()
-    stringBuilder.append((new Date()).format('21yyMMddHHmm'))
+    stringBuilder.append((new Date()).format('21yyMMddHH'))
     return stringBuilder.toString()
 }
 
