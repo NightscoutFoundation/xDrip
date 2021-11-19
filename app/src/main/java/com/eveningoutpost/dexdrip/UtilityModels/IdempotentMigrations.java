@@ -16,6 +16,7 @@ import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.LibreData;
 import com.eveningoutpost.dexdrip.Models.PenData;
 import com.eveningoutpost.dexdrip.Models.Prediction;
+import com.eveningoutpost.dexdrip.Models.UserNotification;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
 import com.eveningoutpost.dexdrip.Models.AlertType;
@@ -49,6 +50,7 @@ public class IdempotentMigrations {
         Libre2Sensor.updateDB();
 //        BgReadingArchive.updateDB();
         AlertType.fixUpTable();
+        UserNotification.updateDB();
         JoH.clearCache();
 
         IncompatibleApps.notifyAboutIncompatibleApps();

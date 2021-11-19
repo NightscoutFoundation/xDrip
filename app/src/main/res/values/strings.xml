@@ -487,6 +487,7 @@
     <string name="start_sensor">Start Sensor</string>
     <string name="debug_and_other_misc_options">Debug and other misc. options</string>
     <string name="low_glucose_values">Low Glucose Values</string>
+    <string name="bad_glucose_values">Bad Glucose Values</string>
     <string name="revert_to_default">Revert to Default</string>
     <string name="filtered_values">Filtered Values</string>
     <string name="treatment_color">Treatment Color</string>
@@ -1611,4 +1612,5 @@
     <string name="enable_streaming_dialog_title">Connecting Libre sensor to Bluetooth</string>
     <string name="title_lower_fuzzer">Lower FUZZER</string>
     <string name="summary_lower_fuzzer">Lower the FUZZER value from 2.5 minutes to 37.5 seconds</string>
+    <string name="without_camera_permission_cannot_scan_barcode">Without camera permission we cannot scan a barcode</string>
 </resources>

@@ -199,7 +199,7 @@
     <string name="send_feedback_message">Visszajelzés küldése</string>
     <string name="copying_settings">Beállítások másolása</string>
     <string name="show_settings_qr_codes">Beállítások átadása QR-kóddal</string>
-    <string name="load_save_settings_to_sdcard">Beállítások mentése/visszaállítása SD-kártyára/mappába</string>
+    <string name="load_save_settings_to_sdcard">Beállítások mentése/visszaállítása</string>
     <string name="alarms_and_alerts">Riasztások és emlékeztetők</string>
     <string name="alerts_and_notifications">Riasztások és emlékeztetők</string>
     <string name="glucose_level_alerts_list">VC-érték riasztások listája</string>
@@ -343,9 +343,9 @@
     <string name="download_now">Letöltés most</string>
     <string name="automatically_check_for_updates">Frissítések automatikus keresése</string>
     <string name="here_you_can_save_the_settings_to_the_external_storage_sdcard">Beállítások külső tárolóra mentése (SD-kártya).\n\nA mentés után bármely app hozzáférhet az akár érzékeny információkhoz.\n\nA beállításokat az importálásuk után célszerű törölni.</string>
-    <string name="save_all_settings_to_sdcard">Beállítások mentése SD-kártyára/mappába</string>
-    <string name="load_all_settings_from_sdcard">Beállítások visszaállítása SD-kártyáról/mappából</string>
-    <string name="delete_any_settings_on_sdcard">Minden mentett beállítás törlése SD-kártyán/mappában</string>
+    <string name="save_all_settings_to_sdcard">Beállítások fájlba mentése</string>
+    <string name="load_all_settings_from_sdcard">Beállítások visszaállítása fájlból</string>
+    <string name="delete_any_settings_on_sdcard">Beállítások mappa törlése (Download/xDrip-export)</string>
     <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Beállítások átadása QR kóddal: Beállítások menü -> Automatikus beállítás]]></string>
     <string name="xdrip_plus_security_key_settings_only">Csak xDrip+ biztonsági kulcs</string>
     <string name="show_general_and_collection_settings">Általános és kollektor beállítások</string>
@@ -367,7 +367,7 @@
     <string name="press_and_hold_on_the_background_to_split_or_delete">Nyomja és tartsa az időszak felosztásához vagy törléséhez</string>
     <string name="search">Keresés</string>
     <string name="reset_all_language_data">Nyelvi beállítások viasszaálltása</string>
-    <string name="settings_on_external_storage">Beállítások a külső tárhelyen</string>
+    <string name="settings_on_external_storage">Beállítások mentése/visszaállítása</string>
     <string name="get_notified_of_new_apk_releases">Értesítés új xDrip verzióról</string>
     <string name="choose_stable_beta_or_alpha_releases">Stabli, béta vagy alfa verziók választása</string>
     <string name="web_feedback_form_for_sending_messages">Üzenet és app értékelés küldése az xDrip fejlesztőjének</string>
@@ -1138,6 +1138,8 @@
     <string name="title_rest_api_extra_options">További beállítások</string>
     <string name="summary_send_bridge_battery_to_nightscout">A transzmitter töltöttségének feltöltése a Nightscoutba. Ne engedélyezze, ha az akku hibás.</string>
     <string name="title_send_bridge_battery_to_nightscout">Transzmitter töltöttség feltöltése</string>
+    <string name="summary_send_dexcom_transmitter_battery_to_nightscout">OB1G5/G6 távadó akku adatok feltöltése Nightscout-ba. Ez a Kollektor állapot képernyő összes adatát jelenti.</string>
+    <string name="title_send_dexcom_transmitter_battery_to_nightscout">OB1G5/G6 távadó adatok feltöltése</string>
     <string name="summary_send_treatments_to_nightscout">Kezelési adatok küldése Nightscout-ba. Ne használja, ha a Careportal-ja nem működik.</string>
     <string name="title_send_treatments_to_nightscout">Kezelések feltöltése</string>
     <string name="summary_warn_nightscout_failures">Értesítés és hangjelzés, ha a Nightscout feltöltés sikertelen.</string>
@@ -1157,7 +1159,7 @@
     <string name="title_tidepool_dev_servers">Integrációs teszt szerver használata</string>
     <string name="title_tidepool">Tidepool</string>
     <string name="show_help">Súgó mutatása</string>
-    <string name="load_save_settings_on_sdcard">Beállítások mentése/visszaállítása SD-kártyára/mappába</string>
+    <string name="load_save_settings_on_sdcard">Beállítások mentése/visszaállítása</string>
     <string name="delete_all_bg_readings">Minden VC-érték törlése</string>
     <string name="debugging_test_feature">Tesztek hibakereséshez</string>
     <string name="sync_treatments">Kezelések szinkronizálása</string>
