@@ -48,7 +48,11 @@ public class FirmwareCapability {
     }
 
     public static boolean isFirmwareTemperatureCapable(final String version) {
-        return !isG6Rev2(version) && !isG6Plus(version);
+        return !isG6Plus(version);
+    }
+
+    public static boolean isFirmwareResistanceCapable(final String Version) {
+        return !isG6Rev2(Version) && !isG6Plus(Version);
     }
 
     private static boolean isFirmwarePredictiveCapable(final String version) {
@@ -98,7 +102,7 @@ public class FirmwareCapability {
 
     public static boolean isTransmitterRawIncapable(final String tx_id) {
         val firmware_version = getRawFirmwareVersionString(tx_id);
-        return doWeHaveVersion(tx_id) && isKnownFirmware(firmware_version) && !isTransmitterRawCapable(firmware_version);
+        return doWeHaveVersion(tx_id) && isKnownFirmware(firmware_version) && !isFirmwareRawCapable(firmware_version);
     }
 
     public static boolean isTransmitterPreemptiveRestartCapable(final String tx_id) {

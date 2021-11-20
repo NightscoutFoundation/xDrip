@@ -312,14 +312,17 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         }
         if (scanResult.getFormatName().equals("QR_CODE")) {
 
-            String scanresults = scanResult.getContents();
+            final String scanresults = scanResult.getContents();
             if (scanresults.startsWith(DisplayQRCode.qrmarker)) {
                 installxDripPlusPreferencesFromQRCode(prefs, scanresults);
                 return;
             }
 
             try {
-                BlueJay.processQRCode(scanResult.getRawBytes());
+                if (BlueJay.processQRCode(scanResult.getRawBytes())) {
+                    refreshFragments();
+                    return;
+                }
             } catch (Exception e) {
                 // meh
             }
@@ -419,7 +422,22 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         };
     }
 
-
+    @Override
+    public void onStop() { // Everything here runs when xDrip is minimized or stopped.
+        super.onStop();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        try {
+            if (!prefs.getBoolean("engineering_mode", false)) { // If engineering mode has been disabled
+                try {
+                    prefs.edit().putBoolean("lower_fuzzer", false).apply(); // Disable lower_fuzzer
+                } catch (Exception e) {
+                    //
+                }
+            }
+        } catch (Exception e) {
+            //
+        }
+    }
 
 
     @Override

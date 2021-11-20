@@ -50,6 +50,13 @@
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
                         app:colorpicker_showHex="false" />
+                    <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#ffffff"
+                        android:key="color_bad_values"
+                        android:title="@string/bad_glucose_values"
+                        app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
+                        app:colorpicker_selectNoneButtonText="@string/revert_to_default"
+                        app:colorpicker_showHex="false" />
 
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#a0a0a0"
@@ -326,7 +333,7 @@
 
 
                 <CheckBoxPreference
-                    android:defaultValue="true"
+                    android:defaultValue="false"
                     android:key="rewrite_history"
                     android:summary="@string/after_calibration_rewrite_history"
                     android:title="@string/rewrite_history" />
@@ -424,6 +431,12 @@
                     android:key="illustrate_remote_data"
                     android:summary="Show data received remotely (diagnostic only)"
                     android:title="Illustrate remote data" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="engineering_mode"
+                    android:key="lower_fuzzer"
+                    android:summary="@string/summary_lower_fuzzer"
+                    android:title="@string/title_lower_fuzzer" />
             </PreferenceScreen>
 
             <CheckBoxPreference

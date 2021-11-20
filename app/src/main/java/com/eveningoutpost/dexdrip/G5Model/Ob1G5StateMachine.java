@@ -611,7 +611,11 @@ public class Ob1G5StateMachine {
                                 if (session_start.isFubar()) {
                                     final long tk = DexTimeKeeper.getDexTime(getTransmitterID(), tsl());
                                     if (tk > 0) {
-                                        DexResetHelper.offer("Unusual session start failure, is transmitter crashed? Try Hard Reset?");
+                                        if (FirmwareCapability.isTransmitterRawIncapable(getTransmitterID())) {// Firefly, which cannot be hard reset
+                                            UserError.Log.e(TAG, "Unusual session start failure");
+                                        } else {
+                                            DexResetHelper.offer("Unusual session start failure, is transmitter crashed? Try Hard Reset?");
+                                        }
                                     } else {
                                         UserError.Log.e(TAG, "No reset as TimeKeeper reports invalid: " + tk);
                                     }
@@ -624,12 +628,14 @@ public class Ob1G5StateMachine {
                                         } else {
                                             if (!parent.lastSensorState.sensorStarted()) {
                                                 UserError.Log.uel(TAG, "Stopping sensor session due to repeated restart failure");
+                                                Treatments.sensorStop(null, "Stopped due to repeated start failure");
                                                 Sensor.stopSensor();
                                             }
                                         }
                                     } else {
                                         if (!parent.lastSensorState.sensorStarted()) {
                                             UserError.Log.uel(TAG, "Stopping sensor session due to start failure");
+                                            Treatments.sensorStop(null, "Stopped due to start failure");
                                             Sensor.stopSensor();
                                         }
                                     }

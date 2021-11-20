@@ -115,8 +115,12 @@ public class ReadingData {
         Iterator<GlucoseData> it = history.iterator();
         while (it.hasNext()) {
             GlucoseData glucoseData = it.next();
-            if (libreTrendPoints.get(glucoseData.sensorTime).isError()) {
-                it.remove();
+            try {
+                if (libreTrendPoints.get(glucoseData.sensorTime).isError()) {
+                    it.remove();
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Exception attempting to check/clear error point: " + e + " @ " + glucoseData.sensorTime);
             }
         }
 

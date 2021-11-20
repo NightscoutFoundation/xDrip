@@ -53,7 +53,7 @@ public class LibreTrendGraph extends BaseAppCompatActivity {
 
         Log.i(TAG, "getLatestBgForXMinutes number of minutes = " + NumberOfMinutes);
         
-        List<LibreTrendPoint> LibreTrendPoints = LibreTrendUtil.getInstance().getData(JoH.tsl() - NumberOfMinutes * 60 * 1000, JoH.tsl());
+        List<LibreTrendPoint> LibreTrendPoints = LibreTrendUtil.getInstance().getData(JoH.tsl() - NumberOfMinutes * 60 * 1000, JoH.tsl(), true);
         if(LibreTrendPoints == null || LibreTrendPoints.size() == 0) {
             Log.e(TAG, "Error getting data from getLatestBgForXMinutes");
             return null;

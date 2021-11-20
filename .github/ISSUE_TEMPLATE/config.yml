@@ -1,8 +1,11 @@
 blank_issues_enabled: false
 contact_links:
-  - name: xDrip Community Support at Facebook
-    url: https://www.facebook.com/groups/xDripG5
-    about: If you're a xDrip user and have trouble with the app or any connected device, please post questions here. We don't have the resources to answer support questions posted here as tickets.
+  - name: xDrip Discussions
+    url: https://github.com/Navid200/xDrip/discussions
+    about: If you are an xDrip user and need support (how to, new feature, or bug), please post here. It's a forum. So, all posts related to your question or proposal stay together and are easy to find. All developers and users can access them.
   - name: xDrip Community Support at Gitter
     url: https://gitter.im/jamorham/xDrip-plus
-    about: If you're a xDrip user and have trouble with the app or any connected device, please post questions here. We don't have the resources to answer support questions posted here as tickets.
+    about: If you are an xDrip user and have trouble with the app, you can post questions here.  
+  - name: xDrip Community Support at Facebook
+    url: https://www.facebook.com/groups/xDripG5
+    about: If you are an xDrip user and have trouble with the app, you can post questions here. Not every developer has a facebook account. So, you may be asked to post in the Discussions (see above).

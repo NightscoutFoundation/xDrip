@@ -74,6 +74,11 @@
                         android:summary="@string/summary_send_bridge_battery_to_nightscout"
                         android:title="@string/title_send_bridge_battery_to_nightscout" />
                     <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:key="send_ob1dex_tx_battery_to_nightscout"
+                        android:summary="@string/summary_send_dexcom_transmitter_battery_to_nightscout"
+                        android:title="@string/title_send_dexcom_transmitter_battery_to_nightscout" />
+                    <CheckBoxPreference
                         android:defaultValue="true"
                         android:key="send_treatments_to_nightscout"
                         android:summary="@string/summary_send_treatments_to_nightscout"

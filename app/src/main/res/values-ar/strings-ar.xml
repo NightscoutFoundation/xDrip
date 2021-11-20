@@ -42,7 +42,7 @@
     <!-- MongoDB Settings -->
     <string name="pref_title_mongodb">MongoDB</string>
     <string name="pref_summary_mongodb_enabled">تحميل قاعدة بيانات المباشرة، غير مستحسن لنايتسكاوت</string>
-    <string name="pref_title_mongodb_uri">URI</string>
+    <string name="pref_title_mongodb_uri">الرابط</string>
     <string name="pref_dialog_mongodb_uri">أدخل MongoDB URI\"</string>
     <string name="pref_message_mongodb_uri">استبدل القيم في المثال التي في {} مع القيم الصحيحة الخاصة بك</string>
     <string name="pref_default_mongodb_uri">mongodb://{user}:{password}@{host}.mongolab.com:{11111}/{database}</string>
@@ -205,7 +205,7 @@
     <string name="disable_low_alerts">تعطيل التنبيهات الانخفاض</string>
     <string name="re_enable_low_alerts">اعادة تشغيل تنبيهات الانخفاض</string>
     <string name="disable_high_alerts">تعطيل تنبيهات الارتفاع</string>
-    <string name="re_enable_high_alerts">اعادة تشغيل تنبيهات الارتفاع</string>
+    <string name="re_enable_high_alerts">إعادة تشغيل تنبيهات الارتفاع</string>
     <string name="disable_all_alerts">تعطيل جميع التنبيهات</string>
     <string name="re_enable_all_alerts">إعادة تشغيل جميع التنبيهات</string>
     <string name="a_new_version_is_available">يتوفر إصدار جديد</string>

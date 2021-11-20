@@ -9,8 +9,10 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -265,15 +267,22 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
         if (I.autoConnect && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) && Pref.getBoolean("bluetooth_allow_background_scans", true)) {
             UserError.Log.d(TAG, "Trying background scan connect: " + scanCallBack + " " + address);
             try {
+                // TODO this probably should be encapsulated within LocationHelper but the check is different because during
+                // TODO an initial scan we may have permission with the app in the foreground and not (yet) need background location permission
+                if (ContextCompat.checkSelfPermission(this,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    UserError.Log.e(TAG, "Could not start a scan as location permission is not granted");
+                } else {
+                    rxBleClient.getBackgroundScanner()
+                            .scanBleDeviceInBackground(scanCallBack,
+                                    new ScanSettings.Builder()
+                                            .setScanMode(ScanSettings.SCAN_MODE_BALANCED)
+                                            // .setCallbackType(ScanSettings.CALLBACK_TYPE_FIRST_MATCH) // doesn't work on samsung - annoying as could persist forever otherwise
+                                            .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
+                                            .build(),
+                                    new ScanFilter.Builder().setDeviceAddress(address).build());
 
-                rxBleClient.getBackgroundScanner()
-                        .scanBleDeviceInBackground(scanCallBack,
-                                new ScanSettings.Builder()
-                                        .setScanMode(ScanSettings.SCAN_MODE_BALANCED)
-                                        // .setCallbackType(ScanSettings.CALLBACK_TYPE_FIRST_MATCH) // doesn't work on samsung - annoying as could persist forever otherwise
-                                        .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
-                                        .build(),
-                                new ScanFilter.Builder().setDeviceAddress(address).build());
+                }
 
             } catch (Exception e) {
                 UserError.Log.e(TAG, "Cannot background scan: " + e);

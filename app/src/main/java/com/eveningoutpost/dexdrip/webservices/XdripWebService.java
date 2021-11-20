@@ -16,6 +16,8 @@ import com.eveningoutpost.dexdrip.xdrip;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -326,7 +328,7 @@ public class XdripWebService implements Runnable {
                 return;
             }
             // Send out the content.
-            output.println("HTTP/1.0 " + response.resultCode + " OK");
+            output.println("HTTP/1.0 " + response.resultCode + " " + response.getResultDesc());
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 output.println("Date: " + rfc7231formatter.format(ZonedDateTime.now(ZoneOffset.UTC)));
             }
