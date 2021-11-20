@@ -75,6 +75,9 @@ class LazyLibreList extends ArrayList<LibreTrendPoint> {
 
     public LazyLibreList(int max_points) {
         super(max_points);
+        while(super.size() < max_points) {
+            super.add(null);
+        }
     }
 
     @Override
