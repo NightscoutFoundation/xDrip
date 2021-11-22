@@ -1113,6 +1113,7 @@
     <string name="connection_status_long">Status połączenia:   </string>
     <string name="without_location_scan_doesnt_work">Bez uprawnień lokalizacji, Androidowe skanowanie Bluetooth nie działa</string>
     <string name="android_10_need_background_location">Android 10 i wyższe wersje potrzebują uprawnień do lokalizacji w tle żeby działał Bluetooth</string>
+    <string name="without_location_permission_emergency_cannot_get_location">Bez uprawnień lokalizacji wiadomości alarmowe nie mogą używać danych lokalizacji</string>
     <string name="force_speaker_colon">Wymuś działanie głośnika</string>
     <string name="choose_data_source">Wybierz źródło danych</string>
     <string name="which_system_do_you_use">Którego z systemów używasz?</string>
