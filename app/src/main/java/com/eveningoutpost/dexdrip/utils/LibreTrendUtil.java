@@ -12,6 +12,7 @@ import com.eveningoutpost.dexdrip.Models.GlucoseData;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.ReadingData;
 
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.utils.LibreTrendPoint;
 
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
@@ -70,12 +71,32 @@ class LibreTrendLatest {
     }
 }
 
+class LazyLibreList extends ArrayList<LibreTrendPoint> {
+
+    public LazyLibreList(int max_points) {
+        super(max_points);
+        while(super.size() < max_points) {
+            super.add(null);
+        }
+    }
+
+    @Override
+    public LibreTrendPoint get(int index) {
+        LibreTrendPoint v = super.get(index);
+        if (v == null) {
+            v = new LibreTrendPoint();
+            super.set(index, v);
+        }
+        return v;
+    }
+}
+
 public class LibreTrendUtil {
 
     private static LibreTrendUtil singleton;
     private static final String TAG = "LibreTrendGraph";
     private static final boolean debug_per_minute = false;
-    final int MAX_POINTS = 16 * 24 * 60; // Assume that there will not be data for longer than 14 days + some extra.
+    public final static int MAX_POINTS = 16 * 24 * 60; // Assume that there will not be data for longer than 14 days + some extra.
 
     private LibreTrendLatest m_libreTrendLatest;
     
@@ -83,7 +104,10 @@ public class LibreTrendUtil {
 
     public void updateLastReading(LibreBlock libreBlock) {
         // Before we update m_libreTrendLatest we call getData as it affects the cache.
-        getData(m_libreTrendLatest.timestamp, libreBlock.timestamp, false);
+        // If there is no timestamp, only take the last 60 minutes.
+        long startTime = m_libreTrendLatest.timestamp > 0 ? m_libreTrendLatest.timestamp :
+                libreBlock.timestamp - 60 * Constants.MINUTE_IN_MS;
+        getData(startTime, libreBlock.timestamp, false);
         m_libreTrendLatest.updateLastReading(libreBlock);
     }
 
@@ -101,10 +125,7 @@ public class LibreTrendUtil {
     }
     
     void ResetPoints() {
-        m_points = new ArrayList<LibreTrendPoint>(MAX_POINTS);
-        while(m_points.size() < MAX_POINTS) {
-            m_points.add(m_points.size(), new LibreTrendPoint());
-        }
+        m_points = new LazyLibreList(MAX_POINTS);
     }
     
     void Reset() {

@@ -33,6 +33,19 @@ public class ReadingData {
         this.history = history;
     }
 
+    public String toString() {
+        String ret = "ternd ";
+        for (GlucoseData gd : trend) {
+            ret += gd.toString();
+            ret += " ";
+        }
+        ret += "history ";
+        for (GlucoseData gd : history) {
+            ret += gd.toString();
+            ret += " ";
+        }
+        return "{" + ret +  "}";
+    }
 
     public static class TransferObject {
         public ReadingData data;
