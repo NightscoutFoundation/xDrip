@@ -467,6 +467,7 @@
     <string name="start_sensor">Sensor starten</string>
     <string name="debug_and_other_misc_options">Weitere Optionen und Debugs</string>
     <string name="low_glucose_values">Niedrige Werte</string>
+    <string name="bad_glucose_values">Schlechte Glukose-Werte</string>
     <string name="revert_to_default">Auf Standard zurücksetzen</string>
     <string name="filtered_values">Gefilterte Werte</string>
     <string name="treatment_color">Farbe der Behandlungen</string>
@@ -1554,4 +1555,5 @@
     <string name="enable_streaming_dialog_dont_ask_again">Nicht erneut fragen</string>
     <string name="enable_streaming_dialog_text">Möchtest du xDrip mit diesem Sensor verbinden? Das Libre Lesegerät und die LibreLink App werden dann keine Alarme mehr empfangen. Drücke \"Ja\" und scanne erneut für eine Verbindung (wähle \"nicht verbinden\", wenn du xDrip mit der gepatchten Libre App nutzen möchtest)</string>
     <string name="enable_streaming_dialog_title">Verbinde Libre-Sensor mit Bluetooth</string>
+    <string name="without_camera_permission_cannot_scan_barcode">Ohne Kamera-Berechtigung können wir keinen Barcode scannen</string>
 </resources>

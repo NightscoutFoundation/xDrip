@@ -170,6 +170,9 @@
     <string name="show_libre_trend">Покажи Libre тенденция</string>
     <string name="libre_15_minutes_graph">Libre 15 минутна графа</string>
     <string name="libre_last_x_minutes_graph">Libre графа последните за последните %d мин</string>
+    <string name="share_config_via_qr_code">Сподели настройки чрез QR код</string>
+    <string name="check_for_updated_version">Проверка за нова версия</string>
+    <string name="send_feedback_to_developer">Изпращане на отзиви към разработчика</string>
     <string name="home_screen">Началния екран</string>
     <string name="event_logs">Журнали със събития</string>
     <string name="calibration_graph">Графика за калибрация</string>
@@ -208,6 +211,10 @@
     <string name="other_alerts">Други алерти</string>
     <string name="extra_alerts_xdrip_plus">Допълнителни Алерти (xDrip+)</string>
     <string name="persistent_high_alert">Продължително висока Кз алерт</string>
+    <string name="forecasted_low_alert">Предвижда се Аларма за Ниска КЗ</string>
+    <string name="extrapolate_data_to_try_to_predict_lows">Екстраполиране на данните в опит да се предвиди ниска КЗ</string>
+    <string name="other_xdrip_plus_alerts">Други xDrip+ известия</string>
+    <string name="xdrip_plus_display_settings">xDrip+ Персонализиране</string>
     <string name="pref_message_influxdb_uri">Замени примерните стойности в {} с твоите реални стойности</string>
     <string name="low_prediction_values">Стойности на предсказание за ниска КЗ</string>
     <string name="atom">Атом</string>

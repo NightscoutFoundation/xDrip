@@ -467,6 +467,7 @@
     <string name="start_sensor">Inicio Sensor</string>
     <string name="debug_and_other_misc_options">Depuración y otras opciones</string>
     <string name="low_glucose_values">Valores de glucosa baja</string>
+    <string name="bad_glucose_values">Valores de glucosa incorrectos</string>
     <string name="revert_to_default">Volver a los valores predeterminados</string>
     <string name="filtered_values">Valores filtrados</string>
     <string name="treatment_color">Color del tratamiento</string>
@@ -1565,4 +1566,5 @@
     <string name="enable_streaming_dialog_title">Conectando sensor Libre a Bluetooth</string>
     <string name="title_lower_fuzzer">Baja FUZZER</string>
     <string name="summary_lower_fuzzer">Bajar el valor de FUZZER de 2.5 minutos a 37.5 segundos</string>
+    <string name="without_camera_permission_cannot_scan_barcode">Sin el permiso de usar la cámara, no podemos escanear un código de barras</string>
 </resources>

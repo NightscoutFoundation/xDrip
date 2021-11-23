@@ -738,6 +738,7 @@
     <string name="edit_note">Upravit poznámku</string>
     <string name="no_search_term_found">Hledaný výraz nebyl nalezen</string>
     <string name="bluetooth_scan">Skenování Bluetooth</string>
+    <string name="level_alerts">Úrovně výstrah</string>
     <string name="override_calibration">Přepsat kalibraci</string>
     <string name="only_stop_your_sensor_when_you_actually_plan">Senzor zastavte pouze v případě, že ho skutečně plánujete odstranit, jinak ho nechte běžet!</string>
     <string name="restart_collector">Restartovat kolektor</string>
