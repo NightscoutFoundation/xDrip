@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="title_activity_bluetooth_scan">جستجوی بلوتوث</string>
+    <string name="connected">متصل</string>
+    <string name="disconnected">قطع شده</string>
+    <string name="menu_scan">جستجو</string>
+    <string name="menu_stop">توقف</string>
+    <string name="menu_refresh">تازه کردن</string>
+    <string name="menu_export_database">خروجی‌گیری از پایگاه داده</string>
+    <string name="menu_export_csv_sidiary">خروجی CSV (قالب SiDiary)</string>
+    <string name="menu_import_db">بازیابی پایگاه داده</string>
+    <string name="error_bluetooth_not_supported">خطا: این دستگاه از بلوتوث پشتیبانی نمی‌کند</string>
+    <string name="unknown_device">دستگاه ناشناخته</string>
+    <string name="connecting_to_device">درحال اتصال به دستگاه</string>
+    <string name="title_activity_raw_data_table">جدول داده های خام</string>
+    <string name="title_activity_calculated_data_table">جدول داده های محاسبه شده</string>
+    <string name="title_activity_start_new_sensor">سنسور جدید را راه اندازی کنید</string>
+    <string name="title_activity_new_sensor_location">محل حسگر جدید</string>
+    <string name="title_activity_stop_sensor">توقف حسگر</string>
     <!-- MongoDB Settings -->
     <!-- API Settings -->
     <!-- wifi Settings -->
@@ -7,5 +24,7 @@
     <!-- broadcast settings -->
     <!-- pebble settings -->
     <!-- Amazfit Settings -->
+    <string name="stop_sensor">توقف حسگر</string>
+    <string name="bluetooth_scan">جستجوی بلوتوث</string>
     <!-- trend arrow for speak -->
 </resources>
