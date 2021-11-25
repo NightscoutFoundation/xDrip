@@ -375,6 +375,7 @@ dependencies {
     //implementation 'com.google.dagger:dagger-android-support:2.x' // if you use the support libraries
     annotationProcessor 'com.google.dagger:dagger-compiler:2.25.4'
     implementation 'net.danlew:android.joda:2.10.6.1'
+    testImplementation 'joda-time:joda-time:2.10.7'
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.objenesis:objenesis:2.5.1'
