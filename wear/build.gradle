@@ -220,7 +220,7 @@ dependencies {
     implementation 'com.polidea.rxandroidble2:rxandroidble:1.12.1'
     implementation 'org.apache.commons:commons-math3:3.6'
     testImplementation "org.robolectric:robolectric:4.2.1"
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.2'
     testImplementation "com.google.truth:truth:0.39"
 
     implementation 'uk.com.robust-it:cloning:1.9.5'
