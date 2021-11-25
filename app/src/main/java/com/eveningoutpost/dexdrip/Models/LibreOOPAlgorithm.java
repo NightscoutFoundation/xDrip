@@ -401,10 +401,10 @@ public class LibreOOPAlgorithm {
                 break;
             }
             glucoseData.realDate = captureDateTime + (final_time - sensorTime) * Constants.MINUTE_IN_MS;
+            glucoseData.sensorTime = final_time;
             if (verifyTime(final_time, "parseBleDataHistory", ble_data)) {
-                glucoseData.sensorTime = final_time;
+                historyList.add(glucoseData);
             }
-            historyList.add(glucoseData);
         }
         return historyList;
     }
