@@ -690,7 +690,6 @@
                 android:summary="@string/calculate_including_glucose_trend"
                 android:title="@string/use_trend_momentum" />
 
-
         </PreferenceCategory>
         <PreferenceCategory
             android:key="title_I_understandb"
