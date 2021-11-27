@@ -689,11 +689,7 @@
                 android:key="predict_use_momentum"
                 android:summary="@string/calculate_including_glucose_trend"
                 android:title="@string/use_trend_momentum" />
-            <EditTextPreference
-                android:defaultValue="35"
-                android:key="profile_carb_absorption_default2"
-                android:summary="@string/linear_model_carbs_absorbed_per_hour"
-                android:title="@string/carb_absorption_rate2" />
+
 
         </PreferenceCategory>
         <PreferenceCategory
