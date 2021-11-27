@@ -650,6 +650,13 @@
                     android:summary="Plot Basal activity on graph and incorporate in predictive model"
                     android:title="Use Basal Activity"/>
 
+                <EditTextPreference
+                    android:defaultValue="204"
+                    android:inputType="number"
+                    android:key="max_insulin_draw_value"
+                    android:summary="When using Basal injections, increase this value. Default is 204mg/dl or 11.3mmol/L"
+                    android:title="Max Insulin Line"/>
+
             </PreferenceScreen>
 
 
@@ -682,6 +689,11 @@
                 android:key="predict_use_momentum"
                 android:summary="@string/calculate_including_glucose_trend"
                 android:title="@string/use_trend_momentum" />
+            <EditTextPreference
+                android:defaultValue="35"
+                android:key="profile_carb_absorption_default2"
+                android:summary="@string/linear_model_carbs_absorbed_per_hour"
+                android:title="@string/carb_absorption_rate2" />
 
         </PreferenceCategory>
         <PreferenceCategory
