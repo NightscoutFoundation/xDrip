@@ -561,7 +561,7 @@ public class GcmListenerSvc extends JamListenerSvc {
                 } else if (action.equals("libreBlock")) {
                     HandleLibreBlock(payload);
                 } else if (action.equals("l2rs")) {
-                    Libre2RawValue currentRawValue = Libre2RawValue.fromJSON (payload);
+                    Libre2RawValue currentRawValue = Libre2RawValue.fromJSON(payload);
                     currentRawValue.save();
                 } else {
                     Log.e(TAG, "Received message action we don't know about: " + action);
