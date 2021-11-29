@@ -289,7 +289,7 @@
     <string name="upload_data_to_dex_servers">Prześlij dane do serwerów Dexcom, dzięki czemu można korzystać z aplikacji Dexcom</string>
     <string name="manage_followers">Zarządzaj odbiorcami</string>
     <string name="manage_existing_followers">Zarządzaj dotychczasowymi odbiorcami i zapraszaj nowych.</string>
-    <string name="invite_follower">Zaproś odbiorcę</string>
+    <string name="invite_follower">Zaproś obserwatora</string>
     <string name="glucose_calibration_and_other_alerts">Glukoza, Kalibracja i inne alarmy</string>
     <string name="alert_volume_profile">Głośnosc alertow, profil</string>
     <string name="smart_alerting">Inteligentne powiadamianie</string>
@@ -1331,7 +1331,7 @@
     <string name="after_you_click_ok_look_for_a_number_icon_in_the_notification_area_if_you_see_123_then_the_test_has_succeeded__on_some_phones_this_test_will_crash_the_phone__after_30_seconds_we_will_shut_off_the_notification_if_your_phone_does_not_recover_after_this_then_hold_the_power_button_to_reboot_it">Po kliknięciu OK, poszukaj ikony z liczbą w obszarze powiadomień.\nJeśli widzisz 123, to test zakończył się sukcesem.\n\nNa niektórych telefonach ten test spowoduje awarię telefonu.\n\nPo 30 sekundach wyłączymy powiadomienie. Jeśli telefon nie odzyska się po tym ustawieniu, przytrzymaj przycisk zasilania, aby go zrestartować.</string>
     <string name="xdrip_will_not_work_below_android_version_42">xDrip+ nie będzie działać poniżej wersji Androida 4.2</string>
     <string name="xdrip_oop2_not_installed">xDrip+ potrzebuje algorytmu OOP2 do obsługi czujników Libre2/Libre ze Stanów Zjednoczonych.</string>
-    <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Ta aplikacja wymaga dodania białej listy optymalizacji baterii albo nie będzie działać poprawnie. Proszę zresetować ustawienia aplikacji</string>
+    <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Ta aplikacja wymaga dodania do białej listy optymalizacji baterii albo nie będzie działać poprawnie. Proszę zresetować ustawienia aplikacji</string>
     <string name="setting_disabled_">Ustawienie wyłączone</string>
     <string name="yes_please">TAK, proszę</string>
     <string name="automated_calibration_enabled">Automatyczna kalibracja włączona</string>
