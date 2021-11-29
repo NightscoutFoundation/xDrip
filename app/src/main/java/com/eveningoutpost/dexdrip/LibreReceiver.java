@@ -90,7 +90,7 @@ public class LibreReceiver extends BroadcastReceiver {
                                 // Libre2 Raw readings are also sent to Sync+ Followers if
                                 // show raw graph for Libre2 option is activated.
                                 if (Pref.getBoolean("plus_follow_master", false) && prefs.getBoolean("Libre2_showRawGraph",false))
-                                    GcmActivity.syncLibre2RawReading (currentRawValue);
+                                    GcmActivity.syncLibre2RawReading(currentRawValue);
 
                                 break;
 
