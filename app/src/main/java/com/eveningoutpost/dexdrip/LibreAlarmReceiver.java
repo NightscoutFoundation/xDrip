@@ -182,7 +182,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
         }.start();
     }
 
-    public static void processReadingDataTransferObject(ReadingData readingData, long CaptureDateTime, String tagid, boolean allowUpload, byte[] patchUid, byte[] patchInfo) {
+    public static void processReadingDataTransferObject(ReadingData readingData, long CaptureDateTime, String tagid, boolean allowUpload, byte[] patchUid, byte[] patchInfo,  boolean bg_val_exists) {
         Log.d(TAG, "Data that was recieved from librealarm is " + HexDump.dumpHexString(readingData.raw_data));
         // Save raw block record (we start from block 0)
         LibreBlock libreBlock = LibreBlock.createAndSave(tagid, CaptureDateTime, readingData.raw_data, 0, allowUpload, patchUid, patchInfo);
@@ -198,10 +198,13 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
 
         boolean use_smoothed_data = Pref.getBooleanDefaultFalse("libre_use_smoothed_data");
         if(use_smoothed_data) {
-            boolean BgValSmoothing = true; //???????????????????????????????????
-            readingData.calculateSmoothDataImproved(libreTrendPoints , BgValSmoothing);
-        } 
-        CalculateFromDataTransferObject(readingData, use_smoothed_data, false);  //??? might be false? true ?
+            readingData.calculateSmoothDataImproved(libreTrendPoints ,  bg_val_exists);
+        }
+        if(Pref.getBooleanDefaultFalse("external_blukon_algorithm") != false) {
+            Log.wtf(TAG, "Error external_blukon_algorithm should be false here");
+        }
+        boolean use_raw = Pref.getBoolean("calibrate_external_libre_2_algorithm", true);
+        CalculateFromDataTransferObject(readingData, use_smoothed_data, use_raw);
     }
 
     public static void CalculateFromDataTransferObject(ReadingData readingData, boolean use_smoothed_data, boolean use_raw) {
