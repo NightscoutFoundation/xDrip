@@ -334,7 +334,8 @@ public class NFCReaderX {
                         // Protect against wifi reader and gmc reader coming at the same time.
                         synchronized (NFCReaderX.class) {
                             if (mResult != null) {
-                                LibreAlarmReceiver.processReadingDataTransferObject(mResult, CaptureDateTime, tagId, allowUpload, patchUid, patchInfo);
+                                boolean bg_val_exists = false;
+                                LibreAlarmReceiver.processReadingDataTransferObject(mResult, CaptureDateTime, tagId, allowUpload, patchUid, patchInfo,  bg_val_exists);
                                 Home.staticRefreshBGCharts();
                             }
                         }
