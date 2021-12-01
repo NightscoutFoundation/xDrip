@@ -1432,6 +1432,8 @@
     <string name="title_ongoing_notification_channel">Use ongoing notification channel</string>
     <string name="summary_notification_channels_grouping">Whether notifications should be grouped together. Incompatible with \'Number Item in Notification Area\' option</string>
     <string name="title_notification_channels_grouping">Group notifications together</string>
+    <string name="summary_delay_ascending_3min">For ascending volume profile, delay the start of the alert sound by 3 minutes. The vibration (if enabled) starts as soon as the alert triggers regardless of this setting.</string>
+    <string name="title_delay_ascending_3min">Delay Ascending Volume</string>
     <string name="summary_play_sound_for_initial_calibration">Play sound when Initial Calibration is requested</string>
     <string name="title_play_sound_for_initial_calibration">Initial Alert</string>
     <string name="category_noisy_readings">Noisy Readings</string>
