@@ -93,7 +93,7 @@ public class Dex_Constants {
         SINGLE_DOWN(6,"\u2193", "SingleDown", -2d),
         DOUBLE_DOWN(7,"\u21CA", "DoubleDown", -3.5d),
         NOT_COMPUTABLE(8, "", "NotComputable"),
-        OUT_OF_RANGE(9, "", "OutOfRange");
+        OUT_OF_RANGE(9, "", "RateOutOfRange");
 
         private String arrowSymbol;
         private String trendName;
