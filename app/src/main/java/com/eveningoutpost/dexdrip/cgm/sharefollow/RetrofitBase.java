@@ -50,9 +50,9 @@ public class RetrofitBase {
                     httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
                 }
                 final OkHttpClient client = enableTls12OnPreLollipop(new OkHttpClient.Builder())
-                        .addInterceptor(httpLoggingInterceptor)
                         .addInterceptor(new InfoInterceptor(TAG))
                         .addInterceptor(useGzip ? new GzipRequestInterceptor() : new NullInterceptor())
+                        .addInterceptor(httpLoggingInterceptor)
                         .build();
 
                 instances.put(TAG, instance = new retrofit2.Retrofit.Builder()
