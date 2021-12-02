@@ -41,7 +41,15 @@
     <string name="pref_share2_scan_barcode_summary">یا اسکن رمزینه روی گیرنده مشترک</string>
     <!-- MongoDB Settings -->
     <string name="pref_title_mongodb">پایگاه داده منگو</string>
+    <string name="pref_summary_mongodb_enabled">آپلود مستقیم پایگاه داده، برای Nightscout توصیه نمی شود</string>
+    <string name="pref_title_mongodb_uri">آدرس وب</string>
+    <string name="pref_dialog_mongodb_uri">آدرس MongoDB را وارد کنید</string>
+    <string name="pref_message_mongodb_uri">داده نمونه داخل {} را با داده صحیح خود جایگزین کنید</string>
+    <string name="pref_default_mongodb_uri">mongodb://{user}:{password}@{host}.mongolab.com:{11111}/{database}</string>
+    <string name="pref_title_mongodb_collection">نام مجموعه</string>
     <string name="pref_dialog_mongodb_collection">ویرایش نام مجموعه</string>
+    <string name="pref_message_mongodb_collection">این نام مجموعه ای است که داده های CGM در آن ذخیره می شود</string>
+    <string name="pref_title_mongodb_device_status_collection">نام مجموعه وضعیت دستگاه</string>
     <!-- API Settings -->
     <string name="pref_title_api_enabled">فعال</string>
     <string name="pref_title_api_url">آدرس پایه</string>
@@ -69,6 +77,7 @@
     <string name="language_editor">ویرایشگر زبان</string>
     <string name="search">جُستجو</string>
     <string name="send_message">ارسال پیام</string>
+    <string name="pref_message_influxdb_uri">داده نمونه داخل {} را با داده صحیح خود جایگزین کنید</string>
     <string name="stop_sensor">توقف حسگر</string>
     <string name="initial_calibration">کالیبره سازی ابتدایی</string>
     <string name="bluetooth_scan">جستجوی بلوتوث</string>
