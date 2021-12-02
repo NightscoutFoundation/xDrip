@@ -1264,6 +1264,8 @@
     <string name="title_pendiq_screen">Wstrzykiwacz insuliny Pendiq 2.0</string>
     <string name="title_pendiq_send_treatments">Wyślij zabieg do wstrzykiwacza</string>
     <string name="title_pendiq_pin">Kod Pin wstrzykiwacza</string>
+    <string name="summary_delay_ascending_3min">W przypadku rosnącego profilu głośności, opóźnij rozpoczęcie dźwięku alertu o 3 minuty. Wibracja (jeśli jest włączona) rozpoczyna się natychmiast po wyzwoleniu alertu, niezależnie od tego ustawienia.</string>
+    <string name="title_delay_ascending_3min">Opóźnij rosnącą głośność</string>
     <string name="note_search_button">SZUKAJ</string>
     <string name="title_full_screen_mode">Tryb pełnoekranowy</string>
     <string name="title_colors_for_printing">Kolory do druku</string>
