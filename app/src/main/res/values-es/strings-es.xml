@@ -1388,6 +1388,8 @@
     <string name="title_ongoing_notification_channel">Usar canal de notificación en curso</string>
     <string name="summary_notification_channels_grouping">Si las notificaciones deben agruparse. Incompatible con la opción \'Icono numérico en área de notificación\'</string>
     <string name="title_notification_channels_grouping">Agrupar notificaciones</string>
+    <string name="summary_delay_ascending_3min">Para el perfil de volumen ascendente, retrasa 3 minutos el inicio del sonido de la alerta. La vibración (si está activada) se inicia tan pronto como la alerta se active, independientemente de esta configuración.</string>
+    <string name="title_delay_ascending_3min">Retardo del volumen ascendente</string>
     <string name="summary_play_sound_for_initial_calibration">Reproducir sonido cuando se solicite la calibración inicial</string>
     <string name="title_play_sound_for_initial_calibration">Alerta Inicial</string>
     <string name="category_noisy_readings">Lecturas Ruidosas</string>
