@@ -52,6 +52,7 @@ import com.eveningoutpost.dexdrip.utils.LibreTrendUtil;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -94,7 +95,7 @@ public class NFCReaderX {
     public static boolean use_fake_de_data() {
         //Pref.setBoolean("use_fake_de_data", true);
         //
-        boolean ret =  Pref.getBooleanDefaultFalse("use_fake_de_data");
+        boolean ret = Pref.getBooleanDefaultFalse("use_fake_de_data");
         Log.d(TAG, "using fake data = " + ret);
         return ret;
     }
@@ -262,7 +263,7 @@ public class NFCReaderX {
         }
     }
 
-    public static void SendLibrereadingToFollowers(final String tagId, byte[] data1, final long CaptureDateTime, byte []patchUid,  byte []patchInfo){
+    public static void SendLibrereadingToFollowers(final String tagId, byte[] data1, final long CaptureDateTime, byte[] patchUid, byte[] patchInfo) {
         if (!Home.get_master()) {
             return;
         }
@@ -284,12 +285,13 @@ public class NFCReaderX {
     }
 
     public static boolean HandleGoodReading(final String tagId, byte[] data1, final long CaptureDateTime, final boolean allowUpload, byte[] patchUid, byte[] patchInfo) {
-        return HandleGoodReading(tagId, data1, CaptureDateTime, allowUpload, patchUid, patchInfo, false);
+        return HandleGoodReading(tagId, data1, CaptureDateTime, allowUpload, patchUid, patchInfo, false, null, null);
     }
 
 
     // returns true if checksum passed.
-    public static boolean HandleGoodReading(final String tagId, byte[] data1, final long CaptureDateTime, final boolean allowUpload, byte[] patchUid, byte[] patchInfo, boolean decripted_data) {
+    public static boolean HandleGoodReading(final String tagId, byte[] data1, final long CaptureDateTime, final boolean allowUpload, byte[] patchUid, byte[] patchInfo,
+                                            boolean decripted_data, int[] trend_bg_vals, int[] history_bg_vals) {
         Log.e(TAG, "HandleGoodReading called dat1 len = " + data1.length);
         if (data1.length > Constants.LIBRE_1_2_FRAM_SIZE) {
             // It seems that some times we read a buffer that is bigger than 0x158, but we should only use the first 0x158 bytes.
@@ -325,7 +327,7 @@ public class NFCReaderX {
                 return true;
             }
 
-            final ReadingData mResult = parseData(0, tagId, data1, CaptureDateTime);
+            final ReadingData mResult = parseData(0, tagId, data1, CaptureDateTime, trend_bg_vals, history_bg_vals);
             new Thread() {
                 @Override
                 public void run() {
@@ -334,8 +336,8 @@ public class NFCReaderX {
                         // Protect against wifi reader and gmc reader coming at the same time.
                         synchronized (NFCReaderX.class) {
                             if (mResult != null) {
-                                boolean bg_val_exists = false;
-                                LibreAlarmReceiver.processReadingDataTransferObject(mResult, CaptureDateTime, tagId, allowUpload, patchUid, patchInfo,  bg_val_exists);
+                                boolean bg_val_exists = trend_bg_vals != null && history_bg_vals != null;
+                                LibreAlarmReceiver.processReadingDataTransferObject(mResult, CaptureDateTime, tagId, allowUpload, patchUid, patchInfo, bg_val_exists);
                                 Home.staticRefreshBGCharts();
                             }
                         }
@@ -811,7 +813,7 @@ public class NFCReaderX {
     }
 
     // Sensor structure is described at  https://github.com/UPetersen/LibreMonitor/wiki
-    public static ReadingData parseData(int attempt, String tagId, byte[] data, Long CaptureDateTime) {
+    public static ReadingData parseData(int attempt, String tagId, byte[] data, Long CaptureDateTime, int[] trend_bg_vals, int[] history_bg_vals) {
         final int FRAM_RECORD_SIZE = 6;
         final int TREND_START = 28;
         final int HISTORY_START = 124;
@@ -876,6 +878,21 @@ public class NFCReaderX {
             glucoseData.sensorTime = time;
             if (verifyTime(time, "parseData trendList", data)) {
                 trendList.add(glucoseData);
+            }
+        }
+
+        Collections.sort(trendList);
+        Collections.sort(historyList);
+        // Adding the bg vals must be done after the sort.
+        if (trend_bg_vals != null && trend_bg_vals.length == trendList.size() && history_bg_vals != null
+                && history_bg_vals.length == historyList.size()) {
+            for (int i = 0; i < trend_bg_vals.length; i++) {
+                trendList.get(i).glucoseLevel = trend_bg_vals[i];
+                Log.e(TAG, "Adding bg val for trend at time " + trendList.get(i).sensorTime + " val =  " + trend_bg_vals[i]);
+            }
+            for (int i = 0; i < history_bg_vals.length; i++) {
+                historyList.get(i).glucoseLevel = history_bg_vals[i];
+                Log.e(TAG, "Adding bg val for history at time " + historyList.get(i).sensorTime + " val =  " + history_bg_vals[i]);
             }
         }
 
@@ -993,7 +1010,7 @@ public class NFCReaderX {
         }
         List<GlucoseData> result;
         if (libreBlock.byte_end == Constants.LIBRE_1_2_FRAM_SIZE) {
-            ReadingData reading_data = parseData(0, "", libreBlock.blockbytes, libreBlock.timestamp);
+            ReadingData reading_data = parseData(0, "", libreBlock.blockbytes, libreBlock.timestamp, null, null);
             if (reading_data == null) {
                 return null;
             }
