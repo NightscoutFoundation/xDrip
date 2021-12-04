@@ -157,7 +157,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
 
                                     final ReadingData.TransferObject object =
                                             new Gson().fromJson(data, ReadingData.TransferObject.class);
-                                    if(object.data.raw_data == null) {
+                                    if (object.data.raw_data == null) {
                                         Log.e(TAG, "Please update LibreAlarm to use OOP algorithm");
                                         JoH.static_toast_long(gs(R.string.please_update_librealarm_to_use_oop_algorithm));
                                         break;
@@ -182,7 +182,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
         }.start();
     }
 
-    public static void processReadingDataTransferObject(ReadingData readingData, long CaptureDateTime, String tagid, boolean allowUpload, byte[] patchUid, byte[] patchInfo,  boolean bg_val_exists) {
+    public static void processReadingDataTransferObject(ReadingData readingData, long CaptureDateTime, String tagid, boolean allowUpload, byte[] patchUid, byte[] patchInfo, boolean bg_val_exists) {
         Log.d(TAG, "Data that was recieved from librealarm is " + HexDump.dumpHexString(readingData.raw_data));
         // Save raw block record (we start from block 0)
         LibreBlock libreBlock = LibreBlock.createAndSave(tagid, CaptureDateTime, readingData.raw_data, 0, allowUpload, patchUid, patchInfo);
@@ -197,10 +197,10 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
         readingData.copyBgVals(libreTrendPoints);
 
         boolean use_smoothed_data = Pref.getBooleanDefaultFalse("libre_use_smoothed_data");
-        if(use_smoothed_data) {
-            readingData.calculateSmoothDataImproved(libreTrendPoints ,  bg_val_exists);
+        if (use_smoothed_data) {
+            readingData.calculateSmoothDataImproved(libreTrendPoints, bg_val_exists);
         }
-        if(Pref.getBooleanDefaultFalse("external_blukon_algorithm") != false) {
+        if (Pref.getBooleanDefaultFalse("external_blukon_algorithm") != false) {
             Log.wtf(TAG, "Error external_blukon_algorithm should be false here");
         }
         boolean use_raw = Pref.getBoolean("calibrate_external_libre_2_algorithm", true);
@@ -240,24 +240,22 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
             }
             if (d)
                 Log.d(TAG, "Oldest cmp: " + JoH.dateTimeText(oldest_cmp) + " Newest cmp: " + JoH.dateTimeText(newest_cmp));
-            long shiftx = 0;
             if (mTrend.size() > 0) {
 
-                shiftx = getTimeShift(mTrend);
-                if (shiftx != 0) Log.d(TAG, "Lag Timeshift: " + shiftx);
-                //applyTimeShift(mTrend, shiftx);
+                // This function changes timeShiftNearest which is the latest value we have, so we are far enough from it.
+                getTimeShift(mTrend);
 
                 for (GlucoseData gd : mTrend) {
                     if (d) Log.d(TAG, "DEBUG: sensor time: " + gd.sensorTime);
                     if ((timeShiftNearest > 0) && ((timeShiftNearest - gd.realDate) < segmentation_timeslice) && (timeShiftNearest - gd.realDate != 0)) {
                         if (d)
-                            Log.d(TAG, "Skipping record due to closeness: " + JoH.dateTimeText(gd.realDate));
+                            Log.d(TAG, "Skipping record due to closeness to the most recent value: " + JoH.dateTimeText(gd.realDate));
                         continue;
                     }
                     if (use_raw) {
                         createBGfromGD(gd, use_smoothed_data, false); // not quick for recent
                     } else {
-                        BgReading.bgReadingInsertFromInt(use_smoothed_data? gd.glucoseLevelSmoothed :gd.glucoseLevel, gd.realDate, true);
+                        BgReading.bgReadingInsertFromInt(use_smoothed_data ? gd.glucoseLevelSmoothed : gd.glucoseLevel, gd.realDate, true);
                     }
                 }
             } else {
