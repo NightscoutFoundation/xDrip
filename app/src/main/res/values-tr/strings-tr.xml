@@ -1387,6 +1387,8 @@
     <string name="title_ongoing_notification_channel">Devam eden bildirim kanalını kullan</string>
     <string name="summary_notification_channels_grouping">Bildirimlerin birlikte gruplandırılıp gruplandırılmayacağı. \'Bildirim Alanındaki Numara Öğesi\' seçeneğiyle uyumsuz</string>
     <string name="title_notification_channels_grouping">Bildirimleri birlikte gruplandırın</string>
+    <string name="summary_delay_ascending_3min">Artan ses profili için, uyarı sesinin başlamasını 3 dakika geciktirin. Titreşim (etkinleştirilmişse), bu ayardan bağımsız olarak, uyarı tetiklendiği anda başlar.</string>
+    <string name="title_delay_ascending_3min">Artan Ses Seviyesini Geciktirme</string>
     <string name="summary_play_sound_for_initial_calibration">İlk kalibrasyon istendiğinde ses çal</string>
     <string name="title_play_sound_for_initial_calibration">İlk Uyarı</string>
     <string name="category_noisy_readings">Gürültülü Okumalar</string>

@@ -1386,6 +1386,8 @@
     <string name="title_ongoing_notification_channel">Gebruik een doorlopend meldingskanaal</string>
     <string name="summary_notification_channels_grouping">Of meldingen moeten worden gegroepeerd. Incompatibel met de optie \'Nummeritem in meldingsgebied\'</string>
     <string name="title_notification_channels_grouping">Groepeer meldingen samen</string>
+    <string name="summary_delay_ascending_3min">Stelt het afspelen van het alarm geluid uit met 3 minuten voor het oplopend volume profiel. De trilfunctie (indien ingeschakeld) begint wel direct zodra het alarm afgaat ongeacht deze instelling.</string>
+    <string name="title_delay_ascending_3min">Oplopend volume uitstellen</string>
     <string name="summary_play_sound_for_initial_calibration">Speel geluid af wanneer initiële kalibratie wordt gevraagd</string>
     <string name="title_play_sound_for_initial_calibration">Eerste melding</string>
     <string name="category_noisy_readings">Lawaaierige metingen</string>

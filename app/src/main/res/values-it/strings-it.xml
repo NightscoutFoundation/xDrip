@@ -1386,6 +1386,8 @@
     <string name="title_ongoing_notification_channel">Usa il canale di notifiche attuale</string>
     <string name="summary_notification_channels_grouping">Se le notifiche devono essere raggruppate insieme. Incompatibili con l\'opzione \'Numero nell\'area di Notifica\'</string>
     <string name="title_notification_channels_grouping">Raggruppa le notifiche</string>
+    <string name="summary_delay_ascending_3min">Per il profilo di volume crescente, ritarda di 3 minuti l\'inizio del suono di allarme. La vibrazione (se abilitata) inizia non appena l\'avviso si attiva, indipendentemente da questa impostazione.</string>
+    <string name="title_delay_ascending_3min">Ritardo Volume Crescente</string>
     <string name="summary_play_sound_for_initial_calibration">Suona quando viene richiesta la calibrazione iniziale</string>
     <string name="title_play_sound_for_initial_calibration">Avviso iniziale</string>
     <string name="category_noisy_readings">Letture rumorose</string>
