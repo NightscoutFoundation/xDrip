@@ -95,6 +95,12 @@ public class WebServiceModule {
         return new WebServiceSync();
     }
 
-
+    @Provides
+    @Singleton
+    @Named("Libre2ConnectCode")
+    BaseWebService providesLibre2ConnectCode() {
+        UserError.Log.d(TAG, "creating Libre2ConnectCode");
+        return new WebLibre2ConnectCode();
+    }
 
 }

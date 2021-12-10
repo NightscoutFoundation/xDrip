@@ -328,8 +328,8 @@ dependencies {
     implementation "com.google.android.gms:play-services-gcm:10.2.1"
     implementation 'com.squareup.wire:wire-runtime:2.2.0'
     implementation 'com.squareup.okhttp:okhttp:2.7.5'
-    implementation 'com.squareup.okhttp3:okhttp:3.12.1'
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.13'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.12.13'
     implementation "com.newrelic.agent.android:android-agent:5.27.1"
     //implementation 'com.jakewharton.retrofit:retrofit1-okhttp3-client:1.1.0'
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'

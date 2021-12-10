@@ -312,14 +312,17 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         }
         if (scanResult.getFormatName().equals("QR_CODE")) {
 
-            String scanresults = scanResult.getContents();
+            final String scanresults = scanResult.getContents();
             if (scanresults.startsWith(DisplayQRCode.qrmarker)) {
                 installxDripPlusPreferencesFromQRCode(prefs, scanresults);
                 return;
             }
 
             try {
-                BlueJay.processQRCode(scanResult.getRawBytes());
+                if (BlueJay.processQRCode(scanResult.getRawBytes())) {
+                    refreshFragments();
+                    return;
+                }
             } catch (Exception e) {
                 // meh
             }

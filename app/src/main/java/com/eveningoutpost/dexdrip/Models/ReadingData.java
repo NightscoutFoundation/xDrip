@@ -33,6 +33,19 @@ public class ReadingData {
         this.history = history;
     }
 
+    public String toString() {
+        String ret = "ternd ";
+        for (GlucoseData gd : trend) {
+            ret += gd.toString();
+            ret += " ";
+        }
+        ret += "history ";
+        for (GlucoseData gd : history) {
+            ret += gd.toString();
+            ret += " ";
+        }
+        return "{" + ret +  "}";
+    }
 
     public static class TransferObject {
         public ReadingData data;
@@ -115,8 +128,12 @@ public class ReadingData {
         Iterator<GlucoseData> it = history.iterator();
         while (it.hasNext()) {
             GlucoseData glucoseData = it.next();
-            if (libreTrendPoints.get(glucoseData.sensorTime).isError()) {
-                it.remove();
+            try {
+                if (libreTrendPoints.get(glucoseData.sensorTime).isError()) {
+                    it.remove();
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Exception attempting to check/clear error point: " + e + " @ " + glucoseData.sensorTime);
             }
         }
 

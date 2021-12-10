@@ -197,7 +197,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
 
         LibreTrendUtil libreTrendUtil = LibreTrendUtil.getInstance();
         // Get the data for the last 24 hours, as this affects the cache.
-        List<LibreTrendPoint> libreTrendPoints = libreTrendUtil.getData(JoH.tsl() - Constants.DAY_IN_MS, JoH.tsl());
+        List<LibreTrendPoint> libreTrendPoints = libreTrendUtil.getData(JoH.tsl() - Constants.DAY_IN_MS, JoH.tsl(), true);
         readingData.ClearErrors(libreTrendPoints);
 
         boolean use_smoothed_data = Pref.getBooleanDefaultFalse("libre_use_smoothed_data");
