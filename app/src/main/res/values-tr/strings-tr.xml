@@ -467,6 +467,7 @@
     <string name="start_sensor">Sensörü Başlat</string>
     <string name="debug_and_other_misc_options">Hata ayıklama ve diğer çeşitli seçenekler</string>
     <string name="low_glucose_values">Düşük Glikoz değerleri</string>
+    <string name="bad_glucose_values">Kötü Glikoz Değerleri</string>
     <string name="revert_to_default">Varsayılana Geri Döndür</string>
     <string name="filtered_values">Filtrelenmiş değerler</string>
     <string name="treatment_color">Tedavi Rengi</string>
@@ -579,7 +580,7 @@
     <string name="for_interacting_compatible_apps">Diğer uyumlu uygulamalarla etkileşim kurmak için</string>
     <string name="interapp_settings">Inter-app ayarları</string>
     <string name="use_plugins_for_brodcast">Yayınlanan değer için gürültü düzeltme ve eklentileri vb. (Etkinleştirilmişse) kullanın</string>
-    <string name="send_display_glucose">Ekran gösterilen Glikoz Değerini Gönder</string>
+    <string name="send_display_glucose">Ekranda Görünen Glikoz Değerini Gönder</string>
     <string name="send_broadcasts_old_permission_model">Yayınları eski izin modeline kilitlemeden gönderin</string>
     <string name="process_nsclient_treatments">NSClient uygulamasından alınan tedavi verileri</string>
     <string name="accept_treatments">Tedaviyi kabul et</string>
@@ -1386,6 +1387,8 @@
     <string name="title_ongoing_notification_channel">Devam eden bildirim kanalını kullan</string>
     <string name="summary_notification_channels_grouping">Bildirimlerin birlikte gruplandırılıp gruplandırılmayacağı. \'Bildirim Alanındaki Numara Öğesi\' seçeneğiyle uyumsuz</string>
     <string name="title_notification_channels_grouping">Bildirimleri birlikte gruplandırın</string>
+    <string name="summary_delay_ascending_3min">Artan ses profili için, uyarı sesinin başlamasını 3 dakika geciktirin. Titreşim (etkinleştirilmişse), bu ayardan bağımsız olarak, uyarı tetiklendiği anda başlar.</string>
+    <string name="title_delay_ascending_3min">Artan Ses Seviyesini Geciktirme</string>
     <string name="summary_play_sound_for_initial_calibration">İlk kalibrasyon istendiğinde ses çal</string>
     <string name="title_play_sound_for_initial_calibration">İlk Uyarı</string>
     <string name="category_noisy_readings">Gürültülü Okumalar</string>
@@ -1564,4 +1567,5 @@
     <string name="enable_streaming_dialog_title">Libre sensörü Bluetooth\'a bağlama</string>
     <string name="title_lower_fuzzer">Düşük FUZZER</string>
     <string name="summary_lower_fuzzer">FUZZER değerini 2,5 dakikadan 37,5 saniyeye düşürün</string>
+    <string name="without_camera_permission_cannot_scan_barcode">Kamera izni olmadan barkod okunamaz</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.cgm.sharefollow;
 
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.Unitized;
@@ -23,37 +24,15 @@ public class ShareGlucoseRecord {
     public String WT;
 
     @Expose
-    public double Trend;
+    public Dex_Constants.TREND_ARROW_VALUES Trend;
 
     @Expose
     public double Value;
 
     public long timestamp = -1;
 
-
-    public String slopeDirection() {
-        switch ((int) Trend) {
-            case 1:
-                return "DoubleUp";
-            case 2:
-                return "SingleUp";
-            case 3:
-                return "FortyFiveUp";
-            case 4:
-                return "Flat";
-            case 5:
-                return "FortyFiveDown";
-            case 6:
-                return "SingleDown";
-            case 7:
-                return "DoubleDown";
-            default:
-                return "";
-        }
-    }
-
     public Double slopePerMsFromDirection() {
-        final String slope_name = slopeDirection();
+        final String slope_name = Trend.trendName();
         return slope_name == null ? null : BgReading.slopefromName(slope_name);
     }
 
@@ -69,7 +48,7 @@ public class ShareGlucoseRecord {
     }
 
     public String toS() {
-        return DT + " " + ST + " " + WT + " " + Value + " " + Trend + " " + JoH.dateTimeText(getTimestamp()) + " " + Unitized.unitized_string_static(Value) + " " + slopeDirection();
+        return DT + " " + ST + " " + WT + " " + Value + " " + Trend + " " + JoH.dateTimeText(getTimestamp()) + " " + Unitized.unitized_string_static(Value) + " " + Trend.trendName();
     }
 
 }

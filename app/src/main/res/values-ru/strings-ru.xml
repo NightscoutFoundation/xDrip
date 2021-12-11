@@ -467,6 +467,7 @@
     <string name="start_sensor">Запустить сенсор</string>
     <string name="debug_and_other_misc_options">Отладка и другие настройки</string>
     <string name="low_glucose_values">Значения низкого уровня глюкозы</string>
+    <string name="bad_glucose_values">Неверные показания глюкозы</string>
     <string name="revert_to_default">Вернуть значения по-умолчанию</string>
     <string name="filtered_values">Отфильтрованные значения</string>
     <string name="treatment_color">Цвет пользовательских значений</string>
@@ -1386,6 +1387,8 @@
     <string name="title_ongoing_notification_channel">Использовать текущий канал уведомлений</string>
     <string name="summary_notification_channels_grouping">Группировать оповещения вместе. Не совместимо с функцией \"Значение глюкозы в области уведомлений\"</string>
     <string name="title_notification_channels_grouping">Группировать оповещения</string>
+    <string name="summary_delay_ascending_3min">Для профиля возрастающей громкости задерживать начало звука тревоги на 3 минуты. Вибрация (если включена) начнется сразу при срабатывании тревоги вне зависимости от этой настройки.</string>
+    <string name="title_delay_ascending_3min">Задержка возрастания громкости</string>
     <string name="summary_play_sound_for_initial_calibration">Уведомлять звуком когда требуется начальная калибровка</string>
     <string name="title_play_sound_for_initial_calibration">Звуковое уведомление</string>
     <string name="category_noisy_readings">Шумные данные</string>
@@ -1564,4 +1567,5 @@
     <string name="enable_streaming_dialog_title">Подключение датчика Libre к Bluetooth</string>
     <string name="title_lower_fuzzer">Уменьшить FUZZER</string>
     <string name="summary_lower_fuzzer">Уменьшить значение Fuzzer с 2,5 минуты до 37,5 секунды</string>
+    <string name="without_camera_permission_cannot_scan_barcode">Без разрешения на камеру мы не можем сканировать штрихкод</string>
 </resources>

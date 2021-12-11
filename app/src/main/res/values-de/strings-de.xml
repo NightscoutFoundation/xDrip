@@ -467,6 +467,7 @@
     <string name="start_sensor">Sensor starten</string>
     <string name="debug_and_other_misc_options">Weitere Optionen und Debugs</string>
     <string name="low_glucose_values">Niedrige Werte</string>
+    <string name="bad_glucose_values">Schlechte Glukose-Werte</string>
     <string name="revert_to_default">Auf Standard zurücksetzen</string>
     <string name="filtered_values">Gefilterte Werte</string>
     <string name="treatment_color">Farbe der Behandlungen</string>
@@ -1164,6 +1165,8 @@
     <string name="title_rest_api_extra_options">Zusätzliche Optionen</string>
     <string name="summary_send_bridge_battery_to_nightscout">Sende Bridge Batterie-Level an Nightscout. Ausschalten, wenn dein Batteriesensor kaputt ist.</string>
     <string name="title_send_bridge_battery_to_nightscout">Transmitter Batterie hochladen</string>
+    <string name="summary_send_dexcom_transmitter_battery_to_nightscout">Sende Dexcom-Transmitter-Batterie-Statistiken an Nightscout. Enthält alle Daten, die auf dem Collector Status Bildschirm angezeigt werden.</string>
+    <string name="title_send_dexcom_transmitter_battery_to_nightscout">OB1G5/G6 Transmitter Batterie hochladen</string>
     <string name="summary_send_treatments_to_nightscout">Sende die Behandlungsdaten an Nightscout. Ausschalten wenn dein Careportal defekt ist.</string>
     <string name="title_send_treatments_to_nightscout">Behandlungen hochladen</string>
     <string name="summary_warn_nightscout_failures">Anzeige- und Ton-Benachrichtigung, wenn Nightscout Upload fehlgeschlagen ist.</string>
@@ -1554,4 +1557,5 @@
     <string name="enable_streaming_dialog_dont_ask_again">Nicht erneut fragen</string>
     <string name="enable_streaming_dialog_text">Möchtest du xDrip mit diesem Sensor verbinden? Das Libre Lesegerät und die LibreLink App werden dann keine Alarme mehr empfangen. Drücke \"Ja\" und scanne erneut für eine Verbindung (wähle \"nicht verbinden\", wenn du xDrip mit der gepatchten Libre App nutzen möchtest)</string>
     <string name="enable_streaming_dialog_title">Verbinde Libre-Sensor mit Bluetooth</string>
+    <string name="without_camera_permission_cannot_scan_barcode">Ohne Kamera-Berechtigung können wir keinen Barcode scannen</string>
 </resources>

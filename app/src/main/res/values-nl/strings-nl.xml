@@ -467,6 +467,7 @@
     <string name="start_sensor">Start Nieuwe Sensor</string>
     <string name="debug_and_other_misc_options">Foutopsporing en andere diverse opties</string>
     <string name="low_glucose_values">Lage glucosewaarden</string>
+    <string name="bad_glucose_values">Slechte glucosewaarden</string>
     <string name="revert_to_default">Terugzetten naar Standaard</string>
     <string name="filtered_values">Gefilterd Waarden</string>
     <string name="treatment_color">Behandeling Color</string>
@@ -1164,6 +1165,8 @@
     <string name="title_rest_api_extra_options">Extra opties</string>
     <string name="summary_send_bridge_battery_to_nightscout">Stuur het batterijniveau van je bridge naar Nightscout. Schakel het selectievakje uit als uw batterijsensor kapot is.</string>
     <string name="title_send_bridge_battery_to_nightscout">Upload bridge-batterij</string>
+    <string name="summary_send_dexcom_transmitter_battery_to_nightscout">Stuur Dexcom transmitter batterij-statistieken naar Nightscout. Bevat alle gegevens die getoond worden op het Collector Status scherm.</string>
+    <string name="title_send_dexcom_transmitter_battery_to_nightscout">Upload OB1G5/G6 zender batterij</string>
     <string name="summary_send_treatments_to_nightscout">Stuur behandelingsgegevens naar Nightscout. Schakel het selectievakje uit als uw zorgportaal kapot is.</string>
     <string name="title_send_treatments_to_nightscout">Upload behandelingen</string>
     <string name="summary_warn_nightscout_failures">Geef een melding weer en laat een geluid horen als het uploaden van Nightscout mislukt.</string>
@@ -1383,6 +1386,8 @@
     <string name="title_ongoing_notification_channel">Gebruik een doorlopend meldingskanaal</string>
     <string name="summary_notification_channels_grouping">Of meldingen moeten worden gegroepeerd. Incompatibel met de optie \'Nummeritem in meldingsgebied\'</string>
     <string name="title_notification_channels_grouping">Groepeer meldingen samen</string>
+    <string name="summary_delay_ascending_3min">Stelt het afspelen van het alarm geluid uit met 3 minuten voor het oplopend volume profiel. De trilfunctie (indien ingeschakeld) begint wel direct zodra het alarm afgaat ongeacht deze instelling.</string>
+    <string name="title_delay_ascending_3min">Oplopend volume uitstellen</string>
     <string name="summary_play_sound_for_initial_calibration">Speel geluid af wanneer initiële kalibratie wordt gevraagd</string>
     <string name="title_play_sound_for_initial_calibration">Eerste melding</string>
     <string name="category_noisy_readings">Lawaaierige metingen</string>
@@ -1559,4 +1564,5 @@
     <string name="enable_streaming_dialog_dont_ask_again">Vraag me dat niet nog een keer</string>
     <string name="enable_streaming_dialog_text">Wil je xDrip met deze sensor verbinden? Dit zorgt ervoor dat de libre reader en libre link geen waarschuwingen meer ontvangen. Druk op Ja en scan opnieuw om verbinding te maken (kies geen verbinding als u xDrip wilt uitvoeren met de gepatchte app)</string>
     <string name="enable_streaming_dialog_title">Libre-sensor verbinden met bluetooth</string>
+    <string name="without_camera_permission_cannot_scan_barcode">Zonder camera toestemming kan er geen barcode gescand worden</string>
 </resources>

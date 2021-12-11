@@ -27,7 +27,7 @@
     <string name="ok">Aceptar</string>
     <string name="cancel">Cancelar</string>
     <string name="no">No</string>
-    <string name="pref_sensor_location_dont_ask_again"> No preguntarme de nuevo</string>
+    <string name="pref_sensor_location_dont_ask_again">No preguntarme de nuevo</string>
     <string name="title_activity_error">"Lista de errores y eventos"</string>
     <string name="title_activity_main">Actividad principal</string>
     <string name="title_activity_fake_numbers">Números Falsos</string>
@@ -113,7 +113,7 @@
     <string name="title_activity_alert_list">Lista de Alertas</string>
     <string name="speaktreatment">Decir tratamientos</string>
     <string name="title_activity_update">Actualización de xDrip+ disponible</string>
-    <string name="title_activity_display_qrcode">Compartir configuración con código QR</string>
+    <string name="title_activity_display_qrcode">Compartir Ajustes a través de código QR</string>
     <string name="title_activity_send_feed_back">Enviar comentarios a Jamorham</string>
     <string name="title_activity_maps">Mapa Parakeet</string>
     <string name="title_activity_display_preferences">Preferencias de visualización</string>
@@ -222,7 +222,7 @@
     <string name="other_xdrip_plus_alerts">Otras alertas xDrip+</string>
     <string name="xdrip_plus_display_settings">xDrip+ Ajustes de pantalla</string>
     <string name="display_customisations">Personalizaciones de pantalla</string>
-    <string name="insulin_carb_ratios_etc_for_models">Insulina, tasas de carbohidratos, etc para los modelos</string>
+    <string name="insulin_carb_ratios_etc_for_models">Insulina, ratios de carbohidratos, etc para los modelos</string>
     <string name="grams_of_carbohydrate_one_unit_covers">Gramos de carbohidratos cubiertos por Unidad</string>
     <string name="linear_model_carbs_absorbed_per_hour">Modelo lineal de carbohidratos absorbidos por hora</string>
     <string name="carb_absorption_rate">Tasa de absorción de carbohidratos</string>
@@ -317,7 +317,7 @@
     <string name="units">unidades</string>
     <string name="carbs">carbohidratos</string>
     <string name="when">cuando</string>
-    <string name="speak_your_treatment">Lea su tratamiento, por ejemplo:\nx.x unidades de insulina / xx gramos de carbohidratos</string>
+    <string name="speak_your_treatment">Dí tu tratamiento, por ejemplo:\nx.x unidades de insulina / xx gramos de carbohidratos</string>
     <string name="speech_recognition_is_not_supported">El reconocimiento de voz no es compatible</string>
     <string name="treatment_note">Nota de Tratamiento</string>
     <string name="accessibility_description">xDrip utiliza la función de Accesibilidad sólo para ajustar la pantalla cuando el dispositivo está bloqueado. Es probable que sólo sea útil si tiene un teléfono con la función Always On Display y la tiene activada. xDrip no interactúa con Android de ninguna otra manera.</string>
@@ -467,6 +467,7 @@
     <string name="start_sensor">Inicio Sensor</string>
     <string name="debug_and_other_misc_options">Depuración y otras opciones</string>
     <string name="low_glucose_values">Valores de glucosa baja</string>
+    <string name="bad_glucose_values">Valores de glucosa incorrectos</string>
     <string name="revert_to_default">Volver a los valores predeterminados</string>
     <string name="filtered_values">Valores filtrados</string>
     <string name="treatment_color">Color del tratamiento</string>
@@ -588,12 +589,12 @@
     <string name="speak_glucose_twice">Leer los valores de glucosa dos veces cada vez</string>
     <string name="short_speak_readings_shortcut">Mostrar acceso directo en el menú ☰ para conmutar Lecturas Habladas</string>
     <string name="speak_readings_shortcut">Acceso directo Lecturas Habladas</string>
-    <string name="battery_optimization_off">En Android 6+ asegurar que las optimizaciones de batería están apagadas. Recomendado</string>
+    <string name="battery_optimization_off">En Android 6+ garantiza que la optimización de la batería está apagada. Recomendado</string>
     <string name="battery_optimization_on">No insistir sobre la optimización de batería. No recomendado.</string>
     <string name="battery_optimization_prompt">Aviso de optimización de Batería</string>
     <string name="advanced_bluetooth_settings">Ajustes Bluetooth Avanzados</string>
     <string name="bluetooth_settings">Ajustes Bluetooth</string>
-    <string name="auto_turn_on_bluetooth">Activar bluetooth automáticamente si esta apagado cuando intente conectarse con un dispositivo bluetooth</string>
+    <string name="auto_turn_on_bluetooth">Activa automaticamente el Bluetooth si está apagado cuando se intenta conectar a un dipositivo bluetooth</string>
     <string name="turn_bluetooth_on">Encender Bluetooth</string>
     <string name="reset_bluetooth">Resetear Bluetooth apagándolo y encendiéndolo si no hay comunicación en 20 minutos</string>
     <string name="bluetooth_watchdog">Vigilante Bluetooth</string>
@@ -804,7 +805,7 @@
     <string name="show_test_features">Mostrar características extra y test alpha</string>
     <string name="show_reminder_features">Mostrar menús y funciones de recordatorio</string>
     <string name="enable_reminder_features">Habilitar Recordatorios</string>
-    <string name="display_mathamatical_simulations">Mostrar simulaciones matemáticas basadas en datos de perfil y bitácora de carbohidratos/insulina</string>
+    <string name="display_mathamatical_simulations">Mostrar simulaciones matematicas basadas en datos de perfil y registros de carbohidratos/insulina</string>
     <string name="predictive_simulations">Simulaciones predictivas</string>
     <string name="low_prediction_values">Valores de predicción de bajadas</string>
     <string name="target_glucose_default">Glucosa objetivo por defecto</string>
@@ -1239,7 +1240,7 @@
     <string name="title_miband_screen_status">Mostrar Estado</string>
     <string name="title_miband_screen_heart_rate">Mostrar Ritmo Cardíaco</string>
     <string name="title_miband_screen_timer">Mostrar Temporizador</string>
-    <string name="title_miband_screen_nfc">Mostrar NFC (si disponible)</string>
+    <string name="title_miband_screen_nfc">Mostrar NFC (si esta disponible)</string>
     <string name="miband_watchface_istall_success">¡Se ha cargado correctamente la esfera de MiBand!</string>
     <string name="miband_watchface_istall_error">Error al cargar la esfera de MiBand</string>
     <string name="miband_bg_dialog_title">¿Actualizar datos de glucosa ahora?</string>
@@ -1387,6 +1388,8 @@
     <string name="title_ongoing_notification_channel">Usar canal de notificación en curso</string>
     <string name="summary_notification_channels_grouping">Si las notificaciones deben agruparse. Incompatible con la opción \'Icono numérico en área de notificación\'</string>
     <string name="title_notification_channels_grouping">Agrupar notificaciones</string>
+    <string name="summary_delay_ascending_3min">Para el perfil de volumen ascendente, retrasa 3 minutos el inicio del sonido de la alerta. La vibración (si está activada) se inicia tan pronto como la alerta se active, independientemente de esta configuración.</string>
+    <string name="title_delay_ascending_3min">Retardo del volumen ascendente</string>
     <string name="summary_play_sound_for_initial_calibration">Reproducir sonido cuando se solicite la calibración inicial</string>
     <string name="title_play_sound_for_initial_calibration">Alerta Inicial</string>
     <string name="category_noisy_readings">Lecturas Ruidosas</string>
@@ -1407,7 +1410,7 @@
     <string name="do_not_hit_start_long">No inicialice el sensor a menos de ya esté integrado y que el colector esté conectado.</string>
     <string name="calibration_graph_no_calibration">gráfica de calibración (sin calibración)</string>
     <string name="calibration_plugin_header">encabezado del \"plug-in\" de calibración</string>
-    <string name="usb_device_was_not_recognized">No se reconoció el dispositivo USB</string>
+    <string name="usb_device_was_not_recognized">Dispositivo USB no reconocido</string>
     <string name="followers_name">Nombre de los Seguidores:</string>
     <string name="your_display_name">Su nombre para mostrar:</string>
     <string name="followers_email">Correo electrónico de Seguidores:</string>
@@ -1553,16 +1556,17 @@
     <string name="pref_enable_insulinprofiles">habilitar al menos un máximo de tres perfiles</string>
     <string name="pref_select_basal_insulinprofiles">elija perfil de insulina basal.</string>
     <string name="pref_select_bolus_insulinprofiles">elija perfil de insulina para bolo. También se utiliza para la bomba y pluma...</string>
-    <string name="enable_streaming_summary">conectarse a sensores Libre2 después de buscarlos. Esto hará que el lector Libre y LibreLink no reciban alertas</string>
+    <string name="enable_streaming_summary">Conectarse a sensores Libre2 después de buscarlos. Esto puede hacer que el lector Libre y LibreLink no reciban alertas</string>
     <string name="enable_streaming_title">Iniciando la conexión bluetooth con sensores Libre2</string>
     <string name="enable_streaming_always_allow">Conectar siempre a sensores Libre2</string>
-    <string name="enable_streaming_ask_each_time">preguntar cada vez</string>
+    <string name="enable_streaming_ask_each_time">Preguntar cada vez</string>
     <string name="enable_streaming_never">Nunca conectar a sensores Libre2</string>
-    <string name="enable_streaming_dialog_yes">conectar a este sensor Libre2</string>
+    <string name="enable_streaming_dialog_yes">Conectar a este sensor Libre2</string>
     <string name="enable_streaming_dialog_no">No conectar a este sensor Libre2 </string>
     <string name="enable_streaming_dialog_dont_ask_again">No volver a preguntarme</string>
-    <string name="enable_streaming_dialog_text">¿Quiere conectar xDrip con este sensor? Esto provocará que el lector Libre y LibreLink dejen de recibir alertas. Pulse sí y busque de nuevo para conectar (elija no conectar si quiere ejecutar xDrip con la aplicación modificada)</string>
+    <string name="enable_streaming_dialog_text">¿Quieres conectar xDrip con este sensor? Esto provocará que el lector Libre y LibreLink dejen de recibir alertas. Pulsa sí y escanea de nuevo para conectar (elige no conectar si quieres ejecutar xDrip con la aplicación modificada)</string>
     <string name="enable_streaming_dialog_title">Conectando sensor Libre a Bluetooth</string>
     <string name="title_lower_fuzzer">Baja FUZZER</string>
     <string name="summary_lower_fuzzer">Bajar el valor de FUZZER de 2.5 minutos a 37.5 segundos</string>
+    <string name="without_camera_permission_cannot_scan_barcode">Sin el permiso de usar la cámara, no podemos escanear un código de barras</string>
 </resources>

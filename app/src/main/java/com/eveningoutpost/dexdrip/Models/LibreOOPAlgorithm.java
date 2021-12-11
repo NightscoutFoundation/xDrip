@@ -25,6 +25,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
+
+import static com.eveningoutpost.dexdrip.NFCReaderX.verifyTime;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 class UnlockBuffers {
@@ -264,6 +266,7 @@ public class LibreOOPAlgorithm {
         glucoseData.glucoseLevel = (int)(oOPResults.currentBg * factor);
         glucoseData.glucoseLevelRaw = (int)(oOPResults.currentBg * factor);
 
+        verifyTime( glucoseData.sensorTime, "LibreOOPAlgorithm", null);
         readingData.trend.add(glucoseData);
         
         // TODO: Add here data of last 10 minutes or whatever.
@@ -361,7 +364,9 @@ public class LibreOOPAlgorithm {
             int relative_time = LIBRE2_SHIFT[i];
             glucoseData.realDate = captureDateTime - relative_time * Constants.MINUTE_IN_MS;
             glucoseData.sensorTime = sensorTime - relative_time;
-            trendList.add(glucoseData);
+            if(verifyTime( glucoseData.sensorTime, "parseBleDataPerMinute ", ble_data)) {
+                trendList.add(glucoseData);
+            }
         }
         return trendList;
     }
@@ -389,7 +394,9 @@ public class LibreOOPAlgorithm {
                 break;
             }
             glucoseData.realDate = captureDateTime  + (final_time - sensorTime) * Constants.MINUTE_IN_MS;
-            glucoseData.sensorTime = final_time;
+            if(verifyTime( final_time, "parseBleDataHistory", ble_data)) {
+                glucoseData.sensorTime = final_time;
+            }
             historyList.add(glucoseData);
         }
         return historyList;

@@ -2,16 +2,21 @@ package com.eveningoutpost.dexdrip.cgm.sharefollow;
 
 import android.support.annotation.NonNull;
 
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.GzipRequestInterceptor;
 import com.eveningoutpost.dexdrip.tidepool.InfoInterceptor;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.concurrent.ConcurrentHashMap;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -34,6 +39,13 @@ public class RetrofitBase {
     private static final ConcurrentHashMap<String, Retrofit> instances = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<String, String> urls = new ConcurrentHashMap<>();
 
+    private static Converter.Factory createGsonConverter(Type type, Object typeAdapter) {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(type, typeAdapter);
+        Gson gson = gsonBuilder.create();
+        return GsonConverterFactory.create(gson);
+    }
+
     // TODO make fully reusable
     public static Retrofit getRetrofitInstance(final String TAG, final String url, boolean useGzip) throws IllegalArgumentException {
 
@@ -50,15 +62,15 @@ public class RetrofitBase {
                     httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
                 }
                 final OkHttpClient client = enableTls12OnPreLollipop(new OkHttpClient.Builder())
-                        .addInterceptor(httpLoggingInterceptor)
                         .addInterceptor(new InfoInterceptor(TAG))
                         .addInterceptor(useGzip ? new GzipRequestInterceptor() : new NullInterceptor())
+                        .addInterceptor(httpLoggingInterceptor)
                         .build();
 
                 instances.put(TAG, instance = new retrofit2.Retrofit.Builder()
                         .baseUrl(url)
                         .client(client)
-                        .addConverterFactory(GsonConverterFactory.create())
+                        .addConverterFactory(createGsonConverter(Dex_Constants.TREND_ARROW_VALUES.class, new ShareTrendDeserializer()))
                         .build());
                 urls.put(TAG, url); // save creation url for quick search
             }

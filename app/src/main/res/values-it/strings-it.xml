@@ -467,6 +467,7 @@
     <string name="start_sensor">Inizializza Sensore</string>
     <string name="debug_and_other_misc_options">Debug e altre opzioni misc</string>
     <string name="low_glucose_values">Valori Glicemici Bassi</string>
+    <string name="bad_glucose_values">Valori Glicemici Errati</string>
     <string name="revert_to_default">Ritorna ai parametri di Default</string>
     <string name="filtered_values">Valori Filtrati</string>
     <string name="treatment_color">Colori Terapia</string>
@@ -1385,6 +1386,8 @@
     <string name="title_ongoing_notification_channel">Usa il canale di notifiche attuale</string>
     <string name="summary_notification_channels_grouping">Se le notifiche devono essere raggruppate insieme. Incompatibili con l\'opzione \'Numero nell\'area di Notifica\'</string>
     <string name="title_notification_channels_grouping">Raggruppa le notifiche</string>
+    <string name="summary_delay_ascending_3min">Per il profilo di volume crescente, ritarda di 3 minuti l\'inizio del suono di allarme. La vibrazione (se abilitata) inizia non appena l\'avviso si attiva, indipendentemente da questa impostazione.</string>
+    <string name="title_delay_ascending_3min">Ritardo Volume Crescente</string>
     <string name="summary_play_sound_for_initial_calibration">Suona quando viene richiesta la calibrazione iniziale</string>
     <string name="title_play_sound_for_initial_calibration">Avviso iniziale</string>
     <string name="category_noisy_readings">Letture rumorose</string>
@@ -1561,4 +1564,5 @@
     <string name="enable_streaming_dialog_dont_ask_again">Non chiedermelo più</string>
     <string name="enable_streaming_dialog_text">Vuoi collegare xDrip con questo sensore? Questo impedirà al lettore Libre e a LibreLink di ricevere allarmi. Premi sì e scansiona di nuovo per connetterti (scegli non connetterti se vuoi eseguire xDrip con l\'app patchata)</string>
     <string name="enable_streaming_dialog_title">Connessione del sensore Libre al bluetooth</string>
+    <string name="without_camera_permission_cannot_scan_barcode">Senza il permesso di accesso alla fotocamera non si può scansionare un codice a barre</string>
 </resources>
