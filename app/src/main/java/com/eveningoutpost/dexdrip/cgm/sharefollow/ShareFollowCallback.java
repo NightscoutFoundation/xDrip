@@ -28,7 +28,11 @@ public class ShareFollowCallback<T> extends BaseCallback<T> {
     public void onResponse(Call<T> call, Response<T> response) {
         session.setLastResponseCode(response.code());
         if (response.isSuccessful() && response.body() != null) {
-            session.populate(response.body());
+            if (this.name.equalsIgnoreCase("auth")) {
+                session.extractAccountId(response.body());
+            } else {
+                session.populate(response.body());
+            }
         } else {
             session.errorHandler(response.errorBody());
         }
