@@ -65,6 +65,7 @@
     <string name="pref_amazfit_watchface_graph_enable">فعال سازی</string>
     <string name="pref_amazfit_widget_graph_enable">فعال سازی</string>
     <string name="add_widget">اضافه کردن ابزارک</string>
+    <string name="title_activity_alert_list">فهرست آژیرها</string>
     <string name="add_note">افزودن یادداشت</string>
     <string name="space_mins">" دقیقه"</string>
     <string name="expires_at">در {0} تمام می شود</string>
