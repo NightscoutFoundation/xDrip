@@ -16,6 +16,8 @@ import com.eveningoutpost.dexdrip.UtilityModels.LibreUtils;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
+import com.eveningoutpost.dexdrip.NFCReaderX;
+
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -23,22 +25,31 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
+
+import static com.eveningoutpost.dexdrip.NFCReaderX.verifyTime;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 class UnlockBuffers {
-    UnlockBuffers(byte [] btUnlockBuffer,  byte [] nfcUnlockBuffer, String deviceName) {
+    UnlockBuffers(byte [] btUnlockBuffer,  byte [] nfcUnlockBuffer, String deviceName, ArrayList<byte []> unlockBufferArray, int unlockCount) {
         this.btUnlockBuffer = btUnlockBuffer;
         this.nfcUnlockBuffer = nfcUnlockBuffer;
         this.deviceName = deviceName;
+        this.unlockBufferArray = unlockBufferArray;
+        this.unlockCount = unlockCount;
+
     }
     public byte [] btUnlockBuffer;
     public byte [] nfcUnlockBuffer;
     public String deviceName;
+    public ArrayList<byte []> unlockBufferArray;
+    public int unlockCount;
 }
 
 
 public class LibreOOPAlgorithm {
     private static final String TAG = "LibreOOPAlgorithm";
+    // This are the shifts of the libre different buffers
+    static final int[] LIBRE2_SHIFT = {0, 2, 4, 6, 7, 12, 15};
     
     public enum SensorType
     {
@@ -66,13 +77,13 @@ public class LibreOOPAlgorithm {
             return;
         }
         
-        if(fullData.length < 344) {
+        if(fullData.length < Constants.LIBRE_1_2_FRAM_SIZE) {
             Log.e(TAG, "sendData called with data size too small. " + fullData.length);
             return;
         }
         Log.i(TAG, "Sending full data to OOP Algorithm data-len = " + fullData.length);
         
-        fullData = java.util.Arrays.copyOfRange(fullData, 0, 0x158);
+        fullData = java.util.Arrays.copyOfRange(fullData, 0, Constants.LIBRE_1_2_FRAM_SIZE);
         Log.i(TAG, "Data that will be sent is " + HexDump.dumpHexString(fullData));
         
         Intent intent = new Intent(Intents.XDRIP_PLUS_LIBRE_DATA);
@@ -136,26 +147,27 @@ public class LibreOOPAlgorithm {
         UnlockBuffers ret;
         UnlockBlockingQueue.clear();
         try {
-            ret = UnlockBlockingQueue.poll(2, TimeUnit.SECONDS);
+            ret = UnlockBlockingQueue.poll(9, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             Log.e(TAG, "Interuptted exception", e);
             return null;
         }
         if(ret == null) {
-            Log.e(TAG, "waitForUnlockPayload (sendGetBlutoothEnablePayload) returning null");
+            Log.e(TAG, "waitForUnlockPayload (sendGetBluetoothEnablePayload) returning null");
         } else {
-            Log.e(TAG, "waitForUnlockPayload (sendGetBlutoothEnablePayload) got data payload is " + JoH.bytesToHex(ret.btUnlockBuffer) + " "+  JoH.bytesToHex(ret.nfcUnlockBuffer));
+            Log.e(TAG, "waitForUnlockPayload (sendGetBluetoothEnablePayload) got data payload is " + JoH.bytesToHex(ret.btUnlockBuffer) + " "+  JoH.bytesToHex(ret.nfcUnlockBuffer)  +
+                    " unlockBufferArray = " + ret.unlockBufferArray);
         }
         return ret;
     }
     
-    static public  UnlockBuffers sendGetBlutoothEnablePayload(boolean increaseConnectionIndex) {
+    static public  UnlockBuffers sendGetBluetoothEnablePayload(boolean increaseConnectionIndex) {
         Libre2SensorData currentSensorData = Libre2SensorData.getSensorData(increaseConnectionIndex);
         if(currentSensorData == null) {
-            Log.e(TAG, "sendGetBlutoothEnablePayload currentSensorData == null");
+            Log.e(TAG, "sendGetBluetoothEnablePayload currentSensorData == null");
             return null;
         }
-        Log.e(TAG, "sendGetBlutoothEnablePayload called enableTime_ = " + currentSensorData.enableTime_ +
+        Log.e(TAG, "sendGetBluetoothEnablePayload called enableTime_ = " + currentSensorData.enableTime_ +
                 " connectionIndex_ " + currentSensorData.connectionIndex_ + 
                  " patchUid " + JoH.bytesToHex(currentSensorData.patchUid_) +
                  " patchInfo " + JoH.bytesToHex(currentSensorData.patchInfo_) +
@@ -167,17 +179,41 @@ public class LibreOOPAlgorithm {
         bundle.putByteArray(Intents.LIBRE_PATCH_INFO_BUFFER, currentSensorData.patchInfo_);
         bundle.putInt(Intents.ENABLE_TIME, currentSensorData.enableTime_);
         bundle.putInt(Intents.CONNECTION_INDEX, currentSensorData.connectionIndex_);
+        bundle.putInt(Intents.BT_UNLOCK_BUFFER_COUNT, 2000);
+
         sendIntent(Intents.XDRIP_PLUS_BLUETOOTH_ENABLE, bundle);
-        return waitForUnlockPayload();
+
+        UnlockBuffers unlockBuffers=  waitForUnlockPayload();
+        if(unlockBuffers != null && unlockBuffers.unlockBufferArray != null) {
+            // store the array in the cache.
+            Libre2SensorData.saveBtUnlockArray(unlockBuffers.unlockBufferArray, currentSensorData.connectionIndex_);
+        }
+        return unlockBuffers;
+    }
+    static public  byte[] getCachedBtUnlockKey(boolean increaseConnectionIndex) {
+        return Libre2SensorData.getCachedBtUnlockKey(increaseConnectionIndex);
     }
     
-    static public  Pair<byte[], String> nfcSendgetBlutoothEnablePayload() {
-        UnlockBuffers unlockBuffers = sendGetBlutoothEnablePayload(false);
+    static public  Pair<byte[], String> nfcSendgetBluetoothEnablePayload() {
+        UnlockBuffers unlockBuffers = sendGetBluetoothEnablePayload(false);
         if(unlockBuffers == null) {
-            Log.e(TAG, "nfcSendgetBlutoothEnablePayload returning null");
+            Log.e(TAG, "nfcSendgetBluetoothEnablePayload returning null");
             return null;
         }
         return new Pair(unlockBuffers.nfcUnlockBuffer, unlockBuffers.deviceName);
+    }
+
+    static public  byte[] btSendgetBluetoothEnablePayload(boolean increaseConnectionIndex) {
+        byte[] btUnlockBuffer = LibreOOPAlgorithm.getCachedBtUnlockKey(increaseConnectionIndex);
+        if(btUnlockBuffer != null) {
+            return btUnlockBuffer;
+        }
+        UnlockBuffers unlockBuffers = sendGetBluetoothEnablePayload(increaseConnectionIndex);
+        if(unlockBuffers == null) {
+            Log.e(TAG, "btSendgetBluetoothEnablePayload returning null");
+            return null;
+        }
+        return unlockBuffers.btUnlockBuffer;
     }
 
     static public String getLibreDeviceName() {
@@ -212,9 +248,9 @@ public class LibreOOPAlgorithm {
             return;
         }
         boolean use_raw = Pref.getBooleanDefaultFalse("calibrate_external_libre_algorithm");
-        ReadingData.TransferObject libreAlarmObject = new ReadingData.TransferObject();
-        libreAlarmObject.data = new ReadingData();
-        libreAlarmObject.data.trend = new ArrayList<GlucoseData>();
+        ReadingData readingData = new ReadingData();
+
+        readingData.trend = new ArrayList<GlucoseData>();
         
         double factor = 1;
         if(use_raw) {
@@ -229,21 +265,22 @@ public class LibreOOPAlgorithm {
         glucoseData.realDate = oOPResults.timestamp;
         glucoseData.glucoseLevel = (int)(oOPResults.currentBg * factor);
         glucoseData.glucoseLevelRaw = (int)(oOPResults.currentBg * factor);
-        
-        libreAlarmObject.data.trend.add(glucoseData);
+
+        verifyTime( glucoseData.sensorTime, "LibreOOPAlgorithm", null);
+        readingData.trend.add(glucoseData);
         
         // TODO: Add here data of last 10 minutes or whatever.
         
         
-       // Add the historic data
-        libreAlarmObject.data.history = new ArrayList<GlucoseData>();
+        // Add the historic data
+        readingData.history = new ArrayList<GlucoseData>();
         for(HistoricBg historicBg : oOPResults.historicBg) {
             if(historicBg.quality == 0) {
                 glucoseData = new GlucoseData();
                 glucoseData.realDate = oOPResults.timestamp + (historicBg.time - oOPResults.currentTime) * 60000;
                 glucoseData.glucoseLevel = (int)(historicBg.bg * factor);
                 glucoseData.glucoseLevelRaw = (int)(historicBg.bg * factor);
-                libreAlarmObject.data.history.add(glucoseData);
+                readingData.history.add(glucoseData);
             }
         }
         
@@ -253,10 +290,10 @@ public class LibreOOPAlgorithm {
         glucoseData.realDate = oOPResults.timestamp;
         glucoseData.glucoseLevel = (int)(oOPResults.currentBg * factor);
         glucoseData.glucoseLevelRaw = (int)(oOPResults.currentBg * factor);
-        libreAlarmObject.data.history.add(glucoseData);
+        readingData.history.add(glucoseData);
         
-        Log.e(TAG, "handleData Created the following object " + libreAlarmObject.toString());
-        LibreAlarmReceiver.CalculateFromDataTransferObject(libreAlarmObject, use_raw);
+        Log.d(TAG, "handleData Created the following object " + readingData.toString());
+        LibreAlarmReceiver.CalculateFromDataTransferObject(readingData, false, use_raw);
     }
     
     public static SensorType getSensorType(byte []SensorInfo) {
@@ -292,32 +329,79 @@ public class LibreOOPAlgorithm {
     }
     
     public static void handleDecodedBleResult(long timestamp, byte[] ble_data, byte []patchUid) {
-
+        lastRecievedData = JoH.tsl();
         int raw  = LibreOOPAlgorithm.readBits(ble_data, 0 , 0 , 0xe);
         int sensorTime = 256 * (ble_data[41] & 0xFF) + (ble_data[40] & 0xFF);
-        Log.e(TAG, "Creating BG time =  " + sensorTime + "raw = " + raw);
+        Log.e(TAG, "Creating BG time =  " + sensorTime + " raw = " + raw);
         
-        ReadingData.TransferObject libreAlarmObject = new ReadingData.TransferObject();
-        libreAlarmObject.data = new ReadingData();
-        libreAlarmObject.data.trend = new ArrayList<GlucoseData>();
+        ReadingData readingData= new ReadingData();
+        readingData.trend = new ArrayList<GlucoseData>();
 
-        libreAlarmObject.data.raw_data = ble_data;
-        
-        // Add the first object, that is the current time
-        GlucoseData glucoseData = new GlucoseData();
-        glucoseData.sensorTime = sensorTime;
-        glucoseData.realDate = timestamp;
-        glucoseData.glucoseLevel = raw;
-        glucoseData.glucoseLevelRaw = raw;
-        
-        libreAlarmObject.data.trend.add(glucoseData);
+        readingData.raw_data = ble_data;
+        readingData.trend = parseBleDataPerMinute(ble_data, timestamp);
+
+        readingData.history = parseBleDataHistory(ble_data, timestamp);
+
         String SensorSN = LibreUtils.decodeSerialNumberKey(patchUid);
         
-        // TODO: Add here data of last 10 minutes or whatever.
-        Log.e(TAG, "handleDecodedBleResult Created the following object " + libreAlarmObject.toString());
-        LibreAlarmReceiver.processReadingDataTransferObject(libreAlarmObject, timestamp, SensorSN, true /*=allowupload*/, patchUid, null/*=patchInfo*/);   
+        Log.e(TAG, "handleDecodedBleResult Created the following object " + readingData.toString());
+        NFCReaderX.SendLibrereading(SensorSN, readingData.raw_data, timestamp, patchUid, null);
+        LibreAlarmReceiver.processReadingDataTransferObject(readingData, timestamp, SensorSN, true /*=allowupload*/, patchUid, null/*=patchInfo*/);
     }
     
+    public static ArrayList<GlucoseData> parseBleDataPerMinute(byte[] ble_data, Long captureDateTime) {
+        int sensorTime = 256 * (ble_data[41] & 0xFF) + (ble_data[40] & 0xFF);
+
+        ArrayList<GlucoseData> trendList = new ArrayList<>();
+        for (int i = 0; i < 7; i++) {
+            GlucoseData glucoseData = new GlucoseData();
+            
+            glucoseData.glucoseLevelRaw = LibreOOPAlgorithm.readBits(ble_data, i * 4 , 0 , 0xe);
+            glucoseData.temp = LibreOOPAlgorithm.readBits(ble_data, i * 4, 0xe, 0xc) << 2;
+            glucoseData.flags =  LibreOOPAlgorithm.readBits(ble_data, i * 4 , 0x1a , 0x6);
+            glucoseData.source = GlucoseData.DataSource.BLE;
+
+            int relative_time = LIBRE2_SHIFT[i];
+            glucoseData.realDate = captureDateTime - relative_time * Constants.MINUTE_IN_MS;
+            glucoseData.sensorTime = sensorTime - relative_time;
+            if(verifyTime( glucoseData.sensorTime, "parseBleDataPerMinute ", ble_data)) {
+                trendList.add(glucoseData);
+            }
+        }
+        return trendList;
+    }
+    
+    public static ArrayList<GlucoseData> parseBleDataHistory(byte[] ble_data, Long captureDateTime) {
+        int sensorTime = 256 * (ble_data[41] & 0xFF) + (ble_data[40] & 0xFF);
+        //System.out.println("sensorTime = " + sensorTime);
+        if(sensorTime < 3) {
+            return new ArrayList<>();
+        }
+        int sensorTimeModulo = (sensorTime - 2) / 15 * 15;
+        ArrayList<GlucoseData> historyList = new ArrayList<>();
+
+        for (int i = 0; i < 3; i++) {
+            GlucoseData glucoseData = new GlucoseData();
+
+            glucoseData.glucoseLevelRaw = readBits(ble_data, (i+7) * 4 , 0 , 0xe);
+            glucoseData.temp = LibreOOPAlgorithm.readBits(ble_data, (i+7) * 4, 0xe, 0xc) << 2;
+            glucoseData.flags =  LibreOOPAlgorithm.readBits(ble_data, (i+7) * 4 , 0x1a , 0x6);
+            glucoseData.source = GlucoseData.DataSource.BLE;
+
+            int relative_time = i*15;
+            int final_time = sensorTimeModulo - relative_time;
+            if(final_time < 0) {
+                break;
+            }
+            glucoseData.realDate = captureDateTime  + (final_time - sensorTime) * Constants.MINUTE_IN_MS;
+            if(verifyTime( final_time, "parseBleDataHistory", ble_data)) {
+                glucoseData.sensorTime = final_time;
+            }
+            historyList.add(glucoseData);
+        }
+        return historyList;
+    }
+
     
     // Functions that are used for an external decoder.
     static public boolean isDecodeableData(byte []patchInfo) {
@@ -330,24 +414,26 @@ public class LibreOOPAlgorithm {
     static long lastSentData = 0;
     static ArrayBlockingQueue<UnlockBuffers> UnlockBlockingQueue = new ArrayBlockingQueue<UnlockBuffers>(1);
     
-    static public void handleOop2DecryptFarmResult(String tagId, long CaptureDateTime, byte[] buffer, byte []patchUid,  byte []patchInfo ) {
+    static public void handleOop2DecodeFramResult(String tagId, long CaptureDateTime, byte[] buffer, byte []patchUid,  byte []patchInfo ) {
         lastRecievedData = JoH.tsl();
-        Log.e(TAG, "handleOop2PingResult - data" + JoH.bytesToHex(buffer));
+        Log.e(TAG, "handleOop2DecodeFramResult - data " + JoH.bytesToHex(buffer));
         NFCReaderX.HandleGoodReading(tagId, buffer, CaptureDateTime, false , patchUid, patchInfo, true );
     }
     
     
-    static public void  handleOop2BlutoothEnableResult(byte[] bt_unlock_buffer, byte[] nfc_unlock_buffer, byte[] patchUid, byte[] patchInfo, String device_name) {
+    static public void handleOop2BluetoothEnableResult(byte[] bt_unlock_buffer, byte[] nfc_unlock_buffer, byte[] patchUid, byte[] patchInfo, String device_name,
+                                                       ArrayList<byte []> unlockBufferArray, int unlockCount) {
         lastRecievedData = JoH.tsl();
-        Log.e(TAG, "handleOop2BlutoothEnableResult - data bt_unlock_buffer " + JoH.bytesToHex(bt_unlock_buffer) + "\n nfc_unlock_buffer "+ JoH.bytesToHex(nfc_unlock_buffer));
+        Log.e(TAG, "handleOop2BluetoothEnableResult - data bt_unlock_buffer " + JoH.bytesToHex(bt_unlock_buffer) + "\n nfc_unlock_buffer "+ JoH.bytesToHex(nfc_unlock_buffer));
+        if (unlockBufferArray!= null && unlockBufferArray.size() > 0) {
+            Log.d(TAG, "handleOop2BluetoothEnableResult big buffer first " + JoH.bytesToHex(unlockBufferArray.get(0)));
+        }
         UnlockBlockingQueue.clear();
         try {
-            UnlockBlockingQueue.add(new UnlockBuffers(bt_unlock_buffer, nfc_unlock_buffer, device_name));
+            UnlockBlockingQueue.add(new UnlockBuffers(bt_unlock_buffer, nfc_unlock_buffer, device_name, unlockBufferArray, unlockCount));
         } catch (IllegalStateException  is) {
             Log.e(TAG, "Queue is full", is);
-
         }
-        
     }
     
     static public void logIfOOP2NotAlive() {

@@ -21,13 +21,13 @@
     <string name="navigation_drawer_open">Apri Area Navigazione</string>
     <string name="navigation_drawer_close">Chiudi Area Navigazione</string>
     <string name="title_activity_calibration_check_in">Calibrazioni</string>
-    <string name="title_activity_usb_connected">Attività Connessioni Usb</string>
+    <string name="title_activity_usb_connected">Attività Connessioni USB</string>
     <string name="snooze">Sospendi Allarme</string>
     <string name="snooze_hint">Allarme sospeso per x minuti</string>
     <string name="ok">Ok</string>
     <string name="cancel">Annulla</string>
     <string name="no">No</string>
-    <string name="pref_sensor_location_dont_ask_again"> Non Chiedermelo Piu</string>
+    <string name="pref_sensor_location_dont_ask_again"> Non chiedermelo più</string>
     <string name="title_activity_error">"Elenco Errori e Eventi"</string>
     <string name="title_activity_main">Attività principale</string>
     <string name="title_activity_fake_numbers">Numeri Fasulli</string>
@@ -163,12 +163,16 @@
     <string name="checking_for_update">Verifica degli aggiornamenti ..</string>
     <string name="signal_missed">Segnale Perso</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} Minuti fa|1#{0, number, integer} Minuto fa|1&lt;{0, number, integer} Minuti fa}</string>
+    <string name="expires_days">{0, choice,0#Sensore Scaduto!|1#Termina tra {0, number} giorno|1&lt;Termina tra {0, number} giorni}</string>
     <string name="expires_at">Termina {0}</string>
     <string name="space_minutes_ago">" Minuti fa"</string>
+    <string name="in_libre_all_house_mode_no_readings_collected_yet">"Modalità Libre copertura casa intera: nessuna lettura raccolta per il momento."</string>
+    <string name="in_libre_all_house_mode_last_data_collected">"Modalità Libre copertura casa intera: Ultima lettura "</string>
     <string name="space_minute_ago">" Minuto fa"</string>
     <string name="show_parakeet_map">Visualizza mappa Parakeet</string>
     <string name="switch_parakeet_to_setup_mode">Passare Parakeet alla modalità di installazione</string>
     <string name="view_events_log">Visualizza eventi Log</string>
+    <string name="show_libre_trend">Mostra tendenza Libre</string>
     <string name="libre_15_minutes_graph">Grafico Libre 15 minuti</string>
     <string name="libre_last_x_minutes_graph">Grafico Libre ultimi %d minuti</string>
     <string name="share_config_via_qr_code">Configura via codice QR</string>
@@ -285,6 +289,7 @@
     <string name="upload_data_to_dex_servers">Carica i dati nel server Dexcom in modo da poter utilizzare i dati con le applicazioni Dexcom</string>
     <string name="manage_followers">Gestire Follower</string>
     <string name="manage_existing_followers">Gestisci Riceventi (Follower) esistenti e invitane nuovi.</string>
+    <string name="invite_follower">Invita un Follower</string>
     <string name="glucose_calibration_and_other_alerts">Glicemia, Calibrazioni e altri avvisi</string>
     <string name="alert_volume_profile">Profilo Volume ALLARMI</string>
     <string name="smart_alerting">Avviso SMART</string>
@@ -315,6 +320,7 @@
     <string name="speak_your_treatment">Parla il trattamento ad esempio:\nxx / xx unità di insulina grammi di carboidrati</string>
     <string name="speech_recognition_is_not_supported">Il riconoscimento vocale non è supportato</string>
     <string name="treatment_note">Note di Terapia</string>
+    <string name="accessibility_description">xDrip utilizza la funzione Accessibilità solo per regolare lo schermo quando il dispositivo è bloccato. Questo è probabilmente utile solo se si dispone di un telefono con la funzione Always On Display e se è abilitata. xDrip non interagisce con Android in nessun altro modo.</string>
     <string name="could_not_export_database">Impossibile esportare database :(</string>
     <string name="exported_to">"Esportato in "</string>
     <string name="default_to_voice_input_next_time">Inserimento vocale di default dal prossimo</string>
@@ -461,6 +467,7 @@
     <string name="start_sensor">Inizializza Sensore</string>
     <string name="debug_and_other_misc_options">Debug e altre opzioni misc</string>
     <string name="low_glucose_values">Valori Glicemici Bassi</string>
+    <string name="bad_glucose_values">Valori Glicemici Errati</string>
     <string name="revert_to_default">Ritorna ai parametri di Default</string>
     <string name="filtered_values">Valori Filtrati</string>
     <string name="treatment_color">Colori Terapia</string>
@@ -604,9 +611,13 @@
     <string name="repeatedly_restart_collection_service">Riavvia ripetutamente il servizio di raccolta in qualsiasi dubbio di dati mancanti. Abilitare solo se si perdono dati.</string>
     <string name="aggressive_service_restarts">Riavvio servizio aggressivo</string>
     <string name="predictive_readings_old">Vecchio metodo - Non consigliato! Tenta di prevedere letture ogni minuto sulla base di pochi valori precedenti.</string>
+    <string name="use_external_blukon_algorithm_summary">Usa un algoritmo OOP. (Libre Bluetooth/NFC/LibreAlarm)</string>
     <string name="display_predictive_values">Mostra Valori Predetti</string>
+    <string name="use_external_blukon_algorithm">Algoritmo Libre OOP.</string>
     <string name="calibrate_external_libre_algorithm_summary">Applica metodi di calibrazione xDrip sui dati OOP.</string>
     <string name="calibrate_external_libre_algorithm_title">Calibrazione dell\'algoritmo OOP.</string>
+    <string name="libre_use_smoothed_data_summary">Usa una media di 5 punti per ottenere risultati Libre meno rumorosi.</string>
+    <string name="libre_use_smoothed_data_title">Liscia dati Libre.</string>
     <string name="retrieve_blukon_history_title">Recupera cronologia Libre</string>
     <string name="retrieve_blukon_history_summary">Recupera la cronologia dal dispositivo Blukon quando si ricollega al sensore.</string>
     <string name="interpret_share_raw">Se usi Condividi, xDrip mostrerà i valori quando sono normalmente nascosti sul ricevitore.</string>
@@ -699,6 +710,8 @@
     <string name="mongo_db_uri">MongoDB URI</string>
     <string name="skip_local_lan">Per server locali con indirizzi 192.168.x.x, non caricare dati in assenza di connessione di rete locale.</string>
     <string name="skip_lan_uploads">Salta upload LAN</string>
+    <string name="mongo_load_transmitter_data_title">Carica i dati dei trasmettitori Libre</string>
+    <string name="mongo_load_transmitter_data_summary">Autorizza a più di un xDrip di connettersi al dispositivo Bluetooth e salvare i dati ricevuti, nel cloud. Dovrebbe consentire la copertura di tutta la casa per Libre Bluetooth, oppure a due genitori di utilizzare lo stesso dispositivo bluetooth di modo trasparente.</string>
     <string name="influxdb_sync">Abilita sincronizzazione InfluxDB</string>
     <string name="influxdb_uri">URI InfluxDB</string>
     <string name="influxdb_database_name">Nome database InfluxDB</string>
@@ -831,10 +844,12 @@
     <string name="repeat_sound">Ripeti il suono</string>
     <string name="enable_telemetry">Attiva telemetria</string>
     <string name="send_data_to_developers">Invia agli sviluppatori i dati sui tassi di successo dei diversi dispositivi</string>
+    <string name="try_to_work_around_noisy_readings_ultrasensitive">Aggirare le letture rumorose anche per livelli di rumore molto bassi (solo modalità engineering)</string>
     <string name="sidiary_date_title">Esportare a partire da quando?</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Miaomiao</string>
     <string name="bubble">Bubble</string>
+    <string name="atom">Atom</string>
     <string name="use_gravity_sensor_to_rotate_items">Usa il sensore gravità per ruotare gli elementi</string>
     <string name="low_bridge_battery">Batteria bridge bassa</string>
     <string name="reminders">Promemoria</string>
@@ -947,20 +962,20 @@
     <string name="emergency_message_feature">Funzione messaggio di emergenza</string>
     <string name="text_messages_can_be_sent_with_your_location_if_you_do_not_respond_to_alarms_this_feature_is_experimental_and_may_not_be_reliable">Gli SMS possono essere inviati con la tua posizione se non rispondi agli allarmi. Questa funzione è sperimentale e potrebbe non essere affidabile.</string>
     <string name="your_name">Il tuo nome</string>
-    <string name="did_not_acknowledge_a_low_glucose_alert">%s non ha reagito a un allarme di glicemia bassa per %s</string>
-    <string name="did_not_acknowledge_a_high_glucose_alert">%s non ha reagito a un allarme di glicemia alta per %s</string>
-    <string name="has_not_had_glucose_data_received_for">%s non ha ricevuto dati di glicemia per %s</string>
-    <string name="phone_has_not_been_used_for">Il telefono di %s non è stato utilizzato per %s</string>
+    <string name="did_not_acknowledge_a_low_glucose_alert">%1$s non ha reagito a un allarme di glicemia bassa per %2$s</string>
+    <string name="did_not_acknowledge_a_high_glucose_alert">%1$s non ha reagito a un allarme di glicemia alta per %2$s</string>
+    <string name="has_not_had_glucose_data_received_for">%1$s non ha ricevuto dati di glicemia per %2$s</string>
+    <string name="phone_has_not_been_used_for">Il telefono di %1$s non è stato utilizzato per %2$s</string>
     <string name="is_requesting_assistance">%s sta chiedendo assistenza</string>
     <string name="is_testing_the_assistance_request_feature">%s sta testando la funzione di richiesta di assistenza</string>
-    <string name="emergency_message_near_format_string">%s è vicino a %s %s %s %s</string>
+    <string name="emergency_message_near_format_string">%1$s è vicino a %2$s %3$s %4$s %5$s</string>
     <string name="choose_when_to_send_messages">Scegli quando inviare messaggi:</string>
     <string name="low_alert_not_acknowledged">Allarme glicemia bassa non confermato</string>
     <string name="high_alert_not_acknowledged">Allarme glicemia alta non confermato</string>
     <string name="device_inactivity">Dispositivo inattivo</string>
     <string name="test_message_sending">Prova invio SMS</string>
     <string name="d_selected_contacts_for_text_messages_format">%d contatti selezionati per SMS</string>
-    <string name="xdrip_software_changed_format">Versione software xDrip cambiata da: %s a %s</string>
+    <string name="xdrip_software_changed_format">Versione software xDrip cambiata da: %1$s a %2$s</string>
     <string name="when_connected_to_the_audio_device_shown_below_switch_to_vehicle_mode">Passa alla modalità veicolo quando connesso al dispositivo audio sotto.</string>
     <string name="select_device">Seleziona il dispositivo</string>
     <string name="no_bluetooth_audio_found">Nessun audio bluetooth trovato</string>
@@ -1371,6 +1386,8 @@
     <string name="title_ongoing_notification_channel">Usa il canale di notifiche attuale</string>
     <string name="summary_notification_channels_grouping">Se le notifiche devono essere raggruppate insieme. Incompatibili con l\'opzione \'Numero nell\'area di Notifica\'</string>
     <string name="title_notification_channels_grouping">Raggruppa le notifiche</string>
+    <string name="summary_delay_ascending_3min">Per il profilo di volume crescente, ritarda di 3 minuti l\'inizio del suono di allarme. La vibrazione (se abilitata) inizia non appena l\'avviso si attiva, indipendentemente da questa impostazione.</string>
+    <string name="title_delay_ascending_3min">Ritardo Volume Crescente</string>
     <string name="summary_play_sound_for_initial_calibration">Suona quando viene richiesta la calibrazione iniziale</string>
     <string name="title_play_sound_for_initial_calibration">Avviso iniziale</string>
     <string name="category_noisy_readings">Letture rumorose</string>
@@ -1396,6 +1413,7 @@
     <string name="your_display_name">Il tuo nome come visualizzato:</string>
     <string name="followers_email">E-mail dei follower:</string>
     <string name="send_invite">Invia Invito</string>
+    <string name="description_sensor_location">Nel futuro xDrip vorrebbe inviare dati anonimi del sensore agli sviluppatori per migliorare l\'algoritmo di calibrazione... Se decidi di accettare, ti verrà richiesta conferma prima di ogni trasferimento di dati. I dati non saranno mai inviati senza il tuo permesso. Per aiutarci a capire e migliorare la calibrazione vorremmo sapere dove è stato posizionato questo sensore. Premi il tasto indietro per annullare.</string>
     <string name="save_sensor_location">Salva la posizione del sensore</string>
     <string name="alerts">Allarmi</string>
     <string name="use_internal_downloader">Usa downloader interno</string>
@@ -1438,6 +1456,7 @@
     <string name="__do_you_want_to_change_settings_or_start_sensor">\n\nModificare le impostazioni o avviare il sensore?</string>
     <string name="change_settings">Modifica impostazione</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Eliminare e resettare le calibrazioni per questo sensore?</string>
+    <string name="sensor_stop_confirm">Vuoi fermare il sensore?</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Hai attivato una vecchia impostazione sperimentale di predizione della glicemia.\n\nQuesto non è CONSIGLIATO e potrebbe creare problemi.\n\nVuoi che la disabilito per te?</string>
     <string name="settings_issue">Problema Impostazioni!</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Vuoi usare questa glicemia capillare sincronizzata per calibrare?\n\n(puoi cambiare quando questa finestra di dialogo viene visualizzata nelle impostazioni)</string>
@@ -1475,6 +1494,7 @@
     <string name="unusual_internal_context_problem__please_report">Problema di contesto interno anomalo - segnalare agli sviluppatori</string>
     <string name="cannot_start__please_report_context_problem">Impossibile avviare - segnalare il problema</string>
     <string name="xdrip_will_not_work_below_android_version_42">xDrip+ non funzionerà con una versione Android sotto 4.2</string>
+    <string name="xdrip_oop2_not_installed">xDrip+ ha bisogno di OOP per gestire i sensori Libre2/LibreUS.</string>
     <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Questa applicazione necessita che la batteria NON sia ottimizzata o non funzionerà bene. Per favore reimpostare le preferenze delle app</string>
     <string name="setting_disabled_">Impostazione disattivata :)</string>
     <string name="yes_please">SI, per favore</string>
@@ -1487,6 +1507,7 @@
     <string name="starting_sync_to_other_devices">Inizio sincronizzazione con altri dispositivi</string>
     <string name="deleting_all_bg_readings">Cancello TUTTI i valori di glicemia!</string>
     <string name="could_not_export_csv_">Impossibile esportare CSV :(</string>
+    <string name="librealarm_data_format_appears_incompatible_protocol_changed_or_no_data">Il formato dei dati di LibreAlarm sembra incompatibile!? E stato modificato il protocollo o nessun dati?</string>
     <string name="please_update_librealarm_to_use_oop_algorithm">Aggiorna LibreAlarm per utilizzare l\'algoritmo OOP</string>
     <string name="sensor_clock_has_not_advanced">L\'orologio del sensore non ha avanzato!</string>
     <string name="sensor_age_has_gone_backwards">L\'età del sensore è andata indietro!!</string>
@@ -1533,6 +1554,7 @@
     <string name="pref_enable_insulinprofiles">abilitare almeno uno e massimo di tre profili</string>
     <string name="pref_select_basal_insulinprofiles">scegliere il profilo di basale dell’insulina.</string>
     <string name="pref_select_bolus_insulinprofiles">scegliere il profilo di bolo di insulina. utilizzato anche per micro e penna...</string>
+    <string name="enable_streaming_summary">Connettersi ai sensori Libre 2 dopo la scansione. Questo impedirà al lettore Libre e a Libre link di ricevere gli allarmi,</string>
     <string name="enable_streaming_title">Avvio della connessione bluetooth con i sensori Libre2</string>
     <string name="enable_streaming_always_allow">Connettersi sempre ai sensori Libre 2</string>
     <string name="enable_streaming_ask_each_time">chiedi ogni volta</string>
@@ -1540,6 +1562,7 @@
     <string name="enable_streaming_dialog_yes">Connettersi a questo sensore Libre2</string>
     <string name="enable_streaming_dialog_no">Non connettersi a questo sensore Libre 2 </string>
     <string name="enable_streaming_dialog_dont_ask_again">Non chiedermelo più</string>
-    <string name="enable_streaming_dialog_title">Connessione del sensore Libre al bluetooth</string>
     <string name="enable_streaming_dialog_text">Vuoi collegare xDrip con questo sensore? Questo impedirà al lettore Libre e a LibreLink di ricevere allarmi. Premi sì e scansiona di nuovo per connetterti (scegli non connetterti se vuoi eseguire xDrip con l\'app patchata)</string>
+    <string name="enable_streaming_dialog_title">Connessione del sensore Libre al bluetooth</string>
+    <string name="without_camera_permission_cannot_scan_barcode">Senza il permesso di accesso alla fotocamera non si può scansionare un codice a barre</string>
 </resources>

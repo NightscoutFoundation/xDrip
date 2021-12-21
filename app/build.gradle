@@ -12,7 +12,7 @@ buildscript {
     }
 }
 apply plugin: 'com.android.application'
-
+apply from: 'token-replace.gradle'
 
 if (project.file('local.gradle').exists()) {
     apply from: 'local.gradle'
@@ -129,6 +129,35 @@ def generateVersionName = { ->
 
 }
 
+/**
+ * Reads a property from the project settings (Gradle properties), the system environment or
+ * from the file <code>local.properties</code>.
+ *
+ * @param propertyName the name of the property to read
+ * @return the property value or an empty string
+ */
+def getLocalProperty(String propertyName) {
+    def propVal = project.findProperty(propertyName)
+    if (propVal == null) {
+        propVal = System.getenv(propertyName)
+        if (propVal == null)
+            propVal = System.getenv(propertyName.toLowerCase())
+        if (propVal == null)
+            propVal = System.getenv(propertyName.toUpperCase())
+        if (propVal == null) {
+            def propsFile = rootProject.file('local.properties')
+            if (propsFile.exists()) {
+                def props = new Properties()
+                props.load(new FileInputStream(propsFile))
+                propVal = props[propertyName]
+            } else {
+                propVal = ""
+            }
+        }
+    }
+    return propVal
+}
+
 android {
     compileSdkVersion 29
 
@@ -157,8 +186,10 @@ android {
         //vectorDrawables.useSupportLibrary = true // broken in newer gradle versions
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
-        // workaround till #1596 gets merged
-        resValue "string", "google_maps_key", "AIzaSyDOa0FJV2h2qf0tJ-kSeX1Sk2f1-IbUOz4"
+
+        // To get a Google Maps API key, follow this link, follow the directions and press "Create" at the end:
+        // https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=7C:1E:BB:15:CE:A1:92:30:47:9D:D0:3D:89:F6:C6:51:7D:3C:1B:DD%3Bcom.eveningoutpost.dexdrip
+        manifestPlaceholders = [google_maps_key:getLocalProperty('google_maps_key')]
     }
 
     // The defaultConfig values above are fixed, so your incremental builds don't
@@ -297,8 +328,8 @@ dependencies {
     implementation "com.google.android.gms:play-services-gcm:10.2.1"
     implementation 'com.squareup.wire:wire-runtime:2.2.0'
     implementation 'com.squareup.okhttp:okhttp:2.7.5'
-    implementation 'com.squareup.okhttp3:okhttp:3.12.1'
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.13'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.12.13'
     implementation "com.newrelic.agent.android:android-agent:5.27.1"
     //implementation 'com.jakewharton.retrofit:retrofit1-okhttp3-client:1.1.0'
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
@@ -313,7 +344,7 @@ dependencies {
     implementation 'io.reactivex:rxjava:1.3.3'
     implementation 'com.activeandroid:thread-safe-active-android:3.1.1'
     //implementation 'com.github.lecho:hellocharts-android:v1.5.8'
-    implementation "com.polidea.rxandroidble2:rxandroidble:1.11.1"
+    implementation "com.polidea.rxandroidble2:rxandroidble:1.12.1"
     implementation 'com.google.guava:guava:24.1-android'
     implementation 'com.embarkmobile:zxing-android-minimal:2.0.0@aar'
     implementation 'com.embarkmobile:zxing-android-integration:2.0.0@aar'

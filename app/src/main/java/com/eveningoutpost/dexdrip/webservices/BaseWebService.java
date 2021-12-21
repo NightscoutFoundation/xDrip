@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.webservices;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.URLDecoder;
@@ -20,7 +22,11 @@ public abstract class BaseWebService {
     public abstract WebResponse request(String query);
 
     public WebResponse request(final String query, final InetAddress source) {
-        return request(query);
+        try {
+            return request(query);
+        } catch (Exception ex) {
+            return webError("Exception in "+getClass()+": " +ExceptionUtils.getStackTrace(ex), 500);
+        }
     }
 
     // web error helpers

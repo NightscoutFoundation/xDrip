@@ -98,7 +98,7 @@ public class StartNewSensor extends ActivityWithMenu {
                 JoH.static_toast_long("Need to connect to transmitter once before we can start sensor");
                 MegaStatus.startStatus(MegaStatus.G5_STATUS);
             } else {
-                realStartSensor();   // If we're using native mode, don't bother asking about insertion time
+                startSensorOrAskForG6Code();   // If we're using native mode, don't bother asking about insertion time
             }
         } else {
             final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -107,7 +107,7 @@ public class StartNewSensor extends ActivityWithMenu {
             builder.setPositiveButton(gs(R.string.yes_today), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
-                    askSesorInsertionTime();
+                    askSensorInsertionTime();
                 }
             });
             builder.setNegativeButton(gs(R.string.not_today), new DialogInterface.OnClickListener() {
@@ -115,7 +115,7 @@ public class StartNewSensor extends ActivityWithMenu {
                     dialog.dismiss();
                     if (DexCollectionType.hasLibre()) {
                         ucalendar.add(Calendar.DAY_OF_MONTH, -1);
-                        realStartSensor();
+                        startSensorOrAskForG6Code();
                     } else {
                         final DatePickerFragment datePickerFragment = new DatePickerFragment();
                         datePickerFragment.setAllowFuture(false);
@@ -129,9 +129,9 @@ public class StartNewSensor extends ActivityWithMenu {
                                 ucalendar.set(year, month, day);
                                 // Long enough in the past for age adjustment to be meaningless? Skip asking time
                                 if ((!Home.get_engineering_mode()) && (JoH.tsl() - ucalendar.getTimeInMillis() > (AGE_ADJUSTMENT_TIME + (1000 * 60 * 60 * 24)))) {
-                                    realStartSensor();
+                                    startSensorOrAskForG6Code();
                                 } else {
-                                    askSesorInsertionTime();
+                                    askSensorInsertionTime();
                                 }
                             }
                         });
@@ -144,7 +144,7 @@ public class StartNewSensor extends ActivityWithMenu {
         }
     }
 
-    private void askSesorInsertionTime() {
+    private void askSensorInsertionTime() {
         final Calendar calendar = Calendar.getInstance();
 
         TimePickerFragment timePickerFragment = new TimePickerFragment();
@@ -160,45 +160,21 @@ public class StartNewSensor extends ActivityWithMenu {
                     ucalendar.add(Calendar.HOUR_OF_DAY, -1); // hack for warmup time
                 }
 
-                realStartSensor();
+                startSensorOrAskForG6Code();
             }
         });
         timePickerFragment.show(activity.getFragmentManager(), "TimePicker");
     }
 
-    private void realStartSensor() {
+    private void startSensorOrAskForG6Code() {
         if (Ob1G5CollectionService.usingCollector() && Ob1G5StateMachine.usingG6()) {
-            G6CalibrationCodeDialog.ask(this, this::realRealStartSensor);
+            G6CalibrationCodeDialog.ask(this, this::startSensorAndSetIntent);
         } else {
-            realRealStartSensor();
+            startSensorAndSetIntent();
         }
     }
 
-
-    public static void startSensorForTime(long startTime) {
-        Sensor.create(startTime);
-        UserError.Log.ueh("NEW SENSOR", "Sensor started at " + JoH.dateTimeText(startTime));
-
-        JoH.static_toast_long(gs(R.string.new_sensor_started));
-
-        startWatchUpdaterService(xdrip.getAppContext(), WatchUpdaterService.ACTION_SYNC_SENSOR, TAG);
-
-        LibreAlarmReceiver.clearSensorStats();
-        // TODO this is just a timer and could be confusing - consider removing this notification
-       // JoH.scheduleNotification(xdrip.getAppContext(), "Sensor should be ready", xdrip.getAppContext().getString(R.string.please_enter_two_calibrations_to_get_started), 60 * 130, Home.SENSOR_READY_ID);
-
-        // reverse libre hacky workaround
-        Treatments.SensorStart((DexCollectionType.hasLibre() ? startTime + (3600000) : startTime));
-
-        CollectionServiceStarter.restartCollectionServiceBackground();
-
-        Ob1G5StateMachine.startSensor(startTime);
-        JoH.clearCache();
-        Home.staticRefreshBGCharts();
-
-    }
-
-    private void realRealStartSensor() {
+    private void startSensorAndSetIntent() {
         long startTime = ucalendar.getTime().getTime();
         Log.d(TAG, "Starting sensor time: " + JoH.dateTimeText(ucalendar.getTime().getTime()));
 
@@ -218,6 +194,35 @@ public class StartNewSensor extends ActivityWithMenu {
 
         startActivity(intent);
         finish();
+    }
+
+    /**
+     * Sends command to G5/G6 sensor for sensor start and adds a Sensor Start entry in the xDrip db
+     */
+    public static void startSensorForTime(long startTime) {
+        Sensor.create(startTime);
+        UserError.Log.ueh("NEW SENSOR", "Sensor started at " + JoH.dateTimeText(startTime));
+
+        JoH.static_toast_long(gs(R.string.new_sensor_started));
+
+        startWatchUpdaterService(xdrip.getAppContext(), WatchUpdaterService.ACTION_SYNC_SENSOR, TAG);
+
+        LibreAlarmReceiver.clearSensorStats();
+        // TODO this is just a timer and could be confusing - consider removing this notification
+       // JoH.scheduleNotification(xdrip.getAppContext(), "Sensor should be ready", xdrip.getAppContext().getString(R.string.please_enter_two_calibrations_to_get_started), 60 * 130, Home.SENSOR_READY_ID);
+
+        // reverse libre hacky workaround
+        final long modifiedStartTime = DexCollectionType.hasLibre() ? (startTime + 3600000) : startTime;
+
+        // Add treatment entry in db
+        Treatments.sensorStart(modifiedStartTime, "Started by xDrip");
+
+        CollectionServiceStarter.restartCollectionServiceBackground();
+
+        Ob1G5StateMachine.startSensor(startTime);
+        JoH.clearCache();
+        Home.staticRefreshBGCharts();
+
     }
 
     @Override

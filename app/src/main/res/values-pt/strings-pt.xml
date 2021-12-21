@@ -2,10 +2,10 @@
 <resources>
     <string name="title_activity_bluetooth_scan">Pesquisa Bluetooth</string>
     <string name="connected">Conectado</string>
-    <string name="disconnected">Desligado</string>
+    <string name="disconnected">Desconectado</string>
     <string name="menu_scan">Pesquisar</string>
     <string name="menu_stop">Parar</string>
-    <string name="menu_refresh">Actualizar</string>
+    <string name="menu_refresh">Atualizar</string>
     <string name="menu_export_database">Exportar base de dados</string>
     <string name="menu_export_csv_sidiary">Exportar CSV (formato SiDiary)</string>
     <string name="menu_import_db">Importar base de dados</string>
@@ -15,7 +15,7 @@
     <string name="title_activity_raw_data_table">Tabela de Dados em Bruto</string>
     <string name="title_activity_calculated_data_table">Tabela de Dados Calculados</string>
     <string name="title_activity_start_new_sensor">Iniciar Novo Sensor</string>
-    <string name="title_activity_new_sensor_location">Localização de Novo Sensor</string>
+    <string name="title_activity_new_sensor_location">Localização do Novo Sensor</string>
     <string name="title_activity_stop_sensor">Parar Sensor</string>
     <string name="title_activity_nav_drawer">Menu de Navegação</string>
     <string name="navigation_drawer_open">Abrir menu de navegação</string>
@@ -27,7 +27,7 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancelar</string>
     <string name="no">Não</string>
-    <string name="pref_sensor_location_dont_ask_again"> Não voltar a perguntar</string>
+    <string name="pref_sensor_location_dont_ask_again"> Não perguntar novamente</string>
     <string name="title_activity_error">"Lista de Erros e Eventos"</string>
     <string name="title_activity_main">Actividade Principal</string>
     <string name="title_activity_fake_numbers">Números Falsos</string>
@@ -69,7 +69,7 @@
     <string name="location_yes">Activar</string>
     <!-- broadcast settings -->
     <string name="pref_title_broadcast_enabled">Transmissão local</string>
-    <string name="pref_summary_broadcast_enabled">Ligar transmissão local de dados para que outras aplicações (ex. NightWatch), possam ler novos valores</string>
+    <string name="pref_summary_broadcast_enabled">Activar transmissão local de dados para que outras aplicações (ex. NightWatch), possam ler novos valores</string>
     <string name="title_activity_share_test">Partilhar Teste</string>
     <!-- pebble settings -->
     <string name="pref_pebble_trend_watchface">Usar Pebble Trend Watchface</string>
@@ -177,7 +177,7 @@
     <string name="libre_last_x_minutes_graph">Gráfico do Libre de %d minutos</string>
     <string name="share_config_via_qr_code">Partilhar configurações via código QR</string>
     <string name="check_for_updated_version">Procurar actualização</string>
-    <string name="send_feedback_to_developer">Enviar feedback para o programador</string>
+    <string name="send_feedback_to_developer">Enviar opinião ao programador</string>
     <string name="home_screen">Ecrã Principal</string>
     <string name="event_logs">Registos de Eventos</string>
     <string name="calibration_graph">Gráfico de Calibração</string>
@@ -289,6 +289,7 @@
     <string name="upload_data_to_dex_servers">Enviar dados para os servidores da Dexcom para que possa usá-los nas apps Dexcom</string>
     <string name="manage_followers">Gerir Seguidores</string>
     <string name="manage_existing_followers">Gerir seguidores e convidar novos.</string>
+    <string name="invite_follower">Convidar seguidor</string>
     <string name="glucose_calibration_and_other_alerts">Glicemia, Calibração e Outros alertas</string>
     <string name="alert_volume_profile">Perfil de Volume de Alerta</string>
     <string name="smart_alerting">Alertas Inteligentes</string>
@@ -587,7 +588,7 @@
     <string name="speak_glucose_twice">Dizer o valor da glicose duas vezes</string>
     <string name="short_speak_readings_shortcut">Mostrar atalho no ☰ menu para ligar e desligar Leituras Faladas</string>
     <string name="speak_readings_shortcut">Atalho para leituras por voz</string>
-    <string name="battery_optimization_off">Recomendado. Em Android 6 ou superior garanta que optimização de bateria esteja desligada</string>
+    <string name="battery_optimization_off">Recomendado. Em Android 6 ou superior garanta que otimização de bateria esteja desligada</string>
     <string name="battery_optimization_on">Não perguntar sobre optimização de bateria. Não recomendado</string>
     <string name="battery_optimization_prompt">Comando para Optimização de Bateria</string>
     <string name="advanced_bluetooth_settings">Configurações Avançadas do Bluetooth</string>
@@ -959,20 +960,20 @@
     <string name="emergency_message_feature">Função de Mensagem de Emergência</string>
     <string name="text_messages_can_be_sent_with_your_location_if_you_do_not_respond_to_alarms_this_feature_is_experimental_and_may_not_be_reliable">Mensagens de texto podem ser enviadas com a sua localização caso não responda aos alarmes. Esta função é experimental e pode não ser fiável.</string>
     <string name="your_name">O seu nome</string>
-    <string name="did_not_acknowledge_a_low_glucose_alert">%s não reconheceu alerta de hipo por %s</string>
-    <string name="did_not_acknowledge_a_high_glucose_alert">%s não reconheceu alerta de hipo por %s</string>
-    <string name="has_not_had_glucose_data_received_for">%s não tem recebido leituras da glicose por %s</string>
-    <string name="phone_has_not_been_used_for">%s telefone não tem sido usado por %s</string>
+    <string name="did_not_acknowledge_a_low_glucose_alert">%1$s não reconheceu alerta de hipo por %2$s</string>
+    <string name="did_not_acknowledge_a_high_glucose_alert">%1$s não reconheceu alerta de hipo por %2$s</string>
+    <string name="has_not_had_glucose_data_received_for">%1$s não tem recebido leituras da glicose por %2$s</string>
+    <string name="phone_has_not_been_used_for">%1$s telefone não tem sido usado por %2$s</string>
     <string name="is_requesting_assistance">%s está a pedir assistência</string>
     <string name="is_testing_the_assistance_request_feature">%s a testar a função de pedido de ajuda</string>
-    <string name="emergency_message_near_format_string">%s perto %s %s %s %s</string>
+    <string name="emergency_message_near_format_string">%1$s perto %2$s %3$s %4$s %5$s</string>
     <string name="choose_when_to_send_messages">Escolher quando enviar mensagens:</string>
     <string name="low_alert_not_acknowledged">Alerta de Hipo não reconhecido</string>
     <string name="high_alert_not_acknowledged">Alerta de Hiper não reconhecido</string>
     <string name="device_inactivity">Inactividade do Dispositivo</string>
     <string name="test_message_sending">Envio de Mensagem de Teste</string>
     <string name="d_selected_contacts_for_text_messages_format">%d contactos seleccionados para as mensagens de texto</string>
-    <string name="xdrip_software_changed_format">Versão de xDrip actualizada de: %s para %s</string>
+    <string name="xdrip_software_changed_format">Versão de xDrip actualizada de: %1$s para %2$s</string>
     <string name="when_connected_to_the_audio_device_shown_below_switch_to_vehicle_mode">Mudar para Modo Veículo quando ligado ao dispositivo áudio mostrado em baixo.</string>
     <string name="select_device">Seleccionar Dispositivo</string>
     <string name="no_bluetooth_audio_found">Nenhum bluetooth áudio encontrado</string>
@@ -1443,7 +1444,7 @@
     <string name="classic_simple">Clássico Simples</string>
     <string name="libre">Libre</string>
     <string name="what_type_of_libre_bridge_device_do_you_use">Que Tipo de Dispositivo de Ponte Libre?</string>
-    <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Dispositivo Ponte Bluetooth: Blucon, Bubble, LimiTTer, Bluereader, Tomato etc</string>
+    <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Dispositivo Ponte Bluetooth: Blucon, Bluereader, LimiTTer, Tomato etc</string>
     <string name="libre_patched">Libre2 Modificado</string>
     <string name="librealarm_app_using_sony_smartwatch">App LibreAlarm: a usar Sony Smartwatch </string>
     <string name="__data_source_disabled">\n FONTE DE DADOS DESACTIVADA</string>
@@ -1451,6 +1452,7 @@
     <string name="__do_you_want_to_change_settings_or_start_sensor">\n\nAlterar as Configurações ou Iniciar Sensor?</string>
     <string name="change_settings">Alterar Definições</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Eliminar e Reiniciar as Calibrações para este Sensor?</string>
+    <string name="sensor_stop_confirm">Quer terminar o sensor?</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Possui uma antiga previsão experimental de glicose ativada.\n\nIsso NÃO é RECOMENDADO e pode confundir muito as coisas.\n\nPretende desativar?</string>
     <string name="settings_issue">Problema de Configurações!</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Pretende usar este teste capilar inserido para calibrar?\n\n(Pode alterar quando esta caixa de diálogo é exibida nas Configurações)</string>
@@ -1556,6 +1558,6 @@
     <string name="enable_streaming_dialog_yes">ligar a este sensor Libre 2</string>
     <string name="enable_streaming_dialog_no">Não ligar a este sensor libre 2 </string>
     <string name="enable_streaming_dialog_dont_ask_again">Não voltar a perguntar</string>
-    <string name="enable_streaming_dialog_title">A ligar o sensor Libre ao bluetooth</string>
     <string name="enable_streaming_dialog_text">Deseja ligar o xDrip com este sensor?  Isto impedirá o leitor do Libre e app LibreLink de receber alertas. Pressione sim e faça leitura por NFC novamente para ligar (escolha não ligar se quiser executar o xDrip com a Libre 2 Patched app)</string>
+    <string name="enable_streaming_dialog_title">A ligar o sensor Libre ao bluetooth</string>
 </resources>

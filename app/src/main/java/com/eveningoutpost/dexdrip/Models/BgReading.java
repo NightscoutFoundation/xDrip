@@ -1089,7 +1089,11 @@ public class BgReading extends Model implements ShareUploadableBg {
             bgr.uuid = UUID.randomUUID().toString();
             bgr.calculated_value = calculated_value;
             bgr.raw_data = SPECIAL_G5_PLACEHOLDER; // placeholder
-            bgr.appendSourceInfo("G5 Native");
+            if (Ob1G5CollectionService.usingG6()) {
+                bgr.appendSourceInfo("G6 Native");
+            } else {
+                bgr.appendSourceInfo("G5 Native");
+            }
             if (sourceInfoAppend != null && sourceInfoAppend.length() > 0) {
                 bgr.appendSourceInfo(sourceInfoAppend);
             }
@@ -1274,7 +1278,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                     Log.d(TAG, "Ignoring duplicate bgr record due to timestamp: " + json);
                 }
             } catch (Exception e) {
-                Log.d(TAG, "Could not save BGR: " + e.toString());
+                Log.e(TAG, "Could not save BGR bgReading: ", e);
             }
         } else {
             Log.e(TAG,"Got null bgr from json");
@@ -1325,7 +1329,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                     Log.d(TAG, "Ignoring duplicate bgr record due to timestamp: " + timestamp);
                 }
             } catch (Exception e) {
-                Log.d(TAG, "Could not save BGR: " + e.toString());
+                Log.e(TAG, "Could not save BGR: ", e);
             }
         } else {
             Log.e(TAG,"Got null bgr from create");

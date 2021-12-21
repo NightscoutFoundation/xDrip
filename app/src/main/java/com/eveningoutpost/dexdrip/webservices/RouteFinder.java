@@ -33,6 +33,11 @@ public class RouteFinder {
 
         // support for nightscout style sgv.json endpoint
         routes.add(new RouteInfo("sgv.json", "WebServiceSgv"));
+        routes.add(new RouteInfo("api/v1/entries/sgv.json", "WebServiceSgv"));
+
+        // support for nightscout style treatments.json endpoint
+        routes.add(new RouteInfo("treatments.json", "WebServiceTreatments"));
+        routes.add(new RouteInfo("api/v1/treatments.json", "WebServiceTreatments"));
 
         // support for nightscout style barebones status.json endpoint
         routes.add(new RouteInfo("status.json", "WebServiceStatus"));
@@ -46,6 +51,8 @@ public class RouteFinder {
         // tasker interface
         routes.add(new RouteInfo("tasker/", "WebServiceTasker"));
 
+        // libre2 start connection code.
+        routes.add(new RouteInfo("Libre2ConnectCode.json", "Libre2ConnectCode"));
     }
 
     // process a received route

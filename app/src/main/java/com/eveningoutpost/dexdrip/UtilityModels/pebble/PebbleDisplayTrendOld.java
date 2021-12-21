@@ -505,57 +505,60 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
             if (lock.tryLock(60, TimeUnit.SECONDS)) {
                 try {
 
-                        if (PebbleKit.isWatchConnected(this.context)) {
-                            if (d) Log.d(TAG, "Sendstep: " + sendStep);
-                            if (sendStep == 5) {
-                                sendStep = 0;
-                                done = false;
-                                clearDictionary();
+                    if (PebbleKit.isWatchConnected(this.context)) {
+                        if (d) Log.d(TAG, "Sendstep: " + sendStep);
+                        if (sendStep == 5) {
+                            sendStep = 0;
+                            done = false;
+                            clearDictionary();
+                        }
+
+                        if (d)
+                            Log.i(TAG, "sendData: messageInTransit= " + messageInTransit + ", transactionFailed= " + transactionFailed + ", sendStep= " + sendStep);
+                        if (sendStep == 0 && !messageInTransit && !transactionOk && !transactionFailed) {
+
+                            if (use_best_glucose) {
+                                this.dg = BestGlucose.getDisplayGlucose();
+                            } else {
+                                this.bgReading = BgReading.last();
                             }
 
-                            if (d) Log.i(TAG, "sendData: messageInTransit= " + messageInTransit + ", transactionFailed= " + transactionFailed + ", sendStep= " + sendStep);
-                            if (sendStep == 0 && !messageInTransit && !transactionOk && !transactionFailed) {
+                            sendingData = true;
+                            buildDictionary();
+                            sendDownload();
+                        }
 
-                                if (use_best_glucose) {
-                                    this.dg = BestGlucose.getDisplayGlucose();
+
+                        if (sendStep == 0 && !messageInTransit && transactionOk && !transactionFailed) {
+                            if (d) Log.i(TAG, "sendData: sendStep 0 complete, clearing dictionary");
+                            clearDictionary();
+                            transactionOk = false;
+                            sendStep = 1;
+                        }
+                        if (sendStep > 0 && sendStep < 5) {
+                            if (!doWeDisplayTrendData()) {
+                                if (didTrend) {
+                                    sendTrendToPebble(true); // clear trend image
                                 } else {
-                                    this.bgReading = BgReading.last();
-                                    }
-
-                                sendingData = true;
-                                buildDictionary();
-                                sendDownload();
-                            }
-
-
-                            if (sendStep == 0 && !messageInTransit && transactionOk && !transactionFailed) {
-                                if (d) Log.i(TAG, "sendData: sendStep 0 complete, clearing dictionary");
-                                clearDictionary();
-                                transactionOk = false;
-                                sendStep = 1;
-                            }
-                            if (sendStep > 0 && sendStep < 5) {
-                                if (!doWeDisplayTrendData()) {
-                                    if (didTrend) {
-                                        sendTrendToPebble(true); // clear trend image
-                                    } else {
-                                        sendStep = 5;
-                                    }
-                                } else {
-                                    sendTrendToPebble(false);
+                                    sendStep = 5;
                                 }
-                            }
-
-                            if (sendStep == 5) {
-                                if (d) Log.i(TAG, "sendData: finished sending.  sendStep = " + sendStep);
-                                done = true;
-                                transactionFailed = false;
-                                transactionOk = false;
-                                messageInTransit = false;
-                                sendingData = false;
+                            } else {
+                                sendTrendToPebble(false);
                             }
                         }
 
+                        if (sendStep == 5) {
+                            if (d)
+                                Log.i(TAG, "sendData: finished sending.  sendStep = " + sendStep);
+                            done = true;
+                            transactionFailed = false;
+                            transactionOk = false;
+                            messageInTransit = false;
+                            sendingData = false;
+                        }
+                    }
+                } catch (final NullPointerException e) {
+                    Log.e(TAG, "Got null pointer error " + e);
                 } finally {
                     lock.unlock();
                 }

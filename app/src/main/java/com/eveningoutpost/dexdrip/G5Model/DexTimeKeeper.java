@@ -4,6 +4,8 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 
+import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.getTransmitterID;
+
 /**
  * Created by jamorham on 25/11/2016.
  */
@@ -32,7 +34,11 @@ public class DexTimeKeeper {
         if (dexTimeStamp < 1) {
             UserError.Log.e(TAG, "Invalid dex timestamp in updateAge: " + dexTimeStamp);
             if (dexTimeStamp == 0 && absolute) {
-                DexResetHelper.offer("Your transmitter clock has stopped or never started. Do you want to hard reset it?");
+                if (FirmwareCapability.isTransmitterRawIncapable(getTransmitterID())) { // Firefly, which cannot be hard reset
+                    UserError.Log.e(TAG, "Your transmitter clock has stopped or never started.");
+                } else {
+                    DexResetHelper.offer("Your transmitter clock has stopped or never started. Do you want to hard reset it?");
+                }
             }
             return;
         }

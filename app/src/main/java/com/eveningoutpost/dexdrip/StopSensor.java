@@ -11,12 +11,17 @@ import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.NanoStatus;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
+import com.eveningoutpost.dexdrip.ui.dialog.GenericConfirmDialog;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
+
+import lombok.val;
+
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 public class StopSensor extends ActivityWithMenu {
@@ -43,17 +48,13 @@ public class StopSensor extends ActivityWithMenu {
     }
 
     public void addListenerOnButton() {
-
         button = (Button)findViewById(R.id.stop_sensor);
-
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                stop();
-                JoH.startActivity(Home.class);
-                finish();
-            }
-
-        });
+        val activity = this;
+        button.setOnClickListener(v -> GenericConfirmDialog.show(activity, gs(R.string.are_you_sure), gs(R.string.sensor_stop_confirm), () -> {
+            stop();
+            JoH.startActivity(Home.class);
+            finish();
+        }));
     }
 
     public synchronized static void stop() {
@@ -65,6 +66,8 @@ public class StopSensor extends ActivityWithMenu {
         JoH.clearCache();
         LibreAlarmReceiver.clearSensorStats();
         PluggableCalibration.invalidateAllCaches();
+
+        Treatments.sensorStop(null, "Stopped by xDrip");
 
         Ob1G5StateMachine.stopSensor();
 

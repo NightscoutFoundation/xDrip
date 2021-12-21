@@ -84,7 +84,7 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
         LayoutInflater inflater= LayoutInflater.from(this);
         View view=inflater.inflate(R.layout.import_db_warning, null);
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-        alertDialog.setTitle("Import Instructions");
+        alertDialog.setTitle("Restore Instructions");
         alertDialog.setView(view);
         alertDialog.setCancelable(false);
         alertDialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {

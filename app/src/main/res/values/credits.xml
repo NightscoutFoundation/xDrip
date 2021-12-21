@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+<!--    These translators credited here provided translation via the in-app translation feature.
+        Later during the project, this feature was retired and cloud based translation was used with
+        many additional contributors who are not individually recognized within the application.
+
+        In June 2021 the credits for these translators was removed from the main display due to
+        the data being outdated vs the current state of how translation is handled.
+
+        For historical record this file remains.
+-->
 <string translatable="false" name="translation_credits">Many thanks to our translators:\n\nPietballing (ro) :: 458\nAlino1963 (it) :: 432\nMilos Kozak (cs) :: 419\nTixastronauta (pt) :: 411\nSomyeong\'s mom (ko) :: 396\nCyrille David (fr) :: 353\nJonny Johnson (de) :: 321\nMaciej Glabik (pl) :: 268\nEcorman (es) :: 156\nVladislav Lebedev (ru) :: 130\nMeica (de) :: 105\nAdrianLxM (de) :: 063\nFrank Labuda (de) :: 006\nAlexandre Silva (pt) :: 006\nLukas Soukup (cs) :: 003\nEduard (ru) :: 001\nGrandpa (de) :: 001\nTimMoritz (de) :: 001\nDenis (ru) :: 001</string>
 </resources>

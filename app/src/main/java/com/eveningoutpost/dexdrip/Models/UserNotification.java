@@ -20,7 +20,7 @@ import java.util.Locale;
  */
 
 @Table(name = "Notifications", id = BaseColumns._ID)
-public class UserNotification extends Model {
+public class UserNotification extends PlusModel {
 
     // For 'other alerts' this will be the time that the alert should be raised again.
     // For calibration alerts this is the time that the alert was played.
@@ -60,6 +60,7 @@ public class UserNotification extends Model {
             "bg_missed_alerts", "bg_rise_alert", "bg_fall_alert");
     private final static String TAG = AlertPlayer.class.getSimpleName();
 
+    private static boolean patched = false;
 
     public static UserNotification lastBgAlert() {
         return new Select()
@@ -179,4 +180,16 @@ public class UserNotification extends Model {
         return userNotification;
 
     }
+
+    // create the table ourselves without worrying about model versioning and downgrading
+    public static void updateDB() {
+        patched = fixUpTable(schema, patched);
+    }
+
+    private static final String[] schema = {
+            "ALTER TABLE Notifications ADD COLUMN bg_unclear_readings_alert INTEGER;",
+            "ALTER TABLE Notifications ADD COLUMN bg_missed_alerts INTEGER;",
+            "ALTER TABLE Notifications ADD COLUMN bg_rise_alert INTEGER;",
+            "ALTER TABLE Notifications ADD COLUMN bg_fall_alert INTEGER;",
+    };
 }

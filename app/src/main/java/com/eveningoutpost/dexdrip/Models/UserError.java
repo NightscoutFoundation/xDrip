@@ -404,7 +404,7 @@ public class UserError extends Model {
             Log.e(TAG, "Unknown level for tag " + tag + " please use d v or i");
         }
         
-        static boolean shouldLogTag(final String tag, final int level) {
+        public static boolean shouldLogTag(final String tag, final int level) {
             final Integer levelForTag = extraTags.get(tag != null ? tag.toLowerCase() : "");
             return levelForTag != null && level >= levelForTag;
         }

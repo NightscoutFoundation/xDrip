@@ -31,4 +31,19 @@ public class WebResponse {
         this.mimeType = mimeType;
         this.resultCode = resultCode;
     }
+
+    public String getResultDesc() {
+        switch (resultCode) {
+            case 200:
+                return "OK";
+            case 400:
+                return "Bad Request";
+            case 404:
+                return "Not Found";
+            case 500:
+                return "Server Error";
+            default:
+                return "Unknown";
+        }
+    }
 }

@@ -48,6 +48,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import lombok.val;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -186,6 +187,23 @@ public class UpdateActivity extends BaseAppCompatActivity {
                 httpClient = null; // for GC
             }).start();
         }
+    }
+
+    public static void forceUpdateCheckNow() {
+        JoH.static_toast_long(xdrip.gs(R.string.checking_for_update));
+        UpdateActivity.last_check_time = -2;
+        UpdateActivity.checkForAnUpdate(xdrip.getAppContext());
+    }
+
+    public static boolean testAndSetNightly(final boolean set) {
+        val update_channel = "update_channel";
+        val nightly_channel = "nightly";
+        val nightly = Pref.getString(update_channel, "").matches(nightly_channel);
+        if (!nightly && set) {
+            Pref.setString(update_channel, nightly_channel);
+            UpdateActivity.forceUpdateCheckNow();
+        }
+        return nightly;
     }
 
     private static String getDownloadFolder() {

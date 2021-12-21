@@ -29,7 +29,7 @@ import java.util.Locale;
 public class SpeechUtil {
 
     public static final String TAG = "SpeechUtil";
-    public static final String TWICE_DELIMITER = " ... ... ... "; // creates a pause hopefully works on all locales
+    public static final String TWICE_DELIMITER = " ... "; // creates a pause hopefully works on all locales
     private static volatile TextToSpeech tts = null; // maintained instance
 
     // delay parameter allows you to force a millis delay before playing to avoid clash with notification sounds triggered at the same time
