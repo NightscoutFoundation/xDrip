@@ -69,6 +69,10 @@
     <string name="add_note">افزودن یادداشت</string>
     <string name="space_mins">" دقیقه"</string>
     <string name="expires_at">در {0} تمام می شود</string>
+    <string name="home_screen">صفحه اصلی</string>
+    <string name="glucose_units">واحد قند خون</string>
+    <string name="high_value">حد بالا</string>
+    <string name="low_value">حد پایین</string>
     <string name="view_google_licenses">مجوز گوگل</string>
     <string name="system_status">وضعیت سیستم</string>
     <string name="history">تاریخچه</string>
