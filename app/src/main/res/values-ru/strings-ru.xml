@@ -1387,6 +1387,8 @@
     <string name="title_ongoing_notification_channel">Использовать текущий канал уведомлений</string>
     <string name="summary_notification_channels_grouping">Группировать оповещения вместе. Не совместимо с функцией \"Значение глюкозы в области уведомлений\"</string>
     <string name="title_notification_channels_grouping">Группировать оповещения</string>
+    <string name="summary_delay_ascending_3min">Для профиля возрастающей громкости задерживать начало звука тревоги на 3 минуты. Вибрация (если включена) начнется сразу при срабатывании тревоги вне зависимости от этой настройки.</string>
+    <string name="title_delay_ascending_3min">Задержка возрастания громкости</string>
     <string name="summary_play_sound_for_initial_calibration">Уведомлять звуком когда требуется начальная калибровка</string>
     <string name="title_play_sound_for_initial_calibration">Звуковое уведомление</string>
     <string name="category_noisy_readings">Шумные данные</string>
