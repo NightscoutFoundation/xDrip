@@ -985,7 +985,6 @@
             android:title="@string/automatic_update_check" />
         <ListPreference
             android:defaultValue="beta"
-            android:dependency="auto_update_download"
             android:entries="@array/UpdateChannelDetail"
             android:entryValues="@array/UpdateChannel"
             android:key="update_channel"
