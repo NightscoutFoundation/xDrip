@@ -1387,6 +1387,8 @@
     <string name="title_ongoing_notification_channel">Verwenden Sie den laufenden Benachrichtigungskanal</string>
     <string name="summary_notification_channels_grouping">Ob Benachrichtigungen gruppiert werden sollen. Inkompatibel mit \"Nummern-Symbol im Benachrichtigungsbereich\"</string>
     <string name="title_notification_channels_grouping">Gruppiere Benachrichtigungen</string>
+    <string name="summary_delay_ascending_3min">Um einen ansteigenden Alarmton zu nutzen, musst Du den Alarmton 3 Minuten verzögert starten. Die Vibration startet - sofern aktiviert - unabhängig von dieser Einstellung direkt beim Auslösen des Alarms.</string>
+    <string name="title_delay_ascending_3min">Ansteigende Lautstärke verzögern</string>
     <string name="summary_play_sound_for_initial_calibration">Ton abspielen, wenn die initiale Kalibrierung angefordert wird</string>
     <string name="title_play_sound_for_initial_calibration">Initiale Warnung</string>
     <string name="category_noisy_readings">Verrauschte Werte</string>
