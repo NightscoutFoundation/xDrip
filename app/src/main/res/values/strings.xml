@@ -1232,6 +1232,11 @@
     <string name="send_bg_readings_to_backfill">Send BG readings to backfill</string>
     <string name="view_old_error_log">View old Error Log</string>
     <string name="return_to_home_screen">Return to Home Screen</string>
+
+    <string name="title_watch_broadcast_preferences">Watch Broadcast</string>
+    <string name="title_watch_broadcast_enable">Enable Watch Broadcast</string>
+    <string name="summary_watch_broadcast_enable">Enables xDrip communication with thirdpary applications</string>
+
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Sync Data with MiBand fitness bands</string>
     <string name="title_miband_enable">Use MiBand Band</string>
