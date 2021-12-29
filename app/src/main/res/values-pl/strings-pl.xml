@@ -1302,6 +1302,7 @@
     <string name="i_agree">ZGADZAM SIĘ</string>
     <string name="backup_detected">Wykryto kopie zapasową</string>
     <string name="libre">Libre</string>
+    <string name="__data_source_disabled">\n WYŁĄCZONE ŹRÓDŁO DANYCH</string>
     <string name="data_source_is_set_to_">Źródło danych jest ustawione na: </string>
     <string name="__do_you_want_to_change_settings_or_start_sensor">\n\nChcesz zmienić ustawienia czy uruchomić czujnik?</string>
     <string name="change_settings">Zmień ustawienia</string>
