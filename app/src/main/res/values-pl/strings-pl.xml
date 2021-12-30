@@ -1308,6 +1308,7 @@
     <string name="change_settings">Zmień ustawienia</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Czy chcesz usunąć i zresetować kalibracje dla tego czujnika?</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Masz włączoną starą eksperymentalną opcję przewidywania glikemii.\n\nTo NIE jest zalecane i może wiele popsuć.\n\nCzy mogę ją dla Ciebie wyłączyć?</string>
+    <string name="settings_issue">Problem z ustawieniami!</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Czy chcesz użyć tej zsynchronizowanej wartości stężenia glukozy we krwi do kalibracji?\n\n(możesz zmienić kiedy to okno dialogowe jest wyświetlane w Ustawieniach)</string>
     <string name="use_bg_for_calibration">Czy użyć glikemii do kalibracji?</string>
     <string name="do_you_want_to_use_this_entered_fingerstick_blood_glucose_test_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Czy chcesz użyć tej wprowadzonej wartości stężenia glukozy we krwi do kalibracji?\n\n(możesz zmienić kiedy to okno dialogowe jest wyświetlane w Ustawieniach)</string>
@@ -1317,11 +1318,13 @@
     <string name="yes_enable">TAK, włącz</string>
     <string name="what_would_you_like_to_do">Co chciałbyś zrobić?</string>
     <string name="nothing">Nic</string>
+    <string name="are_you_sure_you_want_to_delete_this_blood_test_result">Czy na pewno chcesz usunąć ten pomiar z krwi?</string>
     <string name="yes_delete">Tak, usuń</string>
     <string name="deleted">Usunięto!</string>
     <string name="your_wifi_is_set_to_sleep_when_the_phone_screen_is_off__this_may_cause_problems_if_you_dont_have_cellular_data_or_have_devices_on_your_local_network__would_you_like_to_go_to_the_settings_page_to_set__always_keep_wifi_on_during_sleep">Twoje WiFi jest usypiane, gdy ekran telefonu jest wyłączony.\n\nMoże to powodować problemy, jeśli nie masz włączonych danych komórkowych albo posiadasz urządzenia w sieci lokalnej.\n\nCzy chcesz przejść do ustawień żeby włączyć:\n\nPozostaw Wi-Fi włączone podczas uśpienia?</string>
     <string name="maybe_later">Może później</string>
     <string name="yes_do_it">TAK, Zrób to</string>
+    <string name="ooops_this_device_doesnt_seem_to_have_a_wifi_settings_page">Uuups to urządzenie nie ma strony z ustawieniami WiFi!</string>
     <string name="restore_backup">Przywrócić kopię zapasową?</string>
     <string name="do_you_want_to_restore_the_backup_file_">Czy chcesz przywrócić z pliku kopii zapasowej: </string>
     <string name="restore">Przywróć</string>
@@ -1358,6 +1361,7 @@
     <string name="please_wait">Proszę czekać..</string>
     <string name="didnt_find_any_glucose_readings_in_that_time_period">Nie znaleziono pomiarów glikemii w tym okresie</string>
     <string name="sensor_stopped">Czujnik zatrzymany</string>
+    <string name="restarting_collector">Restartowanie kolektora!</string>
     <string name="follower_deleted_succesfully">Obserwator pomyślnie usunięty</string>
     <string name="failed_to_delete_follower">Nie udało się usunąć obserwatora</string>
     <string name="cancelled">Anulowano!</string>
