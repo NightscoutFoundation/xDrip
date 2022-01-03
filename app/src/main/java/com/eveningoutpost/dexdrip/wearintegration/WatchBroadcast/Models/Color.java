@@ -28,7 +28,7 @@ public class Color implements Parcelable {
         parcel.writeInt(color);
     }
 
-    public static final Parcelable.Creator<Color> CREATOR = new Parcelable.Creator<Color>() {
+    public static final Creator<Color> CREATOR = new Creator<Color>() {
 
         @Override
         public Color createFromParcel(Parcel source) {

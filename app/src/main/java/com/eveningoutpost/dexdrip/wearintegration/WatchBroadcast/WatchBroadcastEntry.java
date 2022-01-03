@@ -36,10 +36,4 @@ public class WatchBroadcastEntry {
             JoH.startService(WatchBroadcastService.class, "function", "update_bg");
         }
     }
-
-    public static void forceShowLatestBG() {
-        if (isEnabled()) {
-            JoH.startService(WatchBroadcastService.class, "function", "update_bg_force");
-        }
-    }
 }
