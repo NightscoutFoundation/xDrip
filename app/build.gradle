@@ -60,7 +60,7 @@ def generateVersionNumber = { ->
 
 def generateVersionNumberString = { ->
     StringBuilder stringBuilder = new StringBuilder()
-    stringBuilder.append((new Date()).format('yyMMddHHmm'))
+    stringBuilder.append((new Date()).format('21yyMMddHH'))
     return stringBuilder.toString()
 }
 
