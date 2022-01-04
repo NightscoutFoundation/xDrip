@@ -21,9 +21,15 @@ jobs:
       with:
         java-version: ${{ matrix.java-version }}
         distribution: adopt
-    - name: Run unit tests and assemble APKs
+    - name: Run unit tests, assemble APKs and generate code coverage report
       uses: gradle/gradle-build-action@v2
       with:
-        arguments: assembleProdRelease testProdReleaseUnitTest
+        arguments: assembleProdRelease testProdReleaseUnitTestCoverage
+    - name: Upload coverage report to Codecov
+      uses: codecov/codecov-action@v2
+      with:
+        verbose: true # optional (default = false)
+        directory: app/build/reports/jacoco/testProdReleaseUnitTestCoverage
+        files: testProdReleaseUnitTestCoverage.xml
     - name: Check Output
       run: bash ./etc/CheckBuild/check-release.sh test
