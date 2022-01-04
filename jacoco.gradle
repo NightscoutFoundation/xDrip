@@ -1,0 +1,53 @@
+apply plugin: 'jacoco'
+
+jacoco {
+    // This version should be same as the one defined in root project build.gradle file :
+    toolVersion = "0.8.6"
+}
+
+tasks.withType(Test) {
+    jacoco.includeNoLocationClasses = true
+}
+
+project.afterEvaluate {
+    android.applicationVariants.all { variant ->
+        def testTaskName = "test${variant.name.capitalize()}UnitTest"
+        task "${testTaskName}Coverage"(type: JacocoReport, dependsOn: "$testTaskName") {
+            group = "Reporting"
+            description = "Generate Jacoco coverage reports on the ${variant.name.capitalize()} build."
+            def excludes = [
+                    '**/R.class',
+                    '**/R$*.class',
+                    '**/*$ViewInjector*.*',
+                    '**/*$ViewBinder*.*',
+                    '**/BuildConfig.*',
+                    '**/Manifest*.*'
+            ]
+
+            //Tree for all the Java classes
+            def javaClasses = fileTree(dir: variant.javaCompiler.destinationDir, excludes: excludes)
+            println "Test : " + javaClasses
+
+            //Tree for all the Kotlin classes
+            def kotlinClasses = fileTree(dir: "${buildDir}/tmp/kotlin-classes/${variant.name}", excludes: excludes)
+
+            //combined source directories
+            classDirectories.from = files([javaClasses, kotlinClasses])
+
+            def coverageSourceDirs = [
+                    "$project.projectDir/src/main/java",
+                    "$project.projectDir/src/${variant.name}/java",
+                    "$project.projectDir/src/main/kotlin",
+                    "$project.projectDir/src/${variant.name}/kotlin"
+            ]
+            additionalSourceDirs.from = files(coverageSourceDirs)
+            sourceDirectories.from = files(coverageSourceDirs)
+            executionData.from = files("${project.buildDir}/jacoco/${testTaskName}.exec")
+            reports {
+                xml.enabled = true
+                html.enabled = false
+                html.destination = file("${project.buildDir}/jacoco/")
+            }
+        }
+    }
+}

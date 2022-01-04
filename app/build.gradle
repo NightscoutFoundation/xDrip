@@ -338,3 +338,4 @@ tasks.withType(Test) {
 }
 
 apply plugin: 'com.google.gms.google-services'
+apply from: '../jacoco.gradle'
