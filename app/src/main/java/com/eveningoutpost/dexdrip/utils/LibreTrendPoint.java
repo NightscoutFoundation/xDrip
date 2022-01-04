@@ -8,9 +8,7 @@ public class LibreTrendPoint {
     long sensorTime; // The number of minutes from sensor start.
     public long rawSensorValue; // The raw value of the sensor
     int flags; // The flags that were received from the sensor (if any).
-    public GlucoseData.DataSource source; // Did we read this data from
-                                          // bluetooth or NFC? This affects the
-                                          // way that flags are interputed.
+    public GlucoseData.DataSource source; // Did we read this data from bluetooth or NFC? This affects the way that flags are interpreted.
 
     static final String TAG = "LibreTrendPoint";
 
