@@ -1,7 +1,7 @@
 # Reporting Issues with xDrip
 
 Before opening an issue, please communicate with us by posting in the support channels:  
-https://github.com/NightscoutFoundation/xDrip/discussions
+https://github.com/NightscoutFoundation/xDrip/discussions  
 https://www.facebook.com/groups/xDripG5  
 We will encourage you to open an issue if it is not already known and there is no work-around.  
 
