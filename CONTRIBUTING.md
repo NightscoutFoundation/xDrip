@@ -1,8 +1,8 @@
 # Reporting Issues with xDrip
 
 Before opening an issue, please communicate with us by posting in the support channels:  
+https://github.com/NightscoutFoundation/xDrip/discussions
 https://www.facebook.com/groups/xDripG5  
-https://gitter.im/jamorham/xDrip-plus  
 We will encourage you to open an issue if it is not already known and there is no work-around.  
 
 ### Please try to provide as much information as possible when raising an issue:
@@ -16,7 +16,8 @@ We will encourage you to open an issue if it is not already known and there is n
 
 Patches are welcomed! To ensure the best all round results they need be a good fit with the project roadmap, the ecosystem of users and respect overall project stability and good practice.
 
-The best way to get patches accepted is to discuss your ideas with project maintainers prior to implementation and discuss how to structure things so that they can fit well within the project and also the rationale for the change.
+The best way to get patches accepted is to discuss your ideas with project maintainers prior to implementation and discuss how to structure things so that they can fit well within the project and also the rationale for the change:  
+https://github.com/NightscoutFoundation/xDrip/discussions
 
 #### Project reviewers are likely to use criteria similar to that outlined below:
 
