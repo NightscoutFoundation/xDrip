@@ -28,11 +28,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-//KS import com.eveningoutpost.dexdrip.GcmActivity;
-//KS import com.eveningoutpost.dexdrip.Services.SyncService;
-//KS import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
-//KS import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
-
 // TODO Switchable Carb models
 // TODO Linear array timeline optimization
 
