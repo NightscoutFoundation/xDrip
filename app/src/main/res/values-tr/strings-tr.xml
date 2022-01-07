@@ -521,7 +521,7 @@
     <string name="disable_alert">Alarmı devre dışı bırak</string>
     <string name="save_alert">Alarmı kaydet</string>
     <string name="remove_alert">Alarmı kaldır</string>
-    <string name="snooze_alert_before_it_fires">önce ertele sonra uyar</string>
+    <string name="snooze_alert_before_it_fires">Önce ertele sonra uyar</string>
     <string name="create_low_alert">Düşük uyarı oluştur</string>
     <string name="create_high_alert">Yüksek uyarı oluştur</string>
     <string name="long_press_an_existing_alert_to_edit">(Mevcut bir uyarıyı düzenlemek için uzun süre basılı tutun)</string>
