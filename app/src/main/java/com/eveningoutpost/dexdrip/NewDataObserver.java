@@ -24,6 +24,7 @@ import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayRemote;
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService;
+import com.eveningoutpost.dexdrip.wearintegration.WatchBroadcast.WatchBroadcastService;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
@@ -49,6 +50,7 @@ public class NewDataObserver {
         sendToAmazfit();
         sendToLeFun();
         sendToMiBand();
+        sendToWatchBroadcast();
         sendToBlueJay();
         sendToRemoteBlueJay();
         Notifications.start();
@@ -108,6 +110,9 @@ public class NewDataObserver {
         if (MiBandEntry.isEnabled()) {
             Inevitable.task("poll-miband-for-bg", DexCollectionType.hasBluetooth() ? 2000 : 500, MiBandEntry::showLatestBG); // delay enough for BT to finish on collector
         }
+    }
+    private static void sendToWatchBroadcast() {
+        WatchBroadcastService.showLatestBG();
     }
 
     private static void sendToBlueJay() {

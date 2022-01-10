@@ -558,6 +558,18 @@
                 </PreferenceCategory>
             </PreferenceScreen>
         </PreferenceScreen>
+
+
+        <PreferenceScreen
+            android:key="watch_broadcast_preferences"
+            android:title="@string/title_watch_broadcast_preferences">
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="watch_broadcast_enabled"
+                android:summary="@string/summary_watch_broadcast_enable"
+                android:title="@string/title_watch_broadcast_enable" />
+        </PreferenceScreen>
+
         <PreferenceScreen
             android:key="miband_preferences"
             android:title="@string/title_miband">
@@ -802,16 +814,6 @@
                     android:title="Disable hight MTU values" />
            </PreferenceCategory>
 
-        </PreferenceScreen>
-
-        <PreferenceScreen
-            android:key="watch_broadcast_preferences"
-            android:title="@string/title_watch_broadcast_preferences">
-            <SwitchPreference
-                android:defaultValue="false"
-                android:key="watch_broadcast_enabled"
-                android:summary="@string/summary_watch_broadcast_enable"
-                android:title="@string/title_watch_broadcast_enable" />
         </PreferenceScreen>
 
         <PreferenceScreen

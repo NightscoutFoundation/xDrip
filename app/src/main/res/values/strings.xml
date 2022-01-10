@@ -1235,7 +1235,7 @@
 
     <string name="title_watch_broadcast_preferences">Watch Broadcast</string>
     <string name="title_watch_broadcast_enable">Enable Watch Broadcast</string>
-    <string name="summary_watch_broadcast_enable">Enables xDrip communication with thirdpary applications</string>
+    <string name="summary_watch_broadcast_enable">Enables xDrip communication with thirdparty applications</string>
 
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Sync Data with MiBand fitness bands</string>

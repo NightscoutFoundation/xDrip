@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 public class WatchSettings implements Parcelable {
     protected WatchSettings(Parcel in) {
+        apkName = in.readString();
         graphSince = in.readLong();
     }
 
@@ -30,6 +31,16 @@ public class WatchSettings implements Parcelable {
 
     private long graphSince;
 
+    public String getApkName() {
+        return apkName;
+    }
+
+    public void setApkName(String apkName) {
+        this.apkName = apkName;
+    }
+
+    private String apkName;
+
     @Override
     public int describeContents() {
         return 0;
@@ -37,6 +48,7 @@ public class WatchSettings implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(apkName);
         parcel.writeLong(graphSince);
     }
 }
