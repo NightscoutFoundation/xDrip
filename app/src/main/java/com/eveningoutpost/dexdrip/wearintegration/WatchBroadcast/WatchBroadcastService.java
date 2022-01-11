@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 
@@ -54,8 +55,8 @@ public class WatchBroadcastService extends Service {
 
     protected static final String CMD_SET_SETTINGS = "set_settings";
     protected static final String CMD_UPDATE_BG_FORCE = "update_bg_force";
-    protected static final String CMD_ALARM = "alarm";
-    protected static final String CMD_SNOOZE_ALARM = "snooze_alarm";
+    protected static final String CMD_ALERT = "alarm";
+    protected static final String CMD_SNOOZE_ALERT = "snooze_alarm";
     protected static final String CMD_ADD_STEPS = "add_steps";
     protected static final String CMD_ADD_HR = "add_hrs";
     protected static final String CMD_ADD_TREATMENT = "add_treatment";
@@ -66,6 +67,7 @@ public class WatchBroadcastService extends Service {
     protected static final String ACTION_WATCH_COMMUNICATION_RECEIVER = "com.eveningoutpost.dexdrip.watch.wearintegration.WATCH_BROADCAST_RECEIVER";
     //send
     protected static final String ACTION_WATCH_COMMUNICATION_SENDER = "com.eveningoutpost.dexdrip.watch.wearintegration.WATCH_BROADCAST_SENDER";
+
     public static SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
             if (key.startsWith("watch_broadcast")) {
@@ -75,6 +77,7 @@ public class WatchBroadcastService extends Service {
             }
         }
     };
+
     protected String TAG = this.getClass().getSimpleName();
     protected Map<String, WatchSettings> broadcastEntities;
     private String statusIOB = "";
@@ -85,7 +88,7 @@ public class WatchBroadcastService extends Service {
             try {
                 final String action = intent.getAction();
                 if (action != null && action.equals(ACTION_WATCH_COMMUNICATION_RECEIVER)) return;
-
+                PowerManager.WakeLock wl = JoH.getWakeLock(TAG, 2000);
                 String packageKey = intent.getStringExtra(INTENT_PACKAGE_KEY);
                 String function = intent.getStringExtra(INTENT_FUNCTION_KEY);
                 UserError.Log.d(TAG, String.format("received broadcast: function:%s, packageKey: %s", function, packageKey));
@@ -132,7 +135,7 @@ public class WatchBroadcastService extends Service {
                             //update immediately
                             startService = true;
                             break;
-                        case CMD_SNOOZE_ALARM:
+                        case CMD_SNOOZE_ALERT:
                             String activeAlertType = intent.getStringExtra(INTENT_ALERT_TYPE);
                             if (activeAlertType == null) {
                                 function = CMD_REPLY_MSG;
@@ -165,7 +168,9 @@ public class WatchBroadcastService extends Service {
                     intentSend.putExtra(INTENT_FUNCTION_KEY, function);
                     intentSend.putExtra(INTENT_PACKAGE_KEY, packageKey);
                     xdrip.getAppContext().startService(intent);
+                    return;
                 }
+                JoH.releaseWakeLock(wl);
             } catch (Exception e) {
                 UserError.Log.e(TAG, "broadcast onReceive Error: " + e.toString());
             }
@@ -184,12 +189,22 @@ public class WatchBroadcastService extends Service {
 
     public static void initialStartIfEnabled() {
         if (isEnabled()) {
-            Inevitable.task("mb-full-watch-broadcast-initial-start", 500, new Runnable() {
+            Inevitable.task("watch-broadcast-initial-start", 500, new Runnable() {
                 @Override
                 public void run() {
                     JoH.startService(WatchBroadcastService.class);
                 }
             });
+        }
+    }
+
+    // convert multi-line text to string for display constraints
+    public static void sendAlert(String title, String message) {
+        if (isEnabled()) {
+            Inevitable.task("watch-broadcast-send-alert", 100, () -> JoH.startService(WatchBroadcastService.class,
+                    INTENT_FUNCTION_KEY, CMD_ALERT,
+                    "message", message,
+                    "title", title));
         }
     }
 
@@ -235,24 +250,29 @@ public class WatchBroadcastService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (isEnabled()) {
-            if (intent != null) {
-                final String function = intent.getStringExtra(INTENT_FUNCTION_KEY);
-                if (function != null) {
-                    try {
-                        handleCommand(function, intent);
-                    } catch (Exception e) {
-                        UserError.Log.e(TAG, "handleCommand Error: " + e.toString());
+        final PowerManager.WakeLock wl = JoH.getWakeLock(TAG, 10000);
+        try {
+            if (isEnabled()) {
+                if (intent != null) {
+                    final String function = intent.getStringExtra(INTENT_FUNCTION_KEY);
+                    if (function != null) {
+                        try {
+                            handleCommand(function, intent);
+                        } catch (Exception e) {
+                            UserError.Log.e(TAG, "handleCommand Error: " + e.toString());
+                        }
+                    } else {
+                        UserError.Log.d(TAG, "onStartCommand called without function");
                     }
-                } else {
-                    UserError.Log.d(TAG, "onStartCommand called without function");
                 }
+                return START_STICKY;
+            } else {
+                UserError.Log.d(TAG, "Service is NOT set be active - shutting down");
+                stopSelf();
+                return START_NOT_STICKY;
             }
-            return START_STICKY;
-        } else {
-            UserError.Log.d(TAG, "Service is NOT set be active - shutting down");
-            stopSelf();
-            return START_NOT_STICKY;
+        } finally {
+            JoH.releaseWakeLock(wl);
         }
     }
 
@@ -287,7 +307,10 @@ public class WatchBroadcastService extends Service {
                 replyMsg = intent.getStringExtra(INTENT_REPLY_MSG);
                 receiver = intent.getStringExtra(INTENT_PACKAGE_KEY);
                 break;
-            case CMD_ALARM:
+            case CMD_ALERT:
+                bundle = new Bundle();
+                bundle.putString("title", intent.getStringExtra("title"));
+                bundle.putString("message", intent.getStringExtra("message"));
                 break;
             case CMD_START:
                 break;
@@ -297,7 +320,7 @@ public class WatchBroadcastService extends Service {
                 WatchSettings settings = broadcastEntities.get(receiver);
                 bundle = prepareBundleBG(settings, JoH.tsl(), bundle);
                 break;
-            case CMD_SNOOZE_ALARM:
+            case CMD_SNOOZE_ALERT:
                 receiver = intent.getStringExtra(INTENT_PACKAGE_KEY);
                 String alertName = "";
                 int snoozeMinutes = 0;
@@ -329,6 +352,7 @@ public class WatchBroadcastService extends Service {
                     if (userNotification != null) {
                         nextAlertAt = userNotification.timestamp;
                     }
+                    alertName = activeAlertType;
                 }
                 bundle = new Bundle();
                 bundle.putString("alertName", alertName);
