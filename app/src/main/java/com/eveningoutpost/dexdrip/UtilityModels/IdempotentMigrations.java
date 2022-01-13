@@ -71,15 +71,15 @@ public class IdempotentMigrations {
                 highMark = highMark * Constants.MMOLL_TO_MGDL;
                 lowMark = lowMark * Constants.MMOLL_TO_MGDL;
             }
-            boolean bg_sound_in_silent = prefs.getBoolean("bg_sound_in_silent", false);
+            boolean bg_sound_in_silent = prefs.getBoolean("bg_sound_in_silent", true);
             String bg_notification_sound = prefs.getString("bg_notification_sound", "content://settings/system/notification_sound");
 
             int bg_high_snooze = Integer.parseInt(prefs.getString("bg_snooze",  Integer.toString(SnoozeActivity.getDefaultSnooze(true))));
             int bg_low_snooze = Integer.parseInt(prefs.getString("bg_snooze",  Integer.toString(SnoozeActivity.getDefaultSnooze(false))));
 
 
-            AlertType.add_alert(null, mContext.getString(R.string.high_alert), true, highMark, true, 1, bg_notification_sound, 0, 0, bg_sound_in_silent, false, bg_high_snooze, true, true);
-            AlertType.add_alert(null, mContext.getString(R.string.low_alert), false, lowMark, true, 1, bg_notification_sound, 0, 0, bg_sound_in_silent, false, bg_low_snooze, true, true);
+            AlertType.add_alert(null, mContext.getString(R.string.high_alert), true, highMark, true, 1, bg_notification_sound, 0, 0, bg_sound_in_silent, true, bg_high_snooze, true, true);
+            AlertType.add_alert(null, mContext.getString(R.string.low_alert), false, lowMark, true, 1, bg_notification_sound, 0, 0, bg_sound_in_silent, true, bg_low_snooze, true, true);
             prefs.edit().putBoolean("bg_notifications", false).apply();
         }
     }

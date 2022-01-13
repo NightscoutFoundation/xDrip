@@ -65,9 +65,14 @@
     <string name="pref_amazfit_watchface_graph_enable">فعال سازی</string>
     <string name="pref_amazfit_widget_graph_enable">فعال سازی</string>
     <string name="add_widget">اضافه کردن ابزارک</string>
+    <string name="title_activity_alert_list">فهرست آژیرها</string>
     <string name="add_note">افزودن یادداشت</string>
     <string name="space_mins">" دقیقه"</string>
     <string name="expires_at">در {0} تمام می شود</string>
+    <string name="home_screen">صفحه اصلی</string>
+    <string name="glucose_units">واحد قند خون</string>
+    <string name="high_value">حد بالا</string>
+    <string name="low_value">حد پایین</string>
     <string name="view_google_licenses">مجوز گوگل</string>
     <string name="system_status">وضعیت سیستم</string>
     <string name="history">تاریخچه</string>
@@ -82,5 +87,6 @@
     <string name="initial_calibration">کالیبره سازی ابتدایی</string>
     <string name="bluetooth_scan">جستجوی بلوتوث</string>
     <!-- trend arrow for speak -->
+    <string name="glucose_units_mmol_or_mgdl">واحد قند mmol/L یا mg/dL</string>
     <string name="enable_streaming_dialog_dont_ask_again">دیگه از من نپرس</string>
 </resources>

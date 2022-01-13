@@ -519,7 +519,7 @@
     <string name="vibrate_on_alert">Vibrer en cas d\'alerte</string>
     <string name="test_alert">test de l\'alerte</string>
     <string name="disable_alert">Désactiver l\'alerte</string>
-    <string name="save_alert">sauver l\'alerte</string>
+    <string name="save_alert">sauver</string>
     <string name="remove_alert">enlever l\'alerte</string>
     <string name="snooze_alert_before_it_fires">arrêter l\'alerte avant qu\'elle ne déclenche</string>
     <string name="create_low_alert">Créer alerte Basse</string>
@@ -1388,8 +1388,8 @@
     <string name="title_ongoing_notification_channel">Utiliser le canal de notification en cours</string>
     <string name="summary_notification_channels_grouping">Si les notifications doivent être groupées ensemble. Incompatible avec l\'option \'Numéro élément dans la zone de notification\'</string>
     <string name="title_notification_channels_grouping">Grouper les notifications par fil</string>
-    <string name="summary_delay_ascending_3min">Pour le profil de l\'augmentation du volume, retarder le début du son d\'alerte de 3 minutes. Le vibreur (si activé) démarre dès que l\'alerte se déclenche, quel que soit ce paramètre.</string>
-    <string name="title_delay_ascending_3min">Délai de l\'augmentation du volume</string>
+    <string name="summary_delay_ascending_3min">Pour le profil de volume ascendant, retarder le démarrage du son d\'alerte de 3 minutes. Le vibreur (si activé) démarre dès que l\'alerte se déclenche, quel que soit ce paramètre.</string>
+    <string name="title_delay_ascending_3min">Délai du volume ascendant</string>
     <string name="summary_play_sound_for_initial_calibration">Émettre un son lorsque la calibration initiale est demandée</string>
     <string name="title_play_sound_for_initial_calibration">Alerte initiale</string>
     <string name="category_noisy_readings">Lectures de bruits</string>
