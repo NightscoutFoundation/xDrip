@@ -47,6 +47,7 @@ public class ExternalStatusServiceTest extends RobolectricTestWithConfig {
         assertWithMessage("TBR 2 int ok").that(getTBRInt()).isEqualTo(15);
         PersistentStore.setString(EXTERNAL_STATUS_STORE, tbr3);
         assertWithMessage("TBR 3 int ok").that(getTBRInt()).isEqualTo(235);
+        PersistentStore.setString(EXTERNAL_STATUS_STORE, ""); // clear out value after test
     }
 
 }
