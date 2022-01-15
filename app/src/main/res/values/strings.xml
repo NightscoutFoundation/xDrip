@@ -336,7 +336,7 @@
     <string name="space_units">" units"</string>
     <string name="units">units</string>
     <string name="carbs">carbs</string>
-    <string name="when">when</string>
+    <string name="when">when (HHMM)</string>
     <string name="speak_your_treatment">Speak your treatment e.g.\nx.x units insulin / xx grams carbs</string>
     <string name="speech_recognition_is_not_supported">Speech recognition is not supported</string>
     <string name="treatment_note">Treatment Note</string>
