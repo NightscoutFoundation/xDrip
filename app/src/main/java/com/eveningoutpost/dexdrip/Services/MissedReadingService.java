@@ -76,7 +76,7 @@ public class MissedReadingService extends IntentService {
             }
 
             if (WatchBroadcastService.isEnabled() && (!BgReading.last_within_millis(stale_millis))) {
-                WatchBroadcastService.showLatestBG();
+                WatchBroadcastService.sendLatestBG();
             }
 
 

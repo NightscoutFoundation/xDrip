@@ -112,7 +112,7 @@ public class NewDataObserver {
         }
     }
     private static void sendToWatchBroadcast() {
-        WatchBroadcastService.showLatestBG();
+        WatchBroadcastService.sendLatestBG();
     }
 
     private static void sendToBlueJay() {

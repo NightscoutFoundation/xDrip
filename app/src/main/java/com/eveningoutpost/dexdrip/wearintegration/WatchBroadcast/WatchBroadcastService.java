@@ -43,7 +43,6 @@ import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 public class WatchBroadcastService extends Service {
     public static final String PREF_ENABLED = "watch_broadcast_enabled";
 
-    public static final String BROADCAST_RECEIVER = "BROADCAST";
     public static final String BG_ALERT_TYPE = "BG_ALERT_TYPE";
 
     protected static final int NUM_VALUES = (60 / 5) * 24;
@@ -70,10 +69,8 @@ public class WatchBroadcastService extends Service {
 
     public static SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-            if (key.startsWith("watch_broadcast")) {
-                if (isEnabled()) {
-                    JoH.startService(WatchBroadcastService.class);
-                }
+            if (key.equals(PREF_ENABLED)) {
+                JoH.startService(WatchBroadcastService.class);
             }
         }
     };
@@ -87,7 +84,7 @@ public class WatchBroadcastService extends Service {
         public void onReceive(Context context, Intent intent) {
             try {
                 final String action = intent.getAction();
-                if (action != null && action.equals(ACTION_WATCH_COMMUNICATION_RECEIVER)) return;
+                if (action == null || !action.equals(ACTION_WATCH_COMMUNICATION_RECEIVER)) return;
                 PowerManager.WakeLock wl = JoH.getWakeLock(TAG, 2000);
                 String packageKey = intent.getStringExtra(INTENT_PACKAGE_KEY);
                 String function = intent.getStringExtra(INTENT_FUNCTION_KEY);
@@ -96,18 +93,18 @@ public class WatchBroadcastService extends Service {
                 boolean startService = false;
                 long timeStamp;
                 WatchSettings watchSettings;
-                Intent intentSend = new Intent(xdrip.getAppContext(), WatchBroadcastService.class);
+                Intent serviceIntent = new Intent(xdrip.getAppContext(), WatchBroadcastService.class);
 
                 if (CMD_SET_SETTINGS.equals(function) || CMD_UPDATE_BG_FORCE.equals(function)) {
                     if (packageKey == null) {
                         function = CMD_REPLY_MSG;
-                        intentSend.putExtra(INTENT_REPLY_MSG, "Error, \"PACKAGE\" extra not specified");
+                        serviceIntent.putExtra(INTENT_REPLY_MSG, "Error, \"PACKAGE\" extra not specified");
                         startService = true;
                     }
                 } else {
                     if (!broadcastEntities.containsKey(packageKey)) {
                         function = CMD_REPLY_MSG;
-                        intentSend.putExtra(INTENT_REPLY_MSG, "Error, the app should be registered at first");
+                        serviceIntent.putExtra(INTENT_REPLY_MSG, "Error, the app should be registered at first");
                         startService = true;
                     }
                 }
@@ -117,7 +114,7 @@ public class WatchBroadcastService extends Service {
                             watchSettings = intent.getParcelableExtra(INTENT_SETTINGS);
                             if (watchSettings == null) {
                                 function = CMD_REPLY_MSG;
-                                intentSend.putExtra(INTENT_REPLY_MSG, "Error, can't parse WatchSettings");
+                                serviceIntent.putExtra(INTENT_REPLY_MSG, "Error, can't parse WatchSettings");
                                 startService = true;
                                 break;
                             }
@@ -127,7 +124,7 @@ public class WatchBroadcastService extends Service {
                             watchSettings = intent.getParcelableExtra(INTENT_SETTINGS);
                             if (watchSettings == null) {
                                 function = CMD_REPLY_MSG;
-                                intentSend.putExtra(INTENT_REPLY_MSG, "Error, can't parse WatchSettings");
+                                serviceIntent.putExtra(INTENT_REPLY_MSG, "Error, can't parse WatchSettings");
                                 startService = true;
                                 break;
                             }
@@ -139,21 +136,21 @@ public class WatchBroadcastService extends Service {
                             String activeAlertType = intent.getStringExtra(INTENT_ALERT_TYPE);
                             if (activeAlertType == null) {
                                 function = CMD_REPLY_MSG;
-                                intentSend.putExtra(INTENT_REPLY_MSG, "Error, \"ALERT_TYPE\" not specified ");
+                                serviceIntent.putExtra(INTENT_REPLY_MSG, "Error, \"ALERT_TYPE\" not specified ");
                                 startService = true;
                                 break;
                             }
-                            intentSend.putExtra(INTENT_ALERT_TYPE, activeAlertType);
+                            serviceIntent.putExtra(INTENT_ALERT_TYPE, activeAlertType);
                             startService = true;
                             break;
                         case CMD_ADD_STEPS:
                             timeStamp = intent.getLongExtra("timeStamp", JoH.tsl());
-                            int steps = intent.getIntExtra("steps", 0);
+                            int steps = intent.getIntExtra("value", 0);
                             StepCounter.createEfficientRecord(timeStamp, steps);
                             break;
                         case CMD_ADD_HR:
                             timeStamp = intent.getLongExtra("timeStamp", JoH.tsl());
-                            int hrValue = intent.getIntExtra("steps", 0);
+                            int hrValue = intent.getIntExtra("value", 0);
                             HeartRate.create(timeStamp, hrValue, 1);
                             break;
                         case CMD_ADD_TREATMENT:
@@ -165,9 +162,9 @@ public class WatchBroadcastService extends Service {
                     }
                 }
                 if (startService) {
-                    intentSend.putExtra(INTENT_FUNCTION_KEY, function);
-                    intentSend.putExtra(INTENT_PACKAGE_KEY, packageKey);
-                    xdrip.getAppContext().startService(intent);
+                    serviceIntent.putExtra(INTENT_FUNCTION_KEY, function);
+                    serviceIntent.putExtra(INTENT_PACKAGE_KEY, packageKey);
+                    xdrip.getAppContext().startService(serviceIntent);
                     return;
                 }
                 JoH.releaseWakeLock(wl);
@@ -181,7 +178,7 @@ public class WatchBroadcastService extends Service {
         return Pref.getBooleanDefaultFalse(PREF_ENABLED);
     }
 
-    public static void showLatestBG() {
+    public static void sendLatestBG() {
         if (isEnabled()) {
             JoH.startService(WatchBroadcastService.class, INTENT_FUNCTION_KEY, CMD_UPDATE_BG);
         }
@@ -278,7 +275,7 @@ public class WatchBroadcastService extends Service {
 
     private void handleCommand(String function, Intent intent) {
         UserError.Log.d(TAG, "handleCommand function:" + function);
-        String receiver = BROADCAST_RECEIVER;
+        String receiver = null;
         boolean handled = false;
         String replyMsg = "";
         //send to all connected apps
@@ -369,18 +366,15 @@ public class WatchBroadcastService extends Service {
         Intent intent = new Intent(ACTION_WATCH_COMMUNICATION_SENDER);
         UserError.Log.d(TAG, String.format("sendBroadcast functionName:%s, receiver: %s", function, receiver));
 
-        if (receiver == null || receiver.isEmpty()) {
-            UserError.Log.d(TAG, "error, receiver not specified");
-            return;
-        }
-
         if (function == null || function.isEmpty()) {
             UserError.Log.d(TAG, "error, function not specified");
             return;
         }
 
         intent.putExtra(INTENT_FUNCTION_KEY, function);
-        intent.putExtra(INTENT_PACKAGE_KEY, receiver);
+        if (receiver != null && !receiver.isEmpty()) {
+            intent.setPackage(receiver);
+        }
         if (!replyMsg.isEmpty()) {
             intent.putExtra(INTENT_REPLY_MSG, replyMsg);
             UserError.Log.d(TAG, "replyMsg: " + replyMsg);
@@ -449,7 +443,7 @@ public class WatchBroadcastService extends Service {
             bundle.putString("iob", statusIOB);
 
             Treatments treatment = Treatments.last();
-            if (treatment.hasContent() && !treatment.noteOnly()) {
+            if (treatment != null && treatment.hasContent() && !treatment.noteOnly()) {
                 if (treatment.insulin > 0) {
                     bundle.putDouble("treatment.insulin", treatment.insulin);
                 }
