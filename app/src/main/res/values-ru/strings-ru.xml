@@ -518,10 +518,10 @@
     <string name="override_phone_silent_mode_colon">Игнорировать беззвучный режим телефона:</string>
     <string name="vibrate_on_alert">Вибрировать при оповещении</string>
     <string name="test_alert">тест оповещения</string>
-    <string name="disable_alert">отключить оповещение</string>
-    <string name="save_alert">сохранить оповещение</string>
-    <string name="remove_alert">удалить оповещение</string>
-    <string name="snooze_alert_before_it_fires">отложить оповещение до его срабатывания</string>
+    <string name="disable_alert">Отключить тревогу</string>
+    <string name="save_alert">сохранить тревогу</string>
+    <string name="remove_alert">удалить тревогу</string>
+    <string name="snooze_alert_before_it_fires">отложить тревогу до срабатывания</string>
     <string name="create_low_alert">Создать оповещение о гипо</string>
     <string name="create_high_alert">Создать оповещение о гипер</string>
     <string name="long_press_an_existing_alert_to_edit">(Удерживайте палец на существующем оповещении, чтобы отредактировать)</string>

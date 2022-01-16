@@ -520,7 +520,7 @@
     <string name="disable_alert">Desactivar alerta</string>
     <string name="save_alert">guardar alerta</string>
     <string name="remove_alert">remover alerta</string>
-    <string name="snooze_alert_before_it_fires">silenciar alerta antes de ser iniciado</string>
+    <string name="snooze_alert_before_it_fires">Silenciar o alerta antes de ser iniciado</string>
     <string name="create_low_alert">Criar alerta Hipo</string>
     <string name="create_high_alert">Criar alerta Hiper</string>
     <string name="long_press_an_existing_alert_to_edit">(Pressionar longamente num alerta existente para editar)</string>

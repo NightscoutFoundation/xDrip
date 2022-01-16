@@ -123,7 +123,7 @@ public class ForecastTest extends RobolectricTestWithConfig {
         Truth.assertThat(result).hasLength(5);
         Truth.assertThat(result)
                 .usingTolerance(0.001)
-                .containsAllOf(new double[]{1, 2, 3, 4, 5})
+                .containsExactly(new double[]{1, 2, 3, 4, 5})
                 .inOrder();
     }
 
