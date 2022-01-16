@@ -4,11 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class WatchSettings implements Parcelable {
-    protected WatchSettings(Parcel in) {
-        apkName = in.readString();
-        graphSince = in.readLong();
-    }
-
     public static final Creator<WatchSettings> CREATOR = new Creator<WatchSettings>() {
         @Override
         public WatchSettings createFromParcel(Parcel in) {
@@ -21,15 +16,33 @@ public class WatchSettings implements Parcelable {
         }
     };
 
-    public long getGraphSince() {
-        return graphSince;
+    private long graphStart;
+    private long graphEnd;
+    private String apkName;
+    private boolean displayGraph;
+
+    protected WatchSettings(Parcel in) {
+        apkName = in.readString();
+        graphStart = in.readLong();
+        graphEnd = in.readLong();
+        displayGraph = in.readBoolean();
     }
 
-    public void setGraphSince(long graphSince) {
-        this.graphSince = graphSince;
+    public long getGraphStart() {
+        return graphStart;
     }
 
-    private long graphSince;
+    public void setGraphStart(long graphStart) {
+        this.graphStart = graphStart;
+    }
+
+    public long getGraphEnd() {
+        return graphEnd;
+    }
+
+    public void setGraphEnd(long graphEnd) {
+        this.graphEnd = graphEnd;
+    }
 
     public String getApkName() {
         return apkName;
@@ -39,7 +52,13 @@ public class WatchSettings implements Parcelable {
         this.apkName = apkName;
     }
 
-    private String apkName;
+    public boolean isDisplayGraph() {
+        return displayGraph;
+    }
+
+    public void setDisplayGraph(boolean displayGraph) {
+        this.displayGraph = displayGraph;
+    }
 
     @Override
     public int describeContents() {
@@ -49,6 +68,8 @@ public class WatchSettings implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(apkName);
-        parcel.writeLong(graphSince);
+        parcel.writeLong(graphStart);
+        parcel.writeLong(graphEnd);
+        parcel.writeBoolean(displayGraph);
     }
 }

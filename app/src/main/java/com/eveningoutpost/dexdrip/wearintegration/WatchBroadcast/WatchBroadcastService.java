@@ -24,6 +24,7 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserNotification;
 import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -45,7 +46,7 @@ public class WatchBroadcastService extends Service {
 
     public static final String BG_ALERT_TYPE = "BG_ALERT_TYPE";
 
-    protected static final int NUM_VALUES = (60 / 5) * 24;
+    protected static final int DATA_ITEMS_LIMIT = (60 / 5) * 24;
     protected static final String INTENT_FUNCTION_KEY = "FUNCTION";
     protected static final String INTENT_PACKAGE_KEY = "PACKAGE";
     protected static final String INTENT_REPLY_MSG = "REPLY_MSG";
@@ -153,7 +154,7 @@ public class WatchBroadcastService extends Service {
                             int hrValue = intent.getIntExtra("value", 0);
                             HeartRate.create(timeStamp, hrValue, 1);
                             break;
-                        case CMD_ADD_TREATMENT:
+                        case CMD_ADD_TREATMENT: //so it woudl be possible to add treatment via watch
                             timeStamp = intent.getLongExtra("timeStamp", JoH.tsl());
                             double carbs = intent.getDoubleExtra("carbs", 0);
                             double insulin = intent.getDoubleExtra("insulin", 0);
@@ -195,13 +196,12 @@ public class WatchBroadcastService extends Service {
         }
     }
 
-    // convert multi-line text to string for display constraints
-    public static void sendAlert(String title, String message) {
+    public static void sendAlert(String type, String message) {
         if (isEnabled()) {
             Inevitable.task("watch-broadcast-send-alert", 100, () -> JoH.startService(WatchBroadcastService.class,
                     INTENT_FUNCTION_KEY, CMD_ALERT,
                     "message", message,
-                    "title", title));
+                    "type", type));
         }
     }
 
@@ -285,7 +285,7 @@ public class WatchBroadcastService extends Service {
             switch (function) {
                 case CMD_UPDATE_BG:
                     Bundle bundle = new Bundle();
-                    bundle = prepareBundleBG(settings, JoH.tsl(), bundle);
+                    bundle = prepareBundleBG(settings, bundle);
                     sendBroadcast(function, receiver, bundle, replyMsg);
                     break;
             }
@@ -306,7 +306,7 @@ public class WatchBroadcastService extends Service {
                 break;
             case CMD_ALERT:
                 bundle = new Bundle();
-                bundle.putString("title", intent.getStringExtra("title"));
+                bundle.putString("type", intent.getStringExtra("type"));
                 bundle.putString("message", intent.getStringExtra("message"));
                 break;
             case CMD_START:
@@ -315,7 +315,7 @@ public class WatchBroadcastService extends Service {
                 bundle = new Bundle();
                 receiver = intent.getStringExtra(INTENT_PACKAGE_KEY);
                 WatchSettings settings = broadcastEntities.get(receiver);
-                bundle = prepareBundleBG(settings, JoH.tsl(), bundle);
+                bundle = prepareBundleBG(settings, bundle);
                 break;
             case CMD_SNOOZE_ALERT:
                 receiver = intent.getStringExtra(INTENT_PACKAGE_KEY);
@@ -386,21 +386,10 @@ public class WatchBroadcastService extends Service {
         xdrip.getAppContext().sendBroadcast(intent);
     }
 
-    public Bundle prepareBundleBG(WatchSettings settings, long end, Bundle bundle) {
+    public Bundle prepareBundleBG(WatchSettings settings, Bundle bundle) {
         if (settings == null) return null;
-        long start = settings.getGraphSince();
-        if (start > end) {
-            long temp = end;
-            end = start;
-            start = temp;
-        }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
 
-        bundle.putInt("fuzzer", Pref.getBoolean("lower_fuzzer", false) ? 500 * 15 * 5 : 1000 * 30 * 5); // 37.5 seconds : 2.5 minutes
-        bundle.putLong("start", start);
-        bundle.putLong("end", end);
-        bundle.putDouble("highMark", JoH.tolerantParseDouble(prefs.getString("highValue", "170"), 170));
-        bundle.putDouble("lowMark", JoH.tolerantParseDouble(prefs.getString("lowValue", "70"), 70));
         bundle.putBoolean("doMgdl", (prefs.getString("units", "mgdl").equals("mgdl")));
         bundle.putInt("phoneBattery", PowerStateReceiver.getBatteryLevel(xdrip.getAppContext()));
 
@@ -408,37 +397,37 @@ public class WatchBroadcastService extends Service {
         BgReading bgReading = BgReading.last();
         if (dg != null || bgReading != null) {
             String deltaName;
-            String bgValue;
+            double bgValue;
             boolean isBgHigh = false;
             boolean isBgLow = false;
             boolean isStale;
             long timeStamp;
             String plugin = "";
-            String unitizedDelta = "";
+            double deltaValue = "";
             if (dg != null) {
                 deltaName = dg.delta_name;
                 //fill bg
-                bgValue = dg.unitized;
+                bgValue = dg.mgdl;
                 isStale = dg.isStale();
                 isBgHigh = dg.isHigh();
                 isBgLow = dg.isLow();
                 timeStamp = dg.timestamp;
                 plugin = dg.plugin_name;
-                unitizedDelta = dg.unitized_delta_no_units;
+                deltaValue = dg.delta_mgdl;
             } else {
                 deltaName = bgReading.getDg_deltaName();
-                bgValue = bgReading.displayValue(null);
+                bgValue = bgReading.getDg_mgdl();
                 isStale = bgReading.isStale();
                 timeStamp = bgReading.getEpochTimestamp();
             }
             bundle.putString("bg.deltaName", deltaName);
-            bundle.putString("bg.value", bgValue);
+            bundle.putDouble("bg.valueMgdl", bgValue);
             bundle.putBoolean("bg.isHigh", isBgHigh);
             bundle.putBoolean("bg.isLow", isBgLow);
             bundle.putLong("bg.timeStamp", timeStamp);
             bundle.putBoolean("bg.isStale", isStale);
             bundle.putString("bg.plugin", plugin);
-            bundle.putString("bg.unitizedDelta", unitizedDelta);
+            bundle.putDouble("bg.deltaValueMgdl", deltaValue);
 
             bundle.putString("iob", statusIOB);
 
@@ -453,14 +442,34 @@ public class WatchBroadcastService extends Service {
                 bundle.putLong("treatment.timeStamp", treatment.timestamp);
             }
 
-            ArrayList<Color> colors = new ArrayList<>();
-            for (X color : X.values()) {
-                colors.add(new Color(color.name(), getCol(color)));
-            }
-            bundle.putParcelableArrayList("colors", colors);
+            if (settings.isDisplayGraph()) {
+                long start = settings.getGraphStart();
+                long end = settings.getGraphEnd();
+                if (end == 0) {
+                    end = JoH.tsl();
+                }
+                if (start == 0) {
+                    start = JoH.tsl() - Constants.HOUR_IN_MS * 2;
+                }
+                if (start > end) {
+                    long temp = end;
+                    end = start;
+                    start = temp;
+                }
+                bundle.putInt("fuzzer", Pref.getBoolean("lower_fuzzer", false) ? 500 * 15 * 5 : 1000 * 30 * 5); // 37.5 seconds : 2.5 minutes
+                bundle.putLong("start", start);
+                bundle.putLong("end", end);
+                bundle.putDouble("highMark", JoH.tolerantParseDouble(prefs.getString("highValue", "170"), 170));
+                bundle.putDouble("lowMark", JoH.tolerantParseDouble(prefs.getString("lowValue", "70"), 70));
+                ArrayList<Color> colors = new ArrayList<>();
+                for (X color : X.values()) {
+                    colors.add(new Color(color.name(), getCol(color)));
+                }
+                bundle.putParcelableArrayList("colors", colors);
 
-            List<BgReading> bgReadings = BgReading.latestForGraph(NUM_VALUES, start, end);
-            List<Treatments> treatments = Treatments.latestForGraph(NUM_VALUES, start, end + (120 * 60 * 1000));
+                List<BgReading> bgReadings = BgReading.latestForGraph(DATA_ITEMS_LIMIT, start, end);
+                List<Treatments> treatments = Treatments.latestForGraph(DATA_ITEMS_LIMIT, start, end + (120 * 60 * 1000));
+            }
         }
         return bundle;
     }
