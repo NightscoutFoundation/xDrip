@@ -11,11 +11,15 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        java-version: [ 8, 11 ]
+
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-java@v2
       with:
-        java-version: 8
+        java-version: ${{ matrix.java-version }}
         distribution: adopt
     - name: Run unit tests and assemble APKs
       uses: gradle/gradle-build-action@v2
