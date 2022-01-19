@@ -23,19 +23,7 @@ jobs:
       env:
         GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: true
       with:
-        arguments: assembleRelease
-    - name: Run Unit Tests
-      uses: gradle/gradle-build-action@v2
-      env:
-        GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: true
-      with:
-        arguments: :app:testProdReleaseUnitTest :wear:testProdReleaseUnitTest
-    - name: Generate Code Coverage Report
-      uses: gradle/gradle-build-action@v2
-      env:
-        GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: true
-      with:
-        arguments: testProdReleaseUnitTestCoverage
+        arguments: assembleRelease :app:testProdReleaseUnitTest :wear:testProdReleaseUnitTest testProdReleaseUnitTestCoverage
     - name: Upload Coverage Report to Codecov
       uses: codecov/codecov-action@v2
       with:
