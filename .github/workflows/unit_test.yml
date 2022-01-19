@@ -13,19 +13,29 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: set up JDK 1.8
-      uses: actions/setup-java@v1
+    - uses: actions/setup-java@v2
       with:
-        java-version: 1.8
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-    - name: Run Compile Tests
-      run: ./gradlew assembleRelease
+        distribution: adopt
+        java-version: 8
+        
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2
+      env:
+        GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: true
+      with:
+        arguments: assembleRelease
     - name: Run Unit Tests
-      run: ./gradlew :app:testProdReleaseUnitTest :wear:testProdReleaseUnitTest
+      uses: gradle/gradle-build-action@v2
+      env:
+        GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: true
+      with:
+        arguments: :app:testProdReleaseUnitTest :wear:testProdReleaseUnitTest
     - name: Generate Code Coverage Report
-      run: |
-        ./gradlew testProdReleaseUnitTestCoverage
+      uses: gradle/gradle-build-action@v2
+      env:
+        GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: true
+      with:
+        arguments: testProdReleaseUnitTestCoverage
     - name: Upload Coverage Report to Codecov
       uses: codecov/codecov-action@v2
       with:
