@@ -24,29 +24,26 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserNotification;
 import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
+import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
-import com.eveningoutpost.dexdrip.wearintegration.WatchBroadcast.Models.Color;
+import com.eveningoutpost.dexdrip.wearintegration.WatchBroadcast.Models.GraphLine;
 import com.eveningoutpost.dexdrip.wearintegration.WatchBroadcast.Models.WatchSettings;
 import com.eveningoutpost.dexdrip.xdrip;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
-import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
+import lecho.lib.hellocharts.model.Line;
 
 public class WatchBroadcastService extends Service {
     public static final String PREF_ENABLED = "watch_broadcast_enabled";
 
     public static final String BG_ALERT_TYPE = "BG_ALERT_TYPE";
 
-    protected static final int DATA_ITEMS_LIMIT = (60 / 5) * 24;
     protected static final String INTENT_FUNCTION_KEY = "FUNCTION";
     protected static final String INTENT_PACKAGE_KEY = "PACKAGE";
     protected static final String INTENT_REPLY_MSG = "REPLY_MSG";
@@ -67,12 +64,11 @@ public class WatchBroadcastService extends Service {
     protected static final String ACTION_WATCH_COMMUNICATION_RECEIVER = "com.eveningoutpost.dexdrip.watch.wearintegration.WATCH_BROADCAST_RECEIVER";
     //send
     protected static final String ACTION_WATCH_COMMUNICATION_SENDER = "com.eveningoutpost.dexdrip.watch.wearintegration.WATCH_BROADCAST_SENDER";
+    private static final int COMMADS_LIMIT_TIME = 1;
 
-    public static SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
-        public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-            if (key.equals(PREF_ENABLED)) {
-                JoH.startService(WatchBroadcastService.class);
-            }
+    public static SharedPreferences.OnSharedPreferenceChangeListener prefListener = (prefs, key) -> {
+        if (key.equals(PREF_ENABLED)) {
+            JoH.startService(WatchBroadcastService.class);
         }
     };
 
@@ -109,7 +105,7 @@ public class WatchBroadcastService extends Service {
                         startService = true;
                     }
                 }
-                if (!startService) {
+                if (!startService && !JoH.pratelimit(function + "_" + packageKey, COMMADS_LIMIT_TIME)) {
                     switch (function) {
                         case CMD_SET_SETTINGS:
                             watchSettings = intent.getParcelableExtra(INTENT_SETTINGS);
@@ -187,12 +183,7 @@ public class WatchBroadcastService extends Service {
 
     public static void initialStartIfEnabled() {
         if (isEnabled()) {
-            Inevitable.task("watch-broadcast-initial-start", 500, new Runnable() {
-                @Override
-                public void run() {
-                    JoH.startService(WatchBroadcastService.class);
-                }
-            });
+            Inevitable.task("watch-broadcast-initial-start", 500, () -> JoH.startService(WatchBroadcastService.class));
         }
     }
 
@@ -403,7 +394,7 @@ public class WatchBroadcastService extends Service {
             boolean isStale;
             long timeStamp;
             String plugin = "";
-            double deltaValue = "";
+            double deltaValue = 0;
             if (dg != null) {
                 deltaName = dg.delta_name;
                 //fill bg
@@ -461,14 +452,24 @@ public class WatchBroadcastService extends Service {
                 bundle.putLong("end", end);
                 bundle.putDouble("highMark", JoH.tolerantParseDouble(prefs.getString("highValue", "170"), 170));
                 bundle.putDouble("lowMark", JoH.tolerantParseDouble(prefs.getString("lowValue", "70"), 70));
-                ArrayList<Color> colors = new ArrayList<>();
-                for (X color : X.values()) {
-                    colors.add(new Color(color.name(), getCol(color)));
-                }
-                bundle.putParcelableArrayList("colors", colors);
 
-                List<BgReading> bgReadings = BgReading.latestForGraph(DATA_ITEMS_LIMIT, start, end);
-                List<Treatments> treatments = Treatments.latestForGraph(DATA_ITEMS_LIMIT, start, end + (120 * 60 * 1000));
+                BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(xdrip.getAppContext(), start, end);
+                bgGraphBuilder.defaultLines(true); // simple mode
+
+                bundle.putParcelable("graph.lowLine", new GraphLine(bgGraphBuilder.lowLine()));
+                bundle.putParcelable("graph.highLine", new GraphLine(bgGraphBuilder.highLine()));
+                bundle.putParcelable("graph.inRange", new GraphLine(bgGraphBuilder.inRangeValuesLine()));
+                bundle.putParcelable("graph.low", new GraphLine(bgGraphBuilder.lowValuesLine()));
+                bundle.putParcelable("graph.high", new GraphLine(bgGraphBuilder.highValuesLine()));
+
+                Line[] treatments = bgGraphBuilder.treatmentValuesLine();
+
+                bundle.putParcelable("graph.iob", new GraphLine(treatments[2])); //insulin on board
+                bundle.putParcelable("graph.treatment", new GraphLine(treatments[1])); //treatmentValues
+
+                bundle.putParcelable("graph.predictedBg", new GraphLine(treatments[5]));  // predictive
+                bundle.putParcelable("graph.cob", new GraphLine(treatments[6]));  //cobValues
+                bundle.putParcelable("graph.polyBg", new GraphLine(treatments[7]));  //poly predict ;
             }
         }
         return bundle;

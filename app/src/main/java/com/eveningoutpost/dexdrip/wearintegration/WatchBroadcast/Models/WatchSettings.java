@@ -25,7 +25,7 @@ public class WatchSettings implements Parcelable {
         apkName = in.readString();
         graphStart = in.readLong();
         graphEnd = in.readLong();
-        displayGraph = in.readBoolean();
+        displayGraph = in.readInt() == 1;
     }
 
     public long getGraphStart() {
@@ -70,6 +70,6 @@ public class WatchSettings implements Parcelable {
         parcel.writeString(apkName);
         parcel.writeLong(graphStart);
         parcel.writeLong(graphEnd);
-        parcel.writeBoolean(displayGraph);
+        parcel.writeInt(displayGraph ? 1 : 0);
     }
 }
