@@ -26,7 +26,6 @@ project.afterEvaluate {
 
             //Tree for all the Java classes
             def javaClasses = fileTree(dir: variant.javaCompiler.destinationDir, excludes: excludes)
-            println "Test : " + javaClasses
 
             //Tree for all the Kotlin classes
             def kotlinClasses = fileTree(dir: "${buildDir}/tmp/kotlin-classes/${variant.name}", excludes: excludes)
@@ -45,7 +44,7 @@ project.afterEvaluate {
             executionData.from = files("${project.buildDir}/jacoco/${testTaskName}.exec")
             reports {
                 xml.enabled = true
-                html.enabled = false
+                html.enabled = project.getProperties().getOrDefault('covHtml', false) == 'true'
                 html.destination = file("${project.buildDir}/jacoco/")
             }
         }
