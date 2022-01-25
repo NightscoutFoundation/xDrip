@@ -28,7 +28,6 @@ jobs:
       uses: codecov/codecov-action@v2
       with:
         verbose: true # optional (default = false)
-        directory: app/build/reports/jacoco/testProdReleaseUnitTestCoverage
-        files: testProdReleaseUnitTestCoverage.xml
+        files: app/build/reports/jacoco/testProdReleaseUnitTestCoverage/testProdReleaseUnitTestCoverage.xml,wear/build/reports/jacoco/testProdReleaseUnitTestCoverage/testProdReleaseUnitTestCoverage.xml 
     - name: Check Output
       run: bash ./etc/CheckBuild/check-release.sh test
