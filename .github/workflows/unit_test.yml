@@ -17,11 +17,9 @@ jobs:
       with:
         java-version: 8
         distribution: adopt
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-    - name: Run Compile Tests
-      run: ./gradlew assembleRelease
-    - name: Run Unit Tests
-      run: ./gradlew :app:testProdReleaseUnitTest :wear:testProdReleaseUnitTest
+    - name: Run unit tests and assemble APKs
+      uses: gradle/gradle-build-action@v2
+      with:
+        arguments: assembleProdRelease testProdReleaseUnitTest
     - name: Check Output
       run: bash ./etc/CheckBuild/check-release.sh test
