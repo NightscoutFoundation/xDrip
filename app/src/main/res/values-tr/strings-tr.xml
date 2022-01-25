@@ -316,7 +316,7 @@
     <string name="space_units">" ünite"</string>
     <string name="units">ünite</string>
     <string name="carbs">karbonhidrat</string>
-    <string name="when">ne zaman</string>
+    <string name="when">ne zaman (ssdd)</string>
     <string name="speak_your_treatment">Tedavinizi söyleyin, örneğin:\nx.x ünite İnsülin / xx gram karbonhidrat</string>
     <string name="speech_recognition_is_not_supported">Konuşma tanıma desteklenmiyor</string>
     <string name="treatment_note">Tedavi notu</string>
@@ -578,7 +578,7 @@
     <string name="vibrate_alerts">Uyarılarda Titreşim</string>
     <string name="attach_to_button">Herhangi bir aktif uyarıyı saatinizi anında ertelemek için bir pebble düğmesine iliştirin. Ayrıca Uzaktan Erteleme özelliği için.</string>
     <string name="for_interacting_compatible_apps">Diğer uyumlu uygulamalarla etkileşim kurmak için</string>
-    <string name="interapp_settings">Inter-app ayarları</string>
+    <string name="interapp_settings">Uyg.lar-arası ayarlar</string>
     <string name="use_plugins_for_brodcast">Yayınlanan değer için gürültü düzeltme ve eklentileri vb. (Etkinleştirilmişse) kullanın</string>
     <string name="send_display_glucose">Ekranda Görünen Glikoz Değerini Gönder</string>
     <string name="send_broadcasts_old_permission_model">Yayınları eski izin modeline kilitlemeden gönderin</string>
@@ -1002,7 +1002,7 @@
     <string name="summary_Smooth_heart_rate_graph">Pürüzsüz kalp atış hızı eğrisi</string>
     <string name="title_When_changes_by">KŞ Değiştiğinde</string>
     <string name="title_Or_per_number_of_minutes">Dakikada</string>
-    <string name="title_Identify_receiver">Alıcı tanımlayın</string>
+    <string name="title_Identify_receiver">Alıcı tanımlama</string>
     <string name="summary_Only_send_to_named_package">Sadece adlandırılmış paket isimlerine gönderin</string>
     <string name="title_Accept_Calibrations">Kalibrasyonları Kabul Et</string>
     <string name="summary_Operate_a_local_web_server_for_interacting_with_Fitbit_Ionic_etc">Fitbit İyonik vb. İle etkileşimde bulunmak için yerel bir web sunucusu başlat</string>
