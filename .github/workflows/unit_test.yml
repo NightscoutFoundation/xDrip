@@ -23,7 +23,7 @@ jobs:
       env:
         GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: true
       with:
-        arguments: assembleRelease :app:testProdReleaseUnitTest :wear:testProdReleaseUnitTest testProdReleaseUnitTestCoverage
+        arguments: assembleProdRelease testProdReleaseUnitTestCoverage
     - name: Upload Coverage Report to Codecov
       uses: codecov/codecov-action@v2
       with:
