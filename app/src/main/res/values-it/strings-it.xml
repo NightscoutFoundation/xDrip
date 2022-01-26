@@ -1166,6 +1166,8 @@
     <string name="title_rest_api_extra_options">Altre opzioni</string>
     <string name="summary_send_bridge_battery_to_nightscout">Invia il livello della batteria a Nightscout. Deseleziona se il sensore di batteria non funziona.</string>
     <string name="title_send_bridge_battery_to_nightscout">Upload livello batteria del bridge</string>
+    <string name="summary_send_dexcom_transmitter_battery_to_nightscout">Invia le statistiche della batteria del trasmettitore Dexcom a Nightscout. Include tutti i dati mostrati sulla schermata Stato del Collector.</string>
+    <string name="title_send_dexcom_transmitter_battery_to_nightscout">Carica il livello di batteria del trasmettitore OB1 G5/G6</string>
     <string name="summary_send_treatments_to_nightscout">Invia i trattamenti a Nightscout. Deseleziona se il tuo careportal non funziona.</string>
     <string name="title_send_treatments_to_nightscout">Carica trattamenti</string>
     <string name="summary_warn_nightscout_failures">Notifica e suona se il caricamento a Nightscout fallisce.</string>
@@ -1564,5 +1566,7 @@
     <string name="enable_streaming_dialog_dont_ask_again">Non chiedermelo più</string>
     <string name="enable_streaming_dialog_text">Vuoi collegare xDrip con questo sensore? Questo impedirà al lettore Libre e a LibreLink di ricevere allarmi. Premi sì e scansiona di nuovo per connetterti (scegli non connetterti se vuoi eseguire xDrip con l\'app patchata)</string>
     <string name="enable_streaming_dialog_title">Connessione del sensore Libre al bluetooth</string>
+    <string name="title_lower_fuzzer">Abbassa FUZZER</string>
+    <string name="summary_lower_fuzzer">Abbassa il valore FUZZER da 2,5 minuti a 37,5 secondi</string>
     <string name="without_camera_permission_cannot_scan_barcode">Senza il permesso di accesso alla fotocamera non si può scansionare un codice a barre</string>
 </resources>

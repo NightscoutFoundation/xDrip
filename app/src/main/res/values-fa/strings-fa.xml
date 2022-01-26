@@ -51,12 +51,15 @@
     <string name="pref_message_mongodb_collection">این نام مجموعه ای است که داده های CGM در آن ذخیره می شود</string>
     <string name="pref_title_mongodb_device_status_collection">نام مجموعه وضعیت دستگاه</string>
     <!-- API Settings -->
+    <string name="pref_title_api">همگام سازی با نایت اسکات(REST-API)</string>
     <string name="pref_title_api_enabled">فعال</string>
     <string name="pref_title_api_url">آدرس پایه</string>
+    <string name="pref_dialog_api_url">آدرس پایه API را وارد کنید</string>
     <!-- wifi Settings -->
     <!-- Location Settings -->
     <string name="location_yes">فعال سازی</string>
     <!-- broadcast settings -->
+    <string name="pref_title_broadcast_enabled">انتشار محلی</string>
     <!-- pebble settings -->
     <!-- Amazfit Settings -->
     <string name="pref_amazfit_enable">فعال سازی</string>
