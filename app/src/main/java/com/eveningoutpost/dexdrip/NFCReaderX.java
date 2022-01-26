@@ -624,7 +624,7 @@ public class NFCReaderX {
                         }
 
                         SensorType sensorType = LibreOOPAlgorithm.getSensorType(patchInfo);
-                        if (addressed && sensorType != SensorType.Libre1) {
+                        if (addressed && sensorType != SensorType.Libre1 && sensorType != SensorType.Libre1New) {
                             Log.d(TAG, "Not using addressed mode since not a libre 1 sensor");
                             addressed = false;
                         }
@@ -636,15 +636,21 @@ public class NFCReaderX {
                         }
 
                         if (multiblock) {
-                            Log.e(TAG, "starting multiple blobk reads");
-                            final int correct_reply_size = addressed ? 28 : 25;
-                            for (int i = 0; i <= 43; i = i + 3) {
+                            Log.e(TAG, "starting multiple block reads");
+                            for (int i = 0; i < 43; i = i + 3) {
+                                int read_blocks = 3;
+                                int correct_reply_size = addressed ? 28 : 25;
+                                if (i == 42 && sensorType == SensorType.Libre2) {
+                                    read_blocks = 1;
+                                    correct_reply_size = 9;
+                                }
+
                                 final byte[] cmd;
                                 if (addressed) {
-                                    cmd = new byte[]{0x60, 0x23, 0, 0, 0, 0, 0, 0, 0, 0, (byte) i, 0x02};
+                                    cmd = new byte[]{0x60, 0x23, 0, 0, 0, 0, 0, 0, 0, 0, (byte) i, (byte) (read_blocks - 1)};
                                     System.arraycopy(uid, 0, cmd, 2, 8);
                                 } else {
-                                    cmd = new byte[]{0x02, 0x23, (byte) i, 0x02};
+                                    cmd = new byte[]{0x02, 0x23, (byte) i, (byte) (read_blocks - 1)};
                                 }
 
                                 byte[] replyBlock;
@@ -681,7 +687,7 @@ public class NFCReaderX {
                                     return null;
                                 }
                                 if (addressed) {
-                                    for (int j = 0; j < 3; j++) {
+                                    for (int j = 0; j < read_blocks; j++) {
                                         System.arraycopy(replyBlock, 2 + (j * 9), data, i * 8 + (j * 8), 8);
                                     }
                                 } else {
