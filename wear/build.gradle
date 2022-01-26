@@ -88,7 +88,7 @@ apply from: '../app/token-replace.gradle'
 //apply plugin: 'io.fabric'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 31
     lintOptions {
         checkReleaseBuilds false
 //        abortOnError false
