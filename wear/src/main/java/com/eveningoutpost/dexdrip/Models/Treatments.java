@@ -14,13 +14,8 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
-//KS import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.R;
-//KS import com.eveningoutpost.dexdrip.Services.SyncService;
-//KS import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
-//KS import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -29,13 +24,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.UUID;
 
 // TODO Switchable Carb models
@@ -90,7 +80,7 @@ public class Treatments extends Model {
         if ((future_seconds > 60) && (future_seconds < 86400) && ((carbs > 0) || (insulin > 0))) {
             final Context context = xdrip.getAppContext();
             JoH.scheduleNotification(context, "Treatment Reminder", "@" + JoH.hourMinuteString(timestamp) + " : "
-                    + carbs + " " + "carbs" + " / "//context.getString(R.string.carbs)
+                    + carbs + " g " + "carbs" + " / "//context.getString(R.string.carbs)
                     + insulin + " " + "units", (int) future_seconds, 34026);//context.getString(R.string.units)
         }
         return create(carbs, insulin, notes, timestamp, -1, suggested_uuid);

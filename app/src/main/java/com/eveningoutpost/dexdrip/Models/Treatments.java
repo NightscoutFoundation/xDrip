@@ -252,7 +252,7 @@ public class Treatments extends Model {
         if ((future_seconds > 60) && (future_seconds < 86400) && ((carbs > 0) || (insulinSum > 0))) {
             final Context context = xdrip.getAppContext();
             JoH.scheduleNotification(context, "Treatment Reminder", "@" + JoH.hourMinuteString(timestamp) + " : "
-                    + carbs + " " + context.getString(R.string.carbs) + " / "
+                    + carbs + " g " + context.getString(R.string.carbs) + " / "
                     + insulinSum + " " + context.getString(R.string.units), (int) future_seconds, 34026);
         }
         return create(carbs, insulinSum, insulin, timestamp, -1, suggested_uuid);
