@@ -640,9 +640,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                                 startActivityForResult(intent, REQ_CODE_BATTERY_OPTIMIZATION);
 
                             } catch (ActivityNotFoundException e) {
-                                final String msg = "Device does not appear to support battery optimization whitelisting!";
-                                JoH.static_toast_short(msg);
-                                UserError.Log.wtf(TAG, msg);
+                                JoH.static_toast_short(getString(R.string.no_battery_optimization_whitelisting));
+                                UserError.Log.wtf(TAG, "Device does not appear to support battery optimization whitelisting!");
                             }
                         }
                     });
@@ -689,7 +688,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 toast(gs(R.string.setting_disabled_));
             });
 
-            builder.setNegativeButton("No, I really know what I'm doing", (dialog, which) -> dialog.dismiss());
+            builder.setNegativeButton(R.string.no_i_really_know, (dialog, which) -> dialog.dismiss());
 
             AlertDialog alert = builder.create();
             alert.show();
@@ -726,7 +725,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 }
             } else {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Use " + JoH.qs(glucosenumber, 1) + " for Calibration?");
+                builder.setTitle(String.format(gs(R.string.use_for_calibration), JoH.qs(glucosenumber, 1)));
                 builder.setMessage(gs(R.string.do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings));
 
                 builder.setPositiveButton(gs(R.string.yes_calibrate), (dialog, which) -> {
@@ -1031,7 +1030,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
                         });
 
-                        builder.setNegativeButton("Delete", (dialog, which) -> {
+                        builder.setNegativeButton(R.string.delete, (dialog, which) -> {
                             dialog.dismiss();
                             final AlertDialog.Builder builder1 = new AlertDialog.Builder(mActivity);
                             builder1.setTitle(gs(R.string.confirm_delete));
@@ -1053,7 +1052,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                         final AlertDialog alert = builder.create();
                         alert.show();
                     } else {
-                        JoH.static_toast_long("Could not find blood test data!! " + bt_uuid);
+                        JoH.static_toast_long(String.format(gs(R.string.could_not_find_blood_data), bt_uuid));
                     }
                 }
             } else if (bundle.getString("confirmsnooze") != null) {
@@ -1214,7 +1213,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
             Log.d(TAG, "Got exception during search word load: " + e.toString());
             Toast.makeText(getApplicationContext(),
-                    "Problem loading speech lexicon!",
+                    gs(R.string.problem_loading_speech_lexicon),
                     Toast.LENGTH_LONG).show();
         }
         Log.d(TAG, "Loaded Words: " + lcs.entries.size());
@@ -1271,20 +1270,20 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Type treatment\neg: units x.x");
+        builder.setTitle(R.string.type_treatment_eg);
         // Set up the input
         final EditText input = new EditText(this);
         input.setInputType(InputType.TYPE_CLASS_TEXT);
         builder.setView(input);
         // Set up the buttons
-        builder.setPositiveButton("OK", (dialog, which) -> {
+        builder.setPositiveButton(R.string.ok, (dialog, which) -> {
             voiceRecognitionText.setText(input.getText().toString());
             voiceRecognitionText.setVisibility(View.VISIBLE);
             last_speech_time = JoH.ts();
             naturalLanguageRecognition(input.getText().toString());
 
         });
-        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+        builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.cancel());
 
         final AlertDialog dialog = builder.create();
         input.setOnFocusChangeListener((v, hasFocus) -> {
@@ -1343,7 +1342,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (searchWords == null) {
 
             Toast.makeText(getApplicationContext(),
-                    "Word lexicon not loaded!",
+                    gs(R.string.word_lexicon_not_loaded),
                     Toast.LENGTH_LONG).show();
             return;
         }
@@ -1469,7 +1468,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             case "carbs":
                 if (!carbsset && (thisnumber > 0)) {
                     thiscarbsnumber = thisnumber;
-                    textCarbohydrates.setText((int) thisnumber + " carbs");
+                    textCarbohydrates.setText((int)thisnumber + " g carbs");
                     carbsset = true;
                     Log.d(TAG, "Carbs eaten: " + thisnumber);
                     btnCarbohydrates.setVisibility(View.VISIBLE);
@@ -1922,7 +1921,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                             }
                         });
 
-                        builder.setNegativeButton("NO, Never", (dialog, which) -> {
+                        builder.setNegativeButton(R.string.no_never, (dialog, which) -> {
                             dialog.dismiss();
                             Pref.setLong("wifi_warning_never", (long) JoH.ts());
                         });
@@ -2492,7 +2491,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         // automagically start an xDrip sensor session if G5 transmitter already has active sensor
         if (!isSensorActive && Ob1G5CollectionService.isG5SensorStarted() && !Sensor.stoppedRecently()) {
-            JoH.static_toast_long("Auto starting sensor!");
+            JoH.static_toast_long(getString(R.string.auto_starting_sensor));
             Sensor.create(JoH.tsl() - HOUR_IN_MS * 3);
             isSensorActive = Sensor.isActive();
         }
@@ -2518,7 +2517,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
                         final Context context = this;
                         builder.setTitle(getString(R.string.start_sensor) + "?");
-                        builder.setMessage("Data Source is set to: " + DexCollectionType.getDexCollectionType().toString() + "\n\nDo you want to change settings or start sensor?");
+                        builder.setMessage(String.format(gs(R.string.start_sensor_confirmation), DexCollectionType.getDexCollectionType().toString()));
                         builder.setNegativeButton(gs(R.string.change_settings), (dialog, which) -> {
                             dialog.dismiss();
                             startActivity(new Intent(context, Preferences.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
@@ -2554,7 +2553,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         // TODO this logic needed a rework even a year ago, now its a lot more confused with the additional complexity of native mode
         if (Ob1G5CollectionService.isG5ActiveButUnknownState() && Calibration.latestValid(2).size() < 2) {
             // TODO use format string
-            notificationText.setText((Ob1G5StateMachine.usingG6() ? "G6" : "G5") + " State isn't currently known. Next connection will update this");
+            notificationText.setText(String.format(gs(R.string.state_not_currently_known), (Ob1G5StateMachine.usingG6() ? "G6" : "G5")));
             showUncalibratedSlope();
         } else {
 
@@ -2582,7 +2581,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                             promptForCalibration();
                             dontKeepScreenOn();
                         } else {
-                            notificationText.setText("Unusual calibration state - waiting for more data");
+                            notificationText.setText(R.string.unusual_calibration_waiting);
                             if (Ob1G5CollectionService.isProvidingNativeGlucoseData()) {
                                 displayCurrentInfo();
                                 if (screen_forced_on) dontKeepScreenOn();
@@ -2604,14 +2603,14 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                                 if (!Ob1G5CollectionService.isPendingCalibration()) {
                                     promptForCalibration();
                                 } else {
-                                    notificationText.setText("Waiting for Transmitter to receive calibration");
+                                    notificationText.setText(R.string.transmitter_waiting_for_calibration);
                                 }
                             } else {
                                 if (!Ob1G5CollectionService.isG5SensorStarted()) {
-                                    notificationText.setText("Sensor session does not appear to be started");
+                                    notificationText.setText(R.string.sensor_not_started);
                                     // TODO do we stop xDrip sensor session here?
                                 } else {
-                                    notificationText.setText("Not getting any readings.");
+                                    notificationText.setText(R.string.not_getting_readings);
                                 }
                             }
                             dontKeepScreenOn();
@@ -2752,7 +2751,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                         dexbridgeBattery.setText(limitterName + " " + getString(R.string.battery) + ": " + bridgeBattery + "%");
                     }
                 } else {
-                    dexbridgeBattery.setText("Bridge battery" + ": " + bridgeBattery + ((bridgeBattery < 200) ? "%" : "mV"));
+                    dexbridgeBattery.setText(getString(R.string.bridge_battery) + ": " + bridgeBattery + ((bridgeBattery < 200) ? "%" : "mV"));
                 }
             }
             if (bridgeBattery < 50) dexbridgeBattery.setTextColor(Color.YELLOW);
@@ -2793,14 +2792,14 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (sensor_age > 0 && (DexCollectionType.hasLibre() || hasLibreblock())) {
             final String age_problem = (Pref.getBooleanDefaultFalse("nfc_age_problem") ? " \u26A0\u26A0\u26A0" : "");
             if (Pref.getBoolean("nfc_show_age", true)) {
-                sensorAge.setText("Age: " + JoH.qs(((double) sensor_age) / 1440, 1) + "d" + age_problem);
+                sensorAge.setText(getResources().getQuantityString(R.plurals.sensor_age, sensor_age / 1440, JoH.qs(((double) sensor_age) / 1440, 1)) + age_problem);
             } else {
                 try {
                     final double expires = JoH.tolerantParseDouble(Pref.getString("nfc_expiry_days", "14.5"), 14.5d) - ((double) sensor_age) / 1440;
-                    sensorAge.setText(((expires >= 0) ? ("Expires: " + JoH.qs(expires, 1) + "d") : "EXPIRED! ") + age_problem);
+                    sensorAge.setText(((expires >= 0) ? getResources().getQuantityString(R.plurals.sensor_expires, (int) expires, JoH.qs(expires, 1)) : getString(R.string.sensor_expired)) + age_problem);
                 } catch (Exception e) {
                     Log.e(TAG, "expiry calculation: " + e);
-                    sensorAge.setText("Expires: " + "???");
+                    sensorAge.setText(getString(R.string.expires_unknown));
                 }
             }
             sensorAge.setVisibility(View.VISIBLE);
@@ -2837,7 +2836,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             // detect broken data from G5 or other sources
             if ((lastBgReading.raw_data != 0) && (lastBgReading.raw_data * 2 == lastBgReading.filtered_data)) {
                 if (JoH.ratelimit("g5-corrupt-data-warning", 1200)) {
-                    final String msg = "filtered data is exactly double raw sensor data which looks wrong! (Transmitter maybe dead)" + lastBgReading.raw_data;
+                    final String msg = getString(R.string.transmitter_maybe_dead) + lastBgReading.raw_data;
                     toaststaticnext(msg);
                 }
             }
@@ -2968,7 +2967,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 display_delta = bgGraphBuilder.unitizedDeltaStringRaw(true, true, estimated_delta);
                 addDisplayDelta();
                 if (!Pref.getBoolean("show_noise_workings", false)) {
-                    notificationText.append("\nNoise: " + bgGraphBuilder.noiseString(BgGraphBuilder.last_noise));
+                    notificationText.append("\n" + String.format(gs(R.string.noise_workings_noise), bgGraphBuilder.noiseString(BgGraphBuilder.last_noise)));
                 }
             } else {
                 addDisplayDelta();
@@ -3007,7 +3006,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     private void addDisplayDelta() {
         if (BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
-            if (Locale.getDefault().getLanguage() == "iw") {
+            if (Locale.getDefault().getLanguage().equals("iw")) {
                 HebrewAppendDisplayData();
             } else {
                 notificationText.append("  ");
@@ -3099,8 +3098,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     target = new ViewTarget(R.id.btnNote, this); // dummy
                     size1 = 0;
                     size2 = 0;
-                    title = "Motion Detection Warning";
-                    message = "Activity Motion Detection is experimental and only some phones are compatible. Its main purpose is to detect vehicle mode.\n\nIn tests it seems higher end phones are the most likely to properly support the sensors needed for it to work.  It may also drain your battery.\n\nFor exercise related movement, Smartwatch step counters work better.";
+                    title = getString(R.string.title_motion_detection_warning);
+                    message = getString(R.string.message_motion_detection_warning);
                     break;
 
                  /*   case SHOWCASE_G5FIRMWARE:
@@ -3115,8 +3114,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     target = new ViewTarget(R.id.btnNote, this); // dummy
                     size1 = 0;
                     size2 = 0;
-                    title = "You are using an xDrip+ variant";
-                    message = "xDrip+ variants allow multiple apps to be installed at once. Either for advanced use or to allow xDrip-Experimental and xDrip+ to both be installed at the same time.\n\nWith variants, some things might not work properly due to one app or another having exclusive access, for example bluetooth pairing. Feedback and bug reports about variants is welcomed!";
+                    title = getString(R.string.title_variant);
+                    message = getString(R.string.message_variant);
                     break;
 
                 case SHOWCASE_NOTE_LONG:
@@ -3279,7 +3278,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         });
         if (Treatments.byTimestamp(timestamp, (int) (2.5 * MINUTE_IN_MS)) != null) {
-            dialogBuilder.setNeutralButton("Delete", (dialog, whichButton) -> {
+            dialogBuilder.setNeutralButton(R.string.delete, (dialog, whichButton) -> {
                 // are you sure?
                 final AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
                 builder.setTitle(gs(R.string.confirm_delete));
@@ -3338,9 +3337,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                         final ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
                         if (activeBgAlert != null) {
                             AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1);
-                            final String msg = "Snoozing alert due to volume button press";
-                            JoH.static_toast_long(msg);
-                            UserError.Log.ueh(TAG, msg);
+                            JoH.static_toast_long(getString(R.string.snoozing_due_button_press));
+                            UserError.Log.ueh(TAG, "Snoozing alert due to volume button press");
                         } else {
                             if (d) UserError.Log.d(TAG, "no active alert to snooze");
                         }
@@ -3394,7 +3392,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     super.onPostExecute(filename);
                     if (filename != null) {
 
-                        snackBar(R.string.share, getString(R.string.exported_to) + filename, makeSnackBarUriLauncher(Uri.fromFile(new File(filename)), "Share database..."), Home.this);
+                        snackBar(R.string.share, getString(R.string.exported_to) + filename, makeSnackBarUriLauncher(Uri.fromFile(new File(filename)), getString(R.string.share_database)), Home.this);
                         startActivity(new Intent(xdrip.getAppContext(), SdcardImportExport.class).putExtra("backup", "now").setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                     /*    SnackbarManager.show(
                                 Snackbar.with(Home.this)
@@ -3462,7 +3460,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                             super.onPostExecute(filename);
                             if (filename != null) {
                                 Pref.setLong("sidiary_last_exportdate", System.currentTimeMillis());
-                                snackBar(R.string.share, getString(R.string.exported_to) + filename, makeSnackBarUriLauncher(Uri.fromFile(new File(filename)), "Share database..."), Home.this);
+                                snackBar(R.string.share, getString(R.string.exported_to) + filename, makeSnackBarUriLauncher(Uri.fromFile(new File(filename)), getString(R.string.share_database)), Home.this);
                             } else {
                                 Toast.makeText(Home.this, gs(R.string.could_not_export_csv_), Toast.LENGTH_LONG).show();
                             }
