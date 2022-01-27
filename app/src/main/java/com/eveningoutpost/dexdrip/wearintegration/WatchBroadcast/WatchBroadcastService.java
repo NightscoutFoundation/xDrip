@@ -10,12 +10,13 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
-import android.support.v4.content.LocalBroadcastManager;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
+import com.eveningoutpost.dexdrip.Models.Accuracy;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.StepCounter;
@@ -27,10 +28,12 @@ import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.UtilityModels.PumpStatus;
+import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.wearintegration.WatchBroadcast.Models.GraphLine;
+import com.eveningoutpost.dexdrip.wearintegration.WatchBroadcast.Models.WatchBroadcast;
 import com.eveningoutpost.dexdrip.wearintegration.WatchBroadcast.Models.WatchSettings;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -38,6 +41,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import lecho.lib.hellocharts.model.Line;
+
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
 
 public class WatchBroadcastService extends Service {
     public static final String PREF_ENABLED = "watch_broadcast_enabled";
@@ -49,6 +54,7 @@ public class WatchBroadcastService extends Service {
     protected static final String INTENT_REPLY_MSG = "REPLY_MSG";
     protected static final String INTENT_SETTINGS = "SETTINGS";
     protected static final String INTENT_ALERT_TYPE = "ALERT_TYPE";
+    protected static final String INTENT_STAT_HOURS = "stat_hours";
 
     protected static final String CMD_SET_SETTINGS = "set_settings";
     protected static final String CMD_UPDATE_BG_FORCE = "update_bg_force";
@@ -60,6 +66,7 @@ public class WatchBroadcastService extends Service {
     protected static final String CMD_START = "start";
     protected static final String CMD_UPDATE_BG = "update_bg";
     protected static final String CMD_REPLY_MSG = "reply_msg";
+    protected static final String CMD_STAT_INFO = "stat_info";
     //listen
     protected static final String ACTION_WATCH_COMMUNICATION_RECEIVER = "com.eveningoutpost.dexdrip.watch.wearintegration.WATCH_BROADCAST_RECEIVER";
     //send
@@ -73,9 +80,7 @@ public class WatchBroadcastService extends Service {
     };
 
     protected String TAG = this.getClass().getSimpleName();
-    protected Map<String, WatchSettings> broadcastEntities;
-    private String statusIOB = "";
-    private BroadcastReceiver statusReceiver;
+    protected Map<String, WatchBroadcast> broadcastEntities;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -105,7 +110,7 @@ public class WatchBroadcastService extends Service {
                         startService = true;
                     }
                 }
-                if (!startService && !JoH.pratelimit(function + "_" + packageKey, COMMADS_LIMIT_TIME)) {
+                if (!startService && JoH.pratelimit(function + "_" + packageKey, COMMADS_LIMIT_TIME)) {
                     switch (function) {
                         case CMD_SET_SETTINGS:
                             watchSettings = intent.getParcelableExtra(INTENT_SETTINGS);
@@ -115,7 +120,7 @@ public class WatchBroadcastService extends Service {
                                 startService = true;
                                 break;
                             }
-                            broadcastEntities.put(packageKey, intent.getParcelableExtra(INTENT_SETTINGS));
+                            broadcastEntities.put(packageKey, new WatchBroadcast(watchSettings));
                             break;
                         case CMD_UPDATE_BG_FORCE:
                             watchSettings = intent.getParcelableExtra(INTENT_SETTINGS);
@@ -125,7 +130,7 @@ public class WatchBroadcastService extends Service {
                                 startService = true;
                                 break;
                             }
-                            broadcastEntities.put(packageKey, intent.getParcelableExtra(INTENT_SETTINGS));
+                            broadcastEntities.put(packageKey, new WatchBroadcast(watchSettings));
                             //update immediately
                             startService = true;
                             break;
@@ -150,11 +155,15 @@ public class WatchBroadcastService extends Service {
                             int hrValue = intent.getIntExtra("value", 0);
                             HeartRate.create(timeStamp, hrValue, 1);
                             break;
-                        case CMD_ADD_TREATMENT: //so it woudl be possible to add treatment via watch
+                        case CMD_ADD_TREATMENT: //so it would be possible to add treatment via watch
                             timeStamp = intent.getLongExtra("timeStamp", JoH.tsl());
                             double carbs = intent.getDoubleExtra("carbs", 0);
                             double insulin = intent.getDoubleExtra("insulin", 0);
                             Treatments.create(carbs, insulin, timeStamp);
+                            break;
+                        case CMD_STAT_INFO:
+                            serviceIntent.putExtra(INTENT_STAT_HOURS, intent.getIntExtra(INTENT_STAT_HOURS, 24));
+                            startService = true;
                             break;
                     }
                 }
@@ -207,18 +216,6 @@ public class WatchBroadcastService extends Service {
         broadcastEntities = new HashMap<>();
         registerReceiver(broadcastReceiver, new IntentFilter(ACTION_WATCH_COMMUNICATION_RECEIVER));
 
-        statusReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                final String iob = intent.getStringExtra("iob");
-                if (iob != null) {
-                    statusIOB = iob;
-                }
-            }
-        };
-        LocalBroadcastManager.getInstance(this).registerReceiver(statusReceiver,
-                new IntentFilter(Intents.HOME_STATUS_ACTION));
-
         JoH.startService(WatchBroadcastService.class, INTENT_FUNCTION_KEY, CMD_START);
         super.onCreate();
     }
@@ -228,11 +225,6 @@ public class WatchBroadcastService extends Service {
         UserError.Log.e(TAG, "killing service");
         broadcastEntities.clear();
         unregisterReceiver(broadcastReceiver);
-        try {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(statusReceiver);
-        } catch (Exception e) {
-            UserError.Log.e(TAG, "Exception unregistering broadcast receiver: " + e);
-        }
         super.onDestroy();
     }
 
@@ -269,14 +261,16 @@ public class WatchBroadcastService extends Service {
         String receiver = null;
         boolean handled = false;
         String replyMsg = "";
+
+        WatchBroadcast watchBroadcast;
+        Bundle bundle = null;
         //send to all connected apps
-        for (Map.Entry<String, WatchSettings> entry : broadcastEntities.entrySet()) {
+        for (Map.Entry<String, WatchBroadcast> entry : broadcastEntities.entrySet()) {
             receiver = entry.getKey();
-            WatchSettings settings = entry.getValue();
+            watchBroadcast = entry.getValue();
             switch (function) {
                 case CMD_UPDATE_BG:
-                    Bundle bundle = new Bundle();
-                    bundle = prepareBundleBG(settings, bundle);
+                    bundle = prepareBgBundle(watchBroadcast);
                     sendBroadcast(function, receiver, bundle, replyMsg);
                     break;
             }
@@ -288,8 +282,6 @@ public class WatchBroadcastService extends Service {
         if (handled) {
             return;
         }
-
-        Bundle bundle = null;
         switch (function) {
             case CMD_REPLY_MSG:
                 replyMsg = intent.getStringExtra(INTENT_REPLY_MSG);
@@ -302,11 +294,15 @@ public class WatchBroadcastService extends Service {
                 break;
             case CMD_START:
                 break;
-            case CMD_UPDATE_BG_FORCE:
-                bundle = new Bundle();
+            case CMD_STAT_INFO:
                 receiver = intent.getStringExtra(INTENT_PACKAGE_KEY);
-                WatchSettings settings = broadcastEntities.get(receiver);
-                bundle = prepareBundleBG(settings, bundle);
+                watchBroadcast = broadcastEntities.get(receiver);
+                bundle = prepareStatisticBundle(watchBroadcast, intent.getIntExtra("stat_hours", 24));
+                break;
+            case CMD_UPDATE_BG_FORCE:
+                receiver = intent.getStringExtra(INTENT_PACKAGE_KEY);
+                watchBroadcast = broadcastEntities.get(receiver);
+                bundle = prepareBgBundle(watchBroadcast);
                 break;
             case CMD_SNOOZE_ALERT:
                 receiver = intent.getStringExtra(INTENT_PACKAGE_KEY);
@@ -377,10 +373,54 @@ public class WatchBroadcastService extends Service {
         xdrip.getAppContext().sendBroadcast(intent);
     }
 
-    public Bundle prepareBundleBG(WatchSettings settings, Bundle bundle) {
+    public Bundle prepareStatisticBundle(WatchBroadcast watchBroadcast, int statHours) {
+        Bundle bundle;
+        if (watchBroadcast.isStatCacheValid(statHours)) {
+            UserError.Log.d(TAG, "Stat Cache Hit");
+            bundle = watchBroadcast.getStatBundle();
+        } else {
+            UserError.Log.d(TAG, "Stat Cache Miss");
+            UserError.Log.d(TAG, "Getting StatsResult");
+            bundle = new Bundle();
+            final StatsResult statsResult = new StatsResult(Pref.getInstance(), Constants.HOUR_IN_MS * statHours, JoH.tsl());
+
+            bundle.putString("status.avg", statsResult.getAverageUnitised());
+            bundle.putString("status.a1c_dcct", statsResult.getA1cDCCT());
+            bundle.putString("status.a1c_ifcc", statsResult.getA1cIFCC());
+            bundle.putString("status.in", statsResult.getInPercentage());
+            bundle.putString("status.high", statsResult.getHighPercentage());
+            bundle.putString("status.low", statsResult.getLowPercentage());
+            bundle.putString("status.stdev", statsResult.getStdevUnitised());
+            bundle.putString("status.gvi", statsResult.getGVI());
+            bundle.putString("status.carbs", String.valueOf(Math.round(statsResult.getTotal_carbs())));
+            bundle.putString("status.insulin", JoH.qs(statsResult.getTotal_insulin(), 2));
+            bundle.putString("status.royce_ratio", JoH.qs(statsResult.getRatio(), 2));
+            bundle.putString("status.capture_percentage", statsResult.getCapturePercentage(false));
+            bundle.putString("status.capture_realtime_capture_percentage", statsResult.getRealtimeCapturePercentage(false));
+            String accuracyString = "";
+            final long accuracy_period = DAY_IN_MS * 3;
+            final String accuracy_report = Accuracy.evaluateAccuracy(accuracy_period);
+            if ((accuracy_report != null) && (accuracy_report.length() > 0)) {
+                accuracyString = accuracy_report;
+            } else {
+                final String accuracy = BloodTest.evaluateAccuracy(accuracy_period);
+                accuracyString = (accuracy != null) ? " " + accuracy : "";
+            }
+            bundle.putString("status.accuracy", accuracyString);
+            bundle.putString("status.steps", String.valueOf(statsResult.getTotal_steps()));
+            
+            watchBroadcast.setStatCache(bundle, statHours);
+        }
+        return bundle;
+    }
+
+    public Bundle prepareBgBundle(WatchBroadcast watchBroadcast) {
+        if (watchBroadcast == null) return null;
+        WatchSettings settings = watchBroadcast.getSettings();
         if (settings == null) return null;
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
 
+        Bundle bundle = new Bundle();
         bundle.putBoolean("doMgdl", (prefs.getString("units", "mgdl").equals("mgdl")));
         bundle.putInt("phoneBattery", PowerStateReceiver.getBatteryLevel(xdrip.getAppContext()));
 
@@ -419,8 +459,7 @@ public class WatchBroadcastService extends Service {
             bundle.putBoolean("bg.isStale", isStale);
             bundle.putString("bg.plugin", plugin);
             bundle.putDouble("bg.deltaValueMgdl", deltaValue);
-
-            bundle.putString("iob", statusIOB);
+            bundle.putString("pumpJSON", PumpStatus.toJson());
 
             Treatments treatment = Treatments.last();
             if (treatment != null && treatment.hasContent() && !treatment.noteOnly()) {
