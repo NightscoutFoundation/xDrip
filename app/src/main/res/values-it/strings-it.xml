@@ -1166,6 +1166,8 @@
     <string name="title_rest_api_extra_options">Altre opzioni</string>
     <string name="summary_send_bridge_battery_to_nightscout">Invia il livello della batteria a Nightscout. Deseleziona se il sensore di batteria non funziona.</string>
     <string name="title_send_bridge_battery_to_nightscout">Upload livello batteria del bridge</string>
+    <string name="summary_send_dexcom_transmitter_battery_to_nightscout">Invia le statistiche della batteria del trasmettitore Dexcom a Nightscout. Include tutti i dati mostrati sulla schermata Stato del Collector.</string>
+    <string name="title_send_dexcom_transmitter_battery_to_nightscout">Carica il livello di batteria del trasmettitore OB1 G5/G6</string>
     <string name="summary_send_treatments_to_nightscout">Invia i trattamenti a Nightscout. Deseleziona se il tuo careportal non funziona.</string>
     <string name="title_send_treatments_to_nightscout">Carica trattamenti</string>
     <string name="summary_warn_nightscout_failures">Notifica e suona se il caricamento a Nightscout fallisce.</string>
@@ -1386,6 +1388,8 @@
     <string name="title_ongoing_notification_channel">Usa il canale di notifiche attuale</string>
     <string name="summary_notification_channels_grouping">Se le notifiche devono essere raggruppate insieme. Incompatibili con l\'opzione \'Numero nell\'area di Notifica\'</string>
     <string name="title_notification_channels_grouping">Raggruppa le notifiche</string>
+    <string name="summary_delay_ascending_3min">Per il profilo di volume crescente, ritarda di 3 minuti l\'inizio del suono di allarme. La vibrazione (se abilitata) inizia non appena l\'avviso si attiva, indipendentemente da questa impostazione.</string>
+    <string name="title_delay_ascending_3min">Ritardo Volume Crescente</string>
     <string name="summary_play_sound_for_initial_calibration">Suona quando viene richiesta la calibrazione iniziale</string>
     <string name="title_play_sound_for_initial_calibration">Avviso iniziale</string>
     <string name="category_noisy_readings">Letture rumorose</string>
@@ -1562,5 +1566,7 @@
     <string name="enable_streaming_dialog_dont_ask_again">Non chiedermelo più</string>
     <string name="enable_streaming_dialog_text">Vuoi collegare xDrip con questo sensore? Questo impedirà al lettore Libre e a LibreLink di ricevere allarmi. Premi sì e scansiona di nuovo per connetterti (scegli non connetterti se vuoi eseguire xDrip con l\'app patchata)</string>
     <string name="enable_streaming_dialog_title">Connessione del sensore Libre al bluetooth</string>
+    <string name="title_lower_fuzzer">Abbassa FUZZER</string>
+    <string name="summary_lower_fuzzer">Abbassa il valore FUZZER da 2,5 minuti a 37,5 secondi</string>
     <string name="without_camera_permission_cannot_scan_barcode">Senza il permesso di accesso alla fotocamera non si può scansionare un codice a barre</string>
 </resources>

@@ -11,16 +11,11 @@ import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 
-import java.nio.charset.StandardCharsets;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
-import static com.eveningoutpost.dexdrip.ListenerService.SendData;
 
 /**
  * Adapted from WearDialer which is:
@@ -291,7 +286,7 @@ public class KeypadInputActivity extends Activity {
         mystring += (JoH.tsl()/1000)+" watchkeypad ";
         mystring += (getValue("time").length() > 0) ? getValue("time") + " time " : getTime() + " time ";
         mystring += (getValue("bloodtest").length() > 0) ? getValue("bloodtest") + " blood " : "";
-        mystring += (getValue("carbs").length() > 0) ? (!getValue("carbs").equals("0") ? getValue("carbs") + " carbs " : "") : "";
+        mystring += (getValue("carbs").length() > 0) ? (!getValue("carbs").equals("0") ? getValue("carbs") + " g carbs " : "") : "";
         mystring += (getValue("insulin").length() > 0) ? (!getValue("insulin").equals("0") ? getValue("insulin") + " units " : "") : "";
 
         if (mystring.length() > 1) {
@@ -322,7 +317,7 @@ public class KeypadInputActivity extends Activity {
                 break;
             case "carbs":
                 carbstabbutton.setBackgroundColor(onColor);
-                append = " carbs";
+                append = "g carbs";
                 break;
             case "bloodtest":
                 bloodtesttabbutton.setBackgroundColor(onColor);

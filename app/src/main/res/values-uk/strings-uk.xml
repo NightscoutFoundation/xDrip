@@ -27,7 +27,7 @@
     <string name="ok">Добре</string>
     <string name="cancel">Скасувати</string>
     <string name="no">Ні</string>
-    <string name="pref_sensor_location_dont_ask_again"> Більше не запитувати</string>
+    <string name="pref_sensor_location_dont_ask_again">Більше не запитувати</string>
     <string name="title_activity_error">"Помилки та події"</string>
     <string name="title_activity_main">Основні функції</string>
     <string name="title_activity_fake_numbers">Фіктивні значення</string>

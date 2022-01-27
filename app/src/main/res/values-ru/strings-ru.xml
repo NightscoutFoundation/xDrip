@@ -518,10 +518,10 @@
     <string name="override_phone_silent_mode_colon">Игнорировать беззвучный режим телефона:</string>
     <string name="vibrate_on_alert">Вибрировать при оповещении</string>
     <string name="test_alert">тест оповещения</string>
-    <string name="disable_alert">отключить оповещение</string>
-    <string name="save_alert">сохранить оповещение</string>
-    <string name="remove_alert">удалить оповещение</string>
-    <string name="snooze_alert_before_it_fires">отложить оповещение до его срабатывания</string>
+    <string name="disable_alert">Отключить тревогу</string>
+    <string name="save_alert">сохранить тревогу</string>
+    <string name="remove_alert">удалить тревогу</string>
+    <string name="snooze_alert_before_it_fires">отложить тревогу до срабатывания</string>
     <string name="create_low_alert">Создать оповещение о гипо</string>
     <string name="create_high_alert">Создать оповещение о гипер</string>
     <string name="long_press_an_existing_alert_to_edit">(Удерживайте палец на существующем оповещении, чтобы отредактировать)</string>
@@ -1387,6 +1387,8 @@
     <string name="title_ongoing_notification_channel">Использовать текущий канал уведомлений</string>
     <string name="summary_notification_channels_grouping">Группировать оповещения вместе. Не совместимо с функцией \"Значение глюкозы в области уведомлений\"</string>
     <string name="title_notification_channels_grouping">Группировать оповещения</string>
+    <string name="summary_delay_ascending_3min">Для профиля возрастающей громкости задерживать начало звука тревоги на 3 минуты. Вибрация (если включена) начнется сразу при срабатывании тревоги вне зависимости от этой настройки.</string>
+    <string name="title_delay_ascending_3min">Задержка возрастания громкости</string>
     <string name="summary_play_sound_for_initial_calibration">Уведомлять звуком когда требуется начальная калибровка</string>
     <string name="title_play_sound_for_initial_calibration">Звуковое уведомление</string>
     <string name="category_noisy_readings">Шумные данные</string>
