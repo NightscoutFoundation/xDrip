@@ -13,6 +13,7 @@ import org.junit.runners.Parameterized;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -69,8 +70,27 @@ public class DateUtilTest {
 
         @BeforeClass
         public static void setUp() throws Exception {
-            setFinalStatic(Build.VERSION.class.getField("SDK_INT"), android.os.Build.VERSION_CODES.O);
+            setFinalStatic(Build.VERSION.class.getField("SDK_INT"), Build.VERSION_CODES.O);
             System.out.println("Testing ISO Date Parsing function using SDK version: " + Build.VERSION.SDK_INT);
+        }
+    }
+
+    public static class DateUtilMiscTests {
+
+        @BeforeClass
+        public static void setUp() throws Exception {
+            setFinalStatic(Build.VERSION.class.getField("SDK_INT"), Build.VERSION_CODES.O);
+            System.out.println("Testing ISO Date Parsing function using SDK version: " + Build.VERSION.SDK_INT);
+        }
+
+        @Test
+        public void tolerantFromISODateStringWithoutSeconds() {
+            try {
+                Date dtExpectedZeroSeconds = Date.from(dtExpected.toInstant().truncatedTo(ChronoUnit.MINUTES));
+                assertEquals(dtExpectedZeroSeconds, DateUtil.tolerantFromISODateString("2018-03-03T05:22-0600"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
