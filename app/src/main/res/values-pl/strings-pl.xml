@@ -1384,4 +1384,12 @@
     <string name="enable_streaming_dialog_dont_ask_again">Nie pytaj ponownie</string>
     <string name="enable_streaming_dialog_text">Czy chcesz połączyć xDrip z tym czujnikiem? To spowoduje wyłączenie alarmów w czytniku i oficjalnej aplikacji LibreLink. Naciśnij tak i zeskanuj ponownie, aby połączyć się (wybierz opcję nie łącz, jeśli chcesz uruchomić xDrip ze zmodyfikowaną aplikacją)</string>
     <string name="enable_streaming_dialog_title">Łączenie czujnika Libre z Bluetooth</string>
+    <string name="title_multiple_insulin_types_settings">Wiele rodzajów insuliny</string>
+    <string name="title_multiple_insulin_types">Wiele rodzajów insuliny</string>
+    <string name="use_for_calibration">Czy użyć %s do kalibracji?</string>
+    <string name="no_never">NIE, nigdy</string>
+    <string name="start_sensor_confirmation">Źródło danych jest ustawione na: %s\n\nCzy chcesz zmienić ustawienia lub uruchomić czujnik?</string>
+    <string name="not_getting_readings">Nie uzyskuje żadnych odczytów.</string>
+    <string name="snoozing_due_button_press">Usypianie alarmu z powodu naciśnięcia przycisku głośności</string>
+    <string name="share_database">Udostępnij bazę danych...</string>
 </resources>
