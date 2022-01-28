@@ -36,6 +36,7 @@ import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm;
 import com.eveningoutpost.dexdrip.Models.ReadingData;
 import com.eveningoutpost.dexdrip.Models.SensorSanity;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
@@ -60,6 +61,11 @@ import static com.eveningoutpost.dexdrip.xdrip.gs;
 // From LibreAlarm et al
 
 // TODO have we always checked checksum on this data? what about LibreAlarm path?
+
+enum ENABLE_STREAMING {
+    SUCCESS,
+    FAILED,
+}
 
 public class NFCReaderX {
 
@@ -474,6 +480,19 @@ public class NFCReaderX {
             }
         }
 
+        void LogLibre2StartStreaming(ENABLE_STREAMING success, String extraData) {
+            switch(success) {
+                case SUCCESS:
+                    UserError.Log.ueh("Libre 2", "Bluetooth connection with sensor enabled, you should be able to receive BG data using Bluetooth");
+                    break;
+                case FAILED:
+                    UserError.Log.ueh("Libre 2", "Bluetooth connection with sensor failed." +
+                            " You wont get any readings. Try scanning again to fix this. (Extra data: " +
+                            extraData +" )");
+                    break;
+            }
+        }
+
         void startLibre2Streaming(NfcV nfcvTag, byte[] patchUid, byte[] patchInfo) throws InterruptedException {
             // Since this is libre2 we can remove the physical devices battery.
             Pref.setInt("bridge_battery", 0);
@@ -481,6 +500,7 @@ public class NFCReaderX {
             PersistentStore.setString("Bubblebattery", "0");
             if (!enableBluetoothAllowed(context)) {
                 Log.e(TAG, "Sensor is libre 2, enabeling BT not allowed");
+                LogLibre2StartStreaming(ENABLE_STREAMING.FAILED, "Sensor is Libre 2 but enabling BT is not allowed by the settings");
                 return;
             }
             Log.e(TAG, "Sensor is libre 2, enabeling BT");
@@ -492,6 +512,7 @@ public class NFCReaderX {
             Pair<byte[], String> unlockData = LibreOOPAlgorithm.nfcSendgetBluetoothEnablePayload();
             if (unlockData == null) {
                 Log.e(TAG, "unlockData is null, not enabeling streaming");
+                LogLibre2StartStreaming(ENABLE_STREAMING.FAILED, "Failure in communicating with OOP2. Is OOP2 installed?");
                 return;
             }
             Libre2SensorData.setLibre2SensorData(patchUid, patchInfo, 42, 1, unlockData.second);
@@ -518,6 +539,7 @@ public class NFCReaderX {
                 } catch (IOException e) {
                     if ((System.currentTimeMillis() > time_patch + 2000)) {
                         Log.e(TAG, "enable streaming command read timeout");
+                        LogLibre2StartStreaming(ENABLE_STREAMING.FAILED, "Enable streaming command read timeout");
                         JoH.static_toast_short(gs(R.string.nfc_read_timeout));
                         vibrate(context, 3);
                         return;
@@ -532,8 +554,10 @@ public class NFCReaderX {
 
                 ActiveBluetoothDevice.setDevice(LibreOOPAlgorithm.getLibreDeviceName() + SensorSN, JoH.bytesToHexMacFormat(res));
                 CollectionServiceStarter.restartCollectionServiceBackground();
+                LogLibre2StartStreaming(ENABLE_STREAMING.SUCCESS, null);
             } else {
                 Log.e(TAG, "enable streaming returned bad data. BT will not work." + HexDump.dumpHexString(res));
+                LogLibre2StartStreaming(ENABLE_STREAMING.FAILED, "Enable streaming command returned bad data");
             }
         }
 

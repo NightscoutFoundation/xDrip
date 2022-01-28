@@ -27,6 +27,7 @@ import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 
 /**
  * Created by Emma Black on 8/3/15.
+ * This is the old logs activity.
  */
 public class ErrorsActivity extends ActivityWithMenu {
     public static final String menu_name = "Errors";
