@@ -1525,4 +1525,27 @@
     <string name="title_lower_fuzzer">FUZZER csökkentése</string>
     <string name="summary_lower_fuzzer">A FUZZER értékének csökkentése 2,5 percről 37,5 mp-re</string>
     <string name="without_camera_permission_cannot_scan_barcode">Kamerahasználat engedélyezése nélkül nem működik a vonalkód olvasás</string>
+    <string name="summary_widget_hide_graph">A grafikon elrejtése a widgeteken (a következő olvasáskor jelenik meg)</string>
+    <string name="title_widget_hide_graph">Widget grafikon elrejtése</string>
+    <string name="summary_show_accessibility_settings">Ha telefonja rendelkezik Always On Display funkcióval, akkor az xDrip widgetet ott engedélyezheti az xDrip szolgáltatás engedélyezésével az Android rendszerbeállítások oldalon.</string>
+    <string name="title_show_accessibility_settings">xDrip AOD-n (kisegítő szolgáltatásként)</string>
+    <string name="title_multiple_insulin_types_settings">Többféle inzulin</string>
+    <string name="summary_multiple_insulin_types_settings">Beállítások többféle inzulin használatakor</string>
+    <string name="title_multiple_insulin_types">Többféle inzulin</string>
+    <string name="summary_broadcast_snooze">Szundi küldése más app-nak ezen készüléken</string>
+    <string name="summary_accept_broadcast_snooze">Szundi elfogadása más app-tól ezen készüléken</string>
+    <string name="no_i_really_know">Nem, tényleg tudom, mit csinálok</string>
+    <string name="no_never">NEM, soha</string>
+    <string name="auto_starting_sensor">Automatikus szenzorindítás!</string>
+    <string name="start_sensor_confirmation">Az adatforrás helye: %s\n\n Szeretné megváltoztatni a beállításokat vagy elindítani a szenzort?</string>
+    <string name="not_getting_readings">Nem érkezett adat.</string>
+    <string name="noise_workings_noise">Szundi: %s</string>
+    <string name="snoozing_due_button_press">Riasztás szundiba küldése a a hangerő gomb megnyomásával</string>
+    <string name="share_database">Adatbázis megosztása...</string>
+    <string name="title_motion_detection_warning">Mozgásérzékelő figyelmeztetés</string>
+    <string name="message_motion_detection_warning">A mozgásérzékelés kísérleti jellegű, és csak néhány telefonnal kompatibilis. A fő célja a jármű üzemmód észlelése.\n\n\nA tesztek alapján úgy tűnik, hogy a magasabb kategóriájú telefonok támogatják leginkább a működéséhez szükséges érzékelőket. Az akkumulátort erősen merítheti.\n\n\nAz edzéssel kapcsolatos mérésekhez az okosórák lépésszámlálói jobban működnek.</string>
+    <string name="title_variant">xDrip+ variánst használ</string>
+    <string name="message_variant">Az xDrip+ varánsok lehetővé teszik az alkalmazás több példányban történő telepítését. Akár haladó használatra, akár azért, hogy a kísérleti és az éles rendszer egyszerre legyen telepítve.\n\n A variánsoknál előfordulhat, hogy néhány dolog nem működik megfelelően, mert az egyik vagy másik kizárólagos hozzáféréssel rendelkezik, például a bluetooth párosítás. A variánsokkal kapcsolatos visszajelzéseket és hibajelzéseket szívesen fogadjuk!</string>
+    <string name="expires_unknown">Lejárat: ???</string>
+    <string name="sensor_expired">LEJÁRT!</string>
 </resources>
