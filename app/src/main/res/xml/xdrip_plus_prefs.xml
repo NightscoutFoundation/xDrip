@@ -310,7 +310,7 @@
                 android:summary="@string/try_to_work_around_noisy_readings"
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
-                android:title="\u26A0 Smooth sensor noise" />
+                android:title="@string/title_bg_compensate_noise" />
             <SwitchPreference
                 android:defaultValue="false"
                 android:dependency="bg_compensate_noise"
@@ -318,7 +318,7 @@
                 android:summary="@string/try_to_work_around_noisy_readings_ultrasensitive"
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
-                android:title="\u26A0 Smooth sensor noise ultrasensitive" />
+                android:title="@string/title_bg_compensate_noise_ultrasensitive" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="show_showcase"
@@ -361,8 +361,8 @@
                     android:defaultValue="false"
                     android:dependency="show_filtered_curve"
                     android:key="show_pseudo_filtered"
-                    android:summary="Make filtered data as needed"
-                    android:title="Create missing filtered" />
+                    android:summary="@string/summary_create_missing_filtered"
+                    android:title="@string/title_create_missing_filtered" />
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="show_raw_plot"
@@ -424,13 +424,13 @@
                     android:title="@string/title_illustrate_backfilled_data" />
                 <CheckBoxPreference
                     android:key="widget_hide_graph"
-                    android:summary="Hide the graph on widgets (shows on next reading)"
-                    android:title="Hide widget graph" />
+                    android:summary="@string/summary_widget_hide_graph"
+                    android:title="@string/title_widget_hide_graph" />
                 <CheckBoxPreference
                     android:dependency="engineering_mode"
                     android:key="illustrate_remote_data"
-                    android:summary="Show data received remotely (diagnostic only)"
-                    android:title="Illustrate remote data" />
+                    android:summary="@string/summary_illustrate_remote_data"
+                    android:title="@string/title_illustrate_remote_data" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="engineering_mode"
@@ -477,8 +477,8 @@
                 android:title="@string/enable_reminder_features" />
             <Preference
                 android:key="show_accessibility_settings"
-                android:summary="If your phone has Always On Display you can enable the xDrip widget there by enabling the xDrip accessibility service from the Android System Settings page."
-                android:title="Enable xDrip Accessibility">
+                android:summary="@string/summary_show_accessibility_settings"
+                android:title="@string/title_show_accessibility_settings">
                 <intent
                     android:action="android.settings.ACCESSIBILITY_SETTINGS"
                     />
@@ -625,30 +625,30 @@
 
             <PreferenceScreen
                 android:key="xdrip_plus_multiple_insulin_types_settings"
-                android:title="Multiple Insulin Types"
-                android:summary="Options for working with multiple insulin types">
+                android:title="@string/title_multiple_insulin_types_settings"
+                android:summary="@string/summary_multiple_insulin_types_settings">
                 <SwitchPreference
                     android:defaultValue="false"
                     android:key="multiple_insulin_types"
                     android:switchTextOff="@string/short_off_text_for_switches"
                     android:switchTextOn="@string/short_on_text_for_switches"
-                    android:title="Multiple Insulin Types" />
-            <Preference
-                android:key="insulin_profiles"
-                android:dependency="multiple_insulin_types"
-                android:summary="@string/desc_enable_dedicated_insulin_profiles"
-                android:title="@string/enable_dedicated_insulin_profiles">
-                <intent
-                    android:action="android.intent.action.MAIN"
-                    android:targetClass="com.eveningoutpost.dexdrip.insulin.InsulinProfileEditor"
-                    android:targetPackage="@string/local_target_package" />
-            </Preference>
+                    android:title="@string/title_multiple_insulin_types" />
+                <Preference
+                    android:key="insulin_profiles"
+                    android:dependency="multiple_insulin_types"
+                    android:summary="@string/desc_enable_dedicated_insulin_profiles"
+                    android:title="@string/enable_dedicated_insulin_profiles">
+                    <intent
+                        android:action="android.intent.action.MAIN"
+                        android:targetClass="com.eveningoutpost.dexdrip.insulin.InsulinProfileEditor"
+                        android:targetPackage="@string/local_target_package" />
+                </Preference>
 
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="multiple_insulin_use_basal_activity"
-                    android:summary="Plot Basal activity on graph and incorporate in predictive model"
-                    android:title="Use Basal Activity"/>
+                    android:summary="@string/summary_multiple_insulin_use_basal_activity"
+                    android:title="@string/title_multiple_insulin_use_basal_activity"/>
 
             </PreferenceScreen>
 
@@ -824,21 +824,21 @@
                     android:title="@string/wifi_name_must_match" />
                 <PreferenceCategory
                     android:key="xdrip_plus_snooze_broadcast"
-                    android:title="Local Broadcast">
+                    android:title="@string/title_xdrip_plus_snooze_broadcast">
                     <SwitchPreference
                         android:defaultValue="false"
                         android:key="broadcast_snooze"
-                        android:summary="Send snoozes to other apps on this handset"
+                        android:summary="@string/summary_broadcast_snooze"
                         android:switchTextOff="@string/short_off_text_for_switches"
                         android:switchTextOn="@string/short_on_text_for_switches"
-                        android:title="Local Broadcast" />
+                        android:title="@string/title_broadcast_snooze" />
                     <SwitchPreference
                         android:defaultValue="false"
                         android:key="accept_broadcast_snooze"
-                        android:summary="Accept snoozes from other apps on this handset"
+                        android:summary="@string/summary_accept_broadcast_snooze"
                         android:switchTextOff="@string/short_off_text_for_switches"
                         android:switchTextOn="@string/short_on_text_for_switches"
-                        android:title="Accept Local Broadcast" />
+                        android:title="@string/title_accept_broadcast_snooze" />
                 </PreferenceCategory>
             </PreferenceScreen>
             <PreferenceScreen
