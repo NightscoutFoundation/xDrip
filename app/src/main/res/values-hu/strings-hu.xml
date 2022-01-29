@@ -27,6 +27,7 @@
     <string name="no">Nem</string>
     <string name="pref_sensor_location_dont_ask_again"> Ne kérdezz rá mégegyszer</string>
     <string name="title_activity_error">"Hiba- és eseménynapló"</string>
+    <string name="title_activity_main">Főképernyő</string>
     <string name="title_activity_edit_alert">Riasztás beállítása</string>
     <string name="title_activity_double_calibration">Indító kalibráció</string>
     <string name="title_activity_calibration_override">Kalibráció felülírása</string>
@@ -309,7 +310,7 @@
     <string name="space_units">" egység"</string>
     <string name="units">egység</string>
     <string name="carbs">CH</string>
-    <string name="when">mikor</string>
+    <string name="when">mikor (óómm)</string>
     <string name="speak_your_treatment">Kezelés felolvasása pl.:\nx.x egység inzulin / xx gram szénhidrát</string>
     <string name="speech_recognition_is_not_supported">Beszédfelismerés nem támogatott</string>
     <string name="treatment_note">Jegyzet kezelésről</string>
@@ -759,6 +760,7 @@
     <string name="alert_sound">Riasztás hangja</string>
     <string name="override_silent_mode_these">Néma üzemmód felülírása</string>
     <string name="persistent_repeat_max">Ismétlés max ennyi perc után (p)</string>
+    <string name="momentum_indicates_low">Ha a trend azt mutatja, hogy a hipoglikémia lesz</string>
     <string name="notify_on_low_battery_level">Riasztás, ha akku töltöttsége lecsökken</string>
     <string name="collector_battery_alerts">Kollektor akku riasztás</string>
     <string name="low_battery_percentage">Alacsony akku töltöttségi szint (%)</string>
@@ -949,6 +951,8 @@
     <string name="did_not_acknowledge_a_high_glucose_alert">%1$s nem reagált %2$s ideje a magas vércukorértékre</string>
     <string name="has_not_had_glucose_data_received_for">%2$s nem kapott VC-értéket %1$s perce</string>
     <string name="phone_has_not_been_used_for">%2$s telefon nem volt használatban %1$s perce</string>
+    <string name="is_requesting_assistance">Segítséget kér: %s</string>
+    <string name="is_testing_the_assistance_request_feature">Segítségkérés funkciót teszteli: %s</string>
     <string name="emergency_message_near_format_string">%1$s - %2$s %3$s %4$s %5$s közelében</string>
     <string name="choose_when_to_send_messages">Üzenet küldése, ha:</string>
     <string name="low_alert_not_acknowledged">Nem reagált az alacsony érték értesítésre</string>
@@ -1532,8 +1536,12 @@
     <string name="title_multiple_insulin_types_settings">Többféle inzulin</string>
     <string name="summary_multiple_insulin_types_settings">Beállítások többféle inzulin használatakor</string>
     <string name="title_multiple_insulin_types">Többféle inzulin</string>
+    <string name="title_xdrip_plus_snooze_broadcast">Helyi adatszórás</string>
     <string name="summary_broadcast_snooze">Szundi küldése más app-nak ezen készüléken</string>
+    <string name="title_broadcast_snooze">Helyi adatszórás</string>
     <string name="summary_accept_broadcast_snooze">Szundi elfogadása más app-tól ezen készüléken</string>
+    <string name="title_accept_broadcast_snooze">Helyi adatszórás engedélyezése</string>
+    <string name="no_battery_optimization_whitelisting">Úgy tűnik, a készüléke nem vezet kivétellistát az akku optimalizált app-okról!</string>
     <string name="no_i_really_know">Nem, tényleg tudom, mit csinálok</string>
     <string name="no_never">NEM, soha</string>
     <string name="auto_starting_sensor">Automatikus szenzorindítás!</string>
