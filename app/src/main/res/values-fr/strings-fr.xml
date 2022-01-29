@@ -1569,4 +1569,13 @@
     <string name="title_lower_fuzzer">Réduire FUZZER</string>
     <string name="summary_lower_fuzzer">Réduire la valeur de FUZZER de 2,5 minutes à 37,5 secondes</string>
     <string name="without_camera_permission_cannot_scan_barcode">Impossible de scanner le code-barres sans la permission caméra</string>
+    <string name="summary_widget_hide_graph">Masquer le graphe sur les widgets (applicable à la prochaine lecture)</string>
+    <string name="title_widget_hide_graph">Masquer le graphe du widget</string>
+    <string name="summary_illustrate_remote_data">Afficher les données reçues à distance (diagnostic uniquement)</string>
+    <string name="title_show_accessibility_settings">Activer l\'accessibilité xDrip</string>
+    <string name="title_multiple_insulin_types_settings">Types d\'insuline multiples</string>
+    <string name="summary_multiple_insulin_types_settings">Options pour utiliser plusieurs types d\'insuline</string>
+    <string name="title_multiple_insulin_types">Types d\'insuline multiples</string>
+    <string name="title_xdrip_plus_snooze_broadcast">Diffusion locale</string>
+    <string name="title_broadcast_snooze">Diffusion locale</string>
 </resources>
