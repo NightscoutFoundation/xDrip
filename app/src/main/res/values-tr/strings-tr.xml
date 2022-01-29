@@ -33,7 +33,7 @@
     <string name="title_activity_fake_numbers">Sahte numaralar</string>
     <string name="title_activity_edit_alert">Uyarıyı Düzenle</string>
     <string name="title_activity_double_calibration">İlk kalibrasyon</string>
-    <string name="title_activity_calibration_override">Kalibrasyonun üzerine yaz</string>
+    <string name="title_activity_calibration_override">Kalibrasyonu geçersiz kıl</string>
     <string name="pref_header_cloud_storage">Bulut Depolama</string>
     <string name="auto_configure_title">Otomatik Yapılandır</string>
     <string name="prefs_auto_config_summary">Barkod kullanarak otomatik yapılandır.</string>
