@@ -237,7 +237,7 @@
     <string name="hardware_data_source">Donanım Veri Kaynağı</string>
     <string name="enter_ten_character_dexcom_receiver_serial">10 Karakterli Dexcom Alıcısı (Receiver) Seri Numarası Girin</string>
     <string name="dexcom_transmitter_id">Dexcom Transmitter ID\'si</string>
-    <string name="run_collector_in_foreground">Ön planda Toplayıcı Çalıştır</string>
+    <string name="run_collector_in_foreground">Toplayıcıyı ön planda çalıştır</string>
     <string name="shows_a_persistent_notification">Kilit ekranında görünen kalıcı bir bildirim grafiği gösterir ve Android\'in hizmeti kapatmasını önler.</string>
     <string name="list_of_receivers">Alıcılar listesi</string>
     <string name="extra_tags_for_logging">Günlüğe kaydetme için ek etiketler</string>
