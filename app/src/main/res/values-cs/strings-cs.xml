@@ -983,7 +983,7 @@
     <string name="__do_you_want_to_change_settings_or_start_sensor">\n\nChcete změnit nastavení nebo spustit senzor?</string>
     <string name="change_settings">Změnit nastavení</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Chcete smazat a resetovat kalibrace pro tento senzor?</string>
-    <string name="sensor_stop_confirm">Chcete zastavit senzor?</string>
+    <string name="sensor_stop_confirm">Opravdu chcete zastavit senzor?</string>
     <string name="use_bg_for_calibration">Použít glykemii pro kalibraci?</string>
     <string name="yes_calibrate">ANO, kalibrovat</string>
     <string name="enable_automatic_calibration">Povolit automatickou kalibraci</string>
