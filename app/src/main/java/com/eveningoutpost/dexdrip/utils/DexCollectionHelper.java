@@ -86,7 +86,7 @@ public class DexCollectionHelper {
                 textSettingDialog(activity,
                         "shfollow_user", "Dex Share Username",
                         "Enter Share Follower Username",
-                        InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD,
+                        InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS,
                         new Runnable() {
                             @Override
                             public void run() {
