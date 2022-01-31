@@ -1579,4 +1579,6 @@
     <string name="title_multiple_insulin_types_settings">Множество типов инсулина</string>
     <string name="summary_multiple_insulin_types_settings">Настройки работы с различными типами инсулина</string>
     <string name="title_multiple_insulin_types">Множество типов инсулина</string>
+    <string name="external_status_strings_eg_tbr">Статусы из внешних приложений, например ВБС из AAPS</string>
+    <string name="accept_external_status">Принимать статусы извне</string>
 </resources>
