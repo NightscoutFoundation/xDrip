@@ -1537,7 +1537,7 @@ public class Ob1G5StateMachine {
         if (transmitterId.length() != 6) return false;
         if (data.length < 10) return false;
         final BatteryInfoRxMessage batteryInfoRxMessage = new BatteryInfoRxMessage(data);
-        UserError.Log.e(TAG, "Saving battery data: " + batteryInfoRxMessage.toString());
+        UserError.Log.ueh(TAG, "Saving battery data: " + batteryInfoRxMessage.toString());
         PersistentStore.setBytes(G5_BATTERY_MARKER + transmitterId, data);
         PersistentStore.setLong(G5_BATTERY_FROM_MARKER + transmitterId, tsl());
 
