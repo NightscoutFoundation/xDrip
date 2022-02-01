@@ -13,6 +13,8 @@ import static com.eveningoutpost.dexdrip.cgm.sharefollow.ShareConstants.USER_AGE
 
 // jamorham
 
+// TODO: change authentication and session ID into UUID
+// TODO: switch from Publisher/ReadPublisherLatestGlucoseValues to Subscriber/ReadEvents
 public interface DexcomShareInterface {
 
     // logging in and getting session id
