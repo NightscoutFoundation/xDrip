@@ -965,6 +965,13 @@
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/title_Accept_Calibrations" />
             <SwitchPreference
+                android:defaultValue="true"
+                android:key="accept_external_status"
+                android:summary="@string/external_status_strings_eg_tbr"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="@string/accept_external_status" />
+            <SwitchPreference
                 android:defaultValue="false"
                 android:key="xdrip_webservice"
                 android:summary="@string/summary_Operate_a_local_web_server_for_interacting_with_Fitbit_Ionic_etc"

@@ -1667,4 +1667,6 @@
         <item quantity="one">Age: %sd</item>
         <item quantity="other">Age: %sd</item>
     </plurals>
+    <string name="external_status_strings_eg_tbr">External status strings, eg TBR from AAPS</string>
+    <string name="accept_external_status">Accept External Status</string>
 </resources>
