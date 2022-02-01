@@ -245,4 +245,6 @@
     <string name="title_multiple_insulin_types">Няколко вида инсулин</string>
     <string name="title_xdrip_plus_snooze_broadcast">Локално излъчване(broadcast)</string>
     <string name="title_broadcast_snooze">Локално излъчване(broadcast)</string>
+    <string name="external_status_strings_eg_tbr">Низове(Strings) от външно състояние, напр. TBR от AAPS</string>
+    <string name="accept_external_status">Приемане на външно състояние</string>
 </resources>
