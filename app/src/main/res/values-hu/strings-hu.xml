@@ -1556,4 +1556,6 @@
     <string name="message_variant">Az xDrip+ varánsok lehetővé teszik az alkalmazás több példányban történő telepítését. Akár haladó használatra, akár azért, hogy a kísérleti és az éles rendszer egyszerre legyen telepítve.\n\n A variánsoknál előfordulhat, hogy néhány dolog nem működik megfelelően, mert az egyik vagy másik kizárólagos hozzáféréssel rendelkezik, például a bluetooth párosítás. A variánsokkal kapcsolatos visszajelzéseket és hibajelzéseket szívesen fogadjuk!</string>
     <string name="expires_unknown">Lejárat: ???</string>
     <string name="sensor_expired">LEJÁRT!</string>
+    <string name="external_status_strings_eg_tbr">Külső alkalmazásokból származó adatok (pl. AAPS-ből TBR)</string>
+    <string name="accept_external_status">Adatfogadás külső alkalmazásokból</string>
 </resources>
