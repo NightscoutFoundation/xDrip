@@ -1614,4 +1614,6 @@
     <string name="message_variant">xDrip+ varyantları, aynı anda birden fazla uygulamanın yüklenmesine izin verir. Ya gelişmiş kullanım için ya da xDrip-Deneysel ve xDrip+\'ın aynı anda yüklenmesine izin vermek için.\n\nVaryantlarda, bir uygulamanın veya diğerinin özel erişime sahip olması, örneğin bluetooth eşleştirmesi nedeniyle bazı şeyler düzgün çalışmayabilir. Varyantlar hakkında geri bildirim ve hata raporları memnuniyetle karşılanır!</string>
     <string name="expires_unknown">Bitiş tarihi: ???</string>
     <string name="sensor_expired">SÜRESİ DOLDU!</string>
+    <string name="external_status_strings_eg_tbr">Harici durum dizileri, ör. AAPS\'den GBO</string>
+    <string name="accept_external_status">Harici Durumu Kabul Et</string>
 </resources>
