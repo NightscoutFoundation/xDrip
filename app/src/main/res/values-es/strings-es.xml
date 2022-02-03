@@ -1576,4 +1576,5 @@
         <item quantity="one">Expira: %sd</item>
         <item quantity="other">Expira: %sd</item>
     </plurals>
+    <string name="accept_external_status">Aceptar estado externo</string>
 </resources>
