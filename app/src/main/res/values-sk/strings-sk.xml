@@ -8,7 +8,7 @@
     <string name="menu_refresh">Obnoviť</string>
     <string name="menu_export_database">Exportovať databázu</string>
     <string name="menu_export_csv_sidiary">Exportovať CSV (formát SiDiary)</string>
-    <string name="menu_import_db">Importovať databázu</string>
+    <string name="menu_import_db">Obnoviť databázu</string>
     <string name="error_bluetooth_not_supported">Chyba: Bluetooth nie je na tomto zariadení podporováné</string>
     <string name="unknown_device">Nerozpoznané zariadenie</string>
     <string name="connecting_to_device">Pripájam sa k zariadeniu</string>
@@ -1078,6 +1078,7 @@ Je nutné zakázať v prípade, že chcete používať xdrip cifreník. (Požado
     <string name="calibrate">Kalibrovať</string>
     <string name="are_you_sure_you_want_to_delete_this_treatment">Si si istý, že chceš zmazať túto liečbu?</string>
     <string name="no_data_received_from_master_yet">Zatiaľ neboli prijaté dáta z veliaceho mobilu</string>
+    <string name="last_from_master_">Naposledy prijaté: </string>
     <string name="xdrip_will_not_work_below_android_version_42">xDrip+ vyžaduje verziu Android 4.2 a vyššiu</string>
     <string name="xdrip_oop2_not_installed">xDrip+ potrebuje inštaláciu oop2 pre libre2/libre senzory.</string>
     <string name="yes_please">ÁNO, prosím</string>
