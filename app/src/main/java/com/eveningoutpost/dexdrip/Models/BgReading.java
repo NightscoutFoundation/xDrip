@@ -1071,7 +1071,7 @@ public class BgReading extends Model implements ShareUploadableBg {
 
                        // TODO can these methods be unified to reduce duplication
                                                                // TODO remember to sync this with wear code base
-    public static synchronized BgReading bgReadingInsertFromG5(double calculated_value, long timestamp, String sourceInfoAppend) {
+    public static synchronized BgReading bgReadingInsertFromG5(double calculated_value, final long timestamp, String sourceInfoAppend) {
 
         final Sensor sensor = Sensor.currentSensor();
         if (sensor == null) {
@@ -1278,7 +1278,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                     Log.d(TAG, "Ignoring duplicate bgr record due to timestamp: " + json);
                 }
             } catch (Exception e) {
-                Log.d(TAG, "Could not save BGR: " + e.toString());
+                Log.e(TAG, "Could not save BGR bgReading: ", e);
             }
         } else {
             Log.e(TAG,"Got null bgr from json");
@@ -1329,7 +1329,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                     Log.d(TAG, "Ignoring duplicate bgr record due to timestamp: " + timestamp);
                 }
             } catch (Exception e) {
-                Log.d(TAG, "Could not save BGR: " + e.toString());
+                Log.e(TAG, "Could not save BGR: ", e);
             }
         } else {
             Log.e(TAG,"Got null bgr from create");

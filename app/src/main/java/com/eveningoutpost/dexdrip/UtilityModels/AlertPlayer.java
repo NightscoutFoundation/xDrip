@@ -258,7 +258,7 @@ public class AlertPlayer {
         activeBgAlert.snooze(repeatTime);
     }
 
-    // Check the state and alrarm if needed
+    // Check the state and alarm if needed
     public void ClockTick(Context ctx, boolean trendingToAlertEnd, String bgValue)
     {
         if (trendingToAlertEnd) {
@@ -534,23 +534,25 @@ public class AlertPlayer {
                 .setDeleteIntent(snoozeIntent(context, minsFromStartPlaying));
 
         if (profile != ALERT_PROFILE_VIBRATE_ONLY && profile != ALERT_PROFILE_SILENT) {
-            if (minsFromStartPlaying >= MAX_VIBRATING_MINUTES) {
-                // Before this, we only vibrate...
-                float volumeFrac = (float) (minsFromStartPlaying - MAX_VIBRATING_MINUTES) / (MAX_ASCENDING_MINUTES - MAX_VIBRATING_MINUTES);
-                volumeFrac = Math.min(volumeFrac, 1);
-                if (profile == ALERT_PROFILE_MEDIUM) {
-                    volumeFrac = (float) 0.7;
+            float volumeFrac = (float) (minsFromStartPlaying - MAX_VIBRATING_MINUTES) / (MAX_ASCENDING_MINUTES - MAX_VIBRATING_MINUTES);
+            // While minsFromStartPlaying <= MAX_VIBRATING_MINUTES, we only vibrate ...
+            volumeFrac = Math.max(volumeFrac, 0); // Limit volumeFrac to values greater than and equal to 0
+            volumeFrac = Math.min(volumeFrac, 1); // Limit volumeFrac to values less than and equal to 1
+            if (!Pref.getBoolean("delay_ascending_3min", true) && volumeFrac < 0.3) {
+                volumeFrac = (float) 0.3; // If delay_ascending_3min is disabled, we never only vibrate.
+            }
+            if (profile == ALERT_PROFILE_MEDIUM) {
+                volumeFrac = (float) 0.7;
+            }
+            Log.d(TAG, "VibrateNotifyMakeNoise volumeFrac = " + volumeFrac);
+            boolean overrideSilent = alert.override_silent_mode;
+            boolean forceSpeaker = alert.force_speaker;
+            if (notSilencedDueToCall()) {
+                if (overrideSilent || isLoudPhone(context)) {
+                    playFile(context, alert.mp3_file, volumeFrac, forceSpeaker, overrideSilent);
                 }
-                Log.d(TAG, "VibrateNotifyMakeNoise volumeFrac = " + volumeFrac);
-                boolean overrideSilent = alert.override_silent_mode;
-                boolean forceSpeaker = alert.force_speaker;
-                if (notSilencedDueToCall()) {
-                    if (overrideSilent || isLoudPhone(context)) {
-                        playFile(context, alert.mp3_file, volumeFrac, forceSpeaker, overrideSilent);
-                    }
-                } else {
-                    Log.i(TAG, "Silenced Alert Noise due to ongoing call");
-                }
+            } else {
+                Log.i(TAG, "Silenced Alert Noise due to ongoing call");
             }
         }
         if (profile != ALERT_PROFILE_SILENT && alert.vibrate) {

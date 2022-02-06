@@ -467,6 +467,7 @@
     <string name="start_sensor">Starta sensor</string>
     <string name="debug_and_other_misc_options">Avlusning och diverse annat</string>
     <string name="low_glucose_values">Låga glukosvärden</string>
+    <string name="bad_glucose_values">Dåliga glukosvärden</string>
     <string name="revert_to_default">Återställ till standard</string>
     <string name="filtered_values">Filtrerade värden</string>
     <string name="treatment_color">Behandlingsfärg</string>
@@ -887,7 +888,10 @@
     <string name="summary_ob1_g5_restart_sensor">Starta automatiskt om en sensor när den stoppas</string>
     <string name="title_ob1_g5_restart_sensor">Starta om sensor</string>
     <string name="summary_ob1_g5_preemptive_restart">Starta om en sensor i förebyggande syfte dag 6/9 för att undvika uppvärmningstiden</string>
+    <string name="summary_delay_ascending_3min">För stigande volymprofil, fördröj starten av varningsljud med 3 minuter. Vibration (om aktiverad) startar så snart varningen aktiveras oavsett denna inställning.</string>
+    <string name="title_delay_ascending_3min">Fördröjning stigande volym</string>
     <string name="bluetooth_device">Blåtandsenhet:   </string>
     <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Blåtandsbryggenhet: Blucon, Bubble, LimiTTer, Bluereader, Tomato mm</string>
     <string name="enable_streaming_dialog_dont_ask_again"> Fråga inte i framtiden</string>
+    <string name="without_camera_permission_cannot_scan_barcode">Utan tillåtelse att använda kameran kan vi inte skanna en streckkod</string>
 </resources>

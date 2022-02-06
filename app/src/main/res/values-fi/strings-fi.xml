@@ -467,6 +467,7 @@
     <string name="start_sensor">Käynnistä sensori</string>
     <string name="debug_and_other_misc_options">Vianetsintä ja muut sekalaiset asetukset</string>
     <string name="low_glucose_values">Matalan glukoosin arvot</string>
+    <string name="bad_glucose_values">Huonot verensokeri arvot</string>
     <string name="revert_to_default">Palauta oletusarvot</string>
     <string name="filtered_values">Suodatetut arvot</string>
     <string name="treatment_color">Hoitotapahtuman väri</string>
@@ -1560,4 +1561,5 @@
     <string name="enable_streaming_dialog_dont_ask_again">Älä kysy tätä uudelleen</string>
     <string name="enable_streaming_dialog_text">Haluatko yhdistää tämän sensorin xDripiin? Tämä estää hälytykset Libren lukijassa ja LibreLinkissä. Paina Kyllä ja skannaa uudelleen yhdistääksesi (valitse Älä yhdistä, jos haluat käyttää xDripiä muokatun LibreLink-sovelluksen kanssa)</string>
     <string name="enable_streaming_dialog_title">Yhdistetään Libre-sensori Bluetoothiin</string>
+    <string name="without_camera_permission_cannot_scan_barcode">Ilman kameran lupaa emme voi skannata viivakoodia</string>
 </resources>

@@ -45,6 +45,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm.SensorType;
+import com.eveningoutpost.dexdrip.utils.LibreTrendUtil;
 
 
 import java.io.IOException;
@@ -79,9 +80,10 @@ public class NFCReaderX {
     private static final String ENABLE_BLUETOOTH_TIMESTAMP = "enable_bluetooth_timestamp";
 
     // For libre2 emulation only
-    static final byte []de_new_packet = {(byte)0x87 ,(byte)0x88 ,(byte)0xd2 ,(byte)0xe8 ,(byte)0xdd ,(byte)0x28 ,(byte)0x9b ,(byte)0x95 ,(byte)0xb5 ,(byte)0x9d ,(byte)0xe1 ,(byte)0x1f ,(byte)0x47 ,(byte)0x2c ,(byte)0x61 ,(byte)0x4f ,(byte)0xcb ,(byte)0x81 ,(byte)0x5e ,(byte)0xc8 ,(byte)0x36 ,(byte)0x4a ,(byte)0x4c ,(byte)0x1f ,(byte)0xa4 ,(byte)0xc8 ,(byte)0x59 ,(byte)0x81 ,(byte)0x72 ,(byte)0xbf ,(byte)0x9e ,(byte)0xae ,(byte)0xa4 ,(byte)0x1b ,(byte)0x51 ,(byte)0x5b ,(byte)0xb9 ,(byte)0x9f ,(byte)0x6a ,(byte)0x6b ,(byte)0xf4 ,(byte)0x55 ,(byte)0x78 ,(byte)0xe1 ,(byte)0xa3 ,(byte)0x4f ,(byte)0x3a ,(byte)0x60 ,(byte)0x49 ,(byte)0x8f ,(byte)0x1f ,(byte)0xcb ,(byte)0xdf ,(byte)0x2e ,(byte)0xdc ,(byte)0xbe ,(byte)0x59 ,(byte)0xc9 ,(byte)0x28 ,(byte)0x8e ,(byte)0xf4 ,(byte)0x83 ,(byte)0x16 ,(byte)0x11 ,(byte)0xa ,(byte)0xd2 ,(byte)0x74 ,(byte)0x6f ,(byte)0x9d ,(byte)0xbf ,(byte)0x29 ,(byte)0x44 ,(byte)0x37 ,(byte)0x8d ,(byte)0xe9 ,(byte)0xf7 ,(byte)0x47 ,(byte)0x1 ,(byte)0x2b ,(byte)0x3 ,(byte)0x5e ,(byte)0x9b ,(byte)0x72 ,(byte)0x25 ,(byte)0x1f ,(byte)0x82 ,(byte)0x11 ,(byte)0xb5 ,(byte)0xdb ,(byte)0x19 ,(byte)0x42 ,(byte)0x9c ,(byte)0xfe ,(byte)0x91 ,(byte)0x63 ,(byte)0x94 ,(byte)0xf7 ,(byte)0x14 ,(byte)0x67 ,(byte)0xb6 ,(byte)0x25 ,(byte)0xf3 ,(byte)0xf9 ,(byte)0xee ,(byte)0x30 ,(byte)0x54 ,(byte)0xa4 ,(byte)0x89 ,(byte)0x2b ,(byte)0xa8 ,(byte)0xe4 ,(byte)0x6f ,(byte)0x7a ,(byte)0x4f ,(byte)0xa3 ,(byte)0xdc ,(byte)0xc0 ,(byte)0x43 ,(byte)0xfc ,(byte)0x38 ,(byte)0x1c ,(byte)0x32 ,(byte)0x76 ,(byte)0x1b ,(byte)0x17 ,(byte)0xb6 ,(byte)0x81 ,(byte)0x87 ,(byte)0xf8 ,(byte)0xd3 ,(byte)0x97 ,(byte)0xca ,(byte)0xd5 ,(byte)0x67 ,(byte)0xf6 ,(byte)0x4a ,(byte)0xbd ,(byte)0x6f ,(byte)0x2b ,(byte)0x90 ,(byte)0xd6 ,(byte)0xd2 ,(byte)0x4e ,(byte)0x96 ,(byte)0x87 ,(byte)0x98 ,(byte)0xcf ,(byte)0xf6 ,(byte)0x82 ,(byte)0xb3 ,(byte)0x7b ,(byte)0xf1 ,(byte)0xd4 ,(byte)0xf2 ,(byte)0x3b ,(byte)0xb3 ,(byte)0xc3 ,(byte)0x76 ,(byte)0x33 ,(byte)0xe5 ,(byte)0xa3 ,(byte)0xe9 ,(byte)0x27 ,(byte)0xde ,(byte)0x6a ,(byte)0x21 ,(byte)0xc2 ,(byte)0xb2 ,(byte)0xfc ,(byte)0x2 ,(byte)0x87 ,(byte)0xb1 ,(byte)0x55 ,(byte)0x7c ,(byte)0xc9 ,(byte)0xe0 ,(byte)0x5b ,(byte)0x9f ,(byte)0x63 ,(byte)0x61 ,(byte)0x67 ,(byte)0x18 ,(byte)0x3d ,(byte)0xe9 ,(byte)0x92 ,(byte)0x1f ,(byte)0xed ,(byte)0xad ,(byte)0x41 ,(byte)0xee ,(byte)0x8d ,(byte)0xd7 ,(byte)0x5e ,(byte)0x3d ,(byte)0x4b ,(byte)0xa4 ,(byte)0x20 ,(byte)0xfa ,(byte)0x6c ,(byte)0xc ,(byte)0xf7 ,(byte)0x68 ,(byte)0xe5 ,(byte)0xfb ,(byte)0x90 ,(byte)0xc6 ,(byte)0x54 ,(byte)0x49 ,(byte)0x4d ,(byte)0xfe ,(byte)0x1e ,(byte)0xa3 ,(byte)0x25 ,(byte)0x2b ,(byte)0xa5 ,(byte)0x6f ,(byte)0xf9 ,(byte)0xc0 ,(byte)0xce ,(byte)0x18 ,(byte)0x67 ,(byte)0x6e ,(byte)0x33 ,(byte)0xc1 ,(byte)0x43 ,(byte)0x53 ,(byte)0x35 ,(byte)0x44 ,(byte)0x52 ,(byte)0x91 ,(byte)0xd2 ,(byte)0x8 ,(byte)0x5a ,(byte)0x9d ,(byte)0x18 ,(byte)0xea ,(byte)0x2d ,(byte)0xcb ,(byte)0x11 ,(byte)0x2b ,(byte)0xe0 ,(byte)0xb ,(byte)0xe3 ,(byte)0x84 ,(byte)0x18 ,(byte)0x54 ,(byte)0xc0 ,(byte)0xc1 ,(byte)0x74 ,(byte)0xfb ,(byte)0x53 ,(byte)0x4d ,(byte)0x3a ,(byte)0x29 ,(byte)0x56 ,(byte)0x6d ,(byte)0xce ,(byte)0x7e ,(byte)0x28 ,(byte)0x4 ,(byte)0xf ,(byte)0xd4 ,(byte)0xb7 ,(byte)0xaa ,(byte)0x19 ,(byte)0x4f ,(byte)0x5f ,(byte)0x60 ,(byte)0x5a ,(byte)0x59 ,(byte)0x9 ,(byte)0x89 ,(byte)0xa3 ,(byte)0xed ,(byte)0x24 ,(byte)0xcc ,(byte)0x6f ,(byte)0x88 ,(byte)0xf8 ,(byte)0x53 ,(byte)0xd7 ,(byte)0xe3 ,(byte)0x74 ,(byte)0x7 ,(byte)0x6d ,(byte)0xe1 ,(byte)0x6e ,(byte)0xe9 ,(byte)0xed ,(byte)0x64 ,(byte)0xf ,(byte)0x46 ,(byte)0x58 ,(byte)0xe ,(byte)0x8f ,(byte)0x30 ,(byte)0x6b ,(byte)0xdb ,(byte)0xd6 ,(byte)0xbd ,(byte)0x56 ,(byte)0xe0 ,(byte)0x89 ,(byte)0x87 ,(byte)0x51 ,(byte)0x4e ,(byte)0xad ,(byte)0xe3 ,(byte)0x63 ,(byte)0xf ,(byte)0x18 ,(byte)0x41 ,(byte)0x45 ,(byte)0x52 ,(byte)0xdd ,(byte)0x3e ,(byte)0x21 ,(byte)0xe ,(byte)0x74 ,(byte)0x6b ,(byte)0xd9 ,(byte)0xcf ,(byte)0x4f ,(byte)0xa3 ,(byte)0x94 ,(byte)0x62 ,(byte)0xff ,(byte)0x6a ,(byte)0x52 ,(byte)0xbe ,(byte)0x15 ,(byte)0x37 ,(byte)0xbb ,(byte)0xad ,(byte)0xd4 ,(byte)0x63 ,(byte)0x28 ,(byte)0x23 ,(byte)0x26 ,(byte)0x60 ,(byte)0x90 ,(byte)0xe7 ,(byte)0xcd ,(byte)0xf6};
-    static final byte []de_new_patch_uid = {(byte)0xd6, (byte)0xf1, (byte)0x0f, (byte)0x01, (byte)0x00, (byte)0xa4, (byte)0x07, (byte)0xe0};
-    static final byte []de_new_patch_info = {(byte)0x9d, (byte)0x08, (byte)0x30, (byte)0x01, (byte)0x9c, (byte)0x16};
+    static final byte[] de_new_packet = {(byte) 0x87, (byte) 0x88, (byte) 0xd2, (byte) 0xe8, (byte) 0xdd, (byte) 0x28, (byte) 0x9b, (byte) 0x95, (byte) 0xb5, (byte) 0x9d, (byte) 0xe1, (byte) 0x1f, (byte) 0x47, (byte) 0x2c, (byte) 0x61, (byte) 0x4f, (byte) 0xcb, (byte) 0x81, (byte) 0x5e, (byte) 0xc8, (byte) 0x36, (byte) 0x4a, (byte) 0x4c, (byte) 0x1f, (byte) 0xa4, (byte) 0xc8, (byte) 0x59, (byte) 0x81, (byte) 0x72, (byte) 0xbf, (byte) 0x9e, (byte) 0xae, (byte) 0xa4, (byte) 0x1b, (byte) 0x51, (byte) 0x5b, (byte) 0xb9, (byte) 0x9f, (byte) 0x6a, (byte) 0x6b, (byte) 0xf4, (byte) 0x55, (byte) 0x78, (byte) 0xe1, (byte) 0xa3, (byte) 0x4f, (byte) 0x3a, (byte) 0x60, (byte) 0x49, (byte) 0x8f, (byte) 0x1f, (byte) 0xcb, (byte) 0xdf, (byte) 0x2e, (byte) 0xdc, (byte) 0xbe, (byte) 0x59, (byte) 0xc9, (byte) 0x28, (byte) 0x8e, (byte) 0xf4, (byte) 0x83, (byte) 0x16, (byte) 0x11, (byte) 0xa, (byte) 0xd2, (byte) 0x74, (byte) 0x6f, (byte) 0x9d, (byte) 0xbf, (byte) 0x29, (byte) 0x44, (byte) 0x37, (byte) 0x8d, (byte) 0xe9, (byte) 0xf7, (byte) 0x47, (byte) 0x1, (byte) 0x2b, (byte) 0x3, (byte) 0x5e, (byte) 0x9b, (byte) 0x72, (byte) 0x25, (byte) 0x1f, (byte) 0x82, (byte) 0x11, (byte) 0xb5, (byte) 0xdb, (byte) 0x19, (byte) 0x42, (byte) 0x9c, (byte) 0xfe, (byte) 0x91, (byte) 0x63, (byte) 0x94, (byte) 0xf7, (byte) 0x14, (byte) 0x67, (byte) 0xb6, (byte) 0x25, (byte) 0xf3, (byte) 0xf9, (byte) 0xee, (byte) 0x30, (byte) 0x54, (byte) 0xa4, (byte) 0x89, (byte) 0x2b, (byte) 0xa8, (byte) 0xe4, (byte) 0x6f, (byte) 0x7a, (byte) 0x4f, (byte) 0xa3, (byte) 0xdc, (byte) 0xc0, (byte) 0x43, (byte) 0xfc, (byte) 0x38, (byte) 0x1c, (byte) 0x32, (byte) 0x76, (byte) 0x1b, (byte) 0x17, (byte) 0xb6, (byte) 0x81, (byte) 0x87, (byte) 0xf8, (byte) 0xd3, (byte) 0x97, (byte) 0xca, (byte) 0xd5, (byte) 0x67, (byte) 0xf6, (byte) 0x4a, (byte) 0xbd, (byte) 0x6f, (byte) 0x2b, (byte) 0x90, (byte) 0xd6, (byte) 0xd2, (byte) 0x4e, (byte) 0x96, (byte) 0x87, (byte) 0x98, (byte) 0xcf, (byte) 0xf6, (byte) 0x82, (byte) 0xb3, (byte) 0x7b, (byte) 0xf1, (byte) 0xd4, (byte) 0xf2, (byte) 0x3b, (byte) 0xb3, (byte) 0xc3, (byte) 0x76, (byte) 0x33, (byte) 0xe5, (byte) 0xa3, (byte) 0xe9, (byte) 0x27, (byte) 0xde, (byte) 0x6a, (byte) 0x21, (byte) 0xc2, (byte) 0xb2, (byte) 0xfc, (byte) 0x2, (byte) 0x87, (byte) 0xb1, (byte) 0x55, (byte) 0x7c, (byte) 0xc9, (byte) 0xe0, (byte) 0x5b, (byte) 0x9f, (byte) 0x63, (byte) 0x61, (byte) 0x67, (byte) 0x18, (byte) 0x3d, (byte) 0xe9, (byte) 0x92, (byte) 0x1f, (byte) 0xed, (byte) 0xad, (byte) 0x41, (byte) 0xee, (byte) 0x8d, (byte) 0xd7, (byte) 0x5e, (byte) 0x3d, (byte) 0x4b, (byte) 0xa4, (byte) 0x20, (byte) 0xfa, (byte) 0x6c, (byte) 0xc, (byte) 0xf7, (byte) 0x68, (byte) 0xe5, (byte) 0xfb, (byte) 0x90, (byte) 0xc6, (byte) 0x54, (byte) 0x49, (byte) 0x4d, (byte) 0xfe, (byte) 0x1e, (byte) 0xa3, (byte) 0x25, (byte) 0x2b, (byte) 0xa5, (byte) 0x6f, (byte) 0xf9, (byte) 0xc0, (byte) 0xce, (byte) 0x18, (byte) 0x67, (byte) 0x6e, (byte) 0x33, (byte) 0xc1, (byte) 0x43, (byte) 0x53, (byte) 0x35, (byte) 0x44, (byte) 0x52, (byte) 0x91, (byte) 0xd2, (byte) 0x8, (byte) 0x5a, (byte) 0x9d, (byte) 0x18, (byte) 0xea, (byte) 0x2d, (byte) 0xcb, (byte) 0x11, (byte) 0x2b, (byte) 0xe0, (byte) 0xb, (byte) 0xe3, (byte) 0x84, (byte) 0x18, (byte) 0x54, (byte) 0xc0, (byte) 0xc1, (byte) 0x74, (byte) 0xfb, (byte) 0x53, (byte) 0x4d, (byte) 0x3a, (byte) 0x29, (byte) 0x56, (byte) 0x6d, (byte) 0xce, (byte) 0x7e, (byte) 0x28, (byte) 0x4, (byte) 0xf, (byte) 0xd4, (byte) 0xb7, (byte) 0xaa, (byte) 0x19, (byte) 0x4f, (byte) 0x5f, (byte) 0x60, (byte) 0x5a, (byte) 0x59, (byte) 0x9, (byte) 0x89, (byte) 0xa3, (byte) 0xed, (byte) 0x24, (byte) 0xcc, (byte) 0x6f, (byte) 0x88, (byte) 0xf8, (byte) 0x53, (byte) 0xd7, (byte) 0xe3, (byte) 0x74, (byte) 0x7, (byte) 0x6d, (byte) 0xe1, (byte) 0x6e, (byte) 0xe9, (byte) 0xed, (byte) 0x64, (byte) 0xf, (byte) 0x46, (byte) 0x58, (byte) 0xe, (byte) 0x8f, (byte) 0x30, (byte) 0x6b, (byte) 0xdb, (byte) 0xd6, (byte) 0xbd, (byte) 0x56, (byte) 0xe0, (byte) 0x89, (byte) 0x87, (byte) 0x51, (byte) 0x4e, (byte) 0xad, (byte) 0xe3, (byte) 0x63, (byte) 0xf, (byte) 0x18, (byte) 0x41, (byte) 0x45, (byte) 0x52, (byte) 0xdd, (byte) 0x3e, (byte) 0x21, (byte) 0xe, (byte) 0x74, (byte) 0x6b, (byte) 0xd9, (byte) 0xcf, (byte) 0x4f, (byte) 0xa3, (byte) 0x94, (byte) 0x62, (byte) 0xff, (byte) 0x6a, (byte) 0x52, (byte) 0xbe, (byte) 0x15, (byte) 0x37, (byte) 0xbb, (byte) 0xad, (byte) 0xd4, (byte) 0x63, (byte) 0x28, (byte) 0x23, (byte) 0x26, (byte) 0x60, (byte) 0x90, (byte) 0xe7, (byte) 0xcd, (byte) 0xf6};
+    static final byte[] de_new_patch_uid = {(byte) 0xd6, (byte) 0xf1, (byte) 0x0f, (byte) 0x01, (byte) 0x00, (byte) 0xa4, (byte) 0x07, (byte) 0xe0};
+    static final byte[] de_new_patch_info = {(byte) 0x9d, (byte) 0x08, (byte) 0x30, (byte) 0x01, (byte) 0x9c, (byte) 0x16};
+
     // Never in production. Used to emulate German sensor behavior.
     public static boolean use_fake_de_data() {
         //Pref.setBoolean("use_fake_de_data", true);
@@ -90,13 +92,14 @@ public class NFCReaderX {
     }
 
     static boolean enable_bluetooth_ask_user = false;
+
     enum ENABLE_BLUETOOTH_SET {
         ALWAYS_ALLOW,
         NEVER_ALLOW,
         ASK
     }
 
-    
+
     public static void stopNFC(Activity context) {
         if (foreground_enabled) {
             try {
@@ -251,8 +254,8 @@ public class NFCReaderX {
         }
     }
 
-    public static void SendLibrereading(final String tagId, byte[] data1, final long CaptureDateTime, byte []patchUid,  byte []patchInfo){
-        if(!Home.get_master()) {
+    public static void SendLibrereading(final String tagId, byte[] data1, final long CaptureDateTime, byte[] patchUid, byte[] patchInfo) {
+        if (!Home.get_master()) {
             return;
         }
         LibreBlock libreBlock = LibreBlock.getForTimestamp(CaptureDateTime);
@@ -262,32 +265,32 @@ public class NFCReaderX {
         }
         // Create the object to send
         libreBlock = LibreBlock.create(tagId, CaptureDateTime, data1, 0, patchUid, patchInfo);
-        if(libreBlock == null) {
+        if (libreBlock == null) {
             Log.e(TAG, "Error could not create libreBlock for libre-allhouse");
             return;
         }
         final String json = libreBlock.toExtendedJson();
-        
+
         GcmActivity.pushLibreBlock(json);
-    
+
     }
 
-    public static boolean HandleGoodReading(final String tagId, byte[] data1, final long CaptureDateTime, final boolean allowUpload, byte []patchUid,  byte []patchInfo ) {
-        return HandleGoodReading(tagId, data1, CaptureDateTime, allowUpload, patchUid,  patchInfo, false ) ;
+    public static boolean HandleGoodReading(final String tagId, byte[] data1, final long CaptureDateTime, final boolean allowUpload, byte[] patchUid, byte[] patchInfo) {
+        return HandleGoodReading(tagId, data1, CaptureDateTime, allowUpload, patchUid, patchInfo, false);
     }
-    
-    
+
+
     // returns true if checksum passed.
-    public static boolean HandleGoodReading(final String tagId, byte[] data1, final long CaptureDateTime, final boolean allowUpload, byte []patchUid,  byte []patchInfo, boolean decripted_data ) {
+    public static boolean HandleGoodReading(final String tagId, byte[] data1, final long CaptureDateTime, final boolean allowUpload, byte[] patchUid, byte[] patchInfo, boolean decripted_data) {
         Log.e(TAG, "HandleGoodReading called dat1 len = " + data1.length);
-        if(data1.length > Constants.LIBRE_1_2_FRAM_SIZE) {
+        if (data1.length > Constants.LIBRE_1_2_FRAM_SIZE) {
             // It seems that some times we read a buffer that is bigger than 0x158, but we should only use the first 0x158 bytes.
             data1 = java.util.Arrays.copyOfRange(data1, 0, Constants.LIBRE_1_2_FRAM_SIZE);
         }
 
-        if(LibreOOPAlgorithm.isDecodeableData(patchInfo) && decripted_data == false
+        if (LibreOOPAlgorithm.isDecodeableData(patchInfo) && decripted_data == false
                 && !Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
-            // Send to OOP2 for drcryption.
+            // Send to OOP2 for decryption.
             LibreOOPAlgorithm.logIfOOP2NotAlive();
             LibreOOPAlgorithm.sendData(data1, CaptureDateTime, patchUid, patchInfo, tagId);
             return true;
@@ -307,13 +310,13 @@ public class NFCReaderX {
                 Log.e(TAG, "bad cs");
                 return false;
             }
-            
+
             // The 4'th byte is where the sensor status is.
-            if(!LibreUtils.isSensorReady(data1[4])) {
+            if (!LibreUtils.isSensorReady(data1[4])) {
                 Log.e(TAG, "Sensor is not ready, Ignoring reading!");
                 return true;
             }
-            
+
             final ReadingData mResult = parseData(0, tagId, data1, CaptureDateTime);
             new Thread() {
                 @Override
@@ -322,7 +325,7 @@ public class NFCReaderX {
                     try {
                         // Protect against wifi reader and gmc reader coming at the same time.
                         synchronized (NFCReaderX.class) {
-                            if(mResult != null) {
+                            if (mResult != null) {
                                 LibreAlarmReceiver.processReadingDataTransferObject(mResult, CaptureDateTime, tagId, allowUpload, patchUid, patchInfo);
                                 Home.staticRefreshBGCharts();
                             }
@@ -339,11 +342,11 @@ public class NFCReaderX {
     public static void enableBluetoothAskUser(Activity context) {
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
         LayoutInflater inflater = context.getLayoutInflater();
-        View  dialogView = inflater.inflate(R.layout.activity_enable_bluetooth, null);
+        View dialogView = inflater.inflate(R.layout.activity_enable_bluetooth, null);
 
         dialogBuilder.setView(dialogView);
         final AlertDialog show = dialogBuilder.show();
-        
+
         final CheckBox cbx = (CheckBox) dialogView.findViewById(R.id.enable_streaming_dont_ask_again);
 
         Button enableStreamingYesButton = (Button) dialogView.findViewById(R.id.enable_streaming_yes);
@@ -351,7 +354,7 @@ public class NFCReaderX {
             @Override
             public void onClick(View v) {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-                if(cbx.isChecked()) {
+                if (cbx.isChecked()) {
                     prefs.edit().putString("libre2_enable_bluetooth_streaming", "enable_streaming_always").apply();
                 }
                 Pref.setLong(ENABLE_BLUETOOTH_TIMESTAMP, JoH.tsl());
@@ -364,7 +367,7 @@ public class NFCReaderX {
             @Override
             public void onClick(View v) {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-                if(cbx.isChecked()) {
+                if (cbx.isChecked()) {
                     prefs.edit().putString("libre2_enable_bluetooth_streaming", "enable_streaming_never").apply();
                 }
                 Pref.setLong(ENABLE_BLUETOOTH_TIMESTAMP, 0);
@@ -379,7 +382,7 @@ public class NFCReaderX {
         static ENABLE_BLUETOOTH_SET readEnableBluetoothAllowed(Context context) {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             String enable_streaming = prefs.getString("libre2_enable_bluetooth_streaming", "enable_streaming_ask");
-            switch(enable_streaming) {
+            switch (enable_streaming) {
                 case "enable_streaming_always":
                     return ENABLE_BLUETOOTH_SET.ALWAYS_ALLOW;
                 case "enable_streaming_never":
@@ -395,7 +398,7 @@ public class NFCReaderX {
         static boolean enableBluetoothAllowed(Context context) {
             enable_bluetooth_ask_user = false;
             ENABLE_BLUETOOTH_SET ebs = readEnableBluetoothAllowed(context);
-            switch (ebs)  {
+            switch (ebs) {
                 case NEVER_ALLOW:
                     return false;
                 case ALWAYS_ALLOW:
@@ -403,15 +406,15 @@ public class NFCReaderX {
                 default:
                     // act based on elapsed time,
             }
-            if(JoH.msSince(Pref.getLong(ENABLE_BLUETOOTH_TIMESTAMP, 0)) < 2 * MINUTE) {
+            if (JoH.msSince(Pref.getLong(ENABLE_BLUETOOTH_TIMESTAMP, 0)) < 2 * MINUTE) {
                 return true;
             }
             // We still don't know what to do, so returning false, but we will ask the user.
             enable_bluetooth_ask_user = true;
             return false;
         }
-        
-        
+
+
         Activity context;
         boolean succeeded = false;
 
@@ -427,35 +430,35 @@ public class NFCReaderX {
 
         @Override
         protected void onPostExecute(Tag tag) {
-        	Log.d(TAG, "onPostExecute called");
+            Log.d(TAG, "onPostExecute called");
             try {
                 if (tag == null) return;
                 if (!NFCReaderX.useNFC()) return;
                 if (succeeded) {
                     long now = JoH.tsl();
                     String SensorSn = LibreUtils.decodeSerialNumberKey(tag.getId());
-                    
+
                     if (SensorSanity.checkLibreSensorChangeIfEnabled(SensorSn)) {
                         Log.e(TAG, "Problem with Libre Serial Number - not processing");
                         return;
                     }
                     // Set the time of the current reading
                     PersistentStore.setLong("libre-reading-timestamp", JoH.tsl());
-                    
-                    boolean checksum_ok; 
-                    if(use_fake_de_data()) {
+
+                    boolean checksum_ok;
+                    if (use_fake_de_data()) {
                         checksum_ok = HandleGoodReading(SensorSn, de_new_packet, now, false, de_new_patch_uid, de_new_patch_info);
                     } else {
                         checksum_ok = HandleGoodReading(SensorSn, data, now, false, tag.getId(), patchInfo);
                     }
-                    if(checksum_ok == false) {
+                    if (checksum_ok == false) {
                         Log.e(TAG, "Read data but checksum is wrong");
                     }
                     PersistentStore.setString("LibreSN", SensorSn);
                 } else {
                     Log.d(TAG, "Scan did not succeed so ignoring buffer");
                 }
-                Log.d(TAG,"calling startHomeWithExtra");
+                Log.d(TAG, "calling startHomeWithExtra");
                 if (enable_bluetooth_ask_user) {
                     Home.startHomeWithExtra(context, Home.ENABLE_STREAMING_DIALOG, "");
                 } else {
@@ -476,24 +479,24 @@ public class NFCReaderX {
             Pref.setInt("bridge_battery", 0);
             PersistentStore.setString("Tomatobattery", "0");
             PersistentStore.setString("Bubblebattery", "0");
-            if(!enableBluetoothAllowed(context)) {
+            if (!enableBluetoothAllowed(context)) {
                 Log.e(TAG, "Sensor is libre 2, enabeling BT not allowed");
                 return;
             }
             Log.e(TAG, "Sensor is libre 2, enabeling BT");
-            
+
             String SensorSN = LibreUtils.decodeSerialNumberKey(patchUid);
 
-            Libre2SensorData.setLibre2SensorData(patchUid, patchInfo, 42, 1 , "");
+            Libre2SensorData.setLibre2SensorData(patchUid, patchInfo, 42, 1, "");
             // This is the nfc command to enable streaming
             Pair<byte[], String> unlockData = LibreOOPAlgorithm.nfcSendgetBluetoothEnablePayload();
             if (unlockData == null) {
                 Log.e(TAG, "unlockData is null, not enabeling streaming");
                 return;
             }
-            Libre2SensorData.setLibre2SensorData(patchUid, patchInfo, 42, 1 , unlockData.second);
+            Libre2SensorData.setLibre2SensorData(patchUid, patchInfo, 42, 1, unlockData.second);
             byte[] nfc_command = unlockData.first;
-            
+
             final byte[] cmd = new byte[]{0x02, (byte) 0xa1, 0x07};
             final byte[] full_cmd = new byte[cmd.length + nfc_command.length];
             System.arraycopy(cmd, 0, full_cmd, 0, cmd.length);
@@ -506,9 +509,9 @@ public class NFCReaderX {
             while (true) {
                 try {
                     res = nfcvTag.transceive(full_cmd);
-                    if(use_fake_de_data()) {
+                    if (use_fake_de_data()) {
                         // DC:A6:32:0F:4F:92
-                        res = new byte[]{(byte)0x12, (byte)0x92, (byte)0x4f, (byte)0x0f, (byte)0x32, (byte)0xa6, (byte)0xdc};
+                        res = new byte[]{(byte) 0x12, (byte) 0x92, (byte) 0x4f, (byte) 0x0f, (byte) 0x32, (byte) 0xa6, (byte) 0xdc};
                     }
                     Log.e(TAG, "enable streaming command returned: " + HexDump.dumpHexString(res));
                     break;
@@ -522,7 +525,7 @@ public class NFCReaderX {
                     Thread.sleep(100);
                 }
             }
-            if(res.length == 7) {
+            if (res.length == 7) {
                 // The mac addresses of the device is the returned data, after removing the first byte, and reversing it.
                 res = Arrays.copyOfRange(res, 1, res.length);
                 res = JoH.reverseBytes(res);
@@ -594,10 +597,10 @@ public class NFCReaderX {
                         Long time_patch = System.currentTimeMillis();
                         while (true) {
                             try {
-                                
-                                final byte[] cmd = new byte[] {0x02, (byte)0xa1, 0x07};
+
+                                final byte[] cmd = new byte[]{0x02, (byte) 0xa1, 0x07};
                                 patchInfo = nfcvTag.transceive(cmd);
-                                if(patchInfo != null) {
+                                if (patchInfo != null) {
                                     // We need to throw away the first byte.
                                     patchInfo = Arrays.copyOfRange(patchInfo, 1, patchInfo.length);
                                 }
@@ -613,25 +616,25 @@ public class NFCReaderX {
                             }
                         }
                         Log.d(TAG, "patchInfo = " + HexDump.dumpHexString(patchInfo));
-                        byte []patchUid = tag.getId();
+                        byte[] patchUid = tag.getId();
                         Log.d(TAG, "patchUid = " + HexDump.dumpHexString(patchUid));
-                        if(use_fake_de_data()) {
+                        if (use_fake_de_data()) {
                             patchUid = de_new_patch_uid;
                             patchInfo = de_new_patch_info;
                         }
-                        
+
                         SensorType sensorType = LibreOOPAlgorithm.getSensorType(patchInfo);
-                        if(addressed && sensorType != SensorType.Libre1 ) {
+                        if (addressed && sensorType != SensorType.Libre1) {
                             Log.d(TAG, "Not using addressed mode since not a libre 1 sensor");
                             addressed = false;
                         }
-                        if(sensorType == SensorType.Libre2) {
+                        if (sensorType == SensorType.Libre2) {
                             startLibre2Streaming(nfcvTag, patchUid, patchInfo);
                             PersistentStore.setString("LibreVersion", "2");
                         } else {
                             PersistentStore.setString("LibreVersion", "1");
                         }
-                        
+
                         if (multiblock) {
                             Log.e(TAG, "starting multiple blobk reads");
                             final int correct_reply_size = addressed ? 28 : 25;
@@ -692,17 +695,17 @@ public class NFCReaderX {
                             for (int i = 0; i < 43; i++) {
                                 final byte[] cmd;
                                 int startBlock;
-                                if(addressed) {
+                                if (addressed) {
                                     cmd = new byte[]{0x60, 0x20, 0, 0, 0, 0, 0, 0, 0, 0, (byte) i, 0};
                                     System.arraycopy(uid, 0, cmd, 2, 8);
                                     correct_reply_size = 10;
                                     startBlock = 2;
                                 } else {
-                                    cmd = new byte[]{(byte)0x02, (byte) 0x23, 0, (byte) 0x0};
+                                    cmd = new byte[]{(byte) 0x02, (byte) 0x23, 0, (byte) 0x0};
                                     correct_reply_size = 9;
                                     startBlock = 1;
                                 }
-                                cmd[2] = (byte)i;
+                                cmd[2] = (byte) i;
 
                                 byte[] oneBlock;
                                 Long time = System.currentTimeMillis();
@@ -745,7 +748,7 @@ public class NFCReaderX {
                         JoH.static_toast_short(gs(R.string.nfc_io_error));
                         vibrate(context, 3);
                     } catch (Exception e) {
-                        Log.e(TAG, "Got exception reading nfc in background: ",e);
+                        Log.e(TAG, "Got exception reading nfc in background: ", e);
                         return null;
                     } finally {
                         try {
@@ -771,8 +774,20 @@ public class NFCReaderX {
 
     }
 
-    public static ReadingData parseData(int attempt, String tagId, byte[] data, Long CaptureDateTime) {
+    public static boolean verifyTime(long time, String caller, byte[] extra_data) {
+        if ((time < 0) || time >= LibreTrendUtil.MAX_POINTS) {
+            // This is an illegal value
+            Log.e(TAG, "We have an illegal time at " + caller + " " + time + JoH.bytesToHex(extra_data));
+            return false;
+        }
+        return true;
+    }
 
+    // Sensor structure is described at  https://github.com/UPetersen/LibreMonitor/wiki
+    public static ReadingData parseData(int attempt, String tagId, byte[] data, Long CaptureDateTime) {
+        final int FRAM_RECORD_SIZE = 6;
+        final int TREND_START = 28;
+        final int HISTORY_START = 124;
         int indexTrend = data[26] & 0xFF;
 
         int indexHistory = data[27] & 0xFF; // double check this bitmask? should be lower?
@@ -781,39 +796,34 @@ public class NFCReaderX {
 
         long sensorStartTime = CaptureDateTime - sensorTime * MINUTE;
 
-        // option to use 13 bit mask
-        //final boolean thirteen_bit_mask = Pref.getBooleanDefaultFalse("testing_use_thirteen_bit_mask");
-        final boolean thirteen_bit_mask = true;
-
         ArrayList<GlucoseData> historyList = new ArrayList<>();
-
 
         // loads history values (ring buffer, starting at index_trent. byte 124-315)
         for (int index = 0; index < 32; index++) {
             int i = indexHistory - index - 1;
             if (i < 0) i += 32;
             GlucoseData glucoseData = new GlucoseData();
-            // glucoseData.glucoseLevel =
-            //       getGlucose(new byte[]{data[(i * 6 + 125)], data[(i * 6 + 124)]});
 
             // If the data is decoded for some reason, we might have a wrong index.
-
-            if(i * 6 + 125 >= data.length) {
+            // The 6 is because we read up to 6 bytes.
+            if (i * FRAM_RECORD_SIZE + HISTORY_START + FRAM_RECORD_SIZE >= data.length) {
                 Log.e(TAG, "Failing to parse data from " + JoH.dateTimeText(CaptureDateTime));
                 return null;
             }
 
             glucoseData.glucoseLevelRaw =
-                    getGlucoseRaw(new byte[]{data[(i * 6 + 125)], data[(i * 6 + 124)]}, thirteen_bit_mask);
-            glucoseData.flags = LibreOOPAlgorithm.readBits(data, i*6 + 124, 0xe , 0xc);
-            glucoseData.temp = LibreOOPAlgorithm.readBits(data, i*6 + 124, 0x1a , 0xc);
+                    getGlucoseRaw(new byte[]{data[(i * FRAM_RECORD_SIZE + HISTORY_START + 1)], data[(i * FRAM_RECORD_SIZE + HISTORY_START)]});
+            glucoseData.flags = LibreOOPAlgorithm.readBits(data, i * FRAM_RECORD_SIZE + HISTORY_START, 0xe, 0xc);
+            glucoseData.temp = LibreOOPAlgorithm.readBits(data, i * FRAM_RECORD_SIZE + HISTORY_START, 0x1a, 0xc);
             glucoseData.source = GlucoseData.DataSource.FRAM;
 
             int time = Math.max(0, Math.abs((sensorTime - 3) / 15) * 15 - index * 15);
 
             glucoseData.realDate = sensorStartTime + time * MINUTE;
             glucoseData.sensorTime = time;
-            historyList.add(glucoseData);
+            if (verifyTime(time, "parseData history", data)) {
+                historyList.add(glucoseData);
+            }
         }
 
 
@@ -824,22 +834,22 @@ public class NFCReaderX {
             int i = indexTrend - index - 1;
             if (i < 0) i += 16;
             GlucoseData glucoseData = new GlucoseData();
-            // glucoseData.glucoseLevel =
-            //         getGlucose(new byte[]{data[(i * 6 + 29)], data[(i * 6 + 28)]});
-            if(i * 6 + 29 >= data.length) {
+            if (i * FRAM_RECORD_SIZE + TREND_START + FRAM_RECORD_SIZE >= data.length) {
                 Log.e(TAG, "Failing to parse data from " + JoH.dateTimeText(CaptureDateTime));
                 return null;
             }
             glucoseData.glucoseLevelRaw =
-                    getGlucoseRaw(new byte[]{data[(i * 6 + 29)], data[(i * 6 + 28)]}, thirteen_bit_mask);
-            glucoseData.flags = LibreOOPAlgorithm.readBits(data, i*6 + 28, 0xe , 0xc);
-            glucoseData.temp = LibreOOPAlgorithm.readBits(data, i*6 + 28, 0x1a , 0xc);
+                    getGlucoseRaw(new byte[]{data[(i * FRAM_RECORD_SIZE + TREND_START + 1)], data[(i * FRAM_RECORD_SIZE + TREND_START)]});
+            glucoseData.flags = LibreOOPAlgorithm.readBits(data, i * FRAM_RECORD_SIZE + TREND_START, 0xe, 0xc);
+            glucoseData.temp = LibreOOPAlgorithm.readBits(data, i * FRAM_RECORD_SIZE + TREND_START, 0x1a, 0xc);
             glucoseData.source = GlucoseData.DataSource.FRAM;
             int time = Math.max(0, sensorTime - index);
 
             glucoseData.realDate = sensorStartTime + time * MINUTE;
             glucoseData.sensorTime = time;
-            trendList.add(glucoseData);
+            if (verifyTime(time, "parseData trendList", data)) {
+                trendList.add(glucoseData);
+            }
         }
 
 
@@ -849,12 +859,8 @@ public class NFCReaderX {
     }
 
 
-    private static int getGlucoseRaw(byte[] bytes, boolean thirteen) {
-        if (thirteen) {
-            return ((256 * (bytes[0] & 0xFF) + (bytes[1] & 0xFF)) & 0x1FFF);
-        } else {
-            return ((256 * (bytes[0] & 0xFF) + (bytes[1] & 0xFF)) & 0x0FFF);
-        }
+    private static int getGlucoseRaw(byte[] bytes) {
+        return ((256 * (bytes[0] & 0xFF) + (bytes[1] & 0xFF)) & 0x1FFF);
     }
 
     public static void vibrate(Context context, int pattern) {
@@ -952,32 +958,31 @@ public class NFCReaderX {
             }, 1000);
         }
     }
-    
+
     static public List<GlucoseData> getLibreTrend(LibreBlock libreBlock) {
-        if(libreBlock.byte_start != 0) {
+        if (libreBlock.byte_start != 0) {
             Log.i(TAG, "libreBlock does not start with 0, don't know how to parse it " + libreBlock.timestamp);
             return null;
         }
         List<GlucoseData> result;
-        if(libreBlock.byte_end == Constants.LIBRE_1_2_FRAM_SIZE) {
+        if (libreBlock.byte_end == Constants.LIBRE_1_2_FRAM_SIZE) {
             ReadingData reading_data = parseData(0, "", libreBlock.blockbytes, libreBlock.timestamp);
-            if(reading_data == null) {
+            if (reading_data == null) {
                 return null;
             }
             result = reading_data.trend;
-        }
-        else if(libreBlock.byte_end == 44) {
+        } else if (libreBlock.byte_end == 44) {
             // This is the libre2 ble data
             result = LibreOOPAlgorithm.parseBleDataPerMinute(libreBlock.blockbytes, libreBlock.timestamp);
         } else {
             Log.i(TAG, "libreBlock exists but size is " + libreBlock.byte_end + " don't know how to parse it " + libreBlock.timestamp);
             return null;
         }
-        if(result.size() == 0 ) {
+        if (result.size() == 0) {
             Log.i(TAG, "libreBlock exists but no trend data exists, or first value is zero " + libreBlock.timestamp);
             return null;
         }
         return result;
     }
-    
+
 }

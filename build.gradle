@@ -3,7 +3,6 @@
 buildscript {
     repositories {
         google()
-        jcenter()
         mavenCentral()
         maven { url "https://jitpack.io" }
 
@@ -23,8 +22,11 @@ buildscript {
 }
 
 allprojects {
+    tasks.withType(JavaCompile).configureEach {
+        options.fork = true
+    }
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 }

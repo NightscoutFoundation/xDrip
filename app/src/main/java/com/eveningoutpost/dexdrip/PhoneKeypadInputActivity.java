@@ -388,7 +388,7 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         double units = 0;
         if (timeValue.length() > 0) mystring += timeValue + " time ";
         if (nonzeroBloodValue) mystring += getValue("bloodtest") + " blood ";
-        if (nonzeroCarbsValue) mystring += getValue("carbs") + " carbs ";
+        if (nonzeroCarbsValue) mystring += getValue("carbs") + " g carbs ";
         if (nonzeroInsulin1Value && (insulinProfile1 != null))
         {
             double d = Double.parseDouble(getValue("insulin-1"));
@@ -497,7 +497,7 @@ public class PhoneKeypadInputActivity extends BaseActivity {
                 break;
             case "carbs":
                 carbstabbutton.setBackgroundColor(onColor);
-                append = " " + getString(R.string.carbs);
+                append = " g " + getString(R.string.carbs);
                 break;
             case "bloodtest":
                 bloodtesttabbutton.setBackgroundColor(onColor);
