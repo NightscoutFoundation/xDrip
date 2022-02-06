@@ -1669,8 +1669,4 @@
     </plurals>
     <string name="external_status_strings_eg_tbr">External status strings, eg TBR from AAPS</string>
     <string name="accept_external_status">Accept External Status</string>
-    <string name="choose_sound_file">Choose File</string>
-    <string name="default_xdrip_sound">Default xDrip sound</string>
-    <string name="choose_alert_sound_file">BG Level Sound</string>
-    <string name="select_new_sound">Select new sound source</string>
 </resources>
