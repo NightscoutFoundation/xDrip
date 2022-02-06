@@ -1623,4 +1623,6 @@
         <item quantity="one">Età: %sd</item>
         <item quantity="other">Età: %sd</item>
     </plurals>
+    <string name="external_status_strings_eg_tbr">Stringhe di stato esterno, es. basale da AAPS</string>
+    <string name="accept_external_status">Accetta Stato Esterno</string>
 </resources>
