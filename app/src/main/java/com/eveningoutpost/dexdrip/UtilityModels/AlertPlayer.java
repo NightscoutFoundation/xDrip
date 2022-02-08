@@ -101,7 +101,7 @@ public class AlertPlayer {
     private volatile static AlertPlayer alertPlayerInstance;
 
     private final static String TAG = AlertPlayer.class.getSimpleName();
-    private volatile MediaPlayer mediaPlayer;
+    private volatile MediaPlayer mediaPlayer = null;
     private final AudioManager manager = (AudioManager)xdrip.getAppContext().getSystemService(Context.AUDIO_SERVICE);
     volatile int volumeBeforeAlert = -1;
     volatile int volumeForThisAlert = -1;
@@ -169,10 +169,12 @@ public class AlertPlayer {
             notificationDismiss(ctx);
         }
         if (mediaPlayer != null) {
-            try {
-                mediaPlayer.stop();
-            } catch (IllegalStateException e) {
-                UserError.Log.e(TAG, "Exception when stopping media player: " + e);
+            if (mediaPlayer.isPlaying()) {
+                try {
+                    mediaPlayer.stop();
+                } catch (IllegalStateException e) {
+                    UserError.Log.e(TAG, "Exception when stopping media player: " + e);
+                }
             }
             mediaPlayer.release();
             mediaPlayer = null;
@@ -334,6 +336,19 @@ public class AlertPlayer {
             return;
         }
 
+        mediaPlayer.setOnCompletionListener(mp -> {
+            Log.i(TAG, "playFile: onCompletion called (finished playing) ");
+            mediaPlayer.release();
+            mediaPlayer = null;
+            revertCurrentVolume(streamType);
+        });
+
+        mediaPlayer.setOnErrorListener((mp, what, extra) -> {
+            Log.e(TAG, "playFile: onError called (what: " + what + ", extra: " + extra);
+            // possibly media player error; release is handled in onCompletionListener
+            return false;
+        });
+
         boolean setDataSourceSucceeded = false;
         if (fileName != null && fileName.length() > 0) {
             setDataSourceSucceeded = setMediaDataSource(ctx, mediaPlayer, Uri.parse(fileName));
@@ -353,18 +368,6 @@ public class AlertPlayer {
             mediaPlayer.setOnPreparedListener(mp -> {
                 adjustCurrentVolumeForAlert(streamType, volumeFrac, overrideSilentMode);
                 mediaPlayer.start();
-            });
-
-            mediaPlayer.setOnCompletionListener(mp -> {
-                Log.i(TAG, "playFile: onCompletion called (finished playing) ");
-                try {
-                    mediaPlayer.stop();
-                } catch (IllegalStateException e) {
-                    //
-                }
-                mediaPlayer.release();
-                mediaPlayer = null;
-                revertCurrentVolume(streamType);
             });
 
             mediaPlayer.prepareAsync();
