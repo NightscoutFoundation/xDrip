@@ -14,9 +14,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.LibreUtils;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
-import com.eveningoutpost.dexdrip.NFCReaderX;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -343,7 +341,7 @@ public class LibreOOPAlgorithm {
         String SensorSN = LibreUtils.decodeSerialNumberKey(patchUid);
 
         Log.e(TAG, "handleDecodedBleResult Created the following object " + readingData.toString());
-        NFCReaderX.SendLibrereadingToFollowers(SensorSN, readingData.raw_data, timestamp, patchUid, null);
+        NFCReaderX.sendLibrereadingToFollowers(SensorSN, readingData.raw_data, timestamp, patchUid, null);
         boolean bg_val_exists = trend_bg_vals != null && history_bg_vals != null;
         LibreAlarmReceiver.processReadingDataTransferObject(readingData, timestamp, SensorSN, true /*=allowupload*/, patchUid, null/*=patchInfo*/, bg_val_exists);
     }

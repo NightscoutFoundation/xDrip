@@ -34,7 +34,7 @@ public class GlucoseData implements Comparable<GlucoseData> {
     public String toString() {
         return "{ sensorTime = " + sensorTime + " glucoseLevel = " + glucoseLevel + " glucoseLevelRaw = " + glucoseLevelRaw +
                 " glucoseLevelRawSmoothed = " + glucoseLevelRawSmoothed + " flags = " + flags +
-                " source = " + source + "  glucoseLevel " + glucoseLevel + " glucoseLevelSmoothed " +  glucoseLevelSmoothed + "}";
+                " source = " + source + "  glucoseLevel " + glucoseLevel + " glucoseLevelSmoothed " + glucoseLevelSmoothed + "}";
     }
 
     public String glucose(boolean mmol) {
