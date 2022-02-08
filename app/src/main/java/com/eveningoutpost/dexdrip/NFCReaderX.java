@@ -263,7 +263,7 @@ public class NFCReaderX {
         }
     }
 
-    public static void SendLibrereadingToFollowers(final String tagId, byte[] data1, final long CaptureDateTime, byte[] patchUid, byte[] patchInfo) {
+    public static void sendLibrereadingToFollowers(final String tagId, byte[] data1, final long CaptureDateTime, byte[] patchUid, byte[] patchInfo) {
         if (!Home.get_master()) {
             return;
         }
@@ -306,7 +306,7 @@ public class NFCReaderX {
             return true;
         }
 
-        SendLibrereadingToFollowers(tagId, data1, CaptureDateTime, patchUid, patchInfo);
+        sendLibrereadingToFollowers(tagId, data1, CaptureDateTime, patchUid, patchInfo);
 
         if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             // If oop is used, there is no need to  do the checksum It will be done by the oop.
