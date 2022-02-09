@@ -52,9 +52,13 @@ public class WatchBroadcastService extends Service {
     protected static final String INTENT_FUNCTION_KEY = "FUNCTION";
     protected static final String INTENT_PACKAGE_KEY = "PACKAGE";
     protected static final String INTENT_REPLY_MSG = "REPLY_MSG";
+    protected static final String INTENT_REPLY_CODE = "REPLY_CODE";
     protected static final String INTENT_SETTINGS = "SETTINGS";
     protected static final String INTENT_ALERT_TYPE = "ALERT_TYPE";
     protected static final String INTENT_STAT_HOURS = "stat_hours";
+
+    protected static final String INTENT_REPLY_CODE_OK = "OK";
+    protected static final String INTENT_REPLY_CODE_ERROR = "ERROR";
 
     protected static final String CMD_SET_SETTINGS = "set_settings";
     protected static final String CMD_UPDATE_BG_FORCE = "update_bg_force";
@@ -116,7 +120,8 @@ public class WatchBroadcastService extends Service {
                             watchSettings = intent.getParcelableExtra(INTENT_SETTINGS);
                             if (watchSettings == null) {
                                 function = CMD_REPLY_MSG;
-                                serviceIntent.putExtra(INTENT_REPLY_MSG, "Error, can't parse WatchSettings");
+                                serviceIntent.putExtra(INTENT_REPLY_MSG, "Can't parse WatchSettings");
+                                serviceIntent.putExtra(INTENT_REPLY_CODE, INTENT_REPLY_CODE_ERROR);
                                 startService = true;
                                 break;
                             }
@@ -126,7 +131,8 @@ public class WatchBroadcastService extends Service {
                             watchSettings = intent.getParcelableExtra(INTENT_SETTINGS);
                             if (watchSettings == null) {
                                 function = CMD_REPLY_MSG;
-                                serviceIntent.putExtra(INTENT_REPLY_MSG, "Error, can't parse WatchSettings");
+                                serviceIntent.putExtra(INTENT_REPLY_MSG, "Can't parse WatchSettings");
+                                serviceIntent.putExtra(INTENT_REPLY_CODE, INTENT_REPLY_CODE_ERROR);
                                 startService = true;
                                 break;
                             }
@@ -138,7 +144,8 @@ public class WatchBroadcastService extends Service {
                             String activeAlertType = intent.getStringExtra(INTENT_ALERT_TYPE);
                             if (activeAlertType == null) {
                                 function = CMD_REPLY_MSG;
-                                serviceIntent.putExtra(INTENT_REPLY_MSG, "Error, \"ALERT_TYPE\" not specified ");
+                                serviceIntent.putExtra(INTENT_REPLY_MSG, "\"ALERT_TYPE\" not specified ");
+                                serviceIntent.putExtra(INTENT_REPLY_CODE, INTENT_REPLY_CODE_ERROR);
                                 startService = true;
                                 break;
                             }
@@ -160,6 +167,10 @@ public class WatchBroadcastService extends Service {
                             double carbs = intent.getDoubleExtra("carbs", 0);
                             double insulin = intent.getDoubleExtra("insulin", 0);
                             Treatments.create(carbs, insulin, timeStamp);
+                            function = CMD_REPLY_MSG;
+                            serviceIntent.putExtra(INTENT_REPLY_MSG, "Treatment were added");
+                            serviceIntent.putExtra(INTENT_REPLY_CODE, INTENT_REPLY_CODE_OK);
+                            startService = true;
                             break;
                         case CMD_STAT_INFO:
                             serviceIntent.putExtra(INTENT_STAT_HOURS, intent.getIntExtra(INTENT_STAT_HOURS, 24));
@@ -260,8 +271,6 @@ public class WatchBroadcastService extends Service {
         UserError.Log.d(TAG, "handleCommand function:" + function);
         String receiver = null;
         boolean handled = false;
-        String replyMsg = "";
-
         WatchBroadcast watchBroadcast;
         Bundle bundle = null;
         //send to all connected apps
@@ -271,7 +280,7 @@ public class WatchBroadcastService extends Service {
             switch (function) {
                 case CMD_UPDATE_BG:
                     bundle = prepareBgBundle(watchBroadcast);
-                    sendBroadcast(function, receiver, bundle, replyMsg);
+                    sendBroadcast(function, receiver, bundle);
                     break;
             }
         }
@@ -284,7 +293,9 @@ public class WatchBroadcastService extends Service {
         }
         switch (function) {
             case CMD_REPLY_MSG:
-                replyMsg = intent.getStringExtra(INTENT_REPLY_MSG);
+                bundle = new Bundle();
+                bundle.putString(INTENT_REPLY_MSG, intent.getStringExtra(INTENT_REPLY_MSG));
+                bundle.putString(INTENT_REPLY_CODE, intent.getStringExtra(INTENT_REPLY_CODE));
                 receiver = intent.getStringExtra(INTENT_PACKAGE_KEY);
                 break;
             case CMD_ALERT:
@@ -307,15 +318,18 @@ public class WatchBroadcastService extends Service {
             case CMD_SNOOZE_ALERT:
                 receiver = intent.getStringExtra(INTENT_PACKAGE_KEY);
                 String alertName = "";
+                String replyMsg = "";
+                String replyCode = INTENT_REPLY_CODE_OK;
                 int snoozeMinutes = 0;
                 double nextAlertAt = JoH.ts();
                 String activeAlertType = intent.getStringExtra(INTENT_ALERT_TYPE);
-                replyMsg = "Snooze accepted";
+                bundle = new Bundle();
                 if (activeAlertType.equals(BG_ALERT_TYPE)) {
                     if (ActiveBgAlert.currentlyAlerting()) {
                         ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
                         if (activeBgAlert == null) {
                             replyMsg = "Error: snooze was called but no alert is active";
+                            replyCode = INTENT_REPLY_CODE_ERROR;
                         } else {
                             AlertType alert = ActiveBgAlert.alertTypegetOnly();
                             if (alert != null) {
@@ -327,6 +341,7 @@ public class WatchBroadcastService extends Service {
                         }
                     } else {
                         replyMsg = "Error: No Alarms found to snooze";
+                        replyCode = INTENT_REPLY_CODE_ERROR;
                     }
                 } else {
                     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -338,33 +353,33 @@ public class WatchBroadcastService extends Service {
                     }
                     alertName = activeAlertType;
                 }
-                bundle = new Bundle();
-                bundle.putString("alertName", alertName);
-                bundle.putInt("snoozeMinutes", snoozeMinutes);
-                bundle.putDouble("nextAlertAt", nextAlertAt);
+                if (replyMsg.isEmpty()) {
+                    replyMsg = "Snooze accepted";
+                    bundle.putString("alertName", alertName);
+                    bundle.putInt("snoozeMinutes", snoozeMinutes);
+                    bundle.putLong("nextAlertAt", (long) nextAlertAt);
+                }
+                bundle.putString(INTENT_REPLY_MSG, replyMsg);
+                bundle.putString(INTENT_REPLY_CODE, replyCode);
                 break;
             default:
                 return;
         }
-        sendBroadcast(function, receiver, bundle, replyMsg);
+        sendBroadcast(function, receiver, bundle);
     }
 
-    public void sendBroadcast(String function, String receiver, Bundle bundle, String replyMsg) {
+    public void sendBroadcast(String function, String receiver, Bundle bundle) {
         Intent intent = new Intent(ACTION_WATCH_COMMUNICATION_SENDER);
         UserError.Log.d(TAG, String.format("sendBroadcast functionName:%s, receiver: %s", function, receiver));
 
         if (function == null || function.isEmpty()) {
-            UserError.Log.d(TAG, "error, function not specified");
+            UserError.Log.d(TAG, "Error, function not specified");
             return;
         }
 
         intent.putExtra(INTENT_FUNCTION_KEY, function);
         if (receiver != null && !receiver.isEmpty()) {
             intent.setPackage(receiver);
-        }
-        if (!replyMsg.isEmpty()) {
-            intent.putExtra(INTENT_REPLY_MSG, replyMsg);
-            UserError.Log.d(TAG, "replyMsg: " + replyMsg);
         }
         if (bundle != null) {
             intent.putExtras(bundle);
@@ -376,10 +391,10 @@ public class WatchBroadcastService extends Service {
     public Bundle prepareStatisticBundle(WatchBroadcast watchBroadcast, int statHours) {
         Bundle bundle;
         if (watchBroadcast.isStatCacheValid(statHours)) {
-            UserError.Log.d(TAG, "Stat Cache Hit");
+            UserError.Log.d(TAG, "Stats Cache Hit");
             bundle = watchBroadcast.getStatBundle();
         } else {
-            UserError.Log.d(TAG, "Stat Cache Miss");
+            UserError.Log.d(TAG, "Stats Cache Miss");
             UserError.Log.d(TAG, "Getting StatsResult");
             bundle = new Bundle();
             final StatsResult statsResult = new StatsResult(Pref.getInstance(), Constants.HOUR_IN_MS * statHours, JoH.tsl());
