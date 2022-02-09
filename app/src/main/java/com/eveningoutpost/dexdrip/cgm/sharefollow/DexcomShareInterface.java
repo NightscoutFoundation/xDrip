@@ -13,13 +13,19 @@ import static com.eveningoutpost.dexdrip.cgm.sharefollow.ShareConstants.USER_AGE
 
 // jamorham
 
+// TODO: change authentication and session ID into UUID
+// TODO: switch from Publisher/ReadPublisherLatestGlucoseValues to Subscriber/ReadEvents
 public interface DexcomShareInterface {
 
     // logging in and getting session id
-    @POST("General/LoginPublisherAccountByName")
+    @POST("General/AuthenticatePublisherAccount")
     @Headers({USER_AGENT, "Content-Type: application/json", "Accept: application/json"})
-    Call<String> getSessionId(@Body ShareAuthenticationBody body);
+    Call<String> authenticate(@Body ShareAuthenticationBody body);
 
+    // logging in and getting session id
+    @POST("General/LoginPublisherAccountById")
+    @Headers({USER_AGENT, "Content-Type: application/json", "Accept: application/json"})
+    Call<String> getSessionId(@Body ShareLoginBody body);
 
     // getting recent data
     @POST("Publisher/ReadPublisherLatestGlucoseValues")
