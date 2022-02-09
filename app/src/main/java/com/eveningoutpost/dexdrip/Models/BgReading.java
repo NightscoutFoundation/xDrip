@@ -968,6 +968,8 @@ public class BgReading extends Model implements ShareUploadableBg {
         final ProcessInitialDataQuality.InitialDataQuality idq = ProcessInitialDataQuality.getInitialDataQuality(uncalculated);
         if (!idq.pass) {
             UserError.Log.d(TAG, "Data quality failure for double calibration: " + idq.advice);
+        } else {
+            UserError.Log.d(TAG, "Data quality allows double calibration.");
         }
         return idq.pass || Pref.getBooleanDefaultFalse("bypass_calibration_quality_check");
     }
