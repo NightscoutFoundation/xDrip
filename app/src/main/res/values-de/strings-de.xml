@@ -1547,4 +1547,15 @@
     <string name="enable_streaming_dialog_text">Möchtest du xDrip mit diesem Sensor verbinden? Das Libre Lesegerät und die LibreLink App werden dann keine Alarme mehr empfangen. Drücke \"Ja\" und scanne erneut für eine Verbindung (wähle \"nicht verbinden\", wenn du xDrip mit der gepatchten Libre App nutzen möchtest)</string>
     <string name="enable_streaming_dialog_title">Verbinde Libre-Sensor mit Bluetooth</string>
     <string name="without_camera_permission_cannot_scan_barcode">Ohne Kamera-Berechtigung können wir keinen Barcode scannen</string>
+    <string name="summary_widget_hide_graph">Graph auf Widgets ausblenden (wird beim nächsten Wert aktiv)</string>
+    <string name="title_widget_hide_graph">Graph auf Widgets ausblenden</string>
+    <string name="no_i_really_know">Nein, ich weiß wirklich, was ich tue</string>
+    <string name="no_never">Nein, niemals</string>
+    <string name="auto_starting_sensor">Starte Sensor automatisch!</string>
+    <string name="sensor_not_started">Sensorsitzung scheint nicht gestartet zu sein</string>
+    <string name="not_getting_readings">Keine Werte erhalten.</string>
+    <string name="snoozing_due_button_press">Alarm schlummert wegen Drücken der Lautstärketaste</string>
+    <string name="title_variant">Du verwendest eine xDrip+-Variante</string>
+    <string name="expires_unknown">Läuft ab: ???</string>
+    <string name="sensor_expired">Abgelaufen!</string>
 </resources>

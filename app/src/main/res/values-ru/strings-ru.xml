@@ -1568,4 +1568,17 @@
     <string name="title_lower_fuzzer">Уменьшить FUZZER</string>
     <string name="summary_lower_fuzzer">Уменьшить значение Fuzzer с 2,5 минуты до 37,5 секунды</string>
     <string name="without_camera_permission_cannot_scan_barcode">Без разрешения на камеру мы не можем сканировать штрихкод</string>
+    <string name="summary_create_missing_filtered">По мере необходимости давать отфильтрованные данные</string>
+    <string name="title_create_missing_filtered">Восстанавливать пропущенные фильтрованные данные</string>
+    <string name="summary_widget_hide_graph">Скрывать график на виджетах (будет виден при следующей передаче данных)</string>
+    <string name="title_widget_hide_graph">Скрывать график виджета</string>
+    <string name="summary_illustrate_remote_data">Показывать данные полученные удаленно (только для диагностики)</string>
+    <string name="title_illustrate_remote_data">Иллюстрировать данные дистанционно</string>
+    <string name="summary_show_accessibility_settings">Если ваш телефон имеет опцию Не убирать с экрана (Always On Display), можно включить виджет xDrip там, активировав службу доступа xDrip на странице системных настроек Android.</string>
+    <string name="title_show_accessibility_settings">Включить службу доступа Xdrip</string>
+    <string name="title_multiple_insulin_types_settings">Множество типов инсулина</string>
+    <string name="summary_multiple_insulin_types_settings">Настройки работы с различными типами инсулина</string>
+    <string name="title_multiple_insulin_types">Множество типов инсулина</string>
+    <string name="external_status_strings_eg_tbr">Статусы из внешних приложений, например ВБС из AAPS</string>
+    <string name="accept_external_status">Принимать статусы извне</string>
 </resources>

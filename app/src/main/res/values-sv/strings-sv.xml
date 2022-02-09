@@ -894,4 +894,6 @@
     <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Blåtandsbryggenhet: Blucon, Bubble, LimiTTer, Bluereader, Tomato mm</string>
     <string name="enable_streaming_dialog_dont_ask_again"> Fråga inte i framtiden</string>
     <string name="without_camera_permission_cannot_scan_barcode">Utan tillåtelse att använda kameran kan vi inte skanna en streckkod</string>
+    <string name="external_status_strings_eg_tbr">Extera statusar, tex TBR från AAPS</string>
+    <string name="accept_external_status">Acceptera extern status</string>
 </resources>

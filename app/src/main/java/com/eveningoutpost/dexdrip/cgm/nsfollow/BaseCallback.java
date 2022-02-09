@@ -20,7 +20,7 @@ public class BaseCallback<T> implements Callback<T> {
     protected final String TAG = this.getClass().getSimpleName();
 
     //  final Session session;
-    private final String name;
+    protected final String name;
     private Runnable onSuccess;
     private Runnable onFailure;
 
