@@ -1569,4 +1569,12 @@
     <string name="title_lower_fuzzer">Baja FUZZER</string>
     <string name="summary_lower_fuzzer">Bajar el valor de FUZZER de 2.5 minutos a 37.5 segundos</string>
     <string name="without_camera_permission_cannot_scan_barcode">Sin el permiso de usar la cámara, no podemos escanear un código de barras</string>
+    <string name="no_never">No, nunca</string>
+    <string name="noise_workings_noise">Ruido: %s</string>
+    <string name="share_database">Compartir base de datos...</string>
+    <plurals name="sensor_expires">
+        <item quantity="one">Expira: %sd</item>
+        <item quantity="other">Expira: %sd</item>
+    </plurals>
+    <string name="accept_external_status">Aceptar estado externo</string>
 </resources>

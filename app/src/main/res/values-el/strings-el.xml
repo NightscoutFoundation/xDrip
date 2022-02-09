@@ -294,4 +294,5 @@
     <string name="no_sensor_found">Δεν βρέθηκε αισθητήρας</string>
     <string name="blood_glucose_graph">Γράφημα Γλυκόζης Αίματος</string>
     <string name="enable_streaming_dialog_dont_ask_again">Να μην ερωτηθώ ξανά</string>
+    <string name="title_multiple_insulin_types">Πολλαπλοί τυποι ινσουλίνης</string>
 </resources>

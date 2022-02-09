@@ -235,4 +235,16 @@
     <string name="enable_streaming_dialog_title">Свържи Libre сонзор към Bluetooth</string>
     <string name="title_lower_fuzzer">Намалете стойността на FUZZER</string>
     <string name="summary_lower_fuzzer">Намалете стойността на FUZZER от 2,5 минути на 37,5 секунди</string>
+    <string name="title_widget_hide_graph">Скрии графиката на Widget-а</string>
+    <string name="summary_illustrate_remote_data">Покажи данни получени отдаличено (само за диагностика)</string>
+    <string name="title_illustrate_remote_data">Визуализирай отдаличени данни</string>
+    <string name="summary_show_accessibility_settings">Ако телефона има постояно включен екран можете да вкл. xDrip widget-a и така включвате и xDrip услугите за достъпност от страница за Настройки на Андроид.</string>
+    <string name="title_show_accessibility_settings">Вкл. xDrip достъпност</string>
+    <string name="title_multiple_insulin_types_settings">Няколко вида инсулин</string>
+    <string name="summary_multiple_insulin_types_settings">Опции за работа с няколко вида инсулин</string>
+    <string name="title_multiple_insulin_types">Няколко вида инсулин</string>
+    <string name="title_xdrip_plus_snooze_broadcast">Локално излъчване(broadcast)</string>
+    <string name="title_broadcast_snooze">Локално излъчване(broadcast)</string>
+    <string name="external_status_strings_eg_tbr">Низове(Strings) от външно състояние, напр. TBR от AAPS</string>
+    <string name="accept_external_status">Приемане на външно състояние</string>
 </resources>
