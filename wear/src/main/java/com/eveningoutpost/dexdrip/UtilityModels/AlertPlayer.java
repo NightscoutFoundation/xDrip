@@ -300,7 +300,7 @@ public class AlertPlayer {
         return false;
     }
 
-    private synchronized void PlayFile(final Context ctx, String FileName, float VolumeFrac) {
+    protected synchronized void PlayFile(final Context ctx, String FileName, float VolumeFrac) {
         Log.i(TAG, "PlayFile: called FileName = " + FileName);
 
         if(mediaPlayer != null) {
