@@ -1569,9 +1569,15 @@
     <string name="title_lower_fuzzer">Baja FUZZER</string>
     <string name="summary_lower_fuzzer">Bajar el valor de FUZZER de 2.5 minutos a 37.5 segundos</string>
     <string name="without_camera_permission_cannot_scan_barcode">Sin el permiso de usar la cámara, no podemos escanear un código de barras</string>
+    <string name="title_show_accessibility_settings">Habilitar Accesibilidad en xDrip</string>
+    <string name="title_multiple_insulin_types_settings">Múltiples tipos de Insulina</string>
+    <string name="summary_multiple_insulin_types_settings">Opciones para trabajar con múltiples tipos de insulina</string>
+    <string name="title_multiple_insulin_types">Múltiples tipos de Insulina</string>
     <string name="no_never">No, nunca</string>
     <string name="noise_workings_noise">Ruido: %s</string>
     <string name="share_database">Compartir base de datos...</string>
+    <string name="title_variant">Estás usando una variante de xDrip+</string>
+    <string name="message_variant">Las variantes de xDrip+ permiten la instalación de múltiples aplicaciones a la vez. Tanto para uso avanzado como para permitir que xDrip-Experimental y xDrip+ se instalen al mismo tiempo.\n\nCon variantes, es posible que algunas cosas no funcionen correctamente debido a que una aplicación u otra tiene acceso exclusivo, por ejemplo el emparejamiento de bluetooth. Comentarios y reportes de errores sobre variantes son bienvenidos!</string>
     <plurals name="sensor_expires">
         <item quantity="one">Expira: %sd</item>
         <item quantity="other">Expira: %sd</item>
