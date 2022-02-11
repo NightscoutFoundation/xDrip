@@ -251,6 +251,52 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
 
     }
 
+    class ExtractedParameters {
+        long CaptureDateTime;
+        byte[] ble_fram_data;
+        byte[] patchUid;
+        int[]trend_bg_vals;
+        int[] history_bg_vals;
+    }
+
+    private ExtractedParameters extractParameters(JSONObject json_object) {
+        String decoded_buffer;
+        String patchUidString;
+
+        ExtractedParameters extractedParameters = new ExtractedParameters();
+
+        try {
+            decoded_buffer = json_object.getString(Intents.DECODED_BUFFER);
+            patchUidString = json_object.getString(Intents.PATCH_UID);
+            extractedParameters.CaptureDateTime = json_object.getLong(Intents.LIBRE_DATA_TIMESTAMP);
+            if (json_object.has(Intents.TREND_BG) && json_object.has(Intents.HISTORIC_BG)) {
+                JSONArray computed_bg = json_object.getJSONArray(Intents.TREND_BG);
+                extractedParameters.trend_bg_vals = new int[computed_bg.length()];
+                for (int i = 0; i < computed_bg.length(); i++) {
+                    extractedParameters.trend_bg_vals[i] = computed_bg.getInt(i);
+                }
+                computed_bg = json_object.getJSONArray(Intents.HISTORIC_BG);
+                extractedParameters.history_bg_vals = new int[computed_bg.length()];
+                for (int i = 0; i < computed_bg.length(); i++) {
+                    extractedParameters.history_bg_vals[i] = computed_bg.getInt(i);
+                }
+            }
+
+        } catch (JSONException e) {
+            Log.e(TAG, "Error JSONException in ExtractedParameters", e);
+            return null;
+        }
+        if (decoded_buffer == null) {
+            Log.e(TAG, "Error could not get decoded_buffer in ExtractedParameters");
+            return null;
+        }
+
+        // Does this throws exception???
+        extractedParameters.ble_fram_data = Base64.decode(decoded_buffer, Base64.NO_WRAP);
+        extractedParameters.patchUid = Base64.decode(patchUidString, Base64.NO_WRAP);
+        return extractedParameters;
+    }
+
     private void handleOop2DecodeFramResult(Bundle bundle) {
         if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             Log.e(TAG, "External OOP algorithm is on, ignoring decoded data.");
@@ -260,46 +306,30 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
         if (json_object == null) {
             return;
         }
-        String decoded_buffer;
-        String patchUidString;
         String patchInfoString;
         String tagId;
-        long CaptureDateTime;
-        int[] trend_bg_vals = null;
-        int[] history_bg_vals = null;
 
         try {
-            decoded_buffer = json_object.getString(Intents.DECODED_BUFFER);
-            patchUidString = json_object.getString(Intents.PATCH_UID);
             patchInfoString = json_object.getString(Intents.PATCH_INFO);
             tagId = json_object.getString(Intents.TAG_ID);
-            CaptureDateTime = json_object.getLong(Intents.LIBRE_DATA_TIMESTAMP);
-            if (json_object.has(Intents.TREND_BG) && json_object.has(Intents.HISTORIC_BG)) {
-                JSONArray computed_bg = json_object.getJSONArray(Intents.TREND_BG);
-                trend_bg_vals = new int[computed_bg.length()];
-                for (int i = 0; i < computed_bg.length(); i++) {
-                    trend_bg_vals[i] = computed_bg.getInt(i);
-                }
-                computed_bg = json_object.getJSONArray(Intents.HISTORIC_BG);
-                history_bg_vals = new int[computed_bg.length()];
-                for (int i = 0; i < computed_bg.length(); i++) {
-                    history_bg_vals[i] = computed_bg.getInt(i);
-                }
-            }
         } catch (JSONException e) {
             Log.e(TAG, "Error JSONException ", e);
             return;
         }
-        if (decoded_buffer == null) {
-            Log.e(TAG, "Error could not get decoded_buffer");
+
+        ExtractedParameters extractedParameters = extractParameters(json_object);
+        if(extractedParameters == null) {
+            Log.e(TAG, "Error in extractParameters");
+            return;
+        }
+        if (extractedParameters.ble_fram_data == null) {
+            Log.e(TAG, "Error could not get ble data");
             return;
         }
 
-        // Does this throws exception???
-        byte[] fram_data = Base64.decode(decoded_buffer, Base64.NO_WRAP);
-        byte[] patchUid = Base64.decode(patchUidString, Base64.NO_WRAP);
         byte[] patchInfo = Base64.decode(patchInfoString, Base64.NO_WRAP);
-        LibreOOPAlgorithm.handleOop2DecodeFramResult(tagId, CaptureDateTime, fram_data, patchUid, patchInfo, trend_bg_vals, history_bg_vals);
+        LibreOOPAlgorithm.handleOop2DecodeFramResult(tagId, extractedParameters.CaptureDateTime, extractedParameters.ble_fram_data,
+                extractedParameters.patchUid, patchInfo, extractedParameters.trend_bg_vals, extractedParameters.history_bg_vals);
     }
 
     private void handleOop2DecodeBleResult(Bundle bundle) {
@@ -311,44 +341,18 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
         if (json_object == null) {
             return;
         }
-        String decoded_buffer;
-        String patchUidString;
-        JSONArray computed_bg;
-        long CaptureDateTime;
 
-        int[] trend_bg_vals = null;
-        int[] history_bg_vals = null;
-
-        try {
-            decoded_buffer = json_object.getString(Intents.DECODED_BUFFER);
-            patchUidString = json_object.getString(Intents.PATCH_UID);
-            CaptureDateTime = json_object.getLong(Intents.LIBRE_DATA_TIMESTAMP);
-            if (json_object.has(Intents.TREND_BG) && json_object.has(Intents.HISTORIC_BG)) {
-                computed_bg = json_object.getJSONArray(Intents.TREND_BG);
-                trend_bg_vals = new int[computed_bg.length()];
-                for (int i = 0; i < computed_bg.length(); i++) {
-                    trend_bg_vals[i] = computed_bg.getInt(i);
-                }
-                computed_bg = json_object.getJSONArray(Intents.HISTORIC_BG);
-                history_bg_vals = new int[computed_bg.length()];
-                for (int i = 0; i < computed_bg.length(); i++) {
-                    history_bg_vals[i] = computed_bg.getInt(i);
-                }
-            }
-
-        } catch (JSONException e) {
-            Log.e(TAG, "Error JSONException ", e);
+        ExtractedParameters extractedParameters = extractParameters(json_object);
+        if(extractedParameters == null) {
+            Log.e(TAG, "Error in extractParameters");
             return;
         }
-        if (decoded_buffer == null) {
-            Log.e(TAG, "Error could not get decoded_buffer");
+        if (extractedParameters.ble_fram_data == null) {
+            Log.e(TAG, "Error could not get ble data");
             return;
         }
-
-        // Does this throws exception???
-        byte[] ble_data = Base64.decode(decoded_buffer, Base64.NO_WRAP);
-        byte[] patchUid = Base64.decode(patchUidString, Base64.NO_WRAP);
-        LibreOOPAlgorithm.handleDecodedBleResult(CaptureDateTime, ble_data, patchUid, trend_bg_vals, history_bg_vals);
+        LibreOOPAlgorithm.handleDecodedBleResult(extractedParameters.CaptureDateTime, extractedParameters.ble_fram_data,
+                extractedParameters.patchUid, extractedParameters.trend_bg_vals, extractedParameters.history_bg_vals);
     }
 
     private void handleOop2BluetoothEnableResult(Bundle bundle) {
