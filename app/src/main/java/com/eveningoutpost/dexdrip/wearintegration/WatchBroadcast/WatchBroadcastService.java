@@ -59,6 +59,8 @@ public class WatchBroadcastService extends Service {
 
     protected static final String INTENT_REPLY_CODE_OK = "OK";
     protected static final String INTENT_REPLY_CODE_ERROR = "ERROR";
+    protected static final String INTENT_REPLY_CODE_PACKAGE_ERROR = "ERROR_NO_PACKAGE";
+    protected static final String INTENT_REPLY_CODE_NOT_REGISTERED = "NOT_REGISTERED";
 
     protected static final String CMD_SET_SETTINGS = "set_settings";
     protected static final String CMD_UPDATE_BG_FORCE = "update_bg_force";
@@ -75,7 +77,7 @@ public class WatchBroadcastService extends Service {
     protected static final String ACTION_WATCH_COMMUNICATION_RECEIVER = "com.eveningoutpost.dexdrip.watch.wearintegration.WATCH_BROADCAST_RECEIVER";
     //send
     protected static final String ACTION_WATCH_COMMUNICATION_SENDER = "com.eveningoutpost.dexdrip.watch.wearintegration.WATCH_BROADCAST_SENDER";
-    private static final int COMMADS_LIMIT_TIME = 1;
+    private static final int COMMADS_LIMIT_TIME = 2;
 
     public static SharedPreferences.OnSharedPreferenceChangeListener prefListener = (prefs, key) -> {
         if (key.equals(PREF_ENABLED)) {
@@ -105,12 +107,14 @@ public class WatchBroadcastService extends Service {
                     if (packageKey == null) {
                         function = CMD_REPLY_MSG;
                         serviceIntent.putExtra(INTENT_REPLY_MSG, "Error, \"PACKAGE\" extra not specified");
+                        serviceIntent.putExtra(INTENT_REPLY_CODE, INTENT_REPLY_CODE_PACKAGE_ERROR);
                         startService = true;
                     }
                 } else {
                     if (!broadcastEntities.containsKey(packageKey)) {
                         function = CMD_REPLY_MSG;
                         serviceIntent.putExtra(INTENT_REPLY_MSG, "Error, the app should be registered at first");
+                        serviceIntent.putExtra(INTENT_REPLY_CODE, INTENT_REPLY_CODE_NOT_REGISTERED);
                         startService = true;
                     }
                 }
