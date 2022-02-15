@@ -12,7 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -28,8 +28,8 @@ import com.eveningoutpost.dexdrip.G5Model.BluetoothServices;
 import com.eveningoutpost.dexdrip.G5Model.CalibrationState;
 import com.eveningoutpost.dexdrip.G5Model.DexSyncKeeper;
 import com.eveningoutpost.dexdrip.G5Model.FirmwareCapability;
-import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.G5Model.Ob1DexTransmitterBattery;
+import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.G5Model.TransmitterStatus;
 import com.eveningoutpost.dexdrip.G5Model.VersionRequest1RxMessage;
 import com.eveningoutpost.dexdrip.G5Model.VersionRequest2RxMessage;
@@ -969,7 +969,7 @@ public class Ob1G5CollectionService extends G5BaseService {
             checkAlwaysScanModels();
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-                android_wear = (getResources().getConfiguration().uiMode & Configuration.UI_MODE_TYPE_MASK) == Configuration.UI_MODE_TYPE_WATCH;
+                android_wear = JoH.areWeRunningOnAndroidWear();
                 if (android_wear) {
                     UserError.Log.d(TAG, "We are running on Android Wear");
                     wear_broadcast = Pref.getBooleanDefaultFalse("ob1_wear_broadcast");
