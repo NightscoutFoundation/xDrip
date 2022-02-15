@@ -168,7 +168,9 @@ public class Ob1G5StateMachine {
 
     @SuppressLint("CheckResult")
     private static void handleAuthenticationWrite(final Ob1G5CollectionService parent, final RxBleConnection connection) {
-        final AuthRequestTxMessage authRequest = new AuthRequestTxMessage(getTokenSize(), usingAlt());
+        final int specifiedSlot = Pref.getBooleanDefaultFalse("engineering_mode") ? Pref.getStringToInt("dex_specified_slot", -1) : -1;
+        final AuthRequestTxMessage authRequest = (specifiedSlot == -1) ? new AuthRequestTxMessage(getTokenSize(), usingAlt())
+        : new AuthRequestTxMessage(getTokenSize(), specifiedSlot);
         lastAuthPacket = authRequest;
         UserError.Log.i(TAG, "AuthRequestTX: " + JoH.bytesToHex(authRequest.byteSequence));
 
