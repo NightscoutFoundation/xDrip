@@ -602,7 +602,6 @@
     <string name="g5_bluetooth_watchdog">G5 Bluetooth Watchdog</string>
     <string name="close_gatt">Jeśli watchdog Bluetooth często się aktywuje, możesz spróbować odznaczyć tę opcję, aby sprawdzić, czy to pomoże</string>
     <string name="older_bluetooth_wakelocks">Starsza metoda wybudzania Bluetooth, która może spowodować dodatkowe zużycie baterii, ale czasem może być potrzebna do poprawnego odbioru Bluetooth</string>
-    <string name="reset_bluetooth_on_off">Zresetuj Bluetooth wyłączając go i co kilka minut! Zaznacz tylko, jeśli testujesz. Może to zakłócić inne rzeczy połączone za pomocą Bluetooth.</string>
     <string name="constantly_reset_bluetooth">Stale resetuj Bluetooth</string>
     <string name="experimental_transmitter_fpv_uav">Wsparcie eksperymentalne dla urządzenia \"Transmitter\" z @FPV-UAV - tylko testy</string>
     <string name="transmitter_pl_support">Wsparcie dla \"Transmitter (PL)\"</string>
@@ -1116,7 +1115,6 @@
     <string name="low_and_high_alerts_currently_disabled">ALARMY O NISKIM I WYSOKIM POZIOMIE OBECNIE WYŁĄCZONE</string>
     <string name="low_alerts_currently_disabled">ALARMY O NISKIM POZIOMIE OBECNIE WYŁĄCZONE</string>
     <string name="high_alerts_currently_disabled">ALARMY O WYSOKIM POZIOMIE OBECNIE WYŁĄCZONE</string>
-    <string name="bg_reading_missed">Brak odczytów BG</string>
     <string name="not_connected">Nie połączono</string>
     <string name="no_data">Brak danych</string>
     <string name="no_bluetooth">Brak bluetooth</string>
@@ -1151,7 +1149,7 @@
     <string name="title_rest_api_extra_options">Dodatkowe opcje</string>
     <string name="summary_send_dexcom_transmitter_battery_to_nightscout">Prześlij dane baterii transmitera Dexcom do Nightscout. Włącznie z wszystkimi danymi w zakładce Collector Status.</string>
     <string name="title_send_dexcom_transmitter_battery_to_nightscout">Prześlij poziom baterii transmitera OB1G5/G6</string>
-    <string name="summary_send_treatments_to_nightscout">Wyślij dane leczenia do Nightscout. Odznacz jeżeli Twój careportal jest uszkodzony.</string>
+    <string name="summary_send_treatments_to_nightscout">Wyślij dane zabiegu do Nightscout. Odznacz jeżeli twój careportal jest uszkodzony.</string>
     <string name="title_send_treatments_to_nightscout">Prześlij zabiegi</string>
     <string name="summary_warn_nightscout_failures">Wyświetl i wydaj dźwięk powiadomienia, jeśli wysyłanie Nightscout nie powiodło się.</string>
     <string name="title_warn_nightscout_failures">Alarmuj przy awariach</string>
@@ -1160,7 +1158,7 @@
     <string name="summary_tidepool_upload_screen">Prześlij dane do usługi Tidepool</string>
     <string name="title_sync_to_tidepool">Synchronizuj z Tidepool</string>
     <string name="summary_tidepool_username">Twój login Tidepool, zazwyczaj twój adres e-mail</string>
-    <string name="title_tidepool_username">Login Nazwa Użytkownika</string>
+    <string name="title_tidepool_username">Nazwa użytkownika logowania</string>
     <string name="summary_tidepool_password">Twoje hasło do Tidepool</string>
     <string name="title_tidepool_password">Hasło logowania</string>
     <string name="title_tidepool_test_login">Sprawdź dostęp do Tidepool</string>
@@ -1195,7 +1193,6 @@
     <string name="title_miband_nightmode_start">Początek trybu nocnego</string>
     <string name="title_miband_nightmode_end">Koniec trybu nocnego</string>
     <string name="title_miband_interval_in_nightmode">Interwał</string>
-    <string name="summary_miband_interval_in_nightmode">Określa jak często BY będzie synchronizowane w trybie nocnym</string>
     <string name="title_miband_colect_heartrate">Mierz puls</string>
     <string name="summary_miband_colect_heartrate">Włącza mierzenie tętna za pomocą opaski. Interwał aktualizacji można skonfigurować w MiFit lub dowolnej aplikacji zewnętrznej</string>
     <string name="title_miband_authkey">Klucz uwierzytelniania</string>
@@ -1273,19 +1270,17 @@
     <string name="title_illustrate_backfilled_data">Pokaż dane uzupełnione wstecz</string>
     <string name="title_high_priority_notifications">Powiadomienia o wysokim priorytecie</string>
     <string name="summary_public_notifications">Pokaż powiadomienia na zabezpieczonym ekranie blokady</string>
-    <string name="summary_number_wall_on_lockscreen">Pokaż na zablokowanym ekranie. Tylko Android 7 i wyższe!</string>
+    <string name="summary_number_wall_on_lockscreen">Pokaż na zablokowanym ekranie. Tylko Android 7 i nowszy!</string>
     <string name="title_number_wall_on_lockscreen">Użyj na ekranie blokady</string>
     <string name="title_pick_numberwall_start">Włącz</string>
     <string name="title_pick_numberwall_stop">Czas wyłączenia</string>
     <string name="title_xdrip_plus_number_icon">Ikona wartości w obszarze powiadomień</string>
     <string name="summary_do_number_icon_test">Ikona wartości powoduje awarie niektórych telefonów! Naciśnij aby uruchomić test przed włączeniem funkcji!</string>
-    <string name="title_do_number_icon_test">Włącz test Ilony Wartości</string>
     <string name="title_number_icon_tested">Ikona wartości przetestowana</string>
     <string name="summary_use_number_icon">Pokazuje bieżącą wartości glukozy jako ikonę paska powiadomień i ekranu blokady</string>
     <string name="title_use_number_icon">Pokaż małą ikonę wartości</string>
     <string name="title_use_number_icon_large">Użyj dużej ikony wartości</string>
     <string name="summary_number_icon_large_arrow">Pokaż strzałkę trendu w dużej ikonie</string>
-    <string name="title_number_icon_large_arrow">Pokaż strzałkę w Dużej Ikonie</string>
     <string name="title_show_home_on_boot">Pokaż xDrip przy uruchomieniu telefonu</string>
     <string name="eula">Licencja</string>
     <string name="summary_plus_accept_follower_actions">Zabiegi, kalibracje i inne działania ze strony obserwatorów będą akceptowane</string>
