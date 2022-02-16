@@ -1669,4 +1669,6 @@
     </plurals>
     <string name="external_status_strings_eg_tbr">External status strings, eg TBR from AAPS</string>
     <string name="accept_external_status">Accept External Status</string>
+    <string translatable="false" name="summary_dex_specified_slot">Specify transmitter slot manually, setting this incorrectly will prevent any readings being received.</string>
+    <string translatable="false" name="title_dex_specified_slot">Manual Slot Number</string>
 </resources>

@@ -20,7 +20,6 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -1400,8 +1399,7 @@ public class JoH {
 
     public static boolean areWeRunningOnAndroidWear() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH
-                && (xdrip.getAppContext().getResources().getConfiguration().uiMode
-                & Configuration.UI_MODE_TYPE_MASK) == Configuration.UI_MODE_TYPE_WATCH;
+                && xdrip.getAppContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_WATCH);
     }
 
     public static boolean isAirplaneModeEnabled(Context context) {
