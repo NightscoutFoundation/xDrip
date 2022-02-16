@@ -15,19 +15,16 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-java@v2
       with:
-        distribution: adopt
         java-version: 8
-        
-    - name: Setup Gradle
+        distribution: adopt
+    - name: Run unit tests and assemble APKs
       uses: gradle/gradle-build-action@v2
-      env:
-        GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: true
       with:
-        arguments: assembleProdRelease testProdReleaseUnitTestCoverage
+        arguments: assembleProdRelease testProdReleaseUnitTest
     - name: Upload Coverage Report to Codecov
       uses: codecov/codecov-action@v2
       with:
         verbose: true # optional (default = false)
-        files: app/build/reports/jacoco/testProdReleaseUnitTestCoverage/testProdReleaseUnitTestCoverage.xml,wear/build/reports/jacoco/testProdReleaseUnitTestCoverage/testProdReleaseUnitTestCoverage.xml 
+        files: app/build/reports/jacoco/testProdReleaseUnitTestCoverage/testProdReleaseUnitTestCoverage.xml,wear/build/reports/jacoco/testProdReleaseUnitTestCoverage/testProdReleaseUnitTestCoverage.xml
     - name: Check Output
       run: bash ./etc/CheckBuild/check-release.sh test

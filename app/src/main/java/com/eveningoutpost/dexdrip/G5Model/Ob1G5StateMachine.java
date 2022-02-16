@@ -168,7 +168,9 @@ public class Ob1G5StateMachine {
 
     @SuppressLint("CheckResult")
     private static void handleAuthenticationWrite(final Ob1G5CollectionService parent, final RxBleConnection connection) {
-        final AuthRequestTxMessage authRequest = new AuthRequestTxMessage(getTokenSize(), usingAlt());
+        final int specifiedSlot = Pref.getBooleanDefaultFalse("engineering_mode") ? Pref.getStringToInt("dex_specified_slot", -1) : -1;
+        final AuthRequestTxMessage authRequest = (specifiedSlot == -1) ? new AuthRequestTxMessage(getTokenSize(), usingAlt())
+        : new AuthRequestTxMessage(getTokenSize(), specifiedSlot);
         lastAuthPacket = authRequest;
         UserError.Log.i(TAG, "AuthRequestTX: " + JoH.bytesToHex(authRequest.byteSequence));
 
@@ -1537,7 +1539,7 @@ public class Ob1G5StateMachine {
         if (transmitterId.length() != 6) return false;
         if (data.length < 10) return false;
         final BatteryInfoRxMessage batteryInfoRxMessage = new BatteryInfoRxMessage(data);
-        UserError.Log.e(TAG, "Saving battery data: " + batteryInfoRxMessage.toString());
+        UserError.Log.uel(TAG, "Saving battery data: " + batteryInfoRxMessage.toString());
         PersistentStore.setBytes(G5_BATTERY_MARKER + transmitterId, data);
         PersistentStore.setLong(G5_BATTERY_FROM_MARKER + transmitterId, tsl());
 
