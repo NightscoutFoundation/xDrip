@@ -77,8 +77,8 @@ public class ShareFollowDownload extends RetrofitBase {
         if (!session.sessionIdValid()) {
             if (JoH.tsl() > loginBlockedTill) {
                 extendWakeLock(30_000);
-                getService().getSessionId(new ShareAuthenticationBody(password, login))
-                        .enqueue(new ShareFollowCallback<String>("Login", session, this::getData)
+                getService().authenticate(new ShareAuthenticationBody(password, login))
+                        .enqueue(new ShareFollowCallback<String>("Auth", session, this::authenticate)
                                 .setOnFailure(this::handleLoginFailure));
             } else {
                 UserError.Log.e(TAG, "Not trying to login due to backoff timer for login failures until: " + JoH.dateTimeText(loginBlockedTill));
@@ -100,6 +100,25 @@ public class ShareFollowDownload extends RetrofitBase {
             loginBlockedTill = JoH.tsl() + loginBackoff;
         }
         releaseWakeLock();
+    }
+
+    private boolean authenticate() {
+        try {
+            if (session.accountIdValid()) {
+                extendWakeLock(30_000);
+                getService().getSessionId(new ShareLoginBody(password, session.accountId))
+                        .enqueue(new ShareFollowCallback<String>("Login", session, this::getData)
+                                .setOnFailure(this::handleLoginFailure));
+            } else {
+                UserError.Log.d(TAG, "Cannot login as accountID is invalid");
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Got exception in getData() " + e);
+            releaseWakeLock();
+            return false;
+        }
     }
 
     // Get data from service

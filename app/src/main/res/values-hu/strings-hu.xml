@@ -27,6 +27,7 @@
     <string name="no">Nem</string>
     <string name="pref_sensor_location_dont_ask_again"> Ne kérdezz rá mégegyszer</string>
     <string name="title_activity_error">"Hiba- és eseménynapló"</string>
+    <string name="title_activity_main">Főképernyő</string>
     <string name="title_activity_edit_alert">Riasztás beállítása</string>
     <string name="title_activity_double_calibration">Indító kalibráció</string>
     <string name="title_activity_calibration_override">Kalibráció felülírása</string>
@@ -309,7 +310,7 @@
     <string name="space_units">" egység"</string>
     <string name="units">egység</string>
     <string name="carbs">CH</string>
-    <string name="when">mikor</string>
+    <string name="when">mikor (óómm)</string>
     <string name="speak_your_treatment">Kezelés felolvasása pl.:\nx.x egység inzulin / xx gram szénhidrát</string>
     <string name="speech_recognition_is_not_supported">Beszédfelismerés nem támogatott</string>
     <string name="treatment_note">Jegyzet kezelésről</string>
@@ -759,6 +760,7 @@
     <string name="alert_sound">Riasztás hangja</string>
     <string name="override_silent_mode_these">Néma üzemmód felülírása</string>
     <string name="persistent_repeat_max">Ismétlés max ennyi perc után (p)</string>
+    <string name="momentum_indicates_low">Ha a trend azt mutatja, hogy a hipoglikémia lesz</string>
     <string name="notify_on_low_battery_level">Riasztás, ha akku töltöttsége lecsökken</string>
     <string name="collector_battery_alerts">Kollektor akku riasztás</string>
     <string name="low_battery_percentage">Alacsony akku töltöttségi szint (%)</string>
@@ -949,6 +951,8 @@
     <string name="did_not_acknowledge_a_high_glucose_alert">%1$s nem reagált %2$s ideje a magas vércukorértékre</string>
     <string name="has_not_had_glucose_data_received_for">%2$s nem kapott VC-értéket %1$s perce</string>
     <string name="phone_has_not_been_used_for">%2$s telefon nem volt használatban %1$s perce</string>
+    <string name="is_requesting_assistance">Segítséget kér: %s</string>
+    <string name="is_testing_the_assistance_request_feature">Segítségkérés funkciót teszteli: %s</string>
     <string name="emergency_message_near_format_string">%1$s - %2$s %3$s %4$s %5$s közelében</string>
     <string name="choose_when_to_send_messages">Üzenet küldése, ha:</string>
     <string name="low_alert_not_acknowledged">Nem reagált az alacsony érték értesítésre</string>
@@ -1525,4 +1529,33 @@
     <string name="title_lower_fuzzer">FUZZER csökkentése</string>
     <string name="summary_lower_fuzzer">A FUZZER értékének csökkentése 2,5 percről 37,5 mp-re</string>
     <string name="without_camera_permission_cannot_scan_barcode">Kamerahasználat engedélyezése nélkül nem működik a vonalkód olvasás</string>
+    <string name="summary_widget_hide_graph">A grafikon elrejtése a widgeteken (a következő olvasáskor jelenik meg)</string>
+    <string name="title_widget_hide_graph">Widget grafikon elrejtése</string>
+    <string name="summary_show_accessibility_settings">Ha telefonja rendelkezik Always On Display funkcióval, akkor az xDrip widgetet ott engedélyezheti az xDrip szolgáltatás engedélyezésével az Android rendszerbeállítások oldalon.</string>
+    <string name="title_show_accessibility_settings">xDrip AOD-n (kisegítő szolgáltatásként)</string>
+    <string name="title_multiple_insulin_types_settings">Többféle inzulin</string>
+    <string name="summary_multiple_insulin_types_settings">Beállítások többféle inzulin használatakor</string>
+    <string name="title_multiple_insulin_types">Többféle inzulin</string>
+    <string name="title_xdrip_plus_snooze_broadcast">Helyi adatszórás</string>
+    <string name="summary_broadcast_snooze">Szundi küldése más app-nak ezen készüléken</string>
+    <string name="title_broadcast_snooze">Helyi adatszórás</string>
+    <string name="summary_accept_broadcast_snooze">Szundi elfogadása más app-tól ezen készüléken</string>
+    <string name="title_accept_broadcast_snooze">Helyi adatszórás engedélyezése</string>
+    <string name="no_battery_optimization_whitelisting">Úgy tűnik, a készüléke nem vezet kivétellistát az akku optimalizált app-okról!</string>
+    <string name="no_i_really_know">Nem, tényleg tudom, mit csinálok</string>
+    <string name="no_never">NEM, soha</string>
+    <string name="auto_starting_sensor">Automatikus szenzorindítás!</string>
+    <string name="start_sensor_confirmation">Az adatforrás helye: %s\n\n Szeretné megváltoztatni a beállításokat vagy elindítani a szenzort?</string>
+    <string name="not_getting_readings">Nem érkezett adat.</string>
+    <string name="noise_workings_noise">Szundi: %s</string>
+    <string name="snoozing_due_button_press">Riasztás szundiba küldése a a hangerő gomb megnyomásával</string>
+    <string name="share_database">Adatbázis megosztása...</string>
+    <string name="title_motion_detection_warning">Mozgásérzékelő figyelmeztetés</string>
+    <string name="message_motion_detection_warning">A mozgásérzékelés kísérleti jellegű, és csak néhány telefonnal kompatibilis. A fő célja a jármű üzemmód észlelése.\n\n\nA tesztek alapján úgy tűnik, hogy a magasabb kategóriájú telefonok támogatják leginkább a működéséhez szükséges érzékelőket. Az akkumulátort erősen merítheti.\n\n\nAz edzéssel kapcsolatos mérésekhez az okosórák lépésszámlálói jobban működnek.</string>
+    <string name="title_variant">xDrip+ variánst használ</string>
+    <string name="message_variant">Az xDrip+ varánsok lehetővé teszik az alkalmazás több példányban történő telepítését. Akár haladó használatra, akár azért, hogy a kísérleti és az éles rendszer egyszerre legyen telepítve.\n\n A variánsoknál előfordulhat, hogy néhány dolog nem működik megfelelően, mert az egyik vagy másik kizárólagos hozzáféréssel rendelkezik, például a bluetooth párosítás. A variánsokkal kapcsolatos visszajelzéseket és hibajelzéseket szívesen fogadjuk!</string>
+    <string name="expires_unknown">Lejárat: ???</string>
+    <string name="sensor_expired">LEJÁRT!</string>
+    <string name="external_status_strings_eg_tbr">Külső alkalmazásokból származó adatok (pl. AAPS-ből TBR)</string>
+    <string name="accept_external_status">Adatfogadás külső alkalmazásokból</string>
 </resources>

@@ -762,6 +762,12 @@ public class Ob1G5StateMachine {
     }
 
     private static void backFillIfNeeded(Ob1G5CollectionService parent, RxBleConnection connection) {
+        final Sensor sensor = Sensor.currentSensor();
+        if (sensor == null) {
+            UserError.Log.e(TAG, "Cannot process backfill evaluation as no active sensor");
+            return;
+        }
+
         final int check_readings = nextBackFillCheckSize;
         UserError.Log.d(TAG, "Checking " + check_readings + " for backfill requirement");
         final List<BgReading> lastReadings = BgReading.latest_by_size(check_readings);
@@ -794,8 +800,14 @@ public class Ob1G5StateMachine {
         if (ask_for_backfill) {
             nextBackFillCheckSize = BACKFILL_CHECK_LARGE;
             monitorBackFill(parent, connection);
-            final long startTime = earliest_timestamp - (Constants.MINUTE_IN_MS * 5);
+            final long startTime = Math.max(earliest_timestamp - (Constants.MINUTE_IN_MS * 5), sensor.started_at);
             final long endTime = latest_timestamp + (Constants.MINUTE_IN_MS * 5);
+
+            if (startTime >= endTime) {
+                UserError.Log.e(TAG, "Cannot process backfill request where start time would be after end time");
+                return;
+            }
+
             UserError.Log.d(TAG, "Requesting backfill between: " + JoH.dateTimeText(startTime) + " " + JoH.dateTimeText(endTime));
             enqueueUniqueCommand(
                     BackFillTxMessage.get(getTransmitterID(), startTime, endTime),
@@ -1175,7 +1187,9 @@ public class Ob1G5StateMachine {
         DexTimeKeeper.updateAge(getTransmitterID(), glucose.timestamp);
         if (glucose.usable() || (glucose.insufficient() && Pref.getBoolean("ob1_g5_use_insufficiently_calibrated", true))) {
             UserError.Log.d(TAG, "Got usable glucose data from G5!!");
-            final BgReading bgReading = BgReading.bgReadingInsertFromG5(glucose.glucose, tsl());
+            final long rxtimestamp = tsl();
+
+            final BgReading bgReading = BgReading.bgReadingInsertFromG5(glucose.glucose, rxtimestamp);
             if (bgReading != null) {
                 try {
                     bgReading.calculated_value_slope = glucose.getTrend() / Constants.MINUTE_IN_MS; // note this is different to the typical calculated slope, (normally delta)
@@ -1204,8 +1218,8 @@ public class Ob1G5StateMachine {
                 }
             }
 
-            if (android_wear && wear_broadcast && bgReading != null) {
-                // emit local broadcast
+            if (android_wear && wear_broadcast && bgReading != null && bgReading.timestamp == rxtimestamp) {
+                // emit local broadcast on wear if reading was newly created
                 BroadcastGlucose.sendLocalBroadcast(bgReading);
             }
 

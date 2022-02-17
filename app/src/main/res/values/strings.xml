@@ -1613,4 +1613,62 @@
     <string name="title_lower_fuzzer">Lower FUZZER</string>
     <string name="summary_lower_fuzzer">Lower the FUZZER value from 2.5 minutes to 37.5 seconds</string>
     <string name="without_camera_permission_cannot_scan_barcode">Without camera permission we cannot scan a barcode</string>
+    <string name="summary_create_missing_filtered">Make filtered data as needed</string>
+    <string name="title_create_missing_filtered">Create missing filtered</string>
+    <string name="summary_widget_hide_graph">Hide the graph on widgets (shows on next reading)</string>
+    <string name="title_widget_hide_graph">Hide widget graph</string>
+    <string name="summary_illustrate_remote_data">Show data received remotely (diagnostic only)</string>
+    <string name="title_illustrate_remote_data">Illustrate remote data</string>
+    <string name="summary_show_accessibility_settings">If your phone has Always On Display you can enable the xDrip widget there by enabling the xDrip accessibility service from the Android System Settings page.</string>
+    <string name="title_show_accessibility_settings">Enable xDrip Accessibility</string>
+    <string name="title_multiple_insulin_types_settings">Multiple Insulin Types</string>
+    <string name="summary_multiple_insulin_types_settings">Options for working with multiple insulin types</string>
+    <string name="title_multiple_insulin_types">Multiple Insulin Types</string>
+    <string name="summary_multiple_insulin_use_basal_activity">Plot Basal activity on graph and incorporate in predictive model</string>
+    <string name="title_multiple_insulin_use_basal_activity">Use Basal Activity</string>
+    <string name="title_xdrip_plus_snooze_broadcast">Local Broadcast</string>
+    <string name="summary_broadcast_snooze">Send snoozes to other apps on this handset</string>
+    <string name="title_broadcast_snooze">Local Broadcast</string>
+    <string name="summary_accept_broadcast_snooze">Accept snoozes from other apps on this handset</string>
+    <string name="title_accept_broadcast_snooze">Accept Local Broadcast</string>
+    <string name="title_bg_compensate_noise">\u26A0 Smooth sensor noise</string>
+    <string name="title_bg_compensate_noise_ultrasensitive">\u26A0 Smooth sensor noise ultrasensitive</string>
+    <string name="no_battery_optimization_whitelisting">Device does not appear to support battery optimization whitelisting!</string>
+    <string name="no_i_really_know">No, I really know what I\'m doing</string>
+    <string name="use_for_calibration">Use %s for Calibration?</string>
+    <string name="problem_loading_speech_lexicon">Problem loading speech lexicon!</string>
+    <string name="type_treatment_eg">Type treatment\neg: units x.x</string>
+    <string name="word_lexicon_not_loaded">Word lexicon not loaded!</string>
+    <string name="no_never">NO, Never</string>
+    <string name="auto_starting_sensor">Auto starting sensor!</string>
+    <string name="start_sensor_confirmation">Data Source is set to: %s\n\nDo you want to change settings or start sensor?</string>
+    <string name="state_not_currently_known">%s  State isn\'t currently known. Next connection will update this</string>
+    <string name="unusual_calibration_waiting">Unusual calibration state - waiting for more data</string>
+    <string name="could_not_find_blood_data">Could not find blood test data!! %s</string>
+    <string name="transmitter_waiting_for_calibration">Waiting for Transmitter to receive calibration</string>
+    <string name="sensor_not_started">Sensor session does not appear to be started</string>
+    <string name="not_getting_readings">Not getting any readings.</string>
+    <string name="bridge_battery">Bridge battery</string>
+    <string name="transmitter_maybe_dead">filtered data is exactly double raw sensor data which looks wrong! (Transmitter maybe dead)</string>
+    <string name="noise_workings_noise">Noise: %s</string>
+    <string name="snoozing_due_button_press">Snoozing alert due to volume button press</string>
+    <string name="share_database">Share database...</string>
+    <string name="title_motion_detection_warning">Motion Detection Warning</string>
+    <string name="message_motion_detection_warning">Activity Motion Detection is experimental and only some phones are compatible. Its main purpose is to detect vehicle mode.\n\nIn tests it seems higher end phones are the most likely to properly support the sensors needed for it to work.  It may also drain your battery.\n\nFor exercise related movement, Smartwatch step counters work better.</string>
+    <string name="title_variant">You are using an xDrip+ variant</string>
+    <string name="message_variant">xDrip+ variants allow multiple apps to be installed at once. Either for advanced use or to allow xDrip-Experimental and xDrip+ to both be installed at the same time.\n\nWith variants, some things might not work properly due to one app or another having exclusive access, for example bluetooth pairing. Feedback and bug reports about variants is welcomed!</string>
+    <string name="expires_unknown">Expires: ???</string>
+    <string name="sensor_expired">EXPIRED!</string>
+    <plurals name="sensor_expires">
+        <item quantity="one">Expires: %sd</item>
+        <item quantity="other">Expires: %sd</item>
+    </plurals>
+    <plurals name="sensor_age">
+        <item quantity="one">Age: %sd</item>
+        <item quantity="other">Age: %sd</item>
+    </plurals>
+    <string name="external_status_strings_eg_tbr">External status strings, eg TBR from AAPS</string>
+    <string name="accept_external_status">Accept External Status</string>
+    <string translatable="false" name="summary_dex_specified_slot">Specify transmitter slot manually, setting this incorrectly will prevent any readings being received.</string>
+    <string translatable="false" name="title_dex_specified_slot">Manual Slot Number</string>
 </resources>

@@ -1104,6 +1104,7 @@
     <string name="restart_in_the_morning">Restartuj rano</string>
     <string name="advanced_mode">Tryb zaawansowany</string>
     <string name="reminder_title">Tytuł przypomnienia</string>
+    <string name="what_time_of_day_question">Jaka pora dnia?</string>
     <string name="all_alerts_currently_disabled">WSZYSTKIE ALARMY OBECNIE WYŁĄCZONE</string>
     <string name="low_and_high_alerts_currently_disabled">ALARMY O NISKIM I WYSOKIM POZIOMIE OBECNIE WYŁĄCZONE</string>
     <string name="low_alerts_currently_disabled">ALARMY O NISKIM POZIOMIE OBECNIE WYŁĄCZONE</string>
@@ -1141,6 +1142,7 @@
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatyczna kalibracja</string>
     <string name="title_rest_api_extra_options">Dodatkowe opcje</string>
     <string name="title_send_treatments_to_nightscout">Prześlij zabiegi</string>
+    <string name="summary_warn_nightscout_failures">Wyświetl i wydaj dźwięk powiadomienia, jeśli wysyłanie Nightscout nie powiodło się.</string>
     <string name="title_warn_nightscout_failures">Alarmuj przy awariach</string>
     <string name="summary_tap_to_send_historical_data">Dotknij, aby wysłać dane historyczne do Nightscout</string>
     <string name="title_back_fill_data">Uzupełnij wstecz</string>
@@ -1200,9 +1202,11 @@
     <string name="miband_watchface_istall_error">Wystąpił błąd podczas przesyłania tarczy zegarowej MiBand</string>
     <string name="miband_bg_dialog_title">Zaktualizować teraz dane glikemii?</string>
     <string name="title_lefun_band">Opaska Lefun</string>
+    <string name="summary_lefun_enable">Synchronizuj dane z opaskami Lefun</string>
     <string name="title_lefun_enable">Użyj opaski Lefun</string>
     <string name="title_lefun_mac">Adres Mac</string>
     <string name="title_lefun_send_readings">Wyślij odczyty</string>
+    <string name="summary_lefun_send_alarms">Wysyłaj powiadomienia do opaski z alarmami glikemii</string>
     <string name="title_lefun_send_alarms">Wyślij Alarmy</string>
     <string name="title_lefun_option_shake_snoozes">Wstrząśnij aby uśpić</string>
     <string name="title_lefun_screens_features">Ekrany i funkcje Lefun</string>
@@ -1238,7 +1242,9 @@
     <string name="title_plugins_and_features">Wtyczki i funkcje</string>
     <string name="title_color_heart_rate1">Monitor tętna</string>
     <string name="title_insulin_colors">Kolory insuliny</string>
+    <string name="title_color_basal_tbr">Baza TDP</string>
     <string name="title_xdrip_plus_graph_display_settings">Ustawienia wykresu</string>
+    <string name="title_show_basal_line">Pokaż bazę TDP</string>
     <string name="title_show_smb_icons">Pokaż ikony mikro bolusów</string>
     <string name="summary_illustrate_backfilled_data">Wyróżnij dane uzupełnione wstecz</string>
     <string name="title_illustrate_backfilled_data">Pokaż dane uzupełnione wstecz</string>
@@ -1266,6 +1272,8 @@
     <string name="title_pendiq_pin">Kod Pin wstrzykiwacza</string>
     <string name="summary_delay_ascending_3min">W przypadku rosnącego profilu głośności, opóźnij rozpoczęcie dźwięku alertu o 3 minuty. Wibracja (jeśli jest włączona) rozpoczyna się natychmiast po wyzwoleniu alertu, niezależnie od tego ustawienia.</string>
     <string name="title_delay_ascending_3min">Opóźnij rosnącą głośność</string>
+    <string name="category_noisy_readings">Zaszumione odczyty</string>
+    <string name="category_falling_rising_bg">Spadająca/Wzrastająca glikemia</string>
     <string name="note_search_button">SZUKAJ</string>
     <string name="title_full_screen_mode">Tryb pełnoekranowy</string>
     <string name="title_colors_for_printing">Kolory do druku</string>
@@ -1299,14 +1307,18 @@
     <string name="mean_bg">Średnia glikemia:</string>
     <string name="hba1c_est">HbA1c szac.:</string>
     <string name="stddev">Odch.Std:</string>
+    <string name="relative_sd_cv">Wsp. zmienności:</string>
+    <string name="important_warning">Ważne ostrzeżenie!</string>
     <string name="i_agree">ZGADZAM SIĘ</string>
     <string name="backup_detected">Wykryto kopie zapasową</string>
+    <string name="restore_settings">Przywróć ustawienia</string>
     <string name="libre">Libre</string>
     <string name="__data_source_disabled">\n WYŁĄCZONE ŹRÓDŁO DANYCH</string>
     <string name="data_source_is_set_to_">Źródło danych jest ustawione na: </string>
     <string name="__do_you_want_to_change_settings_or_start_sensor">\n\nChcesz zmienić ustawienia czy uruchomić czujnik?</string>
     <string name="change_settings">Zmień ustawienia</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Czy chcesz usunąć i zresetować kalibracje dla tego czujnika?</string>
+    <string name="sensor_stop_confirm">Czy chcesz zatrzymać czujnik?</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Masz włączoną starą eksperymentalną opcję przewidywania glikemii.\n\nTo NIE jest zalecane i może wiele popsuć.\n\nCzy mogę ją dla Ciebie wyłączyć?</string>
     <string name="settings_issue">Problem z ustawieniami!</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Czy chcesz użyć tej zsynchronizowanej wartości stężenia glukozy we krwi do kalibracji?\n\n(możesz zmienić kiedy to okno dialogowe jest wyświetlane w Ustawieniach)</string>
@@ -1384,4 +1396,19 @@
     <string name="enable_streaming_dialog_dont_ask_again">Nie pytaj ponownie</string>
     <string name="enable_streaming_dialog_text">Czy chcesz połączyć xDrip z tym czujnikiem? To spowoduje wyłączenie alarmów w czytniku i oficjalnej aplikacji LibreLink. Naciśnij tak i zeskanuj ponownie, aby połączyć się (wybierz opcję nie łącz, jeśli chcesz uruchomić xDrip ze zmodyfikowaną aplikacją)</string>
     <string name="enable_streaming_dialog_title">Łączenie czujnika Libre z Bluetooth</string>
+    <string name="title_widget_hide_graph">Ukryj wykres widżetu</string>
+    <string name="title_multiple_insulin_types_settings">Wiele rodzajów insuliny</string>
+    <string name="title_multiple_insulin_types">Wiele rodzajów insuliny</string>
+    <string name="no_i_really_know">Nie, naprawdę wiem, co robię</string>
+    <string name="use_for_calibration">Czy użyć %s do kalibracji?</string>
+    <string name="no_never">NIE, nigdy</string>
+    <string name="start_sensor_confirmation">Źródło danych jest ustawione na: %s\n\nCzy chcesz zmienić ustawienia lub uruchomić czujnik?</string>
+    <string name="could_not_find_blood_data">Nie można znaleźć danych z badań krwi!! %s</string>
+    <string name="not_getting_readings">Nie uzyskuje żadnych odczytów.</string>
+    <string name="noise_workings_noise">Szum: %s</string>
+    <string name="snoozing_due_button_press">Usypianie alarmu z powodu naciśnięcia przycisku głośności</string>
+    <string name="share_database">Udostępnij bazę danych...</string>
+    <string name="message_variant">Warianty xDrip+ pozwalają na zainstalowanie wielu aplikacji jednocześnie. Do zastosowań zaawansowanych lub żeby umożliwić jednoczesną instalacje xDrip-Experimental i xDrip+.\n\nZ wariantami, niektóre rzeczy mogą nie działać poprawnie, ponieważ jedna lub druga aplikacja posiada wyłączny dostęp, na przykład do parowania bluetooth. Opinie i raporty o błędach dotyczące wariantów są mile widziane!</string>
+    <string name="expires_unknown">Wygasa: ???</string>
+    <string name="sensor_expired">WYGASŁ!</string>
 </resources>

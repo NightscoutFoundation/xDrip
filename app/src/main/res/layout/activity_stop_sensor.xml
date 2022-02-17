@@ -43,7 +43,7 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="STOP SENSOR"
+                android:text="@string/stop_sensor"
                 android:id="@+id/stop_sensor"
                 android:layout_toEndOf="@+id/sensor_age_container"
                 android:layout_alignParentBottom="true"

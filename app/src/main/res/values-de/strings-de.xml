@@ -108,7 +108,6 @@
     <string name="toast_crash">Da ist etwas schief gegangen :( Ein Bericht über das Problem wurde an die Entwickler versendet.</string>
     <string name="taskerConfigInstruction">Einfach mit einem Klick auf den Haken bestätigen. Die Konfigurationszeile muss nicht geändert werden.</string>
     <string name="taskerConfiguration">Tasker-Konfiguration</string>
-    <string name="finish_preferences_activity">fertige Einstellungen_Aktivität</string>
     <string name="add_widget">Widget hinzufügen</string>
     <string name="title_activity_alert_list">Liste der Warnungen</string>
     <string name="speaktreatment">Behandlung sprechen</string>
@@ -316,8 +315,8 @@
     <string name="space_units">" Einheiten"</string>
     <string name="units">Einheiten</string>
     <string name="carbs">Kohlenhydrate</string>
-    <string name="when">wann</string>
-    <string name="speak_your_treatment">Behandlung per Sprache zB:\nxx Einheiten Insulin / xx Gramm Kohlehydrate</string>
+    <string name="when">wann (HHMM)</string>
+    <string name="speak_your_treatment">Behandlung per Sprache eingeben, z. B.\nxx Einheiten Insulin / xx Gramm Kohlenhydrate</string>
     <string name="speech_recognition_is_not_supported">Die Spracherkennung wird nicht unterstützt</string>
     <string name="treatment_note">Behandlungsnotiz</string>
     <string name="accessibility_description">xDrip+ verwendet die Eingabehilfe nur, wenn das Gerät gesperrt ist. Das ist wahrscheinlich nur nützlich, wenn du ein Smartphone mit \"always on\" Feature besitzt und dieses aktiviert hast. Sonst gibt es kein Zusammenwirken zwischen xDrip+ und Android.</string>
@@ -376,7 +375,7 @@
     <string name="search">Suche</string>
     <string name="reset_all_language_data">Spracheinstellungen zurücksetzen</string>
     <string name="show_only_customized_entries">Nur modifizierte Einträge anzeigen</string>
-    <string name="settings_on_external_storage">Einstellungen auf externem Speicher</string>
+    <string name="settings_on_external_storage">Einstellungen laden/speichern</string>
     <string name="get_notified_of_new_apk_releases">Nachricht bei neuer APK Version</string>
     <string name="choose_stable_beta_or_alpha_releases">Stable-, Beta- oder Alpha-Versionen für Updates wählen</string>
     <string name="web_feedback_form_for_sending_messages">Web Feedback-Formular für Nachrichten und Bewertungen an die Entwickler</string>
@@ -849,6 +848,7 @@
     <string name="blukon">BluCon</string>
     <string name="tomato">Tomato</string>
     <string name="bubble">Bubble</string>
+    <string name="atom">Atom</string>
     <string name="use_gravity_sensor_to_rotate_items">Verwende Schwerkraftsensor um Ansicht zu drehen</string>
     <string name="low_bridge_battery">Niedrige Transmitter Batterie</string>
     <string name="reminders">Erinnerungen</string>
@@ -901,7 +901,7 @@
     <string name="bluereader_turnoff_sum">Schalte den blueReader aus, wenn die Batterie unter den eingestellten Wert sinkt</string>
     <string name="bluereader_turnoff">Sicherheitsauschaltung</string>
     <string name="blueReader_turnoffvalue">Wert in %</string>
-    <string name="blueReader_turnoffvalue_sum">unter dem der Bluereader ausgeschaltet wird</string>
+    <string name="blueReader_turnoffvalue_sum">unter dem der blueReader ausgeschaltet wird</string>
     <string name="days">tage</string>
     <string name="bluereaderoff">blueReader wird ausgeschaltet, da die Batterie folgenden Wert unterschreitet: </string>
     <string name="bluereader_position">Bitte Positionierung des BlueReaders auf dem Sensor prüfen!</string>
@@ -1031,9 +1031,8 @@
     <string name="summary_Probe_Bluetooth_services_on_every_connect">Teste Bluetooth-Dienste bei jeder Verbindung</string>
     <string name="title_Always_discover_services">Dienste immer ermitteln</string>
     <string name="summary_Only_suitable_for_phones_which_support_automatic_pairing">Nur sinnvoll bei Smartphones welche automatisches Pairing unterstützen</string>
-    <string name="title_Allow_blucon_unbonding">Erlaube BlueCon trennung</string>
+    <string name="title_Allow_blucon_unbonding">Erlaube BlueCon-Trennung</string>
     <string name="summary_Suppress_the_ugly_state_message_if_Problem_appears">Unterdrücke die Ugly-State-Nachricht wenn es auftritt</string>
-    <string name="title_supress_ugly_state_message">Unterdrücke Ugly-State-Nachricht</string>
     <string name="summary_write_Battery_Information_for_additional_analytic">Schreibe Batterie-Informationen des BlueReaders für zusätzliche Analysen in eine Datei. Bitte aktiviere das nur wenn ein Entwickler dich dazu auffordert!</string>
     <string name="title_Batterylog">Batterie-Log</string>
     <string name="summary_Choose_to_display_the_bridge_battery_level">Auswählen zum Anzeigen des Transmitter-Batterie-Levels</string>
@@ -1187,7 +1186,7 @@
     <string name="title_tidepool_dev_servers">Integration (Test) Server verwenden</string>
     <string name="title_tidepool">Tidepool</string>
     <string name="show_help">Hilfe anzeigen</string>
-    <string name="load_save_settings_on_sdcard">Einstellungen auf SD-Karte laden / speichern</string>
+    <string name="load_save_settings_on_sdcard">Einstellungen von/auf SD-Karte laden/speichern</string>
     <string name="delete_all_bg_readings">Alle BG-Werte löschen</string>
     <string name="debugging_test_feature">Debugging-Testfunktion</string>
     <string name="sync_treatments">Synchronisiere Behandlungen</string>
@@ -1267,7 +1266,6 @@
     <string name="title_lefun_screen_mac_address">MAC-Adresse anzeigen</string>
     <string name="summary_allow_samsung_workaround">Verwende Workarounds, um abweichendes Android-Verhalten bei Samsung-Geräten zu vermeiden. Ohne dies erhalten Datensammler normalerweise keine Daten.</string>
     <string name="title_allow_samsung_workaround">Samsung Workarounds</string>
-    <string name="summary_medtrum_use_native">Verwenden Sie für die Primärübertragung die Senderkalibrierung anstelle von xDrip</string>
     <string name="title_medtrum_use_native">Medtrum Native</string>
     <string name="summary_medtrum_a_hex">Wert des Hex-Diagnosetests</string>
     <string name="title_medtrum_a_hex">Medtrum Debug</string>
@@ -1294,7 +1292,6 @@
     <string name="title_using_g6">Unterstützung für G6</string>
     <string name="summary_ob1_g5_allow_resetbond">Der OB1 Kollektor kann die Kopplung aufheben, wenn er glaubt, dass die Verschlüsselung fehlgeschlagen ist. Wenn Unpairing zum Problem wird, deaktivierebbdiese Option. Wenn du danach die Verbindung vollständig verlierst, stelle sicher, dass sie aktiviert ist.</string>
     <string name="title_ob1_g5_allow_resetbond">OB1-Entkoppelung erlauben</string>
-    <string name="summary_ob1_initiate_bonding_flag">Der OB1-Kollektor kann eine Verklebung initiieren.</string>
     <string name="title_ob1_initiate_bonding_flag">OB1 Verbindungsaufbau erlauben</string>
     <string name="title_old_g5_options">Alte G5 Kollektor-Einstellungen</string>
     <string name="title_g5g6_battery_options">G5/G6 Akku-Optionen</string>
@@ -1314,7 +1311,6 @@
     <string name="summary_show_smb_icons">Den Graph durch Symbole für kleine Boli aufräumen</string>
     <string name="title_show_smb_icons">Zeige Micro-Bolus-Symbole</string>
     <string name="summary_show_medtrum_secondary">Zeige alternative Glukosepunkte</string>
-    <string name="title_show_medtrum_secondary">Medtrum Sekundär</string>
     <string name="summary_illustrate_backfilled_data">Kennzeichne nachgetragene Daten im Graph</string>
     <string name="title_illustrate_backfilled_data">Zeige nachgetragene Daten</string>
     <string name="summary_high_priority_notifications">Zeige Benachrichtigungen und Graph oben (auch auf Sperrbildschirm sinnvoll)</string>
@@ -1352,10 +1348,7 @@
     <string name="title_plus_whole_house">Whole-House</string>
     <string name="summary_libre_whole_house_collector">Dieses Telefon wird ein Collector im Whole-House-Netzwerk sein</string>
     <string name="title_libre_whole_house_collector">Libre-Whole-House</string>
-    <string name="summary_xdrip_plus_desert_sync_settings">Off-Raster folgen</string>
-    <string name="title_xdrip_plus_desert_sync_settings">Wüsten-Sync</string>
     <string name="summary_desert_sync_enabled">Lokale Synchronisation (ohne Internet) aktiviert</string>
-    <string name="title_desert_sync_enabled">Wüsten-Sync</string>
     <string name="title_desert_sync_master_ip">Master-IP-Adresse</string>
     <string name="summary_send_sync_show_qr">Barcode für Follower um diese automatisch zu konfigurieren</string>
     <string name="title_send_sync_show_qr">Zeige QR-Code</string>
@@ -1383,8 +1376,6 @@
     <string name="title_pendiq_pin">Pen-Pincode</string>
     <string name="summary_use_notification_channels">Verwende die Android 8+ Benachrichtigungskanal-Funktion</string>
     <string name="title_use_notification_channels">Benachrichtigungskanäle</string>
-    <string name="summary_ongoing_notification_channel">Kann bei einigen Geräten Umgebungsanzeigen benachrichtigungen auslösen. Muss getestet werden!</string>
-    <string name="title_ongoing_notification_channel">Verwenden Sie den laufenden Benachrichtigungskanal</string>
     <string name="summary_notification_channels_grouping">Ob Benachrichtigungen gruppiert werden sollen. Inkompatibel mit \"Nummern-Symbol im Benachrichtigungsbereich\"</string>
     <string name="title_notification_channels_grouping">Gruppiere Benachrichtigungen</string>
     <string name="summary_delay_ascending_3min">Um einen ansteigenden Alarmton zu nutzen, musst Du den Alarmton 3 Minuten verzögert starten. Die Vibration startet - sofern aktiviert - unabhängig von dieser Einstellung direkt beim Auslösen des Alarms.</string>
@@ -1408,7 +1399,6 @@
     <string name="nothing_found">nichts gefunden</string>
     <string name="do_not_hit_start_long">Sensor nicht starten, falls der Sensor noch nicht platziert und der Transmitter verbunden ist.</string>
     <string name="calibration_graph_no_calibration">Kalibrierungsdiagramm (keine Kalibration)</string>
-    <string name="calibration_plugin_header">kalibrierungs-Plugin-Header</string>
     <string name="usb_device_was_not_recognized">USB-Gerät wurde nicht erkannt</string>
     <string name="followers_name">Name des Followers:</string>
     <string name="your_display_name">Dein angezeigter Name:</string>
@@ -1421,7 +1411,6 @@
     <string name="title">Titel</string>
     <string name="summary">Zusammenfassung</string>
     <string name="auto_refresh">Automatisch aktualisieren</string>
-    <string name="set_up_desert_sync_follower">Desert Sync-Follower einrichten</string>
     <string name="version">Version:</string>
     <string name="sensor_start">Sensorstart:</string>
     <string name="plug_in_your_dexcom_reciever">Schließe den Dexcom-Empfänger an, tippe diesen Button und drücke die Daumen!</string>
@@ -1429,7 +1418,6 @@
     <string name="progress">Fortschritt</string>
     <string name="bluetooth_device">Bluetooth-Gerät:</string>
     <string name="transmitter_battery_status">Transmitter-Batterie:</string>
-    <string name="top">Oben</string>
     <string name="connect_device_usb_otg">Schließe dein Gerät bitte per USB OTG Kabel an.</string>
     <string name="connection_status">Verbindungsstatus:</string>
     <string name="range_in_high_low">Ziel: (innerh./hoch/tief)</string>
@@ -1449,7 +1437,7 @@
     <string name="classic_simple">Klassisch einfach</string>
     <string name="libre">Libre</string>
     <string name="what_type_of_libre_bridge_device_do_you_use">Welche Art von Libre-Transmitter verwendest du?</string>
-    <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Bluetooth-Transmitter: Blucon, Bubble, LimiTTer, Bluereader, Tomato etc.</string>
+    <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Bluetooth Transmitter: Blucon, Bubble, LimiTTer, Bluereader, Tomato etc.</string>
     <string name="libre_patched">Libre2 gepatcht</string>
     <string name="librealarm_app_using_sony_smartwatch">LibreAlarm App: verwende Sony Smartwatch</string>
     <string name="__data_source_disabled">\n DATENQUELLE DEAKTIVIERT</string>
@@ -1467,7 +1455,6 @@
     <string name="enable_automatic_calibration">Automatische Kalibrierung aktivieren</string>
     <string name="entered_blood_tests_which_occur_during_flat_trend_periods_can_automatically_be_used_to_recalibrate_after_20_minutes_this_should_provide_the_most_accurate_method_to_calibrate_with__do_you_want_to_enable_this_feature">Eingegebene blutige Messungen bei flacher Trendkurve können nach 20 Minuten automatisch zur Kalibrierung verwendet werden. Dies sollte die genaueste Methode zur Kalibrierung sein.\n\nMöchtest du diese Funktion aktivieren?</string>
     <string name="yes_enable">JA, aktivieren</string>
-    <string name="blood_test_action">Bluttest Aktion</string>
     <string name="what_would_you_like_to_do">Was möchtest du tun?</string>
     <string name="nothing">Nichts</string>
     <string name="are_you_sure_you_want_to_delete_this_blood_test_result">Bist du sicher, dass du diese blutige Messung entfernen möchtest?</string>
@@ -1560,4 +1547,15 @@
     <string name="enable_streaming_dialog_text">Möchtest du xDrip mit diesem Sensor verbinden? Das Libre Lesegerät und die LibreLink App werden dann keine Alarme mehr empfangen. Drücke \"Ja\" und scanne erneut für eine Verbindung (wähle \"nicht verbinden\", wenn du xDrip mit der gepatchten Libre App nutzen möchtest)</string>
     <string name="enable_streaming_dialog_title">Verbinde Libre-Sensor mit Bluetooth</string>
     <string name="without_camera_permission_cannot_scan_barcode">Ohne Kamera-Berechtigung können wir keinen Barcode scannen</string>
+    <string name="summary_widget_hide_graph">Graph auf Widgets ausblenden (wird beim nächsten Wert aktiv)</string>
+    <string name="title_widget_hide_graph">Graph auf Widgets ausblenden</string>
+    <string name="no_i_really_know">Nein, ich weiß wirklich, was ich tue</string>
+    <string name="no_never">Nein, niemals</string>
+    <string name="auto_starting_sensor">Starte Sensor automatisch!</string>
+    <string name="sensor_not_started">Sensorsitzung scheint nicht gestartet zu sein</string>
+    <string name="not_getting_readings">Keine Werte erhalten.</string>
+    <string name="snoozing_due_button_press">Alarm schlummert wegen Drücken der Lautstärketaste</string>
+    <string name="title_variant">Du verwendest eine xDrip+-Variante</string>
+    <string name="expires_unknown">Läuft ab: ???</string>
+    <string name="sensor_expired">Abgelaufen!</string>
 </resources>

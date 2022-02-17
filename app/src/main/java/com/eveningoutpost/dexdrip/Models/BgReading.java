@@ -968,6 +968,8 @@ public class BgReading extends Model implements ShareUploadableBg {
         final ProcessInitialDataQuality.InitialDataQuality idq = ProcessInitialDataQuality.getInitialDataQuality(uncalculated);
         if (!idq.pass) {
             UserError.Log.d(TAG, "Data quality failure for double calibration: " + idq.advice);
+        } else {
+            UserError.Log.d(TAG, "Data quality allows double calibration.");
         }
         return idq.pass || Pref.getBooleanDefaultFalse("bypass_calibration_quality_check");
     }
@@ -1071,7 +1073,7 @@ public class BgReading extends Model implements ShareUploadableBg {
 
                        // TODO can these methods be unified to reduce duplication
                                                                // TODO remember to sync this with wear code base
-    public static synchronized BgReading bgReadingInsertFromG5(double calculated_value, long timestamp, String sourceInfoAppend) {
+    public static synchronized BgReading bgReadingInsertFromG5(double calculated_value, final long timestamp, String sourceInfoAppend) {
 
         final Sensor sensor = Sensor.currentSensor();
         if (sensor == null) {

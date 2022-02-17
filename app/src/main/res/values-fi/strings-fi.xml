@@ -1562,4 +1562,5 @@
     <string name="enable_streaming_dialog_text">Haluatko yhdistää tämän sensorin xDripiin? Tämä estää hälytykset Libren lukijassa ja LibreLinkissä. Paina Kyllä ja skannaa uudelleen yhdistääksesi (valitse Älä yhdistä, jos haluat käyttää xDripiä muokatun LibreLink-sovelluksen kanssa)</string>
     <string name="enable_streaming_dialog_title">Yhdistetään Libre-sensori Bluetoothiin</string>
     <string name="without_camera_permission_cannot_scan_barcode">Ilman kameran lupaa emme voi skannata viivakoodia</string>
+    <string name="no_never">Ei, Ei Koskaan</string>
 </resources>

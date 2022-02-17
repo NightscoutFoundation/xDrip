@@ -1507,4 +1507,6 @@
     <string name="enable_streaming_dialog_text">לחבר את xDrip לחיישן הזה? פעולה זו תעצור את Libre Reader ואת Libre Link מלקבל התראות. לחצו כן וסרקו שוב כדי לחבר (בחרו \"אל תתחבר\" אם ברצונכם להפעיל את xDrip עם אפליקצייה עם patch)</string>
     <string name="enable_streaming_dialog_title">חיבור חיישן ליברה בבלוטות\'</string>
     <string name="without_camera_permission_cannot_scan_barcode">ללא הרשאת מצלמה לא ניתן לסרוק את הברקוד</string>
+    <string name="external_status_strings_eg_tbr">מחרוזת סטטוס חיצונית, כדוגמאת: זמן נמוך מהטווח (TBR) ממערכת AAPS</string>
+    <string name="accept_external_status">קבל סטטוס חיצוני</string>
 </resources>
