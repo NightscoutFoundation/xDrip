@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_activity_bluetooth_scan">Bluetoothi skannimine</string>
+    <string name="connected">Ühendatud</string>
+    <string name="disconnected">Ühendus katkestatud</string>
+    <string name="menu_scan">Skanneeri</string>
+    <string name="menu_stop">Peata</string>
+    <string name="menu_refresh">Värskenda</string>
+    <string name="menu_export_database">Ekspordi andmebaas</string>
+    <string name="menu_export_csv_sidiary">Ekspordi CSV (SiDiary formaat)</string>
+    <string name="menu_import_db">Taasta andmebaas</string>
+    <string name="error_bluetooth_not_supported">Viga: See seade ei toeta bluetooth\'i</string>
+    <string name="unknown_device">Tundmatu seade</string>
+    <string name="connecting_to_device">Seadmega ühendamine</string>
+    <string name="title_activity_raw_data_table">Töötlemata andmete tabel</string>
+    <string name="title_activity_calculated_data_table">Arvutatud andmete tabel</string>
+    <string name="title_activity_start_new_sensor">Käivita uus sensor</string>
+    <string name="title_activity_new_sensor_location">Uue sensori asukoht</string>
+    <string name="title_activity_stop_sensor">Peata sensor</string>
+    <string name="navigation_drawer_open">Ava navigatsiooni riba</string>
+    <string name="navigation_drawer_close">Sulge navigatsiooni riba</string>
+    <string name="title_activity_usb_connected">USB ühenduse tegevused</string>
+    <string name="snooze">Vaigista</string>
+    <string name="snooze_hint">Vaigista alarm x minutiks</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Tühista</string>
+    <string name="no">Ei</string>
+    <string name="pref_sensor_location_dont_ask_again">Ära küsi seda enam uuesti</string>
+    <string name="title_activity_error">"Vigade ja sündmuste nimekiri"</string>
+    <string name="title_activity_main">Peamine tegevus</string>
+    <string name="title_activity_edit_alert">Muuda alarme</string>
+    <string name="title_activity_double_calibration">Esialgne kalibreerimine</string>
+    <string name="pref_header_cloud_storage">Pilvesalvestus</string>
+    <string name="auto_configure_title">Automaatne seadistamine</string>
+    <string name="prefs_auto_config_summary">Automaatne seadistamine kasutades triipkoodi.</string>
+    <string name="scan_share2_barcode">Skaneeri jagatud triipkoodi</string>
+    <!-- MongoDB Settings -->
+    <string name="pref_title_mongodb">MongoDB</string>
+    <string name="pref_summary_mongodb_enabled">Otsene andmebaasi üleslaadimine, mitte soovitatav Nightscout jaoks</string>
+    <string name="pref_title_mongodb_uri">URI</string>
+    <string name="pref_dialog_mongodb_uri">Sisesta MongoDB URI\"</string>
+    <string name="pref_message_mongodb_uri">Asenda näidisväärtused sulgudes {} enda õigete väärtustega</string>
+    <string name="pref_default_mongodb_uri">mongodb://{user}:{password}@{host}.mongolab.com:{11111}/{database}</string>
+    <string name="pref_title_mongodb_collection">Andmekogu nimetus</string>
+    <string name="pref_dialog_mongodb_collection">Sisesta kogu nimi</string>
+    <string name="pref_message_mongodb_collection">See on andmekogumi nimi, kuhu CGM andmed salvestatakse</string>
+    <string name="pref_title_mongodb_device_status_collection">Seadme Nimi kogumi nimi</string>
+    <string name="pref_dialog_mongodb_device_status_collection">Sisesta Seadme Nimi kogumi nimi\"</string>
+    <string name="pref_message_mongodb_device_status_collection">See on kogumi nimi, kus salvestatakse seadme aku info ja muud andmed</string>
+    <!-- API Settings -->
+    <string name="pref_title_api">Nightscout Sync (REST-API)</string>
+    <string name="pref_title_api_enabled">Lubatud</string>
+    <string name="pref_summary_api_enabled">REST API on tavaline viis ühenduda Nightscout\'iga</string>
+    <string name="pref_title_api_url">Baas URL (veebiaadress)</string>
+    <string name="pref_dialog_api_url">Sisesta baas API URL (veebiaadress)</string>
+    <string name="pref_message_api_url">See on põhi URL (veebi aadress), kuhu üleslaadija (info saatja) automaatselt andmed lisab POST jaoks. API_SECRET parool serveris peab olema sama ka siin seades.</string>
+    <string name="pref_default_api_url">https://yourpassphrase@{YOUR-SITE}.azurewebsites.net/api/v1/</string>
+    <!-- wifi Settings -->
+    <string name="wifi_recievers_dialog_message">Komaga eraldatud nimekiri IP:port aadressidest (näiteks: 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
+    <string name="wifi_recievers_dialog_title">Sisesta vastuvõtja IP aadressid ja pordid (kaasa arvatud mongodb aadressid, kui on vaja)</string>
+    <!-- Location Settings -->
+    <string name="location_not_found_title">Asukoht pole lubatud</string>
+    <string name="location_not_found_message">Et bluetoothi tuvastamine töötaks uuemates seadmetes, peab asukoht olema lubatud. xDrip ei jälgi teie asukohta, välja arvatud valikulise hädaabisõnumi funktsiooniga</string>
+    <string name="location_yes">Luba</string>
+    <!-- broadcast settings -->
+    <string name="pref_title_broadcast_enabled">Edastage kohapeal</string>
+    <string name="pref_summary_broadcast_enabled">Lubage andmete kohalik edastus, et teised rakendused (nt NightWatch) saaksid uusi väärtusi kuulata</string>
+    <string name="title_activity_share_test">Testi jagamine</string>
+    <!-- pebble settings -->
+    <string name="pref_pebble_display_trend">Kuva trendijoont</string>
+    <string name="pref_pebble_display_high_line">Kuva kõrge joon</string>
+    <string name="pref_pebble_display_low_line">Kuva madal joon</string>
+    <!-- Amazfit Settings -->
+    <string name="pref_amazfit_enable">Luba</string>
+    <string name="pref_amazfit_tile">Amazfit teenus</string>
+    <string name="pref_amazfit_BG_alert_enable">Luba</string>
+    <string name="pref_amazfit_other_alert_enable_summary">Saada teisi teavitusi nutikellale</string>
+    <string name="pref_amazfit_other_alert_enable">Luba</string>
+    <string name="pref_amazfit_other_alert_title">Teised teavitused</string>
+    <string name="pref_amazfit_watchface_graph_dots_title">Kellaplaadi skaala täpid</string>
+    <string name="pref_amazfit_watchface_graph_enable">Luba</string>
+    <string name="pref_amazfit_watchface_graph_title">Kellaplaadi skaala</string>
+    <string name="pref_amazfit_watchface_graph_enable_summary">Näita skaalat kellaplaadi taustal</string>
+    <string name="pref_amazfit_watchface_graph_hours_title">Kellaplaadi skaala</string>
+    <string name="pref_amazfit_widget_graph_hours_title">Vidina graafik</string>
+    <string name="pref_amazfit_widget_graph_enable">Luba</string>
+    <string name="pref_amazfit_widget_graph_title">Vidina graafik</string>
+    <string name="pref_amazfit_watchface_settings">Kellaplaadi seaded (võib vajada rohkem akut)</string>
+    <string name="pref_amazfit_widget_settings">Vidina seaded (võib vajada rohkem akut)</string>
+    <string name="toast_crash">Midagi läks valesti :( saadeti aruanne, mis aitab probleemi lahendada.</string>
+    <string name="add_widget">Lisa vidin</string>
+    <string name="title_activity_alert_list">Hoiatuste loend</string>
+    <string name="title_activity_update">xDrip+ uuendus saadaval</string>
+    <string name="title_activity_display_qrcode">Jaga seadeid QR koodiga</string>
+    <string name="title_activity_send_feed_back">Saada tagasisidet</string>
+    <string name="erase">Kustuta</string>
+    <string name="note_button">Märkmete nupp</string>
+    <string name="share">Jaga</string>
+    <string name="now_start_your_sensor">Nüüd alusta oma sensor või vaata seadeid</string>
+    <string name="till">kuni</string>
+    <string name="in">sees</string>
+    <string name="pref_message_influxdb_uri">Asenda näidisväärtused sulgudes {} enda õigete väärtustega</string>
+    <string name="stop_sensor">Peata sensor</string>
+    <string name="initial_calibration">Esialgne kalibreerimine</string>
+    <string name="bluetooth_scan">Bluetoothi skannimine</string>
+    <!-- trend arrow for speak -->
+    <string name="enable_streaming_dialog_dont_ask_again">Ära küsi seda enam uuesti</string>
+</resources>
