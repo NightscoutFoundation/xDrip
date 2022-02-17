@@ -41,6 +41,7 @@
     <string name="pref_share2_scan_barcode_summary">Nebo naskenovat čárový kód na přijímači</string>
     <!-- MongoDB Settings -->
     <string name="pref_title_mongodb">MongoDB</string>
+    <string name="pref_title_mongodb_uri">URI</string>
     <string name="pref_dialog_mongodb_uri">Vložte MongoDB URI\"</string>
     <string name="pref_message_mongodb_uri">Přepište příklady {} skutečnými hodnotami. Složené závorky odstraňte.</string>
     <string name="pref_default_mongodb_uri">mongodb://{uzivatel}:{heslo}@{dsXXXXXX}.mongolab.com:{XXXXXXX}/{databaze}</string>
@@ -53,6 +54,7 @@
     <!-- API Settings -->
     <string name="pref_title_api">Nahrávání přes API (REST)</string>
     <string name="pref_title_api_enabled">Povoleno</string>
+    <string name="pref_summary_api_enabled">REST API je standardní způsob, jak se připojit k Nightscoutu</string>
     <string name="pref_title_api_url">Základní URL</string>
     <string name="pref_dialog_api_url">Základní URL serveru</string>
     <string name="pref_message_api_url">Toto je pouze základní adresa. Uploader automaticky přidá na konec / pro nahrání dat. API_SECRET a na serveru musí odpovídat vasapisecret nastavení.</string>
@@ -80,8 +82,10 @@
     <string name="pref_amazfit_enable_summary">Povolit podporu AmazFit</string>
     <string name="pref_amazfit_enable">Povolit</string>
     <string name="pref_amazfit_tile">Služba AmazFit</string>
+    <string name="pref_amazfit_BG_alert_enable_summary">Odesílat aktivní výstrahy glykémie do hodinek</string>
     <string name="pref_amazfit_BG_alert_enable">Povolit</string>
     <string name="pref_amazfit_BG_alert_title">Výstrahy glykemie</string>
+    <string name="pref_amazfit_other_alert_enable_summary">Odesílat ostatní výstrahy do hodinek</string>
     <string name="pref_amazfit_other_alert_enable">Povolit</string>
     <string name="pref_amazfit_other_alert_title">Další výstrahy</string>
     <string name="pref_amazfit_watchface_graph_enable">Povolit</string>
@@ -94,7 +98,7 @@
     <string name="speaktreatment">Mluvené ošetření</string>
     <string name="title_activity_update">xDrip+ K dispozici je aktualizace</string>
     <string name="title_activity_display_qrcode">Sdílet nastavení pomocí QR kódu</string>
-    <string name="title_activity_send_feed_back">Poslat zpětnou vazbu k Jamorham</string>
+    <string name="title_activity_send_feed_back">Poslat zpětnou vazbu Jamorhamovi (autor)</string>
     <string name="title_activity_maps">Mapa Parakeetů</string>
     <string name="title_activity_display_preferences">Zobrazit možnosti</string>
     <string name="export_submenu">Možnosti importu/exportu</string>
@@ -218,9 +222,9 @@
     <string name="extra_tags_dialog_title">Další klíčová slova k logování.</string>
     <string name="data_source_settings">Nastavení zdroje dat</string>
     <string name="smart_watch_features">Nastavení hodinek</string>
-    <string name="wear_integration">Integrace Andorid Wear</string>
+    <string name="wear_integration">Integrace s Android Wear</string>
     <string name="send_data_to_android_wear_watch">Odeslat data na Android Wear</string>
-    <string name="android_wear_integration">Android Wear integrace</string>
+    <string name="android_wear_integration">Integrace s Android Wear</string>
     <string name="pref_enable_wearG5">Povolit příjem dat na hodinkách Wear</string>
     <string name="pref_summary_enable_wearG5">Připojit hodinky k BT kolektoru, pokud telefon není v dosahu</string>
     <string name="pref_force_wearG5">Vynutit příjem dat na hodinkách</string>
@@ -241,7 +245,7 @@
     <string name="pref_use_wear_health">Používat zdravotní údaje z hodinek Wear</string>
     <string name="pref_summary_use_wear_health">Sbírat a zobrazovat údaje o počtu kroků, pokud jsou dostupné</string>
     <string name="pebble_integration">Integrace s Pebble</string>
-    <string name="send_data_to_pebble_watchface">Odeslat data na Pebble</string>
+    <string name="send_data_to_pebble_watchface">Odeslat data na Pebble hodinky.</string>
     <string name="pebble_watch_integration">Integrace s hodinkami Pebble</string>
     <string name="standard_or_trend_pebble_watchface">Standardní Watchface nebo s trendem</string>
     <string name="choose_pebble_watchface">Vybrat Pebble Watchface</string>
@@ -364,13 +368,13 @@
     <string name="send_message">Odeslat zprávu</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Prosím napište, co si myslíte o aplikaci obecně</string>
     <string name="preferences_saved_in_sdcard_downloads">Nastavení uložena do SD karty do složky Stažené dokumenty</string>
-    <string name="could_not_write_to_sdcard_check_perms">Nelze zapsat na SD kartu</string>
+    <string name="could_not_write_to_sdcard_check_perms">Nelze zapsat na SD kartu - zkontrolujte oprávnění?</string>
     <string name="loaded_preferences_restarting">Nastavení načtena! Restartuji</string>
     <string name="could_not_load_preferences_check_pers">Nelze načíst preferencí - kontrolní oprávnění nebo soubor?</string>
     <string name="external_storage_not_writable">Nelze zapsat do externího úložiště</string>
     <string name="successfully_deleted">Úspěšně odstraněno</string>
     <string name="deletion_problem">Chyba při mazání</string>
-    <string name="sdcard_not_writable_cannot_save">Na SD kartu se nedá zapisovat - nezle uložit</string>
+    <string name="sdcard_not_writable_cannot_save">Na SD kartu se nedá zapisovat - nelze uložit</string>
     <string name="sdcard_not_readable">SD karta není čitelná</string>
     <string name="loading_settings_from_xdrip_mainline">Nastavení načítání z xDrip hlavního stromu</string>
     <string name="warning_settings_from_xdrip_and_plus_exist">Nastavení varování od xDrip a xDrip+ existovat - nakládka xDrip+</string>
@@ -632,12 +636,12 @@
     <string name="nfc_options">Volby pro senzory založené na NFC skenování telefonem</string>
     <string name="nfc_scan_features">Možnosti NFC skenování</string>
     <string name="use_nfc_feature">Používat NFC</string>
-    <string name="allow_sensor_scanning">Všechny senzory musí být skenované při otevřené aplikaci. Historická data budou doplněna. Riskatní! Může to zničit senzor. Otestujete kompatibilitu telefonu na senzoru před vypršením funčnosti. Byli jste varováni!</string>
+    <string name="allow_sensor_scanning">Zapnout skenování senzorů při otevřené aplikaci. Historická data budou doplněna. Experimentální! Může to zničit senzor. Otestujete kompatibilitu telefonu na senzoru těsně před jeho expirací. Byli jste varováni!</string>
     <string name="sensor_age_or_expiry">Stáří senzoru nebo expirace</string>
     <string name="show_expiry_time">Zobrazovat expiraci senzoru na bázi 14,5 dne</string>
     <string name="show_sensor_age">Zobrazovat stáří senzoru na hlavní obrazovce</string>
     <string name="change_sensor_total_days">Změnit počet dnů senzoru</string>
-    <string name="nfc_scanning_xdrip_open">NFC skenování bude provedeno, pokud je xDrip+ viditelný</string>
+    <string name="nfc_scanning_xdrip_open">NFC skenování bude provedeno pokud je xDrip+ viditelný</string>
     <string name="nfc_scanning_launcher">NFC skenování bude také možné z launcheru</string>
     <string name="scan_when_app_closed">Skenovat pokud nejsme v xDrip+</string>
     <string name="vibrate_scanning_status">Vibrovat při skenování</string>
@@ -766,6 +770,7 @@
     <string name="are_you_sure">Jste si jisti?</string>
     <string name="bluetooth_wixel">Bluetooth Wixel</string>
     <string name="parakeet_wifi">Parakeet / WiFi</string>
+    <string name="other">Ostatní</string>
     <string name="which_software_is_the_wixel_running">Jaký software používá Wixel?</string>
     <string name="hour_format">%s hodin</string>
     <string name="enter_your_transmitter_id_exactly">Zadejte ID vašeho vysílače přesně tak, jak je vytištěno</string>
@@ -796,9 +801,15 @@
     <string name="device_inactivity">Neaktivita zařízení</string>
     <string name="d_selected_contacts_for_text_messages_format">%d vybraných kontaktů pro nouzové zprávy</string>
     <string name="select_device">Vyberte zařízení</string>
+    <string name="summary_If_you_plan_to_only_use_a_Wear_collector_and_never_your_phone">Pokud chcete používat pouze Wear kolektor a nikdy váš telefon.</string>
+    <string name="title_Only_use_Wear">Použít pouze Wear</string>
+    <string name="summary_Show_Bolus_Wizard_Preview_Insulin_value_on_watch_when_appropriate">Zobrazit v případě potřeby BWP (Bolus Wizard Preview) hodnotu inzulínu na hodinkách</string>
+    <string name="title_Display_BWP_Insulin">Zobrazit BWP inzulín</string>
     <string name="title_Heart_Rate_Sensor">Senzor tepové frekvence</string>
     <string name="title_Accept_Calibrations">Potvrdit kalibrace</string>
     <string name="title_xDrip_Web_Service">xDrip Web Service</string>
+    <string name="summary_Display_status_from_other_apps_like_AndroidAPS">Zobrazit stav z jiných aplikací jako je AndroidAPS</string>
+    <string name="title_External_Status">Externí stav</string>
     <string name="summary_Display_pump_status_information_if_available">Zobrazit informace o stavu pumpy, pokud jsou k dispozici</string>
     <string name="title_Pump_Status">Stav pumpy</string>
     <string name="title_Carb_Insulin_Ratio">Inzulino-sacharidový poměr</string>
@@ -872,7 +883,7 @@
     <string name="not_today">Dnes ne</string>
     <string name="need_contacts_permission_to_select_message_recipients">Je zapotřebí oprávnění k přístupu ke kontaktům</string>
     <string name="manual_overwrite_not_possible">Manuální přepsání není možné!</string>
-    <string name="upload_even_when_using_mobile_data">Nahrát i přes mobilní data</string>
+    <string name="upload_even_when_using_mobile_data">Nahrávat i přes mobilní data</string>
     <string name="use_mobile_data">Použít mobilní data</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Kalibrovat bez ptaní, pokud jsou příhodné podmínky (experimentální)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatická kalibrace</string>
@@ -882,6 +893,7 @@
     <string name="show_help">Zobrazit nápovědu</string>
     <string name="view_old_error_log">Zobrazit starý protokol chyb</string>
     <string name="return_to_home_screen">Návrat na domovskou obrazovku</string>
+    <string name="title_miband">MiBand</string>
     <string name="title_miband_screen_battery">Zobrazovat baterii</string>
     <string name="title_miband_show_date">Zobrazovat datum na obrazovce</string>
     <string name="title_miband_units">Jednotky</string>
@@ -957,6 +969,7 @@
     <string name="version">Verze:</string>
     <string name="sensor_start">Start senzoru:</string>
     <string name="bluetooth_device">Bluetooth zařízení:   </string>
+    <string name="connection_status">Stav připojení:</string>
     <string name="absolute_s">Celkem #s:</string>
     <string name="median_bg">Medián glykémií:</string>
     <string name="mean_bg">Průměr glykémií:</string>
@@ -970,7 +983,7 @@
     <string name="__do_you_want_to_change_settings_or_start_sensor">\n\nChcete změnit nastavení nebo spustit senzor?</string>
     <string name="change_settings">Změnit nastavení</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Chcete smazat a resetovat kalibrace pro tento senzor?</string>
-    <string name="sensor_stop_confirm">Chcete zastavit senzor?</string>
+    <string name="sensor_stop_confirm">Opravdu chcete zastavit senzor?</string>
     <string name="use_bg_for_calibration">Použít glykemii pro kalibraci?</string>
     <string name="yes_calibrate">ANO, kalibrovat</string>
     <string name="enable_automatic_calibration">Povolit automatickou kalibraci</string>
@@ -1008,6 +1021,10 @@
     <string name="authentication_failed_wrong_password">Ověřování se nezdařilo. Špatné heslo?</string>
     <string name="collection_summary_ob1_g5_preemptive_restart">Automaticky restartovat senzor dříve, než se zastaví</string>
     <string name="blood_glucose_graph">Graf glykémie</string>
+    <string name="enable_streaming_title">Připojit se k Libre2 senzoru přes Bluetooth</string>
+    <string name="enable_streaming_always_allow">Vždy se připojovat k Libre2 senzorům</string>
     <string name="enable_streaming_ask_each_time">Pokaždé se zeptat</string>
+    <string name="enable_streaming_never">Nikdy se nepřipojovat k Libre2 senzorům</string>
     <string name="enable_streaming_dialog_dont_ask_again">Znovu se neptat</string>
+    <string name="no_never">NE, nikdy</string>
 </resources>

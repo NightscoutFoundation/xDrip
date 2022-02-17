@@ -19,7 +19,6 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.app.UiModeManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -34,7 +33,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -82,7 +80,6 @@ import java.nio.ByteOrder;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -819,10 +816,10 @@ public class DexCollectionService extends Service implements BtCallBack {
     }
 
     @SuppressLint("ObsoleteSdkInt")
-    private static boolean shouldServiceRun() {
+    private boolean shouldServiceRun() {
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) return false;
         final boolean result = (DexCollectionType.hasXbridgeWixel() || DexCollectionType.hasBtWixel())
-                && ((!Home.get_forced_wear() && (((UiModeManager) xdrip.getAppContext().getSystemService(UI_MODE_SERVICE)).getCurrentModeType() != Configuration.UI_MODE_TYPE_WATCH))
+                && ((!Home.get_forced_wear() && !JoH.areWeRunningOnAndroidWear())
                 || PersistentStore.getBoolean(CollectionServiceStarter.pref_run_wear_collector));
         if (d) Log.d(TAG, "shouldServiceRun() returning: " + result);
         return result;

@@ -8,7 +8,7 @@
     <string name="menu_refresh">Obnoviť</string>
     <string name="menu_export_database">Exportovať databázu</string>
     <string name="menu_export_csv_sidiary">Exportovať CSV (formát SiDiary)</string>
-    <string name="menu_import_db">Importovať databázu</string>
+    <string name="menu_import_db">Obnoviť databázu</string>
     <string name="error_bluetooth_not_supported">Chyba: Bluetooth nie je na tomto zariadení podporováné</string>
     <string name="unknown_device">Nerozpoznané zariadenie</string>
     <string name="connecting_to_device">Pripájam sa k zariadeniu</string>
@@ -27,7 +27,7 @@
     <string name="ok">DOBRE</string>
     <string name="cancel">Zrušiť</string>
     <string name="no">Nie</string>
-    <string name="pref_sensor_location_dont_ask_again"> Na toto se už nepýtať</string>
+    <string name="pref_sensor_location_dont_ask_again">Na toto sa ma už nepýtať</string>
     <string name="title_activity_error">"Zoznam chýb a udalostí"</string>
     <string name="title_activity_main">Hlavná obrazovka</string>
     <string name="title_activity_fake_numbers">Vymyslené hodnoty</string>
@@ -62,7 +62,7 @@
     <string name="pref_default_api_url">https://{APIsecert}@{nazov}.azurewebsites.net/api/v1 alebo https://{APIsecert}@{nazov}.herokuapp.com/api/v1</string>
     <!-- wifi Settings -->
     <string name="wifi_recievers_dialog_message">Čiarkami oddelený zoznam IP:port (napríklad 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
-    <string name="wifi_recievers_dialog_title">Vložiť IP adresu a port príjímačov (vrátane MongoDB adresy ak je to potrebné)</string>
+    <string name="wifi_recievers_dialog_title">Zadať IP adresu a port prijímačov (vrátane MongoDB adresy ak je to potrebné)</string>
     <!-- Location Settings -->
     <string name="location_not_found_title">Zisťovanie polohy nie je povolené</string>
     <string name="location_not_found_message">Pre nájdenie Bluetooth zariadení je nutné na najnovších telefónoch povoliť zisťovanie polohy. xDrip ťa nesleduje (s výnimkou prípadnej Emergency Message funkcie) a po vykonaní párovania môžeš povolenie opäť odobrať.</string>
@@ -108,7 +108,7 @@
     <string name="toast_crash">Niečo je nesprávne :( Hlásenie o chybe bolo odoslané, aby mohla byť odstránená.</string>
     <string name="taskerConfigInstruction">Len kliknite na Tick ikonu pre potvrdenie. Nie je potrebné meniť konfiguračný reťazec.</string>
     <string name="taskerConfiguration">Konfigurácia Taskeru</string>
-    <string name="finish_preferences_activity">finish_preferences_activity</string>
+    <string name="finish_preferences_activity">Zatvoriť nastavenia</string>
     <string name="add_widget">Pridať miniaplikáciu</string>
     <string name="title_activity_alert_list">Zoznam výstrah</string>
     <string name="speaktreatment">Vyslov ošetrenie</string>
@@ -134,7 +134,7 @@
     <string name="share">Zdieľať</string>
     <string name="title_activity_profile_editor">Úprava profilov liečby</string>
     <string name="first_use_menu_to_scan">Najskôr použi menu na vyhľadanie BT zariadenia, alebo zmeň v nastaveniach zdroj dát!</string>
-    <string name="first_configure_ip_address">Najskôr nastav IP adresu Wifi wixelu, alebo URL zariadenia Parakeet</string>
+    <string name="first_configure_ip_address">Najskôr nastav IP adresu WiFi Wixelu, alebo URL zariadenia Parakeet</string>
     <string name="now_start_your_sensor">Teraz sputi senzor, alebo prekontroluj nastavenia</string>
     <string name="please_wait_while_sensor_warms_up">Počkaj kým sa senzor zahraje! (</string>
     <string name="minutes_with_bracket">" minút)"</string>
@@ -289,6 +289,7 @@
     <string name="upload_data_to_dex_servers">Nahrávať dáta na servery Dexcom, aby bolo možné ich používať s Dexcom aplikáciami</string>
     <string name="manage_followers">Spravovať nasledovníkov</string>
     <string name="manage_existing_followers">Spravovať existujúcich nasledovníkov a pozvať nových</string>
+    <string name="invite_follower">Pozvať nasledovníka</string>
     <string name="glucose_calibration_and_other_alerts">Výstrahy glykémie, kalibrácie a ďalšie</string>
     <string name="alert_volume_profile">Zvukový profil výstrahy</string>
     <string name="smart_alerting">Inteligentné výstrahy</string>
@@ -772,14 +773,25 @@
     <string name="default_liver_maximum_impact">Štandardný maximálny vplyv pečene (0-1)</string>
     <string name="remote_snoozing">Vzdialený odklad výstrah</string>
     <string name="send_snooze_to_all">Poslať odklad všetkým</string>
+    <string name="confirm_sensing_snooze">Potvrdiť odoslanie stíšenia</string>
     <string name="allow_remotes_silence">Povoliť iným telefónom utíšiť výstrahy na tomto zariadení</string>
     <string name="acccept_remote_snoozes">Prijímať vzdialené stíšenie</string>
+    <string name="send_remote_snooze">Zaslať vzdialené stíšenie</string>
     <string name="wifi_name_must_match">Názov WiFi sa musí zhodovať</string>
+    <string name="confirm_remote_snooze">Potvrdiť vzdialené stíšenie</string>
     <string name="are_you_sure_you_wish_to_snooze_all_other_devices_in_your_sync_group">Si istý, že chceš utíšiť všetky ostatné zariadenia v tvojej synchronizačnej skupine?</string>
     <string name="yes_send_it">ÁNO, odoslať!</string>
+    <string name="xdrip_motion_tracking">xDrip+ Pohybová Aktivita</string>
+    <string name="detect_motion_types">Používať senzory na rozoznanie typu pohybu</string>
+    <string name="enable_motion_tracking">Sledovať pohybovú aktivitu</string>
+    <string name="be_motion_master">Hlavné zariadenie sledovania pohybovej aktivity aj keď je nasledovníkom. Zapni len na jednom!</string>
     <string name="act_as_motion_master">Byť zdrojom pohybu</string>
     <string name="play_sound">Prehrať zvuk</string>
     <string name="repeat_sound">Zopakovať zvuk</string>
+    <string name="blukon">BluCon</string>
+    <string name="tomato">Tomato</string>
+    <string name="bubble">Bubble</string>
+    <string name="atom">Atom</string>
     <string name="reminders">Pripomenutia</string>
     <string name="error">chyba</string>
     <string name="after_installation_of_languages_you_might_have_to">(Po inštalácii jazykov môže byť potrebné kliknúť \"Reštartovať zberač dát\" v Stave systému.)</string>
@@ -823,6 +835,7 @@
     <string name="days">dni</string>
     <string name="offical_msg">Oficiálna aplikácia</string>
     <string name="yes">Áno</string>
+    <string name="xdrip_compatible_features">Vlastnosti xDrip+ %s</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
     <string name="set_data_source_to">Nastaviť zdroj dát na: %s ?</string>
@@ -844,6 +857,7 @@
     <string name="glucose_units_mmol_or_mgdl">Jednotka merania glukózy (mmol/L alebo mg/dL)</string>
     <string name="is_your_typical_glucose_value">Vyber hodnotu, ktorá sa podobá typickej hodnote tvojej glykémie: 5.5 (mmol/L) alebo 100 (mg/dL)</string>
     <string name="settings_updated_to_mmol">Nastavenia zmenené na mmol/L</string>
+    <string name="g6_sensor_code">Kód senzoru G6</string>
     <string name="please_enter_printed_calibration_code">Prosím vložte vytlačený číselný kalibračný kód, 4 číslice, napr: 5678</string>
     <string name="enable_update_checks">Povoliť kontrolu aktualizácií?</string>
     <string name="cancel_alarm">Zrušiť výstrahu?</string>
@@ -1012,6 +1026,7 @@ Je nutné zakázať v prípade, že chcete používať xdrip cifreník. (Požado
     <string name="summary_nsfollow_url">Web adresa, ktorú chceš sledovať</string>
     <string name="title_nsfollow_url">URL pre sledovanie Nightscout</string>
     <string name="summary_nsfollow_download_treatments">Ako nasledovník získavaj dáta aj z Nightscout</string>
+    <string name="title_nsfollow_download_treatments">Stiahnuť ošetrenia</string>
     <string name="title_xdrip_plus_number_icon">Číselná ikona v oznamovacej oblasti</string>
     <string name="summary_do_number_icon_test">Číselná ikona môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predtým ako povolíte túto funkciu!</string>
     <string name="title_do_number_icon_test">Otestovať číselnú ikonu</string>
@@ -1023,6 +1038,9 @@ Je nutné zakázať v prípade, že chcete používať xdrip cifreník. (Požado
     <string name="title_use_number_icon_large">Použiť veľkú číselnú ikonu</string>
     <string name="summary_number_icon_large_arrow">Zobraziť šípky trendov vo veľkej ikone</string>
     <string name="title_number_icon_large_arrow">Ukázať šípku vo veľkej ikone</string>
+    <string name="summary_plus_accept_follower_actions">Ošetrenia, kalibrácie a iné akcie sledujúcich budú prijaté aj na tomto zariadení</string>
+    <string name="title_plus_accept_follower_actions">Prijať akcie sledujúceho</string>
+    <string name="summary_send_sync_show_qr">Čiarový kód pre automatickú konfiguráciiu nasledovateľa</string>
     <string name="summary_inpen_screen">Sťahovanie informácií o dávkach</string>
     <string name="title_inpen_screen">Inzulínové pero InPen</string>
     <string name="title_inpen_enabled">Podpora InPen</string>
@@ -1051,9 +1069,13 @@ Je nutné zakázať v prípade, že chcete používať xdrip cifreník. (Požado
     <string name="collecting">spracovávam...</string>
     <string name="insulin">inzulín</string>
     <string name="nothing_found">žiadne výsledky</string>
+    <string name="followers_name">Meno sledujúceho:</string>
+    <string name="followers_email">Email sledujúceho:</string>
     <string name="description_sensor_location">V budúcnosti bude možné odosielať merania z xDripu jeho vývojárom za účelom vylepšenia kalibračného algoritmu... Ak sa rozhodneš zúčastniť, budeš vyzvaný potvrdiť každú odoslanú dávku dát. Dáta nebudú nikdy oslasné bez tvojho súhlasu. Aby bolo možné lepšie vyladiť kalibráciu bude xDrip od teba chcieť vedieť umiestnenie senzora. Stlač tlačidlo späť pre zrušenie.</string>
     <string name="alerts">Výstrahy</string>
+    <string name="use_internal_downloader">Používať interný sťahovač</string>
     <string name="auto_refresh">Automatická aktualizácia</string>
+    <string name="set_up_desert_sync_follower">Nastaviť Desert Sync nasledovníka</string>
     <string name="version">xDrip ver.:</string>
     <string name="sensor_start">Senzor aktivovaný:</string>
     <string name="plug_in_your_dexcom_reciever">Pripoj Dexcom prijímač, potom stlač toto tlačítko a drž palce!</string>
@@ -1078,6 +1100,7 @@ Je nutné zakázať v prípade, že chcete používať xdrip cifreník. (Požado
     <string name="calibrate">Kalibrovať</string>
     <string name="are_you_sure_you_want_to_delete_this_treatment">Si si istý, že chceš zmazať túto liečbu?</string>
     <string name="no_data_received_from_master_yet">Zatiaľ neboli prijaté dáta z veliaceho mobilu</string>
+    <string name="last_from_master_">Naposledy prijaté: </string>
     <string name="xdrip_will_not_work_below_android_version_42">xDrip+ vyžaduje verziu Android 4.2 a vyššiu</string>
     <string name="xdrip_oop2_not_installed">xDrip+ potrebuje inštaláciu oop2 pre libre2/libre senzory.</string>
     <string name="yes_please">ÁNO, prosím</string>
@@ -1091,6 +1114,8 @@ Je nutné zakázať v prípade, že chcete používať xdrip cifreník. (Požado
     <string name="nfc_invalid_data__try_again">Neplatné NFC dáta - skús znova</string>
     <string name="scanned_ok">Skenovanie OK!</string>
     <string name="restarting_collector">Reštartujem zberač dát!</string>
+    <string name="follower_deleted_succesfully">Nasledovateľ úspešne zmazaný</string>
+    <string name="failed_to_delete_follower">Nepodarilo sa zmazať nasledovateľa</string>
     <string name="authentication_failed_wrong_password">Autentifikácia zlyhala. Nesprávne heslo?</string>
     <string name="blood_glucose_graph">Graf glykémie</string>
     <string name="enable_streaming_summary">pripojiť libre 2 sensor po oscanovaní. Toto znemožní libre čítačke a libre linku prijímať výstrahy</string>

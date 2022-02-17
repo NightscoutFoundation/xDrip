@@ -1,5 +1,9 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import static com.eveningoutpost.dexdrip.Models.JoH.dateTimeText;
+import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
+
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -8,15 +12,19 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Noise;
+import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
+
+import lombok.val;
 
 // created by jamorham
 
 public class BroadcastGlucose {
 
     private static final String TAG = "BroadcastGlucose";
+    private static long lastTimestamp = 0;
 
     public static void sendLocalBroadcast(final BgReading bgReading) {
         if (SendXdripBroadcast.enabled()) {
@@ -27,6 +35,28 @@ public class BroadcastGlucose {
                     return;
                 }
 
+                if (Math.abs(bgReading.timestamp - lastTimestamp) < MINUTE_IN_MS) {
+                    val msg = String.format("Refusing to broadcast a reading with close timestamp to last broadcast:  %s (%d) vs %s (%d) ", dateTimeText(lastTimestamp), lastTimestamp, dateTimeText(bgReading.timestamp), bgReading.timestamp);
+                    if (bgReading.timestamp == lastTimestamp) {
+                        UserError.Log.d(TAG, msg);
+                    } else {
+                        UserError.Log.wtf(TAG, msg);
+                    }
+                    return;
+                }
+
+                val sensor = Sensor.currentSensor();
+                if (sensor == null) {
+                    UserError.Log.wtf(TAG, "Refusing to broadcast a reading as no sensor is active");
+                    return;
+                }
+
+                if (bgReading.timestamp <= sensor.started_at) {
+                    UserError.Log.wtf(TAG, "Refusing to broadcast a reading before sensor start:  " + dateTimeText(sensor.started_at) + " vs " + dateTimeText(bgReading.timestamp));
+                    return;
+                }
+
+                lastTimestamp = bgReading.timestamp;
 
                 BestGlucose.DisplayGlucose dg;
 
@@ -50,6 +80,7 @@ public class BroadcastGlucose {
                 bundle.putString(Intents.EXTRA_NS_NOISE_LEVEL, bgReading.noise);
                 if ((Pref.getBoolean("broadcast_data_use_best_glucose", false))
                         && !bgReading.isBackfilled()
+                        && (msSince(bgReading.timestamp) < MINUTE_IN_MS * 5)
                         && ((dg = BestGlucose.getDisplayGlucose()) != null)) {
 
                     bundle.putDouble(Intents.EXTRA_NOISE, dg.noise);

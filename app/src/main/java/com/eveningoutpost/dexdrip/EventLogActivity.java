@@ -548,9 +548,9 @@ public class EventLogActivity extends BaseAppCompatActivity {
                 case 4:
                     return Color.DKGRAY;
                 case 5:
-                    return Color.parseColor("#ff337777");
+                    return Color.parseColor("#ff337777"); // turquoise
                 case 6:
-                    return Color.parseColor("#ff337733");
+                    return Color.parseColor("#ff337733"); // green
 
                 default:
                     return Color.TRANSPARENT;

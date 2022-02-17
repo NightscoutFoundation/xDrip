@@ -252,13 +252,14 @@
                 android:summary="@string/summary_ob1_initiate_bonding_flag"
                 android:title="@string/title_ob1_initiate_bonding_flag"
                 />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:dependency="use_ob1_g5_collector_service"
-                    android:key="ob1_android10workaround"
-                    android:enabled="false"
-                    android:summary="Some devices need to constantly rebond to the transmitter on others this will make a pop-up every 5 minutes (not used on this version)"
-                    android:title="Android 10 workaround" />
+                <EditTextPreference
+                    android:defaultValue=""
+                    android:inputType="number"
+                    android:maxLength="1"
+                    android:dependency="engineering_mode"
+                    android:key="dex_specified_slot"
+                    android:summary="@string/summary_dex_specified_slot"
+                    android:title="@string/title_dex_specified_slot" />
             </PreferenceCategory>
             <PreferenceCategory
                 android:key="old_g5_options"
