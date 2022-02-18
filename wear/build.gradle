@@ -83,7 +83,6 @@ def generateVersionName = { ->
 }
 
 apply plugin: 'com.android.application'
-apply from: '../app/token-replace.gradle'
 //apply plugin: 'me.tatarka.retrolambda'
 //apply plugin: 'io.fabric'
 

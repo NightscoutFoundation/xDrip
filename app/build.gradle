@@ -12,7 +12,6 @@ buildscript {
     }
 }
 apply plugin: 'com.android.application'
-apply from: 'token-replace.gradle'
 
 if (project.file('local.gradle').exists()) {
     apply from: 'local.gradle'
