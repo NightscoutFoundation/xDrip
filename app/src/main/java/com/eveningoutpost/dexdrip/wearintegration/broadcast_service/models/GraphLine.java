@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip.wearintegration.WatchBroadcast.Models;
+package com.eveningoutpost.dexdrip.wearintegration.broadcast_service.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;

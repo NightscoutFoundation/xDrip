@@ -48,7 +48,7 @@ import com.eveningoutpost.dexdrip.ui.NumberGraphic;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
-import com.eveningoutpost.dexdrip.wearintegration.WatchBroadcast.WatchBroadcastService;
+import com.eveningoutpost.dexdrip.wearintegration.broadcast_service.BroadcastEntry;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.Date;
@@ -1036,7 +1036,7 @@ public class Notifications extends IntentService {
                 Amazfitservice.start("xDrip_Otheralert", message, 30);
             }
 
-            WatchBroadcastService.sendAlert(type, message);
+            BroadcastEntry.sendAlert(type, message);
         }
     }
 

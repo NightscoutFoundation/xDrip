@@ -24,7 +24,7 @@ import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayRemote;
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService;
-import com.eveningoutpost.dexdrip.wearintegration.WatchBroadcast.WatchBroadcastService;
+import com.eveningoutpost.dexdrip.wearintegration.broadcast_service.BroadcastEntry;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
@@ -112,7 +112,7 @@ public class NewDataObserver {
         }
     }
     private static void sendToWatchBroadcast() {
-        WatchBroadcastService.sendLatestBG();
+        BroadcastEntry.sendLatestBG();
     }
 
     private static void sendToBlueJay() {

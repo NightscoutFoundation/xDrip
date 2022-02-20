@@ -1,18 +1,18 @@
-package com.eveningoutpost.dexdrip.wearintegration.WatchBroadcast.Models;
+package com.eveningoutpost.dexdrip.wearintegration.broadcast_service.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class WatchSettings implements Parcelable {
-    public static final Creator<WatchSettings> CREATOR = new Creator<WatchSettings>() {
+public class Settings implements Parcelable {
+    public static final Creator<Settings> CREATOR = new Creator<Settings>() {
         @Override
-        public WatchSettings createFromParcel(Parcel in) {
-            return new WatchSettings(in);
+        public Settings createFromParcel(Parcel in) {
+            return new Settings(in);
         }
 
         @Override
-        public WatchSettings[] newArray(int size) {
-            return new WatchSettings[size];
+        public Settings[] newArray(int size) {
+            return new Settings[size];
         }
     };
 
@@ -21,7 +21,7 @@ public class WatchSettings implements Parcelable {
     private String apkName;
     private boolean displayGraph;
 
-    protected WatchSettings(Parcel in) {
+    protected Settings(Parcel in) {
         apkName = in.readString();
         graphStart = in.readLong();
         graphEnd = in.readLong();

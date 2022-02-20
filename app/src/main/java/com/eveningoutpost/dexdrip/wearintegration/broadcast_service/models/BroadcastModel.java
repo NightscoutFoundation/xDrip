@@ -1,17 +1,17 @@
-package com.eveningoutpost.dexdrip.wearintegration.WatchBroadcast.Models;
+package com.eveningoutpost.dexdrip.wearintegration.broadcast_service.models;
 
 import android.os.Bundle;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 
-public class WatchBroadcast {
-    private WatchSettings settings;
+public class BroadcastModel {
+    private Settings settings;
     private long statCacheTime = 0;
     private int statCacheHoursVal = 0;
     private Bundle statBundle;
 
-    public WatchBroadcast(WatchSettings settings) {
+    public BroadcastModel(Settings settings) {
         this.settings = settings;
     }
 
@@ -25,11 +25,11 @@ public class WatchBroadcast {
         this.statCacheTime = JoH.tsl();
     }
 
-    public WatchSettings getSettings() {
+    public Settings getSettings() {
         return settings;
     }
 
-    public void setSettings(WatchSettings settings) {
+    public void setSettings(Settings settings) {
         this.settings = settings;
     }
 

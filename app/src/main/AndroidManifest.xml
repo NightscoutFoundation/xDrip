@@ -117,7 +117,7 @@
         <service android:name=".Services.ActivityRecognizedService" />
         <service android:name=".Services.BluetoothGlucoseMeter" />
         <service
-            android:name=".wearintegration.WatchBroadcast.WatchBroadcastService"
+            android:name=".wearintegration.broadcast_service.BroadcastService"
             android:enabled="true"
             android:exported="true"></service>
         <service
