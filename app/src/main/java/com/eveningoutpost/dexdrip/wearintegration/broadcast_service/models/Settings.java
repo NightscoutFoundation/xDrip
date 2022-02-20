@@ -3,6 +3,9 @@ package com.eveningoutpost.dexdrip.wearintegration.broadcast_service.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public class Settings implements Parcelable {
     public static final Creator<Settings> CREATOR = new Creator<Settings>() {
         @Override
@@ -16,9 +19,17 @@ public class Settings implements Parcelable {
         }
     };
 
+    @Getter
+    @Setter
     private long graphStart;
+    @Getter
+    @Setter
     private long graphEnd;
+    @Getter
+    @Setter
     private String apkName;
+    @Getter
+    @Setter
     private boolean displayGraph;
 
     protected Settings(Parcel in) {
@@ -26,38 +37,6 @@ public class Settings implements Parcelable {
         graphStart = in.readLong();
         graphEnd = in.readLong();
         displayGraph = in.readInt() == 1;
-    }
-
-    public long getGraphStart() {
-        return graphStart;
-    }
-
-    public void setGraphStart(long graphStart) {
-        this.graphStart = graphStart;
-    }
-
-    public long getGraphEnd() {
-        return graphEnd;
-    }
-
-    public void setGraphEnd(long graphEnd) {
-        this.graphEnd = graphEnd;
-    }
-
-    public String getApkName() {
-        return apkName;
-    }
-
-    public void setApkName(String apkName) {
-        this.apkName = apkName;
-    }
-
-    public boolean isDisplayGraph() {
-        return displayGraph;
-    }
-
-    public void setDisplayGraph(boolean displayGraph) {
-        this.displayGraph = displayGraph;
     }
 
     @Override

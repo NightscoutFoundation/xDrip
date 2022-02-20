@@ -559,15 +559,14 @@
             </PreferenceScreen>
         </PreferenceScreen>
 
-
         <PreferenceScreen
-            android:key="watch_broadcast_preferences"
-            android:title="@string/title_watch_broadcast_preferences">
+            android:key="broadcast_service_preferences"
+            android:title="@string/title_broadcast_service_preferences">
             <SwitchPreference
                 android:defaultValue="false"
-                android:key="watch_broadcast_enabled"
-                android:summary="@string/summary_watch_broadcast_enable"
-                android:title="@string/title_watch_broadcast_enable" />
+                android:key="broadcast_service_enabled"
+                android:summary="@string/summary_broadcast_service_enable"
+                android:title="@string/title_broadcast_service_enable" />
         </PreferenceScreen>
 
         <PreferenceScreen

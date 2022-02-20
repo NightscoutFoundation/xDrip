@@ -3,6 +3,9 @@ package com.eveningoutpost.dexdrip.wearintegration.broadcast_service.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public class GraphPoint implements Parcelable {
     public static final Creator<GraphPoint> CREATOR = new Creator<GraphPoint>() {
 
@@ -16,7 +19,13 @@ public class GraphPoint implements Parcelable {
             return new GraphPoint[size];
         }
     };
+
+    @Getter
+    @Setter
     private float x;
+
+    @Getter
+    @Setter
     private float y;
 
     public GraphPoint(float x, float y) {
@@ -27,22 +36,6 @@ public class GraphPoint implements Parcelable {
     public GraphPoint(Parcel parcel) {
         x = parcel.readFloat();
         y = parcel.readFloat();
-    }
-
-    public float getX() {
-        return x;
-    }
-
-    public void setX(float x) {
-        this.x = x;
-    }
-
-    public float getY() {
-        return y;
-    }
-
-    public void setY(float y) {
-        this.y = y;
     }
 
     @Override

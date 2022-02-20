@@ -1233,9 +1233,9 @@
     <string name="view_old_error_log">View old Error Log</string>
     <string name="return_to_home_screen">Return to Home Screen</string>
 
-    <string name="title_watch_broadcast_preferences">Watch Broadcast</string>
-    <string name="title_watch_broadcast_enable">Enable Watch Broadcast</string>
-    <string name="summary_watch_broadcast_enable">Enables xDrip communication with thirdparty applications</string>
+    <string name="title_broadcast_service_preferences">Broadcast Service</string>
+    <string name="title_broadcast_service_enable">Enable Broadcast Service</string>
+    <string name="summary_broadcast_service_enable">Enables xDrip communication with third-party applications</string>
 
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Sync Data with MiBand fitness bands</string>

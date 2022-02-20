@@ -6,7 +6,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 public class BroadcastEntry {
     //a tiny class created to make sure the service class would not be loaded if service disabled
-    public static final String PREF_ENABLED = "watch_broadcast_enabled";
+    public static final String PREF_ENABLED = "broadcast_service_enabled";
 
     public static boolean isEnabled() {
         return Pref.getBooleanDefaultFalse(PREF_ENABLED);
@@ -14,7 +14,7 @@ public class BroadcastEntry {
 
     public static void initialStartIfEnabled() {
         if (isEnabled()) {
-            Inevitable.task("watch-broadcast-initial-start", 500, () -> JoH.startService(BroadcastService.class));
+            Inevitable.task("broadcast-service-initial-start", 500, () -> JoH.startService(BroadcastService.class));
         }
     }
 
@@ -26,7 +26,7 @@ public class BroadcastEntry {
 
     public static void sendAlert(String type, String message) {
         if (isEnabled()) {
-            Inevitable.task("watch-broadcast-send-alert", 100, () -> JoH.startService(BroadcastService.class,
+            Inevitable.task("broadcast-service-send-alert", 100, () -> JoH.startService(BroadcastService.class,
                     Const.INTENT_FUNCTION_KEY, Const.CMD_ALERT,
                     "message", message,
                     "type", type));

@@ -50,7 +50,7 @@ public class NewDataObserver {
         sendToAmazfit();
         sendToLeFun();
         sendToMiBand();
-        sendToWatchBroadcast();
+        sendToBroadcastService();
         sendToBlueJay();
         sendToRemoteBlueJay();
         Notifications.start();
@@ -111,7 +111,8 @@ public class NewDataObserver {
             Inevitable.task("poll-miband-for-bg", DexCollectionType.hasBluetooth() ? 2000 : 500, MiBandEntry::showLatestBG); // delay enough for BT to finish on collector
         }
     }
-    private static void sendToWatchBroadcast() {
+
+    private static void sendToBroadcastService() {
         BroadcastEntry.sendLatestBG();
     }
 

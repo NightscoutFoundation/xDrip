@@ -31,8 +31,8 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.PumpStatus;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
-import com.eveningoutpost.dexdrip.wearintegration.broadcast_service.models.GraphLine;
 import com.eveningoutpost.dexdrip.wearintegration.broadcast_service.models.BroadcastModel;
+import com.eveningoutpost.dexdrip.wearintegration.broadcast_service.models.GraphLine;
 import com.eveningoutpost.dexdrip.wearintegration.broadcast_service.models.Settings;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -45,10 +45,10 @@ import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
 
 public class BroadcastService extends Service {
     //listen
-    protected static final String ACTION_WATCH_COMMUNICATION_RECEIVER = "com.eveningoutpost.dexdrip.watch.wearintegration.WATCH_BROADCAST_RECEIVER";
+    protected static final String ACTION_WATCH_COMMUNICATION_RECEIVER = "com.eveningoutpost.dexdrip.watch.wearintegration.BROADCAST_SERVICE_RECEIVER";
     //send
-    protected static final String ACTION_WATCH_COMMUNICATION_SENDER = "com.eveningoutpost.dexdrip.watch.wearintegration.WATCH_BROADCAST_SENDER";
-    private static final int COMMADS_LIMIT_TIME = 2;
+    protected static final String ACTION_WATCH_COMMUNICATION_SENDER = "com.eveningoutpost.dexdrip.watch.wearintegration.BROADCAST_SERVICE_SENDER";
+    private static final int COMMANDS_LIMIT_TIME_SEC = 2;
 
     public static SharedPreferences.OnSharedPreferenceChangeListener prefListener = (prefs, key) -> {
         if (key.equals(BroadcastEntry.PREF_ENABLED)) {
@@ -67,7 +67,7 @@ public class BroadcastService extends Service {
                 PowerManager.WakeLock wl = JoH.getWakeLock(TAG, 2000);
                 String packageKey = intent.getStringExtra(Const.INTENT_PACKAGE_KEY);
                 String function = intent.getStringExtra(Const.INTENT_FUNCTION_KEY);
-                UserError.Log.d(TAG, String.format("received broadcast: function:%s, packageKey: %s", function, packageKey));
+                UserError.Log.d(TAG, String.format("received broadcast: function: %s, packageKey: %s", function, packageKey));
 
                 boolean startService = false;
                 long timeStamp;
@@ -89,7 +89,7 @@ public class BroadcastService extends Service {
                         startService = true;
                     }
                 }
-                if (!startService && JoH.pratelimit(function + "_" + packageKey, COMMADS_LIMIT_TIME)) {
+                if (!startService && JoH.pratelimit(function + "_" + packageKey, COMMANDS_LIMIT_TIME_SEC)) {
                     switch (function) {
                         case Const.CMD_SET_SETTINGS:
                             settings = intent.getParcelableExtra(Const.INTENT_SETTINGS);
@@ -242,32 +242,31 @@ public class BroadcastService extends Service {
         if (handled) {
             return;
         }
+        receiver = intent.getStringExtra(Const.INTENT_PACKAGE_KEY);
         switch (function) {
             case Const.CMD_REPLY_MSG:
                 bundle = new Bundle();
                 bundle.putString(Const.INTENT_REPLY_MSG, intent.getStringExtra(Const.INTENT_REPLY_MSG));
                 bundle.putString(Const.INTENT_REPLY_CODE, intent.getStringExtra(Const.INTENT_REPLY_CODE));
-                receiver = intent.getStringExtra(Const.INTENT_PACKAGE_KEY);
                 break;
             case Const.CMD_ALERT:
+                receiver = null; //broadcast
                 bundle = new Bundle();
                 bundle.putString("type", intent.getStringExtra("type"));
                 bundle.putString("message", intent.getStringExtra("message"));
                 break;
             case Const.CMD_START:
+                receiver = null; //broadcast
                 break;
             case Const.CMD_STAT_INFO:
-                receiver = intent.getStringExtra(Const.INTENT_PACKAGE_KEY);
                 broadcastModel = broadcastEntities.get(receiver);
                 bundle = prepareStatisticBundle(broadcastModel, intent.getIntExtra("stat_hours", 24));
                 break;
             case Const.CMD_UPDATE_BG_FORCE:
-                receiver = intent.getStringExtra(Const.INTENT_PACKAGE_KEY);
                 broadcastModel = broadcastEntities.get(receiver);
                 bundle = prepareBgBundle(broadcastModel);
                 break;
             case Const.CMD_SNOOZE_ALERT:
-                receiver = intent.getStringExtra(Const.INTENT_PACKAGE_KEY);
                 String alertName = "";
                 String replyMsg = "";
                 String replyCode = Const.INTENT_REPLY_CODE_OK;
@@ -374,7 +373,7 @@ public class BroadcastService extends Service {
             }
             bundle.putString("status.accuracy", accuracyString);
             bundle.putString("status.steps", String.valueOf(statsResult.getTotal_steps()));
-            
+
             broadcastModel.setStatCache(bundle, statHours);
         }
         return bundle;

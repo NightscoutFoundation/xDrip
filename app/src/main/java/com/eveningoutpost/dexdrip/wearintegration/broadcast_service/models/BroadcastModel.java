@@ -38,6 +38,6 @@ public class BroadcastModel {
     }
 
     public boolean isStatCacheValid(int statHoursVal) {
-       return JoH.msSince(statCacheTime) < Constants.MINUTE_IN_MS && statHoursVal == statCacheHoursVal && statBundle != null;
+        return JoH.msSince(statCacheTime) < Constants.MINUTE_IN_MS && statHoursVal == statCacheHoursVal && statBundle != null;
     }
 }
