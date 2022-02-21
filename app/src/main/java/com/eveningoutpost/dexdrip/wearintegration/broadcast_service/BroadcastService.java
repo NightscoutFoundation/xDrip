@@ -318,7 +318,7 @@ public class BroadcastService extends Service {
         sendBroadcast(function, receiver, bundle);
     }
 
-    public void sendBroadcast(String function, String receiver, Bundle bundle) {
+    protected void sendBroadcast(String function, String receiver, Bundle bundle) {
         Intent intent = new Intent(ACTION_WATCH_COMMUNICATION_SENDER);
         UserError.Log.d(TAG, String.format("sendBroadcast functionName: %s, receiver: %s", function, receiver));
 
@@ -338,7 +338,7 @@ public class BroadcastService extends Service {
         xdrip.getAppContext().sendBroadcast(intent);
     }
 
-    public Bundle prepareStatisticBundle(BroadcastModel broadcastModel, int statHours) {
+    protected Bundle prepareStatisticBundle(BroadcastModel broadcastModel, int statHours) {
         Bundle bundle;
         if (broadcastModel.isStatCacheValid(statHours)) {
             UserError.Log.d(TAG, "Stats Cache Hit");
@@ -379,7 +379,7 @@ public class BroadcastService extends Service {
         return bundle;
     }
 
-    public Bundle prepareBgBundle(BroadcastModel broadcastModel) {
+    protected Bundle prepareBgBundle(BroadcastModel broadcastModel) {
         if (broadcastModel == null) return null;
         Settings settings = broadcastModel.getSettings();
         if (settings == null) return null;
