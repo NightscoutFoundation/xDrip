@@ -915,8 +915,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             addPreferencesFromResource(R.xml.pref_data_source);
 
             addPreferencesFromResource(R.xml.pref_data_sync);
-            setupBarcodeConfigScanner();
-            setupBarcodeShareScanner();
             bindPreferenceSummaryToValue(findPreference("cloud_storage_mongodb_uri"));
             bindPreferenceSummaryToValue(findPreference("cloud_storage_mongodb_collection"));
             bindPreferenceSummaryToValue(findPreference("cloud_storage_mongodb_device_status_collection"));
@@ -924,6 +922,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
             addPreferencesFromResource(R.xml.pref_advanced_settings);
             addPreferencesFromResource(R.xml.xdrip_plus_prefs);
+            setupBarcodeConfigScanner();
+            setupBarcodeShareScanner();
 
             bindPreferenceSummaryToValue(findPreference("persistent_high_threshold_mins"));
             bindPreferenceSummaryToValue(findPreference("persistent_high_repeat_mins"));
