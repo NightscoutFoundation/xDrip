@@ -215,7 +215,10 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
                                 Log.e(TAG, "Unknown action! " + action);
                                 break;
                         }
-                    } finally {
+
+                    } catch (Exception e) {
+                        Log.e(TAG, "Caught Exception handling intent", e );
+                    }finally {
                         JoH.benchmark("NSEmulator process");
                         JoH.releaseWakeLock(wl);
                     }
