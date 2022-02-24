@@ -394,7 +394,7 @@
     <string name="persistent_high_sound">Püsivalt vali heli</string>
     <string name="forecast_lows">Madala veresuhkru prognoos</string>
     <string name="raise_alarm_on_forecast_low">Alarmeeri madala veresuhkru võimalikkusest</string>
-    <string name="parakeet_related_alerts">\"Parakeet\"-iga seotud alarmid</string>
+    <string name="parakeet_related_alerts">Parakeetiga seotud alarmid</string>
     <string name="raise_parakeet_notification_silently_when_charging">Tõsta \"Parakeet\" märguande taset aeglaselt kui laeb</string>
     <string name="silent_alert_when_charging">Laadimise ajaks alarmi vaigistus</string>
     <string name="alarms_silenced_during_telephone_calls">Alarmid vaigistuvad telefonikõnede ajal</string>
@@ -444,6 +444,8 @@
     <string name="main_chart_background">Põhigraafiku taust</string>
     <string name="try_to_work_around_noisy_readings">Proovi töötada vigaste andmetega</string>
     <string name="show_interface_hints">Kuva programmi vihjed</string>
+    <string name="display_filtered_plot">Kuva filtreeritud andmete graafik</string>
+    <string name="display_raw_plot_data">Kuva toorandmete graafik</string>
     <string name="show_graph_target_line">Näita graafikul veresuhkru eesmärgi joont</string>
     <string name="show_noise_workings">Näita vigaste andmete (müra) olekut</string>
     <string name="insulin_duration_hours">Insuliini toimeaeg tundides</string>
@@ -484,8 +486,10 @@
     <string name="sliding_24_hour_window_summary">Statistika jaoks kasuta viimast 24 h, mitte alates kell 00:00.</string>
     <string name="sliding_24_hour_window">Libisev vaade</string>
     <string name="delete">Kustuta</string>
+    <string name="pref_summary_influxdb_enabled">See peaks olema lubatud, kui kasutad privaatset InfluxDB andmebaasi</string>
     <string name="pref_message_influxdb_uri">Asenda näidisväärtused sulgudes {} enda õigete väärtustega</string>
     <string name="pref_dialog_influxdb_uri">Sisesta InfluxDB URI</string>
+    <string name="pref_message_influxdb_database">Andmebaas, kuhu salvestatakse mõõtmised. Pea meeles, et see tuleb serveris luua.</string>
     <string name="pref_dialog_influxdb_database">Andmebaas</string>
     <string name="pref_dialog_influxdb_username">Kasutaja</string>
     <string name="pref_dialog_influxdb_password">Parool</string>
@@ -505,11 +509,13 @@
     <string name="bluetooth_settings">Bluetoothi seaded</string>
     <string name="turn_bluetooth_on">Lülitage Bluetooth sisse</string>
     <string name="reset_bluetooth">Taaskäivita Bluetooth sisse-välja lülitades, kui 20 min jooksul andmeid ei saa</string>
+    <string name="reset_bluetooth_g5">Lähtesta Bluetooth sisse-välja lülitades, et hoida G5 andmeallikas töös. Ilma selleta võib G5 vastuvõtja üles öelda.</string>
     <string name="constantly_reset_bluetooth">Bluetoothi pidev lähtestamine</string>
     <string name="rfduino_support">RFduino tugi</string>
     <string name="repeatedly_restart_collection_service">Taaskäivita korduvalt vastuvõtuteenust, kui tundub, et andmeid on puudu. Luba ainult andmekao korral.</string>
     <string name="aggressive_service_restarts">Agressiivne teenuste taaskäivitus</string>
     <string name="predictive_readings_old">Vana meetod - mittesoovitav! Püüab igal minutil prognoosida andmeid paari viimase andmepunkti abil.</string>
+    <string name="use_external_blukon_algorithm_summary">Kasuta protsessivälist (OOP) Libre algoritmi. (BluCon/NFC/LibreAlarm)</string>
     <string name="display_predictive_values">Kuva prognoositud väärtusi</string>
     <string name="libre_use_smoothed_data_summary">Kasuta 5 punkti keskmist, et siluda Libre andmeid.</string>
     <string name="libre_use_smoothed_data_title">Silu Libre andmed.</string>
@@ -565,6 +571,7 @@
     <string name="skip_local_lan">Kohalike serverite puhul, mille aadressid on 192.168.x.x, jätke üleslaadimine vahele, kui kohaliku võrguga ühendust pole.</string>
     <string name="skip_lan_uploads">Jäta LAN-üleslaadimised vahele</string>
     <string name="mongo_load_transmitter_data_title">Laadi üles Libre saatjate andmed</string>
+    <string name="mongo_load_transmitter_data_summary">Luba rohkem kui ühel xDrip äpil ühenduda BT seadetega ja säilitada andmeid, mida nad pilvest vastu võtavad. Sellega peaks olema üle terve maja kaetud Libre ühendus MiaoMiao\'ga, või kahel vanemal võimalus saada andmeid samast BT seadmest.</string>
     <string name="influxdb_uri">InfluxDB URI</string>
     <string name="influxdb_database_name">InfluxDB andmebaasi nimi</string>
     <string name="user">Kasutaja</string>
@@ -685,6 +692,7 @@
     <string name="code_accepted">Kood aktsepteeritud</string>
     <string name="g6_sensor_code">G6 Sensori kood</string>
     <string name="please_enter_printed_calibration_code">Palun sisesta prinditud kalibreerimiskood, 4 numbrit, nt. 5678</string>
+    <string name="you_can_easily_roll_back_dialog_msg">Kui sulle uus versioon ei meeldi, siis xDripiga saab lihtsasti vanema versiooni peale tagasi minna, kui taaskäivitad vanema versiooni APK installeri Downloads kaustas.\n\nKas soovid lubada uuenduste kontrolli?</string>
     <string name="you_have_update_checks_off">Uuenduste kontroll on välja lülitatud!\n\nMe püüame jooksvalt parandada vigu ja lisada uusi funktsioone.\n\nIga 60 päeva pärast ilmub meeldetuletus, mis soovitab lülitada uuenduste kontrolli sisse.</string>
     <string name="cancel_alarm">Tühistada hoiatus?</string>
     <string name="yes_cancel">Jah, tühista</string>
@@ -719,7 +727,7 @@
     <string name="invalid_number">Vigane number</string>
     <string name="something_went_wrong_reminder">Meeldetuletuse loomisel läks midagi valesti</string>
     <string name="snoozed_reminder_for">Meeldetuletus vaigistatud</string>
-    <string name="id_reference">ID viide/ referents</string>
+    <string name="id_reference">Id referents</string>
     <string name="reminder_period">Meeldetuletuse ajaperiood</string>
     <string name="hour">Tund</string>
     <string name="hours">Tundi</string>
@@ -822,7 +830,6 @@
     <string name="title_color_number_wall">Seina teksti värv</string>
     <string name="title_color_number_wall_shadow">Seina varju värv</string>
     <string name="title_pick_numberwall_start">Lülita sisse</string>
-    <string name="title_pick_numberwall_stop">Väljalülituse aeg</string>
     <string name="title_show_home_on_boot">Kuva xDrip alglaadimisel</string>
     <string name="eula">EULA</string>
     <string name="title_plus_accept_follower_actions">Nõustuge jälgijate toimingutega</string>
@@ -860,7 +867,7 @@
     <string name="plug_in_your_dexcom_reciever">Ühendage oma Dexcomi vastuvõtja, seejärel vajutage seda nuppu ja pöidlad pihku!</string>
     <string name="progress">edenemine</string>
     <string name="transmitter_battery_status">Saatja aku:  </string>
-    <string name="range_in_high_low">Vahemik: (sees/kõrge/madal)</string>
+    <string name="range_in_high_low">Vahemik: (eesmärgis/kõrge/madal)</string>
     <string name="median_bg">VS Mediaan:</string>
     <string name="mean_bg">VS Keskmine:</string>
     <string name="i_agree">MA NÕUSTUN</string>
