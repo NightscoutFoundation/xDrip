@@ -1569,6 +1569,8 @@
     <string name="title_lower_fuzzer">Baja FUZZER</string>
     <string name="summary_lower_fuzzer">Bajar el valor de FUZZER de 2.5 minutos a 37.5 segundos</string>
     <string name="without_camera_permission_cannot_scan_barcode">Sin el permiso de usar la cámara, no podemos escanear un código de barras</string>
+    <string name="summary_widget_hide_graph">Oculta el gráfico en los widgets (se muestra en la próxima lectura)</string>
+    <string name="title_widget_hide_graph">Ocultar gráfico del widget</string>
     <string name="summary_show_accessibility_settings">Si tu teléfono tiene Always On Display, puedes habilitar el widget xDrip allí habilitando el servicio de accesibilidad de xDrip desde la página de configuración del sistema Android.</string>
     <string name="title_show_accessibility_settings">Habilitar Accesibilidad en xDrip</string>
     <string name="title_multiple_insulin_types_settings">Múltiples tipos de Insulina</string>
