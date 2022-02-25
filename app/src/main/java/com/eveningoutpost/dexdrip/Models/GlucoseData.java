@@ -8,7 +8,9 @@ import java.text.DecimalFormat;
 // class from LibreAlarm
 
 public class GlucoseData implements Comparable<GlucoseData> {
-    public enum DataSource {NOT_SET, FRAM, BLE};
+    public enum DataSource {NOT_SET, FRAM, BLE}
+
+    ;
 
     public long realDate;               // The time of this reading in ms
     public int sensorTime;             // The counter in minutes from start of sensor.
@@ -19,7 +21,8 @@ public class GlucoseData implements Comparable<GlucoseData> {
     public int temp;
     public DataSource source;
 
-    public GlucoseData(){}
+    public GlucoseData() {
+    }
 
     // jamorham added constructor
     public GlucoseData(int glucoseLevelRaw, long timestamp) {
@@ -38,7 +41,7 @@ public class GlucoseData implements Comparable<GlucoseData> {
     }
 
     public static String glucose(int mgdl, boolean mmol) {
-        return mmol ? new DecimalFormat("##.0").format(mgdl/ Constants.MMOLL_TO_MGDL) : String.valueOf(mgdl);
+        return mmol ? new DecimalFormat("##.0").format(mgdl / Constants.MMOLL_TO_MGDL) : String.valueOf(mgdl);
     }
 
     @Override

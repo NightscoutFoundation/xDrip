@@ -96,6 +96,12 @@
                     android:summary="@string/summary_notification_channels_grouping"
                     android:title="@string/title_notification_channels_grouping" />
 
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="delay_ascending_3min"
+                    android:summary="@string/summary_delay_ascending_3min"
+                    android:title="@string/title_delay_ascending_3min" />
+
             </PreferenceScreen>
 
 

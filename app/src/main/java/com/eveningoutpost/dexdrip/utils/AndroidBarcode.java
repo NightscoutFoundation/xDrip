@@ -4,73 +4,95 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
+import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.xdrip;
 import com.google.zxing.client.android.Intents;
 import com.google.zxing.integration.android.IntentIntegrator;
+
+/**
+ * This is a helper class to facilitate asking for camera permission and returning
+ * the scan result to the original instantiating activity
+ */
 
 
 public class AndroidBarcode extends AppCompatActivity
         implements ActivityCompat.OnRequestPermissionsResultCallback {
     public static final String SCAN_INTENT = Intents.Scan.ACTION;
-    Activity activity;
+    private static Object returnTo;
+    private Activity activity;
     final static int MY_PERMISSIONS_REQUEST_CAMERA = 1003;
     final static String TAG = "jamorham barcode";
 
-    public AndroidBarcode(Activity activity) {
+    public AndroidBarcode(final Activity activity) {
         this.activity = activity;
     }
 
-    // callback not received in test
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_CAMERA: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    new IntentIntegrator(activity).initiateScan();
-                } else {
-                    toast("Without camera permission we cannot scan a barcode");
-                }
-                return;
-            }
+    public AndroidBarcode() {
+    }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        activity = (Activity) returnTo; // restore saved context
+        returnTo = null;
+        super.onCreate(savedInstanceState);
+        requestPermission();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(final int requestCode,
+                                           @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        if (requestCode == MY_PERMISSIONS_REQUEST_CAMERA) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                actuallyStartScan();
+            } else {
+                JoH.static_toast_long(xdrip.gs(R.string.without_camera_permission_cannot_scan_barcode));
+            }
+        }
+        try {
+            finish();
+        } catch (Exception e) {
+            //
         }
     }
 
-    public void scan() {
+    private void actuallyStartScan() {
+        new IntentIntegrator(activity).initiateScan();
+    }
 
+    private void requestPermission() {
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.CAMERA},
+                MY_PERMISSIONS_REQUEST_CAMERA);
+    }
+
+    public void scan() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(activity.getApplicationContext(),
                     Manifest.permission.CAMERA)
                     != PackageManager.PERMISSION_GRANTED) {
-
-                ActivityCompat.requestPermissions(activity,
-                        new String[]{Manifest.permission.CAMERA},
-                        MY_PERMISSIONS_REQUEST_CAMERA);
+                try {
+                    // are we in an actual activity?
+                    requestPermission();
+                } catch (NullPointerException e) {
+                    returnTo = activity; // save return context
+                    JoH.startActivity(AndroidBarcode.class);
+                }
             } else {
-                new IntentIntegrator(activity).initiateScan();
+                actuallyStartScan();
             }
         } else {
-            new IntentIntegrator(activity).initiateScan();
+            actuallyStartScan();
         }
     }
 
-    private void toast(final String msg) {
-        try {
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(activity.getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-                }
-            });
-            android.util.Log.d(TAG, "Toast msg: " + msg);
-        } catch (Exception e) {
-            android.util.Log.e(TAG, "Couldn't display toast: " + msg);
-        }
-    }
 }

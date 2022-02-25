@@ -7,11 +7,13 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.xdrip;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Test;
 
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Locale;
+import java.util.Set;
+import java.util.TreeSet;
 
 import lombok.val;
 
@@ -30,7 +32,8 @@ public class TranslationTest extends RobolectricTestWithConfig {
         final Configuration config = xdrip.getAppContext().getResources().getConfiguration();
         val internal = xdrip.getAppContext().getResources().getStringArray(R.array.LocaleChoicesValues);
         val extra = new String[]{"ar", "cs", "de", "el", "en", "es", "fi", "fr", "he", "hr", "it", "iw", "ja", "ko", "nb", "nl", "no", "pl", "pt", "ro", "ru", "sk", "sl", "sv", "tr", "zh"};
-        val locales = ArrayUtils.addAll(internal, extra);
+        Set<String> locales = new TreeSet<>(Arrays.asList(internal));
+        locales.addAll(Arrays.asList(extra));
         String fmt;
         String result;
 

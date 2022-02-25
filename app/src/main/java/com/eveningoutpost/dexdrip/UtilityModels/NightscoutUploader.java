@@ -1,11 +1,7 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.os.BatteryManager;
-import android.os.Build;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.util.Base64;
@@ -24,7 +20,6 @@ import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
-import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -1058,55 +1053,58 @@ public class NightscoutUploader {
         }
     }
 
-
     private static final String LAST_NIGHTSCOUT_BATTERY_LEVEL = "last-nightscout-battery-level";
 
-    private void postDeviceStatus(NightscoutService nightscoutService, String apiSecret) throws Exception {
+    private long getLastBatteryLevel(NightscoutBatteryDevice type) {
+        return PersistentStore.getLong(LAST_NIGHTSCOUT_BATTERY_LEVEL + "-" + type.name());
+    }
 
+    private void setLastBatteryLevel(NightscoutBatteryDevice type, long value) {
+        PersistentStore.setLong(LAST_NIGHTSCOUT_BATTERY_LEVEL + "-" + type.name(), value);
+    }
+
+    /**
+     * Uploads the device status (containing battery details) to Nightscout for
+     */
+    private void postDeviceStatus(NightscoutService nightscoutService, String apiSecret) throws Exception {
         // TODO optimize based on changes avoiding stale marker issues
-        final boolean always_send_battery = true; // nightscout doesn't currently display device device status if it thinks its stale
-        final List<String> batteries = new ArrayList<>();
-        batteries.add("Phone");
+
+        final List<NightscoutBatteryDevice> batteries = new ArrayList<>();
+
+        batteries.add(NightscoutBatteryDevice.PHONE);
+
         if ((DexCollectionType.hasBattery() && (Pref.getBoolean("send_bridge_battery_to_nightscout", true)))
                 || (Home.get_forced_wear() && DexCollectionType.getDexCollectionType().equals(DexCollectionType.DexcomG5))) {
-            batteries.add("Bridge");
+            batteries.add(NightscoutBatteryDevice.BRIDGE);
         }
-        if (DexCollectionType.hasWifi()) batteries.add("Parakeet");
 
-        for (String battery : batteries) {
+        if (DexCollectionType.hasWifi()) {
+            batteries.add(NightscoutBatteryDevice.PARAKEET);
+        }
 
-            int battery_level;
-            String battery_name = "";
-            switch (battery) {
-                case "Phone":
-                    battery_level = getBatteryLevel();
-                    battery_name = Build.MANUFACTURER + " " + Build.MODEL;
-                    break;
-                case "Bridge":
-                    battery_level = Pref.getInt("bridge_battery", -1);
-                    battery_name = DexCollectionService.getBestLimitterHardwareName();
-                    break;
-                case "Parakeet":
-                    battery_level = Pref.getInt("parakeet_battery", -1);
-                    battery_name = "Parakeet";
-                    break;
-                default:
-                    battery_level = -1;
-                    break;
-            }
-            final long last_battery_level = PersistentStore.getLong(LAST_NIGHTSCOUT_BATTERY_LEVEL);
+        boolean sendDexcomTxBattery = Pref.getBooleanDefaultFalse("send_ob1dex_tx_battery_to_nightscout");
+        if (sendDexcomTxBattery) {
+            batteries.add(NightscoutBatteryDevice.DEXCOM_TRANSMITTER);
+        }
 
-            final JSONArray array = new JSONArray();
-            final JSONObject json = new JSONObject();
-            final JSONObject uploader = new JSONObject();
+        for (NightscoutBatteryDevice batteryType : batteries) {
+            final long last_battery_level = getLastBatteryLevel(batteryType);
+            final int new_battery_level = batteryType.getBatteryLevel(mContext);
 
-            if ((battery_level > 0) && (battery_level != last_battery_level || always_send_battery)) {
-                PersistentStore.setLong(LAST_NIGHTSCOUT_BATTERY_LEVEL, battery_level);
+            if ((new_battery_level > 0) && (new_battery_level != last_battery_level || batteryType.alwaysSendBattery())) {
+                setLastBatteryLevel(batteryType, new_battery_level);
                 // UserError.Log.d(TAG, "Uploading battery detail: " + battery_level);
                 // json.put("uploaderBattery", battery_level); // old style
 
-                uploader.put("battery", battery_level);
-                json.put("device", battery_name);
+                final JSONArray array = new JSONArray();
+                final JSONObject json = new JSONObject();
+                final JSONObject uploader = batteryType.getUploaderJson(mContext);
+
+                if (uploader == null) {
+                    continue;
+                }
+
+                json.put("device", batteryType.getDeviceName());
                 json.put("uploader", uploader);
 
                 array.put(json);
@@ -1120,7 +1118,6 @@ public class NightscoutUploader {
                 //            "temperature": "+51.0°C"
                 //}
                 //}
-
 
                 final RequestBody body = RequestBody.create(MediaType.parse("application/json"), json.toString());
                 Response<ResponseBody> r;
@@ -1336,16 +1333,9 @@ public class NightscoutUploader {
             }
             return false;
         }
+
     public int getBatteryLevel() {
-        Intent batteryIntent = mContext.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-        if (batteryIntent != null) {
-            int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-            int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-            if (level == -1 || scale == -1) {
-                return 50;
-            }
-            return (int) (((float) level / (float) scale) * 100.0f);
-        } else return 50;
+        return NightscoutBatteryDevice.PHONE.getBatteryLevel(mContext);
     }
 
     private static boolean isLANhost(String host) {

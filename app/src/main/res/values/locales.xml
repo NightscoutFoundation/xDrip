@@ -2,8 +2,10 @@
 <resources>
     <string-array name="LocaleChoices">
         <item>Bokmal</item>
+        <item>български език</item>
         <item>čeština</item>
         <item>Deutsch</item>
+        <item>eesti keel</item>
         <item>English</item>
         <item>Español</item>
         <item>Français</item>
@@ -25,8 +27,10 @@
     </string-array>
     <string-array name="LocaleChoicesValues">
         <item>nb</item>
+        <item>bg</item>
         <item>cs</item>
         <item>de</item>
+        <item>et</item>
         <item>en</item>
         <item>es</item>
         <item>fr</item>
