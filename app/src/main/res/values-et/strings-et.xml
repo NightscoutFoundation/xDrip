@@ -162,8 +162,6 @@
     <string name="added">Lisatud</string>
     <string name="checking_for_update">Uuenduste otsimine...</string>
     <string name="signal_missed">Signaal jäi vahele</string>
-    <string name="minutes_ago">{0, vali,0#{0, number, integer} Minutit tagasi|1#{0, number, integer} Minutit tagasi|1&lt;{0, number, integer} Minutit tagasi}</string>
-    <string name="expires_days">{0, vali,0#Sensor on aegunud!|1#Aegub {0, number} päeva pärast|1&lt;Aegub {0, number} päeva pärast}</string>
     <string name="expires_at">Lõpeb {0}</string>
     <string name="space_minutes_ago">" Minutit tagasi"</string>
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"Libre kogumaja režiim: ühtegi tulemust pole veel kogutud."</string>
