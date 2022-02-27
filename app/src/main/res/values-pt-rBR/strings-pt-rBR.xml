@@ -1,57 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="title_activity_bluetooth_scan">Procura Bluetooth</string>
-    <string name="disconnected">Desligado</string>
+    <string name="title_activity_bluetooth_scan">Pesquisar Bluetooth</string>
+    <string name="connected">Conectado</string>
+    <string name="disconnected">Desconectado</string>
     <string name="menu_scan">Procurar</string>
+    <string name="menu_stop">Parar</string>
+    <string name="menu_refresh">Atualizar</string>
+    <string name="menu_export_database">Exportar banco de dados</string>
+    <string name="menu_export_csv_sidiary">Exportar CSV (formato SiDiary)</string>
+    <string name="menu_import_db">Restaurar banco de dados</string>
+    <string name="error_bluetooth_not_supported">Erro: Bluetooth não é suportado por este dispositivo</string>
+    <string name="unknown_device">Dispositivo desconhecido</string>
     <string name="connecting_to_device">Conectando-se ao dispositivo</string>
     <string name="title_activity_raw_data_table">Tabela de dados brutos</string>
     <string name="title_activity_calculated_data_table">Tabela de dados calculados</string>
-    <string name="title_activity_new_sensor_location">Novo local de Sensor</string>
-    <string name="navigation_drawer_open">Gaveta de navegação aberta</string>
-    <string name="navigation_drawer_close">Feche a gaveta de navegação</string>
-    <string name="title_activity_calibration_check_in">Atividade de calibração</string>
+    <string name="title_activity_start_new_sensor">Iniciar Novo Sensor</string>
+    <string name="title_activity_new_sensor_location">Novo local do Sensor</string>
+    <string name="title_activity_stop_sensor">Parar Sensor</string>
+    <string name="title_activity_nav_drawer">Menu de navegação</string>
+    <string name="navigation_drawer_open">Abrir o menu de navegação</string>
+    <string name="navigation_drawer_close">Fechar o menu de navegação</string>
+    <string name="title_activity_calibration_check_in">Atividades de calibração</string>
     <string name="title_activity_usb_connected">Atividade USB conectado</string>
-    <string name="snooze">Soneca</string>
-    <string name="snooze_hint">Não alertar por x minutos</string>
+    <string name="snooze">Adiar</string>
+    <string name="snooze_hint">Adiar alerta por x minutos</string>
+    <string name="cancel">Cancelar</string>
+    <string name="no">Não</string>
+    <string name="pref_sensor_location_dont_ask_again">Não perguntar novamente</string>
+    <string name="title_activity_error">"Lista de Erros e Eventos"</string>
     <string name="title_activity_main">Atividade principal</string>
     <string name="title_activity_fake_numbers">Números falsos</string>
-    <string name="title_activity_double_calibration">Calibração dupla</string>
-    <string name="title_activity_calibration_override">Substituir calibração</string>
-    <string name="pref_header_cloud_storage">Armazenamento na núvem</string>
+    <string name="title_activity_edit_alert">Editar Alerta</string>
+    <string name="title_activity_double_calibration">Calibração inicial</string>
+    <string name="title_activity_calibration_override">Sobrepor calibração</string>
+    <string name="pref_header_cloud_storage">Armazenamento na nuvem</string>
     <string name="auto_configure_title">Configurar automaticamente</string>
-    <string name="prefs_auto_config_summary">Definição automática usando um código de barras.</string>
-    <string name="scan_share2_barcode">Ler código de barras de partilha</string>
-    <string name="pref_share2_scan_barcode_summary">Ou leia o código de barras no receptor de partilha</string>
+    <string name="prefs_auto_config_summary">Configurar automaticamente usando um código de barras.</string>
+    <string name="scan_share2_barcode">Escanear códigos de barras</string>
+    <string name="pref_share2_scan_barcode_summary">Ou escanear o código de barras no receptor de compartilhamento</string>
     <!-- MongoDB Settings -->
-    <string name="pref_dialog_mongodb_uri">Introduza MongoDB URI\"</string>
-    <string name="pref_message_mongodb_uri">Substituir valores de exemplo em {} com seus valores</string>
+    <string name="pref_summary_mongodb_enabled">Envio direto para o banco de dados, não recomendado para o Nightscout</string>
+    <string name="pref_dialog_mongodb_uri">Insira o URI do MongoDB\"</string>
+    <string name="pref_message_mongodb_uri">Substitua os dados de exemplo em {} com seus dados</string>
     <string name="pref_title_mongodb_collection">O nome da coleção</string>
-    <string name="pref_dialog_mongodb_collection">Introduza nome de coleção</string>
+    <string name="pref_dialog_mongodb_collection">Insira o nome de coleção</string>
     <string name="pref_message_mongodb_collection">Este é o nome da coleção onde será guardada a informação de CGM</string>
     <string name="pref_title_mongodb_device_status_collection">Nome da coleção Device Status</string>
     <string name="pref_dialog_mongodb_device_status_collection">Introduza nome da coleção Device Status\"</string>
     <string name="pref_message_mongodb_device_status_collection">Este é o nome da coleção onde dados sobre bateria e outros dados do dispositivo serão guardados</string>
     <!-- API Settings -->
-    <string name="pref_title_api">API Upload (REST)</string>
+    <string name="pref_title_api">Sincronização do Nightscout (REST-API)</string>
     <string name="pref_title_api_enabled">Ativado</string>
-    <string name="pref_dialog_api_url">Introduza URL base da API</string>
+    <string name="pref_summary_api_enabled">REST API é o método padrão de se conectar ao Nightscout</string>
+    <string name="pref_title_api_url">URL Base</string>
+    <string name="pref_dialog_api_url">Introduza o URL base da API</string>
     <string name="pref_message_api_url">Isto é apenas o URL base, o uploader acrescentará automaticamente /entries para o POST. O API_SECRET no servidor deverá ser igual à suapassphrase nesta definição.</string>
-    <string name="pref_default_api_url">https://suapassphrase@{YOUR-SITE}.azurewebsites.net/api/v1/</string>
+    <string name="pref_default_api_url">https://suasenha@{SEU-SITE}.azurewebsites.net/api/v1/</string>
     <!-- wifi Settings -->
+    <string name="wifi_recievers_dialog_message">Lista de IP separados por vírgula: port (por exemplo 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
     <!-- Location Settings -->
     <string name="location_not_found_title">Localização não está ligada</string>
-    <string name="location_not_found_message">Para que a descoberta Bluetooth funcione em dispositivos mais recentes, a localização tem que estar ligada. O xDrip não rastreia a sua localização e esta pode ser desativada após emparelhamento bem sucedido.</string>
+    <string name="location_not_found_message">Para que a pesquisa do Bluetooth funcione em dispositivos mais recentes, a localização precisa estar ativada. O xDrip não rastreia a sua localização exceto com o recurso opcional de Mensagem de Emergência</string>
     <string name="location_yes">Ligar</string>
     <!-- broadcast settings -->
-    <string name="pref_summary_broadcast_enabled">Ligar transmissão local de dados para que outras aplicações (ex. NightWatch), possam ler novos valores</string>
-    <string name="title_activity_share_test">Testar Partilha</string>
+    <string name="pref_title_broadcast_enabled">Transmitir localmente</string>
+    <string name="pref_summary_broadcast_enabled">Ligar transmissão local de dados para que outros aplicativos (ex. NightWatch), possam ler novos valores</string>
+    <string name="title_activity_share_test">Testar Compartilhamento</string>
     <!-- pebble settings -->
-    <string name="pref_summary_pebble_trend_watchface">Usar/instalar Pebble Trend Watchface (experimental)</string>
+    <string name="pref_pebble_trend_watchface">Usar Watchface Pebble Trend</string>
+    <string name="pref_summary_pebble_trend_watchface">Usar/instalar Watchface Pebble Trend (experimental)</string>
     <string name="pref_pebble_display_trend">Mostrar tendência</string>
-    <string name="pref_summary_display_trend">Mostrar a tendência glicémica na Watchface xDrip do Pebble.</string>
-    <string name="pref_pebble_display_high_line">Mostrar linha Hiper</string>
-    <string name="pref_pebble_display_low_line">Mostrar linha Hipo</string>
+    <string name="pref_summary_display_trend">Mostrar a tendência de glicemia na Watchface xDrip do Pebble.</string>
+    <string name="pref_pebble_display_high_line">Mostrar linha de Hiper</string>
+    <string name="pref_pebble_display_low_line">Mostrar linha de Hipo</string>
     <!-- Amazfit Settings -->
+    <string name="amazfit_sync_service">Serviço de sincronização AmazFit</string>
+    <string name="pref_amazfit_enable_summary">Ativar suporte a dados do Amazfit</string>
     <string name="pref_amazfit_enable">Ligar</string>
     <string name="pref_amazfit_BG_alert_enable">Ligar</string>
     <string name="pref_amazfit_other_alert_enable">Ligar</string>
@@ -60,8 +84,10 @@
     <string name="taskerConfigInstruction">Cloque no ícone de Visto para confirmar. Não deve ser necessário alterar a string de definição.</string>
     <string name="taskerConfiguration">Definição Tasker</string>
     <string name="title_activity_alert_list">Lista de alertas</string>
-    <string name="title_activity_update">Atualização xDrip+ disponível</string>
+    <string name="speaktreatment">Falar tratamento</string>
+    <string name="title_activity_update">Atualização do xDrip+ disponível</string>
     <string name="title_activity_display_qrcode">Partilhar definições via QR code</string>
+    <string name="title_activity_send_feed_back">Enviar feedback para Jamorham</string>
     <string name="title_activity_display_preferences">Preferências de visualização</string>
     <string name="action_resend_to_watch">Reenviar glicémia para smartwatch</string>
     <string name="erase">Apagar</string>
@@ -282,6 +308,7 @@
     <string name="delete">Apagar</string>
     <string name="pref_message_influxdb_uri">Substituir valores de exemplo em {} com seus valores</string>
     <string name="low_prediction_values">Valores de previsão de Hipo</string>
+    <string name="stop_sensor">Parar Sensor</string>
     <string name="initial_calibration">Calibração dupla</string>
     <string name="bluetooth_scan">Procura Bluetooth</string>
     <!-- trend arrow for speak -->
