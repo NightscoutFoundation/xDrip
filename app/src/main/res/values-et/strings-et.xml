@@ -660,6 +660,8 @@
     <string name="hours_between_calibrations">Tundi kalibreerimiste vahel</string>
     <string name="override_silent_mode">Tühista vaikne režiim</string>
     <string name="even_when_charging">Isegi, kui aku laeb</string>
+    <string name="repeat_alerts">Korda hoiatusi</string>
+    <string name="alert_repeat_minutes">Hoiatuse kordusaeg minutites</string>
     <string name="alert_snooze">Vaigista alarm</string>
     <string name="bg_falling_fast">Kiire VS langus</string>
     <string name="bg_rising_fast">Kiire VS tõus</string>
@@ -680,12 +682,14 @@
     <string name="movement_detection_and_vehicle_mode">Liikumise tuvastamine ja sõiduki-režiim</string>
     <string name="xdrip_motion_tracking">xDrip+ liikumise jälgimine</string>
     <string name="detect_motion_types">Kasuta liikumise tüüpide tuvastamiseks andureid</string>
+    <string name="log_and_plot_motion">Logi ja kuva liikumise joonis</string>
     <string name="be_motion_master">Ole liikumisandmete põhiseade isegi siis, kui oled jälgija. Seadista see ainult ühe telefoni jaoks!</string>
     <string name="act_as_motion_master">Käitu kui liikumise põhiseade</string>
     <string name="enable_vehicle_mode">Luba sõidukirežiim</string>
     <string name="play_sound">Mängi heli</string>
     <string name="repeat_sound">Korda heli</string>
     <string name="enable_telemetry">Luba telemeetria</string>
+    <string name="sidiary_date_title">Ekspordi alates mis kuupäevast?</string>
     <string name="blukon">BluCon</string>
     <string name="tomato">Tomato</string>
     <string name="bubble">Bubble</string>
@@ -701,6 +705,7 @@
     <string name="calibration_out_of_range">Kalibreerimine väljaspool vahemikku</string>
     <string name="note_search">Märkuste otsing</string>
     <string name="edit_note">Muuda märkust</string>
+    <string name="no_search_term_found">Otsing ei andnud tulemusi</string>
     <string name="bluetooth_scan">Bluetoothi skannimine</string>
     <string name="level_alerts">Taseme hoiatused</string>
     <string name="override_calibration">Kalibreerimise üle kirjutamine</string>
@@ -759,6 +764,7 @@
     <string name="external_calibration_app">Väline kalibreerimise rakendus</string>
     <string name="use_app_for_calibration">kas kasutada kalibreerimiseks rakendust?</string>
     <string name="code_accepted">Kood aktsepteeritud</string>
+    <string name="invalid_or_unsupported_code">Vale/tundmatu kood!</string>
     <string name="g6_sensor_code">G6 Sensori kood</string>
     <string name="please_enter_printed_calibration_code">Palun sisesta prinditud kalibreerimiskood, 4 numbrit, nt. 5678</string>
     <string name="you_can_easily_roll_back_dialog_msg">Kui sulle uus versioon ei meeldi, siis xDripiga saab lihtsasti vanema versiooni peale tagasi minna, kui taaskäivitad vanema versiooni APK installeri Downloads kaustas.\n\nKas soovid lubada uuenduste kontrolli?</string>
@@ -766,9 +772,17 @@
     <string name="you_have_update_checks_off">Uuenduste kontroll on välja lülitatud!\n\nMe püüame jooksvalt parandada vigu ja lisada uusi funktsioone.\n\nIga 60 päeva pärast ilmub meeldetuletus, mis soovitab lülitada uuenduste kontrolli sisse.</string>
     <string name="cancel_alarm">Tühistada hoiatus?</string>
     <string name="yes_cancel">Jah, tühista</string>
+    <string name="automatic_message_from_xdrip">automaatne sõnum xDrip+\'ilt</string>
     <string name="zero_zero_zero_zero">0000</string>
     <string name="emergency_messages">Hädaolukorra sõnumid</string>
     <string name="your_name">Sinu nimi</string>
+    <string name="did_not_acknowledge_a_low_glucose_alert">%1$s ei kinnitanud madala veresuhkru alarmi %2$s</string>
+    <string name="did_not_acknowledge_a_high_glucose_alert">%1$s ei tunnistanud kõrge glükoositaseme hoiatust %2$s</string>
+    <string name="has_not_had_glucose_data_received_for">%1$s ei ole saanud veresuhkruandmeid %2$s</string>
+    <string name="phone_has_not_been_used_for">%1$s ei ole kasutanud oma telefoni %2$s</string>
+    <string name="is_requesting_assistance">%s vajab abi</string>
+    <string name="is_testing_the_assistance_request_feature">%s testib abi küsimise funktsiooni</string>
+    <string name="emergency_message_near_format_string">%1$s asukoht %2$s%3$s%4$s%5$s</string>
     <string name="device_inactivity">Seadme tegevusetus</string>
     <string name="xdrip_software_changed_format">xDrip programmiversioon muudeti: %1$s -> %2$s</string>
     <string name="select_device">Vali seade</string>
@@ -837,6 +851,7 @@
     <string name="not_connected">Pole ühendatud</string>
     <string name="no_data">Andmed puuduvad</string>
     <string name="no_bluetooth">Pole Bluetoothi</string>
+    <string name="connection_status_long">Ühenduse olek:   </string>
     <string name="did_you_insert_it_today">Kas sa sisestasid selle täna?</string>
     <string name="we_need_to_know_when_the_sensor_was_inserted_to_improve_calculation_accuracy__was_it_inserted_today">Arvutustäpsuse parandamiseks on vaja teada, millal sensor sisestati.\n\nKas sensor sisestati täna?</string>
     <string name="yes_today">JAH, täna</string>
@@ -943,6 +958,7 @@
     <string name="sensor_start">Sensori käivitus:</string>
     <string name="plug_in_your_dexcom_reciever">Ühendage oma Dexcomi vastuvõtja, seejärel vajutage seda nuppu ja pöidlad pihku!</string>
     <string name="progress">edenemine</string>
+    <string name="bluetooth_device">Bluetooth seade:   </string>
     <string name="transmitter_battery_status">Saatja aku:  </string>
     <string name="range_in_high_low">Vahemik: (eesmärgis/kõrge/madal)</string>
     <string name="median_bg">VS Mediaan:</string>
@@ -982,6 +998,7 @@
     <string name="cancelled">Tühistatud!</string>
     <string name="no_sensor_found">Sensorit ei leitud</string>
     <string name="scanning">Skaneerimine</string>
+    <string name="ob1_session_restarted_msg">Sensorisessioon ennetavalt taaskäivitatud. Palun kontrolli järgnevaid näitusid ja vajadusel kalibreeri</string>
     <string name="enable_streaming_ask_each_time">Küsi iga kord</string>
     <string name="enable_streaming_dialog_dont_ask_again">Ära küsi seda enam uuesti</string>
     <string name="title_xdrip_plus_snooze_broadcast">Kohalik edastus</string>
@@ -994,5 +1011,6 @@
     <string name="auto_starting_sensor">Sensori automaatkäivitus!</string>
     <string name="noise_workings_noise">Signaalimüra: %s</string>
     <string name="share_database">Jaga andmebaasi...</string>
+    <string name="message_motion_detection_warning">Liikumise tuvastamise funktsioon on eksperimentaalne ja töötab ainult osade telefonidega. Selle eesmärk on automaatselt tuvastada sõidukirežiimi.\n\nTestid on kinnitanud, et liikumissensorid töötavad piisavalt hästi ainult uuematel telefonidel. Ka aku võib kiiremini tühjaks saada.\n\nTreeningutega seotud liikumise jaoks töötavad kõige paremini Smartwatchi sammuloendurid.</string>
     <string name="accept_external_status">Nõustu välise seisuga</string>
 </resources>
