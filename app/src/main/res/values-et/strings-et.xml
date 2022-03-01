@@ -496,6 +496,7 @@
     <string name="insulin_duration_hours">Insuliini toimeaeg tundides</string>
     <string name="alert_name_colon">Alarmi nimi:</string>
     <string name="threshold_colon">Künnis:</string>
+    <string name="default_snooze_colon">Vaikimisi vaigistus:</string>
     <string name="alert_tone_colon">Alarmi heli:</string>
     <string name="choose_file">Vali fail</string>
     <string name="select_time_for_alert_colon">Valige hoiatuse aeg:</string>
@@ -676,6 +677,9 @@
     <string name="low_battery_percentage">Madal akutase</string>
     <string name="notify_data_arrives_master"><![CDATA[Teavita, kui põhiseadmelt saabuvate andmete intervall on > 20 min.]]></string>
     <string name="follower_chime_new">Uue jälgija märguanne</string>
+    <string name="carb_ratio">SV suhe</string>
+    <string name="enable_dedicated_insulin_profiles">Seadista insuliini manustamise profiilid</string>
+    <string name="desc_enable_dedicated_insulin_profiles">Siin saab lubada ja seadistada erinevaid insuliini manustamise profiile</string>
     <string name="insulin_sensitivity">Insuliinitundlikkus</string>
     <string name="secondary_plugin_glucose_value">Täiendava liidese veresuhkruväärtus</string>
     <string name="force_english_text">Ainult inglise keeles</string>
@@ -684,6 +688,7 @@
     <string name="target_glucose_default">Veresuhkru eesmärgi vaikevariant</string>
     <string name="remote_snoozing">Kaugvaigistus</string>
     <string name="send_snooze_to_all">Vaigista kõik</string>
+    <string name="send_remote_snooze">Saada kaugvaigistus</string>
     <string name="wifi_name_must_match">WiFi nimi peab ühtima</string>
     <string name="confirm_remote_snooze">Kinnita kaugvaigistus</string>
     <string name="yes_send_it">JAH, saada!</string>
@@ -747,7 +752,7 @@
     <string name="fitbit">Fitbit</string>
     <string name="enable_local_web_server_feature">Kas lubada lokaalse veebiserveri funktsioon Garmini kellaplaadil jaoks?</string>
     <string name="enable_local_web_server_feature_fitbit">Kas lubada lokaalse veebiserveri funktsioon Fitbit\'i kellaplaadil jaoks?</string>
-    <string name="set_data_source_to">Teha vastuvõtjaks %s ?</string>
+    <string name="set_data_source_to">Teha andmeallikaks %s ?</string>
     <string name="are_you_sure">Oled kindel?</string>
     <string name="g4_share_receiver">G4 jagamise vastuvõtja</string>
     <string name="bluetooth_wixel">Bluetooth Wixel</string>
@@ -780,7 +785,7 @@
     <string name="hey_fam">Halloo...</string>
     <string name="you_have_update_checks_off">Uuenduste kontroll on välja lülitatud!\n\nMe püüame jooksvalt parandada vigu ja lisada uusi funktsioone.\n\nIga 60 päeva pärast ilmub meeldetuletus, mis soovitab lülitada uuenduste kontrolli sisse.</string>
     <string name="cancel_alarm">Tühistada hoiatus?</string>
-    <string name="please_confirm_to_cancel_the_alert">Kinnita, kas tühistame hoiatuse?</string>
+    <string name="please_confirm_to_cancel_the_alert">Kinnitage hoiatuse tühistamine?</string>
     <string name="yes_cancel">Jah, tühista</string>
     <string name="automatic_message_from_xdrip">automaatne sõnum xDrip+\'ilt</string>
     <string name="zero_zero_zero_zero">0000</string>
@@ -865,6 +870,7 @@
     <string name="no_data">Andmed puuduvad</string>
     <string name="no_bluetooth">Pole Bluetoothi</string>
     <string name="connection_status_long">Ühenduse olek:   </string>
+    <string name="choose_data_source">Andmeallika valimine</string>
     <string name="did_you_insert_it_today">Kas sa sisestasid selle täna?</string>
     <string name="we_need_to_know_when_the_sensor_was_inserted_to_improve_calculation_accuracy__was_it_inserted_today">Arvutustäpsuse parandamiseks on vaja teada, millal sensor sisestati.\n\nKas sensor sisestati täna?</string>
     <string name="yes_today">JAH, täna</string>
@@ -983,7 +989,7 @@
     <string name="absolute_s">Mõõtmiste arv:</string>
     <string name="median_bg">VS Mediaan:</string>
     <string name="mean_bg">VS Keskmine:</string>
-    <string name="hba1c_est">HbA1c progn.:</string>
+    <string name="hba1c_est">HbA1c prognoos:</string>
     <string name="stddev">Std.hälve:</string>
     <string name="relative_sd_cv">Suhteline hälve (CV):</string>
     <string name="i_agree">MA NÕUSTUN</string>
@@ -993,7 +999,7 @@
     <string name="what_type_of_g4_bridge_device_do_you_use">Mis tüüpi G4 vastuvõtu seadet Te kasutate?</string>
     <string name="xbridge_compatible">xBridge-ga ühilduv</string>
     <string name="libre">Libre</string>
-    <string name="data_source_is_set_to_">Vastuvõtjaks on määratud: </string>
+    <string name="data_source_is_set_to_">Andmeallikaks on määratud: </string>
     <string name="change_settings">Muuda sätteid</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Aegunud/eksperimentaalne veresuhkru prognoosimine on sisse lülitatud.\n\nSee EI OLE SOOVITATUD ja võib jama kokku keerata.\n\nKas lülitame selle välja?</string>
     <string name="entered_blood_tests_which_occur_during_flat_trend_periods_can_automatically_be_used_to_recalibrate_after_20_minutes_this_should_provide_the_most_accurate_method_to_calibrate_with__do_you_want_to_enable_this_feature">Veresuhkru mõõtmisi, mis on sisestatud tasase veresuhkru perioodil, saab automaatselt kasutada 20 min möödudes uuesti kalibreerimiseks. See peaks olema kõige täpsem meetod.\n\nKas soovid seda funktsiooni lubada?</string>
@@ -1002,7 +1008,7 @@
     <string name="restore_backup">Taastada varukoopia?</string>
     <string name="do_you_want_to_restore_the_backup_file_">Kas soovid taastada varukoopia faili: </string>
     <string name="restore">Taasta</string>
-    <string name="calibrate_sensor">Kalibreerida sensor?</string>
+    <string name="calibrate_sensor">Sensori kalibreerimine?</string>
     <string name="we_have_some_readings__next_we_need_the_first_calibration_blood_test__ready_to_calibrate_now">Meil on mõned näidud!\n\nNüüd vajame esimest veresuhkru näitu kalibreerimiseks.\n\nOlete kalibreerimiseks valmis?</string>
     <string name="calibrate">Kalibreeri</string>
     <string name="confirm_delete">Kinnita kustutamine</string>
@@ -1057,7 +1063,7 @@
     <string name="word_lexicon_not_loaded">Sõnaraamatut ei laaditud!</string>
     <string name="no_never">EI, mitte kunagi</string>
     <string name="auto_starting_sensor">Sensori automaatkäivitus!</string>
-    <string name="start_sensor_confirmation">Vastuvõtjaks on: %s\n\nKas soovid muuta seadeid või käivitada sensorit?</string>
+    <string name="start_sensor_confirmation">Andmeallikaks on: %s\n\nKas soovid muuta seadeid või käivitada sensorit?</string>
     <string name="state_not_currently_known">%s  olek pole hetkel teada. Järgmine ühendus värskendab seda</string>
     <string name="unusual_calibration_waiting">Ebatavaline kalibreerimise olek – ootame lisaandmeid</string>
     <string name="could_not_find_blood_data">Ei leidnud veresuhkru andmeid!! %s</string>
