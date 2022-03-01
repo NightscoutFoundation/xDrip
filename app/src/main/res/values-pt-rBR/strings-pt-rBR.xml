@@ -24,6 +24,7 @@
     <string name="title_activity_usb_connected">Atividade USB conectado</string>
     <string name="snooze">Adiar</string>
     <string name="snooze_hint">Adiar alerta por x minutos</string>
+    <string name="ok">Ok</string>
     <string name="cancel">Cancelar</string>
     <string name="no">Não</string>
     <string name="pref_sensor_location_dont_ask_again">Não perguntar novamente</string>
@@ -39,9 +40,12 @@
     <string name="scan_share2_barcode">Escanear códigos de barras</string>
     <string name="pref_share2_scan_barcode_summary">Ou escanear o código de barras no receptor de compartilhamento</string>
     <!-- MongoDB Settings -->
+    <string name="pref_title_mongodb">MongoDB</string>
     <string name="pref_summary_mongodb_enabled">Envio direto para o banco de dados, não recomendado para o Nightscout</string>
+    <string name="pref_title_mongodb_uri">URI</string>
     <string name="pref_dialog_mongodb_uri">Insira o URI do MongoDB\"</string>
     <string name="pref_message_mongodb_uri">Substitua os dados de exemplo em {} com seus dados</string>
+    <string name="pref_default_mongodb_uri">mongodb://{user}:{password}@{host}.mongolab.com:{11111}/{database}</string>
     <string name="pref_title_mongodb_collection">O nome da coleção</string>
     <string name="pref_dialog_mongodb_collection">Insira o nome de coleção</string>
     <string name="pref_message_mongodb_collection">Este é o nome da coleção onde será guardada a informação de CGM</string>
@@ -58,6 +62,7 @@
     <string name="pref_default_api_url">https://suasenha@{SEU-SITE}.azurewebsites.net/api/v1/</string>
     <!-- wifi Settings -->
     <string name="wifi_recievers_dialog_message">Lista de IP separados por vírgula: port (por exemplo 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
+    <string name="wifi_recievers_dialog_title">Coloque os endereços IP e portas de receptores (incluindo endereços MongoDB se necessário)</string>
     <!-- Location Settings -->
     <string name="location_not_found_title">Localização não está ligada</string>
     <string name="location_not_found_message">Para que a pesquisa do Bluetooth funcione em dispositivos mais recentes, a localização precisa estar ativada. O xDrip não rastreia a sua localização exceto com o recurso opcional de Mensagem de Emergência</string>
@@ -77,8 +82,14 @@
     <string name="amazfit_sync_service">Serviço de sincronização AmazFit</string>
     <string name="pref_amazfit_enable_summary">Ativar suporte a dados do Amazfit</string>
     <string name="pref_amazfit_enable">Ligar</string>
+    <string name="pref_amazfit_tile">Serviço de sincronização Amazfit</string>
+    <string name="pref_amazfit_BG_alert_enable_summary">Enviar Alerta De Glicose Para O Smartwatch</string>
     <string name="pref_amazfit_BG_alert_enable">Ligar</string>
+    <string name="pref_amazfit_BG_alert_title">Alerta De Glicemia</string>
+    <string name="pref_amazfit_other_alert_enable_summary">Enviar Outros Alertas Para O Smartwatch</string>
     <string name="pref_amazfit_other_alert_enable">Ligar</string>
+    <string name="pref_amazfit_other_alert_title">Outros Alertas</string>
+    <string name="pref_amazfit_watchface_graph_dots_title">Gráficos Na Tela Do Relógio (Whatface)</string>
     <string name="pref_amazfit_watchface_graph_enable">Ligar</string>
     <string name="pref_amazfit_widget_graph_enable">Ligar</string>
     <string name="taskerConfigInstruction">Cloque no ícone de Visto para confirmar. Não deve ser necessário alterar a string de definição.</string>
