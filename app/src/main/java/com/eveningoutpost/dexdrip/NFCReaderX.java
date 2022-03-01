@@ -534,10 +534,11 @@ public class NFCReaderX {
             byte[] res = null;
             while (true) {
                 try {
-                    res = nfcvTag.transceive(full_cmd);
                     if (use_fake_de_data()) {
                         // DC:A6:32:0F:4F:92
                         res = new byte[]{(byte) 0x12, (byte) 0x92, (byte) 0x4f, (byte) 0x0f, (byte) 0x32, (byte) 0xa6, (byte) 0xdc};
+                    } else {
+                        res = nfcvTag.transceive(full_cmd);
                     }
                     Log.e(TAG, "enable streaming command returned: " + HexDump.dumpHexString(res));
                     break;
@@ -653,6 +654,7 @@ public class NFCReaderX {
                         }
 
                         SensorType sensorType = LibreOOPAlgorithm.getSensorType(patchInfo);
+                        Log.uel(TAG, "Libre sensor of type " + sensorType.name() + " detected.");
                         if (addressed && sensorType != SensorType.Libre1 && sensorType != SensorType.Libre1New) {
                             Log.d(TAG, "Not using addressed mode since not a libre 1 sensor");
                             addressed = false;

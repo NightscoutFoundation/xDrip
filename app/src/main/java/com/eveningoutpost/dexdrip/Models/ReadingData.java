@@ -212,7 +212,9 @@ public class ReadingData {
         for (int i = 0; i < MAX_DISTANCE_FOR_SMOOTHING && points_used < PREFERRED_AVERAGE; i++) {
             LibreTrendPoint libreTrendPoint = libreTrendPoints.get(glucoseData.sensorTime - i);
             if (errorHash.contains(glucoseData.sensorTime - i) || libreTrendPoint.rawSensorValue == 0) {
-                Log.d(TAG, "Not using point because it is in error" + libreTrendPoint);
+                if (libreTrendPoint.getSensorTime() != 0) {
+                    Log.d(TAG, "Not using point because it is in error" + libreTrendPoint);
+                }
                 continue;
             }
             sum += libreTrendPoint.rawSensorValue;
