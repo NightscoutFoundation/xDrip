@@ -402,9 +402,11 @@
     <string name="sdcard_not_writable_cannot_save">SD kaardile ei saa salvestada</string>
     <string name="sdcard_not_readable">SD kaart pole loetav</string>
     <string name="loading_settings_from_xdrip_mainline">Seadeid laetakse xDrip põhiliinilt</string>
+    <string name="warning_settings_from_xdrip_and_plus_exist">Hoiatuste seaded xDripist ja xDrip+st on olemas- laeb xDripi</string>
     <string name="new_version_date_colon">"Uue versiooni kuupäev: "</string>
     <string name="old_version_date_colon">"Vana versiooni kuupäev: "</string>
     <string name="speak_your_note_text">Öelge oma märkuse tekst</string>
+    <string name="alarm_if_above_high_value">Alarmeeri kui on üle kõrge Vs näidust</string>
     <string name="for_longer_than_minutes">kauem kui (minutit)</string>
     <string name="choose_sound_used_for_persistent_high_alarm">Valige püsiva kõrge alarmi jaoks kasutatav heli.</string>
     <string name="persistent_high_sound">Püsivalt vali heli</string>
@@ -677,7 +679,7 @@
     <string name="low_battery_percentage">Madal akutase</string>
     <string name="notify_data_arrives_master"><![CDATA[Teavita, kui põhiseadmelt saabuvate andmete intervall on > 20 min.]]></string>
     <string name="follower_chime_new">Uue jälgija märguanne</string>
-    <string name="carb_ratio">SV suhe</string>
+    <string name="carb_ratio">Süsivesikute suhe</string>
     <string name="enable_dedicated_insulin_profiles">Seadista insuliini manustamise profiilid</string>
     <string name="desc_enable_dedicated_insulin_profiles">Siin saab lubada ja seadistada erinevaid insuliini manustamise profiile</string>
     <string name="insulin_sensitivity">Insuliinitundlikkus</string>
