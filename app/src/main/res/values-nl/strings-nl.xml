@@ -1032,9 +1032,9 @@
     <string name="summary_Probe_Bluetooth_services_on_every_connect">Test Bluetooth-services bij elke verbinding</string>
     <string name="title_Always_discover_services">Ontdek services altijd</string>
     <string name="summary_Only_suitable_for_phones_which_support_automatic_pairing">Alleen geschikt voor telefoons die automatisch koppelen ondersteunen</string>
-    <string name="title_Allow_blucon_unbonding">Blucon loskoppelen toestaan</string>
+    <string name="title_Allow_blucon_unbonding">BluCon loskoppelen toestaan</string>
     <string name="summary_Suppress_the_ugly_state_message_if_Problem_appears">Onderdruk het lelijke statusbericht als het probleem wordt weergegeven</string>
-    <string name="title_supress_ugly_state_message">onderdruk lelijke statusbericht</string>
+    <string name="title_supress_ugly_state_message">onderdruk lelijk statusbericht</string>
     <string name="summary_write_Battery_Information_for_additional_analytic">schrijf de batterij-informatie voor aanvullende analyse in een bestand. Gebruik dit alleen als u daarom wordt gevraagd door een ontwikkelaar!</string>
     <string name="title_Batterylog">Batterijlog</string>
     <string name="summary_Choose_to_display_the_bridge_battery_level">Kies ervoor om het batterijniveau van de brug weer te geven</string>
@@ -1359,7 +1359,7 @@
     <string name="title_desert_sync_master_ip">Master IP-adres</string>
     <string name="summary_send_sync_show_qr">Streepjescode die volgers kunnen scannen om ze automatisch te configureren</string>
     <string name="title_send_sync_show_qr">QR-code weergeven</string>
-    <string name="summary_desert_use_https">Voeg nog een coderingslaag toe voor gedeelde netwerken, bijvoorbeeld openbare wifi</string>
+    <string name="summary_desert_use_https">Voeg nog een encryptie laag toe voor gedeelde netwerken; bijv. openbare WiFi</string>
     <string name="title_desert_use_https">Gebruik HTTPS</string>
     <string name="title_xdrip_plus_experimental">Experimentele sectie</string>
     <string name="summary_inpen_screen">Doseringen downloaden</string>
@@ -1449,7 +1449,7 @@
     <string name="classic_simple">Klassiek eenvoudig</string>
     <string name="libre">Libre</string>
     <string name="what_type_of_libre_bridge_device_do_you_use">Welk type Libre bridge-apparaat gebruikt u?</string>
-    <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Bluetooth Bridge-apparaat: Blucon, Bubble, LimiTTer, Bluereader, Tomato enz</string>
+    <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Bluetooth Bridge-apparaat: Blucon, Bubble, LimiTTer, blueReader, Tomato enz</string>
     <string name="libre_patched">Libre2 gepatcht</string>
     <string name="librealarm_app_using_sony_smartwatch">LibreAlarm-app: Sony Smartwatch gebruiken</string>
     <string name="__data_source_disabled">\n GEGEVENSBRON UITGESCHAKELD</string>
@@ -1478,7 +1478,7 @@
     <string name="maybe_later">Misschien later</string>
     <string name="yes_do_it">Ja doe het</string>
     <string name="recommend_that_you_change_wifi_to_always_be_on_during_sleep">Aanbevolen dat u wifi wijzigt om altijd aan te zijn tijdens de slaapstand</string>
-    <string name="ooops_this_device_doesnt_seem_to_have_a_wifi_settings_page">Oeps, dit apparaat lijkt geen pagina met wifi-instellingen te hebben!</string>
+    <string name="ooops_this_device_doesnt_seem_to_have_a_wifi_settings_page">Oeps, dit apparaat lijkt geen WiFi instellingen pagina te hebben!</string>
     <string name="restore_backup">Back-up terugzetten?</string>
     <string name="do_you_want_to_restore_the_backup_file_">Wilt u het back-upbestand herstellen: </string>
     <string name="restore">Herstellen</string>
@@ -1528,7 +1528,7 @@
     <string name="please_wait">Even geduld aub..</string>
     <string name="didnt_find_any_glucose_readings_in_that_time_period">Geen glucosemetingen gevonden in die periode</string>
     <string name="got_calibration_in_the_future__cannot_process">Kreeg kalibratie in de toekomst - kan niet verwerken!</string>
-    <string name="remote_snooze">Sluimeren op afstand..</string>
+    <string name="remote_snooze">Snoozen op afstand...</string>
     <string name="sensor_stopped">Sensor gestopt</string>
     <string name="restarting_collector">Verzamelaar opnieuw opstarten!</string>
     <string name="follower_deleted_succesfully">Volger succesvol verwijderd</string>
@@ -1552,9 +1552,9 @@
     <string name="title_ob1_g5_preemptive_restart_alert">Waarschuwing bij preventieve herstart</string>
     <string name="summary_ob1_g5_preemptive_restart_alert">Geef een waarschuwing wanneer u de sessie preventief herstart</string>
     <string name="blood_glucose_graph">Bloed glucose grafiek</string>
-    <string name="pref_enable_insulinprofiles">schakel ten minste één en maximaal drie profielen in</string>
-    <string name="pref_select_basal_insulinprofiles">kies het basale insulineprofiel.</string>
-    <string name="pref_select_bolus_insulinprofiles">kies het bolusinsuline-profiel. ook gebruikt voor pomp en pen...</string>
+    <string name="pref_enable_insulinprofiles">Schakel ten minste één en maximaal drie profielen in</string>
+    <string name="pref_select_basal_insulinprofiles">Kies het basale insulineprofiel.</string>
+    <string name="pref_select_bolus_insulinprofiles">Kies het bolusinsuline-profiel. ook gebruikt voor pomp en pen...</string>
     <string name="enable_streaming_summary">Maak verbinding met libre 2 sensoren nadat u ze hebt gescand. Dit zorgt ervoor dat de libre reader en libre link geen waarschuwingen meer ontvangen</string>
     <string name="enable_streaming_title">Bluetooth-verbinding starten met libre 2-sensoren</string>
     <string name="enable_streaming_always_allow">Maak altijd verbinding met libre2-sensoren</string>
@@ -1614,6 +1614,14 @@
     <string name="message_variant">xDrip+ varianten zorgen ervoor dat meerdere apps tegelijk geïnstalleerd kunnen worden. Voor gevorderd gebruik of om xDrip-Experimenteel en xDrip+ tegelijkertijd te installeren.\n\nMet varianten werken sommige dingen mogelijk niet goed, doordat de ene app of de andere beschikt over exclusieve toegang, bijvoorbeeld bluetooth koppeling. Feedback en foutrapporten over varianten worden verwelkomd!</string>
     <string name="expires_unknown">Vervalt: ???</string>
     <string name="sensor_expired">VERVALLEN!</string>
+    <plurals name="sensor_expires">
+        <item quantity="one">Vervalt: %sd</item>
+        <item quantity="other">Vervalt: %sd</item>
+    </plurals>
+    <plurals name="sensor_age">
+        <item quantity="one">Leeftijd: %sd</item>
+        <item quantity="other">Leeftijd: %sd</item>
+    </plurals>
     <string name="external_status_strings_eg_tbr">Externe status weergave, bijvoorbeeld TBR van AAPS</string>
     <string name="accept_external_status">Accepteer externe status</string>
 </resources>
