@@ -6,7 +6,6 @@
     <PreferenceCategory
         android:key="dataSync"
         android:title="@string/data_sync">
-
         <PreferenceScreen
             android:icon="@drawable/ic_cloud_upload_grey600_48dp"
             android:key="cloud_data_sync"

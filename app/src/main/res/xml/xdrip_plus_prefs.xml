@@ -996,7 +996,7 @@
             android:key="xdrip_plus_move_settings"
             android:title="Backup and Restore">              //////@string/copying_settings
             <PreferenceScreen
-                android:icon="@drawable/ic_scan"
+                android:icon="@drawable/ic_qrscan"
                 android:key="auto_configure"
                 android:summary="Import settings from QR or barcode"
                 android:title="Barcode Scanner" />                     ////// @string/prefs_auto_config_summary   //////  @string/auto_configure_title
