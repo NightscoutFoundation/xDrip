@@ -998,7 +998,7 @@
             <PreferenceScreen
                 android:icon="@drawable/ic_scan"
                 android:key="auto_configure"
-                android:summary="Apply settings from QR or barcode"
+                android:summary="Import settings from QR or barcode"
                 android:title="Barcode Scanner" />                     ////// @string/prefs_auto_config_summary   //////  @string/auto_configure_title
             <Preference
                 android:icon="@drawable/ic_qrcode_grey600_48dp"
