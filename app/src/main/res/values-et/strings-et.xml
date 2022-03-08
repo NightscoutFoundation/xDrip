@@ -708,6 +708,8 @@
     <string name="insulin_sensitivity">Insuliinitundlikkus</string>
     <string name="secondary_plugin_glucose_value">Täiendava liidese veresuhkruväärtus</string>
     <string name="force_english_text">Ainult inglise keeles</string>
+    <string name="using_local_language">Kasutad praegu seadme määratud keelt</string>
+    <string name="forcing_alternate_language">Praegu sunnitakse kasutama alternatiivset keelt</string>
     <string name="chosse_language">Vali keel</string>
     <string name="low_prediction_values">Madala taseme ennustusväärtused</string>
     <string name="target_glucose_default">Veresuhkru eesmärgi vaikevariant</string>
@@ -833,6 +835,8 @@
     <string name="xdrip_software_changed_format">xDrip programmiversioon muudeti: %1$s -> %2$s</string>
     <string name="select_device">Vali seade</string>
     <string name="no_bluetooth_audio_found">Bluetooth heliseadet ei leitud</string>
+    <string name="tap_to_set_current_car_audio_device">Puuduta, et seadistada hetkel ühendatud auto heliseadet</string>
+    <string name="learn_current_car_audio">Salvesta praegune auto heliseade</string>
     <string name="detect_car_audio">Tuvasta auto audio</string>
     <string name="bluetooth_watchdog_timers">Taimeri aeg BT jälgija jaoks</string>
     <string name="bluetooth_watchdog_timer_sums">Sisesta väärtus minutites</string>
@@ -914,6 +918,10 @@
     <string name="restart_in_the_morning">Taaskäivita hommikul</string>
     <string name="reminder_title">Meeldetuletuse pealkiri</string>
     <string name="what_time_of_day_question">Mis kellaaeg?</string>
+    <string name="all_alerts_currently_disabled">KÕIK HOIATUSED HETKEL TÜHISTATUD</string>
+    <string name="low_and_high_alerts_currently_disabled">MADALA JA KÕRGE VS HOIATUSED HETKEL TÜHISTATUD</string>
+    <string name="low_alerts_currently_disabled">MADALA VS HOIATUSED HETKEL TÜHISTATUD</string>
+    <string name="high_alerts_currently_disabled">KÕRGE VS HOIATUSED HETKEL TÜHISTATUD</string>
     <string name="bg_reading_missed">VS näidud jäid vahele</string>
     <string name="not_connected">Pole ühendatud</string>
     <string name="no_data">Andmed puuduvad</string>
