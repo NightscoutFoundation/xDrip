@@ -1569,6 +1569,8 @@
     <string name="title_lower_fuzzer">Baja FUZZER</string>
     <string name="summary_lower_fuzzer">Bajar el valor de FUZZER de 2.5 minutos a 37.5 segundos</string>
     <string name="without_camera_permission_cannot_scan_barcode">Sin el permiso de usar la cámara, no podemos escanear un código de barras</string>
+    <string name="summary_create_missing_filtered">Make filtered data as needed</string>
+    <string name="title_create_missing_filtered">Crear filtros faltantes</string>
     <string name="summary_widget_hide_graph">Oculta el gráfico en los widgets (se muestra en la próxima lectura)</string>
     <string name="title_widget_hide_graph">Ocultar gráfico del widget</string>
     <string name="summary_illustrate_remote_data">Mostrar datos recibidos de forma remota (sólo diagnóstico)</string>
