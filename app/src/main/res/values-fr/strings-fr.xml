@@ -1588,6 +1588,26 @@
     <string name="title_accept_broadcast_snooze">Accepter la diffusion locale</string>
     <string name="title_bg_compensate_noise">\u26A0 Bruit du capteur lissé</string>
     <string name="title_bg_compensate_noise_ultrasensitive">\u26A0 Bruit du capteur ultrasensible</string>
+    <string name="no_never">NON, jamais</string>
+    <string name="auto_starting_sensor">Démarrage automatique du capteur !</string>
+    <string name="start_sensor_confirmation">La source de données est définie à : %s\n\nVoulez-vous modifier les paramètres ou démarrer le capteur ?</string>
+    <string name="noise_workings_noise">Bruit : %s</string>
+    <string name="snoozing_due_button_press">Rappel de l\'alerte en raison d\'un appui sur le bouton de volume</string>
+    <string name="share_database">Partager la base de données...</string>
+    <string name="title_motion_detection_warning">Alerte de détection de mouvement</string>
+    <string name="message_motion_detection_warning">La détection de mouvement est expérimentale et seuls certains téléphones sont compatibles. Son but principal est de détecter le mode véhicule.\n\nLors de tests, il semble que les téléphones haut de gamme sont les plus susceptibles de prendre en charge correctement les capteurs nécessaires à son fonctionnement. Cela peut également vider votre batterie.\n\nPour les mouvements liés à l\'exercice, les compteurs de pas des Smartwatch fonctionnent mieux.</string>
+    <string name="title_variant">Vous utilisez une variante xDrip+</string>
+    <string name="message_variant">Les variantes xDrip+ permettent l\'installation simultanée de plusieurs applications. Soit pour une utilisation avancée, soit pour permettre à xDrip-Experimental et à xDrip+ d\'être installés en même temps.\n\nAvec les variantes, certaines choses peuvent ne pas fonctionner correctement en raison d\'un accès exclusif par une des deux applications, par exemple pour l\'appairage bluetooth. Les commentaires et les rapports de bugs sur les variantes sont les bienvenus !</string>
+    <string name="expires_unknown">Expire : ???</string>
+    <string name="sensor_expired">EXPIRÉ !</string>
+    <plurals name="sensor_expires">
+        <item quantity="one">Expire : %sj</item>
+        <item quantity="other">Expire : %sj</item>
+    </plurals>
+    <plurals name="sensor_age">
+        <item quantity="one">Âge : %sj</item>
+        <item quantity="other">Âge : %sj</item>
+    </plurals>
     <string name="external_status_strings_eg_tbr">Chaînes d\'état externes, par exemple TBR d\'AAPS</string>
     <string name="accept_external_status">Accepter le statut externe</string>
 </resources>
