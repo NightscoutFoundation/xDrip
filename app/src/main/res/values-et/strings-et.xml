@@ -796,6 +796,7 @@
     <string name="Speech_speed">Kõne kiirus</string>
     <string name="Speech_pitch">Kõne helikõrgus</string>
     <string name="Speak_Alerts">Ütle hoiatusi</string>
+    <string name="advanced_bluereader_settings_summary">blueReader\'i täpsemad sätted</string>
     <string name="advanced_bluereader_settings">blueReaderi seaded</string>
     <string name="bluereader_turnoff">Ohutuslüliti välja</string>
     <string name="blueReader_turnoffvalue">Väärtuse %</string>
@@ -904,7 +905,12 @@
     <string name="reminder_due">Meeldetuletuse tähtaeg</string>
     <string name="title_add_reminder">Lisa meeldetuletus</string>
     <string name="title_edit_reminder">Muuda meeldetuletust</string>
+    <string name="sound_once">ühekordne heli</string>
+    <string name="alert_until_dismissed">hoiata kuni tühistamiseni</string>
+    <string name="and_then_repeat">ja seejärel korda iga</string>
+    <string name="will_not_repeat">kuid ei korrata pärast seda</string>
     <string name="Please_Allow_Permission">Palun anna luba</string>
+    <string name="need_storage_permission">Kõigile helinatele juurdepääsuks on vaja salvestusluba</string>
     <string name="select_file_reminder_sound">Vali fail meeldetuletuse heliks</string>
     <string name="select_tone_alert">Valige alarmi helin:</string>
     <string name="completed">tehtud</string>
@@ -913,6 +919,7 @@
     <string name="next">järgmine</string>
     <string name="last">viimane</string>
     <string name="using_default_sound">Kasutusel vaikehelin</string>
+    <string name="cannot_chose_file">Ilma salvestamise loata ei saa faili valida</string>
     <string name="problem_with_sound">Probleem heliga</string>
     <string name="invalid_number">Vigane number</string>
     <string name="toast_deleted">Kustutatud:</string>
@@ -965,9 +972,14 @@
     <string name="no_data">Andmed puuduvad</string>
     <string name="no_bluetooth">Pole Bluetoothi</string>
     <string name="connection_status_long">Ühenduse olek:   </string>
+    <string name="without_location_scan_doesnt_work">Ilma asukoha loata Androidi Bluetooth skaneerimine ei tööta</string>
+    <string name="android_10_need_background_location">Android 10 ja uuemad versioonid vajavad Bluetooth\'i töötamiseks taustal asukohta</string>
+    <string name="without_location_permission_emergency_cannot_get_location">Ilma asukoha loata ei saa hädaabisõnumid asukohaandmeid kasutada</string>
+    <string name="force_speaker_colon">Kõlari sundkasutus</string>
     <string name="choose_data_source">Andmeallika valimine</string>
     <string name="which_system_do_you_use">Millist süsteemi kasutad?</string>
     <string name="please_allow_permission">Palun anna luba</string>
+    <string name="location_permission_needed_to_use_bluetooth">Bluetooth\'i kasutamiseks on vaja asukoha luba!</string>
     <string name="did_you_insert_it_today">Kas sa sisestasid selle täna?</string>
     <string name="we_need_to_know_when_the_sensor_was_inserted_to_improve_calculation_accuracy__was_it_inserted_today">Arvutustäpsuse parandamiseks on vaja teada, millal sensor sisestati.\n\nKas sensor sisestati täna?</string>
     <string name="yes_today">JAH, täna</string>
@@ -976,6 +988,10 @@
     <string name="new_sensor_started">UUS SENSOR KÄIVITATUD</string>
     <string name="error_sensor_start_time_in_future">VIGA: SENSORI KÄIVITAMISAEG ON TULEVIKUS</string>
     <string name="not_today">Mitte täna</string>
+    <string name="need_permission_to_access_audio_files">Helifailidele juurdepääsuks on vaja luba</string>
+    <string name="need_contacts_permission_to_select_message_recipients">Sõnumi adressaatide valimiseks on vaja kontaktide luba</string>
+    <string name="need_storage_permission_to_access_all_ringtones">Kõigile helinatele juurdepääsuks on vaja salvestusluba</string>
+    <string name="xdrip_needs_whitelisting_for_proper_performance">xDrip+ vajab õigeks toimimiseks heakskiidetud äppide nimekirja kandmist</string>
     <string name="manual_overwrite_not_possible">Käsitsi ülekirjutamine pole võimalik!</string>
     <string name="use_mobile_data">Kasuta mobiilside andmeid</string>
     <string name="summary_cloud_storage_api_download_enable">Proovi ka Nightscout\'i raviandmeid alla laadida</string>
