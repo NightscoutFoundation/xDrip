@@ -521,7 +521,7 @@
     <string name="disable_alert">Wyłącz alarm</string>
     <string name="save_alert">Zapisz alarm</string>
     <string name="remove_alert">Usuń alarm</string>
-    <string name="snooze_alert_before_it_fires">Uspij alarm zanim bedzie aktywny</string>
+    <string name="snooze_alert_before_it_fires">Uśpij alarm, zanim będzie aktywny</string>
     <string name="create_low_alert">Ustaw ostrzeżenie o niskim poziomie</string>
     <string name="create_high_alert">Ustaw ostrzeżenie o wysokim poziomie</string>
     <string name="long_press_an_existing_alert_to_edit">(Długie naciśnięcie - edytuj istniejący alert)</string>
@@ -761,7 +761,7 @@
     <string name="alert_snooze">Uśpij alarm</string>
     <string name="alert_minutes_reraise">Liczba minut przed zgłoszeniem tego samego ostrzeżenia po jego uśpieniu.</string>
     <string name="reraise_before_snooze">Odnów alarm przed czasem drzemki</string>
-    <string name="reraise_not_snoozed_sooner">Odnów alarm jeżeli nie został uśpiony przed końcem drzemki</string>
+    <string name="reraise_not_snoozed_sooner">Odnów alarm, jeżeli nie został uśpiony przed końcem drzemki</string>
     <string name="alert_reraise_time">Interwał wznowienia alarmu</string>
     <string name="alert_seconds_reraise">Liczba SEKUND, które muszą upłynąć, zanim pojawi się ten sam alarm.</string>
     <string name="bg_falling_fast">Szybki spadek glikemii</string>
