@@ -593,6 +593,7 @@
     <string name="predictive_readings_old">Vana meetod - mittesoovitav! Püüab igal minutil prognoosida andmeid paari viimase andmepunkti abil.</string>
     <string name="use_external_blukon_algorithm_summary">Kasuta protsessivälist (OOP) Libre algoritmi. (BluCon/NFC/LibreAlarm)</string>
     <string name="display_predictive_values">Kuva prognoositud väärtusi</string>
+    <string name="calibrate_external_libre_algorithm_title">OOP algoritmi kalibreerimine.</string>
     <string name="libre_use_smoothed_data_summary">Kasuta 5 punkti keskmist, et siluda Libre andmeid.</string>
     <string name="libre_use_smoothed_data_title">Silu Libre andmed.</string>
     <string name="retrieve_blukon_history_title">Hangi Libre ajalugu</string>
@@ -658,6 +659,7 @@
     <string name="g5_force_ui_thread">See on oluline mõnede Android seadmete ühenduvuse jaoks, kuid andmed võivad jääda lugemata muude UI intensiivste tegevuste kasutamisel.</string>
     <string name="authentificate_before_reading">Tuvasta G5 enne igat lugemist</string>
     <string name="unbond_g5_before_read">Enne iga vastuvõttu katkesta ühendus G5-ga</string>
+    <string name="g5_remove_before_read">See eemaldab G5\'e sinu telefoniga seotud seadmete loendist ja proovib iga lugemiskatsega täielikku autentimist ja sidumist.</string>
     <string name="use_calibrated_data">Kasuta allikana kalibreeritud andmeid</string>
     <string name="data_sync">Andmete sünkroonimine</string>
     <string name="options_for_upload">Valikud Nightscout, MongoDB või Dexcom Share üleslaadimiseks</string>
