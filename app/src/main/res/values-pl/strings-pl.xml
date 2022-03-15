@@ -960,8 +960,8 @@
     <string name="emergency_message_feature">Funkcja wiadomości awaryjnej</string>
     <string name="text_messages_can_be_sent_with_your_location_if_you_do_not_respond_to_alarms_this_feature_is_experimental_and_may_not_be_reliable">Wiadomości tekstowe z twoją lokalizacją mogą być wysyłane, jeśli nie odpowiadasz na alarmy. Ta funkcja jest eksperymentalna i może nie działać w pełni poprawnie.</string>
     <string name="your_name">Twoje imię</string>
-    <string name="did_not_acknowledge_a_low_glucose_alert">%1$s nie potwierdził alertu niskiego poziomu glukozy przez %2$s</string>
-    <string name="did_not_acknowledge_a_high_glucose_alert">%1$s nie potwierdził wysokiego poziomu glukozy przez %2$s</string>
+    <string name="did_not_acknowledge_a_low_glucose_alert">%1$s nie potwierdził alarmu niskiego poziomu glukozy przez %2$s</string>
+    <string name="did_not_acknowledge_a_high_glucose_alert">%1$s nie potwierdził alarmu wysokiego poziomu glukozy przez %2$s</string>
     <string name="has_not_had_glucose_data_received_for">%1$s nie odebrał danych glukozy przez %2$s</string>
     <string name="phone_has_not_been_used_for">%1$s telefon nie był używany przez %2$s</string>
     <string name="is_requesting_assistance">%s prosi o pomoc</string>
@@ -1115,6 +1115,7 @@
     <string name="low_and_high_alerts_currently_disabled">ALARMY O NISKIM I WYSOKIM POZIOMIE OBECNIE WYŁĄCZONE</string>
     <string name="low_alerts_currently_disabled">ALARMY O NISKIM POZIOMIE OBECNIE WYŁĄCZONE</string>
     <string name="high_alerts_currently_disabled">ALARMY O WYSOKIM POZIOMIE OBECNIE WYŁĄCZONE</string>
+    <string name="bg_reading_missed">Zgubiono Odczyty Glikemii</string>
     <string name="not_connected">Nie połączono</string>
     <string name="no_data">Brak danych</string>
     <string name="no_bluetooth">Brak bluetooth</string>
@@ -1193,12 +1194,15 @@
     <string name="title_miband_nightmode_start">Początek trybu nocnego</string>
     <string name="title_miband_nightmode_end">Koniec trybu nocnego</string>
     <string name="title_miband_interval_in_nightmode">Interwał</string>
+    <string name="summary_miband_interval_in_nightmode">Określa, jak często glikemia będzie synchronizowana w trybie nocnym</string>
     <string name="title_miband_colect_heartrate">Mierz puls</string>
     <string name="summary_miband_colect_heartrate">Włącza mierzenie tętna za pomocą opaski. Interwał aktualizacji można skonfigurować w MiFit lub dowolnej aplikacji zewnętrznej</string>
     <string name="title_miband_authkey">Klucz uwierzytelniania</string>
     <string name="summary_miband_authkey">Ustaw klucz autoryzacji dla MiBand4 (Aby uzyskać klucz autoryzacyjny, postępuj zgodnie z instrukcjami na https://www.freemyband.com/)</string>
     <string name="summary_miband_mac">Pozostaw puste dla automatycznego wyszukiwania</string>
     <string name="title_miband_send_readings_as_notification">Odczyty glikemii jako powiadomienia</string>
+    <string name="summary_miband_send_readings_as_notification">Będzie używać powiadomień, aby wysyłać odczyty glikemii. Data nie zostanie zmieniona, więc wszystkie funkcje opaski mogą być używane.
+        Należy wyłączyć, jeśli chcesz korzystać z tarczy zegarowej xDrip (Wymagane jest usunięcie oficjalnej aplikacji MiFit, aby uniknąć nadpisywania daty)</string>
     <string name="title_miband_vibrate_on_readings">Wibruj przy odczytach</string>
     <string name="title_miband_send_calls">Wysyłaj połączenia</string>
     <string name="summary_miband_send_calls">Wyślij powiadomienia o połączeniach do opaski (Android 6+)</string>
