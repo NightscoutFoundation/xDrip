@@ -1616,4 +1616,10 @@
     <string name="sensor_expired">SÜRESİ DOLDU!</string>
     <string name="external_status_strings_eg_tbr">Harici durum dizileri, ör. AAPS\'den GBO</string>
     <string name="accept_external_status">Harici Durumu Kabul Et</string>
+    <string name="cancel_by_default">Varsayılan olarak iptal</string>
+    <string name="old">Eski</string>
+    <string name="neww">Yeni</string>
+    <string name="reschedule_with_new_timing">Yeni zamanlama ile yeniden planlansın mı?</string>
+    <string name="select_new_sound_source">Yeni ses kaynağı seçin</string>
+    <string name="snooze_done">← Ertele / Bitti →</string>
 </resources>
