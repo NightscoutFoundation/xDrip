@@ -1609,4 +1609,10 @@
     </plurals>
     <string name="external_status_strings_eg_tbr">Cadenas de estado externas, por ejemplo, TBR de AAPS</string>
     <string name="accept_external_status">Aceptar estado externo</string>
+    <string name="cancel_by_default">Cancelar por defecto</string>
+    <string name="old">Antiguo</string>
+    <string name="neww">Nuevo</string>
+    <string name="reschedule_with_new_timing">¿Reprogramar con nuevo tiempo?</string>
+    <string name="select_new_sound_source">Seleccionar nueva fuente de sonido</string>
+    <string name="snooze_done">← Posponer / Hecho →</string>
 </resources>
