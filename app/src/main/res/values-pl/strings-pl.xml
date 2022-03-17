@@ -1454,4 +1454,9 @@
     <string name="message_variant">Warianty xDrip+ pozwalają na zainstalowanie wielu aplikacji jednocześnie. Do zastosowań zaawansowanych lub żeby umożliwić jednoczesną instalacje xDrip-Experimental i xDrip+.\n\nZ wariantami, niektóre rzeczy mogą nie działać poprawnie, ponieważ jedna lub druga aplikacja posiada wyłączny dostęp, na przykład do parowania bluetooth. Opinie i raporty o błędach dotyczące wariantów są mile widziane!</string>
     <string name="expires_unknown">Wygasa: ???</string>
     <string name="sensor_expired">WYGASŁ!</string>
+    <string name="cancel_by_default">Anuluj domyślnie</string>
+    <string name="old">Stary</string>
+    <string name="neww">Nowy</string>
+    <string name="select_new_sound_source">Wybierz nowe źródło dźwięku</string>
+    <string name="snooze_done">← Uśpij / Potwierdź →</string>
 </resources>
