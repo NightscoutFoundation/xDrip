@@ -1610,4 +1610,5 @@
     </plurals>
     <string name="external_status_strings_eg_tbr">Chaînes d\'état externes, par exemple TBR d\'AAPS</string>
     <string name="accept_external_status">Accepter le statut externe</string>
+    <string name="old">Ancien</string>
 </resources>
