@@ -246,21 +246,21 @@
     <string name="data_source_settings">Andmeallika sätted</string>
     <string name="smart_watch_features">Nutikella funktsioonid</string>
     <string name="wear_integration">Wear ühendamine</string>
-    <string name="send_data_to_android_wear_watch">Saada andmed Android Wear kella vaikekuvale.</string>
+    <string name="send_data_to_android_wear_watch">Saada andmed Android Wear kella avakuvale.</string>
     <string name="android_wear_integration">Android Weari integratsioon</string>
-    <string name="pref_enable_wearG5">Luba Wear kogumis teenus</string>
+    <string name="pref_enable_wearG5">Luba Wear kogumisteenus</string>
     <string name="pref_summary_enable_wearG5">Ühenda Wear BT saatjaga kui telefon on levist väljas</string>
     <string name="pref_force_wearG5">Sunni Wear kogumisteenus</string>
     <string name="pref_summary_force_wearG5">Sunni telefoni Wear kogumisteenust kasutama</string>
     <string name="pref_disable_wearG5_on_lowbattery">Katkesta sundus madala akutaseme korral</string>
-    <string name="pref_summary_disable_wearG5_on_lowbattery">Weari tühja aku teavituse korral lülita Wear kogumis teenuse sundkasutamine välja</string>
+    <string name="pref_summary_disable_wearG5_on_lowbattery">Kella tühja aku teavituse korral lülita Wear kogumisteenuse sundkasutamine välja</string>
     <string name="pref_disable_wearG5_on_missedreadings">Katkesta sundus kaduma läinud tulemuste korral</string>
     <string name="pref_summary_disable_wearG5_on_missedreadings">Peata sunduslik kella vastuvõtt saatjalt kui viimasest kella saadud näidust on möödunud niipalju minuteid</string>
     <string name="pref_disable_wearG5_on_missedreadings_level">Minutid viimasest kella poolt saadud lugemist</string>
     <string name="pref_node_wearG5">Seade, mis kogub saatjalt andmeid</string>
     <string name="pref_summary_node_wearG5">Sunni telefoni Wear kogumisteenust kasutama</string>
     <string name="pref_sync_wear_logs">Sünkrooni kella logi</string>
-    <string name="pref_summary_sync_wear_logs">Weari logide saatmine sündmustevaaturisse</string>
+    <string name="pref_summary_sync_wear_logs">Saada kella logi põhiprogrammi</string>
     <string name="pref_wear_logs_prefix">Kella logi eesliide</string>
     <string name="pref_summary_wear_logs_prefix">Eesliide, mida kasutatakse kella logi sissekannetes</string>
     <string name="pref_show_treatments">Näita ravi annuseid</string>
@@ -406,7 +406,7 @@
     <string name="new_version_date_colon">"Uue versiooni kuupäev: "</string>
     <string name="old_version_date_colon">"Vana versiooni kuupäev: "</string>
     <string name="speak_your_note_text">Öelge oma märkuse tekst</string>
-    <string name="alarm_if_above_high_value">Alarmeeri kui on üle kõrge Vs näidust</string>
+    <string name="alarm_if_above_high_value">Hoiata kui on üle kõrge VS näidu</string>
     <string name="for_longer_than_minutes">kauem kui (minutit)</string>
     <string name="choose_sound_used_for_persistent_high_alarm">Valige püsiva kõrge alarmi jaoks kasutatav heli.</string>
     <string name="persistent_high_sound">Püsivalt vali heli</string>
@@ -500,11 +500,11 @@
     <string name="insulin_duration_hours">Insuliini toimeaeg tundides</string>
     <string name="default_liver_sensitivity_ratio">Vaikimisi maksa tundlikkuse suhe</string>
     <string name="key_is_used_instead_of_google_account">Võtit kasutatakse Google konto asemel</string>
-    <string name="sync_using_custom_security_key">Sünkroniseerimine kasutades spets turvavõtit</string>
+    <string name="sync_using_custom_security_key">Sünkroniseeri spetsiaalse turvavõtmega</string>
     <string name="handset_group_security_key">Telefonide grupi sünkroniseerimise turvavõti</string>
     <string name="handset_sync_grouping_key">Telefonide süknroniseerimise grupivõti</string>
     <string name="alert_name_colon">Alarmi nimi:</string>
-    <string name="threshold_colon">Künnis:</string>
+    <string name="threshold_colon">Piirmäär:</string>
     <string name="default_snooze_colon">Vaikimisi vaigistus:</string>
     <string name="alert_tone_colon">Alarmi heli:</string>
     <string name="choose_file">Vali fail</string>
@@ -535,7 +535,7 @@
     <string name="grid_time_lines_visible">Graafiku ajajooned nähtavaks</string>
     <string name="grid_glucose_lines_visible">Graafiku veresuhkru jooned nähtavaks</string>
     <string name="useful_for_noise_and_missed_readings">Kasulik valede või puuduvate tulemuse jaoks</string>
-    <string name="the_standard_xdrip_calculated_value">xDrip standard arvutuslikud väärtused</string>
+    <string name="the_standard_xdrip_calculated_value">Standardsed xDrip arvutatud väärtused</string>
     <string name="display_ideal_glucose_target_line">Kuva ideaalse veresuhkru sihtjoon</string>
     <string name="display_eight_hour_average_line">Kuva 8 tunni keskmise joon</string>
     <string name="display_twenty_four_hour_average_line">Kuva 24 tunni keskmise joon</string>
@@ -578,7 +578,7 @@
     <string name="accept_treatments">Nõustuge raviandmetega</string>
     <string name="process_broadcasted_calibrations">Töötle teistest rakendustest saabunud kalibreerimisi</string>
     <string name="speak_glucose_twice">Veresuhkru väärtus öeldakse iga kord kaks korda</string>
-    <string name="speak_readings_shortcut">Otsetee tulemuste ettelugemiseks</string>
+    <string name="speak_readings_shortcut">Andmete ütlemise otsetee</string>
     <string name="battery_optimization_off">Alates Android 6 veenduge, et aku optimeerimine oleks välja lülitatud (soovitatav).</string>
     <string name="battery_optimization_prompt">Aku optimeerimise otsetee</string>
     <string name="advanced_bluetooth_settings">Bluetoothi täpsemad sätted</string>
@@ -837,6 +837,7 @@
     <string name="bluereader_restdays_onhome">Päevade jääk avakuval</string>
     <string name="bluereader_turnoff">Ohutuslüliti välja</string>
     <string name="blueReader_turnoffvalue">Väärtuse %</string>
+    <string name="blueReader_turnoffvalue_sum">kus blueReader välja lülitatakse</string>
     <string name="days">päevi</string>
     <string name="bluereaderoff">blueReader lülitub välja kui akutase on madalam kui  </string>
     <string name="offical_msg">Ametlik rakendus</string>
@@ -917,7 +918,7 @@
     <string name="sensor_is_still_warming_up_please_wait">Sensor endiselt soojeneb, palun oodake</string>
     <string name="number_wall_config">Numbriseina konfigureerimine</string>
     <string name="summary_If_you_plan_to_only_use_a_Wear_collector_and_never_your_phone">Kui kavatsete kasutada ainult kella vastuvõtjana ja mitte kunagi oma telefoni.</string>
-    <string name="title_Only_use_Wear">Kasuta ainult Wear</string>
+    <string name="title_Only_use_Wear">Kasuta ainult kella</string>
     <string name="title_Display_BWP_Insulin">Kuva booluse ennustus</string>
     <string name="title_Smartwatch_Sensors">Nutikella andurid</string>
     <string name="title_Use_Health_Data">Kasuta kogutud terviseandmeid</string>
@@ -925,6 +926,7 @@
     <string name="title_Heart_Rate_Sensor">Pulsisensor</string>
     <string name="summary_Smooth_heart_rate_graph">Silu pulsigraafik</string>
     <string name="title_Identify_receiver">Tuvasta vastuvõtja</string>
+    <string name="summary_Only_send_to_named_package">Saada ainult märgitud saajale</string>
     <string name="title_Accept_Calibrations">Nõustu kalibreerimistega</string>
     <string name="title_xDrip_Web_Service">xDrip veebiteenus</string>
     <string name="title_Open_Web_Service">Ava veebiteenus</string>
@@ -1057,6 +1059,7 @@
     <string name="need_storage_permission_to_access_all_ringtones">Kõigile helinatele juurdepääsuks on vaja salvestusluba</string>
     <string name="xdrip_needs_whitelisting_for_proper_performance">xDrip+ vajab õigeks toimimiseks heakskiidetud äppide nimekirja kandmist</string>
     <string name="manual_overwrite_not_possible">Käsitsi ülekirjutamine pole võimalik!</string>
+    <string name="upload_even_when_using_mobile_data">Laadi üles isegi mobiilse andmeside kasutamisel</string>
     <string name="use_mobile_data">Kasuta mobiilside andmeid</string>
     <string name="summary_cloud_storage_api_download_enable">Proovi ka Nightscout\'i raviandmeid alla laadida</string>
     <string name="title_cloud_storage_api_download_enable">Lae alla raviandmed</string>
@@ -1078,6 +1081,7 @@
     <string name="title_tidepool_password">Sisselogimise parool</string>
     <string name="title_tidepool_test_login">Testi Tidepool\'i sisselogimist</string>
     <string name="title_tidepool_window_latency">Andmete vanus minutites</string>
+    <string name="title_tidepool_dev_servers">Kasuta integratsiooni (test) servereid</string>
     <string name="title_tidepool">Tidepool</string>
     <string name="show_help">Näita juhendit</string>
     <string name="load_save_settings_on_sdcard">Lae/salvesta seaded</string>
@@ -1087,6 +1091,7 @@
     <string name="view_old_error_log">Vaata vana vigadelogi</string>
     <string name="return_to_home_screen">Tagasi avakuvale</string>
     <string name="title_miband">MiBand</string>
+    <string name="summary_miband_enable">Sünkrooni andmed MiBand treeningkellaga</string>
     <string name="title_miband_enable">Kasuta MiBand kella</string>
     <string name="title_miband_screens_features">MiBand ekraanid / funktsioonid</string>
     <string name="title_miband_screen_battery">Näita aku olek</string>
@@ -1095,6 +1100,9 @@
     <string name="summary_miband_visibility">MiBand on teistele seadmetele nähtav</string>
     <string name="title_miband_switch_display_on_wrist">Vaheta kellal ekraanipilti</string>
     <string name="title_miband_units">Ühikud</string>
+    <string name="summary_miband_units">Valige kellas kasutatav pikkusühik </string>
+    <string name="title_miband_goal_notification">Eesmärgi täitmise märguanne</string>
+    <string name="summary_miband_goal_notification">MiBand vibreerib kui saavutad eesmärgi</string>
     <string name="title_miband_locale_24_hour">24h kellaaeg</string>
     <string name="summary_miband_locale_24_hour">Kuva 24h kellaaeg</string>
     <string name="title_miband_nightmode_category">Öörežiimi seaded</string>
@@ -1103,6 +1111,7 @@
     <string name="title_miband_nightmode_end">Öörežiimi lõpp</string>
     <string name="title_miband_interval_in_nightmode">Intervall</string>
     <string name="title_miband_colect_heartrate">Mõõda pulssi</string>
+    <string name="title_miband_authkey">Autentimise võti</string>
     <string name="summary_miband_mac">Automaatse otsingu jaoks jäta tühjaks</string>
     <string name="summary_miband_send_readings_as_notification">Kasutab veresuhkru näitude saatmiseks teavitusi. Kuupäeva ei muudeta, nii et saab kasutada kõiki kella funktsioone.
         Kui soovite kasutada xDrip kellaplaati, tuleb see keelata (kuupäevade ülekirjutamise vältimiseks on vaja ametlik MiFit rakendus kustutada)</string>
@@ -1217,7 +1226,7 @@
     <string name="title_inpen_screen">InPen insuliini-pen</string>
     <string name="title_inpen_enabled">InPen tugi</string>
     <string name="title_inpen_detect_priming">Tuvasta kasutamine</string>
-    <string name="title_inpen_sounds">Esita heli</string>
+    <string name="title_inpen_sounds">Kasuta heli</string>
     <string name="title_inpen_reset">Otsi uus pen-süstal</string>
     <string name="summary_pendiq_screen">Annuste lugemine ja kirjutamine</string>
     <string name="title_pendiq_screen">Pendiq 2.0 insuliini pen</string>
@@ -1226,7 +1235,7 @@
     <string name="title_pendiq_send_treatments">Saada raviandmed pen-süstlasse</string>
     <string name="title_pendiq_pin">Pen-süstla pin-kood</string>
     <string name="title_use_notification_channels">Teavituskanalid</string>
-    <string name="title_play_sound_for_initial_calibration">Esmane alarm</string>
+    <string name="title_play_sound_for_initial_calibration">Alustamise teavitus</string>
     <string name="category_noisy_readings">Vigased andmed</string>
     <string name="category_falling_rising_bg">Langev/tõusev VS</string>
     <string name="note_search_button">OTSI</string>
@@ -1416,4 +1425,10 @@
     <string name="sensor_expired">AEGUNUD!</string>
     <string name="external_status_strings_eg_tbr">Väljastpoolt saadud andmed</string>
     <string name="accept_external_status">Nõustu välise seisuga</string>
+    <string name="cancel_by_default">Vaikimisi tühistamine</string>
+    <string name="old">Vana</string>
+    <string name="neww">Uus</string>
+    <string name="reschedule_with_new_timing">Uue ajakava järgi ümber paigutada?</string>
+    <string name="select_new_sound_source">Vali uus heli lähtekoht</string>
+    <string name="snooze_done">← Vaigista / Tehtud →</string>
 </resources>
