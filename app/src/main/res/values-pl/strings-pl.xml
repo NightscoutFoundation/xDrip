@@ -237,7 +237,7 @@
     <string name="hardware_data_source">Sprzętowe źródło danych</string>
     <string name="enter_ten_character_dexcom_receiver_serial">Wprowadź 10 znakowy numer seryjny odbiornika Dexcom</string>
     <string name="dexcom_transmitter_id">Dexcom Nadajnik ID</string>
-    <string name="run_collector_in_foreground">Uruchom Collector na pierwszym planie</string>
+    <string name="run_collector_in_foreground">Uruchom kolektor na pierwszym planie</string>
     <string name="shows_a_persistent_notification">Pokazuje ciągłe powiadomienie z wykresem, widoczne na ekranie blokady co zapobiega zabijaniu procesu przez system Android.</string>
     <string name="list_of_receivers">Lista odbiorników</string>
     <string name="extra_tags_for_logging">Dodatkowe tagi logowania</string>
@@ -249,7 +249,7 @@
     <string name="send_data_to_android_wear_watch">Wysyłanie danych do Android Wear Watchface.</string>
     <string name="android_wear_integration">Integracja z Android Wear</string>
     <string name="pref_enable_wearG5">Włącz usługę zbierania pomiarów poprzez np. smartwatch</string>
-    <string name="pref_summary_enable_wearG5">Połącz smartwatch z nadajnikiem BT, gdy telefon jest poza zasięgiem</string>
+    <string name="pref_summary_enable_wearG5">Połącz smartwatch z kolektorem BT, gdy telefon jest poza zasięgiem</string>
     <string name="pref_force_wearG5">Wymuś zbieranie pomiarów poprzez smartwatch</string>
     <string name="pref_summary_force_wearG5">Wymuś użycie pomiarów zbieranych przez smartwatch</string>
     <string name="pref_disable_wearG5_on_lowbattery">Wyłącz wymuszanie przy niskim poziomie baterii</string>
@@ -270,7 +270,7 @@
     <string name="pebble_integration">Integracja z Pebble</string>
     <string name="send_data_to_pebble_watchface">Wysyłanie danych do Pebble Watchface.</string>
     <string name="pebble_watch_integration">Integracja z Pebble Watch</string>
-    <string name="standard_or_trend_pebble_watchface">Tarcza zegarka Pebble - Standard czy Trend?</string>
+    <string name="standard_or_trend_pebble_watchface">Tarcza zegarka Pebble - Standard czy Trend</string>
     <string name="choose_pebble_watchface">Wybierz Pebble Watchface</string>
     <string name="message_to_display_when_bgl_hits">Komunikat będzie wyświetlany, gdy BGL przekroczy szczególną wartość</string>
     <string name="text_to_display_when_hitting_special_value">Tekst wyświetlany po osiągnięciu szczególnej wartości.</string>
@@ -719,7 +719,7 @@
     <string name="upload_to_dexcom">Włącz to, aby przesłać na serwery Dexcom</string>
     <string name="upload_to_dexcom_share">Prześlij wartości glikemii jako Dexcom Share</string>
     <string name="accounts_outside_usa">Wyłączone = Twoje konto i aplikacje śledzące są spoza USA</string>
-    <string name="accounts_inside_usa">Włączone = Twoje konto i aplikacje śledzące są z USA</string>
+    <string name="accounts_inside_usa">Włączone = Twoje konto i aplikacje śledzące (follower) są z USA</string>
     <string name="usa_based_account">Konto Dexcom w USA</string>
     <string name="dexcom_login">Twój login na stronie Dexcom</string>
     <string name="dexcom_user">Logowanie do konta Dexcom</string>
@@ -777,7 +777,7 @@
     <string name="collector_battery_alerts">Alarmy poziomu naładowania nakładki na sensor</string>
     <string name="low_battery_percentage">Niski procent baterii</string>
     <string name="notify_data_arrives_master"><![CDATA[Powiadom kiedy dane dotrą z nadajnika, jeśli opóźnienie wynosi > 20 minut.]]></string>
-    <string name="follower_chime_new">Dźwięk nowego odbiorcy</string>
+    <string name="follower_chime_new">Dźwięk nowego obserwatora</string>
     <string name="carb_ratio">Współczynnik węglowodanów</string>
     <string name="enable_dedicated_insulin_profiles">Ustawienia profili insuliny</string>
     <string name="desc_enable_dedicated_insulin_profiles">Tutaj można włączyć lub skonfigurować różne profile insuliny</string>
@@ -869,7 +869,7 @@
     <string name="level_alerts">Alarmy poziomu</string>
     <string name="override_calibration">Nadpisz kalibrację</string>
     <string name="only_stop_your_sensor_when_you_actually_plan">Zatrzymaj czujnik jedynie wtedy, gdy planujesz go usunąć, w przeciwnym razie pozostaw czujnik uruchomiony!</string>
-    <string name="restart_collector">Zrestartuj Kolektor</string>
+    <string name="restart_collector">Zrestartuj kolektor</string>
     <string name="forget_device">Zapomnij urządzenie</string>
     <string name="other_notes">Pozostałe notatki:</string>
     <string name="delete_future_data">Usuń przyszłe dane</string>
@@ -932,7 +932,7 @@
     <string name="androidwear">Android Wear OS</string>
     <string name="librealarm">LibreAlarm</string>
     <string name="use_librealarm">Używać aplikacji LibreAlarm jako źródła danych?</string>
-    <string name="noise_blocking">Blokowanie niedokładności</string>
+    <string name="noise_blocking">Blokowanie szumu</string>
     <string name="level_at_which_noisy_data_should_not_be_broadcast">Poziom, na którym niedokładne dane nie powinny być transmitowane, ponieważ mogą być mylące dla odbierających aplikacji</string>
     <string name="low_parakeet_battery">Niski poziom baterii Parakeet</string>
     <string name="glucose_units_mmol_or_mgdl">Jednostki glukozy mmol/l lub mg/dL</string>
