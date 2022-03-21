@@ -1624,8 +1624,10 @@
     </plurals>
     <string name="external_status_strings_eg_tbr">Externe status weergave, bijvoorbeeld TBR van AAPS</string>
     <string name="accept_external_status">Accepteer externe status</string>
+    <string name="cancel_by_default">Standaard annuleren</string>
     <string name="old">Oud</string>
     <string name="neww">Nieuw</string>
     <string name="reschedule_with_new_timing">Opnieuw inplannen met nieuwe tijd?</string>
+    <string name="select_new_sound_source">Selecteer nieuwe geluidsbron</string>
     <string name="snooze_done">← Snooze / Klaar →</string>
 </resources>
