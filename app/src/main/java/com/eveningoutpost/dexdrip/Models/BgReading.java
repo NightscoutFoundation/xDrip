@@ -447,6 +447,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                     .where("timestamp <= ?", (timestamp + precision))
                     .where("timestamp >= ?", (timestamp - precision))
                     .orderBy("abs(timestamp - " + timestamp + ") asc")
+                    .indexedBy("index_BgReadings_timestamp")
                     .executeSingle();
             Long noIndex = JoH.tsl() - start;
             start = JoH.tsl();
@@ -456,7 +457,6 @@ public class BgReading extends Model implements ShareUploadableBg {
                     .where("timestamp <= ?", (timestamp + precision))
                     .where("timestamp >= ?", (timestamp - precision))
                     .orderBy("abs(timestamp - " + timestamp + ") asc")
-                    .indexedBy("index_BgReadings_timestamp")
                     .executeSingle();
             Log.e("xxxx", "Select 3 took " + (JoH.tsl() - start) + " compared to " +  noIndex + " milly seconds ");
 
@@ -796,6 +796,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                         .where("raw_data != 0")
                 //        .where("timestamp <= ?", JoH.tsl())
                         .orderBy("timestamp desc")
+                        .indexedBy("index_BgReadings_timestamp")
                         .executeSingle();
                 Long noIndex = JoH.tsl() - start;
                 start = JoH.tsl();
@@ -806,7 +807,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                         .where("raw_data != 0")
                         //        .where("timestamp <= ?", JoH.tsl())
                         .orderBy("timestamp desc")
-                        .indexedBy("index_BgReadings_timestamp")
+
                         .executeSingle();
 
                 Log.e("xxxx", "Select 6 took " + (JoH.tsl() - start) + " compared to " +  noIndex + " milly seconds ");
@@ -866,6 +867,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                     .where("raw_data != 0")
               //      .where("timestamp <= ?", JoH.tsl())
                     .orderBy("timestamp desc")
+                    .indexedBy("index_BgReadings_timestamp")
                     .limit(number)
                     .execute();
 
@@ -877,7 +879,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                     .where("raw_data != 0")
                     //      .where("timestamp <= ?", JoH.tsl())
                     .orderBy("timestamp desc")
-                    .indexedBy("index_BgReadings_timestamp")
+
                     .limit(number)
                     .execute();
             Log.e("xxxx", "Select 7 took " + (JoH.tsl() - start) + " compared to " +  noIndex + " milly seconds ");
@@ -902,6 +904,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                 .where("raw_data != 0")
                 .orderBy("timestamp desc")
                 .limit(number)
+                .indexedBy("index_BgReadings_timestamp")
                 .execute();
         Long noIndex = JoH.tsl() - start;
 
@@ -912,7 +915,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                 .where("raw_data != 0")
                 .orderBy("timestamp desc")
                 .limit(number)
-                .indexedBy("index_BgReadings_timestamp")
+
                 .execute();
         Log.e("xxxx", "Select 8 took " + (JoH.tsl() - start) + " compared to " +  noIndex + " milly seconds ");
 
@@ -937,6 +940,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                 .where("calculated_value != 0")
                 .where("raw_data != 0")
                 .orderBy("timestamp desc")
+                .indexedBy("index_BgReadings_timestamp")
                 .limit(number)
                 .execute();
         //Log.e("xxxx", "Select 9 took " + (JoH.tsl() - start) + " milly seconds tmp = " );
@@ -950,7 +954,6 @@ public class BgReading extends Model implements ShareUploadableBg {
                 .where("calculated_value != 0")
                 .where("raw_data != 0")
                 .orderBy("timestamp desc")
-                .indexedBy("index_BgReadings_timestamp")
                 .limit(number)
                 .execute();
         Log.e("xxxx", "Select 9 took " + (JoH.tsl() - start) + " compared to " +  noIndex + " milly seconds ");
