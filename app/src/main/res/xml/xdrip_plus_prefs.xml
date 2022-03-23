@@ -994,7 +994,7 @@
             android:title="App Version" >                        /////////////////////string
 
             <Preference
-                android:key="show_app_version"
+                android:key="version_check"
                 android:title="@string/check_for_updated_version"
                 android:summary="Current: 92b6d8d-2022.02.09">
             </Preference>
