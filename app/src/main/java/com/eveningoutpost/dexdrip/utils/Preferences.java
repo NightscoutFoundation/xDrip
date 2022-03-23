@@ -292,7 +292,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
     }
 
-
     public static Boolean getBooleanPreferenceViaContextWithoutException(Context context, String key, Boolean defaultValue) {
         try {
             return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(key, defaultValue);
@@ -1401,8 +1400,16 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 }
             });
 
-
-
+            final Preference update_version = findPreference("show_app_version");
+            update_version.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    if (JoH.ratelimit("manual-update-check", 5)) {
+                        UpdateActivity.forceUpdateCheckNow();
+                    }
+                    return true;
+                }
+            });
 
             units_pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
 

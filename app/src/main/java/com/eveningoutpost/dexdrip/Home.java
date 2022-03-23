@@ -3314,14 +3314,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         staticRefreshBGCharts();
     }
 
-    public void checkForUpdate(MenuItem myitem) {
-        if (JoH.ratelimit("manual-update-check", 5)) {
-            toast(getString(R.string.checking_for_update));
-            UpdateActivity.last_check_time = -1;
-            UpdateActivity.checkForAnUpdate(getApplicationContext());
-        }
-    }
-
     public void sendFeedback(MenuItem myitem) {
         startActivity(new Intent(getApplicationContext(), SendFeedBack.class));
     }

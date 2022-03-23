@@ -152,13 +152,6 @@
         android:visible="false"
         android:showAsAction="never"/>
 
-    <item android:id="@+id/checkforupdate"
-        android:title="@string/check_for_updated_version"
-        android:checkable="false"
-        android:orderInCategory="1"
-        android:onClick="checkForUpdate"
-        android:showAsAction="never"/>
-
     <item android:id="@+id/sendfeedback"
         android:title="@string/send_feedback_to_developer"
         android:checkable="false"

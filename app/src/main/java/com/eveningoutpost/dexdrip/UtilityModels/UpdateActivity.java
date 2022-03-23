@@ -191,7 +191,7 @@ public class UpdateActivity extends BaseAppCompatActivity {
 
     public static void forceUpdateCheckNow() {
         JoH.static_toast_long(xdrip.gs(R.string.checking_for_update));
-        UpdateActivity.last_check_time = -2;
+        UpdateActivity.last_check_time = -1;
         UpdateActivity.checkForAnUpdate(xdrip.getAppContext());
     }
 

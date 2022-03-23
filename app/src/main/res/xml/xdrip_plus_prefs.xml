@@ -961,37 +961,7 @@
         android:icon="@drawable/ic_briefcase_download_grey600_48dp"
         android:key="xdrip_version_and_backup_settings"
         android:summary="App version, feedback, and import/export"
-        android:title="Update and Backup">
-        <PreferenceCategory
-            android:key="xdrip_version_category"
-            android:title="App Version" >                        /////////////////////string
-            <Preference
-                android:key="I_understandb"
-                android:summary="@string/not_for_medical_use"
-                android:title="@string/end_user_license_agreement">
-                <intent
-                    android:action="android.intent.action.MAIN"
-                    android:targetClass="com.eveningoutpost.dexdrip.LicenseAgreementActivity"
-                    android:targetPackage="@string/local_target_package" />
-            </Preference>
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="auto_update_download"
-                android:summaryOff="New releases often have bugs fixed. It is recommended to switch on update notifications!"
-                android:summaryOn="@string/get_notified_of_new_apk_releases"
-                android:switchTextOff="@string/short_off_text_for_switches"
-                android:switchTextOn="@string/short_on_text_for_switches"
-                android:title="@string/automatic_update_check" />
-            <ListPreference
-                android:defaultValue="beta"
-                android:entries="@array/UpdateChannelDetail"
-                android:entryValues="@array/UpdateChannel"
-                android:key="update_channel"
-                android:shouldDisableView="true"
-                android:summary="@string/choose_stable_beta_or_alpha_releases"
-                android:title="@string/update_channel" />
-        </PreferenceCategory>
-
+        android:title="Backup and Update">
         <PreferenceCategory
             android:key="xdrip_plus_move_settings"
             android:title="Backup and Restore">              //////@string/copying_settings
@@ -1016,6 +986,42 @@
                 <intent
                     android:action="android.intent.action.MAIN"
                     android:targetClass="com.eveningoutpost.dexdrip.utils.SdcardImportExport"
+                    android:targetPackage="@string/local_target_package" />
+            </Preference>
+        </PreferenceCategory>
+        <PreferenceCategory
+            android:key="xdrip_version_category"
+            android:title="App Version" >                        /////////////////////string
+
+            <Preference
+                android:key="show_app_version"
+                android:title="@string/check_for_updated_version"
+                android:summary="Current: 92b6d8d-2022.02.09">
+            </Preference>
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="auto_update_download"
+                android:summaryOff="New releases often have bugs fixed. It is recommended to switch on update notifications!"
+                android:summaryOn="@string/get_notified_of_new_apk_releases"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="@string/automatic_update_check" />
+            <ListPreference
+                android:defaultValue="beta"
+                android:entries="@array/UpdateChannelDetail"
+                android:entryValues="@array/UpdateChannel"
+                android:key="update_channel"
+                android:shouldDisableView="true"
+                android:summary="@string/choose_stable_beta_or_alpha_releases"
+                android:title="@string/update_channel" />
+            <Preference
+                android:key="I_understandb"
+                android:summary="@string/not_for_medical_use"
+                android:title="@string/end_user_license_agreement">
+                <intent
+                    android:action="android.intent.action.MAIN"
+                    android:targetClass="com.eveningoutpost.dexdrip.LicenseAgreementActivity"
                     android:targetPackage="@string/local_target_package" />
             </Preference>
         </PreferenceCategory>
