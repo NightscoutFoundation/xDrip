@@ -517,7 +517,11 @@
         </receiver>
         <receiver android:name=".utils.framework.WakeLockTrampoline" />
         <receiver android:name=".watch.thinjam.BackgroundScanReceiver" />
-
+        <receiver
+            android:name=".receiver.ReminderReceiver"
+            android:enabled="true"
+            android:exported="true">
+        </receiver>
         <service
             android:name=".TaskService"
             android:exported="true"

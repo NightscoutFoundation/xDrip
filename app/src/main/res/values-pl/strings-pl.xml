@@ -316,7 +316,7 @@
     <string name="space_units">" Jednostki"</string>
     <string name="units">jednostki</string>
     <string name="carbs">węglowodany</string>
-    <string name="when">kiedy</string>
+    <string name="when">kiedy (HHMM)</string>
     <string name="speak_your_treatment">Wymawiaj zabiegi np:\nxx jednostek insuliny / xx gramów węglowodanów</string>
     <string name="speech_recognition_is_not_supported">Rozpoznawanie mowy nie jest obsługiwane</string>
     <string name="treatment_note">Notatka do zabiegu</string>
@@ -446,7 +446,7 @@
     <string name="bluetooth_wakelocks">Wakelocks Bluetooth</string>
     <string name="compatible_broadcast">Kompatybilny Broadcast</string>
     <string name="show_datatables">Pokaż DataTables</string>
-    <string name="display_bridge_battery">Wyświetlanie stanu baterii Bridge</string>
+    <string name="display_bridge_battery">Wyświetlanie stanu baterii mostka</string>
     <string name="close_gatt_on_ble_disconnect">Blisko GATT na BLE rozłączeniem</string>
     <string name="disable_battery_warning">Wyłączenie ostrzeżenia o stanie baterii</string>
     <string name="additional_text_status">Dodatkowy tekst z statusem</string>
@@ -518,10 +518,10 @@
     <string name="override_phone_silent_mode_colon">Zastąp Tryb cichy:</string>
     <string name="vibrate_on_alert">Wibracje podczas alarmu</string>
     <string name="test_alert">Testowy alarm</string>
-    <string name="disable_alert">wyłącz alarm</string>
-    <string name="save_alert">zapisać alarm</string>
-    <string name="remove_alert">usunięcie wpisu</string>
-    <string name="snooze_alert_before_it_fires">uspij alarm zanim bedzie aktywny</string>
+    <string name="disable_alert">Wyłącz alarm</string>
+    <string name="save_alert">Zapisz alarm</string>
+    <string name="remove_alert">Usuń alarm</string>
+    <string name="snooze_alert_before_it_fires">Uspij alarm zanim bedzie aktywny</string>
     <string name="create_low_alert">Ustaw ostrzeżenie o niskim poziomie</string>
     <string name="create_high_alert">Ustaw ostrzeżenie o wysokim poziomie</string>
     <string name="long_press_an_existing_alert_to_edit">(Długie naciśnięcie - edytuj istniejący alert)</string>
@@ -801,7 +801,7 @@
     <string name="display_calculations">Wyświetl obliczenia Insuliny/Węglowodanów</string>
     <string name="display_calculations_everytime">Cały czas wyświetlaj obliczenia Insuliny/Węglowodanów</string>
     <string name="always_show_bolus_wizard_preview">Zawsze pokazuj podgląd kreatora bolusa</string>
-    <string name="show_test_features">Pokaż dodatkowe i zaawansowane funkcje w fazie testów</string>
+    <string name="show_test_features">Pokaż dodatkowe i zaawansowane funkcje testowe</string>
     <string name="show_reminder_features">Pokaż menu i funkcje przypomnień</string>
     <string name="enable_reminder_features">Włącz funkcje przypomnień</string>
     <string name="display_mathamatical_simulations">Wyświetlaj symulacje matematyczne na podstawie danych profilu i logów węglowodanów/insuliny</string>
@@ -1024,7 +1024,7 @@
     <string name="title_xBridge_Polling_Mode">xBridge+ Tryb Odpytywania</string>
     <string name="summary_Only_suitable_for_phones_which_support_automatic_pairing">Odpowiednie tylko dla telefonów wspierających automatyczne parowanie</string>
     <string name="title_Allow_blucon_unbonding">Zezwól na odłączenie blucon</string>
-    <string name="summary_Choose_to_display_the_bridge_battery_level">Wybierz by wyświetlić poziom baterii urządzenia łączącego</string>
+    <string name="summary_Choose_to_display_the_bridge_battery_level">Wybierz by wyświetlić poziom baterii mostka</string>
     <string name="summary_Erase_data_older_than_this_many_days">Usuwaj dane starsze niż ta liczba dni. 0 = nic nie usuwaj</string>
     <string name="title_Other_misc_options">Pozostałe opcje</string>
     <string name="summary_allow_testing_with_dead_sensor">zezwól na testowanie z niedziałającym sensorem</string>
@@ -1426,7 +1426,7 @@
     <string name="enable_streaming_dialog_dont_ask_again">Nie pytaj ponownie</string>
     <string name="enable_streaming_dialog_text">Czy chcesz połączyć xDrip z tym czujnikiem? To spowoduje wyłączenie alarmów w czytniku i oficjalnej aplikacji LibreLink. Naciśnij tak i zeskanuj ponownie, aby połączyć się (wybierz opcję nie łącz, jeśli chcesz uruchomić xDrip ze zmodyfikowaną aplikacją)</string>
     <string name="enable_streaming_dialog_title">Łączenie czujnika Libre z Bluetooth</string>
-    <string name="title_widget_hide_graph">Ukryj wykres widżetu</string>
+    <string name="title_widget_hide_graph">Ukryj widżet wykresu</string>
     <string name="title_multiple_insulin_types_settings">Wiele rodzajów insuliny</string>
     <string name="title_multiple_insulin_types">Wiele rodzajów insuliny</string>
     <string name="no_i_really_know">Nie, naprawdę wiem, co robię</string>
