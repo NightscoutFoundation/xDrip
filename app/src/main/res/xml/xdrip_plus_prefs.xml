@@ -960,16 +960,16 @@
     <PreferenceScreen
         android:icon="@drawable/ic_briefcase_download_grey600_48dp"
         android:key="xdrip_version_and_backup_settings"
-        android:summary="App version, feedback, and import/export"
-        android:title="Backup and Update">
+        android:summary="@string/backup_and_update_summary"
+        android:title="@string/backup_and_update_title">
         <PreferenceCategory
             android:key="xdrip_plus_move_settings"
-            android:title="Backup and Restore">              //////@string/copying_settings
+            android:title="@string/backup_and_restore">              //////@string/copying_settings
             <PreferenceScreen
                 android:icon="@drawable/ic_qrscan"
                 android:key="auto_configure"
-                android:summary="Import settings from QR or barcode"
-                android:title="Barcode Scanner" />                     ////// @string/prefs_auto_config_summary   //////  @string/auto_configure_title
+                android:summary="@string/prefs_barcode_scanner_summary"
+                android:title="@string/barcode_scanner_title" />                     ////// @string/prefs_auto_config_summary   //////  @string/auto_configure_title
             <Preference
                 android:icon="@drawable/ic_qrcode_grey600_48dp"
                 android:key="show_qr_codes"
@@ -991,12 +991,11 @@
         </PreferenceCategory>
         <PreferenceCategory
             android:key="xdrip_version_category"
-            android:title="App Version" >                        /////////////////////string
+            android:title="@string/app_version" >
 
             <Preference
                 android:key="version_check"
-                android:title="@string/check_for_updated_version"
-                android:summary="Current: 92b6d8d-2022.02.09">
+                android:title="@string/check_for_updated_version">
             </Preference>
 
             <SwitchPreference
@@ -1028,7 +1027,7 @@
 
         <PreferenceCategory
             android:key="xdrip_feedback_category"
-            android:title="Feedback and Support" >                        /////////////////////string
+            android:title="@string/feedback_and_support" >
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="enable_crashlytics"
