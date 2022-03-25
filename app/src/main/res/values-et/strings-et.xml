@@ -569,9 +569,9 @@
     <string name="pref_dialog_influxdb_uri">Sisesta InfluxDB URI</string>
     <string name="pref_message_influxdb_database">Andmebaas, kuhu salvestatakse mõõtmised. Pea meeles, et see tuleb serveris luua.</string>
     <string name="pref_dialog_influxdb_database">Andmebaas</string>
-    <string name="pref_message_influxdb_username">Kasutajanimi autentifikatsiooniks. Ei ole soovitatav lubada kasutust ilma autentifikatsioonita.</string>
+    <string name="pref_message_influxdb_username">Kasutajanimi autentimiseks. Soovitatav on mitte lubada kasutamist ilma autentimiseta.</string>
     <string name="pref_dialog_influxdb_username">Kasutaja</string>
-    <string name="pref_message_influxdb_password">Parool autentifikatsiooniks. Ei ole soovitatav lubada kasutust ilma autentifikatsioonita.</string>
+    <string name="pref_message_influxdb_password">Parool autentimiseks. Soovitatav on mitte lubada kasutamist ilma autentimiseta.</string>
     <string name="pref_dialog_influxdb_password">Parool</string>
     <string name="use_tiny_dots">Kasuta väikest punktisuurust</string>
     <string name="watch_vibrate_active_alerts">Lase kellal vibreerida veresuhkru aktiivse alarmi korral</string>
@@ -601,7 +601,8 @@
     <string name="reset_bluetooth_g5">Lähtesta Bluetooth sisse-välja lülitades, et hoida G5 andmeallikas töös. Ilma selleta võib G5 vastuvõtja üles öelda.</string>
     <string name="g5_bluetooth_watchdog">G5 bluetoothi jälgija</string>
     <string name="close_gatt">Kui bluetoothi jälgija aktiveerub tihti, võite proovida selle valiku tühistada, et näha kas see aitab</string>
-    <string name="reset_bluetooth_on_off">Lähtesta Bluetooth lülitades see sisse-välja iga mõne minuti tagant! Vali ainult siis kui oled testimas. See seade võib häirida teisi Bluetoothi seadmeid.</string>
+    <string name="older_bluetooth_wakelocks">Vanemad Bluetooth wakelockid, mis võivad akut rohkem kulutada, aga võivad olla vajalikud bluetooth-vastuvõtuks</string>
+    <string name="reset_bluetooth_on_off">Lähtesta Bluetooth, lülitades seda iga paari minuti järel sisse-välja! Vali ainult siis kui testid. See võib häirida kõiki muid Bluetooth-seadmeid.</string>
     <string name="constantly_reset_bluetooth">Bluetoothi pidev lähtestamine</string>
     <string name="experimental_transmitter_fpv_uav">Eksperimentaalne tugi @FPV-UAV \'Transmitter\'-seadmele  - ainult testimiseks</string>
     <string name="transmitter_pl_support">Saatja (PL) tugi</string>
@@ -619,7 +620,7 @@
     <string name="libre_use_smoothed_data_title">Silu Libre andmed.</string>
     <string name="retrieve_blukon_history_title">Hangi Libre ajalugu</string>
     <string name="retrieve_blukon_history_summary">Sensoriga uuesti ühendudes hangi BluCon-seadmest ka vanemad saamata andmed.</string>
-    <string name="interpret_share_raw">Kasurades jagamisfunktsiooni, näitab xDrip väärtusi, mis on tavaliselt vastuvõtjal peidetud.</string>
+    <string name="interpret_share_raw">Kui kasutad Share-teenust, näitab xDrip väärtusi, mis on tavaliselt vastuvõtjas peidetud.</string>
     <string name="interpret_raw">Algandmete tõlgendamine</string>
     <string name="use_infrequent_calibrations">Vajadusel kasuta varasemaid kalibreerimisi, nt. juhul, kui kalibreerid ebakorrapäraselt/harva.</string>
     <string name="infrequent_calibrations">Harv kalibreerimine</string>
@@ -630,7 +631,7 @@
     <string name="only_enable_on_trouble">Luba ainult siis, kui äpiga on probleeme.</string>
     <string name="store_logs">Säilita logid tõrgete otsinguks</string>
     <string name="show_datatables_in_app_drawer">Kuva rakenduste menüüs kalibreerimise ja VS andmetabelid.</string>
-    <string name="disable_log_transmitter_battery_warning">Peida hoiatus, mida kuvatakse saatja madala aku korral avaekraanil. (asjakohane vaid isetehtud vasuvõtjate puhul)</string>
+    <string name="disable_log_transmitter_battery_warning">Peida hoiatus, mida kuvatakse saatja madala aku korral avaekraanil. (Asjakohane vaid isetehtud vasuvõtjate puhul)</string>
     <string name="engineering_mode">Tehniline režiim</string>
     <string name="allow_unsafe_settings">Lubab muuta kõige riskantsemaid seadeid, mis võivad äpi lõhkuda!</string>
     <string name="daily_save_db">Salvesta andmebaas iga päev</string>
@@ -676,6 +677,7 @@
     <string name="nfc_options">Valikud NFC-põhiste sensorite skaneerimiseks telefoniga</string>
     <string name="nfc_scan_features">NFC skaneerimise funktsioonid</string>
     <string name="use_nfc_feature">Kasuta NFC\'d</string>
+    <string name="allow_sensor_scanning">Luba sensorit skaneerida kui rakendus on avatud. Vanad andmed taastatakse. Väga eksperimentaalne! Ettevaatust - see võib sensori rikkuda. Esmalt testi telefoni ühilduvust peaaegu aegunud sensoriga. Sind on hoiatatud!</string>
     <string name="sensor_age_or_expiry">Sensori vanus või kehtivusaeg</string>
     <string name="show_expiry_time">Kuva sensori aegumisaeg 14,5 päeva põhjal</string>
     <string name="show_sensor_age">Näita sensori vanust avakuval</string>
@@ -691,6 +693,7 @@
     <string name="transmitter_id">Teie Dexcomi saatja ID, nt. 12AB3</string>
     <string name="advanced_g5_settings">Täiendavad G5 seaded harvaesinevateks olukordadeks</string>
     <string name="g5_debug_settings">G5/G6 täpsemad seaded</string>
+    <string name="g5_scan_constantly">Mõned seadmed töötavad paremini pidevalt skaneerides, teised mitte. Kui see säte pole valitud ja andmed on usaldusväärsed, siis peaks aku tööiga olema pikem. Tavaliselt on parem see mitte valida</string>
     <string name="scan_for_g5_constantly">Skaneeri G5-saatjat pidevalt</string>
     <string name="g5_force_ui_thread">See on oluline mõnede Android seadmete ühenduvuse jaoks, kuid andmed võivad jääda lugemata muude UI intensiivste tegevuste kasutamisel.</string>
     <string name="force_g5_ui_thread">Sunni G5 kasutajaliidese lõimele</string>
@@ -750,10 +753,10 @@
     <string name="calibrations_sound">Määra heli kalibreerimistaotluste jaoks.</string>
     <string name="override_silent_mode">Tühista vaikne režiim</string>
     <string name="even_when_charging">Isegi, kui aku laeb</string>
-    <string name="no_calibration_requests_charging">Eemaldage siit linnuke kui Te ei soovi, et rakendus küsiks kalibreerimist kui telefoni aku laeb</string>
+    <string name="no_calibration_requests_charging">Tühjenda ruut, et telefon ei küsiks laadimise ajal kalibreerimist</string>
     <string name="keep_alert_no_calibration">Jätka hoiatusi kui kalibreerimist ei teostata</string>
     <string name="repeat_alerts">Korda hoiatusi</string>
-    <string name="calibration_minutes_reraise">Mitu minutit peaks möödas olema, et rakendus kalibreerimist uuesti küsiks.</string>
+    <string name="calibration_minutes_reraise">Mitu minutit peab möödas olema, et rakendus kalibreerimist uuesti küsiks.</string>
     <string name="alert_repeat_minutes">Hoiatuse kordusaeg minutites</string>
     <string name="alert_noisy_values">Hoiata kui mürarikkaid andmeid olnud x minutit</string>
     <string name="alert_snooze">Vaigista alarm</string>
@@ -761,7 +764,7 @@
     <string name="reraise_before_snooze">Korda hoiatusi enne edasilükkamise aja täitumist</string>
     <string name="reraise_not_snoozed_sooner">Kui hoiatust ei vaigistata kiiremalt, korda seda</string>
     <string name="alert_reraise_time">Hoiatuse kordusaeg</string>
-    <string name="alert_seconds_reraise">Mitu SEKUNDIT peaks möödas olema, et sama teavitus korduks.</string>
+    <string name="alert_seconds_reraise">Mitu SEKUNDIT peab möödas olema, et sama teavitus korduks.</string>
     <string name="bg_falling_fast">Kiire VS langus</string>
     <string name="bg_rising_fast">Kiire VS tõus</string>
     <string name="falling_threshold">langeva piirmäär</string>
@@ -906,6 +909,7 @@
     <string name="bluereaderuglystate">BlueReader avastati vigases olekus! See lülitub nüüd välja ja pead selle uuesti sisse lülitama (nupule lühike vajutus). Pärast seda peaks blueReader töötama ootuspäraselt!</string>
     <string name="offical_msg">Ametlik rakendus</string>
     <string name="use_conflict_msg">võib püüda ligi pääseda ka saatjale, mis võib põhjustada mõlema äpiga probleeme</string>
+    <string name="use_confict_msg_glimp">Saad reguleerida Glimp\'i sätteid: valikud -&gt; seadmed -&gt; tühista Bluetoothi valik</string>
     <string name="yes">Jah</string>
     <string name="xdrip_compatible_features">xDrip+ %s funktsioonid</string>
     <string name="garmin">Garmin</string>
@@ -951,7 +955,7 @@
     <string name="cancel_alarm">Tühistada hoiatus?</string>
     <string name="please_confirm_to_cancel_the_alert">Kinnitage hoiatuse tühistamine?</string>
     <string name="yes_cancel">Jah, tühista</string>
-    <string name="warning_no_alert_will_be_played_in_silent_mode">Hoiatus, teavituse heli ei mängita kui telefon on vaiksel või vibratsioonirežiimil!!!</string>
+    <string name="warning_no_alert_will_be_played_in_silent_mode">Hoiatus, kui telefon on vaikses/vibratsiooni-režiimis, hoiatust ei esitata!!!</string>
     <string name="automatic_message_from_xdrip">automaatne sõnum xDrip+\'ilt</string>
     <string name="zero_zero_zero_zero">0000</string>
     <string name="emergency_messages">Hädaolukorra sõnumid</string>
@@ -972,13 +976,14 @@
     <string name="test_message_sending">Testsõnumi saatmine</string>
     <string name="d_selected_contacts_for_text_messages_format">%d -kontaktide arv tekstisõnumite jaoks</string>
     <string name="xdrip_software_changed_format">xDrip programmiversioon muudeti: %1$s -> %2$s</string>
+    <string name="when_connected_to_the_audio_device_shown_below_switch_to_vehicle_mode">Lülitu sõidukirežiimile kui oled ühendatud allpool näidatud heliseadmega.</string>
     <string name="select_device">Vali seade</string>
     <string name="no_bluetooth_audio_found">Bluetooth heliseadet ei leitud</string>
     <string name="tap_to_set_current_car_audio_device">Puuduta, et seadistada hetkel ühendatud auto heliseadet</string>
     <string name="learn_current_car_audio">Salvesta praegune auto heliseade</string>
     <string name="detect_car_audio">Tuvasta auto audio</string>
-    <string name="automatically_enable_when_connected_to_car_bluetooth">Lülita sõidukirežiim automaatselt sisse kui telefon on ühendatud auto Bluetoothiga</string>
-    <string name="enable_speak_readings_when_in_vehicle">Loe sõidukirežiimil veresuhkruväärtusi valjult ette</string>
+    <string name="automatically_enable_when_connected_to_car_bluetooth">Auto Bluetoothiga ühendamisel luba automaatselt sõidukirežiim</string>
+    <string name="enable_speak_readings_when_in_vehicle">Luba andmete ettelugemise funktsioon sõidukirežiimis</string>
     <string name="bluetooth_watchdog_timers">Taimeri aeg BT jälgija jaoks</string>
     <string name="bluetooth_watchdog_timer_sums">Sisesta väärtus minutites</string>
     <string name="basal_editor">Basaali redigeerimine – valige kohandatavad tunnid</string>
@@ -987,10 +992,10 @@
     <string name="summary_If_you_plan_to_only_use_a_Wear_collector_and_never_your_phone">Kui kavatsete kasutada ainult kella vastuvõtjana ja mitte kunagi oma telefoni.</string>
     <string name="title_Only_use_Wear">Kasuta ainult kella</string>
     <string name="summary_Also_show_the_filtered_data_on_the_trend">Näita ka filtreeritud andmeid trendi juures</string>
-    <string name="summary_Show_Bolus_Wizard_Preview_Insulin_value_on_watch_when_appropriate">Vajadusel kuva kellal booluse abivahendi eelvaate insuliini kogust</string>
+    <string name="summary_Show_Bolus_Wizard_Preview_Insulin_value_on_watch_when_appropriate">Vajadusel kuva kellal booluse abivahendi eelvaatel insuliini kogust</string>
     <string name="title_Display_BWP_Insulin">Kuva booluse ennustus</string>
     <string name="title_Smartwatch_Sensors">Nutikella andurid</string>
-    <string name="summary_Collect_and_display_Step_counter_and_Heart_rate_when_available">Loe ja näita kõnnitud samme ning pulsisagedust kui on saadaval</string>
+    <string name="summary_Collect_and_display_Step_counter_and_Heart_rate_when_available">Loe ja näita kõnnitud samme ning pulsisagedust, kui on saadaval</string>
     <string name="title_Use_Health_Data">Kasuta kogutud terviseandmeid</string>
     <string name="summary_Activate_heart_rate_sensor_if_available">Aktiveeri pulsiandur kui see on saadaval</string>
     <string name="title_Heart_Rate_Sensor">Pulsisensor</string>
@@ -1028,8 +1033,8 @@
     <string name="title_Always_discover_services">Alati otsi teenust</string>
     <string name="summary_Only_suitable_for_phones_which_support_automatic_pairing">Sobib ainult telefonidele, mis toetavad automaatset sidumist</string>
     <string name="title_Allow_blucon_unbonding">Luba BluCon\'i lahtiühendamine</string>
-    <string name="summary_Suppress_the_ugly_state_message_if_Problem_appears">Kui tekib Probleem, sulge vigane olekuteade</string>
-    <string name="title_supress_ugly_state_message">peida vigane olekuteade</string>
+    <string name="summary_Suppress_the_ugly_state_message_if_Problem_appears">Kui tekib Probleem, sulge vigase oleku teade</string>
+    <string name="title_supress_ugly_state_message">peida vigase oleku teade</string>
     <string name="summary_write_Battery_Information_for_additional_analytic">kirjuta faili akuteave täiendavaks analüüsiks. Kasuta seda ainult siis, kui arendaja seda küsib!</string>
     <string name="title_Batterylog">Aku logiraamat</string>
     <string name="summary_Choose_to_display_the_bridge_battery_level">Vali, et vastuvõtja akutaset kuvataks</string>
@@ -1039,6 +1044,7 @@
     <string name="summary_allow_testing_with_dead_sensor">luba testida aegunud sensoriga</string>
     <string name="title_NOT_FOR_PRODUCTION_USE">MITTE KASUTAMISEKS TOOTMISES</string>
     <string name="title_You_have_no_reminders_yet">Sul pole veel meeldetuletusi</string>
+    <string name="message_reminders_explanation">Meeldetuletusi saab teha näiteks pumba asukoha muutmiseks või millekski muuks.\n\nNeid saab korrata ja määrata eri ajaperioodideks. Panna vaigistatuks, edasi lükatuks, ümber ajastatuks jne.\n\nMeeldetuletuse lisamiseks vajuta \"+\".</string>
     <string name="title_swipe_reminder">Viipa vasakule või paremale</string>
     <string name="message_swipe_explanation">\u2190 Viipa VASAKULE meeldetuletuse viivitamiseks või edasilükkamiseks\n\n\u2192 Viipa PAREMALE järgmise meeldetuletuse ajastamiseks\n\nPealkirja või kellaaja puudutamine on seadistamiseks. Muude parameetrite muutmiseks vajuta pealkirja pikalt.</string>
     <string name="title_reminder_snooze_undo">Meeldetuletuse vaigistuse paneel – võta tagasi</string>
@@ -1216,7 +1222,7 @@
     <string name="title_miband_authkey">Autentimise võti</string>
     <string name="summary_miband_authkey">Määra MiBand4 autentimisvõti (võtme saamiseks järgige juhiseid aadressil https://www.freemyband.com/)</string>
     <string name="summary_miband_mac">Automaatse otsingu jaoks jäta tühjaks</string>
-    <string name="title_miband_send_readings_as_notification">Veresuhkruväärtused kui teated</string>
+    <string name="title_miband_send_readings_as_notification">VS-näidud märguannetena</string>
     <string name="summary_miband_send_readings_as_notification">Kasutab veresuhkru näitude saatmiseks teavitusi. Kuupäeva ei muudeta, nii et saab kasutada kõiki kella funktsioone.
         Kui soovite kasutada xDrip kellaplaati, tuleb see keelata (kuupäevade ülekirjutamise vältimiseks on vaja ametlik MiFit rakendus kustutada)</string>
     <string name="title_miband_vibrate_on_readings">Vibreeri kui näit saabub</string>
@@ -1260,9 +1266,11 @@
     <string name="title_lefun_screen_heart_pressure">Kuva vererõhku</string>
     <string name="title_lefun_screen_find_phone">Kuva \"Otsi telefon / Vaigista\"</string>
     <string name="title_lefun_screen_mac_address">Kuva MAC aadress</string>
+    <string name="summary_allow_samsung_workaround">Kasuta lahendusi, et vältida Samsungi telefonide Androidi ebastandardset käitumist. Ilma selleta ei saa tavaliselt andmeid kätte.</string>
     <string name="title_allow_samsung_workaround">Samsungi lahendused</string>
     <string name="summary_medtrum_use_native">Kasuta algkalibreerimiseks saatja andmeid, mitte xDrip rakendust</string>
     <string name="title_medtrum_use_native">Medtrum algupärane</string>
+    <string name="summary_medtrum_a_hex">Hex-diagnostika testväärtus</string>
     <string name="title_medtrum_a_hex">Medtrum\'i veaotsing</string>
     <string name="summary_nsfollow_url">Veebiaadress jälgijatele</string>
     <string name="title_nsfollow_url">Nightscout jälgimise URL</string>
@@ -1279,6 +1287,7 @@
     <string name="title_ob1_g5_preemptive_restart">Ennetavad taaskäivitused</string>
     <string name="summary_ob1_g5_use_insufficiently_calibrated">Jätka andmete kasutamist ka siis kui häid kalibreerimisi pole piisavalt (eksperimentaalne!)</string>
     <string name="title_ob1_g5_use_insufficiently_calibrated">Jätka ilma kalibreerimiseta</string>
+    <string name="summary_ob1_g5_fallback_to_xdrip">Kui G5 ei anna VS andmeid, naase xDrip-algoritmile (potentsiaalne risk!)</string>
     <string name="title_ob1_g5_fallback_to_xdrip">Tagasi xDrip\'pi</string>
     <string name="summary_ob1_minimize_scanning">Kasutage heuristikat, et minimeerida Bluetooth skaneerimist ja säästa energiat</string>
     <string name="title_ob1_minimize_scanning">Minimaalne skaneerimine</string>
@@ -1309,6 +1318,7 @@
     <string name="title_show_medtrum_secondary">Teisene Medtrum</string>
     <string name="summary_illustrate_backfilled_data">Märgi graafikul tagasitäidetud andmed</string>
     <string name="title_illustrate_backfilled_data">Kuva tagasitäidetud andmed</string>
+    <string name="summary_high_priority_notifications">Kuva märguanded ja graafik ülaosas (kasulik ka lukustuskuval)</string>
     <string name="title_high_priority_notifications">Kõrge prioriteediga teavitused</string>
     <string name="summary_public_notifications">Kuva märguande sisu turvalisel lukustuskuval</string>
     <string name="title_public_notifications">Avalikud teated</string>
@@ -1360,6 +1370,8 @@
     <string name="title_inpen_detect_priming">Tuvasta kasutamine</string>
     <string name="title_inpen_prime_units">Täitmise ühikud</string>
     <string name="title_inpen_prime_minutes">Täitmise aja-aken</string>
+    <string name="summary_inpen_orphan_primes_ignored">Kui märgitud, siis täitmine, millele ei järgne doosi, jäetakse tähelepanuta. Tühjenda märge, et käsitleda annusena</string>
+    <string name="title_inpen_orphan_primes_ignored">Ignoreeri üksikut täitmist</string>
     <string name="summary_inpen_sounds">Kasuta helisignaale, et teavitada andmevahetusest pen-iga</string>
     <string name="title_inpen_sounds">Kasuta heli</string>
     <string name="summary_inpen_reset">Lähtesta ja otsi sidumisrežiimis uut pen-süstalt</string>
@@ -1374,7 +1386,9 @@
     <string name="title_use_notification_channels">Teavituskanalid</string>
     <string name="summary_ongoing_notification_channel">Võib mõnes seadmes käivitada muid märguandeid. Vajab testimist!</string>
     <string name="title_ongoing_notification_channel">Kasuta pidevat teavituskanalit</string>
+    <string name="summary_notification_channels_grouping">Teatised tuleks rühmitada. Ei ühildu valikuga „Numbriikoon teavitusalal”.</string>
     <string name="title_notification_channels_grouping">Rühmita teavitused kokku</string>
+    <string name="summary_delay_ascending_3min">Kasvava helitugevuse profiili jaoks lükka hoiatusheli algust 3 minutit edasi. Vibratsioon (kui lubatud) algab kohe, kui hoiatus käivitub, olenemata sellest sättest.</string>
     <string name="title_delay_ascending_3min">Helitugevuse kasvu viivitus</string>
     <string name="summary_play_sound_for_initial_calibration">Esita helimärguanne kui taotletakse esialgset kalibreerimist</string>
     <string name="title_play_sound_for_initial_calibration">Alustamise teavitus</string>
@@ -1447,7 +1461,9 @@
     <string name="sensor_stop_confirm">Kas soovid sensorit peatada?</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Aegunud/eksperimentaalne veresuhkru prognoosimine on sisse lülitatud.\n\nSee EI OLE SOOVITATUD ja võib jama kokku keerata.\n\nKas lülitame selle välja?</string>
     <string name="settings_issue">Seadete probleem!</string>
+    <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Kas soovid kasutada seda sünkroonitud veresuhkru tulemust kalibreerimiseks?\n\n(saad muuta, millal seda dialoogi kuvatakse, menüüs \"Seaded\")</string>
     <string name="use_bg_for_calibration">Kasutada VS-näitu kalibreerimiseks?</string>
+    <string name="do_you_want_to_use_this_entered_fingerstick_blood_glucose_test_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Kas soovid kasutada kalibreerimiseks seda sisestatud veresuhkru testi?\n\n(saad muuta, millal seda dialoogi kuvatakse menüüs \"Seaded\")</string>
     <string name="yes_calibrate">JAH, kalibreeri</string>
     <string name="enable_automatic_calibration">Luba automaatne kalibreerimine</string>
     <string name="entered_blood_tests_which_occur_during_flat_trend_periods_can_automatically_be_used_to_recalibrate_after_20_minutes_this_should_provide_the_most_accurate_method_to_calibrate_with__do_you_want_to_enable_this_feature">Veresuhkru mõõtmisi, mis on sisestatud tasase veresuhkru perioodil, saab automaatselt kasutada 20 min möödudes uuesti kalibreerimiseks. See peaks olema kõige täpsem meetod.\n\nKas soovid seda funktsiooni lubada?</string>
@@ -1459,6 +1475,7 @@
     <string name="yes_delete">Jah, kustuta</string>
     <string name="deleted">Kustutatud!</string>
     <string name="wifi_sleep_policy_issue">WiFi unerežiimi probleem</string>
+    <string name="your_wifi_is_set_to_sleep_when_the_phone_screen_is_off__this_may_cause_problems_if_you_dont_have_cellular_data_or_have_devices_on_your_local_network__would_you_like_to_go_to_the_settings_page_to_set__always_keep_wifi_on_during_sleep">Telefoni WiFi on seatud unerežiimile kui ekraan välja lülitatud.\n\nSee võib põhjustada probleeme kui pole mobiilset andmesidet või kui kohalikus võrgus on veel seadmeid.\n\nKas minna seadistamiseks seadete lehele:\n\nKas hoida WiFi unerežiimi ajal alati sees?</string>
     <string name="maybe_later">Võib-olla hiljem</string>
     <string name="yes_do_it">JAH, tee seda</string>
     <string name="recommend_that_you_change_wifi_to_always_be_on_during_sleep">Soovitav on muuta WiFi nii, et see oleks ka pausi ajal alati sisse lülitatud</string>
@@ -1558,6 +1575,7 @@
     <string name="title_widget_hide_graph">Peida vidina graafik</string>
     <string name="summary_illustrate_remote_data">Kuva kaugvastuvõetud andmed (ainult diagnostika)</string>
     <string name="title_illustrate_remote_data">Illustreeri kaugandmed</string>
+    <string name="summary_show_accessibility_settings">Kui telefonil on \"Always On Display\", saate seal lubada xDrip-vidina, lubades Androidi süsteemiseadete lehelt xDrip juurdepääsetavusteenuse.</string>
     <string name="title_show_accessibility_settings">Luba xDrip\'ile ligipääsu õigus</string>
     <string name="title_multiple_insulin_types_settings">Mitu insuliinitüüpi</string>
     <string name="summary_multiple_insulin_types_settings">Valikud mitme insuliinitüübiga töötamiseks</string>
@@ -1594,6 +1612,7 @@
     <string name="title_motion_detection_warning">Liikumise tuvastamise hoiatus</string>
     <string name="message_motion_detection_warning">Liikumise tuvastamise funktsioon on eksperimentaalne ja töötab ainult osade telefonidega. Selle eesmärk on automaatselt tuvastada sõidukirežiimi.\n\nTestid on kinnitanud, et liikumissensorid töötavad piisavalt hästi ainult uuematel telefonidel. Ka aku võib kiiremini tühjaks saada.\n\nTreeningutega seotud liikumise jaoks töötavad kõige paremini nutikella sammuloendurid.</string>
     <string name="title_variant">Kasutate xDrip+ versiooni</string>
+    <string name="message_variant">xDrip+ variandid võimaldavad korraga installida mitu rakendust. Kas eriliseks kasutamiseks või lubada korraga installida xDrip-Experimental ja xDrip+.\n\nVariantide puhul ei pruugi mõned asjad korralikult töötada, kuna ühel või teisel rakendusel on erinevad seaded, näiteks Bluetoothi sidumine. Tagasiside ja veateated variantide kohta on teretulnud!</string>
     <string name="expires_unknown">Aegub: ???</string>
     <string name="sensor_expired">AEGUNUD!</string>
     <plurals name="sensor_expires">
