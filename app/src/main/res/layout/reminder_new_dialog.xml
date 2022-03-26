@@ -163,6 +163,7 @@
 
         <CheckBox
             android:id="@+id/weekDaysCheckbox"
+            android:layout_marginLeft="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/reminderRepeatcheckBox"
@@ -179,33 +180,47 @@
             android:checked="true"
             android:text="@string/weekends" />
 
-        <CheckBox
-            android:id="@+id/homeOnlyCheckbox"
-            android:layout_marginLeft="10dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/reminderRepeatcheckBox"
-            android:layout_toEndOf="@+id/weekEndsCheckbox"
-            android:checked="false"
-            android:text="At Home Only"/>
+
+
+
 
         <CheckBox
-            android:id="@+id/speakCheckbox"
+            android:id="@+id/GraphIconCheckbox"
             android:layout_marginLeft="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/weekEndsCheckbox"
-            android:layout_toLeftOf="@+id/homeOnlyCheckbox"
+            android:layout_alignParentStart="true"
             android:checked="false"
-            android:text="Speak"/>
+            android:text="Graph Note"/>
+
+        <CheckBox
+            android:id="@+id/speakCheckbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/weekEndsCheckbox"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/GraphIconCheckbox"
+            android:checked="false"
+            android:text="Speak" />
+
+        <CheckBox
+            android:id="@+id/homeOnlyCheckbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/GraphIconCheckbox"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="3dp"
+            android:checked="false"
+            android:text="At Home Only" />
 
         <CheckBox
             android:id="@+id/highPriorityCheckbox"
-            android:layout_marginLeft="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/homeOnlyCheckbox"
-            android:layout_toEndOf="@+id/weekEndsCheckbox"
+            android:layout_marginLeft="10dp"
+            android:layout_below="@+id/GraphIconCheckbox"
+            android:layout_toEndOf="@+id/homeOnlyCheckbox"
             android:checked="false"
             android:text="@string/mega_priority" />
     </RelativeLayout>

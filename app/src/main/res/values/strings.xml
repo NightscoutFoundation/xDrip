@@ -1671,4 +1671,10 @@
     <string name="accept_external_status">Accept External Status</string>
     <string translatable="false" name="summary_dex_specified_slot">Specify transmitter slot manually, setting this incorrectly will prevent any readings being received.</string>
     <string translatable="false" name="title_dex_specified_slot">Manual Slot Number</string>
+    <string name="cancel_by_default">Cancel by default</string>
+    <string name="old">Old</string>
+    <string name="neww">New</string>
+    <string name="reschedule_with_new_timing">Reschedule with new timing?</string>
+    <string name="select_new_sound_source">Select new sound source</string>
+    <string name="snooze_done">← Snooze / Done →</string>
 </resources>

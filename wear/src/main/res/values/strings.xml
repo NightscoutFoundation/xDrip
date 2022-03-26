@@ -220,7 +220,7 @@
     <string name="bluereaderoff">blueReader will be turn off, as the battery is lower then </string>
     <string name="bluereader_position">Check position of blueReader on the sensor, as it was not able to read!</string>
     <string name="bluereaderuglystate">The blueReader was found in an ugly state! It will be now turn off now, and you turn it back to on (short press of the button). After that the blueReader should work as expected!</string>
-    <string name="xdrip_software_changed_format">xDrip WATCH software version changed from: %s to %s</string>
+    <string name="xdrip_software_changed_format">xDrip WATCH software version changed from: %1$s to %2$s</string>
     <string name="summary_always_on_screen">Force screen always on prior to BT scanning</string>
     <string name="title_always_on_screen">Force Screen Always-on</string>
     <string name="sumary_alert_use_sounds">Use watch speaker if it has one to play alert sound</string>
