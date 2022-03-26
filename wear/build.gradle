@@ -1,91 +1,6 @@
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.1'
-    }
-
-}
-
-
-def generateVersionNumberString = { ->
-    StringBuilder stringBuilder = new StringBuilder()
-    stringBuilder.append((new Date()).format('21yyMMddHH'))
-    return stringBuilder.toString()
-}
-
-def generateTimestamp = { ->
-    StringBuilder stringBuilder = new StringBuilder()
-    stringBuilder.append((new Date()).getTime())
-    stringBuilder.append("L")
-    return stringBuilder.toString()
-}
-
-def generateRandomUUID = { ->
-    StringBuilder stringBuilder = new StringBuilder();
-    stringBuilder.append('"' + UUID.randomUUID().toString() + '"')
-    return stringBuilder.toString()
-}
-
-def generateVersionName = { ->
-
-    StringBuilder stringBuilder = new StringBuilder()
-    try {
-        def stdout = new ByteArrayOutputStream()
-        exec {
-            commandLine 'git', 'describe', '--always'
-            standardOutput = stdout
-        }
-        String commitObject = stdout.toString().trim()
-        try {
-            stdout = new ByteArrayOutputStream()
-            exec {
-                commandLine 'git', 'describe', '--tags'
-                standardOutput = stdout
-            }
-            //stringBuilder.append(stdout.toString().trim())
-            //stringBuilder.append("-")
-        } catch (ignored) {
-            // no tags
-        }
-
-        stringBuilder.append(commitObject)
-        stdout = new ByteArrayOutputStream()
-        exec {
-            commandLine 'git', 'rev-parse', '--show-toplevel'
-            standardOutput = stdout
-        }
-        if (stdout.toString().trim().contains("xDrip-Experimental")) {
-            stringBuilder.append("-experimental")
-        }
-
-        stdout = new ByteArrayOutputStream()
-        exec {
-            commandLine 'git', 'rev-parse', '--abbrev-ref', 'HEAD'
-            standardOutput = stdout
-        }
-        String branch = stdout.toString().trim()
-        if (!branch.equals("master")) {
-            stringBuilder.append('-')
-            stringBuilder.append(branch)
-        }
-
-    } catch (ignored) {
-        return "NoGitSystemAvailable"
-    }
-    stringBuilder.append('-')
-    stringBuilder.append((new Date()).format('yyyy.MM.dd'))
-    return stringBuilder.toString()
-
-}
-
 apply plugin: 'com.android.application'
 apply from: '../app/token-replace.gradle'
-//apply plugin: 'me.tatarka.retrolambda'
-//apply plugin: 'io.fabric'
+apply from: '../common.gradle'
 
 android {
     compileSdkVersion 29
@@ -129,18 +44,19 @@ android {
     }
 
     testOptions {
+        animationsDisabled = true
         unitTests {
             includeAndroidResources = true
         }
     }
 
+    packagingOptions {
+        exclude 'META-INF/INDEX.LIST'
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    packagingOptions {
-        exclude 'META-INF/INDEX.LIST'
     }
 
     dataBinding {
@@ -151,10 +67,11 @@ android {
         release {
             minifyEnabled true
             shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'),
+                    'proguard-rules.pro'
         }
     }
-    
+
     flavorDimensions "version"
     productFlavors {
         // When building a variant that uses this flavor, the following configurations
@@ -183,17 +100,8 @@ android {
 
 allprojects {
     repositories {
-        google()
-        mavenCentral()
-        maven {
-            url "https://jitpack.io"
-        }
-
         flatDir {
-            dirs 'libs'
-        }
-        flatDir {
-            dirs '../app/libs'
+            dirs 'libs', '../app/libs'
         }
     }
 }
@@ -203,20 +111,16 @@ dependencies {
     compileOnly 'com.google.android.wearable:wearable:2.5.0'
     implementation 'com.google.android.support:wearable:2.5.0'
     implementation 'com.android.support:appcompat-v7:26.1.0'
-    // implementation 'com.google.android.support:wearable:1.4.0'
-    //implementation 'com.google.android.gms:play-services-wearable:9.4.0'
-    // FIX upgrage to play-services-wearable:17.0.0 requires upgrade to AndroidX libraries, https://developers.google.com/android/guides/releases#june_17_2019
+    // FIX upgrade to play-services-wearable:17.0.0 requires upgrade to AndroidX libraries, https://developers.google.com/android/guides/releases#june_17_2019
     implementation 'com.google.android.gms:play-services-wearable:10.2.1'
     implementation 'com.squareup.wire:wire-runtime:2.2.0'
     //implementation 'com.ustwo.android:clockwise-wearable:1.0.2'
-    //implementation files('libs/hellocharts-library-1.5.5.jar')
     implementation(name: 'ustwo-clockwise-debug', ext: 'aar')
     implementation(name: 'wearpreferenceactivity-0.5.0', ext: 'aar')
     implementation 'com.google.code.gson:gson:2.8.6'
 
     implementation 'com.tananaev:adblib:1.3'
 
-    //implementation 'io.reactivex:rxjava:1.3.2'
     implementation(name: 'thread-safe-active-android-3.1.1', ext: 'aar')
     implementation 'com.google.guava:guava:24.1-jre'
     implementation 'io.reactivex:rxjava:1.3.3'
@@ -226,12 +130,16 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     testImplementation "com.google.truth:truth:1.1.3"
 
+    // add missing JAXB dependencies for JDK 9+
+    if (JavaVersion.current().ordinal() >= JavaVersion.VERSION_1_9.ordinal()) {
+        annotationProcessor 'jakarta.xml.bind:jakarta.xml.bind-api:2.3.3'
+    }
+
     implementation 'uk.com.robust-it:cloning:1.9.5'
     // you will want to install the android studio lombok plugin
-    compileOnly 'org.projectlombok:lombok:1.18.10'
-//    compileOnly 'javax.annotation:javax.annotation-api:1.3.1'
-    annotationProcessor "org.projectlombok:lombok:1.18.10"
-      // use lombok in unit tests
-    testCompileOnly 'org.projectlombok:lombok:1.18.10'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.10'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor "org.projectlombok:lombok"
+    // use lombok in unit tests
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 }
