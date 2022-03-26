@@ -43,7 +43,8 @@ public enum DexCollectionType {
     Disabled("Disabled"),
     Mock("Mock"),
     Manual("Manual"),
-    LibreReceiver("LibreReceiver");
+    LibreReceiver("LibreReceiver"),
+    AidexReceiver("AidexReceiver");
 
     String internalName;
     private static final Map<String, DexCollectionType> mapToInternalName;
@@ -244,6 +245,7 @@ public enum DexCollectionType {
         final DexCollectionType dct = getDexCollectionType();
         switch (dct) {
             case NSEmulator:
+            case AidexReceiver:
             case LibreReceiver:
                 return "Other App";
             case WifiWixel:

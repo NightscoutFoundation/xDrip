@@ -485,6 +485,16 @@
                 <action android:name="com.eveningoutpost.dexdrip.OOP2_BLUETOOTH_ENABLE_RESULT" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".receivers.aidex.AidexReceiver">
+            <intent-filter>
+                <action android:name="com.microtechmd.cgms.aidex.action.BgEstimate" />
+                <action android:name="com.microtechmd.cgms.aidex.action.Calibration" />
+                <action android:name="com.microtechmd.cgms.aidex.action.SensorNew" />
+                <action android:name="com.microtechmd.cgms.aidex.action.SensorRestart" />
+                <action android:name="com.microtechmd.cgms.aidex.action.SensorStop" />
+                <action android:name="com.microtechmd.cgms.aidex.action.Notification" />
+            </intent-filter>
+        </receiver>
         <receiver android:name="com.eveningoutpost.dexdrip.watch.thinjam.io.ThinJamApiReceiver">
             <intent-filter>
                 <action android:name="com.eveningoutpost.dexdrip.THINJAM_API" />
