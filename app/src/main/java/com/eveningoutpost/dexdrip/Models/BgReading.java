@@ -938,12 +938,12 @@ public class BgReading extends Model implements ShareUploadableBg {
                 .execute();
     }
 
-    public static BgReading readingNearTimeStamp(double startTime) {
-        double margin = (4 * 60 * 1000);
+    public static BgReading readingNearTimeStamp(long startTime) {
+        long margin = (4 * 60 * 1000);
         return readingNearTimeStamp(startTime, margin);
     }
 
-    public static BgReading readingNearTimeStamp(double startTime, final double margin) {
+    public static BgReading readingNearTimeStamp(long startTime, final long margin) {
         final DecimalFormat df = new DecimalFormat("#");
         df.setMaximumFractionDigits(1);
         return new Select()
@@ -1293,7 +1293,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     // TODO this method shares some code with above.. merge
-    public static void bgReadingInsertFromInt(int value, long timestamp, double margin, boolean do_notification) {
+    public static void bgReadingInsertFromInt(int value, long timestamp, long margin, boolean do_notification) {
         // TODO sanity check data!
 
         if ((value <= 0) || (timestamp <= 0)) {
