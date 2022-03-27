@@ -606,6 +606,8 @@
     <string name="use_external_blukon_algorithm">Külső Libre algoritmus.</string>
     <string name="calibrate_external_libre_algorithm_summary">xDrip kalibrációs mechanizmus használata az OOP-adatokra.</string>
     <string name="calibrate_external_libre_algorithm_title">OOP kalibrációs algoritmus.</string>
+    <string name="calibrate_external_libre_2_algorithm_summary">xDrip kalibrációs mechanizmus használata az OOP2-adatokra.</string>
+    <string name="calibrate_external_libre_2_algorithm_title">OOP2 kalibrációs algoritmus.</string>
     <string name="libre_use_smoothed_data_summary">Öt pontból számoljon átlagot a simább Libre adatgörbéhez.</string>
     <string name="libre_use_smoothed_data_title">Adatgörbe simítása.</string>
     <string name="retrieve_blukon_history_title">Historikus adatok</string>
