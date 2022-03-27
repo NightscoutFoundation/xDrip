@@ -616,6 +616,8 @@
     <string name="use_external_blukon_algorithm">Algoritmo externo para el Libre.</string>
     <string name="calibrate_external_libre_algorithm_summary">Aplica métodos de calibración de xDrip con los datos del algoritmo externo para el Libre.</string>
     <string name="calibrate_external_libre_algorithm_title">Calibracion del algoritmo OOP.</string>
+    <string name="calibrate_external_libre_2_algorithm_summary">Aplicar métodos de calibración de xDrip sobre datos OOP2.</string>
+    <string name="calibrate_external_libre_2_algorithm_title">Calibracion del algoritmo OOP2.</string>
     <string name="libre_use_smoothed_data_summary">Utilizar una media de 5 puntos para obtener datos del libre más suaves.</string>
     <string name="libre_use_smoothed_data_title">Suavizar Datos de Libre.</string>
     <string name="retrieve_blukon_history_title">Recuperar el historial del Libre</string>
