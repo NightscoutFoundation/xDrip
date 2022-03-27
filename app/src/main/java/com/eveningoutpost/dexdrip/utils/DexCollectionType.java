@@ -158,12 +158,14 @@ public enum DexCollectionType {
         return does_have_filtered || usesFiltered.contains(getDexCollectionType());
     }
 
-    public static boolean isLibreOOPAlgorithm(DexCollectionType collector) {
+    // Non calibrable means that raw values are used with oop2
+    public static boolean isLibreOOPNonCalibratebleAlgorithm(DexCollectionType collector) {
         if (collector == null) {
             collector = DexCollectionType.getDexCollectionType();
         }
         return hasLibre(collector) &&
-                Pref.getBooleanDefaultFalse("external_blukon_algorithm");
+                (Pref.getBooleanDefaultFalse("external_blukon_algorithm") ||
+                        !Pref.getBoolean("calibrate_external_libre_2_algorithm", true));
     }
 
     public static Class<?> getCollectorServiceClass() {
