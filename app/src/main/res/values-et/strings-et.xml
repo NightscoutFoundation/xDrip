@@ -616,6 +616,8 @@
     <string name="use_external_blukon_algorithm">Libre OOP-algoritm</string>
     <string name="calibrate_external_libre_algorithm_summary">Rakenda OOP andmetele xDrip kalibreerimismeetodid.</string>
     <string name="calibrate_external_libre_algorithm_title">OOP algoritmi kalibreerimine.</string>
+    <string name="calibrate_external_libre_2_algorithm_summary">Rakenda OOP2 andmetele xDrip kalibreerimismeetodid.</string>
+    <string name="calibrate_external_libre_2_algorithm_title">OOP2 algoritmi kalibreerimine.</string>
     <string name="libre_use_smoothed_data_summary">Kasuta 5 punkti keskmist, et siluda Libre andmeid.</string>
     <string name="libre_use_smoothed_data_title">Silu Libre andmed.</string>
     <string name="retrieve_blukon_history_title">Hangi Libre ajalugu</string>
