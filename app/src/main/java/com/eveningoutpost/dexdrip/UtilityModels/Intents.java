@@ -84,6 +84,8 @@ public interface Intents {
     String DEVICE_NAME = "DeviceName";
     String DEVICE_MAC_ADDRESS = "MacAddress";
     String BT_UNLOCK_BUFFER_ARRAY = "BtUnlockBufferArray";
+    String TREND_BG = "TrendBg";
+    String HISTORIC_BG = "HistoricBg";
     
     String TAG_ID = "TagId";
     String ROW_ID = "RowId";

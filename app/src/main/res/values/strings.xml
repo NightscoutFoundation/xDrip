@@ -644,6 +644,8 @@
     <string name="use_external_blukon_algorithm">Out of process Libre algorithm.</string>
     <string name="calibrate_external_libre_algorithm_summary">Apply xDrip calibration methods on OOP data.</string>
     <string name="calibrate_external_libre_algorithm_title">OOP algorithm calibration.</string>
+    <string name="calibrate_external_libre_2_algorithm_summary">Apply xDrip calibration methods on OOP2 data.</string>
+    <string name="calibrate_external_libre_2_algorithm_title">OOP2 algorithm calibration.</string>
     <string name="libre_use_smoothed_data_summary">Use average of 5 points to get smoother Libre data.</string>
     <string name="libre_use_smoothed_data_title">Smooth Libre data.</string>
     <string name="retrieve_blukon_history_title">Retrieve Libre history</string>
