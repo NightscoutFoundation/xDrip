@@ -237,7 +237,7 @@
     <string name="hardware_data_source">Sprzętowe źródło danych</string>
     <string name="enter_ten_character_dexcom_receiver_serial">Wprowadź 10 znakowy numer seryjny odbiornika Dexcom</string>
     <string name="dexcom_transmitter_id">Dexcom Nadajnik ID</string>
-    <string name="run_collector_in_foreground">Uruchom Collector na pierwszym planie</string>
+    <string name="run_collector_in_foreground">Uruchom kolektor na pierwszym planie</string>
     <string name="shows_a_persistent_notification">Pokazuje ciągłe powiadomienie z wykresem, widoczne na ekranie blokady co zapobiega zabijaniu procesu przez system Android.</string>
     <string name="list_of_receivers">Lista odbiorników</string>
     <string name="extra_tags_for_logging">Dodatkowe tagi logowania</string>
@@ -249,7 +249,7 @@
     <string name="send_data_to_android_wear_watch">Wysyłanie danych do Android Wear Watchface.</string>
     <string name="android_wear_integration">Integracja z Android Wear</string>
     <string name="pref_enable_wearG5">Włącz usługę zbierania pomiarów poprzez np. smartwatch</string>
-    <string name="pref_summary_enable_wearG5">Połącz smartwatch z nadajnikiem BT, gdy telefon jest poza zasięgiem</string>
+    <string name="pref_summary_enable_wearG5">Połącz smartwatch z kolektorem BT, gdy telefon jest poza zasięgiem</string>
     <string name="pref_force_wearG5">Wymuś zbieranie pomiarów poprzez smartwatch</string>
     <string name="pref_summary_force_wearG5">Wymuś użycie pomiarów zbieranych przez smartwatch</string>
     <string name="pref_disable_wearG5_on_lowbattery">Wyłącz wymuszanie przy niskim poziomie baterii</string>
@@ -270,7 +270,7 @@
     <string name="pebble_integration">Integracja z Pebble</string>
     <string name="send_data_to_pebble_watchface">Wysyłanie danych do Pebble Watchface.</string>
     <string name="pebble_watch_integration">Integracja z Pebble Watch</string>
-    <string name="standard_or_trend_pebble_watchface">Tarcza zegarka Pebble - Standard czy Trend?</string>
+    <string name="standard_or_trend_pebble_watchface">Tarcza zegarka Pebble - Standard czy Trend</string>
     <string name="choose_pebble_watchface">Wybierz Pebble Watchface</string>
     <string name="message_to_display_when_bgl_hits">Komunikat będzie wyświetlany, gdy BGL przekroczy szczególną wartość</string>
     <string name="text_to_display_when_hitting_special_value">Tekst wyświetlany po osiągnięciu szczególnej wartości.</string>
@@ -521,7 +521,7 @@
     <string name="disable_alert">Wyłącz alarm</string>
     <string name="save_alert">Zapisz alarm</string>
     <string name="remove_alert">Usuń alarm</string>
-    <string name="snooze_alert_before_it_fires">Uspij alarm zanim bedzie aktywny</string>
+    <string name="snooze_alert_before_it_fires">Uśpij alarm, zanim będzie aktywny</string>
     <string name="create_low_alert">Ustaw ostrzeżenie o niskim poziomie</string>
     <string name="create_high_alert">Ustaw ostrzeżenie o wysokim poziomie</string>
     <string name="long_press_an_existing_alert_to_edit">(Długie naciśnięcie - edytuj istniejący alert)</string>
@@ -602,6 +602,7 @@
     <string name="g5_bluetooth_watchdog">G5 Bluetooth Watchdog</string>
     <string name="close_gatt">Jeśli watchdog Bluetooth często się aktywuje, możesz spróbować odznaczyć tę opcję, aby sprawdzić, czy to pomoże</string>
     <string name="older_bluetooth_wakelocks">Starsza metoda wybudzania Bluetooth, która może spowodować dodatkowe zużycie baterii, ale czasem może być potrzebna do poprawnego odbioru Bluetooth</string>
+    <string name="reset_bluetooth_on_off">Zresetuj Bluetooth, wyłączając i włączając go co kilka minut! Wybieraj tylko w przypadku testowania. Może to zakłócić działanie innych urządzeń korzystających z Bluetooth.</string>
     <string name="constantly_reset_bluetooth">Stale resetuj Bluetooth</string>
     <string name="experimental_transmitter_fpv_uav">Wsparcie eksperymentalne dla urządzenia \"Transmitter\" z @FPV-UAV - tylko testy</string>
     <string name="transmitter_pl_support">Wsparcie dla \"Transmitter (PL)\"</string>
@@ -615,6 +616,8 @@
     <string name="use_external_blukon_algorithm">Zewnętrzny algorytm Libre.</string>
     <string name="calibrate_external_libre_algorithm_summary">Zastosuj kalibracje xDrip na danych OOP.</string>
     <string name="calibrate_external_libre_algorithm_title">Kalibracja zewnętrznego algorytmu (OOP).</string>
+    <string name="calibrate_external_libre_2_algorithm_summary">Zastosuj metody kalibracji xDrip na danych OOP2.</string>
+    <string name="calibrate_external_libre_2_algorithm_title">OOP2 algorithm calibration.</string>
     <string name="libre_use_smoothed_data_summary">Użyj średniej z 5 punktów, aby uzyskać bardziej gładkie dane.</string>
     <string name="libre_use_smoothed_data_title">Wygładź dane z Libre.</string>
     <string name="retrieve_blukon_history_title">Pobierz historię Libre</string>
@@ -719,7 +722,7 @@
     <string name="upload_to_dexcom">Włącz to, aby przesłać na serwery Dexcom</string>
     <string name="upload_to_dexcom_share">Prześlij wartości glikemii jako Dexcom Share</string>
     <string name="accounts_outside_usa">Wyłączone = Twoje konto i aplikacje śledzące są spoza USA</string>
-    <string name="accounts_inside_usa">Włączone = Twoje konto i aplikacje śledzące są z USA</string>
+    <string name="accounts_inside_usa">Włączone = Twoje konto i aplikacje śledzące (follower) są z USA</string>
     <string name="usa_based_account">Konto Dexcom w USA</string>
     <string name="dexcom_login">Twój login na stronie Dexcom</string>
     <string name="dexcom_user">Logowanie do konta Dexcom</string>
@@ -761,7 +764,7 @@
     <string name="alert_snooze">Uśpij alarm</string>
     <string name="alert_minutes_reraise">Liczba minut przed zgłoszeniem tego samego ostrzeżenia po jego uśpieniu.</string>
     <string name="reraise_before_snooze">Odnów alarm przed czasem drzemki</string>
-    <string name="reraise_not_snoozed_sooner">Odnów alarm jeżeli nie został uśpiony przed końcem drzemki</string>
+    <string name="reraise_not_snoozed_sooner">Odnów alarm, jeżeli nie został uśpiony przed końcem drzemki</string>
     <string name="alert_reraise_time">Interwał wznowienia alarmu</string>
     <string name="alert_seconds_reraise">Liczba SEKUND, które muszą upłynąć, zanim pojawi się ten sam alarm.</string>
     <string name="bg_falling_fast">Szybki spadek glikemii</string>
@@ -777,7 +780,7 @@
     <string name="collector_battery_alerts">Alarmy poziomu naładowania nakładki na sensor</string>
     <string name="low_battery_percentage">Niski procent baterii</string>
     <string name="notify_data_arrives_master"><![CDATA[Powiadom kiedy dane dotrą z nadajnika, jeśli opóźnienie wynosi > 20 minut.]]></string>
-    <string name="follower_chime_new">Dźwięk nowego odbiorcy</string>
+    <string name="follower_chime_new">Dźwięk nowego obserwatora</string>
     <string name="carb_ratio">Współczynnik węglowodanów</string>
     <string name="enable_dedicated_insulin_profiles">Ustawienia profili insuliny</string>
     <string name="desc_enable_dedicated_insulin_profiles">Tutaj można włączyć lub skonfigurować różne profile insuliny</string>
@@ -869,7 +872,7 @@
     <string name="level_alerts">Alarmy poziomu</string>
     <string name="override_calibration">Nadpisz kalibrację</string>
     <string name="only_stop_your_sensor_when_you_actually_plan">Zatrzymaj czujnik jedynie wtedy, gdy planujesz go usunąć, w przeciwnym razie pozostaw czujnik uruchomiony!</string>
-    <string name="restart_collector">Zrestartuj Kolektor</string>
+    <string name="restart_collector">Zrestartuj kolektor</string>
     <string name="forget_device">Zapomnij urządzenie</string>
     <string name="other_notes">Pozostałe notatki:</string>
     <string name="delete_future_data">Usuń przyszłe dane</string>
@@ -932,7 +935,7 @@
     <string name="androidwear">Android Wear OS</string>
     <string name="librealarm">LibreAlarm</string>
     <string name="use_librealarm">Używać aplikacji LibreAlarm jako źródła danych?</string>
-    <string name="noise_blocking">Blokowanie niedokładności</string>
+    <string name="noise_blocking">Blokowanie szumu</string>
     <string name="level_at_which_noisy_data_should_not_be_broadcast">Poziom, na którym niedokładne dane nie powinny być transmitowane, ponieważ mogą być mylące dla odbierających aplikacji</string>
     <string name="low_parakeet_battery">Niski poziom baterii Parakeet</string>
     <string name="glucose_units_mmol_or_mgdl">Jednostki glukozy mmol/l lub mg/dL</string>
@@ -960,8 +963,8 @@
     <string name="emergency_message_feature">Funkcja wiadomości awaryjnej</string>
     <string name="text_messages_can_be_sent_with_your_location_if_you_do_not_respond_to_alarms_this_feature_is_experimental_and_may_not_be_reliable">Wiadomości tekstowe z twoją lokalizacją mogą być wysyłane, jeśli nie odpowiadasz na alarmy. Ta funkcja jest eksperymentalna i może nie działać w pełni poprawnie.</string>
     <string name="your_name">Twoje imię</string>
-    <string name="did_not_acknowledge_a_low_glucose_alert">%1$s nie potwierdził alertu niskiego poziomu glukozy przez %2$s</string>
-    <string name="did_not_acknowledge_a_high_glucose_alert">%1$s nie potwierdził wysokiego poziomu glukozy przez %2$s</string>
+    <string name="did_not_acknowledge_a_low_glucose_alert">%1$s nie potwierdził alarmu niskiego poziomu glukozy przez %2$s</string>
+    <string name="did_not_acknowledge_a_high_glucose_alert">%1$s nie potwierdził alarmu wysokiego poziomu glukozy przez %2$s</string>
     <string name="has_not_had_glucose_data_received_for">%1$s nie odebrał danych glukozy przez %2$s</string>
     <string name="phone_has_not_been_used_for">%1$s telefon nie był używany przez %2$s</string>
     <string name="is_requesting_assistance">%s prosi o pomoc</string>
@@ -1115,6 +1118,7 @@
     <string name="low_and_high_alerts_currently_disabled">ALARMY O NISKIM I WYSOKIM POZIOMIE OBECNIE WYŁĄCZONE</string>
     <string name="low_alerts_currently_disabled">ALARMY O NISKIM POZIOMIE OBECNIE WYŁĄCZONE</string>
     <string name="high_alerts_currently_disabled">ALARMY O WYSOKIM POZIOMIE OBECNIE WYŁĄCZONE</string>
+    <string name="bg_reading_missed">Zgubiono Odczyty Glikemii</string>
     <string name="not_connected">Nie połączono</string>
     <string name="no_data">Brak danych</string>
     <string name="no_bluetooth">Brak bluetooth</string>
@@ -1193,12 +1197,15 @@
     <string name="title_miband_nightmode_start">Początek trybu nocnego</string>
     <string name="title_miband_nightmode_end">Koniec trybu nocnego</string>
     <string name="title_miband_interval_in_nightmode">Interwał</string>
+    <string name="summary_miband_interval_in_nightmode">Określa, jak często glikemia będzie synchronizowana w trybie nocnym</string>
     <string name="title_miband_colect_heartrate">Mierz puls</string>
     <string name="summary_miband_colect_heartrate">Włącza mierzenie tętna za pomocą opaski. Interwał aktualizacji można skonfigurować w MiFit lub dowolnej aplikacji zewnętrznej</string>
     <string name="title_miband_authkey">Klucz uwierzytelniania</string>
     <string name="summary_miband_authkey">Ustaw klucz autoryzacji dla MiBand4 (Aby uzyskać klucz autoryzacyjny, postępuj zgodnie z instrukcjami na https://www.freemyband.com/)</string>
     <string name="summary_miband_mac">Pozostaw puste dla automatycznego wyszukiwania</string>
     <string name="title_miband_send_readings_as_notification">Odczyty glikemii jako powiadomienia</string>
+    <string name="summary_miband_send_readings_as_notification">Będzie używać powiadomień, aby wysyłać odczyty glikemii. Data nie zostanie zmieniona, więc wszystkie funkcje opaski mogą być używane.
+        Należy wyłączyć, jeśli chcesz korzystać z tarczy zegarowej xDrip (Wymagane jest usunięcie oficjalnej aplikacji MiFit, aby uniknąć nadpisywania daty)</string>
     <string name="title_miband_vibrate_on_readings">Wibruj przy odczytach</string>
     <string name="title_miband_send_calls">Wysyłaj połączenia</string>
     <string name="summary_miband_send_calls">Wyślij powiadomienia o połączeniach do opaski (Android 6+)</string>
@@ -1272,7 +1279,9 @@
     <string name="summary_public_notifications">Pokaż powiadomienia na zabezpieczonym ekranie blokady</string>
     <string name="summary_number_wall_on_lockscreen">Pokaż na zablokowanym ekranie. Tylko Android 7 i nowszy!</string>
     <string name="title_number_wall_on_lockscreen">Użyj na ekranie blokady</string>
+    <string name="summary_pick_numberwall_start">Wybierz czas, aby zacząć pokazywać</string>
     <string name="title_pick_numberwall_start">Włącz</string>
+    <string name="summary_pick_numberwall_stop">Wybierz czas, aby przestać - ustaw na taki sam jak start, aby nigdy nie przestawać</string>
     <string name="title_pick_numberwall_stop">Czas wyłączenia</string>
     <string name="title_xdrip_plus_number_icon">Ikona wartości w obszarze powiadomień</string>
     <string name="summary_do_number_icon_test">Ikona wartości powoduje awarie niektórych telefonów! Naciśnij aby uruchomić test przed włączeniem funkcji!</string>
@@ -1300,11 +1309,18 @@
     <string name="title_pendiq_screen">Wstrzykiwacz insuliny Pendiq 2.0</string>
     <string name="title_pendiq_send_treatments">Wyślij zabieg do wstrzykiwacza</string>
     <string name="title_pendiq_pin">Kod Pin wstrzykiwacza</string>
+    <string name="summary_use_notification_channels">Użyj funkcji kanału powiadomień z systemem Android 8+</string>
+    <string name="title_use_notification_channels">Kanały powiadomień</string>
+    <string name="title_notification_channels_grouping">Grupuj powiadomienia</string>
     <string name="summary_delay_ascending_3min">W przypadku rosnącego profilu głośności, opóźnij rozpoczęcie dźwięku alertu o 3 minuty. Wibracja (jeśli jest włączona) rozpoczyna się natychmiast po wyzwoleniu alertu, niezależnie od tego ustawienia.</string>
     <string name="title_delay_ascending_3min">Opóźnij rosnącą głośność</string>
+    <string name="summary_play_sound_for_initial_calibration">Odtwórz dźwięk, gdy żądana jest początkowa kalibracja</string>
+    <string name="title_play_sound_for_initial_calibration">Alarm początkowy</string>
     <string name="category_noisy_readings">Zaszumione odczyty</string>
     <string name="category_falling_rising_bg">Spadająca/Wzrastająca glikemia</string>
+    <string name="summary_persistent_high_alert">Gdy zbyt długo powyżej górnego zakresu i nie zmierza w dół</string>
     <string name="note_search_button">SZUKAJ</string>
+    <string name="all_note_button">WSZYSTKIE</string>
     <string name="title_full_screen_mode">Tryb pełnoekranowy</string>
     <string name="title_colors_for_printing">Kolory do druku</string>
     <string name="title_share_save_this_screen">Udostępnij / Zapisz ten ekran</string>
@@ -1441,4 +1457,9 @@
     <string name="message_variant">Warianty xDrip+ pozwalają na zainstalowanie wielu aplikacji jednocześnie. Do zastosowań zaawansowanych lub żeby umożliwić jednoczesną instalacje xDrip-Experimental i xDrip+.\n\nZ wariantami, niektóre rzeczy mogą nie działać poprawnie, ponieważ jedna lub druga aplikacja posiada wyłączny dostęp, na przykład do parowania bluetooth. Opinie i raporty o błędach dotyczące wariantów są mile widziane!</string>
     <string name="expires_unknown">Wygasa: ???</string>
     <string name="sensor_expired">WYGASŁ!</string>
+    <string name="cancel_by_default">Anuluj domyślnie</string>
+    <string name="old">Stary</string>
+    <string name="neww">Nowy</string>
+    <string name="select_new_sound_source">Wybierz nowe źródło dźwięku</string>
+    <string name="snooze_done">← Uśpij / Potwierdź →</string>
 </resources>
