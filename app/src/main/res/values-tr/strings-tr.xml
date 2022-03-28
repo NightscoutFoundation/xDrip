@@ -616,6 +616,8 @@
     <string name="use_external_blukon_algorithm">İşlem dışı Libre algoritması.</string>
     <string name="calibrate_external_libre_algorithm_summary">OOP verisine xDrip kalibrasyon yöntemlerini uygulayın.</string>
     <string name="calibrate_external_libre_algorithm_title">OOP kalibrasyon algoritması.</string>
+    <string name="calibrate_external_libre_2_algorithm_summary">OOP2 verisine xDrip kalibrasyon yöntemlerini uygulayın.</string>
+    <string name="calibrate_external_libre_2_algorithm_title">OOP2 kalibrasyon algoritması.</string>
     <string name="libre_use_smoothed_data_summary">Daha pürüzsüz ve düzgün Libre sensör verileri elde etmek için ortalama 5 puan kullanın.</string>
     <string name="libre_use_smoothed_data_title">Pürüzsüz Libre verileri.</string>
     <string name="retrieve_blukon_history_title">Libre geçmişini al</string>
