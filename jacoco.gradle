@@ -2,7 +2,7 @@ apply plugin: 'jacoco'
 
 jacoco {
     // This version should be same as the one defined in root project build.gradle file :
-    toolVersion = "0.8.6"
+    toolVersion = "0.8.7"
 }
 
 tasks.withType(Test) {
