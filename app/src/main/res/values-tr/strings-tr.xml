@@ -616,6 +616,8 @@
     <string name="use_external_blukon_algorithm">İşlem dışı Libre algoritması.</string>
     <string name="calibrate_external_libre_algorithm_summary">OOP verisine xDrip kalibrasyon yöntemlerini uygulayın.</string>
     <string name="calibrate_external_libre_algorithm_title">OOP kalibrasyon algoritması.</string>
+    <string name="calibrate_external_libre_2_algorithm_summary">OOP2 verisine xDrip kalibrasyon yöntemlerini uygulayın.</string>
+    <string name="calibrate_external_libre_2_algorithm_title">OOP2 kalibrasyon algoritması.</string>
     <string name="libre_use_smoothed_data_summary">Daha pürüzsüz ve düzgün Libre sensör verileri elde etmek için ortalama 5 puan kullanın.</string>
     <string name="libre_use_smoothed_data_title">Pürüzsüz Libre verileri.</string>
     <string name="retrieve_blukon_history_title">Libre geçmişini al</string>
@@ -1616,4 +1618,10 @@
     <string name="sensor_expired">SÜRESİ DOLDU!</string>
     <string name="external_status_strings_eg_tbr">Harici durum dizileri, ör. AAPS\'den GBO</string>
     <string name="accept_external_status">Harici Durumu Kabul Et</string>
+    <string name="cancel_by_default">Varsayılan olarak iptal</string>
+    <string name="old">Eski</string>
+    <string name="neww">Yeni</string>
+    <string name="reschedule_with_new_timing">Yeni zamanlama ile yeniden planlansın mı?</string>
+    <string name="select_new_sound_source">Yeni ses kaynağı seçin</string>
+    <string name="snooze_done">← Ertele / Bitti →</string>
 </resources>

@@ -616,6 +616,8 @@
     <string name="use_external_blukon_algorithm">Algoritmo externo para el Libre.</string>
     <string name="calibrate_external_libre_algorithm_summary">Aplica métodos de calibración de xDrip con los datos del algoritmo externo para el Libre.</string>
     <string name="calibrate_external_libre_algorithm_title">Calibracion del algoritmo OOP.</string>
+    <string name="calibrate_external_libre_2_algorithm_summary">Aplicar métodos de calibración de xDrip sobre datos OOP2.</string>
+    <string name="calibrate_external_libre_2_algorithm_title">Calibracion del algoritmo OOP2.</string>
     <string name="libre_use_smoothed_data_summary">Utilizar una media de 5 puntos para obtener datos del libre más suaves.</string>
     <string name="libre_use_smoothed_data_title">Suavizar Datos de Libre.</string>
     <string name="retrieve_blukon_history_title">Recuperar el historial del Libre</string>
@@ -1609,4 +1611,10 @@
     </plurals>
     <string name="external_status_strings_eg_tbr">Cadenas de estado externas, por ejemplo, TBR de AAPS</string>
     <string name="accept_external_status">Aceptar estado externo</string>
+    <string name="cancel_by_default">Cancelar por defecto</string>
+    <string name="old">Antiguo</string>
+    <string name="neww">Nuevo</string>
+    <string name="reschedule_with_new_timing">¿Reprogramar con nuevo tiempo?</string>
+    <string name="select_new_sound_source">Seleccionar nueva fuente de sonido</string>
+    <string name="snooze_done">← Posponer / Hecho →</string>
 </resources>

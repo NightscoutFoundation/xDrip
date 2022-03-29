@@ -215,7 +215,10 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
                                 Log.e(TAG, "Unknown action! " + action);
                                 break;
                         }
-                    } finally {
+
+                    } catch (Exception e) {
+                        Log.e(TAG, "Caught Exception handling intent", e );
+                    }finally {
                         JoH.benchmark("NSEmulator process");
                         JoH.releaseWakeLock(wl);
                     }
@@ -265,12 +268,27 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
         String patchInfoString;
         String tagId;
         long CaptureDateTime;
+        int[] trend_bg_vals = null;
+        int[] history_bg_vals = null;
+
         try {
             decoded_buffer = json_object.getString(Intents.DECODED_BUFFER);
             patchUidString = json_object.getString(Intents.PATCH_UID);
             patchInfoString = json_object.getString(Intents.PATCH_INFO);
             tagId = json_object.getString(Intents.TAG_ID);
             CaptureDateTime = json_object.getLong(Intents.LIBRE_DATA_TIMESTAMP);
+            if (json_object.has(Intents.TREND_BG) && json_object.has(Intents.HISTORIC_BG)) {
+                JSONArray computed_bg = json_object.getJSONArray(Intents.TREND_BG);
+                trend_bg_vals = new int[computed_bg.length()];
+                for (int i = 0; i < computed_bg.length(); i++) {
+                    trend_bg_vals[i] = computed_bg.getInt(i);
+                }
+                computed_bg = json_object.getJSONArray(Intents.HISTORIC_BG);
+                history_bg_vals = new int[computed_bg.length()];
+                for (int i = 0; i < computed_bg.length(); i++) {
+                    history_bg_vals[i] = computed_bg.getInt(i);
+                }
+            }
         } catch (JSONException e) {
             Log.e(TAG, "Error JSONException ", e);
             return;
@@ -284,7 +302,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
         byte[] fram_data = Base64.decode(decoded_buffer, Base64.NO_WRAP);
         byte[] patchUid = Base64.decode(patchUidString, Base64.NO_WRAP);
         byte[] patchInfo = Base64.decode(patchInfoString, Base64.NO_WRAP);
-        LibreOOPAlgorithm.handleOop2DecodeFramResult(tagId, CaptureDateTime, fram_data, patchUid, patchInfo);
+        LibreOOPAlgorithm.handleOop2DecodeFramResult(tagId, CaptureDateTime, fram_data, patchUid, patchInfo, trend_bg_vals, history_bg_vals);
     }
 
     private void handleOop2DecodeBleResult(Bundle bundle) {
@@ -298,11 +316,29 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
         }
         String decoded_buffer;
         String patchUidString;
+        JSONArray computed_bg;
         long CaptureDateTime;
+
+        int[] trend_bg_vals = null;
+        int[] history_bg_vals = null;
+
         try {
             decoded_buffer = json_object.getString(Intents.DECODED_BUFFER);
             patchUidString = json_object.getString(Intents.PATCH_UID);
             CaptureDateTime = json_object.getLong(Intents.LIBRE_DATA_TIMESTAMP);
+            if (json_object.has(Intents.TREND_BG) && json_object.has(Intents.HISTORIC_BG)) {
+                computed_bg = json_object.getJSONArray(Intents.TREND_BG);
+                trend_bg_vals = new int[computed_bg.length()];
+                for (int i = 0; i < computed_bg.length(); i++) {
+                    trend_bg_vals[i] = computed_bg.getInt(i);
+                }
+                computed_bg = json_object.getJSONArray(Intents.HISTORIC_BG);
+                history_bg_vals = new int[computed_bg.length()];
+                for (int i = 0; i < computed_bg.length(); i++) {
+                    history_bg_vals[i] = computed_bg.getInt(i);
+                }
+            }
+
         } catch (JSONException e) {
             Log.e(TAG, "Error JSONException ", e);
             return;
@@ -315,7 +351,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
         // Does this throws exception???
         byte[] ble_data = Base64.decode(decoded_buffer, Base64.NO_WRAP);
         byte[] patchUid = Base64.decode(patchUidString, Base64.NO_WRAP);
-        LibreOOPAlgorithm.handleDecodedBleResult(CaptureDateTime, ble_data, patchUid);
+        LibreOOPAlgorithm.handleDecodedBleResult(CaptureDateTime, ble_data, patchUid, trend_bg_vals, history_bg_vals);
     }
 
     private void handleOop2BluetoothEnableResult(Bundle bundle) {

@@ -1199,7 +1199,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
                 final PendingIntent pendingIntent = PendingIntent.getActivity(xdrip.getAppContext(), NOTIFICATION_ID, notificationIntent, FLAG_UPDATE_CURRENT);
 
                 if (reminder.graphicon) {
-                    Treatments.create_note("Reminder"+": " + reminder.title, tsl());
+                    Treatments.create_note("Reminder"+": " + reminder.getTitle(), tsl());
                 }
 
                 JoH.showNotification(reminder.getTitle(), xdrip.getAppContext().getString(R.string.reminder_due) + " " + JoH.hourMinuteString(reminder.next_due), pendingIntent, NOTIFICATION_ID, NotificationChannels.REMINDER_CHANNEL, true, true, deleteIntent, JoH.isOngoingCall() ? null : (reminder.sound_uri != null) ? Uri.parse(reminder.sound_uri) : Uri.parse(JoH.getResourceURI(R.raw.reminder_default_notification)), null);

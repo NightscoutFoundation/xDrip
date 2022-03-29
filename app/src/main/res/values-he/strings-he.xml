@@ -616,6 +616,8 @@
     <string name="use_external_blukon_algorithm">אלגוריתם ליברה חיצוני.</string>
     <string name="calibrate_external_libre_algorithm_summary">יישום שיטות כיול של xDrip על נתוני OOP.</string>
     <string name="calibrate_external_libre_algorithm_title">כיול אלגוריתם OOP</string>
+    <string name="calibrate_external_libre_2_algorithm_summary">יישום שיטות כיול של xDrip על נתוני OOP.</string>
+    <string name="calibrate_external_libre_2_algorithm_title">כיול אלגוריתם OOP.</string>
     <string name="libre_use_smoothed_data_summary">משתמש בממוצע 5 נק\' מדידה לקבלת נתוני ליברה חלקים יותר.</string>
     <string name="libre_use_smoothed_data_title">שפע את נתוני ליברה.</string>
     <string name="retrieve_blukon_history_title">קבל היסטוריה של הליברה</string>
@@ -1509,4 +1511,9 @@
     <string name="without_camera_permission_cannot_scan_barcode">ללא הרשאת מצלמה לא ניתן לסרוק את הברקוד</string>
     <string name="external_status_strings_eg_tbr">מחרוזת סטטוס חיצונית, כדוגמאת: זמן נמוך מהטווח (TBR) ממערכת AAPS</string>
     <string name="accept_external_status">קבל סטטוס חיצוני</string>
+    <string name="cancel_by_default">בטל כברירת מחדל</string>
+    <string name="old">ישן</string>
+    <string name="neww">חדש</string>
+    <string name="select_new_sound_source">בחרו מקור שמע חדש</string>
+    <string name="snooze_done">← נודניק/סיום →</string>
 </resources>
