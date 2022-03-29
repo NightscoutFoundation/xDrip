@@ -18,6 +18,7 @@
         <item>Medtrum A6</item>
         <item>Nightscout Follower</item>
         <item>Dex Share Follower</item>
+        <item>GlucoRx/Aidex App</item>
         <item>Disable Collection</item>
     </string-array>
 
@@ -39,6 +40,7 @@
         <item>Medtrum</item>
         <item>NSFollower</item>
         <item>SHFollower</item>
+        <item>AidexReceiver</item>
         <item>Disabled</item>
     </string-array>
 

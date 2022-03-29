@@ -6,6 +6,8 @@
     android:installLocation="internalOnly">
     <!-- To receive data from HAPP. -->
     <uses-permission android:name="com.eveningoutpost.dexdrip.permissions.RECEIVE_EXTERNAL_STATUSLINE" />
+    <!-- To receive data from Aidex -->
+    <uses-permission android:name="com.microtechmd.cgms.aidex.permissions.RECEIVE_BG_ESTIMATE" />
 
     <uses-feature
         android:name="android.hardware.bluetooth_le"
