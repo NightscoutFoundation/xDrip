@@ -24,7 +24,7 @@ jobs:
     - name: Run unit tests and assemble APKs
       uses: gradle/gradle-build-action@v2
       with:
-        arguments: assembleProdRelease testProdReleaseUnitTest
+        arguments: assembleProdRelease testProdReleaseUnitTestCoverage
     - name: Upload Coverage Report to Codecov
       uses: codecov/codecov-action@v2
       with:
