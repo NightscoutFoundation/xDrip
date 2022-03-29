@@ -606,6 +606,8 @@
     <string name="use_external_blukon_algorithm">Külső Libre algoritmus.</string>
     <string name="calibrate_external_libre_algorithm_summary">xDrip kalibrációs mechanizmus használata az OOP-adatokra.</string>
     <string name="calibrate_external_libre_algorithm_title">OOP kalibrációs algoritmus.</string>
+    <string name="calibrate_external_libre_2_algorithm_summary">xDrip kalibrációs mechanizmus használata az OOP2-adatokra.</string>
+    <string name="calibrate_external_libre_2_algorithm_title">OOP2 kalibrációs algoritmus.</string>
     <string name="libre_use_smoothed_data_summary">Öt pontból számoljon átlagot a simább Libre adatgörbéhez.</string>
     <string name="libre_use_smoothed_data_title">Adatgörbe simítása.</string>
     <string name="retrieve_blukon_history_title">Historikus adatok</string>
@@ -1006,7 +1008,7 @@
     <string name="title_Non_fixed_Libre_slopes">Nem rögzített Libre meredekség</string>
     <string name="summary_Allow_initial_calibration_no_good_enough_data">Engedélyezze az indító kalibrációt akkor is, ha ahhoz nincsen elég adat. Figyelem, ez a kalibráció pontatlanságát okozhatja!</string>
     <string name="title_Bypass_quality_check">Minőségellenőrzés kihagyása</string>
-    <string name="summary_Scan_before_connecting_on_xBridge_and_Libre_bluetooth">Szkennelés XBridge-hez vagy Libre szenzorhoz kapcsolódás előtt</string>
+    <string name="summary_Scan_before_connecting_on_xBridge_and_Libre_bluetooth">Szkennelés xBridge-hez vagy Libre szenzorhoz kapcsolódás előtt</string>
     <string name="title_Use_scanning">Szkennelés használata</string>
     <string name="summary_Use_and_trust_Android_bluetooth_auto_connect_feature">Az Android automatikus kapcsolódás és megbízható eszköz funkció használata</string>
     <string name="title_Trust_Auto_Connect">Automatikus kapcsolódás használata</string>
@@ -1483,6 +1485,7 @@
     <string name="nfc_diag_timeout">NFC időtúllépés</string>
     <string name="nfc_read_timeout">NFC olvasási időtúllépés</string>
     <string name="nfc_invalid_data__try_again">Érvénytelen NFC adatok - próbálja újra</string>
+    <string name="turned_off_anytag_feature">Any-tag funkció leállítva</string>
     <string name="nfc_invalid_data">Érvénytelen NFC adatok</string>
     <string name="scanned_ok">Sikeres szkennelés!</string>
     <string name="nfc_io_error">NFC IO hiba</string>
@@ -1496,6 +1499,7 @@
     <string name="restarting_collector">Kollektor újraindítása!</string>
     <string name="follower_deleted_succesfully">Követő eltávolítva</string>
     <string name="failed_to_delete_follower">Követő eltávolítása sikertelen</string>
+    <string name="input_not_found_cancelled">Nincs adat! Leállítva!</string>
     <string name="cancelled">Megszakítva!</string>
     <string name="no_sensor_found">Szenzor nem található</string>
     <string name="checksum_failed__retrying">Ellenőrző összeg hibás - ismétlés</string>
@@ -1529,8 +1533,10 @@
     <string name="title_lower_fuzzer">FUZZER csökkentése</string>
     <string name="summary_lower_fuzzer">A FUZZER értékének csökkentése 2,5 percről 37,5 mp-re</string>
     <string name="without_camera_permission_cannot_scan_barcode">Kamerahasználat engedélyezése nélkül nem működik a vonalkód olvasás</string>
+    <string name="title_create_missing_filtered">Alkossa meg a hiányzó szűrt adatokat</string>
     <string name="summary_widget_hide_graph">A grafikon elrejtése a widgeteken (a következő olvasáskor jelenik meg)</string>
     <string name="title_widget_hide_graph">Widget grafikon elrejtése</string>
+    <string name="summary_illustrate_remote_data">Kapott távoli adatok megjelenítése (csak diagnosztika)</string>
     <string name="summary_show_accessibility_settings">Ha telefonja rendelkezik Always On Display funkcióval, akkor az xDrip widgetet ott engedélyezheti az xDrip szolgáltatás engedélyezésével az Android rendszerbeállítások oldalon.</string>
     <string name="title_show_accessibility_settings">xDrip AOD-n (kisegítő szolgáltatásként)</string>
     <string name="title_multiple_insulin_types_settings">Többféle inzulin</string>
@@ -1543,10 +1549,13 @@
     <string name="title_accept_broadcast_snooze">Helyi adatszórás engedélyezése</string>
     <string name="no_battery_optimization_whitelisting">Úgy tűnik, a készüléke nem vezet kivétellistát az akku optimalizált app-okról!</string>
     <string name="no_i_really_know">Nem, tényleg tudom, mit csinálok</string>
+    <string name="problem_loading_speech_lexicon">Hiba a beszédlexikon betöltésében!</string>
     <string name="no_never">NEM, soha</string>
     <string name="auto_starting_sensor">Automatikus szenzorindítás!</string>
     <string name="start_sensor_confirmation">Az adatforrás helye: %s\n\n Szeretné megváltoztatni a beállításokat vagy elindítani a szenzort?</string>
+    <string name="transmitter_waiting_for_calibration">Várakozás a transzmitterre a kalibrációhoz</string>
     <string name="not_getting_readings">Nem érkezett adat.</string>
+    <string name="bridge_battery">Transzmitter töltöttség</string>
     <string name="noise_workings_noise">Szundi: %s</string>
     <string name="snoozing_due_button_press">Riasztás szundiba küldése a a hangerő gomb megnyomásával</string>
     <string name="share_database">Adatbázis megosztása...</string>
@@ -1558,4 +1567,9 @@
     <string name="sensor_expired">LEJÁRT!</string>
     <string name="external_status_strings_eg_tbr">Külső alkalmazásokból származó adatok (pl. AAPS-ből TBR)</string>
     <string name="accept_external_status">Adatfogadás külső alkalmazásokból</string>
+    <string name="old">Régi</string>
+    <string name="neww">Új</string>
+    <string name="reschedule_with_new_timing">Újratervezés új időzítéssel?</string>
+    <string name="select_new_sound_source">Hangforrás kiválasztása</string>
+    <string name="snooze_done">← Szundi / Kész →</string>
 </resources>

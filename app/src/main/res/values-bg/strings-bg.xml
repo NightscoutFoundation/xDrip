@@ -216,6 +216,8 @@
     <string name="other_xdrip_plus_alerts">Други xDrip+ известия</string>
     <string name="xdrip_plus_display_settings">xDrip+ Персонализиране</string>
     <string name="pref_message_influxdb_uri">Замени примерните стойности в {} с твоите реални стойности</string>
+    <string name="calibrate_external_libre_2_algorithm_summary">Приложи хДрип калибрация на OOP2 данни.</string>
+    <string name="calibrate_external_libre_2_algorithm_title">OOP2 алгоритъм калибрация.</string>
     <string name="low_prediction_values">Стойности на предсказание за ниска КЗ</string>
     <string name="atom">Атом</string>
     <string name="stop_sensor">Спри сензора</string>

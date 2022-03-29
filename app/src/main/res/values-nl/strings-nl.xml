@@ -616,6 +616,8 @@
     <string name="use_external_blukon_algorithm">Extern Libre algoritme.</string>
     <string name="calibrate_external_libre_algorithm_summary">XDrip kalibratiemethoden toepassen op OOOP-gegevens.</string>
     <string name="calibrate_external_libre_algorithm_title">OOP algoritme kalibreren.</string>
+    <string name="calibrate_external_libre_2_algorithm_summary">Pas xDrip kalibratiemethoden toe op OOP2 gegevens.</string>
+    <string name="calibrate_external_libre_2_algorithm_title">OOP2 algoritme kalibratie.</string>
     <string name="libre_use_smoothed_data_summary">Gebruik een gemiddelde van 5 punten om vloeiendere libre gegevens te krijgen.</string>
     <string name="libre_use_smoothed_data_title">Vloeiende libre gegevens.</string>
     <string name="retrieve_blukon_history_title">Haal Libre-geschiedenis op</string>
@@ -1624,4 +1626,10 @@
     </plurals>
     <string name="external_status_strings_eg_tbr">Externe status weergave, bijvoorbeeld TBR van AAPS</string>
     <string name="accept_external_status">Accepteer externe status</string>
+    <string name="cancel_by_default">Standaard annuleren</string>
+    <string name="old">Oud</string>
+    <string name="neww">Nieuw</string>
+    <string name="reschedule_with_new_timing">Opnieuw inplannen met nieuwe tijd?</string>
+    <string name="select_new_sound_source">Selecteer nieuwe geluidsbron</string>
+    <string name="snooze_done">← Snooze / Klaar →</string>
 </resources>

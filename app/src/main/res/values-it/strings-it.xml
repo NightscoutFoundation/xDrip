@@ -1625,4 +1625,6 @@
     </plurals>
     <string name="external_status_strings_eg_tbr">Stringhe di stato esterno, es. basale da AAPS</string>
     <string name="accept_external_status">Accetta Stato Esterno</string>
+    <string name="old">Vecchio</string>
+    <string name="select_new_sound_source">Seleziona nuova sorgente sonora</string>
 </resources>
