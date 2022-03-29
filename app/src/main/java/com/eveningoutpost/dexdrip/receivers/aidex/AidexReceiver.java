@@ -39,6 +39,7 @@ public class AidexReceiver extends BroadcastReceiver {
     private static final boolean debug = true;
     private static final Object lock = new Object();
     private static SharedPreferences prefs;
+    private static final long segmentation_timeslice = (long) (Constants.MINUTE_IN_MS * 4.5);
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -150,7 +151,7 @@ public class AidexReceiver extends BroadcastReceiver {
         checkIfCorrectSensorIsRunning(sensorId, timeStamp);
 
         UserError.Log.i(TAG, "Aidex Broadcast NewBGEstimate received: " + bgValueMgDl);
-        BgReading.bgReadingInsertFromInt(bgValueMgDl, timeStamp, false);
+        BgReading.bgReadingInsertFromInt(bgValueMgDl, timeStamp, segmentation_timeslice, false);
 
     }
 
