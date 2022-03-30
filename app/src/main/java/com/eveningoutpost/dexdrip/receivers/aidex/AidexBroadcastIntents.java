@@ -86,6 +86,9 @@ public interface AidexBroadcastIntents {
      */
     String AIDEX_MESSAGE_VALUE = "com.microtechmd.cgms.aidex.MessageValue";
 
+    String UNIT_MMOL_L = "mmol/l";
+    String UNIT_MG_DL = "mg/dl";
+
     // DON'T CHANGE THIS - END
 
     // You can add your own data here

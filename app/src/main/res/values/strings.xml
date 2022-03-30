@@ -1679,4 +1679,14 @@
     <string name="reschedule_with_new_timing">Reschedule with new timing?</string>
     <string name="select_new_sound_source">Select new sound source</string>
     <string name="snooze_done">← Snooze / Done →</string>
+
+    <!-- Aidex Messages -->
+    <string name="aidex_sensor_error">Aidex - Sensor Error</string>
+    <string name="aidex_transmitter_error">Aidex - Transmitter Error</string>
+    <string name="aidex_calibration_requested">Aidex - Calibration Requested</string>
+    <string name="aidex_glucose_invalid">Aidex - Glucose invalid</string>
+    <string name="aidex_battery_low">Aidex - Battery Low</string>
+    <string name="aidex_battery_empty">Aidex - Battery Empty</string>
+    <string name="aidex_sensor_expired">Aidex - Sensor Expired</string>
+
 </resources>

@@ -22,6 +22,8 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 
+import java.util.GregorianCalendar;
+
 import static com.eveningoutpost.dexdrip.receivers.aidex.AidexBroadcastIntents.AIDEX_BG_TYPE;
 import static com.eveningoutpost.dexdrip.receivers.aidex.AidexBroadcastIntents.AIDEX_BG_VALUE;
 import static com.eveningoutpost.dexdrip.receivers.aidex.AidexBroadcastIntents.AIDEX_SENSOR_ID;
@@ -134,9 +136,9 @@ public class AidexReceiver extends BroadcastReceiver {
 
         int bgValueMgDl = 0;
 
-        if ("mg/dl".equalsIgnoreCase(bgType)) {
+        if (AidexBroadcastIntents.UNIT_MG_DL.equalsIgnoreCase(bgType)) {
             bgValueMgDl = bgValue.intValue();
-        } else if ("mmol/l".equalsIgnoreCase(bgType)) {
+        } else if (AidexBroadcastIntents.UNIT_MMOL_L.equalsIgnoreCase(bgType)) {
             bgValueMgDl = (int)(bgValue * Constants.MMOLL_TO_MGDL);
         } else {
             UserError.Log.e(TAG, "Aidex Broadcast BgType invalid. BgType needs to be either: mg/dl or mmol/l.");
@@ -150,7 +152,7 @@ public class AidexReceiver extends BroadcastReceiver {
 
         checkIfCorrectSensorIsRunning(sensorId, timeStamp);
 
-        UserError.Log.i(TAG, "Aidex Broadcast NewBGEstimate received: " + bgValueMgDl);
+        UserError.Log.i(TAG, "Aidex Broadcast NewBGEstimate received: bg=" + bgValueMgDl + ", time=" + JoH.dateTimeText(timeStamp));
         BgReading.bgReadingInsertFromInt(bgValueMgDl, timeStamp, segmentation_timeslice, false);
 
     }
@@ -186,10 +188,10 @@ public class AidexReceiver extends BroadcastReceiver {
                 }
 
                 final String local_units = Pref.getString("units", "mgdl");
-                if (units.equals("mg/dl") && (!local_units.equals("mgdl"))) {
+                if (AidexBroadcastIntents.UNIT_MG_DL.equals(units) && (!local_units.equals("mgdl"))) {
                     bgValue = bgValue * Constants.MGDL_TO_MMOLL;
                     Log.d(TAG, "Converting from mgdl to mmol: " + JoH.qs(bgValue, 2));
-                } else if (units.equals("mmol/l") && (!local_units.equals("mmol"))) {
+                } else if (AidexBroadcastIntents.UNIT_MMOL_L.equals(units) && (!local_units.equals("mmol"))) {
                     bgValue = bgValue * Constants.MMOLL_TO_MGDL;
                     Log.d(TAG, "Converting from mmol to mgdl: " + JoH.qs(bgValue, 2));
                 }
@@ -216,20 +218,57 @@ public class AidexReceiver extends BroadcastReceiver {
     private void processSensorStart(Bundle bundle) {
         if (bundle != null && bundle.containsKey(AIDEX_TIMESTAMP)) {
             long sensorStartTime = bundle.getLong(AIDEX_TIMESTAMP);
+            String sensorId = bundle.getString(AIDEX_SENSOR_ID);
 
-            Sensor last = Sensor.currentSensor();
-            if (last != null) {
-                Sensor.stopSensor();
-                last = null;
+            if (stopCurrentSensor(sensorId)) {
+                Sensor.create(sensorStartTime, bundle.getString(AIDEX_SENSOR_ID));
             }
-
-            Sensor.create(sensorStartTime, bundle.getString(AIDEX_SENSOR_ID));
         }
+    }
+
+    private boolean stopCurrentSensor(String nextSensorId) {
+        Sensor last = Sensor.currentSensor();
+        if (last != null) {
+            if (last.uuid.equals(nextSensorId)) {
+                // if we restart sensor we would have same uuid, so we don't do anything.
+                return false;
+            }
+            Sensor.stopSensor();
+        }
+
+        return true;
     }
 
 
     private void processSensorRestart(Bundle bundle) {
         Log.w(TAG, "Received broadcast Sensor Restart from Aidex, but we don't process it.");
+        String sensorId = bundle.getString(AIDEX_SENSOR_ID);
+        Sensor sensorSearch = Sensor.getByUuid(sensorId);
+        long sensorStartTime = bundle.getLong(AIDEX_TIMESTAMP);
+
+        if (sensorSearch!=null) {
+            Sensor currentSensor = Sensor.currentSensor();
+
+            if (currentSensor==null) {
+                if (sensorSearch.stopped_at != 0) {
+                    Sensor.restartSensor(sensorId);
+                }
+            } else {
+                if (sensorSearch.equals(currentSensor)) {
+                    return;
+                } else {
+                    stopCurrentSensor("x");
+                    if (sensorSearch.stopped_at != 0) {
+                        Sensor.restartSensor(sensorId);
+                    }
+                }
+            }
+
+        } else {
+            if (stopCurrentSensor(sensorId)) {
+                Sensor.create(sensorStartTime, sensorId);
+            }
+        }
     }
 
 
@@ -256,6 +295,13 @@ public class AidexReceiver extends BroadcastReceiver {
         } else {
             UserError.Log.i(TAG, "  Notification type=" + messageType);
         }
+
+        AidexMessageType messageTypeEnum = AidexMessageType.getByKey(messageType);
+
+        if (messageTypeEnum!=AidexMessageType.OTHER) {
+            // TODO display this message
+        }
+
     }
 
 }
