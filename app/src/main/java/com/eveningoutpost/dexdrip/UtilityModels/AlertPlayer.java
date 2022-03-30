@@ -519,6 +519,8 @@ public class AlertPlayer {
         String title = bgValue + " " + alert.name;
         String content = "BG " + highlow + " ALERT: " + bgValue + "  (@" + JoH.hourMinuteString() + ")";
         final Intent intent = new Intent(context, SnoozeActivity.class);
+        NotificationCompat.Action action = new NotificationCompat.Action.Builder(R.drawable.ic_action_communication_invert_colors_on,
+                context.getResources().getString(R.string.snooze), snoozeIntent(context, minsFromStartPlaying)).build();
 
         boolean localOnly = (Home.get_forced_wear() && PersistentStore.getBoolean("bg_notifications_watch"));
         Log.d(TAG, "NotificationCompat.Builder localOnly=" + localOnly);
@@ -526,7 +528,7 @@ public class AlertPlayer {
                 .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
                 .setContentTitle(title)
                 .setContentText(content)
-                //.addAction(R.drawable.ic_action_communication_invert_colors_on, "SNOOZE", notificationIntent(context, intent))
+                .addAction(action)
                 .setContentIntent(notificationIntent(context, intent))
                 .setLocalOnly(localOnly)
                 .setGroup("xDrip level alert")
