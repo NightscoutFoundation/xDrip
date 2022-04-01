@@ -1528,7 +1528,7 @@
     <string name="nfc_io_error">Error de E/S de NFC</string>
     <string name="nfc_error">Error NFC</string>
     <string name="still_processing_previous_backfill_request">¡Procesando la solicitud de relleno anterior!</string>
-    <string name="please_wait">Por favor espere…</string>
+    <string name="please_wait">Por favor, espere...</string>
     <string name="didnt_find_any_glucose_readings_in_that_time_period">No se encontraron lecturas de glucosa en ese período</string>
     <string name="got_calibration_in_the_future__cannot_process">Se obtuvo una calibración en el futuro, ¡no se puede procesar!</string>
     <string name="remote_snooze">Diferido a Distancia…</string>
