@@ -284,7 +284,16 @@ public class UserError extends Model {
 
         public static void e(String tag, String b, Exception e){
             android.util.Log.e(tag, b, e);
-            new UserError(tag, b + "\n" + e.toString());
+            StringBuilder sb = new StringBuilder();
+            sb.append(b);
+            sb.append("\n");
+            sb.append(e.toString());
+            sb.append("\n");
+            StackTraceElement[] ste = e.getStackTrace();
+            for (StackTraceElement ee : ste) {
+                sb.append("    " +  ee.toString() + "\n");
+            }
+            new UserError(tag, sb.toString()) ;
         }
 
         public static void w(String tag, String b){
