@@ -72,9 +72,11 @@
     <string name="pref_amazfit_BG_alert_enable">Ενεργοποίηση</string>
     <string name="pref_amazfit_other_alert_enable">Ενεργοποίηση</string>
     <string name="pref_amazfit_other_alert_title">Άλλες Ειδοποιήσεις</string>
+    <string name="pref_amazfit_watchface_graph_dots_summary">Δείχνει μικροσκοπικές τελείες αντί για μικρές</string>
     <string name="pref_amazfit_watchface_graph_enable">Ενεργοποίηση</string>
     <string name="pref_amazfit_watchface_graph_hours_summary">ορισμός πόσες ώρες στο γράφημα</string>
     <string name="pref_amazfit_widget_graph_hours_summary">ορισμός πόσες ώρες στο γράφημα</string>
+    <string name="pref_amazfit_widget_graph_dots_summary">Δείχνει μικροσκοπικές τελείες αντί για μικρές</string>
     <string name="pref_amazfit_widget_graph_enable">Ενεργοποίηση</string>
     <string name="taskerConfigInstruction">Απλά κάντε κλικ στο εικονίδιο Tick εδώ για να επιβεβαιώσετε. Δεν θα πρέπει να αλλάξετε τη συμβολοσειρά ρυθμίσεων.</string>
     <string name="finish_preferences_activity">τερματισμός_προτιμίσεις_δραστηριότητα</string>
@@ -116,6 +118,8 @@
     <string name="nokeep_parakeet_as_it_is">Όχι, κρατήστε το Parakeet όπως είναι</string>
     <string name="added">Προστέθηκε</string>
     <string name="checking_for_update">Έλεγχος για ενημερώσεις...</string>
+    <string name="signal_missed">Χάθηκε το σήμα</string>
+    <string name="minutes_ago">{0, επιλογή,0#{0, αριθμός, ακέραιος} Λεπτά πριν|1#{0, number, integer} Λεπτά πριν|1&lt;{0, number, integer} Λεπτά πριν}{0, number, integer}</string>
     <string name="expires_at">Λήξη του {0}</string>
     <string name="space_minutes_ago">" λεπτά πριν"</string>
     <string name="space_minute_ago">" Λεπτό πριν"</string>
