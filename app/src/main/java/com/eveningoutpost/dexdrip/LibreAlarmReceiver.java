@@ -191,19 +191,21 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
         // Get the data for the last 24 hours, as this affects the cache.
         List<LibreTrendPoint> libreTrendPoints = libreTrendUtil.getData(JoH.tsl() - Constants.DAY_IN_MS, JoH.tsl(), true);
 
-        readingData.ClearErrors(libreTrendPoints);
+        boolean use_smoothed_data = Pref.getBooleanDefaultFalse("libre_use_smoothed_data");
+        boolean use_raw = Pref.getBoolean("calibrate_external_libre_2_algorithm", true);
+        
         // This is not a perfect solution, but it should work well in almost all casses except restart.
         // (after restart we will only have data of one reading).
         readingData.copyBgVals(libreTrendPoints);
+        // Noise estimation needs all BgVals so we do this function after copyBgVals()
+        readingData.ClearErrors(libreTrendPoints, use_raw);
 
-        boolean use_smoothed_data = Pref.getBooleanDefaultFalse("libre_use_smoothed_data");
         if (use_smoothed_data) {
             readingData.calculateSmoothDataImproved(libreTrendPoints, bg_val_exists);
         }
         if (Pref.getBooleanDefaultFalse("external_blukon_algorithm") != false) {
             Log.wtf(TAG, "Error external_blukon_algorithm should be false here");
         }
-        boolean use_raw = Pref.getBoolean("calibrate_external_libre_2_algorithm", true);
         CalculateFromDataTransferObject(readingData, use_smoothed_data, use_raw);
     }
 
