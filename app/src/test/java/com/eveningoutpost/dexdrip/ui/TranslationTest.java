@@ -1,6 +1,9 @@
 package com.eveningoutpost.dexdrip.ui;
 
 
+import static com.google.common.truth.Truth.assertWithMessage;
+import static java.nio.file.FileVisitResult.CONTINUE;
+
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -22,9 +25,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import lombok.val;
-
-import static com.google.common.truth.Truth.assertWithMessage;
-import static java.nio.file.FileVisitResult.CONTINUE;
 
 public class TranslationTest extends RobolectricTestWithConfig {
 
@@ -66,7 +66,7 @@ public class TranslationTest extends RobolectricTestWithConfig {
 
         val resourcePath = RuntimeEnvironment.application
                 .getPackageResourcePath()
-                .replaceFirst("/apk_for_local_test/.*","/merged-not-compiled-resources");
+                .replaceFirst("apk_for_local_test(?:\\\\|/).*", "merged-not-compiled-resources");
         val size = locales.size();
         Files.walkFileTree(Paths.get(resourcePath), new ResourceLocaleParser());
         assertWithMessage("No locales added from resources - this seems unlikely").that(locales.size()).isGreaterThan(size);
