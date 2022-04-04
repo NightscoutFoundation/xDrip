@@ -119,8 +119,8 @@
     <string name="added">Προστέθηκε</string>
     <string name="checking_for_update">Έλεγχος για ενημερώσεις...</string>
     <string name="signal_missed">Χάθηκε το σήμα</string>
-    <string name="minutes_ago">{0, επιλογή,0#{0, αριθμός, ακέραιος} Λεπτά πριν|1#{0, number, integer} Λεπτά πριν|1&lt;{0, number, integer} Λεπτά πριν}{0, number, integer}</string>
-    <string name="expires_days">{0, επιλογή,0#Ο αισθητήρας έληξε!|1#Τελειώνει σε {0, number} ημέρα|1&lt;Τελειώνει σε {0, number} ημέρες}</string>
+    <string name="minutes_ago">{0, choice,0#{0, number, integer} Λεπτά πριν|1#{0, number, integer} Λεπτά πριν|1&lt;{0, number, integer} Λεπτά πριν}</string>
+    <string name="expires_days">{0, choice,0#Ο αισθητήρας έληξε!|1#Τελειώνει σε {0, number} ημέρα|1&lt;Τελειώνει σε {0, number} ημέρες}</string>
     <string name="expires_at">Λήξη του {0}</string>
     <string name="space_minutes_ago">" λεπτά πριν"</string>
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"Σε λειτουργία Libre all house: δεν έχει συλλεχθεί καμία ανάγνωση ακόμα."</string>
