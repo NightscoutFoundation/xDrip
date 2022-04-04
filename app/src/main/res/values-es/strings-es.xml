@@ -370,7 +370,7 @@
     <string name="glucose_history">Historial de glucosa</string>
     <string name="import_database">Importar base de datos</string>
     <string name="sensor_table">Tabla sensor</string>
-    <string name="bg_readings_table">Tabla de Lecturas de Glucosa</string>
+    <string name="bg_readings_table">Tabla de lecturas de glucosa</string>
     <string name="long_press_to_split_or_delete">Presión larga para dividir o borrar</string>
     <string name="press_and_hold_on_the_background_to_split_or_delete">Presione y mantenga presionado para dividir o borrar un bloque de tiempo</string>
     <string name="search">Buscar</string>
@@ -617,7 +617,7 @@
     <string name="calibrate_external_libre_algorithm_summary">Aplica métodos de calibración de xDrip con los datos del algoritmo externo para el Libre.</string>
     <string name="calibrate_external_libre_algorithm_title">Calibracion del algoritmo OOP.</string>
     <string name="calibrate_external_libre_2_algorithm_summary">Aplicar métodos de calibración de xDrip sobre datos OOP2.</string>
-    <string name="calibrate_external_libre_2_algorithm_title">Calibracion del algoritmo OOP2.</string>
+    <string name="calibrate_external_libre_2_algorithm_title">Calibracion del algoritmo OOP2</string>
     <string name="libre_use_smoothed_data_summary">Utilizar una media de 5 puntos para obtener datos del libre más suaves.</string>
     <string name="libre_use_smoothed_data_title">Suavizar Datos de Libre.</string>
     <string name="retrieve_blukon_history_title">Recuperar el historial del Libre</string>
@@ -848,7 +848,7 @@
     <string name="send_data_to_developers">Enviar datos a los desarrolladores sobre las tasas de éxito de los diferentes dispositivos</string>
     <string name="try_to_work_around_noisy_readings_ultrasensitive">Empezar a solucionar las lecturas ruidosas incluso en niveles de ruido muy bajos (sólo en modo ingeniería)</string>
     <string name="sidiary_date_title">¿Desde cuando se exporta?</string>
-    <string name="blukon">Blucon</string>
+    <string name="blukon">BluCon</string>
     <string name="tomato">Tomato</string>
     <string name="bubble">Bubble</string>
     <string name="atom">Atom</string>
