@@ -107,7 +107,7 @@
     <string name="pref_amazfit_widget_settings">Configuración del Widget (puede necesitar más batería)</string>
     <string name="toast_crash">Algo salió mal :( se envió un informe para ayudar a solucionar el problema.</string>
     <string name="taskerConfigInstruction">Sólo haga clic en la casilla para confirmar. No debería requerir cambiar la cadena de configuración.</string>
-    <string name="taskerConfiguration">Configurar Tasker</string>
+    <string name="taskerConfiguration">Configuración de tasker</string>
     <string name="finish_preferences_activity">Finalizar la actividad de preferencias</string>
     <string name="add_widget">Añadir Widget</string>
     <string name="title_activity_alert_list">Lista de Alertas</string>
@@ -152,7 +152,7 @@
     <string name="till">hasta</string>
     <string name="low_predicted">Baja pronosticada</string>
     <string name="in">en</string>
-    <string name="yes_enter_setup_mode">Sí entrar en el modo de ajustes</string>
+    <string name="yes_enter_setup_mode">Sí, entrar en el modo de ajustes</string>
     <string name="nokeep_parakeet_as_it_is">No; mantener Parakeet como está</string>
     <string name="are_you_sure_you_want_switch_parakeet_to_setup">¿Está seguro de querer cambiar Parakeet al modo de ajustes?\n\nNormalmente esto sólo se usa para enviar mensajes de texto adicionales para que Parakeet reconfigure el transmisor por el que escucha, etc.</string>
     <string name="split_delete_or_do_nothing">Dividir, eliminar o no hacer nada</string>
@@ -234,7 +234,7 @@
     <string name="calibration_data_table">Tabla de datos de calibración</string>
     <string name="bg_data_table">Tabla de datos de Glucosa</string>
     <string name="cannot_calibrate_right_now">No se puede calibrar en este momento</string>
-    <string name="hardware_data_source">Fuente de datos de hardware</string>
+    <string name="hardware_data_source">Fuente de datos hardware</string>
     <string name="enter_ten_character_dexcom_receiver_serial">Introduzca los 10 caracteres del número de serie del receptor Dexcom</string>
     <string name="dexcom_transmitter_id">ID del transmisor Dexcom</string>
     <string name="run_collector_in_foreground">Ejecutar Colector en primer plano</string>
@@ -1433,7 +1433,7 @@
     <string name="bluetooth_device">Dispositivo Bluetooth:   </string>
     <string name="transmitter_battery_status">Batería del transmisor:  </string>
     <string name="top">Arriba</string>
-    <string name="connect_device_usb_otg">Por favor conecta tu dispositvo mediante un cable USB OTG.</string>
+    <string name="connect_device_usb_otg">Por favor, conecta tu dispositvo mediante un cable USB OTG.</string>
     <string name="connection_status">Edo. de la Conexión:</string>
     <string name="range_in_high_low">Rango: (medio/alto/bajo)</string>
     <string name="absolute_s">#s Absoluto:</string>
