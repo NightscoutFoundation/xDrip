@@ -471,7 +471,7 @@
     <string name="revert_to_default">Volver a los valores predeterminados</string>
     <string name="filtered_values">Valores filtrados</string>
     <string name="treatment_color">Color del tratamiento</string>
-    <string name="treatment_color_dark">Color oscuro del tratamiento</string>
+    <string name="treatment_color_dark">Tratamiento en Color Obscuro</string>
     <string name="predictive_color">Color de la Predicción</string>
     <string name="predictive_color_dark">Color oscuro de la Predicción</string>
     <string name="average_and_target_lines">Líneas de Promedio y Objetivo</string>
@@ -789,7 +789,7 @@
     <string name="step_counter_1st_color">Contador pasos 1er Color</string>
     <string name="step_counter_2nd_color">Contador pasos 2do Color</string>
     <string name="flair_colors">Estilos de Colores</string>
-    <string name="use_flair_colors">Usa estilos de colores</string>
+    <string name="use_flair_colors">Usar estilos de colores</string>
     <string name="upper_title_bar_flair">Estilo de la barra de título superior</string>
     <string name="lower_button_bar_falir">Estilo de barra de botones inferior</string>
     <string name="force_english_text">Forzar idioma Inglés</string>
