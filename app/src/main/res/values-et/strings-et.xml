@@ -472,7 +472,7 @@
     <string name="filtered_values">Filtreeritud väärtused</string>
     <string name="treatment_color">Ravi värv</string>
     <string name="treatment_color_dark">Ravi värv mustas režiimis</string>
-    <string name="predictive_color">Ennustuse värv</string>
+    <string name="predictive_color">Ennustav värv</string>
     <string name="predictive_color_dark">Ennustuse värv must</string>
     <string name="average_and_target_lines">Keskmise ja eesmärgi jooned</string>
     <string name="eight_hour_average_line">Keskmise väärtuse joon 8h arvestuses</string>
