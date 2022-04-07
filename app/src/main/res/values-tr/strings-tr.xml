@@ -470,10 +470,10 @@
     <string name="bad_glucose_values">Kötü Glikoz Değerleri</string>
     <string name="revert_to_default">Varsayılana Geri Döndür</string>
     <string name="filtered_values">Filtrelenmiş değerler</string>
-    <string name="treatment_color">Tedavi Rengi</string>
+    <string name="treatment_color">Aktif İnsülin</string>
     <string name="treatment_color_dark">Tedavi için Koyu Renk</string>
-    <string name="predictive_color">Öngörü için Renk</string>
-    <string name="predictive_color_dark">Öngörü için Koyu Renk</string>
+    <string name="predictive_color">Glikoz Tahmini</string>
+    <string name="predictive_color_dark">Aktif Karbonhidrat</string>
     <string name="average_and_target_lines">Ortalama ve Hedef Çizgileri</string>
     <string name="eight_hour_average_line">8 Saat Ortalama Çizgi</string>
     <string name="twenty_four_hour_average_line">24 Saat Ortalama Çizgi</string>
@@ -789,9 +789,9 @@
     <string name="step_counter_1st_color">Adımsayar 1. Renk</string>
     <string name="step_counter_2nd_color">Adımsayar 2. Renk</string>
     <string name="flair_colors">Flair Renkleri</string>
-    <string name="use_flair_colors">Flair Renklerini kullan</string>
-    <string name="upper_title_bar_flair">Sistem durum çubuğunun rengi</string>
-    <string name="lower_button_bar_falir">Sistem gezinme çubuğunun rengi</string>
+    <string name="use_flair_colors">Özel Başlık/Gezinti Çubuğu</string>
+    <string name="upper_title_bar_flair">Üst Başlık Çubuğu</string>
+    <string name="lower_button_bar_falir">Alt Gezinti Çubuğu</string>
     <string name="force_english_text">İngilizce kullanmaya zorla</string>
     <string name="using_local_language">Şu anda cihazınızın yerel dilini kullanın</string>
     <string name="forcing_alternate_language">Şu anda alternatif bir dil kullanımı zorlanmaktadır</string>
