@@ -218,6 +218,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private ImageButton btnApprove;
     private ImageButton btnCancel;
     private ImageButton btnCarbohydrates;
+    private ImageButton btnFats;
+    private ImageButton btnProteins;
     private ImageButton btnBloodGlucose;
     private ImageButton buttonInsulinSingleDose;
     private ImageButton[] btnInsulinDose = new ImageButton[MAX_INSULIN_PROFILES];
@@ -227,6 +229,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private ImageButton btnVehicleMode;
     private TextView voiceRecognitionText;
     private TextView textCarbohydrates;
+    private TextView textFats;
+    private TextView textProteins;
     private TextView textBloodGlucose;
     private TextView textInsulinSumDose;
     private TextView[] textInsulinDose = new TextView[MAX_INSULIN_PROFILES];
@@ -270,6 +274,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     double thisnumber = -1;
     double thisglucosenumber = 0;
     double thiscarbsnumber = 0;
+    double thisFatsNumber = 0;
+    double thisProteinsNumber = 0;
     double thisInsulinSumNumber = 0;
     double[] thisinsulinnumber = new double[MAX_INSULIN_PROFILES];
     Insulin[] thisinsulinprofile = new Insulin[MAX_INSULIN_PROFILES];
@@ -279,6 +285,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     String thisuuid = "";
     private static String nexttoast;
     boolean carbsset = false;
+    boolean fatsSet = false;
+    boolean proteinsSet = false;
     boolean[] insulinset = new boolean[MAX_INSULIN_PROFILES];
     boolean insulinsumset = false;
     boolean glucoseset = false;
@@ -425,10 +433,14 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         this.voiceRecognitionText = (TextView) findViewById(R.id.treatmentTextView);
         this.textBloodGlucose = (TextView) findViewById(R.id.textBloodGlucose);
         this.textCarbohydrates = (TextView) findViewById(R.id.textCarbohydrate);
+        this.textFats = (TextView) findViewById(R.id.textFat);
+        this.textProteins = (TextView) findViewById(R.id.textProtein);
         this.textInsulinSumDose = (TextView) findViewById(R.id.textInsulinSumUnits);
         this.textTime = (TextView) findViewById(R.id.textTimeButton);
         this.btnBloodGlucose = (ImageButton) findViewById(R.id.bloodTestButton);
         this.btnCarbohydrates = (ImageButton) findViewById(R.id.buttonCarbs);
+        this.btnFats = (ImageButton) findViewById(R.id.buttonFats);
+        this.btnProteins = (ImageButton) findViewById(R.id.buttonProteins);
         this.textInsulinDose[0] = (TextView) findViewById(R.id.textInsulin1Units);
         this.buttonInsulinSingleDose = (ImageButton) findViewById(R.id.buttonInsulin0);
         this.btnInsulinDose[0] = (ImageButton) findViewById(R.id.buttonInsulin1);
@@ -525,6 +537,30 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             thiscarbsnumber = 0;
             if (hideTreatmentButtonsIfAllDone()) {
                 updateCurrentBgInfo("carbs button");
+            }
+        });
+
+        btnFats.setOnClickListener(v -> {
+            // Process and approve treatment.
+            textFats.setVisibility(View.INVISIBLE);
+            btnFats.setVisibility(View.INVISIBLE);
+            reset_viewport = true;
+            Treatments.create(thisFatsNumber, 0, new ArrayList<InsulinInjection>(), Treatments.getTimeStampWithOffset(thistimeoffset));
+            thisFatsNumber = 0;
+            if (hideTreatmentButtonsIfAllDone()) {
+                updateCurrentBgInfo("fats button");
+            }
+        });
+
+        btnProteins.setOnClickListener(v -> {
+            // Process and approve treatment.
+            textProteins.setVisibility(View.INVISIBLE);
+            btnProteins.setVisibility(View.INVISIBLE);
+            reset_viewport = true;
+            Treatments.create(thisProteinsNumber, 0, new ArrayList<InsulinInjection>(), Treatments.getTimeStampWithOffset(thistimeoffset));
+            thisProteinsNumber = 0;
+            if (hideTreatmentButtonsIfAllDone()) {
+                updateCurrentBgInfo("proteins button");
             }
         });
 
@@ -1131,6 +1167,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         if ((btnBloodGlucose.getVisibility() == View.INVISIBLE) &&
                 (btnCarbohydrates.getVisibility() == View.INVISIBLE) &&
+                (btnFats.getVisibility() == View.INVISIBLE) &&
+                (btnProteins.getVisibility() == View.INVISIBLE) &&
                 byTypeInvisible) {
             hideAllTreatmentButtons(); // we clear values here also
             //send toast to wear - closes the confirmation activity on the watch
@@ -1147,6 +1185,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         btnApprove.setVisibility(View.INVISIBLE);
         btnCancel.setVisibility(View.INVISIBLE);
         btnCarbohydrates.setVisibility(View.INVISIBLE);
+        btnFats.setVisibility(View.INVISIBLE);
+        btnProteins.setVisibility(View.INVISIBLE);
         textInsulinSumDose.setVisibility(View.INVISIBLE);
         for (int i = 0; i < MAX_INSULIN_PROFILES; i++) {
             textInsulinDose[i].setVisibility(View.INVISIBLE);
@@ -1160,6 +1200,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         // zeroing code could be functionalized
         thiscarbsnumber = 0;
+        thisFatsNumber = 0;
+        thisProteinsNumber = 0;
         thisInsulinSumNumber = 0;
         insulinsumset = false;
         for (int i = 0; i < MAX_INSULIN_PROFILES; i++)
@@ -1171,6 +1213,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         thistimeoffset = 0;
         thisglucosenumber = 0;
         carbsset = false;
+        fatsSet = false;
+        proteinsSet = false;
         glucoseset = false;
         timeset = false;
 

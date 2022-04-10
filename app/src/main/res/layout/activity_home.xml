@@ -341,6 +341,49 @@
                     android:textStyle="bold" />
 
                 <ImageButton
+                    android:id="@+id/buttonFats"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/bloodTestButton"
+                    android:layout_marginStart="29dp"
+                    android:layout_toEndOf="@+id/bloodTestButton"
+                    android:src="@drawable/ic_fats_white_48dp" />
+
+                <TextView
+                    android:id="@+id/textFat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/buttonFats"
+                    android:layout_marginBottom="12dp"
+                    android:layout_toEndOf="@+id/buttonFats"
+                    android:background="@android:color/transparent"
+                    android:text="55 grams"
+                    android:textColor="@android:color/holo_green_light"
+                    android:textSize="22dp"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/buttonProteins"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignStart="@+id/buttonFats"
+                    android:layout_below="@+id/buttonFats"
+                    android:src="@drawable/ic_proteins_white_48dp" />
+
+                <TextView
+                    android:id="@+id/textProtein"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/buttonProteins"
+                    android:layout_marginBottom="12dp"
+                    android:layout_toEndOf="@+id/buttonProteins"
+                    android:background="@android:color/transparent"
+                    android:text="60 grams"
+                    android:textColor="@android:color/holo_green_light"
+                    android:textSize="22dp"
+                    android:textStyle="bold" />
+
+                <ImageButton
                     android:id="@+id/buttonInsulin0"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
