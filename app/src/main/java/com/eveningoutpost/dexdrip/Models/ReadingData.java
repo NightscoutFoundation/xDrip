@@ -165,7 +165,8 @@ public class ReadingData {
 
     static private void calculateNoisePerPoint(GlucoseData glucoseData, List<LibreTrendPoint> libreTrendPoints, HashSet<Integer> errorHash, boolean useRaw) {
         // This function calculates the noise per point given the trendpoint data,
-        // For now only calibration noise is detected by getting a trendline for the delta of the two trends and get the slope of the trendline. when the OOP2 algorithm is not correcting itself the slope should be 0 (ideally). This should prevent downstream apps like androidAPS on acting the spiky data.
+        // For now only calibration noise is detected by getting a trendline for the delta of the two trends and get the slope of the trendline. 
+        // when the OOP2 algorithm is not correcting itself the slope should be 0 (ideally). This should prevent downstream apps like androidAPS on acting the spiky data.
 
         if (useRaw)
         {
@@ -199,7 +200,7 @@ public class ReadingData {
             // If the errorVarience is higher then the noise calculated from the slope, we use that, as in that case the data is noisy and our slope estimation may be off
             glucoseData.noise = (errorVarience > noise) ? errorVarience : noise;
 
-            Log.e(TAG, "Setting noise level based on, Time: " + glucoseData.sensorTime + " Slope: " + slope + " Error Variance: " + errorVarience + " Noise: " + noise +" Reported: " + glucoseData.noise);
+            Log.d(TAG, "Setting noise level based on, Time: " + glucoseData.sensorTime + " Slope: " + slope + " Error Variance: " + errorVarience + " Noise: " + noise +" Reported: " + glucoseData.noise);
         }
     }
 
