@@ -1038,8 +1038,37 @@
     <PreferenceCategory
         android:key="xdrip_plus_experimental"
         android:title="@string/title_xdrip_plus_experimental">
-
         <PreferenceScreen
+            android:icon="@drawable/ic_mode_edit_grey_600_48dp"
+            android:key="pens_screen"
+            android:title="Insulin Pens">
+            <PreferenceScreen
+                android:icon="@drawable/ic_mode_edit_grey_600_48dp"
+                android:key="opennov_screen"
+                android:summary="NFC dose downloading of models 6 and Echo Plus"
+                android:title="NovoPen Insulin Pen">
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:key="opennov_enabled"
+                    android:summary="Doesn't yet co-exist with other NFC scan features!"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="OpenNov support" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:dependency="opennov_enabled"
+                    android:key="opennov_play_sounds"
+                    android:summary="@string/meter_connect_sound"
+                    android:title="@string/meter_connect_sound_effect" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="engineering_mode"
+                    android:key="opennov_debug"
+                    android:summary="Log extra data to aid in debugging. Can slow things down."
+                    android:title="Additional debug logs" />
+            </PreferenceScreen>
+
+            <PreferenceScreen
             android:icon="@drawable/ic_mode_edit_grey_600_48dp"
             android:key="inpen_screen"
             android:summary="@string/summary_inpen_screen"
@@ -1128,6 +1157,7 @@
                 android:title="@string/title_pendiq_pin" />
 
 
+        </PreferenceScreen>
         </PreferenceScreen>
 
     </PreferenceCategory>

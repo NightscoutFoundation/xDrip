@@ -75,6 +75,7 @@ import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URLEncoder;
@@ -1090,11 +1091,14 @@ public class JoH {
         try {
             Object clone = obj.getClass().newInstance();
             for (Field field : obj.getClass().getDeclaredFields()) {
-                field.setAccessible(true);
-                field.set(clone, field.get(obj));
+                if (!Modifier.isFinal(field.getModifiers())) {
+                    field.setAccessible(true);
+                    field.set(clone, field.get(obj));
+                }
             }
             return clone;
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return null;
         }
     }

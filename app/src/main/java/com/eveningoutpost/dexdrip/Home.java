@@ -108,6 +108,7 @@ import com.eveningoutpost.dexdrip.insulin.Insulin;
 import com.eveningoutpost.dexdrip.insulin.InsulinManager;
 import com.eveningoutpost.dexdrip.insulin.MultipleInsulins;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
+import com.eveningoutpost.dexdrip.insulin.opennov.nfc.NfcSetup;
 import com.eveningoutpost.dexdrip.insulin.pendiq.Pendiq;
 import com.eveningoutpost.dexdrip.profileeditor.DatePickerFragment;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileAdapter;
@@ -1878,6 +1879,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             NFCReaderX.doNFC(this);
         } else {
             NFCReaderX.disableNFC(this);
+        }
+        // TODO multiplexing dispatcher to handle both types of tags
+        if (Pref.getBooleanDefaultFalse("opennov_enabled")) {
+            NfcSetup.initNFC(this);
         }
 
         if (get_follower() || get_master()) {
