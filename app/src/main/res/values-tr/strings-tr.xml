@@ -471,7 +471,7 @@
     <string name="revert_to_default">Varsayılana Geri Döndür</string>
     <string name="filtered_values">Filtrelenmiş değerler</string>
     <string name="treatment_color">Aktif İnsülin</string>
-    <string name="treatment_color_dark">Tedavi için Koyu Renk</string>
+    <string name="treatment_color_dark">İnsülin Etkinliği</string>
     <string name="predictive_color">Glikoz Tahmini</string>
     <string name="predictive_color_dark">Aktif Karbonhidrat</string>
     <string name="average_and_target_lines">Ortalama ve Hedef Çizgileri</string>
