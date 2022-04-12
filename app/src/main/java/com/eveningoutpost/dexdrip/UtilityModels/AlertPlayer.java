@@ -101,7 +101,7 @@ public class AlertPlayer {
     private volatile static AlertPlayer alertPlayerInstance;
 
     private final static String TAG = AlertPlayer.class.getSimpleName();
-    private volatile MediaPlayer mediaPlayer;
+    private volatile MediaPlayer mediaPlayer = null;
     private final AudioManager manager = (AudioManager)xdrip.getAppContext().getSystemService(Context.AUDIO_SERVICE);
     volatile int volumeBeforeAlert = -1;
     volatile int volumeForThisAlert = -1;
@@ -169,16 +169,14 @@ public class AlertPlayer {
             notificationDismiss(ctx);
         }
         if (mediaPlayer != null) {
-            try {
-                mediaPlayer.stop();
-            } catch (IllegalStateException e) {
-                UserError.Log.e(TAG, "Exception when stopping media player: " + e);
+            if (mediaPlayer.isPlaying()) {
+                try {
+                    mediaPlayer.stop();
+                } catch (IllegalStateException e) {
+                    UserError.Log.e(TAG, "Exception when stopping media player: " + e);
+                }
             }
-            try {
-                mediaPlayer.release();
-            } catch (IllegalStateException e) {
-                UserError.Log.e(TAG, "Exception releasing media player: " + e);
-            }
+            mediaPlayer.release();
             mediaPlayer = null;
         }
         revertCurrentVolume(streamType);
@@ -319,7 +317,7 @@ public class AlertPlayer {
         return false;
     }
 
-    private synchronized void playFile(final Context ctx, final String fileName, final float volumeFrac, final boolean forceSpeaker, final boolean overrideSilentMode) {
+    protected synchronized void playFile(final Context ctx, final String fileName, final float volumeFrac, final boolean forceSpeaker, final boolean overrideSilentMode) {
         Log.i(TAG, "playFile: called fileName = " + fileName);
         if (volumeFrac <= 0) {
             UserError.Log.e(TAG, "Not playing file " + fileName + " as requested volume is " + volumeFrac);
@@ -328,11 +326,7 @@ public class AlertPlayer {
 
         if (mediaPlayer != null) {
             Log.i(TAG, "ERROR, playFile:going to leak a mediaplayer !!!");
-            try {
-                mediaPlayer.release();
-            } catch (IllegalStateException e) {
-                //
-            }
+            mediaPlayer.release();
             mediaPlayer = null;
         }
 
@@ -341,6 +335,19 @@ public class AlertPlayer {
             Log.wtf(TAG, "MediaPlayerCreaterHelper().createMediaPlayer failed !!");
             return;
         }
+
+        mediaPlayer.setOnCompletionListener(mp -> {
+            Log.i(TAG, "playFile: onCompletion called (finished playing) ");
+            mediaPlayer.release();
+            mediaPlayer = null;
+            revertCurrentVolume(streamType);
+        });
+
+        mediaPlayer.setOnErrorListener((mp, what, extra) -> {
+            Log.e(TAG, "playFile: onError called (what: " + what + ", extra: " + extra);
+            // possibly media player error; release is handled in onCompletionListener
+            return false;
+        });
 
         boolean setDataSourceSucceeded = false;
         if (fileName != null && fileName.length() > 0) {
@@ -361,22 +368,6 @@ public class AlertPlayer {
             mediaPlayer.setOnPreparedListener(mp -> {
                 adjustCurrentVolumeForAlert(streamType, volumeFrac, overrideSilentMode);
                 mediaPlayer.start();
-            });
-
-            mediaPlayer.setOnCompletionListener(mp -> {
-                Log.i(TAG, "playFile: onCompletion called (finished playing) ");
-                try {
-                    mediaPlayer.stop();
-                } catch (IllegalStateException e) {
-                    //
-                }
-                try {
-                    mediaPlayer.release();
-                } catch (IllegalStateException e) {
-                    //
-                }
-                mediaPlayer = null;
-                revertCurrentVolume(streamType);
             });
 
             mediaPlayer.prepareAsync();
@@ -491,7 +482,7 @@ public class AlertPlayer {
     }
     
     public static boolean isAscendingMode(Context ctx){
-        Log.d("Adrian", "(getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING): " + (getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING));
+        Log.d(TAG, "(getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING): " + (getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING));
         return getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING;
     }
 
@@ -499,7 +490,7 @@ public class AlertPlayer {
         return !(Pref.getBooleanDefaultFalse("no_alarms_during_calls") && (JoH.isOngoingCall()));
     }
 
-    private void VibrateNotifyMakeNoise(Context context, AlertType alert, String bgValue, int minsFromStartPlaying) {
+    protected void VibrateNotifyMakeNoise(Context context, AlertType alert, String bgValue, int minsFromStartPlaying) {
         Log.d(TAG, "VibrateNotifyMakeNoise called minsFromStartedPlaying = " + minsFromStartPlaying);
         Log.d("ALARM", "setting vibrate alarm");
         int profile = getAlertProfile(context);
