@@ -1230,7 +1230,7 @@ public class NightscoutUploader {
                             
                             Log.d(TAG, "uploading new item to mongo");
                             // Checksum might be wrong, for libre 2 or libre us 14 days.
-                            boolean ChecksumOk = LibreUtils.verify(libreBlockEntry.blockbytes);
+                            boolean ChecksumOk = LibreUtils.verify(libreBlockEntry.blockbytes, libreBlockEntry.patchInfo);
                             
                             // make db object
                             BasicDBObject testData = new BasicDBObject();

@@ -64,4 +64,8 @@ public class Constants {
     public static final int APK_DOWNLOAD_JOB_ID = 60920014;
 
     public static final int LIBRE_1_2_FRAM_SIZE = 344;
+
+    public static final int LIBREPRO_HEADER1 = 40;
+    public static final int LIBREPRO_HEADER2 = 80;
+
 }
