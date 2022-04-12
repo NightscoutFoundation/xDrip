@@ -40,6 +40,8 @@ import java.io.IOException;
 import java.util.Date;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
+import static com.eveningoutpost.dexdrip.Models.JoH.delayedMediaPlayerRelease;
+import static com.eveningoutpost.dexdrip.Models.JoH.stopAndReleasePlayer;
 
 // A helper class to create the mediaplayer on the UI thread.
 // This is needed in order for the callbackst to work.
@@ -169,14 +171,7 @@ public class AlertPlayer {
             notificationDismiss(ctx);
         }
         if (mediaPlayer != null) {
-            if (mediaPlayer.isPlaying()) {
-                try {
-                    mediaPlayer.stop();
-                } catch (IllegalStateException e) {
-                    UserError.Log.e(TAG, "Exception when stopping media player: " + e);
-                }
-            }
-            mediaPlayer.release();
+            stopAndReleasePlayer(mediaPlayer);
             mediaPlayer = null;
         }
         revertCurrentVolume(streamType);
@@ -325,9 +320,8 @@ public class AlertPlayer {
         }
 
         if (mediaPlayer != null) {
-            Log.i(TAG, "ERROR, playFile:going to leak a mediaplayer !!!");
-            mediaPlayer.release();
-            mediaPlayer = null;
+            Log.i(TAG, "ERROR, playFile sound already playing");
+            stopAndReleasePlayer(mediaPlayer);
         }
 
         mediaPlayer = new MediaPlayerCreaterHelper().createMediaPlayer(ctx);
@@ -338,8 +332,8 @@ public class AlertPlayer {
 
         mediaPlayer.setOnCompletionListener(mp -> {
             Log.i(TAG, "playFile: onCompletion called (finished playing) ");
-            mediaPlayer.release();
-            mediaPlayer = null;
+            delayedMediaPlayerRelease(mp);
+            JoH.threadSleep(300);
             revertCurrentVolume(streamType);
         });
 
