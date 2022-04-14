@@ -470,7 +470,6 @@
     <string name="bad_glucose_values">Złe wartości glukozy</string>
     <string name="revert_to_default">Przywróć domyślne</string>
     <string name="filtered_values">Przefiltrowane wartości</string>
-    <string name="treatment_color">Kolor zabiegów</string>
     <string name="treatment_color_dark">Leczenie Kolor Ciemno</string>
     <string name="predictive_color">Przewidywanie Kolor</string>
     <string name="predictive_color_dark">Przewidywanie Kolor Ciemny</string>

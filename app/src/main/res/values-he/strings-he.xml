@@ -616,8 +616,8 @@
     <string name="use_external_blukon_algorithm">אלגוריתם ליברה חיצוני.</string>
     <string name="calibrate_external_libre_algorithm_summary">יישום שיטות כיול של xDrip על נתוני OOP.</string>
     <string name="calibrate_external_libre_algorithm_title">כיול אלגוריתם OOP</string>
-    <string name="calibrate_external_libre_2_algorithm_summary">יישום שיטות כיול של xDrip על נתוני OOP.</string>
-    <string name="calibrate_external_libre_2_algorithm_title">כיול אלגוריתם OOP.</string>
+    <string name="calibrate_external_libre_2_algorithm_summary">יישום שיטות כיול של xDrip על נתוני OOP2.</string>
+    <string name="calibrate_external_libre_2_algorithm_title">כיול אלגוריתם OOP2.</string>
     <string name="libre_use_smoothed_data_summary">משתמש בממוצע 5 נק\' מדידה לקבלת נתוני ליברה חלקים יותר.</string>
     <string name="libre_use_smoothed_data_title">שפע את נתוני ליברה.</string>
     <string name="retrieve_blukon_history_title">קבל היסטוריה של הליברה</string>

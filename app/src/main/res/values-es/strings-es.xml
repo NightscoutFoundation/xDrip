@@ -111,7 +111,7 @@
     <string name="finish_preferences_activity">Finalizar la actividad de preferencias</string>
     <string name="add_widget">Añadir Widget</string>
     <string name="title_activity_alert_list">Lista de Alertas</string>
-    <string name="speaktreatment">Decir tratamientos</string>
+    <string name="speaktreatment">Leer tratamiento</string>
     <string name="title_activity_update">Actualización de xDrip+ disponible</string>
     <string name="title_activity_display_qrcode">Compartir Ajustes a través de código QR</string>
     <string name="title_activity_send_feed_back">Enviar comentarios a Jamorham</string>
@@ -256,7 +256,7 @@
     <string name="pref_summary_disable_wearG5_on_lowbattery">Desactivar el forzado del servicio de recolección Wear cuando la batería del mismo esté baja</string>
     <string name="pref_disable_wearG5_on_missedreadings">Deshabilitar forzado cuando hay lecturas perdidas</string>
     <string name="pref_summary_disable_wearG5_on_missedreadings">Desactivar el forzado del servicio de recolección Wear, en minutos, desde su última lectura</string>
-    <string name="pref_disable_wearG5_on_missedreadings_level">Minutos desde última lectura desde Wear</string>
+    <string name="pref_disable_wearG5_on_missedreadings_level">Minutos de la última lectura desde Wear</string>
     <string name="pref_node_wearG5">Dispositivo que ejecuta el servicio de recolección</string>
     <string name="pref_summary_node_wearG5">Forzar el teléfono para usar el servicio de recolección de Wear</string>
     <string name="pref_sync_wear_logs">Sincronizar registros Wear</string>
@@ -471,7 +471,7 @@
     <string name="revert_to_default">Volver a los valores predeterminados</string>
     <string name="filtered_values">Valores filtrados</string>
     <string name="treatment_color">Color del tratamiento</string>
-    <string name="treatment_color_dark">Color oscuro del tratamiento</string>
+    <string name="treatment_color_dark">Tratamiento en Color Obscuro</string>
     <string name="predictive_color">Color de la Predicción</string>
     <string name="predictive_color_dark">Color oscuro de la Predicción</string>
     <string name="average_and_target_lines">Líneas de Promedio y Objetivo</string>
@@ -692,7 +692,7 @@
     <string name="use_multi_block">Utiliza el método de lectura de bloques múltiples más rápido</string>
     <string name="use_any_tag">Utilizar el método de lectura \"any-tag\" optimizado</string>
     <string name="low_level_value">Valor de nivel bajo de diagnóstico/prototipo</string>
-    <string name="transmitter_id">ID de su colector Dexcom, p. ej., 12AB3</string>
+    <string name="transmitter_id">ID del transmisor Dexcom, ej: 12AB3</string>
     <string name="advanced_g5_settings">Ajustes avanzados para situaciones raras del G5</string>
     <string name="g5_debug_settings">Configuración de depuración de G5/G6</string>
     <string name="g5_scan_constantly">Algunos dispositivos funcionan mejor cuando buscan constantemente, otros no. Si la lectura es fiable cuando ésta configuración está desactivada, la duración de la batería debería aumentar. Normalmente es mejor mantener esto desactivo</string>
@@ -789,7 +789,7 @@
     <string name="step_counter_1st_color">Contador pasos 1er Color</string>
     <string name="step_counter_2nd_color">Contador pasos 2do Color</string>
     <string name="flair_colors">Estilos de Colores</string>
-    <string name="use_flair_colors">Usa estilos de colores</string>
+    <string name="use_flair_colors">Usar estilos de colores</string>
     <string name="upper_title_bar_flair">Estilo de la barra de título superior</string>
     <string name="lower_button_bar_falir">Estilo de barra de botones inferior</string>
     <string name="force_english_text">Forzar idioma Inglés</string>
@@ -1512,7 +1512,7 @@
     <string name="deleting_all_bg_readings">¡Borrando TODAS las lecturas de glucosa!</string>
     <string name="could_not_export_csv_">No se pudo exportar a CSV:(</string>
     <string name="librealarm_data_format_appears_incompatible_protocol_changed_or_no_data">El formato de datos de LibreAlarm parece incompatible. ¿El protocolo cambió o no hay datos?</string>
-    <string name="please_update_librealarm_to_use_oop_algorithm">Por favor actualiza LibreAlarm para usar el algoritmo OOP</string>
+    <string name="please_update_librealarm_to_use_oop_algorithm">Por favor, actualiza LibreAlarm para usar el algoritmo OOP</string>
     <string name="sensor_clock_has_not_advanced">¡El reloj del sensor no ha avanzado!</string>
     <string name="sensor_age_has_gone_backwards">¡La edad del sensor ha retrocedido!</string>
     <string name="phone_has_no_nfc_reader">El teléfono no tiene lector NFC</string>
@@ -1596,6 +1596,7 @@
     <string name="auto_starting_sensor">¡Inicio automático del Sensor!</string>
     <string name="start_sensor_confirmation">La fuente de datos está establecida en: %s\n\n¿Quieres cambiar la configuración o iniciar el sensor?</string>
     <string name="could_not_find_blood_data">No se han podido encontrar datos de glucemia capilar!! %s</string>
+    <string name="bridge_battery">Batería del Bridge</string>
     <string name="noise_workings_noise">Ruido: %s</string>
     <string name="snoozing_due_button_press">Posponer alerta presionando botón de volumen</string>
     <string name="share_database">Compartir base de datos...</string>

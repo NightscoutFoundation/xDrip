@@ -470,8 +470,8 @@
     <string name="bad_glucose_values">Неверные показания глюкозы</string>
     <string name="revert_to_default">Вернуть значения по-умолчанию</string>
     <string name="filtered_values">Отфильтрованные значения</string>
-    <string name="treatment_color">Цвет пользовательских значений</string>
-    <string name="treatment_color_dark">Тёмный цвет пользовательских значений</string>
+    <string name="treatment_color">Цвет события терапии</string>
+    <string name="treatment_color_dark">Темный цвет события терапии</string>
     <string name="predictive_color">Цвет прогноза</string>
     <string name="predictive_color_dark">Тёмный цвет прогноза</string>
     <string name="average_and_target_lines">Средняя и целевая линии</string>
@@ -787,9 +787,9 @@
     <string name="step_counter_1st_color">Шагометр 1-й цвет</string>
     <string name="step_counter_2nd_color">Шагометр 2-й цвет</string>
     <string name="flair_colors">Цвет шторки/кнопок</string>
-    <string name="use_flair_colors">Изменять цвета шторки/кнопок</string>
-    <string name="upper_title_bar_flair">Цвет верхней шторки</string>
-    <string name="lower_button_bar_falir">Цвет системных кнопок снизу</string>
+    <string name="use_flair_colors">Использовать цвета панелей</string>
+    <string name="upper_title_bar_flair">Верхняя панель уведомлений</string>
+    <string name="lower_button_bar_falir">Нижняя панель кнопок навигации</string>
     <string name="force_english_text">Меню на английском</string>
     <string name="using_local_language">В настоящий момент используется системный язык</string>
     <string name="forcing_alternate_language">В настоящий момент язык приложения принудительно изменен на английский</string>
