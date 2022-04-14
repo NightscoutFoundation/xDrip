@@ -690,6 +690,7 @@
     <string name="vibrate_scanning_status">Vibrera för att indikera att avläsning utförs</string>
     <string name="beep_when_scanning_within_app">Pip när avläsning sker inuti xDrip+</string>
     <string name="use_multi_block">Använd en snabbare metod för flerblocksläsning</string>
+    <string name="use_any_tag">Använd inläsning optimerad för \"any-tag\"</string>
     <string name="low_level_value">Lågt diagnostik/prototyp värde</string>
     <string name="transmitter_id">Sändar-id för din Dexcom, t ex 12AB3</string>
     <string name="advanced_g5_settings">Avancerade G5-funktioner för ovanliga situationer</string>
@@ -712,6 +713,7 @@
     <string name="skip_local_lan">För lokala servrar med adresser som 192.168.x.x, hoppa över uppladdning när inget lokalt nätverk finns.</string>
     <string name="skip_lan_uploads">Hoppa över LAN-uppladning</string>
     <string name="mongo_load_transmitter_data_title">Ladda upp Libre-sändar data</string>
+    <string name="mongo_load_transmitter_data_summary">Tillåt flera xDrip att ansluta till BT-enheter och lagra insamlade uppgifter som i molnet. Detta kan göra det möjligt att föräldrar läser samma enhet eller att tex. Libre med MiaoMiao kan nås i hela huset.</string>
     <string name="influxdb_sync">Aktivera InfluxDB-synk</string>
     <string name="influxdb_uri">InfluxDB URI</string>
     <string name="influxdb_database_name">InfluxDB Databasenamn</string>
@@ -781,6 +783,7 @@
     <string name="follower_chime_new">Pling för ny följare</string>
     <string name="carb_ratio">Kolhydratsförhållande</string>
     <string name="enable_dedicated_insulin_profiles">Konfigurera insulinprofiler</string>
+    <string name="desc_enable_dedicated_insulin_profiles">Här kan man aktivera eller göra inställningar för insulinprofiler</string>
     <string name="insulin_sensitivity">Insulinkänslighet</string>
     <string name="secondary_plugin_glucose_value">Sekundärtilläggs glukosvärde</string>
     <string name="step_counter_1st_color">Stegräknare färg 1</string>
