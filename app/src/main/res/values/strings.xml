@@ -535,7 +535,7 @@
     <string name="select_time_for_alert_colon">Select time for alert:</string>
     <string name="all_day">all day</string>
     <string name="tap_to_change">(tap to change)</string>
-    <string name="override_phone_silent_mode_colon">Override phone Silent Mode:</string>
+    <string name="override_phone_silent_mode_colon">Override phone DND:</string>
     <string name="vibrate_on_alert">Vibrate on alert</string>
     <string name="test_alert">Test alert</string>
     <string name="disable_alert">Disable alert</string>
@@ -803,7 +803,7 @@
     <string name="rising_threshold">rising threshold</string>
     <string name="set_sound_for_bg_alerts">Set sound used for BG Alerts.</string>
     <string name="alert_sound">Alert Sound</string>
-    <string name="override_silent_mode_these">Override Silent mode on these alerts</string>
+    <string name="override_silent_mode_these">Override DND on these alerts</string>
     <string name="persistent_repeat_max">Repeating max every (minutes)</string>
     <string name="momentum_indicates_low">When momentum trend indicates a Low would be predicted</string>
     <string name="notify_on_low_battery_level">Notify when battery level goes below</string>
@@ -991,7 +991,7 @@
     <string name="cancel_alarm">Cancel Alarm?</string>
     <string name="please_confirm_to_cancel_the_alert">Please confirm to cancel the alert?</string>
     <string name="yes_cancel">Yes Cancel</string>
-    <string name="warning_no_alert_will_be_played_in_silent_mode">Warning, no alert will be played when phone in silent/vibrate mode!!!</string>
+    <string name="warning_no_alert_will_be_played_in_silent_mode">Warning, no alert will be played when phone in Do Not Disturb mode!!!</string>
     <string name="automatic_message_from_xdrip">automatic message from xDrip+</string>
     <string name="zero_zero_zero_zero">0000</string>
     <string name="emergency_messages">Emergency Messages</string>
