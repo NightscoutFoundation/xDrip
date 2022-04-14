@@ -61,13 +61,13 @@ public class LibreUtils {
         return crc == ((data[start+1]& 0xFF) * 256 + (data[start] & 0xff));
     }
     private static boolean verifyLibrePro(byte[] data) {
-        if(data.length < Constants.LIBREPRO_HEADER2) {
+        if(data.length < Constants.LIBREPRO_HEADER1_SIZE + Constants.LIBREPRO_HEADER2_SIZE) {
             Log.e(TAG, "Must have at least 80 bytes for librepro data");
             return false;
         }
 
-        boolean checksum_ok = CheckCRC16(data, 0 ,Constants.LIBREPRO_HEADER1);
-        checksum_ok &= CheckCRC16(data, Constants.LIBREPRO_HEADER1 ,Constants.LIBREPRO_HEADER2);
+        boolean checksum_ok = CheckCRC16(data, 0 ,Constants.LIBREPRO_HEADER1_SIZE);
+        checksum_ok &= CheckCRC16(data, Constants.LIBREPRO_HEADER1_SIZE ,Constants.LIBREPRO_HEADER2_SIZE);
         return checksum_ok;
     }
 
