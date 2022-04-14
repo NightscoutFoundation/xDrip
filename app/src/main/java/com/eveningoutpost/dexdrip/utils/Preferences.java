@@ -1842,6 +1842,13 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 //
             }
 
+            try {
+                bindPreferenceTitleAppendToStringValue(findPreference("opennov_prime_units"));
+                bindPreferenceTitleAppendToStringValue(findPreference("opennov_prime_minutes"));
+            } catch (Exception e) {
+                //
+            }
+
             // Pebble Trend -- START
 
             int currentPebbleSync = PebbleUtil.getCurrentPebbleSyncType();

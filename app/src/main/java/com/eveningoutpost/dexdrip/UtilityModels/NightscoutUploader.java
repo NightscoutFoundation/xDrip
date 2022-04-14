@@ -234,6 +234,10 @@ public class NightscoutUploader {
 
     public static String uuid_to_id(String uuid) {
         if (uuid.length() == 24) return uuid; // already converted
+        if (uuid.length() < 24) {
+            // convert non-standard uuids to compatible ones
+            return CipherUtils.getMD5(uuid).substring(0,24);
+        }
         return uuid.replaceAll("-", "").substring(0, 24);
     }
 
@@ -549,7 +553,7 @@ public class NightscoutUploader {
                     Log.d(TAG,"Skipping treatment upload due to preference disabled");
                 }
             } catch (Exception e) {
-                Log.e(TAG, "Exception uploading REST API treatments: " + e.getMessage());
+                Log.e(TAG, "Exception uploading REST API treatments: ", e);
                 if (e.getMessage().equals("Not Found")) {
                     final String msg = "Please ensure careportal plugin is enabled on nightscout for treatment upload!";
                     Log.wtf(TAG, msg);

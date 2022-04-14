@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.insulin.opennov.data;
 import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
 import static com.eveningoutpost.dexdrip.insulin.opennov.Options.playSounds;
+import static com.eveningoutpost.dexdrip.insulin.opennov.Options.removePrimingDoses;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -11,7 +12,12 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.insulin.opennov.Message;
+import com.eveningoutpost.dexdrip.insulin.opennov.Options;
 import com.eveningoutpost.dexdrip.insulin.opennov.mt.InsulinDose;
+
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import lombok.val;
 
@@ -24,7 +30,10 @@ public class SaveCompleted implements ICompleted {
 
     private static final String TAG = "OpenNov";
     private static final String MARKER = "xDrip NFC scan";
+    private static final String PRIMING = "Priming";
     private static final String NOTE_PREFIX = "PEN";
+
+    private final List<Treatments> cache = new LinkedList<>();
 
     @Override
     public int receiveFinalData(final Message msg) {
@@ -41,12 +50,13 @@ public class SaveCompleted implements ICompleted {
                         val treatment = Treatments.create(0, dose.units, dose.absoluteTime, uuid);
                         if (treatment != null) {
                             treatment.enteredBy = MARKER + " @ " + JoH.dateTimeText(tsl());
-                            treatment.notes = NOTE_PREFIX + " " + serial + "\n" + msg.getContext().model.getModel();
+                            treatment.notes = NOTE_PREFIX + " " + serial + "\n" + msg.getContext().model.getModel(); // must be same for each dose for a specific pen
                             treatment.save();
+                            cache.add(treatment);
                             newData = true;
                         }
                         UserError.Log.uel(TAG, "New dose logged from pen: " + serial + " " + dose.units + "U @ " + JoH.dateTimeText(dose.absoluteTime));
-                        if (playSounds() && JoH.ratelimit("opennov_data_in", 1)) {
+                        if (playSounds() && JoH.ratelimitmilli("opennov_data_in", 200)) {
                             JoH.playResourceAudio(R.raw.bt_meter_data_in);
                         }
                     } else {
@@ -65,6 +75,66 @@ public class SaveCompleted implements ICompleted {
         return newData ? doses.size() : 0;
     }
 
+    // find a dose immediately after this dose within parameters which indicates this dose is priming, check for back reference
+    static boolean isPrimingDose(final List<Treatments> cache, final Treatments dose, final double doseThreshold, final long timeThreshold) {
+        if (dose.insulin > doseThreshold) {
+            return false;
+        }
+        val primeTime = dose.timestamp;
+        val primeMax = primeTime + timeThreshold;
+        val primeMin = primeTime - timeThreshold;
+
+        // find earlier prime that could make this not a prime
+        for (val nextDose : cache) {
+            if ((nextDose.timestamp < primeTime)
+                    && nextDose.timestamp > primeMin
+                    && !nextDose.uuid.equals(dose.uuid)
+                    && nextDose.insulin == 0.0d) {
+                return false;
+            }
+        }
+
+        // find real dose that could make this a prime
+        for (val nextDose : cache) {
+            if ((nextDose.timestamp > primeTime)
+                    && nextDose.timestamp < primeMax
+                    && !nextDose.uuid.equals(dose.uuid)
+                    && nextDose.notes != null
+                    && nextDose.notes.equals(dose.notes)
+                    && nextDose.insulin > 0.0d) {
+                return true;
+            }
+            // can optimize as list is sorted
+            if (nextDose.timestamp > primeMax) break;
+        }
+        return false;
+    }
+
+    @Override
+    public int prunePrimingDoses() {
+        int removed = 0;
+        if (removePrimingDoses()) {
+            val timeThreshold = (long) (Constants.MINUTE_IN_MS * Options.primingMinutes());
+            val doseThreshold = Options.primingUnits();
+
+            // sort timestamps ascending
+            Collections.sort(cache, (o1, o2) -> Long.valueOf(o1.timestamp).compareTo(Long.valueOf(o2.timestamp)));
+
+            for (val dose : cache) {
+                if (isPrimingDose(cache, dose, doseThreshold, timeThreshold)) {
+                    dose.notes = PRIMING +" " + dose.insulin + "U" + "\n" + dose.notes;
+                    dose.insulin = 0;
+                    dose.save();
+                    UserError.Log.d(TAG, "Removed priming dose @ " + JoH.dateTimeText(dose.timestamp) + " " + dose.notes);
+                }
+            }
+        } else {
+            UserError.Log.d(TAG, "Not removing priming doses due to config");
+        }
+        cache.clear();
+        return removed;
+    }
+
     private String uuidFromDose(final Message msg, final InsulinDose dose) {
         return msg.getContext().specification.getSerial() + ":" + dose.getHash();
     }
@@ -74,7 +144,8 @@ public class SaveCompleted implements ICompleted {
         val list = Treatments.latest(10000);
         if (list != null) {
             for (val item : list) {
-                if (item.enteredBy.startsWith(MARKER) && item.notes.startsWith(NOTE_PREFIX)) {
+                if (item.enteredBy.startsWith(MARKER)
+                        && (item.notes.startsWith(NOTE_PREFIX) || item.notes.startsWith(PRIMING))) {
                     UserError.Log.d(TAG, "Deleting item: " + item.uuid);
                     item.delete();
                 }

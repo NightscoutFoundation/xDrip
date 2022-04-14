@@ -10,4 +10,5 @@ import com.eveningoutpost.dexdrip.insulin.opennov.Message;
 public interface ICompleted {
 
     int receiveFinalData(final Message msg);
+    int prunePrimingDoses();
 }

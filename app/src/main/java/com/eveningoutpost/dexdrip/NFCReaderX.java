@@ -63,10 +63,6 @@ import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 // TODO have we always checked checksum on this data? what about LibreAlarm path?
 
-enum ENABLE_STREAMING {
-    SUCCESS,
-    FAILED,
-}
 
 public class NFCReaderX {
 
@@ -109,6 +105,7 @@ public class NFCReaderX {
     }
 
 
+    @Deprecated
     public static void stopNFC(Activity context) {
         if (foreground_enabled) {
             try {
@@ -141,6 +138,7 @@ public class NFCReaderX {
     }
 
     @SuppressLint("NewApi")
+    @Deprecated
     public static void doNFC(final Activity context) {
 
         if (!useNFC()) return;
@@ -222,11 +220,11 @@ public class NFCReaderX {
 
     }
 
-    private static synchronized void doTheScan(final Activity context, Tag tag, boolean showui) {
+    public static synchronized void doTheScan(final Activity context, Tag tag, boolean showui) {
         synchronized (tag_lock) {
             if (!tag_discovered) {
                 if (!useNFC()) return;
-                if ((!last_read_succeeded) && (JoH.ratelimit("nfc-debounce", 5)) || (JoH.ratelimit("nfc-debounce", 60))) {
+                if ((!last_read_succeeded) && (JoH.ratelimit("nfc-debounce", 5)) || (JoH.ratelimit("nfc-debounce", 30))) {
                     tag_discovered = true;
                     Home.staticBlockUI(context, true);
                     last_tag_discovered = JoH.tsl();
@@ -242,12 +240,12 @@ public class NFCReaderX {
                 } else {
                     if (JoH.tsl() - last_tag_discovered > 5000) {
                         vibrate(context, 4);
-                        JoH.static_toast_short(gs(R.string.not_so_quickly_wait_60_seconds));
+                        JoH.static_toast_short(gs(R.string.not_so_quickly_wait_30_seconds));
                     }
                 }
             } else {
                 Log.d(TAG, "Tag already discovered!");
-                if (JoH.tsl() - last_tag_discovered > 60000)
+                if (JoH.tsl() - last_tag_discovered > 30000)
                     tag_discovered = false; // don't lock too long
             }
         } // lock
@@ -369,6 +367,7 @@ public class NFCReaderX {
                     prefs.edit().putString("libre2_enable_bluetooth_streaming", "enable_streaming_always").apply();
                 }
                 Pref.setLong(ENABLE_BLUETOOTH_TIMESTAMP, JoH.tsl());
+                JoH.clearRatelimit("nfc-debounce");
                 show.dismiss();
             }
         });
@@ -1035,6 +1034,11 @@ public class NFCReaderX {
             return null;
         }
         return result;
+    }
+
+    enum ENABLE_STREAMING {
+        SUCCESS,
+        FAILED,
     }
 
 }

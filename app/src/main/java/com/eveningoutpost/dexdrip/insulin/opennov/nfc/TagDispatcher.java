@@ -24,14 +24,16 @@ public class TagDispatcher implements NfcAdapter.ReaderCallback {
     private static final String TAG = "OpenNov";
     private final ICompleted dataSaver = new SaveCompleted();
 
+    private static class Singleton {
+        private static final TagDispatcher INSTANCE = new TagDispatcher();
+    }
+
+    public static TagDispatcher getInstance() {
+        return TagDispatcher.Singleton.INSTANCE;
+    }
+
     @Override
     public void onTagDiscovered(final Tag tag) {
-        val tlist = tag.getTechList();
-        val tech = tlist[0];
-        UserError.Log.d(TAG, "tech:" + tech);
-
-        switch (tech) {
-            case "android.nfc.tech.IsoDep":
                 val openNov = new OpenNov();
                 if (!openNov.processTag(tag, dataSaver)) {
                     UserError.Log.d(TAG, "Failed to read pen!");
@@ -42,10 +44,6 @@ public class TagDispatcher implements NfcAdapter.ReaderCallback {
                 } else {
                     JoH.static_toast_short("Pen read okay");
                 }
-                break;
-            default:
-                UserError.Log.d(TAG, "Unexpected tech type: " + tech);
+                dataSaver.prunePrimingDoses();
         }
-
-    }
 }

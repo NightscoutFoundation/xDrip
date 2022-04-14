@@ -1058,8 +1058,41 @@
                     android:defaultValue="true"
                     android:dependency="opennov_enabled"
                     android:key="opennov_play_sounds"
-                    android:summary="@string/meter_connect_sound"
-                    android:title="@string/meter_connect_sound_effect" />
+                    android:summary="@string/summary_inpen_sounds"
+                    android:title="@string/title_inpen_sounds" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="opennov_enabled"
+                    android:key="opennov_remove_priming"
+                    android:summary="Automatically remove priming doses that are the same or less as the priming units value and happen within the priming minutes before the next dose."
+                    android:title="Remove priming doses" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="opennov_enabled"
+                    android:key="opennov_hide_priming"
+                    android:summary="Hide priming dose note entries from graph"
+                    android:title="Hide priming doses" />
+
+                <EditTextPreference
+                    android:dependency="opennov_enabled"
+                    android:defaultValue="2.0"
+                    android:inputType="numberPassword|textVisiblePassword"
+                    android:key="opennov_prime_units"
+                    android:maxLength="3"
+                    android:summary="Doses must be less than or equal to this many units to be considered a priming dose"
+                    android:title="@string/title_inpen_prime_units" />
+
+                <EditTextPreference
+                    android:dependency="opennov_enabled"
+                    android:defaultValue="2"
+                    android:inputType="numberPassword|textVisiblePassword"
+                    android:key="opennov_prime_minutes"
+                    android:maxLength="3"
+                    android:summary="How close in minutes a dose must be to be considered a priming dose"
+                    android:title="@string/title_inpen_prime_minutes" />
+
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="engineering_mode"

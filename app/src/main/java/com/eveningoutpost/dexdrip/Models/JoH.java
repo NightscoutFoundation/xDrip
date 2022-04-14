@@ -577,7 +577,7 @@ public class JoH {
     public static synchronized boolean ratelimitmilli(String name, int milliseconds) {
         // check if over limit
         if ((rateLimits.containsKey(name)) && (JoH.tsl() - rateLimits.get(name) < (milliseconds))) {
-            Log.d(TAG, name + " rate limited: " + milliseconds + " milliseconds");
+            //Log.d(TAG, name + " rate limited: " + milliseconds + " milliseconds");
             return false;
         }
         // not over limit
