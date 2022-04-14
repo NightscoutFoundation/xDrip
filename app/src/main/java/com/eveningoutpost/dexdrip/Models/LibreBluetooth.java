@@ -101,7 +101,7 @@ public class LibreBluetooth {
             patchUid =  new byte[]{(byte)0xd6, (byte)0xf1, (byte)0x0f, (byte)0x01, (byte)0x00, (byte)0xa4, (byte)0x07, (byte)0xe0};
         }
 
-        Log.e(TAG, "SendData patchUid = " + HexDump.dumpHexString(patchUid));
+        Log.d(TAG, "SendData patchUid = " + HexDump.dumpHexString(patchUid));
 
         LibreOOPAlgorithm.sendBleData(data, timestamp, patchUid);
     }

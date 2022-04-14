@@ -340,7 +340,7 @@ public class LibreOOPAlgorithm {
 
         String SensorSN = LibreUtils.decodeSerialNumberKey(patchUid);
 
-        Log.e(TAG, "handleDecodedBleResult Created the following object " + readingData.toString());
+        Log.d(TAG, "handleDecodedBleResult Created the following object " + readingData.toString());
         NFCReaderX.sendLibrereadingToFollowers(SensorSN, readingData.raw_data, timestamp, patchUid, null);
         boolean bg_val_exists = trend_bg_vals != null && history_bg_vals != null;
         LibreAlarmReceiver.processReadingDataTransferObject(readingData, timestamp, SensorSN, true /*=allowupload*/, patchUid, null/*=patchInfo*/, bg_val_exists);
