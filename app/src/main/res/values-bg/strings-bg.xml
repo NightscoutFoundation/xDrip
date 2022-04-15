@@ -226,6 +226,7 @@
     <!-- trend arrow for speak -->
     <string name="deleting_all_bg_readings">Изтриване на ВСИЧКИ стойности за КЗ!</string>
     <string name="could_not_export_csv_">Неуспешно експортиране на CSV :(</string>
+    <string name="not_so_quickly_wait_30_seconds">Не толкова бързо, изчакай 30 секунди</string>
     <string name="enable_streaming_title">Стартирай Bluetooth връзка с Libre2 сензори</string>
     <string name="enable_streaming_always_allow">Винаги се свързвай с Libre2 сензори</string>
     <string name="enable_streaming_ask_each_time">Питай всеки път</string>
@@ -249,4 +250,11 @@
     <string name="title_broadcast_snooze">Локално излъчване(broadcast)</string>
     <string name="external_status_strings_eg_tbr">Низове(Strings) от външно състояние, напр. TBR от AAPS</string>
     <string name="accept_external_status">Приемане на външно състояние</string>
+    <string name="zero_value">Нулева стойност </string>
+    <string name="adjust_dose">Регулирай доза</string>
+    <string name="Dose">Доза</string>
+    <string name="choose_type">Избор на тип</string>
+    <string name="invalid_serial">Невалиден сериен</string>
+    <string name="set_pen_to_format">Настрой Писалка %s до %s</string>
+    <string name="pen_contains_which_insulin_type">Писалка %s кой тип инсулин ползва?</string>
 </resources>
