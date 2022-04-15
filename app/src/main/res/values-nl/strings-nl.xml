@@ -1518,6 +1518,7 @@
     <string name="nfc_is_not_enabled">NFC is niet ingeschakeld</string>
     <string name="phone_nfc_is_having_problems">Telefoon NFC heeft problemen!</string>
     <string name="not_so_quickly_wait_60_seconds">Niet zo snel, wacht 60 seconden</string>
+    <string name="not_so_quickly_wait_30_seconds">Niet zo snel, wacht 30 seconden</string>
     <string name="nfc_diag_timeout">Time-out voor NFC-diag</string>
     <string name="nfc_read_timeout">Time-out voor lezen van NFC</string>
     <string name="nfc_invalid_data__try_again">NFC ongeldige gegevens - probeer het opnieuw</string>
@@ -1632,4 +1633,9 @@
     <string name="reschedule_with_new_timing">Opnieuw inplannen met nieuwe tijd?</string>
     <string name="select_new_sound_source">Selecteer nieuwe geluidsbron</string>
     <string name="snooze_done">← Snooze / Klaar →</string>
+    <string name="adjust_dose">Dosis aanpassen</string>
+    <string name="Dose">Dosis</string>
+    <string name="choose_type">Kies type</string>
+    <string name="invalid_serial">Ongeldig serienummer</string>
+    <string name="pen_contains_which_insulin_type">Welk type insuline bevat pen %s?</string>
 </resources>
