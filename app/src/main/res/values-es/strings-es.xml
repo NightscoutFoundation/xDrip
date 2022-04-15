@@ -1519,6 +1519,7 @@
     <string name="nfc_is_not_enabled">El NFC no está activo</string>
     <string name="phone_nfc_is_having_problems">¡El NFC del teléfono tiene problemas!</string>
     <string name="not_so_quickly_wait_60_seconds">No tan rápido, espere 60 segundos</string>
+    <string name="not_so_quickly_wait_30_seconds">No tan rápido, espera 30 segundos</string>
     <string name="nfc_diag_timeout">Expiró el tiempo de diag. NFC</string>
     <string name="nfc_read_timeout">Expiró el tiempo de lectura NFC</string>
     <string name="nfc_invalid_data__try_again">Datos NFC inválidos: inténtelo de nuevo</string>
@@ -1576,6 +1577,7 @@
     <string name="summary_widget_hide_graph">Oculta el gráfico en los widgets (se muestra en la próxima lectura)</string>
     <string name="title_widget_hide_graph">Ocultar gráfico del widget</string>
     <string name="summary_illustrate_remote_data">Mostrar datos recibidos de forma remota (sólo diagnóstico)</string>
+    <string name="title_illustrate_remote_data">Ilustrar datos remotos</string>
     <string name="summary_show_accessibility_settings">Si tu teléfono tiene Always On Display, puedes habilitar el widget xDrip allí habilitando el servicio de accesibilidad de xDrip desde la página de configuración del sistema Android.</string>
     <string name="title_show_accessibility_settings">Habilitar Accesibilidad en xDrip</string>
     <string name="title_multiple_insulin_types_settings">Múltiples tipos de Insulina</string>
@@ -1588,15 +1590,25 @@
     <string name="title_broadcast_snooze">Transmisión local</string>
     <string name="summary_accept_broadcast_snooze">Aceptar aplazamientos de otras aplicaciones en este teléfono</string>
     <string name="title_accept_broadcast_snooze">Aceptar transmisión local</string>
+    <string name="title_bg_compensate_noise">\u26A0 Ruido del sensor suavizado</string>
+    <string name="title_bg_compensate_noise_ultrasensitive">\u26A0 Ruido del sensor ultrasensitivo</string>
     <string name="no_battery_optimization_whitelisting">¡El dispositivo no parece admitir la lista blanca de optimización de batería!</string>
     <string name="no_i_really_know">No, realmente sé lo que estoy haciendo</string>
     <string name="use_for_calibration">¿Usar %s para la Calibración?</string>
+    <string name="problem_loading_speech_lexicon">Problema cargando el léxico de voz</string>
     <string name="type_treatment_eg">Tipo de tratamiento\nejemplo: unidades x.x</string>
+    <string name="word_lexicon_not_loaded">El léxico de palabras no está cargado</string>
     <string name="no_never">No, nunca</string>
     <string name="auto_starting_sensor">¡Inicio automático del Sensor!</string>
     <string name="start_sensor_confirmation">La fuente de datos está establecida en: %s\n\n¿Quieres cambiar la configuración o iniciar el sensor?</string>
+    <string name="state_not_currently_known">%s  Estado desconocido. Se actualizará en la siguiente conexión</string>
+    <string name="unusual_calibration_waiting">Estado de calibración inusual - esperando más datos</string>
     <string name="could_not_find_blood_data">No se han podido encontrar datos de glucemia capilar!! %s</string>
+    <string name="transmitter_waiting_for_calibration">Esperando a que el transmisor reciba la calibración</string>
+    <string name="sensor_not_started">La sesión del sensor no parece haberse iniciado</string>
+    <string name="not_getting_readings">No se obtienen lecturas</string>
     <string name="bridge_battery">Batería del Bridge</string>
+    <string name="transmitter_maybe_dead">Los datos filtrados son exactamente el doble de datos sin procesar del sensor, que están mal. Es posible que el transmisor haya muerto</string>
     <string name="noise_workings_noise">Ruido: %s</string>
     <string name="snoozing_due_button_press">Posponer alerta presionando botón de volumen</string>
     <string name="share_database">Compartir base de datos...</string>
@@ -1610,6 +1622,10 @@
         <item quantity="one">Expira: %sd</item>
         <item quantity="other">Expira: %sd</item>
     </plurals>
+    <plurals name="sensor_age">
+        <item quantity="one">Tiempo del sensor: %sd</item>
+        <item quantity="other">Tiempo del sensor: %sd</item>
+    </plurals>
     <string name="external_status_strings_eg_tbr">Cadenas de estado externas, por ejemplo, TBR de AAPS</string>
     <string name="accept_external_status">Aceptar estado externo</string>
     <string name="cancel_by_default">Cancelar por defecto</string>
@@ -1618,4 +1634,11 @@
     <string name="reschedule_with_new_timing">¿Reprogramar con nuevo tiempo?</string>
     <string name="select_new_sound_source">Seleccionar nueva fuente de sonido</string>
     <string name="snooze_done">← Posponer / Hecho →</string>
+    <string name="zero_value">Valor cero</string>
+    <string name="adjust_dose">Ajustar dosis</string>
+    <string name="Dose">Dosis</string>
+    <string name="choose_type">Selecciona el tipo</string>
+    <string name="invalid_serial">Serial inválido</string>
+    <string name="set_pen_to_format">Establecer Pen %s a %s</string>
+    <string name="pen_contains_which_insulin_type">¿Qué tipo de insulina contiene el PEN %s?</string>
 </resources>
