@@ -19,6 +19,7 @@ import com.eveningoutpost.dexdrip.insulin.opennov.base.MyByteBuffer;
 import com.eveningoutpost.dexdrip.insulin.opennov.data.ICompleted;
 import com.eveningoutpost.dexdrip.insulin.opennov.ll.PHDllHelper;
 import com.eveningoutpost.dexdrip.insulin.opennov.ll.T4Transceiver;
+import com.eveningoutpost.dexdrip.utils.jobs.BackgroundQueue;
 
 import java.io.IOException;
 
@@ -51,7 +52,7 @@ public class OpenNov extends MyByteBuffer {
             if (ts.doNeededSelection()) {
                 UserError.Log.d(TAG, "Selection okay");
                 if (playSounds()) {
-                    JoH.playResourceAudio(R.raw.bt_meter_connect);
+                    BackgroundQueue.post(() -> JoH.playResourceAudio(R.raw.bt_meter_connect));
                 }
                 int errors = 0;
                 int transactions = 0;

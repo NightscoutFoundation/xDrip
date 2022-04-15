@@ -49,6 +49,8 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import lombok.val;
 
@@ -1330,6 +1332,20 @@ public class Treatments extends Model {
 
     public boolean isPenSyncedDose() {
         return notes != null && notes.startsWith("PEN");
+    }
+
+    public String getPenSerial() {
+        if (isPenSyncedDose()) {
+            final Pattern penPattern = Pattern.compile(".*PEN ([A-Z0-9]+).*", Pattern.DOTALL);
+            final Matcher m = penPattern.matcher(notes);
+            if (m.matches()) {
+                return m.group(1);
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 
     public boolean isPrimingDose() {

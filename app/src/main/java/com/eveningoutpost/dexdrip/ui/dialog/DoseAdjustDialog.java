@@ -9,6 +9,7 @@ import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
+import com.eveningoutpost.dexdrip.insulin.MultipleInsulins;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import lombok.val;
@@ -19,6 +20,7 @@ public class DoseAdjustDialog {
 
     public static void show(final Activity activity, final String uuid) {
         if (uuid.equals("")) return;
+        final boolean trackPens = MultipleInsulins.isEnabled();
 
         val t = Treatments.byuuid(uuid);
         val builder = new AlertDialog.Builder(activity)
@@ -30,9 +32,16 @@ public class DoseAdjustDialog {
             dialog.cancel();
         });
 
-        builder.setNeutralButton(R.string.cancel, (dialog, which) -> {
-            dialog.cancel();
-        });
+        if (trackPens) {
+            builder.setNeutralButton(R.string.choose_type, (dialog, which) -> {
+                dialog.cancel();
+                ChooseInsulinPenDialog.show(activity, t.getPenSerial());
+            });
+        } else {
+            builder.setNeutralButton(R.string.cancel, (dialog, which) -> {
+                dialog.cancel();
+            });
+        }
 
         builder.setNegativeButton(R.string.zero_value, (dialog, which) -> {
             GenericConfirmDialog.show(activity, xdrip.gs(R.string.zero_value) + " ?", xdrip.gs(R.string.are_you_sure), () -> zeroTreatmentValueByUUID(uuid));

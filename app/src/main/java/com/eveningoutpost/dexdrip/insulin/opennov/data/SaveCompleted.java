@@ -6,14 +6,19 @@ import static com.eveningoutpost.dexdrip.insulin.opennov.Options.playSounds;
 import static com.eveningoutpost.dexdrip.insulin.opennov.Options.removePrimingDoses;
 
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.InsulinInjection;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.insulin.MultipleInsulins;
+import com.eveningoutpost.dexdrip.insulin.opennov.Machine;
 import com.eveningoutpost.dexdrip.insulin.opennov.Message;
 import com.eveningoutpost.dexdrip.insulin.opennov.Options;
 import com.eveningoutpost.dexdrip.insulin.opennov.mt.InsulinDose;
+import com.eveningoutpost.dexdrip.utils.jobs.BackgroundQueue;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -34,10 +39,15 @@ public class SaveCompleted implements ICompleted {
     private static final String NOTE_PREFIX = "PEN";
 
     private final List<Treatments> cache = new LinkedList<>();
+    private Pens pens;
 
     @Override
     public int receiveFinalData(final Message msg) {
-
+        final boolean trackPens = MultipleInsulins.isEnabled();
+        if (trackPens) {
+            pens = Pens.load();
+        }
+        Boolean knownPen = null;
         boolean newData = false;
         val doses = msg.getContext().eventReport.doses;
         for (val dose : doses) {
@@ -46,8 +56,27 @@ public class SaveCompleted implements ICompleted {
                     val uuid = uuidFromDose(msg, dose);
                     val existing = Treatments.byuuid(uuid);
                     val serial = msg.getContext().specification.getSerial();
+
+                    if (trackPens) {
+                        if (knownPen == null) {
+                            knownPen = pens.hasPenWithSerial(serial);
+                        }
+                        if (!knownPen) {
+                            UserError.Log.d(TAG, "Don't know type of pen for serial: " + serial);
+                            newData = true; // to force reload again
+                            if (JoH.ratelimit("choose-insulin-pen", 10)) {
+                                Home.startHomeWithExtra(xdrip.getAppContext(), Home.CHOOSE_INSULIN_PEN, serial);
+                            }
+                            break; // exit loop
+                        }
+                    }
+
                     if (existing == null) {
-                        val treatment = Treatments.create(0, dose.units, dose.absoluteTime, uuid);
+                        List<InsulinInjection> insulinType = null;
+                        if (trackPens) {
+                            insulinType = Treatments.convertLegacyDoseToInjectionListByName(pens.getPenTypeBySerial(serial), dose.units);
+                        }
+                        val treatment = Treatments.create(0, dose.units, insulinType, dose.absoluteTime, uuid);
                         if (treatment != null) {
                             treatment.enteredBy = MARKER + " @ " + JoH.dateTimeText(tsl());
                             treatment.notes = NOTE_PREFIX + " " + serial + "\n" + msg.getContext().model.getModel(); // must be same for each dose for a specific pen
@@ -55,9 +84,9 @@ public class SaveCompleted implements ICompleted {
                             cache.add(treatment);
                             newData = true;
                         }
-                        UserError.Log.uel(TAG, "New dose logged from pen: " + serial + " " + dose.units + "U @ " + JoH.dateTimeText(dose.absoluteTime));
-                        if (playSounds() && JoH.ratelimitmilli("opennov_data_in", 200)) {
-                            JoH.playResourceAudio(R.raw.bt_meter_data_in);
+                        UserError.Log.uel(TAG, "New dose logged from pen: " + serial + " " + dose.units + "U " + (trackPens ? pens.getPenTypeBySerial(serial) : "") + " @ " + JoH.dateTimeText(dose.absoluteTime));
+                        if (playSounds() && JoH.ratelimitmilli("opennov_data_in", 400)) {
+                            BackgroundQueue.post(() -> JoH.playResourceAudio(R.raw.bt_meter_data_in));
                         }
                     } else {
                         UserError.Log.d(TAG, "Existing dose: " + uuid);
@@ -122,7 +151,7 @@ public class SaveCompleted implements ICompleted {
 
             for (val dose : cache) {
                 if (isPrimingDose(cache, dose, doseThreshold, timeThreshold)) {
-                    dose.notes = PRIMING +" " + dose.insulin + "U" + "\n" + dose.notes;
+                    dose.notes = PRIMING + " " + dose.insulin + "U" + "\n" + dose.notes;
                     dose.insulin = 0;
                     dose.save();
                     UserError.Log.d(TAG, "Removed priming dose @ " + JoH.dateTimeText(dose.timestamp) + " " + dose.notes);
@@ -151,6 +180,11 @@ public class SaveCompleted implements ICompleted {
                 }
             }
         }
+        val plist = Pens.load().pens;
+        for (val p : plist) {
+            Machine.deleteSuccessInfo(p.serial);
+        }
+        new Pens().save();
     }
 
 }

@@ -5,6 +5,7 @@ import static com.eveningoutpost.dexdrip.insulin.opennov.FSA.Action.WRITE_READ;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.insulin.opennov.data.ICompleted;
 
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class Machine {
     private int currentSegment = -1;
     private State state = State.AWAIT_ASSOCIATION_REQ;
     private final OpContext context = new OpContext();
+    private boolean lastSuccessCache = false;
 
     private final ICompleted iCompleted;
 
@@ -106,6 +108,11 @@ public class Machine {
 
             case AWAIT_INFORMATION:
                 UserError.Log.d(TAG, "Await information");
+                if (context.specification == null) {
+                    UserError.Log.d(TAG, "Failed to acquire specification - trying again");
+                    return new FSA(WRITE_READ, msg.getAskInformation());
+                }
+                lastSuccessCache = wasLastReadSuccess();
                 state = state.next();
                 return new FSA(WRITE_READ, msg.getConfirmedAction());
 
@@ -132,9 +139,13 @@ public class Machine {
             case AWAIT_LOG_DATA:
                 UserError.Log.d(TAG, "Await Log data: msize:" + msg.getLength());
                 if (msg.getLength() == 0) return FSA.writeNull();
+                if (context.eventReport.doses.size() > 0) {
+                    setLastReadSuccess(false); // started receiving data
+                }
                 val count = iCompleted.receiveFinalData(msg);
-                if (count == 0 && !loadEverything) {
+                if (count == 0 && !loadEverything && lastSuccessCache) {
                     UserError.Log.d(TAG, "No new data so requesting close");
+                    setLastReadSuccess(true); // completed receiving data
                     return doCloseDown(msg);
                 }
                 val er = msg.getContext().eventReport;
@@ -144,6 +155,7 @@ public class Machine {
                     tsil.markProcessed(er.instance);
                     if (!tsil.hasUnprocessed()) {
                         UserError.Log.d(TAG, "All segments processed");
+                        setLastReadSuccess(true); // completed receiving data
                     } else {
                         UserError.Log.e(TAG, "Segments remain unprocessed");
                         return handleNextSegment(msg);
@@ -195,6 +207,38 @@ public class Machine {
             }
         }
         return FSA.empty();
+    }
+
+    private static final String READ_SUCCESS = "READ_SUCCESS_";
+
+    private void setLastReadSuccess(final boolean result) {
+        if (context.specification == null) {
+            UserError.Log.wtf(TAG, "Specification null when trying to set success");
+            return;
+        }
+        val serial = context.specification.getSerial();
+        if (serial == null || serial.length() < 4) {
+            UserError.Log.wtf(TAG, "Invalid serial when trying to set success");
+            return;
+        }
+        PersistentStore.setBoolean(READ_SUCCESS + serial, result);
+    }
+
+    private boolean wasLastReadSuccess() {
+        if (context.specification == null) {
+            UserError.Log.wtf(TAG, "Specification null when trying to check success");
+            return false;
+        }
+        val serial = context.specification.getSerial();
+        if (serial == null || serial.length() < 4) {
+            UserError.Log.wtf(TAG, "Invalid serial when trying to check success");
+            return false;
+        }
+        return PersistentStore.getBoolean(READ_SUCCESS + serial, false);
+    }
+
+    public static void deleteSuccessInfo(final String serial) {
+        PersistentStore.removeItem(READ_SUCCESS + serial);
     }
 
 }

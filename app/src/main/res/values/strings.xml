@@ -1683,4 +1683,8 @@
     <string name="zero_value">Zero value</string>
     <string name="adjust_dose">Adjust Dose</string>
     <string name="Dose">Dose</string>
+    <string name="choose_type">Choose Type</string>
+    <string name="invalid_serial">Invalid serial</string>
+    <string name="set_pen_to_format">Set Pen %s to %s</string>
+    <string name="pen_contains_which_insulin_type">PEN %s contains which insulin type?</string>
 </resources>
