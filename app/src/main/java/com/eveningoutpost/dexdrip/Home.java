@@ -2019,7 +2019,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             Viewport moveViewPort = new Viewport(chart.getMaximumViewport());
             float tempwidth = (float) moveViewPort.width() / 4;
             holdViewport.left = moveViewPort.right - tempwidth;
-            holdViewport.right = moveViewPort.right + (moveViewPort.width() / 24);
+            holdViewport.right = moveViewPort.right + (moveViewPort.width() / BgGraphBuilder.time_span);
             holdViewport.top = moveViewPort.top;
             holdViewport.bottom = moveViewPort.bottom;
             chart.setCurrentViewport(holdViewport);
@@ -2029,7 +2029,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 final long which_hour = PersistentStore.getLong("home-locked-hours");
                 if (which_hour > 0) {
                     hours = which_hour;
-                    setHoursViewPort();
                 } else {
                     hours = DEFAULT_CHART_HOURS;
                 }
@@ -2037,6 +2036,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             } else {
                 hours = DEFAULT_CHART_HOURS;
             }
+            setHoursViewPort();
             previewChart.setVisibility(homeShelf.get("chart_preview") ? View.VISIBLE : View.GONE);
         }
 
@@ -2197,7 +2197,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     private void setHoursViewPort() {
         final Viewport moveViewPort = new Viewport(chart.getMaximumViewport());
-        float hour_width = moveViewPort.width() / 24;
+        float hour_width = moveViewPort.width() / BgGraphBuilder.time_span;
         holdViewport.left = moveViewPort.right - hour_width * hours;
         holdViewport.right = moveViewPort.right;
         holdViewport.top = moveViewPort.top;

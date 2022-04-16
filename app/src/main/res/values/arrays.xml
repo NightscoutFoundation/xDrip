@@ -203,4 +203,19 @@
         <item>JamTrendArrow3Impl</item>
     </string-array>
 
+    <string-array name="time_span_entries">
+        <item>12 hrs</item>
+        <item>24 hrs</item>
+        <item>26 hrs</item>
+        <item>30 hrs</item>
+        <item>36 hrs</item>
+    </string-array>
+    <string-array name="time_span_values">
+        <item>12</item>
+        <item>24</item>
+        <item>26</item>
+        <item>30</item>
+        <item>36</item>
+    </string-array>
+
 </resources>
