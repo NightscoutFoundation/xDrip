@@ -1562,4 +1562,8 @@
     <string name="zero_value">Nullwert</string>
     <string name="adjust_dose">Dosis anpassen</string>
     <string name="Dose">Dosis</string>
+    <string name="choose_type">Typ auswählen</string>
+    <string name="invalid_serial">Ungültige Seriennummer</string>
+    <string name="set_pen_to_format">Setze Pen %s auf %s</string>
+    <string name="pen_contains_which_insulin_type">PEN %s enthält welchen Insulintyp?</string>
 </resources>
