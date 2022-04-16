@@ -820,8 +820,10 @@
     <string name="confirm_sensing_snooze">Verifiera snoozesändning</string>
     <string name="allow_remotes_silence">Tillåt andra enheter att tysta larm på denna</string>
     <string name="acccept_remote_snoozes">Ta emot fjärrsnooar</string>
+    <string name="send_remote_snooze">Skicka fjärrsnooze</string>
     <string name="only_accept_same_network">Accepteera bara om det andra wifi-näterket börjar med samma bokstäver och är väldigt likt i övrigt</string>
     <string name="wifi_name_must_match">Wifi-namn måste matcha</string>
+    <string name="confirm_remote_snooze">Bekräfta fjärrsnooze</string>
     <string name="are_you_sure_you_wish_to_snooze_all_other_devices_in_your_sync_group">Är du säker på att du vill snooza alla andra enheter i din synkroniseringsgrupp?</string>
     <string name="yes_send_it">JA, skicka det!</string>
     <string name="movement_detection_and_vehicle_mode">Rörelseavkänning och billäge</string>
@@ -855,6 +857,7 @@
     <string name="reminders">Påminnelser</string>
     <string name="error">fel</string>
     <string name="install_text_to_speech_data_question">Installera data för Text-To-Speech?</string>
+    <string name="after_installation_of_languages_you_might_have_to">(Efter installation av språk måste du kanske trycka på \"Starta om samlaren\" i Systemstatus.)</string>
     <string name="stop_sensor">Stoppa sensor</string>
     <string name="dont_stop_just_reset_all_calibrations">Sluta inte, endast återställ kalibreringar</string>
     <string name="initial_calibration">Dubbelkalibrering</string>
@@ -879,6 +882,7 @@
     <string name="received_some_recent_data">Mottog några senaste data</string>
     <string name="received_enough_good_data_to_calibrate">Mottog tillräckligt med bra data för att kalibrera</string>
     <string name="play_sound_when_ready_for_calibration">Spela upp ljud när kalibrering är möjlig</string>
+    <string name="receiving_data_from_collector">Tar emot data från samlare för %s</string>
     <!-- trend arrow for speak -->
     <string name="DoubleDown">Snabbt fall</string>
     <string name="SingleDown">Sjunker</string>
@@ -887,6 +891,14 @@
     <string name="FortyFiveUp">Något stigande</string>
     <string name="SingleUp">Stigande</string>
     <string name="DoubleUp">Snabbt stigande</string>
+    <string name="Speak_trend_arrow_name">Säg trendpilens namn</string>
+    <string name="Speak_everything_twice">Säg allt två gånger</string>
+    <string name="Speech_speed">Talhastighet</string>
+    <string name="Speech_pitch">Tal tonhöjd</string>
+    <string name="Speak_Alerts">Röstvarningar</string>
+    <string name="Speak_Alerts_Summary">Ge också några varningsmeddelanden med röst</string>
+    <string name="advanced_bluereader_settings_summary">Utökade inställningar för blueReader</string>
+    <string name="advanced_bluereader_settings">blueReader inställningar</string>
     <string name="bluereader_restdays_onhome_sum">Visar de uppskattade vilodagarna för blueReader på startskärmen efter att batteriet måste laddas om</string>
     <string name="blueReader_turnoffvalue">Värde i %</string>
     <string name="blueReader_turnoffvalue_sum">där blueReader kommer att stängas av</string>
