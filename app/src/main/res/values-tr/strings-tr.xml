@@ -1518,6 +1518,7 @@
     <string name="nfc_is_not_enabled">NFC etkin değil</string>
     <string name="phone_nfc_is_having_problems">Telefon NFC\'si problemli!</string>
     <string name="not_so_quickly_wait_60_seconds">O kadar hızlı değil, 60 saniye bekleyin</string>
+    <string name="not_so_quickly_wait_30_seconds">Çok hızlı değil, 30 saniye bekleyin</string>
     <string name="nfc_diag_timeout">NFC tanılama zaman aşımı</string>
     <string name="nfc_read_timeout">NFC okuma zaman aşımı</string>
     <string name="nfc_invalid_data__try_again">NFC geçersiz veri - tekrar deneyin</string>
@@ -1632,4 +1633,11 @@
     <string name="reschedule_with_new_timing">Yeni zamanlama ile yeniden planlansın mı?</string>
     <string name="select_new_sound_source">Yeni ses kaynağı seçin</string>
     <string name="snooze_done">← Ertele / Bitti →</string>
+    <string name="zero_value">Sıfır değer</string>
+    <string name="adjust_dose">Dozu Ayarla</string>
+    <string name="Dose">Doz</string>
+    <string name="choose_type">Türü Seç</string>
+    <string name="invalid_serial">Geçersiz seri</string>
+    <string name="set_pen_to_format">Kalem\'i %s\'i %s olarak ayarla</string>
+    <string name="pen_contains_which_insulin_type">KALEM %s hangi insülin türünü içeriyor?</string>
 </resources>
