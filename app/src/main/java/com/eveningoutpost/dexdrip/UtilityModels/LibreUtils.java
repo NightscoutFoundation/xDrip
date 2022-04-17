@@ -68,6 +68,7 @@ public class LibreUtils {
 
         boolean checksum_ok = CheckCRC16(data, 0 ,Constants.LIBREPRO_HEADER1_SIZE);
         checksum_ok &= CheckCRC16(data, Constants.LIBREPRO_HEADER1_SIZE ,Constants.LIBREPRO_HEADER2_SIZE);
+        checksum_ok &= CheckCRC16(data, Constants.LIBREPRO_HEADER1_SIZE + Constants.LIBREPRO_HEADER2_SIZE, Constants.LIBREPRO_HEADER3_SIZE);
         return checksum_ok;
     }
 

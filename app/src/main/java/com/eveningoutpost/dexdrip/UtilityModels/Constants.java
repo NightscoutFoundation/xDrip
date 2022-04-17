@@ -67,5 +67,6 @@ public class Constants {
 
     public static final int LIBREPRO_HEADER1_SIZE = 40;
     public static final int LIBREPRO_HEADER2_SIZE = 32;
+    public static final int LIBREPRO_HEADER3_SIZE = 104;
 
 }
