@@ -1637,4 +1637,8 @@
     <string name="zero_value">Nullväärtus</string>
     <string name="adjust_dose">Reguleeri doosi</string>
     <string name="Dose">Doos</string>
+    <string name="choose_type">Vali tüüp</string>
+    <string name="invalid_serial">Vigane seerianumber</string>
+    <string name="set_pen_to_format">Määra pen %s väärtuseks %s</string>
+    <string name="pen_contains_which_insulin_type">Millist tüüpi insuliini sisaldab pen %s?</string>
 </resources>
