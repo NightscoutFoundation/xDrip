@@ -1628,4 +1628,8 @@
     <string name="accept_external_status">Accetta Stato Esterno</string>
     <string name="old">Vecchio</string>
     <string name="select_new_sound_source">Seleziona nuova sorgente sonora</string>
+    <string name="choose_type">Scegli il tipo</string>
+    <string name="invalid_serial">Seriale non valido</string>
+    <string name="set_pen_to_format">Imposta la penna %s a %s</string>
+    <string name="pen_contains_which_insulin_type">Quale tipo d\'insulina contiene la penna %s?</string>
 </resources>
