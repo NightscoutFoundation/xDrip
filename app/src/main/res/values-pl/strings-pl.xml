@@ -1411,6 +1411,7 @@
     <string name="nfc_is_not_enabled">NFC nie jest włączone</string>
     <string name="phone_nfc_is_having_problems">Problem z NFC telefonu!</string>
     <string name="not_so_quickly_wait_60_seconds">Nie tak szybko, poczekaj 60 sekund</string>
+    <string name="not_so_quickly_wait_30_seconds">Nie tak szybko, poczekaj 30 sekund</string>
     <string name="nfc_read_timeout">Przekroczono limit czasu odczytu NFC</string>
     <string name="nfc_invalid_data__try_again">Nieprawidłowe dane NFC - spróbuj ponownie</string>
     <string name="nfc_invalid_data">Nieprawidłowe dane NFC</string>
@@ -1461,4 +1462,6 @@
     <string name="neww">Nowy</string>
     <string name="select_new_sound_source">Wybierz nowe źródło dźwięku</string>
     <string name="snooze_done">← Uśpij / Potwierdź →</string>
+    <string name="adjust_dose">Dostosowanie dawki</string>
+    <string name="Dose">Dawka</string>
 </resources>

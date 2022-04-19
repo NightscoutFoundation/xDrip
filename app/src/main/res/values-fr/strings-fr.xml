@@ -1519,6 +1519,7 @@
     <string name="nfc_is_not_enabled">NFC n\'est pas activé</string>
     <string name="phone_nfc_is_having_problems">Le NFC du téléphone a des problèmes!</string>
     <string name="not_so_quickly_wait_60_seconds">Pas si vite, attendez 60 secondes</string>
+    <string name="not_so_quickly_wait_30_seconds">Pas si vite, attendez 30 secondes</string>
     <string name="nfc_diag_timeout">Délai de diagnostic NFC</string>
     <string name="nfc_read_timeout">Délai de lecture NFC</string>
     <string name="nfc_invalid_data__try_again">Données NFC non valides - réessayez</string>
@@ -1633,4 +1634,11 @@
     <string name="reschedule_with_new_timing">Replanifier avec un nouveau délai?</string>
     <string name="select_new_sound_source">Sélectionner une nouvelle source sonore</string>
     <string name="snooze_done">← Mise en veille / Fait →</string>
+    <string name="zero_value">Valeur zéro</string>
+    <string name="adjust_dose">Ajuster la dose</string>
+    <string name="Dose">Dose</string>
+    <string name="choose_type">Choisir le type</string>
+    <string name="invalid_serial">Numéro de série invalide</string>
+    <string name="set_pen_to_format">Définir le stylo %s à %s</string>
+    <string name="pen_contains_which_insulin_type">Le Stylo %s contient quel type d\'insuline?</string>
 </resources>

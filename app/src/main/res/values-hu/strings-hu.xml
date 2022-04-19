@@ -1494,6 +1494,7 @@
     <string name="nfc_is_not_enabled">NFC nincs engedélyezve</string>
     <string name="phone_nfc_is_having_problems">A készülék NFC olvasója hibát jelez!</string>
     <string name="not_so_quickly_wait_60_seconds">Ne ilyen gyorsan, kérem, várjon 60 mp-et</string>
+    <string name="not_so_quickly_wait_30_seconds">Ne ilyen gyorsan, várjon 30 mp-et</string>
     <string name="nfc_diag_timeout">NFC időtúllépés</string>
     <string name="nfc_read_timeout">NFC olvasási időtúllépés</string>
     <string name="nfc_invalid_data__try_again">Érvénytelen NFC adatok - próbálja újra</string>
@@ -1584,4 +1585,7 @@
     <string name="reschedule_with_new_timing">Újratervezés új időzítéssel?</string>
     <string name="select_new_sound_source">Hangforrás kiválasztása</string>
     <string name="snooze_done">← Szundi / Kész →</string>
+    <string name="zero_value">Nulla érték</string>
+    <string name="adjust_dose">Adagolás beállítása</string>
+    <string name="Dose">Adag</string>
 </resources>

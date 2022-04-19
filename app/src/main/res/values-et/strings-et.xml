@@ -1519,6 +1519,7 @@
     <string name="nfc_is_not_enabled">NFC pole sisse lülitatud</string>
     <string name="phone_nfc_is_having_problems">Telefoni NFC-ga on probleeme!</string>
     <string name="not_so_quickly_wait_60_seconds">Mitte nii kiiresti, oodake 60 sekundit</string>
+    <string name="not_so_quickly_wait_30_seconds">Mitte nii kiiresti, oota 30 sekundit</string>
     <string name="nfc_diag_timeout">NFC ajapiir ületatud</string>
     <string name="nfc_read_timeout">NFC ajapiir ületatud</string>
     <string name="nfc_invalid_data__try_again">NFC vigased andmed – proovi uuesti</string>
@@ -1633,4 +1634,11 @@
     <string name="reschedule_with_new_timing">Uue ajakava järgi ümber paigutada?</string>
     <string name="select_new_sound_source">Vali uus heli lähtekoht</string>
     <string name="snooze_done">← Vaigista / Tehtud →</string>
+    <string name="zero_value">Nullväärtus</string>
+    <string name="adjust_dose">Reguleeri doosi</string>
+    <string name="Dose">Doos</string>
+    <string name="choose_type">Vali tüüp</string>
+    <string name="invalid_serial">Vigane seerianumber</string>
+    <string name="set_pen_to_format">Määra pen %s väärtuseks %s</string>
+    <string name="pen_contains_which_insulin_type">Millist tüüpi insuliini sisaldab pen %s?</string>
 </resources>

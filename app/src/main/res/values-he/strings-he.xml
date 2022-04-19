@@ -1516,4 +1516,7 @@
     <string name="neww">חדש</string>
     <string name="select_new_sound_source">בחרו מקור שמע חדש</string>
     <string name="snooze_done">← נודניק/סיום →</string>
+    <string name="choose_type">בחר סוג</string>
+    <string name="invalid_serial">מספר סידורי לא תקין</string>
+    <string name="pen_contains_which_insulin_type">איזה סוג אינסולין יש בעט %s?</string>
 </resources>
