@@ -9,7 +9,10 @@ import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileItem;
+import com.eveningoutpost.dexdrip.utils.FoodType;
 import com.eveningoutpost.dexdrip.xdrip;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -30,12 +33,22 @@ public class Profile {
     public static double minimum_shown_cob = 0.01;
     public static double minimum_insulin_recommendation = 0.1;
     public static double minimum_carb_recommendation = 1;
+    public static double minimum_fats_recommendation = 1;
+    public static double minimum_proteins_recommendation = 1;
     public static double scale_factor = 18;
     private static double the_carb_ratio = 10; // now defunct
+    private static double the_fats_ratio = 10; // now defunct
+    private static double the_proteins_ratio = 10; // now defunct
     private static double stored_default_sensitivity = 54; // now defunct
     private static double stored_default_absorption_rate = 35;
+    private static double stored_default_carbs_absorption_rate = 35;
+    private static double stored_default_fats_absorption_rate = 35;
+    private static double stored_default_proteins_absorption_rate = 35;
     private static double stored_default_insulin_action_time = 3.0;
     private static double stored_default_carb_delay_minutes = 15;
+    private static double stored_default_fats_delay_minutes = 15;
+    private static double stored_default_proteins_delay_minutes = 15;
+    private static double stored_default_delay_minutes = 15;
     private static boolean preferences_loaded = false;
     private static List<ProfileItem> profileItemList;
 
@@ -62,10 +75,42 @@ public class Profile {
         return stored_default_absorption_rate; // carbs per hour
     }
 
+    static double getFoodAbsorptionRate(double when, FoodType foodType) {
+        switch (foodType) {
+            case CARBS:
+                return stored_default_carbs_absorption_rate;
+
+            case FATS:
+                return stored_default_fats_absorption_rate;
+
+            case PROTEINS:
+                return stored_default_proteins_absorption_rate;
+
+            default:
+                return stored_default_absorption_rate;
+        }
+    }
+
     public static void setCarbAbsorptionDefault(double value) {
         // sanity check goes here
         if (value < 0.01) return;
         stored_default_absorption_rate = value;
+    }
+
+    public static void setFoodAbsorptionDefault(double value, FoodType foodType) {
+        // sanity check goes here
+        if (value < 0.01) return;
+
+        switch (foodType) {
+            case CARBS:
+                stored_default_carbs_absorption_rate = value;
+
+            case FATS:
+                stored_default_fats_absorption_rate = value;
+
+            case PROTEINS:
+                stored_default_proteins_absorption_rate = value;
+        }
     }
 
     static double insulinActionTime(double when) {
@@ -76,6 +121,22 @@ public class Profile {
         return stored_default_carb_delay_minutes;
     }
 
+    static double foodDelayMinutes(double when, FoodType foodType) {
+        switch (foodType) {
+            case CARBS:
+                return stored_default_carb_delay_minutes;
+
+            case FATS:
+                return stored_default_fats_delay_minutes;
+
+            case PROTEINS:
+                return stored_default_proteins_delay_minutes;
+
+            default:
+                return stored_default_delay_minutes;
+        }
+    }
+
     static double maxLiverImpactRatio(double when) {
         return 0.3; // how much can the liver block carbs going in to blood stream?
     }
@@ -83,6 +144,23 @@ public class Profile {
     public static double getCarbRatio(double when) {
         return findItemListElementForTime(when).carb_ratio;
         //return the_carb_ratio; // g per unit
+    }
+
+    public static double getFoodRatio(double when, FoodType foodType) {
+
+        switch (foodType) {
+            case CARBS:
+                return findItemListElementForTime(when).carb_ratio;
+
+            case FATS:
+                return findItemListElementForTime(when).fats_ratio;
+
+            case PROTEINS:
+                return findItemListElementForTime(when).proteins_ratio;
+
+            default:
+                return 0.0;
+        }
     }
 
 
@@ -133,6 +211,24 @@ public class Profile {
         the_carb_ratio = value; // g per unit
     }
 
+    static public void setDefaultFoodRatio(Double value, FoodType foodType) {
+        if (value <= 0) {
+            Log.e(TAG, "Invalid default " + foodType.value +" ratio: " + value);
+            return;
+        }
+
+        switch (foodType) {
+            case CARBS:
+                the_carb_ratio = value;
+
+            case FATS:
+                the_fats_ratio = value;
+
+            case PROTEINS:
+                the_proteins_ratio = value;
+        }
+    }
+
     static double getLiverSensRatio(double when) {
         return 2.0;
     }
@@ -159,10 +255,19 @@ public class Profile {
         return getCarbRatio(when) / getSensitivity(when);
     }
 
+    static double getFoodSensitivity(double when, FoodType foodType) {
+        return getFoodRatio(when, foodType) / getSensitivity(when);
+    }
+
     static double getCarbsToRaiseByMmol(double mmol, double when) {
 
         double result = getCarbSensitivity(when) * mmol;
         return result;
+    }
+
+    static double getFoodToRaiseByMmol(double mmol, double when, FoodType foodType) {
+
+        return getFoodSensitivity(when, foodType) * mmol;
     }
 
     static double getInsulinToLowerByMmol(double mmol, double when) {
@@ -173,6 +278,13 @@ public class Profile {
     static double getCarbsToRaiseByMmolBetweenTwoTimes(double mmol, double whennow, double whenthen) {
         double result = (getCarbsToRaiseByMmol(mmol, whennow) + getCarbsToRaiseByMmol(mmol, whenthen)) / 2;
         UserError.Log.d(TAG, "GetCarbsToRaiseByMmolBetweenTwoTimes: " + JoH.qs(mmol) + " result: " + JoH.qs(result));
+        return result;
+    }
+
+    static double getFoodToRaiseByMmolBetweenTwoTimes(double mmol, double whennow, double whenthen, FoodType foodType) {
+        double result = (getFoodToRaiseByMmol(mmol, whennow, foodType) + getFoodToRaiseByMmol(mmol, whenthen, foodType)) / 2;
+
+        UserError.Log.d(TAG, "Get"+ StringUtils.capitalize(foodType.value) + "ToRaiseByMmolBetweenTwoTimes: " + JoH.qs(mmol) + " result: " + JoH.qs(result));
         return result;
     }
 

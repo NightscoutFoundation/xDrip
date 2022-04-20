@@ -715,6 +715,28 @@ public class WatchUpdaterService extends WearableListenerService implements
         }
     }
 
+    public static void sendTreatment(double carbs, double fats, double proteins, double insulin, double bloodtest, String injectionJSON, double timeoffset, String timestring) {
+        if ((googleApiClient != null) && (googleApiClient.isConnected())) {
+            PutDataMapRequest dataMapRequest = PutDataMapRequest.create(WEARABLE_TREATMENT_PAYLOAD);
+            //unique content
+            dataMapRequest.setUrgent();
+            dataMapRequest.getDataMap().putDouble("timestamp", System.currentTimeMillis());
+            dataMapRequest.getDataMap().putDouble("carbs", carbs);
+            dataMapRequest.getDataMap().putDouble("fats", fats);
+            dataMapRequest.getDataMap().putDouble("proteins", proteins);
+            dataMapRequest.getDataMap().putDouble("insulin", insulin);
+            dataMapRequest.getDataMap().putDouble("bloodtest", bloodtest);
+            dataMapRequest.getDataMap().putDouble("timeoffset", timeoffset);
+            dataMapRequest.getDataMap().putString("timestring", timestring);
+            dataMapRequest.getDataMap().putString("injectionJSON", injectionJSON);
+            dataMapRequest.getDataMap().putBoolean("ismgdl", doMgdl(PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext())));
+            PutDataRequest putDataRequest = dataMapRequest.asPutDataRequest();
+            Wearable.DataApi.putDataItem(googleApiClient, putDataRequest);
+        } else {
+            Log.e(TAG, "No connection to wearable available for send treatment!");
+        }
+    }
+
     private static boolean doMgdl(SharedPreferences sPrefs) {
         String unit = sPrefs.getString("units", "mgdl");
         if (unit.compareTo("mgdl") == 0) {
@@ -728,7 +750,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     public void onCreate() {
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         wear_integration = mPrefs.getBoolean("wear_sync", false);
-        //is_using_g5 = (getDexCollectionType() == DexCollectionType.DexcomG5);
+        //is_using_g5 = (getDexCeollectionType() == DexCollectionType.DexcomG5);
         is_using_bt = DexCollectionType.hasBluetooth();
         if (wear_integration) {
             googleApiConnect();

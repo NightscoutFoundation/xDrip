@@ -242,6 +242,8 @@
     <string name="display_customisations">Display customizations</string>
     <string name="insulin_carb_ratios_etc_for_models">Insulin, Carb ratios etc. for models</string>
     <string name="grams_of_carbohydrate_one_unit_covers">Grams of Carbohydrate 1 Unit covers</string>
+    <string name="grams_of_fats_one_unit_covers">Grams of Fats 1 Unit covers</string>
+    <string name="grams_of_proteins_one_unit_covers">Grams of Proteins 1 Unit covers</string>
     <string name="linear_model_carbs_absorbed_per_hour">Linear model carbs absorbed per hour</string>
     <string name="carb_absorption_rate">Carb Absorption rate</string>
     <string name="calculate_including_glucose_trend">Calculate including glucose trend</string>
@@ -336,6 +338,8 @@
     <string name="space_units">" units"</string>
     <string name="units">units</string>
     <string name="carbs">carbs</string>
+    <string name="fats">fats</string>
+    <string name="proteins">proteins</string>
     <string name="when">when (HHMM)</string>
     <string name="speak_your_treatment">Speak your treatment e.g.\nx.x units insulin / xx grams carbs</string>
     <string name="speech_recognition_is_not_supported">Speech recognition is not supported</string>
@@ -812,6 +816,8 @@
     <string name="notify_data_arrives_master"><![CDATA[Notify when data arrives from the master if the interval is > 20 mins.]]></string>
     <string name="follower_chime_new">Follower Chime New</string>
     <string name="carb_ratio">Carb Ratio</string>
+    <string name="fats_ratio">Fats Ratio</string>
+    <string name="proteins_ratio">Proteins Ratio</string>
     <string name="enable_dedicated_insulin_profiles">Config Insulin profiles</string>
     <string name="desc_enable_dedicated_insulin_profiles">Here one can enable or configure various insulin profiles</string>
     <string name="insulin_sensitivity">Insulin Sensitivity</string>

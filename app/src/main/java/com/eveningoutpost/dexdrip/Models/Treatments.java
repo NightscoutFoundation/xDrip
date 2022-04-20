@@ -41,6 +41,7 @@ import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -91,6 +92,12 @@ public class Treatments extends Model {
     @Expose
     @Column(name = "carbs")
     public double carbs;
+    @Expose
+    @Column(name = "fats")
+    public double fats;
+    @Expose
+    @Column(name = "proteins")
+    public double proteins;
     @Expose
     @Column(name = "insulin")
     public double insulin;
@@ -220,12 +227,18 @@ public class Treatments extends Model {
     {
         eventType = DEFAULT_EVENT_TYPE;
         carbs = 0;
+        fats = 0;
+        proteins = 0;
         insulin = 0;
         //setInsulinInjections(null);
     }
 
     public static synchronized Treatments create(final double carbs, final double insulin, long timestamp) {
         return create(carbs, insulin, timestamp, null);
+    }
+
+    public static synchronized Treatments create(final double carbs, final double fats, final double proteins, final double insulin, long timestamp) {
+        return create(carbs, fats, proteins, insulin, timestamp, null);
     }
 
     public static synchronized Treatments create(final double carbs, final double insulinSum, final long timestamp, final String suggested_uuid) {
@@ -238,8 +251,22 @@ public class Treatments extends Model {
 
     }
 
+    public static synchronized Treatments create(final double carbs, final double fats, final double proteins, final double insulinSum, final long timestamp, final String suggested_uuid) {
+
+        if (MultipleInsulins.isEnabled()) {
+            return create(carbs, fats, proteins, insulinSum, convertLegacyDoseToBolusInjectionList(insulinSum), timestamp, suggested_uuid);
+        } else {
+            return create(carbs, fats, proteins, insulinSum, null, timestamp, suggested_uuid);
+        }
+
+    }
+
     public static synchronized Treatments create(final double carbs, final double insulinSum, final List<InsulinInjection> insulin, long timestamp) {
         return create(carbs, insulinSum, insulin, timestamp, null);
+    }
+
+    public static synchronized Treatments create(final double carbs, final double fats, final double proteins, final double insulinSum, final List<InsulinInjection> insulin, long timestamp) {
+        return create(carbs, fats, proteins, insulinSum, insulin, timestamp, null);
     }
 
     public static synchronized Treatments create(final double carbs, final double insulinSum, final List<InsulinInjection> insulin, long timestamp, String suggested_uuid) {
@@ -256,6 +283,38 @@ public class Treatments extends Model {
                     + insulinSum + " " + context.getString(R.string.units), (int) future_seconds, 34026);
         }
         return create(carbs, insulinSum, insulin, timestamp, -1, suggested_uuid);
+    }
+
+    public static synchronized Treatments create(final double carbs, final double fats, final double proteins, final double insulinSum, final List<InsulinInjection> insulin, long timestamp, String suggested_uuid) {
+        // if treatment more than 1 minutes in the future
+        final long future_seconds = (timestamp - JoH.tsl()) / 1000;
+        if (future_seconds > (60 * 60)) {
+            JoH.static_toast_long("Refusing to create a treatement more than 1 hours in the future!");
+            return null;
+        }
+        if ((future_seconds > 60) && (future_seconds < 86400) && anyMatchGreaterThanZero(Arrays.asList(carbs, fats, proteins, insulinSum))) {
+            final Context context = xdrip.getAppContext();
+            JoH.scheduleNotification(context, "Treatment Reminder", "@" + JoH.hourMinuteString(timestamp) + " : "
+                    + carbs + " g " + context.getString(R.string.carbs) + " / "
+                    + fats + " g " + context.getString(R.string.fats) + " / "
+                    + proteins + " g " + context.getString(R.string.proteins) + " / "
+                    + insulinSum + " " + context.getString(R.string.units), (int) future_seconds, 34026);
+        }
+        return create(carbs, fats, proteins, insulinSum, insulin, timestamp, -1, suggested_uuid);
+    }
+
+    private static boolean anyMatchGreaterThanZero(List<Double> list) {
+        for (Double element : list) {
+            if (element > 0) return true;
+        }
+        return false;
+    }
+
+    private static boolean allMatchEqualZero(List<Double> list) {
+        for (Double element : list) {
+            if (element != 0) return false;
+        }
+        return true;
     }
 
     public static synchronized Treatments create(final double carbs, final double insulinSum, final List<InsulinInjection> insulin, long timestamp, double position, String suggested_uuid) {
@@ -282,6 +341,48 @@ public class Treatments extends Model {
         }
 
         treatment.carbs = carbs;
+        treatment.insulin = insulinSum;
+        treatment.setInsulinInjections(insulin);
+        treatment.timestamp = timestamp;
+        treatment.created_at = DateUtil.toISOString(timestamp);
+        treatment.uuid = suggested_uuid != null ? suggested_uuid : UUID.randomUUID().toString();
+        treatment.save();
+        // GcmActivity.pushTreatmentAsync(Treatment);
+        //  NSClientChat.pushTreatmentAsync(Treatment);
+
+        pushTreatmentSync(treatment);
+        UndoRedo.addUndoTreatment(treatment.uuid);
+        return treatment;
+    }
+
+    public static synchronized Treatments create(final double carbs, final double fats, final double proteins, final double insulinSum, final List<InsulinInjection> insulin, long timestamp, double position, String suggested_uuid) {
+        // TODO sanity check values
+        Log.d(TAG, "Creating treatment: " +
+                "Insulin: " + insulinSum + " / " +
+                "Carbs: " + carbs +
+                "Fats: " + fats +
+                "Proteins: " + proteins +
+                (suggested_uuid != null && !suggested_uuid.isEmpty()
+                        ? " " + "uuid: " + suggested_uuid
+                        : ""));
+
+        if (allMatchEqualZero(Arrays.asList(carbs, fats, proteins, insulinSum))) return null;
+
+        if (timestamp == 0) {
+            timestamp = new Date().getTime();
+        }
+
+        final Treatments treatment = new Treatments();
+
+        if (position > 0) {
+            treatment.enteredBy = XDRIP_TAG + " pos:" + JoH.qs(position, 2);
+        } else {
+            treatment.enteredBy = XDRIP_TAG;
+        }
+
+        treatment.carbs = carbs;
+        treatment.fats = fats;
+        treatment.proteins = proteins;
         treatment.insulin = insulinSum;
         treatment.setInsulinInjections(insulin);
         treatment.timestamp = timestamp;
@@ -476,6 +577,8 @@ public class Treatments extends Model {
                 "ALTER TABLE Treatments ADD COLUMN insulin REAL;",
                 "ALTER TABLE Treatments ADD COLUMN insulinJSON TEXT;",
                 "ALTER TABLE Treatments ADD COLUMN carbs REAL;",
+                "ALTER TABLE Treatments ADD COLUMN fats REAL;",
+                "ALTER TABLE Treatments ADD COLUMN proteins REAL;",
                 "CREATE INDEX index_Treatments_timestamp on Treatments(timestamp);",
                 "CREATE UNIQUE INDEX index_Treatments_uuid on Treatments(uuid);"};
 
@@ -648,7 +751,8 @@ public class Treatments extends Model {
         Log.d(TAG, "converting treatment from json: " + json);
         final Treatments mytreatment = fromJSON(json);
         if (mytreatment != null) {
-            if ((mytreatment.carbs == 0) && (mytreatment.insulin == 0)
+
+            if (allMatchEqualZero(Arrays.asList(mytreatment.carbs, mytreatment.fats, mytreatment.proteins, mytreatment.insulin))
                     && (mytreatment.notes != null) && (mytreatment.notes.startsWith("AndroidAPS started"))) {
                 Log.d(TAG, "Skipping AndroidAPS started message");
                 return false;
@@ -682,6 +786,18 @@ public class Treatments extends Model {
 
                 if ((dupe_treatment.carbs == 0) && (mytreatment.carbs > 0)) {
                     dupe_treatment.carbs = mytreatment.carbs;
+                    dupe_treatment.save();
+                    Home.staticRefreshBGChartsOnIdle();
+                }
+
+                if ((dupe_treatment.fats == 0) && (mytreatment.fats > 0)) {
+                    dupe_treatment.fats = mytreatment.fats;
+                    dupe_treatment.save();
+                    Home.staticRefreshBGChartsOnIdle();
+                }
+
+                if ((dupe_treatment.proteins == 0) && (mytreatment.proteins > 0)) {
+                    dupe_treatment.proteins = mytreatment.proteins;
                     dupe_treatment.save();
                     Home.staticRefreshBGChartsOnIdle();
                 }
@@ -1271,6 +1387,8 @@ public class Treatments extends Model {
             jsonObject.put("insulin", insulin);
             jsonObject.put("insulinJSON", insulinJSON);
             jsonObject.put("carbs", carbs);
+            jsonObject.put("fats", fats);
+            jsonObject.put("proteins", proteins);
             jsonObject.put("timestamp", timestamp);
             jsonObject.put("notes", notes);
             jsonObject.put("enteredBy", enteredBy);

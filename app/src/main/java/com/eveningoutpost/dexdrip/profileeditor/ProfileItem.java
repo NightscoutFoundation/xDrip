@@ -18,14 +18,21 @@ public class ProfileItem {
     @Expose
     public int day_of_week, start_min, end_min;
     @Expose
-    public double carb_ratio, sensitivity, absorption_rate;
+    public double carb_ratio, sensitivity, absorption_rate, fats_ratio, proteins_ratio;
 
 
     public ProfileItem(int start_min, int end_min,double carb_ratio,double sensitivity)
     {
+        this(start_min, end_min, carb_ratio, 0.0, 0.0, sensitivity);
+    }
+
+    public ProfileItem(int start_min, int end_min,double carb_ratio, double fats_ratio, double proteins_ratio,double sensitivity)
+    {
         this.start_min = start_min;
         this.end_min = end_min;
         this.carb_ratio = carb_ratio;
+        this.fats_ratio = fats_ratio;
+        this.proteins_ratio = proteins_ratio;
         this.sensitivity = sensitivity;
     }
 
@@ -60,7 +67,7 @@ public class ProfileItem {
 
     public ProfileItem clone()
     {
-        ProfileItem nu = new ProfileItem(this.start_min,this.end_min,this.carb_ratio,this.sensitivity);
+        ProfileItem nu = new ProfileItem(this.start_min,this.end_min,this.carb_ratio,this.fats_ratio,this.proteins_ratio,this.sensitivity);
         return nu;
     }
 

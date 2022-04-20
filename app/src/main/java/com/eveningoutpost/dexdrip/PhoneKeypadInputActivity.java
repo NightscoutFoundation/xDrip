@@ -18,6 +18,7 @@ import com.eveningoutpost.dexdrip.insulin.InsulinManager;
 import com.eveningoutpost.dexdrip.insulin.MultipleInsulins;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +40,7 @@ public class PhoneKeypadInputActivity extends BaseActivity {
     private Button zeroButton, oneButton, twoButton, threeButton, fourButton, fiveButton,
             sixButton, sevenButton, eightButton, nineButton, starButton, backSpaceButton, multiButton1, multiButton2, multiButton3;
     private ImageButton callImageButton, backspaceImageButton, insulintabbutton, carbstabbutton,
-            bloodtesttabbutton, timetabbutton, speakbutton;
+            bloodtesttabbutton, timetabbutton, speakbutton, carbsFoodTabButton, fatsFoodTabButton, proteinsFoodTabButton;
 
     private static String currenttab = "insulin-1";
     private static final String LAST_TAB_STORE = "phone-keypad-treatment-last-tab";
@@ -50,6 +51,7 @@ public class PhoneKeypadInputActivity extends BaseActivity {
     private Insulin insulinProfile2 = null;
     private Insulin insulinProfile3 = null;
     private LinearLayout insulinTypesSection = null;
+    private LinearLayout foodTypesSection = null;
 
     private final boolean multipleInsulins = MultipleInsulins.isEnabled();
 
@@ -89,6 +91,7 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         starButton = (Button) findViewById(R.id.star_button);
         backSpaceButton = (Button) findViewById(R.id.backspace_button);
         insulinTypesSection = (LinearLayout) findViewById(R.id.insulinTypesSection);
+        foodTypesSection = (LinearLayout) findViewById(R.id.foodTypesSection);
         multiButton1 = (Button) findViewById(R.id.multi_button1);
         multiButton2 = (Button) findViewById(R.id.multi_button2);
         multiButton3 = (Button) findViewById(R.id.multi_button3);
@@ -100,6 +103,9 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         timetabbutton = (ImageButton) findViewById(R.id.timetabbutton);
         carbstabbutton = (ImageButton) findViewById(R.id.carbstabbutton);
         speakbutton = (ImageButton) findViewById(R.id.btnKeypadSpeak);
+        carbsFoodTabButton = (ImageButton) findViewById(R.id.carbsFoodTabButton);
+        fatsFoodTabButton = (ImageButton) findViewById(R.id.fatsFoodTabButton);
+        proteinsFoodTabButton = (ImageButton) findViewById(R.id.proteinsFoodTabButton);
 
         mDialTextView.setText("");
 
@@ -185,6 +191,33 @@ public class PhoneKeypadInputActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 appCurrent("9");
+            }
+        });
+
+        carbsFoodTabButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "carbsFoodTabButton clicked");
+                currenttab = "carbs";
+                updateTab();
+            }
+        });
+
+        fatsFoodTabButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "fatsFoodTabButton clicked");
+                currenttab = "fats";
+                updateTab();
+            }
+        });
+
+        proteinsFoodTabButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "proteinsFoodTabButton clicked");
+                currenttab = "proteins";
+                updateTab();
             }
         });
 
@@ -361,13 +394,15 @@ public class PhoneKeypadInputActivity extends BaseActivity {
 
         boolean nonzeroBloodValue = isNonzeroValueInTab("bloodtest");
         boolean nonzeroCarbsValue = isNonzeroValueInTab("carbs");
+        boolean nonzeroFatsValue = isNonzeroValueInTab("fats");
+        boolean nonzeroProteinsValue = isNonzeroValueInTab("proteins");
         boolean nonzeroInsulin1Value = isNonzeroValueInTab("insulin-1");
         boolean nonzeroInsulin2Value = isNonzeroValueInTab("insulin-2");
         boolean nonzeroInsulin3Value = isNonzeroValueInTab("insulin-3");
 
         // The green tick is clickable even when it's hidden, so we might get here
         // without valid data.  Ignore the click if input is incomplete
-        if(!nonzeroBloodValue && !nonzeroCarbsValue && !nonzeroInsulin1Value && !nonzeroInsulin2Value && !nonzeroInsulin3Value) {
+        if(!nonzeroBloodValue && !nonzeroCarbsValue  && !nonzeroFatsValue  && !nonzeroProteinsValue && !nonzeroInsulin1Value && !nonzeroInsulin2Value && !nonzeroInsulin3Value) {
             Log.d(TAG, "All zero values in tabs - not processing button click");
             return;
         }
@@ -388,7 +423,9 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         double units = 0;
         if (timeValue.length() > 0) mystring += timeValue + " time ";
         if (nonzeroBloodValue) mystring += getValue("bloodtest") + " blood ";
-        if (nonzeroCarbsValue) mystring += getValue("carbs") + " g carbs ";
+        if (nonzeroCarbsValue) mystring += getValue("carbs") + " carbs ";
+        if (nonzeroFatsValue) mystring += getValue("fats") + " fats ";
+        if (nonzeroProteinsValue) mystring += getValue("proteins") + " proteins ";
         if (nonzeroInsulin1Value && (insulinProfile1 != null))
         {
             double d = Double.parseDouble(getValue("insulin-1"));
@@ -431,6 +468,7 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         timetabbutton.setBackgroundColor(offColor);
         bloodtesttabbutton.setBackgroundColor(offColor);
         insulinTypesSection.setVisibility(multipleInsulins ? View.VISIBLE : View.GONE);
+        foodTypesSection.setVisibility(Arrays.asList("carbs", "fats", "proteins").contains(currenttab) ? View.VISIBLE : View.GONE);
         multiButton1.setBackgroundColor(offColor);
         multiButton2.setBackgroundColor(offColor);
         multiButton3.setBackgroundColor(offColor);
@@ -440,6 +478,9 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         multiButton1.setEnabled(false);
         multiButton2.setEnabled(false);
         multiButton3.setEnabled(false);
+        carbsFoodTabButton.setBackgroundColor(offColor);
+        fatsFoodTabButton.setBackgroundColor(offColor);
+        proteinsFoodTabButton.setBackgroundColor(offColor);
 
         String append = "";
         switch (currenttab.split("-")[0]) {
@@ -497,7 +538,18 @@ public class PhoneKeypadInputActivity extends BaseActivity {
                 break;
             case "carbs":
                 carbstabbutton.setBackgroundColor(onColor);
+                carbsFoodTabButton.setBackgroundColor(onColor);
                 append = " g " + getString(R.string.carbs);
+                break;
+            case "fats":
+                carbstabbutton.setBackgroundColor(onColor);
+                fatsFoodTabButton.setBackgroundColor(onColor);
+                append = " g " + getString(R.string.fats);
+                break;
+            case "proteins":
+                carbstabbutton.setBackgroundColor(onColor);
+                proteinsFoodTabButton.setBackgroundColor(onColor);
+                append = " g " + getString(R.string.proteins);
                 break;
             case "bloodtest":
                 bloodtesttabbutton.setBackgroundColor(onColor);
