@@ -1,5 +1,9 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
+import static com.eveningoutpost.dexdrip.Models.JoH.delayedMediaPlayerRelease;
+import static com.eveningoutpost.dexdrip.Models.JoH.stopAndReleasePlayer;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -27,6 +31,7 @@ import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
 import com.eveningoutpost.dexdrip.eassist.AlertTracker;
+import com.eveningoutpost.dexdrip.ui.helpers.AudioFocusType;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFun;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
 import com.eveningoutpost.dexdrip.watch.miband.MiBand;
@@ -39,9 +44,6 @@ import com.eveningoutpost.dexdrip.xdrip;
 import java.io.IOException;
 import java.util.Date;
 
-import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
-import static com.eveningoutpost.dexdrip.Models.JoH.delayedMediaPlayerRelease;
-import static com.eveningoutpost.dexdrip.Models.JoH.stopAndReleasePlayer;
 
 // A helper class to create the mediaplayer on the UI thread.
 // This is needed in order for the callbackst to work.
@@ -120,6 +122,9 @@ public class AlertPlayer {
 
     public int streamType = AudioManager.STREAM_MUSIC;
 
+    private final AudioManager.OnAudioFocusChangeListener focusChangeListener =
+            focusChange -> Log.d(TAG, "Audio focus changes to: " + focusChange);
+
     public static synchronized AlertPlayer getPlayer() {
         if(alertPlayerInstance == null) {
             Log.i(TAG,"getPlayer: Creating a new AlertPlayer");
@@ -132,6 +137,27 @@ public class AlertPlayer {
 
     public static void defaultSnooze() {
         AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1);
+    }
+
+    private void requestAudioFocus() {
+        try {
+            final int focus = AudioFocusType.getAlarmAudioFocusType();
+            if (focus != 0) {
+                UserError.Log.d(TAG, "Calling request audio focus");
+                manager.requestAudioFocus(focusChangeListener, streamType, focus);
+            }
+        } catch (Exception e) {
+            UserError.Log.wtf(TAG, "Failed to get audio focus: " + e);
+        }
+    }
+
+    private void releaseAudioFocus() {
+        UserError.Log.d(TAG, "Calling release audio focus");
+        try {
+            manager.abandonAudioFocus(focusChangeListener);
+        } catch (Exception e) {
+            UserError.Log.wtf(TAG, "Failed to release audio focus: " + e);
+        }
     }
 
     public synchronized void startAlert(Context ctx, boolean trendingToAlertEnd, AlertType newAlert, String bgValue) {
@@ -175,6 +201,7 @@ public class AlertPlayer {
             mediaPlayer = null;
         }
         revertCurrentVolume(streamType);
+        releaseAudioFocus();
     }
 
     // only do something if an alert is active - only call from interactive
@@ -335,6 +362,7 @@ public class AlertPlayer {
             delayedMediaPlayerRelease(mp);
             JoH.threadSleep(300);
             revertCurrentVolume(streamType);
+            releaseAudioFocus();
         });
 
         mediaPlayer.setOnErrorListener((mp, what, extra) -> {
@@ -358,6 +386,7 @@ public class AlertPlayer {
         streamType = forceSpeaker ? AudioManager.STREAM_ALARM : AudioManager.STREAM_MUSIC;
 
         try {
+            requestAudioFocus();
             mediaPlayer.setAudioStreamType(streamType);
             mediaPlayer.setOnPreparedListener(mp -> {
                 adjustCurrentVolumeForAlert(streamType, volumeFrac, overrideSilentMode);
