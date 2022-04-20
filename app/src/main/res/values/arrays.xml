@@ -205,7 +205,7 @@
 
     <string-array name="time_span_entries">
         <item>12 hrs</item>
-        <item>24 hrs</item>
+        <item>24 hrs ></item>
         <item>26 hrs</item>
         <item>30 hrs</item>
         <item>36 hrs</item>
