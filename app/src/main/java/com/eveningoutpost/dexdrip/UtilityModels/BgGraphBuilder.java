@@ -2126,7 +2126,7 @@ public class BgGraphBuilder {
     /////////VIEWPORT RELATED//////////////
     public Viewport advanceViewport(Chart chart, Chart previewChart, float hours) {
         viewport = new Viewport(previewChart.getMaximumViewport());
-        viewport.inset((float) ((BgGraphBuilder.time_span * 60 * 60 * 1000 / hours) / FUZZER), 0);
+        viewport.inset((float) ((time_span * 60 * 60 * 1000 / hours) / FUZZER), 0);
         double distance_to_move = ((new Date().getTime()) / FUZZER) - viewport.left - (((viewport.right - viewport.left) / 2));
         viewport.offset((float) distance_to_move, 0);
         return viewport;
