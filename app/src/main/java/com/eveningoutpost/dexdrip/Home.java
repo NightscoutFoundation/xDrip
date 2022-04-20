@@ -253,7 +253,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     public static final int SHOWCASE_REMINDER4 = 17;
     public static final int SHOWCASE_REMINDER5 = 19;
     public static final int SHOWCASE_REMINDER6 = 20;
-    private static final float DEFAULT_CHART_HOURS = 2.5f;
+    private static final float DEFAULT_CHART_HOURS = 2.8f;
     private static double last_speech_time = 0;
     private static float hours = DEFAULT_CHART_HOURS;
     private PreviewLineChartView previewChart;
