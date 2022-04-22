@@ -143,7 +143,7 @@ public class Amazfitservice extends Service {
 
                 if (item.getAction().equals("Amazfit_Treatmentsdata")) {
                     DataBundle databundle = item.getData();
-                    Treatments.create(databundle.getDouble("carbs"), databundle.getDouble("insulin"), databundle.getLong("timestamp"));
+                    Treatments.create(databundle.getDouble("carbs"), databundle.getDouble("fats"), databundle.getDouble("proteins"), databundle.getDouble("insulin"), databundle.getLong("timestamp"));
 
                 }
             }

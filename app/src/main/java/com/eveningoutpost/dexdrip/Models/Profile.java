@@ -71,8 +71,16 @@ public class Profile {
         stored_default_insulin_action_time = value;
     }
 
+    /**
+     * @deprecated
+     * This method doesn't support other food types. i.e: fats and proteins.
+     * <p> Use {@link Profile#getFoodAbsorptionRate(double, FoodType)} instead.
+     * @param when time.
+     * @return carbs per hour.
+     */
+    @Deprecated
     static double getCarbAbsorptionRate(double when) {
-        return stored_default_absorption_rate; // carbs per hour
+        return stored_default_absorption_rate;
     }
 
     static double getFoodAbsorptionRate(double when, FoodType foodType) {
@@ -91,6 +99,13 @@ public class Profile {
         }
     }
 
+    /**
+     * @deprecated
+     * This method doesn't support other food types. i.e: fats and proteins.
+     * <p> Use {@link Profile#setFoodAbsorptionDefault(double, FoodType)} instead.
+     * @param value stored_default_absorption_rate.
+     */
+    @Deprecated
     public static void setCarbAbsorptionDefault(double value) {
         // sanity check goes here
         if (value < 0.01) return;
@@ -104,12 +119,15 @@ public class Profile {
         switch (foodType) {
             case CARBS:
                 stored_default_carbs_absorption_rate = value;
+                break;
 
             case FATS:
                 stored_default_fats_absorption_rate = value;
+                break;
 
             case PROTEINS:
                 stored_default_proteins_absorption_rate = value;
+                break;
         }
     }
 
@@ -117,6 +135,14 @@ public class Profile {
         return stored_default_insulin_action_time;
     }
 
+    /**
+     * @deprecated
+     * This method doesn't support other food types. i.e: fats and proteins.
+     * <p> Use {@link Profile#foodDelayMinutes(double, FoodType)} instead.
+     * @param when stored_default_carb_delay_minutes.
+     * @return stored_default_carb_delay_minutes.
+     */
+    @Deprecated
     static double carbDelayMinutes(double when) {
         return stored_default_carb_delay_minutes;
     }
@@ -141,6 +167,14 @@ public class Profile {
         return 0.3; // how much can the liver block carbs going in to blood stream?
     }
 
+    /**
+     * @deprecated
+     * This method doesn't support other food types. i.e: fats and proteins.
+     * <p> Use {@link Profile#getFoodRatio(double, FoodType)} instead.
+     * @param when time.
+     * @return g per unit.
+     */
+    @Deprecated
     public static double getCarbRatio(double when) {
         return findItemListElementForTime(when).carb_ratio;
         //return the_carb_ratio; // g per unit
@@ -203,12 +237,20 @@ public class Profile {
     }
 
 
+    /**
+     * @deprecated
+     * This method doesn't support other food types. i.e: fats and proteins.
+     * <p> Use {@link Profile#setDefaultFoodRatio(Double, FoodType)} instead.
+     * @param value the_carb_ratio.
+     * @return g per unit.
+     */
+    @Deprecated
     static public void setDefaultCarbRatio(Double value) {
         if (value <= 0) {
             Log.e(TAG, "Invalid default carb ratio: " + value);
             return;
         }
-        the_carb_ratio = value; // g per unit
+        the_carb_ratio = value;
     }
 
     static public void setDefaultFoodRatio(Double value, FoodType foodType) {
@@ -220,12 +262,15 @@ public class Profile {
         switch (foodType) {
             case CARBS:
                 the_carb_ratio = value;
+                break;
 
             case FATS:
                 the_fats_ratio = value;
+                break;
 
             case PROTEINS:
                 the_proteins_ratio = value;
+                break;
         }
     }
 
@@ -251,6 +296,14 @@ public class Profile {
         //return getTargetRangeInMmol(when) * scale_factor; // TODO deal with rounding errors here? (3 decimal places?)
     }
 
+    /**
+     * @deprecated
+     * This method doesn't support other food types. i.e: fats and proteins.
+     * <p> Use {@link Profile#getFoodSensitivity(double, FoodType)} instead.
+     * @param when time.
+     * @return sensitivity.
+     */
+    @Deprecated
     static double getCarbSensitivity(double when) {
         return getCarbRatio(when) / getSensitivity(when);
     }
@@ -259,6 +312,15 @@ public class Profile {
         return getFoodRatio(when, foodType) / getSensitivity(when);
     }
 
+    /**
+     * @deprecated
+     * This method doesn't support other food types. i.e: fats and proteins.
+     * <p> Use {@link Profile#getFoodToRaiseByMmol(double, double, FoodType)} instead.
+     * @param mmol mmol.
+     * @param when time.
+     * @return CarbsToRaiseByMmol.
+     */
+    @Deprecated
     static double getCarbsToRaiseByMmol(double mmol, double when) {
 
         double result = getCarbSensitivity(when) * mmol;
@@ -274,7 +336,17 @@ public class Profile {
         return mmol / getSensitivity(when);
     }
 
-    // take an average of carb suggestions when our scope is between two times
+    /**
+     * take an average of carb suggestions when our scope is between two times
+     * @deprecated
+     * This method doesn't support other food types. i.e: fats and proteins.
+     * <p> Use {@link Profile#getFoodToRaiseByMmolBetweenTwoTimes(double, double, double, FoodType)} instead.
+     * @param mmol mmol.
+     * @param whennow whennow.
+     * @param whenthen whenthen.
+     * @return CarbsToRaiseByMmolBetweenTwoTimes.
+     */
+    @Deprecated
     static double getCarbsToRaiseByMmolBetweenTwoTimes(double mmol, double whennow, double whenthen) {
         double result = (getCarbsToRaiseByMmol(mmol, whennow) + getCarbsToRaiseByMmol(mmol, whenthen)) / 2;
         UserError.Log.d(TAG, "GetCarbsToRaiseByMmolBetweenTwoTimes: " + JoH.qs(mmol) + " result: " + JoH.qs(result));
@@ -294,15 +366,19 @@ public class Profile {
 
     public static double[] evaluateEndGameMmol(double mmol, double endGameTime, double timeNow) {
         double addcarbs = 0;
+        double addFats = 0;
+        double addProteins = 0;
         double addinsulin = 0;
         final double target_mmol = getTargetRangeInMmol(endGameTime) * scale_factor;
         double diff_mmol = target_mmol - mmol;
         if (diff_mmol > 0) {
-            addcarbs = getCarbsToRaiseByMmolBetweenTwoTimes(diff_mmol, timeNow, endGameTime);
+            addcarbs = getFoodToRaiseByMmolBetweenTwoTimes(diff_mmol, timeNow, endGameTime, FoodType.CARBS);
+            addFats = getFoodToRaiseByMmolBetweenTwoTimes(diff_mmol, timeNow, endGameTime, FoodType.FATS);
+            addProteins = getFoodToRaiseByMmolBetweenTwoTimes(diff_mmol, timeNow, endGameTime, FoodType.PROTEINS);
         } else if (diff_mmol < 0) {
             addinsulin = getInsulinToLowerByMmolBetweenTwoTimes(diff_mmol * -1, timeNow, endGameTime);
         }
-        return new double[]{addcarbs, addinsulin};
+        return new double[]{addcarbs, addFats, addProteins, addinsulin};
     }
 
     public static void reloadPreferencesIfNeeded(SharedPreferences prefs) {
@@ -324,17 +400,24 @@ public class Profile {
             }
         }
         try {
-            Profile.setDefaultCarbRatio(tolerantParseDouble(prefs.getString("profile_carb_ratio_default", "0")));
-        } catch (Exception e) {
-            if (JoH.ratelimit("invalid-insulin-profile", 60)) {
-                Home.toaststatic("Invalid default carb ratio!");
-            }
-        }
-        try {
-            Profile.setCarbAbsorptionDefault(tolerantParseDouble(prefs.getString("profile_carb_absorption_default", "0")));
+            Profile.setFoodAbsorptionDefault(tolerantParseDouble(prefs.getString("profile_carb_absorption_default", "0")), FoodType.CARBS);
         } catch (Exception e) {
             if (JoH.ratelimit("invalid-insulin-profile", 60)) {
                 Home.toaststatic("Invalid carb absorption rate");
+            }
+        }
+        try {
+            Profile.setFoodAbsorptionDefault(tolerantParseDouble(prefs.getString("profile_fats_absorption_default", "0")), FoodType.FATS);
+        } catch (Exception e) {
+            if (JoH.ratelimit("invalid-insulin-profile", 60)) {
+                Home.toaststatic("Invalid fats absorption rate");
+            }
+        }
+        try {
+            Profile.setFoodAbsorptionDefault(tolerantParseDouble(prefs.getString("profile_proteins_absorption_default", "0")), FoodType.PROTEINS);
+        } catch (Exception e) {
+            if (JoH.ratelimit("invalid-insulin-profile", 60)) {
+                Home.toaststatic("Invalid proteins absorption rate");
             }
         }
         try {

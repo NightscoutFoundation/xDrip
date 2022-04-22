@@ -47,6 +47,8 @@ public class ColorCache {
         color_low_values("color_low_values"),
         color_filtered("color_filtered"),
         color_treatment("color_treatment"),
+        color_fats("color_fats"),
+        color_proteins("color_proteins"),
         color_treatment_dark("color_treatment_dark"),
         color_predictive("color_predictive"),
         color_predictive_dark("color_predictive_dark"),

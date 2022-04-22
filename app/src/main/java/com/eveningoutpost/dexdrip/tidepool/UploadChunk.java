@@ -14,6 +14,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.LogSlider;
 import com.eveningoutpost.dexdrip.utils.NamedSliderProcessor;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -105,7 +106,7 @@ public class UploadChunk implements NamedSliderProcessor {
         List<BaseElement> result = new LinkedList<>();
         final List<Treatments> treatments = Treatments.latestForGraph(1800, start, end);
         for (Treatments treatment : treatments) {
-            if (treatment.carbs > 0) {
+            if (anyMatchGreaterThanZero(Arrays.asList(treatment.carbs, treatment.fats, treatment.proteins))) {
                 EWizard eWizard = EWizard.fromTreatment(treatment);
                 if(eWizard != null) {
                     result.add(eWizard);
@@ -120,6 +121,13 @@ public class UploadChunk implements NamedSliderProcessor {
             }
         }
         return result;
+    }
+
+    private static boolean anyMatchGreaterThanZero(List<Double> list) {
+        for (Double element : list) {
+            if (element > 0) return true;
+        }
+        return false;
     }
 
 

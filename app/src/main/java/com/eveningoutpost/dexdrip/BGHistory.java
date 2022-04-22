@@ -201,6 +201,16 @@ public class BGHistory extends ActivityWithMenu {
                 double carbs = statsResult.getTotal_carbs();
                 sb.append(getResources().getString(R.string.label_show_carbs, df.format(carbs)));
             }
+            if (Pref.getBoolean("status_line_fats", true)) {
+                sb.append(' ');
+                double fats = statsResult.getTotalFats();
+                sb.append(getResources().getString(R.string.label_show_fats, df.format(fats)));
+            }
+            if (Pref.getBoolean("status_line_proteins", true)) {
+                sb.append(' ');
+                double proteins = statsResult.getTotalProteins();
+                sb.append(getResources().getString(R.string.label_show_proteins, df.format(proteins)));
+            }
             if (Pref.getBoolean("status_line_royce_ratio", false)) {
                 sb.append(' ');
                 double ratio = statsResult.getRatio();

@@ -245,7 +245,11 @@
     <string name="grams_of_fats_one_unit_covers">Grams of Fats 1 Unit covers</string>
     <string name="grams_of_proteins_one_unit_covers">Grams of Proteins 1 Unit covers</string>
     <string name="linear_model_carbs_absorbed_per_hour">Linear model carbs absorbed per hour</string>
+    <string name="linear_model_fats_absorbed_per_hour">Linear model fats absorbed per hour</string>
+    <string name="linear_model_proteins_absorbed_per_hour">Linear model proteins absorbed per hour</string>
     <string name="carb_absorption_rate">Carb Absorption rate</string>
+    <string name="fats_absorption_rate">Fats Absorption rate</string>
+    <string name="proteins_absorption_rate">Proteins Absorption rate</string>
     <string name="calculate_including_glucose_trend">Calculate including glucose trend</string>
     <string name="use_trend_momentum">Use trend momentum</string>
     <string name="add_calibration">Add Calibration</string>
@@ -495,6 +499,8 @@
     <string name="revert_to_default">Revert to Default</string>
     <string name="filtered_values">Filtered Values</string>
     <string name="treatment_color">Treatment Color</string>
+    <string name="fats_color">Fats Color</string>
+    <string name="proteins_color">Proteins Color</string>
     <string name="treatment_color_dark">Treatment Color Dark</string>
     <string name="predictive_color">Predictive Color</string>
     <string name="predictive_color_dark">Predictive Color Dark</string>
@@ -585,6 +591,8 @@
     <string name="format_decimal_treatments" translatable="false">#.##</string>
     <string name="label_show_insulin">U:%1$su</string>
     <string name="label_show_carbs">Carbs:%1$sg</string>
+    <string name="label_show_fats">Fats:%1$sg</string>
+    <string name="label_show_proteins">Proteins:%1$sg</string>
     <string name="label_show_royceratio">C/I:%1$s</string>
     <string name="label_show_steps">Steps:%1$d</string>
     <string name="label_show_steps_km">km:%1$s</string>
@@ -682,7 +690,11 @@
     <string name="show_standard_deviation">Show standard deviation of values.</string>
     <string name="standard_deviation">Standard Deviation</string>
     <string name="show_total_carbs">Show treatment carbohydrate total</string>
+    <string name="show_total_fats">Show treatment fat total</string>
+    <string name="show_total_proteins">Show treatment protein total</string>
     <string name="total_carbs">Total Carbohydrate</string>
+    <string name="total_fats">Total Fat</string>
+    <string name="total_proteins">Total Protein</string>
     <string name="show_total_insulin">Show treatment insulin total</string>
     <string name="total_insulin">Total Insulin</string>
     <string name="received_readings_percentage">Percentage of sensor readings received</string>

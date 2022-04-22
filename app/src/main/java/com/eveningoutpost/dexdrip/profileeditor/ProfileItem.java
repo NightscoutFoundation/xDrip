@@ -1,10 +1,12 @@
 package com.eveningoutpost.dexdrip.profileeditor;
 
+import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -20,13 +22,18 @@ public class ProfileItem {
     @Expose
     public double carb_ratio, sensitivity, absorption_rate, fats_ratio, proteins_ratio;
 
-
+    /**
+     * @deprecated
+     * This method doesn't support other food types. i.e: fats and proteins.
+     * <p> Use {@link ProfileItem#ProfileItem(int, int, double, double, double, double)} instead.
+     */
+    @Deprecated
     public ProfileItem(int start_min, int end_min,double carb_ratio,double sensitivity)
     {
         this(start_min, end_min, carb_ratio, 0.0, 0.0, sensitivity);
     }
 
-    public ProfileItem(int start_min, int end_min,double carb_ratio, double fats_ratio, double proteins_ratio,double sensitivity)
+    public ProfileItem(int start_min, int end_min,double carb_ratio, double fats_ratio, double proteins_ratio, double sensitivity)
     {
         this.start_min = start_min;
         this.end_min = end_min;

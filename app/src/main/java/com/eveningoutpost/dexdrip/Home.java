@@ -2118,7 +2118,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             previewChart.setVisibility(homeShelf.get("chart_preview") ? View.VISIBLE : View.GONE);
         }
 
-        if (insulinsumset || glucoseset || carbsset || timeset) {
+        if (insulinsumset || glucoseset || carbsset || fatsSet || proteinsSet || timeset) {
             if (chart != null) {
                 chart.setAlpha((float) 0.10);
                 // TODO also set buttons alpha

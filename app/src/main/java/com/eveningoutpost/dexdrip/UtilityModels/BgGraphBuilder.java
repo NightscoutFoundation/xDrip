@@ -43,16 +43,20 @@ import com.eveningoutpost.dexdrip.ui.classifier.NoteClassifier;
 import com.eveningoutpost.dexdrip.ui.helpers.BitmapLoader;
 import com.eveningoutpost.dexdrip.ui.helpers.ColorUtil;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.utils.FoodType;
 import com.eveningoutpost.dexdrip.utils.LibreTrendGraph;
 import com.eveningoutpost.dexdrip.utils.math.RollingAverage;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.android.gms.location.DetectedActivity;
 import com.rits.cloning.Cloner;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -157,6 +161,8 @@ public class BgGraphBuilder {
     private final List<PointValue> iconValues = new ArrayList<>();
     private final List<PointValue> iobValues = new ArrayList<PointValue>();
     private final List<PointValue> cobValues = new ArrayList<PointValue>();
+    private final List<PointValue> fatsOBValues = new ArrayList<PointValue>();
+    private final List<PointValue> proteinsOBValues = new ArrayList<PointValue>();
     private final List<PointValue> predictedBgValues = new ArrayList<PointValue>();
     private final List<PointValue> polyBgValues = new ArrayList<PointValue>();
     private final List<PointValue> noisePolyBgValues = new ArrayList<PointValue>();
@@ -925,7 +931,7 @@ public class BgGraphBuilder {
     }
 
     public Line[] treatmentValuesLine() {
-        Line[] lines = new Line[9];
+        Line[] lines = new Line[11];
         try {
 
             lines[0] = new Line(treatmentValues);
@@ -999,31 +1005,56 @@ public class BgGraphBuilder {
             lines[6].setHasPoints(true);
             lines[6].setHasLabels(false);
 
-            lines[7] = new Line(polyBgValues);
-            lines[7].setColor(ChartUtils.COLOR_RED);
+            lines[7] = new Line(fatsOBValues);
+            lines[7].setColor(getCol(X.color_fats));
             lines[7].setHasLines(false);
             lines[7].setCubic(false);
-            lines[7].setStrokeWidth(1);
             lines[7].setFilled(false);
             lines[7].setPointRadius(1);
             lines[7].setHasPoints(true);
             lines[7].setHasLabels(false);
 
-            lines[8] = new Line(noisePolyBgValues);
-            lines[8].setColor(ChartUtils.COLOR_ORANGE);
-            lines[8].setHasLines(true);
+            lines[8] = new Line(proteinsOBValues);
+            lines[8].setColor(getCol(X.color_proteins));
+            lines[8].setHasLines(false);
             lines[8].setCubic(false);
-            lines[8].setStrokeWidth(1);
             lines[8].setFilled(false);
             lines[8].setPointRadius(1);
             lines[8].setHasPoints(true);
             lines[8].setHasLabels(false);
+
+            lines[9] = new Line(polyBgValues);
+            lines[9].setColor(ChartUtils.COLOR_RED);
+            lines[9].setHasLines(false);
+            lines[9].setCubic(false);
+            lines[9].setStrokeWidth(1);
+            lines[9].setFilled(false);
+            lines[9].setPointRadius(1);
+            lines[9].setHasPoints(true);
+            lines[9].setHasLabels(false);
+
+            lines[10] = new Line(noisePolyBgValues);
+            lines[10].setColor(ChartUtils.COLOR_ORANGE);
+            lines[10].setHasLines(true);
+            lines[10].setCubic(false);
+            lines[10].setStrokeWidth(1);
+            lines[10].setFilled(false);
+            lines[10].setPointRadius(1);
+            lines[10].setHasPoints(true);
+            lines[10].setHasLabels(false);
 
 
         } catch (Exception e) {
             if (d) Log.i(TAG, "Exception making treatment lines: " + e.toString());
         }
         return lines;
+    }
+
+    private static boolean anyMatchGreaterThanZero(List<Double> list) {
+        for (Double element : list) {
+            if (element > 0) return true;
+        }
+        return false;
     }
 
     private void addBgReadingValues() {
@@ -1051,6 +1082,8 @@ public class BgGraphBuilder {
             iobValues.clear();
             activityValues.clear();
             cobValues.clear();
+            fatsOBValues.clear();
+            proteinsOBValues.clear();
             predictedBgValues.clear();
             polyBgValues.clear();
             noisePolyBgValues.clear();
@@ -1661,6 +1694,8 @@ public class BgGraphBuilder {
 
                     final double iobscale = 1 * bgScale;
                     final double cobscale = 0.2 * bgScale;
+                    final double fatsOBScale = 0.2 * bgScale;
+                    final double proteinsOBScale = 0.2 * bgScale;
                     final double initial_predicted_bg = predictedbg;
                     final double relaxed_predicted_bg_limit = initial_predicted_bg * 1.20;
                     final double cob_insulin_max_draw_value = highMark * 1.20;
@@ -1683,7 +1718,7 @@ public class BgGraphBuilder {
                         for (Iob iob : iobinfo) {
 
                             //double activity = iob.activity;
-                            if ((iob.iob > 0) || (iob.cob > 0) || (iob.jActivity > 0) || (iob.jCarbImpact > 0)) {
+                            if (anyMatchGreaterThanZero(Arrays.asList(iob.iob, iob.cob, iob.fatsOB, iob.proteinsOB, iob.jActivity, iob.jCarbImpact, iob.jFatsImpact, iob.jProteinsImpact))) {
                                 fuzzed_timestamp = iob.timestamp / FUZZER;
                                 if (d) Log.d(TAG, "iob timestamp: " + iob.timestamp);
                                 if (iob.iob > Profile.minimum_shown_iob) {
@@ -1699,15 +1734,9 @@ public class BgGraphBuilder {
                                     activityValues.add(av);
                                 }
 
-                                if (iob.cob > 0) {
-                                    double height = iob.cob * cobscale;
-                                    if (height > cob_insulin_max_draw_value)
-                                        height = cob_insulin_max_draw_value;
-                                    PointValue pv = new PointValue((float) fuzzed_timestamp, (float) height);
-                                    if (d)
-                                        Log.d(TAG, "Cob total record: " + JoH.qs(height) + " " + JoH.qs(iob.cob) + " " + Float.toString(pv.getY()) + " @ timestamp: " + Long.toString(iob.timestamp));
-                                    cobValues.add(pv); // warning should not be hardcoded
-                                }
+                                populateFoodValues(cobscale, cob_insulin_max_draw_value, fuzzed_timestamp, iob, FoodType.CARBS);
+                                populateFoodValues(fatsOBScale, cob_insulin_max_draw_value, fuzzed_timestamp, iob, FoodType.FATS);
+                                populateFoodValues(proteinsOBScale, cob_insulin_max_draw_value, fuzzed_timestamp, iob, FoodType.PROTEINS);
 
                                 // momentum curve
                                 // do we actually need to calculate this within the loop - can we use only the last datum?
@@ -1732,6 +1761,8 @@ public class BgGraphBuilder {
                                         Log.d(TAG, "Processing prediction: before: " + JoH.qs(predictedbg) + " activity: " + JoH.qs(iob.jActivity) + " jcarbimpact: " + JoH.qs(iob.jCarbImpact));
                                     predictedbg -= iob.jActivity; // lower bg by current insulin activity
                                     predictedbg += iob.jCarbImpact;
+                                    predictedbg += iob.jFatsImpact;
+                                    predictedbg += iob.jProteinsImpact;
 
                                     double predictedbg_final = predictedbg;
                                     // add momentum characteristics if we have them
@@ -1799,7 +1830,7 @@ public class BgGraphBuilder {
                         String bwp_update = "";
                         keyStore.putL("bwp_last_insulin_timestamp", -1);
                         if (d)
-                            Log.i(TAG, "Predictive BWP: Current prediction: " + JoH.qs(predictedbg) + " / carbs: " + JoH.qs(evaluation[0]) + " insulin: " + JoH.qs(evaluation[1]));
+                            Log.i(TAG, "Predictive BWP: Current prediction: " + JoH.qs(predictedbg) + " / carbs: " + JoH.qs(evaluation[0]) + " fats: " + JoH.qs(evaluation[1]) + " proteins: " + JoH.qs(evaluation[2]) + " insulin: " + JoH.qs(evaluation[3]));
                         if (!BgReading.isDataStale()) {
                             if (((low_occurs_at < 1) || Pref.getBooleanDefaultFalse("always_show_bwp")) && (Pref.getBooleanDefaultFalse("show_bwp"))) {
                                 if (evaluation[0] > Profile.minimum_carb_recommendation) {
@@ -1807,12 +1838,16 @@ public class BgGraphBuilder {
                                     //iv.setLabel("+Carbs: " + JoH.qs(evaluation[0], 0));
                                     bwp_update = "\u224F" + " Carbs: " + JoH.qs(evaluation[0], 0);
                                     //annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
-                                } else if (evaluation[1] > Profile.minimum_insulin_recommendation) {
+                                } else if(evaluation[1] > Profile.minimum_fats_recommendation) {
+                                    bwp_update = "\u224F" + " Fats: " + JoH.qs(evaluation[1], 0);
+                                } else if(evaluation[2] > Profile.minimum_proteins_recommendation) {
+                                    bwp_update = "\u224F" + " Proteins: " + JoH.qs(evaluation[2], 0);
+                                } else if (evaluation[3] > Profile.minimum_insulin_recommendation) {
                                     //PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (11 * bgScale));
-                                    //iv.setLabel("+Insulin: " + JoH.qs(evaluation[1], 1));
-                                    keyStore.putS("bwp_last_insulin", JoH.qs(evaluation[1], 1) + ((low_occurs_at > 0) ? ("!") : ""));
+                                    //iv.setLabel("+Insulin: " + JoH.qs(evaluation[3], 1));
+                                    keyStore.putS("bwp_last_insulin", JoH.qs(evaluation[3], 1) + ((low_occurs_at > 0) ? ("!") : ""));
                                     keyStore.putL("bwp_last_insulin_timestamp", JoH.tsl());
-                                    bwp_update = "\u224F" + " Insulin: " + JoH.qs(evaluation[1], 1) + ((low_occurs_at > 0) ? (" " + "\u26A0") : ""); // warning symbol
+                                    bwp_update = "\u224F" + " Insulin: " + JoH.qs(evaluation[3], 1) + ((low_occurs_at > 0) ? (" " + "\u26A0") : ""); // warning symbol
                                     //annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
                                 }
                             }
@@ -1826,6 +1861,49 @@ public class BgGraphBuilder {
             } // if !simple
         } finally {
             readings_lock.unlock();
+        }
+    }
+
+    private void populateFoodValues(double foodOBScale, double cob_insulin_max_draw_value, float fuzzed_timestamp, Iob iob, FoodType foodType) {
+        double iobValue = 0.0;
+
+        switch (foodType) {
+            case CARBS:
+                iobValue = iob.cob;
+                break;
+
+            case FATS:
+                iobValue = iob.fatsOB;
+                break;
+
+            case PROTEINS:
+                iobValue = iob.proteinsOB;
+                break;
+        }
+
+        if (iobValue <= 0) return;
+
+        double height = iobValue * foodOBScale;
+        if (height > cob_insulin_max_draw_value)
+            height = cob_insulin_max_draw_value;
+
+        PointValue pv = new PointValue(fuzzed_timestamp, (float) height);
+
+        if (d)
+            Log.d(TAG, foodType == FoodType.CARBS ? "Cob" : (foodType == FoodType.FATS ? "FatsOB" : (foodType == FoodType.PROTEINS ? "ProteinsOB" : "UnknownOB")) + " total record: " + JoH.qs(height) + " " + JoH.qs(iobValue) + " " + Float.toString(pv.getY()) + " @ timestamp: " + Long.toString(iob.timestamp));
+
+        switch (foodType) {
+            case CARBS:
+                cobValues.add(pv); // warning should not be hardcoded
+                break;
+
+            case FATS:
+                fatsOBValues.add(pv);
+                break;
+
+            case PROTEINS:
+                proteinsOBValues.add(pv);
+                break;
         }
     }
 

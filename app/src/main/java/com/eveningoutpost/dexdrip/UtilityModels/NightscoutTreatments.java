@@ -95,11 +95,23 @@ public class NightscoutTreatments {
 
             // extract treatment data if present
             double carbs = 0;
+            double fats = 0;
+            double proteins = 0;
             double insulin = 0;
             String injections = null;
             String notes = null;
             try {
                 carbs = tr.getDouble("carbs");
+            } catch (JSONException e) {
+                //  Log.d(TAG, "json processing: " + e);
+            }
+            try {
+                fats = tr.getDouble("fats");
+            } catch (JSONException e) {
+                //  Log.d(TAG, "json processing: " + e);
+            }
+            try {
+                proteins = tr.getDouble("proteins");
             } catch (JSONException e) {
                 //  Log.d(TAG, "json processing: " + e);
             }
@@ -122,11 +134,11 @@ public class NightscoutTreatments {
             if ((notes != null) && ((notes.startsWith("AndroidAPS started") || notes.equals("null") || (notes.equals("Bolus Std")))))
                 notes = null;
 
-            if ((carbs > 0) || (insulin > 0) || (notes != null)) {
+            if ((carbs > 0) || (fats > 0) || (proteins > 0) || (insulin > 0) || (notes != null)) {
                 final long timestamp = DateUtil.tolerantFromISODateString(tr.getString("created_at")).getTime();
                 if (timestamp > 0) {
                     if (d)
-                        UserError.Log.d(TAG, "Treatment: Carbs: " + carbs + " Insulin: " + insulin + " timestamp: " + timestamp);
+                        UserError.Log.d(TAG, "Treatment: Carbs: " + carbs + " Fats: " + fats +  " Proteins: " + proteins + " Insulin: " + insulin + " timestamp: " + timestamp);
                     Treatments existing = Treatments.byuuid(nightscout_id);
                     if (existing == null)
                         existing = Treatments.byuuid(uuid);
@@ -135,12 +147,14 @@ public class NightscoutTreatments {
                         existing = Treatments.byTimestamp(timestamp, 60000);
                         if (!((existing != null) && (JoH.roundDouble(existing.insulin, 2) == JoH.roundDouble(insulin, 2))
                                 && (JoH.roundDouble(existing.carbs, 2) == JoH.roundDouble(carbs, 2))
+                                && (JoH.roundDouble(existing.fats, 2) == JoH.roundDouble(fats, 2))
+                                && (JoH.roundDouble(existing.proteins, 2) == JoH.roundDouble(proteins, 2))
                                 && ((existing.notes == null && notes == null) || ((existing.notes != null) && existing.notes.equals(notes != null ? notes : ""))))) {
 
-                            UserError.Log.ueh(TAG, "New Treatment from Nightscout: Carbs: " + carbs + " Insulin: " + insulin + " timestamp: " + JoH.dateTimeText(timestamp) + ((notes != null) ? " Note: " + notes : ""));
+                            UserError.Log.ueh(TAG, "New Treatment from Nightscout: Carbs: " + carbs + "Fats: " + fats + "Proteins: " + proteins + " Insulin: " + insulin + " timestamp: " + JoH.dateTimeText(timestamp) + ((notes != null) ? " Note: " + notes : ""));
                             final Treatments t;
-                            if ((carbs > 0) || (insulin > 0)) {
-                                t = Treatments.create(carbs, insulin, new ArrayList<InsulinInjection>(), timestamp, nightscout_id);
+                            if ((carbs > 0) || (fats > 0) || (proteins > 0) || (insulin > 0)) {
+                                t = Treatments.create(carbs, fats, proteins, insulin, new ArrayList<InsulinInjection>(), timestamp, nightscout_id);
                                if (t != null) {
                                    if (insulin > 0) t.setInsulinJSON(injections);
                                    if (notes != null) t.notes = notes;
@@ -168,7 +182,7 @@ public class NightscoutTreatments {
                                 pushTreatmentSyncToWatch(t, true);
                             new_data = true;
                         } else {
-                            UserError.Log.d(TAG, "Skipping treatment as it appears identical to one we already have: " + JoH.dateTimeText(timestamp) + " " + insulin + " " + carbs + " " + notes);
+                            UserError.Log.d(TAG, "Skipping treatment as it appears identical to one we already have: " + JoH.dateTimeText(timestamp) + " Insulin: " + insulin + " Carbs: " + carbs + " Fats: " + fats+ " Proteins: " + proteins + " Notes: " + notes);
                         }
                     } else {
                         if (existing != null) {
@@ -176,10 +190,12 @@ public class NightscoutTreatments {
                                 UserError.Log.d(TAG, "Treatment with uuid: " + uuid + " / " + nightscout_id + " already exists");
                             if (notes == null) notes = "";
                             if (existing.notes == null) existing.notes = "";
-                            if ((existing.carbs != carbs) || (existing.insulin != insulin) || ((existing.timestamp / Constants.SECOND_IN_MS) != (timestamp / Constants.SECOND_IN_MS))
+                            if ((existing.carbs != carbs) || (existing.fats != fats) || (existing.proteins != proteins) ||  (existing.insulin != insulin) || ((existing.timestamp / Constants.SECOND_IN_MS) != (timestamp / Constants.SECOND_IN_MS))
                                     || (!existing.notes.contains(notes))) {
-                                UserError.Log.ueh(TAG, "Treatment changes from Nightscout: " + carbs + " Insulin: " + insulin + " timestamp: " + JoH.dateTimeText(timestamp) + " " + notes + " " + " vs " + existing.carbs + " " + existing.insulin + " " + JoH.dateTimeText(existing.timestamp) + " " + existing.notes);
+                                UserError.Log.ueh(TAG, "Treatment changes from Nightscout: " +  " Carbs: " + carbs + " Fats: " + fats + " Proteins: " + proteins + " Insulin: " + insulin + " timestamp: " + JoH.dateTimeText(timestamp) + " notes: " + notes + " " + " vs " +  " Carbs: " + existing.carbs + " Fats: " + existing.fats + " Proteins: " + existing.proteins + " Insulin: " + existing.insulin + " timestamp: " + JoH.dateTimeText(existing.timestamp) + " notes: " + existing.notes);
                                 existing.carbs = carbs;
+                                existing.fats = fats;
+                                existing.proteins = proteins;
                                 existing.insulin = insulin;
                                 if (insulin > 0)
                                     existing.setInsulinJSON(injections);

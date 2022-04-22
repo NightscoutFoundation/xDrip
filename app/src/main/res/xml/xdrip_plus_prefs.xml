@@ -98,6 +98,20 @@
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
                         app:colorpicker_showHex="false" />
+                    <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#00FFFF"
+                        android:key="color_fats"
+                        android:title="@string/fats_color"
+                        app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
+                        app:colorpicker_selectNoneButtonText="@string/revert_to_default"
+                        app:colorpicker_showHex="false" />
+                    <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#FF00FF"
+                        android:key="color_proteins"
+                        android:title="@string/proteins_color"
+                        app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
+                        app:colorpicker_selectNoneButtonText="@string/revert_to_default"
+                        app:colorpicker_showHex="false" />
 
 
                 </PreferenceCategory>
@@ -664,6 +678,26 @@
             </Preference>
 
             <Preference
+                android:key="profile_fats_ratio_default"
+                android:summary="@string/grams_of_fats_one_unit_covers"
+                android:title="@string/fats_ratio">
+                <intent
+                    android:action="android.intent.action.MAIN"
+                    android:targetClass="com.eveningoutpost.dexdrip.profileeditor.ProfileEditor"
+                    android:targetPackage="@string/local_target_package" />
+            </Preference>
+
+            <Preference
+                android:key="profile_proteins_ratio_default"
+                android:summary="@string/grams_of_proteins_one_unit_covers"
+                android:title="@string/proteins_ratio">
+                <intent
+                    android:action="android.intent.action.MAIN"
+                    android:targetClass="com.eveningoutpost.dexdrip.profileeditor.ProfileEditor"
+                    android:targetPackage="@string/local_target_package" />
+            </Preference>
+
+            <Preference
                 android:key="profile_insulin_sensitivity_default"
                 android:summary="@string/glucose_drop_for_one_unit"
                 android:title="@string/insulin_sensitivity">
@@ -677,6 +711,16 @@
                 android:key="profile_carb_absorption_default"
                 android:summary="@string/linear_model_carbs_absorbed_per_hour"
                 android:title="@string/carb_absorption_rate" />
+            <EditTextPreference
+                android:defaultValue="35"
+                android:key="profile_fats_absorption_default"
+                android:summary="@string/linear_model_fats_absorbed_per_hour"
+                android:title="@string/fats_absorption_rate" />
+            <EditTextPreference
+                android:defaultValue="35"
+                android:key="profile_proteins_absorption_default"
+                android:summary="@string/linear_model_proteins_absorbed_per_hour"
+                android:title="@string/proteins_absorption_rate" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="predict_use_momentum"

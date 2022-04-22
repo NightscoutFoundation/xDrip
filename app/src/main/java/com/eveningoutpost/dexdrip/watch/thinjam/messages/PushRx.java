@@ -30,6 +30,8 @@ public class PushRx extends BaseRx {
         Choice(Const.PUSH_OPCODE_CHOICE),
         AssetRequest(Const.PUSH_OPCODE_ASSET_REQ),
         CarbInfo(Const.PUSH_OPCODE_C_INFO),
+        FatsInfo(Const.PUSH_OPCODE_F_INFO),
+        ProteinsInfo(Const.PUSH_OPCODE_P_INFO),
         InsulinInfo(Const.PUSH_OPCODE_I_INFO),
         TemperatureInfo(Const.PUSH_OPCODE_T_INFO),
         HeartRateInfo(Const.PUSH_OPCODE_H_INFO);
@@ -141,6 +143,8 @@ public class PushRx extends BaseRx {
                     case AssetRequest:
                         return new PushRx(push.type, ((bytes[3] & 0xFF) | ((bytes[4] & 0xFF) << 8)));
                     case CarbInfo:
+                    case FatsInfo:
+                    case ProteinsInfo:
                     case InsulinInfo:
                         return new PushRx(push.type, push.getUnsignedInt(3));
                 }
