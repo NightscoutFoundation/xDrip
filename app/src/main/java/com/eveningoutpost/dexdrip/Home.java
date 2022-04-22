@@ -56,6 +56,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
+import com.eveningoutpost.dexdrip.G5Model.SensorDays;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
@@ -171,6 +172,8 @@ import lecho.lib.hellocharts.view.PreviewLineChartView;
 import lombok.Getter;
 
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
+import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
@@ -712,7 +715,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
             final Intent calintent = new Intent(getApplicationContext(), AddCalibration.class);
             calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            calintent.putExtra("timestamp", JoH.tsl());
+            calintent.putExtra("timestamp", tsl());
             calintent.putExtra("bg_string", JoH.qs(glucosenumber));
             calintent.putExtra("bg_age", Long.toString((long) (timeoffset / 1000)));
             calintent.putExtra("allow_undo", "true");
@@ -759,7 +762,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             final Intent calintent = new Intent(getApplicationContext(), AddCalibration.class);
 
             calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            calintent.putExtra("timestamp", JoH.tsl());
+            calintent.putExtra("timestamp", tsl());
             calintent.putExtra("bg_string", JoH.qs(glucosenumber));
             calintent.putExtra("bg_age", Long.toString((long) (timeoffset / 1000)));
             calintent.putExtra("allow_undo", "true");
@@ -863,7 +866,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (watchkeypad) {
             // calculate absolute offset
             long treatment_timestamp = watchkeypad_timestamp - (long) mytimeoffset;
-            mytimeoffset = JoH.tsl() - treatment_timestamp;
+            mytimeoffset = tsl() - treatment_timestamp;
             Log.d(TAG, "Watch Keypad timestamp is: " + JoH.dateTimeText(treatment_timestamp) + " Original offset: " + JoH.qs(thistimeoffset) + " New: " + JoH.qs(mytimeoffset));
             if ((mytimeoffset > (DAY_IN_MS * 3)) || (mytimeoffset < -HOUR_IN_MS * 3)) {
                 Log.e(TAG, "Treatment timestamp out of range: " + mytimeoffset);
@@ -1031,7 +1034,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                         builder.setPositiveButton(gs(R.string.calibrate), (dialog, which) -> {
                             dialog.dismiss();
                             // TODO time should be absolute not relative!?!?
-                            final long time_since = JoH.msSince(bt.timestamp);
+                            final long time_since = msSince(bt.timestamp);
                             Home.startHomeWithExtra(xdrip.getAppContext(), Home.BLUETOOTH_METER_CALIBRATION, BgGraphBuilder.unitized_string_static(bt.mgdl), Long.toString(time_since));
                             bt.addState(BloodTest.STATE_CALIBRATION);
                             GcmActivity.syncBloodTests();
@@ -1432,7 +1435,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     }
                     if (note_text.length() > 0) {
                         // TODO respect historic timeset?
-                        Treatments.create_note(note_text, JoH.tsl());
+                        Treatments.create_note(note_text, tsl());
                         staticRefreshBGCharts();
                         break; // don't process any more
                     }
@@ -2485,7 +2488,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             if(lastReading == 0) {
                 notificationText.setText(R.string.in_libre_all_house_mode_no_readings_collected_yet);
             } else {
-                int minutes = (int) (JoH.tsl() - lastReading) / (60 * 1000);
+                int minutes = (int) (tsl() - lastReading) / (60 * 1000);
                 final String fmt = getString(R.string.minutes_ago);
                 notificationText.setText(R.string.in_libre_all_house_mode_last_data_collected);
                 notificationText.append(MessageFormat.format(fmt, minutes));
@@ -2498,7 +2501,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         // automagically start an xDrip sensor session if G5 transmitter already has active sensor
         if (!isSensorActive && Ob1G5CollectionService.isG5SensorStarted() && !Sensor.stoppedRecently()) {
             JoH.static_toast_long(getString(R.string.auto_starting_sensor));
-            Sensor.create(JoH.tsl() - HOUR_IN_MS * 3);
+            Sensor.create(tsl() - HOUR_IN_MS * 3);
             isSensorActive = Sensor.isActive();
         }
 
@@ -2540,13 +2543,23 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             return;
         }
 
-        final long now = System.currentTimeMillis();
-        if (Sensor.currentSensor().started_at + 60000 * 60 * 2 >= now) {
-            double waitTime = (Sensor.currentSensor().started_at + 60000 * 60 * 2 - now) / 60000.0;
-            notificationText.setText(getString(R.string.please_wait_while_sensor_warms_up) + JoH.qs(waitTime, 0) + getString(R.string.minutes_with_bracket));
-            showUncalibratedSlope();
-            return;
+        if (!BgReading.doWeHaveRecentUsableData()) {
+            long startedAt = Sensor.currentSensor().started_at;
+            long computedStartedAt = SensorDays.get().getStart();
+            if (computedStartedAt > 0 && msSince(computedStartedAt) < HOUR_IN_MS * 3) {
+                startedAt = Math.min(computedStartedAt, startedAt);
+            }
+            final long warmUpMs = SensorDays.get().getWarmupMs();
+            final long now = tsl();
+            if (startedAt + warmUpMs > now) {
+                double waitTime = (startedAt + warmUpMs - now) / (double)MINUTE_IN_MS;
+                // TODO better resource format string
+                notificationText.setText(getString(R.string.please_wait_while_sensor_warms_up) + JoH.qs(waitTime, 0) + getString(R.string.minutes_with_bracket));
+                showUncalibratedSlope();
+                return;
+            }
         }
+
         if (DexCollectionType.isLibreOOPNonCalibratebleAlgorithm(collector)) {
             // Rest of this function deals with initial calibration. Since we currently don't have a way to calibrate,
             // And even once we will have, there is probably no need to force a calibration at start of sensor use.
@@ -2861,6 +2874,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
     }
 
+    // TODO consider moving this out of Home
     public static long stale_data_millis() {
         if (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm)
             return (60000 * 13);
@@ -3241,7 +3255,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     }
 
     public void showNoteTextInputDialog(View myitem) {
-        showNoteTextInputDialog(myitem, JoH.tsl(), -1);
+        showNoteTextInputDialog(myitem, tsl(), -1);
     }
 
     public void showNoteTextInputDialog(View myitem, final long timestamp) {

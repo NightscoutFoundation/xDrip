@@ -112,6 +112,7 @@ import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.G
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.INIT;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.PREBOND;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.SCAN;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_CALIBRATION_REQUEST;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_FAILED;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_RESTARTED;
@@ -1119,6 +1120,10 @@ public class Ob1G5CollectionService extends G5BaseService {
         return result;
     }
 
+    public static void clearScanError() {
+        lastScanError = null;
+    }
+
     // Successful result from our bluetooth scan
     private synchronized void onScanResult(ScanResult bleScanResult) {
         // TODO MIN RSSI
@@ -2006,6 +2011,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
         final VersionRequest1RxMessage vr1 = (VersionRequest1RxMessage) Ob1G5StateMachine.getFirmwareXDetails(tx_id, 1);
         final VersionRequest2RxMessage vr2 = (VersionRequest2RxMessage) Ob1G5StateMachine.getFirmwareXDetails(tx_id, 2);
+        final VersionRequest2RxMessage vr3 = (VersionRequest2RxMessage) Ob1G5StateMachine.getFirmwareXDetails(tx_id, 3);
         try {
             if (vr1 != null) {
                 val known = FirmwareCapability.isKnownFirmware(vr1.firmware_version_string);
@@ -2027,13 +2033,24 @@ public class Ob1G5CollectionService extends G5BaseService {
         try {
             if (vr2 != null) {
                 if (vr2.typicalSensorDays != 10 && vr2.typicalSensorDays != 7) {
-                    l.add(new StatusItem("Sensor Period", vr2.typicalSensorDays, Highlight.NOTICE));
+                    l.add(new StatusItem("Sensor Period", niceTimeScalar(vr2.typicalSensorDays * DAY_IN_MS), Highlight.NOTICE));
                 }
                 //l.add(new StatusItem("Feature mask", vr2.featureBits));
             }
         } catch (Exception e) {
             //
         }
+
+        try {
+            if (vr3 != null) {
+                if (vr3.warmupSeconds != 7200) {
+                    l.add(new StatusItem("Warm Up Time", niceTimeScalar(vr3.warmupSeconds * SECOND_IN_MS), Highlight.NOTICE));
+                }
+            }
+        } catch (Exception e) {
+            //
+        }
+
 
         // firmware hardware details
         final VersionRequestRxMessage vr = (VersionRequestRxMessage) Ob1G5StateMachine.getFirmwareXDetails(tx_id, 0);
