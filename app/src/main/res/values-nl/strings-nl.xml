@@ -1637,5 +1637,6 @@
     <string name="Dose">Dosis</string>
     <string name="choose_type">Kies type</string>
     <string name="invalid_serial">Ongeldig serienummer</string>
+    <string name="set_pen_to_format">Zet Pen %s op %s</string>
     <string name="pen_contains_which_insulin_type">Welk type insuline bevat pen %s?</string>
 </resources>
