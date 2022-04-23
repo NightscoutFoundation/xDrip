@@ -35,8 +35,6 @@
     <string name="title_activity_double_calibration">Первинне калібрування</string>
     <string name="title_activity_calibration_override">Перекалібрувати сенсор</string>
     <string name="pref_header_cloud_storage">Хмарне сховище</string>
-    <string name="auto_configure_title">Автоналаштування</string>
-    <string name="prefs_auto_config_summary">Автоналаштування за допомогою QR-коду.</string>
     <string name="scan_share2_barcode">Сканувати QR-код</string>
     <string name="pref_share2_scan_barcode_summary">Або відскануйте QR-код на ресивері</string>
     <!-- MongoDB Settings -->
@@ -353,7 +351,6 @@
     <string name="save_all_settings_to_sdcard">Зберегти всі налаштування на SD-карту</string>
     <string name="load_all_settings_from_sdcard">Завантажити налаштування з SD-карти</string>
     <string name="delete_any_settings_on_sdcard">Видалити всі налаштування з SD-карти</string>
-    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Скористайтеся QR-кодами для відправки налаштувань, для цього перейдіть у меню Налаштування - Автоналаштування]]></string>
     <string name="xdrip_plus_security_key_settings_only">Налаштування ключа безпеки xDrip+</string>
     <string name="show_general_and_collection_settings">Відображати загальні налаштування і налаштування збору даних</string>
     <string name="copy_all_settings">Скопіювати всі налаштування</string>

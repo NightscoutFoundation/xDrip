@@ -35,8 +35,6 @@
     <string name="title_activity_double_calibration">Početno baždaranje</string>
     <string name="title_activity_calibration_override">Prebrisati baždarenje</string>
     <string name="pref_header_cloud_storage">Spremanje u oblak</string>
-    <string name="auto_configure_title">Automatska konfiguracija</string>
-    <string name="prefs_auto_config_summary">Automatski konfiguriraj koristeći barkod.</string>
     <string name="scan_share2_barcode">Skeniraj dijeljeni barkod</string>
     <string name="pref_share2_scan_barcode_summary">Ili skeniraj barkod dijeljenog prijamnika</string>
     <!-- MongoDB Settings -->
@@ -346,7 +344,6 @@
     <string name="save_all_settings_to_sdcard">Spremi sve postavke na SD karticu</string>
     <string name="load_all_settings_from_sdcard">Učitaj sve postavke sa SD kartice</string>
     <string name="delete_any_settings_on_sdcard">Izbriši sve postavke sa SD kartice</string>
-    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Koristi QR kodove za prijenos postavki koristeći Postavke->Automatska konfiguracija]]></string>
     <string name="xdrip_plus_security_key_settings_only">samo xDrip Plus postavke sigurnosnsog ključa (Security Key)</string>
     <string name="show_general_and_collection_settings">Prikaži opće i postavke prikupljanja</string>
     <string name="copy_all_settings">Kopiraj sve postavke</string>

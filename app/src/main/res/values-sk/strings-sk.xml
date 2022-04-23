@@ -35,8 +35,6 @@
     <string name="title_activity_double_calibration">Úvodná kalibrácia</string>
     <string name="title_activity_calibration_override">Prepísanie kalibrácie</string>
     <string name="pref_header_cloud_storage">Cloudové úložisko</string>
-    <string name="auto_configure_title">Automatická konfigurácia</string>
-    <string name="prefs_auto_config_summary">Automatická konfigurácia pomocou QR kódu.</string>
     <string name="scan_share2_barcode">Nasnímaj čiarový kód</string>
     <string name="pref_share2_scan_barcode_summary">alebo čiarový kód nasnímaj na zdieľanom prijímači</string>
     <!-- MongoDB Settings -->
@@ -353,7 +351,6 @@
     <string name="save_all_settings_to_sdcard">Uložiť všetky nastavenia na SD kartu</string>
     <string name="load_all_settings_from_sdcard">Načítať všetky nastavenia z SD karty</string>
     <string name="delete_any_settings_on_sdcard">Zmazať všetky nastavenia z SD karty</string>
-    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Použi QR kódy na prenos nastavení v Nastavenia>Automatická konfigurácia]]></string>
     <string name="xdrip_plus_security_key_settings_only">Iba nastavenie xDrip+ bezpečnostného kľúča</string>
     <string name="show_general_and_collection_settings">Zobraziť všeobecné nastavenia a o zbierkach dát</string>
     <string name="copy_all_settings">Kopírovať všetky nastavenia</string>

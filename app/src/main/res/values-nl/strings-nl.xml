@@ -35,8 +35,6 @@
     <string name="title_activity_double_calibration">Initiële kalibratie</string>
     <string name="title_activity_calibration_override">Kalibratie Overschrijven</string>
     <string name="pref_header_cloud_storage">Cloud opslag</string>
-    <string name="auto_configure_title">Automatisch configureren</string>
-    <string name="prefs_auto_config_summary">Automatisch configureren met behulp van een barcode.</string>
     <string name="scan_share2_barcode">Scan Deel Barcode</string>
     <string name="pref_share2_scan_barcode_summary">Of scan de barcode op de share ontvanger</string>
     <!-- MongoDB Settings -->
@@ -353,7 +351,6 @@
     <string name="save_all_settings_to_sdcard">Sla alle instellingen op in het bestand</string>
     <string name="load_all_settings_from_sdcard">Laad alle instellingen uit het bestand</string>
     <string name="delete_any_settings_on_sdcard">Verwijder instellingen map (Download/xDrip-export)</string>
-    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Gebruik QR-codes om instellingen over te dragen met de functie Instellingen-> Auto Configureren]]></string>
     <string name="xdrip_plus_security_key_settings_only">alleen xDrip Plus Security Key Settings</string>
     <string name="show_general_and_collection_settings">Toon algemene en Collection Settings</string>
     <string name="copy_all_settings">Kopieer alle instellingen</string>

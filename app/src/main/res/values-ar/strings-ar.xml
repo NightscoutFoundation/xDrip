@@ -35,8 +35,6 @@
     <string name="title_activity_double_calibration">المعايرة الأولية</string>
     <string name="title_activity_calibration_override">تجاوز المعايرة</string>
     <string name="pref_header_cloud_storage">تخزين سحابي</string>
-    <string name="auto_configure_title">تعريف تلقائي</string>
-    <string name="prefs_auto_config_summary">تعريف تلقائي باستخدام الباركود.</string>
     <string name="scan_share2_barcode">مسح الباركود المشارك</string>
     <string name="pref_share2_scan_barcode_summary">أو قم بمسح الباركود في الجهاز المستقبِل</string>
     <!-- MongoDB Settings -->

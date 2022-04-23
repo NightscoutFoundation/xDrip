@@ -969,7 +969,7 @@
                 android:icon="@drawable/ic_qrscan"
                 android:key="auto_configure"
                 android:summary="@string/prefs_barcode_scanner_summary"
-                android:title="@string/barcode_scanner_title" />                     ////// @string/prefs_auto_config_summary   //////  @string/auto_configure_title
+                android:title="@string/barcode_scanner_title" />
             <Preference
                 android:icon="@drawable/ic_qrcode_grey600_48dp"
                 android:key="show_qr_codes"

@@ -35,8 +35,6 @@
     <string name="title_activity_double_calibration">Ensimmäinen kalibraatio</string>
     <string name="title_activity_calibration_override">Pakota uusi kalibraatio</string>
     <string name="pref_header_cloud_storage">Tietovarasto pilvessä</string>
-    <string name="auto_configure_title">Automaattiset asetukset</string>
-    <string name="prefs_auto_config_summary">Tee asetukset automaattisesti käyttäen viivakoodia.</string>
     <string name="scan_share2_barcode">Skannaa Share viivakoodi</string>
     <string name="pref_share2_scan_barcode_summary">Tai skannaa Share vastaanottimen viivakoodi</string>
     <!-- MongoDB Settings -->
@@ -353,7 +351,6 @@
     <string name="save_all_settings_to_sdcard">Tallenna kaikki asetukset SD-kortille</string>
     <string name="load_all_settings_from_sdcard">Lataa kaikki Asetukset SD-kortilta</string>
     <string name="delete_any_settings_on_sdcard">Poista kaikki asetukset SD-kortilta</string>
-    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Käytä QR -koodeja asetuksien siirtämiseen Asetukset-> Automaattiset Asetukset -ominaisuudella]]></string>
     <string name="xdrip_plus_security_key_settings_only">Vain xDrip Plus suojausavain -asetukset</string>
     <string name="show_general_and_collection_settings">Näytä Yleiset ja Kokoelman asetukset</string>
     <string name="copy_all_settings">Kopioi kaikki asetukset</string>

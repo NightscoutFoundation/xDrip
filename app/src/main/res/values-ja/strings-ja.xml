@@ -35,8 +35,6 @@
     <string name="title_activity_double_calibration">初期キリブレーション</string>
     <string name="title_activity_calibration_override">カリブレーションの変更</string>
     <string name="pref_header_cloud_storage">クラウドストレージ</string>
-    <string name="auto_configure_title">自動構成</string>
-    <string name="prefs_auto_config_summary">バーコードで自動構成</string>
     <string name="scan_share2_barcode">共有のバーコードをスキャン</string>
     <string name="pref_share2_scan_barcode_summary">または共有の受信機のバーコードをスキャンする</string>
     <!-- MongoDB Settings -->

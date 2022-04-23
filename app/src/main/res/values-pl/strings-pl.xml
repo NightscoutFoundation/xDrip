@@ -35,8 +35,6 @@
     <string name="title_activity_double_calibration">Początkowa kalibracja</string>
     <string name="title_activity_calibration_override">Nadpisanie kalibracji</string>
     <string name="pref_header_cloud_storage">Przechowywanie w chmurze</string>
-    <string name="auto_configure_title">Automatyczna konfiguracja</string>
-    <string name="prefs_auto_config_summary">Automatyczna konfiguracja za pomocą kodu kreskowego.</string>
     <string name="scan_share2_barcode">Skanowanie kodów kreskowych Share</string>
     <string name="pref_share2_scan_barcode_summary">Lub zeskanować kod kreskowy na odbiorniku share</string>
     <!-- MongoDB Settings -->
@@ -353,7 +351,6 @@
     <string name="save_all_settings_to_sdcard">Zapisz wszystkie ustawienia na karcie SD</string>
     <string name="load_all_settings_from_sdcard">Załąduj wszystkie ustawienia z pliku z ustawieniami</string>
     <string name="delete_any_settings_on_sdcard">Usuń wszystkie ustawienia z karty SD</string>
-    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Za pomocą kodów QR przenieść ustawienia. Ustawienia-&gt; funkcja Auto Konfiguracji]]></string>
     <string name="xdrip_plus_security_key_settings_only">tylko xDrip Plus Ustawienia zabezpieczeń klucza</string>
     <string name="show_general_and_collection_settings">Wyswietl ustawienia ogólne i collection</string>
     <string name="copy_all_settings">Kopiowanie wszystkich ustawień</string>

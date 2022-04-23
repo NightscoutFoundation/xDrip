@@ -35,8 +35,6 @@
     <string name="title_activity_double_calibration">Dubbelkalibrering</string>
     <string name="title_activity_calibration_override">Åsidosätt kalibrering</string>
     <string name="pref_header_cloud_storage">Molnlagring</string>
-    <string name="auto_configure_title">Autoinställning</string>
-    <string name="prefs_auto_config_summary">Autokonfigurera med hjälp av en streckkod.</string>
     <string name="scan_share2_barcode">Avsök en delningsstreckkod</string>
     <string name="pref_share2_scan_barcode_summary">Eller skanna streckkoden med din Share-mottagare</string>
     <!-- MongoDB Settings -->
@@ -353,7 +351,6 @@
     <string name="save_all_settings_to_sdcard">Exportera samtliga inställningar till SD-kort</string>
     <string name="load_all_settings_from_sdcard">Läs in samtliga inställningar från SD-kort</string>
     <string name="delete_any_settings_on_sdcard">Ta bort samtliga inställningar på SD-kort</string>
-    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Använd QR-koder för att överföra inställningar från av Inställningar&gt; Automatisk justering funktion]]></string>
     <string name="xdrip_plus_security_key_settings_only">xDrip+ säkerhetsnyckelinställningar endast</string>
     <string name="show_general_and_collection_settings">Visa allmänna och samlingsinställningar</string>
     <string name="copy_all_settings">Kopiera alla inställningar</string>
