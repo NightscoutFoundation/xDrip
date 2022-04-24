@@ -200,7 +200,6 @@
     <string name="send_crash_errors_to_developer">クラッシュ エラーを開発者に送信する</string>
     <string name="automatic_crash_reporting">自動クラッシュ レポート</string>
     <string name="send_feedback_message">フィードバックメッセージを送信する</string>
-    <string name="copying_settings">設定をコピー中</string>
     <string name="show_settings_qr_codes">設定のQRコードを表示する</string>
     <string name="load_save_settings_to_sdcard">SDカードに 設定を読み込む/保存する</string>
     <string name="alarms_and_alerts">アラームと通知</string>

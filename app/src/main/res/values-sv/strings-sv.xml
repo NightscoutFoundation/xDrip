@@ -201,7 +201,6 @@
     <string name="send_crash_errors_to_developer">Skicka krascher och fel till utvecklare</string>
     <string name="automatic_crash_reporting">Automatisk krashrapportering</string>
     <string name="send_feedback_message">Skicka feedbackmeddelande</string>
-    <string name="copying_settings">Kopieringsinställningar</string>
     <string name="show_settings_qr_codes">Visa inställningar för QR-koder</string>
     <string name="load_save_settings_to_sdcard">Ladda / spara inställningar till SD-kort</string>
     <string name="alarms_and_alerts">Larm och varningar</string>

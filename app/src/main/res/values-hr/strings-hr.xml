@@ -196,7 +196,6 @@
     <string name="send_crash_errors_to_developer">Pošalji informacije o rušenjima sustava programeru</string>
     <string name="automatic_crash_reporting">Automatsko izvještavanje o rušenjima sustava</string>
     <string name="send_feedback_message">Pošalji poruku s povratnom informacijom</string>
-    <string name="copying_settings">Postavke kopiranja</string>
     <string name="show_settings_qr_codes">Prikaži QR kodove postavki</string>
     <string name="load_save_settings_to_sdcard">Učitaj / Spremi postavke sa/na SD karticu</string>
     <string name="alarms_and_alerts">Alarmi i upozorenja</string>

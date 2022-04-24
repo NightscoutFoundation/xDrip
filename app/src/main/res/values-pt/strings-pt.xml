@@ -201,7 +201,6 @@
     <string name="send_crash_errors_to_developer">Enviar relatório de erros para o programador</string>
     <string name="automatic_crash_reporting">Relatório Automático de Erros</string>
     <string name="send_feedback_message">Enviar Mensagem de Feedback</string>
-    <string name="copying_settings">Definições de Cópia</string>
     <string name="show_settings_qr_codes">Mostrar códigos QR de Definições</string>
     <string name="load_save_settings_to_sdcard">Carregar / Guardar definições no cartão SD</string>
     <string name="alarms_and_alerts">Alarmes e Alertas</string>

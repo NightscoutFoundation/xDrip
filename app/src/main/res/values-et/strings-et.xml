@@ -201,7 +201,6 @@
     <string name="send_crash_errors_to_developer">Saada arendajale kokkujooksmise vead</string>
     <string name="automatic_crash_reporting">Automaatne kokkujooksmise aruanne</string>
     <string name="send_feedback_message">Saada tagasiside sõnum</string>
-    <string name="copying_settings">Seadete kopeerimine</string>
     <string name="show_settings_qr_codes">Kuva seaded QR-koodid</string>
     <string name="load_save_settings_to_sdcard">Laadi / salvesta seaded</string>
     <string name="alarms_and_alerts">Alarmid ja hoiatused</string>

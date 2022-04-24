@@ -150,7 +150,6 @@
     <string name="send_crash_errors_to_developer">إرسال تقارير الأعطال للمطوّر</string>
     <string name="automatic_crash_reporting">الإبلاغ التلقائي عن الأعطال</string>
     <string name="send_feedback_message">إرسال الملاحظات</string>
-    <string name="copying_settings">نسخ الإعدادات</string>
     <string name="show_settings_qr_codes">اظهار باركود الإعدادات</string>
     <string name="load_save_settings_to_sdcard">تحميل / حفظ الإعدادات إلى بطاقة الذاكرة</string>
     <string name="alarms_and_alerts">التنبيهات والانذارات</string>

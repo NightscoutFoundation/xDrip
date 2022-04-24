@@ -201,7 +201,6 @@
     <string name="send_crash_errors_to_developer">Invia gli errori di arresto agli sviluppatori</string>
     <string name="automatic_crash_reporting">Segnalazione automatica Crash</string>
     <string name="send_feedback_message">Invia Feedback</string>
-    <string name="copying_settings">Impostazioni di copia</string>
     <string name="show_settings_qr_codes">Mostra impostazioni dei codici QR</string>
     <string name="load_save_settings_to_sdcard">Carica / Salva impostazioni su SDcard</string>
     <string name="alarms_and_alerts">Allarmi e Avvisi</string>

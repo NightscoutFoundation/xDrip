@@ -201,7 +201,6 @@
     <string name="send_crash_errors_to_developer">Envoyer les rapports d\'erreurs au développeur</string>
     <string name="automatic_crash_reporting">Rapport d\'erreurs automatique</string>
     <string name="send_feedback_message">Envoyer des commentaires</string>
-    <string name="copying_settings">Copie de paramètres</string>
     <string name="show_settings_qr_codes">Afficher les paramètres codes QR</string>
     <string name="load_save_settings_to_sdcard">Charger / Enregistrer les paramètres sur la carte SD</string>
     <string name="alarms_and_alerts">Alarmes et alertes</string>

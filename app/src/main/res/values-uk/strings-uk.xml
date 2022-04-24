@@ -201,7 +201,6 @@
     <string name="send_crash_errors_to_developer">Надсилати інформацію про збої розробнику</string>
     <string name="automatic_crash_reporting">Автоматична відправка звітів про збої</string>
     <string name="send_feedback_message">Зворотній зв\'язок</string>
-    <string name="copying_settings">Копіювання налаштувань</string>
     <string name="show_settings_qr_codes">Відобразити QR-коди налаштувань</string>
     <string name="load_save_settings_to_sdcard">Завантажити/Зберегти налаштування</string>
     <string name="alarms_and_alerts">Сигнали та сповіщення</string>

@@ -201,7 +201,6 @@
     <string name="send_crash_errors_to_developer">Отправлять информацию о сбоях разработчику</string>
     <string name="automatic_crash_reporting">Автоматическая отправка отчётов о сбоях</string>
     <string name="send_feedback_message">Обратная связь</string>
-    <string name="copying_settings">Копирование настроек</string>
     <string name="show_settings_qr_codes">Показать QR-коды настроек</string>
     <string name="load_save_settings_to_sdcard">Загрузить / Сохранить настройки на SD-карту</string>
     <string name="alarms_and_alerts">Сигналы и оповещения</string>

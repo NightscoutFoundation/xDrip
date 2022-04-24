@@ -201,7 +201,6 @@
     <string name="send_crash_errors_to_developer">שלח התראות על קריסות למפתח</string>
     <string name="automatic_crash_reporting">דיווח אוטומטי על קריסות</string>
     <string name="send_feedback_message">שלח משוב</string>
-    <string name="copying_settings">מעתיק הגדרות</string>
     <string name="show_settings_qr_codes">הצג קוד QR של ההגדרות</string>
     <string name="load_save_settings_to_sdcard">שמור \\ טען הגדרות לכרטיס זכרון</string>
     <string name="alarms_and_alerts">התראות ואזעקות</string>

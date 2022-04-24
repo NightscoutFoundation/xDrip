@@ -201,7 +201,6 @@
     <string name="send_crash_errors_to_developer">Lähetä tiedot virheistä kehittäjille</string>
     <string name="automatic_crash_reporting">Automaattinen virheiden raportointi</string>
     <string name="send_feedback_message">Lähetä palautetta</string>
-    <string name="copying_settings">Kopioidaan Asetukset</string>
     <string name="show_settings_qr_codes">Näytä asetukset sisältävät QR-koodit</string>
     <string name="load_save_settings_to_sdcard">Lataa / Tallenna asetukset SD-kortille</string>
     <string name="alarms_and_alerts">Hälytykset ja ilmoitukset</string>

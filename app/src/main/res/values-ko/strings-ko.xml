@@ -201,7 +201,6 @@
     <string name="send_crash_errors_to_developer">개발자 크래쉬 오류 보내기</string>
     <string name="automatic_crash_reporting">자동 크래쉬 보고</string>
     <string name="send_feedback_message">피드백 메시지 보내기</string>
-    <string name="copying_settings">복사 세팅</string>
     <string name="show_settings_qr_codes">QR 코드 세팅 보기</string>
     <string name="load_save_settings_to_sdcard">SDCARD에 로드/저장 세팅</string>
     <string name="alarms_and_alerts">알람 및 알림</string>

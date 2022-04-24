@@ -201,7 +201,6 @@
     <string name="send_crash_errors_to_developer">Wyślij błędy o awariach do dewelopera</string>
     <string name="automatic_crash_reporting">Automatyczne raportowanie awarii</string>
     <string name="send_feedback_message">Wyślij wiadomość Feedback</string>
-    <string name="copying_settings">Ustawienia kopiowania</string>
     <string name="show_settings_qr_codes">Ustawienia dla kodów QR</string>
     <string name="load_save_settings_to_sdcard">Otw. / Zap. ustaw. na karcie SD</string>
     <string name="alarms_and_alerts">Alarmy i alerty</string>

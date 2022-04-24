@@ -964,7 +964,7 @@
         android:title="@string/backup_and_update_title">
         <PreferenceCategory
             android:key="xdrip_plus_move_settings"
-            android:title="@string/backup_and_restore">              //////@string/copying_settings
+            android:title="@string/backup_and_restore">
             <PreferenceScreen
                 android:icon="@drawable/ic_qrscan"
                 android:key="auto_configure"

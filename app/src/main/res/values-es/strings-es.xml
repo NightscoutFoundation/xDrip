@@ -201,7 +201,6 @@
     <string name="send_crash_errors_to_developer">Enviar errores de bloqueo al desarrollador</string>
     <string name="automatic_crash_reporting">Informes de bloqueo automáticos</string>
     <string name="send_feedback_message">Enviar mensaje de retroalimentación</string>
-    <string name="copying_settings">Copiando ajustes</string>
     <string name="show_settings_qr_codes">Mostrar códigos QR de Ajustes</string>
     <string name="load_save_settings_to_sdcard">Cargar/Guardar ajustes en tarjeta SD</string>
     <string name="alarms_and_alerts">Alarmas y alertas</string>

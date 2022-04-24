@@ -201,7 +201,6 @@
     <string name="send_crash_errors_to_developer">Stuur crashfouten naar de ontwikkelaar</string>
     <string name="automatic_crash_reporting">Automatische crashrapportage</string>
     <string name="send_feedback_message">Feedbackbericht verzenden</string>
-    <string name="copying_settings">Instellingen kopiëren</string>
     <string name="show_settings_qr_codes">Toon instellingen QR-codes</string>
     <string name="load_save_settings_to_sdcard">Instellingen laden / opslaan</string>
     <string name="alarms_and_alerts">Alarmen en waarschuwingen</string>

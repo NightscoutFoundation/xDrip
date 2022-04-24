@@ -178,7 +178,6 @@
     <string name="send_crash_errors_to_developer">Odeslat pády aplikace vývojářům</string>
     <string name="automatic_crash_reporting">Automatické odesílání chybových hlášení</string>
     <string name="send_feedback_message">Odeslat zprávu se zpětnou vazbou</string>
-    <string name="copying_settings">Kopírovat nastavení</string>
     <string name="show_settings_qr_codes">Zobrazit nastavení QR kódů</string>
     <string name="load_save_settings_to_sdcard">Načíst / uložit všechna nastavení na SD kartu</string>
     <string name="alarms_and_alerts">Výstrahy a upozornění</string>

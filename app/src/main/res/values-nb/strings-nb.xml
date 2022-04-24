@@ -182,7 +182,6 @@
     <string name="send_crash_errors_to_developer">Send krasjfeil til utvikler</string>
     <string name="automatic_crash_reporting">Automatisk krasjrapportering</string>
     <string name="send_feedback_message">Send tilbakemelding</string>
-    <string name="copying_settings">Kopiering Innstillinger</string>
     <string name="show_settings_qr_codes">Vis Innstillings QR-koder</string>
     <string name="load_save_settings_to_sdcard">Last inn / lagre innstillinger på SDkort</string>
     <string name="alarms_and_alerts">Alarmer og Varslinger</string>

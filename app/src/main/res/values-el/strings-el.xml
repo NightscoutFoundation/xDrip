@@ -129,7 +129,6 @@
     <string name="high_value">Υψηλή Τιμή</string>
     <string name="low_value">Χαμηλή Τιμή</string>
     <string name="save">Αποθήκευση</string>
-    <string name="copying_settings">Αντιγραφή ρυθμίσεων</string>
     <string name="other_alerts">Άλλες Ειδοποιήσεις</string>
     <string name="extra_alerts_xdrip_plus">Επιπλέον Ειδοποιήσεις (xDrip+)</string>
     <string name="forecasted_low_alert">Προβλεπόμενη Χαμηλή Ειδοποίηση</string>

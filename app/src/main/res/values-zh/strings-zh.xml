@@ -200,7 +200,6 @@
     <string name="send_crash_errors_to_developer">发送崩溃错误给开发者</string>
     <string name="automatic_crash_reporting">自动发送崩溃报告</string>
     <string name="send_feedback_message">发送反馈信息</string>
-    <string name="copying_settings">正在复制设置</string>
     <string name="show_settings_qr_codes">显示设置二维码</string>
     <string name="load_save_settings_to_sdcard">加载/保存设置到SD卡</string>
     <string name="alarms_and_alerts">报警和警报</string>

@@ -200,7 +200,6 @@
     <string name="send_crash_errors_to_developer">Absturz Fehlerbericht an Entwickler senden</string>
     <string name="automatic_crash_reporting">Absturzberichte automatisch erstellen</string>
     <string name="send_feedback_message">Feedback senden</string>
-    <string name="copying_settings">Einstellungen kopieren</string>
     <string name="show_settings_qr_codes">Einstellungen per QR-Code anzeigen</string>
     <string name="load_save_settings_to_sdcard">Einstellungen von/auf SD-Karte laden/speichern</string>
     <string name="alarms_and_alerts">Warnungen</string>

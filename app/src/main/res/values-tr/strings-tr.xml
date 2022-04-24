@@ -201,7 +201,6 @@
     <string name="send_crash_errors_to_developer">Geliştirici için kilitlenme hatalarını gönder</string>
     <string name="automatic_crash_reporting">Otomatik Kilitlenme Raporlaması</string>
     <string name="send_feedback_message">Geri Bildirim İletisi Gönder</string>
-    <string name="copying_settings">Ayarları Kopyala</string>
     <string name="show_settings_qr_codes">Ayarları QR kodları ile göster</string>
     <string name="load_save_settings_to_sdcard">Ayarları SD karta yükle / kaydet</string>
     <string name="alarms_and_alerts">Alarmlar ve uyarılar</string>

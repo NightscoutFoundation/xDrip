@@ -201,7 +201,6 @@
     <string name="send_crash_errors_to_developer">Trimite erorile de avarie la dezvoltator</string>
     <string name="automatic_crash_reporting">Raportare automată a avariilor</string>
     <string name="send_feedback_message">Trimite feedback</string>
-    <string name="copying_settings">Setări de copiere</string>
     <string name="show_settings_qr_codes">Arată setările pentru coduri QR</string>
     <string name="load_save_settings_to_sdcard">Încarcă / Salvează setări din/pe SDcard</string>
     <string name="alarms_and_alerts">Alarme și alerte</string>
