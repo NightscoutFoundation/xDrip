@@ -376,7 +376,7 @@
     <string name="save_all_settings_to_sdcard">Save all Settings to the settings file</string>
     <string name="load_all_settings_from_sdcard">Load all settings from the settings file</string>
     <string name="delete_any_settings_on_sdcard">Delete settings folder (Download/xDrip-export)</string>
-    <string name="qr_code_generator_description"><![CDATA[Generates QR codes containing current app settings. Import them on another device using xDrip's barcode scanner.]]></string>
+    <string name="qr_code_generator_description"><![CDATA[Generates QR codes containing current app settings.\nImport them on another device using xDrip\'s barcode scanner.]]></string>
     <string name="xdrip_plus_security_key_settings_only">xDrip Plus Security Key Settings only</string>
     <string name="show_general_and_collection_settings">Show General and Collection Settings</string>
     <string name="copy_all_settings">Copy all Settings</string>
