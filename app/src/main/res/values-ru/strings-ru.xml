@@ -35,6 +35,8 @@
     <string name="title_activity_double_calibration">Первичная калибровка</string>
     <string name="title_activity_calibration_override">Перекалибровать сенсор</string>
     <string name="pref_header_cloud_storage">Облачное хранилище</string>
+    <string name="auto_configure_title">Автонастройка</string>
+    <string name="prefs_auto_config_summary">Автонастройка при помощи штрих-кода.</string>
     <string name="scan_share2_barcode">Сканировать штрих-код Share</string>
     <string name="pref_share2_scan_barcode_summary">Или отсканируйте штрих-код на ресивере</string>
     <!-- MongoDB Settings -->
@@ -201,6 +203,7 @@
     <string name="send_crash_errors_to_developer">Отправлять информацию о сбоях разработчику</string>
     <string name="automatic_crash_reporting">Автоматическая отправка отчётов о сбоях</string>
     <string name="send_feedback_message">Обратная связь</string>
+    <string name="copying_settings">Копирование настроек</string>
     <string name="show_settings_qr_codes">Показать QR-коды настроек</string>
     <string name="load_save_settings_to_sdcard">Загрузить / Сохранить настройки на SD-карту</string>
     <string name="alarms_and_alerts">Сигналы и оповещения</string>
@@ -350,6 +353,7 @@
     <string name="save_all_settings_to_sdcard">Сохранить все настройки на SD-карту</string>
     <string name="load_all_settings_from_sdcard">Загрузить настройки с SD-карты</string>
     <string name="delete_any_settings_on_sdcard">Удалить все настройки на SD-карте</string>
+    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Воспользуйтесь QR-кодами для отправки настроек, для этого перейдите в меню Настройки->Автонастройка]]></string>
     <string name="xdrip_plus_security_key_settings_only">Настройки ключа безопасности xDrip+</string>
     <string name="show_general_and_collection_settings">Отображать общие настройки и настройки сбора данных</string>
     <string name="copy_all_settings">Скопировать все настройки</string>

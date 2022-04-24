@@ -35,6 +35,8 @@
     <string name="title_activity_double_calibration">İlk kalibrasyon</string>
     <string name="title_activity_calibration_override">Kalibrasyonu geçersiz kıl</string>
     <string name="pref_header_cloud_storage">Bulut Depolama</string>
+    <string name="auto_configure_title">Otomatik Yapılandır</string>
+    <string name="prefs_auto_config_summary">Barkod kullanarak otomatik yapılandır.</string>
     <string name="scan_share2_barcode">Paylaşım barkod tara</string>
     <string name="pref_share2_scan_barcode_summary">Veya paylaşılan alıcıdaki barkodu tarayın</string>
     <!-- MongoDB Settings -->
@@ -201,6 +203,7 @@
     <string name="send_crash_errors_to_developer">Geliştirici için kilitlenme hatalarını gönder</string>
     <string name="automatic_crash_reporting">Otomatik Kilitlenme Raporlaması</string>
     <string name="send_feedback_message">Geri Bildirim İletisi Gönder</string>
+    <string name="copying_settings">Ayarları Kopyala</string>
     <string name="show_settings_qr_codes">Ayarları QR kodları ile göster</string>
     <string name="load_save_settings_to_sdcard">Ayarları SD karta yükle / kaydet</string>
     <string name="alarms_and_alerts">Alarmlar ve uyarılar</string>
@@ -350,6 +353,7 @@
     <string name="save_all_settings_to_sdcard">Tüm ayarları SD karta kaydet</string>
     <string name="load_all_settings_from_sdcard">SD karttan tüm ayarları yükle</string>
     <string name="delete_any_settings_on_sdcard">Ayarlar klasörünü sil (Download/xDrip-export)</string>
+    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Ayarlar -> Otomatik Yapılandırma özelliği\'ni kullanarak ayarları aktarmak için QR kodlarını kullanın]]></string>
     <string name="xdrip_plus_security_key_settings_only">Yyalnızca xDrip+ Güvenlik Tuş Ayarları</string>
     <string name="show_general_and_collection_settings">Genel ve Okuma ayarlarını göster</string>
     <string name="copy_all_settings">Tüm ayarları kopyala</string>

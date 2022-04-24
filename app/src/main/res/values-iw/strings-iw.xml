@@ -35,6 +35,8 @@
     <string name="title_activity_double_calibration">כיול התחלתי</string>
     <string name="title_activity_calibration_override">החלף כיול</string>
     <string name="pref_header_cloud_storage">אחסון בענן</string>
+    <string name="auto_configure_title">הגדרה אוטומטית</string>
+    <string name="prefs_auto_config_summary">הגדרה אוטומטית באמצעות ברקוד.</string>
     <string name="scan_share2_barcode">סרוק ברקוד עבור Share</string>
     <string name="pref_share2_scan_barcode_summary">או סרוק את הברקוד שעל מקלט ה-Share</string>
     <!-- MongoDB Settings -->
@@ -201,6 +203,7 @@
     <string name="send_crash_errors_to_developer">שלח התראות על קריסות למפתח</string>
     <string name="automatic_crash_reporting">דיווח אוטומטי על קריסות</string>
     <string name="send_feedback_message">שלח משוב</string>
+    <string name="copying_settings">מעתיק הגדרות</string>
     <string name="show_settings_qr_codes">הצג קוד QR של ההגדרות</string>
     <string name="load_save_settings_to_sdcard">שמור \\ טען הגדרות לכרטיס זכרון</string>
     <string name="alarms_and_alerts">התראות ואזעקות</string>
@@ -348,6 +351,7 @@
     <string name="save_all_settings_to_sdcard">שמור את כל ההגדרות לכרטיס הזיכרון</string>
     <string name="load_all_settings_from_sdcard">טען את כל ההגדרות מכרטיס הזיכרון</string>
     <string name="delete_any_settings_on_sdcard">מחק את כל ההגדרות על כרטיס הזיכרון</string>
+    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[השתמש בקוד QR להעביר את הגדרות על ידי שימוש בהגדרות->הגדרה אוטומטית]]></string>
     <string name="xdrip_plus_security_key_settings_only">הגדרות מפתח ביטחון xDrip בלבד</string>
     <string name="show_general_and_collection_settings">הראה הגדרות כלליות והגדרות איסוף</string>
     <string name="copy_all_settings">העתק את כל ההגדרות</string>

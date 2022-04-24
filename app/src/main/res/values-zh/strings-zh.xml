@@ -35,6 +35,8 @@
     <string name="title_activity_double_calibration">两次校准</string>
     <string name="title_activity_calibration_override">覆盖校准</string>
     <string name="pref_header_cloud_storage">云存储</string>
+    <string name="auto_configure_title">自动配置</string>
+    <string name="prefs_auto_config_summary">使用二维码进行自动配置.</string>
     <string name="scan_share2_barcode">扫描二维码</string>
     <string name="pref_share2_scan_barcode_summary">或者在共享接收器上扫描二维码</string>
     <!-- MongoDB Settings -->
@@ -200,6 +202,7 @@
     <string name="send_crash_errors_to_developer">发送崩溃错误给开发者</string>
     <string name="automatic_crash_reporting">自动发送崩溃报告</string>
     <string name="send_feedback_message">发送反馈信息</string>
+    <string name="copying_settings">正在复制设置</string>
     <string name="show_settings_qr_codes">显示设置二维码</string>
     <string name="load_save_settings_to_sdcard">加载/保存设置到SD卡</string>
     <string name="alarms_and_alerts">报警和警报</string>
@@ -348,6 +351,7 @@
     <string name="save_all_settings_to_sdcard">保存所有设置到SD卡</string>
     <string name="load_all_settings_from_sdcard">从SD卡加载所有设置</string>
     <string name="delete_any_settings_on_sdcard">从SD卡删除所有设置</string>
+    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[使用 QR 码传输设置，点击设置->> 自动配置功能]]></string>
     <string name="xdrip_plus_security_key_settings_only">xDrip+ 安全密钥设置</string>
     <string name="show_general_and_collection_settings">显示常规和集合设置</string>
     <string name="copy_all_settings">复制所有设置</string>

@@ -35,6 +35,8 @@
     <string name="title_activity_double_calibration">두번 보정</string>
     <string name="title_activity_calibration_override">다시 보정</string>
     <string name="pref_header_cloud_storage">클라우드 저장소</string>
+    <string name="auto_configure_title">자동 구성</string>
+    <string name="prefs_auto_config_summary">바코드를 이용한 자동 구성.</string>
     <string name="scan_share2_barcode">스캔 공유 바코드</string>
     <string name="pref_share2_scan_barcode_summary">With share receiver의 바코드를 스캔</string>
     <!-- MongoDB Settings -->
@@ -201,6 +203,7 @@
     <string name="send_crash_errors_to_developer">개발자 크래쉬 오류 보내기</string>
     <string name="automatic_crash_reporting">자동 크래쉬 보고</string>
     <string name="send_feedback_message">피드백 메시지 보내기</string>
+    <string name="copying_settings">복사 세팅</string>
     <string name="show_settings_qr_codes">QR 코드 세팅 보기</string>
     <string name="load_save_settings_to_sdcard">SDCARD에 로드/저장 세팅</string>
     <string name="alarms_and_alerts">알람 및 알림</string>
@@ -349,6 +352,7 @@
     <string name="save_all_settings_to_sdcard">SDCARD에 모든 세팅 저장하기</string>
     <string name="load_all_settings_from_sdcard">SDCARD에서 모든 세팅 불러오기</string>
     <string name="delete_any_settings_on_sdcard">SDCARD에서 세팅 삭제하기</string>
+    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[세팅 -&gt; 자동 구성 기능을 사용하여 세팅을 전달하는 QR 코드를 사용하세요.]]></string>
     <string name="xdrip_plus_security_key_settings_only">xDrip 플러스 보안 키 세팅</string>
     <string name="show_general_and_collection_settings">일반 및 컬렉션 세팅 보기</string>
     <string name="copy_all_settings">모든 세팅 복사</string>

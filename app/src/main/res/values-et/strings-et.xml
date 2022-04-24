@@ -35,6 +35,8 @@
     <string name="title_activity_double_calibration">Esialgne kalibreerimine</string>
     <string name="title_activity_calibration_override">Kalibreeringu ümberlükkamine</string>
     <string name="pref_header_cloud_storage">Pilvesalvestus</string>
+    <string name="auto_configure_title">Automaatne seadistamine</string>
+    <string name="prefs_auto_config_summary">Automaatne seadistamine kasutades triipkoodi.</string>
     <string name="scan_share2_barcode">Skaneeri jagatud triipkoodi</string>
     <string name="pref_share2_scan_barcode_summary">Või skaneeri triipkoodi jagajalt</string>
     <!-- MongoDB Settings -->
@@ -201,6 +203,7 @@
     <string name="send_crash_errors_to_developer">Saada arendajale kokkujooksmise vead</string>
     <string name="automatic_crash_reporting">Automaatne kokkujooksmise aruanne</string>
     <string name="send_feedback_message">Saada tagasiside sõnum</string>
+    <string name="copying_settings">Seadete kopeerimine</string>
     <string name="show_settings_qr_codes">Kuva seaded QR-koodid</string>
     <string name="load_save_settings_to_sdcard">Laadi / salvesta seaded</string>
     <string name="alarms_and_alerts">Alarmid ja hoiatused</string>
@@ -350,6 +353,7 @@
     <string name="save_all_settings_to_sdcard">Salvestage kõik sätted seadete faili</string>
     <string name="load_all_settings_from_sdcard">Laadige seadete failist kõik seaded</string>
     <string name="delete_any_settings_on_sdcard">Kustuta seadete kaust (Download/xDrip-export)</string>
+    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Kasuta QR-koodi sätete ülekandmiseks, kasutades funktsiooni Seaded-> Automaatne konfigureerimine]]></string>
     <string name="xdrip_plus_security_key_settings_only">Ainult xDrip+ turvavõtme seaded</string>
     <string name="show_general_and_collection_settings">Näita üldiseid ja kollektsiooni seadeid</string>
     <string name="copy_all_settings">Kopeeri kõik seaded</string>

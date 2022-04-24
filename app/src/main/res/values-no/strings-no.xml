@@ -35,6 +35,8 @@
     <string name="title_activity_double_calibration">Dobbel Kalibrering</string>
     <string name="title_activity_calibration_override">Overstyr Kalibrering</string>
     <string name="pref_header_cloud_storage">Skylagring</string>
+    <string name="auto_configure_title">Autokonfigurer</string>
+    <string name="prefs_auto_config_summary">Autokonfigurer med strekkode.</string>
     <string name="scan_share2_barcode">Skan Delingsstrekkode</string>
     <string name="pref_share2_scan_barcode_summary">Eller skanne strekkoden på mottakeren</string>
     <!-- MongoDB Settings -->
@@ -187,6 +189,7 @@
     <string name="send_crash_errors_to_developer">Send krasjfeil til utvikler</string>
     <string name="automatic_crash_reporting">Automatisk krasjrapportering</string>
     <string name="send_feedback_message">Send tilbakemelding</string>
+    <string name="copying_settings">Kopiering Innstillinger</string>
     <string name="show_settings_qr_codes">Vis Innstillings QR-koder</string>
     <string name="load_save_settings_to_sdcard">Last inn / lagre innstillinger på SDkort</string>
     <string name="alarms_and_alerts">Alarmer og Varslinger</string>
@@ -335,6 +338,7 @@
     <string name="save_all_settings_to_sdcard">Lagre alle innstillinger til SDkort</string>
     <string name="load_all_settings_from_sdcard">Last alle innstillinger fra SDkort</string>
     <string name="delete_any_settings_on_sdcard">Slett innstillinger på SDkort</string>
+    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Bruk QR-koder til å overføre innstillingene ved å bruke Innstillinger-&gt; Autokonfigureringsfunksjonen]]></string>
     <string name="xdrip_plus_security_key_settings_only">Kun xDrip Plus sikkerhetsnøkkel-innstillinger</string>
     <string name="show_general_and_collection_settings">Vis Generelle- og innsamlingsinnstillinger</string>
     <string name="copy_all_settings">Kopier alle innstillinger</string>

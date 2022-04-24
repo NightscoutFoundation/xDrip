@@ -35,6 +35,8 @@
     <string name="title_activity_double_calibration">کالیبره سازی ابتدایی</string>
     <string name="title_activity_calibration_override">لغو کالیبره سازی</string>
     <string name="pref_header_cloud_storage">فضای ذخیره سازی ابری</string>
+    <string name="auto_configure_title">تنظیم خودکار</string>
+    <string name="prefs_auto_config_summary">تنظیم خودکار به وسیله رمزینه.</string>
     <string name="scan_share2_barcode">اسکن اشتراک گذاری رمزینه</string>
     <string name="pref_share2_scan_barcode_summary">یا اسکن رمزینه روی گیرنده مشترک</string>
     <!-- MongoDB Settings -->

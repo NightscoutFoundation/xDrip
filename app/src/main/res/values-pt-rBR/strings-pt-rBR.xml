@@ -35,6 +35,8 @@
     <string name="title_activity_double_calibration">Calibração inicial</string>
     <string name="title_activity_calibration_override">Sobrepor calibração</string>
     <string name="pref_header_cloud_storage">Armazenamento na nuvem</string>
+    <string name="auto_configure_title">Configurar automaticamente</string>
+    <string name="prefs_auto_config_summary">Configurar automaticamente usando um código de barras.</string>
     <string name="scan_share2_barcode">Escanear códigos de barras</string>
     <string name="pref_share2_scan_barcode_summary">Ou escanear o código de barras no receptor de compartilhamento</string>
     <!-- MongoDB Settings -->
@@ -212,6 +214,7 @@
     <string name="save_all_settings_to_sdcard">Guardar todas as Definições para o SDcard</string>
     <string name="load_all_settings_from_sdcard">Carregar todas as Definições do SDcard</string>
     <string name="delete_any_settings_on_sdcard">Apagar todas as definições do SDcard</string>
+    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Utilize QR codes para transferir definições em Definições-&gt;funcionalidade Auto Definição]]></string>
     <string name="show_general_and_collection_settings">Mostrar Definições Gerais e de Coleções</string>
     <string name="sensor_is_ready_please_enter_double_calibration">Sensor pronto, por favor insira dupla calibração</string>
     <string name="in_order_to_get_started_please_perform_two_finger">Para iniciar, por favor efetue dois testes capilares e insira os valores aqui</string>

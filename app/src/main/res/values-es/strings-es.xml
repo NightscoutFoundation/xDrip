@@ -35,6 +35,8 @@
     <string name="title_activity_double_calibration">Calibración Inicial</string>
     <string name="title_activity_calibration_override">Anular calibración</string>
     <string name="pref_header_cloud_storage">Almacenar en la nube</string>
+    <string name="auto_configure_title">Autoconfigurar</string>
+    <string name="prefs_auto_config_summary">Autoconfigurar usando código de barras.</string>
     <string name="scan_share2_barcode">Escanear el código de barras compartido</string>
     <string name="pref_share2_scan_barcode_summary">O escanear el código de barras en el receptor compartido</string>
     <!-- MongoDB Settings -->
@@ -201,6 +203,7 @@
     <string name="send_crash_errors_to_developer">Enviar errores de bloqueo al desarrollador</string>
     <string name="automatic_crash_reporting">Informes de bloqueo automáticos</string>
     <string name="send_feedback_message">Enviar mensaje de retroalimentación</string>
+    <string name="copying_settings">Copiando ajustes</string>
     <string name="show_settings_qr_codes">Mostrar códigos QR de Ajustes</string>
     <string name="load_save_settings_to_sdcard">Cargar/Guardar ajustes en tarjeta SD</string>
     <string name="alarms_and_alerts">Alarmas y alertas</string>
@@ -350,6 +353,7 @@
     <string name="save_all_settings_to_sdcard">Guardar ajustes en tarjeta SD</string>
     <string name="load_all_settings_from_sdcard">Cargar ajustes de tarjeta SD</string>
     <string name="delete_any_settings_on_sdcard">Eliminar ajustes de tarjeta SD</string>
+    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Utilizar códigos QR para transferir la configuración usando Preferencias->Función Auto configuración]]></string>
     <string name="xdrip_plus_security_key_settings_only">Sólo Configuración de clave de seguridad xDrip Plus</string>
     <string name="show_general_and_collection_settings">Mostrar Ajustes Generales y de recolección</string>
     <string name="copy_all_settings">Copiar todos los ajustes</string>

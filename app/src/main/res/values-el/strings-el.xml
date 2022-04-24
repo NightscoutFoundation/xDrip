@@ -35,6 +35,8 @@
     <string name="title_activity_double_calibration">Αρχική Βαθμονόμηση</string>
     <string name="title_activity_calibration_override">Παράκαμψη Βαθμονόμησης</string>
     <string name="pref_header_cloud_storage">Χώρο αποθήκευσης στο cloud</string>
+    <string name="auto_configure_title">Αυτόματη ρύθμιση</string>
+    <string name="prefs_auto_config_summary">Αυτόματη ρύθμιση παραμέτρων χρησιμοποιώντας barcode.</string>
     <string name="scan_share2_barcode">Σάρωση Κοινοποίησης Barcode</string>
     <string name="pref_share2_scan_barcode_summary">Ή σκάναρε το barcode στο δέκτη διαμοιρασμού</string>
     <!-- MongoDB Settings -->
@@ -129,6 +131,7 @@
     <string name="high_value">Υψηλή Τιμή</string>
     <string name="low_value">Χαμηλή Τιμή</string>
     <string name="save">Αποθήκευση</string>
+    <string name="copying_settings">Αντιγραφή ρυθμίσεων</string>
     <string name="other_alerts">Άλλες Ειδοποιήσεις</string>
     <string name="extra_alerts_xdrip_plus">Επιπλέον Ειδοποιήσεις (xDrip+)</string>
     <string name="forecasted_low_alert">Προβλεπόμενη Χαμηλή Ειδοποίηση</string>

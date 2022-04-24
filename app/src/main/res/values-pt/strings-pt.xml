@@ -35,6 +35,8 @@
     <string name="title_activity_double_calibration">Calibração Inicial</string>
     <string name="title_activity_calibration_override">Substituir Calibração</string>
     <string name="pref_header_cloud_storage">Armazenamento na Cloud</string>
+    <string name="auto_configure_title">Configurar Automaticamente</string>
+    <string name="prefs_auto_config_summary">Configuração Automática utilizando código de barras.</string>
     <string name="scan_share2_barcode">Ler Código de Barras de Partilha</string>
     <string name="pref_share2_scan_barcode_summary">Ou ler o código de barras no receptor de partilha</string>
     <!-- MongoDB Settings -->
@@ -201,6 +203,7 @@
     <string name="send_crash_errors_to_developer">Enviar relatório de erros para o programador</string>
     <string name="automatic_crash_reporting">Relatório Automático de Erros</string>
     <string name="send_feedback_message">Enviar Mensagem de Feedback</string>
+    <string name="copying_settings">Definições de Cópia</string>
     <string name="show_settings_qr_codes">Mostrar códigos QR de Definições</string>
     <string name="load_save_settings_to_sdcard">Carregar / Guardar definições no cartão SD</string>
     <string name="alarms_and_alerts">Alarmes e Alertas</string>
@@ -350,6 +353,7 @@
     <string name="save_all_settings_to_sdcard">Guardar todas as Definições no Cartão SD</string>
     <string name="load_all_settings_from_sdcard">Carregar todas as Definições do Cartão SD</string>
     <string name="delete_any_settings_on_sdcard">Apagar todas as definições do Cartão SD</string>
+    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Usar códigos QR para transferir definições em Definições->Configurar Automaticamente]]></string>
     <string name="xdrip_plus_security_key_settings_only">Apenas definições de Chave de Segurança xDrip+</string>
     <string name="show_general_and_collection_settings">Mostrar Definições Gerais e de Colecção</string>
     <string name="copy_all_settings">Copiar todas as Definições</string>

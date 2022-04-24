@@ -35,6 +35,8 @@
     <string name="title_activity_double_calibration">Dvojitá kalibrace</string>
     <string name="title_activity_calibration_override">Přepsání kalibrace</string>
     <string name="pref_header_cloud_storage">Cloudové úložiště</string>
+    <string name="auto_configure_title">Automatická konfigurace</string>
+    <string name="prefs_auto_config_summary">Automatická konfigurace pomocí čárového kódu.</string>
     <string name="scan_share2_barcode">Skenovat čárový kód na přijímači</string>
     <string name="pref_share2_scan_barcode_summary">Nebo naskenovat čárový kód na přijímači</string>
     <!-- MongoDB Settings -->
@@ -178,6 +180,7 @@
     <string name="send_crash_errors_to_developer">Odeslat pády aplikace vývojářům</string>
     <string name="automatic_crash_reporting">Automatické odesílání chybových hlášení</string>
     <string name="send_feedback_message">Odeslat zprávu se zpětnou vazbou</string>
+    <string name="copying_settings">Kopírovat nastavení</string>
     <string name="show_settings_qr_codes">Zobrazit nastavení QR kódů</string>
     <string name="load_save_settings_to_sdcard">Načíst / uložit všechna nastavení na SD kartu</string>
     <string name="alarms_and_alerts">Výstrahy a upozornění</string>
@@ -325,6 +328,7 @@
     <string name="save_all_settings_to_sdcard">Uložit všechna nastavení na SD kartu</string>
     <string name="load_all_settings_from_sdcard">Načíst všechna nastavení z SD karty</string>
     <string name="delete_any_settings_on_sdcard">Smazat všechna nastavení na SD kartě</string>
+    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Použít QR kódy pro přenos nastavení v Nastavení - Automatická konfigurace]]></string>
     <string name="xdrip_plus_security_key_settings_only">Pouze xDrip Plus Nastavení zabezpečení Key</string>
     <string name="show_general_and_collection_settings">Zobrazit obecná nastavení a kolekce</string>
     <string name="copy_all_settings">Kopírovat všechny hodnoty</string>

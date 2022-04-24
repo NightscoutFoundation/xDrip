@@ -35,6 +35,8 @@
     <string name="title_activity_double_calibration">Étalonnage initial</string>
     <string name="title_activity_calibration_override">Override de calibration</string>
     <string name="pref_header_cloud_storage">Stockage Cloud</string>
+    <string name="auto_configure_title">Configuration automatique</string>
+    <string name="prefs_auto_config_summary">Configuration automatique en utilisant un code-barres.</string>
     <string name="scan_share2_barcode">Numériser le code-barres Share</string>
     <string name="pref_share2_scan_barcode_summary">Ou scanner le code-barres sur le récepteur Share</string>
     <!-- MongoDB Settings -->
@@ -201,6 +203,7 @@
     <string name="send_crash_errors_to_developer">Envoyer les rapports d\'erreurs au développeur</string>
     <string name="automatic_crash_reporting">Rapport d\'erreurs automatique</string>
     <string name="send_feedback_message">Envoyer des commentaires</string>
+    <string name="copying_settings">Copie de paramètres</string>
     <string name="show_settings_qr_codes">Afficher les paramètres codes QR</string>
     <string name="load_save_settings_to_sdcard">Charger / Enregistrer les paramètres sur la carte SD</string>
     <string name="alarms_and_alerts">Alarmes et alertes</string>
@@ -350,6 +353,7 @@
     <string name="save_all_settings_to_sdcard">Enregistrer tous les paramètres à partir du fichier</string>
     <string name="load_all_settings_from_sdcard">Charger tous les paramètres depuis le fichier</string>
     <string name="delete_any_settings_on_sdcard">Supprimer le dossier de paramètres (Download/xDrip-export)</string>
+    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Utilisez les codes QR pour transférer les paramètres en utilisant Paramètres-> Configuration Automatique]]></string>
     <string name="xdrip_plus_security_key_settings_only">xDrip+ Clés de Sécurité seulement</string>
     <string name="show_general_and_collection_settings">Afficher les paramètres Généraux et Collection</string>
     <string name="copy_all_settings">Copier tous les paramètres</string>

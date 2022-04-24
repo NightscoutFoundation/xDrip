@@ -35,6 +35,8 @@
     <string name="title_activity_double_calibration">Първоначална калибрация</string>
     <string name="title_activity_calibration_override">Коригиране на калибрирането</string>
     <string name="pref_header_cloud_storage">Cloud хранилище</string>
+    <string name="auto_configure_title">Автоматично конфигуриране</string>
+    <string name="prefs_auto_config_summary">Автоматично конфигуриране с баркод.</string>
     <string name="scan_share2_barcode">Сканирай сподели баркод</string>
     <string name="pref_share2_scan_barcode_summary">Или сканирай баркода от споделения приемник</string>
     <!-- MongoDB Settings -->
@@ -196,6 +198,7 @@
     <string name="send_crash_errors_to_developer">Изпращане на грешки на разработчика</string>
     <string name="automatic_crash_reporting">Автоматично съобщение след срив</string>
     <string name="send_feedback_message">Избрати обратна връзка</string>
+    <string name="copying_settings">Копиране на настройките</string>
     <string name="show_settings_qr_codes">Покажи QR код за настройките</string>
     <string name="load_save_settings_to_sdcard">Зареди / Запази настройки на SD карта</string>
     <string name="alarms_and_alerts">Аларми и Алерти</string>
