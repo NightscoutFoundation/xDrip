@@ -31,6 +31,7 @@ import com.eveningoutpost.dexdrip.insulin.MultipleInsulins;
 import com.eveningoutpost.dexdrip.utils.jobs.BackgroundQueue;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.xdrip;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -70,7 +71,7 @@ public class Treatments extends Model {
     public static final String SENSOR_STOP_EVENT_TYPE = "Sensor Stop";
     private static final String DEFAULT_EVENT_TYPE = "<none>";
 
-    public final static String XDRIP_TAG = "xdrip";
+    public final static String XDRIP_TAG = "xdrip_" + FirebaseInstanceId.getInstance().getId();
 
     //public static double activityMultipler = 8.4; // somewhere between 8.2 and 8.8
     private static Treatments lastCarbs;
