@@ -37,8 +37,8 @@
     <string name="title_activity_double_calibration">Initial Calibration</string>
     <string name="title_activity_calibration_override">Calibration Override</string>
     <string name="pref_header_cloud_storage">Cloud Storage</string>
-    <string name="barcode_scanner_title">Barcode Scanner</string>
-    <string name="prefs_barcode_scanner_summary">Import settings from QR or barcode</string>
+    <string name="auto_configure_title">Barcode Scanner</string>
+    <string name="prefs_auto_config_summary">Import settings from QR or barcode</string>
     <string name="scan_share2_barcode">Scan Share Barcode</string>
     <string name="pref_share2_scan_barcode_summary">Or scan the barcode on the share receiver</string>
 
@@ -222,7 +222,7 @@
     <string name="send_crash_errors_to_developer">Send crash errors to developer</string>
     <string name="automatic_crash_reporting">Automatic Crash Reporting</string>
     <string name="send_feedback_message">Send Feedback Message</string>
-    <string name="backup_and_restore">Backup and Restore</string>
+    <string name="copying_settings">Backup and Restore</string>
     <string name="app_version">App Version</string>
     <string name="feedback_and_support">Feedback and Support</string>
     <string name="show_settings_qr_codes">Show Settings QR codes</string>

@@ -964,12 +964,12 @@
         android:title="@string/backup_and_update_title">
         <PreferenceCategory
             android:key="xdrip_plus_move_settings"
-            android:title="@string/backup_and_restore">
+            android:title="@string/copying_settings">
             <PreferenceScreen
                 android:icon="@drawable/ic_qrscan"
                 android:key="auto_configure"
-                android:summary="@string/prefs_barcode_scanner_summary"
-                android:title="@string/barcode_scanner_title" />
+                android:summary="@string/prefs_auto_config_summary"
+                android:title="@string/auto_configure_title" />
             <Preference
                 android:icon="@drawable/ic_qrcode_grey600_48dp"
                 android:key="show_qr_codes"
