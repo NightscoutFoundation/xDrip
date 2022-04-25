@@ -30,6 +30,7 @@ import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.getTran
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.usingNativeMode;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.None;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getDexCollectionType;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.hasDexcomRaw;
@@ -72,7 +73,7 @@ public class SensorDays {
         if (type == null) type = None;  // obscure workaround
 
         // get cached result
-        val result = cache.get(type.toString() + tx_id);
+        val result = cache.get(type + tx_id);
         if (result != null && result.cacheValid()) return result;
 
         val ths = new SensorDays();
@@ -127,11 +128,15 @@ public class SensorDays {
         }
     }
 
+    private static long getLibreAgeMs() {
+        return Pref.getInt("nfc_sensor_age", -50000) * MINUTE_IN_MS;
+    }
+
     private long getLibreStart() {
         try {
-            val age_minutes = Pref.getInt("nfc_sensor_age", -50000);
-            if (age_minutes > 0) {
-                return tsl() - (age_minutes * Constants.MINUTE_IN_MS);
+            val age_ms = getLibreAgeMs();
+            if (age_ms > 0) {
+                return tsl() - age_ms;
             } else {
                 return Sensor.currentSensor().started_at;
             }
@@ -210,7 +215,7 @@ public class SensorDays {
     }
 
     boolean cacheValid() {
-        return msSince(created) < Constants.MINUTE_IN_MS * 10;
+        return msSince(created) < MINUTE_IN_MS * 10;
     }
 
     void invalidateCache() {
