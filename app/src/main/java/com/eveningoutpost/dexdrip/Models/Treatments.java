@@ -28,6 +28,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.insulin.Insulin;
 import com.eveningoutpost.dexdrip.insulin.InsulinManager;
 import com.eveningoutpost.dexdrip.insulin.MultipleInsulins;
+import com.eveningoutpost.dexdrip.utils.jobs.BackgroundQueue;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
@@ -48,6 +49,8 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import lombok.val;
 
@@ -435,22 +438,27 @@ public class Treatments extends Model {
         pushTreatmentSync(treatment, true, null); // new entry by default
     }
 
-    private static void pushTreatmentSync(Treatments treatment, boolean is_new, String suggested_uuid) {
+    private static void pushTreatmentSync(final Treatments treatment, boolean is_new, String suggested_uuid) {
 
-        if (Home.get_master_or_follower()) GcmActivity.pushTreatmentAsync(treatment);
-
-        if (!(Pref.getBoolean("cloud_storage_api_enable", false) || Pref.getBoolean("cloud_storage_mongodb_enable", false))) {
-            NSClientChat.pushTreatmentAsync(treatment);
-        } else {
-            Log.d(TAG, "Skipping NSClient treatment broadcast as nightscout direct sync is enabled");
-        }
-
-        if (suggested_uuid == null) {
-            // only sync to nightscout if source of change was not from nightscout
-            if (UploaderQueue.newEntry(is_new ? "insert" : "update", treatment) != null) {
-                SyncService.startSyncService(3000); // sync in 3 seconds
+        BackgroundQueue.postDelayed(() -> {
+            if (Home.get_master_or_follower()) {
+                GcmActivity.pushTreatmentAsync(treatment);
             }
-        }
+
+            if (!(Pref.getBoolean("cloud_storage_api_enable", false) || Pref.getBoolean("cloud_storage_mongodb_enable", false))) {
+                NSClientChat.pushTreatmentAsync(treatment);
+            } else {
+                Log.d(TAG, "Skipping NSClient treatment broadcast as nightscout direct sync is enabled");
+            }
+
+            if (suggested_uuid == null) {
+                // only sync to nightscout if source of change was not from nightscout
+                if (UploaderQueue.newEntry(is_new ? "insert" : "update", treatment) != null) {
+                    SyncService.startSyncService(3000); // sync in 3 seconds
+                }
+            }
+        },1000);
+
     }
 
     public static void pushTreatmentSyncToWatch(Treatments treatment, boolean is_new) {
@@ -1320,6 +1328,28 @@ public class Treatments extends Model {
                 .serializeSpecialFloatingPointValues()
                 .create();
         return gson.toJson(this);
+    }
+
+    public boolean isPenSyncedDose() {
+        return notes != null && notes.startsWith("PEN");
+    }
+
+    public String getPenSerial() {
+        if (isPenSyncedDose()) {
+            final Pattern penPattern = Pattern.compile(".*PEN ([A-Z0-9]+).*", Pattern.DOTALL);
+            final Matcher m = penPattern.matcher(notes);
+            if (m.matches()) {
+                return m.group(1);
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public boolean isPrimingDose() {
+        return notes != null && notes.startsWith("Priming");
     }
 }
 

@@ -203,4 +203,17 @@
         <item>JamTrendArrow3Impl</item>
     </string-array>
 
+    <string-array name="AudioFocus">
+        <item>Don\'t adjust other app sounds</item>
+        <item>Lower volume of other apps</item>
+        <item>Pause other apps playing audio</item>
+        <item>Pause all other sounds</item>
+    </string-array>
+    <string-array name="AudioFocusValues">
+        <item>AUDIOFOCUS_NONE</item>
+        <item>AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK</item>
+        <item>AUDIOFOCUS_GAIN_TRANSIENT</item>
+        <item>AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE</item>
+    </string-array>
+
 </resources>

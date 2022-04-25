@@ -156,7 +156,7 @@ public class ReadingDataTest extends RobolectricTestWithConfig {
             LibreTrendPoint libreTrendPoint = new LibreTrendPoint(1000 - times[i], data[i], 0x700, GlucoseData.DataSource.BLE);
             libreTrendPoints.set((int)libreTrendPoint.getSensorTime(), libreTrendPoint);
         }
-        readingData.calculateSmoothDataImproved(libreTrendPoints);
+        readingData.calculateSmoothDataImproved(libreTrendPoints, false);
         assertWithMessage("First 4 values should be used").that(readingData.trend.get(0).glucoseLevelRawSmoothed).isEqualTo((200+210+222+230) / 4);
     }
 
@@ -185,7 +185,7 @@ public class ReadingDataTest extends RobolectricTestWithConfig {
         // The first value has an error
         libreTrendPoints.get(1000).rawSensorValue = 0;
 
-        readingData.calculateSmoothDataImproved(libreTrendPoints);
+        readingData.calculateSmoothDataImproved(libreTrendPoints, false);
         assertWithMessage("3 values should be used").that(readingData.trend.get(0).glucoseLevelRawSmoothed).isEqualTo((210+222+230) / 3);
         assertWithMessage("4 values should be used").that(readingData.trend.get(1).glucoseLevelRawSmoothed).isEqualTo((210 + 222 + 230 + 240) / 4);
         assertWithMessage("3 values should be used").that(readingData.trend.get(2).glucoseLevelRawSmoothed).isEqualTo((222 + 230 + 240) / 3);
@@ -228,7 +228,7 @@ public class ReadingDataTest extends RobolectricTestWithConfig {
         for(int i =0 ; i < 20 ; i++)
         System.err.println(1000-i + " "  +libreTrendPoints.get(1000 - i ).rawSensorValue);
 
-        readingData.calculateSmoothDataImproved(libreTrendPoints);
+        readingData.calculateSmoothDataImproved(libreTrendPoints, false);
         assertWithMessage("First 5 values should be used").that(readingData.trend.get(0).glucoseLevelRawSmoothed).isEqualTo((200 + 210 + 220 +230 +240) / 5);
         assertWithMessage("First 5 values should be used (point 2)").that(readingData.trend.get(1).glucoseLevelRawSmoothed).isEqualTo((220 +230 +240 + 250 +260) / 5);
         assertWithMessage("First 5 values should be used (point 4)").that(readingData.trend.get(2).glucoseLevelRawSmoothed).isEqualTo((240 + 250 + 260 +270 +280) / 5);
@@ -276,7 +276,7 @@ public class ReadingDataTest extends RobolectricTestWithConfig {
         for(int i =0 ; i < 20 ; i++)
             System.err.println(1000-i + " "  +libreTrendPoints.get(1000 - i ).rawSensorValue);
 
-        readingData.calculateSmoothDataImproved(libreTrendPoints);
+        readingData.calculateSmoothDataImproved(libreTrendPoints, false);
         // Here is how things should look like
         // reading   0       1       2       3   4                   5           6
         // point   1000 999 998 997 996 995 994 993 992 991 990 989 988 987 986 985 984 983
@@ -330,7 +330,7 @@ public class ReadingDataTest extends RobolectricTestWithConfig {
         for(int i =0 ; i < 20 ; i++)
             System.err.println(1000-i + " "  +libreTrendPoints.get(1000 - i ).rawSensorValue);
 
-        readingData.calculateSmoothDataImproved(libreTrendPoints);
+        readingData.calculateSmoothDataImproved(libreTrendPoints, false);
         // Here is how things should look like
         // reading   0       1       2       3   4                   5           6
         // point   1000 999 998 997 996 995 994 993 992 991 990 989 988 987 986 985 984 983

@@ -52,6 +52,7 @@ import com.eveningoutpost.dexdrip.utils.LibreTrendUtil;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -62,10 +63,6 @@ import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 // TODO have we always checked checksum on this data? what about LibreAlarm path?
 
-enum ENABLE_STREAMING {
-    SUCCESS,
-    FAILED,
-}
 
 public class NFCReaderX {
 
@@ -93,8 +90,10 @@ public class NFCReaderX {
     // Never in production. Used to emulate German sensor behavior.
     public static boolean use_fake_de_data() {
         //Pref.setBoolean("use_fake_de_data", true);
-        //Log.e(TAG, "Not using fake data");
-        return Pref.getBooleanDefaultFalse("use_fake_de_data");
+        //
+        boolean ret = Pref.getBooleanDefaultFalse("use_fake_de_data");
+        Log.d(TAG, "using fake data = " + ret);
+        return ret;
     }
 
     static boolean enable_bluetooth_ask_user = false;
@@ -106,6 +105,7 @@ public class NFCReaderX {
     }
 
 
+    @Deprecated
     public static void stopNFC(Activity context) {
         if (foreground_enabled) {
             try {
@@ -138,6 +138,7 @@ public class NFCReaderX {
     }
 
     @SuppressLint("NewApi")
+    @Deprecated
     public static void doNFC(final Activity context) {
 
         if (!useNFC()) return;
@@ -219,11 +220,11 @@ public class NFCReaderX {
 
     }
 
-    private static synchronized void doTheScan(final Activity context, Tag tag, boolean showui) {
+    public static synchronized void doTheScan(final Activity context, Tag tag, boolean showui) {
         synchronized (tag_lock) {
             if (!tag_discovered) {
                 if (!useNFC()) return;
-                if ((!last_read_succeeded) && (JoH.ratelimit("nfc-debounce", 5)) || (JoH.ratelimit("nfc-debounce", 60))) {
+                if ((!last_read_succeeded) && (JoH.ratelimit("nfc-debounce", 5)) || (JoH.ratelimit("nfc-debounce", 30))) {
                     tag_discovered = true;
                     Home.staticBlockUI(context, true);
                     last_tag_discovered = JoH.tsl();
@@ -239,12 +240,12 @@ public class NFCReaderX {
                 } else {
                     if (JoH.tsl() - last_tag_discovered > 5000) {
                         vibrate(context, 4);
-                        JoH.static_toast_short(gs(R.string.not_so_quickly_wait_60_seconds));
+                        JoH.static_toast_short(gs(R.string.not_so_quickly_wait_30_seconds));
                     }
                 }
             } else {
                 Log.d(TAG, "Tag already discovered!");
-                if (JoH.tsl() - last_tag_discovered > 60000)
+                if (JoH.tsl() - last_tag_discovered > 30000)
                     tag_discovered = false; // don't lock too long
             }
         } // lock
@@ -260,7 +261,7 @@ public class NFCReaderX {
         }
     }
 
-    public static void SendLibrereading(final String tagId, byte[] data1, final long CaptureDateTime, byte[] patchUid, byte[] patchInfo) {
+    public static void sendLibrereadingToFollowers(final String tagId, byte[] data1, final long CaptureDateTime, byte[] patchUid, byte[] patchInfo) {
         if (!Home.get_master()) {
             return;
         }
@@ -282,12 +283,13 @@ public class NFCReaderX {
     }
 
     public static boolean HandleGoodReading(final String tagId, byte[] data1, final long CaptureDateTime, final boolean allowUpload, byte[] patchUid, byte[] patchInfo) {
-        return HandleGoodReading(tagId, data1, CaptureDateTime, allowUpload, patchUid, patchInfo, false);
+        return HandleGoodReading(tagId, data1, CaptureDateTime, allowUpload, patchUid, patchInfo, false, null, null);
     }
 
 
     // returns true if checksum passed.
-    public static boolean HandleGoodReading(final String tagId, byte[] data1, final long CaptureDateTime, final boolean allowUpload, byte[] patchUid, byte[] patchInfo, boolean decripted_data) {
+    public static boolean HandleGoodReading(final String tagId, byte[] data1, final long CaptureDateTime, final boolean allowUpload, byte[] patchUid, byte[] patchInfo,
+                                            boolean decripted_data, int[] trend_bg_vals, int[] history_bg_vals) {
         Log.e(TAG, "HandleGoodReading called dat1 len = " + data1.length);
         if (data1.length > Constants.LIBRE_1_2_FRAM_SIZE) {
             // It seems that some times we read a buffer that is bigger than 0x158, but we should only use the first 0x158 bytes.
@@ -302,7 +304,7 @@ public class NFCReaderX {
             return true;
         }
 
-        SendLibrereading(tagId, data1, CaptureDateTime, patchUid, patchInfo);
+        sendLibrereadingToFollowers(tagId, data1, CaptureDateTime, patchUid, patchInfo);
 
         if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             // If oop is used, there is no need to  do the checksum It will be done by the oop.
@@ -323,7 +325,7 @@ public class NFCReaderX {
                 return true;
             }
 
-            final ReadingData mResult = parseData(0, tagId, data1, CaptureDateTime);
+            final ReadingData mResult = parseData(0, tagId, data1, CaptureDateTime, trend_bg_vals, history_bg_vals);
             new Thread() {
                 @Override
                 public void run() {
@@ -332,7 +334,8 @@ public class NFCReaderX {
                         // Protect against wifi reader and gmc reader coming at the same time.
                         synchronized (NFCReaderX.class) {
                             if (mResult != null) {
-                                LibreAlarmReceiver.processReadingDataTransferObject(mResult, CaptureDateTime, tagId, allowUpload, patchUid, patchInfo);
+                                boolean bg_val_exists = trend_bg_vals != null && history_bg_vals != null;
+                                LibreAlarmReceiver.processReadingDataTransferObject(mResult, CaptureDateTime, tagId, allowUpload, patchUid, patchInfo, bg_val_exists);
                                 Home.staticRefreshBGCharts();
                             }
                         }
@@ -364,6 +367,7 @@ public class NFCReaderX {
                     prefs.edit().putString("libre2_enable_bluetooth_streaming", "enable_streaming_always").apply();
                 }
                 Pref.setLong(ENABLE_BLUETOOTH_TIMESTAMP, JoH.tsl());
+                JoH.clearRatelimit("nfc-debounce");
                 show.dismiss();
             }
         });
@@ -529,10 +533,11 @@ public class NFCReaderX {
             byte[] res = null;
             while (true) {
                 try {
-                    res = nfcvTag.transceive(full_cmd);
                     if (use_fake_de_data()) {
                         // DC:A6:32:0F:4F:92
                         res = new byte[]{(byte) 0x12, (byte) 0x92, (byte) 0x4f, (byte) 0x0f, (byte) 0x32, (byte) 0xa6, (byte) 0xdc};
+                    } else {
+                        res = nfcvTag.transceive(full_cmd);
                     }
                     Log.e(TAG, "enable streaming command returned: " + HexDump.dumpHexString(res));
                     break;
@@ -648,6 +653,7 @@ public class NFCReaderX {
                         }
 
                         SensorType sensorType = LibreOOPAlgorithm.getSensorType(patchInfo);
+                        Log.uel(TAG, "Libre sensor of type " + sensorType.name() + " detected.");
                         if (addressed && sensorType != SensorType.Libre1 && sensorType != SensorType.Libre1New) {
                             Log.d(TAG, "Not using addressed mode since not a libre 1 sensor");
                             addressed = false;
@@ -814,7 +820,7 @@ public class NFCReaderX {
     }
 
     // Sensor structure is described at  https://github.com/UPetersen/LibreMonitor/wiki
-    public static ReadingData parseData(int attempt, String tagId, byte[] data, Long CaptureDateTime) {
+    public static ReadingData parseData(int attempt, String tagId, byte[] data, Long CaptureDateTime, int[] trend_bg_vals, int[] history_bg_vals) {
         final int FRAM_RECORD_SIZE = 6;
         final int TREND_START = 28;
         final int HISTORY_START = 124;
@@ -879,6 +885,21 @@ public class NFCReaderX {
             glucoseData.sensorTime = time;
             if (verifyTime(time, "parseData trendList", data)) {
                 trendList.add(glucoseData);
+            }
+        }
+
+        Collections.sort(trendList);
+        Collections.sort(historyList);
+        // Adding the bg vals must be done after the sort.
+        if (trend_bg_vals != null && trend_bg_vals.length == trendList.size() && history_bg_vals != null
+                && history_bg_vals.length == historyList.size()) {
+            for (int i = 0; i < trend_bg_vals.length; i++) {
+                trendList.get(i).glucoseLevel = trend_bg_vals[i];
+                Log.e(TAG, "Adding bg val for trend at time " + trendList.get(i).sensorTime + " val =  " + trend_bg_vals[i]);
+            }
+            for (int i = 0; i < history_bg_vals.length; i++) {
+                historyList.get(i).glucoseLevel = history_bg_vals[i];
+                Log.e(TAG, "Adding bg val for history at time " + historyList.get(i).sensorTime + " val =  " + history_bg_vals[i]);
             }
         }
 
@@ -996,14 +1017,14 @@ public class NFCReaderX {
         }
         List<GlucoseData> result;
         if (libreBlock.byte_end == Constants.LIBRE_1_2_FRAM_SIZE) {
-            ReadingData reading_data = parseData(0, "", libreBlock.blockbytes, libreBlock.timestamp);
+            ReadingData reading_data = parseData(0, "", libreBlock.blockbytes, libreBlock.timestamp, null, null);
             if (reading_data == null) {
                 return null;
             }
             result = reading_data.trend;
         } else if (libreBlock.byte_end == 44) {
             // This is the libre2 ble data
-            result = LibreOOPAlgorithm.parseBleDataPerMinute(libreBlock.blockbytes, libreBlock.timestamp);
+            result = LibreOOPAlgorithm.parseBleDataPerMinute(libreBlock.blockbytes, null, libreBlock.timestamp);
         } else {
             Log.i(TAG, "libreBlock exists but size is " + libreBlock.byte_end + " don't know how to parse it " + libreBlock.timestamp);
             return null;
@@ -1013,6 +1034,11 @@ public class NFCReaderX {
             return null;
         }
         return result;
+    }
+
+    enum ENABLE_STREAMING {
+        SUCCESS,
+        FAILED,
     }
 
 }

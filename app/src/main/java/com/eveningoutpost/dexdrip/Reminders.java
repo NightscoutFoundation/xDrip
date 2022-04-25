@@ -20,7 +20,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -577,30 +576,20 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
         showReminderDialog(v, null, 0);
     }
 
-    private synchronized MediaPlayer playSelectedSound() {
-        return JoH.playSoundUri((selectedSound != null) ? selectedSound : JoH.getResourceURI(R.raw.reminder_default_notification));
+    private synchronized void playSelectedSound() {
+        JoH.playSoundUri((selectedSound != null) ? selectedSound : JoH.getResourceURI(R.raw.reminder_default_notification));
     }
 
     public void chooseReminderSound(View v) {
-        final MediaPlayer player = playSelectedSound();
+        playSelectedSound();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.select_new_sound_source)
                 .setOnDismissListener(dialog -> {
-                    try {
-                        player.stop();
-                        player.release();
-                    } catch (Exception e) {
-                        //
-                    }
+                        JoH.stopSoundUri();
                 })
                 .setItems(R.array.reminderAlertType, (dialog, which) -> {
-                    try {
-                        player.stop();
-                        player.release();
-                    } catch (Exception e) {
-                        //
-                    }
+                    JoH.stopSoundUri();
                     if (which == 0) {
                         final Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
                         intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, xdrip.getAppContext().getString(R.string.select_tone_alert));
@@ -1199,7 +1188,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
                 final PendingIntent pendingIntent = PendingIntent.getActivity(xdrip.getAppContext(), NOTIFICATION_ID, notificationIntent, FLAG_UPDATE_CURRENT);
 
                 if (reminder.graphicon) {
-                    Treatments.create_note("Reminder"+": " + reminder.title, tsl());
+                    Treatments.create_note("Reminder"+": " + reminder.getTitle(), tsl());
                 }
 
                 JoH.showNotification(reminder.getTitle(), xdrip.getAppContext().getString(R.string.reminder_due) + " " + JoH.hourMinuteString(reminder.next_due), pendingIntent, NOTIFICATION_ID, NotificationChannels.REMINDER_CHANNEL, true, true, deleteIntent, JoH.isOngoingCall() ? null : (reminder.sound_uri != null) ? Uri.parse(reminder.sound_uri) : Uri.parse(JoH.getResourceURI(R.raw.reminder_default_notification)), null);
