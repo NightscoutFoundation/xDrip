@@ -58,6 +58,11 @@ public class ProfileItem {
         return Integer.parseInt(result.substring(0,2))*60+Integer.parseInt(result.substring(2,4));
     }
 
+    public static int timeStampToMin(long when) {
+        final String result = hourMinConvert.format(when);
+        return Integer.parseInt(result.substring(0, 2)) * 60 + Integer.parseInt(result.substring(2, 4));
+    }
+
     public ProfileItem clone()
     {
         ProfileItem nu = new ProfileItem(this.start_min,this.end_min,this.carb_ratio,this.sensitivity);
