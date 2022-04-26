@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="title_activity_bluetooth_scan">Bluetooth сканиране</string>
-    <string name="connected">Сдвоено</string>
+    <string name="connected">Свързано</string>
     <string name="disconnected">Раздвоено</string>
     <string name="menu_scan">Сканиране</string>
     <string name="menu_stop">Спиране</string>
@@ -24,7 +24,7 @@
     <string name="title_activity_usb_connected">Активност USB свързаност</string>
     <string name="snooze">Отлагане</string>
     <string name="snooze_hint">Отлагане на алармата за x минути</string>
-    <string name="ok">Добре</string>
+    <string name="ok">OK</string>
     <string name="cancel">Отказ</string>
     <string name="no">Не</string>
     <string name="pref_sensor_location_dont_ask_again">Не ме питай повече</string>
@@ -215,6 +215,13 @@
     <string name="extrapolate_data_to_try_to_predict_lows">Екстраполиране на данните в опит да се предвиди ниска КЗ</string>
     <string name="other_xdrip_plus_alerts">Други xDrip+ известия</string>
     <string name="xdrip_plus_display_settings">xDrip+ Персонализиране</string>
+    <string name="system_status">Системен статус</string>
+    <string name="settings">Настройки</string>
+    <string name="hardware_data_source">Източник на данни</string>
+    <string name="data_source_settings">Настройки на източници на данни</string>
+    <string name="wear_integration">Интеграция с Wear</string>
+    <string name="create_low_alert">Създай аларма(ниско)</string>
+    <string name="create_high_alert">Създай аларма(високо)</string>
     <string name="pref_message_influxdb_uri">Замени примерните стойности в {} с твоите реални стойности</string>
     <string name="calibrate_external_libre_2_algorithm_summary">Приложи хДрип калибрация на OOP2 данни.</string>
     <string name="calibrate_external_libre_2_algorithm_title">OOP2 алгоритъм калибрация.</string>
