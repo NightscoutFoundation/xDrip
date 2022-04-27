@@ -151,7 +151,7 @@ public class Pref {
     public static boolean removeItem(final String pref) {
         initializePrefs();
         if (prefs != null) {
-            prefs.edit().remove(pref).apply();
+            prefs.edit().remove(pref).commit();
             return true;
         }
         return false;

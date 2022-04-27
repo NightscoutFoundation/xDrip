@@ -16,6 +16,7 @@ import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.LibreData;
 import com.eveningoutpost.dexdrip.Models.PenData;
 import com.eveningoutpost.dexdrip.Models.Prediction;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserNotification;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
@@ -30,6 +31,7 @@ import java.util.Iterator;
 public class IdempotentMigrations {
     private Context mContext;
     private SharedPreferences prefs;
+    private final static String TAG = IdempotentMigrations.class.getSimpleName();
 
     public IdempotentMigrations(Context context) {
         this.mContext = context;
@@ -55,6 +57,7 @@ public class IdempotentMigrations {
 
         IncompatibleApps.notifyAboutIncompatibleApps();
         CompatibleApps.notifyAboutCompatibleApps();
+        migrateOOP2CalibrationPreferences();
 
     }
 
@@ -124,6 +127,38 @@ public class IdempotentMigrations {
         } else {
             // instead of an empty string: delete the setting to show (but later not read) default string
             prefs.edit().remove("cloud_storage_api_base").apply();
+        }
+    }
+
+    // This function moves us from calibrate_external_libre_2_algorithm which is a boolean to a
+    // 3 values option
+    private void migrateOOP2CalibrationPreferences() {
+        // Read twice with both defaults to see if something set there.
+        boolean res_true = Pref.getBoolean("calibrate_external_libre_2_algorithm", true);
+        boolean res_false = Pref.getBoolean("calibrate_external_libre_2_algorithm", false);
+        UserError.Log.e(TAG, "Initial values are: " + res_true + " " + res_false + " " + mContext);
+        if(res_true == true && res_false == false) {
+            // This means that no value is set, we can safely continue.
+            UserError.Log.e(TAG, "No value is set for calibrate_external_libre_2_algorithm returning");
+            return;
+        }
+        // If we are here we have a real value...
+        boolean res = Pref.removeItem("calibrate_external_libre_2_algorithm");
+        UserError.Log.e(TAG, "res returned " + res);
+
+        // Read again....
+        res_true = Pref.getBoolean("calibrate_external_libre_2_algorithm", true);
+        res_false = Pref.getBoolean("calibrate_external_libre_2_algorithm", false);
+        UserError.Log.e(TAG, "After delete values are: " + res_true + " " + res_false);
+
+        if(res_true == true) {
+            UserError.Log.e(TAG, "calibrate_external_libre_2_algorithm is set to true");
+            // Set xx to xxx
+            Pref.setString("calibrate_external_libre_2_algorithm_multi", "calibrate_raw");
+        } else {
+            UserError.Log.e(TAG, "calibrate_external_libre_2_algorithm is set to false");
+            // Set xx to xxx
+            Pref.setString("calibrate_external_libre_2_algorithm_multi", "no_calibration");
         }
     }
 
