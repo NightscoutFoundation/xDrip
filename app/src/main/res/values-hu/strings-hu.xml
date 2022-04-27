@@ -1555,6 +1555,8 @@
     <string name="title_multiple_insulin_types_settings">Többféle inzulin</string>
     <string name="summary_multiple_insulin_types_settings">Beállítások többféle inzulin használatakor</string>
     <string name="title_multiple_insulin_types">Többféle inzulin</string>
+    <string name="summary_multiple_insulin_use_basal_activity">Bázisinzulin aktivitás megrajzolása és a prediktív modellhez adása</string>
+    <string name="title_multiple_insulin_use_basal_activity">Bázisinzulin aktivitás</string>
     <string name="title_xdrip_plus_snooze_broadcast">Helyi adatszórás</string>
     <string name="summary_broadcast_snooze">Szundi küldése más app-nak ezen készüléken</string>
     <string name="title_broadcast_snooze">Helyi adatszórás</string>
@@ -1562,6 +1564,7 @@
     <string name="title_accept_broadcast_snooze">Helyi adatszórás engedélyezése</string>
     <string name="no_battery_optimization_whitelisting">Úgy tűnik, a készüléke nem vezet kivétellistát az akku optimalizált app-okról!</string>
     <string name="no_i_really_know">Nem, tényleg tudom, mit csinálok</string>
+    <string name="use_for_calibration">Használja a %s értéket kalibrációra?</string>
     <string name="problem_loading_speech_lexicon">Hiba a beszédlexikon betöltésében!</string>
     <string name="no_never">NEM, soha</string>
     <string name="auto_starting_sensor">Automatikus szenzorindítás!</string>
@@ -1588,4 +1591,8 @@
     <string name="zero_value">Nulla érték</string>
     <string name="adjust_dose">Adagolás beállítása</string>
     <string name="Dose">Adag</string>
+    <string name="invalid_serial">Érvénytelen szériaszám</string>
+    <string name="allow_do_not_disturb_text">Adjon Ne zavarjanak-engedélyt az xDrip-nek a rendszerbeállításokban a következő oldalon, hogy akkor is tudjon figyelmeztetni az xDrip, ha az Androidban a Ne zavarjanak funkció aktív</string>
+    <string name="graphical_editor_for_pump_basal">Pumpák bázisinzulin-profiljának szerkesztése</string>
+    <string name="basal_profile_editor">Bázisinzulin-profil szerkesztő</string>
 </resources>
