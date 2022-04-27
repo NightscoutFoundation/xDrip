@@ -682,7 +682,16 @@
                 android:key="predict_use_momentum"
                 android:summary="@string/calculate_including_glucose_trend"
                 android:title="@string/use_trend_momentum" />
-
+            <Preference
+                android:key="basal_profile_edit_start"
+                android:summary="@string/graphical_editor_for_pump_basal"
+                android:title="@string/basal_profile_editor">
+                <intent
+                    android:action="android.intent.action.MAIN"
+                    android:targetClass="com.eveningoutpost.dexdrip.profileeditor.BasalProfileEditor"
+                    android:targetPackage="@string/local_target_package">
+                </intent>
+            </Preference>
         </PreferenceCategory>
         <PreferenceCategory
             android:key="title_I_understandb"

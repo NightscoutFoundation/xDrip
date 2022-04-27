@@ -1687,4 +1687,7 @@
     <string name="invalid_serial">Invalid serial</string>
     <string name="set_pen_to_format">Set Pen %s to %s</string>
     <string name="pen_contains_which_insulin_type">PEN %s contains which insulin type?</string>
+    <string name="allow_do_not_disturb_text">To be able to have the optional ability to alert even when Android Do-Not-Disturb is enabled, please allow xDrip this permission in the system settings on the next page</string>
+    <string name="graphical_editor_for_pump_basal">Graphical editor for pump basal profiles</string>
+    <string name="basal_profile_editor">Basal Profile Editor</string>
 </resources>
