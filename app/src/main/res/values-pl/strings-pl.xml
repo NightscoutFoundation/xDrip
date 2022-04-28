@@ -1464,4 +1464,5 @@
     <string name="snooze_done">← Uśpij / Potwierdź →</string>
     <string name="adjust_dose">Dostosowanie dawki</string>
     <string name="Dose">Dawka</string>
+    <string name="choose_type">Wybierz typ</string>
 </resources>
