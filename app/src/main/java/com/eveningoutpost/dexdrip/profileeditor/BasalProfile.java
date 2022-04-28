@@ -39,7 +39,7 @@ public class BasalProfile {
         return Pref.getString(ACTIVE_BASAL_PROFILE, "1");
     }
 
-    private static int howManyMatch(final List<Float> segments, final int start, final int maxMatches) {
+    private static <T> int howManyMatch(final List<T> segments, final int start, final int maxMatches) {
         val current = segments.get(start);
         int matches = 1;
         for (int pos = start + 1; pos < segments.size(); pos++) {
@@ -56,11 +56,11 @@ public class BasalProfile {
     }
 
     /**
-     * Compress a list of floats where there are consistent repeated identical segments
+     * Compress a list of elements where there are consistent repeated identical segments
      * @param segments
      * @param minSize
      */
-    public static List<Float> consolidate(List<Float> segments, final int minSize) {
+    public static <T> List<T> consolidate(List<T> segments, final int minSize) {
         if (segments == null) return null;
         if (segments.size() <= minSize) return segments;
 
@@ -68,7 +68,7 @@ public class BasalProfile {
         int iterations = 0;
 
         while (iterations++ < 1440) {
-            final List<Float> newSegments = new LinkedList<>();
+            final List<T> newSegments = new LinkedList<>();
             int referencePtr = 0;
             int matches;
             boolean cleanRun = true;

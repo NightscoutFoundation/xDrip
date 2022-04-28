@@ -10,7 +10,7 @@ import java.util.Locale;
 /**
  * Created by jamorham on 21/06/2016.
  */
-public class ProfileItem {
+public class ProfileItem implements Comparable<ProfileItem>{
 
     final private static SimpleDateFormat hourMinConvert = new SimpleDateFormat("HHmm", Locale.ENGLISH);
 
@@ -78,4 +78,26 @@ public class ProfileItem {
         return gson.toJson(this);
     }
 
+    @Override
+    public int compareTo(ProfileItem o) {
+            final Integer myStartMin = start_min;
+            final Integer oStartMin = o.end_min;
+            return myStartMin.compareTo(oStartMin);
+        }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof ProfileItem)) {
+            return false;
+        }
+        final ProfileItem pi = (ProfileItem) o;
+
+        // Note: is only testing equality of values
+        return carb_ratio == pi.carb_ratio
+                && sensitivity == pi.sensitivity
+                && absorption_rate == pi.absorption_rate;
+    }
 }
