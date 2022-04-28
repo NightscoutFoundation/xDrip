@@ -14,6 +14,11 @@ import java.util.HashMap;
 
 import lombok.val;
 
+/**
+ * JamOrHam
+ * Import AAPS profiles via local treatment broadcast
+ */
+
 public class ImportAapsProfile {
 
     private static final String TAG = ImportAapsProfile.class.getSimpleName();
