@@ -5,6 +5,7 @@ import static com.eveningoutpost.dexdrip.profileeditor.BasalProfile.consolidate;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.Unitized;
 import com.eveningoutpost.dexdrip.utils.jobs.BackgroundQueue;
 import com.google.gson.GsonBuilder;
@@ -67,7 +68,9 @@ public class ImportAapsProfile {
             } else {
                 UserError.Log.wtf(TAG, "Mismatched units mmol vs mgdl between AAPS and xDrip");
             }
-            BackgroundQueue.post(() -> JoH.playSoundUri(JoH.getResourceURI(R.raw.labbed_musical_chime)));
+            if (Pref.getBooleanDefaultFalse("profile_import_sound")) {
+                BackgroundQueue.post(() -> JoH.playSoundUri(JoH.getResourceURI(R.raw.labbed_musical_chime)));
+            }
             JoH.static_toast_long("xDrip imported AAPS profile");
         }
     }

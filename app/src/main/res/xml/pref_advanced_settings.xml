@@ -957,6 +957,12 @@
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/accept_treatments" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:dependency="accept_nsclient_treatments"
+                android:key="profile_import_sound"
+                android:summary="@string/play_sounds_when_importing"
+                android:title="@string/import_sounds" />
             <SwitchPreference
                 android:defaultValue="true"
                 android:key="accept_broadcast_calibrations"
