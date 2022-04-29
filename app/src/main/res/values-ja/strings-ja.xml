@@ -381,4 +381,5 @@
     <string name="zero_value">ゼロ値</string>
     <string name="adjust_dose">用量を調整</string>
     <string name="Dose">投与量</string>
+    <string name="allow_do_not_disturb_text">Androidのサイレントモードが有効になっている場合でも警告するオプション機能を有効にするには、次のページのシステム設定でxDripにこの権限を許可してください。</string>
 </resources>

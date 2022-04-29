@@ -1641,4 +1641,7 @@
     <string name="invalid_serial">Vigane seerianumber</string>
     <string name="set_pen_to_format">Määra pen %s väärtuseks %s</string>
     <string name="pen_contains_which_insulin_type">Millist tüüpi insuliini sisaldab pen %s?</string>
+    <string name="allow_do_not_disturb_text">Et oleks võimalik saada hoiatusi isegi siis kui telefoni funktsioon \"Mitte segada\" on sees, luba xDripile vastav säte süsteemiseadetes järgmisel lehel</string>
+    <string name="graphical_editor_for_pump_basal">Pumba basaaliprofiilide graafiline redaktor</string>
+    <string name="basal_profile_editor">Basaali profiiliredaktor</string>
 </resources>

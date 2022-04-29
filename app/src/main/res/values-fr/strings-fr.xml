@@ -471,9 +471,9 @@
     <string name="revert_to_default">Revenir aux valeurs par défaut</string>
     <string name="filtered_values">Valeurs filtrées</string>
     <string name="treatment_color">Couleur de Traitement</string>
-    <string name="treatment_color_dark">Couleur sombre de Traitement</string>
-    <string name="predictive_color">Couleur de Prédictions</string>
-    <string name="predictive_color_dark">Couleur sombre de Prédictions</string>
+    <string name="treatment_color_dark">Activité de l\'insuline</string>
+    <string name="predictive_color">Prédiction de Glycémie</string>
+    <string name="predictive_color_dark">Prédictions de Glucides actifs</string>
     <string name="average_and_target_lines">Lignes moyenne et cible</string>
     <string name="eight_hour_average_line">Ligne Moyenne de 8 heures</string>
     <string name="twenty_four_hour_average_line">Ligne Moyenne 24 heures</string>
@@ -789,9 +789,9 @@
     <string name="step_counter_1st_color">Compteur de pas 1ère couleur</string>
     <string name="step_counter_2nd_color">Compteur de pas 2ème couleur</string>
     <string name="flair_colors">Couleurs élégantes</string>
-    <string name="use_flair_colors">Utiliser les couleurs élégantes</string>
-    <string name="upper_title_bar_flair">Barre de titre supérieure élégante</string>
-    <string name="lower_button_bar_falir">Barre de boutons inférieure élégante</string>
+    <string name="use_flair_colors">Barre de Titre/Navigation personnalisée</string>
+    <string name="upper_title_bar_flair">Barre de titre supérieure</string>
+    <string name="lower_button_bar_falir">Barre de navigation inférieure</string>
     <string name="force_english_text">Forcer le texte anglais</string>
     <string name="using_local_language">Utilisation actuelle de la langue locale de votre appareil</string>
     <string name="forcing_alternate_language">Utilisation actuelle forcée de la langue de substitution</string>
