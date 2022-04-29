@@ -375,10 +375,6 @@
             android:name=".ShareTest"
             android:label="@string/title_activity_share_test" />
         <activity
-            android:name=".SystemStatus"
-            android:configChanges="orientation|screenSize"
-            android:label="@string/system_status" />
-        <activity
             android:name=".utils.Preferences"
             android:configChanges="orientation|screenSize"
             android:label="@string/settings"

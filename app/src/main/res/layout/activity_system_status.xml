@@ -14,7 +14,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="2dp"
-    tools:context="com.eveningoutpost.dexdrip.SystemStatus">
+    tools:context="com.eveningoutpost.dexdrip.MegaStatus">
 
     <ScrollView
         android:id="@+id/scrollView3"
