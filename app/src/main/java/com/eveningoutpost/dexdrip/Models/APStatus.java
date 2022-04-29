@@ -99,6 +99,10 @@ public class APStatus extends PlusModel {
     }
 
     public static List<APStatus> latestForGraph(int number, long startTime, long endTime) {
+        return latestForGraph(number, startTime, endTime, true);
+    }
+
+    public static List<APStatus> latestForGraph(int number, long startTime, long endTime, boolean extensionRecord) {
         try {
             final List<APStatus> results = new Select()
                     .from(APStatus.class)
@@ -107,20 +111,23 @@ public class APStatus extends PlusModel {
                     .orderBy("timestamp asc") // warn asc!
                     .limit(number)
                     .execute();
-            // extend line to now if we have current data but it is continuation of last record
-            // so not generating a new efficient record.
-            if (results != null && (results.size() > 0)) {
-                final APStatus last = results.get(results.size() - 1);
-                final long last_raw_record_timestamp = ExternalStatusService.getLastStatusLineTime();
-                // check are not already using the latest.
-                if (last_raw_record_timestamp > last.timestamp) {
-                    final Integer last_recorded_tbr = ExternalStatusService.getTBRInt();
-                    if (last_recorded_tbr != null) {
-                        if ((last.basal_percent == last_recorded_tbr)
-                                && (JoH.msSince(last.timestamp) < Constants.HOUR_IN_MS * 3)
-                                && (JoH.msSince(ExternalStatusService.getLastStatusLineTime()) < Constants.MINUTE_IN_MS * 20)) {
-                            results.add(new APStatus(JoH.tsl(), last_recorded_tbr));
-                            UserError.Log.d(TAG, "Adding extension record");
+
+            if (extensionRecord) {
+                // extend line to now if we have current data but it is continuation of last record
+                // so not generating a new efficient record.
+                if (results != null && (results.size() > 0)) {
+                    final APStatus last = results.get(results.size() - 1);
+                    final long last_raw_record_timestamp = ExternalStatusService.getLastStatusLineTime();
+                    // check are not already using the latest.
+                    if (last_raw_record_timestamp > last.timestamp) {
+                        final Integer last_recorded_tbr = ExternalStatusService.getTBRInt();
+                        if (last_recorded_tbr != null) {
+                            if ((last.basal_percent == last_recorded_tbr)
+                                    && (JoH.msSince(last.timestamp) < Constants.HOUR_IN_MS * 3)
+                                    && (JoH.msSince(ExternalStatusService.getLastStatusLineTime()) < Constants.MINUTE_IN_MS * 20)) {
+                                results.add(new APStatus(JoH.tsl(), last_recorded_tbr));
+                                UserError.Log.d(TAG, "Adding extension record");
+                            }
                         }
                     }
                 }

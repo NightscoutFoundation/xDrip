@@ -23,7 +23,11 @@ public class BasalRepository {
         if (rates.size() == 0 || msSince(lastUpdated) > Constants.HOUR_IN_MS) {
             synchronized (rates) {
                 rates.clear();
-                rates.addAll(BasalProfile.load(getActiveRateName()));
+                try {
+                    rates.addAll(BasalProfile.load(getActiveRateName()));
+                } catch (NullPointerException e) {
+                    //
+                }
                 lastUpdated = tsl();
                 if (rates.size() == 0) {
                     // failed to load
