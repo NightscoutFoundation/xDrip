@@ -15,8 +15,8 @@ public class RawScaling {
             case G6v1:
                 return raw * 34;
             case G6v2:
-                Float f;
-                return f.intBitsToFloat(raw) * 35;
+                Float f = (float)0.0;
+                return f.intBitsToFloat((int)raw) * 35;
             default:
                 return raw;
         }
