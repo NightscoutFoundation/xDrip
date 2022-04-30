@@ -30,7 +30,7 @@ public class BasalRepositoryTest extends RobolectricTestWithConfig {
     @Before
     public void setup() {
         oldTimeZone = TimeZone.getDefault();
-        TimeZone.setDefault(TimeZone.getTimeZone("Europe/London"));
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         final List<Float> segments = new LinkedList<>();
         for (int i = 1; i < 25; i++) {
             segments.add(i / 10f);
@@ -83,12 +83,12 @@ public class BasalRepositoryTest extends RobolectricTestWithConfig {
         clearRates();
         assertWithMessage("no rates zero rate").that(getRateByTimeStamp(SPEC_TIMESTAMP)).isEqualTo(0d);
         populateRateAsNeeded();
-        assertWithMessage("rates timezone rate 16:00").that(getRateByTimeStamp(SPEC_TIMESTAMP)).isEqualTo(1.7d);
+        assertWithMessage("rates timezone rate 16:00").that(getRateByTimeStamp(SPEC_TIMESTAMP)).isEqualTo(1.6d);
     }
 
     @Test
     public void getActiveRateTest() {
         clearRates();
-        assertWithMessage("rates timezone rate 16:00").that(getActiveRate(SPEC_TIMESTAMP)).isEqualTo(1.7d);
+        assertWithMessage("rates timezone rate 16:00").that(getActiveRate(SPEC_TIMESTAMP)).isEqualTo(1.6d);
     }
 }

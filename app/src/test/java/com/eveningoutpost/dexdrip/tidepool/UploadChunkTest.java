@@ -19,7 +19,7 @@ import lombok.val;
 
 public class UploadChunkTest extends RobolectricTestWithConfig {
 
-    private static final boolean D = true;
+    private static final boolean D = false;
     private TimeZone oldTimeZone;
 
     private static final String testData =
