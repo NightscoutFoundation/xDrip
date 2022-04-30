@@ -8,16 +8,19 @@ import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.profileeditor.BasalProfile;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.TimeZone;
 
 import lombok.val;
 
 public class UploadChunkTest extends RobolectricTestWithConfig {
 
     private static final boolean D = true;
+    private TimeZone oldTimeZone;
 
     private static final String testData =
             "9910|100|1651220547452\n" +
@@ -224,6 +227,8 @@ public class UploadChunkTest extends RobolectricTestWithConfig {
 
     @Before
     public void setupDb() {
+        oldTimeZone = TimeZone.getDefault();
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         val values = testData.split("\n");
         assertWithMessage("db test data state okay").that(values.length).isEqualTo(200);
         APStatus.updateDB();
@@ -240,6 +245,11 @@ public class UploadChunkTest extends RobolectricTestWithConfig {
         BasalProfile.save("1", fl);
     }
 
+
+    @After
+    public void tearDown() {
+        TimeZone.setDefault(oldTimeZone);
+    }
 
     @Test
     public void getBasalsTest() {
