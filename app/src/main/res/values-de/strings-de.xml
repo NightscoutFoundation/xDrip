@@ -1569,4 +1569,6 @@
     <string name="allow_do_not_disturb_text">Um die optionale Möglichkeit zur Benachrichtigung auch bei aktiviertem Android Nicht-Stören haben zu können, erlauben Sie xDrip bitte diese Berechtigung in den Systemeinstellungen auf der nächsten Seite</string>
     <string name="graphical_editor_for_pump_basal">Grafischer Editor für Pumpenbasalprofile</string>
     <string name="basal_profile_editor">Basalprofil Editor</string>
+    <string name="import_sounds">Audio importieren</string>
+    <string name="play_sounds_when_importing">Töne beim Importieren wichtiger Daten wie z.B. Profilen abspielen</string>
 </resources>

@@ -1632,4 +1632,7 @@
     <string name="invalid_serial">Seriale non valido</string>
     <string name="set_pen_to_format">Imposta la penna %s a %s</string>
     <string name="pen_contains_which_insulin_type">Quale tipo d\'insulina contiene la penna %s?</string>
+    <string name="allow_do_not_disturb_text">Per potere ricevere allerte quando Android è in modalità Non Disturbare, devi consentire xDrip questa autorizzazione nelle impostazioni di sistema nella pagina successiva</string>
+    <string name="graphical_editor_for_pump_basal">Editor grafico per profili basali del micro</string>
+    <string name="basal_profile_editor">Editor Profilo Basale</string>
 </resources>

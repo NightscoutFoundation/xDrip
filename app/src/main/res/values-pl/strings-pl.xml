@@ -1465,4 +1465,6 @@
     <string name="adjust_dose">Dostosowanie dawki</string>
     <string name="Dose">Dawka</string>
     <string name="choose_type">Wybierz typ</string>
+    <string name="import_sounds">Importuj dźwięki</string>
+    <string name="play_sounds_when_importing">Odtwarzaj dźwięki podczas importowania istotnych danych, takich jak profile</string>
 </resources>
