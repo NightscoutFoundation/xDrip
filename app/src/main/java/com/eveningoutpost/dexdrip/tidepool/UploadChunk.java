@@ -172,6 +172,14 @@ public class UploadChunk implements NamedSliderProcessor {
             }
             aplist.add(apStatus);
         }
+
+        // add opening record starting at start time, using previous record if suitable
+        // but only if there were no records falling within our actual time span
+        if (previous != null && aplist.size() == 0) {
+            previous.timestamp = start;
+            aplist.add(previous);
+        }
+
         if (aplist.size() > 0) {
             // add closing record up to end time
             val apStatus = aplist.get(aplist.size() - 1);
