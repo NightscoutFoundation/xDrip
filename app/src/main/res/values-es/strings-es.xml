@@ -1644,4 +1644,6 @@
     <string name="allow_do_not_disturb_text">Para poder avisarte de forma opcional por alertas incluso cuando está habilitado el modo \"No Molestar\", es necesario conceder el permiso en la configuración del sistema que se muestra en la siguiente página a xDrip+</string>
     <string name="graphical_editor_for_pump_basal">Editor gráfico para perfiles basales de la bomba</string>
     <string name="basal_profile_editor">Editor de perfil basal</string>
+    <string name="import_sounds">Añadir sonidos</string>
+    <string name="play_sounds_when_importing">Reproducir sonidos al importar datos importantes como perfiles</string>
 </resources>
