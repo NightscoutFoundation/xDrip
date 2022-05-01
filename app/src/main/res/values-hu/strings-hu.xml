@@ -1595,4 +1595,6 @@
     <string name="allow_do_not_disturb_text">Adjon Ne zavarjanak-engedélyt az xDrip-nek a rendszerbeállításokban a következő oldalon, hogy akkor is tudjon figyelmeztetni az xDrip, ha az Androidban a Ne zavarjanak funkció aktív</string>
     <string name="graphical_editor_for_pump_basal">Pumpák bázisinzulin-profiljának szerkesztése</string>
     <string name="basal_profile_editor">Bázisinzulin-profil szerkesztő</string>
+    <string name="import_sounds">Hangok importálása</string>
+    <string name="play_sounds_when_importing">Hangjelzés fontos adatok pl. profilok importálásakor</string>
 </resources>

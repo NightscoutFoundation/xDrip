@@ -1641,4 +1641,9 @@
     <string name="invalid_serial">Numéro de série invalide</string>
     <string name="set_pen_to_format">Définir le stylo %s à %s</string>
     <string name="pen_contains_which_insulin_type">Le Stylo %s contient quel type d\'insuline?</string>
+    <string name="allow_do_not_disturb_text">Pour pouvoir avoir la possibilité optionnelle d\'alerter même lorsque la fonction Android Ne-Pas-Déranger est activée, veuillez autoriser cette autorisation xDrip dans les paramètres du système sur la page suivante</string>
+    <string name="graphical_editor_for_pump_basal">Éditeur graphique pour les profils basal de la pompe</string>
+    <string name="basal_profile_editor">Éditeur de profil Basal</string>
+    <string name="import_sounds">Importer des sons</string>
+    <string name="play_sounds_when_importing">Jouer des sons lors de l\'importation de données significatives telles que des profils</string>
 </resources>

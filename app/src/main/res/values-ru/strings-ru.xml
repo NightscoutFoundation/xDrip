@@ -1606,4 +1606,6 @@
     <string name="allow_do_not_disturb_text">Чтобы иметь возможность настроить сигналы даже при включенном режиме \"Не беспокоить\" Android, дайте xDrip+ это разрешение в системных настройках на следующей странице</string>
     <string name="graphical_editor_for_pump_basal">Графический редактор для базальных профилей помпы</string>
     <string name="basal_profile_editor">Редактор базального профиля</string>
+    <string name="import_sounds">Звуки импорта</string>
+    <string name="play_sounds_when_importing">Воспроизводить звуки при импорте важных данных, таких как профили</string>
 </resources>
