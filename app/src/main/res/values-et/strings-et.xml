@@ -1644,4 +1644,6 @@
     <string name="allow_do_not_disturb_text">Et oleks võimalik saada hoiatusi isegi siis kui telefoni funktsioon \"Mitte segada\" on sees, luba xDripile vastav säte süsteemiseadetes järgmisel lehel</string>
     <string name="graphical_editor_for_pump_basal">Pumba basaaliprofiilide graafiline redaktor</string>
     <string name="basal_profile_editor">Basaali profiiliredaktor</string>
+    <string name="import_sounds">Impordi helid</string>
+    <string name="play_sounds_when_importing">Esita helimärguanne kui imporditakse olulisi andmeid (nt profiile)</string>
 </resources>
