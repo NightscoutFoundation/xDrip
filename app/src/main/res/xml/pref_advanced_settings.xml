@@ -1483,9 +1483,11 @@
                     android:summary="@string/use_external_blukon_algorithm_summary"
                     android:title="@string/use_external_blukon_algorithm" />
 
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="calibrate_external_libre_2_algorithm"
+                <ListPreference
+                    android:defaultValue="calibrate_raw"
+                    android:entries="@array/CalibrateExternalLibre2"
+                    android:entryValues="@array/CalibrateExternalLibre2Values"
+                    android:key="calibrate_external_libre_2_algorithm_type"
                     android:summary="@string/calibrate_external_libre_2_algorithm_summary"
                     android:title="@string/calibrate_external_libre_2_algorithm_title" />
 

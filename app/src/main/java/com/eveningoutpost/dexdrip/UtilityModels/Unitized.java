@@ -2,7 +2,6 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 
 // jamorham
 
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 
 import java.text.DecimalFormat;
@@ -20,6 +19,10 @@ public class Unitized {
 
     public static double mmolConvert(double mgdl) {
         return mgdl * Constants.MGDL_TO_MMOLL;
+    }
+
+    public static double mgdlConvert(double mmol) {
+        return mmol * Constants.MMOLL_TO_MGDL;
     }
 
     public static double unitized(double value, boolean doMgdl) {
