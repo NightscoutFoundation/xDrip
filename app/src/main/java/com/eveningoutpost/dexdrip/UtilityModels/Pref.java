@@ -53,6 +53,11 @@ public class Pref {
         return (prefs != null) && (prefs.getBoolean(pref, def));
     }
 
+    public static boolean isPreferenceSet(final String pref) {
+        initializePrefs();
+        return (prefs != null) && prefs.contains(pref);
+    }
+
     public static boolean setBoolean(final String pref, final boolean lng) {
         initializePrefs();
         if (prefs != null) {

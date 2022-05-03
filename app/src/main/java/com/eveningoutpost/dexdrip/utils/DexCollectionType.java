@@ -158,12 +158,14 @@ public enum DexCollectionType {
         return does_have_filtered || usesFiltered.contains(getDexCollectionType());
     }
 
-    public static boolean isLibreOOPAlgorithm(DexCollectionType collector) {
+    // Non calibrable means that raw values are used with oop2
+    public static boolean isLibreOOPNonCalibratebleAlgorithm(DexCollectionType collector) {
         if (collector == null) {
             collector = DexCollectionType.getDexCollectionType();
         }
         return hasLibre(collector) &&
-                Pref.getBooleanDefaultFalse("external_blukon_algorithm");
+                (Pref.getBooleanDefaultFalse("external_blukon_algorithm") ||
+                        Pref.getString("calibrate_external_libre_2_algorithm_type", "calibrate_raw").equals("no_calibration"));
     }
 
     public static Class<?> getCollectorServiceClass() {
@@ -295,6 +297,29 @@ public enum DexCollectionType {
         } else {
             return "";
         }
+    }
+
+    public long getSamplePeriod() {
+        return getCollectorSamplePeriod(this);
+    }
+
+    public static long getCollectorSamplePeriod(final DexCollectionType type) {
+        switch (type) {
+            default:
+                return 300_000; // 5 minutes
+        }
+    }
+    public static long getCurrentSamplePeriod() {
+       return getDexCollectionType().getSamplePeriod();
+    }
+
+    public static long getCurrentDeduplicationPeriod() {
+        final long period = getDexCollectionType().getSamplePeriod();
+        return period - (period / 5); // TODO this needs more validation
+    }
+
+    public static int getCurrentSamplesForPeriod(final long periodMs) {
+        return (int) (periodMs / getDexCollectionType().getSamplePeriod());
     }
 
 

@@ -1509,4 +1509,10 @@
     <string name="collection_summary_ob1_g5_preemptive_restart">在传感器停止前自动重启</string>
     <string name="enable_streaming_summary">扫描后Libre2将会与xdrip+连接，这意味着您的扫描仪和Librelink无法继续通过蓝牙接收报警提醒</string>
     <string name="enable_streaming_dialog_dont_ask_again"> 下次不要再问我</string>
+    <string name="cancel_by_default">默认取消</string>
+    <string name="old">旧的</string>
+    <string name="neww">新的</string>
+    <string name="reschedule_with_new_timing">重新安排新的时间？</string>
+    <string name="select_new_sound_source">选择新的声音源</string>
+    <string name="snooze_done">← 静默 / 完成 →</string>
 </resources>

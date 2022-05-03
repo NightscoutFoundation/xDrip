@@ -48,6 +48,18 @@
         <item>@string/enable_streaming_never</item>
     </string-array>
 
+    <string-array name="CalibrateExternalLibre2">
+        <item>No calibration</item>
+        <item>Calibrate based on raw</item>
+        <item>Calibrate based on glucose (experimental)</item>
+    </string-array>
+
+    <string-array name="CalibrateExternalLibre2Values">
+        <item>no_calibration</item>
+        <item>calibrate_raw</item>
+        <item>calibrate_glucose</item>
+    </string-array>
+
     <string-array name="EnableStreamingValues">
         <item>enable_streaming_always</item>
         <item>enable_streaming_ask</item>
@@ -201,6 +213,19 @@
         <item>JamTrendArrow2Impl</item>
         <item>JamTrendArrow2bImpl</item>
         <item>JamTrendArrow3Impl</item>
+    </string-array>
+
+    <string-array name="AudioFocus">
+        <item>Don\'t adjust other app sounds</item>
+        <item>Lower volume of other apps</item>
+        <item>Pause other apps playing audio</item>
+        <item>Pause all other sounds</item>
+    </string-array>
+    <string-array name="AudioFocusValues">
+        <item>AUDIOFOCUS_NONE</item>
+        <item>AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK</item>
+        <item>AUDIOFOCUS_GAIN_TRANSIENT</item>
+        <item>AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE</item>
     </string-array>
 
 </resources>

@@ -909,16 +909,44 @@ public class JoH {
         return ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + xdrip.getAppContext().getPackageName() + "/" + id;
     }
 
-    public static synchronized MediaPlayer playSoundUri(String soundUri) {
+    private static MediaPlayer player;
+    public static synchronized void playSoundUri(String soundUri) {
         try {
             JoH.getWakeLock("joh-playsound", 10000);
-            final MediaPlayer player = MediaPlayer.create(xdrip.getAppContext(), Uri.parse(soundUri));
+            if (player != null) {
+                UserError.Log.i(TAG, "playSoundUri: media player still exists. Releasing it.");
+                player.release();
+                player = null;
+            }
+            player = MediaPlayer.create(xdrip.getAppContext(), Uri.parse(soundUri));
+            player.setOnCompletionListener(mp -> {
+                UserError.Log.i(TAG, "playSoundUri: onCompletion called (finished playing) ");
+                player.release();
+                player = null;
+            });
+            player.setOnErrorListener((mp, what, extra) -> {
+                UserError.Log.e(TAG, "playSoundUri: onError called (what: " + what + ", extra: " + extra);
+                // possibly media player error; release is handled in onCompletionListener
+                return false;
+            });
             player.setLooping(false);
             player.start();
-            return player;
         } catch (Exception e) {
             Log.wtf(TAG, "Failed to play audio: " + soundUri + " exception:" + e);
-            return null;
+        }
+    }
+
+    public static synchronized void stopSoundUri() {
+        if (player != null) {
+            if (player.isPlaying()) {
+                try {
+                    player.stop();
+                } catch (IllegalStateException e) {
+                    UserError.Log.e(TAG, "Exception when stopping sound URI media player: " + e);
+                }
+            }
+            player.release();
+            player = null;
         }
     }
 

@@ -6,6 +6,7 @@ import android.preference.Preference;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
 
 public class BlueJayAdapter {
@@ -88,6 +89,11 @@ public class BlueJayAdapter {
         }
     };
 
+    private static boolean alwaysAllowPhoneSlot() {
+        final int specifiedSlot = Pref.getBooleanDefaultFalse("engineering_mode") ? Pref.getStringToInt("dex_specified_slot", -1) : -1;
+        return specifiedSlot == 3;
+    }
+
     public static Preference.OnPreferenceChangeListener changeToPhoneCollectorListener = new Preference.OnPreferenceChangeListener() {
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
@@ -95,11 +101,12 @@ public class BlueJayAdapter {
             try {
                 if ((boolean) value) {
                     // setting to true
-                    if (preference.getSharedPreferences().getBoolean("bluejay_run_as_phone_collector", false)) {
-                        JoH.static_toast_long("Must disable BlueJay using phone slot first!");
-                        return false;
+                    if (!alwaysAllowPhoneSlot()) {
+                        if (preference.getSharedPreferences().getBoolean("bluejay_run_as_phone_collector", false)) {
+                            JoH.static_toast_long("Must disable BlueJay using phone slot first!");
+                            return false;
+                        }
                     }
-
                 }
 
             } catch (Exception e) {

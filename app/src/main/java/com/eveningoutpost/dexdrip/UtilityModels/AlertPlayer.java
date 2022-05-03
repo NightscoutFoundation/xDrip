@@ -1,5 +1,9 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
+import static com.eveningoutpost.dexdrip.Models.JoH.delayedMediaPlayerRelease;
+import static com.eveningoutpost.dexdrip.Models.JoH.stopAndReleasePlayer;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -27,6 +31,7 @@ import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
 import com.eveningoutpost.dexdrip.eassist.AlertTracker;
+import com.eveningoutpost.dexdrip.ui.helpers.AudioFocusType;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFun;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
 import com.eveningoutpost.dexdrip.watch.miband.MiBand;
@@ -41,7 +46,6 @@ import com.eveningoutpost.dexdrip.xdrip;
 import java.io.IOException;
 import java.util.Date;
 
-import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 
 // A helper class to create the mediaplayer on the UI thread.
 // This is needed in order for the callbackst to work.
@@ -103,7 +107,7 @@ public class AlertPlayer {
     private volatile static AlertPlayer alertPlayerInstance;
 
     private final static String TAG = AlertPlayer.class.getSimpleName();
-    private volatile MediaPlayer mediaPlayer;
+    private volatile MediaPlayer mediaPlayer = null;
     private final AudioManager manager = (AudioManager)xdrip.getAppContext().getSystemService(Context.AUDIO_SERVICE);
     volatile int volumeBeforeAlert = -1;
     volatile int volumeForThisAlert = -1;
@@ -120,6 +124,9 @@ public class AlertPlayer {
 
     public int streamType = AudioManager.STREAM_MUSIC;
 
+    private final AudioManager.OnAudioFocusChangeListener focusChangeListener =
+            focusChange -> Log.d(TAG, "Audio focus changes to: " + focusChange);
+
     public static synchronized AlertPlayer getPlayer() {
         if(alertPlayerInstance == null) {
             Log.i(TAG,"getPlayer: Creating a new AlertPlayer");
@@ -132,6 +139,27 @@ public class AlertPlayer {
 
     public static void defaultSnooze() {
         AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1);
+    }
+
+    private void requestAudioFocus() {
+        try {
+            final int focus = AudioFocusType.getAlarmAudioFocusType();
+            if (focus != 0) {
+                UserError.Log.d(TAG, "Calling request audio focus");
+                manager.requestAudioFocus(focusChangeListener, streamType, focus);
+            }
+        } catch (Exception e) {
+            UserError.Log.wtf(TAG, "Failed to get audio focus: " + e);
+        }
+    }
+
+    private void releaseAudioFocus() {
+        UserError.Log.d(TAG, "Calling release audio focus");
+        try {
+            manager.abandonAudioFocus(focusChangeListener);
+        } catch (Exception e) {
+            UserError.Log.wtf(TAG, "Failed to release audio focus: " + e);
+        }
     }
 
     public synchronized void startAlert(Context ctx, boolean trendingToAlertEnd, AlertType newAlert, String bgValue) {
@@ -171,19 +199,11 @@ public class AlertPlayer {
             notificationDismiss(ctx);
         }
         if (mediaPlayer != null) {
-            try {
-                mediaPlayer.stop();
-            } catch (IllegalStateException e) {
-                UserError.Log.e(TAG, "Exception when stopping media player: " + e);
-            }
-            try {
-                mediaPlayer.release();
-            } catch (IllegalStateException e) {
-                UserError.Log.e(TAG, "Exception releasing media player: " + e);
-            }
+            stopAndReleasePlayer(mediaPlayer);
             mediaPlayer = null;
         }
         revertCurrentVolume(streamType);
+        releaseAudioFocus();
     }
 
     // only do something if an alert is active - only call from interactive
@@ -299,7 +319,7 @@ public class AlertPlayer {
             mp.setDataSource(context, uri);
             return true;
         } catch (IOException | NullPointerException | IllegalArgumentException | SecurityException ex) {
-            Log.e(TAG, "setMediaDataSource from uri failed:", ex);
+            Log.e(TAG, "setMediaDataSource from uri failed: uri = " + uri.toString(), ex);
             // fall through
         }
         return false;
@@ -321,7 +341,7 @@ public class AlertPlayer {
         return false;
     }
 
-    private synchronized void playFile(final Context ctx, final String fileName, final float volumeFrac, final boolean forceSpeaker, final boolean overrideSilentMode) {
+    protected synchronized void playFile(final Context ctx, final String fileName, final float volumeFrac, final boolean forceSpeaker, final boolean overrideSilentMode) {
         Log.i(TAG, "playFile: called fileName = " + fileName);
         if (volumeFrac <= 0) {
             UserError.Log.e(TAG, "Not playing file " + fileName + " as requested volume is " + volumeFrac);
@@ -329,13 +349,8 @@ public class AlertPlayer {
         }
 
         if (mediaPlayer != null) {
-            Log.i(TAG, "ERROR, playFile:going to leak a mediaplayer !!!");
-            try {
-                mediaPlayer.release();
-            } catch (IllegalStateException e) {
-                //
-            }
-            mediaPlayer = null;
+            Log.i(TAG, "ERROR, playFile sound already playing");
+            stopAndReleasePlayer(mediaPlayer);
         }
 
         mediaPlayer = new MediaPlayerCreaterHelper().createMediaPlayer(ctx);
@@ -343,6 +358,20 @@ public class AlertPlayer {
             Log.wtf(TAG, "MediaPlayerCreaterHelper().createMediaPlayer failed !!");
             return;
         }
+
+        mediaPlayer.setOnCompletionListener(mp -> {
+            Log.i(TAG, "playFile: onCompletion called (finished playing) ");
+            delayedMediaPlayerRelease(mp);
+            JoH.threadSleep(300);
+            revertCurrentVolume(streamType);
+            releaseAudioFocus();
+        });
+
+        mediaPlayer.setOnErrorListener((mp, what, extra) -> {
+            Log.e(TAG, "playFile: onError called (what: " + what + ", extra: " + extra);
+            // possibly media player error; release is handled in onCompletionListener
+            return false;
+        });
 
         boolean setDataSourceSucceeded = false;
         if (fileName != null && fileName.length() > 0) {
@@ -359,26 +388,11 @@ public class AlertPlayer {
         streamType = forceSpeaker ? AudioManager.STREAM_ALARM : AudioManager.STREAM_MUSIC;
 
         try {
+            requestAudioFocus();
             mediaPlayer.setAudioStreamType(streamType);
             mediaPlayer.setOnPreparedListener(mp -> {
                 adjustCurrentVolumeForAlert(streamType, volumeFrac, overrideSilentMode);
                 mediaPlayer.start();
-            });
-
-            mediaPlayer.setOnCompletionListener(mp -> {
-                Log.i(TAG, "playFile: onCompletion called (finished playing) ");
-                try {
-                    mediaPlayer.stop();
-                } catch (IllegalStateException e) {
-                    //
-                }
-                try {
-                    mediaPlayer.release();
-                } catch (IllegalStateException e) {
-                    //
-                }
-                mediaPlayer = null;
-                revertCurrentVolume(streamType);
             });
 
             mediaPlayer.prepareAsync();
@@ -493,7 +507,7 @@ public class AlertPlayer {
     }
     
     public static boolean isAscendingMode(Context ctx){
-        Log.d("Adrian", "(getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING): " + (getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING));
+        Log.d(TAG, "(getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING): " + (getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING));
         return getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING;
     }
 
@@ -501,7 +515,7 @@ public class AlertPlayer {
         return !(Pref.getBooleanDefaultFalse("no_alarms_during_calls") && (JoH.isOngoingCall()));
     }
 
-    private void VibrateNotifyMakeNoise(Context context, AlertType alert, String bgValue, int minsFromStartPlaying) {
+    protected void VibrateNotifyMakeNoise(Context context, AlertType alert, String bgValue, int minsFromStartPlaying) {
         Log.d(TAG, "VibrateNotifyMakeNoise called minsFromStartedPlaying = " + minsFromStartPlaying);
         Log.d("ALARM", "setting vibrate alarm");
         int profile = getAlertProfile(context);
