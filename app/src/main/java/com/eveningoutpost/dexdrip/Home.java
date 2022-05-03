@@ -783,9 +783,9 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 });
 
                 builder.setNegativeButton(gs(R.string.no), (dialog, which) -> {
-                    // TODO make this a blood test entry xx
-                    calintent.putExtra("note_only", "true");
-                    startIntentThreadWithDelayedRefresh(calintent);
+                    Log.d(TAG, "Creating bloodtest record");
+                    BloodTest.createFromCal(glucosenumber, timeoffset, "Manual Entry");
+                    GcmActivity.syncBloodTests();
                     dialog.dismiss();
                 });
 
