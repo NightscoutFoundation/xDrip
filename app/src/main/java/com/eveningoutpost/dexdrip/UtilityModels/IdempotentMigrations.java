@@ -56,7 +56,6 @@ public class IdempotentMigrations {
         AlertType.fixUpTable();
         UserNotification.updateDB();
         JoH.clearCache();
-        migrateOOP2CalibrationPreferences();
         IncompatibleApps.notifyAboutIncompatibleApps();
         CompatibleApps.notifyAboutCompatibleApps();
 
@@ -133,7 +132,7 @@ public class IdempotentMigrations {
 
     // This function moves us from calibrate_external_libre_2_algorithm which is a boolean to a
     // multi value list option
-    private void migrateOOP2CalibrationPreferences() {
+    public static void migrateOOP2CalibrationPreferences() {
         val oldPref = "calibrate_external_libre_2_algorithm";
         val newPref = "calibrate_external_libre_2_algorithm_type";
         if (Pref.isPreferenceSet(oldPref) && !Pref.isPreferenceSet(newPref)) {
