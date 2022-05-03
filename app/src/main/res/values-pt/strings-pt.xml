@@ -467,6 +467,7 @@
     <string name="start_sensor">Iniciar Sensor</string>
     <string name="debug_and_other_misc_options">Depuração e outras opções</string>
     <string name="low_glucose_values">Valores Hipoglicemia</string>
+    <string name="bad_glucose_values">Valores de Glucose Maus</string>
     <string name="revert_to_default">Restaurar pré-definições</string>
     <string name="filtered_values">Valores filtrados</string>
     <string name="treatment_color">Cor Tratamento</string>
@@ -615,6 +616,8 @@
     <string name="use_external_blukon_algorithm">Algoritmo do Libre fora do processo.</string>
     <string name="calibrate_external_libre_algorithm_summary">Aplica métodos de calibração xDrip em dados OOP.</string>
     <string name="calibrate_external_libre_algorithm_title">Algoritmo de Calibração OOP.</string>
+    <string name="calibrate_external_libre_2_algorithm_summary">Aplica métodos de calibração xDrip em dados OOP2.</string>
+    <string name="calibrate_external_libre_2_algorithm_title">Calibração do algoritmo OOP2.</string>
     <string name="libre_use_smoothed_data_summary">Usa a média de 5 pontos para obter dados do Libre mais suaves.</string>
     <string name="libre_use_smoothed_data_title">Suavizar dados Libre.</string>
     <string name="retrieve_blukon_history_title">Recuperar histórico do Libre</string>
@@ -848,6 +851,7 @@
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
     <string name="bubble">Bubble</string>
+    <string name="atom">Átomo</string>
     <string name="use_gravity_sensor_to_rotate_items">Usar Sensor Gravidade para rodar</string>
     <string name="low_bridge_battery">Bridge bateria fraca</string>
     <string name="reminders">Lembretes</string>
@@ -1164,6 +1168,8 @@
     <string name="title_rest_api_extra_options">Opções Extra</string>
     <string name="summary_send_bridge_battery_to_nightscout">Enviar o valor da bateria para o Nightscout. Não seleccionar se o sensor de bateria estiver defeituoso.</string>
     <string name="title_send_bridge_battery_to_nightscout">Enviar valor da bateria</string>
+    <string name="summary_send_dexcom_transmitter_battery_to_nightscout">Enviar estatísticas da bateria do transmissor Dexcom para o Nightscout. Inclui todos os dados mostrados no ecrã de Status do Coletor.</string>
+    <string name="title_send_dexcom_transmitter_battery_to_nightscout">Enviar status da bateria de transmissor OB1G5/G6</string>
     <string name="summary_send_treatments_to_nightscout">Enviar os dados de tratamentos para a Nightscout. Não seleccionar se o portal de cuidados estiver fora de serviço.</string>
     <string name="title_send_treatments_to_nightscout">Enviar tratamentos</string>
     <string name="summary_warn_nightscout_failures">Notificar se o envio de dados para o Nightscout estiver com falhas.</string>
@@ -1560,4 +1566,18 @@
     <string name="enable_streaming_dialog_dont_ask_again">Não voltar a perguntar</string>
     <string name="enable_streaming_dialog_text">Deseja ligar o xDrip com este sensor?  Isto impedirá o leitor do Libre e app LibreLink de receber alertas. Pressione sim e faça leitura por NFC novamente para ligar (escolha não ligar se quiser executar o xDrip com a Libre 2 Patched app)</string>
     <string name="enable_streaming_dialog_title">A ligar o sensor Libre ao bluetooth</string>
+    <string name="noise_workings_noise">Ruído: %s</string>
+    <string name="share_database">Partilhar a base de dados...</string>
+    <string name="expires_unknown">Expira: ???</string>
+    <string name="sensor_expired">EXPIRADO!</string>
+    <plurals name="sensor_expires">
+        <item quantity="one">Expira: %sd</item>
+        <item quantity="other">Expira: %sd</item>
+    </plurals>
+    <plurals name="sensor_age">
+        <item quantity="one">Idade: %sd</item>
+        <item quantity="other">Idade: %sd</item>
+    </plurals>
+    <string name="old">Antigo</string>
+    <string name="neww">Novo</string>
 </resources>
