@@ -14,7 +14,7 @@ public class RawScalingTest {
 
         assertWithMessage("G6v1 1").that((int) RawScaling.scale(294, RawScaling.DType.G6v1, false)).isEqualTo(9996);
 
-        assertWithMessage("G6v2 1").that((int) RawScaling.scale(1168582904, RawScaling.DType.G6v2, false)).isEqualTo(155299);
+        assertWithMessage("G6v2 1").that((int) RawScaling.scale(1168582904, RawScaling.DType.G6v2, false)).isEqualTo(187219);
     }
 
     @Test
