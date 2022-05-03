@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.insulin.opennov.ll;
 
-import com.eveningoutpost.dexdrip.insulin.opennov.base.MyByteBuffer;
+import com.eveningoutpost.dexdrip.buffer.MyByteBuffer;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;

@@ -9,7 +9,7 @@ import android.nfc.tech.IsoDep;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.insulin.opennov.base.MyByteBuffer;
+import com.eveningoutpost.dexdrip.buffer.MyByteBuffer;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
