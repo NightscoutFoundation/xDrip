@@ -1502,6 +1502,7 @@
     <string name="nfc_is_not_enabled">NFC ist nicht aktiviert</string>
     <string name="phone_nfc_is_having_problems">NFC des Telefons hat Probleme!</string>
     <string name="not_so_quickly_wait_60_seconds">Nicht so schnell, warte 60 Sekunden</string>
+    <string name="not_so_quickly_wait_30_seconds">Nicht so schnell, warte 30 Sekunden</string>
     <string name="nfc_diag_timeout">NFC-Timeout</string>
     <string name="nfc_read_timeout">NFC Lese-Timeout</string>
     <string name="nfc_invalid_data__try_again">ungültige NFC-Daten - versuche es neu</string>
@@ -1558,4 +1559,16 @@
     <string name="title_variant">Du verwendest eine xDrip+-Variante</string>
     <string name="expires_unknown">Läuft ab: ???</string>
     <string name="sensor_expired">Abgelaufen!</string>
+    <string name="zero_value">Nullwert</string>
+    <string name="adjust_dose">Dosis anpassen</string>
+    <string name="Dose">Dosis</string>
+    <string name="choose_type">Typ auswählen</string>
+    <string name="invalid_serial">Ungültige Seriennummer</string>
+    <string name="set_pen_to_format">Setze Pen %s auf %s</string>
+    <string name="pen_contains_which_insulin_type">PEN %s enthält welchen Insulintyp?</string>
+    <string name="allow_do_not_disturb_text">Um die optionale Möglichkeit zur Benachrichtigung auch bei aktiviertem Android Nicht-Stören haben zu können, erlauben Sie xDrip bitte diese Berechtigung in den Systemeinstellungen auf der nächsten Seite</string>
+    <string name="graphical_editor_for_pump_basal">Grafischer Editor für Pumpenbasalprofile</string>
+    <string name="basal_profile_editor">Basalprofil Editor</string>
+    <string name="import_sounds">Audio importieren</string>
+    <string name="play_sounds_when_importing">Töne beim Importieren wichtiger Daten wie z.B. Profilen abspielen</string>
 </resources>

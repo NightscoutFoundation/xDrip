@@ -470,7 +470,6 @@
     <string name="bad_glucose_values">Złe wartości glukozy</string>
     <string name="revert_to_default">Przywróć domyślne</string>
     <string name="filtered_values">Przefiltrowane wartości</string>
-    <string name="treatment_color">Kolor zabiegów</string>
     <string name="treatment_color_dark">Leczenie Kolor Ciemno</string>
     <string name="predictive_color">Przewidywanie Kolor</string>
     <string name="predictive_color_dark">Przewidywanie Kolor Ciemny</string>
@@ -602,7 +601,7 @@
     <string name="g5_bluetooth_watchdog">G5 Bluetooth Watchdog</string>
     <string name="close_gatt">Jeśli watchdog Bluetooth często się aktywuje, możesz spróbować odznaczyć tę opcję, aby sprawdzić, czy to pomoże</string>
     <string name="older_bluetooth_wakelocks">Starsza metoda wybudzania Bluetooth, która może spowodować dodatkowe zużycie baterii, ale czasem może być potrzebna do poprawnego odbioru Bluetooth</string>
-    <string name="reset_bluetooth_on_off">Zresetuj Bluetooth, wyłączając i włączając go co kilka minut! Wybieraj tylko w przypadku testowania. Może to zakłócić działanie innych urządzeń korzystających z Bluetooth.</string>
+    <string name="reset_bluetooth_on_off">Zresetuj Bluetooth, wyłączając i włączając go co kilka minut! Zaznacz tylko w przypadku testowania. Może to zakłócić działanie innych urządzeń korzystających z Bluetooth.</string>
     <string name="constantly_reset_bluetooth">Stale resetuj Bluetooth</string>
     <string name="experimental_transmitter_fpv_uav">Wsparcie eksperymentalne dla urządzenia \"Transmitter\" z @FPV-UAV - tylko testy</string>
     <string name="transmitter_pl_support">Wsparcie dla \"Transmitter (PL)\"</string>
@@ -1412,6 +1411,7 @@
     <string name="nfc_is_not_enabled">NFC nie jest włączone</string>
     <string name="phone_nfc_is_having_problems">Problem z NFC telefonu!</string>
     <string name="not_so_quickly_wait_60_seconds">Nie tak szybko, poczekaj 60 sekund</string>
+    <string name="not_so_quickly_wait_30_seconds">Nie tak szybko, poczekaj 30 sekund</string>
     <string name="nfc_read_timeout">Przekroczono limit czasu odczytu NFC</string>
     <string name="nfc_invalid_data__try_again">Nieprawidłowe dane NFC - spróbuj ponownie</string>
     <string name="nfc_invalid_data">Nieprawidłowe dane NFC</string>
@@ -1462,4 +1462,9 @@
     <string name="neww">Nowy</string>
     <string name="select_new_sound_source">Wybierz nowe źródło dźwięku</string>
     <string name="snooze_done">← Uśpij / Potwierdź →</string>
+    <string name="adjust_dose">Dostosowanie dawki</string>
+    <string name="Dose">Dawka</string>
+    <string name="choose_type">Wybierz typ</string>
+    <string name="import_sounds">Importuj dźwięki</string>
+    <string name="play_sounds_when_importing">Odtwarzaj dźwięki podczas importowania istotnych danych, takich jak profile</string>
 </resources>

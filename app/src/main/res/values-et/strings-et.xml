@@ -470,10 +470,10 @@
     <string name="bad_glucose_values">Mittekorralikud veresuhkru andmed</string>
     <string name="revert_to_default">Taasta vaikeväärtused</string>
     <string name="filtered_values">Filtreeritud väärtused</string>
-    <string name="treatment_color">Ravi värv</string>
-    <string name="treatment_color_dark">Ravi värv mustas režiimis</string>
-    <string name="predictive_color">Ennustuse värv</string>
-    <string name="predictive_color_dark">Ennustuse värv must</string>
+    <string name="treatment_color">Insuliini kuvamine</string>
+    <string name="treatment_color_dark">Insuliini mõju</string>
+    <string name="predictive_color">Veresuhkru ennustus</string>
+    <string name="predictive_color_dark">Süsivesikute kuvamine</string>
     <string name="average_and_target_lines">Keskmise ja eesmärgi jooned</string>
     <string name="eight_hour_average_line">Keskmise väärtuse joon 8h arvestuses</string>
     <string name="twenty_four_hour_average_line">Keskmise väärtuse joon 24h arvestuses</string>
@@ -789,9 +789,9 @@
     <string name="step_counter_1st_color">Sammulugeja 1.värv</string>
     <string name="step_counter_2nd_color">Sammulugeja 2.värv</string>
     <string name="flair_colors">Erksad värvid</string>
-    <string name="use_flair_colors">Kasuta erksaid värve</string>
-    <string name="upper_title_bar_flair">Ülemise tiitliriba stiil</string>
-    <string name="lower_button_bar_falir">Alumise klahvirea stiil</string>
+    <string name="use_flair_colors">Kohanda pealkirja/navigeerimisriba</string>
+    <string name="upper_title_bar_flair">Ülemine tiitliriba</string>
+    <string name="lower_button_bar_falir">Alumine navigeerimisriba</string>
     <string name="force_english_text">Ainult inglise keeles</string>
     <string name="using_local_language">Kasutad praegu seadme määratud keelt</string>
     <string name="forcing_alternate_language">Praegu sunnitakse kasutama alternatiivset keelt</string>
@@ -1519,6 +1519,7 @@
     <string name="nfc_is_not_enabled">NFC pole sisse lülitatud</string>
     <string name="phone_nfc_is_having_problems">Telefoni NFC-ga on probleeme!</string>
     <string name="not_so_quickly_wait_60_seconds">Mitte nii kiiresti, oodake 60 sekundit</string>
+    <string name="not_so_quickly_wait_30_seconds">Mitte nii kiiresti, oota 30 sekundit</string>
     <string name="nfc_diag_timeout">NFC ajapiir ületatud</string>
     <string name="nfc_read_timeout">NFC ajapiir ületatud</string>
     <string name="nfc_invalid_data__try_again">NFC vigased andmed – proovi uuesti</string>
@@ -1633,4 +1634,14 @@
     <string name="reschedule_with_new_timing">Uue ajakava järgi ümber paigutada?</string>
     <string name="select_new_sound_source">Vali uus heli lähtekoht</string>
     <string name="snooze_done">← Vaigista / Tehtud →</string>
+    <string name="zero_value">Nullväärtus</string>
+    <string name="adjust_dose">Reguleeri doosi</string>
+    <string name="Dose">Doos</string>
+    <string name="choose_type">Vali tüüp</string>
+    <string name="invalid_serial">Vigane seerianumber</string>
+    <string name="set_pen_to_format">Määra pen %s väärtuseks %s</string>
+    <string name="pen_contains_which_insulin_type">Millist tüüpi insuliini sisaldab pen %s?</string>
+    <string name="allow_do_not_disturb_text">Et oleks võimalik saada hoiatusi isegi siis kui telefoni funktsioon \"Mitte segada\" on sees, luba xDripile vastav säte süsteemiseadetes järgmisel lehel</string>
+    <string name="graphical_editor_for_pump_basal">Pumba basaaliprofiilide graafiline redaktor</string>
+    <string name="basal_profile_editor">Basaali profiiliredaktor</string>
 </resources>

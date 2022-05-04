@@ -107,11 +107,11 @@
     <string name="pref_amazfit_widget_settings">Configuración del Widget (puede necesitar más batería)</string>
     <string name="toast_crash">Algo salió mal :( se envió un informe para ayudar a solucionar el problema.</string>
     <string name="taskerConfigInstruction">Sólo haga clic en la casilla para confirmar. No debería requerir cambiar la cadena de configuración.</string>
-    <string name="taskerConfiguration">Configurar Tasker</string>
+    <string name="taskerConfiguration">Configuración de tasker</string>
     <string name="finish_preferences_activity">Finalizar la actividad de preferencias</string>
     <string name="add_widget">Añadir Widget</string>
     <string name="title_activity_alert_list">Lista de Alertas</string>
-    <string name="speaktreatment">Decir tratamientos</string>
+    <string name="speaktreatment">Leer tratamiento</string>
     <string name="title_activity_update">Actualización de xDrip+ disponible</string>
     <string name="title_activity_display_qrcode">Compartir Ajustes a través de código QR</string>
     <string name="title_activity_send_feed_back">Enviar comentarios a Jamorham</string>
@@ -152,7 +152,7 @@
     <string name="till">hasta</string>
     <string name="low_predicted">Baja pronosticada</string>
     <string name="in">en</string>
-    <string name="yes_enter_setup_mode">Sí entrar en el modo de ajustes</string>
+    <string name="yes_enter_setup_mode">Sí, entrar en el modo de ajustes</string>
     <string name="nokeep_parakeet_as_it_is">No; mantener Parakeet como está</string>
     <string name="are_you_sure_you_want_switch_parakeet_to_setup">¿Está seguro de querer cambiar Parakeet al modo de ajustes?\n\nNormalmente esto sólo se usa para enviar mensajes de texto adicionales para que Parakeet reconfigure el transmisor por el que escucha, etc.</string>
     <string name="split_delete_or_do_nothing">Dividir, eliminar o no hacer nada</string>
@@ -234,7 +234,7 @@
     <string name="calibration_data_table">Tabla de datos de calibración</string>
     <string name="bg_data_table">Tabla de datos de Glucosa</string>
     <string name="cannot_calibrate_right_now">No se puede calibrar en este momento</string>
-    <string name="hardware_data_source">Fuente de datos de hardware</string>
+    <string name="hardware_data_source">Fuente de datos hardware</string>
     <string name="enter_ten_character_dexcom_receiver_serial">Introduzca los 10 caracteres del número de serie del receptor Dexcom</string>
     <string name="dexcom_transmitter_id">ID del transmisor Dexcom</string>
     <string name="run_collector_in_foreground">Ejecutar Colector en primer plano</string>
@@ -256,7 +256,7 @@
     <string name="pref_summary_disable_wearG5_on_lowbattery">Desactivar el forzado del servicio de recolección Wear cuando la batería del mismo esté baja</string>
     <string name="pref_disable_wearG5_on_missedreadings">Deshabilitar forzado cuando hay lecturas perdidas</string>
     <string name="pref_summary_disable_wearG5_on_missedreadings">Desactivar el forzado del servicio de recolección Wear, en minutos, desde su última lectura</string>
-    <string name="pref_disable_wearG5_on_missedreadings_level">Minutos desde última lectura desde Wear</string>
+    <string name="pref_disable_wearG5_on_missedreadings_level">Minutos de la última lectura desde Wear</string>
     <string name="pref_node_wearG5">Dispositivo que ejecuta el servicio de recolección</string>
     <string name="pref_summary_node_wearG5">Forzar el teléfono para usar el servicio de recolección de Wear</string>
     <string name="pref_sync_wear_logs">Sincronizar registros Wear</string>
@@ -370,7 +370,7 @@
     <string name="glucose_history">Historial de glucosa</string>
     <string name="import_database">Importar base de datos</string>
     <string name="sensor_table">Tabla sensor</string>
-    <string name="bg_readings_table">Tabla de Lecturas de Glucosa</string>
+    <string name="bg_readings_table">Tabla de lecturas de glucosa</string>
     <string name="long_press_to_split_or_delete">Presión larga para dividir o borrar</string>
     <string name="press_and_hold_on_the_background_to_split_or_delete">Presione y mantenga presionado para dividir o borrar un bloque de tiempo</string>
     <string name="search">Buscar</string>
@@ -471,7 +471,7 @@
     <string name="revert_to_default">Volver a los valores predeterminados</string>
     <string name="filtered_values">Valores filtrados</string>
     <string name="treatment_color">Color del tratamiento</string>
-    <string name="treatment_color_dark">Color oscuro del tratamiento</string>
+    <string name="treatment_color_dark">Tratamiento en Color Obscuro</string>
     <string name="predictive_color">Color de la Predicción</string>
     <string name="predictive_color_dark">Color oscuro de la Predicción</string>
     <string name="average_and_target_lines">Líneas de Promedio y Objetivo</string>
@@ -617,7 +617,7 @@
     <string name="calibrate_external_libre_algorithm_summary">Aplica métodos de calibración de xDrip con los datos del algoritmo externo para el Libre.</string>
     <string name="calibrate_external_libre_algorithm_title">Calibracion del algoritmo OOP.</string>
     <string name="calibrate_external_libre_2_algorithm_summary">Aplicar métodos de calibración de xDrip sobre datos OOP2.</string>
-    <string name="calibrate_external_libre_2_algorithm_title">Calibracion del algoritmo OOP2.</string>
+    <string name="calibrate_external_libre_2_algorithm_title">Calibracion del algoritmo OOP2</string>
     <string name="libre_use_smoothed_data_summary">Utilizar una media de 5 puntos para obtener datos del libre más suaves.</string>
     <string name="libre_use_smoothed_data_title">Suavizar Datos de Libre.</string>
     <string name="retrieve_blukon_history_title">Recuperar el historial del Libre</string>
@@ -692,7 +692,7 @@
     <string name="use_multi_block">Utiliza el método de lectura de bloques múltiples más rápido</string>
     <string name="use_any_tag">Utilizar el método de lectura \"any-tag\" optimizado</string>
     <string name="low_level_value">Valor de nivel bajo de diagnóstico/prototipo</string>
-    <string name="transmitter_id">ID de su colector Dexcom, p. ej., 12AB3</string>
+    <string name="transmitter_id">ID del transmisor Dexcom, ej: 12AB3</string>
     <string name="advanced_g5_settings">Ajustes avanzados para situaciones raras del G5</string>
     <string name="g5_debug_settings">Configuración de depuración de G5/G6</string>
     <string name="g5_scan_constantly">Algunos dispositivos funcionan mejor cuando buscan constantemente, otros no. Si la lectura es fiable cuando ésta configuración está desactivada, la duración de la batería debería aumentar. Normalmente es mejor mantener esto desactivo</string>
@@ -789,7 +789,7 @@
     <string name="step_counter_1st_color">Contador pasos 1er Color</string>
     <string name="step_counter_2nd_color">Contador pasos 2do Color</string>
     <string name="flair_colors">Estilos de Colores</string>
-    <string name="use_flair_colors">Usa estilos de colores</string>
+    <string name="use_flair_colors">Usar estilos de colores</string>
     <string name="upper_title_bar_flair">Estilo de la barra de título superior</string>
     <string name="lower_button_bar_falir">Estilo de barra de botones inferior</string>
     <string name="force_english_text">Forzar idioma Inglés</string>
@@ -848,7 +848,7 @@
     <string name="send_data_to_developers">Enviar datos a los desarrolladores sobre las tasas de éxito de los diferentes dispositivos</string>
     <string name="try_to_work_around_noisy_readings_ultrasensitive">Empezar a solucionar las lecturas ruidosas incluso en niveles de ruido muy bajos (sólo en modo ingeniería)</string>
     <string name="sidiary_date_title">¿Desde cuando se exporta?</string>
-    <string name="blukon">Blucon</string>
+    <string name="blukon">BluCon</string>
     <string name="tomato">Tomato</string>
     <string name="bubble">Bubble</string>
     <string name="atom">Atom</string>
@@ -1433,7 +1433,7 @@
     <string name="bluetooth_device">Dispositivo Bluetooth:   </string>
     <string name="transmitter_battery_status">Batería del transmisor:  </string>
     <string name="top">Arriba</string>
-    <string name="connect_device_usb_otg">Por favor conecta tu dispositvo mediante un cable USB OTG.</string>
+    <string name="connect_device_usb_otg">Por favor, conecta tu dispositvo mediante un cable USB OTG.</string>
     <string name="connection_status">Edo. de la Conexión:</string>
     <string name="range_in_high_low">Rango: (medio/alto/bajo)</string>
     <string name="absolute_s">#s Absoluto:</string>
@@ -1512,13 +1512,14 @@
     <string name="deleting_all_bg_readings">¡Borrando TODAS las lecturas de glucosa!</string>
     <string name="could_not_export_csv_">No se pudo exportar a CSV:(</string>
     <string name="librealarm_data_format_appears_incompatible_protocol_changed_or_no_data">El formato de datos de LibreAlarm parece incompatible. ¿El protocolo cambió o no hay datos?</string>
-    <string name="please_update_librealarm_to_use_oop_algorithm">Por favor actualiza LibreAlarm para usar el algoritmo OOP</string>
+    <string name="please_update_librealarm_to_use_oop_algorithm">Por favor, actualiza LibreAlarm para usar el algoritmo OOP</string>
     <string name="sensor_clock_has_not_advanced">¡El reloj del sensor no ha avanzado!</string>
     <string name="sensor_age_has_gone_backwards">¡La edad del sensor ha retrocedido!</string>
     <string name="phone_has_no_nfc_reader">El teléfono no tiene lector NFC</string>
     <string name="nfc_is_not_enabled">El NFC no está activo</string>
     <string name="phone_nfc_is_having_problems">¡El NFC del teléfono tiene problemas!</string>
     <string name="not_so_quickly_wait_60_seconds">No tan rápido, espere 60 segundos</string>
+    <string name="not_so_quickly_wait_30_seconds">No tan rápido, espera 30 segundos</string>
     <string name="nfc_diag_timeout">Expiró el tiempo de diag. NFC</string>
     <string name="nfc_read_timeout">Expiró el tiempo de lectura NFC</string>
     <string name="nfc_invalid_data__try_again">Datos NFC inválidos: inténtelo de nuevo</string>
@@ -1528,7 +1529,7 @@
     <string name="nfc_io_error">Error de E/S de NFC</string>
     <string name="nfc_error">Error NFC</string>
     <string name="still_processing_previous_backfill_request">¡Procesando la solicitud de relleno anterior!</string>
-    <string name="please_wait">Por favor espere…</string>
+    <string name="please_wait">Por favor, espere...</string>
     <string name="didnt_find_any_glucose_readings_in_that_time_period">No se encontraron lecturas de glucosa en ese período</string>
     <string name="got_calibration_in_the_future__cannot_process">Se obtuvo una calibración en el futuro, ¡no se puede procesar!</string>
     <string name="remote_snooze">Diferido a Distancia…</string>
@@ -1576,6 +1577,7 @@
     <string name="summary_widget_hide_graph">Oculta el gráfico en los widgets (se muestra en la próxima lectura)</string>
     <string name="title_widget_hide_graph">Ocultar gráfico del widget</string>
     <string name="summary_illustrate_remote_data">Mostrar datos recibidos de forma remota (sólo diagnóstico)</string>
+    <string name="title_illustrate_remote_data">Ilustrar datos remotos</string>
     <string name="summary_show_accessibility_settings">Si tu teléfono tiene Always On Display, puedes habilitar el widget xDrip allí habilitando el servicio de accesibilidad de xDrip desde la página de configuración del sistema Android.</string>
     <string name="title_show_accessibility_settings">Habilitar Accesibilidad en xDrip</string>
     <string name="title_multiple_insulin_types_settings">Múltiples tipos de Insulina</string>
@@ -1588,14 +1590,25 @@
     <string name="title_broadcast_snooze">Transmisión local</string>
     <string name="summary_accept_broadcast_snooze">Aceptar aplazamientos de otras aplicaciones en este teléfono</string>
     <string name="title_accept_broadcast_snooze">Aceptar transmisión local</string>
+    <string name="title_bg_compensate_noise">\u26A0 Ruido del sensor suavizado</string>
+    <string name="title_bg_compensate_noise_ultrasensitive">\u26A0 Ruido del sensor ultrasensitivo</string>
     <string name="no_battery_optimization_whitelisting">¡El dispositivo no parece admitir la lista blanca de optimización de batería!</string>
     <string name="no_i_really_know">No, realmente sé lo que estoy haciendo</string>
     <string name="use_for_calibration">¿Usar %s para la Calibración?</string>
+    <string name="problem_loading_speech_lexicon">Problema cargando el léxico de voz</string>
     <string name="type_treatment_eg">Tipo de tratamiento\nejemplo: unidades x.x</string>
+    <string name="word_lexicon_not_loaded">El léxico de palabras no está cargado</string>
     <string name="no_never">No, nunca</string>
     <string name="auto_starting_sensor">¡Inicio automático del Sensor!</string>
     <string name="start_sensor_confirmation">La fuente de datos está establecida en: %s\n\n¿Quieres cambiar la configuración o iniciar el sensor?</string>
+    <string name="state_not_currently_known">%s  Estado desconocido. Se actualizará en la siguiente conexión</string>
+    <string name="unusual_calibration_waiting">Estado de calibración inusual - esperando más datos</string>
     <string name="could_not_find_blood_data">No se han podido encontrar datos de glucemia capilar!! %s</string>
+    <string name="transmitter_waiting_for_calibration">Esperando a que el transmisor reciba la calibración</string>
+    <string name="sensor_not_started">La sesión del sensor no parece haberse iniciado</string>
+    <string name="not_getting_readings">No se obtienen lecturas</string>
+    <string name="bridge_battery">Batería del Bridge</string>
+    <string name="transmitter_maybe_dead">Los datos filtrados son exactamente el doble de datos sin procesar del sensor, que están mal. Es posible que el transmisor haya muerto</string>
     <string name="noise_workings_noise">Ruido: %s</string>
     <string name="snoozing_due_button_press">Posponer alerta presionando botón de volumen</string>
     <string name="share_database">Compartir base de datos...</string>
@@ -1609,6 +1622,10 @@
         <item quantity="one">Expira: %sd</item>
         <item quantity="other">Expira: %sd</item>
     </plurals>
+    <plurals name="sensor_age">
+        <item quantity="one">Tiempo del sensor: %sd</item>
+        <item quantity="other">Tiempo del sensor: %sd</item>
+    </plurals>
     <string name="external_status_strings_eg_tbr">Cadenas de estado externas, por ejemplo, TBR de AAPS</string>
     <string name="accept_external_status">Aceptar estado externo</string>
     <string name="cancel_by_default">Cancelar por defecto</string>
@@ -1617,4 +1634,14 @@
     <string name="reschedule_with_new_timing">¿Reprogramar con nuevo tiempo?</string>
     <string name="select_new_sound_source">Seleccionar nueva fuente de sonido</string>
     <string name="snooze_done">← Posponer / Hecho →</string>
+    <string name="zero_value">Valor cero</string>
+    <string name="adjust_dose">Ajustar dosis</string>
+    <string name="Dose">Dosis</string>
+    <string name="choose_type">Selecciona el tipo</string>
+    <string name="invalid_serial">Serial inválido</string>
+    <string name="set_pen_to_format">Establecer Pen %s a %s</string>
+    <string name="pen_contains_which_insulin_type">¿Qué tipo de insulina contiene el PEN %s?</string>
+    <string name="allow_do_not_disturb_text">Para poder avisarte de forma opcional por alertas incluso cuando está habilitado el modo \"No Molestar\", es necesario conceder el permiso en la configuración del sistema que se muestra en la siguiente página a xDrip+</string>
+    <string name="graphical_editor_for_pump_basal">Editor gráfico para perfiles basales de la bomba</string>
+    <string name="basal_profile_editor">Editor de perfil basal</string>
 </resources>

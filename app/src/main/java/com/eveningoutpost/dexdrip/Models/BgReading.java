@@ -843,6 +843,12 @@ public class BgReading extends Model implements ShareUploadableBg {
         return JoH.msSince(last.timestamp) > Home.stale_data_millis();
     }
 
+    public static boolean doWeHaveRecentUsableData() {
+        final BgReading last = last();
+        if (last == null) return false;
+        return last.calculated_value > 12 && JoH.msSince(last.timestamp) < Home.stale_data_millis();
+    }
+
 
     public static List<BgReading> latestUnCalculated(int number) {
         Sensor sensor = Sensor.currentSensor();
