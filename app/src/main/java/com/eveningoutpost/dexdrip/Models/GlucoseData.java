@@ -20,7 +20,8 @@ public class GlucoseData implements Comparable<GlucoseData> {
     public int glucoseLevelRawSmoothed;
     public int flags;
     public int temp;
-    public double noise = -9999;
+    public double glucoseLevelNoise = -9999;    // Noise level that was calculated for the values provided by the oop algorithm 
+    public double glucoseLevelRawNoise = -9999; // Noise that was calculated for the raw values
     public DataSource source;
 
     public GlucoseData() {
@@ -34,8 +35,8 @@ public class GlucoseData implements Comparable<GlucoseData> {
 
     public String toString() {
         return "{ sensorTime = " + sensorTime + " glucoseLevel = " + glucoseLevel + " glucoseLevelRaw = " + glucoseLevelRaw +
-                " glucoseLevelRawSmoothed = " + glucoseLevelRawSmoothed + " flags = " + flags +
-                " source = " + source + "  glucoseLevel " + glucoseLevel + " glucoseLevelSmoothed " + glucoseLevelSmoothed + " noise " + noise + "}";
+                " glucoseLevelRawSmoothed = " + glucoseLevelRawSmoothed + " glucoseLevelRawNoise " + glucoseLevelRawNoise + " flags = " + flags +
+                " source = " + source + "  glucoseLevel " + glucoseLevel + " glucoseLevelSmoothed " + glucoseLevelSmoothed + " glucoseLevelNoise " + glucoseLevelNoise + "}";
     }
 
     public String glucose(boolean mmol) {

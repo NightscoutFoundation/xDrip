@@ -477,6 +477,10 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public static BgReading create(double raw_data, double filtered_data, Context context, Long timestamp, boolean quick) {
+        return create(raw_data, filtered_data, context, timestamp, quick, false, 0);
+    }
+
+    public static BgReading create(double raw_data, double filtered_data, Context context, Long timestamp, boolean quick, boolean handleLibreNoise, double noise) {
         if (context == null) context = xdrip.getAppContext();
         BgReading bgReading = new BgReading();
         final Sensor sensor = Sensor.currentSensor();
@@ -523,8 +527,9 @@ public class BgReading extends Model implements ShareUploadableBg {
                 //context.startService(new Intent(context, Notifications.class));
                 // allow this instead to be fired inside handleNewBgReading when noise will have been injected already
             }
-
-            bgReading.postProcess(quick);
+            // Handle noise
+            bgReading.noise = String.valueOf(noise);
+            bgReading.postProcess(quick, handleLibreNoise);
 
         }
 
