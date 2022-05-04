@@ -165,9 +165,10 @@ public class ReadingData {
     }
 
     static private void calculateNoisePerPoint(GlucoseData glucoseData, List<LibreTrendPoint> libreTrendPoints, HashSet<Integer> errorHash, boolean bgValExists) {
-        // This function calculates the noise per point given the trendpoint data,
-        // For now only calibration noise is detected by getting a trendline for the delta of the two trends and get the slope of the trendline. 
-        // when the OOP2 algorithm is not correcting itself the slope should be 0 (ideally). This should prevent downstream apps like androidAPS on acting the spiky data.
+        // This function calculates the noise per point given the trendpoint data, This function calculates the noise on the glucose data in 2 ways:
+        // 1. Noise calculation based on the glucose values and determine a trendline, based on the error variance on the trendline the noise is set.
+        // 2. Changes effected by other factors then the bg can be determined by comparing the raw and the oop2 calculated data. 
+        //    This is done by calculating a trendline on the delta's between the bg and oop2 calculated bg value. Under normal circumstance the delta's between these 2 values should not vary.
 
         int sensitivity = 1; //Pref.getStringToDouble("libre_noise_sensitivity", 1); // TODO create setting
         double calibrationNoise = 0;
@@ -201,11 +202,14 @@ public class ReadingData {
             final double slope = time_to_delta.predict(1) - time_to_delta.predict(0);
             final double errorVarience = time_to_delta.errorVarience();
 
+            // When the OOP2 algorithm is not correcting itself the slope should be 0 (ideally). 
+            // When there is a growing difference between the bg and raw bg values the slope will increase,
+            // we can use this as way to detect large changes that are not triggered by actual bloodglucose changes.
             // Error variance is defined by dot(r,r) / (size(r) - order - 1)
             // To convert our slope a value that resembles the error variance in sensitivity and values:
             final double noiseFromSlope = Math.pow(Math.abs(slope), 2) * 5; // TODO: Add setting to set sensitivity of slope to noise calculation
 
-            // If the errorVarience is higher then the noise calculated from the slope, we use that, as in that case the data is noisy and our slope estimation is off, and we have noise anyway
+            // If the errorVarience is higher then the noise calculated from the slope, we use that, as in that case the data is noisy and our slope estimation is off.
             calibrationNoise = (errorVarience > noiseFromSlope) ? errorVarience : noiseFromSlope;
 
             Log.d(TAG, "Setting delta noise level based on, Time: " + glucoseData.sensorTime + " Slope: " + JoH.qs(slope) + " Noise from slope: " 
