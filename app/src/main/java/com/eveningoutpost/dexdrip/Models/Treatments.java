@@ -54,6 +54,7 @@ import java.util.regex.Pattern;
 
 import lombok.val;
 
+import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
 import static java.lang.StrictMath.abs;
@@ -1296,6 +1297,10 @@ public class Treatments extends Model {
     public boolean likelySMB() {
         return (carbs == 0 && insulin > 0
                 && ((insulin <= MAX_SMB_UNITS && (notes == null || notes.length() == 0)) || (enteredBy != null && enteredBy.startsWith("openaps:") && insulin <= MAX_OPENAPS_SMB_UNITS)));
+    }
+
+    public boolean wasCreatedRecently() {
+        return msSince(DateUtil.tolerantFromISODateString(created_at).getTime()) < HOUR_IN_MS * 12;
     }
 
     public boolean noteOnly() {

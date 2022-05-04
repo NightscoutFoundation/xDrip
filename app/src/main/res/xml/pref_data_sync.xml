@@ -344,7 +344,13 @@
             android:key="bluetooth_meters"
             android:summary="@string/glucose_meter_options"
             android:title="@string/glucose_meters">
-
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="nfc_meter_enabled"
+                android:summary="Download glucose records from NFC meter when xDrip is open"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="Use NFC Meter" />
             <SwitchPreference
                 android:defaultValue="false"
                 android:key="bluetooth_meter_enabled"
@@ -363,7 +369,6 @@
             </Preference>
             <CheckBoxPreference
                 android:defaultValue="true"
-                android:dependency="bluetooth_meter_enabled"
                 android:key="bluetooth_meter_play_sounds"
                 android:summary="@string/meter_connect_sound"
                 android:title="@string/meter_connect_sound_effect" />
