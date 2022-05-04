@@ -133,6 +133,25 @@
           "duration": "2160"
         }
       }
+    },
+    {
+      "name": "Levemir",
+      "displayName": "Levemir (long acting)",
+      "PPN":
+      [
+        "LevemirU100"
+      ],
+      "concentration": "U100",
+      "Curve":
+      {
+        "type": "linear trapezoid",
+        "data":
+        {
+          "onset": "180",
+          "peak": "180-480",
+          "duration": "1440"
+        }
+      }
     }
   ]
 }
