@@ -106,12 +106,12 @@ public class NightscoutTreatments {
                 //  Log.d(TAG, "json processing: " + e);
             }
             try {
-                fats = tr.getDouble("fat");
+                fats = tr.getDouble("fats");
             } catch (JSONException e) {
                 //  Log.d(TAG, "json processing: " + e);
             }
             try {
-                proteins = tr.getDouble("protein");
+                proteins = tr.getDouble("proteins");
             } catch (JSONException e) {
                 //  Log.d(TAG, "json processing: " + e);
             }
