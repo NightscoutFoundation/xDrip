@@ -47,6 +47,7 @@ import com.eveningoutpost.dexdrip.ui.helpers.ColorUtil;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.LibreTrendGraph;
 import com.eveningoutpost.dexdrip.utils.math.RollingAverage;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.android.gms.location.DetectedActivity;
 import com.rits.cloning.Cloner;
@@ -1662,7 +1663,7 @@ public class BgGraphBuilder {
                     final double cobscale = 0.2 * bgScale;
                     final double initial_predicted_bg = predictedbg;
                     final double relaxed_predicted_bg_limit = initial_predicted_bg * 1.20;
-                    final double cob_insulin_max_draw_value = highMark * 1.20;
+                    final double cob_insulin_max_draw_value = Pref.getStringToInt("max_insulin_draw_value", 204);
                     // final List<Iob> iobinfo_old = Treatments.ioBForGraph(numValues, (start_time * FUZZER));
                     final List<Iob> iobinfo = (simulation_enabled) ? Treatments.ioBForGraph_new(NUM_VALUES, (start_time * FUZZER)) : null; // for test
 

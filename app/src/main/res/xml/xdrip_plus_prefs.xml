@@ -650,6 +650,13 @@
                     android:summary="@string/summary_multiple_insulin_use_basal_activity"
                     android:title="@string/title_multiple_insulin_use_basal_activity"/>
 
+                <EditTextPreference
+                    android:defaultValue="204"
+                    android:inputType="number"
+                    android:key="max_insulin_draw_value"
+                    android:summary="When using Basal injections, increase this value. Default is 204mg/dl or 11.3mmol/L"
+                    android:title="Max Insulin Line"/>
+
             </PreferenceScreen>
 
 
