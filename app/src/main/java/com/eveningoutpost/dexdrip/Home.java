@@ -770,6 +770,9 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             Log.d(TAG, "ProcessCalibrationNoUI number: " + glucosenumber + " offset: " + timeoffset);
 
             final String calibration_type = Pref.getString("treatment_fingerstick_calibration_usage", "ask");
+            Log.d(TAG, "Creating blood test record from input data");
+            BloodTest.createFromCal(glucosenumber, timeoffset, "Manual Entry");
+            GcmActivity.syncBloodTests();
             if (calibration_type.equals("ask")) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle(gs(R.string.use_bg_for_calibration));
@@ -783,9 +786,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 });
 
                 builder.setNegativeButton(gs(R.string.no), (dialog, which) -> {
-                    // TODO make this a blood test entry xx
-                    calintent.putExtra("note_only", "true");
-                    startIntentThreadWithDelayedRefresh(calintent);
                     dialog.dismiss();
                 });
 
@@ -793,9 +793,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 alert.show();
 
             } else if (calibration_type.equals("auto")) {
-                Log.d(TAG, "Creating bloodtest  record from cal input data");
-                BloodTest.createFromCal(glucosenumber, timeoffset, "Manual Entry");
-                GcmActivity.syncBloodTests();
                 if ((!Pref.getBooleanDefaultFalse("bluetooth_meter_for_calibrations_auto"))
                         && (DexCollectionType.getDexCollectionType() != DexCollectionType.Follower)
                         && (JoH.pratelimit("ask_about_auto_calibration", 86400 * 30))) {
@@ -816,9 +813,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 }
                 // offer choice to enable auto-calibration mode if not already enabled on pratelimit
             } else if (calibration_type.equals("never")) {
-                Log.d(TAG, "Creating bloodtest record");
-                BloodTest.createFromCal(glucosenumber, timeoffset, "Manual Entry");
-                GcmActivity.syncBloodTests();
             } else {
                 // if use for calibration == "no" then this is a "note_only" type, otherwise it isn't
                 calintent.putExtra("note_only", calibration_type.equals("never") ? "true" : "false");
