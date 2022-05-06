@@ -1,3 +1,6 @@
+codecov:
+  token: 0e67eb01-5257-41ab-805d-a896e3de107d
+
 comment:
   layout: "diff, files"
   behavior: default
