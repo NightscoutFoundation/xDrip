@@ -8,7 +8,7 @@
     <string name="menu_refresh">Förnya</string>
     <string name="menu_export_database">Exportera databas</string>
     <string name="menu_export_csv_sidiary">Exporta CSV (kommaseparerade värden)</string>
-    <string name="menu_import_db">Importera databas</string>
+    <string name="menu_import_db">Återställ databas</string>
     <string name="error_bluetooth_not_supported">Fel: Denna enhet har inte stöd för Bluetooth</string>
     <string name="unknown_device">Okänd enhet</string>
     <string name="connecting_to_device">Ansluter till enhet</string>
@@ -27,7 +27,7 @@
     <string name="ok">Ok</string>
     <string name="cancel">Avbryt</string>
     <string name="no">Nej</string>
-    <string name="pref_sensor_location_dont_ask_again">Fråga inte i framtiden</string>
+    <string name="pref_sensor_location_dont_ask_again">Fråga inte igen</string>
     <string name="title_activity_error">"Fel- och händelselista"</string>
     <string name="title_activity_main">Huvudaktivitet</string>
     <string name="title_activity_fake_numbers">Fejksiffror</string>
@@ -69,7 +69,7 @@
     <string name="location_yes">Aktivera</string>
     <!-- broadcast settings -->
     <string name="pref_title_broadcast_enabled">Lokal delgivning</string>
-    <string name="pref_summary_broadcast_enabled">Aktivera lokal delgivning av data så andra program (t.ex.. Nightwatch) kan ta del av värden</string>
+    <string name="pref_summary_broadcast_enabled">Aktivera lokal sändning av data så andra program (t.ex. Nightwatch) kan ta del av värden</string>
     <string name="title_activity_share_test">Testa delning</string>
     <!-- pebble settings -->
     <string name="pref_pebble_trend_watchface">Använd Pebble Trend Watchface</string>
@@ -82,7 +82,7 @@
     <string name="amazfit_sync_service">AmazFit Sync-tjänst</string>
     <string name="pref_amazfit_enable_summary">Aktivera stöd för Amazfit Data</string>
     <string name="pref_amazfit_enable">Aktivera</string>
-    <string name="pref_amazfit_tile">Amazfit Service</string>
+    <string name="pref_amazfit_tile">Amazfit-tjänst</string>
     <string name="pref_amazfit_BG_alert_enable_summary">Skickar aktiva BG-varningar till Smartwatch</string>
     <string name="pref_amazfit_BG_alert_enable">Aktivera</string>
     <string name="pref_amazfit_BG_alert_title">BG Varningar</string>
@@ -90,7 +90,7 @@
     <string name="pref_amazfit_other_alert_enable">Aktivera</string>
     <string name="pref_amazfit_other_alert_title">Andra varningar</string>
     <string name="pref_amazfit_watchface_graph_dots_title">Watchface Graf Punkter</string>
-    <string name="pref_amazfit_watchface_graph_dots_summary">Visar ännu mindre prickar istället för de små</string>
+    <string name="pref_amazfit_watchface_graph_dots_summary">Visa minimala prickar istället för små</string>
     <string name="pref_amazfit_watchface_graph_enable">Aktivera</string>
     <string name="pref_amazfit_watchface_graph_title">Watchface Graf</string>
     <string name="pref_amazfit_watchface_graph_enable_summary">Visar diagram i watchfaces bakgrund</string>
@@ -99,7 +99,7 @@
     <string name="pref_amazfit_widget_graph_hours_title">Widget graf</string>
     <string name="pref_amazfit_widget_graph_hours_summary">ange hur många timmar som visas i diagrammet</string>
     <string name="pref_amazfit_widget_graph_dots_title">Widget graf punkter</string>
-    <string name="pref_amazfit_widget_graph_dots_summary">Visar mycket små prickar istället för små</string>
+    <string name="pref_amazfit_widget_graph_dots_summary">Visar minimala prickar istället för små</string>
     <string name="pref_amazfit_widget_graph_enable">Aktivera</string>
     <string name="pref_amazfit_widget_graph_title">Widget Graf</string>
     <string name="pref_amazfit_widget_graph_enable_summary">Visar diagram i widgeten</string>
@@ -134,7 +134,7 @@
     <string name="share">Dela</string>
     <string name="title_activity_profile_editor">Behandlingsprofilsredigeraren</string>
     <string name="first_use_menu_to_scan">Börja med att söka efter din BT-enhet från menyn, eller ändra datakällan i inställningar!</string>
-    <string name="first_configure_ip_address">Ställ först in dina wifi wixel läsares ip-adresser eller parakeet-urler</string>
+    <string name="first_configure_ip_address">Konfigurera först dina WiFi Wixel läsares ip-adresser eller Parakeet-URLer</string>
     <string name="now_start_your_sensor">Starta din sensor nu, eller kontrollera inställningarna</string>
     <string name="please_wait_while_sensor_warms_up">Vänta medan sensorn drar igång! (</string>
     <string name="minutes_with_bracket">" minuter)"</string>
@@ -343,7 +343,7 @@
     <string name="re_enable_high_alerts">Återaktivera höga varningar</string>
     <string name="disable_all_alerts">Inaktivera alla varningar</string>
     <string name="re_enable_all_alerts">Återaktivera alla varningar</string>
-    <string name="alert_snoozed_by_watch">Varning snoozad på Watch</string>
+    <string name="alert_snoozed_by_watch">Varning snoozad från Watch</string>
     <string name="update_channel_colon_space">"Uppdatera källa: "</string>
     <string name="a_new_version_is_available">En ny version finns tillgänglig</string>
     <string name="version_details">Versionsinformation</string>
@@ -368,7 +368,7 @@
     <string name="install_pebble_trend_watchface">Installera Pebble Trend Watchface</string>
     <string name="install_pebble_watchface">Installera Pebble Watchface</string>
     <string name="glucose_history">Glukoshistoria</string>
-    <string name="import_database">Importera databas</string>
+    <string name="import_database">Återställ databas</string>
     <string name="sensor_table">Sensortabell</string>
     <string name="bg_readings_table">Tabell över BG-avläsningar</string>
     <string name="long_press_to_split_or_delete">Håll in länge för att deöa eller radera</string>
@@ -968,6 +968,7 @@
     <string name="title_Heart_Rate_Sensor">Sensor för hjärtfrekvens</string>
     <string name="summary_Smooth_heart_rate_graph">Mjuk pulsgraf</string>
     <string name="title_Accept_Calibrations">Acceptera kalibreringar</string>
+    <string name="title_Pump_Status">Pumpstatus</string>
     <string name="title_Carb_Insulin_Ratio">Kolhydrat/insulinratio</string>
     <string name="summary_Scan_before_connecting_on_xBridge_and_Libre_bluetooth">Sök innan anslutning till xBridge och Libre-blåtand</string>
     <string name="summary_Use_and_trust_Android_bluetooth_auto_connect_feature">Använd och lita på Android-blåtands funktion för automatisk anslutning</string>

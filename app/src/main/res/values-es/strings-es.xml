@@ -113,7 +113,7 @@
     <string name="title_activity_alert_list">Lista de Alertas</string>
     <string name="speaktreatment">Leer tratamiento</string>
     <string name="title_activity_update">Actualización de xDrip+ disponible</string>
-    <string name="title_activity_display_qrcode">Compartir Ajustes a través de código QR</string>
+    <string name="title_activity_display_qrcode">Compartir ajustes mediante código QR</string>
     <string name="title_activity_send_feed_back">Enviar comentarios a Jamorham</string>
     <string name="title_activity_maps">Mapa Parakeet</string>
     <string name="title_activity_display_preferences">Preferencias de visualización</string>
@@ -177,7 +177,7 @@
     <string name="libre_last_x_minutes_graph">Gráfica últimos %d minutos del Libre</string>
     <string name="share_config_via_qr_code">Compartir ajustes a través de código QR</string>
     <string name="check_for_updated_version">Comprobar actualizaciones</string>
-    <string name="send_feedback_to_developer">Enviar sus comentarios al desarrollador</string>
+    <string name="send_feedback_to_developer">Enviar comentarios al desarrollador</string>
     <string name="home_screen">Pantalla de inicio</string>
     <string name="event_logs">Registro de Eventos</string>
     <string name="calibration_graph">Gráfico de calibración</string>
@@ -1644,4 +1644,6 @@
     <string name="allow_do_not_disturb_text">Para poder avisarte de forma opcional por alertas incluso cuando está habilitado el modo \"No Molestar\", es necesario conceder el permiso en la configuración del sistema que se muestra en la siguiente página a xDrip+</string>
     <string name="graphical_editor_for_pump_basal">Editor gráfico para perfiles basales de la bomba</string>
     <string name="basal_profile_editor">Editor de perfil basal</string>
+    <string name="import_sounds">Importar Sonidos</string>
+    <string name="play_sounds_when_importing">Reproducir sonidos al importar datos importantes como perfiles</string>
 </resources>

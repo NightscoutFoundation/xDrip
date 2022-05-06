@@ -616,6 +616,8 @@
     <string name="use_external_blukon_algorithm">Algoritmo Libre OOP.</string>
     <string name="calibrate_external_libre_algorithm_summary">Applica metodi di calibrazione xDrip sui dati OOP.</string>
     <string name="calibrate_external_libre_algorithm_title">Calibrazione dell\'algoritmo OOP.</string>
+    <string name="calibrate_external_libre_2_algorithm_summary">Applica le calibrazioni xDrip sui dati da OOP2.</string>
+    <string name="calibrate_external_libre_2_algorithm_title">Calibrazione dell\'algoritmo OOP2.</string>
     <string name="libre_use_smoothed_data_summary">Usa una media di 5 punti per ottenere risultati Libre meno rumorosi.</string>
     <string name="libre_use_smoothed_data_title">Liscia dati Libre.</string>
     <string name="retrieve_blukon_history_title">Recupera cronologia Libre</string>
@@ -1626,8 +1628,15 @@
     </plurals>
     <string name="external_status_strings_eg_tbr">Stringhe di stato esterno, es. basale da AAPS</string>
     <string name="accept_external_status">Accetta Stato Esterno</string>
+    <string name="cancel_by_default">Annulla per default</string>
     <string name="old">Vecchio</string>
+    <string name="neww">Nuovo</string>
+    <string name="reschedule_with_new_timing">Riprogrammare con una nuova tempistica?</string>
     <string name="select_new_sound_source">Seleziona nuova sorgente sonora</string>
+    <string name="snooze_done">← Snooze / Fatto →</string>
+    <string name="zero_value">Valore zero</string>
+    <string name="adjust_dose">Regola la Dose</string>
+    <string name="Dose">Dose</string>
     <string name="choose_type">Scegli il tipo</string>
     <string name="invalid_serial">Seriale non valido</string>
     <string name="set_pen_to_format">Imposta la penna %s a %s</string>
@@ -1635,4 +1644,6 @@
     <string name="allow_do_not_disturb_text">Per potere ricevere allerte quando Android è in modalità Non Disturbare, devi consentire xDrip questa autorizzazione nelle impostazioni di sistema nella pagina successiva</string>
     <string name="graphical_editor_for_pump_basal">Editor grafico per profili basali del micro</string>
     <string name="basal_profile_editor">Editor Profilo Basale</string>
+    <string name="import_sounds">Importa Suoni</string>
+    <string name="play_sounds_when_importing">Suona durante l\'importazione di dati significativi come i profili</string>
 </resources>
