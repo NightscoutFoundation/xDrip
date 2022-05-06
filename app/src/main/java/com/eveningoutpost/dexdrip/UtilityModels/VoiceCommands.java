@@ -17,6 +17,7 @@ import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.Services.G5BaseService;
 import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService;
+import com.eveningoutpost.dexdrip.insulin.opennov.data.SaveCompleted;
 import com.eveningoutpost.dexdrip.profileeditor.BasalProfileEditor;
 import com.eveningoutpost.dexdrip.ui.activities.DatabaseAdmin;
 import com.eveningoutpost.dexdrip.ui.dialog.G6CalibrationCodeDialog;
@@ -157,6 +158,10 @@ public class VoiceCommands {
             case "delete all desert sync data":
                 JoH.static_toast_long("deleted all desert sync data");
                 DesertSync.deleteAll();
+                break;
+            case "delete all pen data":
+                JoH.static_toast_long("deleted all pen sync data");
+                SaveCompleted.deleteAll();
                 break;
             case "start usb configuration":
                 JoH.startActivity(MtpConfigureActivity.class);

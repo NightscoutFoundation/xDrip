@@ -375,6 +375,11 @@
     <string name="restore">復元</string>
     <string name="are_you_sure_you_want_to_delete_this_treatment">このトリートメントを削除しますか？</string>
     <string name="prepare_to_test">テストの準備をします！</string>
+    <string name="not_so_quickly_wait_30_seconds">急がず30秒待ちます</string>
     <string name="scanning">スキャン中</string>
     <string name="enable_streaming_dialog_dont_ask_again"> 今後表示しないで下さい</string>
+    <string name="zero_value">ゼロ値</string>
+    <string name="adjust_dose">用量を調整</string>
+    <string name="Dose">投与量</string>
+    <string name="allow_do_not_disturb_text">Androidのサイレントモードが有効になっている場合でも警告するオプション機能を有効にするには、次のページのシステム設定でxDripにこの権限を許可してください。</string>
 </resources>

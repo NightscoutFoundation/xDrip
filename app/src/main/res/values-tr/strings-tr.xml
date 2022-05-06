@@ -470,10 +470,10 @@
     <string name="bad_glucose_values">Kötü Glikoz Değerleri</string>
     <string name="revert_to_default">Varsayılana Geri Döndür</string>
     <string name="filtered_values">Filtrelenmiş değerler</string>
-    <string name="treatment_color">Tedavi Rengi</string>
-    <string name="treatment_color_dark">Tedavi için Koyu Renk</string>
-    <string name="predictive_color">Öngörü için Renk</string>
-    <string name="predictive_color_dark">Öngörü için Koyu Renk</string>
+    <string name="treatment_color">Aktif İnsülin</string>
+    <string name="treatment_color_dark">İnsülin Etkinliği</string>
+    <string name="predictive_color">Glikoz Tahmini</string>
+    <string name="predictive_color_dark">Aktif Karbonhidrat</string>
     <string name="average_and_target_lines">Ortalama ve Hedef Çizgileri</string>
     <string name="eight_hour_average_line">8 Saat Ortalama Çizgi</string>
     <string name="twenty_four_hour_average_line">24 Saat Ortalama Çizgi</string>
@@ -789,9 +789,9 @@
     <string name="step_counter_1st_color">Adımsayar 1. Renk</string>
     <string name="step_counter_2nd_color">Adımsayar 2. Renk</string>
     <string name="flair_colors">Flair Renkleri</string>
-    <string name="use_flair_colors">Flair Renklerini kullan</string>
-    <string name="upper_title_bar_flair">Sistem durum çubuğunun rengi</string>
-    <string name="lower_button_bar_falir">Sistem gezinme çubuğunun rengi</string>
+    <string name="use_flair_colors">Özel Başlık/Gezinti Çubuğu</string>
+    <string name="upper_title_bar_flair">Üst Başlık Çubuğu</string>
+    <string name="lower_button_bar_falir">Alt Gezinti Çubuğu</string>
     <string name="force_english_text">İngilizce kullanmaya zorla</string>
     <string name="using_local_language">Şu anda cihazınızın yerel dilini kullanın</string>
     <string name="forcing_alternate_language">Şu anda alternatif bir dil kullanımı zorlanmaktadır</string>
@@ -1518,6 +1518,7 @@
     <string name="nfc_is_not_enabled">NFC etkin değil</string>
     <string name="phone_nfc_is_having_problems">Telefon NFC\'si problemli!</string>
     <string name="not_so_quickly_wait_60_seconds">O kadar hızlı değil, 60 saniye bekleyin</string>
+    <string name="not_so_quickly_wait_30_seconds">Çok hızlı değil, 30 saniye bekleyin</string>
     <string name="nfc_diag_timeout">NFC tanılama zaman aşımı</string>
     <string name="nfc_read_timeout">NFC okuma zaman aşımı</string>
     <string name="nfc_invalid_data__try_again">NFC geçersiz veri - tekrar deneyin</string>
@@ -1616,6 +1617,14 @@
     <string name="message_variant">xDrip+ varyantları, aynı anda birden fazla uygulamanın yüklenmesine izin verir. Ya gelişmiş kullanım için ya da xDrip-Deneysel ve xDrip+\'ın aynı anda yüklenmesine izin vermek için.\n\nVaryantlarda, bir uygulamanın veya diğerinin özel erişime sahip olması, örneğin bluetooth eşleştirmesi nedeniyle bazı şeyler düzgün çalışmayabilir. Varyantlar hakkında geri bildirim ve hata raporları memnuniyetle karşılanır!</string>
     <string name="expires_unknown">Bitiş tarihi: ???</string>
     <string name="sensor_expired">SÜRESİ DOLDU!</string>
+    <plurals name="sensor_expires">
+        <item quantity="one">Bitiş tarihi: %sd</item>
+        <item quantity="other">Bitiş tarihi: %sd</item>
+    </plurals>
+    <plurals name="sensor_age">
+        <item quantity="one">Yaş: %sd</item>
+        <item quantity="other">Yaş: %sd</item>
+    </plurals>
     <string name="external_status_strings_eg_tbr">Harici durum dizileri, ör. AAPS\'den GBO</string>
     <string name="accept_external_status">Harici Durumu Kabul Et</string>
     <string name="cancel_by_default">Varsayılan olarak iptal</string>
@@ -1624,4 +1633,16 @@
     <string name="reschedule_with_new_timing">Yeni zamanlama ile yeniden planlansın mı?</string>
     <string name="select_new_sound_source">Yeni ses kaynağı seçin</string>
     <string name="snooze_done">← Ertele / Bitti →</string>
+    <string name="zero_value">Sıfır değer</string>
+    <string name="adjust_dose">Dozu Ayarla</string>
+    <string name="Dose">Doz</string>
+    <string name="choose_type">Türü Seç</string>
+    <string name="invalid_serial">Geçersiz seri</string>
+    <string name="set_pen_to_format">Kalem\'i %s\'i %s olarak ayarla</string>
+    <string name="pen_contains_which_insulin_type">KALEM %s hangi insülin türünü içeriyor?</string>
+    <string name="allow_do_not_disturb_text">Android Rahatsız-Etmeyin etkinleştirildiğinde bile isteğe bağlı uyarı verme yeteneğine sahip olabilmek için lütfen bir sonraki sayfada sistem ayarlarında xDrip\'in bu iznine izin verin</string>
+    <string name="graphical_editor_for_pump_basal">Pompa bazal profilleri için grafik düzenleyici</string>
+    <string name="basal_profile_editor">Bazal Profil Editörü</string>
+    <string name="import_sounds">Sesleri İçe Aktar</string>
+    <string name="play_sounds_when_importing">Profiller gibi önemli verileri içe aktarırken sesleri çal</string>
 </resources>

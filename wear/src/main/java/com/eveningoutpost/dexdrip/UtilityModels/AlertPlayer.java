@@ -102,7 +102,7 @@ public class AlertPlayer {
     private static volatile AlertPlayer singletone;
 
     private final static String TAG = AlertPlayer.class.getSimpleName();
-    private volatile MediaPlayer mediaPlayer;
+    private volatile MediaPlayer mediaPlayer = null;
     private int volumeBeforeAlert = -1;
     private int volumeForThisAlert = -1;
 
@@ -167,7 +167,13 @@ public class AlertPlayer {
             notificationDismiss(ctx);
         }
         if (mediaPlayer != null) {
-            mediaPlayer.stop();
+            if (mediaPlayer.isPlaying()) {
+                try {
+                    mediaPlayer.stop();
+                } catch (IllegalStateException e) {
+                    UserError.Log.e(TAG, "Exception when stopping media player: " + e);
+                }
+            }
             mediaPlayer.release();
             mediaPlayer = null;
         }
@@ -294,7 +300,7 @@ public class AlertPlayer {
         return false;
     }
 
-    private synchronized void PlayFile(final Context ctx, String FileName, float VolumeFrac) {
+    protected synchronized void PlayFile(final Context ctx, String FileName, float VolumeFrac) {
         Log.i(TAG, "PlayFile: called FileName = " + FileName);
 
         if(mediaPlayer != null) {
@@ -308,7 +314,20 @@ public class AlertPlayer {
             Log.e(TAG, "MediaPlayerCreaterHelper().createMediaPlayer failed");
             return;
         }
-        
+
+        mediaPlayer.setOnCompletionListener(mp -> {
+            Log.i(TAG, "playFile: onCompletion called (finished playing) ");
+            mediaPlayer.release();
+            mediaPlayer = null;
+            revertCurrentVolume(ctx);
+        });
+
+        mediaPlayer.setOnErrorListener((mp, what, extra) -> {
+            Log.e(TAG, "playFile: onError called (what: " + what + ", extra: " + extra);
+            // possibly media player error; release is handled in onCompletionListener
+            return false;
+        });
+
         boolean setDataSourceSucceeded = false;
         if(FileName != null && FileName.length() > 0) {
             setDataSourceSucceeded = setDataSource(ctx, mediaPlayer, Uri.parse(FileName));
@@ -411,7 +430,7 @@ public class AlertPlayer {
     }
     
     public static boolean isAscendingMode(Context ctx){
-        Log.d("Adrian", "(getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING): " + (getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING));
+        Log.d(TAG, "(getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING): " + (getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING));
         return getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING;
     }
 

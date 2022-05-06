@@ -20,6 +20,8 @@
     <string name="title_activity_nav_drawer">Navigációs menü</string>
     <string name="navigation_drawer_open">Navigációs menü megnyitása</string>
     <string name="navigation_drawer_close">Navigációs menü bezárása</string>
+    <string name="title_activity_calibration_check_in">Kalibrációs emlékeztető</string>
+    <string name="title_activity_usb_connected">USB csatlakoztatva</string>
     <string name="snooze">Szundi</string>
     <string name="snooze_hint">Szundi x percre</string>
     <string name="ok">OK</string>
@@ -28,6 +30,7 @@
     <string name="pref_sensor_location_dont_ask_again"> Ne kérdezz rá mégegyszer</string>
     <string name="title_activity_error">"Hiba- és eseménynapló"</string>
     <string name="title_activity_main">Főképernyő</string>
+    <string name="title_activity_fake_numbers">Hamis értékek</string>
     <string name="title_activity_edit_alert">Riasztás beállítása</string>
     <string name="title_activity_double_calibration">Indító kalibráció</string>
     <string name="title_activity_calibration_override">Kalibráció felülírása</string>
@@ -146,7 +149,9 @@
     <string name="waiting_for_packet">Várakozás adatokra</string>
     <string name="persistent_high_for_greater_than">Folyamatos magas érték &gt; </string>
     <string name="space_mins">" perc"</string>
+    <string name="till">amíg</string>
     <string name="low_predicted">Alacsony VC-érték várható</string>
+    <string name="in">itt</string>
     <string name="yes_enter_setup_mode">Igen, beállítási mód indítása</string>
     <string name="nokeep_parakeet_as_it_is">Parakeet-et változatlanul hagyni</string>
     <string name="are_you_sure_you_want_switch_parakeet_to_setup">Parakeet beállítási mód indítása?\n\ Általában erre csak a Parakeet újrakonfigurálásához van szükség (Transmitter-ID, stb.).</string>
@@ -222,6 +227,7 @@
     <string name="linear_model_carbs_absorbed_per_hour">Szénhidrát-felszívódás óránként (lineáris modell)</string>
     <string name="carb_absorption_rate">CH felszívódási sebesség</string>
     <string name="calculate_including_glucose_trend">VC-érték trend számítása is</string>
+    <string name="use_trend_momentum">Trendek felhasználása</string>
     <string name="add_calibration">Kalibrálás</string>
     <string name="system_status">Rendszer állapota</string>
     <string name="settings">Beállítások</string>
@@ -363,11 +369,13 @@
     <string name="install_pebble_watchface">Pebble óralap telepítése</string>
     <string name="glucose_history">Szenzorglükóz történet</string>
     <string name="import_database">Adatbázis importálása</string>
+    <string name="sensor_table">Szenzor táblázat</string>
     <string name="bg_readings_table">VC-érték adattábla</string>
     <string name="long_press_to_split_or_delete">Szerkesztéshez vagy törléshez nyomja hosszan</string>
     <string name="press_and_hold_on_the_background_to_split_or_delete">Nyomja és tartsa az időszak felosztásához vagy törléséhez</string>
     <string name="search">Keresés</string>
     <string name="reset_all_language_data">Nyelvi beállítások viasszaálltása</string>
+    <string name="show_only_customized_entries">Csak testreszabott értékek mutatása</string>
     <string name="settings_on_external_storage">Beállítások mentése/visszaállítása</string>
     <string name="get_notified_of_new_apk_releases">Értesítés új xDrip verzióról</string>
     <string name="choose_stable_beta_or_alpha_releases">Stabli, béta vagy alfa verziók választása</string>
@@ -489,6 +497,8 @@
     <string name="show_graph_target_line">Cél VC-érték vonal mutatása</string>
     <string name="show_graph_recent_average">Jelenlegi átlag mutatása</string>
     <string name="show_graph_total_average">Abszolút átlagértékek megjelenítése a diagramban</string>
+    <string name="show_momentum_working_curve">Munkagörbe mutatása</string>
+    <string name="show_noise_workings">Zajfeldolgozás mutatása</string>
     <string name="parakeet_and_extra_features">Parakeet és további tesztfunkciók</string>
     <string name="insulin_duration_hours">Inzulin hatástartam órában</string>
     <string name="default_liver_sensitivity_ratio">Máj érzékenység</string>
@@ -613,6 +623,7 @@
     <string name="retrieve_blukon_history_title">Historikus adatok</string>
     <string name="retrieve_blukon_history_summary">A Blukonhoz visszacsatlakozásakor a kihagyott időszak adatainak visszatöltése.</string>
     <string name="interpret_share_raw">Ha a Share-t használja, az xDrip azokat az értékeket is mutatja, amelyek normál esetben a vevő elől rejtve maradnak.</string>
+    <string name="interpret_raw">Nyers adatok értelmezése</string>
     <string name="use_infrequent_calibrations">Szükség esetén használjon régebbi kalibrációkat, pl. ha ritkán kalibrál.</string>
     <string name="infrequent_calibrations">Ritka kalibráció</string>
     <string name="extra_logging">Haladó naplózási beállítások</string>
@@ -671,6 +682,7 @@
     <string name="sensor_age_or_expiry">Szenzor kora vagy lejárata</string>
     <string name="show_expiry_time">Szenzorlejárat megjelenítése 14,5 nappal számítva</string>
     <string name="show_sensor_age">Szenzor életkor megjelenítése a főképernyőn</string>
+    <string name="change_sensor_total_days">Szenzor szavatosság beállítása</string>
     <string name="nfc_scanning_xdrip_open">NFC szkennelés csak akkor, ha xDrip+ előtérben van</string>
     <string name="nfc_scanning_launcher">NFC szkennelés az android kezdőképernyőről is</string>
     <string name="scan_when_app_closed">NFC szkennelés, ha xDrip nem fut</string>
@@ -1482,6 +1494,7 @@
     <string name="nfc_is_not_enabled">NFC nincs engedélyezve</string>
     <string name="phone_nfc_is_having_problems">A készülék NFC olvasója hibát jelez!</string>
     <string name="not_so_quickly_wait_60_seconds">Ne ilyen gyorsan, kérem, várjon 60 mp-et</string>
+    <string name="not_so_quickly_wait_30_seconds">Ne ilyen gyorsan, várjon 30 mp-et</string>
     <string name="nfc_diag_timeout">NFC időtúllépés</string>
     <string name="nfc_read_timeout">NFC olvasási időtúllépés</string>
     <string name="nfc_invalid_data__try_again">Érvénytelen NFC adatok - próbálja újra</string>
@@ -1542,6 +1555,8 @@
     <string name="title_multiple_insulin_types_settings">Többféle inzulin</string>
     <string name="summary_multiple_insulin_types_settings">Beállítások többféle inzulin használatakor</string>
     <string name="title_multiple_insulin_types">Többféle inzulin</string>
+    <string name="summary_multiple_insulin_use_basal_activity">Bázisinzulin aktivitás megrajzolása és a prediktív modellhez adása</string>
+    <string name="title_multiple_insulin_use_basal_activity">Bázisinzulin aktivitás</string>
     <string name="title_xdrip_plus_snooze_broadcast">Helyi adatszórás</string>
     <string name="summary_broadcast_snooze">Szundi küldése más app-nak ezen készüléken</string>
     <string name="title_broadcast_snooze">Helyi adatszórás</string>
@@ -1549,6 +1564,7 @@
     <string name="title_accept_broadcast_snooze">Helyi adatszórás engedélyezése</string>
     <string name="no_battery_optimization_whitelisting">Úgy tűnik, a készüléke nem vezet kivétellistát az akku optimalizált app-okról!</string>
     <string name="no_i_really_know">Nem, tényleg tudom, mit csinálok</string>
+    <string name="use_for_calibration">Használja a %s értéket kalibrációra?</string>
     <string name="problem_loading_speech_lexicon">Hiba a beszédlexikon betöltésében!</string>
     <string name="no_never">NEM, soha</string>
     <string name="auto_starting_sensor">Automatikus szenzorindítás!</string>
@@ -1572,4 +1588,13 @@
     <string name="reschedule_with_new_timing">Újratervezés új időzítéssel?</string>
     <string name="select_new_sound_source">Hangforrás kiválasztása</string>
     <string name="snooze_done">← Szundi / Kész →</string>
+    <string name="zero_value">Nulla érték</string>
+    <string name="adjust_dose">Adagolás beállítása</string>
+    <string name="Dose">Adag</string>
+    <string name="invalid_serial">Érvénytelen szériaszám</string>
+    <string name="allow_do_not_disturb_text">Adjon Ne zavarjanak-engedélyt az xDrip-nek a rendszerbeállításokban a következő oldalon, hogy akkor is tudjon figyelmeztetni az xDrip, ha az Androidban a Ne zavarjanak funkció aktív</string>
+    <string name="graphical_editor_for_pump_basal">Pumpák bázisinzulin-profiljának szerkesztése</string>
+    <string name="basal_profile_editor">Bázisinzulin-profil szerkesztő</string>
+    <string name="import_sounds">Hangok importálása</string>
+    <string name="play_sounds_when_importing">Hangjelzés fontos adatok pl. profilok importálásakor</string>
 </resources>
