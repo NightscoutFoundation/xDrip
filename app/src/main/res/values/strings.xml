@@ -1692,4 +1692,6 @@
     <string name="basal_profile_editor">Basal Profile Editor</string>
     <string name="import_sounds">Import Sounds</string>
     <string name="play_sounds_when_importing">Play sounds when importing significant data such as profiles</string>
+    <string name="show_action_buttons_within_alerts">Show action buttons (like Snooze) within alert notifications</string>
+    <string name="alert_buttons">Alert buttons</string>
 </resources>

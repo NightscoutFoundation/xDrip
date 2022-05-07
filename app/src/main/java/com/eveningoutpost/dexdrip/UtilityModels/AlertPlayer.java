@@ -543,10 +543,18 @@ public class AlertPlayer {
                 //.addAction(R.drawable.ic_action_communication_invert_colors_on, "SNOOZE", notificationIntent(context, intent))
                 .setContentIntent(notificationIntent(context, intent))
                 .setLocalOnly(localOnly)
+                .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setGroup("xDrip level alert")
                 .setPriority(Pref.getBooleanDefaultFalse("high_priority_notifications") ? Notification.PRIORITY_MAX : Notification.PRIORITY_HIGH)
                 .setDeleteIntent(snoozeIntent(context, minsFromStartPlaying));
-
+        if (Pref.getBoolean("show_buttons_in_alerts", true)) {
+             builder.addAction(
+                    R.drawable.alert_icon,
+                    context.getString(R.string.snooze_alert),
+                    snoozeIntent(context, minsFromStartPlaying)
+            );
+        }
+        boolean overrideSilent = alert.override_silent_mode;
         if (profile != ALERT_PROFILE_VIBRATE_ONLY && profile != ALERT_PROFILE_SILENT) {
             float volumeFrac = (float) (minsFromStartPlaying - MAX_VIBRATING_MINUTES) / (MAX_ASCENDING_MINUTES - MAX_VIBRATING_MINUTES);
             // While minsFromStartPlaying <= MAX_VIBRATING_MINUTES, we only vibrate ...
@@ -559,8 +567,14 @@ public class AlertPlayer {
                 volumeFrac = (float) 0.7;
             }
             Log.d(TAG, "VibrateNotifyMakeNoise volumeFrac = " + volumeFrac);
-            boolean overrideSilent = alert.override_silent_mode;
+
             boolean forceSpeaker = alert.force_speaker;
+
+            if (overrideSilent) {
+                UserError.Log.d(TAG, "Setting full screen intent");
+                builder.setFullScreenIntent(notificationIntent(context, intent), true);
+            }
+
             if (notSilencedDueToCall()) {
                 if (overrideSilent || isLoudPhone(context)) {
                     playFile(context, alert.mp3_file, volumeFrac, forceSpeaker, overrideSilent);
