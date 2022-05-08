@@ -543,7 +543,7 @@ public class AlertPlayer {
                 //.addAction(R.drawable.ic_action_communication_invert_colors_on, "SNOOZE", notificationIntent(context, intent))
                 .setContentIntent(notificationIntent(context, intent))
                 .setLocalOnly(localOnly)
-                .setCategory(NotificationCompat.CATEGORY_ALARM)
+
                 .setGroup("xDrip level alert")
                 .setPriority(Pref.getBooleanDefaultFalse("high_priority_notifications") ? Notification.PRIORITY_MAX : Notification.PRIORITY_HIGH)
                 .setDeleteIntent(snoozeIntent(context, minsFromStartPlaying));
@@ -572,7 +572,8 @@ public class AlertPlayer {
 
             if (overrideSilent) {
                 UserError.Log.d(TAG, "Setting full screen intent");
-                builder.setFullScreenIntent(notificationIntent(context, intent), true);
+                builder.setCategory(NotificationCompat.CATEGORY_ALARM);
+                builder.setFullScreenIntent(notificationIntent(context, new Intent(context, Home.class)), true);
             }
 
             if (notSilencedDueToCall()) {
