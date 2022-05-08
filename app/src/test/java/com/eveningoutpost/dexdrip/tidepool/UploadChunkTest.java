@@ -235,7 +235,7 @@ public class UploadChunkTest extends RobolectricTestWithConfig {
         APStatus.cleanup(0);
         for (val record : values) {
             val fields = record.split("\\|");
-            val aps = new APStatus(Long.parseLong(fields[2]), Integer.parseInt(fields[1]));
+            val aps = new APStatus(Long.parseLong(fields[2]), Integer.parseInt(fields[1]), -1d);
             //System.out.println(aps.toS());
             aps.save();
         }

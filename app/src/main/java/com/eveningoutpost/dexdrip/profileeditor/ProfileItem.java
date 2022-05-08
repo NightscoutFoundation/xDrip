@@ -29,18 +29,16 @@ public class ProfileItem implements Comparable<ProfileItem>{
         this.sensitivity = sensitivity;
     }
 
-    public String getTimePeriod()
-    {
-        return String.format("%02d:%02d",start_min / 60,start_min %60)+" -> "+String.format("%02d:%02d",end_min/60, end_min %60);
+    public String getTimePeriod() {
+        return String.format(Locale.ENGLISH, "%02d:%02d", start_min / 60, start_min % 60) + " -> " + String.format(Locale.ENGLISH, "%02d:%02d", end_min / 60, end_min % 60);
     }
 
-    public String getTimeStart()
-    {
-        return String.format("%02d:%02d",start_min / 60,start_min %60);
+    public String getTimeStart() {
+        return String.format(Locale.ENGLISH, "%02d:%02d", start_min / 60, start_min % 60);
     }
-    public String getTimeEnd()
-    {
-        return String.format("%02d:%02d",end_min / 60,end_min %60);
+
+    public String getTimeEnd() {
+        return String.format(Locale.ENGLISH, "%02d:%02d", end_min / 60, end_min % 60);
     }
 
     public String getTitle() {
@@ -65,8 +63,7 @@ public class ProfileItem implements Comparable<ProfileItem>{
 
     public ProfileItem clone()
     {
-        ProfileItem nu = new ProfileItem(this.start_min,this.end_min,this.carb_ratio,this.sensitivity);
-        return nu;
+        return new ProfileItem(this.start_min, this.end_min, this.carb_ratio, this.sensitivity);
     }
 
     public String toJson() {

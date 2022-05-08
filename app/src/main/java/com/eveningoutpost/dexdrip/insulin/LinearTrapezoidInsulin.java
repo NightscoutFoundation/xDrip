@@ -30,7 +30,7 @@ public class LinearTrapezoidInsulin extends Insulin {
         maxEffect = t3;
     }
 
-    public double calculateIOB(double t) {
+    public double calculateIOB(long t) {
 
 		if ((0 <= t) && (t < onset))
 			return 1.0;
@@ -43,7 +43,7 @@ public class LinearTrapezoidInsulin extends Insulin {
         else return 0;
     }
 
-    public double calculateActivity(double t) {
+    public double calculateActivity(long t) {
 
         if ((0 <= t) && (t < onset))
             return 0.0;
