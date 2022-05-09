@@ -94,6 +94,7 @@
                         android:summary="@string/summary_nightscout_device_append_source_info"
                         android:title="@string/title_nightscout_device_append_source_info" />
                     <Preference
+                        android:key="back_fill_data_activity_intent_key"
                         android:summary="@string/summary_tap_to_send_historical_data"
                         android:title="@string/title_back_fill_data">
                         <intent
