@@ -360,8 +360,7 @@ public class BgGraphBuilder {
                 int count = aplist.size();
                 for (APStatus item : aplist) {
                     if (--count == 0 || (item.basal_percent != last_percent)) {
-
-                        final float this_ypos = (item.basal_percent * yscale) / 100f;
+                        final float this_ypos = (Math.min(item.basal_percent, 500) * yscale) / 100f; // capped at 500%
                         points.add(new PointValue((float) item.timestamp / FUZZER, this_ypos));
 
                         last_percent = item.basal_percent;
