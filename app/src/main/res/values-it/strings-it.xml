@@ -1646,4 +1646,6 @@
     <string name="basal_profile_editor">Editor Profilo Basale</string>
     <string name="import_sounds">Importa Suoni</string>
     <string name="play_sounds_when_importing">Suona durante l\'importazione di dati significativi come i profili</string>
+    <string name="show_action_buttons_within_alerts">Mostra i pulsanti azione (come Snooze) nelle notifiche di avviso</string>
+    <string name="alert_buttons">Pulsanti di avviso</string>
 </resources>
