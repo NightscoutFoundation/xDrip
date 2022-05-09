@@ -382,4 +382,8 @@
     <string name="adjust_dose">用量を調整</string>
     <string name="Dose">投与量</string>
     <string name="allow_do_not_disturb_text">Androidのサイレントモードが有効になっている場合でも警告するオプション機能を有効にするには、次のページのシステム設定でxDripにこの権限を許可してください。</string>
+    <string name="import_sounds">サウンドをインポート</string>
+    <string name="play_sounds_when_importing">プロファイルなどの重要なデータをインポートしたときに音を鳴らす</string>
+    <string name="show_action_buttons_within_alerts">警報通知内にアクションボタン\"(\"スヌーズ等\")\"を表示する</string>
+    <string name="alert_buttons">警報ボタン</string>
 </resources>

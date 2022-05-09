@@ -440,7 +440,7 @@
     <string name="display_slope_arrows">Mostrar flechas de tendencia</string>
     <string name="vibrate_watch_to_alert_no_data">Vibrar reloj para alertar cuando no obtiene datos de la glucosa</string>
     <string name="vibrate_when_missed_signal">Vibre cuando la señal perdida</string>
-    <string name="vibrate_watch_to_alert_no_bluetooth">Hacer vibrar el reloj para alertar que el bluetooth de ha desconectado</string>
+    <string name="vibrate_watch_to_alert_no_bluetooth">Vibrar reloj para alertar que el Bluetooth se desconectó</string>
     <string name="vibrate_when_no_bluetooth">Vibrar cuando no hay bluetooth</string>
     <string name="special_glucose_value_to_display_message">Valor especial de glucosa para que aparezca el siguiente mensaje</string>
     <string name="bluetooth_wakelocks">Wakelocks Bluetooth</string>
@@ -709,7 +709,7 @@
     <string name="options_for_upload">Opciones para subida de datos de Nightscout, MongoDB o Dexcom Share</string>
     <string name="cloud_upload">Subir a la nube</string>
     <string name="enable_mongo_sync">Habilitar la sincronización de la BD Nightscout Mongo</string>
-    <string name="mongo_db_uri">IUR de la BD Mongo</string>
+    <string name="mongo_db_uri">MongoDB URI</string>
     <string name="skip_local_lan">Para servidores locales con direcciones 192.168.x.x , omitir subidas cuando no hay conectividad de red local.</string>
     <string name="skip_lan_uploads">Omitir subidas LAN</string>
     <string name="mongo_load_transmitter_data_title">Cargar datos de transmisores Libre</string>
@@ -822,7 +822,7 @@
     <string name="acccept_remote_snoozes">Aceptar silenciar remotamente</string>
     <string name="send_remote_snooze">Enviar Diferir a Distancia</string>
     <string name="only_accept_same_network">Solo aceptar si el wifi remoto empieza con las misma letras que el nuestro y se parece mucho</string>
-    <string name="wifi_name_must_match">Nombre WiFi debe coincidir</string>
+    <string name="wifi_name_must_match">El nombre del WiFi debe coincidir</string>
     <string name="confirm_remote_snooze">Confirmar Diferir a Distancia</string>
     <string name="are_you_sure_you_wish_to_snooze_all_other_devices_in_your_sync_group">¿Está seguro de que desea diferir todos los demás móviles de su grupo de sincronización?</string>
     <string name="yes_send_it">SÍ, ¡enviar!</string>
@@ -1514,7 +1514,7 @@
     <string name="librealarm_data_format_appears_incompatible_protocol_changed_or_no_data">El formato de datos de LibreAlarm parece incompatible. ¿El protocolo cambió o no hay datos?</string>
     <string name="please_update_librealarm_to_use_oop_algorithm">Por favor, actualiza LibreAlarm para usar el algoritmo OOP</string>
     <string name="sensor_clock_has_not_advanced">¡El reloj del sensor no ha avanzado!</string>
-    <string name="sensor_age_has_gone_backwards">¡La edad del sensor ha retrocedido!</string>
+    <string name="sensor_age_has_gone_backwards">¡La edad del sensor ha retrocedido!!</string>
     <string name="phone_has_no_nfc_reader">El teléfono no tiene lector NFC</string>
     <string name="nfc_is_not_enabled">El NFC no está activo</string>
     <string name="phone_nfc_is_having_problems">¡El NFC del teléfono tiene problemas!</string>
@@ -1646,4 +1646,6 @@
     <string name="basal_profile_editor">Editor de perfil basal</string>
     <string name="import_sounds">Importar Sonidos</string>
     <string name="play_sounds_when_importing">Reproducir sonidos al importar datos importantes como perfiles</string>
+    <string name="show_action_buttons_within_alerts">Mostrar botones de acción (como Diferir) dentro de las notificaciones de las alertas</string>
+    <string name="alert_buttons">Botones de alerta</string>
 </resources>
