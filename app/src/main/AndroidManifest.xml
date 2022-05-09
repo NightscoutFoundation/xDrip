@@ -660,7 +660,7 @@
             android:label="@string/language_editor"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".GlucoseMeter.BTGlucoseMeterActivity"
+            android:name=".glucosemeter.BTGlucoseMeterActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_btglucose_meter"
             android:parentActivityName=".Home">
