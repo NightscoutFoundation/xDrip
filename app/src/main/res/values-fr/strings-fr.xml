@@ -1646,4 +1646,6 @@
     <string name="basal_profile_editor">Éditeur de profil Basal</string>
     <string name="import_sounds">Importer des sons</string>
     <string name="play_sounds_when_importing">Jouer des sons lors de l\'importation de données significatives telles que des profils</string>
+    <string name="show_action_buttons_within_alerts">Afficher les boutons d\'action (comme Snooze) dans les notifications d\'alerte</string>
+    <string name="alert_buttons">Boutons d\'alerte</string>
 </resources>
