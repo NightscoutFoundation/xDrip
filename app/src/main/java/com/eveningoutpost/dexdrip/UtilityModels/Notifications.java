@@ -109,6 +109,7 @@ public class Notifications extends IntentService {
     public static final int parakeetMissingId = 014;
     public static final int persistentHighAlertNotificationId = 015;
     public static final int ob1SessionRestartNotificationId = 016;
+    public static final int sensorAgeAlertNotificationId = 017;
     private static boolean low_notifying = false;
 
     private static final int CALIBRATION_REQUEST_MAX_FREQUENCY = (60 * 60 * 6); // don't bug for extra calibrations more than every 6 hours
@@ -402,6 +403,21 @@ public class Notifications extends IntentService {
         } else {
             clearAllCalibrationNotifications();
         }
+
+        // Sensor age alert to notify about upcoming expiry
+        long sensorAge = new Date().getTime() - sensor.started_at;
+        if (sensorAge >= Integer.parseInt(prefs.getString("sensor_age_alerts_days", "13")) * 60000 * 24) {
+            if (!prefs.getBoolean("sensor_age_alerts_notified", false)) {
+                OtherAlert(context, "sensor_age_alerts", "Sensor age: " + JoH.niceTimeScalar(sensorAge),
+                        sensorAgeAlertNotificationId, NotificationChannels.SENSOR_AGE_CHANNEL, true,
+                        Integer.MAX_VALUE / 100000);
+                prefs.edit().putBoolean("sensor_age_alerts_notified", true).apply();
+            }
+        } else { // Sensor is still young and fresh
+            notificationDismiss(sensorAgeAlertNotificationId);
+            prefs.edit().putBoolean("sensor_age_alerts_notified", false).apply();
+        }
+
         return unclearReading;
     }
 
