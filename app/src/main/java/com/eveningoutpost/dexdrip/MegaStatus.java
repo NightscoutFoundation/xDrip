@@ -92,7 +92,7 @@ public class MegaStatus extends ActivityWithMenu {
 
     private static final ArrayList<String> sectionList = new ArrayList<>();
     private static final ArrayList<String> sectionTitles = new ArrayList<>();
-    private static final HashSet<String> sectionAlwaysOn = new HashSet<>();
+    private static final HashSet<String> sectionAlwaysOn = new HashSet<>(); //While viewing these pages, the screen won't time out.
 
     public static View runnableView;
 

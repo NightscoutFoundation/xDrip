@@ -14,7 +14,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="2dp"
-    tools:context="com.eveningoutpost.dexdrip.SystemStatus">
+    tools:context="com.eveningoutpost.dexdrip.MegaStatus">
 
     <ScrollView
         android:id="@+id/scrollView3"
@@ -41,13 +41,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/version"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
                 <TextView
                     android:id="@+id/version_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="--"
+                    android:paddingBottom="5dp"
+                    android:paddingLeft="5dp"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
             </LinearLayout>
 
@@ -63,14 +65,15 @@
                     android:id="@+id/textView6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text='@{"Data Source: " + ms.gs("niceCollector")}'
-
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:text="Data Source:"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
                 <TextView
                     android:id="@+id/collection_method"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingLeft="5dp"
+                    android:text='@{ms.gs("niceCollector")}'
                     android:textAppearance="?android:attr/textAppearanceMedium" />
             </LinearLayout>
 
@@ -88,12 +91,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/bluetooth_device"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
                 <TextView
                     android:id="@+id/remembered_device"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingLeft="5dp"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
             </LinearLayout>
 
@@ -109,17 +113,15 @@
                     android:id="@+id/textView8"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:paddingTop="10dp"
-
                     android:text="@string/connection_status_long"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
                 <TextView
                     android:id="@+id/connection_status"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
+                    android:paddingLeft="5dp"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
             </LinearLayout>
 
@@ -135,12 +137,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/sensor_start"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
                 <TextView
                     android:id="@+id/sensor_status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingLeft="5dp"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
             </LinearLayout>
 
@@ -157,12 +160,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/transmitter_battery_status"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
                 <TextView
                     android:id="@+id/transmitter_status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingLeft="5dp"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
             </LinearLayout>
 
