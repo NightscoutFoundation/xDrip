@@ -106,9 +106,9 @@ public class BgGraphBuilder {
     final int previewAxisTextSize;
     final int hoursPreviewStep;
     //private final int numValues = (60 / 5) * 24;
-    public double end_time = (new Date().getTime() + (60000 * 10)) / FUZZER;
-    public double predictive_end_time;
-    public double start_time = end_time - ((60000 * 60 * time_span)) / FUZZER;
+    public long end_time = (new Date().getTime() + (60000 * 10)) / FUZZER;
+    public long predictive_end_time;
+    public long start_time = end_time - ((60000 * 60 * time_span)) / FUZZER;
 
 
     private final static double timeshift = 500_000;
