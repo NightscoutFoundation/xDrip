@@ -98,8 +98,6 @@
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
                         app:colorpicker_showHex="false" />
-
-
                 </PreferenceCategory>
 
                 <PreferenceCategory
@@ -164,7 +162,6 @@
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
                         app:colorpicker_showHex="false" />
-
                 </PreferenceCategory>
                 <PreferenceCategory
                     android:key="xdrip_plus_display_colorset5"
@@ -256,7 +253,6 @@
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
                         app:colorpicker_showHex="false" />
-
                 </PreferenceCategory>
                 <PreferenceCategory
                     android:key="xdrip_plus_display_colorset9_android5plus"
@@ -275,7 +271,6 @@
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
                         app:colorpicker_showHex="false" />
-
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#FF000000"
                         android:key="color_lower_flair_bar"
@@ -283,10 +278,8 @@
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
                         app:colorpicker_showHex="false" />
-
                 </PreferenceCategory>
             </PreferenceScreen>
-
 
             <SwitchPreference
                 android:defaultValue="false"
@@ -330,7 +323,6 @@
                 android:key="xdrip_plus_graph_display_settings"
                 android:summary="@string/summary_xdrip_plus_graph_display_settings"
                 android:title="@string/title_xdrip_plus_graph_display_settings">
-
 
                 <CheckBoxPreference
                     android:defaultValue="false"
@@ -493,7 +485,7 @@
                     <intent
                         android:action="android.intent.action.MAIN"
                         android:targetClass="com.eveningoutpost.dexdrip.ui.activities.NumberWallPreview"
-                        android:targetPackage="@string/local_target_package"></intent>
+                        android:targetPackage="@string/local_target_package" />
                 </Preference>
                 <SwitchPreference
                     android:defaultValue="false"
@@ -611,7 +603,6 @@
         android:summary="@string/insulin_carb_ratios_etc_for_models"
         android:title="@string/xdrip_plus_prediction_settings">
 
-
         <PreferenceCategory
             android:key="xdrip_plus_profile_category"
             android:title="@string/xdrip_plus_prediction_settings">
@@ -643,15 +634,12 @@
                         android:targetClass="com.eveningoutpost.dexdrip.insulin.InsulinProfileEditor"
                         android:targetPackage="@string/local_target_package" />
                 </Preference>
-
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="multiple_insulin_use_basal_activity"
                     android:summary="@string/summary_multiple_insulin_use_basal_activity"
                     android:title="@string/title_multiple_insulin_use_basal_activity"/>
-
             </PreferenceScreen>
-
 
             <Preference
                 android:key="profile_carb_ratio_default"
@@ -713,7 +701,6 @@
             android:summary="@string/deel_settings_for_algs"
             android:title="@string/low_prediction_values">
 
-
             <PreferenceCategory
                 android:key="xdrip_plus_adv_predict_cat"
                 android:title="@string/low_level_prediction_values">
@@ -730,7 +717,6 @@
                     android:key="xplus_insulin_dia"
                     android:summary=""
                     android:title="@string/insulin_duration_hours" />
-
                 <EditTextPreference
                     android:defaultValue="2"
                     android:inputType="numberDecimal"
@@ -746,7 +732,6 @@
             </PreferenceCategory>
         </PreferenceScreen>
 
-
     </PreferenceScreen>
 
     <PreferenceScreen
@@ -755,7 +740,6 @@
         android:key="xdrip_plus_sync_settings"
         android:summary="@string/settings_for_syncing"
         android:title="@string/xdrip_plus_sync_settings">
-
 
         <PreferenceCategory
             android:key="xdrip_plus_sync_category"
@@ -978,7 +962,6 @@
             android:title="@string/repeat_sound" />
     </PreferenceScreen>
 
-
     <PreferenceScreen
         android:icon="@drawable/ic_briefcase_download_grey600_48dp"
         android:key="xdrip_plus_update_settings"
@@ -1197,7 +1180,6 @@
                 android:key="pendiq_pin"
                 android:maxLength="4"
                 android:title="@string/title_pendiq_pin" />
-
 
         </PreferenceScreen>
         </PreferenceScreen>
