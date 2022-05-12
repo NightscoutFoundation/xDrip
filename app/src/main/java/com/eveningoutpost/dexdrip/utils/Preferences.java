@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.utils;
 
+import static com.eveningoutpost.dexdrip.xdrip.gs;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -121,8 +123,6 @@ import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-
-import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -782,38 +782,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         try {
             preference.setOnPreferenceChangeListener(sBindPreferenceTitleAppendToIntegerValueListener);
             sBindPreferenceTitleAppendToIntegerValueListener.onPreferenceChange(preference,
-                    PreferenceManager
-                            .getDefaultSharedPreferences(preference.getContext())
-                            .getInt(preference.getKey(), 0));
-        } catch (Exception e) {
-            Log.e(TAG, "Got exception binding preference title: " + e.toString());
-        }
-    }
-
-    private static void bindPreferenceTitleAppendToIntegerValueFromLogSlider(Preference preference, NamedSliderProcessor ref, String name, boolean unitize) {
-
-        final Preference.OnPreferenceChangeListener listener = new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object value) {
-
-                boolean do_update = false;
-                // detect not first run
-                if (preference.getTitle().toString().contains("(")) {
-                    do_update = true;
-                }
-                final int result = ref.interpolate(name, (int)value);
-
-                preference.setTitle(preference.getTitle().toString().replaceAll("  \\([a-z0-9A-Z \\.]+\\)$", "") + "  (" + (unitize ? BgGraphBuilder.unitized_string_static_no_interpretation_short(result) : result) + ")");
-                if (do_update) {
-                    preference.getEditor().putInt(preference.getKey(), (int) value).apply(); // update prefs now
-                }
-                return true;
-            }
-        };
-
-        try {
-            preference.setOnPreferenceChangeListener(listener);
-            listener.onPreferenceChange(preference,
                     PreferenceManager
                             .getDefaultSharedPreferences(preference.getContext())
                             .getInt(preference.getKey(), 0));
