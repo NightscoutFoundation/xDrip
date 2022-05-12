@@ -6,6 +6,12 @@ package com.eveningoutpost.dexdrip;
  * Multi-page plugin style status entry lists
  */
 
+import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.Medtrum;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.NSFollow;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.SHFollow;
+
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -67,12 +73,6 @@ import com.google.android.gms.wearable.DataMap;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-
-import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
-import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
-import static com.eveningoutpost.dexdrip.utils.DexCollectionType.Medtrum;
-import static com.eveningoutpost.dexdrip.utils.DexCollectionType.NSFollow;
-import static com.eveningoutpost.dexdrip.utils.DexCollectionType.SHFollow;
 
 public class MegaStatus extends ActivityWithMenu {
 
@@ -354,6 +354,35 @@ public class MegaStatus extends ActivityWithMenu {
                 }
             }
         };
+
+        try {
+            getSupportActionBar().setSubtitle(BuildConfig.VERSION_NAME);
+            fixElipsusAndSize(null);
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Got exception trying to set subtitle: ", e);
+        }
+    }
+
+    private void fixElipsusAndSize(ViewGroup root) {
+        if (root == null)
+            root = (ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content).getRootView();
+        final int children = root.getChildCount();
+        for (int i = 0; i < children; i++) {
+            final View view = root.getChildAt(i);
+            if (view instanceof TextView) {
+                final String txt = ((TextView) view).getText().toString();
+                if (txt.contains(BuildConfig.VERSION_NAME)) {
+                    ((TextView) view).setEllipsize(null);
+                    final float tsize = ((TextView) view).getTextSize();
+                    if (tsize > 10f) {
+                        ((TextView) view).setTextSize(Math.max(10f, tsize / 4));
+                    }
+                    return;
+                }
+            } else if (view instanceof ViewGroup) {
+                fixElipsusAndSize((ViewGroup) view);
+            }
+        }
     }
 
     private void requestWearCollectorStatus() {
