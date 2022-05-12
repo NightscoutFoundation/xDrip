@@ -1390,6 +1390,8 @@
     <string name="title_ongoing_notification_channel">Usar Canal de Notificação em Curso</string>
     <string name="summary_notification_channels_grouping">Se as notificações devam ser agrupadas. Incompatível com a opção \'Ítem de Número na área de notificação\'</string>
     <string name="title_notification_channels_grouping">Agrupar as notificações</string>
+    <string name="summary_delay_ascending_3min">Para o perfil de volume crescente, atrasar o início do som do alerta em 3 minutos. A vibração (se ativada) começa assim que o alerta dispara, independentemente desta configuração.</string>
+    <string name="title_delay_ascending_3min">Atrasar Volume Ascendente</string>
     <string name="summary_play_sound_for_initial_calibration">Emitir somm quando Calibração inicial é necessária</string>
     <string name="title_play_sound_for_initial_calibration">Alerta Inicial</string>
     <string name="category_noisy_readings">Leituras com Ruído</string>
@@ -1517,6 +1519,7 @@
     <string name="nfc_is_not_enabled">NFC Está Desligado</string>
     <string name="phone_nfc_is_having_problems">NFC do Telefone está com Problemas!</string>
     <string name="not_so_quickly_wait_60_seconds">Não tão rápido, aguarde 60 segundos</string>
+    <string name="not_so_quickly_wait_30_seconds">Não tão rápido, aguarde 30 segundos</string>
     <string name="nfc_diag_timeout">NFC Diag expirou</string>
     <string name="nfc_read_timeout">Tempo leitura NFC expirou</string>
     <string name="nfc_invalid_data__try_again">Dados inválidos NFC - tente novamente</string>
@@ -1566,8 +1569,22 @@
     <string name="enable_streaming_dialog_dont_ask_again">Não voltar a perguntar</string>
     <string name="enable_streaming_dialog_text">Deseja ligar o xDrip com este sensor?  Isto impedirá o leitor do Libre e app LibreLink de receber alertas. Pressione sim e faça leitura por NFC novamente para ligar (escolha não ligar se quiser executar o xDrip com a Libre 2 Patched app)</string>
     <string name="enable_streaming_dialog_title">A ligar o sensor Libre ao bluetooth</string>
+    <string name="title_lower_fuzzer">FUZZER baixo</string>
+    <string name="summary_lower_fuzzer">Diminuir o valor do FUZER de 2,5 minutos para 37,5 segundos</string>
+    <string name="without_camera_permission_cannot_scan_barcode">Sem permissão de câmara não podemos digitalizar um código de barras</string>
+    <string name="summary_create_missing_filtered">Criar dados filtrados conforme necessário</string>
+    <string name="title_create_missing_filtered">Criar valores em falta</string>
+    <string name="title_xdrip_plus_snooze_broadcast">Transmissão Local</string>
+    <string name="summary_broadcast_snooze">Enviar adiamentos para outros aplicativos deste dispositivo</string>
+    <string name="title_broadcast_snooze">Transmissão Local</string>
+    <string name="summary_accept_broadcast_snooze">Aceitar os adiamentos de outros aplicativos neste dispositivo</string>
+    <string name="title_accept_broadcast_snooze">Aceitar Transmissão Local</string>
+    <string name="no_never">NÃO, Nunca</string>
+    <string name="not_getting_readings">Sem leitura obtidas.</string>
+    <string name="bridge_battery">Bateria do transmissor</string>
     <string name="noise_workings_noise">Ruído: %s</string>
     <string name="share_database">Partilhar a base de dados...</string>
+    <string name="title_motion_detection_warning">Aviso de Detecção de Movimento</string>
     <string name="expires_unknown">Expira: ???</string>
     <string name="sensor_expired">EXPIRADO!</string>
     <plurals name="sensor_expires">
@@ -1578,6 +1595,17 @@
         <item quantity="one">Idade: %sd</item>
         <item quantity="other">Idade: %sd</item>
     </plurals>
+    <string name="cancel_by_default">Cancelar por padrão</string>
     <string name="old">Antigo</string>
     <string name="neww">Novo</string>
+    <string name="snooze_done">← Adiar / Feito →</string>
+    <string name="zero_value">Valor zero</string>
+    <string name="adjust_dose">Ajustar Dosagem</string>
+    <string name="Dose">Dosagem</string>
+    <string name="choose_type">Escolha o tipo</string>
+    <string name="invalid_serial">Número de série inválido</string>
+    <string name="import_sounds">Importar sons</string>
+    <string name="play_sounds_when_importing">Reproduzir sons ao importar dados significativos, como os perfis</string>
+    <string name="show_action_buttons_within_alerts">Mostrar botões de ação (como Adiar) nas notificações de alerta</string>
+    <string name="alert_buttons">Botões de alerta</string>
 </resources>

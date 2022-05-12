@@ -150,7 +150,10 @@ public class UploadChunk implements NamedSliderProcessor {
     }
 
     private static double getRateForApStatus(final APStatus apStatus) {
-        return Profile.getBasalRate(apStatus.timestamp) * apStatus.basal_percent / 100d;
+        if (apStatus.basal_absolute >= 0) {
+            return apStatus.basal_absolute;
+        }
+        return Profile.getBasalRateAbsoluteFromPercent(apStatus.timestamp, apStatus.basal_percent);
     }
 
     static List<EBasal> getBasals(final long start, final long end) {
@@ -184,7 +187,7 @@ public class UploadChunk implements NamedSliderProcessor {
             // add closing record up to end time
             val apStatus = aplist.get(aplist.size() - 1);
             if (apStatus.timestamp < end) {
-                aplist.add(new APStatus(end, apStatus.basal_percent));
+                aplist.add(new APStatus(end, apStatus.basal_percent, apStatus.basal_absolute));
             }
         }
         EBasal current = null;

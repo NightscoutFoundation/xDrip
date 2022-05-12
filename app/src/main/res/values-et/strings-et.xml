@@ -1646,4 +1646,6 @@
     <string name="basal_profile_editor">Basaali profiiliredaktor</string>
     <string name="import_sounds">Impordi helid</string>
     <string name="play_sounds_when_importing">Esita helimärguanne kui imporditakse olulisi andmeid (nt profiile)</string>
+    <string name="show_action_buttons_within_alerts">Kuva märguannetes toimingunupud (nt vaigistus)</string>
+    <string name="alert_buttons">Hoiatuste nupud</string>
 </resources>

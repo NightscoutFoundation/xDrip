@@ -1645,4 +1645,6 @@
     <string name="basal_profile_editor">Bazal Profil Editörü</string>
     <string name="import_sounds">Sesleri İçe Aktar</string>
     <string name="play_sounds_when_importing">Profiller gibi önemli verileri içe aktarırken sesleri çal</string>
+    <string name="show_action_buttons_within_alerts">Uyarı bildirimlerinde eylem düğmelerini (Erteleme gibi) göster</string>
+    <string name="alert_buttons">Uyarı Düğmeleri</string>
 </resources>
