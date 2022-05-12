@@ -1227,7 +1227,7 @@
     <string name="title_miband_screen_weather">Időjárás mutatása</string>
     <string name="title_miband_screen_activity">Tevékenységek mutatása</string>
     <string name="title_miband_screen_more">Több mutatása</string>
-    <string name="title_miband_screen_status">Státusz mutatása</string>
+    <string name="title_miband_screen_status">Állapot mutatása</string>
     <string name="title_miband_screen_heart_rate">Pulzus mutatása</string>
     <string name="title_miband_screen_timer">Időzítő mutatása</string>
     <string name="title_miband_screen_nfc">NFC mutatása (ha van)</string>
@@ -1597,4 +1597,8 @@
     <string name="basal_profile_editor">Bázisinzulin-profil szerkesztő</string>
     <string name="import_sounds">Hangok importálása</string>
     <string name="play_sounds_when_importing">Hangjelzés fontos adatok pl. profilok importálásakor</string>
+    <string name="show_sensor_expiry">Szenzor lejárat mutatása</string>
+    <string name="show_collector_status">Kollektor állapot muitatása</string>
+    <string name="show_chart_preview">Grafikon előnézet mutatása</string>
+    <string name="source_wizard_button">Varázsló gomb mutatása</string>
 </resources>
