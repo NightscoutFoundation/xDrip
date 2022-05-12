@@ -33,4 +33,8 @@ public class AuthStatusRxMessage extends BaseMessage {
     public boolean isBonded() {
         return bonded == 1;
     }
+
+    public boolean isBondUnknown() { // Android 12 sometimes returns this, in this case data can still be received
+        return bonded == 2;
+    }
 }
