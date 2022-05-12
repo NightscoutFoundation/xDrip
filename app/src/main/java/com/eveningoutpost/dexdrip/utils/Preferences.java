@@ -1849,7 +1849,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
 
             final NamedSliderProcessor tidepoolProcessor = new UploadChunk();
-            bindPreferenceTitleAppendToIntegerValueFromLogSlider(findPreference("tidepool_window_latency"), tidepoolProcessor, "latency", false);
+            bindPreferenceSummaryAppendToIntegerValueFromLogSlider(findPreference("tidepool_window_latency"), tidepoolProcessor, "latency", false);
 
 
             wifiRecievers.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {

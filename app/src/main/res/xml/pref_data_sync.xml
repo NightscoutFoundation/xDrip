@@ -275,8 +275,8 @@
                 <SeekBarPreference
                     android:key="tidepool_window_latency"
                     android:dependency="cloud_storage_tidepool_enable"
-                    android:title="@string/title_tidepool_window_latency"
-                    android:summary=""
+                    android:title=""
+                    android:summary="@string/title_tidepool_window_latency"
                     android:max="300"
                     android:min="0"
                     android:defaultValue="0" />
