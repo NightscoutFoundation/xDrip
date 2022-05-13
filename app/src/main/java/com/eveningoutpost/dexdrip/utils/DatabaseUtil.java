@@ -231,7 +231,7 @@ public class DatabaseUtil {
                 printStream = new PrintStream(zipOutputStream);
 
                 //add Treatment and BGlucose Header
-                printStream.println("DAY;TIME;UDT_CGMS;BG_LEVEL;CH_GR;BOLUS;REMARK");
+                printStream.println("DAY;TIME;UDT_CGMS;BG_LEVEL;CH_GR;FATS;PROTEINS;BOLUS;REMARK");
 
                 SQLiteDatabase db = Cache.openDatabase();
 
@@ -258,7 +258,7 @@ public class DatabaseUtil {
                         value = cur.getDouble(1);
                         if (value > 13) {
                             date.setTime(timestamp);
-                            printStream.println(df.format(date) + Math.round(value) + ";;;;");
+                            printStream.println(df.format(date) + Math.round(value) + ";;;;;;");
                         }
                     } while (cur.moveToNext());
                 }
@@ -271,7 +271,7 @@ public class DatabaseUtil {
                         value = cur.getDouble(1);
                         if (value > 0) {
                             date.setTime(timestamp);
-                            printStream.println(df.format(date) + ";" + Math.round(value) + ";;;");
+                            printStream.println(df.format(date) + ";" + Math.round(value) + ";;;;;");
                         }
                     } while (cur.moveToNext());
                 }
