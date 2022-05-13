@@ -1690,4 +1690,17 @@
     <string name="invalid_serial">Invalid serial</string>
     <string name="set_pen_to_format">Set Pen %s to %s</string>
     <string name="pen_contains_which_insulin_type">PEN %s contains which insulin type?</string>
+    <string name="allow_do_not_disturb_text">To be able to have the optional ability to alert even when Android Do-Not-Disturb is enabled, please allow xDrip this permission in the system settings on the next page</string>
+    <string name="graphical_editor_for_pump_basal">Graphical editor for pump basal profiles</string>
+    <string name="basal_profile_editor">Basal Profile Editor</string>
+    <string name="import_sounds">Import Sounds</string>
+    <string name="play_sounds_when_importing">Play sounds when importing significant data such as profiles</string>
+    <string name="show_action_buttons_within_alerts">Show action buttons (like Snooze) within alert notifications</string>
+    <string name="alert_buttons">Alert buttons</string>
+    <string name="show_sensor_expiry">Show Sensor Expiry</string>
+    <string name="show_collector_status">Show Collector Status</string>
+    <string name="show_chart_preview">Show Chart Preview</string>
+    <string name="locked_time_period_always_used">Locked Time Period Always Used</string>
+    <string name="show_time_buttons">Show Time Buttons</string>
+    <string name="source_wizard_button">Source Wizard Button</string>
 </resources>

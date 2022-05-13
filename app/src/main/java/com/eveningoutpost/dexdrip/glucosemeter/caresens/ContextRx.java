@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip.GlucoseMeter.caresens;
+package com.eveningoutpost.dexdrip.glucosemeter.caresens;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

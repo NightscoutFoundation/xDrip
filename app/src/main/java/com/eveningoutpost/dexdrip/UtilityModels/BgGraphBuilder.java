@@ -105,9 +105,9 @@ public class BgGraphBuilder {
     final int previewAxisTextSize;
     final int hoursPreviewStep;
     //private final int numValues = (60 / 5) * 24;
-    public double end_time = (new Date().getTime() + (60000 * 10)) / FUZZER;
-    public double predictive_end_time;
-    public double start_time = end_time - ((60000 * 60 * 24)) / FUZZER;
+    public long end_time = (new Date().getTime() + (60000 * 10)) / FUZZER;
+    public long predictive_end_time;
+    public long start_time = end_time - ((60000 * 60 * 24)) / FUZZER;
 
 
     private final static double timeshift = 500_000;
@@ -360,8 +360,7 @@ public class BgGraphBuilder {
                 int count = aplist.size();
                 for (APStatus item : aplist) {
                     if (--count == 0 || (item.basal_percent != last_percent)) {
-
-                        final float this_ypos = (item.basal_percent * yscale) / 100f;
+                        final float this_ypos = (Math.min(item.basal_percent, 500) * yscale) / 100f; // capped at 500%
                         points.add(new PointValue((float) item.timestamp / FUZZER, this_ypos));
 
                         last_percent = item.basal_percent;
@@ -1633,7 +1632,7 @@ public class BgGraphBuilder {
                     // we need to check we actually have sufficient data for this
                     double predictedbg = -1000;
                     BgReading mylastbg = bgReadings.get(0);
-                    double lasttimestamp = 0;
+                    long lasttimestamp = 0;
 
                     // this can be optimised to oncreate and onchange
                     Profile.reloadPreferencesIfNeeded(prefs); // TODO handle this better now we use profile time blocks

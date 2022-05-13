@@ -1,10 +1,12 @@
-package com.eveningoutpost.dexdrip.insulin.opennov.base;
+package com.eveningoutpost.dexdrip.buffer;
+
+import static com.eveningoutpost.dexdrip.Models.JoH.reverseBytes;
 
 import java.nio.ByteBuffer;
 
 /**
  * JamOrHam
- * OpenNov base buffer helper
+ * Base buffer helper
  */
 
 public class MyByteBuffer {
@@ -31,6 +33,25 @@ public class MyByteBuffer {
 
     public static void putUnsignedInt(final ByteBuffer data, long s) {
         data.putInt((int) (s & 0xffffffff));
+    }
+
+    public static byte[] getBytes(final ByteBuffer data, int len) {
+        final byte[] bytes = new byte[len];
+        data.get(bytes);
+        return bytes;
+    }
+
+    public static MyBitSet getBits(final ByteBuffer data, int byteLen, boolean reverse) {
+        byte[] bytes = new byte[byteLen];
+        data.get(bytes);
+        if (reverse) {
+            bytes = reverseBytes(bytes);
+        }
+        return MyBitSet.valueOf(bytes);
+    }
+
+    public static MyBitSet getBits(final ByteBuffer data, int byteLen) {
+        return getBits(data, byteLen, false);
     }
 
 }

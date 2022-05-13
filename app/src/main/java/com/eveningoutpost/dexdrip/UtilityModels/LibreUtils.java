@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm;
 import com.eveningoutpost.dexdrip.Models.SensorSanity;
 
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
@@ -59,8 +60,25 @@ public class LibreUtils {
         long crc = computeCRC16(data, start, size);
         return crc == ((data[start+1]& 0xFF) * 256 + (data[start] & 0xff));
     }
+    private static boolean verifyLibrePro(byte[] data) {
+        if(data.length < Constants.LIBREPRO_HEADER1_SIZE + Constants.LIBREPRO_HEADER2_SIZE) {
+            Log.e(TAG, "Must have at least 80 bytes for librepro data");
+            return false;
+        }
 
-    public static boolean verify(byte[] data) {
+        boolean checksum_ok = CheckCRC16(data, 0 ,Constants.LIBREPRO_HEADER1_SIZE);
+        checksum_ok &= CheckCRC16(data, Constants.LIBREPRO_HEADER1_SIZE ,Constants.LIBREPRO_HEADER2_SIZE);
+        checksum_ok &= CheckCRC16(data, Constants.LIBREPRO_HEADER1_SIZE + Constants.LIBREPRO_HEADER2_SIZE, Constants.LIBREPRO_HEADER3_SIZE);
+        return checksum_ok;
+    }
+
+    // Check the CRC of a libre sensor.
+    public static boolean verify(byte[] data, byte[] patchInfo) {
+        LibreOOPAlgorithm.SensorType sensorType = LibreOOPAlgorithm.getSensorType(patchInfo);
+        if(sensorType == LibreOOPAlgorithm.SensorType.LibreProH) {
+            return verifyLibrePro(data);
+        }
+        // Continue for libre1,2 checks
         if(data.length < Constants.LIBRE_1_2_FRAM_SIZE) {
             Log.e(TAG, "Must have at least 344 bytes for libre data");
             return false;

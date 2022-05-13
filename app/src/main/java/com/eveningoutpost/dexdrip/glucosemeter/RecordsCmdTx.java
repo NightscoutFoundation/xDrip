@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip.GlucoseMeter;
+package com.eveningoutpost.dexdrip.glucosemeter;
 
 // jamorham
 

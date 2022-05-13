@@ -1640,4 +1640,11 @@
     <string name="invalid_serial">Geçersiz seri</string>
     <string name="set_pen_to_format">Kalem\'i %s\'i %s olarak ayarla</string>
     <string name="pen_contains_which_insulin_type">KALEM %s hangi insülin türünü içeriyor?</string>
+    <string name="allow_do_not_disturb_text">Android Rahatsız-Etmeyin etkinleştirildiğinde bile isteğe bağlı uyarı verme yeteneğine sahip olabilmek için lütfen bir sonraki sayfada sistem ayarlarında xDrip\'in bu iznine izin verin</string>
+    <string name="graphical_editor_for_pump_basal">Pompa bazal profilleri için grafik düzenleyici</string>
+    <string name="basal_profile_editor">Bazal Profil Editörü</string>
+    <string name="import_sounds">Sesleri İçe Aktar</string>
+    <string name="play_sounds_when_importing">Profiller gibi önemli verileri içe aktarırken sesleri çal</string>
+    <string name="show_action_buttons_within_alerts">Uyarı bildirimlerinde eylem düğmelerini (Erteleme gibi) göster</string>
+    <string name="alert_buttons">Uyarı Düğmeleri</string>
 </resources>

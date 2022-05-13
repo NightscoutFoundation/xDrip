@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 
+import com.eveningoutpost.dexdrip.glucosemeter.glucomen.GlucoMen;
+import com.eveningoutpost.dexdrip.glucosemeter.glucomen.GlucoMenNfc;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.insulin.opennov.nfc.TagDispatcher;
@@ -41,7 +43,11 @@ public class TagMultiplexer implements NfcAdapter.ReaderCallback {
                         break;
 
                     case "android.nfc.tech.NfcV":
-                        NFCReaderX.doTheScan(activity, tag, false);
+                        if (GlucoMen.wantThis(tag)) {
+                             new GlucoMenNfc(tag).scan();
+                        } else {
+                            NFCReaderX.doTheScan(activity, tag, false);
+                        }
                         break;
 
                     default:

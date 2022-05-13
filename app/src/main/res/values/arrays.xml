@@ -48,6 +48,18 @@
         <item>@string/enable_streaming_never</item>
     </string-array>
 
+    <string-array name="CalibrateExternalLibre2">
+        <item>No calibration</item>
+        <item>Calibrate based on raw</item>
+        <item>Calibrate based on glucose (experimental)</item>
+    </string-array>
+
+    <string-array name="CalibrateExternalLibre2Values">
+        <item>no_calibration</item>
+        <item>calibrate_raw</item>
+        <item>calibrate_glucose</item>
+    </string-array>
+
     <string-array name="EnableStreamingValues">
         <item>enable_streaming_always</item>
         <item>enable_streaming_ask</item>

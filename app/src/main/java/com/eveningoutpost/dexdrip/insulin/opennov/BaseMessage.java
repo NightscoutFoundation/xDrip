@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip.insulin.opennov;
 
 import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.insulin.opennov.base.MyByteBuffer;
+import com.eveningoutpost.dexdrip.buffer.MyByteBuffer;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.GsonBuilder;
 

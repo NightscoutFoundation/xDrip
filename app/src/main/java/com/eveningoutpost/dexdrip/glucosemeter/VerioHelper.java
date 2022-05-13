@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip.GlucoseMeter;
+package com.eveningoutpost.dexdrip.glucosemeter;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;

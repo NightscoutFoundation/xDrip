@@ -17,14 +17,12 @@
             <EditTextPreference
                 android:key="highValue"
                 android:title="@string/high_value"
-                android:numeric="decimal"
                 android:inputType="numberDecimal"
                 android:summary="@string/maximum_value"
                 android:defaultValue="170" />
             <EditTextPreference
                 android:key="lowValue"
                 android:title="@string/low_value"
-                android:numeric="decimal"
                 android:inputType="numberDecimal"
                 android:summary="@string/minimum_value"
                 android:defaultValue="70" />
