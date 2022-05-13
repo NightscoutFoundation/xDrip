@@ -605,6 +605,19 @@
         android:title="@string/xdrip_plus_prediction_settings">
 
         <PreferenceCategory
+            android:key="title_I_understandb"
+            android:title="@string/eula">
+            <Preference
+                android:key="I_understandb"
+                android:summary="@string/not_for_medical_use"
+                android:title="@string/end_user_license_agreement">
+                <intent
+                    android:action="android.intent.action.MAIN"
+                    android:targetClass="com.eveningoutpost.dexdrip.LicenseAgreementActivity"
+                    android:targetPackage="@string/local_target_package" />
+            </Preference>
+        </PreferenceCategory>
+        <PreferenceCategory
             android:key="xdrip_plus_profile_category"
             android:title="@string/xdrip_plus_prediction_settings">
             <SwitchPreference
@@ -1007,15 +1020,6 @@
                 android:shouldDisableView="true"
                 android:summary="@string/choose_stable_beta_or_alpha_releases"
                 android:title="@string/update_channel" />
-            <Preference
-                android:key="I_understandb"
-                android:summary="@string/not_for_medical_use"
-                android:title="@string/end_user_license_agreement">
-                <intent
-                    android:action="android.intent.action.MAIN"
-                    android:targetClass="com.eveningoutpost.dexdrip.LicenseAgreementActivity"
-                    android:targetPackage="@string/local_target_package" />
-            </Preference>
         </PreferenceCategory>
 
         <PreferenceCategory
