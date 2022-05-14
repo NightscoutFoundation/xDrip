@@ -1592,7 +1592,15 @@
     <string name="title_accept_broadcast_snooze">Aceitar Transmissão Local</string>
     <string name="title_bg_compensate_noise">\u26A0 Suavizar ruído do sensor</string>
     <string name="title_bg_compensate_noise_ultrasensitive">\u26A0 Suavizar ruído do sensor ultra sensitivo</string>
+    <string name="no_battery_optimization_whitelisting">O dispositivo parece não suportar uma lista de exclusão de otimização de bateria!</string>
+    <string name="no_i_really_know">Não, eu realmente sei o que faço</string>
+    <string name="use_for_calibration">Usar %s para a Calibração?</string>
+    <string name="problem_loading_speech_lexicon">Problema ao carregar léxico de fala!</string>
+    <string name="type_treatment_eg">Tipo de tratamento\nex: unidades x.x</string>
+    <string name="word_lexicon_not_loaded">Léxico de palavra não carregado!</string>
     <string name="no_never">NÃO, Nunca</string>
+    <string name="auto_starting_sensor">Sensor de arranque automático!</string>
+    <string name="start_sensor_confirmation">A Fonte de Dados está definida para: %s\n\nDeseja alterar as configurações ou iniciar o sensor?</string>
     <string name="not_getting_readings">Sem leitura obtidas.</string>
     <string name="bridge_battery">Bateria do transmissor</string>
     <string name="noise_workings_noise">Ruído: %s</string>
@@ -1621,4 +1629,10 @@
     <string name="play_sounds_when_importing">Reproduzir sons ao importar dados significativos, como os perfis</string>
     <string name="show_action_buttons_within_alerts">Mostrar botões de ação (como Adiar) nas notificações de alerta</string>
     <string name="alert_buttons">Botões de alerta</string>
+    <string name="show_sensor_expiry">Mostrar Expiração do Sensor</string>
+    <string name="show_collector_status">Mostrar Estado do Coletor</string>
+    <string name="show_chart_preview">Mostrar pré-visualização do Gráfico</string>
+    <string name="locked_time_period_always_used">Período de Tempo Bloqueado Sempre Usado</string>
+    <string name="show_time_buttons">Mostrar Botões de Tempo</string>
+    <string name="source_wizard_button">Botão de Ajuda com Fonte</string>
 </resources>
