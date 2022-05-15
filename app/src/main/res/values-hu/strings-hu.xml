@@ -518,7 +518,7 @@
     <string name="override_phone_silent_mode_colon">Telefon Néma üzemmódjának felülírása:</string>
     <string name="vibrate_on_alert">Rezgés riasztáskor</string>
     <string name="test_alert">tesztriasztás</string>
-    <string name="disable_alert">riasztás leállítása</string>
+    <string name="disable_alert">Riasztás leállítása</string>
     <string name="save_alert">riasztás mentése</string>
     <string name="remove_alert">riasztás törlése</string>
     <string name="snooze_alert_before_it_fires">szundi mielőtt riaszt</string>
