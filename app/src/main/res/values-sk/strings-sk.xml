@@ -1185,4 +1185,10 @@ Je nutné zakázať v prípade, že chcete používať xdrip cifreník. (Požado
     <string name="title_multiple_insulin_use_basal_activity">Bazálna aktivita</string>
     <string name="show_action_buttons_within_alerts">Zobraz tlačidlá akcií (ako Odklad) v rámci upozornení</string>
     <string name="alert_buttons">Tlačidlá upozornení</string>
+    <string name="show_sensor_expiry">Zobraziť koniec senzora</string>
+    <string name="show_collector_status">Zobraziť stav zberača dát</string>
+    <string name="show_chart_preview">Zobraziť náhľad grafu</string>
+    <string name="locked_time_period_always_used">Vždy sa použije uzamknutý rozsah času</string>
+    <string name="show_time_buttons">Zobraziť tlačidlá času</string>
+    <string name="source_wizard_button">Tlačidlo pomocníka výberu zdroja</string>
 </resources>

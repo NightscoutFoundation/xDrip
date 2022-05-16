@@ -1648,4 +1648,10 @@
     <string name="play_sounds_when_importing">Suona durante l\'importazione di dati significativi come i profili</string>
     <string name="show_action_buttons_within_alerts">Mostra i pulsanti azione (come Snooze) nelle notifiche di avviso</string>
     <string name="alert_buttons">Pulsanti di avviso</string>
+    <string name="show_sensor_expiry">Mostra Scadenza Sensore</string>
+    <string name="show_collector_status">Mostra Stato Collettore</string>
+    <string name="show_chart_preview">Mostra Anteprima Grafico</string>
+    <string name="locked_time_period_always_used">Usa Sempre Periodo Fisso</string>
+    <string name="show_time_buttons">Mostrare Tasti Periodo</string>
+    <string name="source_wizard_button">Pulsante Assistente Sorgente</string>
 </resources>

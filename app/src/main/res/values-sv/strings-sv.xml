@@ -1002,4 +1002,10 @@
     <string name="allow_do_not_disturb_text">För att ha möjligheten att varna även när Android har stör ej-läget aktiverat behöver du ge xDrip denna behörighet i systeminställningarna på nästa sida</string>
     <string name="graphical_editor_for_pump_basal">Grafisk redigerare för pumpens basalprofiler</string>
     <string name="basal_profile_editor">Editor för basalprofil</string>
+    <string name="show_sensor_expiry">Visa sensorns upphörande</string>
+    <string name="show_collector_status">Visa samlarens status</string>
+    <string name="show_chart_preview">Förhandsvisa graf</string>
+    <string name="locked_time_period_always_used">Använd alltid låst tidsperiod</string>
+    <string name="show_time_buttons">Visa tidsknappar</string>
+    <string name="source_wizard_button">Knapp för assistans källa</string>
 </resources>
