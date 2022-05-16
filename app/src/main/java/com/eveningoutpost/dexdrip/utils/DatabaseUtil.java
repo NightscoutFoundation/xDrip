@@ -292,7 +292,7 @@ public class DatabaseUtil {
                         if (valueFats.equals("0")) valueFats = "";
                         if (valueProteins.equals("0")) valueProteins = "";
                         notes= notes.replaceAll("\n","||"); //convert linefeed to SiDiary conform expression
-                        if (!valueIE.equals("") || !valueCHO.equals("") || !notes.equals("")) {
+                        if (!valueIE.equals("") || !valueCHO.equals("") || !valueFats.equals("") || !valueProteins.equals("") || !notes.equals("")) {
                             date.setTime(timestamp);
                             printStream.println(df.format(date) + ";;" + valueCHO + ";" +  valueFats + ";" +  valueProteins + ";" + valueIE + ";" + notes);
                         }
