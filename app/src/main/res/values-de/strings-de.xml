@@ -470,9 +470,9 @@
     <string name="revert_to_default">Auf Standard zurücksetzen</string>
     <string name="filtered_values">Gefilterte Werte</string>
     <string name="treatment_color">Farbe der Behandlungen</string>
-    <string name="treatment_color_dark">Behandlung Farbe (dunkel):</string>
+    <string name="treatment_color_dark">Farbe der Behandlung (dunkel)</string>
     <string name="predictive_color">Farbe für Vorhersage</string>
-    <string name="predictive_color_dark">Vorhersage Farbe (dunkel):</string>
+    <string name="predictive_color_dark">Farbe für Vorhersage (dunkel)</string>
     <string name="average_and_target_lines">Durchschnitts- und Ziellinien</string>
     <string name="eight_hour_average_line">8-Stunden-Durchschnitt als Linie</string>
     <string name="twenty_four_hour_average_line">24-Stunden-Durchschnitt als Linie</string>
@@ -1502,6 +1502,7 @@
     <string name="nfc_is_not_enabled">NFC ist nicht aktiviert</string>
     <string name="phone_nfc_is_having_problems">NFC des Telefons hat Probleme!</string>
     <string name="not_so_quickly_wait_60_seconds">Nicht so schnell, warte 60 Sekunden</string>
+    <string name="not_so_quickly_wait_30_seconds">Nicht so schnell, warte 30 Sekunden</string>
     <string name="nfc_diag_timeout">NFC-Timeout</string>
     <string name="nfc_read_timeout">NFC Lese-Timeout</string>
     <string name="nfc_invalid_data__try_again">ungültige NFC-Daten - versuche es neu</string>
@@ -1550,6 +1551,7 @@
     <string name="summary_widget_hide_graph">Graph auf Widgets ausblenden (wird beim nächsten Wert aktiv)</string>
     <string name="title_widget_hide_graph">Graph auf Widgets ausblenden</string>
     <string name="no_i_really_know">Nein, ich weiß wirklich, was ich tue</string>
+    <string name="use_for_calibration">%s für Kalibrierung verwenden?</string>
     <string name="no_never">Nein, niemals</string>
     <string name="auto_starting_sensor">Starte Sensor automatisch!</string>
     <string name="sensor_not_started">Sensorsitzung scheint nicht gestartet zu sein</string>
@@ -1558,4 +1560,18 @@
     <string name="title_variant">Du verwendest eine xDrip+-Variante</string>
     <string name="expires_unknown">Läuft ab: ???</string>
     <string name="sensor_expired">Abgelaufen!</string>
+    <string name="zero_value">Nullwert</string>
+    <string name="adjust_dose">Dosis anpassen</string>
+    <string name="Dose">Dosis</string>
+    <string name="choose_type">Typ auswählen</string>
+    <string name="invalid_serial">Ungültige Seriennummer</string>
+    <string name="set_pen_to_format">Setze Pen %s auf %s</string>
+    <string name="pen_contains_which_insulin_type">PEN %s enthält welchen Insulintyp?</string>
+    <string name="allow_do_not_disturb_text">Um die optionale Möglichkeit zur Benachrichtigung auch bei aktiviertem Android Nicht-Stören haben zu können, erlauben Sie xDrip bitte diese Berechtigung in den Systemeinstellungen auf der nächsten Seite</string>
+    <string name="graphical_editor_for_pump_basal">Grafischer Editor für Pumpenbasalprofile</string>
+    <string name="basal_profile_editor">Basalprofil Editor</string>
+    <string name="import_sounds">Audio importieren</string>
+    <string name="play_sounds_when_importing">Töne beim Importieren wichtiger Daten wie z.B. Profilen abspielen</string>
+    <string name="show_action_buttons_within_alerts">Aktions-Schaltflächen (wie Schlummern) in Warnmeldungen anzeigen</string>
+    <string name="alert_buttons">Alarm-Schaltflächen</string>
 </resources>

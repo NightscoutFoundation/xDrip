@@ -35,7 +35,7 @@ public class Libre2SensorData {
         currentSensorData.enableTime_ = enableTime;
         currentSensorData.connectionIndex_ = connectionIndex;
         currentSensorData.deviceName_ = deviceName;
-        Log.e(TAG, "persisting sensor data");
+        Log.d(TAG, "persisting sensor data");
         PersistentStore.setString(SENSOR_DATA_KAY, currentSensorData.toJson());
     }
     
@@ -57,7 +57,7 @@ public class Libre2SensorData {
         libre2SensorData.deviceName_ = currentSensorData.deviceName_;
         if(increaseConnectionIndex) {
             currentSensorData.connectionIndex_++;
-            Log.e(TAG, "persisting sensor data");
+            Log.d(TAG, "persisting sensor data");
             PersistentStore.setString(SENSOR_DATA_KAY, currentSensorData.toJson());
         }
         return libre2SensorData;
@@ -76,7 +76,7 @@ public class Libre2SensorData {
         for(int i = 0 ; i < unlockBufferArray.size(); i++) {
             currentSensorData.bt_cached_keys.put(connectionIndex + i, unlockBufferArray.get(i));
         }
-        Log.e(TAG, "persisting sensor data");
+        Log.e(TAG, "persisting sensor data: bt_cached_keys: size:"+currentSensorData.bt_cached_keys.size());
         PersistentStore.setString(SENSOR_DATA_KAY, currentSensorData.toJson());
     }
 
@@ -96,7 +96,7 @@ public class Libre2SensorData {
 
         if(increaseConnectionIndex) {
             currentSensorData.connectionIndex_++;
-            Log.e(TAG, "persisting sensor data");
+            Log.d(TAG, "persisting sensor data connection count increased");
             PersistentStore.setString(SENSOR_DATA_KAY, currentSensorData.toJson());
         }
         return ret;
@@ -117,7 +117,7 @@ public class Libre2SensorData {
             Log.e(TAG, "Libre2SensorData Got exception processing json msg: " + e );
             return null;
         }
-        Log.e(TAG, "Successfuly created Libre2SensorData value " + json);
+        Log.d(TAG, "Successfuly created Libre2SensorData value " + json);
         return fresh;
     }
     

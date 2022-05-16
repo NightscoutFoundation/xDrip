@@ -86,6 +86,7 @@ public class ProfileEditor extends BaseAppCompatActivity {
         adjustallSeekBar = (SeekBar) findViewById(R.id.profileAdjustAllseekBar);
         adjustPercentage = (TextView) findViewById(R.id.profileAdjustAllPercentage);
 
+        profileItemList.clear();
         profileItemList.addAll(loadData(true));
 
         //Toolbar toolbar = (Toolbar) findViewById(R.id.profile_toolbar);
@@ -263,6 +264,14 @@ public class ProfileEditor extends BaseAppCompatActivity {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        profileItemList.clear();
+        profileItemList.addAll(loadData(true));
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
 
@@ -323,9 +332,7 @@ public class ProfileEditor extends BaseAppCompatActivity {
         String data = gson.toJson(profileItemListTmp);
         if (for_real) {
             saveBtn.setVisibility(View.INVISIBLE);
-            Pref.setString("saved_profile_list_json", data);
-            Pref.setString("saved_profile_list_json_working", "");
-            Log.d(TAG, "Saved final data");
+            saveProfileJson(data);
             UserError.Log.uel(TAG, "Saved Treatment Profile data, timeblocks:" + profileItemListTmp.size());
             updateAdjustmentFactor(1.0); // reset it
             dataChanged = true;
@@ -337,6 +344,12 @@ public class ProfileEditor extends BaseAppCompatActivity {
             undoBtn.setVisibility(View.VISIBLE);
             Log.d(TAG, "Saved working data");
         }
+    }
+
+    public static void saveProfileJson(final String data) {
+        Pref.setString("saved_profile_list_json", data);
+        Pref.setString("saved_profile_list_json_working", "");
+        Log.d(TAG, "Saved final data");
     }
 
     private void clearWorkingData() {

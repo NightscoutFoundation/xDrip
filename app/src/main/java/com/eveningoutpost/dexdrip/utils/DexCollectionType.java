@@ -165,7 +165,7 @@ public enum DexCollectionType {
         }
         return hasLibre(collector) &&
                 (Pref.getBooleanDefaultFalse("external_blukon_algorithm") ||
-                        !Pref.getBoolean("calibrate_external_libre_2_algorithm", true));
+                        Pref.getString("calibrate_external_libre_2_algorithm_type", "calibrate_raw").equals("no_calibration"));
     }
 
     public static Class<?> getCollectorServiceClass() {
@@ -297,6 +297,29 @@ public enum DexCollectionType {
         } else {
             return "";
         }
+    }
+
+    public long getSamplePeriod() {
+        return getCollectorSamplePeriod(this);
+    }
+
+    public static long getCollectorSamplePeriod(final DexCollectionType type) {
+        switch (type) {
+            default:
+                return 300_000; // 5 minutes
+        }
+    }
+    public static long getCurrentSamplePeriod() {
+       return getDexCollectionType().getSamplePeriod();
+    }
+
+    public static long getCurrentDeduplicationPeriod() {
+        final long period = getDexCollectionType().getSamplePeriod();
+        return period - (period / 5); // TODO this needs more validation
+    }
+
+    public static int getCurrentSamplesForPeriod(final long periodMs) {
+        return (int) (periodMs / getDexCollectionType().getSamplePeriod());
     }
 
 

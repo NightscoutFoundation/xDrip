@@ -28,6 +28,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.insulin.Insulin;
 import com.eveningoutpost.dexdrip.insulin.InsulinManager;
 import com.eveningoutpost.dexdrip.insulin.MultipleInsulins;
+import com.eveningoutpost.dexdrip.utils.jobs.BackgroundQueue;
 import com.eveningoutpost.dexdrip.utils.FoodType;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -51,9 +52,12 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import lombok.val;
 
+import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
 import static java.lang.StrictMath.abs;
@@ -152,7 +156,7 @@ public class Treatments extends Model {
         insulinInjections = i;
         Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
-               // .registerTypeAdapter(Date.class, new DateTypeAdapter())
+                // .registerTypeAdapter(Date.class, new DateTypeAdapter())
                 .serializeSpecialFloatingPointValues()
                 .create();
         insulinJSON = gson.toJson(i);
@@ -160,7 +164,7 @@ public class Treatments extends Model {
 
     // lazily populate and return InsulinInjection array from json
     List<InsulinInjection> getInsulinInjections() {
-       // Log.d(TAG,"get injections: "+insulinJSON);
+        // Log.d(TAG,"get injections: "+insulinJSON);
         if (insulinInjections == null) {
             if (insulinJSON != null) {
                 try {
@@ -193,7 +197,7 @@ public class Treatments extends Model {
     // take a simple insulin value and produce a list assuming it is bolus insulin - for legacy conversion
     static private List<InsulinInjection> convertLegacyDoseToBolusInjectionList(final double insulinSum) {
         final ArrayList<InsulinInjection> injections = new ArrayList<>();
-        Insulin profile = InsulinManager.getBolusProfile();
+        val profile = InsulinManager.getBolusProfile();
         if (profile != null) {
             injections.add(new InsulinInjection(profile, insulinSum));
         } else {
@@ -545,7 +549,7 @@ public class Treatments extends Model {
         // Create treatment entry in the database if the sensor was started by another
         // device (e.g. receiver) and not xDrip. If the sensor was started by
         // xDrip, then there will be a Sensor Start treatment already in the db.
-        Treatments lastSensorStart = Treatments.lastEventTypeFromXdrip(Treatments.SENSOR_START_EVENT_TYPE);
+        val lastSensorStart = Treatments.lastEventTypeFromXdrip(Treatments.SENSOR_START_EVENT_TYPE);
 
         // If there isn't an existing sensor start in the xDrip db, or the most recently tracked
         // sensor start was more than 15 minutes ago, then we assume the sensor was actually
@@ -562,22 +566,27 @@ public class Treatments extends Model {
         pushTreatmentSync(treatment, true, null); // new entry by default
     }
 
-    private static void pushTreatmentSync(Treatments treatment, boolean is_new, String suggested_uuid) {
+    private static void pushTreatmentSync(final Treatments treatment, boolean is_new, String suggested_uuid) {
 
-        if (Home.get_master_or_follower()) GcmActivity.pushTreatmentAsync(treatment);
-
-        if (!(Pref.getBoolean("cloud_storage_api_enable", false) || Pref.getBoolean("cloud_storage_mongodb_enable", false))) {
-            NSClientChat.pushTreatmentAsync(treatment);
-        } else {
-            Log.d(TAG, "Skipping NSClient treatment broadcast as nightscout direct sync is enabled");
-        }
-
-        if (suggested_uuid == null) {
-            // only sync to nightscout if source of change was not from nightscout
-            if (UploaderQueue.newEntry(is_new ? "insert" : "update", treatment) != null) {
-                SyncService.startSyncService(3000); // sync in 3 seconds
+        BackgroundQueue.postDelayed(() -> {
+            if (Home.get_master_or_follower()) {
+                GcmActivity.pushTreatmentAsync(treatment);
             }
-        }
+
+            if (!(Pref.getBoolean("cloud_storage_api_enable", false) || Pref.getBoolean("cloud_storage_mongodb_enable", false))) {
+                NSClientChat.pushTreatmentAsync(treatment);
+            } else {
+                Log.d(TAG, "Skipping NSClient treatment broadcast as nightscout direct sync is enabled");
+            }
+
+            if (suggested_uuid == null) {
+                // only sync to nightscout if source of change was not from nightscout
+                if (UploaderQueue.newEntry(is_new ? "insert" : "update", treatment) != null) {
+                    SyncService.startSyncService(3000); // sync in 3 seconds
+                }
+            }
+        },1000);
+
     }
 
     public static void pushTreatmentSyncToWatch(Treatments treatment, boolean is_new) {
@@ -959,11 +968,11 @@ public class Treatments extends Model {
 */
 
     // when using multiple insulins
-    private static Pair<Double, Double> calculateIobActivityFromTreatmentAtTime(final Treatments treatment, final double time, final boolean useBasal) {
+    private static Pair<Double, Double> calculateIobActivityFromTreatmentAtTime(final Treatments treatment, final long time, final boolean useBasal) {
 
         double iobContrib = 0, activityContrib = 0;
         if (treatment.insulin > 0) {
-           // Log.d(TAG,"NEW TYPE insulin: "+treatment.insulin+ " "+treatment.insulinJSON);
+            // Log.d(TAG,"NEW TYPE insulin: "+treatment.insulin+ " "+treatment.insulinJSON);
             // translate a legacy entry to be bolus insulin
             List<InsulinInjection> injectionsList = treatment.getInsulinInjections();
             if (injectionsList == null || injectionsList.size() == 0) {
@@ -984,7 +993,7 @@ public class Treatments extends Model {
     }
 
     // using the original calculation
-    private static Pair<Double, Double> calculateLegacyIobActivityFromTreatmentAtTime(final Treatments treatment, final double time) {
+    private static Pair<Double, Double> calculateLegacyIobActivityFromTreatmentAtTime(final Treatments treatment, final long time) {
 
         final double dia = Profile.insulinActionTime(time); // duration insulin action in hours
         final double peak = 75; // minutes in based on a 3 hour DIA - scaled proportionally (orig 75)
@@ -1024,7 +1033,7 @@ public class Treatments extends Model {
 
 
 
-    private static Iob calcTreatment(final Treatments treatment, final double time, final boolean useBasal) {
+    private static Iob calcTreatment(final Treatments treatment, final long time, final boolean useBasal) {
         final Iob response = new Iob();
 
         if (MultipleInsulins.isEnabled()) {
@@ -1034,31 +1043,31 @@ public class Treatments extends Model {
         } else {
             Pair<Double,Double> result = calculateLegacyIobActivityFromTreatmentAtTime(treatment, time);
             response.iob = result.first;
-           // response.jActivity = result.second;
+            // response.jActivity = result.second;
         }
 
         return response;
     }
 
     // requires stepms granularity which we should already have
-    private static double timesliceIactivityAtTime(Map<Double, Iob> timeslices, double thistime) {
+    private static double timesliceIactivityAtTime(Map<Long, Iob> timeslices, long thistime) {
         if (timeslices.containsKey(thistime)) {
             return timeslices.get(thistime).jActivity;
         } else {
             return 0;
         }
     }
-    
+
     /**
      * @deprecated
      * This method doesn't support other food types. i.e: fats and proteins.
-     * <p> Use {@link Treatments#timeSliceFoodWriter(Map, double, double, FoodType)} instead.
+     * <p> Use {@link Treatments#timeSliceFoodWriter(Map, long, double, FoodType)} instead.
      * @param timeslices timeslices.
      * @param thistime time.
      * @param carbs carbs.
      */
     @Deprecated
-    private static void timesliceCarbWriter(Map<Double, Iob> timeslices, double thistime, double carbs) {
+    private static void timesliceCarbWriter(Map<Long, Iob> timeslices, long thistime, double carbs) {
         // offset for carb action time??
         Iob tempiob;
         if (timeslices.containsKey(thistime)) {
@@ -1067,19 +1076,19 @@ public class Treatments extends Model {
         } else {
             tempiob = new Iob();
             tempiob.timestamp = (long) thistime;
-         //   tempiob.date = new Date((long)thistime);
+            //   tempiob.date = new Date((long)thistime);
             tempiob.cob = carbs;
         }
         timeslices.put(thistime, tempiob);
     }
-    
-    
-    private static void timeSliceFoodWriter(Map<Double, Iob> timeslices, double thistime, double value, FoodType foodType) {
-        
+
+
+    private static void timeSliceFoodWriter(Map<Long, Iob> timeslices, long thistime, double value, FoodType foodType) {
+
         Iob tempiob;
         if (timeslices.containsKey(thistime)) {
             tempiob = timeslices.get(thistime);
-            
+
             switch (foodType) {
                 case CARBS:
                     tempiob.cob = tempiob.cob + value;
@@ -1093,11 +1102,11 @@ public class Treatments extends Model {
                     tempiob.proteinsOB = tempiob.proteinsOB + value;
                     break;
             }
-            
+
         } else {
             tempiob = new Iob();
             tempiob.timestamp = (long) thistime;
-            
+
             switch (foodType) {
                 case CARBS:
                     tempiob.cob = value;
@@ -1115,7 +1124,7 @@ public class Treatments extends Model {
         timeslices.put(thistime, tempiob);
     }
 
-    private static void timesliceInsulinWriter(Map<Double, Iob> timeslices, Iob thisiob, double thistime) {
+    private static void timesliceInsulinWriter(Map<Long, Iob> timeslices, Iob thisiob, long thistime) {
         if (thisiob.iob > 0) {
             if (timeslices.containsKey(thistime)) {
                 Iob tempiob = timeslices.get(thistime);
@@ -1124,16 +1133,16 @@ public class Treatments extends Model {
                 timeslices.put(thistime, tempiob);
             } else {
                 thisiob.timestamp = (long) thistime;
-             //   thisiob.date = new Date((long)thistime);
+                //   thisiob.date = new Date((long)thistime);
                 timeslices.put(thistime, thisiob); // first entry at timeslice so put the record in as is
             }
         }
     }
 
     // NEW NEW NEW
-    public static List<Iob> ioBForGraph_new(int number, double startTime) {
+    public static List<Iob> ioBForGraph_new(int number, long startTime) {
 
-       // Log.d(TAG, "Processing iobforgraph2: main  ");
+        // Log.d(TAG, "Processing iobforgraph2: main  ");
         JoH.benchmark_method_start();
         final boolean multipleInsulins = MultipleInsulins.isEnabled();
         final boolean useBasal = MultipleInsulins.useBasalActivity();
@@ -1149,21 +1158,21 @@ public class Treatments extends Model {
         int counter = 0; // iteration counter
 
         final double step_minutes = 5;
-        final double stepms = step_minutes * MINUTE_IN_MS; // 300s = 5 mins
-        double mytime = startTime;
-        double tendtime = startTime;
+        final long stepms = (long) (step_minutes * MINUTE_IN_MS); // 300s = 5 mins
+        long mytime = startTime;
+        long tendtime = startTime;
 
         Map<String, Boolean> carbsEaten = new HashMap<String, Boolean>();
 
         // linear array populated as needed and layered by each treatment etc
-        SortedMap<Double, Iob> timeslices = new TreeMap<Double, Iob>();
+        SortedMap<Long, Iob> timeslices = new TreeMap<>();
         Iob calcreply;
 
         // First process all IoB calculations
         for (Treatments thisTreatment : theTreatments) {
             // early optimisation exclusion
 
-            mytime = ((long) (thisTreatment.timestamp / stepms)) * stepms; // effects of treatment occur only after it is given / fit to slot time
+            mytime = (long) ((thisTreatment.timestamp / stepms) * stepms); // effects of treatment occur only after it is given / fit to slot time
             tendtime = mytime + 36 * HOUR_IN_MS;     // 36 hours max look (24h history plus 12h forecast)
             if (tendtime > startTime + 30 * HOUR_IN_MS)
                 tendtime = startTime + 30 * HOUR_IN_MS;   // dont look more than 6h in future // TODO review time limit
@@ -1190,7 +1199,7 @@ public class Treatments extends Model {
 
             // evaluate insulin impact
             Iob lastiob = null;
-            for (Map.Entry<Double, Iob> entry : timeslices.entrySet()) {
+            for (Map.Entry<Long, Iob> entry : timeslices.entrySet()) {
                 Iob thisiob = entry.getValue();
                 if (lastiob != null) {
                     if ((thisiob.iob != 0) || (lastiob.iob != 0)) {
@@ -1226,7 +1235,7 @@ public class Treatments extends Model {
         return new ArrayList<Iob>(timeslices.values());
     }
 
-    private static int getFoodCounter(double startTime, List<Treatments> theTreatments, int counter, SortedMap<Double, Iob> timeslices, FoodType foodType) {
+    private static int getFoodCounter(double startTime, List<Treatments> theTreatments, int counter, SortedMap<Long, Iob> timeslices, FoodType foodType) {
         final double step_minutes = 5;
         final double stepms = step_minutes * MINUTE_IN_MS; // 300s = 5 mins
         double mytime;
@@ -1281,7 +1290,7 @@ public class Treatments extends Model {
                 mytime = ((long) (thisTreatment.timestamp / stepms)) * stepms; // effects of treatment occur only after it is given / fit to slot time
                 tendtime = mytime + 6 * HOUR_IN_MS;     // 6 hours max look
 
-                double foodOB_time = mytime + delay_ms_stepped;
+                long foodOB_time = (long) (mytime + delay_ms_stepped);
                 double stomachDiff = ((Profile.getFoodAbsorptionRate(foodOB_time, foodType) * stepms) / HOUR_IN_MS); // initial value
                 double newdelayedFood = 0;
                 double foodOB_remain = treatmentValue;
@@ -1319,7 +1328,7 @@ public class Treatments extends Model {
         double thisOBValue = 0.0;
         double thisOBImpact = 0.0;
 
-        for (Map.Entry<Double, Iob> entry : timeslices.entrySet()) {
+        for (Map.Entry<Long, Iob> entry : timeslices.entrySet()) {
             Iob thisiob = entry.getValue();
 
             if (lastiob != null) {
@@ -1593,6 +1602,10 @@ public class Treatments extends Model {
                 && ((insulin <= MAX_SMB_UNITS && (notes == null || notes.length() == 0)) || (enteredBy != null && enteredBy.startsWith("openaps:") && insulin <= MAX_OPENAPS_SMB_UNITS)));
     }
 
+    public boolean wasCreatedRecently() {
+        return msSince(DateUtil.tolerantFromISODateString(created_at).getTime()) < HOUR_IN_MS * 12;
+    }
+
     public boolean noteOnly() {
         return carbs == 0 && fats == 0 && proteins == 0 && insulin == 0 && noteHasContent();
     }
@@ -1623,6 +1636,28 @@ public class Treatments extends Model {
                 .serializeSpecialFloatingPointValues()
                 .create();
         return gson.toJson(this);
+    }
+
+    public boolean isPenSyncedDose() {
+        return notes != null && notes.startsWith("PEN");
+    }
+
+    public String getPenSerial() {
+        if (isPenSyncedDose()) {
+            final Pattern penPattern = Pattern.compile(".*PEN ([A-Z0-9]+).*", Pattern.DOTALL);
+            final Matcher m = penPattern.matcher(notes);
+            if (m.matches()) {
+                return m.group(1);
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public boolean isPrimingDose() {
+        return notes != null && notes.startsWith("Priming");
     }
 }
 

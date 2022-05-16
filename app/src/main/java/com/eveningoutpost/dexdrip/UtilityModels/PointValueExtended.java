@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class PointValueExtended extends PointValue {
 
     public static final int BloodTest = 1;
+    public static final int AdjustableDose = 2;
 
     public PointValueExtended(float x, float y, String note_param) {
         super(x, y);
@@ -23,6 +24,16 @@ public class PointValueExtended extends PointValue {
     public PointValueExtended(float x, float y) {
         super(x, y);
         calculatedFilteredValue = -1;
+    }
+
+    public PointValueExtended setType(final int type) {
+        this.type = type;
+        return this;
+    }
+
+    public PointValueExtended setUUID(final String uuid) {
+        this.uuid = uuid;
+        return this;
     }
 
     public float calculatedFilteredValue;

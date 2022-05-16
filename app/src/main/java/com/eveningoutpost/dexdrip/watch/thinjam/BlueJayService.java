@@ -120,11 +120,13 @@ import static com.eveningoutpost.dexdrip.watch.thinjam.Const.OPCODE_IDENTIFY;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.OPCODE_RESET_ALL;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.OPCODE_SHOW_QRCODE;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_BULK;
+import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_CALL;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_CANCEL;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_DIALOG;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_HIGH_ALERT;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_LOW_ALERT;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_TEXTBOX1;
+import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_TEXTBOX2;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_OTA;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_WRITE;
 import static com.eveningoutpost.dexdrip.watch.thinjam.firmware.BlueJayFirmware.parse;
@@ -1279,16 +1281,17 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                     notificationType = 0;
                     break;
                 case THINJAM_NOTIFY_TYPE_TEXTBOX1:
+                case THINJAM_NOTIFY_TYPE_TEXTBOX2:
                     notificationType = 6;
                     break;
                 case THINJAM_NOTIFY_TYPE_DIALOG:
                     notificationType = 9;
                     break;
                 case THINJAM_NOTIFY_TYPE_LOW_ALERT:
-                    notificationType = 2;
+                    notificationType = 4;
                     break;
                 case THINJAM_NOTIFY_TYPE_HIGH_ALERT:
-                    notificationType = 1;
+                    notificationType = 3;
                     break;
 
             }

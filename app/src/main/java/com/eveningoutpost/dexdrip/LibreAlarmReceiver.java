@@ -68,17 +68,35 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
         return (lib_raw_value * LIBRE_MULTIPLIER); // to match (raw/8.5)*1000
     }
 
+    private static boolean useGlucoseAsRaw() {
+        return Pref.getString("calibrate_external_libre_2_algorithm_type","calibrate_raw").equals("calibrate_glucose");
+    }
+
     private static void createBGfromGD(GlucoseData gd, boolean use_smoothed_data, boolean quick) {
         final double converted;
-        if (gd.glucoseLevelRaw > 0) {
-            if (use_smoothed_data && gd.glucoseLevelRawSmoothed > 0) {
-                converted = convert_for_dex(gd.glucoseLevelRawSmoothed);
-                Log.d(TAG, "Using smoothed value " + converted + " instead of " + convert_for_dex(gd.glucoseLevelRaw) + gd);
+        if (useGlucoseAsRaw()) {
+            // if treating converted value as raw
+            if (gd.glucoseLevel > 0) {
+                if (use_smoothed_data && gd.glucoseLevelSmoothed > 0) {
+                    converted  = gd.glucoseLevelSmoothed * 1000;
+                    Log.e(TAG, "Using smoothed value as raw " + converted + " instead of " + gd.glucoseLevel);
+                } else {
+                    converted = gd.glucoseLevel * 1000;
+                }
             } else {
-                converted = convert_for_dex(gd.glucoseLevelRaw);
+                converted = 12; // RF error message - might be something else like unconstrained spline
             }
         } else {
-            converted = 12; // RF error message - might be something else like unconstrained spline
+            if (gd.glucoseLevelRaw > 0) {
+                if (use_smoothed_data && gd.glucoseLevelRawSmoothed > 0) {
+                    converted = convert_for_dex(gd.glucoseLevelRawSmoothed);
+                    Log.d(TAG, "Using smoothed value " + converted + " instead of " + convert_for_dex(gd.glucoseLevelRaw) + gd);
+                } else {
+                    converted = convert_for_dex(gd.glucoseLevelRaw);
+                }
+            } else {
+                converted = 12; // RF error message - might be something else like unconstrained spline
+            }
         }
         if (gd.realDate > 0) {
             //   Log.d(TAG, "Raw debug: " + JoH.dateTimeText(gd.realDate) + " raw: " + gd.glucoseLevelRaw + " converted: " + converted);
@@ -203,7 +221,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
         if (Pref.getBooleanDefaultFalse("external_blukon_algorithm") != false) {
             Log.wtf(TAG, "Error external_blukon_algorithm should be false here");
         }
-        boolean use_raw = Pref.getBoolean("calibrate_external_libre_2_algorithm", true);
+        boolean use_raw = !Pref.getString("calibrate_external_libre_2_algorithm_type", "calibrate_raw").equals("no_calibration");
         CalculateFromDataTransferObject(readingData, use_smoothed_data, use_raw);
     }
 

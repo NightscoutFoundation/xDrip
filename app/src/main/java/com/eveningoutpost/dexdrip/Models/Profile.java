@@ -7,6 +7,7 @@ import android.util.Log;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.profileeditor.BasalRepository;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileItem;
 import com.eveningoutpost.dexdrip.utils.FoodType;
@@ -52,7 +53,7 @@ public class Profile {
     private static boolean preferences_loaded = false;
     private static List<ProfileItem> profileItemList;
 
-    public static double getSensitivity(double when) {
+    public static double getSensitivity(long when) {
         final double sensitivity = findItemListElementForTime(when).sensitivity;
         // Log.d(TAG,"sensitivity: "+sensitivity);
         return sensitivity;
@@ -131,23 +132,23 @@ public class Profile {
         }
     }
 
-    static double insulinActionTime(double when) {
+    static double insulinActionTime(long when) {
         return stored_default_insulin_action_time;
     }
 
     /**
      * @deprecated
      * This method doesn't support other food types. i.e: fats and proteins.
-     * <p> Use {@link Profile#foodDelayMinutes(double, FoodType)} instead.
+     * <p> Use {@link Profile#foodDelayMinutes(long, FoodType)} instead.
      * @param when stored_default_carb_delay_minutes.
      * @return stored_default_carb_delay_minutes.
      */
     @Deprecated
-    static double carbDelayMinutes(double when) {
+    static double carbDelayMinutes(long when) {
         return stored_default_carb_delay_minutes;
     }
 
-    static double foodDelayMinutes(double when, FoodType foodType) {
+    static double foodDelayMinutes(long when, FoodType foodType) {
         switch (foodType) {
             case CARBS:
                 return stored_default_carb_delay_minutes;
@@ -163,24 +164,24 @@ public class Profile {
         }
     }
 
-    static double maxLiverImpactRatio(double when) {
+    static double maxLiverImpactRatio(long when) {
         return 0.3; // how much can the liver block carbs going in to blood stream?
     }
 
     /**
      * @deprecated
      * This method doesn't support other food types. i.e: fats and proteins.
-     * <p> Use {@link Profile#getFoodRatio(double, FoodType)} instead.
+     * <p> Use {@link Profile#getFoodRatio(long, FoodType)} instead.
      * @param when time.
      * @return g per unit.
      */
     @Deprecated
-    public static double getCarbRatio(double when) {
+    public static double getCarbRatio(long when) {
         return findItemListElementForTime(when).carb_ratio;
         //return the_carb_ratio; // g per unit
     }
 
-    public static double getFoodRatio(double when, FoodType foodType) {
+    public static double getFoodRatio(long when, FoodType foodType) {
 
         switch (foodType) {
             case CARBS:
@@ -209,11 +210,12 @@ public class Profile {
         profileItemList = null;
     }
 
-    private static ProfileItem findItemListElementForTime(double when) {
+    private static ProfileItem findItemListElementForTime(long when) {
         populateProfile();
         // TODO does this want/need a hash table lookup cache?
-        if (profileItemList.size() == 1)
-            profileItemList.get(0); // always will be first/only element.
+        if (profileItemList.size() == 1) {
+            return profileItemList.get(0); // always will be first/only element.
+        }
         // get time of day
         final int min = ProfileItem.timeStampToMin(when);
         // find element
@@ -274,7 +276,7 @@ public class Profile {
         }
     }
 
-    static double getLiverSensRatio(double when) {
+    static double getLiverSensRatio(long when) {
         return 2.0;
     }
 
@@ -286,7 +288,7 @@ public class Profile {
         }
     }
 
-    static double getTargetRangeInMmol(double when) {
+    static double getTargetRangeInMmol(long when) {
         // return tolerantParseDouble(Home.getString("plus_target_range",Double.toString(5.5 / scale_factor)));
         return getTargetRangeInUnits(when) / scale_factor;
     }
@@ -299,40 +301,39 @@ public class Profile {
     /**
      * @deprecated
      * This method doesn't support other food types. i.e: fats and proteins.
-     * <p> Use {@link Profile#getFoodSensitivity(double, FoodType)} instead.
+     * <p> Use {@link Profile#getFoodSensitivity(long, FoodType)} instead.
      * @param when time.
      * @return sensitivity.
      */
     @Deprecated
-    static double getCarbSensitivity(double when) {
+    static double getCarbSensitivity(long when) {
         return getCarbRatio(when) / getSensitivity(when);
     }
 
-    static double getFoodSensitivity(double when, FoodType foodType) {
+    static double getFoodSensitivity(long when, FoodType foodType) {
         return getFoodRatio(when, foodType) / getSensitivity(when);
     }
 
     /**
      * @deprecated
      * This method doesn't support other food types. i.e: fats and proteins.
-     * <p> Use {@link Profile#getFoodToRaiseByMmol(double, double, FoodType)} instead.
+     * <p> Use {@link Profile#getFoodToRaiseByMmol(double, long, FoodType)} instead.
      * @param mmol mmol.
      * @param when time.
      * @return CarbsToRaiseByMmol.
      */
     @Deprecated
-    static double getCarbsToRaiseByMmol(double mmol, double when) {
 
-        double result = getCarbSensitivity(when) * mmol;
-        return result;
+    static double getCarbsToRaiseByMmol(double mmol, long when) {
+        return getCarbSensitivity(when) * mmol;
     }
 
-    static double getFoodToRaiseByMmol(double mmol, double when, FoodType foodType) {
+    static double getFoodToRaiseByMmol(double mmol, long when, FoodType foodType) {
 
         return getFoodSensitivity(when, foodType) * mmol;
     }
 
-    static double getInsulinToLowerByMmol(double mmol, double when) {
+    static double getInsulinToLowerByMmol(double mmol, long when) {
         return mmol / getSensitivity(when);
     }
 
@@ -340,31 +341,31 @@ public class Profile {
      * take an average of carb suggestions when our scope is between two times
      * @deprecated
      * This method doesn't support other food types. i.e: fats and proteins.
-     * <p> Use {@link Profile#getFoodToRaiseByMmolBetweenTwoTimes(double, double, double, FoodType)} instead.
+     * <p> Use {@link Profile#getFoodToRaiseByMmolBetweenTwoTimes(double, long, long, FoodType)} instead.
      * @param mmol mmol.
      * @param whennow whennow.
      * @param whenthen whenthen.
      * @return CarbsToRaiseByMmolBetweenTwoTimes.
      */
     @Deprecated
-    static double getCarbsToRaiseByMmolBetweenTwoTimes(double mmol, double whennow, double whenthen) {
+    static double getCarbsToRaiseByMmolBetweenTwoTimes(double mmol, long whennow, long whenthen) {
         double result = (getCarbsToRaiseByMmol(mmol, whennow) + getCarbsToRaiseByMmol(mmol, whenthen)) / 2;
         UserError.Log.d(TAG, "GetCarbsToRaiseByMmolBetweenTwoTimes: " + JoH.qs(mmol) + " result: " + JoH.qs(result));
         return result;
     }
 
-    static double getFoodToRaiseByMmolBetweenTwoTimes(double mmol, double whennow, double whenthen, FoodType foodType) {
+    static double getFoodToRaiseByMmolBetweenTwoTimes(double mmol, long whennow, long whenthen, FoodType foodType) {
         double result = (getFoodToRaiseByMmol(mmol, whennow, foodType) + getFoodToRaiseByMmol(mmol, whenthen, foodType)) / 2;
 
         UserError.Log.d(TAG, "Get"+ StringUtils.capitalize(foodType.value) + "ToRaiseByMmolBetweenTwoTimes: " + JoH.qs(mmol) + " result: " + JoH.qs(result));
         return result;
     }
 
-    static double getInsulinToLowerByMmolBetweenTwoTimes(double mmol, double whennow, double whenthen) {
+    static double getInsulinToLowerByMmolBetweenTwoTimes(double mmol, long whennow, long whenthen) {
         return (getInsulinToLowerByMmol(mmol, whennow) + getInsulinToLowerByMmol(mmol, whenthen)) / 2;
     }
 
-    public static double[] evaluateEndGameMmol(double mmol, double endGameTime, double timeNow) {
+    public static double[] evaluateEndGameMmol(double mmol, long endGameTime, long timeNow) {
         double addcarbs = 0;
         double addFats = 0;
         double addProteins = 0;
@@ -434,12 +435,17 @@ public class Profile {
 
     private static double tolerantParseDouble(String str) throws NumberFormatException {
         return Double.parseDouble(str.replace(",", "."));
-
     }
 
-    // TODO placeholder
     public static double getBasalRate(final long when) {
-        return 0d;
+        return BasalRepository.getActiveRate(when);
+    }
+
+    public static double getBasalRateAbsoluteFromPercent(final long when, int basal_percent) {
+        return getBasalRate(when) * basal_percent / 100d;
+    }
+    public static int getBasalRatePercentFromAbsolute(final long when, double basal_absolute) {
+        return (int) Math.round((basal_absolute / getBasalRate(when)) * 100d);
     }
 
 }
