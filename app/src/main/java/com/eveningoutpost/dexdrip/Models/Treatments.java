@@ -1235,7 +1235,7 @@ public class Treatments extends Model {
         return new ArrayList<Iob>(timeslices.values());
     }
 
-    private static int getFoodCounter(double startTime, List<Treatments> theTreatments, int counter, SortedMap<Long, Iob> timeslices, FoodType foodType) {
+    private static int getFoodCounter(long startTime, List<Treatments> theTreatments, int counter, SortedMap<Long, Iob> timeslices, FoodType foodType) {
         final double step_minutes = 5;
         final double stepms = step_minutes * MINUTE_IN_MS; // 300s = 5 mins
         double mytime;
