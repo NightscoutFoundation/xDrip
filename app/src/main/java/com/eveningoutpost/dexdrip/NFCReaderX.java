@@ -944,6 +944,10 @@ public class NFCReaderX {
         } else {
             trendList = parseTrendDataLibrePro(data, sensorTime, sensorStartTime, CaptureDateTime);
         }
+        if(trendList == null || historyList == null) {
+            Log.e(TAG,"Failed parsing trendList or historyList");
+            return null;
+        }
         Collections.sort(trendList);
         Collections.sort(historyList);
         // Adding the bg vals must be done after the sort.
