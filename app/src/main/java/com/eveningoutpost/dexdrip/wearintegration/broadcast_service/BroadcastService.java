@@ -43,10 +43,21 @@ import lecho.lib.hellocharts.model.Line;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
 
+/**
+ *  Broadcast API which provides common data like, bg values, graph info, statistic info.
+ *  Also it can handle different alarms, save HR data, steps and treatments.
+ *  This service was designed as a universal service so multiple thirdparty applications can use it.
+ *  {@link BroadcastService}
+ */
 public class BroadcastService extends Service {
-    //listen
+    /**
+     * action which receive data from thirdparty application
+     */
     protected static final String ACTION_WATCH_COMMUNICATION_RECEIVER = "com.eveningoutpost.dexdrip.watch.wearintegration.BROADCAST_SERVICE_RECEIVER";
-    //send
+
+    /**
+     * action used to send data to thirdparty application
+     */
     protected static final String ACTION_WATCH_COMMUNICATION_SENDER = "com.eveningoutpost.dexdrip.watch.wearintegration.BROADCAST_SERVICE_SENDER";
     private static final int COMMANDS_LIMIT_TIME_SEC = 2;
 
@@ -172,6 +183,10 @@ public class BroadcastService extends Service {
         return null;
     }
 
+    /**
+     * When service started it's will send a broadcast message CMD_START for thirdparty applications and waiting for commands from applications by listening broadcastReceiver.
+     * @see Const.CMD_START
+     */
     @Override
     public void onCreate() {
         UserError.Log.e(TAG, "starting service");
@@ -218,6 +233,11 @@ public class BroadcastService extends Service {
         }
     }
 
+    /**
+     * Handles commands from service receiver
+     * @param function Command name
+     * @param intent Intent received from service
+     */
     private void handleCommand(String function, Intent intent) {
         UserError.Log.d(TAG, "handleCommand function:" + function);
         String receiver = null;
@@ -318,6 +338,12 @@ public class BroadcastService extends Service {
         sendBroadcast(function, receiver, bundle);
     }
 
+    /**
+     * Will send  {@link Intent message as a broadcast message or to specific receiver
+     * @param function Function name
+     * @param receiver If specified, will send a broadcast message to a specific receiver domain
+     * @param bundle If specified, would be added to broadcast {@link Intent}
+     */
     protected void sendBroadcast(String function, String receiver, Bundle bundle) {
         Intent intent = new Intent(ACTION_WATCH_COMMUNICATION_SENDER);
         UserError.Log.d(TAG, String.format("sendBroadcast functionName: %s, receiver: %s", function, receiver));

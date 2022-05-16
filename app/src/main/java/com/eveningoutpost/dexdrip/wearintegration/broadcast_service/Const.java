@@ -23,6 +23,9 @@ public class Const {
     public static final String CMD_ADD_STEPS = "add_steps";
     public static final String CMD_ADD_HR = "add_hrs";
     public static final String CMD_ADD_TREATMENT = "add_treatment";
+    /**
+     * The command which  {@link BroadcastService} send when it is starter, this wil allow to notify other applications that service is ready to communicate
+     */
     public static final String CMD_START = "start";
     public static final String CMD_UPDATE_BG = "update_bg";
     public static final String CMD_REPLY_MSG = "reply_msg";
