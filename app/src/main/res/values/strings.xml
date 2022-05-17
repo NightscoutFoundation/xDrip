@@ -803,6 +803,7 @@
     <string name="rising_threshold">rising threshold</string>
     <string name="set_sound_for_bg_alerts">Set sound used for BG Alerts.</string>
     <string name="alert_sound">Alert Sound</string>
+    <string name="pref_ringtone_silent">Silent</string>
     <string name="override_silent_mode_these">Override Silent mode on these alerts</string>
     <string name="persistent_repeat_max">Repeating max every (minutes)</string>
     <string name="momentum_indicates_low">When momentum trend indicates a Low would be predicted</string>
@@ -1105,7 +1106,6 @@
     <string name="and_then_repeat">and then repeat every</string>
     <string name="will_not_repeat">but will not repeat after that</string>
     <string name="Please_Allow_Permission">Please Allow Permission</string>
-    <string name="need_storage_permission">Need storage permission to access all ringtones</string>
     <string name="select_file_reminder_sound">Select File for Reminder sound</string>
     <string name="select_tone_alert">Select tone for Alert:</string>
     <string name="snoozed_for">snoozed for</string>
