@@ -37,9 +37,15 @@ public class BasalRepository {
         }
     }
 
-    static void clearRates() {
+    public static void clearRates() {
         rates.clear();
         lastUpdated = 0;
+    }
+
+    public static void dummyRatesForTesting() {
+        clearRates();
+        rates.add(2f);
+        lastUpdated = tsl();
     }
 
     static int minutesPerSegment() {

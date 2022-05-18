@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 
+import com.eveningoutpost.dexdrip.glucosemeter.glucomen.GlucoMen;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.NFCReaderX;
@@ -37,6 +38,13 @@ public class NFControl {
                     | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK
                     | NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS;
         }
+
+        if (GlucoMen.isEnabled()) {
+                flags |= NfcAdapter.FLAG_READER_NFC_V
+                        | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK
+                        | NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS;
+        }
+
         return flags;
     }
 
@@ -62,7 +70,9 @@ public class NFControl {
                     return;
 
                 } else if (!mNfcAdapter.isEnabled()) {
-                    JoH.static_toast_long(gs(R.string.nfc_is_not_enabled));
+                    if (JoH.quietratelimit("nfc-not-enabled-toast", 300)) {
+                        JoH.static_toast_long(gs(R.string.nfc_is_not_enabled));
+                    }
                     return;
                 }
             } catch (NullPointerException e) {

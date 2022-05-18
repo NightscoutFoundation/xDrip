@@ -2,13 +2,14 @@ package com.eveningoutpost.dexdrip.G5Model;
 
 // jamorham
 
+import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.getFirmwareXDetails;
+import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.getRawFirmwareVersionString;
+import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
+
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.google.common.collect.ImmutableSet;
 
 import lombok.val;
-
-import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.getRawFirmwareVersionString;
-import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
 
 public class FirmwareCapability {
 
@@ -75,6 +76,14 @@ public class FirmwareCapability {
         return isG6Firmware(getRawFirmwareVersionString(tx_id));
     }
 
+    public static boolean isTransmitterModified(final String tx_id) {
+        val vr1 = (VersionRequest1RxMessage) getFirmwareXDetails(tx_id, 1);
+        if (vr1 != null) {
+            return vr1.max_runtime_days >= 180;
+        }
+        return false;
+    }
+
     public static boolean isTransmitterG5(final String tx_id) {
         return isG5Firmware(getRawFirmwareVersionString(tx_id));
     }
@@ -92,7 +101,8 @@ public class FirmwareCapability {
     }
 
     public static boolean isTransmitterRawCapable(final String tx_id) {
-        return isFirmwareRawCapable(getRawFirmwareVersionString(tx_id));
+        return isFirmwareRawCapable(getRawFirmwareVersionString(tx_id))
+                || isTransmitterModified(tx_id);
     }
 
     public static boolean doWeHaveVersion(final String tx_id) {
@@ -127,6 +137,6 @@ public class FirmwareCapability {
     }
 
     public static long getWarmupPeriod(final String tx_id) {
-        return getWarmupPeriod(getRawFirmwareVersionString(tx_id));
+        return getWarmupPeriodForVersion(getRawFirmwareVersionString(tx_id));
     }
 }

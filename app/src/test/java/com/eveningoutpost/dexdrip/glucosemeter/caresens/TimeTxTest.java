@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip.GlucoseMeter.caresens;
+package com.eveningoutpost.dexdrip.glucosemeter.caresens;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 
