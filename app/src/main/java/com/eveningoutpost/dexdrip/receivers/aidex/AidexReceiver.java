@@ -22,8 +22,6 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 
-import java.util.GregorianCalendar;
-
 import static com.eveningoutpost.dexdrip.receivers.aidex.AidexBroadcastIntents.AIDEX_BG_TYPE;
 import static com.eveningoutpost.dexdrip.receivers.aidex.AidexBroadcastIntents.AIDEX_BG_VALUE;
 import static com.eveningoutpost.dexdrip.receivers.aidex.AidexBroadcastIntents.AIDEX_SENSOR_ID;
@@ -55,9 +53,11 @@ public class AidexReceiver extends BroadcastReceiver {
                 PowerManager.WakeLock wl = JoH.getWakeLock("aidex-receiver", 60000);
                 synchronized (lock) {
                     try {
-
+                        UserError.Log.d(TAG, "Aidex Broadcast: " + JoH.defaultGsonInstance().toJson(intent));
+                        
                         UserError.Log.d(TAG, "Aidex onReceiver: " + intent.getAction());
                         JoH.benchmark(null);
+
                         // check source
                         if (prefs == null)
                             prefs = PreferenceManager.getDefaultSharedPreferences(context);
