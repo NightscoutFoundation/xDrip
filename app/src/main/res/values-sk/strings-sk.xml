@@ -326,7 +326,7 @@
     <string name="default_to_voice_input_next_time">Od teraz používať hlasový vstup</string>
     <string name="done">Hotovo</string>
     <string name="entering_a_calibration_now_will_override_your_previously_entered_calibration">Zadanie novej hodnoty kalibrácie prepíše poslednú hodnotu.</string>
-    <string name="enter_blood_glucose_value">Vlož hodnotu glykémie</string>
+    <string name="enter_blood_glucose_value">Zadaj hodnotu glykémie</string>
     <string name="this_does_not_get_used_for_anything_its_just_to_keep_track_of_differences_for_algorithem_improvement_purposes">Toto sa v skutočnosti nevyužíva, slúži to len na sledovanie rozdielov a vylepšovanie algoritmov</string>
     <string name="no_active_alert_exists">Žiadna aktívna výstraha</string>
     <string name="active_alert_exists_named">Existuje aktivní výstraha pojmenovaná</string>
@@ -1183,4 +1183,12 @@ Je nutné zakázať v prípade, že chcete používať xdrip cifreník. (Požado
     <string name="title_multiple_insulin_types">Viac druhov inzulínu</string>
     <string name="summary_multiple_insulin_use_basal_activity">Vykresli bazálnu aktivitu v grafe a zahrň ju do predpovede.</string>
     <string name="title_multiple_insulin_use_basal_activity">Bazálna aktivita</string>
+    <string name="show_action_buttons_within_alerts">Zobraz tlačidlá akcií (ako Odklad) v rámci upozornení</string>
+    <string name="alert_buttons">Tlačidlá upozornení</string>
+    <string name="show_sensor_expiry">Zobraziť koniec senzora</string>
+    <string name="show_collector_status">Zobraziť stav zberača dát</string>
+    <string name="show_chart_preview">Zobraziť náhľad grafu</string>
+    <string name="locked_time_period_always_used">Vždy sa použije uzamknutý rozsah času</string>
+    <string name="show_time_buttons">Zobraziť tlačidlá času</string>
+    <string name="source_wizard_button">Tlačidlo pomocníka výberu zdroja</string>
 </resources>

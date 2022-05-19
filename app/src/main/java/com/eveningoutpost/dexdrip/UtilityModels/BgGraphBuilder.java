@@ -37,9 +37,11 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
+import com.eveningoutpost.dexdrip.insulin.opennov.Options;
 import com.eveningoutpost.dexdrip.store.FastStore;
 import com.eveningoutpost.dexdrip.store.KeyStore;
 import com.eveningoutpost.dexdrip.ui.classifier.NoteClassifier;
+import com.eveningoutpost.dexdrip.ui.dialog.DoseAdjustDialog;
 import com.eveningoutpost.dexdrip.ui.helpers.BitmapLoader;
 import com.eveningoutpost.dexdrip.ui.helpers.ColorUtil;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -76,6 +78,7 @@ import lecho.lib.hellocharts.model.ValueShape;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
+import lombok.val;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.tolerantParseDouble;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
@@ -102,9 +105,9 @@ public class BgGraphBuilder {
     final int previewAxisTextSize;
     final int hoursPreviewStep;
     //private final int numValues = (60 / 5) * 24;
-    public double end_time = (new Date().getTime() + (60000 * 10)) / FUZZER;
-    public double predictive_end_time;
-    public double start_time = end_time - ((60000 * 60 * 24)) / FUZZER;
+    public long end_time = (new Date().getTime() + (60000 * 10)) / FUZZER;
+    public long predictive_end_time;
+    public long start_time = end_time - ((60000 * 60 * 24)) / FUZZER;
 
 
     private final static double timeshift = 500_000;
@@ -162,6 +165,8 @@ public class BgGraphBuilder {
     private final List<PointValue> noisePolyBgValues = new ArrayList<PointValue>();
     private final List<PointValue> activityValues = new ArrayList<PointValue>();
     private final List<PointValue> annotationValues = new ArrayList<>();
+    private final Pattern posPattern = Pattern.compile(".*?pos:([0-9.]+).*");
+    private final boolean hidePriming = Options.hidePrimingDoses();
     private static TrendLine noisePoly;
     public static double last_noise = -99999;
     public static double original_value = -99999;
@@ -355,8 +360,7 @@ public class BgGraphBuilder {
                 int count = aplist.size();
                 for (APStatus item : aplist) {
                     if (--count == 0 || (item.basal_percent != last_percent)) {
-
-                        final float this_ypos = (item.basal_percent * yscale) / 100f;
+                        final float this_ypos = (Math.min(item.basal_percent, 500) * yscale) / 100f; // capped at 500%
                         points.add(new PointValue((float) item.timestamp / FUZZER, this_ypos));
 
                         last_percent = item.basal_percent;
@@ -1148,9 +1152,9 @@ public class BgGraphBuilder {
             try {
                 for (BloodTest bloodtest : bloodtests) {
                     final long adjusted_timestamp = (bloodtest.timestamp + (AddCalibration.estimatedInterstitialLagSeconds * 1000));
-                    final PointValueExtended this_point = new PointValueExtended((float) (adjusted_timestamp / FUZZER), (float) unitized(bloodtest.mgdl));
-                    this_point.type = PointValueExtended.BloodTest;
-                    this_point.uuid = bloodtest.uuid;
+                    final PointValueExtended this_point = new PointValueExtended((float) (adjusted_timestamp / FUZZER), (float) unitized(bloodtest.mgdl))
+                           .setType(PointValueExtended.BloodTest)
+                            .setUUID(bloodtest.uuid);
                     this_point.real_timestamp = bloodtest.timestamp;
                     // exclude any which have been used for calibration
                     boolean matches = false;
@@ -1391,7 +1395,7 @@ public class BgGraphBuilder {
                                 if (this_poly.errorVarience() < min_errors) {
                                     min_errors = this_poly.errorVarience();
                                     poly = this_poly;
-                                    //if (d) Log.d(TAG, "set forecast best model to: " + poly.getClass().getSimpleName() + " with varience of: " + JoH.qs(poly.errorVarience(),14));
+                                    if (d) Log.d(TAG, "set forecast best model to: " + poly.getClass().getSimpleName() + " with varience of: " + JoH.qs(poly.errorVarience(),14));
                                 }
 
                             }
@@ -1526,6 +1530,9 @@ public class BgGraphBuilder {
                         }
 
                         if (treatment.noteOnly()) {
+                            if (hidePriming && treatment.isPrimingDose()) {
+                                continue;
+                            }
                             final PointValue pv = NoteClassifier.noteToPointValue(treatment.notes);
                             if (pv != null) {
                                 final boolean tooClose = Math.abs(treatment.timestamp - lastIconTimestamp) < Constants.MINUTE_IN_MS * 6;
@@ -1549,8 +1556,10 @@ public class BgGraphBuilder {
                             height = treatment.insulin; // some scaling needed I think
                         if (height > highMark) height = highMark;
                         if (height < lowMark) height = lowMark;
-
                         final PointValueExtended pv = new PointValueExtended((float) (treatment.timestamp / FUZZER), (float) height);
+                        if (treatment.isPenSyncedDose()) {
+                            pv.setType(PointValueExtended.AdjustableDose).setUUID(treatment.uuid);
+                        }
                         String mylabel = "";
                         if (treatment.insulin > 0) {
                             if (mylabel.length() > 0)
@@ -1582,10 +1591,9 @@ public class BgGraphBuilder {
                             pv.note = treatment.getBestShortText();
                             //Log.d(TAG, "watchkeypad pv.note: " + pv.note + " mylabel: " + mylabel);
                             try {
-                                final Pattern p = Pattern.compile(".*?pos:([0-9.]+).*");
-                                final Matcher m = p.matcher(treatment.enteredBy);
+                                final Matcher m = posPattern.matcher(treatment.enteredBy);
                                 if (m.matches()) {
-                                    pv.set(pv.getX(), (float) tolerantParseDouble(m.group(1)));
+                                    pv.set(pv.getX(), (float)Math.min(tolerantParseDouble(m.group(1)), 18 * bgScale)); // don't allow pos note to exceed 18mmol on chart
                                 }
                             } catch (Exception e) {
                                 Log.d(TAG, "Exception matching position: " + e);
@@ -1624,7 +1632,7 @@ public class BgGraphBuilder {
                     // we need to check we actually have sufficient data for this
                     double predictedbg = -1000;
                     BgReading mylastbg = bgReadings.get(0);
-                    double lasttimestamp = 0;
+                    long lasttimestamp = 0;
 
                     // this can be optimised to oncreate and onchange
                     Profile.reloadPreferencesIfNeeded(prefs); // TODO handle this better now we use profile time blocks
@@ -2322,10 +2330,10 @@ public class BgGraphBuilder {
             } else {
                 message = timeFormat.format(time) + "      " + (Math.round(pointValue.getY() * 10) / 10d) + " " + unit() + filtered;
             }
-
+            final String fuuid = uuid;
             switch (type) {
                 case PointValueExtended.BloodTest:
-                    final String fuuid = uuid;
+
                     final View.OnClickListener mBtOnClickListener = new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -2333,6 +2341,10 @@ public class BgGraphBuilder {
                         }
                     };
                     Home.snackBar(R.string.blood_test, message, mBtOnClickListener, callerActivity);
+                    break;
+                case PointValueExtended.AdjustableDose:
+                    Home.snackBar(R.string.Dose, message,
+                            v -> DoseAdjustDialog.show(callerActivity, fuuid), callerActivity);
                     break;
                 default:
                     final View.OnClickListener mOnClickListener = new View.OnClickListener() {

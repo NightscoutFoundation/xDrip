@@ -9,6 +9,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 import lombok.val;
 
+import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
 import static com.eveningoutpost.dexdrip.xdrip.getAppContext;
 
 public class BlueJayEmit {
@@ -18,6 +19,7 @@ public class BlueJayEmit {
     public static final String EMISSION_TYPE = "API_TYPE";
     public static final String API_PARAM = "API_PARAM";
     public static final String API_BYTES = "API_BYTES";
+    public static final String API_TIMESTAMP = "API_TIMESTAMP";
 
     public static final String EVENT_LONGPRESS = "EVENT_LONGPRESS";
     public static final String EVENT_CHOICE = "EVENT_CHOICE";
@@ -56,6 +58,9 @@ public class BlueJayEmit {
             if (bytes != null) {
                 intent.putExtra(API_BYTES, bytes);
             }
+
+
+            intent.putExtra(API_TIMESTAMP, "" + tsl());
 
             intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
 

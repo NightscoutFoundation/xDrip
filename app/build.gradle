@@ -75,11 +75,22 @@ android {
 
     configurations.all {
         resolutionStrategy.force 'com.google.code.findbugs:jsr305:1.3.9'
+
+        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group == "com.android.databinding") {
+                // changes to databinding libraries can apparently result in nasty bugs on some handsets
+                // the following checks that databinding dependencies are not changed from the tested configuration
+                // 2.3.0 and 1.3.1 are from me.tatarka.bindingcollectionadapter2
+                if (!["3.1.4", "2.3.0", "1.3.1", "3.4.3"].contains(details.target.version)) {
+                    throw new GradleException("Untested databinding version: " + details.requested.group + " " + details.requested.name + "- " + details.requested.version + " - " + details.target.version)
+                }
+            }
+        }
     }
 
     defaultConfig {
         applicationId "com.eveningoutpost.dexdrip"
-        minSdkVersion 18
+        minSdkVersion 19
         // increasing target SDK version can cause compatibility issues with Android 7+
         //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 23
@@ -117,6 +128,7 @@ android {
         animationsDisabled = true
         unitTests {
             includeAndroidResources = true
+            returnDefaultValues = true
         }
     }
 

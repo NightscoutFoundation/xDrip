@@ -13,6 +13,7 @@ import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_HIGH_ALERT;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_LOW_ALERT;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_OTHER_ALERT;
+import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_TEXT_MESSAGE;
 
 // jamorham
 
@@ -97,7 +98,7 @@ public class BlueJayEntry {
     }
 
     public static void sendNotifyIfEnabled(final String msg) {
-        sendNotifyIfEnabled(null, msg);
+        sendNotifyIfEnabled(THINJAM_NOTIFY_TYPE_TEXT_MESSAGE, msg);
     }
 
     public static void sendNotifyIfEnabled(final String message_type, final String msg) {

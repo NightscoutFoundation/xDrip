@@ -42,7 +42,7 @@ public class LibreBluetooth {
         long now = JoH.tsl();
         if(now - s_lastReceiveTimestamp > 3*1000) {
             // We did not receive data in 3 seconds, moving to init state again
-            Log.e(TAG, "Recieved a buffer after " + (now - s_lastReceiveTimestamp) / 1000 +  " seconds, starting again. "+
+            Log.d(TAG, "Recieved a buffer after " + (now - s_lastReceiveTimestamp) / 1000 +  " seconds, starting again. "+
             "already acumulated " + s_acumulatedSize + " bytes.");
             s_acumulatedSize = 0;
         }
@@ -77,7 +77,7 @@ public class LibreBluetooth {
 
         PersistentStore.setLong("libre-reading-timestamp", JoH.tsl());
         
-        Log.e(TAG, "We have all the data that we need " + s_acumulatedSize + HexDump.dumpHexString(s_full_data));
+        Log.d(TAG, "We have all the data that we need " + s_acumulatedSize + HexDump.dumpHexString(s_full_data));
 
         SendData(s_full_data, JoH.tsl());
         s_acumulatedSize = 0;
@@ -101,7 +101,7 @@ public class LibreBluetooth {
             patchUid =  new byte[]{(byte)0xd6, (byte)0xf1, (byte)0x0f, (byte)0x01, (byte)0x00, (byte)0xa4, (byte)0x07, (byte)0xe0};
         }
 
-        Log.e(TAG, "SendData patchUid = " + HexDump.dumpHexString(patchUid));
+        Log.d(TAG, "SendData patchUid = " + HexDump.dumpHexString(patchUid));
 
         LibreOOPAlgorithm.sendBleData(data, timestamp, patchUid);
     }

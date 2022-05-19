@@ -51,6 +51,7 @@ public class NanoStatus {
     public final ObservableField<String> watch = new ObservableField<>();
     public final ObservableField<SpannableString> color_watch = new ObservableField<>();
 
+    private static String lastException = "";
 
     public NanoStatus(final String parameter, final int freqMs) {
         this.parameter = parameter;
@@ -150,8 +151,11 @@ public class NanoStatus {
                 }
 
             } catch (Exception e) {
-                Log.d(TAG, "reflection exception: " + e + " " + service.getSimpleName());
-                // TODO cache negative hits that land here?
+              val exceptionString = e + " " + service.getSimpleName();
+                if (!exceptionString.equals(lastException)) {
+                    Log.d(TAG, "reflection exception: " + exceptionString);
+                    lastException = exceptionString;
+                }
             }
         }
         return null;
