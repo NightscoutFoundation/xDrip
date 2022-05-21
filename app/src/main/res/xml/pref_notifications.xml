@@ -245,7 +245,6 @@
                         android:title="@string/rising_threshold" />
                 </PreferenceCategory>
 
-
                 <PreferenceCategory android:title="@string/category_alert_prefs">
                     <RingtonePreference
                         android:defaultValue="content://settings/system/alarm_alert"

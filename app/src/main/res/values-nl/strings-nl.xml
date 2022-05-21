@@ -1639,4 +1639,10 @@
     <string name="invalid_serial">Ongeldig serienummer</string>
     <string name="set_pen_to_format">Zet Pen %s op %s</string>
     <string name="pen_contains_which_insulin_type">Welk type insuline bevat pen %s?</string>
+    <string name="show_sensor_expiry">Toon sensor verloopdatum</string>
+    <string name="show_collector_status">Toon status verzamelaar</string>
+    <string name="show_chart_preview">Toon Grafiekoverzicht</string>
+    <string name="locked_time_period_always_used">Vergrendelde tijdsperiode altijd gebruikt</string>
+    <string name="show_time_buttons">Toon tijdknoppen</string>
+    <string name="source_wizard_button">Bron wizard knop</string>
 </resources>

@@ -2022,7 +2022,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             chart.setCurrentViewport(holdViewport);
             previewChart.setCurrentViewport(holdViewport);
         } else {
-            if (homeShelf.get("time_buttons")) {
+            if (homeShelf.get("time_buttons") || homeShelf.get("time_locked_always")) {
                 final long which_hour = PersistentStore.getLong("home-locked-hours");
                 if (which_hour > 0) {
                     hours = which_hour;

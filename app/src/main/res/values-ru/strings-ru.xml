@@ -1610,4 +1610,10 @@
     <string name="play_sounds_when_importing">Воспроизводить звуки при импорте важных данных, таких как профили</string>
     <string name="show_action_buttons_within_alerts">Показывать кнопки действий (напр., Отложить) в уведомлениях о тревогах</string>
     <string name="alert_buttons">Кнопки тревог</string>
+    <string name="show_sensor_expiry">Показывать срок действия сенсора</string>
+    <string name="show_collector_status">Показывать состояние коллектора</string>
+    <string name="show_chart_preview">Показывать предпросмотр графика</string>
+    <string name="locked_time_period_always_used">Всегда используется заблокированный период времени</string>
+    <string name="show_time_buttons">Показывать кнопки времени</string>
+    <string name="source_wizard_button">Кнопка мастера настройки источника</string>
 </resources>

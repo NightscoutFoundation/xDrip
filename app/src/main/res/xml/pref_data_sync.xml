@@ -242,6 +242,7 @@
                 <Preference
                     android:dependency="share_upload"
                     android:summary="@string/manage_existing_followers"
+                    android:key="manage_dexcom_share_followers"
                     android:title="@string/manage_followers">
                     <intent
                         android:action="android.intent.action.MAIN"
@@ -260,7 +261,6 @@
                     android:defaultValue="false"
                     android:key="cloud_storage_tidepool_enable"
                     android:title="@string/title_sync_to_tidepool" />
-
                 <EditTextPreference
                     android:key="tidepool_username"
                     android:summary="@string/summary_tidepool_username"
