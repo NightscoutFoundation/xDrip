@@ -91,16 +91,18 @@ public class StartNewSensor extends ActivityWithMenu {
 
 
     private void sensorButtonClick() {
+        ucalendar = Calendar.getInstance(); //Default insertion time is now
 
-        ucalendar = Calendar.getInstance();
         if (Ob1G5CollectionService.usingNativeMode()) {
+            // If we're using (Dexcom) native mode, don't prompt user for insertion time
             if (!DexSyncKeeper.isReady(Pref.getString("dex_txid", "NULL"))) {
                 JoH.static_toast_long("Need to connect to transmitter once before we can start sensor");
                 MegaStatus.startStatus(MegaStatus.G5_STATUS);
             } else {
-                startSensorOrAskForG6Code();   // If we're using native mode, don't bother asking about insertion time
+                startSensorOrAskForG6Code();
             }
         } else {
+            // Prompt for insertion date/time of Dexcom or Libre sensor
             final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setTitle(gs(R.string.did_you_insert_it_today));
             builder.setMessage(gs(R.string.we_need_to_know_when_the_sensor_was_inserted_to_improve_calculation_accuracy__was_it_inserted_today));
@@ -115,8 +117,9 @@ public class StartNewSensor extends ActivityWithMenu {
                     dialog.dismiss();
                     if (DexCollectionType.hasLibre()) {
                         ucalendar.add(Calendar.DAY_OF_MONTH, -1);
-                        startSensorOrAskForG6Code();
+                        startSensorAndSetIntent();
                     } else {
+                        //Prompt for insertion day of Dexcom
                         final DatePickerFragment datePickerFragment = new DatePickerFragment();
                         datePickerFragment.setAllowFuture(false);
                         if (!Home.get_engineering_mode()) {

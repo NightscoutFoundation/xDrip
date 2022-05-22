@@ -8,14 +8,10 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:gravity="center_horizontal">
-        <ScrollView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:id="@+id/scrollView4" >
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
                 android:weightSum="1">
 
@@ -25,9 +21,6 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="@string/do_not_hit_start_long"
                     android:id="@+id/textView"
-                    android:layout_above="@+id/startNewSensor"
-                    android:layout_toStartOf="@+id/startNewSensor"
-                    android:layout_alignParentEnd="true"
                     android:layout_marginTop="10dp"
                     android:gravity="center_horizontal"
                     android:textSize="20sp"
@@ -41,12 +34,8 @@
                     android:layout_height="wrap_content"
                     android:text="@string/start_sensor"
                     android:id="@+id/startNewSensor"
-                    android:layout_alignParentBottom="true"
-                    android:layout_centerHorizontal="true"
                     android:layout_marginTop="15dp" />
             </LinearLayout>
-        </ScrollView>
-
     </LinearLayout>
 
     <fragment android:id="@+id/navigation_drawer"
