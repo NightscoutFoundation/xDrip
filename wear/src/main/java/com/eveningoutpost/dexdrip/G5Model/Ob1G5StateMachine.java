@@ -271,10 +271,14 @@ public class Ob1G5StateMachine {
                         parent.authResult(true);
                         parent.changeState(Ob1G5CollectionService.STATE.GET_DATA);
                         throw new OperationSuccess("Authenticated");
+                    } else if (status.isBondUnknown() && ! Pref.getBoolean("ob1_g5_allow_resetbond", true)) {
+                        parent.msg("Authenticated, but unknown bond state, setting prevents us to reset bond, trying to get data");
+                        parent.authResult(true);
+                        parent.changeState(Ob1G5CollectionService.STATE.GET_DATA);
+                        throw new OperationSuccess("Authenticated, but unknown bond state, setting prevents us to reset bond, trying to get data");
                     } else {
                         //parent.unBond(); // bond must be invalid or not existing // WARN
                         parent.changeState(Ob1G5CollectionService.STATE.PREBOND);
-                        // TODO what to do here?
                     }
                 } else {
                     parent.msg("Not Authorized! (Wrong TxID?)");

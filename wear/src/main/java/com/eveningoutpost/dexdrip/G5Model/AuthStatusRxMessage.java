@@ -33,4 +33,7 @@ public class AuthStatusRxMessage extends BaseMessage {
     public boolean isBonded() {
         return bonded == 1;
     }
+    public boolean isBondUnknown() { // Sometimes this is returned, but data can still be get if we dont want to unbond
+        return bonded == 2;
+    }
 }
