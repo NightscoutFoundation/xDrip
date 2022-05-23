@@ -34,6 +34,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -45,6 +46,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.UtilityModels.VibrationPattern;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
@@ -78,6 +80,10 @@ public class EditAlertActivity extends ActivityWithMenu {
     private Button buttonPreSnooze;
     private CheckBox checkboxAllDay;
     private CheckBox checkboxVibrate;
+    private RadioButton vibrateShort;
+    private RadioButton vibrateMedium;
+    private RadioButton vibrateLong;
+    private RadioButton vibrateExtraLong;
     private CheckBox checkboxDisabled;
 
     private LinearLayout layoutTimeBetween;
@@ -110,6 +116,7 @@ public class EditAlertActivity extends ActivityWithMenu {
     private final int MAX_ALERT = 400;
 
     private final static String TAG = AlertPlayer.class.getSimpleName();
+
 
     String getExtra(Bundle savedInstanceState, String paramName, String defaultVal) {
         String newString;
@@ -158,6 +165,10 @@ public class EditAlertActivity extends ActivityWithMenu {
 
         checkboxAllDay = (CheckBox) findViewById(R.id.check_alert_time);
         checkboxVibrate = (CheckBox) findViewById(R.id.check_vibrate);
+        vibrateShort = (RadioButton) findViewById(R.id.vibrate_short);
+        vibrateMedium = (RadioButton) findViewById(R.id.vibrate_medium);
+        vibrateLong = (RadioButton) findViewById(R.id.vibrate_long);
+        vibrateExtraLong = (RadioButton) findViewById(R.id.vibrate_extra_long);
         checkboxDisabled = (CheckBox) findViewById(R.id.view_alert_check_disable);
 
         layoutTimeBetween = (LinearLayout) findViewById(R.id.time_between);
@@ -227,6 +238,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             above = Boolean.parseBoolean(getExtra(savedInstanceState, "above", null));
             checkboxAllDay.setChecked(true);
             checkboxVibrate.setChecked(true);
+            vibrateLong.setChecked(true);
             checkboxDisabled.setChecked(false);
             checkboxOverrideSilent.setChecked(true);
             checkboxForceSpeaker.setChecked(true);
@@ -260,6 +272,17 @@ public class EditAlertActivity extends ActivityWithMenu {
             alertThreshold.setText(unitsConvert2Disp(doMgdl, alertType.threshold));
             checkboxAllDay.setChecked(alertType.all_day);
             checkboxVibrate.setChecked(alertType.vibrate);
+            if(alertType.vibration_pattern != null) {
+                if(alertType.vibration_pattern == VibrationPattern.SHORT) {
+                    vibrateShort.setChecked(true);
+                } else if(alertType.vibration_pattern == VibrationPattern.MEDIUM) {
+                    vibrateMedium.setChecked(true);
+                } else if(alertType.vibration_pattern == VibrationPattern.LONG){
+                    vibrateLong.setChecked(true);
+                } else {
+                    vibrateExtraLong.setChecked(true);
+                }
+            }
             checkboxDisabled.setChecked(!alertType.active);
             checkboxOverrideSilent.setChecked(alertType.override_silent_mode);
             checkboxForceSpeaker.setChecked(alertType.force_speaker);
@@ -542,15 +565,19 @@ public class EditAlertActivity extends ActivityWithMenu {
                     return;
                 }
                 boolean vibrate = checkboxVibrate.isChecked();
+                VibrationPattern vibrationPattern = VibrationPattern.MEDIUM;
+                if(vibrate) {
+                    vibrationPattern = getVibrationPattern();
+                }
                 
                 boolean overrideSilentMode = checkboxOverrideSilent.isChecked();
                 boolean forceSpeaker = checkboxForceSpeaker.isChecked();
 
                 String mp3_file = audioPath;
                 if (uuid != null) {
-                    AlertType.update_alert(uuid, alertText.getText().toString(), above, threshold, allDay, alertReraise, mp3_file, timeStart, timeEnd, overrideSilentMode, forceSpeaker, defaultSnooze, vibrate, !disabled);
+                    AlertType.update_alert(uuid, alertText.getText().toString(), above, threshold, allDay, alertReraise, mp3_file, timeStart, timeEnd, overrideSilentMode, forceSpeaker, defaultSnooze, vibrate, vibrationPattern, !disabled);
                 }  else {
-                    AlertType.add_alert(null, alertText.getText().toString(), above, threshold, allDay, alertReraise, mp3_file, timeStart, timeEnd, overrideSilentMode, forceSpeaker, defaultSnooze, vibrate, !disabled);
+                    AlertType.add_alert(null, alertText.getText().toString(), above, threshold, allDay, alertReraise, mp3_file, timeStart, timeEnd, overrideSilentMode, forceSpeaker, defaultSnooze, vibrate, vibrationPattern, !disabled);
                 }
 
                 startWatchUpdaterService(mContext, WatchUpdaterService.ACTION_SYNC_ALERTTYPE, TAG);
@@ -680,6 +707,18 @@ public class EditAlertActivity extends ActivityWithMenu {
         viewTimeEnd.setOnClickListener(endTimeListener);
         timeInstructionsEnd.setOnClickListener(endTimeListener);
 
+    }
+
+    private VibrationPattern getVibrationPattern() {
+        if(vibrateShort.isChecked()) {
+            return VibrationPattern.SHORT;
+        } else if(vibrateMedium.isChecked()) {
+            return VibrationPattern.MEDIUM;
+        } else if(vibrateLong.isChecked()){
+            return VibrationPattern.LONG;
+        } else {
+            return VibrationPattern.EXTRA_LONG;
+        }
     }
 
     private void chooseFile()
@@ -929,6 +968,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             return;
         }
         boolean vibrate = checkboxVibrate.isChecked();
+        VibrationPattern vibrationPattern = getVibrationPattern();
         boolean overrideSilentMode = checkboxOverrideSilent.isChecked();
         boolean forceSpeaker = checkboxForceSpeaker.isChecked();
         String mp3_file = audioPath;
@@ -943,7 +983,7 @@ public class EditAlertActivity extends ActivityWithMenu {
                 JoH.static_toast_long("Volume Profile is set to silent!");
             }
 
-            AlertType.testAlert(alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd, overrideSilentMode, forceSpeaker, defaultSnooze, vibrate, mContext);
+            AlertType.testAlert(alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd, overrideSilentMode, forceSpeaker, defaultSnooze, vibrate, vibrationPattern, mContext);
         } catch (NullPointerException e) {
             JoH.static_toast_long("Snooze value is not a number - cannot test");
         }
