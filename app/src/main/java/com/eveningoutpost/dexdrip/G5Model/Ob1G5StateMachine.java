@@ -64,6 +64,7 @@ import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.ProbablyBackf
 import static com.eveningoutpost.dexdrip.G5Model.FirmwareCapability.isTransmitterG6Rev2;
 import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.Models.JoH.pratelimit;
+import static com.eveningoutpost.dexdrip.Models.JoH.showNotification;
 import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
 import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_BATTERY_FROM_MARKER;
 import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_BATTERY_LEVEL_MARKER;
@@ -77,6 +78,7 @@ import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.resetSo
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.wear_broadcast;
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PERIOD;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DEXCOM_TRANSMITER_EOL_ID;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.SECOND_IN_MS;
@@ -1377,6 +1379,20 @@ public class Ob1G5StateMachine {
         }
     }
 
+    private static void TransmitterExpiringMessage(long timestamp) {
+        long passed_days =  timestamp / 86400;
+        final long MAX_DAYS = 110; // my guess
+        long []allert_on_day = {90, 100, 101,};
+        for (long day : allert_on_day) {
+            if (day == passed_days) {
+                // We need to alert
+                if (JoH.pratelimit("Transmitter_expiring" + day, 86400)) {
+                    showNotification("Transmiter reaching out of life", "Days passed: " + passed_days + " remaining " + (MAX_DAYS - passed_days),
+                            null, DEXCOM_TRANSMITER_EOL_ID, false, true, false);
+                }
+            }
+        }
+    }
 
     private static void processSensorRxMessage(SensorRxMessage sensorRx) {
         if (sensorRx == null) return;
@@ -1394,6 +1410,7 @@ public class Ob1G5StateMachine {
         UserError.Log.d(TAG, "SUCCESS!! unfiltered: " + sensorRx.unfiltered + " filtered: " + sensorRx.filtered + " timestamp: " + sensorRx.timestamp + " " + JoH.qs((double) sensorRx.timestamp / 86400, 1) + " days :: (" + sensorRx.status + ")");
         DexTimeKeeper.updateAge(getTransmitterID(), sensorRx.timestamp);
         Ob1G5CollectionService.setLast_transmitter_timestamp(sensorRx.timestamp);
+        TransmitterExpiringMessage(sensorRx.timestamp);
         if (sensorRx.unfiltered == 0) {
             UserError.Log.e(TAG, "Transmitter sent raw sensor value of 0 !! This isn't good. " + JoH.hourMinuteString());
         } else {
