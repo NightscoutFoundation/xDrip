@@ -1601,6 +1601,9 @@
     <string name="no_never">NÃO, Nunca</string>
     <string name="auto_starting_sensor">Sensor de arranque automático!</string>
     <string name="start_sensor_confirmation">A Fonte de Dados está definida para: %s\n\nDeseja alterar as configurações ou iniciar o sensor?</string>
+    <string name="state_not_currently_known">O estado de %s é atualmente desconhecido. A próxima ligação atualizará isto</string>
+    <string name="unusual_calibration_waiting">Estado de calibração incomum — a aguardar mais dados</string>
+    <string name="could_not_find_blood_data">Não foi possível encontrar dados de testes de sangue!! %s</string>
     <string name="not_getting_readings">Sem leitura obtidas.</string>
     <string name="bridge_battery">Bateria do transmissor</string>
     <string name="noise_workings_noise">Ruído: %s</string>
