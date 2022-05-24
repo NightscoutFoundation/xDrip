@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip.wearintegration.broadcast_service;
+package com.eveningoutpost.dexdrip.Services.broadcast_service;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;

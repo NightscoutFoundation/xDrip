@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip.wearintegration.broadcast_service;
+package com.eveningoutpost.dexdrip.Services.broadcast_service;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -31,9 +31,9 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.PumpStatus;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
-import com.eveningoutpost.dexdrip.wearintegration.broadcast_service.models.BroadcastModel;
-import com.eveningoutpost.dexdrip.wearintegration.broadcast_service.models.GraphLine;
-import com.eveningoutpost.dexdrip.wearintegration.broadcast_service.models.Settings;
+import com.eveningoutpost.dexdrip.Services.broadcast_service.models.BroadcastModel;
+import com.eveningoutpost.dexdrip.Services.broadcast_service.models.GraphLine;
+import com.eveningoutpost.dexdrip.Services.broadcast_service.models.Settings;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.HashMap;
