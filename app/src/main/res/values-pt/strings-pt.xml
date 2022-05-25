@@ -1604,9 +1604,13 @@
     <string name="state_not_currently_known">O estado de %s é atualmente desconhecido. A próxima ligação atualizará isto</string>
     <string name="unusual_calibration_waiting">Estado de calibração incomum — a aguardar mais dados</string>
     <string name="could_not_find_blood_data">Não foi possível encontrar dados de testes de sangue!! %s</string>
+    <string name="transmitter_waiting_for_calibration">A aguardar que o transmissor receba a calibração</string>
+    <string name="sensor_not_started">A sessão do Sensor não parece estar iniciada</string>
     <string name="not_getting_readings">Sem leitura obtidas.</string>
     <string name="bridge_battery">Bateria do transmissor</string>
+    <string name="transmitter_maybe_dead">os dados filtrados são exatamente dados de sensor em bruto duplicados, que parecem errados! (O transmissor talvez esteja morto)</string>
     <string name="noise_workings_noise">Ruído: %s</string>
+    <string name="snoozing_due_button_press">A suspender o alerta devido ao toque no botão de volume</string>
     <string name="share_database">Partilhar a base de dados...</string>
     <string name="title_motion_detection_warning">Aviso de Detecção de Movimento</string>
     <string name="expires_unknown">Expira: ???</string>
