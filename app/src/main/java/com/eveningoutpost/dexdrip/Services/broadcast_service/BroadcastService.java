@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.BadParcelableException;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -82,7 +83,7 @@ public class BroadcastService extends Service {
 
                 boolean startService = false;
                 long timeStamp;
-                Settings settings;
+                Settings settings = null;
                 Intent serviceIntent = new Intent(xdrip.getAppContext(), BroadcastService.class);
 
                 if (Const.CMD_SET_SETTINGS.equals(function) || Const.CMD_UPDATE_BG_FORCE.equals(function)) {
@@ -103,7 +104,12 @@ public class BroadcastService extends Service {
                 if (!startService && JoH.pratelimit(function + "_" + packageKey, COMMANDS_LIMIT_TIME_SEC)) {
                     switch (function) {
                         case Const.CMD_SET_SETTINGS:
-                            settings = intent.getParcelableExtra(Const.INTENT_SETTINGS);
+                            try {
+                                settings = intent.getParcelableExtra(Const.INTENT_SETTINGS);
+                            }
+                            catch ( BadParcelableException e){
+                                UserError.Log.e(TAG, "broadcast onReceive Error: " + e.toString());
+                            }
                             if (settings == null) {
                                 function = Const.CMD_REPLY_MSG;
                                 serviceIntent.putExtra(Const.INTENT_REPLY_MSG, "Can't parse settings");
@@ -114,7 +120,12 @@ public class BroadcastService extends Service {
                             broadcastEntities.put(packageKey, new BroadcastModel(settings));
                             break;
                         case Const.CMD_UPDATE_BG_FORCE:
-                            settings = intent.getParcelableExtra(Const.INTENT_SETTINGS);
+                            try {
+                                settings = intent.getParcelableExtra(Const.INTENT_SETTINGS);
+                            }
+                            catch ( BadParcelableException e){
+                                UserError.Log.e(TAG, "broadcast onReceive Error: " + e.toString());
+                            }
                             if (settings == null) {
                                 function = Const.CMD_REPLY_MSG;
                                 serviceIntent.putExtra(Const.INTENT_REPLY_MSG, "Can't parse settings");
