@@ -2424,7 +2424,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             }
             BgGraphBuilder.previous_low_occurs_at = BgGraphBuilder.low_occurs_at;
         }
-        testText.setText("Testing");
+        testText.setText("");
+        testText.append(getString(R.string.test_warning));
         testText.setVisibility(View.INVISIBLE);
         if (get_engineering_mode()) { // If engineering mode is enabled
             testText.setVisibility(View.VISIBLE); // Put "Testing" on screen.
