@@ -44,6 +44,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -1380,14 +1381,20 @@ public class Ob1G5StateMachine {
     }
 
     private static void TransmitterExpiringMessage(long timestamp) {
-        long passed_days =  timestamp / 86400;
-        final long MAX_DAYS = 110; // my guess
-        long []allert_on_day = {90, 100, 101,};
+        double passed_days =  timestamp / 86400.0;
+        final long MAX_DAYS = 100; // my guess
+        Calendar now = Calendar.getInstance();
+        int hour = now.get(Calendar.HOUR_OF_DAY);
+        UserError.Log.e(TAG, "TransmitterExpiringMessage  called " + passed_days + " days " + timestamp + " hour = " + hour);
+        if(hour < 9 || hour >= 22) {
+            return;
+        }
+        long []allert_on_day = {80, 90, 91,};
         for (long day : allert_on_day) {
             if (day == passed_days) {
                 // We need to alert
                 if (JoH.pratelimit("Transmitter_expiring" + day, 86400)) {
-                    showNotification("Transmiter reaching out of life", "Days passed: " + passed_days + " remaining " + (MAX_DAYS - passed_days),
+                    showNotification("Transmiter reaching out of life", "Days passed: " + passed_days + " A new sensor can not be activated in " + (MAX_DAYS - passed_days) + " days ",
                             null, DEXCOM_TRANSMITER_EOL_ID, false, true, false);
                 }
             }
