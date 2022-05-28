@@ -662,7 +662,7 @@
     <string name="store_logs">Store logs for troubleshooting</string>
     <string name="show_datatables_in_app_drawer">Show Calibration and BG datatables in the app drawer.</string>
     <string name="disable_log_transmitter_battery_warning">Disable the warning for low transmitter battery state on the home screen. (Only relevant for DIY receivers.)</string>
-    <string name="engineering_mode">Engineering mode</string>
+    <string name="engineering_mode">Test mode</string>
     <string name="allow_unsafe_settings">Allows changing the most unsafe settings which could break everything!</string>
     <string name="daily_save_db">Save Database Daily</string>
     <string name="allow_daily_db_save">Allows the Daily Intent Service to save the database before purging</string>

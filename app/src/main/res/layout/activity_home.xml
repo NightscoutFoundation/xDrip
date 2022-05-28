@@ -187,6 +187,25 @@
                     android:textColor="#C30909"
                     android:textStyle="bold" />
 
+                <TextView
+                    android:id="@+id/testtext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/lowpredict"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginTop="-2dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@android:color/transparent"
+                    android:gravity="left|top"
+                    android:paddingStart="35dp"
+                    android:paddingEnd="30dp"
+                    android:shadowColor="#ff212121"
+                    android:shadowDx="0"
+                    android:shadowDy="0"
+                    android:shadowRadius="14"
+                    android:text="Testing"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+
                 <ImageButton
                     android:id="@+id/btnTreatment"
                     android:layout_width="wrap_content"

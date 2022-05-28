@@ -36,9 +36,9 @@ public class VoiceCommands {
             Calibration.clearLastCalibration();
         } else if (allWords.contentEquals("force google reboot")) {
             SdcardImportExport.forceGMSreset();
-        } else if (allWords.contentEquals("enable engineering mode")) {
+        } else if (allWords.contentEquals("enable test mode")) {
             Pref.setBoolean("engineering_mode", true);
-            JoH.static_toast_long("Engineering mode enabled - be careful");
+            JoH.static_toast_long("Test mode enabled - be careful");
         } else if (get_engineering_mode() && allWords.contentEquals("enable fake data source")) {
             Pref.setString(DexCollectionType.DEX_COLLECTION_METHOD, DexCollectionType.Mock.toString());
             JoH.static_toast_long("YOU ARE NOW USING FAKE DATA!!!");

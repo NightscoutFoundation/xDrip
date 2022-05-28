@@ -2286,9 +2286,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         initializeGraphicTrendArrow();
         final TextView notificationText = (TextView) findViewById(R.id.notices);
         final TextView lowPredictText = (TextView) findViewById(R.id.lowpredict);
+        final TextView testText = (TextView) findViewById(R.id.testtext);
         if (BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
             notificationText.setTextSize(40);
             lowPredictText.setTextSize(30);
+            testText.setTextSize(30);
         }
         notificationText.setText("");
         notificationText.setTextColor(Color.RED);
@@ -2421,6 +2423,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 lowPredictText.setVisibility(View.VISIBLE);
             }
             BgGraphBuilder.previous_low_occurs_at = BgGraphBuilder.low_occurs_at;
+        }
+        testText.setText("Testing");
+        testText.setVisibility(View.INVISIBLE);
+        if (get_engineering_mode()) { // If engineering mode is enabled
+            testText.setVisibility(View.VISIBLE); // Put "Testing" on screen.
         }
 
         if (navigationDrawerFragment == null) Log.e("Runtime", "navigationdrawerfragment is null");
