@@ -35,7 +35,7 @@
     <string name="title_activity_double_calibration">Indító kalibráció</string>
     <string name="title_activity_calibration_override">Kalibráció felülírása</string>
     <string name="pref_header_cloud_storage">Felhőalapú tárhely</string>
-    <string name="auto_configure_title">Automatikus beállítás</string>
+    <string name="auto_configure_title">Beállítások átvétele</string>
     <string name="prefs_auto_config_summary">Automatikus beállítás QR-kóddal.</string>
     <string name="scan_share2_barcode">QR-kód beolvasása</string>
     <string name="pref_share2_scan_barcode_summary">Vagy szkennelje be a QR-kódot a vevőn</string>
