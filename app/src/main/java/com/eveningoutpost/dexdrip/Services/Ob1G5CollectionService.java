@@ -27,6 +27,7 @@ import com.eveningoutpost.dexdrip.G5Model.BatteryInfoRxMessage;
 import com.eveningoutpost.dexdrip.G5Model.BluetoothServices;
 import com.eveningoutpost.dexdrip.G5Model.CalibrationState;
 import com.eveningoutpost.dexdrip.G5Model.DexSyncKeeper;
+import com.eveningoutpost.dexdrip.G5Model.DexTimeKeeper;
 import com.eveningoutpost.dexdrip.G5Model.FirmwareCapability;
 import com.eveningoutpost.dexdrip.G5Model.Ob1DexTransmitterBattery;
 import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
@@ -2111,7 +2112,14 @@ public class Ob1G5CollectionService extends G5BaseService {
                     l.add(new StatusItem("Transmitter Status", battery_status, BAD));
             }
 
-            l.add(new StatusItem("Transmitter Days", parsedBattery.daysEstimate()));
+            if (vr != null && (FirmwareCapability.isTransmitterRawCapable(getTransmitterID())) || DexTimeKeeper.getTransmitterAgeInDays(tx_id) < 69) {
+                // Transmitter days < 69 or G5 or old G6 or modified Firefly
+                l.add(new StatusItem("Transmitter Days", parsedBattery.daysEstimate()));
+            } else if (DexTimeKeeper.getTransmitterAgeInDays(tx_id) < 100) { // Unmodified Firefly with 68 < Transmitter days < 100
+                l.add(new StatusItem("Transmitter Days", parsedBattery.daysEstimate(), Highlight.NOTICE));
+            } else { // Unmodified Firefly with transmitter days > 99
+                l.add(new StatusItem("Transmitter Days", parsedBattery.daysEstimate(), Highlight.BAD));
+            }
             l.add(new StatusItem("Voltage A", parsedBattery.voltageA(), parsedBattery.voltageAWarning() ? BAD : NORMAL));
             l.add(new StatusItem("Voltage B", parsedBattery.voltageB(), parsedBattery.voltageBWarning() ? BAD : NORMAL));
             if (vr != null && FirmwareCapability.isFirmwareResistanceCapable(vr.firmware_version_string)) {
