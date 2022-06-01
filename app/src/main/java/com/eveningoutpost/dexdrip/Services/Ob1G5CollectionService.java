@@ -2111,15 +2111,17 @@ public class Ob1G5CollectionService extends G5BaseService {
                 if (!battery_status.equals("OK"))
                     l.add(new StatusItem("Transmitter Status", battery_status, BAD));
             }
-
-            if (vr != null && (FirmwareCapability.isTransmitterRawCapable(getTransmitterID())) || DexTimeKeeper.getTransmitterAgeInDays(tx_id) < 69) {
+            Highlight TX_dys_highlight; // Transmitter Days highlight
+            final int TX_dys = DexTimeKeeper.getTransmitterAgeInDays(tx_id); // Transmitter days
+            if (vr != null && (FirmwareCapability.isTransmitterRawCapable(getTransmitterID())) || TX_dys < 69) {
                 // Transmitter days < 69 or G5 or old G6 or modified Firefly
-                l.add(new StatusItem("Transmitter Days", parsedBattery.daysEstimate()));
-            } else if (DexTimeKeeper.getTransmitterAgeInDays(tx_id) < 100) { // Unmodified Firefly with 68 < Transmitter days < 100
-                l.add(new StatusItem("Transmitter Days", parsedBattery.daysEstimate(), Highlight.NOTICE));
+                TX_dys_highlight = NORMAL;
+            } else if (TX_dys < 100) { // Unmodified Firefly with 68 < Transmitter days < 100
+                TX_dys_highlight = NOTICE;
             } else { // Unmodified Firefly with transmitter days > 99
-                l.add(new StatusItem("Transmitter Days", parsedBattery.daysEstimate(), Highlight.BAD));
+                TX_dys_highlight = BAD;
             }
+            l.add(new StatusItem("Transmitter Days", parsedBattery.daysEstimate(), TX_dys_highlight));
             l.add(new StatusItem("Voltage A", parsedBattery.voltageA(), parsedBattery.voltageAWarning() ? BAD : NORMAL));
             l.add(new StatusItem("Voltage B", parsedBattery.voltageB(), parsedBattery.voltageBWarning() ? BAD : NORMAL));
             if (vr != null && FirmwareCapability.isFirmwareResistanceCapable(vr.firmware_version_string)) {
