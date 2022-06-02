@@ -173,15 +173,15 @@ public class StartNewSensor extends ActivityWithMenu {
             String strt_warning ="";
             if (FirmwareCapability.isTransmitterModified(getTransmitterID())) { // Modified Firefly
                 if (TX_dys > 179) {
-                    strt_warning = "You cannot successfully start a sensor since \"Transmitter Days\" is greater than 179.";
+                    strt_warning = getString(R.string.SensorStart_TX_EOL_Warning1);
                 } else if (TX_dys > 150) {
-                    strt_warning = "When \"Transmitter Days\" on system status page reaches 179 is the last day you can successfully start a sensor.";
+                    strt_warning = getString(R.string.SensorStart_TX_EOL_Warning2);
                 }
             } else { // Unmodified G6
                 if (TX_dys > 99) {
-                    strt_warning = "You cannot successfully start a sensor since \"Transmitter Days\" is greater than 99.";
+                    strt_warning = getString(R.string.SensorStart_TX_EOL_Warning3);
                 } else if (TX_dys > 68) {
-                    strt_warning = "When \"Transmitter Days\" on system status page reaches 99 is the last day you can successfully start a sensor.";
+                    strt_warning = getString(R.string.SensorStart_TX_EOL_Warning4);
                 }
             }
             if (strt_warning != null) {
