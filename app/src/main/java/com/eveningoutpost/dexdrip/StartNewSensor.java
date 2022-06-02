@@ -13,6 +13,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.G5Model.DexSyncKeeper;
+import com.eveningoutpost.dexdrip.G5Model.DexTimeKeeper;
+import com.eveningoutpost.dexdrip.G5Model.FirmwareCapability;
 import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
@@ -38,6 +40,7 @@ import java.util.Date;
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 import static com.eveningoutpost.dexdrip.Models.BgReading.AGE_ADJUSTMENT_TIME;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
+import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.getTransmitterID;
 
 public class StartNewSensor extends ActivityWithMenu {
     // public static String menu_name = "Start Sensor";
@@ -165,7 +168,25 @@ public class StartNewSensor extends ActivityWithMenu {
 
     private void startSensorOrAskForG6Code() {
         if (Ob1G5CollectionService.usingCollector() && Ob1G5StateMachine.usingG6()) {
+            int TX_dys = DexTimeKeeper.getTransmitterAgeInDays(Pref.getString("dex_txid", "NULL"));
             G6CalibrationCodeDialog.ask(this, this::startSensorAndSetIntent);
+            String strt_warning ="";
+            if (FirmwareCapability.isTransmitterModified(getTransmitterID())) { // Modified Firefly
+                if (TX_dys > 179) {
+                    strt_warning = "You cannot successfully start a sensor since \"Transmitter Days\" is greater than 179.";
+                } else if (TX_dys > 150) {
+                    strt_warning = "When \"Transmitter Days\" on system status page reaches 179 is the last day you can successfully start a sensor.";
+                }
+            } else { // Unmodified G6
+                if (TX_dys > 99) {
+                    strt_warning = "You cannot successfully start a sensor since \"Transmitter Days\" is greater than 99.";
+                } else if (TX_dys > 68) {
+                    strt_warning = "When \"Transmitter Days\" on system status page reaches 99 is the last day you can successfully start a sensor.";
+                }
+            }
+            if (strt_warning != null) {
+                JoH.static_toast_long(strt_warning);
+            }
         } else {
             startSensorAndSetIntent();
         }
