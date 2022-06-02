@@ -168,7 +168,7 @@ public class StartNewSensor extends ActivityWithMenu {
 
     private void startSensorOrAskForG6Code() {
         if (Ob1G5CollectionService.usingCollector() && Ob1G5StateMachine.usingG6()) {
-            int TX_dys = DexTimeKeeper.getTransmitterAgeInDays(Pref.getString("dex_txid", "NULL"));
+            int TX_dys = DexTimeKeeper.getTransmitterAgeInDays(getTransmitterID());
             G6CalibrationCodeDialog.ask(this, this::startSensorAndSetIntent);
             String strt_warning ="";
             if (FirmwareCapability.isTransmitterModified(getTransmitterID())) { // Modified Firefly
