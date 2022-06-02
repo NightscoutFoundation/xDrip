@@ -586,7 +586,17 @@ public class AlertPlayer {
         }
         if (profile != ALERT_PROFILE_SILENT && alert.vibrate) {
             if (notSilencedDueToCall()) {
-                builder.setVibrate(Notifications.vibratePattern);
+                if(alert.vibration_pattern == null) {
+                    builder.setVibrate(Notifications.vibratePatternDefault);
+                } else if(alert.vibration_pattern == VibrationPattern.SHORT) {
+                    builder.setVibrate(Notifications.vibratePatternShort);
+                } else if(alert.vibration_pattern == VibrationPattern.MEDIUM) {
+                    builder.setVibrate(Notifications.vibratePatternMedium);
+                } else if(alert.vibration_pattern == VibrationPattern.LONG) {
+                    builder.setVibrate(Notifications.vibratePatternLong);
+                } else {
+                    builder.setVibrate(Notifications.vibratePatternExtraLong);
+                }
             } else {
                 Log.i(TAG, "Vibration silenced due to ongoing call");
             }

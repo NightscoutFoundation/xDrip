@@ -81,8 +81,8 @@ public class IdempotentMigrations {
             int bg_low_snooze = Integer.parseInt(prefs.getString("bg_snooze",  Integer.toString(SnoozeActivity.getDefaultSnooze(false))));
 
 
-            AlertType.add_alert(null, mContext.getString(R.string.high_alert), true, highMark, true, 1, bg_notification_sound, 0, 0, bg_sound_in_silent, true, bg_high_snooze, true, true);
-            AlertType.add_alert(null, mContext.getString(R.string.low_alert), false, lowMark, true, 1, bg_notification_sound, 0, 0, bg_sound_in_silent, true, bg_low_snooze, true, true);
+            AlertType.add_alert(null, mContext.getString(R.string.high_alert), true, highMark, true, 1, bg_notification_sound, 0, 0, bg_sound_in_silent, true, bg_high_snooze, true, VibrationPattern.LONG, true);
+            AlertType.add_alert(null, mContext.getString(R.string.low_alert), false, lowMark, true, 1, bg_notification_sound, 0, 0, bg_sound_in_silent, true, bg_low_snooze, true, VibrationPattern.LONG, true);
             prefs.edit().putBoolean("bg_notifications", false).apply();
         }
     }

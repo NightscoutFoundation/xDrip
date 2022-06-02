@@ -1700,4 +1700,8 @@
     <string name="locked_time_period_always_used">Locked Time Period Always Used</string>
     <string name="show_time_buttons">Show Time Buttons</string>
     <string name="source_wizard_button">Source Wizard Button</string>
+    <string name="vibrate_extra_log">Extra Long</string>
+    <string name="vibrate_long">Long</string>
+    <string name="vibrate_medium">Medium</string>
+    <string name="vibrate_short">Short</string>
 </resources>

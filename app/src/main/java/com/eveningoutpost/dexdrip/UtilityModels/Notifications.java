@@ -60,7 +60,11 @@ import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
  * Created by Emma Black on 11/28/14.
  */
 public class Notifications extends IntentService {
-    public static final long[] vibratePattern = {0, 1000, 300, 1000, 300, 1000};
+    public static final long[] vibratePatternDefault = {0, 1000, 300, 1000, 300, 1000};
+    public static final long[] vibratePatternShort = {0, 100, 100, 100};
+    public static final long[] vibratePatternMedium = {0, 500, 300, 500};
+    public static final long[] vibratePatternLong = {0, 1000, 300, 1000, 300, 1000};
+    public static final long[] vibratePatternExtraLong = {0, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 100};
     public static boolean bg_notifications;
     public static boolean bg_notifications_watch;
     public static boolean bg_persistent_high_alert_enabled_watch;
@@ -267,7 +271,7 @@ public class Notifications extends IntentService {
                 // If one allert was high and the second one is low however, we alarm in any case (snoozing ignored).
                 boolean opositeDirection = AlertType.OpositeDirection(activeBgAlert, newAlert);
                 if(!opositeDirection) {
-                AlertType newHigherAlert = AlertType.HigherAlert(activeBgAlert, newAlert);
+                    AlertType newHigherAlert = AlertType.HigherAlert(activeBgAlert, newAlert);
                     if ((newHigherAlert == activeBgAlert)) {
                         // the existing (snoozed) alert is the higher, No need to play it since it is snoozed.
                         Log.d(TAG, "FileBasedNotifications The new alert has the same direcotion, it is lower than the one snoozed, not playing it." +
@@ -816,7 +820,7 @@ public class Notifications extends IntentService {
     private void calibrationNotificationCreate(String title, String content, Intent intent, int notificationId) {
         NotificationCompat.Builder mBuilder = notificationBuilder(title, content, intent, NotificationChannels.CALIBRATION_CHANNEL);
         mBuilder.setVisibility(Pref.getBooleanDefaultFalse("public_notifications") ? Notification.VISIBILITY_PUBLIC : Notification.VISIBILITY_PRIVATE);
-        mBuilder.setVibrate(vibratePattern);
+        mBuilder.setVibrate(vibratePatternDefault);
         mBuilder.setLights(0xff00ff00, 300, 1000);
         if(calibration_override_silent) {
             mBuilder.setSound(Uri.parse(calibration_notification_sound), AudioAttributes.USAGE_ALARM);
@@ -895,17 +899,17 @@ public class Notifications extends IntentService {
 
     public static void bgUnclearAlert(Context context) {
         long otherAlertReraiseSec = MissedReadingService.getOtherAlertReraiseSec(context, "bg_unclear_readings_alert");
-        OtherAlert(context, "bg_unclear_readings_alert", "Unclear Sensor Readings" + "  (@" + JoH.hourMinuteString() + ")", uncleanAlertNotificationId, NotificationChannels.BG_ALERT_CHANNEL, true, otherAlertReraiseSec);
+        OtherAlert(context, "bg_unclear_readings_alert", "Unclear Sensor Readings" + "  (@" + JoH.hourMinuteString() + ")", uncleanAlertNotificationId, NotificationChannels.BG_ALERT_CHANNEL, vibratePatternDefault, true, otherAlertReraiseSec);
     }
 
     public static void bgMissedAlert(Context context) {
         long otherAlertReraiseSec = MissedReadingService.getOtherAlertReraiseSec(context, "bg_missed_alerts");
-        OtherAlert(context, "bg_missed_alerts", context.getString(R.string.bg_reading_missed) + "  (@" + JoH.hourMinuteString() + ")", missedAlertNotificationId, NotificationChannels.BG_MISSED_ALERT_CHANNEL, true, otherAlertReraiseSec);
+        OtherAlert(context, "bg_missed_alerts", context.getString(R.string.bg_reading_missed) + "  (@" + JoH.hourMinuteString() + ")", missedAlertNotificationId, NotificationChannels.BG_MISSED_ALERT_CHANNEL, vibratePatternDefault, true, otherAlertReraiseSec);
     }
 
     public static void ob1SessionRestartRequested() {
         Context context = xdrip.getAppContext();
-        OtherAlert(context, "ob1_session_restart", context.getString(R.string.ob1_session_restarted_title), context.getString(R.string.ob1_session_restarted_msg), ob1SessionRestartNotificationId, NotificationChannels.CALIBRATION_CHANNEL, true, 0);
+        OtherAlert(context, "ob1_session_restart", context.getString(R.string.ob1_session_restarted_title), context.getString(R.string.ob1_session_restarted_msg), ob1SessionRestartNotificationId, NotificationChannels.CALIBRATION_CHANNEL, vibratePatternDefault, true, 0);
     }
 
     public static void RisingAlert(Context context, boolean on) {
@@ -919,7 +923,7 @@ public class Notifications extends IntentService {
         final String type = "bg_predict_alert";
         if (on) {
             if ((Pref.getLong("alerts_disabled_until", 0) < JoH.tsl()) && (Pref.getLong("low_alerts_disabled_until", 0) < JoH.tsl())) {
-                OtherAlert(context, type, msg, lowPredictAlertNotificationId, NotificationChannels.BG_PREDICTED_LOW_CHANNEL, false, 20 * 60);
+                OtherAlert(context, type, msg, lowPredictAlertNotificationId, NotificationChannels.BG_PREDICTED_LOW_CHANNEL, vibratePatternMedium, false, 20 * 60);
                 if (Pref.getBooleanDefaultFalse("speak_alerts")) {
                    if (JoH.pratelimit("low-predict-speak", 1800)) SpeechUtil.say(msg, 4000);
                 }
@@ -945,7 +949,7 @@ public class Notifications extends IntentService {
                 }
                 if (snooze_time < 1) snooze_time = 1;       // not less than 1 minute
                 if (snooze_time > 1440) snooze_time = 1440; // not more than 1 day
-                OtherAlert(context, type, msg, persistentHighAlertNotificationId, NotificationChannels.BG_PERSISTENT_HIGH_CHANNEL, false, snooze_time * 60);
+                OtherAlert(context, type, msg, persistentHighAlertNotificationId, NotificationChannels.BG_PERSISTENT_HIGH_CHANNEL, vibratePatternDefault, false, snooze_time * 60);
                 if (Pref.getBooleanDefaultFalse("speak_alerts")) {
                     if (JoH.pratelimit("persist-high-speak", 1800)) {
                         SpeechUtil.say(msg, 4000);
@@ -964,7 +968,7 @@ public class Notifications extends IntentService {
     public static void RiseDropAlert(Context context, boolean on, String type, String message, int notificatioId) {
         if(on) {
          // This alerts will only happen once. Want to have maxint, but not create overflow.
-            OtherAlert(context, type, message, notificatioId, NotificationChannels.BG_RISE_DROP_CHANNEL, false, Integer.MAX_VALUE / 100000);
+            OtherAlert(context, type, message, notificatioId, NotificationChannels.BG_RISE_DROP_CHANNEL, vibratePatternDefault, false, Integer.MAX_VALUE / 100000);
         } else {
             NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotifyMgr.cancel(notificatioId);
@@ -972,11 +976,11 @@ public class Notifications extends IntentService {
         }
     }
 
-    private static void OtherAlert(Context context, String type, String message, int notificatioId, String channelId, boolean addDeleteIntent, long reraiseSec) {
-        OtherAlert(context, type, message, message, notificatioId, channelId, addDeleteIntent, reraiseSec);
+    private static void OtherAlert(Context context, String type, String message, int notificatioId, String channelId, long[] vibratePattern, boolean addDeleteIntent, long reraiseSec) {
+        OtherAlert(context, type, message, message, notificatioId, channelId, vibratePattern, addDeleteIntent, reraiseSec);
     }
 
-    private static void OtherAlert(Context context, String type, String title, String message, int notificatioId, String channelId, boolean addDeleteIntent, long reraiseSec) {
+    private static void OtherAlert(Context context, String type, String title, String message, int notificatioId, String channelId, long[] vibratePattern, boolean addDeleteIntent, long reraiseSec) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String otherAlertsSound = prefs.getString(type+"_sound",prefs.getString("other_alerts_sound", "content://settings/system/notification_sound"));
         Boolean otherAlertsOverrideSilent = prefs.getBoolean("other_alerts_override_silent", false);
@@ -1016,6 +1020,7 @@ public class Notifications extends IntentService {
                 deleteIntent.putExtra("raisedTimeStamp", JoH.tsl());
                 mBuilder.setDeleteIntent(PendingIntent.getService(context, 0, deleteIntent, PendingIntent.FLAG_UPDATE_CURRENT));
             }
+            // set vibratePattern based on alert settings
             mBuilder.setVibrate(vibratePattern);
             mBuilder.setLights(0xff00ff00, 300, 1000);
             if (AlertPlayer.notSilencedDueToCall()) {

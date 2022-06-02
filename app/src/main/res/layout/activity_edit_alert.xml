@@ -384,6 +384,44 @@
                             android:layout_weight="0" />
 
                     </LinearLayout>
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:paddingTop="10dp"
+                        android:paddingLeft="30dp">
+
+                        <RadioGroup
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent">
+
+                            <RadioButton
+                                android:id="@+id/vibrate_short"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/vibrate_short" />
+
+                            <RadioButton
+                                android:id="@+id/vibrate_medium"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/vibrate_medium" />
+
+                            <RadioButton
+                                android:id="@+id/vibrate_long"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/vibrate_long" />
+
+                            <RadioButton
+                                android:id="@+id/vibrate_extra_long"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/vibrate_extra_log" />
+                        </RadioGroup>
+
+                    </LinearLayout>
 
                     <LinearLayout
                         android:orientation="horizontal"
