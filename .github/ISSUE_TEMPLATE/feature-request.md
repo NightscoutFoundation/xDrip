@@ -1,6 +1,6 @@
 ---
-name: "\U0001F4A1Feature request\U0001F4A1"
-about: Open an issue only if requested by a developer
+name: "\U0001F4A1   Please don't open an issue unless if asked by a developer in a discussion (below)"
+about: Feature request
 label: enhancement
 ---
 

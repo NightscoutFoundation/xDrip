@@ -1,6 +1,6 @@
 ---
-name: "\U0001F41BBug report\U0001F41B"
-about: Create a report only if the developers asked you to do so
+name: "\U0001F41B   Please don't open an issue unless if asked by a developer in a discussion (below)"
+about: Bug report
 label: bug
 ---
 
