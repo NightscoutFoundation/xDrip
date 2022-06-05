@@ -80,10 +80,10 @@ public class FirstPageFragment extends Fragment {
                 updateText(localView, lowView, Math.round(stats_low) + " mg/dL");
             }
 
-      //      if (context == null) {
-      //          Log.d("DrawStats", "FirstPageFragment context == null, do not calculate if fragment is not attached");
-      //          return;
-      //      }
+            if (context == null) {
+                Log.d("DrawStats", "FirstPageFragment context == null, do not calculate if fragment is not attached");
+                return;
+            }
 
             //Ranges
             long aboveRange = DBSearchUtil.noReadingsAboveRange(context);
