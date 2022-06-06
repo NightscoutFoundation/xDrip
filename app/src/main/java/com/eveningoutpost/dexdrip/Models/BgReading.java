@@ -1665,7 +1665,7 @@ public class BgReading extends Model implements ShareUploadableBg {
         boolean is_g6 = Ob1G5CollectionService.usingG6();
         final double adjust_for = (is_g6 ? AGE_ADJUSTMENT_TIME_G6 : AGE_ADJUSTMENT_TIME) - time_since_sensor_started;
         if ((adjust_for > 0) && (!DexCollectionType.hasLibre())) {
-            age_adjusted_raw_value = (((is_g6 ? AGE_ADJUSTMENT_FACTOR_G6 : AGE_ADJUSTMENT_FACTOR) * (adjust_for / AGE_ADJUSTMENT_TIME)) * raw_data) + raw_data;
+            age_adjusted_raw_value = (((is_g6 ? AGE_ADJUSTMENT_FACTOR_G6 : AGE_ADJUSTMENT_FACTOR) * (adjust_for / (is_g6 ? AGE_ADJUSTMENT_TIME_G6 : AGE_ADJUSTMENT_TIME))) * raw_data) + raw_data;
             Log.i(TAG, "calculateAgeAdjustedRawValue: RAW VALUE ADJUSTMENT FROM:" + raw_data + " TO: " + age_adjusted_raw_value);
         } else {
             age_adjusted_raw_value = raw_data;
