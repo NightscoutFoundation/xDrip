@@ -303,7 +303,7 @@ public class Ob1G5StateMachine {
                             parent.authResult(true);
                             parent.changeState(Ob1G5CollectionService.STATE.GET_DATA);
                             throw new OperationSuccess("Authenticated");
-                        // Android 12 sometimes returns this, in this case data can still be received
+                        // Sometimes this is returned, but data can still be get if unbonding is not allowed
                         } else if (status.isBondUnknown() && ! Pref.getBoolean("ob1_g5_allow_resetbond", true)) {
                             parent.msg("Authenticated, but unknown bond state, setting prevents us to reset bond, trying to get data");
                             parent.authResult(true);
