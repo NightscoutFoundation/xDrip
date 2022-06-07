@@ -73,11 +73,11 @@ public class FirstPageFragment extends Fragment {
             TextView lowView = (TextView) localView.findViewById(R.id.textView_stats_low);
             //update stats_high/low
             if (!mgdl) {
-                updateText(localView, highView, (Math.round(stats_high * 10) / 10d) + " mmol/L");
-                updateText(localView, lowView, (Math.round(stats_low * 10) / 10d) + " mmol/L");
+                updateText(localView, highView, (Math.round(stats_high * 10) / 10d) + " mmol/l");
+                updateText(localView, lowView, (Math.round(stats_low * 10) / 10d) + " mmol/l");
             } else {
-                updateText(localView, highView, Math.round(stats_high) + " mg/dL");
-                updateText(localView, lowView, Math.round(stats_low) + " mg/dL");
+                updateText(localView, highView, Math.round(stats_high) + " mg/dl");
+                updateText(localView, lowView, Math.round(stats_low) + " mg/dl");
             }
 
             if (context == null) {
@@ -110,10 +110,10 @@ public class FirstPageFragment extends Fragment {
                 TextView medianView = (TextView) localView.findViewById(R.id.textView_median);
 
                 if (mgdl) {
-                    updateText(localView, medianView, Math.round(median * 10) / 10d + " mg/dL");
+                    updateText(localView, medianView, Math.round(median * 10) / 10d + " mg/dl");
 
                 } else {
-                    updateText(localView, medianView, Math.round(median * Dex_Constants.MG_DL_TO_MMOL_L * 100) / 100d + " mmol/L");
+                    updateText(localView, medianView, Math.round(median * Dex_Constants.MG_DL_TO_MMOL_L * 100) / 100d + " mmol/l");
 
                 }
 
@@ -127,9 +127,9 @@ public class FirstPageFragment extends Fragment {
                 TextView meanView = (TextView) localView.findViewById(R.id.textView_mean);
                 //update mean
                 if (mgdl) {
-                    updateText(localView, meanView, (Math.round(mean * 10) / 10d) + " mg/dL");
+                    updateText(localView, meanView, (Math.round(mean * 10) / 10d) + " mg/dl");
                 } else {
-                    updateText(localView, meanView, (Math.round(mean * Dex_Constants.MG_DL_TO_MMOL_L * 100) / 100d) + " mmol/L");
+                    updateText(localView, meanView, (Math.round(mean * Dex_Constants.MG_DL_TO_MMOL_L * 100) / 100d) + " mmol/l");
 
                 }
                 //update A1c
@@ -145,9 +145,9 @@ public class FirstPageFragment extends Fragment {
                 stdev = Math.sqrt(stdev);
                 TextView stdevView = (TextView) localView.findViewById(R.id.textView_stdev);
                 if (mgdl) {
-                    updateText(localView, stdevView, (Math.round(stdev * 10) / 10d) + " mg/dL");
+                    updateText(localView, stdevView, (Math.round(stdev * 10) / 10d) + " mg/dl");
                 } else {
-                    updateText(localView, stdevView, (Math.round(stdev * Dex_Constants.MG_DL_TO_MMOL_L * 100) / 100d) + " mmol/L");
+                    updateText(localView, stdevView, (Math.round(stdev * Dex_Constants.MG_DL_TO_MMOL_L * 100) / 100d) + " mmol/l");
                 }
 
                 TextView coefficientOfVariation = (TextView) localView.findViewById(R.id.textView_coefficient_of_variation);

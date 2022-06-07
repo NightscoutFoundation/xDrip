@@ -29,7 +29,7 @@
                     android:paddingStart="5dp"
                     android:paddingEnd="0dp"
                     android:text="@string/stats_high_value"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <TextView
                     android:id="@+id/textView_stats_high"
@@ -39,7 +39,7 @@
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     android:text=": ---"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
             </LinearLayout>
 
             <LinearLayout
@@ -57,7 +57,7 @@
                     android:paddingStart="5dp"
                     android:paddingEnd="0dp"
                     android:text="@string/stats_low_value"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <TextView
                     android:id="@+id/textView_stats_low"
@@ -67,7 +67,7 @@
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     android:text=": ---"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
             </LinearLayout>
 
             <LinearLayout
