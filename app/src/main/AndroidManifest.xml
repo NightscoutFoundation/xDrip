@@ -118,7 +118,7 @@
         <service android:name=".Services.ActivityRecognizedService" />
         <service android:name=".Services.BluetoothGlucoseMeter" />
         <service
-            android:name=".Services.broadcast_service.BroadcastService"
+            android:name=".Services.broadcastservice.BroadcastService"
             android:enabled="true"
             android:exported="true"></service>
         <service

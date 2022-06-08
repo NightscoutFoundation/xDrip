@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip.Services.broadcast_service;
+package com.eveningoutpost.dexdrip.Services.broadcastservice;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;

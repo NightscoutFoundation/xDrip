@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip.Services.broadcast_service.models;
+package com.eveningoutpost.dexdrip.Services.broadcastservice.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -32,11 +32,15 @@ public class Settings implements Parcelable {
     @Setter
     private boolean displayGraph;
 
-    protected Settings(Parcel in) {
+    public Settings(Parcel in) {
         apkName = in.readString();
         graphStart = in.readLong();
         graphEnd = in.readLong();
         displayGraph = in.readInt() == 1;
+    }
+
+    public Settings() {
+
     }
 
     @Override

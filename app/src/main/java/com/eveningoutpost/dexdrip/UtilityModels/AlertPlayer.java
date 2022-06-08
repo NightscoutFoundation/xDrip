@@ -38,9 +38,9 @@ import com.eveningoutpost.dexdrip.watch.miband.MiBand;
 import com.eveningoutpost.dexdrip.watch.miband.MiBandEntry;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
-import com.eveningoutpost.dexdrip.Services.broadcast_service.BroadcastEntry;
+import com.eveningoutpost.dexdrip.Services.broadcastservice.BroadcastEntry;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
-import com.eveningoutpost.dexdrip.Services.broadcast_service.Const;
+import com.eveningoutpost.dexdrip.Services.broadcastservice.Const;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.IOException;

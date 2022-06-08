@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip.Services.broadcast_service;
+package com.eveningoutpost.dexdrip.Services.broadcastservice;
 
 public class Const {
     public static final String BG_ALERT_TYPE = "BG_ALERT_TYPE";

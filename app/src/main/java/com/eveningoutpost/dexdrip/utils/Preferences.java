@@ -102,7 +102,7 @@ import com.eveningoutpost.dexdrip.watch.thinjam.BlueJay;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayAdapter;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
-import com.eveningoutpost.dexdrip.Services.broadcast_service.BroadcastService;
+import com.eveningoutpost.dexdrip.Services.broadcastservice.BroadcastService;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.eveningoutpost.dexdrip.xDripWidget;
