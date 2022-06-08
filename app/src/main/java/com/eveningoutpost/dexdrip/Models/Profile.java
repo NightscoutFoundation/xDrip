@@ -143,7 +143,7 @@ public class Profile {
         final double default_target_glucose = tolerantParseDouble(Pref.getString("plus_target_range", Double.toString(5.5 / scale_factor)));
         if (default_target_glucose > tolerantParseDouble(Pref.getString("highValue", Double.toString(5.5 / scale_factor)))) {
             Pref.setString("plus_target_range", JoH.qs(default_target_glucose * Constants.MGDL_TO_MMOLL, 1));
-            UserError.Log.i(TAG, "Converted initial value of target glucose to mmol");
+            UserError.Log.i(TAG, "Converted initial value of target glucose to mmol/L");
         }
     }
 

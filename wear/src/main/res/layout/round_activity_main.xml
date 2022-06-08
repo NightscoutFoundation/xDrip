@@ -25,7 +25,7 @@
         android:layout_marginRight="30dp"
         android:layout_marginLeft="30dp"
         android:background="@drawable/tick_thing"
-        tools:text="25.5 mmol/l" />
+        tools:text="25.5 mmol/L" />
 
     <LinearLayout
         android:layout_width="match_parent"

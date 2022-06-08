@@ -179,8 +179,8 @@ public class BloodTest extends Model {
         }
 
         if ((bg < 40) || (bg > 400)) {
-            Log.wtf(TAG, "Invalid out of range bloodtest glucose mg/dl value of: " + bg);
-            JoH.static_toast_long("Bloodtest out of range: " + bg + " mg/dl");
+            Log.wtf(TAG, "Invalid out of range bloodtest glucose mg/dL value of: " + bg);
+            JoH.static_toast_long("Bloodtest out of range: " + bg + " mg/dL");
             return null;
         }
 

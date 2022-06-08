@@ -205,7 +205,7 @@ public class LibreTrendGraph extends BaseAppCompatActivity {
         axisX.setTextSize(16);
         axisY.setTextSize(16);
         axisX.setName("Time from last scan");
-        axisY.setName("Glucose " + (doMgdl ? "mg/dl" : "mmol/l"));
+        axisY.setName("Glucose " + (doMgdl ? "mg/dL" : "mmol/L"));
 
         data = new LineChartData(lines);
         data.setAxisXBottom(axisX);

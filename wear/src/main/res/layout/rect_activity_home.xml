@@ -136,7 +136,7 @@
                 <TextView
                     android:id="@+id/delta"
                     android:textSize="10sp"
-                    android:text="--- mg/dl"
+                    android:text="--- mg/dL"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#FFFFFF"

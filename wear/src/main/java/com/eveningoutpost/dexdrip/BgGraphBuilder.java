@@ -566,9 +566,9 @@ public class BgGraphBuilder {
 
     public static String unit(boolean doMgdl) {
         if (doMgdl) {
-            return "mg/dl";
+            return "mg/dL";
         } else {
-            return "mmol";
+            return "mmol/L";
         }
     }
 

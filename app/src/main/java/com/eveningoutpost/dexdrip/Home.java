@@ -1493,10 +1493,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     thisglucosenumber = thisnumber;
                     if (Pref.getString("units", "mgdl").equals("mgdl")) {
                         if (textBloodGlucose != null)
-                            textBloodGlucose.setText(thisnumber + " mg/dl");
+                            textBloodGlucose.setText(thisnumber + " mg/dL");
                     } else {
                         if (textBloodGlucose != null)
-                            textBloodGlucose.setText(thisnumber + " mmol/l");
+                            textBloodGlucose.setText(thisnumber + " mmol/L");
                     }
 
                     Log.d(TAG, "Blood test: " + thisnumber);

@@ -131,7 +131,7 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                                                     if (convertedBg != null) {
                                                         final long calibration_timestamp = JoH.tsl() - (bgAgeNumber * 1000);
                                                         NativeCalibrationPipe.addCalibration(convertedBg.intValue(), calibration_timestamp);
-                                                        UserError.Log.uel(TAG, "Sending native calibration pipe value: " + convertedBg.intValue() + " mg/dl taken at timestamp: " + JoH.dateTimeText(calibration_timestamp) + " source: " + cal_source);
+                                                        UserError.Log.uel(TAG, "Sending native calibration pipe value: " + convertedBg.intValue() + " mg/dL taken at timestamp: " + JoH.dateTimeText(calibration_timestamp) + " source: " + cal_source);
                                                     }
 
                                                     final Calibration calibration = Calibration.create(calValue, bgAgeNumber, getApplicationContext(), (note_only.equals("true")), localEstimatedInterstitialLagSeconds);

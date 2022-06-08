@@ -200,7 +200,7 @@
     <string name="event_logs">Event Logs</string>
     <string name="calibration_graph">Calibration Graph</string>
     <string name="glucose_units">Glucose Units</string>
-    <string name="mmol_or_mgdl_high_and_low">mmol/l or mg/dl high and low</string>
+    <string name="mmol_or_mgdl_high_and_low">mmol/L or mg/dL high and low</string>
     <string name="general_settings">General Settings</string>
     <string name="high_value">High Value</string>
     <string name="low_value">Low Value</string>
@@ -1294,7 +1294,7 @@
     <string name="summary_lefun_enable">Sync Data with Lefun fitness bands</string>
     <string name="title_lefun_enable">Use Lefun Band</string>
     <string name="title_lefun_mac">Mac address</string>
-    <string name="summary_lefun_send_readings">Appropriate the watch date to represent glucose values. Better with mmol/l - see documentation</string>
+    <string name="summary_lefun_send_readings">Appropriate the watch date to represent glucose values. Better with mmol/L - see documentation</string>
     <string name="title_lefun_send_readings">Send Readings</string>
     <string name="summary_lefun_send_alarms">Send notifications to the band for glucose alarms</string>
     <string name="title_lefun_send_alarms">Send Alarms</string>

@@ -475,8 +475,8 @@ public class Calibration extends Model {
         }
 
         if ((bg < 40) || (bg > 400)) {
-            Log.wtf(TAG, "Invalid out of range calibration glucose mg/dl value of: " + bg);
-            JoH.static_toast_long("Calibration out of range: " + bg + " mg/dl");
+            Log.wtf(TAG, "Invalid out of range calibration glucose mg/dL value of: " + bg);
+            JoH.static_toast_long("Calibration out of range: " + bg + " mg/dL");
             return null;
         }
 

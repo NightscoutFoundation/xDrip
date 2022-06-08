@@ -92,17 +92,17 @@ public class Experience {
     private static String defaultUnits() {
         try {
             final String country = Locale.getDefault().getCountry();
-            final String units = mmol_countries.contains(country) ? "mmol/l" : "mg/dl";
+            final String units = mmol_countries.contains(country) ? "mmol/L" : "mg/dL";
             UserError.Log.d(TAG, "Country: " + country + " default units: " + units);
             return units;
         } catch (Exception e) {
             UserError.Log.e(TAG, "Exception trying to determine locale units: " + e);
-            return "mg/dl";
+            return "mg/dL";
         }
     }
 
     public static boolean defaultUnitsAreMmol() {
-        return defaultUnits().equals("mmol/l");
+        return defaultUnits().equals("mmol/L");
     }
 
     // return true when done

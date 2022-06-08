@@ -94,7 +94,7 @@ public class GlucoseReadingRx extends BluetoothCHelper {
     }
 
     public String toString() {
-        return "Glucose data: mg/dl: " + mgdl + "  mol/l: " + mol + "  kg/l: " + kgl
+        return "Glucose data: mg/dL: " + mgdl + "  mol/L: " + mol + "  kg/l: " + kgl
                 + "  seq:" + sequence + " sampleType: " + sampleType + "  sampleLocation: " + sampleLocation + "  time: " + hour + ":" + minute + ":" + second
                 + "  " + day + "-" + month + "-" + year + " timeoffset: " + offset + " timestamp: " + time + " from: " + device + (contextInfoFollows ? "  CONTEXT FOLLOWS" : "");
     }

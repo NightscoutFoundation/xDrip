@@ -29,7 +29,7 @@ public class WebServiceStatus extends BaseWebService {
             // "settings":{"units":"mmol"}
             final JSONObject settings = new JSONObject();
             final boolean using_mgdl = Pref.getString("units", "mgdl").equals("mgdl");
-            settings.put("units", using_mgdl ? "mg/dl" : "mmol");
+            settings.put("units", using_mgdl ? "mg/dL" : "mmol/L");
 
             // thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}
             double highMark = tolerantParseDouble(Pref.getString("highValue", "170"), 170d);

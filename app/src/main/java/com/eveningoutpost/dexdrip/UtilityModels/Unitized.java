@@ -40,7 +40,7 @@ public class Unitized {
 
     public static String unitized_string_with_units_static(double value) {
         final boolean domgdl = Pref.getString("units", "mgdl").equals("mgdl");
-        return unitized_string(value, domgdl)+" "+(domgdl ? "mg/dl" : "mmol/l");
+        return unitized_string(value, domgdl)+" "+(domgdl ? "mg/dL" : "mmol/L");
     }
 
     public static String unitized_string_with_units_static_short(double value) {
@@ -136,7 +136,7 @@ public class Unitized {
                 df.setMaximumFractionDigits(0);
             }
 
-            return delta_sign + df.format(unitized(value,doMgdl)) + (showUnit ? " mg/dl" : "");
+            return delta_sign + df.format(unitized(value,doMgdl)) + (showUnit ? " mg/dL" : "");
         } else {
             // only show 2 decimal places on mmol/l delta when less than 0.1 mmol/l
             if (highGranularity && (Math.abs(value) < (Constants.MMOLL_TO_MGDL * 0.1))) {
@@ -147,16 +147,16 @@ public class Unitized {
 
             df.setMinimumFractionDigits(1);
             df.setMinimumIntegerDigits(1);
-            return delta_sign + df.format(unitized(value,doMgdl)) + (showUnit ? " mmol/l" : "");
+            return delta_sign + df.format(unitized(value,doMgdl)) + (showUnit ? " mmol/L" : "");
         }
     }
 
 
     public static String unit(boolean doMgdl) {
         if (doMgdl) {
-            return "mg/dl";
+            return "mg/dL";
         } else {
-            return "mmol";
+            return "mmol/L";
         }
     }
 

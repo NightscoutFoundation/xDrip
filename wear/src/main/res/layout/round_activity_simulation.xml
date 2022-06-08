@@ -74,7 +74,7 @@
             android:layout_marginBottom="12dp"
             android:layout_toEndOf="@+id/bloodTestButton"
             android:background="@android:color/transparent"
-            android:text="102 mg/dl"
+            android:text="102 mg/dL"
             android:textColor="@android:color/holo_green_light"
             android:textSize="12dp"
             android:textStyle="bold" />

@@ -680,8 +680,8 @@ public class GcmActivity extends FauxActivity {
             }
 
             if ((bgValue < 40) || (bgValue > 400)) {
-                Log.wtf(TAG, "Invalid out of range calibration glucose mg/dl value of: " + bgValue);
-                JoH.static_toast_long("Calibration out of range: " + bgValue + " mg/dl");
+                Log.wtf(TAG, "Invalid out of range calibration glucose mg/dL value of: " + bgValue);
+                JoH.static_toast_long("Calibration out of range: " + bgValue + " mg/dL");
                 return;
             }
             final String json = newCalibrationToJson(bgValue, uuid, offset);

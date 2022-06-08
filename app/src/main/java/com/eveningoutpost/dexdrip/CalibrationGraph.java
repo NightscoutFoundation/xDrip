@@ -133,7 +133,7 @@ public class CalibrationGraph extends ActivityWithMenu {
         Axis axisX = new Axis();
         Axis axisY = new Axis().setHasLines(true);
         axisX.setName("Raw Value");
-        axisY.setName("Glucose " + (doMgdl ? "mg/dl" : "mmol/l"));
+        axisY.setName("Glucose " + (doMgdl ? "mg/dL" : "mmol/L"));
 
 
         data = new LineChartData(lines);

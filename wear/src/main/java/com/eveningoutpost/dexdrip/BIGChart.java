@@ -468,9 +468,9 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
                 mTime.setText(timeFormat.format(System.currentTimeMillis()));
 
                 String delta = dataMap.getString("delta");
-                if (delta.endsWith(" mg/dl")) {
+                if (delta.endsWith(" mg/dL")) {
                     mDelta.setText(delta.substring(0, delta.length() - 6));
-                } else if (delta.endsWith(" mmol/l")) {
+                } else if (delta.endsWith(" mmol/L")) {
                     mDelta.setText(delta.substring(0, delta.length() - 7));
                 }
                 extra_status_line = bundle.getString("extra_status_line");

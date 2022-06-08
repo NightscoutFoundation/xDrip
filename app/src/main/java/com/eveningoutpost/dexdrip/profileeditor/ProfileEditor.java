@@ -388,7 +388,7 @@ public class ProfileEditor extends BaseAppCompatActivity {
 
         Pref.setString("saved_profile_list_json", data);
         Pref.setString("saved_profile_list_json_working", "");
-        UserError.Log.uel(TAG, "Converted Profile data with multiplier: " + ((multiplier == Dex_Constants.MG_DL_TO_MMOL_L) ? " to mmol/l" : "to mg/dl"));
+        UserError.Log.uel(TAG, "Converted Profile data with multiplier: " + ((multiplier == Dex_Constants.MG_DL_TO_MMOL_L) ? " to mmol/L" : "to mg/dL"));
     }
 
     public static List<ProfileItem> loadData(boolean buttons) {

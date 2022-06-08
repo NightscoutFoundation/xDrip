@@ -317,9 +317,9 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
             textView.setTextColor(getTextColor());
             if (sharedPrefs.getBoolean("showBigNumbers", false)) {
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
-                if (delta.endsWith(" mg/dl")) {
+                if (delta.endsWith(" mg/dL")) {
                     textView.setText(getDelta().substring(0, delta.length() - 6));
-                } else if (delta.endsWith(" mmol/l")) {
+                } else if (delta.endsWith(" mmol/L")) {
                     textView.setText(getDelta().substring(0, delta.length() - 7));
                 }
             } else {

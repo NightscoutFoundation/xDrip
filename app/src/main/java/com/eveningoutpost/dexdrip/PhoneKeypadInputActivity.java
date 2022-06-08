@@ -289,9 +289,9 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         });
 
         if (Pref.getString("units", "mgdl").equals("mgdl")) {
-            bgUnits = "mg/dl";
+            bgUnits = "mg/dL";
         } else {
-            bgUnits = "mmol/l";
+            bgUnits = "mmol/L";
         }
         updateTab();
     }
