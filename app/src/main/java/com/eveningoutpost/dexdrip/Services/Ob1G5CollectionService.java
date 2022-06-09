@@ -12,7 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
+import android.media.AudioManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -214,6 +214,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static volatile long last_connect_started = -1;
     private static volatile long last_mega_status_read = -1;
     private static volatile int error_count = 0;
+    private static volatile int retry_count = 0;
     private static volatile int connectNowFailures = 0;
     private static volatile int connectFailures = 0;
     private static volatile int scanTimeouts = 0;
@@ -777,7 +778,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     }
 
-    private static synchronized boolean isDeviceLocallyBonded() {
+    public static synchronized boolean isDeviceLocallyBonded() {
         if (transmitterMAC == null) return false;
         final Set<RxBleDevice> pairedDevices = rxBleClient.getBondedDevices();
         if ((pairedDevices != null) && (pairedDevices.size() > 0)) {
@@ -906,8 +907,17 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
     }
 
+    public int incrementRetry() {
+        retry_count++;
+        return retry_count;
+    }
+
     public void clearErrors() {
         error_count = 0;
+    }
+
+    public void clearRetries() {
+        retry_count = 0;
     }
 
     private void checkAlwaysScanModels() {
@@ -1330,6 +1340,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
 
         scanTimeouts = 0; // reset counter
+        clearRetries();
 
         if (JoH.ratelimit("g5-to-discover", 1)) {
             changeState(DISCOVER);
@@ -1939,6 +1950,10 @@ public class Ob1G5CollectionService extends G5BaseService {
             l.add(new StatusItem("Hunting Transmitter", "Stay on this page", CRITICAL));
         }
 
+        if (isVolumeSilent() && !isDeviceLocallyBonded()) {
+            l.add(new StatusItem("Turn Sound On!", "You will not hear pairing request with volume set low or do not disturb enabled!", CRITICAL));
+        }
+
         l.add(new StatusItem("Phone Service State", lastState + (BlueJayEntry.isPhoneCollectorDisabled() ? "\nDisabled by BlueJay option" : ""), JoH.msSince(lastStateUpdated) < 300000 ? (lastState.startsWith("Got data") ? Highlight.GOOD : NORMAL) : (isWatchRunning() ? Highlight.GOOD : CRITICAL)));
         if (last_scan_started > 0) {
             final long scanning_time = JoH.msSince(last_scan_started);
@@ -2168,5 +2183,11 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     public static boolean usingCollector() {
         return Pref.getBooleanDefaultFalse(OB1G5_PREFS) && DexCollectionType.getDexCollectionType() == DexcomG5;
+    }
+
+    // TODO may want to move this to utility method in the future
+    private static boolean isVolumeSilent() {
+        final AudioManager am = (AudioManager) xdrip.getAppContext().getSystemService(Context.AUDIO_SERVICE);
+        return (am.getRingerMode() != AudioManager.RINGER_MODE_NORMAL);
     }
 }
