@@ -70,6 +70,9 @@ public class StopSensor extends ActivityWithMenu {
         Treatments.sensorStop(null, "Stopped by xDrip");
 
         Ob1G5StateMachine.stopSensor();
+        if (JoH.pratelimit("dex-stop-start", 15)) {
+            //
+        }
 
         CollectionServiceStarter.restartCollectionServiceBackground();
         Home.staticRefreshBGCharts();
