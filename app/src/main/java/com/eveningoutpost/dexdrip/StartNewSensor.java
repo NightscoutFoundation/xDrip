@@ -168,6 +168,7 @@ public class StartNewSensor extends ActivityWithMenu {
         final int cap = 20;
         if (Ob1G5CollectionService.usingCollector() && Ob1G5StateMachine.usingG6()) {
             if (JoH.pratelimit("dex-stop-start", cap)) {
+                JoH.clearRatelimit("dex-stop-start");
                 G6CalibrationCodeDialog.ask(this, this::startSensorAndSetIntent);
             } else {
                 JoH.static_toast_long(String.format(Locale.ENGLISH, getString(R.string.please_wait_seconds_before_trying_to_start_sensor), cap));
