@@ -1653,4 +1653,5 @@
     <string name="locked_time_period_always_used">Daima Kullanılan Kilitli Zaman Periyodu</string>
     <string name="show_time_buttons">Zaman Düğmelerini Göster</string>
     <string name="source_wizard_button">Kaynak Sihirbazı Düğmesi</string>
+    <string name="please_wait_seconds_before_trying_to_start_sensor">Sensörü başlatmayı denemeden önce lütfen %d saniye bekleyin</string>
 </resources>
