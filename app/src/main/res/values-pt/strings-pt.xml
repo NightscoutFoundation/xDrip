@@ -1654,4 +1654,5 @@
     <string name="locked_time_period_always_used">Período de Tempo Bloqueado Sempre Usado</string>
     <string name="show_time_buttons">Mostrar Botões de Tempo</string>
     <string name="source_wizard_button">Botão de Ajuda com Fonte</string>
+    <string name="please_wait_seconds_before_trying_to_start_sensor">Por favor, espere %d segundos antes de tentar iniciar o sensor</string>
 </resources>
