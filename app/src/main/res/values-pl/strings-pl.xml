@@ -1472,4 +1472,5 @@
     <string name="show_chart_preview">Pokaż podgląd wykresu</string>
     <string name="show_time_buttons">Pokaż przyciski czasu</string>
     <string name="source_wizard_button">Przycisk źródła kreatora</string>
+    <string name="please_wait_seconds_before_trying_to_start_sensor">Poczekaj %d sekund przed próbą uruchomienia czujnika</string>
 </resources>
