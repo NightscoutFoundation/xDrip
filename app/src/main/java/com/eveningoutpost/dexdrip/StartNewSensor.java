@@ -13,8 +13,6 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.G5Model.DexSyncKeeper;
-import com.eveningoutpost.dexdrip.G5Model.DexTimeKeeper;
-import com.eveningoutpost.dexdrip.G5Model.FirmwareCapability;
 import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
@@ -36,11 +34,11 @@ import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 import static com.eveningoutpost.dexdrip.Models.BgReading.AGE_ADJUSTMENT_TIME;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
-import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.getTransmitterID;
 
 public class StartNewSensor extends ActivityWithMenu {
     // public static String menu_name = "Start Sensor";
@@ -167,25 +165,13 @@ public class StartNewSensor extends ActivityWithMenu {
     }
 
     private void startSensorOrAskForG6Code() {
+        final int cap = 20;
         if (Ob1G5CollectionService.usingCollector() && Ob1G5StateMachine.usingG6()) {
-            int TX_dys = DexTimeKeeper.getTransmitterAgeInDays(getTransmitterID());
-            G6CalibrationCodeDialog.ask(this, this::startSensorAndSetIntent);
-            String strt_warning ="";
-            if (FirmwareCapability.isTransmitterModified(getTransmitterID())) { // Modified Firefly
-                if (TX_dys > 179) {
-                    strt_warning = getString(R.string.SensorStart_TX_EOL_Warning1);
-                } else if (TX_dys > 150) {
-                    strt_warning = getString(R.string.SensorStart_TX_EOL_Warning2);
-                }
-            } else { // Unmodified G6
-                if (TX_dys > 99) {
-                    strt_warning = getString(R.string.SensorStart_TX_EOL_Warning3);
-                } else if (TX_dys > 68) {
-                    strt_warning = getString(R.string.SensorStart_TX_EOL_Warning4);
-                }
-            }
-            if (strt_warning != null) {
-                JoH.static_toast_long(strt_warning);
+            if (JoH.pratelimit("dex-stop-start", cap)) {
+                JoH.clearRatelimit("dex-stop-start");
+                G6CalibrationCodeDialog.ask(this, this::startSensorAndSetIntent);
+            } else {
+                JoH.static_toast_long(String.format(Locale.ENGLISH, getString(R.string.please_wait_seconds_before_trying_to_start_sensor), cap));
             }
         } else {
             startSensorAndSetIntent();
