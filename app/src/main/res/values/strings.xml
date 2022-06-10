@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <string name="title_activity_bluetooth_scan">Bluetooth Scan</string>
@@ -1700,8 +1700,5 @@
     <string name="locked_time_period_always_used">Locked Time Period Always Used</string>
     <string name="show_time_buttons">Show Time Buttons</string>
     <string name="source_wizard_button">Source Wizard Button</string>
-    <string name="SensorStart_TX_EOL_Warning1">You cannot successfully start a sensor since "Transmitter Days" is greater than 179.</string>
-    <string name="SensorStart_TX_EOL_Warning2">When "Transmitter Days" on system status page reaches 179 is the last day you can successfully start a sensor.</string>
-    <string name="SensorStart_TX_EOL_Warning3">You cannot successfully start a sensor since "Transmitter Days" is greater than 99.</string>
-    <string name="SensorStart_TX_EOL_Warning4">When "Transmitter Days" on system status page reaches 99 is the last day you can successfully start a sensor.</string>
+    <string name="please_wait_seconds_before_trying_to_start_sensor">Please wait %d seconds before trying to start sensor</string>
 </resources>
