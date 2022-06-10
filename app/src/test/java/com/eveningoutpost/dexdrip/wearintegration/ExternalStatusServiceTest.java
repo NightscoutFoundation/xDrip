@@ -26,6 +26,7 @@ public class ExternalStatusServiceTest extends RobolectricTestWithConfig {
     final String tbr3 =  "235%"; // weird
     final String tbr4 =  "0.00U/h 1.44U(3.12|-1.69)"; // typical
     final String tbr5 =  "Loop Disabled 1.234U/h 1.44U(3.12|-1.69)"; // typical 2
+    final String tbr6 =  "Bonjour 2,345U/h 1,04U(1,11|-0,07) -0,35 4(20)g"; // typical 3 french locale
 
     @Test
     public void getTBRTest() {
@@ -70,6 +71,8 @@ public class ExternalStatusServiceTest extends RobolectricTestWithConfig {
         assertWithMessage("AB 4 match double").that(getAbsoluteBRDouble()).isEqualTo(0.00d);
         PersistentStore.setString(EXTERNAL_STATUS_STORE, tbr5);
         assertWithMessage("AB 5 match double").that(getAbsoluteBRDouble()).isEqualTo(1.234d);
+        PersistentStore.setString(EXTERNAL_STATUS_STORE, tbr6);
+        assertWithMessage("AB 6 match double").that(getAbsoluteBRDouble()).isEqualTo(2.345d);
         PersistentStore.setString(EXTERNAL_STATUS_STORE, tbr1);
         assertWithMessage("TBR 1 pass thru").that(getAbsoluteBRDouble()).isNull();
         PersistentStore.setString(EXTERNAL_STATUS_STORE, tbr2);

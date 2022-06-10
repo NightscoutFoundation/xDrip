@@ -66,6 +66,7 @@ import com.eveningoutpost.dexdrip.Services.BluetoothGlucoseMeter;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.G5BaseService;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
+import com.eveningoutpost.dexdrip.Services.UiBasedCollector;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
@@ -421,6 +422,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 }
             }
         };
+
+        UiBasedCollector.onEnableCheckPermission(this);
     }
 
     @Override
@@ -456,6 +459,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
     }
 
 
+    private final SharedPreferences.OnSharedPreferenceChangeListener uiPrefListener = UiBasedCollector.getListener(this);
+
     @Override
     protected void onResume()
     {
@@ -468,6 +473,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(MiBandEntry.prefListener);
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(BroadcastService.prefListener);
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(BlueJayEntry.prefListener);
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(uiPrefListener);
         LocalBroadcastManager.getInstance(this).registerReceiver(mibandStatusReceiver,
                 new IntentFilter(Intents.PREFERENCE_INTENT));
     }
@@ -480,6 +486,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(MiBandEntry.prefListener);
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(BroadcastService.prefListener);
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(BlueJayEntry.prefListener);
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(uiPrefListener);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mibandStatusReceiver);
         pFragment = null;
         super.onPause();

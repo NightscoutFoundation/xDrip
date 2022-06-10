@@ -1704,4 +1704,5 @@
     <string name="locked_time_period_always_used">Locked Time Period Always Used</string>
     <string name="show_time_buttons">Show Time Buttons</string>
     <string name="source_wizard_button">Source Wizard Button</string>
+    <string name="please_wait_seconds_before_trying_to_start_sensor">Please wait %d seconds before trying to start sensor</string>
 </resources>
