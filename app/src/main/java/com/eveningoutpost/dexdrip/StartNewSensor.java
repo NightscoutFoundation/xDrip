@@ -34,6 +34,7 @@ import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 import static com.eveningoutpost.dexdrip.Models.BgReading.AGE_ADJUSTMENT_TIME;
@@ -164,8 +165,14 @@ public class StartNewSensor extends ActivityWithMenu {
     }
 
     private void startSensorOrAskForG6Code() {
+        final int cap = 20;
         if (Ob1G5CollectionService.usingCollector() && Ob1G5StateMachine.usingG6()) {
-            G6CalibrationCodeDialog.ask(this, this::startSensorAndSetIntent);
+            if (JoH.pratelimit("dex-stop-start", cap)) {
+                JoH.clearRatelimit("dex-stop-start");
+                G6CalibrationCodeDialog.ask(this, this::startSensorAndSetIntent);
+            } else {
+                JoH.static_toast_long(String.format(Locale.ENGLISH, getString(R.string.please_wait_seconds_before_trying_to_start_sensor), cap));
+            }
         } else {
             startSensorAndSetIntent();
         }
