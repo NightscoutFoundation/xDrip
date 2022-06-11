@@ -90,6 +90,12 @@ public class Pref {
         return "";
     }
 
+    public static String getStringTrimmed(final String pref, final String def) {
+        String str = getString(pref, def);
+        if (str != null) str = str.trim();
+        return str;
+    }
+
     public static boolean setString(final String pref, final String str) {
         initializePrefs();
         if (prefs != null) {
