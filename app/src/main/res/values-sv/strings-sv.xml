@@ -102,7 +102,7 @@
     <string name="pref_amazfit_widget_graph_dots_summary">Visar minimala prickar istället för små</string>
     <string name="pref_amazfit_widget_graph_enable">Aktivera</string>
     <string name="pref_amazfit_widget_graph_title">Widget Graf</string>
-    <string name="pref_amazfit_widget_graph_enable_summary">Visar diagram i widgeten</string>
+    <string name="pref_amazfit_widget_graph_enable_summary">Visa diagram i widget</string>
     <string name="pref_amazfit_watchface_settings">Watchface Inställningar (kan behöva mer batteri)</string>
     <string name="pref_amazfit_widget_settings">Widgetens Inställningar (kan behöva mer batteri)</string>
     <string name="toast_crash">Något gick fel :( en rapport har skickats så att vi kan åtgärda problemet.</string>
@@ -248,7 +248,7 @@
     <string name="wear_integration">Wear-integration</string>
     <string name="send_data_to_android_wear_watch">Skicka data till Android Wears urtavla.</string>
     <string name="android_wear_integration">Android Wear-integration</string>
-    <string name="pref_enable_wearG5">Aktivera insamlingstjänstenen för Wear</string>
+    <string name="pref_enable_wearG5">Aktivera insamlingstjänsten för Wear</string>
     <string name="pref_summary_enable_wearG5">Använd Wear för insamling över blåtand när telefonen inte kan nås.</string>
     <string name="pref_force_wearG5">Tvinga användning av insamlingstjänsten för Wear</string>
     <string name="pref_summary_force_wearG5">Tvinga telefonen att använda insamlingstjänsten</string>
@@ -352,7 +352,7 @@
     <string name="here_you_can_save_the_settings_to_the_external_storage_sdcard">Här kan du spara dina inställningar till ett externt lagringsmedium (t ex SD-kort).\n\nKänslig data som sparas externt kan möjligen läsas av obehöriga som har tillgång till mediet.\n\nRadera inställningarna efter att du har återimporterat dem, om du är besvärad av detta.</string>
     <string name="save_all_settings_to_sdcard">Exportera samtliga inställningar till SD-kort</string>
     <string name="load_all_settings_from_sdcard">Läs in samtliga inställningar från SD-kort</string>
-    <string name="delete_any_settings_on_sdcard">Ta bort samtliga inställningar på SD-kort</string>
+    <string name="delete_any_settings_on_sdcard">Ta bort inställningskatalogen från SD-kort</string>
     <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Använd QR-koder för att överföra inställningar från av Inställningar&gt; Automatisk justering funktion]]></string>
     <string name="xdrip_plus_security_key_settings_only">xDrip+ säkerhetsnyckelinställningar endast</string>
     <string name="show_general_and_collection_settings">Visa allmänna och samlingsinställningar</string>
@@ -470,7 +470,7 @@
     <string name="bad_glucose_values">Dåliga glukosvärden</string>
     <string name="revert_to_default">Återställ till standard</string>
     <string name="filtered_values">Filtrerade värden</string>
-    <string name="treatment_color">Behandlingsfärg</string>
+    <string name="treatment_color">Aktivt insulin (IOB)</string>
     <string name="treatment_color_dark">Mörk behandlingsfärg</string>
     <string name="predictive_color">Färg för förutspåenden</string>
     <string name="predictive_color_dark">Märk färg för förutspåenden</string>
@@ -564,7 +564,7 @@
     <string name="label_show_steps">Steg:%1$d</string>
     <string name="label_show_steps_km">km:%1$s</string>
     <string name="label_show_steps_mi">mi:%1$s</string>
-    <string name="pref_summary_influxdb_enabled">Om du använder en privat InfluxDB-databas bör detta aktiveras</string>
+    <string name="pref_summary_influxdb_enabled">Om du använder en privat InfluxDB-databas bör denna aktiveras</string>
     <string name="pref_message_influxdb_uri">Ersätt exempeldatan i {} med riktiga värden</string>
     <string name="pref_dialog_influxdb_uri">Mata in InfluxDB URI</string>
     <string name="pref_message_influxdb_database">Databasen alla mätningar lagras. Kom ihåg att skapa detta på servern.</string>
@@ -586,7 +586,7 @@
     <string name="accept_treatments">Acceptera behandlingar</string>
     <string name="process_broadcasted_calibrations">Bearbeta kalibreringar från andra appar</string>
     <string name="spoken_readings_locale">Åsidosätt språk för talade avläsningar, te x: de or en_IN</string>
-    <string name="speak_glucose_twice">Läs alltid ut glukosvärdet två gånger</string>
+    <string name="speak_glucose_twice">Läs upp glukosvärdet två gånger</string>
     <string name="short_speak_readings_shortcut">Visa en genväg i ☰ menyn för att slå av/på utläsning</string>
     <string name="speak_readings_shortcut">Genväg för utläsning</string>
     <string name="battery_optimization_off">På Android 6+ bör batterioptimering vara avstängt. Rekommenderas</string>
@@ -922,6 +922,7 @@
     <string name="other">Övrigt</string>
     <string name="which_software_is_the_wixel_running">Vilken programvara kör Wixel?</string>
     <string name="start_source_setup_wizard">Starta guiden för ny källa</string>
+    <string name="hour_format">%s timmar</string>
     <string name="enter_your_transmitter_id_exactly">Ange ditt sändar-ID exakt som det är skrivet</string>
     <string name="which_type_of_device">Vilken typ av enhet?</string>
     <string name="enable_local_broadcast">Aktivera lokal sändning?</string>
@@ -932,6 +933,8 @@
     <string name="librealarm">LibreAlarm</string>
     <string name="use_librealarm">Använd LibreAlarm-appen som datakälla?</string>
     <string name="noise_blocking">Brusblockering</string>
+    <string name="low_parakeet_battery">Lågt Parakeet-batteri</string>
+    <string name="glucose_units_mmol_or_mgdl">Glukosenheter mmol/L eller mg/dL</string>
     <string name="settings_updated_to_mmol">Inställningarna uppdaterade till mmol/L</string>
     <string name="external_calibration_app">Extern kalibreringsapp</string>
     <string name="use_app_for_calibration">använd app för kalibrering?</string>
@@ -943,6 +946,7 @@
     <string name="update_checking_enabled">Uppdateringskontrollen har aktiverats!</string>
     <string name="cancel_alarm">Avbryt alarm?</string>
     <string name="please_confirm_to_cancel_the_alert">Vänligen bekräfta för att avbryta varningen?</string>
+    <string name="yes_cancel">Ja, avbryt</string>
     <string name="warning_no_alert_will_be_played_in_silent_mode">Varning, inget alarm kommer att spelas när telefonen är i tyst eller vibrerande läge!!!</string>
     <string name="automatic_message_from_xdrip">automatiskt meddelande från xDrip+</string>
     <string name="zero_zero_zero_zero">0000</string>
@@ -953,6 +957,7 @@
     <string name="did_not_acknowledge_a_low_glucose_alert">%1$s bekräftade inte en varning för lågt blodsocker för %2$s</string>
     <string name="did_not_acknowledge_a_high_glucose_alert">%1$s bekräftade inte en varning för högt blodsocker för %2$s</string>
     <string name="has_not_had_glucose_data_received_for">%1$s har inte fått blodsockervärden för %2$s</string>
+    <string name="phone_has_not_been_used_for">%1$s mobil har inte använts för %2$s</string>
     <string name="is_requesting_assistance">%s begär hjälp</string>
     <string name="is_testing_the_assistance_request_feature">%s testar funktionen för assistansbegäran</string>
     <string name="choose_when_to_send_messages">Välj när du vill skicka meddelanden:</string>
@@ -968,6 +973,7 @@
     <string name="title_Heart_Rate_Sensor">Sensor för hjärtfrekvens</string>
     <string name="summary_Smooth_heart_rate_graph">Mjuk pulsgraf</string>
     <string name="title_Accept_Calibrations">Acceptera kalibreringar</string>
+    <string name="summary_Display_status_from_other_apps_like_AndroidAPS">Visa status från andra appar som AndroidAPS</string>
     <string name="title_Pump_Status">Pumpstatus</string>
     <string name="title_Carb_Insulin_Ratio">Kolhydrat/insulinratio</string>
     <string name="summary_Scan_before_connecting_on_xBridge_and_Libre_bluetooth">Sök innan anslutning till xBridge och Libre-blåtand</string>
@@ -1008,4 +1014,5 @@
     <string name="locked_time_period_always_used">Använd alltid låst tidsperiod</string>
     <string name="show_time_buttons">Visa tidsknappar</string>
     <string name="source_wizard_button">Knapp för assistans källa</string>
+    <string name="please_wait_seconds_before_trying_to_start_sensor">Vänligen vänta %d sekunder innan du försöker starta sensorn</string>
 </resources>
