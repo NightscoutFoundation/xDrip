@@ -35,12 +35,10 @@ public class LeFunEntry {
         }
     }
 
-    public static SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
-        public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-            android.util.Log.d("lefun", "Preference key: " + key);
-            if (key.startsWith("lefun")) {
-                startWithRefresh();
-            }
+    public static SharedPreferences.OnSharedPreferenceChangeListener prefListener = (prefs, key) -> {
+       // android.util.Log.d("lefun", "Preference key: " + key);
+        if (key.startsWith("lefun")) {
+            startWithRefresh();
         }
     };
 
