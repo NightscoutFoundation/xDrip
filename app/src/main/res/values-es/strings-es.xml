@@ -1653,4 +1653,5 @@
     <string name="show_chart_preview">Mostrar vista previa del gráfico</string>
     <string name="show_time_buttons">Mostrar botones de tiempo</string>
     <string name="source_wizard_button">Botón del asistente de origen</string>
+    <string name="please_wait_seconds_before_trying_to_start_sensor">Por favor, espera %d segundos antes de intentar iniciar el sensor</string>
 </resources>

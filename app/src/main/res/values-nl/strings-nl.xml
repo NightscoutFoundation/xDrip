@@ -1633,6 +1633,7 @@
     <string name="reschedule_with_new_timing">Opnieuw inplannen met nieuwe tijd?</string>
     <string name="select_new_sound_source">Selecteer nieuwe geluidsbron</string>
     <string name="snooze_done">← Snooze / Klaar →</string>
+    <string name="zero_value">Nul waarde</string>
     <string name="adjust_dose">Dosis aanpassen</string>
     <string name="Dose">Dosis</string>
     <string name="choose_type">Kies type</string>
@@ -1645,4 +1646,5 @@
     <string name="locked_time_period_always_used">Vergrendelde tijdsperiode altijd gebruikt</string>
     <string name="show_time_buttons">Toon tijdknoppen</string>
     <string name="source_wizard_button">Bron wizard knop</string>
+    <string name="please_wait_seconds_before_trying_to_start_sensor">Wacht %d seconden voordat u de sensor probeert te starten</string>
 </resources>
