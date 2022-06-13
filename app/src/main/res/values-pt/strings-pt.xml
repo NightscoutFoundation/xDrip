@@ -1655,4 +1655,5 @@
     <string name="show_time_buttons">Mostrar Botões de Tempo</string>
     <string name="source_wizard_button">Botão de Ajuda com Fonte</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Por favor, espere %d segundos antes de tentar iniciar o sensor</string>
+    <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">por favor, atualize o OOP2 ou mude para calibrar com base no modo raw</string>
 </resources>
