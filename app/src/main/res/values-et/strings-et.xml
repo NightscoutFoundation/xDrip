@@ -1655,4 +1655,5 @@
     <string name="show_time_buttons">Näita aja nuppe</string>
     <string name="source_wizard_button">Allika abivahendi nupp</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Palun oota %d sekundit enne sensori käivitamist</string>
+    <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">palun värskenda OOP2 või kasuta kalibreerimistel põhinevat algset režiimi</string>
 </resources>

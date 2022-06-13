@@ -1654,4 +1654,5 @@
     <string name="show_time_buttons">Zaman Düğmelerini Göster</string>
     <string name="source_wizard_button">Kaynak Sihirbazı Düğmesi</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Sensörü başlatmayı denemeden önce lütfen %d saniye bekleyin</string>
+    <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">lütfen OOP2\'yi güncelleyin, aksi takdirde ham glikoza ölçümlerine dayalı kalibrasyon modunu kullanın</string>
 </resources>
