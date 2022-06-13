@@ -758,6 +758,7 @@
         <service android:name=".watch.thinjam.BlueJayService"
             android:foregroundServiceType="connectedDevice|location"
             />
+        <service android:name=".cgm.webfollow.WebFollowService" />
     </application>
 
 </manifest>
