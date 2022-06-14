@@ -465,7 +465,7 @@
     <string name="special_glucose_value_to_display_message">Special glucose value to display the message below</string>
     <string name="bluetooth_wakelocks">Bluetooth Wakelocks</string>
     <string name="compatible_broadcast">Compatible Broadcast</string>
-    <string name="show_datatables">Show Data tables</string>
+    <string name="show_datatables">Show Data Tables</string>
     <string name="display_bridge_battery">Display Bridge Battery</string>
     <string name="close_gatt_on_ble_disconnect">Close GATT on BLE disconnect</string>
     <string name="disable_battery_warning">Disable Battery Warning</string>
