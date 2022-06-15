@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.os.BadParcelableException;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Parcelable;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
@@ -48,6 +49,7 @@ import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
  *  Broadcast API which provides common data like, bg values, graph info, statistic info.
  *  Also it can handle different alarms, save HR data, steps and treatments.
  *  This service was designed as a universal service so multiple thirdparty applications can use it.
+ Both commands will store application packageKey with settings. Stored settings would be used when there would be a new bg data, the service will send the graph data to a specific applications (packageKey) with their own graph settings.
  *  {@link BroadcastService}
  */
 public class BroadcastService extends Service {
@@ -60,6 +62,7 @@ public class BroadcastService extends Service {
      * action used to send data to thirdparty application
      */
     protected static final String ACTION_WATCH_COMMUNICATION_SENDER = "com.eveningoutpost.dexdrip.watch.wearintegration.BROADCAST_SERVICE_SENDER";
+
     private static final int COMMANDS_LIMIT_TIME_SEC = 2;
 
     public static SharedPreferences.OnSharedPreferenceChangeListener prefListener = (prefs, key) -> {
@@ -70,6 +73,17 @@ public class BroadcastService extends Service {
 
     protected String TAG = this.getClass().getSimpleName();
     protected Map<String, BroadcastModel> broadcastEntities;
+
+    /**
+     *  The receiver listening {@link  ACTION_WATCH_COMMUNICATION_RECEIVER} action.
+     *  Every Receiver command requires {@link Const.INTENT_PACKAGE_KEY} and {@link Const.INTENT_FUNCTION_KEY} extra parameters in the intent.
+     *  {@link Const.INTENT_PACKAGE_KEY} describes the thirdparty application and used to identify it's own settings, so every application should use own identificator.
+     *  {@link Const.INTENT_FUNCTION_KEY} describes the function command.
+     *  When thirdparty application received  {@link Const.CMD_START}, it can send {@link Const.CMD_SET_SETTINGS} or {@link Const.CMD_UPDATE_BG_FORCE} command with settings model {@link Settings}.
+     *  Both commands will store application packageKey with own settings. Stored settings would be used when there would be a new BG data in xdrip, the service will send the graph data to a specific applications (packageKey) with their own graph settings.
+     *  If service received a command from not registered packageKey, this command would be skipped. So it is necessary to "register" third-party applications with CMD_SET_SETTINGS or CMD_UPDATE_BG_FORCE at first.
+     *  {@link Settings} model is a {@link Parcelable} object. Please note since it is located in package com.eveningoutpost.dexdrip.Services.broadcastservice.models and xdrip code replacing 'Services' package to lovercase 'services' after apk compilation, the thirdparty application should use the following package com.eveningoutpost.dexdrip.services.broadcastservice.models for the settings model.
+     */
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -345,7 +359,7 @@ public class BroadcastService extends Service {
     }
 
     /**
-     * Will send  {@link Intent message as a broadcast message or to specific receiver
+     * Will send  {@link Intent} message as a broadcast message or to specific receiver
      * @param function Function name
      * @param receiver If specified, will send a broadcast message to a specific receiver domain
      * @param bundle If specified, would be added to broadcast {@link Intent}
