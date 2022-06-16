@@ -85,7 +85,7 @@ import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 
 public class BgGraphBuilder {
-    public static final int FUZZER = (Pref.getBoolean("lower_fuzzer", false)) ? 500 * 15 * 5 : 1000 * 30 * 5; // 37.5 seconds : 2.5 minutes
+    public static final long FUZZER = (Pref.getBoolean("lower_fuzzer", false)) ? 500 * 15 * 5 : 1000 * 30 * 5; // 37.5 seconds : 2.5 minutes
     public final static long DEXCOM_PERIOD = 300_000; // 5 minutes
     public final static double NOISE_TRIGGER = 10;
     public final static double NOISE_TRIGGER_ULTRASENSITIVE = 1;
@@ -1813,7 +1813,7 @@ public class BgGraphBuilder {
                     if (prediction_enabled && simulation_enabled) {
                         // if (doMgdl) {
                         // These routines need to understand how the profile is defined to use native instead of scaled
-                        evaluation = Profile.evaluateEndGameMmol(predictedbg, graphPosToTimestamp(lasttimestamp), end_time * FUZZER);
+                        evaluation = Profile.evaluateEndGameMmol(predictedbg, graphPosToTimestamp(lasttimestamp), (long)end_time * FUZZER);
                         // } else {
                         //    evaluation = Profile.evaluateEndGameMmol(predictedbg, lasttimestamp * FUZZER, end_time * FUZZER);
 
