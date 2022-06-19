@@ -178,6 +178,12 @@ public class LibreReceiver extends BroadcastReceiver {
 
                 double noise = estimateNoise(currentValue,value);
 
+                // BgReading doesn't like infinite values for the noise, so just replace NaNs with a crazy high noise value
+                if (!Double.isFinite(noise))
+                {
+                    noise = 500;
+                }
+
                 BgReading.bgReadingInsertLibre2(value, currentValue.timestamp, currentValue.glucose, noise);
 
                 return;
