@@ -36,7 +36,7 @@ import static com.eveningoutpost.dexdrip.Models.Libre2Sensor.Libre2Sensors;
 
 public class LibreReceiver extends BroadcastReceiver {
 
-    private static final String TAG = "xdrip_libre_receiver";
+    private static final String TAG = "xdrip libre_receiver";
     private static final boolean debug = false;
     private static final boolean d = false;
     private static SharedPreferences prefs;
