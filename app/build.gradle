@@ -10,10 +10,10 @@ buildscript {
     }
 }
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
 
 apply from: 'token-replace.gradle'
 apply from: '../common.gradle'
+apply plugin: 'kotlin-android'
 
 if (project.file('local.gradle').exists()) {
     apply from: 'local.gradle'
