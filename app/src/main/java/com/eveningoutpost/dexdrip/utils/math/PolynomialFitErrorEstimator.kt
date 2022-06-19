@@ -49,16 +49,10 @@ class PolynomialFitErrorEstimator @JvmOverloads constructor(
     private val filteredMeasurements = mutableListOf<Measurement>()
 
     fun addRawMeasurement(time: Long, glucose: Double) {
-        if (rawMeasurements.isNotEmpty() && time <= rawMeasurements.last().time) {
-            TODO("error handling!")
-        }
         rawMeasurements.add(Measurement(time,glucose))
     }
 
     fun addFilteredMeasurement(time: Long, glucose: Double) {
-        if (filteredMeasurements.isNotEmpty() && time <= filteredMeasurements.last().time) {
-            TODO("error handling!")
-        }
         filteredMeasurements.add(Measurement(time,glucose))
     }
 
@@ -77,6 +71,9 @@ class PolynomialFitErrorEstimator @JvmOverloads constructor(
     }
 
     fun estimateError() : Double {
+
+        rawMeasurements.sortBy {it.time}
+        filteredMeasurements.sortBy {it.time}
 
         val zeroTime = filteredMeasurements.first().time
 

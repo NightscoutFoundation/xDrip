@@ -27,9 +27,6 @@ class AdaptiveSavitzkyGolay @JvmOverloads constructor(
     val measurementCount get() = rawMeasurements.size
 
     fun addMeasurement(time: Long, glucose: Double) {
-        if (rawMeasurements.isNotEmpty() && time <= rawMeasurements.last().time) {
-            TODO("error handling!")
-        }
         rawMeasurements.add(RawMeasurement(time,glucose))
     }
 
@@ -95,6 +92,8 @@ class AdaptiveSavitzkyGolay @JvmOverloads constructor(
         if (polynomialOrder > measurementCount) {
             throw IllegalStateException("Not enough measurements for polynomial order")
         }
+
+        rawMeasurements.sortBy {it.time}
 
         val zeroTime = findZeroTime()
         var t = rawMeasurements.map{ (it.time - zeroTime) / ticksPerUnitTime }.toDoubleArray()
