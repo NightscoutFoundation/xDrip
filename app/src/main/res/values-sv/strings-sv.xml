@@ -172,7 +172,7 @@
     <string name="show_parakeet_map">Visa Parakeet-karta</string>
     <string name="switch_parakeet_to_setup_mode">Ställ Parakeet i inställningsläge</string>
     <string name="view_events_log">Visa händelselogg</string>
-    <string name="show_libre_trend">Visa libre trend</string>
+    <string name="show_libre_trend">Visa Libre trend</string>
     <string name="libre_15_minutes_graph">Libre 15 minuters graf</string>
     <string name="libre_last_x_minutes_graph">Libre graf över de senaste %d minuterna</string>
     <string name="share_config_via_qr_code">Dela inställningar med QR-kod</string>
