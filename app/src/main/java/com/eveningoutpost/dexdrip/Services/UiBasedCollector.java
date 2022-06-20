@@ -162,7 +162,10 @@ public class UiBasedCollector extends NotificationListenerService {
                     } else {
                         UserError.Log.d(TAG, "Inserting new value");
                         PersistentStore.setLong(UI_BASED_STORE_LAST_VALUE, mgdl);
-                        BgReading.bgReadingInsertFromG5(mgdl, timestamp);
+                        val bgr = BgReading.bgReadingInsertFromG5(mgdl, timestamp);
+                        if (bgr != null) {
+                            bgr.find_slope();
+                        }
                     }
                 } else {
                     UserError.Log.d(TAG, "Duplicate value");
