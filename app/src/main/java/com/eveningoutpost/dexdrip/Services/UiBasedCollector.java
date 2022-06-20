@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
+import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
@@ -165,6 +166,8 @@ public class UiBasedCollector extends NotificationListenerService {
                         val bgr = BgReading.bgReadingInsertFromG5(mgdl, timestamp);
                         if (bgr != null) {
                             bgr.find_slope();
+                            bgr.noRawWillBeAvailable();
+                            bgr.injectDisplayGlucose(BestGlucose.getDisplayGlucose());
                         }
                     }
                 } else {
