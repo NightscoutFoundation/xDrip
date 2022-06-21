@@ -341,11 +341,53 @@
                     android:textStyle="bold" />
 
                 <ImageButton
-                    android:id="@+id/buttonInsulin0"
+                    android:id="@+id/buttonFats"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/textCarbohydrate"
                     android:layout_alignLeft="@+id/buttonCarbs"
+                    android:src="@drawable/ic_fats_white_48dp" />
+
+                <TextView
+                    android:id="@+id/textFat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/textCarbohydrate"
+                    android:layout_alignLeft="@+id/textCarbohydrate"
+                    android:layout_marginBottom="12dp"
+                    android:background="@android:color/transparent"
+                    android:text="55 grams"
+                    android:textColor="@android:color/holo_green_light"
+                    android:textSize="22dp"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/buttonProteins"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/textFat"
+                    android:layout_alignLeft="@+id/buttonFats"
+                    android:src="@drawable/ic_proteins_white_48dp" />
+
+                <TextView
+                    android:id="@+id/textProtein"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/textFat"
+                    android:layout_alignLeft="@+id/textFat"
+                    android:layout_marginBottom="12dp"
+                    android:background="@android:color/transparent"
+                    android:text="60 grams"
+                    android:textColor="@android:color/holo_green_light"
+                    android:textSize="22dp"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/buttonInsulin0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/textProtein"
+                    android:layout_alignLeft="@+id/buttonProteins"
                     android:src="@drawable/ic_colorize_white_48dp" />
 
 
@@ -353,8 +395,8 @@
                     android:id="@+id/textInsulinSumUnits"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/textCarbohydrate"
-                    android:layout_alignLeft="@+id/textCarbohydrate"
+                    android:layout_below="@+id/textProtein"
+                    android:layout_alignLeft="@+id/textProtein"
                     android:background="@android:color/transparent"
                     android:text="14 units"
                     android:textColor="@android:color/holo_green_light"

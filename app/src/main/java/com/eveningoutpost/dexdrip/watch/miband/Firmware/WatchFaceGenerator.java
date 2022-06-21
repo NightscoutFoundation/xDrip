@@ -272,7 +272,17 @@ public class WatchFaceGenerator {
                 if (treatment.carbs > 0) {
                     if (mylabel.length() > 0)
                         mylabel = mylabel + System.getProperty("line.separator");
-                    mylabel = mylabel + (JoH.qs(treatment.carbs, 1) + "g").replace(".0g", "g");
+                    mylabel = mylabel + (JoH.qs(treatment.carbs, 1) + "gc").replace(".0gc", "gc");
+                }
+                if (treatment.fats > 0) {
+                    if (mylabel.length() > 0)
+                        mylabel = mylabel + System.getProperty("line.separator");
+                    mylabel = mylabel + (JoH.qs(treatment.fats, 1) + "gf").replace(".0gf", "gf");
+                }
+                if (treatment.proteins > 0) {
+                    if (mylabel.length() > 0)
+                        mylabel = mylabel + System.getProperty("line.separator");
+                    mylabel = mylabel + (JoH.qs(treatment.proteins, 1) + "gp").replace(".0gp", "gp");
                 }
                 if (mylabel.length() > 0) {
                     if (treatment.timestamp > Constants.DAY_IN_MS)

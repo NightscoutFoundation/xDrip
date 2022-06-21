@@ -148,9 +148,9 @@ public class RouteFinderTest extends RobolectricTestWithConfig {
 
         // Create example treatments (Treatments.create uses epoch seconds)
         long time = Instant.now().getEpochSecond();
-        Treatments treatmentA = Treatments.create(6, 1, time);
-        Treatments treatmentB = Treatments.create(12, 2, time - 1000);
-        Treatments treatmentC = Treatments.create(18, 3, time - 2000);
+        Treatments treatmentA = Treatments.create(6,3,4, 1, time);
+        Treatments treatmentB = Treatments.create(12, 6,8, 2, time - 1000);
+        Treatments treatmentC = Treatments.create(18, 9,12, 3, time - 2000);
 
         // Test treatments.json?count=1
         JSONArray expectedResponse = new JSONArray();
@@ -216,6 +216,8 @@ public class RouteFinderTest extends RobolectricTestWithConfig {
             item.put("enteredBy", treatment.enteredBy);
             item.put("notes", treatment.notes);
             item.put("carbs", treatment.carbs);
+            item.put("fats", treatment.fats);
+            item.put("proteins", treatment.proteins);
             item.put("insulin", treatment.insulin);
             return item;
         } catch (JSONException e) {

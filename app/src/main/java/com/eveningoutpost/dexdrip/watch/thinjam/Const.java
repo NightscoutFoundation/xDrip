@@ -66,6 +66,8 @@ public class Const {
     public static final byte PUSH_OPCODE_T_INFO = 9;
     public static final byte PUSH_OPCODE_H_INFO = 10;
     public static final byte PUSH_OPCODE_B_INFO = 11;
+    public static final byte PUSH_OPCODE_F_INFO = 12;
+    public static final byte PUSH_OPCODE_P_INFO = 13;
 
 
     public static final String[] errorText = {

@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.tidepool;
 import com.eveningoutpost.dexdrip.Models.Profile;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.utils.FoodType;
 import com.google.gson.annotations.Expose;
 
 // jamorham
@@ -16,6 +17,14 @@ public class EWizard extends BaseElement {
     @Expose
     public double insulinCarbRatio;
     @Expose
+    public double fatsInput;
+    @Expose
+    public double insulinFatsRatio;
+    @Expose
+    public double proteinsInput;
+    @Expose
+    public double insulinProteinsRatio;
+    @Expose
     public EBolus bolus;
 
     EWizard() {
@@ -28,11 +37,33 @@ public class EWizard extends BaseElement {
             return false;
         }
         
-        double insulinCarbRatio = Profile.getCarbRatio(treatment.timestamp);
+        double insulinCarbRatio = Profile.getFoodRatio(treatment.timestamp, FoodType.CARBS);
         if(insulinCarbRatio <= 0 || insulinCarbRatio > 250) {
             UserError.Log.e(TAG, "Ignoring invalid treatment (insulinCarbRatio) " + treatment.toS());
             return false;
         }
+        if(treatment.fats < 0 || treatment.fats > 1000) {
+            UserError.Log.e(TAG, "Ignoring invalid treatment (fats) " + treatment.toS());
+            return false;
+        }
+
+        double insulinFatsRatio = Profile.getFoodRatio(treatment.timestamp, FoodType.FATS);
+        if(insulinFatsRatio <= 0 || insulinFatsRatio > 250) {
+            UserError.Log.e(TAG, "Ignoring invalid treatment (insulinFatsRatio) " + treatment.toS());
+            return false;
+        }
+
+        if(treatment.proteins < 0 || treatment.proteins > 1000) {
+            UserError.Log.e(TAG, "Ignoring invalid treatment (proteins) " + treatment.toS());
+            return false;
+        }
+
+        double insulinProteinsRatio = Profile.getFoodRatio(treatment.timestamp, FoodType.PROTEINS);
+        if(insulinProteinsRatio <= 0 || insulinProteinsRatio > 250) {
+            UserError.Log.e(TAG, "Ignoring invalid treatment (insulinProteinsRatio) " + treatment.toS());
+            return false;
+        }
+
         if(treatment.insulin < 0 || treatment.insulin >= 100) {
             UserError.Log.e(TAG, "Ignoring invalid treatment (insulin) " + treatment.toS());
             return false;
@@ -48,7 +79,11 @@ public class EWizard extends BaseElement {
         
         final EWizard result = (EWizard)new EWizard().populate(treatment.timestamp, treatment.uuid);
         result.carbInput = treatment.carbs;
-        result.insulinCarbRatio = Profile.getCarbRatio(treatment.timestamp);
+        result.insulinCarbRatio = Profile.getFoodRatio(treatment.timestamp, FoodType.CARBS);
+        result.fatsInput = treatment.fats;
+        result.insulinFatsRatio = Profile.getFoodRatio(treatment.timestamp, FoodType.FATS);
+        result.proteinsInput = treatment.proteins;
+        result.insulinProteinsRatio = Profile.getFoodRatio(treatment.timestamp, FoodType.PROTEINS);
         if (treatment.insulin > 0) {
             result.bolus = new EBolus(treatment.insulin, treatment.insulin, treatment.timestamp, treatment.uuid);
         } else {

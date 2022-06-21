@@ -77,6 +77,8 @@ public class StatusLine {
                 || Pref.getBoolean("status_line_low", false)
                 || Pref.getBoolean("status_line_stdev", false)
                 || Pref.getBoolean("status_line_carbs", false)
+                || Pref.getBoolean("status_line_fats", false)
+                || Pref.getBoolean("status_line_proteins", false)
                 || Pref.getBoolean("status_line_insulin", false)
                 || Pref.getBoolean("status_line_royce_ratio", false)
                 || Pref.getBoolean("status_line_accuracy", false)
@@ -111,6 +113,12 @@ public class StatusLine {
             }
             if (Pref.getBoolean("status_line_carbs", false)) {
                 append(sb, "Carbs:" + Math.round(statsResult.getTotal_carbs()));
+            }
+            if (Pref.getBoolean("status_line_fats", false)) {
+                append(sb, "Fats:" + Math.round(statsResult.getTotalFats()));
+            }
+            if (Pref.getBoolean("status_line_proteins", false)) {
+                append(sb, "Proteins:" + Math.round(statsResult.getTotalProteins()));
             }
             if (Pref.getBoolean("status_line_insulin", false)) {
                 append(sb, "U:" + JoH.qs(statsResult.getTotal_insulin(), 2));

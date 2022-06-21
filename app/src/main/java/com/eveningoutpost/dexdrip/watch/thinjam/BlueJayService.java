@@ -1410,12 +1410,22 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
 
             case CarbInfo:
                 UserError.Log.d(TAG, "Carb info: " + pushRx.getNumber() + " " + JoH.dateTimeText(pushRx.getTimestamp()));
-                Treatments.create(pushRx.getNumber(), 0, pushRx.getTimestamp());
+                Treatments.create(pushRx.getNumber(), 0, 0, 0, pushRx.getTimestamp());
+                break;
+            case FatsInfo:
+
+                UserError.Log.d(TAG, "Fat info: " + pushRx.getNumber() + " " + JoH.dateTimeText(pushRx.getTimestamp()));
+                Treatments.create(0, pushRx.getNumber(), 0, 0, pushRx.getTimestamp());
+                break;
+            case ProteinsInfo:
+
+                UserError.Log.d(TAG, "Protein info: " + pushRx.getNumber() + " " + JoH.dateTimeText(pushRx.getTimestamp()));
+                Treatments.create(0, 0, pushRx.getNumber(), 0, pushRx.getTimestamp());
                 break;
 
             case InsulinInfo:
                 UserError.Log.d(TAG, "Insulin info: " + pushRx.getNumber() + " " + JoH.dateTimeText(pushRx.getTimestamp()));
-                Treatments.create(0, pushRx.getNumber(), pushRx.getTimestamp());
+                Treatments.create(0,0, 0, pushRx.getNumber(), pushRx.getTimestamp());
                 break;
         }
     }

@@ -231,7 +231,7 @@ public class DatabaseUtil {
                 printStream = new PrintStream(zipOutputStream);
 
                 //add Treatment and BGlucose Header
-                printStream.println("DAY;TIME;UDT_CGMS;BG_LEVEL;CH_GR;BOLUS;REMARK");
+                printStream.println("DAY;TIME;UDT_CGMS;BG_LEVEL;CH_GR;FATS;PROTEINS;BOLUS;REMARK");
 
                 SQLiteDatabase db = Cache.openDatabase();
 
@@ -239,6 +239,8 @@ public class DatabaseUtil {
                 double value;
                 String valueIE;
                 String valueCHO;
+                String valueFats;
+                String valueProteins;
                 String notes;
 
                 long timestamp;
@@ -256,7 +258,7 @@ public class DatabaseUtil {
                         value = cur.getDouble(1);
                         if (value > 13) {
                             date.setTime(timestamp);
-                            printStream.println(df.format(date) + Math.round(value) + ";;;;");
+                            printStream.println(df.format(date) + Math.round(value) + ";;;;;;");
                         }
                     } while (cur.moveToNext());
                 }
@@ -269,26 +271,30 @@ public class DatabaseUtil {
                         value = cur.getDouble(1);
                         if (value > 0) {
                             date.setTime(timestamp);
-                            printStream.println(df.format(date) + ";" + Math.round(value) + ";;;");
+                            printStream.println(df.format(date) + ";" + Math.round(value) + ";;;;;");
                         }
                     } while (cur.moveToNext());
                 }
 
                 //Extract Treatment-Values
-                cur = db.query("Treatments", new String[]{"timestamp", "carbs", "insulin", "notes"}, "timestamp >= " + from, null, null, null, "timestamp ASC");
+                cur = db.query("Treatments", new String[]{"timestamp", "carbs", "fats", "proteins", "insulin", "notes"}, "timestamp >= " + from, null, null, null, "timestamp ASC");
                 if (cur.moveToFirst()) {
                     do {
                         timestamp = cur.getLong(0);
                         valueCHO = cur.getString(1);
-                        valueIE = cur.getString(2);
-                        notes = cur.getString(3);
+                        valueFats = cur.getString(2);
+                        valueProteins = cur.getString(3);
+                        valueIE = cur.getString(4);
+                        notes = cur.getString(5);
                         if (notes == null) notes = "";
                         if (valueIE.equals("0")) valueIE = "";
                         if (valueCHO.equals("0")) valueCHO = "";
+                        if (valueFats.equals("0")) valueFats = "";
+                        if (valueProteins.equals("0")) valueProteins = "";
                         notes= notes.replaceAll("\n","||"); //convert linefeed to SiDiary conform expression
-                        if (!valueIE.equals("") || !valueCHO.equals("") || !notes.equals("")) {
+                        if (!valueIE.equals("") || !valueCHO.equals("") || !valueFats.equals("") || !valueProteins.equals("") || !notes.equals("")) {
                             date.setTime(timestamp);
-                            printStream.println(df.format(date) + ";;" + valueCHO + ";" + valueIE + ";" + notes);
+                            printStream.println(df.format(date) + ";;" + valueCHO + ";" +  valueFats + ";" +  valueProteins + ";" + valueIE + ";" + notes);
                         }
                     } while (cur.moveToNext());
                 }

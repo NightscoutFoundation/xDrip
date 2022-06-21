@@ -51,6 +51,18 @@
         "gee"
     ]},
 
+{"lexicon": "fats",
+    "matchWords":[
+        "fats",
+        "fat"
+    ]},
+
+{"lexicon": "proteins",
+    "matchWords":[
+        "proteins",
+        "protein"
+    ]},
+
 {"lexicon": "time",
     "matchWords":[
         "time",

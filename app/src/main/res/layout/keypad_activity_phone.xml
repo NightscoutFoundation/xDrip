@@ -272,6 +272,57 @@
     </TableRow>
 
     <LinearLayout
+        android:id="@+id/foodTypesSection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.05"
+        android:gravity="center_horizontal"
+        android:visibility="gone"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/carbsFoodTabButton"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:scaleType="centerCrop"
+            android:paddingEnd="5dp"
+            android:paddingStart="5dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="@color/cardview_dark_background"
+            android:src="@drawable/ic_local_dining_white_48dp" />
+
+        <ImageButton
+            android:id="@+id/fatsFoodTabButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:scaleType="centerCrop"
+            android:padding="5dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="@color/cardview_dark_background"
+            android:src="@drawable/ic_fats_white_48dp"/>
+
+        <ImageButton
+            android:id="@+id/proteinsFoodTabButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:scaleType="centerCrop"
+            android:padding="5dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="@color/cardview_dark_background"
+            android:src="@drawable/ic_proteins_white_48dp" />
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/insulinTypesSection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

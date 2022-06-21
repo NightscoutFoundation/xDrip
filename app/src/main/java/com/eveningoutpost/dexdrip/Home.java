@@ -225,6 +225,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private ImageButton btnApprove;
     private ImageButton btnCancel;
     private ImageButton btnCarbohydrates;
+    private ImageButton btnFats;
+    private ImageButton btnProteins;
     private ImageButton btnBloodGlucose;
     private ImageButton buttonInsulinSingleDose;
     private ImageButton[] btnInsulinDose = new ImageButton[MAX_INSULIN_PROFILES];
@@ -234,6 +236,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private ImageButton btnVehicleMode;
     private TextView voiceRecognitionText;
     private TextView textCarbohydrates;
+    private TextView textFats;
+    private TextView textProteins;
     private TextView textBloodGlucose;
     private TextView textInsulinSumDose;
     private TextView[] textInsulinDose = new TextView[MAX_INSULIN_PROFILES];
@@ -277,6 +281,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     double thisnumber = -1;
     double thisglucosenumber = 0;
     double thiscarbsnumber = 0;
+    double thisFatsNumber = 0;
+    double thisProteinsNumber = 0;
     double thisInsulinSumNumber = 0;
     double[] thisinsulinnumber = new double[MAX_INSULIN_PROFILES];
     Insulin[] thisinsulinprofile = new Insulin[MAX_INSULIN_PROFILES];
@@ -286,6 +292,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     String thisuuid = "";
     private static String nexttoast;
     boolean carbsset = false;
+    boolean fatsSet = false;
+    boolean proteinsSet = false;
     boolean[] insulinset = new boolean[MAX_INSULIN_PROFILES];
     boolean insulinsumset = false;
     boolean glucoseset = false;
@@ -432,10 +440,14 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         this.voiceRecognitionText = (TextView) findViewById(R.id.treatmentTextView);
         this.textBloodGlucose = (TextView) findViewById(R.id.textBloodGlucose);
         this.textCarbohydrates = (TextView) findViewById(R.id.textCarbohydrate);
+        this.textFats = (TextView) findViewById(R.id.textFat);
+        this.textProteins = (TextView) findViewById(R.id.textProtein);
         this.textInsulinSumDose = (TextView) findViewById(R.id.textInsulinSumUnits);
         this.textTime = (TextView) findViewById(R.id.textTimeButton);
         this.btnBloodGlucose = (ImageButton) findViewById(R.id.bloodTestButton);
         this.btnCarbohydrates = (ImageButton) findViewById(R.id.buttonCarbs);
+        this.btnFats = (ImageButton) findViewById(R.id.buttonFats);
+        this.btnProteins = (ImageButton) findViewById(R.id.buttonProteins);
         this.textInsulinDose[0] = (TextView) findViewById(R.id.textInsulin1Units);
         this.buttonInsulinSingleDose = (ImageButton) findViewById(R.id.buttonInsulin0);
         this.btnInsulinDose[0] = (ImageButton) findViewById(R.id.buttonInsulin1);
@@ -532,6 +544,30 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             thiscarbsnumber = 0;
             if (hideTreatmentButtonsIfAllDone()) {
                 updateCurrentBgInfo("carbs button");
+            }
+        });
+
+        btnFats.setOnClickListener(v -> {
+            // Process and approve treatment.
+            textFats.setVisibility(View.INVISIBLE);
+            btnFats.setVisibility(View.INVISIBLE);
+            reset_viewport = true;
+            Treatments.create(0, thisFatsNumber, 0, 0, new ArrayList<InsulinInjection>(), Treatments.getTimeStampWithOffset(thistimeoffset));
+            thisFatsNumber = 0;
+            if (hideTreatmentButtonsIfAllDone()) {
+                updateCurrentBgInfo("fats button");
+            }
+        });
+
+        btnProteins.setOnClickListener(v -> {
+            // Process and approve treatment.
+            textProteins.setVisibility(View.INVISIBLE);
+            btnProteins.setVisibility(View.INVISIBLE);
+            reset_viewport = true;
+            Treatments.create(0, 0, thisProteinsNumber, 0, new ArrayList<InsulinInjection>(), Treatments.getTimeStampWithOffset(thistimeoffset));
+            thisProteinsNumber = 0;
+            if (hideTreatmentButtonsIfAllDone()) {
+                updateCurrentBgInfo("proteins button");
             }
         });
 
@@ -881,8 +917,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                             InsulinInjection injection = new InsulinInjection(thisinsulinprofile[i], thisinsulinnumber[i]);
                             injections.add(injection);
                         }
-                    Log.d(TAG, "processAndApproveTreatment create watchkeypad Treatment carbs=" + thiscarbsnumber + " insulin=" + thisInsulinSumNumber + " timestamp=" + JoH.dateTimeText(time) + " uuid=" + thisuuid);
-                    Treatments.create(thiscarbsnumber, thisInsulinSumNumber, injections, time, thisuuid);
+                    Log.d(TAG, "processAndApproveTreatment create watchkeypad Treatment carbs=" + thiscarbsnumber + " fats=" + thisFatsNumber + " proteins=" + thisProteinsNumber + " insulin=" + thisInsulinSumNumber + " timestamp=" + JoH.dateTimeText(time) + " uuid=" + thisuuid);
+                    Treatments.create(thiscarbsnumber, thisFatsNumber, thisProteinsNumber, thisInsulinSumNumber, injections, time, thisuuid);
 // gruoner: changed pendiq handling 09/12/19        TODO remove duplicate code with helper function
 // in case of multiple injections in a treatment, select the injection with the primary insulin profile defined in the profile editor; if not found, take 0
 // in case of a single injection in a treatment, assume thats the #units to send to pendiq
@@ -894,7 +930,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     } else pendiqInsulin = thisInsulinSumNumber;
                     Pendiq.handleTreatment(pendiqInsulin);
                 } else {
-                    Log.d(TAG, "processAndApproveTreatment Treatment already exists carbs=" + thiscarbsnumber + " insulin=" + thisInsulinSumNumber + " timestamp=" + JoH.dateTimeText(time));
+                    Log.d(TAG, "processAndApproveTreatment Treatment already exists carbs=" + thiscarbsnumber + " fats=" + thisFatsNumber + " proteins=" + thisProteinsNumber + " insulin=" + thisInsulinSumNumber + " timestamp=" + JoH.dateTimeText(time));
                 }
             }
         } else {
@@ -905,7 +941,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     InsulinInjection injection = new InsulinInjection(thisinsulinprofile[i], thisinsulinnumber[i]);
                     injections.add(injection);
                 }
-            Treatments.create(thiscarbsnumber, thisInsulinSumNumber, injections, Treatments.getTimeStampWithOffset(mytimeoffset));
+            Treatments.create(thiscarbsnumber, thisFatsNumber, thisProteinsNumber, thisInsulinSumNumber, injections, Treatments.getTimeStampWithOffset(mytimeoffset));
 // gruoner: changed pendiq handling 09/12/19   TODO remove duplicate code with helper function
 // in case of multiple injections in a treatment, select the injection with the primary insulin profile defined in the profile editor; if not found, take 0
 // in case of a single injection in a treatment, assume thats the #units to send to pendiq
@@ -1140,6 +1176,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         if ((btnBloodGlucose.getVisibility() == View.INVISIBLE) &&
                 (btnCarbohydrates.getVisibility() == View.INVISIBLE) &&
+                (btnFats.getVisibility() == View.INVISIBLE) &&
+                (btnProteins.getVisibility() == View.INVISIBLE) &&
                 byTypeInvisible) {
             hideAllTreatmentButtons(); // we clear values here also
             //send toast to wear - closes the confirmation activity on the watch
@@ -1153,9 +1191,13 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private void hideAllTreatmentButtons() {
         textBloodGlucose.setVisibility(View.INVISIBLE);
         textCarbohydrates.setVisibility(View.INVISIBLE);
+        textFats.setVisibility(View.INVISIBLE);
+        textProteins.setVisibility(View.INVISIBLE);
         btnApprove.setVisibility(View.INVISIBLE);
         btnCancel.setVisibility(View.INVISIBLE);
         btnCarbohydrates.setVisibility(View.INVISIBLE);
+        btnFats.setVisibility(View.INVISIBLE);
+        btnProteins.setVisibility(View.INVISIBLE);
         textInsulinSumDose.setVisibility(View.INVISIBLE);
         for (int i = 0; i < MAX_INSULIN_PROFILES; i++) {
             textInsulinDose[i].setVisibility(View.INVISIBLE);
@@ -1169,6 +1211,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         // zeroing code could be functionalized
         thiscarbsnumber = 0;
+        thisFatsNumber = 0;
+        thisProteinsNumber = 0;
         thisInsulinSumNumber = 0;
         insulinsumset = false;
         for (int i = 0; i < MAX_INSULIN_PROFILES; i++)
@@ -1180,6 +1224,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         thistimeoffset = 0;
         thisglucosenumber = 0;
         carbsset = false;
+        fatsSet = false;
+        proteinsSet = false;
         glucoseset = false;
         timeset = false;
 
@@ -1401,6 +1447,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         thisinsulinnumber = new double[MAX_INSULIN_PROFILES];
         thisinsulinprofile = new Insulin[MAX_INSULIN_PROFILES];
         carbsset = false;
+        fatsSet = false;
+        proteinsSet = false;
         timeset = false;
         thisnumber = -1;
         thisword = "";
@@ -1484,6 +1532,34 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     textCarbohydrates.setVisibility(View.VISIBLE);
                 } else {
                     Log.d(TAG, "Carbs already set");
+                    preserve = true;
+                }
+                break;
+
+                case "fats":
+                if (!fatsSet && (thisnumber > 0)) {
+                    thisFatsNumber = thisnumber;
+                    textFats.setText((int)thisnumber + " g fats");
+                    fatsSet = true;
+                    Log.d(TAG, "Fats eaten: " + thisnumber);
+                    btnFats.setVisibility(View.VISIBLE);
+                    textFats.setVisibility(View.VISIBLE);
+                } else {
+                    Log.d(TAG, "Fats already set");
+                    preserve = true;
+                }
+                break;
+
+                case "proteins":
+                if (!proteinsSet && (thisnumber > 0)) {
+                    thisProteinsNumber = thisnumber;
+                    textProteins.setText((int)thisnumber + " g proteins");
+                    carbsset = true;
+                    Log.d(TAG, "Proteins eaten: " + thisnumber);
+                    btnProteins.setVisibility(View.VISIBLE);
+                    textProteins.setVisibility(View.VISIBLE);
+                } else {
+                    Log.d(TAG, "Proteins already set");
                     preserve = true;
                 }
                 break;
@@ -1600,7 +1676,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
         // don't show approve if we only have time
-        if ((insulinsumset || glucoseset || carbsset) && !watchkeypad) {
+        if ((insulinsumset || glucoseset || carbsset || fatsSet || proteinsSet) && !watchkeypad) {
             btnApprove.setVisibility(View.VISIBLE);
 
             if (small_screen) {
@@ -1623,18 +1699,24 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 }
                 btnCarbohydrates.setScaleX(button_scale_factor);
                 btnCarbohydrates.setScaleY(button_scale_factor);
+                btnFats.setScaleX(button_scale_factor);
+                btnFats.setScaleY(button_scale_factor);
+                btnProteins.setScaleX(button_scale_factor);
+                btnProteins.setScaleY(button_scale_factor);
                 btnBloodGlucose.setScaleX(button_scale_factor);
                 btnBloodGlucose.setScaleY(button_scale_factor);
                 btnTime.setScaleX(button_scale_factor);
                 btnTime.setScaleY(button_scale_factor);
                 textCarbohydrates.setTextSize(small_text_size);
+                textFats.setTextSize(small_text_size);
+                textProteins.setTextSize(small_text_size);
                 textInsulinSumDose.setTextSize(small_text_size);
                 textBloodGlucose.setTextSize(small_text_size);
                 textTime.setTextSize(small_text_size);
             }
         }
 
-        if ((insulinsumset || glucoseset || carbsset || timeset) && !watchkeypad) {
+        if ((insulinsumset || glucoseset || carbsset || fatsSet || proteinsSet || timeset) && !watchkeypad) {
             btnCancel.setVisibility(View.VISIBLE);
             if (chart != null) {
                 chart.setAlpha((float) 0.10);
@@ -1652,6 +1734,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     .create();
             WatchUpdaterService.sendTreatment(
                     thiscarbsnumber,
+                    thisFatsNumber,
+                    thisProteinsNumber,
                     thisInsulinSumNumber,
                     thisglucosenumber,
                     gson.toJson(injections),
@@ -2039,7 +2123,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             previewChart.setVisibility(homeShelf.get("chart_preview") ? View.VISIBLE : View.GONE);
         }
 
-        if (insulinsumset || glucoseset || carbsset || timeset) {
+        if (insulinsumset || glucoseset || carbsset || fatsSet || proteinsSet || timeset) {
             if (chart != null) {
                 chart.setAlpha((float) 0.10);
                 // TODO also set buttons alpha

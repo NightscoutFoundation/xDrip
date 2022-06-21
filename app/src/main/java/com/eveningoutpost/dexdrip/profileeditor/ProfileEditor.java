@@ -30,6 +30,7 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
+import com.eveningoutpost.dexdrip.utils.FoodType;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
@@ -131,6 +132,8 @@ public class ProfileEditor extends BaseAppCompatActivity {
         if (profileItemList.size() == 0) {
             profileItemList.add(new ProfileItem(0, END_OF_DAY,
                     JoH.tolerantParseDouble(Pref.getString("profile_carb_ratio_default", "10"), 10d),
+                    JoH.tolerantParseDouble(Pref.getString("profile_fats_ratio_default", "10"), 10d),
+                    JoH.tolerantParseDouble(Pref.getString("profile_proteins_ratio_default", "10"), 10d),
                     JoH.tolerantParseDouble(Pref.getString("profile_insulin_sensitivity_default", "0.1"), 0.1d)));
         }
 
@@ -203,10 +206,10 @@ public class ProfileEditor extends BaseAppCompatActivity {
                                     ProfileItem new_item;
                                     if (old_item.start_min < old_item.end_min) {
                                         // no wrapping time
-                                        new_item = new ProfileItem(old_item.end_min - (old_item.end_min - old_item.start_min) / 2, old_item.end_min, old_item.carb_ratio, old_item.sensitivity);
+                                        new_item = new ProfileItem(old_item.end_min - (old_item.end_min - old_item.start_min) / 2, old_item.end_min, old_item.carb_ratio,  old_item.fats_ratio,  old_item.proteins_ratio, old_item.sensitivity);
                                     } else {
                                         // wraps around
-                                        new_item = new ProfileItem(old_item.end_min - ((old_item.end_min - MINS_PER_DAY) - old_item.start_min) / 2, old_item.end_min, old_item.carb_ratio, old_item.sensitivity);
+                                        new_item = new ProfileItem(old_item.end_min - ((old_item.end_min - MINS_PER_DAY) - old_item.start_min) / 2, old_item.end_min, old_item.carb_ratio,  old_item.fats_ratio,  old_item.proteins_ratio, old_item.sensitivity);
 
                                     }
                                     old_item.end_min = new_item.start_min - 1;
@@ -309,6 +312,8 @@ public class ProfileEditor extends BaseAppCompatActivity {
 
             for (ProfileItem item : profileItemListTmp) {
                 item.carb_ratio = item.carb_ratio / adjustmentFactor;
+                item.fats_ratio = item.fats_ratio / adjustmentFactor;
+                item.proteins_ratio = item.proteins_ratio / adjustmentFactor;
                 item.sensitivity = item.sensitivity * adjustmentFactor;
             }
 
@@ -318,6 +323,8 @@ public class ProfileEditor extends BaseAppCompatActivity {
 
             for (ProfileItem item : profileItemListTmp) {
                 item.carb_ratio = (double) (Math.round(item.carb_ratio * 10)) / 10; // round to nearest .1g
+                item.fats_ratio = (double) (Math.round(item.fats_ratio * 10)) / 10; // round to nearest .1g
+                item.proteins_ratio = (double) (Math.round(item.proteins_ratio * 10)) / 10; // round to nearest .1g
                 item.sensitivity = (double) (Math.round(item.sensitivity * 10)) / 10;
             }
         }
@@ -378,6 +385,8 @@ public class ProfileEditor extends BaseAppCompatActivity {
         final List<ProfileItem> mydata = ProfileEditor.loadData(false);
         for (ProfileItem item : mydata) {
             item.carb_ratio = (double) (Math.round(item.carb_ratio * 10)) / 10; // round to nearest .1g
+            item.fats_ratio = (double) (Math.round(item.fats_ratio * 10)) / 10; // round to nearest .1g
+            item.proteins_ratio = (double) (Math.round(item.proteins_ratio * 10)) / 10; // round to nearest .1g
             item.sensitivity = (double) (Math.round(item.sensitivity * 10 * multiplier)) / 10;
         }
         final Gson gson = new GsonBuilder()
@@ -416,6 +425,8 @@ public class ProfileEditor extends BaseAppCompatActivity {
             // process adjustment factor
             for (ProfileItem item : restored) {
                 item.carb_ratio = item.carb_ratio * adjustmentFactor;
+                item.fats_ratio = item.fats_ratio * adjustmentFactor;
+                item.proteins_ratio = item.proteins_ratio * adjustmentFactor;
                 item.sensitivity = item.sensitivity / adjustmentFactor;
             }
             Collections.addAll(myprofileItemList, restored);
@@ -424,6 +435,8 @@ public class ProfileEditor extends BaseAppCompatActivity {
             try {
                 Log.d(TAG,"Creating default profile entries: sens default: "+ Pref.getString("profile_insulin_sensitivity_default", "0.1"));
                 ProfileItem item = new ProfileItem(0, END_OF_DAY, Double.parseDouble(Pref.getString("profile_carb_ratio_default", "10")),
+                         Double.parseDouble(Pref.getString("profile_fats_ratio_default", "10")),
+                         Double.parseDouble(Pref.getString("profile_proteins_ratio_default", "10")),
                         Double.parseDouble(Pref.getString("profile_insulin_sensitivity_default", "0.1")));
                 myprofileItemList.add(item);
             } catch (Exception e) {
@@ -433,6 +446,14 @@ public class ProfileEditor extends BaseAppCompatActivity {
         return myprofileItemList;
     }
 
+    /**
+     * @deprecated
+     * This method doesn't support other food types. i.e: fats and proteins.
+     * <p> Use {@link ProfileEditor#minMaxFood(List, FoodType)} instead.
+     * @param myprofileItemList profile item list.
+     * @return min and max carb values.
+     */
+    @Deprecated
     public static String minMaxCarbs(List<ProfileItem> myprofileItemList) {
         double carbsmin = 9999999;
         double carbsmax = -1;
@@ -442,6 +463,31 @@ public class ProfileEditor extends BaseAppCompatActivity {
         }
         if (carbsmin == carbsmax) return JoH.qs(carbsmin, -1);
         return JoH.qs(carbsmin, -1) + " - " + JoH.qs(carbsmax, -1);
+    }
+
+    public static String minMaxFood(List<ProfileItem> myprofileItemList, FoodType foodType) {
+        double min = 9999999;
+        double max = -1;
+        for (ProfileItem item : myprofileItemList) {
+            switch (foodType) {
+                case CARBS:
+                    if (item.carb_ratio > max) max = item.carb_ratio;
+                    if (item.carb_ratio < min) min = item.carb_ratio;
+                    break;
+
+                case FATS:
+                    if (item.fats_ratio > max) max = item.fats_ratio;
+                    if (item.fats_ratio < min) min = item.fats_ratio;
+                    break;
+
+                case PROTEINS:
+                    if (item.proteins_ratio > max) max = item.proteins_ratio;
+                    if (item.proteins_ratio < min) min = item.proteins_ratio;
+                    break;
+            }
+        }
+        if (min == max) return JoH.qs(min, -1);
+        return JoH.qs(min, -1) + " - " + JoH.qs(max, -1);
     }
 
     public static String minMaxSens(List<ProfileItem> myprofileItemList) {

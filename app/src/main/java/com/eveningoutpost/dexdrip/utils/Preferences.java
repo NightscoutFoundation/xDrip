@@ -146,6 +146,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
     private static String static_units;
     private static Preference profile_insulin_sensitivity_default;
     private static Preference profile_carb_ratio_default;
+    private static Preference profile_fats_ratio_default;
+    private static Preference profile_proteins_ratio_default;
 
     private static ListPreference locale_choice;
     private static Preference force_english;
@@ -564,7 +566,9 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
     }
 
     private static void refreshProfileRatios() {
-        profile_carb_ratio_default.setTitle(format_carb_ratio(profile_carb_ratio_default.getTitle().toString(), ProfileEditor.minMaxCarbs(ProfileEditor.loadData(false))));
+        profile_carb_ratio_default.setTitle(format_food_ratio(profile_carb_ratio_default.getTitle().toString(), ProfileEditor.minMaxFood(ProfileEditor.loadData(false), FoodType.CARBS)));
+        profile_fats_ratio_default.setTitle(format_food_ratio(profile_fats_ratio_default.getTitle().toString(), ProfileEditor.minMaxFood(ProfileEditor.loadData(false), FoodType.FATS)));
+        profile_proteins_ratio_default.setTitle(format_food_ratio(profile_proteins_ratio_default.getTitle().toString(), ProfileEditor.minMaxFood(ProfileEditor.loadData(false), FoodType.PROTEINS)));
         profile_insulin_sensitivity_default.setTitle(format_insulin_sensitivity(profile_insulin_sensitivity_default.getTitle().toString(), ProfileEditor.minMaxSens(ProfileEditor.loadData(false))));
     }
 
@@ -702,12 +706,37 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
     };
 
 
-
+    /**
+     * @deprecated
+     * This method doesn't support other food types. i.e: fats and proteins.
+     * <p> Use {@link Preferences#format_food_ratio(String, String)} instead.
+     * @param oldValue oldValue.
+     * @param newValue newValue.
+     * @return formatted carb ratio.
+     */
+    @Deprecated
     private static String format_carb_ratio(String oldValue, String newValue) {
         return oldValue.replaceAll(" \\(.*\\)$", "") + "  (" + newValue + "g per Unit)";
     }
 
+    /**
+     * @deprecated
+     * This method doesn't support other food types. i.e: fats and proteins.
+     * <p> Use {@link Preferences#format_food_absorption_rate(String, String)} instead.
+     * @param oldValue oldValue.
+     * @param newValue newValue.
+     * @return formatted carb absorption rate.
+     */
+    @Deprecated
     private static String format_carb_absorption_rate(String oldValue, String newValue) {
+        return oldValue.replaceAll(" \\(.*\\)$", "") + "  (" + newValue + "g per hour)";
+    }
+
+    private static String format_food_ratio(String oldValue, String newValue) {
+        return oldValue.replaceAll(" \\(.*\\)$", "") + "  (" + newValue + "g per Unit)";
+    }
+
+    private static String format_food_absorption_rate(String oldValue, String newValue) {
         return oldValue.replaceAll(" \\(.*\\)$", "") + "  (" + newValue + "g per hour)";
     }
 
@@ -974,6 +1003,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
             profile_insulin_sensitivity_default = findPreference("profile_insulin_sensitivity_default");
             profile_carb_ratio_default = findPreference("profile_carb_ratio_default");
+            profile_fats_ratio_default = findPreference("profile_fats_ratio_default");
+            profile_proteins_ratio_default = findPreference("profile_proteins_ratio_default");
             refreshProfileRatios();
 
             nfc_expiry_days = findPreference("nfc_expiry_days");
@@ -1118,15 +1149,47 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     if (!isNumeric(newValue.toString())) {
                         return false;
                     }
-                    preference.setTitle(format_carb_absorption_rate(preference.getTitle().toString(), newValue.toString()));
+                    preference.setTitle(format_food_absorption_rate(preference.getTitle().toString(), newValue.toString()));
                     Profile.reloadPreferences(AllPrefsFragment.this.prefs);
                     Home.staticRefreshBGCharts();
                     return true;
                 }
             });
 
-            profile_carb_absorption_default.setTitle(format_carb_absorption_rate(profile_carb_absorption_default.getTitle().toString(), this.prefs.getString("profile_carb_absorption_default", "")));
+            profile_carb_absorption_default.setTitle(format_food_absorption_rate(profile_carb_absorption_default.getTitle().toString(), this.prefs.getString("profile_carb_absorption_default", "")));
 
+
+            final Preference profile_fats_absorption_default = findPreference("profile_fats_absorption_default");
+            profile_fats_absorption_default.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    if (!isNumeric(newValue.toString())) {
+                        return false;
+                    }
+                    preference.setTitle(format_food_absorption_rate(preference.getTitle().toString(), newValue.toString()));
+                    Profile.reloadPreferences(AllPrefsFragment.this.prefs);
+                    Home.staticRefreshBGCharts();
+                    return true;
+                }
+            });
+
+            profile_fats_absorption_default.setTitle(format_food_absorption_rate(profile_fats_absorption_default.getTitle().toString(), this.prefs.getString("profile_fats_absorption_default", "")));
+
+            final Preference profile_proteins_absorption_default = findPreference("profile_proteins_absorption_default");
+            profile_proteins_absorption_default.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    if (!isNumeric(newValue.toString())) {
+                        return false;
+                    }
+                    preference.setTitle(format_food_absorption_rate(preference.getTitle().toString(), newValue.toString()));
+                    Profile.reloadPreferences(AllPrefsFragment.this.prefs);
+                    Home.staticRefreshBGCharts();
+                    return true;
+                }
+            });
+
+            profile_proteins_absorption_default.setTitle(format_food_absorption_rate(profile_proteins_absorption_default.getTitle().toString(), this.prefs.getString("profile_proteins_absorption_default", "")));
 
             refresh_extra_items();
             findPreference("plus_extra_features").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {

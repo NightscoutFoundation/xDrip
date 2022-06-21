@@ -31,7 +31,6 @@ import android.widget.TextView;
 import com.activeandroid.Cache;
 import com.activeandroid.util.SQLiteUtils;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.utils.ListActivityWithMenu;
 
 import java.text.DateFormat;
@@ -178,12 +177,12 @@ public class NoteSearch extends ListActivityWithMenu {
         endDate.add(Calendar.DATE, 1);
         long to = endDate.getTimeInMillis();
 
-        dbCursor = db.rawQuery("select timestamp, notes, carbs, insulin, uuid from Treatments where notes IS NOT NULL AND timestamp < " + to + " AND timestamp >= " + from + " ORDER BY timestamp DESC", null);
+        dbCursor = db.rawQuery("select timestamp, notes, carbs, fats, proteins, insulin, uuid from Treatments where notes IS NOT NULL AND timestamp < " + to + " AND timestamp >= " + from + " ORDER BY timestamp DESC", null);
         dbCursor.moveToFirst();
 
         int i = 0;
         for (; i < RESTRICT_SEARCH && !dbCursor.isAfterLast(); i++) {
-            SearchResult result = new SearchResult(dbCursor.getLong(0), dbCursor.getString(1), dbCursor.getDouble(2), dbCursor.getDouble(3), dbCursor.getString(4));
+            SearchResult result = new SearchResult(dbCursor.getLong(0), dbCursor.getString(1), dbCursor.getDouble(2), dbCursor.getDouble(3), dbCursor.getDouble(4), dbCursor.getDouble(5), dbCursor.getString(6));
             resultListAdapter.addSingle(result);
             dbCursor.moveToNext();
         }
@@ -194,7 +193,7 @@ public class NoteSearch extends ListActivityWithMenu {
         if (dbCursor.isAfterLast()) {
             dbCursor.close();
         } else {
-            SearchResult result = new SearchResult(0, getString(R.string.load_more), 0, 0, null);
+            SearchResult result = new SearchResult(0, getString(R.string.load_more), 0, 0, 0, 0, null);
             result.setLoadMoreActionFlag();
             resultListAdapter.addSingle(result);
         }
@@ -237,12 +236,12 @@ public class NoteSearch extends ListActivityWithMenu {
         long to = endDate.getTimeInMillis();
 
 
-        dbCursor = db.rawQuery("select timestamp, notes, carbs, insulin, uuid from Treatments where notes IS NOT NULL AND timestamp < ? AND timestamp >= ? AND notes like ? ORDER BY timestamp DESC", new String[]{Long.toString(to), Long.toString(from), "%" + searchTerm + "%"});
+        dbCursor = db.rawQuery("select timestamp, notes, carbs, fats, proteins, insulin, uuid from Treatments where notes IS NOT NULL AND timestamp < ? AND timestamp >= ? AND notes like ? ORDER BY timestamp DESC", new String[]{Long.toString(to), Long.toString(from), "%" + searchTerm + "%"});
         dbCursor.moveToFirst();
 
         int i = 0;
         for (; i < RESTRICT_SEARCH && !dbCursor.isAfterLast(); i++) {
-            SearchResult result = new SearchResult(dbCursor.getLong(0), dbCursor.getString(1), dbCursor.getDouble(2), dbCursor.getDouble(3), dbCursor.getString(4));
+            SearchResult result = new SearchResult(dbCursor.getLong(0), dbCursor.getString(1), dbCursor.getDouble(2), dbCursor.getDouble(3), dbCursor.getDouble(4), dbCursor.getDouble(5), dbCursor.getString(6));
             resultListAdapter.addSingle(result);
             dbCursor.moveToNext();
         }
@@ -253,7 +252,7 @@ public class NoteSearch extends ListActivityWithMenu {
         if (dbCursor.isAfterLast()) {
             dbCursor.close();
         } else {
-            SearchResult result = new SearchResult(0, getString(R.string.load_more), 0, 0, null);
+            SearchResult result = new SearchResult(0, getString(R.string.load_more), 0, 0, 0, 0, null);
             result.setLoadMoreActionFlag();
             resultListAdapter.addSingle(result);
         }
@@ -383,7 +382,7 @@ public class NoteSearch extends ListActivityWithMenu {
 
         //load more
         for (int i = 0; i < RESTRICT_SEARCH && !dbCursor.isAfterLast(); i++) {
-            SearchResult result = new SearchResult(dbCursor.getLong(0), dbCursor.getString(1), dbCursor.getDouble(2), dbCursor.getDouble(3), dbCursor.getString(4));
+            SearchResult result = new SearchResult(dbCursor.getLong(0), dbCursor.getString(1), dbCursor.getDouble(2), dbCursor.getDouble(3), dbCursor.getDouble(4), dbCursor.getDouble(5), dbCursor.getString(6));
             resultListAdapter.addSingle(result);
             dbCursor.moveToNext();
         }
@@ -391,7 +390,7 @@ public class NoteSearch extends ListActivityWithMenu {
         if (dbCursor.isAfterLast()) {
             dbCursor.close();
         } else {
-            SearchResult result = new SearchResult(0, getString(R.string.load_more), 0, 0, null);
+            SearchResult result = new SearchResult(0, getString(R.string.load_more), 0, 0, 0, 0, null);
             result.setLoadMoreActionFlag();
             resultListAdapter.addSingle(result);
         }
@@ -490,14 +489,23 @@ public class NoteSearch extends ListActivityWithMenu {
         String otherTreatments;
         boolean isLoadMoreAction;
 
-
         public SearchResult(long timestamp, String note, double carbs, double insulin, String uuid) {
+            this(timestamp, note, carbs, 0, 0, insulin, uuid);
+        }
+
+        public SearchResult(long timestamp, String note, double carbs, double fats, double proteins, double insulin, String uuid) {
             this.timestamp = timestamp;
             this.note = note;
             this.uuid = uuid;
             this.otherTreatments = "";
             if (carbs != 0) {
                 otherTreatments += getString(R.string.carbs) + ": " + carbs;
+            }
+            if (fats != 0) {
+                otherTreatments += getString(R.string.fats) + ": " + fats;
+            }
+            if (proteins != 0) {
+                otherTreatments += getString(R.string.proteins) + ": " + proteins;
             }
             if (insulin != 0) {
                 otherTreatments += " " + getString(R.string.insulin) + ": " + insulin;

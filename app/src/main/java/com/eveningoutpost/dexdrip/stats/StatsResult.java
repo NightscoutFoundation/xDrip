@@ -22,6 +22,8 @@ public class StatsResult {
     private final int above;
     private int backfilledNativeG5 = -1;
     private double total_carbs = -1;
+    private double totalFats = -1;
+    private double totalProteins = -1;
     private double total_insulin = -1;
     private double stdev = -1;
     private double GVI = -1;
@@ -119,6 +121,26 @@ public class StatsResult {
             cursor.close();
         }
         return total_carbs;
+    }
+
+    public double getTotalFats() {
+        if (totalFats < 0) {
+            Cursor cursor = Cache.openDatabase().rawQuery("select sum(fats) from treatments  where timestamp >= " + from + " AND timestamp <= " + to, null);
+            cursor.moveToFirst();
+            totalFats = cursor.getDouble(0);
+            cursor.close();
+        }
+        return totalFats;
+    }
+
+    public double getTotalProteins() {
+        if (totalProteins < 0) {
+            Cursor cursor = Cache.openDatabase().rawQuery("select sum(proteins) from treatments  where timestamp >= " + from + " AND timestamp <= " + to, null);
+            cursor.moveToFirst();
+            totalProteins = cursor.getDouble(0);
+            cursor.close();
+        }
+        return totalProteins;
     }
 
     public void calc_StdDev() {

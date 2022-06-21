@@ -29,6 +29,7 @@ import com.eveningoutpost.dexdrip.insulin.Insulin;
 import com.eveningoutpost.dexdrip.insulin.InsulinManager;
 import com.eveningoutpost.dexdrip.insulin.MultipleInsulins;
 import com.eveningoutpost.dexdrip.utils.jobs.BackgroundQueue;
+import com.eveningoutpost.dexdrip.utils.FoodType;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
@@ -37,11 +38,13 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.internal.bind.DateTypeAdapter;
 import com.google.gson.reflect.TypeToken;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -96,6 +99,12 @@ public class Treatments extends Model {
     @Column(name = "carbs")
     public double carbs;
     @Expose
+    @Column(name = "fats")
+    public double fats;
+    @Expose
+    @Column(name = "proteins")
+    public double proteins;
+    @Expose
     @Column(name = "insulin")
     public double insulin;
     @Expose
@@ -147,7 +156,7 @@ public class Treatments extends Model {
         insulinInjections = i;
         Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
-               // .registerTypeAdapter(Date.class, new DateTypeAdapter())
+                // .registerTypeAdapter(Date.class, new DateTypeAdapter())
                 .serializeSpecialFloatingPointValues()
                 .create();
         insulinJSON = gson.toJson(i);
@@ -155,7 +164,7 @@ public class Treatments extends Model {
 
     // lazily populate and return InsulinInjection array from json
     List<InsulinInjection> getInsulinInjections() {
-       // Log.d(TAG,"get injections: "+insulinJSON);
+        // Log.d(TAG,"get injections: "+insulinJSON);
         if (insulinInjections == null) {
             if (insulinJSON != null) {
                 try {
@@ -224,14 +233,32 @@ public class Treatments extends Model {
     {
         eventType = DEFAULT_EVENT_TYPE;
         carbs = 0;
+        fats = 0;
+        proteins = 0;
         insulin = 0;
         //setInsulinInjections(null);
     }
 
+    /**
+     * @deprecated
+     * This method doesn't support other food types. i.e: fats and proteins.
+     * <p> Use {@link Treatments#create(double, double, double, double, long)} instead.
+     */
+    @Deprecated
     public static synchronized Treatments create(final double carbs, final double insulin, long timestamp) {
         return create(carbs, insulin, timestamp, null);
     }
 
+    public static synchronized Treatments create(final double carbs, final double fats, final double proteins, final double insulin, long timestamp) {
+        return create(carbs, fats, proteins, insulin, timestamp, null);
+    }
+
+    /**
+     * @deprecated
+     * This method doesn't support other food types. i.e: fats and proteins.
+     * <p> Use {@link Treatments#create(double, double, double, double, long, String)} instead.
+     */
+    @Deprecated
     public static synchronized Treatments create(final double carbs, final double insulinSum, final long timestamp, final String suggested_uuid) {
 
         if (MultipleInsulins.isEnabled()) {
@@ -242,10 +269,36 @@ public class Treatments extends Model {
 
     }
 
+    public static synchronized Treatments create(final double carbs, final double fats, final double proteins, final double insulinSum, final long timestamp, final String suggested_uuid) {
+
+        if (MultipleInsulins.isEnabled()) {
+            return create(carbs, fats, proteins, insulinSum, convertLegacyDoseToBolusInjectionList(insulinSum), timestamp, suggested_uuid);
+        } else {
+            return create(carbs, fats, proteins, insulinSum, null, timestamp, suggested_uuid);
+        }
+
+    }
+
+    /**
+     * @deprecated
+     * This method doesn't support other food types. i.e: fats and proteins.
+     * <p> Use {@link Treatments#create(double, double, double, double, List, long)} instead.
+     */
+    @Deprecated
     public static synchronized Treatments create(final double carbs, final double insulinSum, final List<InsulinInjection> insulin, long timestamp) {
         return create(carbs, insulinSum, insulin, timestamp, null);
     }
 
+    public static synchronized Treatments create(final double carbs, final double fats, final double proteins, final double insulinSum, final List<InsulinInjection> insulin, long timestamp) {
+        return create(carbs, fats, proteins, insulinSum, insulin, timestamp, null);
+    }
+
+    /**
+     * @deprecated
+     * This method doesn't support other food types. i.e: fats and proteins.
+     * <p> Use {@link Treatments#create(double, double, double, double, List, long, String)} instead.
+     */
+    @Deprecated
     public static synchronized Treatments create(final double carbs, final double insulinSum, final List<InsulinInjection> insulin, long timestamp, String suggested_uuid) {
         // if treatment more than 1 minutes in the future
         final long future_seconds = (timestamp - JoH.tsl()) / 1000;
@@ -260,6 +313,38 @@ public class Treatments extends Model {
                     + insulinSum + " " + context.getString(R.string.units), (int) future_seconds, 34026);
         }
         return create(carbs, insulinSum, insulin, timestamp, -1, suggested_uuid);
+    }
+
+    public static synchronized Treatments create(final double carbs, final double fats, final double proteins, final double insulinSum, final List<InsulinInjection> insulin, long timestamp, String suggested_uuid) {
+        // if treatment more than 1 minutes in the future
+        final long future_seconds = (timestamp - JoH.tsl()) / 1000;
+        if (future_seconds > (60 * 60)) {
+            JoH.static_toast_long("Refusing to create a treatement more than 1 hours in the future!");
+            return null;
+        }
+        if ((future_seconds > 60) && (future_seconds < 86400) && anyMatchGreaterThanZero(Arrays.asList(carbs, fats, proteins, insulinSum))) {
+            final Context context = xdrip.getAppContext();
+            JoH.scheduleNotification(context, "Treatment Reminder", "@" + JoH.hourMinuteString(timestamp) + " : "
+                    + carbs + " g " + context.getString(R.string.carbs) + " / "
+                    + fats + " g " + context.getString(R.string.fats) + " / "
+                    + proteins + " g " + context.getString(R.string.proteins) + " / "
+                    + insulinSum + " " + context.getString(R.string.units), (int) future_seconds, 34026);
+        }
+        return create(carbs, fats, proteins, insulinSum, insulin, timestamp, -1, suggested_uuid);
+    }
+
+    private static boolean anyMatchGreaterThanZero(List<Double> list) {
+        for (Double element : list) {
+            if (element > 0) return true;
+        }
+        return false;
+    }
+
+    private static boolean allMatchEqualZero(List<Double> list) {
+        for (Double element : list) {
+            if (element != 0) return false;
+        }
+        return true;
     }
 
     public static synchronized Treatments create(final double carbs, final double insulinSum, final List<InsulinInjection> insulin, long timestamp, double position, String suggested_uuid) {
@@ -286,6 +371,48 @@ public class Treatments extends Model {
         }
 
         treatment.carbs = carbs;
+        treatment.insulin = insulinSum;
+        treatment.setInsulinInjections(insulin);
+        treatment.timestamp = timestamp;
+        treatment.created_at = DateUtil.toISOString(timestamp);
+        treatment.uuid = suggested_uuid != null ? suggested_uuid : UUID.randomUUID().toString();
+        treatment.save();
+        // GcmActivity.pushTreatmentAsync(Treatment);
+        //  NSClientChat.pushTreatmentAsync(Treatment);
+
+        pushTreatmentSync(treatment);
+        UndoRedo.addUndoTreatment(treatment.uuid);
+        return treatment;
+    }
+
+    public static synchronized Treatments create(final double carbs, final double fats, final double proteins, final double insulinSum, final List<InsulinInjection> insulin, long timestamp, double position, String suggested_uuid) {
+        // TODO sanity check values
+        Log.d(TAG, "Creating treatment: " +
+                "Insulin: " + insulinSum + " / " +
+                "Carbs: " + carbs +
+                " Fats: " + fats +
+                " Proteins: " + proteins +
+                (suggested_uuid != null && !suggested_uuid.isEmpty()
+                        ? " " + "uuid: " + suggested_uuid
+                        : ""));
+
+        if (allMatchEqualZero(Arrays.asList(carbs, fats, proteins, insulinSum))) return null;
+
+        if (timestamp == 0) {
+            timestamp = new Date().getTime();
+        }
+
+        final Treatments treatment = new Treatments();
+
+        if (position > 0) {
+            treatment.enteredBy = XDRIP_TAG + " pos:" + JoH.qs(position, 2);
+        } else {
+            treatment.enteredBy = XDRIP_TAG;
+        }
+
+        treatment.carbs = carbs;
+        treatment.fats = fats;
+        treatment.proteins = proteins;
         treatment.insulin = insulinSum;
         treatment.setInsulinInjections(insulin);
         treatment.timestamp = timestamp;
@@ -485,6 +612,8 @@ public class Treatments extends Model {
                 "ALTER TABLE Treatments ADD COLUMN insulin REAL;",
                 "ALTER TABLE Treatments ADD COLUMN insulinJSON TEXT;",
                 "ALTER TABLE Treatments ADD COLUMN carbs REAL;",
+                "ALTER TABLE Treatments ADD COLUMN fats REAL;",
+                "ALTER TABLE Treatments ADD COLUMN proteins REAL;",
                 "CREATE INDEX index_Treatments_timestamp on Treatments(timestamp);",
                 "CREATE UNIQUE INDEX index_Treatments_uuid on Treatments(uuid);"};
 
@@ -657,7 +786,8 @@ public class Treatments extends Model {
         Log.d(TAG, "converting treatment from json: " + json);
         final Treatments mytreatment = fromJSON(json);
         if (mytreatment != null) {
-            if ((mytreatment.carbs == 0) && (mytreatment.insulin == 0)
+
+            if (allMatchEqualZero(Arrays.asList(mytreatment.carbs, mytreatment.fats, mytreatment.proteins, mytreatment.insulin))
                     && (mytreatment.notes != null) && (mytreatment.notes.startsWith("AndroidAPS started"))) {
                 Log.d(TAG, "Skipping AndroidAPS started message");
                 return false;
@@ -691,6 +821,18 @@ public class Treatments extends Model {
 
                 if ((dupe_treatment.carbs == 0) && (mytreatment.carbs > 0)) {
                     dupe_treatment.carbs = mytreatment.carbs;
+                    dupe_treatment.save();
+                    Home.staticRefreshBGChartsOnIdle();
+                }
+
+                if ((dupe_treatment.fats == 0) && (mytreatment.fats > 0)) {
+                    dupe_treatment.fats = mytreatment.fats;
+                    dupe_treatment.save();
+                    Home.staticRefreshBGChartsOnIdle();
+                }
+
+                if ((dupe_treatment.proteins == 0) && (mytreatment.proteins > 0)) {
+                    dupe_treatment.proteins = mytreatment.proteins;
                     dupe_treatment.save();
                     Home.staticRefreshBGChartsOnIdle();
                 }
@@ -830,7 +972,7 @@ public class Treatments extends Model {
 
         double iobContrib = 0, activityContrib = 0;
         if (treatment.insulin > 0) {
-           // Log.d(TAG,"NEW TYPE insulin: "+treatment.insulin+ " "+treatment.insulinJSON);
+            // Log.d(TAG,"NEW TYPE insulin: "+treatment.insulin+ " "+treatment.insulinJSON);
             // translate a legacy entry to be bolus insulin
             List<InsulinInjection> injectionsList = treatment.getInsulinInjections();
             if (injectionsList == null || injectionsList.size() == 0) {
@@ -901,7 +1043,7 @@ public class Treatments extends Model {
         } else {
             Pair<Double,Double> result = calculateLegacyIobActivityFromTreatmentAtTime(treatment, time);
             response.iob = result.first;
-           // response.jActivity = result.second;
+            // response.jActivity = result.second;
         }
 
         return response;
@@ -916,6 +1058,15 @@ public class Treatments extends Model {
         }
     }
 
+    /**
+     * @deprecated
+     * This method doesn't support other food types. i.e: fats and proteins.
+     * <p> Use {@link Treatments#timeSliceFoodWriter(Map, long, double, FoodType)} instead.
+     * @param timeslices timeslices.
+     * @param thistime time.
+     * @param carbs carbs.
+     */
+    @Deprecated
     private static void timesliceCarbWriter(Map<Long, Iob> timeslices, long thistime, double carbs) {
         // offset for carb action time??
         Iob tempiob;
@@ -925,8 +1076,50 @@ public class Treatments extends Model {
         } else {
             tempiob = new Iob();
             tempiob.timestamp = (long) thistime;
-         //   tempiob.date = new Date((long)thistime);
+            //   tempiob.date = new Date((long)thistime);
             tempiob.cob = carbs;
+        }
+        timeslices.put(thistime, tempiob);
+    }
+
+
+    private static void timeSliceFoodWriter(Map<Long, Iob> timeslices, long thistime, double value, FoodType foodType) {
+
+        Iob tempiob;
+        if (timeslices.containsKey(thistime)) {
+            tempiob = timeslices.get(thistime);
+
+            switch (foodType) {
+                case CARBS:
+                    tempiob.cob = tempiob.cob + value;
+                    break;
+
+                case FATS:
+                    tempiob.fatsOB = tempiob.fatsOB + value;
+                    break;
+
+                case PROTEINS:
+                    tempiob.proteinsOB = tempiob.proteinsOB + value;
+                    break;
+            }
+
+        } else {
+            tempiob = new Iob();
+            tempiob.timestamp = (long) thistime;
+
+            switch (foodType) {
+                case CARBS:
+                    tempiob.cob = value;
+                    break;
+
+                case FATS:
+                    tempiob.fatsOB = value;
+                    break;
+
+                case PROTEINS:
+                    tempiob.proteinsOB = value;
+                    break;
+            }
         }
         timeslices.put(thistime, tempiob);
     }
@@ -940,7 +1133,7 @@ public class Treatments extends Model {
                 timeslices.put(thistime, tempiob);
             } else {
                 thisiob.timestamp = (long) thistime;
-             //   thisiob.date = new Date((long)thistime);
+                //   thisiob.date = new Date((long)thistime);
                 timeslices.put(thistime, thisiob); // first entry at timeslice so put the record in as is
             }
         }
@@ -949,7 +1142,7 @@ public class Treatments extends Model {
     // NEW NEW NEW
     public static List<Iob> ioBForGraph_new(int number, long startTime) {
 
-       // Log.d(TAG, "Processing iobforgraph2: main  ");
+        // Log.d(TAG, "Processing iobforgraph2: main  ");
         JoH.benchmark_method_start();
         final boolean multipleInsulins = MultipleInsulins.isEnabled();
         final boolean useBasal = MultipleInsulins.useBasalActivity();
@@ -968,12 +1161,6 @@ public class Treatments extends Model {
         final long stepms = (long) (step_minutes * MINUTE_IN_MS); // 300s = 5 mins
         long mytime = startTime;
         long tendtime = startTime;
-
-
-        final double carb_delay_minutes = Profile.carbDelayMinutes(mytime); // not likely a time dependent parameter
-        final double carb_delay_ms_stepped = ((long) (carb_delay_minutes / step_minutes)) * step_minutes * MINUTE_IN_MS;
-
-        Log.d(TAG, "Carb delay ms: " + carb_delay_ms_stepped);
 
         Map<String, Boolean> carbsEaten = new HashMap<String, Boolean>();
 
@@ -1033,71 +1220,185 @@ public class Treatments extends Model {
             //
         }
 
-        // calculate carb treatments
+        counter = getFoodCounter(startTime, theTreatments, counter, timeslices, FoodType.CARBS);
+        Log.d(TAG, "Second iteration counter: " + counter);
+
+        counter = getFoodCounter(startTime, theTreatments, counter, timeslices, FoodType.FATS);
+        Log.d(TAG, "Third iteration counter: " + counter);
+
+        counter = getFoodCounter(startTime, theTreatments, counter, timeslices, FoodType.PROTEINS);
+        Log.d(TAG, "Fourth iteration counter: " + counter);
+
+        Log.d(TAG, "Timeslices size: " + timeslices.size());
+        JoH.benchmark_method_end();
+
+        return new ArrayList<Iob>(timeslices.values());
+    }
+
+    private static int getFoodCounter(long startTime, List<Treatments> theTreatments, int counter, SortedMap<Long, Iob> timeslices, FoodType foodType) {
+        final double step_minutes = 5;
+        final double stepms = step_minutes * MINUTE_IN_MS; // 300s = 5 mins
+        double mytime;
+        double tendtime;
+        double delay_minutes;
+        double delay_ms_stepped;
+
+        switch (foodType) {
+            case CARBS:
+                delay_minutes = Profile.foodDelayMinutes(startTime, FoodType.CARBS); // not likely a time dependent parameter.
+                break;
+
+            case FATS:
+                delay_minutes = Profile.foodDelayMinutes(startTime, FoodType.FATS);
+                break;
+
+            case PROTEINS:
+                delay_minutes = Profile.foodDelayMinutes(startTime, FoodType.PROTEINS);
+                break;
+            default:
+                delay_minutes = 0.0;
+
+        }
+
+        delay_ms_stepped = ((long) (delay_minutes / step_minutes)) * step_minutes * MINUTE_IN_MS;
+        Log.d(TAG, StringUtils.capitalize(foodType.value) +" delay ms: " + delay_ms_stepped);
+
+        // calculate food treatments
+        double treatmentValue;
+
         for (Treatments thisTreatment : theTreatments) {
 
-            if (thisTreatment.carbs > 0) {
+            switch (foodType) {
+                case CARBS:
+                    treatmentValue = thisTreatment.carbs;
+                    break;
+
+                case FATS:
+                    treatmentValue = thisTreatment.fats;
+                    break;
+
+                case PROTEINS:
+                    treatmentValue = thisTreatment.proteins;
+                    break;
+                default:
+                    treatmentValue = 0.0;
+
+            }
+
+            if (treatmentValue > 0) {
 
                 mytime = ((long) (thisTreatment.timestamp / stepms)) * stepms; // effects of treatment occur only after it is given / fit to slot time
                 tendtime = mytime + 6 * HOUR_IN_MS;     // 6 hours max look
 
-                long cob_time = (long) (mytime + carb_delay_ms_stepped);
-                double stomachDiff = ((Profile.getCarbAbsorptionRate(cob_time) * stepms) / HOUR_IN_MS); // initial value
-                double newdelayedCarbs = 0;
-                double cob_remain = thisTreatment.carbs;
-                while ((cob_remain > 0) && (stomachDiff > 0) && (cob_time < tendtime)) {
+                long foodOB_time = (long) (mytime + delay_ms_stepped);
+                double stomachDiff = ((Profile.getFoodAbsorptionRate(foodOB_time, foodType) * stepms) / HOUR_IN_MS); // initial value
+                double newdelayedFood = 0;
+                double foodOB_remain = treatmentValue;
+                while ((foodOB_remain > 0) && (stomachDiff > 0) && (foodOB_time < tendtime)) {
 
-                    if (cob_time >= startTime) {
-                        timesliceCarbWriter(timeslices, cob_time, cob_remain);
+                    if (foodOB_time >= startTime) {
+                        timeSliceFoodWriter(timeslices, foodOB_time, foodOB_remain, foodType);
                     }
-                    cob_time += stepms;
+                    foodOB_time += stepms;
 
-                    stomachDiff = ((Profile.getCarbAbsorptionRate(cob_time) * stepms) / HOUR_IN_MS);
-                    cob_remain -= stomachDiff;
+                    stomachDiff = ((Profile.getFoodAbsorptionRate(foodOB_time, foodType) * stepms) / HOUR_IN_MS);
+                    foodOB_remain -= stomachDiff;
 
-                    newdelayedCarbs = (timesliceIactivityAtTime(timeslices, cob_time) * Profile.getLiverSensRatio(cob_time) / Profile.getSensitivity(cob_time)) * Profile.getCarbRatio(cob_time);
+                    newdelayedFood = (timesliceIactivityAtTime(timeslices, foodOB_time) * Profile.getLiverSensRatio(foodOB_time) / Profile.getSensitivity(foodOB_time)) * Profile.getFoodRatio(foodOB_time, foodType);
 
-                    if (newdelayedCarbs > 0) {
-                        final double maximpact = stomachDiff * Profile.maxLiverImpactRatio(cob_time);
-                        if (newdelayedCarbs > maximpact) newdelayedCarbs = maximpact;
-                        cob_remain += newdelayedCarbs; // add back on liverfactor adjustment
+                    if (newdelayedFood > 0) {
+                        final double maximpact = stomachDiff * Profile.maxLiverImpactRatio(foodOB_time);
+                        if (newdelayedFood > maximpact) newdelayedFood = maximpact;
+                        foodOB_remain += newdelayedFood; // add back on liverfactor adjustment
                     }
 
                     counter++;
 
                 }
                 // end record if not present
-                if (cob_time >= startTime) {
-                    timesliceCarbWriter(timeslices, cob_time, 0);
+                if (foodOB_time >= startTime) {
+                    timeSliceFoodWriter(timeslices, foodOB_time, 0, foodType);
                 }
             }
         }
 
-        // evaluate carb impact
+        // evaluate food impact
         Iob lastiob = null;
+        double lastOBValue = 0.0;
+        double thisOBValue = 0.0;
+        double thisOBImpact = 0.0;
+
         for (Map.Entry<Long, Iob> entry : timeslices.entrySet()) {
             Iob thisiob = entry.getValue();
+
             if (lastiob != null) {
-                if ((thisiob.cob != 0 || (lastiob.cob != 0))) {
-                    if (thisiob.cob < lastiob.cob) {
-                        // decaying cob
-                        thisiob.jCarbImpact = (lastiob.cob - thisiob.cob) / Profile.getCarbRatio(thisiob.timestamp) * Profile.getSensitivity(thisiob.timestamp);
+                switch (foodType) {
+                    case CARBS:
+                        lastOBValue = lastiob.cob;
+                        thisOBValue = thisiob.cob;
+                        break;
+
+                    case FATS:
+                        lastOBValue = lastiob.fatsOB;
+                        thisOBValue = thisiob.fatsOB;
+                        break;
+
+                    case PROTEINS:
+                        lastOBValue = lastiob.proteinsOB;
+                        thisOBValue = thisiob.proteinsOB;
+                        break;
+                    default:
+                        lastOBValue = 0.0;
+                        thisOBValue = 0.0;
+
+                }
+
+                if ((thisOBValue != 0 || (lastOBValue != 0))) {
+                    if (thisOBValue < lastOBValue) {
+                        // decaying food OB
+                        thisOBImpact = (lastOBValue - thisOBValue) / Profile.getFoodRatio(thisiob.timestamp, foodType) * Profile.getSensitivity(thisiob.timestamp);
+
+                        switch (foodType) {
+                            case CARBS:
+                                thisiob.jCarbImpact = thisOBImpact;
+                                break;
+
+                            case FATS:
+                                thisiob.jFatsImpact = thisOBImpact;
+                                break;
+
+                            case PROTEINS:
+                                thisiob.jProteinsImpact = thisOBImpact;
+                                break;
+                        }
+
                     } else {
                         // more carbs added
-                        thisiob.jCarbImpact = 0; // TODO THIS IS NOT RIGHT IT MISSES ONE DECAY STEP
+                        thisOBImpact = 0; // TODO THIS IS NOT RIGHT IT MISSES ONE DECAY STEP
+
+                        switch (foodType) {
+                            case CARBS:
+                                thisiob.jCarbImpact = 0.0;
+                                break;
+
+                            case FATS:
+                                thisiob.jFatsImpact = 0.0;
+                                break;
+
+                            case PROTEINS:
+                                thisiob.jProteinsImpact = 0.0;
+                                break;
+                        }
                     }
                 }
             }
 
-            //   Log.d(TAG,"iobinfo2carb  debug: "+JoH.qs(thisiob.timestamp)+" C:"+JoH.qs(thisiob.cob,4)+" I:"+JoH.qs(thisiob.iob,4)+" CA:"+JoH.qs(thisiob.jCarbImpact)+" IA:"+JoH.qs(thisiob.jActivity));
+//               Log.d(TAG,"iobinfo2carb  debug: "+JoH.qs(thisiob.timestamp)+" C:"+JoH.qs(thisOBValue,4)+" I:"+JoH.qs(thisiob.iob,4)+" CA:"+JoH.qs(thisOBImpact)+" IA:"+JoH.qs(thisiob.jActivity));
             counter++;
             lastiob = thisiob;
         }
 
-        Log.d(TAG, "second iteration counter: " + counter);
-        Log.d(TAG, "Timeslices size: " + timeslices.size());
-        JoH.benchmark_method_end();
-        return new ArrayList<Iob>(timeslices.values());
+        return counter;
     }
 
 
@@ -1280,6 +1581,8 @@ public class Treatments extends Model {
             jsonObject.put("insulin", insulin);
             jsonObject.put("insulinJSON", insulinJSON);
             jsonObject.put("carbs", carbs);
+            jsonObject.put("fats", fats);
+            jsonObject.put("proteins", proteins);
             jsonObject.put("timestamp", timestamp);
             jsonObject.put("notes", notes);
             jsonObject.put("enteredBy", enteredBy);
@@ -1295,7 +1598,7 @@ public class Treatments extends Model {
     private static final double MAX_OPENAPS_SMB_UNITS = 0.4;
 
     public boolean likelySMB() {
-        return (carbs == 0 && insulin > 0
+        return (carbs == 0 && fats == 0 && proteins == 0 && insulin > 0
                 && ((insulin <= MAX_SMB_UNITS && (notes == null || notes.length() == 0)) || (enteredBy != null && enteredBy.startsWith("openaps:") && insulin <= MAX_OPENAPS_SMB_UNITS)));
     }
 
@@ -1304,11 +1607,11 @@ public class Treatments extends Model {
     }
 
     public boolean noteOnly() {
-        return carbs == 0 && insulin == 0 && noteHasContent();
+        return carbs == 0 && fats == 0 && proteins == 0 && insulin == 0 && noteHasContent();
     }
 
     public boolean hasContent() {
-        return insulin != 0 || carbs != 0 || noteHasContent() || !isEventTypeDefault();
+        return insulin != 0 || carbs != 0 || fats != 0 || proteins != 0 || noteHasContent() || !isEventTypeDefault();
     }
 
     public boolean noteHasContent() {

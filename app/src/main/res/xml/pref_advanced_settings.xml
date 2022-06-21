@@ -1084,6 +1084,18 @@
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
+                    android:key="status_line_fats"
+                    android:summary="@string/show_total_fats"
+                    android:title="@string/total_fats" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="extra_status_line"
+                    android:key="status_line_proteins"
+                    android:summary="@string/show_total_proteins"
+                    android:title="@string/total_proteins" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="extra_status_line"
                     android:key="status_line_insulin"
                     android:summary="@string/show_total_insulin"
                     android:title="@string/total_insulin" />

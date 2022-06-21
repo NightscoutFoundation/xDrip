@@ -387,7 +387,7 @@ public class BgGraphBuilder {
                     if (carbs > 0) {
                         if (mylabel.length() > 0)
                             mylabel = mylabel + System.getProperty("line.separator");
-                        mylabel = mylabel + (Double.toString(carbs) + "g").replace(".0g", "g");
+                        mylabel = mylabel + (Double.toString(carbs) + "gc").replace(".0gc", "gc");
                     }
                     pv.setLabel(mylabel); // standard label
                     if (d)

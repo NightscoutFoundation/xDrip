@@ -695,6 +695,18 @@ public class WatchUpdaterService extends WearableListenerService implements
         }
     }
 
+    /**
+     * @deprecated
+     * This method doesn't support other food types. i.e: fats and proteins.
+     * <p> Use {@link WatchUpdaterService#sendTreatment(double, double, double, double, double, String, double, String)} instead.
+     * @param carbs carbs.
+     * @param insulin insulin.
+     * @param bloodtest bloodtest.
+     * @param injectionJSON injectionJSON.
+     * @param timeoffset timeoffset.
+     * @param timestring timestring.
+     */
+    @Deprecated
     public static void sendTreatment(double carbs, double insulin, double bloodtest, String injectionJSON, double timeoffset, String timestring) {
         if ((googleApiClient != null) && (googleApiClient.isConnected())) {
             PutDataMapRequest dataMapRequest = PutDataMapRequest.create(WEARABLE_TREATMENT_PAYLOAD);
@@ -702,6 +714,28 @@ public class WatchUpdaterService extends WearableListenerService implements
             dataMapRequest.setUrgent();
             dataMapRequest.getDataMap().putDouble("timestamp", System.currentTimeMillis());
             dataMapRequest.getDataMap().putDouble("carbs", carbs);
+            dataMapRequest.getDataMap().putDouble("insulin", insulin);
+            dataMapRequest.getDataMap().putDouble("bloodtest", bloodtest);
+            dataMapRequest.getDataMap().putDouble("timeoffset", timeoffset);
+            dataMapRequest.getDataMap().putString("timestring", timestring);
+            dataMapRequest.getDataMap().putString("injectionJSON", injectionJSON);
+            dataMapRequest.getDataMap().putBoolean("ismgdl", doMgdl(PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext())));
+            PutDataRequest putDataRequest = dataMapRequest.asPutDataRequest();
+            Wearable.DataApi.putDataItem(googleApiClient, putDataRequest);
+        } else {
+            Log.e(TAG, "No connection to wearable available for send treatment!");
+        }
+    }
+
+    public static void sendTreatment(double carbs, double fats, double proteins, double insulin, double bloodtest, String injectionJSON, double timeoffset, String timestring) {
+        if ((googleApiClient != null) && (googleApiClient.isConnected())) {
+            PutDataMapRequest dataMapRequest = PutDataMapRequest.create(WEARABLE_TREATMENT_PAYLOAD);
+            //unique content
+            dataMapRequest.setUrgent();
+            dataMapRequest.getDataMap().putDouble("timestamp", System.currentTimeMillis());
+            dataMapRequest.getDataMap().putDouble("carbs", carbs);
+            dataMapRequest.getDataMap().putDouble("fats", fats);
+            dataMapRequest.getDataMap().putDouble("proteins", proteins);
             dataMapRequest.getDataMap().putDouble("insulin", insulin);
             dataMapRequest.getDataMap().putDouble("bloodtest", bloodtest);
             dataMapRequest.getDataMap().putDouble("timeoffset", timeoffset);
@@ -728,7 +762,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     public void onCreate() {
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         wear_integration = mPrefs.getBoolean("wear_sync", false);
-        //is_using_g5 = (getDexCollectionType() == DexCollectionType.DexcomG5);
+        //is_using_g5 = (getDexCeollectionType() == DexCollectionType.DexcomG5);
         is_using_bt = DexCollectionType.hasBluetooth();
         if (wear_integration) {
             googleApiConnect();
@@ -1809,6 +1843,8 @@ public class WatchUpdaterService extends WearableListenerService implements
             dataMap.putBoolean("status_line_high", mPrefs.getBoolean("status_line_high", false));
             dataMap.putBoolean("status_line_low", mPrefs.getBoolean("status_line_low", false));
             dataMap.putBoolean("status_line_carbs", mPrefs.getBoolean("status_line_carbs", false));
+            dataMap.putBoolean("status_line_fats", mPrefs.getBoolean("status_line_fats", false));
+            dataMap.putBoolean("status_line_proteins", mPrefs.getBoolean("status_line_proteins", false));
             dataMap.putBoolean("status_line_insulin", mPrefs.getBoolean("status_line_insulin", false));
             dataMap.putBoolean("status_line_stdev", mPrefs.getBoolean("status_line_stdev", false));
             dataMap.putBoolean("status_line_royce_ratio", mPrefs.getBoolean("status_line_royce_ratio", false));

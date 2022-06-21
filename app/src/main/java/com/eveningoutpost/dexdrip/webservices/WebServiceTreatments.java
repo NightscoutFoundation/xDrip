@@ -102,6 +102,8 @@ public class WebServiceTreatments extends BaseWebService {
                 item.put("enteredBy", treatment.enteredBy);
                 item.put("notes", treatment.notes);
                 item.put("carbs", treatment.carbs);
+                item.put("fats", treatment.fats);
+                item.put("proteins", treatment.proteins);
                 item.put("insulin", treatment.insulin);
 
                 reply.put(item);

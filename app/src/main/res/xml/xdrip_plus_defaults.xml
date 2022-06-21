@@ -6,6 +6,16 @@
         android:summary="@string/grams_of_carbohydrate_one_unit_covers"
         android:title="@string/carb_ratio" />
     <EditTextPreference
+        android:defaultValue="10"
+        android:key="profile_fats_ratio_default"
+        android:summary="@string/grams_of_fats_one_unit_covers"
+        android:title="@string/fats_ratio" />
+    <EditTextPreference
+        android:defaultValue="10"
+        android:key="profile_proteins_ratio_default"
+        android:summary="@string/grams_of_proteins_one_unit_covers"
+        android:title="@string/proteins_ratio" />
+    <EditTextPreference
         android:defaultValue="54"
         android:key="profile_insulin_sensitivity_default"
         android:summary="@string/glucose_drop_for_one_unit"
