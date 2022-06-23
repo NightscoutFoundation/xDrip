@@ -266,6 +266,14 @@
             android:enabled="true"
             android:exported="true" />
 
+        <service android:name=".Services.UiBasedCollector"
+            android:label="UiBasedCollector"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
         <activity
             android:name=".stats.StatsActivity"
             android:configChanges="orientation|screenSize"
@@ -750,6 +758,7 @@
         <service android:name=".watch.thinjam.BlueJayService"
             android:foregroundServiceType="connectedDevice|location"
             />
+        <service android:name=".cgm.webfollow.WebFollowService" />
     </application>
 
 </manifest>

@@ -1647,4 +1647,12 @@
     <string name="play_sounds_when_importing">Profiller gibi önemli verileri içe aktarırken sesleri çal</string>
     <string name="show_action_buttons_within_alerts">Uyarı bildirimlerinde eylem düğmelerini (Erteleme gibi) göster</string>
     <string name="alert_buttons">Uyarı Düğmeleri</string>
+    <string name="show_sensor_expiry">Sensör Süre Sonunu Göster</string>
+    <string name="show_collector_status">Toplayıcı Durumunu Göster</string>
+    <string name="show_chart_preview">Grafik Önizlemesini Göster</string>
+    <string name="locked_time_period_always_used">Daima Kullanılan Kilitli Zaman Periyodu</string>
+    <string name="show_time_buttons">Zaman Düğmelerini Göster</string>
+    <string name="source_wizard_button">Kaynak Sihirbazı Düğmesi</string>
+    <string name="please_wait_seconds_before_trying_to_start_sensor">Sensörü başlatmayı denemeden önce lütfen %d saniye bekleyin</string>
+    <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">lütfen OOP2\'yi güncelleyin, aksi takdirde ham glikoza ölçümlerine dayalı kalibrasyon modunu kullanın</string>
 </resources>

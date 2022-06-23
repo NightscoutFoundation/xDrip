@@ -773,50 +773,52 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             Log.d(TAG, "Creating blood test record from input data");
             BloodTest.createFromCal(glucosenumber, timeoffset, "Manual Entry");
             GcmActivity.syncBloodTests();
-            if (calibration_type.equals("ask")) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle(gs(R.string.use_bg_for_calibration));
-                builder.setMessage(gs(R.string.do_you_want_to_use_this_entered_fingerstick_blood_glucose_test_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings));
+            if (!Pref.getBooleanDefaultFalse("bluetooth_meter_for_calibrations_auto")) { // If automatic calibration is disabled
+                if (calibration_type.equals("ask")) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle(gs(R.string.use_bg_for_calibration));
+                    builder.setMessage(gs(R.string.do_you_want_to_use_this_entered_fingerstick_blood_glucose_test_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings));
 
-                builder.setPositiveButton(gs(R.string.yes_calibrate), (dialog, which) -> {
-                    calintent.putExtra("note_only", "false");
-                    calintent.putExtra("from_interactive", "true");
-                    startIntentThreadWithDelayedRefresh(calintent);
-                    dialog.dismiss();
-                });
-
-                builder.setNegativeButton(gs(R.string.no), (dialog, which) -> {
-                    dialog.dismiss();
-                });
-
-                AlertDialog alert = builder.create();
-                alert.show();
-
-            } else if (calibration_type.equals("auto")) {
-                if ((!Pref.getBooleanDefaultFalse("bluetooth_meter_for_calibrations_auto"))
-                        && (DexCollectionType.getDexCollectionType() != DexCollectionType.Follower)
-                        && (JoH.pratelimit("ask_about_auto_calibration", 86400 * 30))) {
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setTitle(gs(R.string.enable_automatic_calibration));
-                    builder.setMessage(gs(R.string.entered_blood_tests_which_occur_during_flat_trend_periods_can_automatically_be_used_to_recalibrate_after_20_minutes_this_should_provide_the_most_accurate_method_to_calibrate_with__do_you_want_to_enable_this_feature));
-
-                    builder.setPositiveButton(gs(R.string.yes_enable), (dialog, which) -> {
-                        Pref.setBoolean("bluetooth_meter_for_calibrations_auto", true);
-                        JoH.static_toast_long(gs(R.string.automated_calibration_enabled));
+                    builder.setPositiveButton(gs(R.string.yes_calibrate), (dialog, which) -> {
+                        calintent.putExtra("note_only", "false");
+                        calintent.putExtra("from_interactive", "true");
+                        startIntentThreadWithDelayedRefresh(calintent);
                         dialog.dismiss();
                     });
 
-                    builder.setNegativeButton(gs(R.string.no), (dialog, which) -> dialog.dismiss());
+                    builder.setNegativeButton(gs(R.string.no), (dialog, which) -> {
+                        dialog.dismiss();
+                    });
 
-                    final AlertDialog alert = builder.create();
+                    AlertDialog alert = builder.create();
                     alert.show();
+
+                } else if (calibration_type.equals("auto")) {
+                    if ((!Pref.getBooleanDefaultFalse("bluetooth_meter_for_calibrations_auto"))
+                            && (DexCollectionType.getDexCollectionType() != DexCollectionType.Follower)
+                            && (JoH.pratelimit("ask_about_auto_calibration", 86400 * 30))) {
+                        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                        builder.setTitle(gs(R.string.enable_automatic_calibration));
+                        builder.setMessage(gs(R.string.entered_blood_tests_which_occur_during_flat_trend_periods_can_automatically_be_used_to_recalibrate_after_20_minutes_this_should_provide_the_most_accurate_method_to_calibrate_with__do_you_want_to_enable_this_feature));
+
+                        builder.setPositiveButton(gs(R.string.yes_enable), (dialog, which) -> {
+                            Pref.setBoolean("bluetooth_meter_for_calibrations_auto", true);
+                            JoH.static_toast_long(gs(R.string.automated_calibration_enabled));
+                            dialog.dismiss();
+                        });
+
+                        builder.setNegativeButton(gs(R.string.no), (dialog, which) -> dialog.dismiss());
+
+                        final AlertDialog alert = builder.create();
+                        alert.show();
+                    }
+                    // offer choice to enable auto-calibration mode if not already enabled on pratelimit
+                } else if (calibration_type.equals("never")) {
+                } else {
+                    // if use for calibration == "no" then this is a "note_only" type, otherwise it isn't
+                    calintent.putExtra("note_only", calibration_type.equals("never") ? "true" : "false");
+                    startIntentThreadWithDelayedRefresh(calintent);
                 }
-                // offer choice to enable auto-calibration mode if not already enabled on pratelimit
-            } else if (calibration_type.equals("never")) {
-            } else {
-                // if use for calibration == "no" then this is a "note_only" type, otherwise it isn't
-                calintent.putExtra("note_only", calibration_type.equals("never") ? "true" : "false");
-                startIntentThreadWithDelayedRefresh(calintent);
             }
         }
     }
@@ -2333,7 +2335,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
         if (isWifiWixel || isWifiBluetoothWixel || isWifiandBTLibre || isWifiLibre || collector.equals(DexCollectionType.Mock)) {
             updateCurrentBgInfoForWifiWixel(collector, notificationText);
-        } else if (is_follower || collector.equals(DexCollectionType.NSEmulator) || collector.equals(DexCollectionType.NSFollow) || collector.equals(DexCollectionType.SHFollow) ||collector.equals(DexCollectionType.LibreReceiver)) {
+        } else if (is_follower || collector.isPassive()) {
             displayCurrentInfo();
             Inevitable.task("home-notifications-start", 5000, Notifications::start);
         } else if (!alreadyDisplayedBgInfoCommon && (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm || collector == DexCollectionType.Medtrum)) {

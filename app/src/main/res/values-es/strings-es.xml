@@ -1648,4 +1648,11 @@
     <string name="play_sounds_when_importing">Reproducir sonidos al importar datos importantes como perfiles</string>
     <string name="show_action_buttons_within_alerts">Mostrar botones de acción (como Diferir) dentro de las notificaciones de las alertas</string>
     <string name="alert_buttons">Botones de alerta</string>
+    <string name="show_sensor_expiry">Mostrar caducidad del sensor</string>
+    <string name="show_collector_status">Mostrar estado del colector</string>
+    <string name="show_chart_preview">Mostrar vista previa del gráfico</string>
+    <string name="show_time_buttons">Mostrar botones de tiempo</string>
+    <string name="source_wizard_button">Botón del asistente de origen</string>
+    <string name="please_wait_seconds_before_trying_to_start_sensor">Por favor, espera %d segundos antes de intentar iniciar el sensor</string>
+    <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">Por favor, actualiza OOP2 o cambia a calibración basada en modo raw</string>
 </resources>

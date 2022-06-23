@@ -86,6 +86,7 @@ public interface Intents {
     String BT_UNLOCK_BUFFER_ARRAY = "BtUnlockBufferArray";
     String TREND_BG = "TrendBg";
     String HISTORIC_BG = "HistoricBg";
+    String OOP2_VERSION_NAME = "OOP2_VERSION";
     
     String TAG_ID = "TagId";
     String ROW_ID = "RowId";

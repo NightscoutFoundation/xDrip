@@ -711,6 +711,7 @@ public class Notifications extends IntentService {
         b.setContentIntent(resultPendingIntent);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
             b.setLocalOnly(true);
+            b.setOnlyAlertOnce(true);
         }
         // strips channel ID if disabled
         return XdripNotification.build(b);
