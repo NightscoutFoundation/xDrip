@@ -1,7 +1,7 @@
 ---
 name: "Please do not open an issue unless asked to do so by a developer in a discussion (see below)"
 about: Please include a link to the discussion in the first post.
-label: bug
+label: issue
 ---
 
 ### Please don't open an issue if you haven't already consulted with the developers
