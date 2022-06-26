@@ -412,7 +412,7 @@
     <string name="optional_contact_info_here_eg_email">Optional contact info here, e.g. email</string>
     <string name="send_message">Send Message</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Please indicate what you think of the app generally</string>
-    <string name="preferences_saved_in_sdcard_downloads">Preferences saved in SD card Downloads</string>
+    <string name="preferences_saved_in_sdcard_downloads">Preferences saved in Internal storage/Download</string>
     <string name="could_not_write_to_sdcard_check_perms">Couldn\'t write to SD card - check permissions?</string>
     <string name="loaded_preferences_restarting">Loaded Preferences! - Restarting</string>
     <string name="could_not_load_preferences_check_pers">Could not load preferences - check permissions or file?</string>
