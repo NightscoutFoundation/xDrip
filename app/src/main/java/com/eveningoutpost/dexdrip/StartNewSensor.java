@@ -31,6 +31,10 @@ import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.LocationHelper;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
+import com.eveningoutpost.dexdrip.G5Model.DexTimeKeeper;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.G5Model.FirmwareCapability;
+import com.eveningoutpost.dexdrip.ui.dialog.G6EndOfLifeDialog;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -39,6 +43,7 @@ import java.util.Locale;
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 import static com.eveningoutpost.dexdrip.Models.BgReading.AGE_ADJUSTMENT_TIME;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
+import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.getTransmitterID;
 
 public class StartNewSensor extends ActivityWithMenu {
     // public static String menu_name = "Start Sensor";
@@ -48,6 +53,8 @@ public class StartNewSensor extends ActivityWithMenu {
     // private TimePicker tp;
     final Activity activity = this;
     Calendar ucalendar = Calendar.getInstance();
+    private static final String TX_EOL = "TX_EOL"; // True when transmitter cannot start more sensors
+    private static final String TX_Mod = "TX_Mod"; // True for modified transmitters
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -168,8 +175,23 @@ public class StartNewSensor extends ActivityWithMenu {
         final int cap = 20;
         if (Ob1G5CollectionService.usingCollector() && Ob1G5StateMachine.usingG6()) {
             if (JoH.pratelimit("dex-stop-start", cap)) {
+                int TX_dys = DexTimeKeeper.getTransmitterAgeInDays(getTransmitterID());
+                PersistentStore.setBoolean(TX_EOL, false);
+                PersistentStore.setBoolean(TX_Mod, false);
+                if (FirmwareCapability.isTransmitterModified(getTransmitterID())) { // Transmitter is modified
+                    PersistentStore.setBoolean(TX_Mod, true);
+                }
+                if (TX_dys > 179 || !PersistentStore.getBoolean("TX_Mod") & TX_dys > 99) { // Cannot start a sensor any longer
+                    PersistentStore.setBoolean(TX_EOL, true);
+                }
                 JoH.clearRatelimit("dex-stop-start");
-                G6CalibrationCodeDialog.ask(this, this::startSensorAndSetIntent);
+                if (TX_dys < 69 || PersistentStore.getBoolean("TX_Mod") & TX_dys < 149) { // More than 30 days left of starting sensors
+                    G6CalibrationCodeDialog.ask(this, this::startSensorAndSetIntent);
+                } else { // 30 or less days left of starting sensors
+                    G6EndOfLifeDialog.show(activity, () -> {
+                        G6CalibrationCodeDialog.ask(this, this::startSensorAndSetIntent);
+                    });
+                }
             } else {
                 JoH.static_toast_long(String.format(Locale.ENGLISH, getString(R.string.please_wait_seconds_before_trying_to_start_sensor), cap));
             }

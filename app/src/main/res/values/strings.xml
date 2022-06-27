@@ -1702,4 +1702,10 @@
     <string name="source_wizard_button">Source Wizard Button</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Please wait %d seconds before trying to start sensor</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">please update OOP2 or move to calibrate based on raw mode</string>
+    <string name="reminder">Reminder</string>
+    <string name="notification">Notification</string>
+    <string name="TX_EOL_reminder">When Transmitter Days, on system status page, reaches 99 will be the last opportunity to start a sensor on this transmitter.</string>
+    <string name="TX_EOL_notification">If you proceed and start sensor, very likely it will fail because of Transmitter Days having reached maximum.</string>
+    <string name="TX_EOL_reminder_mod">Transmitter Days, on system status page, is approaching maximum. Soon, you will not be able to start sensors on this transmitter.</string>
+    <string name="proceed">Proceed</string>
 </resources>
