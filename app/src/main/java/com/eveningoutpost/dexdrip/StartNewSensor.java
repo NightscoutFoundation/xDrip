@@ -27,14 +27,14 @@ import com.eveningoutpost.dexdrip.profileeditor.DatePickerFragment;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileAdapter;
 import com.eveningoutpost.dexdrip.profileeditor.TimePickerFragment;
 import com.eveningoutpost.dexdrip.ui.dialog.G6CalibrationCodeDialog;
-import com.eveningoutpost.dexdrip.ui.dialog.G6EndOfLifeDialog;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.LocationHelper;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.G5Model.DexTimeKeeper;
-import com.eveningoutpost.dexdrip.G5Model.FirmwareCapability;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.G5Model.FirmwareCapability;
+import com.eveningoutpost.dexdrip.ui.dialog.G6EndOfLifeDialog;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -235,7 +235,7 @@ public class StartNewSensor extends ActivityWithMenu {
 
         LibreAlarmReceiver.clearSensorStats();
         // TODO this is just a timer and could be confusing - consider removing this notification
-       // JoH.scheduleNotification(xdrip.getAppContext(), "Sensor should be ready", xdrip.getAppContext().getString(R.string.please_enter_two_calibrations_to_get_started), 60 * 130, Home.SENSOR_READY_ID);
+        // JoH.scheduleNotification(xdrip.getAppContext(), "Sensor should be ready", xdrip.getAppContext().getString(R.string.please_enter_two_calibrations_to_get_started), 60 * 130, Home.SENSOR_READY_ID);
 
         // Add treatment entry in db
         Treatments.sensorStart(startTime, "Started by xDrip");

@@ -1700,10 +1700,11 @@
     <string name="locked_time_period_always_used">Locked Time Period Always Used</string>
     <string name="show_time_buttons">Show Time Buttons</string>
     <string name="source_wizard_button">Source Wizard Button</string>
-    <string name="please_wait_seconds_before_trying_to_start_sensor">Please wait %d seconds before trying to start sensor</string>
     <string name="reminder">Reminder</string>
     <string name="notification">Notification</string>
     <string name="TX_EOL_reminder">When Transmitter Days, on system status page, reaches 99 will be the last opportunity to start a sensor on this transmitter.</string>
-    <string name="TX_EOL_notification">If you proceed and start sensor, very likely it will fail because of Transmitter Days having reached maximum.  Proceed?</string>
-    <string name="TX_EOL_reminder_mod">Transmitter Days, on system status page, is approaching maximum.  Soon, you will not be able to start sensors on this transmitter.</string>
+    <string name="TX_EOL_notification">If you proceed and start sensor, very likely it will fail because of Transmitter Days having reached maximum.</string>
+    <string name="TX_EOL_reminder_mod">Transmitter Days, on system status page, is approaching maximum. Soon, you will not be able to start sensors on this transmitter.</string>
+    <string name="proceed">Proceed</string>
+    <string name="please_wait_seconds_before_trying_to_start_sensor">Please wait %d seconds before trying to start sensor</string>
 </resources>

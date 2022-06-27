@@ -31,7 +31,7 @@ public class G6EndOfLifeDialog {
                 .setTitle(Title)
                 .setMessage(Message);
 
-        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.proceed, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 runnable.run();
@@ -39,7 +39,7 @@ public class G6EndOfLifeDialog {
         });
 
         if (PersistentStore.getBoolean("TX_EOL")) {
-            builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+            builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.cancel();
