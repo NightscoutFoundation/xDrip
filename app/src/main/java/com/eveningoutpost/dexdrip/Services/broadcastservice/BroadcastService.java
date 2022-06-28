@@ -270,13 +270,18 @@ public class BroadcastService extends Service {
             broadcastModel = entry.getValue();
             switch (function) {
                 case Const.CMD_UPDATE_BG:
+                    handled = true;
                     bundle = prepareBgBundle(broadcastModel);
                     sendBroadcast(function, receiver, bundle);
                     break;
+                case Const.CMD_ALERT:
+                    handled = true;
+                    bundle = new Bundle();
+                    bundle.putString("type", intent.getStringExtra("type"));
+                    bundle.putString("message", intent.getStringExtra("message"));
+                    sendBroadcast(function, receiver, bundle);
+                    break;
             }
-        }
-        if (function.equals(Const.CMD_UPDATE_BG)) {
-            handled = true;
         }
 
         if (handled) {
@@ -288,12 +293,6 @@ public class BroadcastService extends Service {
                 bundle = new Bundle();
                 bundle.putString(Const.INTENT_REPLY_MSG, intent.getStringExtra(Const.INTENT_REPLY_MSG));
                 bundle.putString(Const.INTENT_REPLY_CODE, intent.getStringExtra(Const.INTENT_REPLY_CODE));
-                break;
-            case Const.CMD_ALERT:
-                receiver = null; //broadcast
-                bundle = new Bundle();
-                bundle.putString("type", intent.getStringExtra("type"));
-                bundle.putString("message", intent.getStringExtra("message"));
                 break;
             case Const.CMD_START:
                 receiver = null; //broadcast
