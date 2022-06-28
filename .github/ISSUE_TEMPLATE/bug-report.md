@@ -1,11 +1,11 @@
 ---
-name: "\U0001F41BBug report\U0001F41B"
-about: Create a report only if the developers asked you to do so
-label: bug
+name: "Please do not open an issue unless asked to do so by a developer in a discussion (see below)"
+about: Please include a link to the discussion in the first post.
+label: status-triage
 ---
 
 ### Please don't open an issue if you haven't already consulted with the developers
-- Pease go back and use one of the suggested support channels (on the previous page) to present your case if you haven't already.
+- Please go back and use Discussions (on the previous page) to present your case if you haven't already.
 - If you have consulted with the developers and were asked to open an issue, please proceed.
 - Please also search the existing issues for similar problems before opening a new one.
 - Please do not prefix you issue title with BUG: or LIBRE: for instance. The issue maintainer will tag every issue with appropriate labels.
@@ -13,7 +13,7 @@ label: bug
 
 ### Subject of the issue
 Link to the discussion thread:  
-A clear and concise description of what the bug is.
+A clear and concise description of what the bug or request is.
 Example: The BG graph shows negative data points between 3 and 5 am, which is incorrect and can only be an artefact.
 
 ### Your environment

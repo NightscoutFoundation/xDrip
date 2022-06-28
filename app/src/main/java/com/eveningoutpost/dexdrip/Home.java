@@ -1,5 +1,15 @@
 package com.eveningoutpost.dexdrip;
 
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
+import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
+import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
+import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -170,16 +180,6 @@ import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.LineChartView;
 import lecho.lib.hellocharts.view.PreviewLineChartView;
 import lombok.Getter;
-
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
-import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
-import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
-import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
-import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPermissionsResultCallback {
     private final static String TAG = "jamorham " + Home.class.getSimpleName();
@@ -1459,15 +1459,20 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 break;
 
             case "rapid":
-                if (!insulinsumset && (thisnumber > 0)) {
-                    thisInsulinSumNumber = thisnumber;
-                    textInsulinSumDose.setText(Double.toString(thisnumber) + " units");
-                    Log.d(TAG, "Rapid dose: " + Double.toString(thisnumber));
-                    textInsulinSumDose.setVisibility(View.VISIBLE);
-                    if (!MultipleInsulins.isEnabled()) {
-                        buttonInsulinSingleDose.setVisibility(View.VISIBLE); // show the button next to the single insulin dose if not using multiples
+                if (!insulinsumset) {
+                    final String thisNumberStr = Double.toString(thisnumber);
+                    if (thisnumber > 0) {
+                        thisInsulinSumNumber = thisnumber;
+                        textInsulinSumDose.setText(thisNumberStr + " units");
+                        Log.d(TAG, "Rapid dose: " + thisNumberStr);
+                        textInsulinSumDose.setVisibility(View.VISIBLE);
+                        if (!MultipleInsulins.isEnabled()) {
+                            buttonInsulinSingleDose.setVisibility(View.VISIBLE); // show the button next to the single insulin dose if not using multiples
+                        }
+                        insulinsumset = true;
+                    } else {
+                        Log.d(TAG, " Insulin dose is too small: " + thisNumberStr);
                     }
-                    insulinsumset = true;
                 } else {
                     Log.d(TAG, "Rapid dose already set");
                     preserve = true;
@@ -1575,13 +1580,18 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                                 thisinsulinprofile[number] = insulin;
                                 break;
                             }
-                        if (!insulinset[number] && (thisnumber > 0)) {
-                            thisinsulinnumber[number] = thisnumber;
-                            textInsulinDose[number].setText(Double.toString(thisnumber) + " " + insulin.getName());
-                            Log.d(TAG, insulin.getName() + " dose: " + Double.toString(thisnumber));
-                            insulinset[number] = true;
-                            btnInsulinDose[number].setVisibility(View.VISIBLE);
-                            textInsulinDose[number].setVisibility(View.VISIBLE);
+                        if (!insulinset[number]) {
+                            final String thisNumberStr = Double.toString(thisnumber);
+                            if (thisnumber > 0) {
+                                thisinsulinnumber[number] = thisnumber;
+                                textInsulinDose[number].setText(thisNumberStr + " " + insulin.getName());
+                                Log.d(TAG, insulin.getName() + " dose: " + thisNumberStr);
+                                insulinset[number] = true;
+                                btnInsulinDose[number].setVisibility(View.VISIBLE);
+                                textInsulinDose[number].setVisibility(View.VISIBLE);
+                            } else {
+                                Log.d(TAG, insulin.getName() + " dose is too small: " + thisNumberStr);
+                            }
                         } else {
                             Log.d(TAG, insulin.getName() + " dose already set");
                             preserve = true;
