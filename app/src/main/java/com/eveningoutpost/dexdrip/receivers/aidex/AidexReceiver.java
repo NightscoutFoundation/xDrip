@@ -21,6 +21,8 @@ import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import static com.eveningoutpost.dexdrip.receivers.aidex.AidexBroadcastIntents.AIDEX_BG_TYPE;
 import static com.eveningoutpost.dexdrip.receivers.aidex.AidexBroadcastIntents.AIDEX_BG_VALUE;
@@ -53,7 +55,7 @@ public class AidexReceiver extends BroadcastReceiver {
                 PowerManager.WakeLock wl = JoH.getWakeLock("aidex-receiver", 60000);
                 synchronized (lock) {
                     try {
-                        UserError.Log.d(TAG, "Aidex Broadcast: " + JoH.defaultGsonInstance().toJson(intent));
+                        //UserError.Log.d(TAG, "Aidex Broadcast: " + gsonInstance.toJson(intent));
                         
                         UserError.Log.d(TAG, "Aidex onReceiver: " + intent.getAction());
                         JoH.benchmark(null);

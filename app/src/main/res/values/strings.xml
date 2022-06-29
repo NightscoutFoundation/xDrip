@@ -1710,5 +1710,5 @@
     <string name="aidex_glucose_invalid">Aidex - Glucose invalid</string>
     <string name="aidex_battery_low">Aidex - Battery Low</string>
     <string name="aidex_battery_empty">Aidex - Battery Empty</string>
-    <string 
+    <string name="aidex_sensor_expired">Aidex - Sensor Expired</string>
 </resources>
