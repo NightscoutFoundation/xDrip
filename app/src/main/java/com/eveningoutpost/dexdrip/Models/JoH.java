@@ -54,6 +54,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Surface;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.activeandroid.ActiveAndroid;
@@ -105,6 +106,8 @@ import java.util.zip.Checksum;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
+
+import lombok.val;
 
 /**
  * Created by jamorham on 06/01/16.
@@ -1744,6 +1747,13 @@ public class JoH {
         bb.put(bytes);
         return bb;
     }
+
+    public static byte[] splitBytes(final byte[] source, final int start, final int length) {
+        final byte[] newBytes = new byte[length];
+        System.arraycopy(source, start, newBytes, 0, length);
+        return newBytes;
+    }
+
 
     public static long checksum(byte[] bytes) {
         if (bytes == null) return 0;

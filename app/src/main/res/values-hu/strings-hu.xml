@@ -35,7 +35,7 @@
     <string name="title_activity_double_calibration">Indító kalibráció</string>
     <string name="title_activity_calibration_override">Kalibráció felülírása</string>
     <string name="pref_header_cloud_storage">Felhőalapú tárhely</string>
-    <string name="auto_configure_title">Automatikus beállítás</string>
+    <string name="auto_configure_title">Beállítások átvétele</string>
     <string name="prefs_auto_config_summary">Automatikus beállítás QR-kóddal.</string>
     <string name="scan_share2_barcode">QR-kód beolvasása</string>
     <string name="pref_share2_scan_barcode_summary">Vagy szkennelje be a QR-kódot a vevőn</string>
@@ -1601,4 +1601,6 @@
     <string name="show_collector_status">Kollektor állapot muitatása</string>
     <string name="show_chart_preview">Grafikon előnézet mutatása</string>
     <string name="source_wizard_button">Varázsló gomb mutatása</string>
+    <string name="please_wait_seconds_before_trying_to_start_sensor">Várj %d másodpercet, mielőtt indítod a szenzort</string>
+    <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">frissítse az OOP2-t vagy használja a nyers adatokon alapuló kalibrációs módot</string>
 </resources>

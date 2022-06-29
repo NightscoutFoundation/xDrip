@@ -1700,7 +1700,9 @@
     <string name="locked_time_period_always_used">Locked Time Period Always Used</string>
     <string name="show_time_buttons">Show Time Buttons</string>
     <string name="source_wizard_button">Source Wizard Button</string>
-
+    <string name="please_wait_seconds_before_trying_to_start_sensor">Please wait %d seconds before trying to start sensor</string>
+    <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">please update OOP2 or move to calibrate based on raw mode</string>
+    
     <!-- Aidex Messages -->
     <string name="aidex_sensor_error">Aidex - Sensor Error</string>
     <string name="aidex_transmitter_error">Aidex - Transmitter Error</string>
@@ -1708,5 +1710,5 @@
     <string name="aidex_glucose_invalid">Aidex - Glucose invalid</string>
     <string name="aidex_battery_low">Aidex - Battery Low</string>
     <string name="aidex_battery_empty">Aidex - Battery Empty</string>
-    <string name="aidex_sensor_expired">Aidex - Sensor Expired</string>
+    <string 
 </resources>

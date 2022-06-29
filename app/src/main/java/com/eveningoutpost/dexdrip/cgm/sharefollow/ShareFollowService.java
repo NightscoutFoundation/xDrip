@@ -208,7 +208,6 @@ public class ShareFollowService extends ForegroundService {
 
         megaStatus.add(new StatusItem("Latest BG", ageLastBg + (lastBg != null ? " ago" : ""), bgAgeHighlight));
         megaStatus.add(new StatusItem("BG receive delay", ageOfBgLastPoll, ageOfLastBgPollHighlight));
-        megaStatus.add(new StatusItem());
         megaStatus.add(new StatusItem("Last poll", lastPoll > 0 ? JoH.niceTimeScalar(JoH.msSince(lastPoll)) + " ago" : "n/a"));
         megaStatus.add(new StatusItem("Last wakeup", last_wakeup > 0 ? JoH.niceTimeScalar(JoH.msSince(last_wakeup)) + " ago" : "n/a"));
         megaStatus.add(new StatusItem("Next poll in", JoH.niceTimeScalar(wakeup_time - JoH.tsl())));
@@ -216,7 +215,6 @@ public class ShareFollowService extends ForegroundService {
             megaStatus.add(new StatusItem("Last BG time", JoH.dateTimeText(lastBg.timestamp)));
         }
         megaStatus.add(new StatusItem("Next poll time", JoH.dateTimeText(wakeup_time)));
-        megaStatus.add(new StatusItem());
         megaStatus.add(new StatusItem("Buggy Samsung", JoH.buggy_samsung ? gs(R.string.yes) : gs(R.string.no)));
 
         return megaStatus;

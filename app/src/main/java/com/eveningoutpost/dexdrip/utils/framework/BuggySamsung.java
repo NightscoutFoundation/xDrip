@@ -32,14 +32,12 @@ public class BuggySamsung {
     @Getter
     private long max_wakeup_jitter;
 
-    // TODO change log.e to log.d for production
-
     public long evaluate(final long wakeup_time) {
         if (wakeup_time > 0) {
             final long wakeup_jitter = msSince(wakeup_time);
             //UserError.Log.e(TAG, "debug jitter: " + wakeup_jitter);
             if (wakeup_jitter < 0) {
-                UserError.Log.e(TAG, "Woke up Early..");
+                UserError.Log.d(TAG, "Woke up Early..");
             } else {
                 if (wakeup_jitter > 1000) {
                     UserError.Log.d(TAG, "Wake up, time jitter: " + JoH.niceTimeScalar(wakeup_jitter));

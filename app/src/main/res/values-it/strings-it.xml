@@ -1654,4 +1654,6 @@
     <string name="locked_time_period_always_used">Usa Sempre Periodo Fisso</string>
     <string name="show_time_buttons">Mostrare Tasti Periodo</string>
     <string name="source_wizard_button">Pulsante Assistente Sorgente</string>
+    <string name="please_wait_seconds_before_trying_to_start_sensor">Attendere %d secondi prima di provare ad avviare il sensore</string>
+    <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">Aggiornare OOP2 o passare alla calibrazione basata su glicemia grezza</string>
 </resources>
