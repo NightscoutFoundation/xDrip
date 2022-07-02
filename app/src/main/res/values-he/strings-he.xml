@@ -901,6 +901,7 @@
     <string name="days">ימים</string>
     <string name="bluereader_position">בדוק את המיקום של ה-blueReader על הסנסור, אחרת יצליח לקרוא!</string>
     <string name="offical_msg">האפליקציה הרשמית</string>
+    <string name="eng_mode_is_on">מצב המהנדסים פועל. נא לבטלו אלא אם אתם בטוחים שאתם זקוקים לו כי הוא עלול לגרום להתנהגות בלתי צפויה.</string>
     <string name="yes">כן</string>
     <string name="xdrip_compatible_features">תכונות %s xDrip</string>
     <string name="garmin">Garmin</string>
