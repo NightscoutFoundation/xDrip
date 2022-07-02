@@ -260,6 +260,7 @@
     <string name="initial_calibration">Първоначална калибрация</string>
     <string name="bluetooth_scan">Bluetooth сканиране</string>
     <!-- trend arrow for speak -->
+    <string name="eng_mode_is_on">Инженеринг режим активиран. Моля деактивирайте освен, ако не сте сигурни, че ви е нужен, тъй като може да предизвика неочаквани резултати.</string>
     <string name="weekends">Уикенди</string>
     <string name="deleting_all_bg_readings">Изтриване на ВСИЧКИ стойности за КЗ!</string>
     <string name="could_not_export_csv_">Неуспешно експортиране на CSV :(</string>
