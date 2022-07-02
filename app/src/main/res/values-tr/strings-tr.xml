@@ -912,6 +912,7 @@
     <string name="offical_msg">Resmi app</string>
     <string name="use_conflict_msg">verici cihazına da erişmeyi deneyebilir ve bu durum her iki uygulamada da sorunlara neden olabilir</string>
     <string name="use_confict_msg_glimp">Glimp ayarlarını yapabilirsiniz: seçenekler -&gt; cihazlar -&gt; Bluetooth seçeneğini kaldır</string>
+    <string name="eng_mode_is_on">Mühendislik modu etkinleştirildi. Beklenmeyen davranışlara neden olabileceğinden, ihtiyacınız olduğundan emin değilseniz lütfen devre dışı bırakın.</string>
     <string name="yes">Evet</string>
     <string name="xdrip_compatible_features">xDrip + %s özellikleri</string>
     <string name="garmin">Garmin</string>
