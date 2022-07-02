@@ -912,6 +912,7 @@
     <string name="offical_msg">Službena aplikacija</string>
     <string name="use_conflict_msg">može pokušati pristupiti i uređaju odašiljača i to može uzrokovati probleme s obje aplikacije</string>
     <string name="use_confict_msg_glimp">Možete prilagoditi Glimp postavke: opcije -&gt; uređaji -&gt; poništite odabir opcije Bluetooth</string>
+    <string name="eng_mode_is_on">Omogućen je inženjerski način rada. Onemogućite ga osim ako niste sigurni da vam je potreban jer može uzrokovati neočekivano ponašanje.</string>
     <string name="yes">Da</string>
     <string name="xdrip_compatible_features">xDrip + %s značajke</string>
     <string name="garmin">Garmin</string>
