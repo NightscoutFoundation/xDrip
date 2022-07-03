@@ -61,6 +61,12 @@
 
                 <CheckBoxPreference
                     android:defaultValue="false"
+                    android:key="show_buttons_in_alerts"
+                    android:summary="@string/show_action_buttons_within_alerts"
+                    android:title="@string/alert_buttons" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
                     android:key="start_snoozed"
                     android:summary="@string/alerts_start_out_snoozed_and_must_persist_for_a_while"
                     android:title="@string/start_snoozed" />
@@ -238,7 +244,6 @@
                         android:key="rising_bg_val"
                         android:title="@string/rising_threshold" />
                 </PreferenceCategory>
-
 
                 <PreferenceCategory android:title="@string/category_alert_prefs">
                     <RingtonePreference

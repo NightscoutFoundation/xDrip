@@ -328,4 +328,6 @@
     <string name="blood_glucose_graph">Γράφημα Γλυκόζης Αίματος</string>
     <string name="enable_streaming_dialog_dont_ask_again">Να μην ερωτηθώ ξανά</string>
     <string name="title_multiple_insulin_types">Πολλαπλοί τυποι ινσουλίνης</string>
+    <string name="show_action_buttons_within_alerts">Εμφάνιση κουμπιών ενεργειών (όπως Αναβολή) μέσα στις ειδοποιήσεις συναγερμού</string>
+    <string name="alert_buttons">Κουμπιά συναγερμού</string>
 </resources>

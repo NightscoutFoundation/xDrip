@@ -297,6 +297,14 @@ public class Ob1G5StateMachine {
                         parent.changeState(Ob1G5CollectionService.STATE.UNBOND);
 
                     } else {
+                        if (!status.isBonded()
+                                && (parent.isDeviceLocallyBonded() || parent.isDeviceLocallyBonded())
+                                && parent.incrementRetry() <= 3) {
+                            UserError.Log.wtf(TAG, "Doing Android 12+ workaround");
+                            JoH.threadSleep(1500);
+                            handleAuthenticationWrite(parent, connection);
+                            return;
+                        }
 
                         if (status.isBonded()) {
                             parent.msg("Authenticated");
@@ -605,6 +613,7 @@ public class Ob1G5StateMachine {
                                 DexResetHelper.cancel();
                                 if (!parent.lastSensorState.sensorStarted()) {
                                     parent.lastSensorState = CalibrationState.SensorStarted;
+                                    parent.lastSensorStatus = parent.lastSensorState.getExtendedText();
                                 }
                             } else {
                                 final String msg = "Session Start Failed: " + session_start.message();
@@ -658,8 +667,10 @@ public class Ob1G5StateMachine {
                                 UserError.Log.ueh(TAG, msg);
                                 if (parent.lastSensorState.sensorStarted()) {
                                     parent.lastSensorState = CalibrationState.SensorStopped;
+                                    parent.lastSensorStatus = parent.lastSensorState.getExtendedText();
+                                } else {
+                                    reReadGlucoseData();
                                 }
-                                reReadGlucoseData();
                                 enqueueUniqueCommand(new TimeTxMessage(), "Query time after stop");
                             } else {
                                 // TODO what does an error when session isn't started look like? Probably best to downgrade those somewhat

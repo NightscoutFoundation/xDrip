@@ -7,6 +7,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.profileeditor.BasalProfile;
+import com.eveningoutpost.dexdrip.profileeditor.BasalRepository;
 
 import org.junit.After;
 import org.junit.Before;
@@ -230,12 +231,13 @@ public class UploadChunkTest extends RobolectricTestWithConfig {
         oldTimeZone = TimeZone.getDefault();
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         val values = testData.split("\n");
+        BasalRepository.clearRates();
         assertWithMessage("db test data state okay").that(values.length).isEqualTo(200);
         APStatus.updateDB();
         APStatus.cleanup(0);
         for (val record : values) {
             val fields = record.split("\\|");
-            val aps = new APStatus(Long.parseLong(fields[2]), Integer.parseInt(fields[1]));
+            val aps = new APStatus(Long.parseLong(fields[2]), Integer.parseInt(fields[1]), -1d);
             //System.out.println(aps.toS());
             aps.save();
         }

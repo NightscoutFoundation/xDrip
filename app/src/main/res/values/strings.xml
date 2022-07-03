@@ -946,6 +946,7 @@
     <string name="offical_msg">The official app</string>
     <string name="use_conflict_msg">may try to access the transmitter device too and this can cause problems with both apps</string>
     <string name="use_confict_msg_glimp">You can adjust Glimp Settings: options -> devices -> unselect Bluetooth option</string>
+    <string name="eng_mode_is_on">Engineering mode is enabled.  Please disable it unless you are certain you need it as it may cause unexpected behavior.</string>
     <string name="yes">Yes</string>
     <string name="xdrip_compatible_features">xDrip+ %s Features</string>
     <string name="garmin">Garmin</string>
@@ -1692,4 +1693,14 @@
     <string name="basal_profile_editor">Basal Profile Editor</string>
     <string name="import_sounds">Import Sounds</string>
     <string name="play_sounds_when_importing">Play sounds when importing significant data such as profiles</string>
+    <string name="show_action_buttons_within_alerts">Show action buttons (like Snooze) within alert notifications</string>
+    <string name="alert_buttons">Alert buttons</string>
+    <string name="show_sensor_expiry">Show Sensor Expiry</string>
+    <string name="show_collector_status">Show Collector Status</string>
+    <string name="show_chart_preview">Show Chart Preview</string>
+    <string name="locked_time_period_always_used">Locked Time Period Always Used</string>
+    <string name="show_time_buttons">Show Time Buttons</string>
+    <string name="source_wizard_button">Source Wizard Button</string>
+    <string name="please_wait_seconds_before_trying_to_start_sensor">Please wait %d seconds before trying to start sensor</string>
+    <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">please update OOP2 or move to calibrate based on raw mode</string>
 </resources>

@@ -297,4 +297,11 @@
     <string name="allow_do_not_disturb_text">За да имате възможност за алерти дори когато андроид е в режим не ме безпокой, моля разрешетв xDrip достъп до системата на следваща страница</string>
     <string name="graphical_editor_for_pump_basal">Графкчен редактор за помпа базални профили</string>
     <string name="basal_profile_editor">Редактор на базални профили</string>
+    <string name="show_sensor_expiry">Покажи краен срок сензор</string>
+    <string name="show_collector_status">Покажи статус на колектора</string>
+    <string name="show_chart_preview">Покажи графично ревю</string>
+    <string name="locked_time_period_always_used">Винаги използва заключен времеви период</string>
+    <string name="show_time_buttons">Покажи бутона за Време</string>
+    <string name="source_wizard_button">Съветник за източник Бутон</string>
+    <string name="please_wait_seconds_before_trying_to_start_sensor">Моля изчакайте %d секунди преди да стартирате сензор</string>
 </resources>

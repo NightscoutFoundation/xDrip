@@ -12,6 +12,74 @@
             android:key="dex_collection_method"
             android:summary="@string/how_receive_data"
             android:title="@string/hardware_data_source" />
+
+        <PreferenceScreen
+            android:key="xdrip_plus_web_follow_settings"
+            android:summary="Configuration options for web follower data source"
+            android:title="Web Follower Settings">
+
+            <EditTextPreference
+                android:defaultValue="beonlabs"
+                android:key="webfollow_master_domain"
+                android:summary="This is the community helper address or keyword"
+                android:title="Configuration Script" />
+
+            <EditTextPreference
+                android:defaultValue=""
+                android:inputType="textNoSuggestions|textVisiblePassword"
+                android:key="webfollow_username"
+                android:summary="This is your registered user name or email address with the service"
+                android:title="Service logon user name" />
+
+            <EditTextPreference
+                android:defaultValue=""
+                android:inputType="textNoSuggestions|textVisiblePassword"
+                android:key="webfollow_password"
+                android:summary="This is your registered password with the service"
+                android:title="Service logon password" />
+
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="webfollow_use_proxy"
+                android:summary="Use proxy server (advanced)" />
+
+            <EditTextPreference
+                android:defaultValue=""
+                android:inputType="textNoSuggestions|textVisiblePassword"
+                android:dependency="webfollow_use_proxy"
+                android:key="webfollow_proxy_address"
+                android:summary="Proxy host address" />
+            <EditTextPreference
+                android:defaultValue=""
+                android:inputType="number"
+                android:digits="0123456789"
+                android:dependency="webfollow_use_proxy"
+                android:key="webfollow_proxy_port"
+                android:summary="Proxy host port" />
+            <EditTextPreference
+                android:defaultValue=""
+                android:inputType="textNoSuggestions|textVisiblePassword"
+                android:dependency="webfollow_use_proxy"
+                android:key="webfollow_proxy_username"
+                android:summary="Proxy username" />
+            <EditTextPreference
+                android:defaultValue=""
+                android:inputType="textNoSuggestions|textVisiblePassword"
+                android:dependency="webfollow_use_proxy"
+                android:key="webfollow_proxy_password"
+                android:summary="Proxy password" />
+
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="webfollow_use_proxy"
+                android:key="webfollow_proxy_type_http"
+                android:summaryOff="Proxy type is SOCKS (toggle to change)"
+                android:summaryOn="Proxy type is HTTP (toggle to change)"
+               />
+
+        </PreferenceScreen>
+
+
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:icon="@drawable/ic_nfc_grey600_48dp"
             android:key="xdrip_plus_nfc_settings"
@@ -72,7 +140,6 @@
                 android:dependency="engineering_mode"
                 android:key="nfc_test_diagnostic"
                 android:summary="@string/low_level_value" />
-
         </PreferenceScreen>
 
         <EditTextPreference
@@ -140,9 +207,6 @@
             android:summary="Login password for Dex Share Following"
             android:title="Share Password" />
 
-
-
-
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="xdrip_plus_g5_extra_settings"
             android:summary="@string/advanced_g5_settings"
@@ -150,80 +214,76 @@
             <PreferenceCategory
                 android:key="ob1_options"
                 android:title="@string/title_ob1_options">
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="use_ob1_g5_collector_service"
-                android:summary="@string/summary_use_ob1_g5_collector_service"
-                android:title="@string/title_use_ob1_g5_collector_service" />
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:dependency="use_ob1_g5_collector_service"
-                android:key="ob1_g5_use_transmitter_alg"
-                android:summary="@string/summary_ob1_g5_use_transmitter_alg"
-                android:title="@string/title_ob1_g5_use_transmitter_alg"
-                />
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:dependency="ob1_g5_use_transmitter_alg"
-                android:key="ob1_g5_restart_sensor"
-                android:summary="@string/summary_ob1_g5_restart_sensor"
-                android:title="@string/title_ob1_g5_restart_sensor"
-                />
-            <PreferenceScreen
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="use_ob1_g5_collector_service"
+                    android:summary="@string/summary_use_ob1_g5_collector_service"
+                    android:title="@string/title_use_ob1_g5_collector_service" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="use_ob1_g5_collector_service"
+                    android:key="ob1_g5_use_transmitter_alg"
+                    android:summary="@string/summary_ob1_g5_use_transmitter_alg"
+                    android:title="@string/title_ob1_g5_use_transmitter_alg"
+                    />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="ob1_g5_use_transmitter_alg"
+                    android:key="ob1_g5_restart_sensor"
+                    android:summary="@string/summary_ob1_g5_restart_sensor"
+                    android:title="@string/title_ob1_g5_restart_sensor"
+                    />
+                <PreferenceScreen
                     android:key="collection_preemptive_restart"
                     android:dependency="ob1_g5_use_transmitter_alg"
                     android:summary="@string/collection_summary_ob1_g5_preemptive_restart"
                     android:title="@string/title_ob1_g5_preemptive_restart">
-                <CheckBoxPreference
+                    <CheckBoxPreference
                         android:defaultValue="false"
                         android:dependency="ob1_g5_use_transmitter_alg"
                         android:key="ob1_g5_preemptive_restart"
                         android:summary="@string/summary_ob1_g5_preemptive_restart"
                         android:title="@string/title_ob1_g5_preemptive_restart"
-                />
-                <CheckBoxPreference
+                    />
+                    <CheckBoxPreference
                         android:defaultValue="true"
                         android:dependency="ob1_g5_preemptive_restart"
                         android:key="ob1_g5_preemptive_restart_alert"
                         android:title="@string/title_ob1_g5_preemptive_restart_alert"
                         android:summary="@string/summary_ob1_g5_preemptive_restart_alert"
                     />
-                <CheckBoxPreference
+                    <CheckBoxPreference
                         android:defaultValue="false"
                         android:dependency="ob1_g5_preemptive_restart"
                         android:key="ob1_g5_preemptive_restart_extended_time_travel"
                         android:summary="@string/summary_ob1_g5_preemptive_restart_extended_time_travel"
                         android:title="@string/title_ob1_g5_preemptive_restart_extended_time_travel"
-                />
-                <CheckBoxPreference
+                    />
+                    <CheckBoxPreference
                         android:defaultValue="false"
                         android:dependency="ob1_g5_preemptive_restart"
                         android:key="ob1_g5_defer_preemptive_restart_all_firmwares"
                         android:summary="@string/summary_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares"
-                        android:title="@string/title_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares"
-                />
-            </PreferenceScreen>
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:dependency="ob1_g5_use_transmitter_alg"
-                android:key="ob1_g5_use_insufficiently_calibrated"
-                android:summary="@string/summary_ob1_g5_use_insufficiently_calibrated"
-                android:title="@string/title_ob1_g5_use_insufficiently_calibrated"
-                />
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:dependency="ob1_g5_use_transmitter_alg"
-                android:key="ob1_g5_fallback_to_xdrip"
-                android:summary="@string/summary_ob1_g5_fallback_to_xdrip"
-                android:title="@string/title_ob1_g5_fallback_to_xdrip"
-                />
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:dependency="use_ob1_g5_collector_service"
-                android:key="ob1_minimize_scanning"
-                android:summary="@string/summary_ob1_minimize_scanning"
-                android:title="@string/title_ob1_minimize_scanning"
-                />
+                        android:title="@string/title_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares" />
+                </PreferenceScreen>
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:dependency="ob1_g5_use_transmitter_alg"
+                    android:key="ob1_g5_use_insufficiently_calibrated"
+                    android:summary="@string/summary_ob1_g5_use_insufficiently_calibrated"
+                    android:title="@string/title_ob1_g5_use_insufficiently_calibrated" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="ob1_g5_use_transmitter_alg"
+                    android:key="ob1_g5_fallback_to_xdrip"
+                    android:summary="@string/summary_ob1_g5_fallback_to_xdrip"
+                    android:title="@string/title_ob1_g5_fallback_to_xdrip" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="use_ob1_g5_collector_service"
+                    android:key="ob1_minimize_scanning"
+                    android:summary="@string/summary_ob1_minimize_scanning"
+                    android:title="@string/title_ob1_minimize_scanning" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="ob1_minimize_scanning"
@@ -231,27 +291,25 @@
                     android:key="ob1_avoid_scanning"
                     android:summary="Avoid scanning as much as possible (reduces battery usage further)"
                     android:title="Avoid Scanning" />
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:dependency="use_ob1_g5_collector_service"
-                android:key="using_g6"
-                android:summary="@string/summary_using_g6"
-                android:title="@string/title_using_g6"
-                />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="ob1_g5_allow_resetbond"
-                android:dependency="use_ob1_g5_collector_service"
-                android:summary="@string/summary_ob1_g5_allow_resetbond"
-                android:title="@string/title_ob1_g5_allow_resetbond"
-                />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="ob1_initiate_bonding_flag"
-                android:dependency="use_ob1_g5_collector_service"
-                android:summary="@string/summary_ob1_initiate_bonding_flag"
-                android:title="@string/title_ob1_initiate_bonding_flag"
-                />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="use_ob1_g5_collector_service"
+                    android:key="using_g6"
+                    android:summary="@string/summary_using_g6"
+                    android:title="@string/title_using_g6" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="ob1_g5_allow_resetbond"
+                    android:dependency="use_ob1_g5_collector_service"
+                    android:summary="@string/summary_ob1_g5_allow_resetbond"
+                    android:title="@string/title_ob1_g5_allow_resetbond" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="ob1_initiate_bonding_flag"
+                    android:dependency="use_ob1_g5_collector_service"
+                    android:summary="@string/summary_ob1_initiate_bonding_flag"
+                    android:title="@string/title_ob1_initiate_bonding_flag"
+                    />
                 <EditTextPreference
                     android:defaultValue=""
                     android:inputType="number"
@@ -264,36 +322,35 @@
             <PreferenceCategory
                 android:key="old_g5_options"
                 android:title="@string/title_old_g5_options">
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:key="run_ble_scan_constantly"
-                android:summary="@string/g5_scan_constantly"
-                android:title="@string/scan_for_g5_constantly" />
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:key="run_G5_ble_tasks_on_uithread"
-                android:summary="@string/g5_force_ui_thread"
-                android:title="@string/force_g5_ui_thread" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="always_get_new_keys"
-                android:summary="@string/g5_full_authentification"
-                android:title="@string/authentificate_before_reading" />
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:key="always_unbond_G5"
-                android:summary="@string/g5_remove_before_read"
-                android:title="@string/unbond_g5_before_read" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="run_ble_scan_constantly"
+                    android:summary="@string/g5_scan_constantly"
+                    android:title="@string/scan_for_g5_constantly" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="run_G5_ble_tasks_on_uithread"
+                    android:summary="@string/g5_force_ui_thread"
+                    android:title="@string/force_g5_ui_thread" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="always_get_new_keys"
+                    android:summary="@string/g5_full_authentification"
+                    android:title="@string/authentificate_before_reading" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="always_unbond_G5"
+                    android:summary="@string/g5_remove_before_read"
+                    android:title="@string/unbond_g5_before_read" />
             </PreferenceCategory>
             <PreferenceCategory
                 android:key="dex_battery_category"
                 android:title="@string/title_g5g6_battery_options">
-            <EditTextPreference
-                android:key="g5-battery-warning-level"
-                android:title="@string/title_g5_battery_warning_level"
-                android:defaultValue="300"
-                android:numeric="integer"
-                />
+                <EditTextPreference
+                    android:key="g5-battery-warning-level"
+                    android:title="@string/title_g5_battery_warning_level"
+                    android:defaultValue="300"
+                    android:numeric="integer" />
             </PreferenceCategory>
 
         </PreferenceScreen>

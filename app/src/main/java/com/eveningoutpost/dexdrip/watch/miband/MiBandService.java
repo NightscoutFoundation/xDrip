@@ -560,10 +560,14 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     private void getModelName() {
         I.connection.readCharacteristic(Const.UUID_CHAR_DEVICE_NAME).subscribe(
                 readValue -> {
-                    String name = new String(readValue);
-                    if (d)
-                        UserError.Log.d(TAG, "Got device name: " + name);
-                    MiBand.setModel(name, MiBand.getPersistentAuthMac());
+                    if (readValue != null) {
+                        String name = new String(readValue);
+                        if (d)
+                            UserError.Log.d(TAG, "Got device name: " + name);
+                        MiBand.setModel(name, MiBand.getPersistentAuthMac());
+                    } else {
+                        UserError.Log.e(TAG, "Got null device name");
+                    }
                     changeNextState();
                 }, throwable -> {
                     if (d)

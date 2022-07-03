@@ -5,6 +5,13 @@ package com.eveningoutpost.dexdrip;
 
 
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
+import static com.eveningoutpost.dexdrip.Home.SHOWCASE_REMINDER3;
+import static com.eveningoutpost.dexdrip.Models.JoH.dateTimeText;
+import static com.eveningoutpost.dexdrip.Models.JoH.hourMinuteString;
+import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
+import static com.eveningoutpost.dexdrip.Models.JoH.niceTimeScalarNatural;
+import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
+import static lecho.lib.hellocharts.animation.ChartDataAnimator.DEFAULT_ANIMATION_DURATION;
 
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -85,15 +92,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static com.eveningoutpost.dexdrip.Home.SHOWCASE_REMINDER3;
-import static com.eveningoutpost.dexdrip.Models.JoH.dateTimeText;
-import static com.eveningoutpost.dexdrip.Models.JoH.hourMinuteString;
-import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
-import static com.eveningoutpost.dexdrip.Models.JoH.niceTimeScalarNatural;
-import static com.eveningoutpost.dexdrip.Models.JoH.niceTimeTill;
-import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
-import static lecho.lib.hellocharts.animation.ChartDataAnimator.DEFAULT_ANIMATION_DURATION;
 
 import lombok.val;
 
@@ -1278,7 +1276,11 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
 
     private void setFloaterText(String msg) {
         Log.d(TAG, "Setting floater text:" + msg);
-        floaterText.setText(msg);
+        try {
+            floaterText.setText(msg);
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Unable to set floater text to: " + msg);
+        }
     }
 
     private void animateSnoozeFloater(float start, float end, Interpolator interpolator) {

@@ -2,10 +2,4 @@ blank_issues_enabled: false
 contact_links:
   - name: xDrip Discussions
     url: https://github.com/NightscoutFoundation/xDrip/discussions
-    about: If you are an xDrip user and need support (how to, new feature, or bug), please post here. It's a forum. So, all posts related to your question or proposal stay together and are easy to find. All developers and users can access them.
-  - name: xDrip Community Support at Gitter
-    url: https://gitter.im/jamorham/xDrip-plus
-    about: If you are an xDrip user and have trouble with the app, you can post questions here.  
-  - name: xDrip Community Support at Facebook
-    url: https://www.facebook.com/groups/xDripG5
-    about: If you are an xDrip user and have trouble with the app, you can post questions here. Not every developer has a facebook account. So, you may be asked to post in the Discussions (see above).
+    about: Please use "Discussions" (link on the right) to communicate with developers and/or other users (bug report, feature request, or questions).

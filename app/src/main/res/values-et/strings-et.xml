@@ -1644,4 +1644,16 @@
     <string name="allow_do_not_disturb_text">Et oleks võimalik saada hoiatusi isegi siis kui telefoni funktsioon \"Mitte segada\" on sees, luba xDripile vastav säte süsteemiseadetes järgmisel lehel</string>
     <string name="graphical_editor_for_pump_basal">Pumba basaaliprofiilide graafiline redaktor</string>
     <string name="basal_profile_editor">Basaali profiiliredaktor</string>
+    <string name="import_sounds">Impordi helid</string>
+    <string name="play_sounds_when_importing">Esita helimärguanne kui imporditakse olulisi andmeid (nt profiile)</string>
+    <string name="show_action_buttons_within_alerts">Kuva märguannetes toimingunupud (nt vaigistus)</string>
+    <string name="alert_buttons">Hoiatuste nupud</string>
+    <string name="show_sensor_expiry">Näita sensori aegumist</string>
+    <string name="show_collector_status">Näita vastuvõtja olekut</string>
+    <string name="show_chart_preview">Kuva graafiku eelvaade</string>
+    <string name="locked_time_period_always_used">Alati kasutatakse lukustatud ajaperioodi</string>
+    <string name="show_time_buttons">Näita aja nuppe</string>
+    <string name="source_wizard_button">Allika abivahendi nupp</string>
+    <string name="please_wait_seconds_before_trying_to_start_sensor">Palun oota %d sekundit enne sensori käivitamist</string>
+    <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">palun värskenda OOP2 või kasuta kalibreerimistel põhinevat algset režiimi</string>
 </resources>

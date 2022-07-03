@@ -35,7 +35,7 @@
     <string name="title_activity_double_calibration">Indító kalibráció</string>
     <string name="title_activity_calibration_override">Kalibráció felülírása</string>
     <string name="pref_header_cloud_storage">Felhőalapú tárhely</string>
-    <string name="auto_configure_title">Automatikus beállítás</string>
+    <string name="auto_configure_title">Beállítások átvétele</string>
     <string name="prefs_auto_config_summary">Automatikus beállítás QR-kóddal.</string>
     <string name="scan_share2_barcode">QR-kód beolvasása</string>
     <string name="pref_share2_scan_barcode_summary">Vagy szkennelje be a QR-kódot a vevőn</string>
@@ -518,7 +518,7 @@
     <string name="override_phone_silent_mode_colon">Telefon Néma üzemmódjának felülírása:</string>
     <string name="vibrate_on_alert">Rezgés riasztáskor</string>
     <string name="test_alert">tesztriasztás</string>
-    <string name="disable_alert">riasztás leállítása</string>
+    <string name="disable_alert">Riasztás leállítása</string>
     <string name="save_alert">riasztás mentése</string>
     <string name="remove_alert">riasztás törlése</string>
     <string name="snooze_alert_before_it_fires">szundi mielőtt riaszt</string>
@@ -1227,7 +1227,7 @@
     <string name="title_miband_screen_weather">Időjárás mutatása</string>
     <string name="title_miband_screen_activity">Tevékenységek mutatása</string>
     <string name="title_miband_screen_more">Több mutatása</string>
-    <string name="title_miband_screen_status">Státusz mutatása</string>
+    <string name="title_miband_screen_status">Állapot mutatása</string>
     <string name="title_miband_screen_heart_rate">Pulzus mutatása</string>
     <string name="title_miband_screen_timer">Időzítő mutatása</string>
     <string name="title_miband_screen_nfc">NFC mutatása (ha van)</string>
@@ -1597,4 +1597,10 @@
     <string name="basal_profile_editor">Bázisinzulin-profil szerkesztő</string>
     <string name="import_sounds">Hangok importálása</string>
     <string name="play_sounds_when_importing">Hangjelzés fontos adatok pl. profilok importálásakor</string>
+    <string name="show_sensor_expiry">Szenzor lejárat mutatása</string>
+    <string name="show_collector_status">Kollektor állapot muitatása</string>
+    <string name="show_chart_preview">Grafikon előnézet mutatása</string>
+    <string name="source_wizard_button">Varázsló gomb mutatása</string>
+    <string name="please_wait_seconds_before_trying_to_start_sensor">Várj %d másodpercet, mielőtt indítod a szenzort</string>
+    <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">frissítse az OOP2-t vagy használja a nyers adatokon alapuló kalibrációs módot</string>
 </resources>
