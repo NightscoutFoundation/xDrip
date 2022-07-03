@@ -648,6 +648,8 @@
     <string name="calibrate_external_libre_2_algorithm_title">OOP2 algorithm calibration.</string>
     <string name="libre_use_smoothed_data_summary">Use average of 5 points to get smoother Libre data.</string>
     <string name="libre_use_smoothed_data_title">Smooth Libre data.</string>
+    <string name="libre_use_noise_estimation_summary">Use Noise Estimation based on OOP2 data</string>
+    <string name="libre_use_noise_estimation_title">OOP2 noise estimation</string>
     <string name="retrieve_blukon_history_title">Retrieve Libre history</string>
     <string name="retrieve_blukon_history_summary">Retrieve missed history from BluCon device when reconnecting to sensor.</string>
     <string name="interpret_share_raw">If using Share, xDrip will show values when they are normally hidden on the receiver.</string>

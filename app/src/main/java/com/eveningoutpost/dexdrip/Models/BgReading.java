@@ -1310,7 +1310,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     // TODO this method shares some code with above.. merge
-    public static void bgReadingInsertFromInt(int value, double noise, long timestamp, long margin, boolean do_notification) {
+    public static void bgReadingInsertFromInt(int value, double noise, long timestamp, long margin, boolean do_notification, boolean handleLibreNoise) {
         // TODO sanity check data!
 
         if ((value <= 0) || (timestamp <= 0)) {
@@ -1343,7 +1343,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                 if (readingNearTimeStamp(bgr.timestamp, margin) == null) {
                     bgr.save();
                     bgr.find_slope();
-                    bgr.postProcess(!do_notification, true);
+                    bgr.postProcess(!do_notification, handleLibreNoise);
                 } else {
                     Log.d(TAG, "Ignoring duplicate bgr record due to timestamp: " + timestamp);
                 }

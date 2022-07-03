@@ -72,6 +72,10 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
         return Pref.getString("calibrate_external_libre_2_algorithm_type","calibrate_raw").equals("calibrate_glucose");
     }
 
+    private static boolean useLibreNoiseEstimation() {
+        return Pref.getBooleanDefaultFalse("libre_use_noise_estimation");
+    }
+
     private static void createBGfromGD(GlucoseData gd, boolean use_smoothed_data, boolean quick) {
         final double converted;
         final double noise;
@@ -110,7 +114,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
 
                 if (BgReading.getForPreciseTimestamp(gd.realDate, segmentation_timeslice, false) == null) {
                     Log.d(TAG, "Creating bgreading at: " + JoH.dateTimeText(gd.realDate));
-                    BgReading.create(converted, converted, xdrip.getAppContext(), gd.realDate, quick, true, noise); // quick lite insert
+                    BgReading.create(converted, converted, xdrip.getAppContext(), gd.realDate, quick, useLibreNoiseEstimation(), noise); // quick lite insert
                 } else {
                     if (d)
                         Log.d(TAG, "Ignoring duplicate timestamp for: " + JoH.dateTimeText(gd.realDate));
@@ -278,7 +282,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                     if (use_raw) {
                         createBGfromGD(gd, use_smoothed_data, false); // not quick for recent
                     } else {
-                        BgReading.bgReadingInsertFromInt(use_smoothed_data ? gd.glucoseLevelSmoothed : gd.glucoseLevel, gd.glucoseLevelNoise, gd.realDate, segmentation_timeslice, true);
+                        BgReading.bgReadingInsertFromInt(use_smoothed_data ? gd.glucoseLevelSmoothed : gd.glucoseLevel, gd.glucoseLevelNoise, gd.realDate, segmentation_timeslice, true, useLibreNoiseEstimation());
                     }
                 }
             } else {
@@ -303,7 +307,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                     } else {
                         polyyList.add((double) gd.glucoseLevel);
                         // add in the actual value
-                        BgReading.bgReadingInsertFromInt(gd.glucoseLevel, gd.glucoseLevelNoise, gd.realDate, segmentation_timeslice, false);
+                        BgReading.bgReadingInsertFromInt(gd.glucoseLevel, gd.glucoseLevelNoise, gd.realDate, segmentation_timeslice, false, useLibreNoiseEstimation());
                     }
                 }
 
@@ -327,7 +331,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                                 // Here we do not use smoothed data, since data is already smoothed for the history
                                 createBGfromGD(new GlucoseData((int) polySplineF.value(ptime), ptime), false, true);
                             } else {
-                                BgReading.bgReadingInsertFromInt((int) polySplineF.value(ptime), 0, ptime, segmentation_timeslice, false);
+                                BgReading.bgReadingInsertFromInt((int) polySplineF.value(ptime), 0, ptime, segmentation_timeslice, false, useLibreNoiseEstimation());
                             }
                         }
                     } catch (org.apache.commons.math3.exception.NonMonotonicSequenceException e) {

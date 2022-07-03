@@ -1501,6 +1501,13 @@
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:enabled="true"
+                    android:key="libre_use_noise_estimation"
+                    android:summary="@string/libre_use_noise_estimation_summary"
+                    android:title="@string/libre_use_noise_estimation_title" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:enabled="true"
                     android:key="retrieve_blukon_history"
                     android:summary="@string/retrieve_blukon_history_summary"
                     android:title="@string/retrieve_blukon_history_title" />
