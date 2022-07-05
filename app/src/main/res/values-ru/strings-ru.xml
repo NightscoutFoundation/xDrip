@@ -912,6 +912,7 @@
     <string name="offical_msg">Официальное приложение</string>
     <string name="use_conflict_msg">может пытаться получить доступ к передающему устройству что возможно вызовет сбой обоих приложений</string>
     <string name="use_confict_msg_glimp">Вы можете настроить Glimp: Опции -&gt; Устройства -&gt; отключите настройки Bluetooth</string>
+    <string name="eng_mode_is_on">Инженерный режим включен. Пожалуйста, выключите его, если вы не уверены, что он нужен, так как он может вызывать неожиданное поведение.</string>
     <string name="yes">Да</string>
     <string name="xdrip_compatible_features">Функции %s xDrip+</string>
     <string name="garmin">Garmin</string>

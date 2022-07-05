@@ -912,6 +912,7 @@
     <string name="offical_msg">App Oficial</string>
     <string name="use_conflict_msg">pode também tentar aceder ao dispositivo transmissor e pode causar problemas em ambas as apps</string>
     <string name="use_confict_msg_glimp">Ajustar Configurações do Glimp: opções -&gt; dispositivos -&gt; desseleccionar opção Bluetooth</string>
+    <string name="eng_mode_is_on">O modo de engenharia está ativado. Desative-o, a menos que tenha a certeza que precisa, pois pode causar um comportamento inesperado.</string>
     <string name="yes">Sim</string>
     <string name="xdrip_compatible_features">xDrip+ %s Funções</string>
     <string name="garmin">Garmin</string>
