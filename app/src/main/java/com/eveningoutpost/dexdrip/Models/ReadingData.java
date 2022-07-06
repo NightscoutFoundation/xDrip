@@ -130,7 +130,7 @@ public class ReadingData {
             Log.e("xxx", "" + i + " raw val " + trend.get(i).glucoseLevelRaw + " smoothed " + trend.get(i).glucoseLevelRawSmoothed);
         }
     }
-    // TODO JB: Rename this to make clear it also calculates the noise
+
     public void ClearErrors(List<LibreTrendPoint> libreTrendPoints, boolean bgValExists) {
         // For the history data where each reading holds data for 15 minutes we remove only bad points.
         Iterator<GlucoseData> it = history.iterator();
@@ -158,7 +158,6 @@ public class ReadingData {
             }
             else
             {
-                // TODO JB: Not sure if this is the right place for it but it seems so
                 calculateNoisePerPoint(glucoseData, libreTrendPoints, errorHash, bgValExists);
             }
         }
@@ -220,6 +219,8 @@ public class ReadingData {
             final TrendLine time_to_bg = new PolyTrendLine(2);
             time_to_bg.setValues(PolyTrendLine.toPrimitiveFromList(bgs), PolyTrendLine.toPrimitiveFromList(times));
             bgNoise = time_to_bg.errorVarience() * sensitivity;
+            // Only report the noise if we have enough data
+            glucoseData.glucoseLevelNoise = (calibrationNoise > bgNoise) ? calibrationNoise : bgNoise;
         }
 
         if(raws.size() >= NOISE_HORIZON) {
@@ -227,8 +228,6 @@ public class ReadingData {
             time_to_bg.setValues(PolyTrendLine.toPrimitiveFromList(raws), PolyTrendLine.toPrimitiveFromList(times));
             glucoseData.glucoseLevelRawNoise = time_to_bg.errorVarience() * sensitivity;
         }
-
-        glucoseData.glucoseLevelNoise = (calibrationNoise > bgNoise) ? calibrationNoise : bgNoise;
         Log.d(TAG, "Setting noise, Time: " + glucoseData.sensorTime + " glucoseLevelNoise: " + JoH.qs(glucoseData.glucoseLevelNoise) 
                 + " glucoseLevelRawNoise: " + JoH.qs(glucoseData.glucoseLevelRawNoise));
     }
