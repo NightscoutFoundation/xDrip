@@ -190,6 +190,10 @@ public class BgReading extends Model implements ShareUploadableBg {
     @Column(name = "source_info")
     public volatile String source_info;
 
+    @Expose
+    @Column(name = "hasNoiseDetection")
+    public boolean noiseDetectionActive = false;
+
     public synchronized static void updateDB() {
         final String[] updates = new String[]{"ALTER TABLE BgReadings ADD COLUMN dg_mgdl REAL;",
                 "ALTER TABLE BgReadings ADD COLUMN dg_slope REAL;",
@@ -1777,6 +1781,8 @@ public class BgReading extends Model implements ShareUploadableBg {
                     BgGraphBuilder.last_noise = -9999;
                 } else {
                     BgGraphBuilder.last_noise = libre2Noise;
+                    // Noise handled, set flag accordingly
+                    bgReading.noiseDetectionActive = true;
                 }
                 // restore the original value of the field
                 bgReading.noise = "0";
