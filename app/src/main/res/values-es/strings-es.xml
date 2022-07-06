@@ -186,6 +186,7 @@
     <string name="general_settings">Ajustes Generales</string>
     <string name="high_value">Valor Alto</string>
     <string name="low_value">Valor Bajo</string>
+    <string name="stats_range_settings">Ajustes de Rango: </string>
     <string name="end_user_license_agreement">Acuerdo de licencia de usuario final</string>
     <string name="save">Guardar</string>
     <string name="view_important_warning">Ver Aviso Importante</string>
@@ -632,7 +633,7 @@
     <string name="set_logging_appid">Crea Bitácora de appID</string>
     <string name="only_enable_on_trouble">Activar sólo si tienes problemas con la aplicación.</string>
     <string name="store_logs">Guardar logs para resolución de problemas</string>
-    <string name="show_datatables_in_app_drawer">Mostrar tablas de calibración y de Glucosa en el cajón de la aplicación.</string>
+    <string name="show_datatables_in_app_drawer">Mostrar base de datos de calibración y glucosa en la carpeta de la aplicación.</string>
     <string name="disable_log_transmitter_battery_warning">Desactivar la advertencia de estado de batería baja del colector en la pantalla de inicio. (Sólo relevante para receptores de bricolaje).</string>
     <string name="engineering_mode">Modo de Ingeniería</string>
     <string name="allow_unsafe_settings">Permite cambiar los ajustes inseguros que pueden romperlo todo!</string>
