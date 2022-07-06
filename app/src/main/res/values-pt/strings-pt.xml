@@ -445,7 +445,7 @@
     <string name="special_glucose_value_to_display_message">Valor de glicemia para mostrar na mensagem abaixo</string>
     <string name="bluetooth_wakelocks">Wakelocks Bluetooth</string>
     <string name="compatible_broadcast">Transmissão Compatível</string>
-    <string name="show_datatables">Mostrar tabelas de dados</string>
+    <string name="show_datatables">Mostrar Tabelas de Dados</string>
     <string name="display_bridge_battery">Mostrar Bateria do Bridge</string>
     <string name="close_gatt_on_ble_disconnect">Fechar GATT quando BLE desliga</string>
     <string name="disable_battery_warning">Desactivar Avisos de Bateria</string>
