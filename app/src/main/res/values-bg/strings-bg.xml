@@ -183,6 +183,7 @@
     <string name="general_settings">Общи Настройки</string>
     <string name="high_value">Горна граница</string>
     <string name="low_value">Долна граница</string>
+    <string name="stats_range_settings">Настройки на диапазона: </string>
     <string name="end_user_license_agreement">Лицензионно споразумение с крайния потребител</string>
     <string name="save">Запази</string>
     <string name="view_important_warning">Преглед на важни известия</string>
