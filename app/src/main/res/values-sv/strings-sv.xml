@@ -186,6 +186,7 @@
     <string name="general_settings">Allmänna inställningar</string>
     <string name="high_value">Högt värde</string>
     <string name="low_value">Lågt värde</string>
+    <string name="stats_range_settings">Inställningar för Intervall: </string>
     <string name="end_user_license_agreement">Licensavtal för slutanvändare</string>
     <string name="save">Spara</string>
     <string name="view_important_warning">Visa viktig varning</string>
