@@ -186,6 +186,7 @@
     <string name="general_settings">Podstawowe Ustawienia</string>
     <string name="high_value">Wysoka wartość</string>
     <string name="low_value">Niska wartość</string>
+    <string name="stats_range_settings">Ustawienie zakresu: </string>
     <string name="end_user_license_agreement">Umowa licencyjna użytkownika końcowego</string>
     <string name="save">Zapisz</string>
     <string name="view_important_warning">Otwórz ważne ostrzeżenie</string>
@@ -445,7 +446,7 @@
     <string name="special_glucose_value_to_display_message">Specjalna wartość glukozy, przy którym wyświetli się poniższy komunikat</string>
     <string name="bluetooth_wakelocks">Wakelocks Bluetooth</string>
     <string name="compatible_broadcast">Kompatybilny Broadcast</string>
-    <string name="show_datatables">Pokaż DataTables</string>
+    <string name="show_datatables">Pokaż tabele danych</string>
     <string name="display_bridge_battery">Wyświetlanie stanu baterii mostka</string>
     <string name="close_gatt_on_ble_disconnect">Blisko GATT na BLE rozłączeniem</string>
     <string name="disable_battery_warning">Wyłączenie ostrzeżenia o stanie baterii</string>
@@ -612,7 +613,7 @@
     <string name="predictive_readings_old">Stara metoda - Nie zalecana! Próbuje przewidywać odczyty co minutę na podstawie ostatnich kilku wartości.</string>
     <string name="use_external_blukon_algorithm_summary">Użyj zewnętrznego algorytmu (OOP) dla Libre (BluCon/NFC/LibreAlarm)</string>
     <string name="display_predictive_values">Wyświetl wartości przewidywane</string>
-    <string name="use_external_blukon_algorithm">Zewnętrzny algorytm Libre.</string>
+    <string name="use_external_blukon_algorithm">Zewnętrzny algorytm Libre (OOP).</string>
     <string name="calibrate_external_libre_algorithm_summary">Zastosuj kalibracje xDrip na danych OOP.</string>
     <string name="calibrate_external_libre_algorithm_title">Kalibracja zewnętrznego algorytmu (OOP).</string>
     <string name="calibrate_external_libre_2_algorithm_summary">Zastosuj metody kalibracji xDrip na danych OOP2.</string>
@@ -669,7 +670,7 @@
     <string name="show_plugin_results_on_graph">Pokaż wyniki glukozy z wtyczki na głównym wykresie</string>
     <string name="plugin_plot_on_graph">Pokazuj dane ze wtyczek na wykresie</string>
     <string name="use_plugin_glucose">Użyj glukozy z wtyczki</string>
-    <string name="main_glucose_plugin">Główny numer wyświetlania glukozy pochodzi z wtyczki!</string>
+    <string name="main_glucose_plugin">Główna wyświetlana wartość glukozy pochodzi z wtyczki!</string>
     <string name="plugin_override_all">Wtyczka nadpisuje wszystkie inne</string>
     <string name="all_new_glucose_data_plugin">WSZYSTKIE nowe dane dotyczące glukozy zostaną obliczone i zapisane z wybranej wtyczki, a nie ze standardowego algorytmu xDrip. To jest nieprzetestowane i może być niedokładne i błędne. Używaj ze szczególną ostrożnością.</string>
     <string name="old_school_calibrations">Oryginalny węższy zakres dozwolonych nachyleń w ramach klasycznego algorytmu kalibracji xDrip (sprzed 2017 roku). Domyślne nachylenia bardziej prawdopodobne! (tylko w trybie inżynieryjnym)</string>
