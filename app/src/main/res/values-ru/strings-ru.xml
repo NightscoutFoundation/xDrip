@@ -445,7 +445,7 @@
     <string name="special_glucose_value_to_display_message">Специальное значение глюкозы, при котором выводится сообщение ниже</string>
     <string name="bluetooth_wakelocks">Блокировки сна Bluetooth</string>
     <string name="compatible_broadcast">Совместимая трансляция</string>
-    <string name="show_datatables">Отображать таблицы данных</string>
+    <string name="show_datatables">Показывать таблицы данных</string>
     <string name="display_bridge_battery">Отображать состояние батареи Bridge</string>
     <string name="close_gatt_on_ble_disconnect">Закрыть GATT при отключении BLE</string>
     <string name="disable_battery_warning">Отключить предупреждение о разряде батареи</string>
@@ -632,7 +632,7 @@
     <string name="set_logging_appid">Установить AppID журналирования</string>
     <string name="only_enable_on_trouble">Включать только в случае проблем с приложением.</string>
     <string name="store_logs">Сохранять логи для поиска и устранения проблем</string>
-    <string name="show_datatables_in_app_drawer">Показывать калибровку и данные уровня глюкозы в меню приложения.</string>
+    <string name="show_datatables_in_app_drawer">Показывать таблицы данных калибровки и ГК в левом меню.</string>
     <string name="disable_log_transmitter_battery_warning">Отключить предупреждение о низком заряде батареи передатчика на главном экране (только для DIY приемников)</string>
     <string name="engineering_mode">Инженерный режим</string>
     <string name="allow_unsafe_settings">Позволяет изменять самые небезопасные настройки, которые могут все нарушить!</string>
