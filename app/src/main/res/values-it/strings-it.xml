@@ -186,6 +186,7 @@
     <string name="general_settings">Impostazioni Generali</string>
     <string name="high_value">Valore Massimo</string>
     <string name="low_value">Valore Minimo</string>
+    <string name="stats_range_settings">Impostazioni Intervallo: </string>
     <string name="end_user_license_agreement">Contratto di licenza con l\'utente finale</string>
     <string name="save">Salva</string>
     <string name="view_important_warning">Attenzione Avviso Importante</string>

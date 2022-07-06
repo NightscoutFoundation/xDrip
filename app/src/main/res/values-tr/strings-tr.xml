@@ -186,6 +186,7 @@
     <string name="general_settings">Genel Ayarlar</string>
     <string name="high_value">Yüksek Değer</string>
     <string name="low_value">Düşük değer</string>
+    <string name="stats_range_settings">Aralık Ayarları: </string>
     <string name="end_user_license_agreement">Son Kullanıcı Lisans Sözleşmesi</string>
     <string name="save">Kaydet</string>
     <string name="view_important_warning">Önemli Uyarıyı Görüntüle</string>
