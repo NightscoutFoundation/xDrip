@@ -186,6 +186,7 @@
     <string name="general_settings">Definições Gerais</string>
     <string name="high_value">Valor Hiper</string>
     <string name="low_value">Valor Hipo</string>
+    <string name="stats_range_settings">Configurações de Intervalo: </string>
     <string name="end_user_license_agreement">Contrato de Licença de Utilizador Final</string>
     <string name="save">Guardar</string>
     <string name="view_important_warning">Ver Aviso Importante</string>
