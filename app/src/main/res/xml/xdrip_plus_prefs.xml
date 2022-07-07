@@ -345,6 +345,11 @@
                     android:summary="@string/grid_glucose_lines_visible"
                     android:title="@string/show_graph_glucose_lines" />
                 <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="widget_disable_colored_text"
+                    android:summary="@string/disable_colored_widget_text"
+                    android:title="@string/disable_colored_bg" />
+                <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="show_filtered_curve"
                     android:summary="@string/useful_for_noise_and_missed_readings"

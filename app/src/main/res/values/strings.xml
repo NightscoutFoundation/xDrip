@@ -830,6 +830,8 @@
     <string name="chosse_language">Choose a specific language</string>
     <string name="widget_range_lines">Widget Range Lines</string>
     <string name="show_range_on_widget">Show a high and low line on the widget.</string>
+    <string name="disable_colored_widget_text">Disables coloring of the BG reading text on high / low BG on the widget.</string>
+    <string name="disable_colored_bg">Disable colored BG Reading</string>
     <string name="delayed_but_more_stable">Delayed but more stable when noisy (not recommended)</string>
     <string name="show_bolus_wizard_preview">Show Bolus Wizard Preview</string>
     <string name="display_calculations">Display Insulin/Carb calculations</string>

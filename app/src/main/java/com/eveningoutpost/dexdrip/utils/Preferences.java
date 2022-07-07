@@ -2422,6 +2422,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             findPreference("widget_range_lines").setOnPreferenceChangeListener(new WidgetListener());
             findPreference("extra_status_line").setOnPreferenceChangeListener(new WidgetListener());
             findPreference("widget_status_line").setOnPreferenceChangeListener(new WidgetListener());
+            findPreference("widget_disable_colored_text").setOnPreferenceChangeListener(new WidgetListener());
             findPreference("status_line_calibration_long").setOnPreferenceChangeListener(new WidgetListener());
             findPreference("status_line_calibration_short").setOnPreferenceChangeListener(new WidgetListener());
             findPreference("status_line_avg").setOnPreferenceChangeListener(new WidgetListener());

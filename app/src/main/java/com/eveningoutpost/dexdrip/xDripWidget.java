@@ -111,6 +111,7 @@ public class xDripWidget extends AppWidgetProvider {
 
         final boolean showLines = Pref.getBoolean("widget_range_lines", false);
         final boolean showExstraStatus = Pref.getBoolean("extra_status_line", false) && Pref.getBoolean("widget_status_line", false);
+        final boolean disableColoredText = Pref.getBoolean("widget_disable_colored_text", false);
 
         if (lastBgreading != null) {
             double estimate = 0;
@@ -232,11 +233,11 @@ public class xDripWidget extends AppWidgetProvider {
                     views.setTextViewText(R.id.widgetStatusLine, "");
                     views.setViewVisibility(R.id.widgetStatusLine, View.GONE);
                 }
-                if (bgGraphBuilder.unitized(estimate) <= bgGraphBuilder.lowMark) {
+                if (!disableColoredText && bgGraphBuilder.unitized(estimate) <= bgGraphBuilder.lowMark) {
                     views.setTextColor(R.id.widgetBg, Color.parseColor("#C30909"));
                     views.setTextColor(R.id.widgetDelta, Color.parseColor("#C30909"));
                     views.setTextColor(R.id.widgetArrow, Color.parseColor("#C30909"));
-                } else if (bgGraphBuilder.unitized(estimate) >= bgGraphBuilder.highMark) {
+                } else if (!disableColoredText && bgGraphBuilder.unitized(estimate) >= bgGraphBuilder.highMark) {
                     views.setTextColor(R.id.widgetBg, Color.parseColor("#FFBB33"));
                     views.setTextColor(R.id.widgetDelta, Color.parseColor("#FFBB33"));
                     views.setTextColor(R.id.widgetArrow, Color.parseColor("#FFBB33"));
