@@ -82,7 +82,7 @@ public class BroadcastService extends Service {
      *  When thirdparty application received  {@link Const.CMD_START}, it can send {@link Const.CMD_SET_SETTINGS} or {@link Const.CMD_UPDATE_BG_FORCE} command with settings model {@link Settings}.
      *  Both commands will store application packageKey with own settings. Stored settings would be used when there would be a new BG data in xdrip, the service will send the graph data to a specific applications (packageKey) with their own graph settings.
      *  If service received a command from not registered packageKey, this command would be skipped. So it is necessary to "register" third-party applications with CMD_SET_SETTINGS or CMD_UPDATE_BG_FORCE at first.
-     *  {@link Settings} model is a {@link Parcelable} object. Please note since it is located in package com.eveningoutpost.dexdrip.Services.broadcastservice.models and xdrip code replacing 'Services' package to lovercase 'services' after apk compilation, the thirdparty application should use the following package com.eveningoutpost.dexdrip.services.broadcastservice.models for the settings model.
+     *  {@link Settings} model is a {@link Parcelable} object. Please note since Settings model is located in package com.eveningoutpost.dexdrip.Services.broadcastservice.models and xdrip code replacing 'Services' package name to lowercase 'services' name after apk compilation, the thirdparty application should use the following package com.eveningoutpost.dexdrip.services.broadcastservice.models for the settings model.
      */
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -483,19 +483,16 @@ public class BroadcastService extends Service {
             }
 
             if (settings.isDisplayGraph()) {
-                long start = settings.getGraphStart();
-                long end = settings.getGraphEnd();
-                if (end == 0) {
-                    end = JoH.tsl();
+                long graphStartOffset = settings.getGraphStart();
+                long graphEndOffset = settings.getGraphEnd();
+                long start = JoH.tsl();
+                long end = start;
+                if (graphStartOffset == 0) {
+                    graphStartOffset = Constants.HOUR_IN_MS * 2;
                 }
-                if (start == 0) {
-                    start = JoH.tsl() - Constants.HOUR_IN_MS * 2;
-                }
-                if (start > end) {
-                    long temp = end;
-                    end = start;
-                    start = temp;
-                }
+                start = start - graphStartOffset;
+                end = end + graphEndOffset;
+
                 bundle.putInt("fuzzer", BgGraphBuilder.FUZZER);
                 bundle.putLong("start", start);
                 bundle.putLong("end", end);

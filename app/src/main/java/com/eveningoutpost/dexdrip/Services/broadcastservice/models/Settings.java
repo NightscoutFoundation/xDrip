@@ -19,15 +19,32 @@ public class Settings implements Parcelable {
         }
     };
 
+    /**
+     * Defines graph start offset in ms, if not defined, the offset would be Constants.HOUR_IN_MS *2.
+     * Would be used only if enabled displayGraph
+     */
     @Getter
     @Setter
     private long graphStart;
+
+    /**
+     * Defines graph end offset in ms, if not defined, the offset would be current time.
+     * Would be used only if enabled displayGraph
+     */
     @Getter
     @Setter
     private long graphEnd;
+
+    /**
+     * Recipient application name
+     */
     @Getter
     @Setter
     private String apkName;
+
+    /**
+     * If enabled, will send a graph lines data to recipient
+     */
     @Getter
     @Setter
     private boolean displayGraph;
