@@ -90,6 +90,7 @@ import com.eveningoutpost.dexdrip.Services.WixelReader;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.ColorCache;
 import com.eveningoutpost.dexdrip.UtilityModels.CompatibleApps;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Experience;
@@ -3000,11 +3001,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             }
         }
         if (bgGraphBuilder.unitized(estimate) <= bgGraphBuilder.lowMark) {
-            currentBgValueText.setTextColor(Color.parseColor("#C30909"));
+            currentBgValueText.setTextColor(getCol(ColorCache.X.textcolor_low_values));
         } else if (bgGraphBuilder.unitized(estimate) >= bgGraphBuilder.highMark) {
-            currentBgValueText.setTextColor(Color.parseColor("#FFBB33"));
+            currentBgValueText.setTextColor(getCol(ColorCache.X.textcolor_high_values));
         } else {
-            currentBgValueText.setTextColor(Color.WHITE);
+            currentBgValueText.setTextColor(getCol(ColorCache.X.textcolor_inrange_values));
         }
 
         // TODO this should be made more efficient probably
