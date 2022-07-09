@@ -186,6 +186,7 @@
     <string name="general_settings">Opće postavke</string>
     <string name="high_value">Vrijednost za Visoko</string>
     <string name="low_value">Vrijednost za Nisko</string>
+    <string name="stats_range_settings">Postavke raspona: </string>
     <string name="end_user_license_agreement">Licencni ugovor za krajnjeg korisnika</string>
     <string name="save">Spremi</string>
     <string name="view_important_warning">Pogledajte važno upozorenje</string>
