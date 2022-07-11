@@ -1236,6 +1236,10 @@
     <string name="send_bg_readings_to_backfill">Send BG readings to backfill</string>
     <string name="view_old_error_log">View old Error Log</string>
     <string name="return_to_home_screen">Return to Home Screen</string>
+
+    <string name="title_broadcast_service_api">Broadcast Service API</string>
+    <string name="summary_broadcast_service_api">Enables xDrip communication with third-party applications by using new API</string>
+
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Sync Data with MiBand fitness bands</string>
     <string name="title_miband_enable">Use MiBand Band</string>

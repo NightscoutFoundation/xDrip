@@ -118,6 +118,10 @@
         <service android:name=".Services.ActivityRecognizedService" />
         <service android:name=".Services.BluetoothGlucoseMeter" />
         <service
+            android:name=".Services.broadcastservice.BroadcastService"
+            android:enabled="true"
+            android:exported="true"></service>
+        <service
             android:name=".wearintegration.WatchUpdaterService"
             android:exported="true">
             <intent-filter>
