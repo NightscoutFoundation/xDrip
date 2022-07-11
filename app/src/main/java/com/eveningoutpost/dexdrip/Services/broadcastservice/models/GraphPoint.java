@@ -44,7 +44,7 @@ public class GraphPoint implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel parcel, int i) {
+    public void writeToParcel(Parcel parcel, int flags) {
         parcel.writeFloat(x);
         parcel.writeFloat(y);
     }

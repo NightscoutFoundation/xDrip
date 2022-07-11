@@ -66,7 +66,7 @@ public class Settings implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel parcel, int i) {
+    public void writeToParcel(Parcel parcel, int flags) {
         parcel.writeString(apkName);
         parcel.writeLong(graphStart);
         parcel.writeLong(graphEnd);

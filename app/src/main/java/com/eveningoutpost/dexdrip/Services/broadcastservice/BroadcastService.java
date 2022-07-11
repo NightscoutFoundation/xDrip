@@ -49,7 +49,9 @@ import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
  *  Broadcast API which provides common data like, bg values, graph info, statistic info.
  *  Also it can handle different alarms, save HR data, steps and treatments.
  *  This service was designed as a universal service so multiple thirdparty applications can use it.
- Both commands will store application packageKey with settings. Stored settings would be used when there would be a new bg data, the service will send the graph data to a specific applications (packageKey) with their own graph settings.
+ *  Both commands will store application packageKey with settings. Stored settings would be used
+ *  when there would be a new bg data, the service will send the graph data to a specific applications
+ *  (packageKey) with their own graph settings.
  *  {@link BroadcastService}
  */
 public class BroadcastService extends Service {
@@ -76,13 +78,23 @@ public class BroadcastService extends Service {
 
     /**
      *  The receiver listening {@link  ACTION_WATCH_COMMUNICATION_RECEIVER} action.
-     *  Every Receiver command requires {@link Const.INTENT_PACKAGE_KEY} and {@link Const.INTENT_FUNCTION_KEY} extra parameters in the intent.
-     *  {@link Const.INTENT_PACKAGE_KEY} describes the thirdparty application and used to identify it's own settings, so every application should use own identificator.
+     *  Every Receiver command requires {@link Const.INTENT_PACKAGE_KEY}
+     *  and {@link Const.INTENT_FUNCTION_KEY} extra parameters in the intent.
+     *  {@link Const.INTENT_PACKAGE_KEY} describes the thirdparty application and used to identify
+     *  it's own settings, so every application should use own identificator.
      *  {@link Const.INTENT_FUNCTION_KEY} describes the function command.
-     *  When thirdparty application received  {@link Const.CMD_START}, it can send {@link Const.CMD_SET_SETTINGS} or {@link Const.CMD_UPDATE_BG_FORCE} command with settings model {@link Settings}.
-     *  Both commands will store application packageKey with own settings. Stored settings would be used when there would be a new BG data in xdrip, the service will send the graph data to a specific applications (packageKey) with their own graph settings.
-     *  If service received a command from not registered packageKey, this command would be skipped. So it is necessary to "register" third-party applications with CMD_SET_SETTINGS or CMD_UPDATE_BG_FORCE at first.
-     *  {@link Settings} model is a {@link Parcelable} object. Please note since Settings model is located in package com.eveningoutpost.dexdrip.Services.broadcastservice.models and xdrip code replacing 'Services' package name to lowercase 'services' name after apk compilation, the thirdparty application should use the following package com.eveningoutpost.dexdrip.services.broadcastservice.models for the settings model.
+     *  When thirdparty application received  {@link Const.CMD_START}, it can send {@link Const.CMD_SET_SETTINGS}
+     *  or {@link Const.CMD_UPDATE_BG_FORCE} command with settings model {@link Settings}.
+     *  Both commands will store application packageKey with own settings. Stored settings
+     *  would be used when there would be a new BG data in xdrip, the service will send the
+     *  graph data to a specific applications (packageKey) with their own graph settings.
+     *  If service received a command from not registered packageKey, this command would be skipped.
+     *  So it is necessary to "register" third-party applications with CMD_SET_SETTINGS or CMD_UPDATE_BG_FORCE at first.
+     *  {@link Settings} model is a {@link Parcelable} object. Please note since Settings model
+     *  is located in package com.eveningoutpost.dexdrip.Services.broadcastservice.models and
+     *  xdrip code replacing 'Services' package name to lowercase 'services' name after
+     *  apk compilation, the thirdparty application should use the following package
+     *  com.eveningoutpost.dexdrip.services.broadcastservice.models for the settings model.
      */
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -204,7 +216,8 @@ public class BroadcastService extends Service {
     }
 
     /**
-     * When service started it's will send a broadcast message CMD_START for thirdparty applications and waiting for commands from applications by listening broadcastReceiver.
+     * When service started it's will send a broadcast message CMD_START for thirdparty
+     * applications and waiting for commands from applications by listening broadcastReceiver.
      * @see Const.CMD_START
      */
     @Override

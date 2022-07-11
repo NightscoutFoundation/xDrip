@@ -56,7 +56,7 @@ public class GraphLine implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel parcel, int i) {
+    public void writeToParcel(Parcel parcel, int flags) {
         parcel.writeList(values);
         parcel.writeInt(color);
     }
