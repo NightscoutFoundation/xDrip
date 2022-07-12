@@ -1199,6 +1199,8 @@
     <string name="send_bg_readings_to_backfill">Отправить данные с датчика для \'обратного заполнения\'</string>
     <string name="view_old_error_log">Просмотреть старый журнал ошибок</string>
     <string name="return_to_home_screen">Вернуться к домашнему экрану</string>
+    <string name="title_broadcast_service_api">API службы трансляции</string>
+    <string name="summary_broadcast_service_api">Позволяет xDrip взаимодействовать с другими приложениями, используя новый API</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Синхронизация с MiBand браслетами</string>
     <string name="title_miband_enable">Использовать MiBand</string>
