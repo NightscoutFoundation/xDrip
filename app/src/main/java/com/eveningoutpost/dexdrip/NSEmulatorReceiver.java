@@ -363,6 +363,8 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
             return;
         }
 
+        Sensor.createDefaultIfMissing();
+
         // Does this throws exception???
         byte[] ble_data = Base64.decode(decoded_buffer, Base64.NO_WRAP);
         byte[] patchUid = Base64.decode(patchUidString, Base64.NO_WRAP);
@@ -439,6 +441,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
         }
 
         Log.d(TAG, "Received NSEmulator SGV: " + faux_bgr);
+        Sensor.createDefaultIfMissing();
         return bgReadingInsertFromJson(faux_bgr.toString(), do_notification, true); // notify and force sensor
     }
 }
