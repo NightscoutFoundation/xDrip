@@ -1708,4 +1708,5 @@
     <string name="source_wizard_button">Source Wizard Button</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Please wait %d seconds before trying to start sensor</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">please update OOP2 or move to calibrate based on raw mode</string>
+    <string name="special_pairing_workaround">Special Pairing Workaround</string>
 </resources>
