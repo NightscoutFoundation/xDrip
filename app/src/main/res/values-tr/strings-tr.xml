@@ -1199,6 +1199,8 @@
     <string name="send_bg_readings_to_backfill">KŞ okumalarını doldur</string>
     <string name="view_old_error_log">Eski Hata Günlüğünü Görüntüle</string>
     <string name="return_to_home_screen">Ana Ekrana Dön</string>
+    <string name="title_broadcast_service_api">Yayın Hizmeti API\'si</string>
+    <string name="summary_broadcast_service_api">Yeni API kullanarak üçüncü taraf uygulamalarla xDrip iletişimini sağlar</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">MiBand veri senkronizasyonu</string>
     <string name="title_miband_enable">MiBand Bileklik Kullan</string>
