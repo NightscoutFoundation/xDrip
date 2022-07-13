@@ -306,6 +306,8 @@
     <string name="title_rest_api_extra_options">Допълнителни опции</string>
     <string name="show_help">Покажи помощно меню</string>
     <string name="delete_all_bg_readings">Изтриване на ВСИЧКИ стойности за КЗ</string>
+    <string name="title_broadcast_service_api">Broadcast API услуга</string>
+    <string name="summary_broadcast_service_api">Включи xDrip комуникация с приложения като използват новия API</string>
     <string name="title_miband_units">Единици</string>
     <string name="title_miband_locale_24_hour">24 часов часовник</string>
     <string name="title_miband_update_bg">Ръчно актуализиране КЗ</string>

@@ -1193,6 +1193,7 @@
     <string name="send_bg_readings_to_backfill">Wyślij odczyty glikemii do uzupełnienia</string>
     <string name="view_old_error_log">Zobacz stary dziennik błędów</string>
     <string name="return_to_home_screen">Powrót do ekranu głównego</string>
+    <string name="summary_broadcast_service_api">Umożliwia komunikację xDrip z aplikacjami innych firm poprzez użycie nowego API</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Synchronizuj dane z opaskami MiBand</string>
     <string name="title_miband_enable">Użyj opaski MiBand</string>
