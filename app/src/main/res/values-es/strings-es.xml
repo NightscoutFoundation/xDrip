@@ -1199,6 +1199,8 @@
     <string name="send_bg_readings_to_backfill">Enviar lecturas de glucemia a rellenar</string>
     <string name="view_old_error_log">Ver registro de errores anteriores</string>
     <string name="return_to_home_screen">Regresar a la pantalla de Inicio</string>
+    <string name="title_broadcast_service_api">API de Servicio de Broadcast</string>
+    <string name="summary_broadcast_service_api">Permite la comunicación de xDrip con aplicaciones de terceros mediante el uso de la nueva API</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Sincronizar datos con las pulseras de actividad MiBand</string>
     <string name="title_miband_enable">Usar MiBand</string>

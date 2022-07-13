@@ -186,6 +186,7 @@
     <string name="general_settings">Paramètres Généraux</string>
     <string name="high_value">Valeur Haute</string>
     <string name="low_value">Valeur Basse</string>
+    <string name="stats_range_settings">Paramètres de la plage: </string>
     <string name="end_user_license_agreement">Contrat de licence de l\'utilisateur final</string>
     <string name="save">Sauvegarder</string>
     <string name="view_important_warning">Voir les avertissements importants</string>

@@ -901,6 +901,7 @@
     <string name="advanced_bluereader_settings_summary">Utökade inställningar för blueReader</string>
     <string name="advanced_bluereader_settings">blueReader inställningar</string>
     <string name="bluereader_restdays_onhome_sum">Visar de uppskattade vilodagarna för blueReader på startskärmen efter att batteriet måste laddas om</string>
+    <string name="bluereader_restdays_onhome">Vilodagar på hemskärmen</string>
     <string name="bluereader_turnoff_sum">Stäng av blueReader om batterinivån är mindre än valt värde</string>
     <string name="bluereader_turnoff">Säkerhetsbrytare av</string>
     <string name="blueReader_turnoffvalue">Värde i %</string>
@@ -991,6 +992,7 @@
     <string name="bluetooth_watchdog_timer_sums">Ange värde i minuter</string>
     <string name="basal_editor">Basaländring - Välj timmar att justera</string>
     <string name="sensor_is_still_warming_up_please_wait">Sensorn värmer fortfarande upp, vänligen vänta</string>
+    <string name="number_wall_config">Konfiguration för Nummervägg</string>
     <string name="summary_If_you_plan_to_only_use_a_Wear_collector_and_never_your_phone">Om du planerar att bara använda en enhet Wear-enhet för insamling av data och aldrig en telefon.</string>
     <string name="title_Only_use_Wear">Använd endast Wear</string>
     <string name="summary_Also_show_the_filtered_data_on_the_trend">Visa även det filtrerade datat på trenden</string>
@@ -1075,6 +1077,8 @@
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatisk kalibrering</string>
     <string name="summary_send_dexcom_transmitter_battery_to_nightscout">Skicka statistik om sändarens batteri till Nightscout. Innefattar all data som visas på sttusskärmen för inhämtaren.</string>
     <string name="title_send_dexcom_transmitter_battery_to_nightscout">Ladda upp batteridata för OB1G5/G6-sändare</string>
+    <string name="title_broadcast_service_api">API för Broadcast-tjänst</string>
+    <string name="summary_broadcast_service_api">Aktiverar, med hjälp av det nya API:et, för tredjepartsapplikationer att kommunicera med xDrip</string>
     <string name="summary_ob1_g5_restart_sensor">Starta automatiskt om en sensor när den stoppas</string>
     <string name="title_ob1_g5_restart_sensor">Starta om sensor</string>
     <string name="summary_ob1_g5_preemptive_restart">Starta om en sensor i förebyggande syfte dag 6/9 för att undvika uppvärmningstiden</string>
