@@ -1658,4 +1658,5 @@
     <string name="source_wizard_button">Bouton de l\'assistant source</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Veuillez patienter %d secondes avant d\'essayer de démarrer le capteur</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">veuillez mettre à jour OOP2, sinon utilisez le mode de la calibration basée sur les mesures brutes</string>
+    <string name="special_pairing_workaround">Contournement de jumelage spécial</string>
 </resources>
