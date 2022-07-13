@@ -70,17 +70,17 @@
 
                 <PreferenceCategory
                     android:key="xdrip_plus_display_textcolorset1"
-                    android:title="@string/glucose_values_textcolor">
+                    android:title="@string/color_bg_values">
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#FFBB33"
-                        android:key="textcolor_high_values"
+                        android:key="color_high_bg_values"
                         android:title="@string/high_glucose_values"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
                         app:colorpicker_showHex="false" />
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#FFFFFF"
-                        android:key="textcolor_inrange_values"
+                        android:key="color_inrange_bg_values"
                         android:title="@string/in_range_glucose_values"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
@@ -88,7 +88,7 @@
 
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#C30909"
-                        android:key="textcolor_low_values"
+                        android:key="color_low_bg_values"
                         android:title="@string/low_glucose_values"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"

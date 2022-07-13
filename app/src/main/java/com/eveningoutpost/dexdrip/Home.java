@@ -3001,11 +3001,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             }
         }
         if (bgGraphBuilder.unitized(estimate) <= bgGraphBuilder.lowMark) {
-            currentBgValueText.setTextColor(getCol(ColorCache.X.textcolor_low_values));
+            currentBgValueText.setTextColor(getCol(ColorCache.X.color_low_bg_values));
         } else if (bgGraphBuilder.unitized(estimate) >= bgGraphBuilder.highMark) {
-            currentBgValueText.setTextColor(getCol(ColorCache.X.textcolor_high_values));
+            currentBgValueText.setTextColor(getCol(ColorCache.X.color_high_bg_values));
         } else {
-            currentBgValueText.setTextColor(getCol(ColorCache.X.textcolor_inrange_values));
+            currentBgValueText.setTextColor(getCol(ColorCache.X.color_inrange_bg_values));
         }
 
         // TODO this should be made more efficient probably

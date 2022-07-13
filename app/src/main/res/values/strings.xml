@@ -325,7 +325,7 @@
     <string name="high_glucose_values">High Glucose Values</string>
     <string name="in_range_glucose_values">In-range Glucose Values</string>
     <string name="default_color_selected">Default Color Selected</string>
-    <string name="glucose_values_textcolor">Text Colors for Glucose Values</string>
+    <string name="color_bg_values">Colors of BG Reading and Trend Arrow</string>
     <string name="xdrip_plus_extra_settings">xDrip+ extra settings</string>
     <string name="example_chart">Example Chart</string>
     <string name="treatments_prediction_curves">Treatments / Prediction Curves</string>
