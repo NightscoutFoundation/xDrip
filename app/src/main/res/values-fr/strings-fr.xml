@@ -305,6 +305,7 @@
     <string name="high_glucose_values">Valeurs Hyperglycémies</string>
     <string name="in_range_glucose_values">Valeurs de glycémie dans la cible</string>
     <string name="default_color_selected">Couleur par défaut sélectionnée</string>
+    <string name="color_bg_values">Couleurs de lecture de glycémie et de flèche de tendance</string>
     <string name="xdrip_plus_extra_settings">xDrip+ Extra</string>
     <string name="example_chart">Exemple Graphique</string>
     <string name="treatments_prediction_curves">Traitements / Courbes de prévision</string>
