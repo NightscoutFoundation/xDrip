@@ -305,6 +305,7 @@
     <string name="high_glucose_values">Högt glukosvärde</string>
     <string name="in_range_glucose_values">I-mål glukosvärde</string>
     <string name="default_color_selected">Standardfärg vald</string>
+    <string name="color_bg_values">Färger för BG-värden och Trendpil</string>
     <string name="xdrip_plus_extra_settings">xDrip+ ytterligare inställningar</string>
     <string name="example_chart">Exempelkurva</string>
     <string name="treatments_prediction_curves">Behandlingar / Förutspåelsekurvor</string>
