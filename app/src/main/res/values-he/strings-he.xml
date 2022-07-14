@@ -303,6 +303,7 @@
     <string name="high_glucose_values">ערכי סוכר גבוהים</string>
     <string name="in_range_glucose_values">ערכי סוכר בטווח</string>
     <string name="default_color_selected">נבחר צבע ברירת מחדל</string>
+    <string name="color_bg_values">צבע של קריאות סוכר וחץ כיוון</string>
     <string name="xdrip_plus_extra_settings">הגדרות נוספות</string>
     <string name="example_chart">גרף לדוגמה</string>
     <string name="treatments_prediction_curves">טיפולים \\ עקומות חיזוי</string>
