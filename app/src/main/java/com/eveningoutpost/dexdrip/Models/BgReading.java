@@ -536,7 +536,11 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public void postProcess(final boolean quick) {
-        injectNoise(true); // Add noise parameter for nightscout
+        postProcess(quick,false);
+    }
+
+    public void postProcess(final boolean quick, boolean handleLibre2Noise) {
+        injectNoise(true, handleLibre2Noise); // Add noise parameter for nightscout
         injectDisplayGlucose(BestGlucose.getDisplayGlucose()); // Add display glucose for nightscout
         BgSendQueue.handleNewBgReading(this, "create", xdrip.getAppContext(), Home.get_follower(), quick);
     }
@@ -1163,7 +1167,7 @@ public class BgReading extends Model implements ShareUploadableBg {
             return existing;
         }
     }
-    public static synchronized BgReading bgReadingInsertLibre2(double calculated_value, long timestamp, double raw_data) {
+    public static synchronized BgReading bgReadingInsertLibre2(double calculated_value, long timestamp, double raw_data, double noise) {
 
         final Sensor sensor = Sensor.currentSensor();
         if (sensor == null) {
@@ -1181,18 +1185,24 @@ public class BgReading extends Model implements ShareUploadableBg {
                 bgReading.sensor_uuid = sensor.uuid;
                 bgReading.raw_data = raw_data;
                 bgReading.age_adjusted_raw_value = raw_data;
-                bgReading.filtered_data = raw_data;
+                bgReading.filtered_data = calculated_value;
                 bgReading.timestamp = timestamp;
                 bgReading.uuid = UUID.randomUUID().toString();
                 bgReading.calculated_value = calculated_value;
                 bgReading.calculated_value_slope = 0;
-                bgReading.hide_slope = false;
+
+                // hide slope if noise is too high
+                bgReading.hide_slope = (!Double.isNaN(noise)) && noise >= BgGraphBuilder.NOISE_HIGH;
+
+                // this is a hack, but there is no way to store the raw noise estimate in BgReading
+                bgReading.noise = String.valueOf(noise);
+
                 bgReading.appendSourceInfo("Libre2 Native");
                 bgReading.find_slope();
 
                 bgReading.save();
                 bgReading.perform_calculations();
-                bgReading.postProcess(false);
+                bgReading.postProcess(false, true);
 
             } else {
                 Log.d(TAG, "Calibrations, so doing everything bgReading = " + bgReading);
@@ -1202,7 +1212,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                 bgReading.calibration_uuid = calibration.uuid;
                 bgReading.raw_data = raw_data ;
                 bgReading.age_adjusted_raw_value = raw_data;
-                bgReading.filtered_data = raw_data;
+                bgReading.filtered_data = calculated_value;
                 bgReading.timestamp = timestamp;
                 bgReading.uuid = UUID.randomUUID().toString();
 
@@ -1210,7 +1220,13 @@ public class BgReading extends Model implements ShareUploadableBg {
                 bgReading.filtered_calculated_value = ((calibration.slope * bgReading.ageAdjustedFiltered()) + calibration.intercept);
 
                 bgReading.calculated_value_slope = 0;
-                bgReading.hide_slope = false;
+
+                // hide slope if noise is too high
+                bgReading.hide_slope = (!Double.isNaN(noise)) && noise >= BgGraphBuilder.NOISE_HIGH;
+
+                // this is a hack, but there is no way to store the raw noise estimate in BgReading
+                bgReading.noise = String.valueOf(noise);
+
                 bgReading.appendSourceInfo("Libre2 Native");
 
                 BgReading.updateCalculatedValueToWithinMinMax(bgReading);
@@ -1218,7 +1234,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                 bgReading.find_slope();
                 bgReading.save();
 
-                bgReading.postProcess(false);
+                bgReading.postProcess(false, true);
 
             }
 
@@ -1756,11 +1772,36 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public BgReading injectNoise(boolean save) {
+        return injectNoise(save,false);
+    }
+
+    public BgReading injectNoise(boolean save, boolean handleLibre2Noise) {
         final BgReading bgReading = this;
-        if (JoH.msSince(bgReading.timestamp) > Constants.MINUTE_IN_MS * 20) {
+        // Get our raw noise estimate back from our temporary stashing location
+        double libre2Noise = handleLibre2Noise ? Double.valueOf(bgReading.noise) : Double.NaN;
+        if (!handleLibre2Noise && JoH.msSince(bgReading.timestamp) > Constants.MINUTE_IN_MS * 20) {
             bgReading.noise = "0";
         } else {
             BgGraphBuilder.refreshNoiseIfOlderThan(bgReading.timestamp);
+            if (handleLibre2Noise) {
+                // We weren't able to determine a noise level
+                if (libre2Noise == Double.NaN) {
+                    // I don't like the way this is handled, but it mirrors the Dexcom way of doing things
+                    BgGraphBuilder.last_noise = -9999;
+
+                    // Storing data here creates a weird UI layout, so don't write the estimates
+                    // BgGraphBuilder.last_bg_estimate = -9999;
+                    // BgGraphBuilder.best_bg_estimate = -9999;
+                } else {
+                    BgGraphBuilder.last_noise = libre2Noise;
+
+                    // Storing data here creates a weird UI layout, so don't write the estimates
+                    // BgGraphBuilder.best_bg_estimate = bgReading.calculated_value;
+                    // BgGraphBuilder.last_bg_estimate = bgReading.calculated_value;
+                }
+                // restore the original value of the field
+                bgReading.noise = "0";
+            }
             if (BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_HIGH) {
                 bgReading.noise = "4";
             } else if (BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_TOO_HIGH_FOR_PREDICT) {

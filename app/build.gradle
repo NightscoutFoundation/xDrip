@@ -10,8 +10,10 @@ buildscript {
     }
 }
 apply plugin: 'com.android.application'
+
 apply from: 'token-replace.gradle'
 apply from: '../common.gradle'
+apply plugin: 'kotlin-android'
 
 if (project.file('local.gradle').exists()) {
     apply from: 'local.gradle'
@@ -35,6 +37,7 @@ repositories {
     flatDir {
         dirs 'libs'
     }
+    mavenCentral()
 }
 
 /**
@@ -327,6 +330,7 @@ dependencies {
     // use lombok in unit tests
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
 tasks.withType(Test) {

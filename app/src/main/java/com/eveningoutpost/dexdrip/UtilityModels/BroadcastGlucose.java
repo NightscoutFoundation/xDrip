@@ -71,6 +71,7 @@ public class BroadcastGlucose {
                 if (bgReading.source_info != null) {
                     bundle.putString(Intents.XDRIP_DATA_SOURCE_INFO, bgReading.source_info);
                 }
+                bundle.putBoolean(Intents.XDRIP_DATA_SOURCE_HAS_NOISE_FILTERING,true);
 
                 bundle.putString(Intents.XDRIP_VERSION_INFO, BuildConfig.buildVersion + " " + BuildConfig.VERSION_NAME);
 

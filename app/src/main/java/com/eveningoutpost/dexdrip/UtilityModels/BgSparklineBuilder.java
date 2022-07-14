@@ -1,11 +1,9 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
-import android.util.DisplayMetrics;
 import android.view.View;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -38,8 +36,9 @@ public class BgSparklineBuilder {
     protected int height;
     protected BgGraphBuilder bgGraphBuilder;
     protected LineChartView chart;
-    protected long end = new Date().getTime() / BgGraphBuilder.FUZZER;
-    protected long start = end - (60000*180 / BgGraphBuilder.FUZZER); // 3h
+    protected long endTimeInMillis = new Date().getTime();
+    protected long end = BgGraphBuilder.timestampToFuzzedGraphPos(endTimeInMillis);
+    protected long start = BgGraphBuilder.timestampToFuzzedGraphPos(endTimeInMillis- 60000*180); // 3h
     protected boolean showLowLine = false;
     protected boolean showHighLine = false;
     protected boolean showAxes = false;
@@ -50,12 +49,12 @@ public class BgSparklineBuilder {
     protected final static int SCALE_TRIGGER = 84;
 
     public BgSparklineBuilder setStart(long start) {
-        this.start = start / BgGraphBuilder.FUZZER;
+        this.start = BgGraphBuilder.timestampToFuzzedGraphPos(start);
         return this;
     }
 
     public BgSparklineBuilder setEnd(long end) {
-        this.end = end / BgGraphBuilder.FUZZER;
+        this.end = BgGraphBuilder.timestampToFuzzedGraphPos(end);
         return this;
     }
 

@@ -1,7 +1,6 @@
 package com.eveningoutpost.dexdrip.utils;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
@@ -14,6 +13,7 @@ import com.eveningoutpost.dexdrip.Models.ReadingData;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
@@ -28,8 +28,6 @@ import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.LineChartView;
-
-import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.FUZZER;
 
 
 public class LibreTrendGraph extends BaseAppCompatActivity {
@@ -120,7 +118,7 @@ public class LibreTrendGraph extends BaseAppCompatActivity {
              }
              long bg_time = libreTrendLatest.timestamp - time_offset;
              if (bg_time <= end_time && bg_time >= start_time) {
-                 points.add(new PointValue((float) ((double)(bg_time) / FUZZER), bg * conversion_factor_mmol));
+                 points.add(new PointValue((float)BgGraphBuilder.timeStampToGraphPos((double)(bg_time)), bg * conversion_factor_mmol));
              }
              
              time_offset += Constants.MINUTE_IN_MS;

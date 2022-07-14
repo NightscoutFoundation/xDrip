@@ -1371,6 +1371,67 @@
                     android:key="Libre2_showSensors"
                     android:summary="switch to On to show additional Information's in Status for Libre 2 Sensors"
                     android:title="show Sensors Infos in Status" />
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:key="Libre2_useSavitzkyGolay"
+                    android:summary="switch to On to use Savitzky-Golay filter for smoothing raw BG values"
+                    android:title="Use Savitzky-Golay filter" />
+                <EditTextPreference
+                    android:dependency="engineering_mode"
+                    android:defaultValue="25"
+                    android:key="Libre2_sgHorizon"
+                    android:selectAllOnFocus="true"
+                    android:singleLine="true"
+                    android:summary="The number of minutes that the Savitzky-Golay smoother looks back in time"
+                    android:title="Savitzky-Golay smoothing horizon" />
+                <EditTextPreference
+                    android:dependency="engineering_mode"
+                    android:defaultValue="2"
+                    android:key="Libre2_sgLag"
+                    android:selectAllOnFocus="true"
+                    android:singleLine="true"
+                    android:summary="The lag (in number of raw values) from the most recent value at which the Savitzky-Golay smoother is evaluated"
+                    android:title="Savitzky-Golay Smoothing Lag" />
+                <EditTextPreference
+                    android:dependency="engineering_mode"
+                    android:defaultValue="3"
+                    android:key="Libre2_sgPolynomialOrder"
+                    android:selectAllOnFocus="true"
+                    android:singleLine="true"
+                    android:summary="The polynomial order of the Savitzky-Golay smoother"
+                    android:title="Savitzky-Golay polynomial order" />
+                <EditTextPreference
+                    android:dependency="engineering_mode"
+                    android:defaultValue="0.333"
+                    android:key="Libre2_sgWeightedAverageFraction"
+                    android:selectAllOnFocus="true"
+                    android:singleLine="true"
+                    android:summary="Savitzky-Golay computes the final value as a linear combination of its result and a weighted average with the fraction given here."
+                    android:title="Savitzky-Golay weighted average fraction of final value" />
+                <EditTextPreference
+                    android:dependency="engineering_mode"
+                    android:defaultValue="15"
+                    android:key="Libre2_sgWeightedAverageHorizon"
+                    android:selectAllOnFocus="true"
+                    android:singleLine="true"
+                    android:summary="The time horizon in minutes used for the weighted average. Must be smaller than the Savitzky-Golay horizon."
+                    android:title="Savitzky-Golay weighted average horizon" />
+                <EditTextPreference
+                    android:dependency="engineering_mode"
+                    android:defaultValue="16"
+                    android:key="noiseHorizon"
+                    android:selectAllOnFocus="true"
+                    android:singleLine="true"
+                    android:summary="The time horizon in minutes used for Libre2 noise estimation."
+                    android:title="Noise estimation horizon" />
+                <EditTextPreference
+                    android:dependency="engineering_mode"
+                    android:defaultValue="16"
+                    android:key="noisePolynomialOrder"
+                    android:selectAllOnFocus="true"
+                    android:singleLine="true"
+                    android:summary="The polyonmial order used for fitting the filtered values."
+                    android:title="Noise estimation polynomial order" />
             </PreferenceScreen>
 
             <CheckBoxPreference

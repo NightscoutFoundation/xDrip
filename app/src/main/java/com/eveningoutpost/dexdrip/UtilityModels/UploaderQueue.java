@@ -248,6 +248,7 @@ public class UploaderQueue extends Model {
     public static List<UploaderQueue> getPendingbyType(String className, long bitfield, int limit) {
         if (d) UserError.Log.d(TAG, "get Pending by type: " + className);
         last_query = JoH.tsl();
+        long skip_older_than = last_query - 60 * 60 * 24 * 2 * 1000;
         try {
             final String bitfields = Long.toString(bitfield);
             return new Select()
@@ -255,6 +256,7 @@ public class UploaderQueue extends Model {
                     .where("otype = ?", className)
                     .where("(bitfield_wanted & " + bitfields + ") == " + bitfields)
                     .where("(bitfield_complete & " + bitfields + ") != " + bitfields)
+                    .where("timestamp > " + skip_older_than)
                     .orderBy("timestamp asc, _id asc") // would _id asc be sufficient?
                     .limit(limit)
                     .execute();
