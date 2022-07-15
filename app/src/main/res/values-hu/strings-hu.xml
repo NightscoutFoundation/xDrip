@@ -304,6 +304,7 @@
     <string name="high_glucose_values">Magas VC-értékek</string>
     <string name="in_range_glucose_values">Céltartományon belüli VC-értékek</string>
     <string name="default_color_selected">Alapértelmezett szín</string>
+    <string name="color_bg_values">VC-értékek és trendnyilak színe</string>
     <string name="xdrip_plus_extra_settings">xDrip+ egyéb beállítások</string>
     <string name="example_chart">Minta grafikon</string>
     <string name="treatments_prediction_curves">Kezelési/előrejelzési görbék</string>
@@ -1565,6 +1566,8 @@
     <string name="title_broadcast_snooze">Helyi adatszórás</string>
     <string name="summary_accept_broadcast_snooze">Szundi elfogadása más app-tól ezen készüléken</string>
     <string name="title_accept_broadcast_snooze">Helyi adatszórás engedélyezése</string>
+    <string name="title_bg_compensate_noise">\u26A0 szenzorzaj csökkentése</string>
+    <string name="title_bg_compensate_noise_ultrasensitive">\u26A0 szenzorzaj csökkentése (nagy érzékenységű üzemmód)</string>
     <string name="no_battery_optimization_whitelisting">Úgy tűnik, a készüléke nem vezet kivétellistát az akku optimalizált app-okról!</string>
     <string name="no_i_really_know">Nem, tényleg tudom, mit csinálok</string>
     <string name="use_for_calibration">Használja a %s értéket kalibrációra?</string>
