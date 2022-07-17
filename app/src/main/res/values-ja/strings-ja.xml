@@ -185,6 +185,7 @@
     <string name="general_settings">一般設定</string>
     <string name="high_value">高値</string>
     <string name="low_value">低血糖</string>
+    <string name="stats_range_settings">レンジ設定 </string>
     <string name="end_user_license_agreement">エンドユーザーの使用許諾契約</string>
     <string name="save">保存</string>
     <string name="view_important_warning">重要な警告を見る</string>
@@ -312,6 +313,7 @@
     <!-- trend arrow for speak -->
     <string name="Flat">フラット</string>
     <string name="days">日</string>
+    <string name="eng_mode_is_on">エンジニアリングモードが有効になっています。予期せぬ動作を引き起こす可能性があるため、必要な場合以外は無効にしてください。</string>
     <string name="yes">はい</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
@@ -350,6 +352,7 @@
     <string name="unit_weeks">週\"</string>
     <string name="no_data">データがありません。</string>
     <string name="title_tidepool">Tidepool</string>
+    <string name="summary_broadcast_service_api">新しいAPIを使用して、サードパーティのアプリケーションとxDrip通信を有効にします。</string>
     <string name="title_features">機能</string>
     <string name="title_screens">画面</string>
     <string name="title_color_smb_icon">SMBアイコン</string>
@@ -386,4 +389,5 @@
     <string name="play_sounds_when_importing">プロファイルなどの重要なデータをインポートしたときに音を鳴らす</string>
     <string name="show_action_buttons_within_alerts">警報通知内にアクションボタン\"(\"スヌーズ等\")\"を表示する</string>
     <string name="alert_buttons">警報ボタン</string>
+    <string name="please_wait_seconds_before_trying_to_start_sensor">センサーを起動する前に %d 秒お待ちください</string>
 </resources>
