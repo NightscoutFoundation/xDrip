@@ -166,8 +166,11 @@
     <string name="expires_days">{0, choice,0#Изтекъл сензор!|1#Изтича след {0, number} ден|1&lt;Изтича след {0, number} дни}</string>
     <string name="expires_at">Свършва {0}</string>
     <string name="space_minutes_ago">" Преди мин"</string>
+    <string name="in_libre_all_house_mode_no_readings_collected_yet">"В Либре режим цяла къща: не са намерени отчитания."</string>
+    <string name="in_libre_all_house_mode_last_data_collected">"В либре режим цяла къща: Последно отчитане "</string>
     <string name="space_minute_ago">" Преди минута"</string>
     <string name="show_parakeet_map">Покажи Parakeet карта</string>
+    <string name="switch_parakeet_to_setup_mode">Преминаване на Parakeet към Режим за настройване</string>
     <string name="view_events_log">Покажи лог събитя</string>
     <string name="show_libre_trend">Покажи Libre тенденция</string>
     <string name="libre_15_minutes_graph">Libre 15 минутна графа</string>
@@ -216,8 +219,11 @@
     <string name="persistent_high_alert">Продължително висока Кз алерт</string>
     <string name="forecasted_low_alert">Предвижда се Аларма за Ниска КЗ</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Екстраполиране на данните в опит да се предвиди ниска КЗ</string>
+    <string name="alarm_at_forecasted_low_mins">Аларма при предвиждане на Ниски стойности(Кз)</string>
     <string name="other_xdrip_plus_alerts">Други xDrip+ известия</string>
     <string name="xdrip_plus_display_settings">xDrip+ Персонализиране</string>
+    <string name="display_customisations">Покажи персонализация</string>
+    <string name="insulin_carb_ratios_etc_for_models">Инсулин, Въглехидратно съотношение и др. за модели</string>
     <string name="add_calibration">Добавяне калибрация</string>
     <string name="system_status">Системен статус</string>
     <string name="settings">Настройки</string>
