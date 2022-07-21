@@ -78,7 +78,6 @@ import lecho.lib.hellocharts.model.ValueShape;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
-import lombok.val;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.tolerantParseDouble;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
@@ -111,7 +110,7 @@ public class BgGraphBuilder {
 
 
     private final static double timeshift = 500_000;
-    private static final int NUM_VALUES = (60 / 5) * 24;
+    private static final int MAX_VALUES = 60 * 24;
 
     // flag to indicate if readings data has been adjusted
     private static boolean plugin_adjusted = false;
@@ -185,7 +184,7 @@ public class BgGraphBuilder {
     }
 
     public BgGraphBuilder(Context context, long start, long end) {
-        this(context, start, end, NUM_VALUES, true);
+        this(context, start, end, MAX_VALUES, true);
     }
 
     public BgGraphBuilder(Context context, long start, long end, int numValues, boolean show_prediction) {
@@ -217,7 +216,7 @@ public class BgGraphBuilder {
             loaded_end = end;
             bgReadings = BgReading.latestForGraph(numValues, start, end);
             if (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreReceiver)
-                Libre2RawValues = Libre2RawValue.latestForGraph(numValues * 5, start, end);
+                Libre2RawValues = Libre2RawValue.latestForGraph(numValues, start, end);
             plugin_adjusted = false;
         } finally {
             readings_lock.unlock();
@@ -1663,7 +1662,7 @@ public class BgGraphBuilder {
                     final double relaxed_predicted_bg_limit = initial_predicted_bg * 1.20;
                     final double cob_insulin_max_draw_value = highMark * 1.20;
                     // final List<Iob> iobinfo_old = Treatments.ioBForGraph(numValues, (start_time * FUZZER));
-                    final List<Iob> iobinfo = (simulation_enabled) ? Treatments.ioBForGraph_new(NUM_VALUES, (start_time * FUZZER)) : null; // for test
+                    final List<Iob> iobinfo = (simulation_enabled) ? Treatments.ioBForGraph_new(MAX_VALUES, (start_time * FUZZER)) : null; // for test
 
                     long fuzzed_timestamp = (long) end_time; // initial value in case there are no iob records
                     if (d)
