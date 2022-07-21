@@ -305,6 +305,7 @@
     <string name="high_glucose_values">Yüksek Kan Şekeri değerleri</string>
     <string name="in_range_glucose_values">Hedef içerisindeki Glikoz Değerleri</string>
     <string name="default_color_selected">Varsayılan Renk Seçildi</string>
+    <string name="color_bg_values">KŞ Okuma Renkleri ve Eğilim Ok</string>
     <string name="xdrip_plus_extra_settings">xDrip+ ekstra ayarlar</string>
     <string name="example_chart">Örnek Grafik</string>
     <string name="treatments_prediction_curves">Tedaviler / Tahmin Eğrileri</string>
@@ -1659,4 +1660,5 @@
     <string name="source_wizard_button">Kaynak Sihirbazı Düğmesi</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Sensörü başlatmayı denemeden önce lütfen %d saniye bekleyin</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">lütfen OOP2\'yi güncelleyin, aksi takdirde ham glikoza ölçümlerine dayalı kalibrasyon modunu kullanın</string>
+    <string name="special_pairing_workaround">Geçici Özel Eşleştirme Çözümü</string>
 </resources>

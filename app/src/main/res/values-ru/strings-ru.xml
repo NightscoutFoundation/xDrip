@@ -1642,4 +1642,5 @@
     <string name="source_wizard_button">Кнопка мастера настройки источника</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Подождите %d секунд перед попыткой запустить сенсор</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">пожалуйста, обновите OOP2 или переключитесь на калибровку, основанную на raw-режиме</string>
+    <string name="special_pairing_workaround">Специальный обходной путь сопряжения</string>
 </resources>
