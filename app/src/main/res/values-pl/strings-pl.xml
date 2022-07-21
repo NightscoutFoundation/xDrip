@@ -305,6 +305,7 @@
     <string name="high_glucose_values">Wysoka wartość stężenia glukozy</string>
     <string name="in_range_glucose_values">Dopuszczalne wartości glikemii</string>
     <string name="default_color_selected">Domyślny kolor dla zaznaczenia</string>
+    <string name="color_bg_values">Kolory odczytów glikemii i strzałki trendów</string>
     <string name="xdrip_plus_extra_settings">xDrip+ dodatkowe ustawienia</string>
     <string name="example_chart">Przykładowy Wykres</string>
     <string name="treatments_prediction_curves">Zabiegi / Krzywe Info</string>

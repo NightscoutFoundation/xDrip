@@ -305,6 +305,7 @@
     <string name="high_glucose_values">Visoke vrijednosti glukoze</string>
     <string name="in_range_glucose_values">Vrijednosti glukoze u rasponu</string>
     <string name="default_color_selected">Odabrana početna postavka boje</string>
+    <string name="color_bg_values">Boje BG očitanja i strelice trenda</string>
     <string name="xdrip_plus_extra_settings">xDrip+ dodatne postavke</string>
     <string name="example_chart">Primjer grafikona</string>
     <string name="treatments_prediction_curves">Krivulje treatmana / prognoza</string>
@@ -985,4 +986,5 @@
     <string name="locked_time_period_always_used">Zaključano vremensko razdoblje uvijek korišteno</string>
     <string name="show_time_buttons">Prikaži gumbe za vrijeme</string>
     <string name="source_wizard_button">Gumb čarobnjaka izvora</string>
+    <string name="special_pairing_workaround">Zaobilazno rješenje posebnog uparivanja</string>
 </resources>

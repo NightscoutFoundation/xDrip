@@ -305,6 +305,7 @@
     <string name="high_glucose_values">Valeurs Hyperglycémies</string>
     <string name="in_range_glucose_values">Valeurs de glycémie dans la cible</string>
     <string name="default_color_selected">Couleur par défaut sélectionnée</string>
+    <string name="color_bg_values">Couleurs de lecture de glycémie et de flèche de tendance</string>
     <string name="xdrip_plus_extra_settings">xDrip+ Extra</string>
     <string name="example_chart">Exemple Graphique</string>
     <string name="treatments_prediction_curves">Traitements / Courbes de prévision</string>
@@ -1658,4 +1659,5 @@
     <string name="source_wizard_button">Bouton de l\'assistant source</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Veuillez patienter %d secondes avant d\'essayer de démarrer le capteur</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">veuillez mettre à jour OOP2, sinon utilisez le mode de la calibration basée sur les mesures brutes</string>
+    <string name="special_pairing_workaround">Contournement de jumelage spécial</string>
 </resources>

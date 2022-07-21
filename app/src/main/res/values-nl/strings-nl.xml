@@ -1652,4 +1652,5 @@
     <string name="source_wizard_button">Bron wizard knop</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Wacht %d seconden voordat u de sensor probeert te starten</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">Update OOP2 of gebruik kalibreren op basis van ruwe modus</string>
+    <string name="special_pairing_workaround">Workaround voor speciale koppeling</string>
 </resources>
