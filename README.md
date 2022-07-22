@@ -52,6 +52,12 @@ Your data is yours and can be exported in many different ways. xDrip also interc
 ## Collaboration
 We are very happy if people want to collaborate with this project. Please contact us at [Discussions](https://github.com/NightscoutFoundation/xDrip/discussions) if you want to get involved and study the [collaboration guidelines](CONTRIBUTING.md) before submitting any patches or pull requests.
 
+## Help
+Documentation exists on two different websites on which volunteers work closely and provide feedback and suggestions to each other:
+
+* [https://xdrip.readthedocs.io/](https://xdrip.readthedocs.io/)
+* [https://navid200.github.io/xDrip/](https://navid200.github.io/xDrip/)
+
+What are your thoughts on this?
 ## Thanks
 None of this would be possible without all the hard work of the xDrip and Nightscout communities who have developed such excellent software and allowed us to build upon it.
-
