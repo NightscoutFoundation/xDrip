@@ -58,6 +58,5 @@ Documentation exists on two different websites on which volunteers work closely 
 * [https://xdrip.readthedocs.io/](https://xdrip.readthedocs.io/)
 * [https://navid200.github.io/xDrip/](https://navid200.github.io/xDrip/)
 
-What are your thoughts on this?
 ## Thanks
 None of this would be possible without all the hard work of the xDrip and Nightscout communities who have developed such excellent software and allowed us to build upon it.
