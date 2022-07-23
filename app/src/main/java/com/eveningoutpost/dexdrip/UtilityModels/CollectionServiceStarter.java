@@ -230,6 +230,7 @@ public class CollectionServiceStarter {
         JoH.stopService(getCollectorServiceClass(Medtrum));
         JoH.stopService(getCollectorServiceClass(NSFollow));
         JoH.stopService(getCollectorServiceClass(SHFollow));
+        JoH.stopService(getCollectorServiceClass(WebFollow));
     }
 
     private void start(Context context, String collection_method) {
