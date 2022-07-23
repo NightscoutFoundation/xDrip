@@ -305,6 +305,7 @@
     <string name="high_glucose_values">Высокие значения глюкозы</string>
     <string name="in_range_glucose_values">Значения глюкозы в диапазоне</string>
     <string name="default_color_selected">Цвет по-умолчанию</string>
+    <string name="color_bg_values">Цвета показания ГК и стрелки тренда</string>
     <string name="xdrip_plus_extra_settings">Дополнительные настройки xDrip+</string>
     <string name="example_chart">Пример графика</string>
     <string name="treatments_prediction_curves">Введённые значения / Прогнозные кривые</string>
