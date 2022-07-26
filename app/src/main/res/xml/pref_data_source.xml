@@ -298,11 +298,17 @@
                     android:summary="@string/summary_using_g6"
                     android:title="@string/title_using_g6" />
                 <CheckBoxPreference
-                    android:defaultValue="true"
+                    android:defaultValue="false"
                     android:key="ob1_g5_allow_resetbond"
                     android:dependency="use_ob1_g5_collector_service"
                     android:summary="@string/summary_ob1_g5_allow_resetbond"
                     android:title="@string/title_ob1_g5_allow_resetbond" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="ob1_special_pairing_workaround"
+                    android:dependency="use_ob1_g5_collector_service"
+                    android:summary="Some Samsung devices can have an error where they lose the pairing information. This attempts to work around the issue."
+                    android:title="@string/special_pairing_workaround" />
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="ob1_initiate_bonding_flag"

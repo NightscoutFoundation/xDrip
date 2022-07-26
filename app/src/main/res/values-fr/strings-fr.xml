@@ -186,6 +186,7 @@
     <string name="general_settings">Paramètres Généraux</string>
     <string name="high_value">Valeur Haute</string>
     <string name="low_value">Valeur Basse</string>
+    <string name="stats_range_settings">Paramètres de la plage: </string>
     <string name="end_user_license_agreement">Contrat de licence de l\'utilisateur final</string>
     <string name="save">Sauvegarder</string>
     <string name="view_important_warning">Voir les avertissements importants</string>
@@ -304,6 +305,7 @@
     <string name="high_glucose_values">Valeurs Hyperglycémies</string>
     <string name="in_range_glucose_values">Valeurs de glycémie dans la cible</string>
     <string name="default_color_selected">Couleur par défaut sélectionnée</string>
+    <string name="color_bg_values">Couleurs de lecture de glycémie et de flèche de tendance</string>
     <string name="xdrip_plus_extra_settings">xDrip+ Extra</string>
     <string name="example_chart">Exemple Graphique</string>
     <string name="treatments_prediction_curves">Traitements / Courbes de prévision</string>
@@ -912,6 +914,7 @@
     <string name="offical_msg">L\'application officielle</string>
     <string name="use_conflict_msg">peut essayer d\'accéder au périphérique émetteur et cela peut causer des problèmes avec les deux applications</string>
     <string name="use_confict_msg_glimp">Vous pouvez ajuster les paramètres de Glimp : options -&gt; périphériques -&gt; désélectionner l\'option Bluetooth</string>
+    <string name="eng_mode_is_on">Le mode Ingénierie est activé. Veuillez le désactiver à moins que vous n\'en ayez besoin car il peut causer un comportement inattendu.</string>
     <string name="yes">Oui</string>
     <string name="xdrip_compatible_features">Fonctionnalités %s xDrip+</string>
     <string name="garmin">Garmin</string>
@@ -1656,4 +1659,5 @@
     <string name="source_wizard_button">Bouton de l\'assistant source</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Veuillez patienter %d secondes avant d\'essayer de démarrer le capteur</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">veuillez mettre à jour OOP2, sinon utilisez le mode de la calibration basée sur les mesures brutes</string>
+    <string name="special_pairing_workaround">Contournement de jumelage spécial</string>
 </resources>

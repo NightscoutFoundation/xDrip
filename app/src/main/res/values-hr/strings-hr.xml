@@ -186,6 +186,7 @@
     <string name="general_settings">Opće postavke</string>
     <string name="high_value">Vrijednost za Visoko</string>
     <string name="low_value">Vrijednost za Nisko</string>
+    <string name="stats_range_settings">Postavke raspona: </string>
     <string name="end_user_license_agreement">Licencni ugovor za krajnjeg korisnika</string>
     <string name="save">Spremi</string>
     <string name="view_important_warning">Pogledajte važno upozorenje</string>
@@ -304,6 +305,7 @@
     <string name="high_glucose_values">Visoke vrijednosti glukoze</string>
     <string name="in_range_glucose_values">Vrijednosti glukoze u rasponu</string>
     <string name="default_color_selected">Odabrana početna postavka boje</string>
+    <string name="color_bg_values">Boje BG očitanja i strelice trenda</string>
     <string name="xdrip_plus_extra_settings">xDrip+ dodatne postavke</string>
     <string name="example_chart">Primjer grafikona</string>
     <string name="treatments_prediction_curves">Krivulje treatmana / prognoza</string>
@@ -912,6 +914,7 @@
     <string name="offical_msg">Službena aplikacija</string>
     <string name="use_conflict_msg">može pokušati pristupiti i uređaju odašiljača i to može uzrokovati probleme s obje aplikacije</string>
     <string name="use_confict_msg_glimp">Možete prilagoditi Glimp postavke: opcije -&gt; uređaji -&gt; poništite odabir opcije Bluetooth</string>
+    <string name="eng_mode_is_on">Omogućen je inženjerski način rada. Onemogućite ga osim ako niste sigurni da vam je potreban jer može uzrokovati neočekivano ponašanje.</string>
     <string name="yes">Da</string>
     <string name="xdrip_compatible_features">xDrip + %s značajke</string>
     <string name="garmin">Garmin</string>
@@ -972,6 +975,8 @@
     <string name="without_location_permission_emergency_cannot_get_location">Bez dozvole za lokaciju hitne poruke ne mogu koristiti podatak o lokaciji</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Baždari bez traženja potvrde korsiteći nova očitanja glukoze u krvi ukoliko se uvjeti za to čine odgovarajućima (eksperimentalno)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatsko baždarenje</string>
+    <string name="title_broadcast_service_api">API usluge emitiranja</string>
+    <string name="summary_broadcast_service_api">Omogućuje xDrip komunikaciju s aplikacijama trećih strana pomoću novog API-ja</string>
     <string name="enable_streaming_dialog_dont_ask_again"> Ne ponavljaj ovo pitanje</string>
     <string name="show_action_buttons_within_alerts">Prikažite akcijske gumbe (kao što je Odgoda) unutar obavijesti o upozorenjima</string>
     <string name="alert_buttons">Tipke upozorenja</string>
@@ -981,4 +986,5 @@
     <string name="locked_time_period_always_used">Zaključano vremensko razdoblje uvijek korišteno</string>
     <string name="show_time_buttons">Prikaži gumbe za vrijeme</string>
     <string name="source_wizard_button">Gumb čarobnjaka izvora</string>
+    <string name="special_pairing_workaround">Zaobilazno rješenje posebnog uparivanja</string>
 </resources>

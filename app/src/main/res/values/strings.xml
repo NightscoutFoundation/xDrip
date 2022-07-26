@@ -204,6 +204,7 @@
     <string name="general_settings">General Settings</string>
     <string name="high_value">High Value</string>
     <string name="low_value">Low Value</string>
+    <string name="stats_range_settings">Range Settings: </string>
     <string name="end_user_license_agreement">End User License Agreement</string>
     <string name="save">Save</string>
     <string name="view_important_warning">View Important Warning</string>
@@ -324,6 +325,7 @@
     <string name="high_glucose_values">High Glucose Values</string>
     <string name="in_range_glucose_values">In-range Glucose Values</string>
     <string name="default_color_selected">Default Color Selected</string>
+    <string name="color_bg_values">Colors of BG Reading and Trend Arrow</string>
     <string name="xdrip_plus_extra_settings">xDrip+ extra settings</string>
     <string name="example_chart">Example Chart</string>
     <string name="treatments_prediction_curves">Treatments / Prediction Curves</string>
@@ -412,7 +414,7 @@
     <string name="optional_contact_info_here_eg_email">Optional contact info here, e.g. email</string>
     <string name="send_message">Send Message</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Please indicate what you think of the app generally</string>
-    <string name="preferences_saved_in_sdcard_downloads">Preferences saved in SD card Downloads</string>
+    <string name="preferences_saved_in_sdcard_downloads">Preferences saved in Internal storage/Download</string>
     <string name="could_not_write_to_sdcard_check_perms">Couldn\'t write to SD card - check permissions?</string>
     <string name="loaded_preferences_restarting">Loaded Preferences! - Restarting</string>
     <string name="could_not_load_preferences_check_pers">Could not load preferences - check permissions or file?</string>
@@ -465,7 +467,7 @@
     <string name="special_glucose_value_to_display_message">Special glucose value to display the message below</string>
     <string name="bluetooth_wakelocks">Bluetooth Wakelocks</string>
     <string name="compatible_broadcast">Compatible Broadcast</string>
-    <string name="show_datatables">Show Datatables</string>
+    <string name="show_datatables">Show Data Tables</string>
     <string name="display_bridge_battery">Display Bridge Battery</string>
     <string name="close_gatt_on_ble_disconnect">Close GATT on BLE disconnect</string>
     <string name="disable_battery_warning">Disable Battery Warning</string>
@@ -660,7 +662,7 @@
     <string name="set_logging_appid">Set Logging AppID</string>
     <string name="only_enable_on_trouble">Only enable if you are having trouble with the app.</string>
     <string name="store_logs">Store logs for troubleshooting</string>
-    <string name="show_datatables_in_app_drawer">Show Calibration and BG datatables in the app drawer.</string>
+    <string name="show_datatables_in_app_drawer">Show Calibration and BG data tables in the app drawer.</string>
     <string name="disable_log_transmitter_battery_warning">Disable the warning for low transmitter battery state on the home screen. (Only relevant for DIY receivers.)</string>
     <string name="engineering_mode">Engineering mode</string>
     <string name="allow_unsafe_settings">Allows changing the most unsafe settings which could break everything!</string>
@@ -946,6 +948,7 @@
     <string name="offical_msg">The official app</string>
     <string name="use_conflict_msg">may try to access the transmitter device too and this can cause problems with both apps</string>
     <string name="use_confict_msg_glimp">You can adjust Glimp Settings: options -> devices -> unselect Bluetooth option</string>
+    <string name="eng_mode_is_on">Engineering mode is enabled.  Please disable it unless you are certain you need it as it may cause unexpected behavior.</string>
     <string name="yes">Yes</string>
     <string name="xdrip_compatible_features">xDrip+ %s Features</string>
     <string name="garmin">Garmin</string>
@@ -1234,6 +1237,10 @@
     <string name="send_bg_readings_to_backfill">Send BG readings to backfill</string>
     <string name="view_old_error_log">View old Error Log</string>
     <string name="return_to_home_screen">Return to Home Screen</string>
+
+    <string name="title_broadcast_service_api">Broadcast Service API</string>
+    <string name="summary_broadcast_service_api">Enables xDrip communication with third-party applications by using new API</string>
+
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Sync Data with MiBand fitness bands</string>
     <string name="title_miband_enable">Use MiBand Band</string>
@@ -1702,4 +1709,5 @@
     <string name="source_wizard_button">Source Wizard Button</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Please wait %d seconds before trying to start sensor</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">please update OOP2 or move to calibrate based on raw mode</string>
+    <string name="special_pairing_workaround">Special Pairing Workaround</string>
 </resources>

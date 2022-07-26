@@ -186,6 +186,7 @@
     <string name="general_settings">Impostazioni Generali</string>
     <string name="high_value">Valore Massimo</string>
     <string name="low_value">Valore Minimo</string>
+    <string name="stats_range_settings">Impostazioni Intervallo: </string>
     <string name="end_user_license_agreement">Contratto di licenza con l\'utente finale</string>
     <string name="save">Salva</string>
     <string name="view_important_warning">Attenzione Avviso Importante</string>
@@ -304,6 +305,7 @@
     <string name="high_glucose_values">Valori Glicemici Elevati</string>
     <string name="in_range_glucose_values">Valori Glicemici nella media</string>
     <string name="default_color_selected">Colori predefiniti</string>
+    <string name="color_bg_values">Colori del Valore di Glicemia e Freccia di Tendenza</string>
     <string name="xdrip_plus_extra_settings">xDrip+ impostazioni extra</string>
     <string name="example_chart">Chart di Esempio</string>
     <string name="treatments_prediction_curves">Terapia / Curve di previsione</string>
@@ -912,6 +914,7 @@
     <string name="offical_msg">L\'applicazione ufficiale</string>
     <string name="use_conflict_msg">potrebbe anche provare ad accedere al trasmettitore e questo può causare problemi con entrambe le app</string>
     <string name="use_confict_msg_glimp">Puoi regolare le impostazioni di Glimp: opzioni -&gt; dispositivi -&gt; opzione Bluetooth deseleziona</string>
+    <string name="eng_mode_is_on">La modalità ingegneria è abilitata. Disabilitala se non sei certo di averne bisogno perché potrebbe causare comportamenti imprevedibili.</string>
     <string name="yes">Si</string>
     <string name="xdrip_compatible_features">Funzionalità xDrip+ %s</string>
     <string name="garmin">Garmin</string>
@@ -1197,6 +1200,8 @@
     <string name="send_bg_readings_to_backfill">Invia le letture di glicemia per lo storico</string>
     <string name="view_old_error_log">Vedi il Log degli vecchi errori</string>
     <string name="return_to_home_screen">Torna alla schermata iniziale</string>
+    <string name="title_broadcast_service_api">Servizio di Trasmissione API</string>
+    <string name="summary_broadcast_service_api">Abilita la comunicazione tra xDrip e applicazioni terze parti utilizzando la nuova API</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Sincronizza i dati con fitness band MiBand</string>
     <string name="title_miband_enable">Usa MiBand</string>
@@ -1656,4 +1661,5 @@
     <string name="source_wizard_button">Pulsante Assistente Sorgente</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Attendere %d secondi prima di provare ad avviare il sensore</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">Aggiornare OOP2 o passare alla calibrazione basata su glicemia grezza</string>
+    <string name="special_pairing_workaround">Abbinamento Speciale</string>
 </resources>

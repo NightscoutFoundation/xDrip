@@ -186,6 +186,7 @@
     <string name="general_settings">Üldised seaded</string>
     <string name="high_value">Kõrge väärtus</string>
     <string name="low_value">Madal väärtus</string>
+    <string name="stats_range_settings">Vahemiku sätted: </string>
     <string name="end_user_license_agreement">Lõppkasutaja litsentsileping</string>
     <string name="save">Salvesta</string>
     <string name="view_important_warning">Vaata olulisi hoiatusi</string>
@@ -304,6 +305,7 @@
     <string name="high_glucose_values">Kõrged veresuhkru väärtused</string>
     <string name="in_range_glucose_values">Sihtvahemikus olevad veresuhkruväärtused</string>
     <string name="default_color_selected">Vaikevärv valitud</string>
+    <string name="color_bg_values">VS näitude ja trendinoole värvid</string>
     <string name="xdrip_plus_extra_settings">xDrip+ lisaseaded</string>
     <string name="example_chart">Näidisgraafik</string>
     <string name="treatments_prediction_curves">Ravi / ennustuskõverad</string>
@@ -392,7 +394,7 @@
     <string name="optional_contact_info_here_eg_email">Valikuline kontaktinfo siia, nt. e-mail</string>
     <string name="send_message">Saada sõnum</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Palun anna teada, mis sa äpist üldiselt arvad</string>
-    <string name="preferences_saved_in_sdcard_downloads">Eelistused on salvestatud SD kaardi allalaadimis kataloogi</string>
+    <string name="preferences_saved_in_sdcard_downloads">Eelistused on salvestatud sisemisse salvestusruumi/allalaadimiste kausta</string>
     <string name="could_not_write_to_sdcard_check_perms">SD kaardile ei saa kirjutada, kontrolli õigusi?</string>
     <string name="loaded_preferences_restarting">Seaded laaditud! - Taaskäivitus</string>
     <string name="could_not_load_preferences_check_pers">Seadeid ei saanud laadida – kontrolli õigusi või faili?</string>
@@ -912,6 +914,7 @@
     <string name="offical_msg">Ametlik rakendus</string>
     <string name="use_conflict_msg">võib püüda ligi pääseda ka saatjale, mis võib põhjustada mõlema äpiga probleeme</string>
     <string name="use_confict_msg_glimp">Saad reguleerida Glimp\'i sätteid: valikud -&gt; seadmed -&gt; tühista Bluetoothi valik</string>
+    <string name="eng_mode_is_on">Tehniline režiim on sees. Lülita see välja, välja arvatud juhul kui oled kindel, et seda vajad. Võib põhjustada rakenduse ootamatut käitumist.</string>
     <string name="yes">Jah</string>
     <string name="xdrip_compatible_features">xDrip+ %s funktsioonid</string>
     <string name="garmin">Garmin</string>
@@ -1197,6 +1200,8 @@
     <string name="send_bg_readings_to_backfill">Saada VS näidud tagasitäitmiseks</string>
     <string name="view_old_error_log">Vaata vana vigadelogi</string>
     <string name="return_to_home_screen">Tagasi avakuvale</string>
+    <string name="title_broadcast_service_api">API andmevahetus</string>
+    <string name="summary_broadcast_service_api">Lubab xDrip suhtluse kolmanda osapoole rakendustega, kasutades uut API teenust</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Sünkrooni andmed MiBand treeningkellaga</string>
     <string name="title_miband_enable">Kasuta MiBand kella</string>
@@ -1656,4 +1661,5 @@
     <string name="source_wizard_button">Allika abivahendi nupp</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Palun oota %d sekundit enne sensori käivitamist</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">palun värskenda OOP2 või kasuta kalibreerimistel põhinevat algset režiimi</string>
+    <string name="special_pairing_workaround">Spetsiaalne sidumise lahendus</string>
 </resources>

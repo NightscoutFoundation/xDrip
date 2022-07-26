@@ -186,6 +186,7 @@
     <string name="general_settings">Ajustes Generales</string>
     <string name="high_value">Valor Alto</string>
     <string name="low_value">Valor Bajo</string>
+    <string name="stats_range_settings">Ajustes de Rango: </string>
     <string name="end_user_license_agreement">Acuerdo de licencia de usuario final</string>
     <string name="save">Guardar</string>
     <string name="view_important_warning">Ver Aviso Importante</string>
@@ -304,6 +305,7 @@
     <string name="high_glucose_values">Valores de glucosa alta</string>
     <string name="in_range_glucose_values">Dentro de la gama de valores de glucosa</string>
     <string name="default_color_selected">Color por defecto seleccionado</string>
+    <string name="color_bg_values">Colores de lectura BG y flecha de tendencia</string>
     <string name="xdrip_plus_extra_settings">xDrip+ Ajustes adicionales</string>
     <string name="example_chart">Ejemplo gráfico</string>
     <string name="treatments_prediction_curves">Tratamientos / curvas de predicción</string>
@@ -632,7 +634,7 @@
     <string name="set_logging_appid">Crea Bitácora de appID</string>
     <string name="only_enable_on_trouble">Activar sólo si tienes problemas con la aplicación.</string>
     <string name="store_logs">Guardar logs para resolución de problemas</string>
-    <string name="show_datatables_in_app_drawer">Mostrar tablas de calibración y de Glucosa en el cajón de la aplicación.</string>
+    <string name="show_datatables_in_app_drawer">Mostrar base de datos de calibración y glucosa en la carpeta de la aplicación.</string>
     <string name="disable_log_transmitter_battery_warning">Desactivar la advertencia de estado de batería baja del colector en la pantalla de inicio. (Sólo relevante para receptores de bricolaje).</string>
     <string name="engineering_mode">Modo de Ingeniería</string>
     <string name="allow_unsafe_settings">Permite cambiar los ajustes inseguros que pueden romperlo todo!</string>
@@ -912,6 +914,7 @@
     <string name="offical_msg">Aplicación oficial</string>
     <string name="use_conflict_msg">también puede intentar acceder al dispositivo transmisor y esto puede causar problemas con ambas aplicaciones</string>
     <string name="use_confict_msg_glimp">Puedes ajustar la configuración de Glimp: opciones -&gt; dispositivos -&gt; deseleccionar la opción Bluetooth</string>
+    <string name="eng_mode_is_on">El modo de ingeniería está activado. Deshabilítelo a menos que esté seguro de que lo necesita, ya que puede causar un comportamiento inesperado.</string>
     <string name="yes">Si</string>
     <string name="xdrip_compatible_features">Caracteristicas %s xDrip+</string>
     <string name="garmin">Garmin</string>
@@ -1197,6 +1200,8 @@
     <string name="send_bg_readings_to_backfill">Enviar lecturas de glucemia a rellenar</string>
     <string name="view_old_error_log">Ver registro de errores anteriores</string>
     <string name="return_to_home_screen">Regresar a la pantalla de Inicio</string>
+    <string name="title_broadcast_service_api">API del Servicio de Emisión</string>
+    <string name="summary_broadcast_service_api">Permite la comunicación de xDrip con aplicaciones de terceros mediante el uso de la nueva API</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Sincronizar datos con las pulseras de actividad MiBand</string>
     <string name="title_miband_enable">Usar MiBand</string>
@@ -1651,8 +1656,10 @@
     <string name="show_sensor_expiry">Mostrar caducidad del sensor</string>
     <string name="show_collector_status">Mostrar estado del colector</string>
     <string name="show_chart_preview">Mostrar vista previa del gráfico</string>
+    <string name="locked_time_period_always_used">Usar siempre Periodo de Tiempo Bloqueado</string>
     <string name="show_time_buttons">Mostrar botones de tiempo</string>
     <string name="source_wizard_button">Botón del asistente de origen</string>
-    <string name="please_wait_seconds_before_trying_to_start_sensor">Por favor, espera %d segundos antes de intentar iniciar el sensor</string>
+    <string name="please_wait_seconds_before_trying_to_start_sensor">Espere %d segundos antes de intentar iniciar el sensor</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">Por favor, actualiza OOP2 o cambia a calibración basada en modo raw</string>
+    <string name="special_pairing_workaround">Método alternativo especial de emparejamiento</string>
 </resources>

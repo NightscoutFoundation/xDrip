@@ -186,6 +186,7 @@
     <string name="general_settings">Genel Ayarlar</string>
     <string name="high_value">Yüksek Değer</string>
     <string name="low_value">Düşük değer</string>
+    <string name="stats_range_settings">Aralık Ayarları: </string>
     <string name="end_user_license_agreement">Son Kullanıcı Lisans Sözleşmesi</string>
     <string name="save">Kaydet</string>
     <string name="view_important_warning">Önemli Uyarıyı Görüntüle</string>
@@ -304,6 +305,7 @@
     <string name="high_glucose_values">Yüksek Kan Şekeri değerleri</string>
     <string name="in_range_glucose_values">Hedef içerisindeki Glikoz Değerleri</string>
     <string name="default_color_selected">Varsayılan Renk Seçildi</string>
+    <string name="color_bg_values">KŞ Okuma Renkleri ve Eğilim Oku</string>
     <string name="xdrip_plus_extra_settings">xDrip+ ekstra ayarlar</string>
     <string name="example_chart">Örnek Grafik</string>
     <string name="treatments_prediction_curves">Tedaviler / Tahmin Eğrileri</string>
@@ -912,6 +914,7 @@
     <string name="offical_msg">Resmi app</string>
     <string name="use_conflict_msg">verici cihazına da erişmeyi deneyebilir ve bu durum her iki uygulamada da sorunlara neden olabilir</string>
     <string name="use_confict_msg_glimp">Glimp ayarlarını yapabilirsiniz: seçenekler -&gt; cihazlar -&gt; Bluetooth seçeneğini kaldır</string>
+    <string name="eng_mode_is_on">Mühendislik modu etkinleştirildi. Beklenmeyen davranışlara neden olabileceğinden, ihtiyacınız olduğundan emin değilseniz lütfen devre dışı bırakın.</string>
     <string name="yes">Evet</string>
     <string name="xdrip_compatible_features">xDrip + %s özellikleri</string>
     <string name="garmin">Garmin</string>
@@ -1197,6 +1200,8 @@
     <string name="send_bg_readings_to_backfill">KŞ okumalarını doldur</string>
     <string name="view_old_error_log">Eski Hata Günlüğünü Görüntüle</string>
     <string name="return_to_home_screen">Ana Ekrana Dön</string>
+    <string name="title_broadcast_service_api">Yayın Hizmeti API\'si</string>
+    <string name="summary_broadcast_service_api">Yeni API kullanarak üçüncü taraf uygulamalarla xDrip iletişimini sağlar</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">MiBand veri senkronizasyonu</string>
     <string name="title_miband_enable">MiBand Bileklik Kullan</string>
@@ -1655,4 +1660,5 @@
     <string name="source_wizard_button">Kaynak Sihirbazı Düğmesi</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Sensörü başlatmayı denemeden önce lütfen %d saniye bekleyin</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">lütfen OOP2\'yi güncelleyin, aksi takdirde ham glikoza ölçümlerine dayalı kalibrasyon modunu kullanın</string>
+    <string name="special_pairing_workaround">Geçici Özel Eşleştirme Çözümü</string>
 </resources>

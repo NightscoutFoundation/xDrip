@@ -186,6 +186,7 @@
     <string name="general_settings">Definições Gerais</string>
     <string name="high_value">Valor Hiper</string>
     <string name="low_value">Valor Hipo</string>
+    <string name="stats_range_settings">Configurações de Intervalo: </string>
     <string name="end_user_license_agreement">Contrato de Licença de Utilizador Final</string>
     <string name="save">Guardar</string>
     <string name="view_important_warning">Ver Aviso Importante</string>
@@ -304,6 +305,7 @@
     <string name="high_glucose_values">Valores Hiperglicemia</string>
     <string name="in_range_glucose_values">Valores Glicemia no Alvo</string>
     <string name="default_color_selected">Cor pré-definida Seleccionada</string>
+    <string name="color_bg_values">Cores das Leituras de Glicemia e da Seta de Tendência</string>
     <string name="xdrip_plus_extra_settings">Definições Extra xDrip+</string>
     <string name="example_chart">Gráfico Exemplo</string>
     <string name="treatments_prediction_curves">Tratamentos / Curva preditiva</string>
@@ -445,7 +447,7 @@
     <string name="special_glucose_value_to_display_message">Valor de glicemia para mostrar na mensagem abaixo</string>
     <string name="bluetooth_wakelocks">Wakelocks Bluetooth</string>
     <string name="compatible_broadcast">Transmissão Compatível</string>
-    <string name="show_datatables">Mostrar tabelas de dados</string>
+    <string name="show_datatables">Mostrar Tabelas de Dados</string>
     <string name="display_bridge_battery">Mostrar Bateria do Bridge</string>
     <string name="close_gatt_on_ble_disconnect">Fechar GATT quando BLE desliga</string>
     <string name="disable_battery_warning">Desactivar Avisos de Bateria</string>
@@ -912,6 +914,7 @@
     <string name="offical_msg">App Oficial</string>
     <string name="use_conflict_msg">pode também tentar aceder ao dispositivo transmissor e pode causar problemas em ambas as apps</string>
     <string name="use_confict_msg_glimp">Ajustar Configurações do Glimp: opções -&gt; dispositivos -&gt; desseleccionar opção Bluetooth</string>
+    <string name="eng_mode_is_on">O modo de engenharia está ativado. Desative-o, a menos que tenha a certeza que precisa, pois pode causar um comportamento inesperado.</string>
     <string name="yes">Sim</string>
     <string name="xdrip_compatible_features">xDrip+ %s Funções</string>
     <string name="garmin">Garmin</string>
@@ -1197,6 +1200,8 @@
     <string name="send_bg_readings_to_backfill">Enviar leituras de Glicose para preenchimento</string>
     <string name="view_old_error_log">Ver Registo de Erro antigo</string>
     <string name="return_to_home_screen">Voltar ao Ecrã Inicial</string>
+    <string name="title_broadcast_service_api">API do Serviço de Transmissão</string>
+    <string name="summary_broadcast_service_api">Permite a comunicação de xDrip com aplicações de terceiros usando a nova API</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Sincronizar Dados com as bandas fitness MiBand</string>
     <string name="title_miband_enable">Usar banda MiBand</string>
@@ -1656,4 +1661,5 @@
     <string name="source_wizard_button">Botão de Ajuda com Fonte</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Por favor, espere %d segundos antes de tentar iniciar o sensor</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">por favor, atualize o OOP2 ou mude para calibrar com base no modo raw</string>
+    <string name="special_pairing_workaround">Solução especial de emparelhamento</string>
 </resources>

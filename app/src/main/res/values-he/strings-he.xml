@@ -303,6 +303,7 @@
     <string name="high_glucose_values">ערכי סוכר גבוהים</string>
     <string name="in_range_glucose_values">ערכי סוכר בטווח</string>
     <string name="default_color_selected">נבחר צבע ברירת מחדל</string>
+    <string name="color_bg_values">צבע של קריאות סוכר וחץ כיוון</string>
     <string name="xdrip_plus_extra_settings">הגדרות נוספות</string>
     <string name="example_chart">גרף לדוגמה</string>
     <string name="treatments_prediction_curves">טיפולים \\ עקומות חיזוי</string>
@@ -901,6 +902,7 @@
     <string name="days">ימים</string>
     <string name="bluereader_position">בדוק את המיקום של ה-blueReader על הסנסור, אחרת יצליח לקרוא!</string>
     <string name="offical_msg">האפליקציה הרשמית</string>
+    <string name="eng_mode_is_on">מצב המהנדסים פועל. נא לבטלו אלא אם אתם בטוחים שאתם זקוקים לו כי הוא עלול לגרום להתנהגות בלתי צפויה.</string>
     <string name="yes">כן</string>
     <string name="xdrip_compatible_features">תכונות %s xDrip</string>
     <string name="garmin">Garmin</string>

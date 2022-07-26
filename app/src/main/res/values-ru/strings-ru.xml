@@ -186,6 +186,7 @@
     <string name="general_settings">Общие настройки</string>
     <string name="high_value">Верхнее значение</string>
     <string name="low_value">Нижнее значение</string>
+    <string name="stats_range_settings">Настройки диапазона: </string>
     <string name="end_user_license_agreement">Лицензионное соглашение с конечным пользователем</string>
     <string name="save">Сохранить</string>
     <string name="view_important_warning">Просмотреть важное предупреждение</string>
@@ -304,6 +305,7 @@
     <string name="high_glucose_values">Высокие значения глюкозы</string>
     <string name="in_range_glucose_values">Значения глюкозы в диапазоне</string>
     <string name="default_color_selected">Цвет по-умолчанию</string>
+    <string name="color_bg_values">Цвета показания ГК и стрелки тренда</string>
     <string name="xdrip_plus_extra_settings">Дополнительные настройки xDrip+</string>
     <string name="example_chart">Пример графика</string>
     <string name="treatments_prediction_curves">Введённые значения / Прогнозные кривые</string>
@@ -445,7 +447,7 @@
     <string name="special_glucose_value_to_display_message">Специальное значение глюкозы, при котором выводится сообщение ниже</string>
     <string name="bluetooth_wakelocks">Блокировки сна Bluetooth</string>
     <string name="compatible_broadcast">Совместимая трансляция</string>
-    <string name="show_datatables">Отображать таблицы данных</string>
+    <string name="show_datatables">Показывать таблицы данных</string>
     <string name="display_bridge_battery">Отображать состояние батареи Bridge</string>
     <string name="close_gatt_on_ble_disconnect">Закрыть GATT при отключении BLE</string>
     <string name="disable_battery_warning">Отключить предупреждение о разряде батареи</string>
@@ -632,7 +634,7 @@
     <string name="set_logging_appid">Установить AppID журналирования</string>
     <string name="only_enable_on_trouble">Включать только в случае проблем с приложением.</string>
     <string name="store_logs">Сохранять логи для поиска и устранения проблем</string>
-    <string name="show_datatables_in_app_drawer">Показывать калибровку и данные уровня глюкозы в меню приложения.</string>
+    <string name="show_datatables_in_app_drawer">Показывать таблицы данных калибровки и ГК в левом меню.</string>
     <string name="disable_log_transmitter_battery_warning">Отключить предупреждение о низком заряде батареи передатчика на главном экране (только для DIY приемников)</string>
     <string name="engineering_mode">Инженерный режим</string>
     <string name="allow_unsafe_settings">Позволяет изменять самые небезопасные настройки, которые могут все нарушить!</string>
@@ -912,6 +914,7 @@
     <string name="offical_msg">Официальное приложение</string>
     <string name="use_conflict_msg">может пытаться получить доступ к передающему устройству что возможно вызовет сбой обоих приложений</string>
     <string name="use_confict_msg_glimp">Вы можете настроить Glimp: Опции -&gt; Устройства -&gt; отключите настройки Bluetooth</string>
+    <string name="eng_mode_is_on">Инженерный режим включен. Пожалуйста, выключите его, если вы не уверены, что он нужен, так как он может вызывать неожиданное поведение.</string>
     <string name="yes">Да</string>
     <string name="xdrip_compatible_features">Функции %s xDrip+</string>
     <string name="garmin">Garmin</string>
@@ -1197,6 +1200,8 @@
     <string name="send_bg_readings_to_backfill">Отправить данные с датчика для \'обратного заполнения\'</string>
     <string name="view_old_error_log">Просмотреть старый журнал ошибок</string>
     <string name="return_to_home_screen">Вернуться к домашнему экрану</string>
+    <string name="title_broadcast_service_api">API службы трансляции</string>
+    <string name="summary_broadcast_service_api">Позволяет xDrip взаимодействовать с другими приложениями, используя новый API</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Синхронизация с MiBand браслетами</string>
     <string name="title_miband_enable">Использовать MiBand</string>
@@ -1589,6 +1594,8 @@
     <string name="title_broadcast_snooze">Локальная трансляция</string>
     <string name="summary_accept_broadcast_snooze">Принимать приостановку оповещений с других приложений в телефоне</string>
     <string name="title_accept_broadcast_snooze">Принять локальную трансляцию</string>
+    <string name="title_bg_compensate_noise">\u26A0 Сглаживать шумы сенсора</string>
+    <string name="title_bg_compensate_noise_ultrasensitive">\u26A0 Сглаживать шумы сенсора (режим высокой чувствительности)</string>
     <string name="no_battery_optimization_whitelisting">Устройство не поддерживает список для приложений, которые не оптимизируют работу батареи!</string>
     <string name="no_i_really_know">Нет, я действительно знаю, что делаю</string>
     <string name="use_for_calibration">Использовать %s для калибровки?</string>
@@ -1605,6 +1612,13 @@
     <string name="sensor_not_started">Сенсорный сеанс, похоже, не запущен</string>
     <string name="not_getting_readings">Не получает никаких показаний.</string>
     <string name="bridge_battery">Состояние батареи трансмиттера</string>
+    <string name="transmitter_maybe_dead">отфильтрованные данные представляют собой удвоенные значения необработанных данных сенсора, что выглядит неверно (возможно, батарея трансмиттера разряжена)</string>
+    <string name="noise_workings_noise">Зашумленность: %s</string>
+    <string name="snoozing_due_button_press">Оповещение отложено из-за нажатия кнопки громкости</string>
+    <string name="share_database">Разрешить совместное пользование базой данных...</string>
+    <string name="title_motion_detection_warning">Предупреждение об обнаружении движения</string>
+    <string name="message_motion_detection_warning">Обнаружение движения является экспериментальным и предназначено в основном для движения автомобиля.\n\n Тестирования показали, что только высококачественные смартфоны верно поддерживают работу необходимых датчиков. Также возможен быстрый расход заряда батареи.\n\n Для перемещений, связанных с физическими нагрузками лучше использовать шагомеры смарт-часов.</string>
+    <string name="expires_unknown">Срок действия истек: ???</string>
     <string name="external_status_strings_eg_tbr">Статусы из внешних приложений, например ВБС из AAPS</string>
     <string name="accept_external_status">Принимать статусы извне</string>
     <string name="select_new_sound_source">Выберите новый источник звука</string>
@@ -1628,4 +1642,6 @@
     <string name="show_time_buttons">Показывать кнопки времени</string>
     <string name="source_wizard_button">Кнопка мастера настройки источника</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Подождите %d секунд перед попыткой запустить сенсор</string>
+    <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">пожалуйста, обновите OOP2 или переключитесь на калибровку, основанную на raw-режиме</string>
+    <string name="special_pairing_workaround">Специальный обходной путь сопряжения</string>
 </resources>

@@ -1000,6 +1000,11 @@
                 android:key="xdrip_webservice_secret"
                 android:summary="@string/summary_Shared_Secret_for_open_web_service"
                 android:title="@string/title_xDrip_Web_Service_Secret" />
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="broadcast_service_enabled"
+                android:summary="@string/summary_broadcast_service_api"
+                android:title="@string/title_broadcast_service_api" />
         </PreferenceScreen>
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="xdrip_less_common_settings"
