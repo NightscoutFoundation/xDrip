@@ -402,7 +402,7 @@
     <string name="successfully_deleted">Pomyślnie usunięty</string>
     <string name="deletion_problem">Usuwanie problemu</string>
     <string name="sdcard_not_writable_cannot_save">Karta SD nie pozwala na zapis</string>
-    <string name="sdcard_not_readable">Nie mogę odczytać karty sd</string>
+    <string name="sdcard_not_readable">Nie mogę odczytać z karty sd</string>
     <string name="loading_settings_from_xdrip_mainline">Ładowanie ustawień z xDrip Mainline</string>
     <string name="warning_settings_from_xdrip_and_plus_exist">Ustawienia ostrzegawcze z xDrip i xDrip+ istnieją - uruchamiam xDrip+</string>
     <string name="new_version_date_colon">"Nowa Wersja data: "</string>
@@ -1150,9 +1150,9 @@
     <string name="new_sensor_started">NOWY CZUJNIK WYSTARTOWANY</string>
     <string name="error_sensor_start_time_in_future">BŁĄD: CZAS WYSTARTOWANIA CZUJNIKA Z PRZYSZŁOŚCI</string>
     <string name="not_today">Nie dzisiaj</string>
-    <string name="need_permission_to_access_audio_files">Potrzebujesz uprawnień dostępu do plików audio</string>
-    <string name="need_contacts_permission_to_select_message_recipients">Potrzebujesz uprawnień kontaktów, aby wybrać odbiorców wiadomości</string>
-    <string name="need_storage_permission_to_access_all_ringtones">Potrzebujesz uprawnień do pamięci, aby uzyskać dostęp do wszystkich dzwonków</string>
+    <string name="need_permission_to_access_audio_files">Wymagane uprawnienia dostępu do plików audio</string>
+    <string name="need_contacts_permission_to_select_message_recipients">Wymagane uprawnienia kontaktów, aby wybrać odbiorców wiadomości</string>
+    <string name="need_storage_permission_to_access_all_ringtones">Wymagane uprawnienia do pamięci, aby uzyskać dostęp do wszystkich dzwonków</string>
     <string name="xdrip_needs_whitelisting_for_proper_performance">xDrip+ potrzebuje dodania do białej listy dla poprawnej wydajności</string>
     <string name="overwrite_slope_engineering_only">Nadpisz parametr nachylenia (tylko w trybie inżynieryjnym)</string>
     <string name="overwrite_intercept_engineering_only">Nadpisz parametr odciętej (tylko w trybie inżynieryjnym)</string>
@@ -1377,6 +1377,7 @@
     <string name="calibration_graph_no_calibration">wykres kalibracji (brak kalibracji)</string>
     <string name="usb_device_was_not_recognized">Urządzenie USB nie zostało rozpoznane</string>
     <string name="followers_name">Nazwa obserwatora:</string>
+    <string name="your_display_name">Nazwa wyświetlana:</string>
     <string name="followers_email">Email obserwatora:</string>
     <string name="send_invite">Wyślij zaproszenie</string>
     <string name="description_sensor_location">W przyszłości xDrip chciałby wysłać anonimowe dane z czujników do deweloperów, aby ulepszyć algorytm kalibracji... Jeśli zdecydujesz się uczestniczyć, zostaniesz poproszony o potwierdzenie przed każdym transferem danych. Dane nigdy nie zostaną wysłane bez Twojej zgody. Aby pomóc nam zrozumieć i dopracować kalibrację, chcielibyśmy wiedzieć, gdzie znajduje się czujnik. Naciśnij przycisk wstecz, aby anulować.</string>
@@ -1559,6 +1560,7 @@
     <string name="adjust_dose">Dostosowanie dawki</string>
     <string name="Dose">Dawka</string>
     <string name="choose_type">Wybierz typ</string>
+    <string name="invalid_serial">Nieprawidłowy numer seryjny</string>
     <string name="import_sounds">Importuj dźwięki</string>
     <string name="play_sounds_when_importing">Odtwarzaj dźwięki podczas importowania istotnych danych, takich jak profile</string>
     <string name="alert_buttons">Przyciski alarmowe</string>
@@ -1567,4 +1569,5 @@
     <string name="show_time_buttons">Pokaż przyciski czasu</string>
     <string name="source_wizard_button">Przycisk kreatora źródła</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Poczekaj %d sekund przed próbą uruchomienia czujnika</string>
+    <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">proszę zaktualizuj OOP2 albo wybierz kalibrację w oparciu o dane surowe</string>
 </resources>
