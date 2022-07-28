@@ -12,6 +12,8 @@ import android.os.IBinder;
 import android.os.Parcelable;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Models.Accuracy;
@@ -29,6 +31,7 @@ import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.PumpStatus;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
@@ -75,6 +78,11 @@ public class BroadcastService extends Service {
 
     protected String TAG = this.getClass().getSimpleName();
     protected Map<String, BroadcastModel> broadcastEntities;
+
+    private BroadcastReceiver statusReceiver;
+
+    private String predictedBWP;
+    private String predictedIOB;
 
     /**
      *  The receiver listening {@link  ACTION_WATCH_COMMUNICATION_RECEIVER} action.
@@ -209,7 +217,6 @@ public class BroadcastService extends Service {
         }
     };
 
-
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -227,6 +234,25 @@ public class BroadcastService extends Service {
         registerReceiver(broadcastReceiver, new IntentFilter(ACTION_WATCH_COMMUNICATION_RECEIVER));
 
         JoH.startService(BroadcastService.class, Const.INTENT_FUNCTION_KEY, Const.CMD_START);
+
+        statusReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                final String bwp = intent.getStringExtra("bwp");
+                if (bwp != null) {
+                    predictedBWP = bwp;
+                } else {
+                    final String iob = intent.getStringExtra("iob");
+                    if (iob != null) {
+                        predictedIOB = iob;
+                    }
+                }
+            }
+        };
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(statusReceiver,
+                new IntentFilter(Intents.HOME_STATUS_ACTION));
+
         super.onCreate();
     }
 
@@ -235,6 +261,12 @@ public class BroadcastService extends Service {
         UserError.Log.e(TAG, "killing service");
         broadcastEntities.clear();
         unregisterReceiver(broadcastReceiver);
+
+        try {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(statusReceiver);
+        } catch (Exception e) {
+            Log.e(TAG, "Exception unregistering broadcast receiver: " + e);
+        }
         super.onDestroy();
     }
 
@@ -513,7 +545,7 @@ public class BroadcastService extends Service {
                 bundle.putDouble("lowMark", JoH.tolerantParseDouble(prefs.getString("lowValue", "70"), 70));
 
                 BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(xdrip.getAppContext(), start, end);
-                bgGraphBuilder.defaultLines(true); // simple mode
+                bgGraphBuilder.defaultLines(false); // not simple mode in order to receive simulated data
 
                 bundle.putParcelable("graph.lowLine", new GraphLine(bgGraphBuilder.lowLine()));
                 bundle.putParcelable("graph.highLine", new GraphLine(bgGraphBuilder.highLine()));
@@ -530,7 +562,11 @@ public class BroadcastService extends Service {
                 bundle.putParcelable("graph.cob", new GraphLine(treatments[6]));  //cobValues
                 bundle.putParcelable("graph.polyBg", new GraphLine(treatments[7]));  //poly predict ;
             }
+
+            bundle.putString("predict.IOB", predictedIOB);
+            bundle.putString("predict.BWP", predictedBWP);
         }
         return bundle;
     }
+
 }
