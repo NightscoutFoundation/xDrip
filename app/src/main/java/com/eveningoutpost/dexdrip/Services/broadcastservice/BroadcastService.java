@@ -527,6 +527,9 @@ public class BroadcastService extends Service {
                 bundle.putLong("treatment.timeStamp", treatment.timestamp);
             }
 
+            predictedIOB = "";
+            predictedBWP = "";
+
             if (settings.isDisplayGraph()) {
                 long graphStartOffset = settings.getGraphStart();
                 long graphEndOffset = settings.getGraphEnd();
