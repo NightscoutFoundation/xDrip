@@ -108,6 +108,7 @@
     <string name="toast_crash">Da ist etwas schief gegangen :( Ein Bericht über das Problem wurde an die Entwickler versendet.</string>
     <string name="taskerConfigInstruction">Einfach mit einem Klick auf den Haken bestätigen. Die Konfigurationszeile muss nicht geändert werden.</string>
     <string name="taskerConfiguration">Tasker-Konfiguration</string>
+    <string name="finish_preferences_activity">Aktivität der Einstellungen beenden</string>
     <string name="add_widget">Widget hinzufügen</string>
     <string name="title_activity_alert_list">Liste der Warnungen</string>
     <string name="speaktreatment">Behandlung sprechen</string>
