@@ -34,6 +34,7 @@ import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 import static com.eveningoutpost.dexdrip.Models.BgReading.AGE_ADJUSTMENT_TIME;
@@ -156,9 +157,6 @@ public class StartNewSensor extends ActivityWithMenu {
                 int min = newmins % 60;
                 int hour = (newmins - min) / 60;
                 ucalendar.set(ucalendar.get(Calendar.YEAR), ucalendar.get(Calendar.MONTH), ucalendar.get(Calendar.DAY_OF_MONTH), hour, min);
-                if (DexCollectionType.hasLibre()) {
-                    ucalendar.add(Calendar.HOUR_OF_DAY, -1); // hack for warmup time
-                }
 
                 startSensorOrAskForG6Code();
             }
@@ -167,8 +165,14 @@ public class StartNewSensor extends ActivityWithMenu {
     }
 
     private void startSensorOrAskForG6Code() {
+        final int cap = 20;
         if (Ob1G5CollectionService.usingCollector() && Ob1G5StateMachine.usingG6()) {
-            G6CalibrationCodeDialog.ask(this, this::startSensorAndSetIntent);
+            if (JoH.pratelimit("dex-stop-start", cap)) {
+                JoH.clearRatelimit("dex-stop-start");
+                G6CalibrationCodeDialog.ask(this, this::startSensorAndSetIntent);
+            } else {
+                JoH.static_toast_long(String.format(Locale.ENGLISH, getString(R.string.please_wait_seconds_before_trying_to_start_sensor), cap));
+            }
         } else {
             startSensorAndSetIntent();
         }
@@ -211,11 +215,8 @@ public class StartNewSensor extends ActivityWithMenu {
         // TODO this is just a timer and could be confusing - consider removing this notification
        // JoH.scheduleNotification(xdrip.getAppContext(), "Sensor should be ready", xdrip.getAppContext().getString(R.string.please_enter_two_calibrations_to_get_started), 60 * 130, Home.SENSOR_READY_ID);
 
-        // reverse libre hacky workaround
-        final long modifiedStartTime = DexCollectionType.hasLibre() ? (startTime + 3600000) : startTime;
-
         // Add treatment entry in db
-        Treatments.sensorStart(modifiedStartTime, "Started by xDrip");
+        Treatments.sensorStart(startTime, "Started by xDrip");
 
         CollectionServiceStarter.restartCollectionServiceBackground();
 
@@ -233,6 +234,7 @@ public class StartNewSensor extends ActivityWithMenu {
             for (int i = 0; i < permissions.length; i++) {
                 if (permissions[i].equals(android.Manifest.permission.ACCESS_FINE_LOCATION)) {
                     if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                        Ob1G5CollectionService.clearScanError();
                         sensorButtonClick();
                     }
                 }

@@ -303,6 +303,7 @@
     <string name="high_glucose_values">ערכי סוכר גבוהים</string>
     <string name="in_range_glucose_values">ערכי סוכר בטווח</string>
     <string name="default_color_selected">נבחר צבע ברירת מחדל</string>
+    <string name="color_bg_values">צבע של קריאות סוכר וחץ כיוון</string>
     <string name="xdrip_plus_extra_settings">הגדרות נוספות</string>
     <string name="example_chart">גרף לדוגמה</string>
     <string name="treatments_prediction_curves">טיפולים \\ עקומות חיזוי</string>
@@ -616,6 +617,8 @@
     <string name="use_external_blukon_algorithm">אלגוריתם ליברה חיצוני.</string>
     <string name="calibrate_external_libre_algorithm_summary">יישום שיטות כיול של xDrip על נתוני OOP.</string>
     <string name="calibrate_external_libre_algorithm_title">כיול אלגוריתם OOP</string>
+    <string name="calibrate_external_libre_2_algorithm_summary">יישום שיטות כיול של xDrip על נתוני OOP2.</string>
+    <string name="calibrate_external_libre_2_algorithm_title">כיול אלגוריתם OOP2.</string>
     <string name="libre_use_smoothed_data_summary">משתמש בממוצע 5 נק\' מדידה לקבלת נתוני ליברה חלקים יותר.</string>
     <string name="libre_use_smoothed_data_title">שפע את נתוני ליברה.</string>
     <string name="retrieve_blukon_history_title">קבל היסטוריה של הליברה</string>
@@ -899,6 +902,7 @@
     <string name="days">ימים</string>
     <string name="bluereader_position">בדוק את המיקום של ה-blueReader על הסנסור, אחרת יצליח לקרוא!</string>
     <string name="offical_msg">האפליקציה הרשמית</string>
+    <string name="eng_mode_is_on">מצב המהנדסים פועל. נא לבטלו אלא אם אתם בטוחים שאתם זקוקים לו כי הוא עלול לגרום להתנהגות בלתי צפויה.</string>
     <string name="yes">כן</string>
     <string name="xdrip_compatible_features">תכונות %s xDrip</string>
     <string name="garmin">Garmin</string>
@@ -1509,4 +1513,15 @@
     <string name="without_camera_permission_cannot_scan_barcode">ללא הרשאת מצלמה לא ניתן לסרוק את הברקוד</string>
     <string name="external_status_strings_eg_tbr">מחרוזת סטטוס חיצונית, כדוגמאת: זמן נמוך מהטווח (TBR) ממערכת AAPS</string>
     <string name="accept_external_status">קבל סטטוס חיצוני</string>
+    <string name="cancel_by_default">בטל כברירת מחדל</string>
+    <string name="old">ישן</string>
+    <string name="neww">חדש</string>
+    <string name="select_new_sound_source">בחרו מקור שמע חדש</string>
+    <string name="snooze_done">← נודניק/סיום →</string>
+    <string name="choose_type">בחר סוג</string>
+    <string name="invalid_serial">מספר סידורי לא תקין</string>
+    <string name="pen_contains_which_insulin_type">איזה סוג אינסולין יש בעט %s?</string>
+    <string name="show_action_buttons_within_alerts">הצג כפתורי פעולות (לדוגמה נודניק) בתוך ההתראות</string>
+    <string name="alert_buttons">כפתורי פעולות</string>
+    <string name="please_wait_seconds_before_trying_to_start_sensor">אנא המתינו %d שניות לפני שתנסו להפעיל חיישן</string>
 </resources>

@@ -11,10 +11,13 @@ import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 public class DexSessionKeeper {
 
     private static final String PREF_SESSION_START = "OB1-SESSION-START";
-    private static final long WARMUP_PERIOD = Constants.HOUR_IN_MS * 2;
 
     public static void clearStart() {
         PersistentStore.setLong(PREF_SESSION_START, 0);
+    }
+
+    public static long getWarmupPeriod() {
+        return SensorDays.get().getWarmupMs(); // allow for variable warm up period
     }
 
     public static void setStart(long when) {
@@ -33,6 +36,7 @@ public class DexSessionKeeper {
 
     public static String prettyTime() {
         if (isStarted()) {
+            final long WARMUP_PERIOD = getWarmupPeriod();
             final long elapsed = JoH.msSince(getStart());
             if (elapsed < WARMUP_PERIOD) {
                 return JoH.niceTimeScalar((double) WARMUP_PERIOD - elapsed, 1);
@@ -46,7 +50,7 @@ public class DexSessionKeeper {
 
     // check for mismatch between sensor state currency and transmitter time
     public static boolean warmUpTimeValid() {
-        return (isStarted() && (JoH.msSince(getStart()) <= WARMUP_PERIOD));
+        return (isStarted() && (JoH.msSince(getStart()) <= getWarmupPeriod()));
     }
 
 }

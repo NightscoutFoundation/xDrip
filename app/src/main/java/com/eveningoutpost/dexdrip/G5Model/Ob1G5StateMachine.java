@@ -297,6 +297,14 @@ public class Ob1G5StateMachine {
                         parent.changeState(Ob1G5CollectionService.STATE.UNBOND);
 
                     } else {
+                        if (!status.isBonded()
+                                && (parent.isDeviceLocallyBonded() || parent.isDeviceLocallyBonded())
+                                && parent.incrementRetry() <= 3) {
+                            UserError.Log.wtf(TAG, "Doing Android 12+ workaround");
+                            JoH.threadSleep(1500);
+                            handleAuthenticationWrite(parent, connection);
+                            return;
+                        }
 
                         if (status.isBonded()) {
                             parent.msg("Authenticated");
@@ -575,9 +583,11 @@ public class Ob1G5StateMachine {
                             break;
 
                         case VersionRequest2RxMessage:
-                            if (!setStoredFirmwareBytes(getTransmitterID(), 2, bytes, true)) {
+                            final boolean rev2Type = ((VersionRequest2RxMessage) data_packet.msg).isType2();
+                            if (!setStoredFirmwareBytes(getTransmitterID(), rev2Type ? 3 : 2, bytes, true)) {
                                 UserError.Log.e(TAG, "Could not save out firmware version!");
                             }
+                            SensorDays.clearCache();
                             nextBackFillCheckSize = BACKFILL_CHECK_LARGE;
                             if (JoH.ratelimit("g6-evaluate", 600)) {
                                 Inevitable.task("evaluteG6Settings", 10000, () -> evaluateG6Settings());
@@ -603,6 +613,7 @@ public class Ob1G5StateMachine {
                                 DexResetHelper.cancel();
                                 if (!parent.lastSensorState.sensorStarted()) {
                                     parent.lastSensorState = CalibrationState.SensorStarted;
+                                    parent.lastSensorStatus = parent.lastSensorState.getExtendedText();
                                 }
                             } else {
                                 final String msg = "Session Start Failed: " + session_start.message();
@@ -656,8 +667,10 @@ public class Ob1G5StateMachine {
                                 UserError.Log.ueh(TAG, msg);
                                 if (parent.lastSensorState.sensorStarted()) {
                                     parent.lastSensorState = CalibrationState.SensorStopped;
+                                    parent.lastSensorStatus = parent.lastSensorState.getExtendedText();
+                                } else {
+                                    reReadGlucoseData();
                                 }
-                                reReadGlucoseData();
                                 enqueueUniqueCommand(new TimeTxMessage(), "Query time after stop");
                             } else {
                                 // TODO what does an error when session isn't started look like? Probably best to downgrade those somewhat
@@ -1489,6 +1502,10 @@ public class Ob1G5StateMachine {
             if (v1b.length < 10) return 1;
             final byte[] v0b = getStoredFirmwareBytes(txid, 0);
             if (v0b.length < 10) return 0;
+            if (FirmwareCapability.isTransmitterG6Rev2(txid)) {
+                final byte[] v3b = getStoredFirmwareBytes(txid, 3);
+                if (v3b.length < 9) return 3;
+            }
             final byte[] v2b = getStoredFirmwareBytes(txid, 2);
             if (v2b.length < 10) return 2;
         }
@@ -1521,7 +1538,7 @@ public class Ob1G5StateMachine {
     public static boolean setStoredFirmwareBytes(String transmitterId, int type, byte[] data, boolean from_bluetooth) {
         if (from_bluetooth) UserError.Log.e(TAG, "Store: VersionRX dbg: " + JoH.bytesToHex(data));
         if (transmitterId.length() != 6) return false;
-        if (data.length < 10) return false;
+        if (data.length < 9) return false;
         if (JoH.ratelimit("store-firmware-bytes" + type, 60)) {
             PersistentStore.setBytes(G5_FIRMWARE_MARKER + transmitterId + "-" + type, data);
         }
@@ -1596,11 +1613,12 @@ public class Ob1G5StateMachine {
         }
         try {
             byte[] stored = getStoredFirmwareBytes(tx_id, type);
-            if ((stored != null) && (stored.length > 9)) {
+            if ((stored != null) && (stored.length >= 9)) {
                 switch (type) {
                     case 1:
                         return new VersionRequest1RxMessage(stored);
                     case 2:
+                    case 3:
                         return new VersionRequest2RxMessage(stored);
                     default:
                         return new VersionRequestRxMessage(stored);

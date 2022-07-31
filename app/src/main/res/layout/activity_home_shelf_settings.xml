@@ -23,14 +23,22 @@
             android:layout_height="wrap_content"
             android:checked="@{safeUnbox(vs.included[`source_wizard`])}"
             android:onClick="@{() -> vs.ptoggle(`source_wizard`)}"
-            android:text="Source Wizard Button" />
+            android:text="@string/source_wizard_button" />
         <Switch
             android:id="@+id/pswitch1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:checked="@{safeUnbox(vs.included[`time_buttons`])}"
             android:onClick="@{() -> vs.ptoggle(`time_buttons`)}"
-            android:text="Show Time Buttons" />
+            android:text="@string/show_time_buttons" />
+
+        <Switch
+            android:id="@+id/pswitch4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="@{safeUnbox(vs.included[`time_locked_always`])}"
+            android:onClick="@{() -> vs.ptoggle(`time_locked_always`)}"
+            android:text="@string/locked_time_period_always_used" />
 
         <Switch
             android:id="@+id/pswitch2"
@@ -38,21 +46,21 @@
             android:layout_height="wrap_content"
             android:checked="@{safeUnbox(vs.included[`chart_preview`])}"
             android:onClick="@{() -> vs.ptoggle(`chart_preview`)}"
-            android:text="Show Chart Preview" />
+            android:text="@string/show_chart_preview" />
 
         <Switch
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:checked="@{safeUnbox(vs.included[`collector_nano_status`])}"
             android:onClick="@{() -> vs.ptoggle(`collector_nano_status`)}"
-            android:text="Show Collector Status" />
+            android:text="@string/show_collector_status" />
 
         <Switch
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:checked="@{safeUnbox(vs.included[`sensor_expiry`])}"
             android:onClick="@{() -> vs.ptoggle(`sensor_expiry`)}"
-            android:text="Show Sensor Expiry" />
+            android:text="@string/show_sensor_expiry" />
 
         <LinearLayout
             android:layout_width="match_parent"

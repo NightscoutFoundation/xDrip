@@ -326,7 +326,7 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
                 {
                     long end = System.currentTimeMillis() + (60000 * 5);
                     long start = end - (60000 * 60*trendPeriod) -  (60000 * 10);
-                    this.bgGraphBuilder = new BgGraphBuilder(context, start, end, NUM_VALUES, true);
+                    this.bgGraphBuilder = new BgGraphBuilder(context, start, end, MAX_VALUES, true);
                     lastTrendPeriod=trendPeriod;
                 }
 

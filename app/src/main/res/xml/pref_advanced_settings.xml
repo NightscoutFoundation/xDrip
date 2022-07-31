@@ -5,7 +5,8 @@
         android:key="smart_watch_options"
         android:summary="@string/pebble_and_android_wear_options"
         android:title="@string/smart_watch_features">
-        <PreferenceScreen android:title="@string/android_wear_integration">
+        <PreferenceScreen android:title="@string/android_wear_integration"
+            android:key="android_wear_preferences">
             <PreferenceCategory
                 android:key="watch_integration"
                 android:title="@string/wear_integration">
@@ -86,7 +87,8 @@
 
             </PreferenceCategory>
         </PreferenceScreen>
-        <PreferenceScreen android:title="@string/pebble_integration">
+        <PreferenceScreen android:title="@string/pebble_integration"
+            android:key="pebble_preferences">
             <PreferenceCategory
                 android:key="pebble_integration"
                 android:title="@string/pebble_integration">
@@ -214,6 +216,7 @@
         <PreferenceScreen
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:key="amazfit_sync_preferences"
             android:title="@string/amazfit_sync_service">
             <CheckBoxPreference
                 android:defaultValue="false"
@@ -322,7 +325,6 @@
                 android:summary="Watch can alarm for high/low when not connected to phone."
                 android:title="Local Alarms" />
 
-
             <SwitchPreference
                 android:defaultValue="true"
                 android:dependency="bluejay_enabled"
@@ -335,7 +337,6 @@
                 android:key="bluejay_option_call_notifications"
                 android:summary="Send call notifications to the band (Android 6+)"
                 android:title="Send Calls" />
-
 
             <CheckBoxPreference
                 android:defaultValue="true"
@@ -479,7 +480,8 @@
         </PreferenceScreen>
 
 
-        <PreferenceScreen android:title="@string/title_lefun_band">
+        <PreferenceScreen android:title="@string/title_lefun_band"
+            android:key="lefun_preferences">
             <SwitchPreference
                 android:defaultValue="false"
                 android:key="lefun_enabled"
@@ -516,7 +518,8 @@
                 android:summary="Send call notifications to the band (Android 6+)"
                 android:title="Send Calls" />
 
-            <PreferenceScreen android:title="@string/title_lefun_screens_features">
+            <PreferenceScreen android:title="@string/title_lefun_screens_features"
+                android:key="lefun_features">
 
                 <PreferenceCategory android:title="@string/title_features">
                     <CheckBoxPreference
@@ -631,7 +634,7 @@
             <Preference
                 android:key="update_miband_bg"
                 android:dependency="miband_enabled"
-                android:title="@string/title_miband_update_bg"></Preference>
+                android:title="@string/title_miband_update_bg"/>
             <PreferenceCategory
                 android:title="@string/title_miband_general_settings_category"
                 android:dependency="miband_enabled">
@@ -806,6 +809,7 @@
 
         <PreferenceScreen
             icon="@drawable/ic_heart_pulse_grey600_24dp"
+            android:key="smartwatch_sensors_screen"
             android:title="@string/title_Smartwatch_Sensors">
             <SwitchPreference
                 android:defaultValue="true"
@@ -850,16 +854,16 @@
                 android:key="speak_readings_change_threshold"
                 android:max="300"
                 android:min="0"
-                android:summary=""
-                android:title="@string/title_When_changes_by" />
+                android:summary="@string/title_When_changes_by"
+                android:title="" />
             <SeekBarPreference
                 android:defaultValue="0"
                 android:dependency="bg_to_speech"
                 android:key="speak_readings_change_time"
                 android:max="300"
                 android:min="0"
-                android:summary=""
-                android:title="@string/title_Or_per_number_of_minutes" />
+                android:summary="@string/title_Or_per_number_of_minutes"
+                android:title="" />
             <SwitchPreference
                 android:defaultValue="false"
                 android:key="speak_alerts"
@@ -957,6 +961,12 @@
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/accept_treatments" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:dependency="accept_nsclient_treatments"
+                android:key="profile_import_sound"
+                android:summary="@string/play_sounds_when_importing"
+                android:title="@string/import_sounds" />
             <SwitchPreference
                 android:defaultValue="true"
                 android:key="accept_broadcast_calibrations"
@@ -990,6 +1000,11 @@
                 android:key="xdrip_webservice_secret"
                 android:summary="@string/summary_Shared_Secret_for_open_web_service"
                 android:title="@string/title_xDrip_Web_Service_Secret" />
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="broadcast_service_enabled"
+                android:summary="@string/summary_broadcast_service_api"
+                android:title="@string/title_broadcast_service_api" />
         </PreferenceScreen>
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="xdrip_less_common_settings"
@@ -1223,8 +1238,6 @@
                     android:key="bypass_calibration_quality_check"
                     android:summary="@string/summary_Allow_initial_calibration_no_good_enough_data"
                     android:title="@string/title_Bypass_quality_check" />
-
-
             </PreferenceScreen>
 
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
@@ -1247,7 +1260,6 @@
                     android:dependency="bluetooth_watchdog"
                     android:inputType="numberDecimal"
                     android:key="bluetooth_watchdog_timer"
-                    android:numeric="decimal"
                     android:summary="@string/bluetooth_watchdog_timer_sums"
                     android:title="@string/bluetooth_watchdog_timers" />
                 <CheckBoxPreference
@@ -1367,7 +1379,6 @@
                 android:summary="@string/repeatedly_restart_collection_service"
                 android:title="@string/aggressive_service_restarts" />
 
-
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="interpret_raw"
@@ -1477,13 +1488,13 @@
                     android:summary="@string/use_external_blukon_algorithm_summary"
                     android:title="@string/use_external_blukon_algorithm" />
 
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:dependency="external_blukon_algorithm"
-                    android:enabled="false"
-                    android:key="calibrate_external_libre_algorithm"
-                    android:summary="@string/calibrate_external_libre_algorithm_summary"
-                    android:title="@string/calibrate_external_libre_algorithm_title" />
+                <ListPreference
+                    android:defaultValue="calibrate_raw"
+                    android:entries="@array/CalibrateExternalLibre2"
+                    android:entryValues="@array/CalibrateExternalLibre2Values"
+                    android:key="calibrate_external_libre_2_algorithm_type"
+                    android:summary="@string/calibrate_external_libre_2_algorithm_summary"
+                    android:title="@string/calibrate_external_libre_2_algorithm_title" />
 
                 <CheckBoxPreference
                     android:defaultValue="false"

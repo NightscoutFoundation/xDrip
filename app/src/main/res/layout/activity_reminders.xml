@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,90 +10,129 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/reminder_recycler"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentEnd="true"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/reminder_info_card"
+        android:layout_alignParentStart="true"
+
         android:layout_alignParentTop="true" />
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/reminder_info_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="3dp"
+        android:animateLayoutChanges="true"
+        app:cardBackgroundColor="@color/cardview_light_background"
+        app:cardCornerRadius="5dp">
+
+        <TextView
+            android:id="@+id/reminders_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="left"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginBottom="6dp"
+            android:text="@string/snooze_done"
+            android:textColor="#666666"
+            android:textIsSelectable="false" />
+
+
+    </android.support.v7.widget.CardView>
+
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
         android:layout_gravity="bottom|right"
-        android:layout_margin="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
         android:onClick="newReminder"
         android:src="@drawable/ic_add_black_36dp"
         app:borderWidth="0dp" />
 
     <android.support.v7.widget.CardView
+        android:id="@+id/floatingsnooze"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_gravity="bottom|left"
+        app:cardBackgroundColor="@color/cardview_light_background"
         app:cardCornerRadius="10dp"
-        android:id="@+id/floatingsnooze"
-       app:cardBackgroundColor="@color/cardview_light_background"
         app:cardElevation="8dp">
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
             <LinearLayout
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
                 <TextView
-                    android:text="Test test 123 this is text @string/appwidget_text"
+                    android:id="@+id/floaterText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/floaterText"
-                    android:layout_weight="10"
                     android:layout_marginLeft="5dp"
                     android:layout_marginTop="5dp"
                     android:layout_marginRight="5dp"
+                    android:layout_weight="10"
+                    android:text="Test test 123 this is text @string/appwidget_text"
                     android:textColor="@android:color/darker_gray" />
 
                 <ImageButton
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@android:drawable/arrow_down_float"
                     android:id="@+id/imageButton7"
-                    android:layout_weight="1"
-                    android:background="@android:color/transparent"
-                    android:paddingTop="10dp"
-                    android:onClick="hideFloater"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:minWidth="60dp"
+                    android:onClick="hideFloater"
+                    android:paddingTop="10dp"
                     android:paddingBottom="5dp"
-                    android:layout_width="wrap_content"
-                    android:minWidth="60dp"
-                    android:layout_marginRight="3dp" />
+                    app:srcCompat="@android:drawable/arrow_down_float" />
 
                 <ImageButton
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/ic_undo_variant_grey600_24dp"
                     android:id="@+id/imageButton5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:onClick="undoFromFloater"
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginTop="1dp"
                     android:layout_weight="1"
                     android:background="@android:color/transparent"
-                    android:paddingTop="5dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_width="wrap_content"
                     android:minWidth="60dp"
-                    android:layout_marginLeft="3dp" />
+                    android:onClick="undoFromFloater"
+                    android:paddingTop="5dp"
+                    app:srcCompat="@drawable/ic_undo_variant_grey600_24dp" />
 
                 <ImageButton
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@android:drawable/ic_menu_delete"
                     android:id="@+id/reminderTrashButton"
-                    android:layout_weight="1"
-                    android:background="@android:color/transparent"
-                    android:paddingTop="2dp"
                     android:layout_width="wrap_content"
-                    android:minWidth="60dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="3dp"
                     android:layout_marginRight="3dp"
-                    android:onClick="reminderTrashButton" />
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:minWidth="60dp"
+                    android:onClick="reminderTrashButton"
+                    android:paddingTop="2dp"
+                    app:srcCompat="@android:drawable/ic_menu_delete" />
 
             </LinearLayout>
 
@@ -112,7 +151,7 @@
 
                     android:onClick="snoozeAdjust"
                     android:tag="15 Min"
-                    android:text="@string/button_15_min"/>
+                    android:text="@string/button_15_min" />
 
                 <Button
                     android:id="@+id/button11"
@@ -135,10 +174,10 @@
             </LinearLayout>
 
             <LinearLayout
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center_horizontal">
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
 
                 <Button
                     android:id="@+id/button6"
@@ -172,10 +211,10 @@
             </LinearLayout>
 
             <LinearLayout
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center_horizontal">
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
 
                 <Button
                     android:id="@+id/button7"
@@ -198,27 +237,27 @@
 
                 <Button
                     android:id="@+id/button9"
-                    android:onClick="snoozeAdjust"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:tag="1 week"
-                    android:text="@string/button_1_week"
+                    android:layout_gravity="left"
                     android:layout_weight="1"
-                    android:layout_gravity="left" />
+                    android:onClick="snoozeAdjust"
+                    android:tag="1 week"
+                    android:text="@string/button_1_week" />
             </LinearLayout>
 
         </LinearLayout>
 
         <GridLayout
+            android:id="@+id/remindergrid"
             android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/remindergrid">
+            android:layout_height="wrap_content">
 
         </GridLayout>
 
     </android.support.v7.widget.CardView>
 
 
-</android.support.design.widget.CoordinatorLayout>
+</RelativeLayout>
 
 

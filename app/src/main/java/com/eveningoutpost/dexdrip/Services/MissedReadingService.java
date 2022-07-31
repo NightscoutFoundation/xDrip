@@ -30,6 +30,7 @@ import com.eveningoutpost.dexdrip.ui.LockScreenWallPaper;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFun;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
+import com.eveningoutpost.dexdrip.Services.broadcastservice.BroadcastEntry;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -72,6 +73,10 @@ public class MissedReadingService extends IntentService {
 
             if (LeFunEntry.isEnabled() && (!BgReading.last_within_millis(stale_millis))) {
                 LeFun.showLatestBG();
+            }
+
+            if (BroadcastEntry.isEnabled() && (!BgReading.last_within_millis(stale_millis))) {
+                BroadcastEntry.sendLatestBG();
             }
 
 

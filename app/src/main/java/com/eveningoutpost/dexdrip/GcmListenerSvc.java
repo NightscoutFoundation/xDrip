@@ -561,7 +561,7 @@ public class GcmListenerSvc extends JamListenerSvc {
                             UserError.Log.wtf(TAG, "Exception processing rsom timestamp");
                         }
                     }
-                } else if (action.equals("libreBlock")) {
+                } else if (action.equals("libreBlock") || action.equals("libreBlck")) {
                     HandleLibreBlock(payload);
                 } else {
                     Log.e(TAG, "Received message action we don't know about: " + action);
@@ -575,11 +575,17 @@ public class GcmListenerSvc extends JamListenerSvc {
         }
     }
 
-    private void HandleLibreBlock(String payload) {
+    private void HandleLibreBlock(final String payload) {
         LibreBlock lb = LibreBlock.createFromExtendedJson(payload);
         if (lb == null) {
             return;
         }
+
+        if (lb.timestamp == 0) {
+            UserError.Log.e(TAG, "Corrupt libre block from sync");
+            return;
+        }
+
         if (LibreBlock.getForTimestamp(lb.timestamp) != null) {
             // We already seen this one.
             return;
@@ -591,6 +597,7 @@ public class GcmListenerSvc extends JamListenerSvc {
         if (Home.get_master()) {
             if (SensorSanity.checkLibreSensorChangeIfEnabled(lb.reference)) {
                 Log.e(TAG, "Problem with Libre Serial Number - not processing");
+                return;
             }
 
             NFCReaderX.HandleGoodReading(lb.reference, lb.blockbytes, lb.timestamp, false, lb.patchUid, lb.patchInfo);

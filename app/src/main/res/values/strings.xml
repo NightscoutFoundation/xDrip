@@ -204,6 +204,7 @@
     <string name="general_settings">General Settings</string>
     <string name="high_value">High Value</string>
     <string name="low_value">Low Value</string>
+    <string name="stats_range_settings">Range Settings: </string>
     <string name="end_user_license_agreement">End User License Agreement</string>
     <string name="save">Save</string>
     <string name="view_important_warning">View Important Warning</string>
@@ -324,6 +325,7 @@
     <string name="high_glucose_values">High Glucose Values</string>
     <string name="in_range_glucose_values">In-range Glucose Values</string>
     <string name="default_color_selected">Default Color Selected</string>
+    <string name="color_bg_values">Colors of BG Reading and Trend Arrow</string>
     <string name="xdrip_plus_extra_settings">xDrip+ extra settings</string>
     <string name="example_chart">Example Chart</string>
     <string name="treatments_prediction_curves">Treatments / Prediction Curves</string>
@@ -412,7 +414,7 @@
     <string name="optional_contact_info_here_eg_email">Optional contact info here, e.g. email</string>
     <string name="send_message">Send Message</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Please indicate what you think of the app generally</string>
-    <string name="preferences_saved_in_sdcard_downloads">Preferences saved in SD card Downloads</string>
+    <string name="preferences_saved_in_sdcard_downloads">Preferences saved in Internal storage/Download</string>
     <string name="could_not_write_to_sdcard_check_perms">Couldn\'t write to SD card - check permissions?</string>
     <string name="loaded_preferences_restarting">Loaded Preferences! - Restarting</string>
     <string name="could_not_load_preferences_check_pers">Could not load preferences - check permissions or file?</string>
@@ -465,7 +467,7 @@
     <string name="special_glucose_value_to_display_message">Special glucose value to display the message below</string>
     <string name="bluetooth_wakelocks">Bluetooth Wakelocks</string>
     <string name="compatible_broadcast">Compatible Broadcast</string>
-    <string name="show_datatables">Show Datatables</string>
+    <string name="show_datatables">Show Data Tables</string>
     <string name="display_bridge_battery">Display Bridge Battery</string>
     <string name="close_gatt_on_ble_disconnect">Close GATT on BLE disconnect</string>
     <string name="disable_battery_warning">Disable Battery Warning</string>
@@ -490,10 +492,10 @@
     <string name="bad_glucose_values">Bad Glucose Values</string>
     <string name="revert_to_default">Revert to Default</string>
     <string name="filtered_values">Filtered Values</string>
-    <string name="treatment_color">Treatment Color</string>
-    <string name="treatment_color_dark">Treatment Color Dark</string>
-    <string name="predictive_color">Predictive Color</string>
-    <string name="predictive_color_dark">Predictive Color Dark</string>
+    <string name="treatment_color">Insulin on Board</string>
+    <string name="treatment_color_dark">Insulin Activity</string>
+    <string name="predictive_color">Glucose Prediction</string>
+    <string name="predictive_color_dark">Carbs on Board</string>
     <string name="average_and_target_lines">Average and Target Lines</string>
     <string name="eight_hour_average_line">8-Hour Average Line</string>
     <string name="twenty_four_hour_average_line">24-Hour Average Line</string>
@@ -644,6 +646,8 @@
     <string name="use_external_blukon_algorithm">Out of process Libre algorithm.</string>
     <string name="calibrate_external_libre_algorithm_summary">Apply xDrip calibration methods on OOP data.</string>
     <string name="calibrate_external_libre_algorithm_title">OOP algorithm calibration.</string>
+    <string name="calibrate_external_libre_2_algorithm_summary">Apply xDrip calibration methods on OOP2 data.</string>
+    <string name="calibrate_external_libre_2_algorithm_title">OOP2 algorithm calibration.</string>
     <string name="libre_use_smoothed_data_summary">Use average of 5 points to get smoother Libre data.</string>
     <string name="libre_use_smoothed_data_title">Smooth Libre data.</string>
     <string name="retrieve_blukon_history_title">Retrieve Libre history</string>
@@ -658,7 +662,7 @@
     <string name="set_logging_appid">Set Logging AppID</string>
     <string name="only_enable_on_trouble">Only enable if you are having trouble with the app.</string>
     <string name="store_logs">Store logs for troubleshooting</string>
-    <string name="show_datatables_in_app_drawer">Show Calibration and BG datatables in the app drawer.</string>
+    <string name="show_datatables_in_app_drawer">Show Calibration and BG data tables in the app drawer.</string>
     <string name="disable_log_transmitter_battery_warning">Disable the warning for low transmitter battery state on the home screen. (Only relevant for DIY receivers.)</string>
     <string name="engineering_mode">Engineering mode</string>
     <string name="allow_unsafe_settings">Allows changing the most unsafe settings which could break everything!</string>
@@ -817,9 +821,9 @@
     <string name="step_counter_1st_color">Step counter 1st Color</string>
     <string name="step_counter_2nd_color">Step counter 2nd Color</string>
     <string name="flair_colors">Flair Colors</string>
-    <string name="use_flair_colors">Use Flair Colors</string>
-    <string name="upper_title_bar_flair">Upper Title Bar Flair</string>
-    <string name="lower_button_bar_falir">Lower Button Bar Flair</string>
+    <string name="use_flair_colors">Custom Title/Nav Bar</string>
+    <string name="upper_title_bar_flair">Upper Title Bar</string>
+    <string name="lower_button_bar_falir">Lower Navigation Bar</string>
     <string name="force_english_text">Force English Text</string>
     <string name="using_local_language">Currently using your device\'s local language</string>
     <string name="forcing_alternate_language">Currently forcing use of alternate language</string>
@@ -944,6 +948,7 @@
     <string name="offical_msg">The official app</string>
     <string name="use_conflict_msg">may try to access the transmitter device too and this can cause problems with both apps</string>
     <string name="use_confict_msg_glimp">You can adjust Glimp Settings: options -> devices -> unselect Bluetooth option</string>
+    <string name="eng_mode_is_on">Engineering mode is enabled.  Please disable it unless you are certain you need it as it may cause unexpected behavior.</string>
     <string name="yes">Yes</string>
     <string name="xdrip_compatible_features">xDrip+ %s Features</string>
     <string name="garmin">Garmin</string>
@@ -1232,6 +1237,10 @@
     <string name="send_bg_readings_to_backfill">Send BG readings to backfill</string>
     <string name="view_old_error_log">View old Error Log</string>
     <string name="return_to_home_screen">Return to Home Screen</string>
+
+    <string name="title_broadcast_service_api">Broadcast Service API</string>
+    <string name="summary_broadcast_service_api">Enables xDrip communication with third-party applications by using new API</string>
+
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Sync Data with MiBand fitness bands</string>
     <string name="title_miband_enable">Use MiBand Band</string>
@@ -1561,6 +1570,7 @@
     <string name="nfc_is_not_enabled">NFC is not enabled</string>
     <string name="phone_nfc_is_having_problems">Phone NFC is having problems!</string>
     <string name="not_so_quickly_wait_60_seconds">Not so quickly, wait 60 seconds</string>
+    <string name="not_so_quickly_wait_30_seconds">Not so quickly, wait 30 seconds</string>
     <string name="nfc_diag_timeout">NFC diag timeout</string>
     <string name="nfc_read_timeout">NFC read timeout</string>
     <string name="nfc_invalid_data__try_again">NFC invalid data - try again</string>
@@ -1671,4 +1681,33 @@
     <string name="accept_external_status">Accept External Status</string>
     <string translatable="false" name="summary_dex_specified_slot">Specify transmitter slot manually, setting this incorrectly will prevent any readings being received.</string>
     <string translatable="false" name="title_dex_specified_slot">Manual Slot Number</string>
+    <string name="cancel_by_default">Cancel by default</string>
+    <string name="old">Old</string>
+    <string name="neww">New</string>
+    <string name="reschedule_with_new_timing">Reschedule with new timing?</string>
+    <string name="select_new_sound_source">Select new sound source</string>
+    <string name="snooze_done">← Snooze / Done →</string>
+    <string name="zero_value">Zero value</string>
+    <string name="adjust_dose">Adjust Dose</string>
+    <string name="Dose">Dose</string>
+    <string name="choose_type">Choose Type</string>
+    <string name="invalid_serial">Invalid serial</string>
+    <string name="set_pen_to_format">Set Pen %s to %s</string>
+    <string name="pen_contains_which_insulin_type">PEN %s contains which insulin type?</string>
+    <string name="allow_do_not_disturb_text">To be able to have the optional ability to alert even when Android Do-Not-Disturb is enabled, please allow xDrip this permission in the system settings on the next page</string>
+    <string name="graphical_editor_for_pump_basal">Graphical editor for pump basal profiles</string>
+    <string name="basal_profile_editor">Basal Profile Editor</string>
+    <string name="import_sounds">Import Sounds</string>
+    <string name="play_sounds_when_importing">Play sounds when importing significant data such as profiles</string>
+    <string name="show_action_buttons_within_alerts">Show action buttons (like Snooze) within alert notifications</string>
+    <string name="alert_buttons">Alert buttons</string>
+    <string name="show_sensor_expiry">Show Sensor Expiry</string>
+    <string name="show_collector_status">Show Collector Status</string>
+    <string name="show_chart_preview">Show Chart Preview</string>
+    <string name="locked_time_period_always_used">Locked Time Period Always Used</string>
+    <string name="show_time_buttons">Show Time Buttons</string>
+    <string name="source_wizard_button">Source Wizard Button</string>
+    <string name="please_wait_seconds_before_trying_to_start_sensor">Please wait %d seconds before trying to start sensor</string>
+    <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">please update OOP2 or move to calibrate based on raw mode</string>
+    <string name="special_pairing_workaround">Special Pairing Workaround</string>
 </resources>

@@ -6,6 +6,13 @@ package com.eveningoutpost.dexdrip;
  * Multi-page plugin style status entry lists
  */
 
+import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.Medtrum;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.NSFollow;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.SHFollow;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.WebFollow;
+
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -49,6 +56,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollowService;
 import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
+import com.eveningoutpost.dexdrip.cgm.webfollow.WebFollowService;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenService;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
@@ -68,12 +76,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
-import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
-import static com.eveningoutpost.dexdrip.utils.DexCollectionType.Medtrum;
-import static com.eveningoutpost.dexdrip.utils.DexCollectionType.NSFollow;
-import static com.eveningoutpost.dexdrip.utils.DexCollectionType.SHFollow;
-
 public class MegaStatus extends ActivityWithMenu {
 
 
@@ -92,7 +94,7 @@ public class MegaStatus extends ActivityWithMenu {
 
     private static final ArrayList<String> sectionList = new ArrayList<>();
     private static final ArrayList<String> sectionTitles = new ArrayList<>();
-    private static final HashSet<String> sectionAlwaysOn = new HashSet<>();
+    private static final HashSet<String> sectionAlwaysOn = new HashSet<>(); //While viewing these pages, the screen won't time out.
 
     public static View runnableView;
 
@@ -123,6 +125,7 @@ public class MegaStatus extends ActivityWithMenu {
     private static final String INPEN_STATUS = "InPen";
     private static final String NIGHTSCOUT_FOLLOW = "Nightscout Follow";
     private static final String SHARE_FOLLOW = "Dex Share Follow";
+    private static final String WEB_FOLLOW = "Web Follower";
     private static final String XDRIP_LIBRE2 = "Libre2";
 
     static {
@@ -199,6 +202,9 @@ public class MegaStatus extends ActivityWithMenu {
             if(dexCollectionType.equals(SHFollow)) {
                 addAsection(SHARE_FOLLOW, "Dex Share Follow Status");
             }
+            if(dexCollectionType.equals(WebFollow)) {
+                addAsection(WEB_FOLLOW, "Web Follower Status");
+            }
 
             //addAsection("Misc", "Currently Empty");
 
@@ -258,6 +264,9 @@ public class MegaStatus extends ActivityWithMenu {
                 break;
             case SHARE_FOLLOW:
                 la.addRows(ShareFollowService.megaStatus());
+                break;
+            case WEB_FOLLOW:
+                la.addRows(WebFollowService.megaStatus());
                 break;
             case XDRIP_LIBRE2:
                 la.addRows(LibreReceiver.megaStatus());
@@ -354,6 +363,35 @@ public class MegaStatus extends ActivityWithMenu {
                 }
             }
         };
+
+        try {
+            getSupportActionBar().setSubtitle(BuildConfig.VERSION_NAME);
+            fixElipsusAndSize(null);
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Got exception trying to set subtitle: ", e);
+        }
+    }
+
+    private void fixElipsusAndSize(ViewGroup root) {
+        if (root == null)
+            root = (ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content).getRootView();
+        final int children = root.getChildCount();
+        for (int i = 0; i < children; i++) {
+            final View view = root.getChildAt(i);
+            if (view instanceof TextView) {
+                final String txt = ((TextView) view).getText().toString();
+                if (txt.contains(BuildConfig.VERSION_NAME)) {
+                    ((TextView) view).setEllipsize(null);
+                    final float tsize = ((TextView) view).getTextSize();
+                    if (tsize > 10f) {
+                        ((TextView) view).setTextSize(Math.max(10f, tsize / 4));
+                    }
+                    return;
+                }
+            } else if (view instanceof ViewGroup) {
+                fixElipsusAndSize((ViewGroup) view);
+            }
+        }
     }
 
     private void requestWearCollectorStatus() {

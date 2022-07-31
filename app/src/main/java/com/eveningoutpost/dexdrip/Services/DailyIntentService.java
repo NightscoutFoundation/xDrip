@@ -24,6 +24,7 @@ import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
 import com.eveningoutpost.dexdrip.utils.Telemetry;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xdrip;
+import com.eveningoutpost.dexdrip.UtilityModels.SettingsValidation;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 import static com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity.checkForAnUpdate;
@@ -145,6 +146,12 @@ public class DailyIntentService extends IntentService {
                     IncompatibleApps.notifyAboutIncompatibleApps();
                 } catch (Exception e) {
                     //
+                }
+
+                try {
+                    SettingsValidation.notifyAboutInadvisableSettings();
+                } catch (Exception e) {
+                    Log.e(TAG, "Exception in SettingsValidation: " + e);
                 }
 
                 Log.i(TAG, "DailyIntentService onHandleIntent exiting after " + ((JoH.tsl() - start) / 1000) + " seconds");
