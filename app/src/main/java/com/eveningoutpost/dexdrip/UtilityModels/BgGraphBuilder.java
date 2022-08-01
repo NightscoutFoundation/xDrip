@@ -2104,7 +2104,7 @@ public class BgGraphBuilder {
     public void showUnSmoothedValues(final List<BgReading> readings) {
         pluginValues.clear();
         for (val bgReading : readings) {
-            pluginValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
+            pluginValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
         }
     }
 
