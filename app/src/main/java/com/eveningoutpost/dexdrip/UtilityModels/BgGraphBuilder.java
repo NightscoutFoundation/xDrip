@@ -38,6 +38,7 @@ import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.insulin.opennov.Options;
+import com.eveningoutpost.dexdrip.processing.SmootherFactory;
 import com.eveningoutpost.dexdrip.store.FastStore;
 import com.eveningoutpost.dexdrip.store.KeyStore;
 import com.eveningoutpost.dexdrip.ui.classifier.NoteClassifier;
@@ -78,6 +79,7 @@ import lecho.lib.hellocharts.model.ValueShape;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
+import lombok.val;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.tolerantParseDouble;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
@@ -114,6 +116,7 @@ public class BgGraphBuilder {
 
     // flag to indicate if readings data has been adjusted
     private static boolean plugin_adjusted = false;
+    private boolean smoother_adjusted;
     // used to prevent concurrency problems with calibration plugins
     private static final ReentrantLock readings_lock = new ReentrantLock();
 
@@ -1041,7 +1044,7 @@ public class BgGraphBuilder {
 
         try {
 
-            if (plugin_adjusted) {
+            if (plugin_adjusted || smoother_adjusted) {
                 Log.i(TAG, "Reloading as Plugin modified data: " + JoH.backTrace(1) + " size:" + bgReadings.size());
                 bgReadings.clear();
                 bgReadings.addAll(BgReading.latestForGraph(loaded_numValues, loaded_start, loaded_end));
@@ -1070,6 +1073,14 @@ public class BgGraphBuilder {
             pluginValues.clear();
             iconValues.clear();
             smbValues.clear();
+
+            if (Pref.getBooleanDefaultFalse("graph_smoothing")) {
+                if (Home.get_engineering_mode() && Pref.getBooleanDefaultFalse("show-unsmoothed-values-as-plugin")) {
+                    showUnSmoothedValues(bgReadings);
+                }
+                SmootherFactory.get(Pref.getString("main-chart-smoothing-alg","")).smoothBgReadings(bgReadings);
+                smoother_adjusted = true;
+            }
 
             final double bgScale = bgScale();
             final double now = JoH.ts();
@@ -2088,6 +2099,13 @@ public class BgGraphBuilder {
         previewXaxis.setTextSize(previewAxisTextSize);
         previewXaxis.setHasLines(true);
         return previewXaxis;
+    }
+
+    public void showUnSmoothedValues(final List<BgReading> readings) {
+        pluginValues.clear();
+        for (val bgReading : readings) {
+            pluginValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
+        }
     }
 
     private SimpleDateFormat hourFormat() {
