@@ -1710,4 +1710,8 @@
     <string name="please_wait_seconds_before_trying_to_start_sensor">Please wait %d seconds before trying to start sensor</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">please update OOP2 or move to calibrate based on raw mode</string>
     <string name="special_pairing_workaround">Special Pairing Workaround</string>
+    <string name="save_power">Save Power</string>
+    <string name="reduce_battery_and_network_overhead">Reduce battery and network overhead by using batch processing and excluding unnecessary data</string>
+    <string name="simplify_graphs_by_smoothing_out_irregularities">Simplify graphs by smoothing out irregularities</string>
+    <string name="graph_smoothing">Graph Smoothing</string>
 </resources>

@@ -352,6 +352,14 @@
                 android:summary="@string/summary_xdrip_plus_graph_display_settings"
                 android:title="@string/title_xdrip_plus_graph_display_settings">
 
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:key="graph_smoothing"
+                    android:summary="@string/simplify_graphs_by_smoothing_out_irregularities"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="@string/graph_smoothing" />
+
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="rewrite_history"
@@ -795,6 +803,11 @@
                 android:key="plus_accept_follower_actions"
                 android:summary="@string/summary_plus_accept_follower_actions"
                 android:title="@string/title_plus_accept_follower_actions" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="plus_follower_save_power"
+                android:summary="@string/reduce_battery_and_network_overhead"
+                android:title="@string/save_power" />
             <SwitchPreference
                 android:defaultValue="false"
                 android:dependency="plus_follow_master"
