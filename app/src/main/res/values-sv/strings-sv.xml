@@ -1106,4 +1106,8 @@
     <string name="source_wizard_button">Knapp för assistans källa</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Vänligen vänta %d sekunder innan du försöker starta sensorn</string>
     <string name="special_pairing_workaround">Temporär fix för enhetskoppling</string>
+    <string name="save_power">Spara Ström</string>
+    <string name="reduce_battery_and_network_overhead">Minska batteri- och nätverksanvändning genom batch-behandling och exkludera ickenödvändiga data</string>
+    <string name="simplify_graphs_by_smoothing_out_irregularities">Förenkla grafer genom att jämna ut avvikelser</string>
+    <string name="graph_smoothing">Grafutjämning</string>
 </resources>

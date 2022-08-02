@@ -390,4 +390,6 @@
     <string name="show_action_buttons_within_alerts">警報通知内にアクションボタン\"(\"スヌーズ等\")\"を表示する</string>
     <string name="alert_buttons">警報ボタン</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">センサーを起動する前に %d 秒お待ちください</string>
+    <string name="save_power">節電</string>
+    <string name="graph_smoothing">グラフのスムージング</string>
 </resources>

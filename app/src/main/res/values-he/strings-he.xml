@@ -1524,4 +1524,8 @@
     <string name="show_action_buttons_within_alerts">הצג כפתורי פעולות (לדוגמה נודניק) בתוך ההתראות</string>
     <string name="alert_buttons">כפתורי פעולות</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">אנא המתינו %d שניות לפני שתנסו להפעיל חיישן</string>
+    <string name="save_power">חסוך בסוללה</string>
+    <string name="reduce_battery_and_network_overhead">חסוך בסוללה ובשימוש בנתונים בעזרת ניתוח נתונים במכה, וכן הפחתה של מידע לא נחוץ</string>
+    <string name="simplify_graphs_by_smoothing_out_irregularities">פשט את הגרפים בעזרת החלקה של נתונים יוצאי דופן</string>
+    <string name="graph_smoothing">החלקת הגרף</string>
 </resources>
