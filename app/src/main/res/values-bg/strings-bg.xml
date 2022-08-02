@@ -454,4 +454,8 @@
     <string name="show_time_buttons">Покажи бутона за Време</string>
     <string name="source_wizard_button">Съветник за източник Бутон</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Моля изчакайте %d секунди преди да стартирате сензор</string>
+    <string name="save_power">Съхранение на енергия</string>
+    <string name="reduce_battery_and_network_overhead">Намаляване консумация на батерия и мрежа използвайки бач процесване на данните</string>
+    <string name="simplify_graphs_by_smoothing_out_irregularities">Опрости графики като изглажда нередни данни</string>
+    <string name="graph_smoothing">Изглаждане на графика</string>
 </resources>

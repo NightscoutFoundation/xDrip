@@ -1662,4 +1662,8 @@
     <string name="please_wait_seconds_before_trying_to_start_sensor">Espere %d segundos antes de intentar iniciar el sensor</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">Por favor, actualiza OOP2 o cambia a calibración basada en modo raw</string>
     <string name="special_pairing_workaround">Método alternativo especial de emparejamiento</string>
+    <string name="save_power">Ahorro de energía</string>
+    <string name="reduce_battery_and_network_overhead">Reducir la sobrecarga de la batería y red mediante el procesamiento por lotes y la exclusión de datos innecesarios</string>
+    <string name="simplify_graphs_by_smoothing_out_irregularities">Simplificar los gráficos suavizando las irregularidades</string>
+    <string name="graph_smoothing">Suavizar gráficos</string>
 </resources>
