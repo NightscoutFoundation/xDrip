@@ -1477,6 +1477,12 @@
                     android:summary="@string/predictive_readings_old"
                     android:title="@string/display_predictive_values" />
                 <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="show-unsmoothed-values-as-plugin"
+                    android:dependency="engineering_mode"
+                    android:summary="Show unsmoothed data in place of plugin (engineering mode only)"
+                    android:title="Debug smoothing" />
+                <CheckBoxPreference
                     android:defaultValue="true"
                     android:dependency="engineering_mode"
                     android:key="use_proper_ongoing"
