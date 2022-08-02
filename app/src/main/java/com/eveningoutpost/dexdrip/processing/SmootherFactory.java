@@ -1,5 +1,8 @@
 package com.eveningoutpost.dexdrip.processing;
 
+import static com.eveningoutpost.dexdrip.UtilityModels.Unitized.unit;
+import static com.eveningoutpost.dexdrip.UtilityModels.Unitized.usingMgDl;
+
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
@@ -28,7 +31,7 @@ public class SmootherFactory {
 
     public static JSmoother get(final String choice) {
         val collectorPeriod = DexCollectionType.getCurrentSamplePeriod();
-        val specification = choice + collectorPeriod;
+        val specification = choice + unit(usingMgDl()) + collectorPeriod;
         JSmoother instance = cache.get(specification);
         if (instance == null) {
             UserError.Log.d(TAG, "New instance for " + specification);
