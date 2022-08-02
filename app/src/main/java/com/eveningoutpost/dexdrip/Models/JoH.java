@@ -185,7 +185,7 @@ public class JoH {
     }
 
     public static long uptime() {
-        return SystemClock.uptimeMillis();
+        return SystemClock.elapsedRealtime();
     }
 
     public static boolean upForAtLeastMins(int mins) {
@@ -1300,6 +1300,21 @@ public class JoH {
         return bitmap;
     }
 
+    public static Bitmap getBitmapFromView(final View root, final int width, final int height) {
+        val params = new ViewGroup.LayoutParams(width, height);
+        root.setLayoutParams(params);
+        val measuredWidth = View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY);
+        val measuredHeight = View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY);
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        val canvas = new Canvas(bitmap);
+        canvas.drawColor(Color.WHITE);
+        root.destroyDrawingCache();
+        root.measure(measuredWidth, measuredHeight);
+        root.layout(0, 0, root.getMeasuredWidth(), root.getMeasuredHeight());
+        root.draw(canvas);
+        return bitmap;
+    }
+
 
     public static void bitmapToFile(Bitmap bitmap, String path, String fileName) {
 
@@ -1720,6 +1735,20 @@ public class JoH {
             UserError.Log.e(TAG, "Exception during unbond! " + transmitterMAC, e);
         }
         UserError.Log.d(TAG, "unBond() finished");
+    }
+
+    public static Field getField(final Class clazz, final String fieldName)
+            throws NoSuchFieldException {
+        try {
+            return clazz.getDeclaredField(fieldName);
+        } catch (NoSuchFieldException e) {
+            Class superClass = clazz.getSuperclass();
+            if (superClass == null) {
+                throw e;
+            } else {
+                return getField(superClass, fieldName);
+            }
+        }
     }
 
 
