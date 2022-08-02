@@ -6,6 +6,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.processing.sgfilter.ContinuousPadder;
 import com.eveningoutpost.dexdrip.processing.sgfilter.EnvelopeProcessor;
+import com.eveningoutpost.dexdrip.processing.sgfilter.LowPreserver;
 import com.eveningoutpost.dexdrip.processing.sgfilter.SGFilter;
 
 import java.util.Collections;
@@ -17,7 +18,7 @@ import lombok.val;
  * JamOrHam
  * <p>
  * The Goto Smoother which implements a Savitzky-Golay filter with contiguous sequence splitting,
- * continuous edge padding and decay envelope post processing.
+ * continuous edge padding, low value preservation and decay envelope post processing.
  */
 
 public class GotoSmoother extends BaseSmoother {
@@ -71,6 +72,7 @@ public class GotoSmoother extends BaseSmoother {
         coefficients = SGFilter.computeSGCoefficients(distance, distance, 2);
         filter = new SGFilter(distance, distance);
         filter.appendPreprocessor(new ContinuousPadder());
+        filter.appendPostprocessor(new LowPreserver(this.multiplier, getLowMarkInMgDl()));
         filter.appendPostprocessor(new EnvelopeProcessor(this.multiplier));
     }
 
