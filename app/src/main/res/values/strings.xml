@@ -1714,4 +1714,5 @@
     <string name="reduce_battery_and_network_overhead">Reduce battery and network overhead by using batch processing and excluding unnecessary data</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Simplify graphs by smoothing out irregularities</string>
     <string name="graph_smoothing">Graph Smoothing</string>
+    <string name="last_reading">Last Reading</string>
 </resources>
