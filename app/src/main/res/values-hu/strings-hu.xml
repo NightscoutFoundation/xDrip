@@ -1614,4 +1614,5 @@
     <string name="reduce_battery_and_network_overhead">Az akkumulátor- és hálózati terhelés csökkentése batch programozással és a felesleges adatok kizárásával</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">A grafikon egyszerűsítése a kiugró értékek elsimításával</string>
     <string name="graph_smoothing">Grafikon simítása</string>
+    <string name="last_reading">Utolsó leolvasás</string>
 </resources>
