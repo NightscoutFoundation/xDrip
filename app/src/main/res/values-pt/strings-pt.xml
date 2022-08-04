@@ -1664,6 +1664,7 @@
     <string name="special_pairing_workaround">Solução especial de emparelhamento</string>
     <string name="save_power">Economizar energia</string>
     <string name="reduce_battery_and_network_overhead">Reduza a sobrecarga de bateria e de rede usando o processamento em lote e excluindo dados desnecessários</string>
-    <string name="simplify_graphs_by_smoothing_out_irregularities">Simplificar os gráficos suavizando irregularidades</string>
+    <string name="simplify_graphs_by_smoothing_out_irregularities">Simplifique os gráficos facilitando irregularidades</string>
     <string name="graph_smoothing">Suavização do gráfico</string>
+    <string name="last_reading">Última Leitura</string>
 </resources>
