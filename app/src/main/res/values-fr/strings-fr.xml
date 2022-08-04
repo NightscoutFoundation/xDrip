@@ -305,7 +305,7 @@
     <string name="high_glucose_values">Valeurs Hyperglycémies</string>
     <string name="in_range_glucose_values">Valeurs de glycémie dans la cible</string>
     <string name="default_color_selected">Couleur par défaut sélectionnée</string>
-    <string name="color_bg_values">Couleurs de lecture de glycémie et de flèche de tendance</string>
+    <string name="color_bg_values">Couleurs de valeur de glycémie et de flèche de tendance</string>
     <string name="xdrip_plus_extra_settings">xDrip+ Extra</string>
     <string name="example_chart">Exemple Graphique</string>
     <string name="treatments_prediction_curves">Traitements / Courbes de prévision</string>
@@ -394,7 +394,7 @@
     <string name="optional_contact_info_here_eg_email">Information de contact facultative, par exemple email</string>
     <string name="send_message">Envoyer le message</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">S\'il vous plaît indiquez ce que vous pensez de l\'application en général</string>
-    <string name="preferences_saved_in_sdcard_downloads">Préférences enregistrées dans dossier Downloads sur carte SD</string>
+    <string name="preferences_saved_in_sdcard_downloads">Préférences enregistrées dans dossier Downloads sur stockage interne</string>
     <string name="could_not_write_to_sdcard_check_perms">Impossible d\'écrire sur la carte SD - Vérifier les autorisations ?</string>
     <string name="loaded_preferences_restarting">Préférences chargées! - Redémarrage</string>
     <string name="could_not_load_preferences_check_pers">Impossible de charger les préférences - Verifier les autorisations ou la présence du fichier ?</string>
@@ -1200,6 +1200,8 @@
     <string name="send_bg_readings_to_backfill">Envoyer les valeurs BG vers l\'historique de récupération</string>
     <string name="view_old_error_log">Voir l\'ancien journal d\'erreur</string>
     <string name="return_to_home_screen">Retourner à la page d\'accueil</string>
+    <string name="title_broadcast_service_api">API du service Broadcast</string>
+    <string name="summary_broadcast_service_api">Active la communication de xDrip avec des applications tiers en utilisant la nouvelle API</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Synchroniser les données avec les bracelets de fitness MiBand</string>
     <string name="title_miband_enable">Utiliser le bracelet MiBand</string>
@@ -1664,4 +1666,5 @@
     <string name="reduce_battery_and_network_overhead">Réduire la charge sur la batterie et le réseau en utilisant le traitement par lots et en excluant les données inutiles</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Simplifier les graphiques en lissant les irrégularités</string>
     <string name="graph_smoothing">Lissage du graphique</string>
+    <string name="last_reading">Dernière lecture</string>
 </resources>
