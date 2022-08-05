@@ -302,7 +302,7 @@
     <string name="download_now">Свали сега</string>
     <string name="automatically_check_for_updates">Автоматична проверка за обновяване</string>
     <string name="here_you_can_save_the_settings_to_the_external_storage_sdcard">Тук, можете да запазите настройки в вътрешната памет(Download/xDrip-export/com.eveningoutpost.dexdrip_preferences.xml).\n\nКогато се запишат във файл, важно е да се знае, че всяко приложение може да прочете този файл, които може да съдържа чувствителна информация.\n\nПрепоръчително е да изтриете данните след като ги импортирате, ако ви притеснява този факт.</string>
-    <string name="save_all_settings_to_sdcard">Запаси всички настройки в файл</string>
+    <string name="save_all_settings_to_sdcard">Запази всички настройки в файл</string>
     <string name="load_all_settings_from_sdcard">Зареди всички настройки от файл</string>
     <string name="delete_any_settings_on_sdcard">Изтрии папката с настройки (Download/xDrip-export)</string>
     <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Използвая QR код за трансфер на настройки използвайки Настройки->Функция за автоматично конфигуриране]]></string>
