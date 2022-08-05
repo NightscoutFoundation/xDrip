@@ -1665,4 +1665,5 @@
     <string name="reduce_battery_and_network_overhead">Toplu işlemeyi kullanarak ve gereksiz verileri hariç tutarak pil ve ağ yükünü azaltın</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Düzensizlikleri yumuşatarak grafikleri basitleştirin</string>
     <string name="graph_smoothing">Grafik Yumuşatma</string>
+    <string name="last_reading">Son Okuma Değeri</string>
 </resources>
