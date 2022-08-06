@@ -987,4 +987,5 @@
     <string name="show_time_buttons">Prikaži gumbe za vrijeme</string>
     <string name="source_wizard_button">Gumb čarobnjaka izvora</string>
     <string name="special_pairing_workaround">Zaobilazno rješenje posebnog uparivanja</string>
+    <string name="last_reading">Zadnje očitanje</string>
 </resources>
