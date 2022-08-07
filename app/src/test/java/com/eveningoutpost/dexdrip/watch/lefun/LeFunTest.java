@@ -6,10 +6,12 @@ import com.eveningoutpost.dexdrip.watch.lefun.messages.RxFind;
 import com.eveningoutpost.dexdrip.watch.lefun.messages.RxPong;
 import com.eveningoutpost.dexdrip.watch.lefun.messages.TxSetScreens;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 
 import static com.eveningoutpost.dexdrip.HexTestTools.hexStringToByteArray;
 import static com.eveningoutpost.dexdrip.watch.lefun.LeFun.calculateCRC;
+import static com.eveningoutpost.dexdrip.watch.lefun.LeFun.formatAlertMessage;
 import static com.eveningoutpost.dexdrip.watch.lefun.LeFun.padToWidth;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
@@ -326,5 +328,13 @@ public class LeFunTest extends RobolectricTestWithConfig {
         assertThat(padToWidth(4, "a")).isEqualTo(" a  ");
         assertThat(padToWidth(5, "a")).isEqualTo("  a  ");
         assertThat(padToWidth(1, "abc")).isEqualTo("abc");
+    }
+
+    @Test
+    public void testFormatAlertMessage() {
+        assertThat(formatAlertMessage(3, ImmutableList.of("a", "b", "c")))
+            .isEqualTo(" a  b  c");
+        assertThat(formatAlertMessage(4, ImmutableList.of("a", "b", "c")))
+            .isEqualTo(" a   b   c ");
     }
 }

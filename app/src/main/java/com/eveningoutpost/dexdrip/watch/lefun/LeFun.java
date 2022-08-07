@@ -7,6 +7,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.google.common.base.Strings;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -28,6 +29,15 @@ public class LeFun {
 
         final int width = ModelFeatures.getScreenWidth();
 
+        final String resultString = formatAlertMessage(width, Arrays.asList(lines));
+
+        Inevitable.task("lefun-send-alert-debounce", isCall ? 300 : 3000, () -> JoH.startService(LeFunService.class, "function", "message",
+                "message", resultString,
+                "message_type", isCall ? "call" : "glucose"));
+    }
+
+    @VisibleForTesting
+    static String formatAlertMessage(int width, List<String> lines) {
         final StringBuilder result = new StringBuilder();
 
         for (final String message : lines) {
@@ -37,10 +47,7 @@ public class LeFun {
         final String resultRaw = result.toString();
         final int trailing_space = resultRaw.lastIndexOf(' ');
         final String resultString = trailing_space >= width ? result.substring(0, trailing_space) : resultRaw;
-
-        Inevitable.task("lefun-send-alert-debounce", isCall ? 300 : 3000, () -> JoH.startService(LeFunService.class, "function", "message",
-                "message", resultString,
-                "message_type", isCall ? "call" : "glucose"));
+        return resultString;
     }
 
     /** Pads a message with spaces to center it in the given width. */
