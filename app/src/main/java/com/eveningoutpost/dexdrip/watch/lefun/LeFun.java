@@ -5,6 +5,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.google.common.base.Strings;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -45,15 +46,16 @@ public class LeFun {
     /** Pads a message with spaces to center it in the given width. */
     @VisibleForTesting
     static String padToWidth(int width, String message) {
-        final StringBuilder messageBuilder = new StringBuilder(message);
-        while (messageBuilder.length() < width) {
-            if ((messageBuilder.length() % 2) == 0) {
-                messageBuilder.insert(0, " ");
-            } else {
-                messageBuilder.append(" ");
-            }
+        if (width <= message.length()) {
+            return message;
         }
-        return messageBuilder.toString();
+        int leftSpaces = (width - message.length()) / 2;
+        int rightSpaces = (width - message.length() + 1) / 2;
+        return new StringBuilder()
+            .append(Strings.repeat(" ", leftSpaces))
+            .append(message)
+            .append(Strings.repeat(" ", rightSpaces))
+            .toString();
     }
 
     public static void showLatestBG() {
