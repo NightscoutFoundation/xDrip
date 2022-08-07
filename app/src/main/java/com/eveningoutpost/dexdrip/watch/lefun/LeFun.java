@@ -26,28 +26,21 @@ public class LeFun {
 
     // convert multi-line text to string for display constraints
     public static void sendAlert(boolean isCall, final String... lines) {
-
-        final int width = ModelFeatures.getScreenWidth();
-
-        final String resultString = formatAlertMessage(width, Arrays.asList(lines));
+        int width = ModelFeatures.getScreenWidth();
+        String formattedMessage = formatAlertMessage(width, Arrays.asList(lines));
 
         Inevitable.task("lefun-send-alert-debounce", isCall ? 300 : 3000, () -> JoH.startService(LeFunService.class, "function", "message",
-                "message", resultString,
+                "message", formattedMessage,
                 "message_type", isCall ? "call" : "glucose"));
     }
 
     @VisibleForTesting
     static String formatAlertMessage(int width, List<String> lines) {
-        final StringBuilder result = new StringBuilder();
-
-        for (final String message : lines) {
+        StringBuilder result = new StringBuilder();
+        for (String message : lines) {
             result.append(padToWidth(width, message));
         }
-
-        final String resultRaw = result.toString();
-        final int trailing_space = resultRaw.lastIndexOf(' ');
-        final String resultString = trailing_space >= width ? result.substring(0, trailing_space) : resultRaw;
-        return resultString;
+        return result.deleteCharAt(result.lastIndexOf(" ")).toString();
     }
 
     /** Pads a message with spaces to center it in the given width. */

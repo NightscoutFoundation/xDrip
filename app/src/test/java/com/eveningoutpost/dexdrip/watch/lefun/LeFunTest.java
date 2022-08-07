@@ -331,7 +331,7 @@ public class LeFunTest extends RobolectricTestWithConfig {
     }
 
     @Test
-    public void testFormatAlertMessage() {
+    public void testFormatAlertMessageChopsLastSpace() {
         assertThat(formatAlertMessage(3, ImmutableList.of("a", "b", "c")))
             .isEqualTo(" a  b  c");
         assertThat(formatAlertMessage(4, ImmutableList.of("a", "b", "c")))
