@@ -1,9 +1,12 @@
 package com.eveningoutpost.dexdrip.watch.lefun;
 
+import androidx.annotation.VisibleForTesting;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * Jamorham
@@ -27,24 +30,30 @@ public class LeFun {
         final StringBuilder result = new StringBuilder();
 
         for (final String message : lines) {
-            final StringBuilder messageBuilder = new StringBuilder(message);
-            while (messageBuilder.length() < width) {
-                if ((messageBuilder.length() % 2) == 0) {
-                    messageBuilder.insert(0, " ");
-                } else {
-                    messageBuilder.append(" ");
-                }
-            }
-            result.append(messageBuilder.toString());
+            result.append(padToWidth(width, message));
         }
 
         final String resultRaw = result.toString();
         final int trailing_space = resultRaw.lastIndexOf(' ');
-        final String resultString = trailing_space >= width ? result.toString().substring(0, trailing_space) : resultRaw;
+        final String resultString = trailing_space >= width ? result.substring(0, trailing_space) : resultRaw;
 
         Inevitable.task("lefun-send-alert-debounce", isCall ? 300 : 3000, () -> JoH.startService(LeFunService.class, "function", "message",
                 "message", resultString,
                 "message_type", isCall ? "call" : "glucose"));
+    }
+
+    /** Pads a message with spaces to center it in the given width. */
+    @VisibleForTesting
+    static String padToWidth(int width, String message) {
+        final StringBuilder messageBuilder = new StringBuilder(message);
+        while (messageBuilder.length() < width) {
+            if ((messageBuilder.length() % 2) == 0) {
+                messageBuilder.insert(0, " ");
+            } else {
+                messageBuilder.append(" ");
+            }
+        }
+        return messageBuilder.toString();
     }
 
     public static void showLatestBG() {
