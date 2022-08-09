@@ -224,6 +224,8 @@
     <string name="xdrip_plus_display_settings">xDrip+ Персонализиране</string>
     <string name="display_customisations">Покажи персонализация</string>
     <string name="insulin_carb_ratios_etc_for_models">Инсулин, Въглехидратно съотношение и др. за модели</string>
+    <string name="grams_of_carbohydrate_one_unit_covers">Грама въглехидрати на 1 ед. инсулин</string>
+    <string name="linear_model_carbs_absorbed_per_hour">Линеен модел въглих. абсорбирани на час</string>
     <string name="add_calibration">Добавяне калибрация</string>
     <string name="system_status">Системен статус</string>
     <string name="settings">Настройки</string>
