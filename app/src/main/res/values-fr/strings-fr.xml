@@ -334,7 +334,7 @@
     <string name="active_alert_exists_named">L\'alerte Active existe nommée</string>
     <string name="bracket_not_snoozed">(non mis en veille)</string>
     <string name="all_alerts_disabled_until">"Toutes les alertes désactivées jusqu'à "</string>
-    <string name="low_alerts_disabled_until">"Alertes Basses désactivées jusqu'à ce que "</string>
+    <string name="low_alerts_disabled_until">"Alertes Basses désactivées jusqu'à  "</string>
     <string name="high_alerts_disabled_until">"Alertes Hautes désactivées jusqu'à "</string>
     <string name="default_snooze">Mise en veille par défaut</string>
     <string name="until_you_reenable">Jusqu\'à ce que vous réactivez</string>
