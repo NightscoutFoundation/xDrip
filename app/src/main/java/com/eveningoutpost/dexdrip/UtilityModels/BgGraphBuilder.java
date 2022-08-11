@@ -88,14 +88,19 @@ import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 public class BgGraphBuilder {
     public static final int FUZZER = (Pref.getBoolean("lower_fuzzer", false)) ? 500 * 15 * 5 : 1000 * 30 * 5; // 37.5 seconds : 2.5 minutes
     public final static long DEXCOM_PERIOD = 300_000; // 5 minutes
+    public final static int LOW_MAX_LOOKAHEAD = 99 * 1000 * 60; // 99 minutes
+    public final static int HIGH_MAX_LOOKAHEAD = 30 * 1000 * 60; // 30 minutes
     public final static double NOISE_TRIGGER = 10;
     public final static double NOISE_TRIGGER_ULTRASENSITIVE = 1;
     public final static double NOISE_TOO_HIGH_FOR_PREDICT = 60;
     public final static double NOISE_HIGH = 200;
     public final static double NOISE_FORGIVE = 100;
     public static double low_occurs_at = -1;
+    public static double high_occurs_at = -1;
     public static double previous_low_occurs_at = -1;
+    public static double previous_high_occurs_at = -1;
     private static double low_occurs_at_processed_till_timestamp = -1;
+    private static double high_occurs_at_processed_till_timestamp = -1;
     private static long noise_processed_till_timestamp = -1;
     private final static String TAG = "jamorham graph";
     //private final static int pluginColor = Color.parseColor("#AA00FFFF"); // temporary
@@ -1192,6 +1197,7 @@ public class BgGraphBuilder {
             final boolean interpret_raw = prefs.getBoolean("interpret_raw", false);
             final boolean show_filtered = prefs.getBoolean("show_filtered_curve", false) && has_filtered;
             final boolean predict_lows = prefs.getBoolean("predict_lows", true);
+            final boolean predict_highs = prefs.getBoolean("predict_highs", false);
             final boolean show_plugin = prefs.getBoolean("plugin_plot_on_graph", false);
             final boolean glucose_from_plugin = prefs.getBoolean("display_glucose_from_plugin", false);
             final boolean illustrate_backfilled_data = prefs.getBoolean("illustrate_backfilled_data", false);
@@ -1439,14 +1445,17 @@ public class BgGraphBuilder {
                     Log.e(TAG, "Error creating back trend: " + e.toString());
                 }
 
+                boolean lowPredicted = false;
+
                 // low estimator
                 // work backwards to see whether we think a low is estimated
                 low_occurs_at = -1;
                 try {
-                    if ((predict_lows) && (prediction_enabled) && (poly != null)) {
-                        final double offset = ActivityRecognizedService.raise_limit_due_to_vehicle_mode() ? unitized(ActivityRecognizedService.getVehicle_mode_adjust_mgdl()) : 0;
+                    if (predict_lows && prediction_enabled && poly != null) {
+                        final double offset = ActivityRecognizedService.raise_limit_due_to_vehicle_mode() ?
+                                unitized(ActivityRecognizedService.getVehicle_mode_adjust_mgdl()) : 0;
                         final double plow_now = JoH.ts();
-                        double plow_timestamp = plow_now + (1000 * 60 * 99); // max look-ahead
+                        double plow_timestamp = plow_now + LOW_MAX_LOOKAHEAD; // max look-ahead
                         double polyPredicty = poly.predict(plow_timestamp);
                         Log.d(TAG, "Low predictor at max lookahead is: " + JoH.qs(polyPredicty));
                         low_occurs_at_processed_till_timestamp = highest_bgreading_timestamp; // store that we have processed up to this timestamp
@@ -1470,11 +1479,41 @@ public class BgGraphBuilder {
                             }
                             Log.i(TAG, "LOW PREDICTED AT: " + JoH.dateTimeText((long) low_occurs_at));
                             predictivehours = Math.max(predictivehours, (int) ((low_occurs_at - plow_now) / (60 * 60 * 1000)) + 1);
+                            lowPredicted = true;
                         }
                     }
+                } catch (NullPointerException ex) {
+                    // ignore
+                }
 
-                } catch (NullPointerException e) {
-                    //Log.d(TAG,"Error with low prediction trend: "+e.toString());
+                // high estimator
+                // same logic as low estimator above
+
+                // we shouldn't be able to predict a high and a low at the same time
+                if (predict_highs && prediction_enabled && poly != null && !lowPredicted) {
+                    final double phigh_now = JoH.ts();
+                    double phigh_timestamp = phigh_now + HIGH_MAX_LOOKAHEAD;
+                    double polyPredicty = poly.predict(phigh_timestamp);
+                    Log.d(TAG, "High predictor at max lookahead is: " + JoH.qs(polyPredicty));
+                    high_occurs_at_processed_till_timestamp = highest_bgreading_timestamp;
+                    if (polyPredicty >= highMark) {
+                        high_occurs_at = phigh_timestamp;
+                        final double highMarkIndicator = (highMark - (highMark / 4));
+                        while (phigh_timestamp > phigh_now) {
+                            phigh_timestamp = phigh_timestamp - FUZZER;
+                            polyPredicty = poly.predict(phigh_timestamp);
+                            if (polyPredicty < highMark) {
+                                polyBgValues.add(new PointValue((float)(phigh_timestamp / FUZZER), (float)polyPredicty));
+                            } else {
+                                high_occurs_at = phigh_timestamp;
+                                if (polyPredicty < highMarkIndicator) {
+                                    polyBgValues.add(new PointValue((float)(phigh_timestamp / FUZZER), (float)polyPredicty));
+                                }
+                            }
+                        }
+                        Log.i(TAG, "HIGH PREDICTED AT: " + JoH.dateTimeText((long)high_occurs_at));
+                        predictivehours = Math.max(predictivehours, (int) ((high_occurs_at - phigh_now) / (60 * 60 * 1000)) + 1);
+                    }
                 }
 
                 final boolean show_noise_working_line;
@@ -1852,6 +1891,23 @@ public class BgGraphBuilder {
             Log.e(TAG, "Got exception in getCurrentLowOccursAt() " + e);
         }
         return low_occurs_at;
+    }
+
+    public static synchronized double getCurrentHighOccursAt() {
+        try {
+            final long last_bg_reading_timestamp = BgReading.last().timestamp;
+            // TODO remove any duplication by using refreshNoiseIfOlderThan()
+            if (high_occurs_at_processed_till_timestamp < last_bg_reading_timestamp) {
+                Log.d(TAG, "Recalculating highOccursAt: " + JoH.dateTimeText((long) high_occurs_at_processed_till_timestamp) + " vs " + JoH.dateTimeText(last_bg_reading_timestamp));
+                // new only the last hour worth of data for this
+                (new BgGraphBuilder(xdrip.getAppContext(), System.currentTimeMillis() - 60 * 60 * 1000, System.currentTimeMillis() + 5 * 60 * 1000, 24, true)).addBgReadingValues(false);
+            } else {
+                Log.d(TAG, "Cached current high timestamp ok: " +  JoH.dateTimeText((long) high_occurs_at_processed_till_timestamp) + " vs " + JoH.dateTimeText(last_bg_reading_timestamp));
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception in getCurrentHighOccursAt() " + e);
+        }
+        return high_occurs_at;
     }
 
     public static synchronized void refreshNoiseIfOlderThan(long timestamp) {

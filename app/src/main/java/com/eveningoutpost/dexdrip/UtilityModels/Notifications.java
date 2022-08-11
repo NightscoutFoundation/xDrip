@@ -110,7 +110,9 @@ public class Notifications extends IntentService {
     public static final int parakeetMissingId = 014;
     public static final int persistentHighAlertNotificationId = 015;
     public static final int ob1SessionRestartNotificationId = 016;
+    public static final int highPredictAlertNotificationId = 017;
     private static boolean low_notifying = false;
+    private static boolean high_notifying = false;
 
     private static final int CALIBRATION_REQUEST_MAX_FREQUENCY = (60 * 60 * 6); // don't bug for extra calibrations more than every 6 hours
     private static final int CALIBRATION_REQUEST_MIN_FREQUENCY = (60 * 60 * 8); // don't bug for general calibrations more than every 8 hours
@@ -317,6 +319,7 @@ public class Notifications extends IntentService {
             return false;
         }
         
+      
         boolean unclearReading = BgReading.getAndRaiseUnclearReading(context);
 
         boolean forced_wear = Home.get_forced_wear();
@@ -334,6 +337,7 @@ public class Notifications extends IntentService {
         //if (watchAlert && bg_persistent_high_alert_enabled_watch) {
         PersistentHigh.checkForPersistentHigh();
         evaluateLowPredictionAlarm();
+        evaluateHighPredictionAlarm();
         reportNoiseChanges();
 
 
@@ -772,12 +776,10 @@ public class Notifications extends IntentService {
     }
 
     private void evaluateLowPredictionAlarm() {
-
         if (!prefs.getBoolean("predict_lows_alarm", false)) return;
 
-
         // force BgGraphBuilder to calculate `low_occurs_at` and `last_noise`
-        // Workaround trying to resolve race donditions as by design they are static but updated/read asynchronously.
+        // Workaround trying to resolve race conditions as by design they are static but updated/read asynchronously.
 
         final double low_occurs_at = BgGraphBuilder.getCurrentLowOccursAt();
 
@@ -804,6 +806,41 @@ public class Notifications extends IntentService {
             if (low_notifying) {
                 Notifications.lowPredictAlert(xdrip.getAppContext(), false, ""); // cancel it
                 low_notifying = false;
+            }
+        }
+    }
+
+    private void evaluateHighPredictionAlarm() {
+        if (!prefs.getBoolean("predict_highs_alarm", false)) return;
+
+        // force BgGraphBuilder to calculate `high_occurs_at` and `last_noise`
+        // Workaround trying to resolve race conditions as by design they are static but updated/read asynchronously.
+
+        final double high_occurs_at = BgGraphBuilder.getCurrentHighOccursAt();
+
+        if ((high_occurs_at > 0) && (BgGraphBuilder.last_noise < BgGraphBuilder.NOISE_TOO_HIGH_FOR_PREDICT)) {
+            final double high_predicted_alarm_minutes = Double.parseDouble(prefs.getString("high_predict_alarm_level", "20"));
+            final double now = JoH.ts();
+            final double predicted_high_in_mins = (high_occurs_at - now) / 60000;
+            android.util.Log.d(TAG, "evaluateHighPredictionAlarm: mins: " + predicted_high_in_mins);
+            if (predicted_high_in_mins > 1) {
+                if (predicted_high_in_mins < high_predicted_alarm_minutes) {
+                    Notifications.highPredictAlert(xdrip.getAppContext(), true, getString(R.string.high_predicted)
+                            +" "+getString(R.string.in)+" " + (int) predicted_high_in_mins + getString(R.string.space_mins));
+                    high_notifying = true;
+                } else {
+                    Notifications.highPredictAlert(xdrip.getAppContext(), false, ""); // cancel it
+                }
+            } else {
+                if (high_notifying) {
+                    Notifications.highPredictAlert(xdrip.getAppContext(), false, ""); // cancel it
+                    high_notifying = false;
+                }
+            }
+        } else {
+            if (high_notifying) {
+                Notifications.highPredictAlert(xdrip.getAppContext(), false, ""); // cancel it
+                high_notifying = false;
             }
         }
     }
@@ -930,6 +967,24 @@ public class Notifications extends IntentService {
         } else {
             NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotifyMgr.cancel(lowPredictAlertNotificationId);
+            UserNotification.DeleteNotificationByType(type);
+        }
+    }
+
+    public static void highPredictAlert(Context context, boolean on, String msg) {
+        final String type = "bg_predict_alert";
+        if (on) {
+            if ((Pref.getLong("alerts_disabled_until", 0) < JoH.tsl()) && (Pref.getLong("high_alerts_disabled_until", 0) < JoH.tsl())) {
+                OtherAlert(context, type, msg, highPredictAlertNotificationId, NotificationChannels.BG_PREDICTED_HIGH_CHANNEL, false, 20 * 60);
+                if (Pref.getBooleanDefaultFalse("speak_alerts")) {
+                    if (JoH.pratelimit("high-predict-speak", 1800)) SpeechUtil.say(msg, 4000);
+                }
+            } else {
+                Log.ueh(TAG, "Not High predict alerting due to snooze: " + msg);
+            }
+        } else {
+            NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotifyMgr.cancel(highPredictAlertNotificationId);
             UserNotification.DeleteNotificationByType(type);
         }
     }

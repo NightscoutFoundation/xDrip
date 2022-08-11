@@ -38,6 +38,7 @@ public class NotificationChannels {
     public static final String BG_MISSED_ALERT_CHANNEL = "bgMissedAlertChannel";
     public static final String BG_RISE_DROP_CHANNEL = "bgRiseDropChannel";
     public static final String BG_PREDICTED_LOW_CHANNEL = "bgPredictedLowChannel";
+    public static final String BG_PREDICTED_HIGH_CHANNEL = "bgPredictedHighChannel";
     public static final String BG_PERSISTENT_HIGH_CHANNEL = "bgPersistentHighChannel";
     public static final String CALIBRATION_CHANNEL = "calibrationChannel";
     public static final String ONGOING_CHANNEL = "ongoingChannel";
@@ -62,6 +63,7 @@ public class NotificationChannels {
         map.put(BG_MISSED_ALERT_CHANNEL, xdrip.getAppContext().getString(R.string.missed_reading_alert));
         map.put(BG_RISE_DROP_CHANNEL, xdrip.getAppContext().getString(R.string.bg_rising_fast));
         map.put(BG_PREDICTED_LOW_CHANNEL, xdrip.getAppContext().getString(R.string.low_predicted));
+        map.put(BG_PREDICTED_HIGH_CHANNEL, xdrip.getAppContext().getString(R.string.high_predicted));
         map.put(BG_PERSISTENT_HIGH_CHANNEL, xdrip.getAppContext().getString(R.string.persistent_high_alert));
         map.put(CALIBRATION_CHANNEL, xdrip.getAppContext().getString(R.string.calibration_alerts));
         map.put(ONGOING_CHANNEL, "Ongoing Notification");

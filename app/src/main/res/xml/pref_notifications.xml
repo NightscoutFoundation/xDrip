@@ -324,6 +324,37 @@
                         android:summary="@string/choose_sound_used_for_predicted_low_alarm"
                         android:title="@string/predicted_low_sound" />
                 </PreferenceCategory>
+                <PreferenceCategory
+                    android:summary="@string/momentum_indicates_high"
+                    android:title="@string/forecasted_high_alert">
+                    <SwitchPreference
+                        android:defaultValue="true"
+                        android:key="predict_highs"
+                        android:summary="@string/extrapolate_data_to_try_to_predict_highs"
+                        android:title="@string/forecast_highs" />
+                    <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:dependency="predict_highs"
+                        android:key="predict_highs_alarm"
+                        android:summary="@string/notify_when_predicted_high_time_reaches_threshold"
+                        android:title="@string/raise_alarm_on_forecast_high" />
+                    <EditTextPreference
+                        android:defaultValue="20"
+                        android:dependency="predict_highs_alarm"
+                        android:digits="0123456789"
+                        android:inputType="number"
+                        android:key="high_predict_alarm_level"
+                        android:summary=""
+                        android:title="@string/alarm_at_forecasted_high_mins" />
+                    <RingtonePreference
+                        android:defaultValue="content://settings/system/notification_sound"
+                        android:dependency="predict_highs"
+                        android:key="bg_predict_alert_sound"
+                        android:ringtoneType="all"
+                        android:showSilent="true"
+                        android:summary="@string/choose_sound_used_for_predicted_high_alarm"
+                        android:title="@string/predicted_high_sound" />
+                </PreferenceCategory>
                 <PreferenceCategory android:title="@string/other_xdrip_plus_alerts">
                     <SwitchPreference
                         android:defaultValue="true"

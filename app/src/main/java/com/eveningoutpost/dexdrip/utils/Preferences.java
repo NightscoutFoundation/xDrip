@@ -1531,6 +1531,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             bindPreferenceSummaryToValue(findPreference("xplus_liver_maximpact"));
 
             bindPreferenceSummaryToValue(findPreference("low_predict_alarm_level"));
+            bindPreferenceSummaryToValue(findPreference("high_predict_alarm_level"));
             Profile.validateTargetRange();
             bindPreferenceSummaryToValue(findPreference("plus_target_range"));
 

@@ -2420,7 +2420,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             final double predicted_low_in_mins = (BgGraphBuilder.low_occurs_at - now) / 60000;
 
             if (predicted_low_in_mins > 1) {
-                lowPredictText.append(getString(R.string.low_predicted) + "\n" + getString(R.string.in) + ": " + (int) predicted_low_in_mins + getString(R.string.space_mins));
+                lowPredictText.append(getString(R.string.low_predicted) + "\n" + getString(R.string.in) + ": " +
+                        (int) predicted_low_in_mins + getString(R.string.space_mins));
                 if (predicted_low_in_mins < low_predicted_alarm_minutes) {
                     lowPredictText.setTextColor(Color.RED); // low front getting too close!
                 } else {
@@ -2434,6 +2435,29 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 lowPredictText.setVisibility(View.VISIBLE);
             }
             BgGraphBuilder.previous_low_occurs_at = BgGraphBuilder.low_occurs_at;
+        }
+
+        if (BgGraphBuilder.high_occurs_at > 0 && !(BgGraphBuilder.low_occurs_at > 0)) {
+            final double high_predicted_alarm_minutes = Double.parseDouble(Pref.getString("high_predict_alarm_level", "20"));
+            final double now = JoH.ts();
+            final double predicted_high_in_mins = (BgGraphBuilder.high_occurs_at - now) / 60000;
+
+            if (predicted_high_in_mins > 1) {
+                lowPredictText.append(getString(R.string.high_predicted) + "\n" + getString(R.string.in) + ": " +
+                        (int) predicted_high_in_mins + getString(R.string.space_mins));
+                if (predicted_high_in_mins < high_predicted_alarm_minutes) {
+                    lowPredictText.setTextColor(Color.RED); // high front getting too close!
+                } else {
+                    final double previous_predicted_high_in_mins = (BgGraphBuilder.previous_high_occurs_at - now) / 60000;
+                    if (BgGraphBuilder.previous_high_occurs_at > 0 && (previous_predicted_high_in_mins + 5) < predicted_high_in_mins) {
+                        lowPredictText.setTextColor(Color.GREEN); // high front is getting further away
+                    } else {
+                        lowPredictText.setTextColor(Color.YELLOW); // high front is getting nearer!
+                    }
+                }
+                lowPredictText.setVisibility(View.VISIBLE);
+            }
+            BgGraphBuilder.previous_high_occurs_at = BgGraphBuilder.high_occurs_at;
         }
 
         if (navigationDrawerFragment == null) Log.e("Runtime", "navigationdrawerfragment is null");
