@@ -28,7 +28,7 @@
     <string name="cancel">Annuler</string>
     <string name="no">Non</string>
     <string name="pref_sensor_location_dont_ask_again"> Ne pas me demander à nouveau</string>
-    <string name="title_activity_error">"Événements et erreurs"</string>
+    <string name="title_activity_error">"Évenements et erreurs"</string>
     <string name="title_activity_main">Activité principale</string>
     <string name="title_activity_fake_numbers">Nombres fictifs</string>
     <string name="title_activity_edit_alert">Modifier l\'alerte</string>
@@ -188,7 +188,7 @@
     <string name="low_value">Valeur Basse</string>
     <string name="stats_range_settings">Paramètres de la plage: </string>
     <string name="end_user_license_agreement">Contrat de licence de l\'utilisateur final</string>
-    <string name="save">Sauvegarder</string>
+    <string name="save">Sauver</string>
     <string name="view_important_warning">Voir les avertissements importants</string>
     <string name="view_google_licenses">Voir les Licences Google</string>
     <string name="not_for_medical_use">Non destiné à l\'usage médical - outil de recherche uniquement</string>
@@ -873,7 +873,7 @@
     <string name="bluetooth_scan">Scan Bluetooth</string>
     <string name="level_alerts">Alertes de niveau</string>
     <string name="override_calibration">Remplacer la calibration</string>
-    <string name="only_stop_your_sensor_when_you_actually_plan">N\'arrêtez votre capteur que lorsque vous planifiez de l\'enlever, sinon, laissez tourner !</string>
+    <string name="only_stop_your_sensor_when_you_actually_plan">N\'arrêtez votre capteur que lorsque vous planifiez de l\'enlever, sinon laissez fonctionner!</string>
     <string name="restart_collector">Redémarrer le collecteur</string>
     <string name="forget_device">Oublier ce périphérique</string>
     <string name="other_notes">Autres Notes:</string>
@@ -1430,7 +1430,7 @@
     <string name="summary">Récapitulatif</string>
     <string name="auto_refresh">Actualisation automatique</string>
     <string name="set_up_desert_sync_follower">Configurer la synchronisation abonné en milieu desert</string>
-    <string name="version">Version :</string>
+    <string name="version">Version:</string>
     <string name="sensor_start">Démarrage du capteur:</string>
     <string name="plug_in_your_dexcom_reciever">Brancher votre lecteur Dexcom puis appuyer sur ce bouton et croiser les doigts!</string>
     <string name="check_in_dexcom_calibrations">Vérifier les calibrations Dexcom</string>
@@ -1457,7 +1457,7 @@
     <string name="classic_simple">Classic simple</string>
     <string name="libre">Libre</string>
     <string name="what_type_of_libre_bridge_device_do_you_use">Quel type de transmetteur Libre utilisez-vous ?</string>
-    <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Périphérique transmetteur Bluetooth: BluCon, LimiTTer, blueReader, Tomato, etc</string>
+    <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Périphérique transmetteur Bluetooth (BluCon, LimiTTer, blueReader, Tomato, etc.)</string>
     <string name="libre_patched">Libre2 Patché</string>
     <string name="librealarm_app_using_sony_smartwatch">Application LibreAlarm : utilise Sony Smartwatch</string>
     <string name="__data_source_disabled">\n SOURCE DE DONNÉES DÉSACTIVÉE</string>
