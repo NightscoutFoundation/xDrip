@@ -20,6 +20,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.IncompatibleApps;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
+import com.eveningoutpost.dexdrip.utils.ConfigureImportExport;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
 import com.eveningoutpost.dexdrip.utils.Telemetry;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
@@ -67,6 +68,7 @@ public class DailyIntentService extends IntentService {
                 if (Pref.getBooleanDefaultFalse("save_db_ondemand")) {
                     try {
                         String export = DatabaseUtil.saveSql(xdrip.getAppContext(), "daily");
+                        ConfigureImportExport.dispatchAdditionalExports(export, true, false);
                     } catch (Exception e) {
                         Log.e(TAG, "DailyIntentService exception on Daily Save Database - ", e);
                     }

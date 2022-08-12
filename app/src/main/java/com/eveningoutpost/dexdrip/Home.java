@@ -138,6 +138,7 @@ import com.eveningoutpost.dexdrip.ui.graphic.ITrendArrow;
 import com.eveningoutpost.dexdrip.ui.graphic.TrendArrowFactory;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
+import com.eveningoutpost.dexdrip.utils.ConfigureImportExport;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.DisplayQRCode;
@@ -3217,6 +3218,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         startActivity(new Intent(getApplicationContext(), SdcardImportExport.class));
     }
 
+    public void configureImportExport(MenuItem myitem) {
+        startActivity(new Intent(getApplicationContext(), ConfigureImportExport.class));
+    }
+
     public void showMapFromMenu(MenuItem myitem) {
         startActivity(new Intent(getApplicationContext(), MapsActivity.class));
     }
@@ -3409,7 +3414,9 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                                 0);
                         return null;
                     } else {
-                        return DatabaseUtil.saveSql(getBaseContext());
+                        String f =  DatabaseUtil.saveSql(getBaseContext());
+                        ConfigureImportExport.dispatchAdditionalExports(f, true, false);
+                        return f;
                     }
 
                 }
@@ -3418,7 +3425,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 protected void onPostExecute(String filename) {
                     super.onPostExecute(filename);
                     if (filename != null) {
-
                         snackBar(R.string.share, getString(R.string.exported_to) + filename, makeSnackBarUriLauncher(Uri.fromFile(new File(filename)), getString(R.string.share_database)), Home.this);
                         startActivity(new Intent(xdrip.getAppContext(), SdcardImportExport.class).putExtra("backup", "now").setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                     /*    SnackbarManager.show(
@@ -3478,7 +3484,9 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                                         0);
                                 return null;
                             } else {
-                                return DatabaseUtil.saveCSV(getBaseContext(), date.getTimeInMillis());
+                                String f =  DatabaseUtil.saveCSV(getBaseContext(), date.getTimeInMillis());
+                                ConfigureImportExport.dispatchAdditionalExports(f, false, false);
+                                return f;
                             }
                         }
 
