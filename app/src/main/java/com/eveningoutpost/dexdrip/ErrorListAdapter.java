@@ -17,6 +17,7 @@ import java.util.List;
 
 /**
  * Created by Emma Black on 8/4/15.
+ * Used with old activity.
  */
 public class ErrorListAdapter  extends BaseAdapter {
     private List<UserError> list;
@@ -66,11 +67,11 @@ public class ErrorListAdapter  extends BaseAdapter {
     private int backgroundFor(int severity) {
         switch (severity) {
             case 1:
-                return Color.rgb(255, 204, 102);
+                return Color.rgb(255, 204, 102); // yellow
             case 2:
-                return Color.rgb(255, 153, 102);
+                return Color.rgb(255, 153, 102); // orange
         }
-        return Color.rgb(255, 102, 102);
+        return Color.rgb(255, 102, 102); // red
     }
 
     private String dateformatter(double timestamp) {

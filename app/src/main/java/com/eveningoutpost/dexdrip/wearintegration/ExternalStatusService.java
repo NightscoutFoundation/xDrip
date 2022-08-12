@@ -12,13 +12,18 @@ import com.eveningoutpost.dexdrip.NewDataObserver;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import lombok.val;
+
 /**
  * Created by adrian on 14/02/16.
  */
 public class ExternalStatusService extends IntentService {
     //constants
-    private static final String EXTERNAL_STATUS_STORE = "external-status-store";
-    private static final String EXTERNAL_STATUS_STORE_TIME = "external-status-store-time";
+    static final String EXTERNAL_STATUS_STORE = "external-status-store";
+    static final String EXTERNAL_STATUS_STORE_TIME = "external-status-store-time";
     private static final String EXTRA_STATUSLINE = "com.eveningoutpost.dexdrip.Extras.Statusline";
     public static final String ACTION_NEW_EXTERNAL_STATUSLINE = "com.eveningoutpost.dexdrip.ExternalStatusline";
     //public static final String RECEIVER_PERMISSION = "com.eveningoutpost.dexdrip.permissions.RECEIVE_EXTERNAL_STATUSLINE";
@@ -85,11 +90,16 @@ public class ExternalStatusService extends IntentService {
             }
 
             if (statusline.length() > 0) {
-                final Integer percent = getTBRInt();
-                if (percent != null) {
-                    APStatus.createEfficientRecord(timestamp, percent);
+                final Double absolute = getAbsoluteBRDouble();
+                if (absolute != null) {
+                    APStatus.createEfficientRecord(timestamp, absolute);
                 } else {
-                    UserError.Log.wtf(TAG, "Could not parse TBR from: " + statusline);
+                    final Integer percent = getTBRInt();
+                    if (percent != null) {
+                        APStatus.createEfficientRecord(timestamp, percent);
+                    } else {
+                        UserError.Log.wtf(TAG, "Could not parse TBR from: " + statusline);
+                    }
                 }
             }
 
@@ -113,9 +123,38 @@ public class ExternalStatusService extends IntentService {
         } else return "???";
     }
 
-    // adapted from PR submission by JoernL
-    public static String getTBR() {
-        final String statusLine = getLastStatusLine();
+    // extract a TBR percentage from a status line string.
+    public static String getTBR(final String statusLine) {
+        if (JoH.emptyString(statusLine)) return "";
+        val pattern = Pattern.compile(".*([^0-9]|^)([0-9]+%)", Pattern.DOTALL); // match last of any number followed by %
+        val matcher = pattern.matcher(statusLine);
+        val matches = matcher.find();       // was at least one found?
+
+        if (matches) {
+            return matcher.group(matcher.groupCount());    // return the last one
+        } else {
+            return "100%";      // if no value in status line return 100%
+        }
+    }
+
+    public static String getAbsoluteBR(final String statusLine) {
+        if (JoH.emptyString(statusLine)) return "";
+        val pattern = Pattern.compile(".*(^|[^0-9.,])([0-9.,]+U/h)", Pattern.DOTALL); // match last of any number followed by units per hour
+        val matcher = pattern.matcher(statusLine);
+        val matches = matcher.find();       // was at least one found?
+
+        if (matches) {
+            return matcher.group(matcher.groupCount());    // return the last one
+        } else {
+            return null;      // if no value in status line return null
+        }
+
+    }
+
+
+    // I don't have test data for what this matched exactly but it doesn't work with newer strings
+    // so hopefully the replacement function works as this one was also intended.
+    public static String getTBRold(final String statusLine) {
         if (statusLine.length() == 0) return "";
         final String check = statusLine.replaceAll("[^%]", "");
         if (check.length() > 0) {
@@ -130,6 +169,17 @@ public class ExternalStatusService extends IntentService {
         else return "???";
     }
 
+    // adapted from PR submission by JoernL
+    public static String getTBR() {
+        final String statusLine = getLastStatusLine();
+        return getTBR(statusLine);
+    }
+
+    public static String getAbsoluteBR() {
+        final String statusLine = getLastStatusLine();
+        return getAbsoluteBR(statusLine);
+    }
+
     public static Integer getTBRInt() {
         try {
             return Integer.parseInt(getTBR().replace("%", ""));
@@ -138,5 +188,12 @@ public class ExternalStatusService extends IntentService {
         }
     }
 
+    public static Double getAbsoluteBRDouble() {
+        try {
+            return JoH.tolerantParseDouble(getAbsoluteBR().replace("U/h", ""));
+        } catch (NullPointerException | NumberFormatException e) {
+            return null;
+        }
+    }
 
 }

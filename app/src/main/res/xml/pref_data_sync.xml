@@ -7,7 +7,7 @@
         android:key="dataSync"
         android:title="@string/data_sync">
         <PreferenceScreen
-            android:icon="@drawable/ic_scan"
+            android:icon="@drawable/ic_qrscan"
             android:key="auto_configure"
             android:summary="@string/prefs_auto_config_summary"
             android:title="@string/auto_configure_title" />
@@ -74,6 +74,11 @@
                         android:summary="@string/summary_send_bridge_battery_to_nightscout"
                         android:title="@string/title_send_bridge_battery_to_nightscout" />
                     <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:key="send_ob1dex_tx_battery_to_nightscout"
+                        android:summary="@string/summary_send_dexcom_transmitter_battery_to_nightscout"
+                        android:title="@string/title_send_dexcom_transmitter_battery_to_nightscout" />
+                    <CheckBoxPreference
                         android:defaultValue="true"
                         android:key="send_treatments_to_nightscout"
                         android:summary="@string/summary_send_treatments_to_nightscout"
@@ -89,6 +94,7 @@
                         android:summary="@string/summary_nightscout_device_append_source_info"
                         android:title="@string/title_nightscout_device_append_source_info" />
                     <Preference
+                        android:key="back_fill_data_activity_intent_key"
                         android:summary="@string/summary_tap_to_send_historical_data"
                         android:title="@string/title_back_fill_data">
                         <intent
@@ -236,6 +242,7 @@
                 <Preference
                     android:dependency="share_upload"
                     android:summary="@string/manage_existing_followers"
+                    android:key="manage_dexcom_share_followers"
                     android:title="@string/manage_followers">
                     <intent
                         android:action="android.intent.action.MAIN"
@@ -254,7 +261,6 @@
                     android:defaultValue="false"
                     android:key="cloud_storage_tidepool_enable"
                     android:title="@string/title_sync_to_tidepool" />
-
                 <EditTextPreference
                     android:key="tidepool_username"
                     android:summary="@string/summary_tidepool_username"
@@ -297,13 +303,55 @@
                     android:title="Don't upload treatments" />
 
             </PreferenceScreen>
+
+            <PreferenceScreen
+                android:key="cloud_storage_web_deposit"
+                android:summary="Simple batch API currently used for diagnostics"
+                android:title="Web Deposit">
+
+                <EditTextPreference
+                    android:defaultValue="http://192.168.0.5:2080/"
+                    android:dependency="engineering_mode"
+                    android:dialogMessage="This is the base URL, it should have a trailing /"
+                    android:dialogTitle="Enter Deposit URL"
+                    android:inputType="textUri"
+                    android:key="web_deposit_url"
+                    android:title="Web Deposit URL" />
+                <EditTextPreference
+                    android:defaultValue="ABC123"
+                    android:dependency="engineering_mode"
+                    android:dialogMessage="This is the identifier sent with each deposit request"
+                    android:dialogTitle="Enter serial identifier"
+                    android:inputType="text"
+                    android:key="web_deposit_serial"
+                    android:title="Serial Information" />
+
+                <Preference
+                    android:key="start_web_deposit"
+                    android:summary=""
+                    android:dependency="engineering_mode"
+                    android:title="Start Web Deposit">
+                    <intent
+                        android:action="android.intent.action.MAIN"
+                        android:targetClass="com.eveningoutpost.dexdrip.deposit.DepositActivity"
+                        android:targetPackage="@string/local_target_package" />
+                </Preference>
+
+            </PreferenceScreen>
+
         </PreferenceScreen>
         <PreferenceScreen
             android:icon="@drawable/ic_touch_app_grey600_48dp"
             android:key="bluetooth_meters"
             android:summary="@string/glucose_meter_options"
             android:title="@string/glucose_meters">
-
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="nfc_meter_enabled"
+                android:summary="Download glucose records from NFC meter when xDrip is open"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="Use NFC Meter" />
             <SwitchPreference
                 android:defaultValue="false"
                 android:key="bluetooth_meter_enabled"
@@ -322,7 +370,6 @@
             </Preference>
             <CheckBoxPreference
                 android:defaultValue="true"
-                android:dependency="bluetooth_meter_enabled"
                 android:key="bluetooth_meter_play_sounds"
                 android:summary="@string/meter_connect_sound"
                 android:title="@string/meter_connect_sound_effect" />

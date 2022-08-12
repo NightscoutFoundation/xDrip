@@ -5,6 +5,7 @@
 
     <uses-feature android:name="android.hardware.type.watch" />
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="com.google.android.permission.PROVIDE_BACKGROUND" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -306,6 +307,9 @@
             android:name=".MenuActivity"
             android:configChanges="orientation|screenSize"
             android:label="Menu" />
+        <activity
+            android:name=".UpdateActivity"
+            />
         <activity
             android:name=".Tables.CalibrationDataTable"
             android:configChanges="orientation|screenSize"

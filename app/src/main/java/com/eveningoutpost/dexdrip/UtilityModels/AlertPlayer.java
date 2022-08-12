@@ -1,5 +1,9 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
+import static com.eveningoutpost.dexdrip.Models.JoH.delayedMediaPlayerRelease;
+import static com.eveningoutpost.dexdrip.Models.JoH.stopAndReleasePlayer;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -27,19 +31,21 @@ import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
 import com.eveningoutpost.dexdrip.eassist.AlertTracker;
+import com.eveningoutpost.dexdrip.ui.helpers.AudioFocusType;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFun;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
 import com.eveningoutpost.dexdrip.watch.miband.MiBand;
 import com.eveningoutpost.dexdrip.watch.miband.MiBandEntry;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
+import com.eveningoutpost.dexdrip.Services.broadcastservice.BroadcastEntry;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
+import com.eveningoutpost.dexdrip.Services.broadcastservice.Const;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.IOException;
 import java.util.Date;
 
-import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 
 // A helper class to create the mediaplayer on the UI thread.
 // This is needed in order for the callbackst to work.
@@ -101,7 +107,7 @@ public class AlertPlayer {
     private volatile static AlertPlayer alertPlayerInstance;
 
     private final static String TAG = AlertPlayer.class.getSimpleName();
-    private volatile MediaPlayer mediaPlayer;
+    private volatile MediaPlayer mediaPlayer = null;
     private final AudioManager manager = (AudioManager)xdrip.getAppContext().getSystemService(Context.AUDIO_SERVICE);
     volatile int volumeBeforeAlert = -1;
     volatile int volumeForThisAlert = -1;
@@ -118,6 +124,9 @@ public class AlertPlayer {
 
     public int streamType = AudioManager.STREAM_MUSIC;
 
+    private final AudioManager.OnAudioFocusChangeListener focusChangeListener =
+            focusChange -> Log.d(TAG, "Audio focus changes to: " + focusChange);
+
     public static synchronized AlertPlayer getPlayer() {
         if(alertPlayerInstance == null) {
             Log.i(TAG,"getPlayer: Creating a new AlertPlayer");
@@ -130,6 +139,27 @@ public class AlertPlayer {
 
     public static void defaultSnooze() {
         AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1);
+    }
+
+    private void requestAudioFocus() {
+        try {
+            final int focus = AudioFocusType.getAlarmAudioFocusType();
+            if (focus != 0) {
+                UserError.Log.d(TAG, "Calling request audio focus");
+                manager.requestAudioFocus(focusChangeListener, streamType, focus);
+            }
+        } catch (Exception e) {
+            UserError.Log.wtf(TAG, "Failed to get audio focus: " + e);
+        }
+    }
+
+    private void releaseAudioFocus() {
+        UserError.Log.d(TAG, "Calling release audio focus");
+        try {
+            manager.abandonAudioFocus(focusChangeListener);
+        } catch (Exception e) {
+            UserError.Log.wtf(TAG, "Failed to release audio focus: " + e);
+        }
     }
 
     public synchronized void startAlert(Context ctx, boolean trendingToAlertEnd, AlertType newAlert, String bgValue) {
@@ -169,19 +199,11 @@ public class AlertPlayer {
             notificationDismiss(ctx);
         }
         if (mediaPlayer != null) {
-            try {
-                mediaPlayer.stop();
-            } catch (IllegalStateException e) {
-                UserError.Log.e(TAG, "Exception when stopping media player: " + e);
-            }
-            try {
-                mediaPlayer.release();
-            } catch (IllegalStateException e) {
-                UserError.Log.e(TAG, "Exception releasing media player: " + e);
-            }
+            stopAndReleasePlayer(mediaPlayer);
             mediaPlayer = null;
         }
         revertCurrentVolume(streamType);
+        releaseAudioFocus();
     }
 
     // only do something if an alert is active - only call from interactive
@@ -225,18 +247,25 @@ public class AlertPlayer {
             return;
         }
         if (repeatTime == -1) {
-            // try to work out default
-            AlertType alert = ActiveBgAlert.alertTypegetOnly();
-            if (alert != null) {
-                repeatTime = alert.default_snooze;
-                Log.d(TAG, "Selecting default snooze time: " + repeatTime);
-            } else {
-                repeatTime = 30; // pick a number if we cannot even find the default
-                Log.e(TAG, "Cannot even find default snooze time so going with: " + repeatTime);
-            }
+            repeatTime = GuessDefaultSnoozeTime();
         }
         activeBgAlert.snooze(repeatTime);
         if (from_interactive) GcmActivity.sendSnoozeToRemote();
+    }
+
+    public synchronized int GuessDefaultSnoozeTime() {
+        int repeatTime;
+        // try to work out default
+        AlertType alert = ActiveBgAlert.alertTypegetOnly();
+        if (alert != null) {
+            repeatTime = alert.default_snooze;
+            Log.d(TAG, "Selecting default snooze time: " + repeatTime);
+        } else {
+            repeatTime = 30; // pick a number if we cannot even find the default
+            Log.e(TAG, "Cannot even find default snooze time so going with: " + repeatTime);
+        }
+
+        return repeatTime;
     }
 
     public synchronized void PreSnooze(Context ctx, String uuid, int repeatTime) {
@@ -251,7 +280,7 @@ public class AlertPlayer {
         activeBgAlert.snooze(repeatTime);
     }
 
-    // Check the state and alrarm if needed
+    // Check the state and alarm if needed
     public void ClockTick(Context ctx, boolean trendingToAlertEnd, String bgValue)
     {
         if (trendingToAlertEnd) {
@@ -290,7 +319,7 @@ public class AlertPlayer {
             mp.setDataSource(context, uri);
             return true;
         } catch (IOException | NullPointerException | IllegalArgumentException | SecurityException ex) {
-            Log.e(TAG, "setMediaDataSource from uri failed:", ex);
+            Log.e(TAG, "setMediaDataSource from uri failed: uri = " + uri.toString(), ex);
             // fall through
         }
         return false;
@@ -312,7 +341,7 @@ public class AlertPlayer {
         return false;
     }
 
-    private synchronized void playFile(final Context ctx, final String fileName, final float volumeFrac, final boolean forceSpeaker, final boolean overrideSilentMode) {
+    protected synchronized void playFile(final Context ctx, final String fileName, final float volumeFrac, final boolean forceSpeaker, final boolean overrideSilentMode) {
         Log.i(TAG, "playFile: called fileName = " + fileName);
         if (volumeFrac <= 0) {
             UserError.Log.e(TAG, "Not playing file " + fileName + " as requested volume is " + volumeFrac);
@@ -320,13 +349,8 @@ public class AlertPlayer {
         }
 
         if (mediaPlayer != null) {
-            Log.i(TAG, "ERROR, playFile:going to leak a mediaplayer !!!");
-            try {
-                mediaPlayer.release();
-            } catch (IllegalStateException e) {
-                //
-            }
-            mediaPlayer = null;
+            Log.i(TAG, "ERROR, playFile sound already playing");
+            stopAndReleasePlayer(mediaPlayer);
         }
 
         mediaPlayer = new MediaPlayerCreaterHelper().createMediaPlayer(ctx);
@@ -334,6 +358,20 @@ public class AlertPlayer {
             Log.wtf(TAG, "MediaPlayerCreaterHelper().createMediaPlayer failed !!");
             return;
         }
+
+        mediaPlayer.setOnCompletionListener(mp -> {
+            Log.i(TAG, "playFile: onCompletion called (finished playing) ");
+            delayedMediaPlayerRelease(mp);
+            JoH.threadSleep(300);
+            revertCurrentVolume(streamType);
+            releaseAudioFocus();
+        });
+
+        mediaPlayer.setOnErrorListener((mp, what, extra) -> {
+            Log.e(TAG, "playFile: onError called (what: " + what + ", extra: " + extra);
+            // possibly media player error; release is handled in onCompletionListener
+            return false;
+        });
 
         boolean setDataSourceSucceeded = false;
         if (fileName != null && fileName.length() > 0) {
@@ -350,26 +388,11 @@ public class AlertPlayer {
         streamType = forceSpeaker ? AudioManager.STREAM_ALARM : AudioManager.STREAM_MUSIC;
 
         try {
+            requestAudioFocus();
             mediaPlayer.setAudioStreamType(streamType);
             mediaPlayer.setOnPreparedListener(mp -> {
                 adjustCurrentVolumeForAlert(streamType, volumeFrac, overrideSilentMode);
                 mediaPlayer.start();
-            });
-
-            mediaPlayer.setOnCompletionListener(mp -> {
-                Log.i(TAG, "playFile: onCompletion called (finished playing) ");
-                try {
-                    mediaPlayer.stop();
-                } catch (IllegalStateException e) {
-                    //
-                }
-                try {
-                    mediaPlayer.release();
-                } catch (IllegalStateException e) {
-                    //
-                }
-                mediaPlayer = null;
-                revertCurrentVolume(streamType);
             });
 
             mediaPlayer.prepareAsync();
@@ -484,7 +507,7 @@ public class AlertPlayer {
     }
     
     public static boolean isAscendingMode(Context ctx){
-        Log.d("Adrian", "(getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING): " + (getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING));
+        Log.d(TAG, "(getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING): " + (getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING));
         return getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING;
     }
 
@@ -492,7 +515,7 @@ public class AlertPlayer {
         return !(Pref.getBooleanDefaultFalse("no_alarms_during_calls") && (JoH.isOngoingCall()));
     }
 
-    private void VibrateNotifyMakeNoise(Context context, AlertType alert, String bgValue, int minsFromStartPlaying) {
+    protected void VibrateNotifyMakeNoise(Context context, AlertType alert, String bgValue, int minsFromStartPlaying) {
         Log.d(TAG, "VibrateNotifyMakeNoise called minsFromStartedPlaying = " + minsFromStartPlaying);
         Log.d("ALARM", "setting vibrate alarm");
         int profile = getAlertProfile(context);
@@ -522,28 +545,45 @@ public class AlertPlayer {
                 //.addAction(R.drawable.ic_action_communication_invert_colors_on, "SNOOZE", notificationIntent(context, intent))
                 .setContentIntent(notificationIntent(context, intent))
                 .setLocalOnly(localOnly)
+
                 .setGroup("xDrip level alert")
                 .setPriority(Pref.getBooleanDefaultFalse("high_priority_notifications") ? Notification.PRIORITY_MAX : Notification.PRIORITY_HIGH)
                 .setDeleteIntent(snoozeIntent(context, minsFromStartPlaying));
-
+        if (Pref.getBoolean("show_buttons_in_alerts", true)) {
+             builder.addAction(
+                    R.drawable.alert_icon,
+                    context.getString(R.string.snooze_alert),
+                    snoozeIntent(context, minsFromStartPlaying)
+            );
+        }
+        boolean overrideSilent = alert.override_silent_mode;
         if (profile != ALERT_PROFILE_VIBRATE_ONLY && profile != ALERT_PROFILE_SILENT) {
-            if (minsFromStartPlaying >= MAX_VIBRATING_MINUTES) {
-                // Before this, we only vibrate...
-                float volumeFrac = (float) (minsFromStartPlaying - MAX_VIBRATING_MINUTES) / (MAX_ASCENDING_MINUTES - MAX_VIBRATING_MINUTES);
-                volumeFrac = Math.min(volumeFrac, 1);
-                if (profile == ALERT_PROFILE_MEDIUM) {
-                    volumeFrac = (float) 0.7;
+            float volumeFrac = (float) (minsFromStartPlaying - MAX_VIBRATING_MINUTES) / (MAX_ASCENDING_MINUTES - MAX_VIBRATING_MINUTES);
+            // While minsFromStartPlaying <= MAX_VIBRATING_MINUTES, we only vibrate ...
+            volumeFrac = Math.max(volumeFrac, 0); // Limit volumeFrac to values greater than and equal to 0
+            volumeFrac = Math.min(volumeFrac, 1); // Limit volumeFrac to values less than and equal to 1
+            if (!Pref.getBoolean("delay_ascending_3min", true) && volumeFrac < 0.3) {
+                volumeFrac = (float) 0.3; // If delay_ascending_3min is disabled, we never only vibrate.
+            }
+            if (profile == ALERT_PROFILE_MEDIUM) {
+                volumeFrac = (float) 0.7;
+            }
+            Log.d(TAG, "VibrateNotifyMakeNoise volumeFrac = " + volumeFrac);
+
+            boolean forceSpeaker = alert.force_speaker;
+
+            if (overrideSilent) {
+                UserError.Log.d(TAG, "Setting full screen intent");
+                builder.setCategory(NotificationCompat.CATEGORY_ALARM);
+                builder.setFullScreenIntent(notificationIntent(context, new Intent(context, Home.class)), true);
+            }
+
+            if (notSilencedDueToCall()) {
+                if (overrideSilent || isLoudPhone(context)) {
+                    playFile(context, alert.mp3_file, volumeFrac, forceSpeaker, overrideSilent);
                 }
-                Log.d(TAG, "VibrateNotifyMakeNoise volumeFrac = " + volumeFrac);
-                boolean overrideSilent = alert.override_silent_mode;
-                boolean forceSpeaker = alert.force_speaker;
-                if (notSilencedDueToCall()) {
-                    if (overrideSilent || isLoudPhone(context)) {
-                        playFile(context, alert.mp3_file, volumeFrac, forceSpeaker, overrideSilent);
-                    }
-                } else {
-                    Log.i(TAG, "Silenced Alert Noise due to ongoing call");
-                }
+            } else {
+                Log.i(TAG, "Silenced Alert Noise due to ongoing call");
             }
         }
         if (profile != ALERT_PROFILE_SILENT && alert.vibrate) {
@@ -584,6 +624,10 @@ public class AlertPlayer {
 
         if (MiBandEntry.areAlertsEnabled() && ActiveBgAlert.currentlyAlerting()) {
             MiBand.sendAlert(alert.name, highlow + " " + bgValue, alert.default_snooze);
+        }
+
+        if (ActiveBgAlert.currentlyAlerting()) {
+            BroadcastEntry.sendAlert(Const.BG_ALERT_TYPE, highlow + " " + bgValue);
         }
 
         // speak alert

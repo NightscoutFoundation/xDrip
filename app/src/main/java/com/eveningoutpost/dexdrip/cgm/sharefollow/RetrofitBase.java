@@ -2,16 +2,21 @@ package com.eveningoutpost.dexdrip.cgm.sharefollow;
 
 import android.support.annotation.NonNull;
 
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.GzipRequestInterceptor;
 import com.eveningoutpost.dexdrip.tidepool.InfoInterceptor;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.concurrent.ConcurrentHashMap;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -29,10 +34,15 @@ import static com.eveningoutpost.dexdrip.UtilityModels.OkHttpWrapper.enableTls12
 
 public class RetrofitBase {
 
-    private static final boolean D = false;
-
     private static final ConcurrentHashMap<String, Retrofit> instances = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<String, String> urls = new ConcurrentHashMap<>();
+
+    private static Converter.Factory createGsonConverter(Type type, Object typeAdapter) {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(type, typeAdapter);
+        Gson gson = gsonBuilder.create();
+        return GsonConverterFactory.create(gson);
+    }
 
     // TODO make fully reusable
     public static Retrofit getRetrofitInstance(final String TAG, final String url, boolean useGzip) throws IllegalArgumentException {
@@ -45,20 +55,23 @@ public class RetrofitBase {
                     return null;
                 }
                 UserError.Log.d(TAG, "Creating new instance for: " + url);
-                final HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
-                if (D) {
-                    httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-                }
-                final OkHttpClient client = enableTls12OnPreLollipop(new OkHttpClient.Builder())
-                        .addInterceptor(httpLoggingInterceptor)
+                final OkHttpClient.Builder httpClient = enableTls12OnPreLollipop(new OkHttpClient.Builder())
                         .addInterceptor(new InfoInterceptor(TAG))
-                        .addInterceptor(useGzip ? new GzipRequestInterceptor() : new NullInterceptor())
-                        .build();
+                        .addInterceptor(useGzip ? new GzipRequestInterceptor() : new NullInterceptor());
+
+                if (UserError.ExtraLogTags.shouldLogTag(TAG, android.util.Log.VERBOSE)) {
+                    UserError.Log.v(TAG, "Enable logging of request and response lines and their respective headers and bodies.");
+                    final HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
+                    httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+                    httpLoggingInterceptor.redactHeader("Authorization");
+                    httpLoggingInterceptor.redactHeader("Cookie");
+                    httpClient.addInterceptor(httpLoggingInterceptor);
+                }
 
                 instances.put(TAG, instance = new retrofit2.Retrofit.Builder()
                         .baseUrl(url)
-                        .client(client)
-                        .addConverterFactory(GsonConverterFactory.create())
+                        .client(httpClient.build())
+                        .addConverterFactory(createGsonConverter(Dex_Constants.TREND_ARROW_VALUES.class, new ShareTrendDeserializer()))
                         .build());
                 urls.put(TAG, url); // save creation url for quick search
             }

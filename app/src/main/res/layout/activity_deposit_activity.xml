@@ -1,0 +1,193 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.eveningoutpost.dexdrip.deposit.DepositActivity.ViewModel" />
+
+        <variable
+            name="prefs"
+            type="com.eveningoutpost.dexdrip.UtilityModels.PrefsViewImpl" />
+
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dp"
+                android:gravity="center"
+                android:text="Web Deposit"
+                android:textAlignment="center"
+                android:textColor="@color/yellow100"
+                android:textSize="22sp" />
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:animateLayoutChanges="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                app:cardBackgroundColor="@color/cardview_dark_background"
+                app:cardCornerRadius="9dp"
+                card_view:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:text="@{vm.statusString, default=`Status message here`}" />
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="19dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:animateLayoutChanges="true"
+
+                app:cardBackgroundColor="@color/cardview_dark_background"
+                app:cardCornerRadius="9dp"
+                card_view:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="15dp"
+                        android:layout_gravity="center"
+                        android:textSize="16sp"
+                        android:fontFamily="monospace"
+                        android:text="@{vm.startTimeString, default=`Start time`}" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:layout_gravity="center"
+                        android:text="to" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="15dp"
+                        android:layout_gravity="center"
+                        android:fontFamily="monospace"
+                        android:textSize="16sp"
+                        android:text="@{vm.endTimeString, default=`End time`}" />
+
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="19dp"
+                android:animateLayoutChanges="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                app:cardBackgroundColor="@color/cardview_dark_background"
+                app:cardCornerRadius="9dp"
+                card_view:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
+
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:fontFamily="monospace"
+                        android:padding="10dp"
+                        android:textSize="20sp"
+                        android:text="@{vm.serialInfo, default=`Serial Info`}" />
+
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:orientation="vertical">
+
+                <ProgressBar
+                    android:id="@+id/progressBar4"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:showIfTrue="@{!vm.showButton}" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+
+                        android:onClick="@{() -> vm.depositButtonG()}"
+                        android:text="Deposit Glucose"
+                        app:showIfTrue="@{vm.showButton}" />
+
+                    <Button
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:onClick="@{() -> vm.depositButtonT()}"
+                        android:text="Deposit Treatment"
+                        app:showIfTrue="@{vm.showButton}" />
+                </LinearLayout>
+
+
+                <Button
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+
+                    android:onClick="@{() -> vm.resetButton()}"
+                    android:text="!!! RESET !!!"
+                    app:showIfTrue="@{vm.showButton &amp;&amp; prefs.getbool(`engineering_mode`)}" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</layout>

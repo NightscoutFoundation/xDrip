@@ -20,6 +20,15 @@
         />
 
     <item
+        android:id="@+id/reminders_cancel_default"
+        android:checkable="true"
+        android:orderInCategory="1"
+        android:title="@string/cancel_by_default"
+        android:visible="true"
+        android:onClick="onCancelByDefaultClick"
+        />
+
+    <item
         android:id="@+id/reminders_restart"
         android:checkable="true"
         android:orderInCategory="1"

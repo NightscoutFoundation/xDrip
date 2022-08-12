@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip;
 
+import static com.eveningoutpost.dexdrip.xdrip.gs;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +17,7 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.profileeditor.ImportAapsProfile;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,7 +25,8 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.UUID;
-import static com.eveningoutpost.dexdrip.xdrip.gs;
+
+import lombok.val;
 
 
 /**
@@ -91,7 +95,7 @@ public class NSClientReceiver extends BroadcastReceiver {
                                 process_TREATMENT_json(jsonArray.getString(i));
                             }
                         } catch (JSONException e) {
-                            Log.e(TAG, "Json exception with sgvs: " + e.toString());
+                            Log.e(TAG, "Json exception with treatments: " + e.toString());
                         }
                     }
                 } else {
@@ -171,8 +175,24 @@ public class NSClientReceiver extends BroadcastReceiver {
 
     private void process_TREATMENT_json(String treatment_json) {
         try {
-            Log.i(TAG, "Processing treatment from NS: "+treatment_json);
-            Treatments.pushTreatmentFromJson(toTreatmentJSON(JoH.JsonStringtoMap(treatment_json)), true); // warning marked as from interactive - watch out for feedback loops
+            Log.i(TAG, "Processing treatment from NS: " + treatment_json);
+            val tmap = JoH.JsonStringtoMap(treatment_json);
+
+            try {
+                val etype = tmap.get("eventType");
+                if (etype != null) {
+                    switch ((String) etype) {
+                        case "Profile Switch":
+                            ImportAapsProfile.importAndSaveFromMap(tmap);
+                            break;
+                    }
+                }
+            } catch (Exception e) {
+                UserError.Log.wtf(TAG, "Got exception trying to handle NS treatment json: " + e + " " + treatment_json);
+            }
+
+            Treatments.pushTreatmentFromJson(toTreatmentJSON(tmap), true); // warning marked as from interactive - watch out for feedback loops
+
         } catch (Exception e) {
             Log.e(TAG, "Got exception processing treatment from NS client " + e.toString());
         }
@@ -199,6 +219,7 @@ public class NSClientReceiver extends BroadcastReceiver {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("uuid", UUID.randomUUID().toString());
+            jsonObject.put("source_info", "NSClient Follow");
 
             jsonObject.put("timestamp", sgv_map.get("mills"));
             jsonObject.put("calculated_value", sgv_map.get("mgdl"));

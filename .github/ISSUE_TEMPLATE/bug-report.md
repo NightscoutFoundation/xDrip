@@ -1,17 +1,19 @@
 ---
-name: "\U0001F41BBug report\U0001F41B"
-about: Create a report to help us improve things
-label: bug
+name: "Please do not open an issue unless asked to do so by a developer in a discussion (see below)"
+about: Please include a link to the discussion in the first post.
+label: status-triage
 ---
 
-### If you need support for xDrip, PLEASE DO NOT FILE A TICKET HERE
-- For support, please post a question to the xDripG5 group at Facebook (https://www.facebook.com/groups/xDripG5) or visit the Gitter room at https://gitter.im/jamorham/xDrip-plus.
+### Please don't open an issue if you haven't already consulted with the developers
+- Please go back and use Discussions (on the previous page) to present your case if you haven't already.
+- If you have consulted with the developers and were asked to open an issue, please proceed.
 - Please also search the existing issues for similar problems before opening a new one.
 - Please do not prefix you issue title with BUG: or LIBRE: for instance. The issue maintainer will tag every issue with appropriate labels.
 - Add screenshots only if necessary, e.g. write the version number instead of adding a screenshot of the system status page.
 
 ### Subject of the issue
-A clear and concise description of what the bug is.
+Link to the discussion thread:  
+A clear and concise description of what the bug or request is.
 Example: The BG graph shows negative data points between 3 and 5 am, which is incorrect and can only be an artefact.
 
 ### Your environment

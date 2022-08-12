@@ -1,11 +1,7 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.os.BatteryManager;
-import android.os.Build;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.util.Base64;
@@ -24,7 +20,6 @@ import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
-import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -58,12 +53,15 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.CipherSuite;
+import okhttp3.Handshake;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
+import okhttp3.TlsVersion;
 import okio.BufferedSink;
 import okio.GzipSink;
 import okio.Okio;
@@ -78,6 +76,8 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+
+import static com.eveningoutpost.dexdrip.UtilityModels.OkHttpWrapper.enableTls12OnPreLollipop;
 
 /**
  * THIS CLASS WAS BUILT BY THE NIGHTSCOUT GROUP FOR THEIR NIGHTSCOUT ANDROID UPLOADER
@@ -165,8 +165,10 @@ public class NightscoutUploader {
         public NightscoutUploader(Context context) {
             mContext = context;
             prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-            final OkHttpClient.Builder okHttp3Builder = new OkHttpClient.Builder();
-
+            final OkHttpClient.Builder okHttp3Builder = enableTls12OnPreLollipop(new OkHttpClient.Builder());
+            if (UserError.ExtraLogTags.shouldLogTag(TAG, android.util.Log.VERBOSE)) {
+                okHttp3Builder.addInterceptor(new SSLHandshakeInterceptor());
+            }
             if (USE_GZIP) okHttp3Builder.addInterceptor(new GzipRequestInterceptor());
             okHttp3Builder.connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
             okHttp3Builder.writeTimeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS);
@@ -232,6 +234,10 @@ public class NightscoutUploader {
 
     public static String uuid_to_id(String uuid) {
         if (uuid.length() == 24) return uuid; // already converted
+        if (uuid.length() < 24) {
+            // convert non-standard uuids to compatible ones
+            return CipherUtils.getMD5(uuid).substring(0,24);
+        }
         return uuid.replaceAll("-", "").substring(0, 24);
     }
 
@@ -299,7 +305,7 @@ public class NightscoutUploader {
         try {
             uri = new URI(baseURI);
         } catch (URISyntaxException e) {
-            Log.e(TAG, "Error URISyntaxException for " + baseURI, e);
+            Log.e(TAG, "Error URISyntaxException for the base URL", e);
             return baseURI;
         }
         String host = uri.getHost();
@@ -419,7 +425,7 @@ public class NightscoutUploader {
                             PersistentStore.setString(LAST_MODIFIED_KEY, last_modified_string);
                             checkGzipSupport(r);
                         } else {
-                            Log.d(TAG, "Failed to get treatments from: " + baseURI);
+                            Log.d(TAG, "Failed to get treatments from the base URL");
                         }
 
                     } else {
@@ -429,7 +435,7 @@ public class NightscoutUploader {
 
 
             } catch (Exception e) {
-                String msg = "Unable to do REST API Download " + e + " " + e.getMessage() + " url: " + baseURI;
+                String msg = "Unable to do REST API Download " + e + e.getMessage();
                 handleRestFailure(msg);
             }
         }
@@ -489,7 +495,7 @@ public class NightscoutUploader {
                     last_success_time = JoH.tsl();
                     last_exception_count = 0;
                 } catch (Exception e) {
-                    String msg = "Unable to do REST API Upload: " + e.getMessage() + " url: " + baseURI + " marking record: " + (any_successes ? "succeeded" : "failed");
+                    String msg = "Unable to do REST API Upload: " + e.getMessage() + " marking record: " + (any_successes ? "succeeded" : "failed");
                     handleRestFailure(msg);
                 }
             }
@@ -547,7 +553,7 @@ public class NightscoutUploader {
                     Log.d(TAG,"Skipping treatment upload due to preference disabled");
                 }
             } catch (Exception e) {
-                Log.e(TAG, "Exception uploading REST API treatments: " + e.getMessage());
+                Log.e(TAG, "Exception uploading REST API treatments: ", e);
                 if (e.getMessage().equals("Not Found")) {
                     final String msg = "Please ensure careportal plugin is enabled on nightscout for treatment upload!";
                     Log.wtf(TAG, msg);
@@ -1051,55 +1057,58 @@ public class NightscoutUploader {
         }
     }
 
-
     private static final String LAST_NIGHTSCOUT_BATTERY_LEVEL = "last-nightscout-battery-level";
 
-    private void postDeviceStatus(NightscoutService nightscoutService, String apiSecret) throws Exception {
+    private long getLastBatteryLevel(NightscoutBatteryDevice type) {
+        return PersistentStore.getLong(LAST_NIGHTSCOUT_BATTERY_LEVEL + "-" + type.name());
+    }
 
+    private void setLastBatteryLevel(NightscoutBatteryDevice type, long value) {
+        PersistentStore.setLong(LAST_NIGHTSCOUT_BATTERY_LEVEL + "-" + type.name(), value);
+    }
+
+    /**
+     * Uploads the device status (containing battery details) to Nightscout for
+     */
+    private void postDeviceStatus(NightscoutService nightscoutService, String apiSecret) throws Exception {
         // TODO optimize based on changes avoiding stale marker issues
-        final boolean always_send_battery = true; // nightscout doesn't currently display device device status if it thinks its stale
-        final List<String> batteries = new ArrayList<>();
-        batteries.add("Phone");
+
+        final List<NightscoutBatteryDevice> batteries = new ArrayList<>();
+
+        batteries.add(NightscoutBatteryDevice.PHONE);
+
         if ((DexCollectionType.hasBattery() && (Pref.getBoolean("send_bridge_battery_to_nightscout", true)))
                 || (Home.get_forced_wear() && DexCollectionType.getDexCollectionType().equals(DexCollectionType.DexcomG5))) {
-            batteries.add("Bridge");
+            batteries.add(NightscoutBatteryDevice.BRIDGE);
         }
-        if (DexCollectionType.hasWifi()) batteries.add("Parakeet");
 
-        for (String battery : batteries) {
+        if (DexCollectionType.hasWifi()) {
+            batteries.add(NightscoutBatteryDevice.PARAKEET);
+        }
 
-            int battery_level;
-            String battery_name = "";
-            switch (battery) {
-                case "Phone":
-                    battery_level = getBatteryLevel();
-                    battery_name = Build.MANUFACTURER + " " + Build.MODEL;
-                    break;
-                case "Bridge":
-                    battery_level = Pref.getInt("bridge_battery", -1);
-                    battery_name = DexCollectionService.getBestLimitterHardwareName();
-                    break;
-                case "Parakeet":
-                    battery_level = Pref.getInt("parakeet_battery", -1);
-                    battery_name = "Parakeet";
-                    break;
-                default:
-                    battery_level = -1;
-                    break;
-            }
-            final long last_battery_level = PersistentStore.getLong(LAST_NIGHTSCOUT_BATTERY_LEVEL);
+        boolean sendDexcomTxBattery = Pref.getBooleanDefaultFalse("send_ob1dex_tx_battery_to_nightscout");
+        if (sendDexcomTxBattery) {
+            batteries.add(NightscoutBatteryDevice.DEXCOM_TRANSMITTER);
+        }
 
-            final JSONArray array = new JSONArray();
-            final JSONObject json = new JSONObject();
-            final JSONObject uploader = new JSONObject();
+        for (NightscoutBatteryDevice batteryType : batteries) {
+            final long last_battery_level = getLastBatteryLevel(batteryType);
+            final int new_battery_level = batteryType.getBatteryLevel(mContext);
 
-            if ((battery_level > 0) && (battery_level != last_battery_level || always_send_battery)) {
-                PersistentStore.setLong(LAST_NIGHTSCOUT_BATTERY_LEVEL, battery_level);
+            if ((new_battery_level > 0) && (new_battery_level != last_battery_level || batteryType.alwaysSendBattery())) {
+                setLastBatteryLevel(batteryType, new_battery_level);
                 // UserError.Log.d(TAG, "Uploading battery detail: " + battery_level);
                 // json.put("uploaderBattery", battery_level); // old style
 
-                uploader.put("battery", battery_level);
-                json.put("device", battery_name);
+                final JSONArray array = new JSONArray();
+                final JSONObject json = new JSONObject();
+                final JSONObject uploader = batteryType.getUploaderJson(mContext);
+
+                if (uploader == null) {
+                    continue;
+                }
+
+                json.put("device", batteryType.getDeviceName());
                 json.put("uploader", uploader);
 
                 array.put(json);
@@ -1113,7 +1122,6 @@ public class NightscoutUploader {
                 //            "temperature": "+51.0°C"
                 //}
                 //}
-
 
                 final RequestBody body = RequestBody.create(MediaType.parse("application/json"), json.toString());
                 Response<ResponseBody> r;
@@ -1226,7 +1234,7 @@ public class NightscoutUploader {
                             
                             Log.d(TAG, "uploading new item to mongo");
                             // Checksum might be wrong, for libre 2 or libre us 14 days.
-                            boolean ChecksumOk = LibreUtils.verify(libreBlockEntry.blockbytes);
+                            boolean ChecksumOk = LibreUtils.verify(libreBlockEntry.blockbytes, libreBlockEntry.patchInfo);
                             
                             // make db object
                             BasicDBObject testData = new BasicDBObject();
@@ -1329,16 +1337,9 @@ public class NightscoutUploader {
             }
             return false;
         }
+
     public int getBatteryLevel() {
-        Intent batteryIntent = mContext.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-        if (batteryIntent != null) {
-            int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-            int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-            if (level == -1 || scale == -1) {
-                return 50;
-            }
-            return (int) (((float) level / (float) scale) * 100.0f);
-        } else return 50;
+        return NightscoutBatteryDevice.PHONE.getBatteryLevel(mContext);
     }
 
     private static boolean isLANhost(String host) {
@@ -1355,6 +1356,28 @@ public class NightscoutUploader {
         if (supportsGzip(id) != value) {
             UserError.Log.e(TAG, "Setting GZIP support: " + id + " " + value);
             PersistentStore.setBoolean(END_SUPPORTS_GZIP_MARKER + id, value);
+        }
+    }
+
+    /** Prints TLS Version and Cipher Suite for SSL Calls through OkHttp3 */
+    public class SSLHandshakeInterceptor implements Interceptor {
+
+        @Override
+        public okhttp3.Response intercept(Chain chain) throws IOException {
+            final okhttp3.Response response = chain.proceed(chain.request());
+            printTlsAndCipherSuiteInfo(response);
+            return response;
+        }
+
+        private void printTlsAndCipherSuiteInfo(okhttp3.Response response) {
+            if (response != null) {
+                Handshake handshake = response.handshake();
+                if (handshake != null) {
+                    final CipherSuite cipherSuite = handshake.cipherSuite();
+                    final TlsVersion tlsVersion = handshake.tlsVersion();
+                    Log.v(TAG, "TLS: " + tlsVersion + ", CipherSuite: " + cipherSuite);
+                }
+            }
         }
     }
 

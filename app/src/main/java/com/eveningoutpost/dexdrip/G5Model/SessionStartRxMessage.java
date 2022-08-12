@@ -38,7 +38,7 @@ public class SessionStartRxMessage extends BaseMessage {
     }
 
     boolean isOkay() {
-        return isValid() && status == 0x00 && (info == 0x01 || info == 0x05) && sessionStartTime != INVALID_TIME;
+        return isValid() && status == 0x00 && (info == 0x01 || info == 0x05 || info == 0x06) && sessionStartTime != INVALID_TIME;
     }
 
     // beyond hope?
@@ -82,6 +82,8 @@ public class SessionStartRxMessage extends BaseMessage {
                 return "Clock not synchronized or other error"; // probably
             case 0x05:
                 return "OK G6"; // probably
+            case 0x06:
+                return "OK G6 - unsure"; // probably
             default:
                 return "Unknown code: " + info;
         }

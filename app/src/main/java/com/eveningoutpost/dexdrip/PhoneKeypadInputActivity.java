@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip;
 
+import static com.eveningoutpost.dexdrip.Home.startHomeWithExtra;
+
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -18,10 +20,11 @@ import com.eveningoutpost.dexdrip.insulin.InsulinManager;
 import com.eveningoutpost.dexdrip.insulin.MultipleInsulins;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
-
-import static com.eveningoutpost.dexdrip.Home.startHomeWithExtra;
 
 
 /**
@@ -386,31 +389,32 @@ public class PhoneKeypadInputActivity extends BaseActivity {
 
         String mystring = "";
         double units = 0;
+        final DecimalFormat df = new DecimalFormat("0.0#", new DecimalFormatSymbols(Locale.ENGLISH));
         if (timeValue.length() > 0) mystring += timeValue + " time ";
         if (nonzeroBloodValue) mystring += getValue("bloodtest") + " blood ";
-        if (nonzeroCarbsValue) mystring += getValue("carbs") + " carbs ";
+        if (nonzeroCarbsValue) mystring += getValue("carbs") + " g carbs ";
         if (nonzeroInsulin1Value && (insulinProfile1 != null))
         {
             double d = Double.parseDouble(getValue("insulin-1"));
             if (multipleInsulins) {
-                mystring += String.format("%.1f", d).replace(",",".") + " " + insulinProfile1.getName() + " ";
+                mystring += df.format(d) + " " + insulinProfile1.getName() + " ";
             }
             units += d;
         }
         if (multipleInsulins) {
             if (nonzeroInsulin2Value && (insulinProfile2 != null)) {
                 double d = Double.parseDouble(getValue("insulin-2"));
-                mystring += String.format("%.1f", d).replace(",", ".") + " " + insulinProfile2.getName() + " ";
+                mystring += df.format(d) + " " + insulinProfile2.getName() + " ";
                 units += d;
             }
             if (nonzeroInsulin3Value && (insulinProfile3 != null)) {
                 double d = Double.parseDouble(getValue("insulin-3"));
-                mystring += String.format("%.1f", d).replace(",", ".") + " " + insulinProfile3.getName() + " ";
+                mystring += df.format(d) + " " + insulinProfile3.getName() + " ";
                 units += d;
             }
         }
         if (units > 0)
-            mystring += String.format("%.1f", units).replace(",",".") + " units ";
+            mystring += df.format(units) + " units ";
 
         if (mystring.length() > 1) {
             //SendData(this, WEARABLE_VOICE_PAYLOAD, mystring.getBytes(StandardCharsets.UTF_8));
@@ -497,7 +501,7 @@ public class PhoneKeypadInputActivity extends BaseActivity {
                 break;
             case "carbs":
                 carbstabbutton.setBackgroundColor(onColor);
-                append = " " + getString(R.string.carbs);
+                append = " g " + getString(R.string.carbs);
                 break;
             case "bloodtest":
                 bloodtesttabbutton.setBackgroundColor(onColor);

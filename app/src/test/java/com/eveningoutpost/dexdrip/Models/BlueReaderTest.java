@@ -72,7 +72,7 @@ public class BlueReaderTest extends RobolectricTestWithConfig {
 
     // ===== Command-tests =============================================================================
     @Test
-    public void decodeBlueReaderPacket_TransFailed() {
+    public void decodeBlueReaderPacket_TransF() {
         // :: Setup
         byte[] buffer = "TRANS_FAILED".getBytes();
 

@@ -1,5 +1,9 @@
 package com.eveningoutpost.dexdrip.Models;
 
+import static android.bluetooth.BluetoothDevice.PAIRING_VARIANT_PIN;
+import static android.content.Context.ALARM_SERVICE;
+import static com.eveningoutpost.dexdrip.stats.StatsActivity.SHOW_STATISTICS_PRINT_COLOR;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -20,7 +24,6 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -51,6 +54,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Surface;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.activeandroid.ActiveAndroid;
@@ -76,6 +80,7 @@ import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URLEncoder;
@@ -85,23 +90,24 @@ import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.Semaphore;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 
-import static android.bluetooth.BluetoothDevice.PAIRING_VARIANT_PIN;
-import static android.content.Context.ALARM_SERVICE;
-import static com.eveningoutpost.dexdrip.stats.StatsActivity.SHOW_STATISTICS_PRINT_COLOR;
+import lombok.val;
 
 /**
  * Created by jamorham on 06/01/16.
@@ -188,6 +194,10 @@ public class JoH {
 
     public static long msSince(long when) {
         return (tsl() - when);
+    }
+
+    public static long msSince(long end, long start) {
+        return (end - start);
     }
 
     public static long msTill(long when) {
@@ -570,7 +580,7 @@ public class JoH {
     public static synchronized boolean ratelimitmilli(String name, int milliseconds) {
         // check if over limit
         if ((rateLimits.containsKey(name)) && (JoH.tsl() - rateLimits.get(name) < (milliseconds))) {
-            Log.d(TAG, name + " rate limited: " + milliseconds + " milliseconds");
+            //Log.d(TAG, name + " rate limited: " + milliseconds + " milliseconds");
             return false;
         }
         // not over limit
@@ -646,6 +656,11 @@ public class JoH {
 
     public static HashMap<String, Object> JsonStringtoMap(String json) {
         return new Gson().fromJson(json, new TypeToken<HashMap<String, Object>>() {
+        }.getType());
+    }
+
+    public static List<Float> JsonStringToFloatList(String json) {
+        return new Gson().fromJson(json, new TypeToken<ArrayList<Float>>() {
         }.getType());
     }
 
@@ -1051,17 +1066,89 @@ public class JoH {
         return ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + xdrip.getAppContext().getPackageName() + "/" + id;
     }
 
-    public static synchronized MediaPlayer playSoundUri(String soundUri) {
-        try {
-            JoH.getWakeLock("joh-playsound", 10000);
-            final MediaPlayer player = MediaPlayer.create(xdrip.getAppContext(), Uri.parse(soundUri));
-            player.setLooping(false);
-            player.start();
-            return player;
-        } catch (Exception e) {
-            Log.wtf(TAG, "Failed to play audio: " + soundUri + " exception:" + e);
-            return null;
+    private static final Semaphore playerLock = new Semaphore(1);
+    private static volatile MediaPlayer player;
+
+    public static synchronized void stopAndReleasePlayer(final MediaPlayer player) {
+        if (player != null) {
+            try {
+                if (player.isPlaying()) {
+                    try {
+                        player.stop();
+                        // kind of brutal that something where the state changes dynamically
+                        // likes to generate exceptions that really can't be avoided as
+                        // the state can change between testing if its playing and telling it
+                        // to stop
+                    } catch (IllegalStateException e) {
+                        UserError.Log.e(TAG, "Exception when stopping sound media player: " + e);
+                    }
+                }
+            } catch (IllegalStateException e) {
+                UserError.Log.d(TAG, "Exception when detecting if media player playing: " + e);
+            }
+            try {
+                player.release();
+            } catch (IllegalStateException e) {
+                UserError.Log.d(TAG, "Exception when releasing media player");
+            }
         }
+    }
+
+    private static void stopReleaseAndNullPlayer() {
+        try {
+            playerLock.acquire();
+            try {
+                stopAndReleasePlayer(player);
+                player = null;
+            } catch (Exception e) {
+                UserError.Log.e(TAG, "Got exception trying to stop and release player: " + e);
+            } finally {
+                playerLock.release();
+            }
+        } catch (InterruptedException e) {
+            UserError.Log.e(TAG, "Got interrupted exception with player semaphore wait 3 " + e);
+        }
+    }
+
+    public static void delayedMediaPlayerRelease(final MediaPlayer mp) {
+        new Thread(() -> {
+            // android calls the onCompletionListener before the sound has actually finished!
+            threadSleep(200);
+            mp.release();
+        }).start();
+    }
+
+    public static void playSoundUri(final String soundUri) {
+        try {
+            playerLock.acquire();
+            try {
+                JoH.getWakeLock("joh-playsound", 10000);
+                player = MediaPlayer.create(xdrip.getAppContext(), Uri.parse(soundUri));
+                player.setOnCompletionListener(mp -> {
+                    UserError.Log.i(TAG, "playSoundUri: onCompletion called (finished playing) ");
+                    delayedMediaPlayerRelease(mp);
+                });
+                player.setOnErrorListener((mp, what, extra) -> {
+                    UserError.Log.e(TAG, "playSoundUri: onError called (what: " + what + ", extra: " + extra);
+                    // possibly media player error; release is handled in onCompletionListener
+                    return false;
+                });
+
+                player.setLooping(false);
+                player.start();
+            } catch (Exception e) {
+                Log.wtf(TAG, "Failed to play audio: " + soundUri + " exception:" + e);
+            } finally {
+                playerLock.release();
+            }
+        } catch (InterruptedException e) {
+            UserError.Log.e(TAG, "Got interrupted exception with player semaphore wait 1 " + e);
+        }
+    }
+
+    public static void stopSoundUri() {
+        UserError.Log.d(TAG, "stopSoundUri called");
+        stopReleaseAndNullPlayer();
     }
 
     public static boolean validateMacAddress(final String mac) {
@@ -1080,11 +1167,14 @@ public class JoH {
         try {
             Object clone = obj.getClass().newInstance();
             for (Field field : obj.getClass().getDeclaredFields()) {
-                field.setAccessible(true);
-                field.set(clone, field.get(obj));
+                if (!Modifier.isFinal(field.getModifiers())) {
+                    field.setAccessible(true);
+                    field.set(clone, field.get(obj));
+                }
             }
             return clone;
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return null;
         }
     }
@@ -1389,8 +1479,7 @@ public class JoH {
 
     public static boolean areWeRunningOnAndroidWear() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH
-                && (xdrip.getAppContext().getResources().getConfiguration().uiMode
-                & Configuration.UI_MODE_TYPE_MASK) == Configuration.UI_MODE_TYPE_WATCH;
+                && xdrip.getAppContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_WATCH);
     }
 
     public static boolean isAirplaneModeEnabled(Context context) {
@@ -1510,6 +1599,16 @@ public class JoH {
         return false;
     }
 
+    public static boolean isBluetoothEnabled(final Context context) {
+        try {
+            final BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
+            final BluetoothAdapter mBluetoothAdapter = bluetoothManager.getAdapter(); // local scope only
+            return mBluetoothAdapter.isEnabled();
+        } catch (Exception e) {
+            UserError.Log.d(TAG, "isBluetoothEnabled() exception: " + e);
+        }
+        return false;
+    }
 
     public synchronized static void setBluetoothEnabled(Context context, boolean state) {
         try {
@@ -1648,6 +1747,13 @@ public class JoH {
         bb.put(bytes);
         return bb;
     }
+
+    public static byte[] splitBytes(final byte[] source, final int start, final int length) {
+        final byte[] newBytes = new byte[length];
+        System.arraycopy(source, start, newBytes, 0, length);
+        return newBytes;
+    }
+
 
     public static long checksum(byte[] bytes) {
         if (bytes == null) return 0;

@@ -16,7 +16,10 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.Services.G5BaseService;
 import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
+import com.eveningoutpost.dexdrip.Services.UiBasedCollector;
 import com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService;
+import com.eveningoutpost.dexdrip.insulin.opennov.data.SaveCompleted;
+import com.eveningoutpost.dexdrip.profileeditor.BasalProfileEditor;
 import com.eveningoutpost.dexdrip.ui.activities.DatabaseAdmin;
 import com.eveningoutpost.dexdrip.ui.dialog.G6CalibrationCodeDialog;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -28,7 +31,7 @@ import static com.eveningoutpost.dexdrip.Home.staticRefreshBGCharts;
 public class VoiceCommands {
 
 
-    public static void processVoiceCommand(String allWords, Activity mActivity) {
+    public static void processVoiceCommand(final String allWords, final Activity mActivity) {
         if (allWords.contentEquals("delete last calibration")
                 || allWords.contentEquals("clear last calibration")) {
             Calibration.clearLastCalibration();
@@ -82,6 +85,9 @@ public class VoiceCommands {
             BgReading.deleteRandomData();
             JoH.static_toast_long("Deleting random glucose data");
             staticRefreshBGCharts();
+        } else if (allWords.equals("test ui based collector")) {
+            UiBasedCollector.switchToAndEnable(mActivity);
+            JoH.static_toast_long("Enabling UI based collector");
         } else if (allWords.contentEquals("delete selected glucose meter") || allWords.contentEquals("delete selected glucose metre")) {
             Pref.setString("selected_bluetooth_meter_address", "");
         } else if (allWords.contentEquals("delete all finger stick data") || (allWords.contentEquals("delete all fingerstick data"))) {
@@ -90,6 +96,8 @@ public class VoiceCommands {
             SdcardImportExport.deletePersistentStore();
         } else if (allWords.contentEquals("delete uploader queue")) {
             UploaderQueue.emptyQueue();
+        } else if (allWords.contentEquals("basal profile editor") || allWords.contentEquals("basil profile editor")) {
+            JoH.startActivity(BasalProfileEditor.class);
         } else if (allWords.contentEquals("clear battery warning")) {
             try {
                 final Sensor sensor = Sensor.currentSensor();
@@ -140,12 +148,24 @@ public class VoiceCommands {
                 JoH.static_toast_long(allWords);
                 GcmActivity.push_start_master_sensor();
                 break;
+            case "enable extension parameter":
+                Ob1G5StateMachine.enableExtensionParameter();
+                JoH.static_toast_long("Enabling extension parameter");
+                break;
+            case "disable extension parameter":
+                Ob1G5StateMachine.disableExtensionParameter();
+                JoH.static_toast_long("Disabling extension parameter");
+                break;
             case "test medtrum calibrate":
                 MedtrumCollectionService.calibratePing();
                 break;
             case "delete all desert sync data":
                 JoH.static_toast_long("deleted all desert sync data");
                 DesertSync.deleteAll();
+                break;
+            case "delete all pen data":
+                JoH.static_toast_long("deleted all pen sync data");
+                SaveCompleted.deleteAll();
                 break;
             case "start usb configuration":
                 JoH.startActivity(MtpConfigureActivity.class);

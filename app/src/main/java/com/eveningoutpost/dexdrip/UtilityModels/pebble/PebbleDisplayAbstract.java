@@ -53,7 +53,7 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
     protected static final int VERSION_KEY = 1002;
 
 
-    protected static final int NUM_VALUES =(60/5)*24;
+    protected static final int MAX_VALUES =60*24;
 
     protected Context context;
     protected BgGraphBuilder bgGraphBuilder;

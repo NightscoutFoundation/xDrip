@@ -1,6 +1,8 @@
 package com.eveningoutpost.dexdrip.tidepool;
 
 
+import static com.eveningoutpost.dexdrip.Models.JoH.dateTimeText;
+
 import com.eveningoutpost.dexdrip.Models.APStatus;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
@@ -18,11 +20,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.dateTimeText;
+import lombok.val;
 
 /**
  * jamorham
- *
+ * <p>
  * This class gets the next time slice of all data to upload
  */
 
@@ -35,6 +37,7 @@ public class UploadChunk implements NamedSliderProcessor {
     private static final long DEFAULT_WINDOW_OFFSET = Constants.MINUTE_IN_MS * 15;
     private static final long MAX_LATENCY_THRESHOLD_MINUTES = 1440; // minutes per day
 
+    private static final boolean D = false;
 
     public static String getNext(final Session session) {
         session.start = getLastEnd();
@@ -107,13 +110,13 @@ public class UploadChunk implements NamedSliderProcessor {
         for (Treatments treatment : treatments) {
             if (treatment.carbs > 0) {
                 EWizard eWizard = EWizard.fromTreatment(treatment);
-                if(eWizard != null) {
+                if (eWizard != null) {
                     result.add(eWizard);
                 }
             } else if (treatment.insulin > 0) {
                 EBolus eBolus = EBolus.fromTreatment(treatment);
-                if(eBolus != null) {
-                  result.add(eBolus);
+                if (eBolus != null) {
+                    result.add(eBolus);
                 }
             } else {
                 // note only TODO
@@ -146,15 +149,53 @@ public class UploadChunk implements NamedSliderProcessor {
         return ESensorGlucose.fromBgReadings(BgReading.latestForGraphAsc(15000, start, end));
     }
 
+    private static double getRateForApStatus(final APStatus apStatus) {
+        if (apStatus.basal_absolute >= 0) {
+            return apStatus.basal_absolute;
+        }
+        return Profile.getBasalRateAbsoluteFromPercent(apStatus.timestamp, apStatus.basal_percent);
+    }
+
     static List<EBasal> getBasals(final long start, final long end) {
         final List<EBasal> basals = new LinkedList<>();
-        final List<APStatus> aplist = APStatus.latestForGraph(15000, start, end);
+        final List<APStatus> aplistMaster = APStatus.latestForGraph(15000, start - (Constants.HOUR_IN_MS * 3), end, false);
+        final List<APStatus> aplist = new LinkedList<>();
+        APStatus previous = null;
+        for (val apStatus : aplistMaster) {
+            if (apStatus.timestamp < start) {
+                previous = apStatus;
+                continue;
+            } else {
+                // add opening record starting at start time, using previous record if suitable
+                if (previous != null && apStatus.timestamp != start) {
+                    previous.timestamp = start;
+                    aplist.add(previous);
+                    previous = null;
+                }
+            }
+            aplist.add(apStatus);
+        }
+
+        // add opening record starting at start time, using previous record if suitable
+        // but only if there were no records falling within our actual time span
+        if (previous != null && aplist.size() == 0) {
+            previous.timestamp = start;
+            aplist.add(previous);
+        }
+
+        if (aplist.size() > 0) {
+            // add closing record up to end time
+            val apStatus = aplist.get(aplist.size() - 1);
+            if (apStatus.timestamp < end) {
+                aplist.add(new APStatus(end, apStatus.basal_percent, apStatus.basal_absolute));
+            }
+        }
         EBasal current = null;
         for (APStatus apStatus : aplist) {
-            final double this_rate = Profile.getBasalRate(apStatus.timestamp) * apStatus.basal_percent / 100d;
+            final double this_rate = getRateForApStatus(apStatus);
 
             if (current != null) {
-                if (this_rate != current.rate) {
+                if (this_rate != current.rate || apStatus.timestamp == end) {
                     current.duration = apStatus.timestamp - current.timestamp;
                     UserError.Log.d(TAG, "Adding current: " + current.toS());
                     if (current.isValid()) {
@@ -171,8 +212,12 @@ public class UploadChunk implements NamedSliderProcessor {
                 current = new EBasal(this_rate, apStatus.timestamp, 0, UUID.nameUUIDFromBytes(("tidepool-basal" + apStatus.timestamp).getBytes()).toString()); // start duration is 0
             }
         }
+        if (D) {
+            for (val b : basals) {
+                UserError.Log.e(TAG, b.toS());
+            }
+        }
         return basals;
-
     }
 
     @Override

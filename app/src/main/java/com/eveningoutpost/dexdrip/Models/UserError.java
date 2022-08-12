@@ -284,7 +284,16 @@ public class UserError extends Model {
 
         public static void e(String tag, String b, Exception e){
             android.util.Log.e(tag, b, e);
-            new UserError(tag, b + "\n" + e.toString());
+            StringBuilder sb = new StringBuilder();
+            sb.append(b);
+            sb.append("\n");
+            sb.append(e.toString());
+            sb.append("\n");
+            StackTraceElement[] ste = e.getStackTrace();
+            for (StackTraceElement ee : ste) {
+                sb.append("    " +  ee.toString() + "\n");
+            }
+            new UserError(tag, sb.toString()) ;
         }
 
         public static void w(String tag, String b){
@@ -404,7 +413,7 @@ public class UserError extends Model {
             Log.e(TAG, "Unknown level for tag " + tag + " please use d v or i");
         }
         
-        static boolean shouldLogTag(final String tag, final int level) {
+        public static boolean shouldLogTag(final String tag, final int level) {
             final Integer levelForTag = extraTags.get(tag != null ? tag.toLowerCase() : "");
             return levelForTag != null && level >= levelForTag;
         }

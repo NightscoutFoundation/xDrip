@@ -54,6 +54,7 @@
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 
     <application
         android:name=".xdrip"
@@ -116,6 +117,10 @@
             android:exported="true" />
         <service android:name=".Services.ActivityRecognizedService" />
         <service android:name=".Services.BluetoothGlucoseMeter" />
+        <service
+            android:name=".Services.broadcastservice.BroadcastService"
+            android:enabled="true"
+            android:exported="true"></service>
         <service
             android:name=".wearintegration.WatchUpdaterService"
             android:exported="true">
@@ -265,6 +270,14 @@
             android:enabled="true"
             android:exported="true" />
 
+        <service android:name=".Services.UiBasedCollector"
+            android:label="UiBasedCollector"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
         <activity
             android:name=".stats.StatsActivity"
             android:configChanges="orientation|screenSize"
@@ -374,10 +387,6 @@
         <activity
             android:name=".ShareTest"
             android:label="@string/title_activity_share_test" />
-        <activity
-            android:name=".SystemStatus"
-            android:configChanges="orientation|screenSize"
-            android:label="@string/system_status" />
         <activity
             android:name=".utils.Preferences"
             android:configChanges="orientation|screenSize"
@@ -517,7 +526,11 @@
         </receiver>
         <receiver android:name=".utils.framework.WakeLockTrampoline" />
         <receiver android:name=".watch.thinjam.BackgroundScanReceiver" />
-
+        <receiver
+            android:name=".receiver.ReminderReceiver"
+            android:enabled="true"
+            android:exported="true">
+        </receiver>
         <service
             android:name=".TaskService"
             android:exported="true"
@@ -579,6 +592,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity android:name=".deposit.DepositActivity" />
+        <activity android:name=".utils.AndroidBarcode" />
         <activity
             android:name=".utils.SdcardImportExport"
             android:configChanges="orientation|screenSize"
@@ -594,7 +609,7 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
+            android:value="${google_maps_key}" />
 
         <activity
             android:name=".MapsActivity"
@@ -653,7 +668,7 @@
             android:label="@string/language_editor"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".GlucoseMeter.BTGlucoseMeterActivity"
+            android:name=".glucosemeter.BTGlucoseMeterActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_btglucose_meter"
             android:parentActivityName=".Home">
@@ -709,11 +724,15 @@
         <service android:name=".watch.miband.MiBandService"
             android:foregroundServiceType="connectedDevice|location"
             />
-        <service android:name=".cgm.nsfollow.NightscoutFollowService" />
+        <service android:name=".cgm.nsfollow.NightscoutFollowService"
+            android:foregroundServiceType="dataSync"
+            />
         <service android:name=".insulin.inpen.InPenService"
             android:foregroundServiceType="connectedDevice|location"
             />
-        <service android:name=".cgm.sharefollow.ShareFollowService" />
+        <service android:name=".cgm.sharefollow.ShareFollowService"
+            android:foregroundServiceType="dataSync"
+            />
         <service android:name=".cgm.connectfollow.ConnectFollowService" />
 
         <activity
@@ -744,6 +763,7 @@
         <service android:name=".watch.thinjam.BlueJayService"
             android:foregroundServiceType="connectedDevice|location"
             />
+        <service android:name=".cgm.webfollow.WebFollowService" />
     </application>
 
 </manifest>

@@ -564,7 +564,7 @@ public class NFCReaderX {
         }
 
 
-        final ReadingData readingData = new ReadingData(null, trendList, historyList);
+        final ReadingData readingData = new ReadingData(trendList, historyList);
         readingData.raw_data = data;
         return readingData;
     }

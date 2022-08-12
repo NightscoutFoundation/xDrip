@@ -47,6 +47,12 @@ public class NoteClassifier {
 
         } else if (haystack.startsWith("maintenance")) {
             return grey(R.drawable.wrench_icon, note);
+
+        } else if (haystack.startsWith("reminder")) {
+            return amber(R.drawable.note_text_icon, note);
+
+        } else if (haystack.startsWith("priming")) {
+            return grey(R.drawable.dropper, note);
         }
         return grey(R.drawable.note_text_icon, note);
     }

@@ -551,7 +551,7 @@ public class Calibration extends Model {
     public static Calibration create(double bg, long timeoffset, Context context, boolean note_only, long estimatedInterstitialLagSeconds) {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         final String unit = prefs.getString("units", "mgdl");
-        final boolean adjustPast = prefs.getBoolean("rewrite_history", true);
+        final boolean adjustPast = prefs.getBoolean("rewrite_history", false);
 
         final Double result = getConvertedBg(bg);
         if (result == null) {
@@ -1056,9 +1056,9 @@ public class Calibration extends Model {
             }
         }
     }
-    
+
     public static void upsertFromMaster(Calibration jsonCalibration) {
-        
+
         if (jsonCalibration == null) {
             Log.wtf(TAG,"Got null calibration from json");
             return;
@@ -1102,14 +1102,14 @@ public class Calibration extends Model {
                 existingCalibration.second_intercept = jsonCalibration.second_intercept;
                 existingCalibration.first_scale = jsonCalibration.first_scale;
                 existingCalibration.second_scale = jsonCalibration.second_scale;
-                
+
                 existingCalibration.save();
             }
         } catch (Exception e) {
             Log.e(TAG, "Could not save Calibration: " + e.toString());
         }
     }
-    
+
 
     //COMMON SCOPES!
     public static Calibration last() {
@@ -1305,7 +1305,7 @@ public class Calibration extends Model {
                  .limit(limit)
                 .execute();
     }
-    
+
     public static List<Calibration> futureCalibrations() {
         double timestamp = new Date().getTime();
         return new Select()

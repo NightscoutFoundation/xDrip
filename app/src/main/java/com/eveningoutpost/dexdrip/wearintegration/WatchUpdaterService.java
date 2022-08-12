@@ -999,7 +999,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                         Log.d(TAG, "onStartCommand Action=" + ACTION_SYNC_CALIBRATION + " Path=" + WEARABLE_CALIBRATION_DATA_PATH);
 
                         sendWearCalibrationData(sendCalibrationCount);
-                        final boolean adjustPast = mPrefs.getBoolean("rewrite_history", true);
+                        final boolean adjustPast = mPrefs.getBoolean("rewrite_history", false);
                         Log.d(TAG, "onStartCommand adjustRecentBgReadings for rewrite_history=" + adjustPast);
                         sendWearBgData(adjustPast ? 30 : 2);//wear may not have all BGs if force_wearG5=false, so send BGs from phone
                         sendData();//ensure BgReading.Last is displayed on watch
@@ -1770,7 +1770,7 @@ public class WatchUpdaterService extends WearableListenerService implements
             force_wearG5 = mPrefs.getBoolean("force_wearG5", false);
             node_wearG5 = mPrefs.getString("node_wearG5", "");
             dataMap.putString("dex_collection_method", dexCollector);
-            dataMap.putBoolean("rewrite_history", mPrefs.getBoolean("rewrite_history", true));
+            dataMap.putBoolean("rewrite_history", mPrefs.getBoolean("rewrite_history", false));
             dataMap.putBoolean("enable_wearG5", enable_wearG5);
             dataMap.putBoolean("force_wearG5", force_wearG5);
             dataMap.putString("node_wearG5", node_wearG5);

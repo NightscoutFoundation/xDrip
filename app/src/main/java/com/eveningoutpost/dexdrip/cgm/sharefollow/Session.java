@@ -33,6 +33,7 @@ public class Session {
     private final String TAG;
     public List<ShareGlucoseRecord> results;
     public ShareErrorResponse lastError;
+    public volatile String accountId;
     public volatile String sessionId;
 
     @Setter
@@ -58,14 +59,26 @@ public class Session {
             // is this a uuid string reply?
         } else if (object instanceof String) {
             sessionId = (String) object;
-            if (sessionId.length() != 36) {
+            if (!isIdValid(sessionId)) {
                 UserError.Log.d(TAG, "Got invalid session id: " + sessionId);
                 sessionId = "";
             } else {
-                UserError.Log.d(TAG, "Got valid looking session id: " + sessionId);
+                UserError.Log.v(TAG, "Got valid looking session id: " + sessionId);
                 sessionId_timestamp = JoH.tsl();
             }
             saveSessionId();
+        }
+    }
+
+    public void extractAccountId(final Object object) {
+        if (object instanceof String) {
+            accountId = (String) object;
+            if (!isIdValid(accountId)) {
+                UserError.Log.d(TAG, "Got invalid account ID: " + accountId);
+                accountId = "";
+            } else {
+                UserError.Log.v(TAG, "Got valid looking account ID: " + accountId);
+            }
         }
     }
 
@@ -81,9 +94,16 @@ public class Session {
         return lastError != null ? lastError.getNicerMessage() : "";
     }
 
+    boolean isIdValid(final String id) {
+        return !emptyString(id) && id.length() == 36 && !id.equals("00000000-0000-0000-0000-000000000000");
+    }
 
     boolean sessionIdValid() {
-        return !emptyString(sessionId) && JoH.msSince(sessionId_timestamp) < SESSION_ID_VALIDITY_TIME;
+        return isIdValid(sessionId) && JoH.msSince(sessionId_timestamp) < SESSION_ID_VALIDITY_TIME;
+    }
+
+    boolean accountIdValid() {
+        return isIdValid(accountId);
     }
 
     void invalidateSessionId() {

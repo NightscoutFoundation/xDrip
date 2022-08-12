@@ -1,0 +1,76 @@
+configurations.all {
+    resolutionStrategy.eachDependency { details ->
+        if (details.requested.group == 'org.projectlombok') {
+            details.useVersion "1.18.20"
+        }
+    }
+}
+
+ext.generateVersionNumberString = { ->
+    StringBuilder stringBuilder = new StringBuilder()
+    stringBuilder.append((new Date()).format('21yyMMddHH'))
+    return stringBuilder.toString()
+}
+
+ext.generateTimestamp = { ->
+    StringBuilder stringBuilder = new StringBuilder()
+    stringBuilder.append((new Date()).getTime())
+    stringBuilder.append("L")
+    return stringBuilder.toString()
+}
+
+ext.generateRandomUUID = { ->
+    StringBuilder stringBuilder = new StringBuilder()
+    stringBuilder.append('"' + UUID.randomUUID().toString() + '"')
+    return stringBuilder.toString()
+}
+
+ext.generateVersionName = { ->
+    StringBuilder stringBuilder = new StringBuilder()
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'describe', '--always'
+            standardOutput = stdout
+        }
+        String commitObject = stdout.toString().trim()
+        try {
+            stdout = new ByteArrayOutputStream()
+            exec {
+                commandLine 'git', 'describe', '--tags'
+                standardOutput = stdout
+            }
+            //stringBuilder.append(stdout.toString().trim())
+            //stringBuilder.append("-")
+        } catch (ignored) {
+            // no tags
+        }
+
+        stringBuilder.append(commitObject)
+        stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'rev-parse', '--show-toplevel'
+            standardOutput = stdout
+        }
+        if (stdout.toString().trim().contains("xDrip-Experimental")) {
+            stringBuilder.append("-experimental")
+        }
+
+        stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'rev-parse', '--abbrev-ref', 'HEAD'
+            standardOutput = stdout
+        }
+        String branch = stdout.toString().trim()
+        if (!branch.equals("master")) {
+            stringBuilder.append('-')
+            stringBuilder.append(branch)
+        }
+
+    } catch (ignored) {
+        return "NoGitSystemAvailable"
+    }
+    stringBuilder.append('-')
+    stringBuilder.append((new Date()).format('yyyy.MM.dd'))
+    return stringBuilder.toString()
+}

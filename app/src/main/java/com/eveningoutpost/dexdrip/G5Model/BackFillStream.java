@@ -6,6 +6,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.LinkedList;
@@ -51,48 +52,52 @@ public class BackFillStream extends BaseMessage {
         data.rewind();
         final int length = data.getInt();
         // TODO check length
-        while (data.position() < extent) {
-            final int dexTime = data.getInt();
-            final int glucose = data.getShort();
-            final byte type = data.get();
-            final byte trend = data.get();
+        try {
+            while (data.position() < extent) {
+                final int dexTime = data.getInt();
+                final int glucose = data.getShort();
+                final byte type = data.get();
+                final byte trend = data.get();
 
-            final CalibrationState state = CalibrationState.parse(type);
+                final CalibrationState state = CalibrationState.parse(type);
 
-            switch (state) {
-                case Ok:
-                case NeedsCalibration:
-                    insertBackfillItem(backsies, dexTime, glucose, trend);
-                    break;
+                switch (state) {
+                    case Ok:
+                    case NeedsCalibration:
+                        insertBackfillItem(backsies, dexTime, glucose, trend);
+                        break;
 
-                case WarmingUp:
-                    break;
+                    case WarmingUp:
+                        break;
 
-                case Errors:
+                    case Errors:
                     /* This preference option has never been available outside of unit testing
                        and can now be removed.
                     if (Pref.getBooleanDefaultFalse("ob1_g5_use_errored_data")) {
                         insertBackfillItem(backsies, dexTime, glucose, trend);
                     }
                     */
-                    break;
+                        break;
 
-                case InsufficientCalibration:
-                    if (Pref.getBoolean("ob1_g5_use_insufficiently_calibrated", true)) {
-                        insertBackfillItem(backsies, dexTime, glucose, trend);
-                    }
-                    break;
+                    case InsufficientCalibration:
+                        if (Pref.getBoolean("ob1_g5_use_insufficiently_calibrated", true)) {
+                            insertBackfillItem(backsies, dexTime, glucose, trend);
+                        }
+                        break;
 
-                case NeedsFirstCalibration:
-                case NeedsSecondCalibration:
-                case Unknown:
-                    break;
+                    case NeedsFirstCalibration:
+                    case NeedsSecondCalibration:
+                    case Unknown:
+                        break;
 
-                default:
-                    UserError.Log.wtf(TAG, "Encountered backfill data we don't recognise: " + type + " " + glucose + " " + trend + " " + " " + JoH.dateTimeText(fromDexTimeCached(dexTime)));
-                    break;
+                    default:
+                        UserError.Log.wtf(TAG, "Encountered backfill data we don't recognise: " + type + " " + glucose + " " + trend + " " + " " + JoH.dateTimeText(fromDexTimeCached(dexTime)));
+                        break;
 
+                }
             }
+        } catch (final BufferUnderflowException e) {
+            UserError.Log.e(TAG, "Got mismatched buffer when decoding: " + e);
         }
         return backsies;
 

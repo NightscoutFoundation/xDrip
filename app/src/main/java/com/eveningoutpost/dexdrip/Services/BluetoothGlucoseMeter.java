@@ -28,12 +28,12 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
-import com.eveningoutpost.dexdrip.GlucoseMeter.CurrentTimeRx;
-import com.eveningoutpost.dexdrip.GlucoseMeter.GlucoseReadingRx;
-import com.eveningoutpost.dexdrip.GlucoseMeter.RecordsCmdTx;
-import com.eveningoutpost.dexdrip.GlucoseMeter.VerioHelper;
-import com.eveningoutpost.dexdrip.GlucoseMeter.caresens.ContextRx;
-import com.eveningoutpost.dexdrip.GlucoseMeter.caresens.TimeTx;
+import com.eveningoutpost.dexdrip.glucosemeter.CurrentTimeRx;
+import com.eveningoutpost.dexdrip.glucosemeter.GlucoseReadingRx;
+import com.eveningoutpost.dexdrip.glucosemeter.RecordsCmdTx;
+import com.eveningoutpost.dexdrip.glucosemeter.VerioHelper;
+import com.eveningoutpost.dexdrip.glucosemeter.caresens.ContextRx;
+import com.eveningoutpost.dexdrip.glucosemeter.caresens.TimeTx;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
@@ -54,9 +54,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import static com.eveningoutpost.dexdrip.GlucoseMeter.VerioHelper.VERIO_F7A1_SERVICE;
-import static com.eveningoutpost.dexdrip.GlucoseMeter.VerioHelper.VERIO_F7A2_WRITE;
-import static com.eveningoutpost.dexdrip.GlucoseMeter.VerioHelper.VERIO_F7A3_NOTIFICATION;
+import static com.eveningoutpost.dexdrip.glucosemeter.VerioHelper.VERIO_F7A1_SERVICE;
+import static com.eveningoutpost.dexdrip.glucosemeter.VerioHelper.VERIO_F7A2_WRITE;
+import static com.eveningoutpost.dexdrip.glucosemeter.VerioHelper.VERIO_F7A3_NOTIFICATION;
 import static com.eveningoutpost.dexdrip.Models.CalibrationRequest.isSlopeFlatEnough;
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.unitized_string_with_units_static;
 
@@ -483,9 +483,13 @@ public class BluetoothGlucoseMeter extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        final IntentFilter pairingRequestFilter = new IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST);
-        pairingRequestFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY - 1);
-        registerReceiver(mPairingRequestRecevier, pairingRequestFilter);
+        if (Build.VERSION.SDK_INT < 29) {
+            final IntentFilter pairingRequestFilter = new IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST);
+            pairingRequestFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY - 1);
+            registerReceiver(mPairingRequestRecevier, pairingRequestFilter);
+        } else {
+            UserError.Log.d(TAG, "Not registering pairing receiver on Android 10+");
+        }
     }
 
     @Override
