@@ -337,7 +337,8 @@ public class CollectionServiceStarter {
             // TODO newer item startups should be consolidated in to a DexCollectionType has set to avoid duplicating logic
             if (DexCollectionType.hasBluetooth() || DexCollectionType.getDexCollectionType() == NSFollow
                     || DexCollectionType.getDexCollectionType() == SHFollow
-                    || DexCollectionType.getDexCollectionType() == WebFollow) { // TODO make this a set lookup
+                    || DexCollectionType.getDexCollectionType() == WebFollow
+                    || DexCollectionType.getDexCollectionType() == ConnectFollow) { // TODO make this a set lookup
                 Log.d(TAG, "Starting service based on collector lookup");
                 startServiceCompat(new Intent(context, DexCollectionType.getCollectorServiceClass()));
             }
