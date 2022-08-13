@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip.cgm.connectfollow;
+package com.eveningoutpost.dexdrip.cgm.carelinkfollow.client;
 
 import okhttp3.Cookie;
 import okhttp3.CookieJar;
@@ -6,7 +6,6 @@ import okhttp3.HttpUrl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class SimpleOkHttpCookieJar implements CookieJar {
 

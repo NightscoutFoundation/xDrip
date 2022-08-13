@@ -1,11 +1,11 @@
-package com.eveningoutpost.dexdrip.cgm.connectfollow;
+package com.eveningoutpost.dexdrip.cgm.carelinkfollow;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.cgm.connectfollow.messages.ConnectData;
-import com.eveningoutpost.dexdrip.cgm.connectfollow.messages.SensorGlucose;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ConnectData;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.SensorGlucose;
 
 import java.util.Collections;
 
@@ -17,7 +17,7 @@ import static com.eveningoutpost.dexdrip.Models.BgReading.SPECIAL_FOLLOWER_PLACE
  *   - process CareLink data and convert to xDrip internal data
  *   - update xDrip internal data
  */
-public class DataProcessor {
+public class CareLinkDataProcessor {
 
 
     private static final String TAG = "ConnectFollowDP";

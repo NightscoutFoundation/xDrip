@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip.cgm.connectfollow;
+package com.eveningoutpost.dexdrip.cgm.carelinkfollow;
 
 import android.os.PowerManager;
 
@@ -7,7 +7,9 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.cgm.connectfollow.messages.ConnectDataResult;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.client.CareLinkClient;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.client.CountryUtils;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ConnectDataResult;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
 
@@ -16,7 +18,7 @@ import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
  *   - download data from CareLink
  *   - execute data conversion and update xDrip data
  */
-public class ConnectFollowDownloader {
+public class CareLinkFollowDownloader {
 
     private static final String TAG = "ConnectFollowDL";
     private static final boolean D = false;
@@ -25,7 +27,7 @@ public class ConnectFollowDownloader {
     private String carelinkPassword;
     private String carelinkCountry;
 
-    private ConnectClient connectClient;
+    private CareLinkClient careLinkClient;
 
     private boolean loginDataLooksOkay;
 
@@ -40,7 +42,7 @@ public class ConnectFollowDownloader {
         return status;
     }
 
-    ConnectFollowDownloader(String carelinkUsername, String carelinkPassword, String carelinkCountry) {
+    CareLinkFollowDownloader(String carelinkUsername, String carelinkPassword, String carelinkCountry) {
         this.carelinkUsername = carelinkUsername;
         this.carelinkPassword = carelinkPassword;
         this.carelinkCountry = carelinkCountry;
@@ -61,7 +63,7 @@ public class ConnectFollowDownloader {
         if (loginDataLooksOkay) {
             if (JoH.tsl() > loginBlockedTill) {
                 try {
-                    if (getConnectClient() != null) {
+                    if (getCareLinkClient() != null) {
                         extendWakeLock(30_000);
                         backgroundProcessConnectData();
                     } else {
@@ -90,7 +92,7 @@ public class ConnectFollowDownloader {
             }
             if(carelinkCountry == null){
                 UserError.Log.e(TAG, "CareLink Country empty!");
-            }else if(!CountryHelper.isSupportedCountry(carelinkCountry)){
+            }else if(!CountryUtils.isSupportedCountry(carelinkCountry)){
                 UserError.Log.e(TAG, "CareLink Country not supported!");
             }
             return false;
@@ -104,7 +106,7 @@ public class ConnectFollowDownloader {
     }
 
     public void invalidateSession() {
-        this.connectClient = null;
+        this.careLinkClient = null;
     }
 
     private void backgroundProcessConnectData() {
@@ -116,15 +118,15 @@ public class ConnectFollowDownloader {
     private void processConnectData() {
 
         ConnectDataResult connectDataResult = null;
-        ConnectClient connectClient = null;
+        CareLinkClient careLinkClient = null;
 
         loginBackoff = 0;
 
         //Get client
-        connectClient = getConnectClient();
+        careLinkClient = getCareLinkClient();
         //Get ConnectData from CareLink client
-        if (connectClient != null) {
-            connectDataResult = getConnectClient().getLast24Hours();
+        if (careLinkClient != null) {
+            connectDataResult = getCareLinkClient().getLast24Hours();
 
             //Got CareLink data
             if (connectDataResult.success) {
@@ -137,10 +139,10 @@ public class ConnectFollowDownloader {
                     }
                     if (D) UserError.Log.d(TAG, "Start process data");
                     //Process CareLink data (conversion and update xDrip data)
-                    DataProcessor.processData(connectDataResult.connectData, true);
+                    CareLinkDataProcessor.processData(connectDataResult.connectData, true);
                     if (D) UserError.Log.d(TAG, "ProcessData finished!");
                     //Update Service status
-                    ConnectFollowService.updateBgReceiveDelay();
+                    CareLinkFollowService.updateBgReceiveDelay();
                     if (D) UserError.Log.d(TAG, "UpdateBgReceiveDelay finished!");
                     msg(null);
                     if (D) UserError.Log.d(TAG, "SetMessage finished!");
@@ -149,14 +151,14 @@ public class ConnectFollowDownloader {
                 }
             //Error during data download
             } else {
-                if (!getConnectClient().getLastLoginSuccess()) {
+                if (!getCareLinkClient().getLastLoginSuccess()) {
                     UserError.Log.e(TAG, "CareLink login error!");
                     loginBackoff += Constants.MINUTE_IN_MS;
                     loginBlockedTill = JoH.tsl() + loginBackoff;
-                } else if (!getConnectClient().getLastDataSuccess()) {
+                } else if (!getCareLinkClient().getLastDataSuccess()) {
                     UserError.Log.e(TAG, "CareLink download error! Response code: " + connectDataResult.responseCode);
-                    UserError.Log.e(TAG, "Error message: " + getConnectClient().getLastErrorMessage());
-                    UserError.Log.e(TAG, "Stack trace: " + getConnectClient().getLastStackTraceString());
+                    UserError.Log.e(TAG, "Error message: " + getCareLinkClient().getLastErrorMessage());
+                    UserError.Log.e(TAG, "Stack trace: " + getCareLinkClient().getLastStackTraceString());
                 }
             }
 
@@ -169,23 +171,23 @@ public class ConnectFollowDownloader {
     }
 
 
-    private ConnectClient getConnectClient() {
-        if (connectClient== null) {
+    private CareLinkClient getCareLinkClient() {
+        if (careLinkClient == null) {
             try {
                 UserError.Log.d(TAG, "Creating ConnectClient");
-                connectClient = new ConnectClient(carelinkUsername, carelinkPassword, carelinkCountry);
+                careLinkClient = new CareLinkClient(carelinkUsername, carelinkPassword, carelinkCountry);
             } catch (NullPointerException e) {
                 UserError.Log.e(TAG, "Error creating ConnectClient");
             }
         }
-        return connectClient;
+        return careLinkClient;
     }
 
 
     private static synchronized void extendWakeLock(final long ms) {
         if (wl == null) {
             if (D) UserError.Log.d(TAG,"Creating wakelock");
-            wl = JoH.getWakeLock("ConnectFollow-download", (int) ms);
+            wl = JoH.getWakeLock("CLFollow-download", (int) ms);
         } else {
             JoH.releaseWakeLock(wl); // lets not get too messy
             wl.acquire(ms);

@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip.cgm.connectfollow;
+package com.eveningoutpost.dexdrip.cgm.carelinkfollow;
 
 import android.content.Intent;
 import android.os.IBinder;
@@ -34,9 +34,9 @@ import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PER
  *   - provide status infos of follower service
  */
 
-public class ConnectFollowService extends ForegroundService {
+public class CareLinkFollowService extends ForegroundService {
 
-    private static final String TAG = "ConnectFollow";
+    private static final String TAG = "CLFollow";
     private static final long SAMPLE_PERIOD = DEXCOM_PERIOD;
 
     protected static volatile String lastState = "";
@@ -49,7 +49,7 @@ public class ConnectFollowService extends ForegroundService {
     private static volatile long bgReceiveDelay;
     private static volatile long lastBgTime;
 
-    private static ConnectFollowDownloader downloader;
+    private static CareLinkFollowDownloader downloader;
 
     private static final long WAKE_UP_GRACE_SECOND = 20;
 
@@ -88,7 +88,7 @@ public class ConnectFollowService extends ForegroundService {
     }
 
     private static boolean shouldServiceRun() {
-        return DexCollectionType.getDexCollectionType() == DexCollectionType.ConnectFollow;
+        return DexCollectionType.getDexCollectionType() == DexCollectionType.CLFollow;
     }
 
     private static long getGraceMillis() {
@@ -103,12 +103,12 @@ public class ConnectFollowService extends ForegroundService {
         wakeup_time = next;
         UserError.Log.d(TAG, "Anticipate next: " + JoH.dateTimeText(next) + "  last BG timestamp: " + JoH.dateTimeText(last));
 
-        JoH.wakeUpIntent(xdrip.getAppContext(), JoH.msTill(next), WakeLockTrampoline.getPendingIntent(ConnectFollowService.class, Constants.CONNECTFOLLOW_SERVICE_FAILOVER_ID));
+        JoH.wakeUpIntent(xdrip.getAppContext(), JoH.msTill(next), WakeLockTrampoline.getPendingIntent(CareLinkFollowService.class, Constants.CONNECTFOLLOW_SERVICE_FAILOVER_ID));
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        final PowerManager.WakeLock wl = JoH.getWakeLock("ConnectFollow-osc", 60000);
+        final PowerManager.WakeLock wl = JoH.getWakeLock("CLFollow-osc", 60000);
         try {
 
             UserError.Log.d(TAG, "WAKE UP WAKE UP WAKE UP");
@@ -132,7 +132,7 @@ public class ConnectFollowService extends ForegroundService {
             if (lastBg == null || msSince(lastBg.timestamp) > SAMPLE_PERIOD) {
                 // Get the data
                 if (downloader == null) {
-                    downloader = new ConnectFollowDownloader(
+                    downloader = new CareLinkFollowDownloader(
                             Pref.getString("connectfollow_user", ""),
                             Pref.getString("connectfollow_pass", ""),
                             Pref.getString("connectfollow_country", "").toLowerCase()

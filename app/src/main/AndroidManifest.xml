@@ -733,7 +733,7 @@
         <service android:name=".cgm.sharefollow.ShareFollowService"
             android:foregroundServiceType="dataSync"
             />
-        <service android:name=".cgm.connectfollow.ConnectFollowService" />
+        <service android:name=".cgm.carelinkfollow.CareLinkFollowService" />
 
         <activity
             android:name=".EventLogActivity"

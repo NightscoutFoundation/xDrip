@@ -20,7 +20,7 @@
         <item>Dex Share Follower</item>
         <item>Web Follower</item>
         <item>Companion (Testing)</item>
-        <item>Medtronic Connect</item>
+        <item>CareLink Follower</item>
         <item>Disable Collection</item>
     </string-array>
 
@@ -44,7 +44,7 @@
         <item>SHFollower</item>
         <item>WebFollower</item>
         <item>UiBased</item>
-        <item>ConnectFollower</item>
+        <item>CLFollower</item>
         <item>Disabled</item>
     </string-array>
 
@@ -234,7 +234,7 @@
         <item>AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE</item>
     </string-array>
 
-    <string-array name="connectCountryEntries">
+    <string-array name="carelinkCountryEntries">
         <item>Albania</item>
         <item>Algeria</item>
         <item>Argentina</item>
@@ -351,7 +351,7 @@
         <item>Vietnam</item>
     </string-array>
 
-    <string-array name="connectCountryValues">
+    <string-array name="carelinkCountryValues">
         <item>al</item>
         <item>dz</item>
         <item>ar</item>

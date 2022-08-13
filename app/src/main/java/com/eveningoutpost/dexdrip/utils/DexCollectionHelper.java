@@ -12,7 +12,7 @@ import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
-import com.eveningoutpost.dexdrip.cgm.connectfollow.ConnectFollowService;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.CareLinkFollowService;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import static com.eveningoutpost.dexdrip.ui.dialog.QuickSettingsDialogs.booleanSettingDialog;
@@ -130,7 +130,7 @@ public class DexCollectionHelper {
                 bluetoothScanIfNeeded();
                 break;
 
-            case ConnectFollow:
+            case CLFollow:
                 textSettingDialog(activity,
                         "connectfollow_country", "CareLink Country",
                         "Two letter country ISO code",
@@ -153,7 +153,7 @@ public class DexCollectionHelper {
                                                             @Override
                                                             public void run() {
                                                                 Home.staticRefreshBGCharts();
-                                                                ConnectFollowService.resetInstanceAndInvalidateSession();
+                                                                CareLinkFollowService.resetInstanceAndInvalidateSession();
                                                                 CollectionServiceStarter.restartCollectionServiceBackground();
                                                             }
                                                         });

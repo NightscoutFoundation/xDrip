@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip.cgm.connectfollow;
+package com.eveningoutpost.dexdrip.cgm.carelinkfollow.client;
 
 import android.util.Log;
 
@@ -8,16 +8,16 @@ import java.util.regex.Pattern;
 
 import okhttp3.*;
 
-import com.eveningoutpost.dexdrip.cgm.connectfollow.messages.ConnectData;
-import com.eveningoutpost.dexdrip.cgm.connectfollow.messages.ConnectDataResult;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ConnectData;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ConnectDataResult;
 import com.google.gson.*;
 
 
 /**
- * Medtronic CareLink Connect Client
- *   - API client for communication with CareLink Connect
+ * Medtronic CareLink Follower Client
+ *   - API client for communication with CareLink
  */
-public class ConnectClient {
+public class CareLinkClient {
     protected String carelinkUsername;
     protected String carelinkPassword;
     protected String carelinkCountry;
@@ -56,7 +56,7 @@ public class ConnectClient {
         Json()
     }
 
-    public ConnectClient(String carelinkUsername, String carelinkPassword, String carelinkCountry) {
+    public CareLinkClient(String carelinkUsername, String carelinkPassword, String carelinkCountry) {
 
         this.carelinkUsername = carelinkUsername;
         this.carelinkPassword = carelinkPassword;

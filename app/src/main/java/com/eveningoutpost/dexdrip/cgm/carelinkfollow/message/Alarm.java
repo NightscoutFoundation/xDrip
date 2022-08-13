@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip.cgm.connectfollow.messages;
+package com.eveningoutpost.dexdrip.cgm.carelinkfollow.message;
 
 /**
  * CareLink Alarm data

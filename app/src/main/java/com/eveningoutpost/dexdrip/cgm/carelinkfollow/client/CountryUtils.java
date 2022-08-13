@@ -1,8 +1,8 @@
-package com.eveningoutpost.dexdrip.cgm.connectfollow;
+package com.eveningoutpost.dexdrip.cgm.carelinkfollow.client;
 
 import java.util.Arrays;
 
-public class CountryHelper {
+public class CountryUtils {
 
     public static final String[] supportedCountryCodes = {
             "dz",

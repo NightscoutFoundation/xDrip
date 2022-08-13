@@ -90,7 +90,7 @@ import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollow;
 import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
 import com.eveningoutpost.dexdrip.cgm.webfollow.Cpref;
-import com.eveningoutpost.dexdrip.cgm.connectfollow.ConnectFollowService;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.CareLinkFollowService;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
 import com.eveningoutpost.dexdrip.tidepool.TidepoolUploader;
@@ -1260,36 +1260,36 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             }
 
             //CareLink Follow preferences
-            final Preference connectFollowUser = findPreference("connectfollow_user");
-            final Preference connectFollowPass = findPreference("connectfollow_pass");
-            final Preference connectFollowCountry = findPreference("connectfollow_country");
-            if (collectionType == DexCollectionType.ConnectFollow) {
+            final Preference carelinkFollowUser = findPreference("clfollow_user");
+            final Preference carelinkFollowPass = findPreference("clfollow_pass");
+            final Preference carelinkFollowCountry = findPreference("clfollow_country");
+            if (collectionType == DexCollectionType.CLFollow) {
                 //Add CL prefs
-                collectionCategory.addPreference(connectFollowUser);
-                collectionCategory.addPreference(connectFollowPass);
-                collectionCategory.addPreference(connectFollowCountry);
+                collectionCategory.addPreference(carelinkFollowUser);
+                collectionCategory.addPreference(carelinkFollowPass);
+                collectionCategory.addPreference(carelinkFollowCountry);
                 //Create prefChange handler
-                final Preference.OnPreferenceChangeListener connectFollowListener = new Preference.OnPreferenceChangeListener() {
+                final Preference.OnPreferenceChangeListener carelinkFollowListener = new Preference.OnPreferenceChangeListener() {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        ConnectFollowService.resetInstanceAndInvalidateSession();
+                        CareLinkFollowService.resetInstanceAndInvalidateSession();
                         CollectionServiceStarter.restartCollectionServiceBackground();
                         return true;
                     }
                 };
                 //Register prefChange handler
                 try {
-                    connectFollowUser.setOnPreferenceChangeListener(connectFollowListener);
-                    connectFollowPass.setOnPreferenceChangeListener(connectFollowListener);
-                    connectFollowCountry.setOnPreferenceChangeListener(connectFollowListener);
+                    carelinkFollowUser.setOnPreferenceChangeListener(carelinkFollowListener);
+                    carelinkFollowPass.setOnPreferenceChangeListener(carelinkFollowListener);
+                    carelinkFollowCountry.setOnPreferenceChangeListener(carelinkFollowListener);
                 } catch (Exception e) {
                     //
                 }
             } else {
                 try {
-                    collectionCategory.removePreference(connectFollowUser);
-                    collectionCategory.removePreference(connectFollowPass);
-                    collectionCategory.removePreference(connectFollowCountry);
+                    collectionCategory.removePreference(carelinkFollowUser);
+                    collectionCategory.removePreference(carelinkFollowPass);
+                    collectionCategory.removePreference(carelinkFollowCountry);
                 } catch (Exception e) {
                     //
                 }
@@ -1620,11 +1620,11 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 }
             }
 
-            if (collectionType != DexCollectionType.ConnectFollow) {
+            if (collectionType != DexCollectionType.CLFollow) {
                 try {
-                    collectionCategory.removePreference(connectFollowCountry);
-                    collectionCategory.removePreference(connectFollowPass);
-                    collectionCategory.removePreference(connectFollowUser);
+                    collectionCategory.removePreference(carelinkFollowCountry);
+                    collectionCategory.removePreference(carelinkFollowPass);
+                    collectionCategory.removePreference(carelinkFollowUser);
                 } catch (Exception e) {
                     //
                 }
