@@ -1644,4 +1644,8 @@
     <string name="please_wait_seconds_before_trying_to_start_sensor">Подождите %d секунд перед попыткой запустить сенсор</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">пожалуйста, обновите OOP2 или переключитесь на калибровку, основанную на raw-режиме</string>
     <string name="special_pairing_workaround">Специальный обходной путь сопряжения</string>
+    <string name="save_power">Экономить энергию</string>
+    <string name="reduce_battery_and_network_overhead">Уменьшить нагрузку на батарею и сеть, используя пакетную обработку и исключая ненужные данные</string>
+    <string name="simplify_graphs_by_smoothing_out_irregularities">Упростить графики, сглаживая неровности</string>
+    <string name="graph_smoothing">Сглаживание графика</string>
 </resources>
