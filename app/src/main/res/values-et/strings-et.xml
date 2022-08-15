@@ -1662,4 +1662,9 @@
     <string name="please_wait_seconds_before_trying_to_start_sensor">Palun oota %d sekundit enne sensori käivitamist</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">palun värskenda OOP2 või kasuta kalibreerimistel põhinevat algset režiimi</string>
     <string name="special_pairing_workaround">Spetsiaalne sidumise lahendus</string>
+    <string name="save_power">Säästa energiat</string>
+    <string name="reduce_battery_and_network_overhead">Vähenda aku ja võrgu koormust, kasutades pakett-töötlust ja välistades mittevajalikke andmeid</string>
+    <string name="simplify_graphs_by_smoothing_out_irregularities">Lihtsusta graafikuid, siludes ebakorrapärasusi</string>
+    <string name="graph_smoothing">Graafiku silumine</string>
+    <string name="last_reading">Viimane näit</string>
 </resources>
