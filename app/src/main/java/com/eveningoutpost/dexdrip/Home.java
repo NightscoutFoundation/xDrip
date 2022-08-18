@@ -2001,7 +2001,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         chart.setZoomType(ZoomType.HORIZONTAL);
         chart.setMaxZoom(50f);
 
-
+        // inject our gesture handler if it hasn't already been done
         try {
             val gestureDetector =  ChartTouchHandler.class.getDeclaredField("gestureDetector");
             gestureDetector.setAccessible(true);
@@ -2012,7 +2012,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             if (!(activeDetector instanceof InterceptingGestureHandler)) {
                 gestureDetector.set(chartTouchHandler, new InterceptingGestureHandler(this, activeDetector));
             } else {
-                UserError.Log.e(TAG,"Already intercepting viewport");
+                UserError.Log.d(TAG, "Already intercepting viewport");
             }
             if (!(previewActiveDetector instanceof InterceptingGestureHandler)) {
                 gestureDetector.set(previewChartTouchHandler, new InterceptingGestureHandler(this, previewActiveDetector));
