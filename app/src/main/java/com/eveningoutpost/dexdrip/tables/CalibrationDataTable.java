@@ -1,32 +1,37 @@
-package com.eveningoutpost.dexdrip.Tables;
+package com.eveningoutpost.dexdrip.tables;
 
-import android.app.ListActivity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.BaseListActivity;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.NavigationDrawerFragment;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
-import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
-public class CalibrationDataTable extends ListActivity {//implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+
+public class CalibrationDataTable extends BaseListActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     private static final String menu_name = "Calibration Data Table";
+    private NavigationDrawerFragment mNavigationDrawerFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.OldAppTheme); // or null actionbar
         super.onCreate(savedInstanceState);
         setContentView(R.layout.raw_data_list);
     }
@@ -34,23 +39,22 @@ public class CalibrationDataTable extends ListActivity {//implements NavigationD
     @Override
     protected void onResume(){
         super.onResume();
+        mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
+        mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
         getData();
     }
 
+    @Override
+    public void onNavigationDrawerItemSelected(int position) {
+        mNavigationDrawerFragment.swapContext(position);
+    }
+
     private void getData() {
-        final long startTime = new Date().getTime() - (60000 * 60 * 24 * 3);//3 days
-        final List<Calibration> latest = Calibration.latestForGraph(60, startTime);
+        final List<Calibration> latest = Calibration.latest(50);
 
         CalibrationDataCursorAdapter adapter = new CalibrationDataCursorAdapter(this, latest);
-        this.setListAdapter(adapter);
 
-        String msg = "";
-        int size = 0;
-        if (latest != null) size = latest.size();
-        if (size == 0) {
-            msg = getResources().getString(R.string.notify_table_size, "Calibration", size);
-            JoH.static_toast(xdrip.getAppContext(), msg, Toast.LENGTH_SHORT);
-        }
+        this.setListAdapter(adapter);
     }
 
 
@@ -107,7 +111,7 @@ public class CalibrationDataTable extends ListActivity {//implements NavigationD
                 view.setBackgroundColor(Color.parseColor("#212121"));
             }
 
-            /*view.setLongClickable(true);
+            view.setLongClickable(true);
             view.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
@@ -116,7 +120,7 @@ public class CalibrationDataTable extends ListActivity {//implements NavigationD
                         public void onClick(DialogInterface dialog, int which) {
                             switch (which){
                                 case DialogInterface.BUTTON_POSITIVE:
-                                    calibration.invalidate();
+                                    calibration.clear_byuuid(calibration.uuid, false);
                                     notifyDataSetChanged();
                                     break;
 
@@ -131,7 +135,7 @@ public class CalibrationDataTable extends ListActivity {//implements NavigationD
                             .setNegativeButton(gs(R.string.no), dialogClickListener).show();
                     return true;
                 }
-            });*/
+            });
 
 
         }
