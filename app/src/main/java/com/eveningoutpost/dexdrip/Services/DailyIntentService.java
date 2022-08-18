@@ -11,8 +11,10 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.DesertSync;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.Libre2RawValue;
 import com.eveningoutpost.dexdrip.Models.RollCall;
 import com.eveningoutpost.dexdrip.Models.StepCounter;
+import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
@@ -110,6 +112,16 @@ public class DailyIntentService extends IntentService {
                     final int bg_retention_days = Pref.getStringToInt("retention_days_bg_reading", 0);
                     if (bg_retention_days > 0) {
                         BgReading.cleanup(bg_retention_days);
+                        try {
+                            Libre2RawValue.cleanup(bg_retention_days);
+                        } catch (Exception e) {
+                            Log.e(TAG, "Exception cleaning up libre raw values " + e);
+                        }
+                        try {
+                            Treatments.cleanup(bg_retention_days);
+                        } catch (Exception e) {
+                            Log.e(TAG, "Exception cleaning up treatment data " + e);
+                        }
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "DailyIntentService exception on BgReadings cleanup ", e);
