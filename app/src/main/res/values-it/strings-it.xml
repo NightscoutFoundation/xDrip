@@ -1662,4 +1662,9 @@
     <string name="please_wait_seconds_before_trying_to_start_sensor">Attendere %d secondi prima di provare ad avviare il sensore</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">Aggiornare OOP2 o passare alla calibrazione basata su glicemia grezza</string>
     <string name="special_pairing_workaround">Abbinamento Speciale</string>
+    <string name="save_power">Risparmia energia</string>
+    <string name="reduce_battery_and_network_overhead">Riduce l\'utilizzo della batteria dei dati di rete con l\'elaborazione in batch escludendo dati inutili</string>
+    <string name="simplify_graphs_by_smoothing_out_irregularities">Semplifica i grafici lisciando le irregolarità</string>
+    <string name="graph_smoothing">Lisciamento del Grafico</string>
+    <string name="last_reading">Ultima lettura</string>
 </resources>

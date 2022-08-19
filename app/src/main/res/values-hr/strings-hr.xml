@@ -987,4 +987,9 @@
     <string name="show_time_buttons">Prikaži gumbe za vrijeme</string>
     <string name="source_wizard_button">Gumb čarobnjaka izvora</string>
     <string name="special_pairing_workaround">Zaobilazno rješenje posebnog uparivanja</string>
+    <string name="save_power">Štedite energiju</string>
+    <string name="reduce_battery_and_network_overhead">Smanjite opterećenje baterije i mreže korištenjem skupne obrade i isključivanjem nepotrebnih podataka</string>
+    <string name="simplify_graphs_by_smoothing_out_irregularities">Pojednostavite grafikone izglađivanjem nepravilnosti</string>
+    <string name="graph_smoothing">Izglađivanje grafikona</string>
+    <string name="last_reading">Zadnje očitanje</string>
 </resources>

@@ -1618,4 +1618,5 @@
     <string name="reduce_battery_and_network_overhead">Reduziere den Akkuverbrauch und die Netzwerkbelastung durch Stapelverarbeitung und den Ausschluss unnötiger Daten</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Vereinfache die grafische Darstellung durch das Glätten von Unregelmäßigkeiten</string>
     <string name="graph_smoothing">Glättung der grafischen Darstellung</string>
+    <string name="last_reading">Letzte Werte</string>
 </resources>

@@ -224,6 +224,8 @@
     <string name="xdrip_plus_display_settings">xDrip+ Персонализиране</string>
     <string name="display_customisations">Покажи персонализация</string>
     <string name="insulin_carb_ratios_etc_for_models">Инсулин, Въглехидратно съотношение и др. за модели</string>
+    <string name="grams_of_carbohydrate_one_unit_covers">Грама въглехидрати на 1 ед. инсулин</string>
+    <string name="linear_model_carbs_absorbed_per_hour">Линеен модел въглих. абсорбирани на час</string>
     <string name="add_calibration">Добавяне калибрация</string>
     <string name="system_status">Системен статус</string>
     <string name="settings">Настройки</string>
@@ -302,7 +304,7 @@
     <string name="download_now">Свали сега</string>
     <string name="automatically_check_for_updates">Автоматична проверка за обновяване</string>
     <string name="here_you_can_save_the_settings_to_the_external_storage_sdcard">Тук, можете да запазите настройки в вътрешната памет(Download/xDrip-export/com.eveningoutpost.dexdrip_preferences.xml).\n\nКогато се запишат във файл, важно е да се знае, че всяко приложение може да прочете този файл, които може да съдържа чувствителна информация.\n\nПрепоръчително е да изтриете данните след като ги импортирате, ако ви притеснява този факт.</string>
-    <string name="save_all_settings_to_sdcard">Запаси всички настройки в файл</string>
+    <string name="save_all_settings_to_sdcard">Запази всички настройки в файл</string>
     <string name="load_all_settings_from_sdcard">Зареди всички настройки от файл</string>
     <string name="delete_any_settings_on_sdcard">Изтрии папката с настройки (Download/xDrip-export)</string>
     <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Използвая QR код за трансфер на настройки използвайки Настройки->Функция за автоматично конфигуриране]]></string>
@@ -458,4 +460,5 @@
     <string name="reduce_battery_and_network_overhead">Намаляване консумация на батерия и мрежа използвайки бач процесване на данните</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Опрости графики като изглажда нередни данни</string>
     <string name="graph_smoothing">Изглаждане на графика</string>
+    <string name="last_reading">Последно замерено</string>
 </resources>

@@ -242,7 +242,7 @@
     <string name="shows_a_persistent_notification">Muestra un gráfico de notificación permanente, visible en el bloqueo de pantalla y evita que android mate el servicio.</string>
     <string name="list_of_receivers">Lista de Receptores</string>
     <string name="extra_tags_for_logging">Etiquetas extra para el registro</string>
-    <string name="extra_tags_dialog_message">Las etiquetas introducidas aquí serán registradas en xDrip. El formato es \'etiqueta:nivel\'. El nivel puede ser v,d,i. Por ejemplo bgreading:i, DexCollectionService:v. Estás etiquetas serán registradas con prioridad baja en las listas de errores y de eventos.</string>
+    <string name="extra_tags_dialog_message">Las etiquetas introducidas aquí serán registradas en xDrip. El formato es \'etiqueta:nivel\'. El nivel puede ser v,d,i. Por ejemplo bgreading:i, DexCollectionService:v. Éstas etiquetas serán registradas con prioridad baja en las listas de errores y de eventos.</string>
     <string name="extra_tags_dialog_title">Introducir más etiquetas para registrar</string>
     <string name="data_source_settings">Configurar la fuente de datos</string>
     <string name="smart_watch_features">Funciones de SmartWatch</string>
@@ -1666,4 +1666,5 @@
     <string name="reduce_battery_and_network_overhead">Reducir la sobrecarga de la batería y red mediante el procesamiento por lotes y la exclusión de datos innecesarios</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Simplificar los gráficos suavizando las irregularidades</string>
     <string name="graph_smoothing">Suavizar gráficos</string>
+    <string name="last_reading">Última lectura</string>
 </resources>
