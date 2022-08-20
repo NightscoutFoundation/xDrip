@@ -3,6 +3,8 @@ package com.eveningoutpost.dexdrip.Services.broadcastservice.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.eveningoutpost.dexdrip.UtilityModels.HPointValue;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +42,11 @@ public class GraphLine implements Parcelable {
         values = new ArrayList<>();
         line.update(0);
         for (PointValue pointValue : line.getValues()) {
-            values.add(new GraphPoint(pointValue.getX(), pointValue.getY()));
+            float real_timestamp = pointValue.getX();
+            if (pointValue instanceof HPointValue) {
+                real_timestamp = (float) HPointValue.unconvert(real_timestamp);
+            }
+            values.add(new GraphPoint(real_timestamp, pointValue.getY()));
         }
         color = line.getColor();
     }
