@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip.Tables;
+package com.eveningoutpost.dexdrip.tables;
 
 import android.app.ListActivity;
 import android.content.Context;
@@ -12,8 +12,8 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -23,7 +23,7 @@ import java.util.Date;
 import java.util.List;
 
 
-public class BloodTestTable extends ListActivity {
+public class TreatmentsTable extends ListActivity {
     private final static String TAG = "jamorham " + TreatmentsTable.class.getSimpleName();
 
     @Override
@@ -42,10 +42,8 @@ public class BloodTestTable extends ListActivity {
     }
 
     private void getData() {
-        UserError.Log.d(TAG, "getData");
         final long startTime = new Date().getTime() - (60000 * 60 * 24 * 3);//3 days
-        final List<BloodTest> latest = BloodTest.latestForGraph(60, startTime);
-
+        final List<Treatments> latest = Treatments.latestForGraph(60, startTime);
         ListAdapter adapter = new thisAdapter(this, latest);
         this.setListAdapter(adapter);
 
@@ -53,7 +51,7 @@ public class BloodTestTable extends ListActivity {
         int size = 0;
         if (latest != null) size = latest.size();
         if (size == 0) {
-            msg = getResources().getString(R.string.notify_table_size, "BloodTest", size);
+            msg = getResources().getString(R.string.notify_table_size, "Treatments", size);
             JoH.static_toast(xdrip.getAppContext(), msg, Toast.LENGTH_SHORT);
         }
     }
@@ -75,9 +73,9 @@ public class BloodTestTable extends ListActivity {
 
     public static class thisAdapter extends BaseAdapter {
         private final Context         context;
-        private final List<BloodTest> data;
+        private final List<Treatments> data;
 
-        public thisAdapter(Context context, List<BloodTest> data) {
+        public thisAdapter(Context context, List<Treatments> data) {
             UserError.Log.d(TAG, "thisAdapter");
             this.context = context;
             if(data == null)
@@ -97,12 +95,12 @@ public class BloodTestTable extends ListActivity {
             return view;
         }
 
-        public void bindView(View view, final Context context, final BloodTest data) {
+        public void bindView(View view, final Context context, final Treatments data) {
             UserError.Log.d(TAG, "bindView");
             final thisCursorAdapterViewHolder tag = (thisCursorAdapterViewHolder) view.getTag();
-            tag.raw_data_id.setText(Long.toString(Math.round(data.mgdl)));
-            tag.raw_data_value.setText(data.source!=null ? data.source : "");
-            tag.raw_data_slope.setText("State: " + Long.toString(data.state));
+            tag.raw_data_id.setText(Double.toString(data.insulin) + "U");
+            tag.raw_data_value.setText("Carbs: " + Math.round(data.carbs) + "g");
+            tag.raw_data_slope.setText("enteredBy: " + data.enteredBy + "\neventType: " + data.eventType + (data.notes != null && !data.notes.isEmpty() ? "\n" + data.notes : ""));
             tag.raw_data_timestamp.setText(new Date(data.timestamp).toString());
             view.setBackgroundColor(Color.parseColor("#212121"));
 
@@ -150,7 +148,7 @@ public class BloodTestTable extends ListActivity {
         }
 
         @Override
-        public BloodTest getItem(int position) {
+        public Treatments getItem(int position) {
             return data.get(position);
         }
 

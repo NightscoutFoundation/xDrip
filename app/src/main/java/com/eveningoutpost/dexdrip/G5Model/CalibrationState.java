@@ -50,7 +50,7 @@ public enum CalibrationState {
 
     private static final SparseArray<CalibrationState> lookup = new SparseArray<>();
     private static final ImmutableSet<CalibrationState> failed = ImmutableSet.of(SensorFailed, SensorFailed2, SensorFailed3, SensorFailed4, SensorFailed5, SensorFailed6, SensorFailedStart);
-    private static final ImmutableSet<CalibrationState> stopped = ImmutableSet.of(Stopped, Ended, SensorFailed, SensorFailed2, SensorFailed3, SensorFailed4, SensorFailed5, SensorFailed6, SensorFailedStart);
+    private static final ImmutableSet<CalibrationState> stopped = ImmutableSet.of(Stopped, Ended, SensorFailed, SensorFailed2, SensorFailed3, SensorFailed4, SensorFailed5, SensorFailed6, SensorFailedStart, SensorStopped);
     private static final ImmutableSet<CalibrationState> transitional = ImmutableSet.of(WarmingUp, SensorStarted, SensorStopped, CalibrationSent);
 
 

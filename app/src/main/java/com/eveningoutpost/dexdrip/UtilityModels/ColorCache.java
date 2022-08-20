@@ -70,7 +70,11 @@ public class ColorCache {
         color_smb_line("color_smb_line"),
         color_number_wall("color_number_wall"),
         color_number_wall_shadow("color_number_wall_shadow"),
-        color_basal_tbr("color_basal_tbr");
+        color_basal_tbr("color_basal_tbr"),
+        color_high_bg_values("color_high_bg_values"),
+        color_inrange_bg_values("color_inrange_bg_values"),
+        color_low_bg_values("color_low_bg_values"),
+        ;
 
         @Getter
         String internalName;

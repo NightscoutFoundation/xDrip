@@ -139,7 +139,7 @@ public class ExternalStatusService extends IntentService {
 
     public static String getAbsoluteBR(final String statusLine) {
         if (JoH.emptyString(statusLine)) return "";
-        val pattern = Pattern.compile(".*(^|[^0-9.])([0-9.]+U/h)", Pattern.DOTALL); // match last of any number followed by %
+        val pattern = Pattern.compile(".*(^|[^0-9.,])([0-9.,]+U/h)", Pattern.DOTALL); // match last of any number followed by units per hour
         val matcher = pattern.matcher(statusLine);
         val matches = matcher.find();       // was at least one found?
 
@@ -190,7 +190,7 @@ public class ExternalStatusService extends IntentService {
 
     public static Double getAbsoluteBRDouble() {
         try {
-            return Double.parseDouble(getAbsoluteBR().replace("U/h", ""));
+            return JoH.tolerantParseDouble(getAbsoluteBR().replace("U/h", ""));
         } catch (NullPointerException | NumberFormatException e) {
             return null;
         }

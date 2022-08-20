@@ -11,8 +11,10 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.DesertSync;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.Libre2RawValue;
 import com.eveningoutpost.dexdrip.Models.RollCall;
 import com.eveningoutpost.dexdrip.Models.StepCounter;
+import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
@@ -24,6 +26,7 @@ import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
 import com.eveningoutpost.dexdrip.utils.Telemetry;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xdrip;
+import com.eveningoutpost.dexdrip.UtilityModels.SettingsValidation;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 import static com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity.checkForAnUpdate;
@@ -109,6 +112,16 @@ public class DailyIntentService extends IntentService {
                     final int bg_retention_days = Pref.getStringToInt("retention_days_bg_reading", 0);
                     if (bg_retention_days > 0) {
                         BgReading.cleanup(bg_retention_days);
+                        try {
+                            Libre2RawValue.cleanup(bg_retention_days);
+                        } catch (Exception e) {
+                            Log.e(TAG, "Exception cleaning up libre raw values " + e);
+                        }
+                        try {
+                            Treatments.cleanup(bg_retention_days);
+                        } catch (Exception e) {
+                            Log.e(TAG, "Exception cleaning up treatment data " + e);
+                        }
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "DailyIntentService exception on BgReadings cleanup ", e);
@@ -145,6 +158,12 @@ public class DailyIntentService extends IntentService {
                     IncompatibleApps.notifyAboutIncompatibleApps();
                 } catch (Exception e) {
                     //
+                }
+
+                try {
+                    SettingsValidation.notifyAboutInadvisableSettings();
+                } catch (Exception e) {
+                    Log.e(TAG, "Exception in SettingsValidation: " + e);
                 }
 
                 Log.i(TAG, "DailyIntentService onHandleIntent exiting after " + ((JoH.tsl() - start) / 1000) + " seconds");

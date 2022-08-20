@@ -54,6 +54,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Surface;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.activeandroid.ActiveAndroid;
@@ -105,6 +106,8 @@ import java.util.zip.Checksum;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
+
+import lombok.val;
 
 /**
  * Created by jamorham on 06/01/16.
@@ -182,7 +185,7 @@ public class JoH {
     }
 
     public static long uptime() {
-        return SystemClock.uptimeMillis();
+        return SystemClock.elapsedRealtime();
     }
 
     public static boolean upForAtLeastMins(int mins) {
@@ -1297,6 +1300,21 @@ public class JoH {
         return bitmap;
     }
 
+    public static Bitmap getBitmapFromView(final View root, final int width, final int height) {
+        val params = new ViewGroup.LayoutParams(width, height);
+        root.setLayoutParams(params);
+        val measuredWidth = View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY);
+        val measuredHeight = View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY);
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        val canvas = new Canvas(bitmap);
+        canvas.drawColor(Color.WHITE);
+        root.destroyDrawingCache();
+        root.measure(measuredWidth, measuredHeight);
+        root.layout(0, 0, root.getMeasuredWidth(), root.getMeasuredHeight());
+        root.draw(canvas);
+        return bitmap;
+    }
+
 
     public static void bitmapToFile(Bitmap bitmap, String path, String fileName) {
 
@@ -1719,6 +1737,20 @@ public class JoH {
         UserError.Log.d(TAG, "unBond() finished");
     }
 
+    public static Field getField(final Class clazz, final String fieldName)
+            throws NoSuchFieldException {
+        try {
+            return clazz.getDeclaredField(fieldName);
+        } catch (NoSuchFieldException e) {
+            Class superClass = clazz.getSuperclass();
+            if (superClass == null) {
+                throw e;
+            } else {
+                return getField(superClass, fieldName);
+            }
+        }
+    }
+
 
     public static Map<String, String> bundleToMap(Bundle bundle) {
         final HashMap<String, String> map = new HashMap<>();
@@ -1744,6 +1776,13 @@ public class JoH {
         bb.put(bytes);
         return bb;
     }
+
+    public static byte[] splitBytes(final byte[] source, final int start, final int length) {
+        final byte[] newBytes = new byte[length];
+        System.arraycopy(source, start, newBytes, 0, length);
+        return newBytes;
+    }
+
 
     public static long checksum(byte[] bytes) {
         if (bytes == null) return 0;

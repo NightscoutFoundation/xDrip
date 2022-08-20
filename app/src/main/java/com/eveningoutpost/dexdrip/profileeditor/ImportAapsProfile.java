@@ -71,7 +71,7 @@ public class ImportAapsProfile {
             if (Pref.getBooleanDefaultFalse("profile_import_sound")) {
                 BackgroundQueue.post(() -> JoH.playSoundUri(JoH.getResourceURI(R.raw.labbed_musical_chime)));
             }
-            JoH.static_toast_long("xDrip imported AAPS profile");
+            UserError.Log.e(TAG, "xDrip imported AAPS profile");
         }
     }
 
