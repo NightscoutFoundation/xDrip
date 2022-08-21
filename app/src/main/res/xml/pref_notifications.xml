@@ -6,8 +6,7 @@
         android:summary="@string/glucose_calibration_and_other_alerts"
         android:title="@string/alarms_and_alerts">
         <PreferenceCategory
-            android:key="alerts_category"
-            android:title="@string/alerts_and_notifications">
+            android:key="alerts_category">
             <Preference
                 android:key="bg_level_alerts"
                 android:title="@string/glucose_level_alerts_list">
@@ -356,6 +355,9 @@
                         android:title="@string/follower_chime_new" />
                 </PreferenceCategory>
             </PreferenceScreen>
+            <Preference
+                android:summary="@string/Custom_Sound_Note_summary">
+            </Preference>
         </PreferenceCategory>
     </PreferenceScreen>
 </PreferenceScreen>

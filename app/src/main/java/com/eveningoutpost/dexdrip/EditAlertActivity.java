@@ -589,12 +589,12 @@ public class EditAlertActivity extends ActivityWithMenu {
         buttonalertMp3.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                builder.setTitle("What type of Alert?")
+                builder.setTitle(getString(R.string.select_new_sound))
                         .setItems(R.array.alertType, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 if (which == 0) {
                                     Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
-                                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Select tone for Alerts:");
+                                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, getString(R.string.choose_alert_sound_file));
                                     intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true);
                                     intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
                                     intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALL);
@@ -604,7 +604,7 @@ public class EditAlertActivity extends ActivityWithMenu {
                                       chooseFile();
                                     }
                                 } else {
-                                    // Xdrip default was chossen, we live the file name as empty.
+                                    // Xdrip default was chosen, we leave the file name empty.
                                     audioPath = "";
                                     alertMp3File.setText(shortPath(audioPath));
                                 }

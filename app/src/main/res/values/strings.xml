@@ -226,7 +226,7 @@
     <string name="show_settings_qr_codes">Show Settings QR codes</string>
     <string name="load_save_settings_to_sdcard">Load / Save settings</string>
     <string name="alarms_and_alerts">Alarms and Alerts</string>
-    <string name="alerts_and_notifications">Alerts and Notifications</string>
+    <string name="alerts_and_notifications">Place custom sound files in the \"Notifications\" folder</string>
     <string name="glucose_level_alerts_list">Glucose Level Alerts List</string>
     <string name="glucose_alerts_settings">Glucose Alerts Settings</string>
     <string name="smart_snoozing">Smart Snoozing</string>
@@ -1715,4 +1715,9 @@
     <string name="simplify_graphs_by_smoothing_out_irregularities">Simplify graphs by smoothing out irregularities</string>
     <string name="graph_smoothing">Graph Smoothing</string>
     <string name="last_reading">Last Reading</string>
+    <string name="select_new_sound">Select new sound source</string>
+    <string name="choose_alert_sound_file">BG Level Sound</string>
+    <string name="choose_sound_file">Choose File</string>
+    <string name="default_xdrip_sound">Default xDrip sound</string>
+    <string name="Custom_Sound_Note_summary">Place custom sound files in the \"Notifications\" folder at the root of the internal storage.</string>
 </resources>
