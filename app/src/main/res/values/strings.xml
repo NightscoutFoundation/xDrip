@@ -226,7 +226,7 @@
     <string name="show_settings_qr_codes">Show Settings QR codes</string>
     <string name="load_save_settings_to_sdcard">Load / Save settings</string>
     <string name="alarms_and_alerts">Alarms and Alerts</string>
-    <string name="alerts_and_notifications">Place custom sound files in the \"Notifications\" folder</string>
+    <string name="alerts_and_notifications">Alerts and Notifications</string>
     <string name="glucose_level_alerts_list">Glucose Level Alerts List</string>
     <string name="glucose_alerts_settings">Glucose Alerts Settings</string>
     <string name="smart_snoozing">Smart Snoozing</string>
