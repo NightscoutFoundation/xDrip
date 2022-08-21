@@ -85,8 +85,7 @@ public class UpdateActivity extends BaseAppCompatActivity {
         if ((last_check_time != -1) && (!prefs.getBoolean(AUTO_UPDATE_PREFS_NAME, true))) return;
         if (last_check_time == 0)
             last_check_time = prefs.getLong(last_update_check_time, 0);
-        if (((JoH.tsl() - last_check_time) > (86300000 * 2)) || (debug)) { // 86300000ms is just under 24 hours
-            //perform a check now
+        if (((JoH.tsl() - last_check_time) > (86300000 * 2)) || (debug)) {
             last_check_time = JoH.tsl();
             prefs.edit().putLong(last_update_check_time, last_check_time).apply();
 
@@ -192,7 +191,7 @@ public class UpdateActivity extends BaseAppCompatActivity {
 
     public static void forceUpdateCheckNow() {
         JoH.static_toast_long(xdrip.gs(R.string.checking_for_update));
-        UpdateActivity.last_check_time = -1; // -1 ignores the status of the "Automatic Updates" preference
+        UpdateActivity.last_check_time = -2;
         UpdateActivity.checkForAnUpdate(xdrip.getAppContext());
     }
 
@@ -202,8 +201,7 @@ public class UpdateActivity extends BaseAppCompatActivity {
         val nightly = Pref.getString(update_channel, "").matches(nightly_channel);
         if (!nightly && set) {
             Pref.setString(update_channel, nightly_channel);
-            UpdateActivity.last_check_time = -2; //only performs check if automatic update checks are enabled
-            UpdateActivity.checkForAnUpdate(xdrip.getAppContext());
+            UpdateActivity.forceUpdateCheckNow();
         }
         return nightly;
     }

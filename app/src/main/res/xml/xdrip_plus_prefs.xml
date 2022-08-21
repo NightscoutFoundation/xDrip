@@ -1039,11 +1039,6 @@
             android:key="xdrip_version_category"
             android:title="@string/app_version" >
 
-            <Preference
-                android:key="version_check"
-                android:title="@string/check_for_updated_version">
-            </Preference>
-
             <SwitchPreference
                 android:defaultValue="true"
                 android:key="auto_update_download"

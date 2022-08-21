@@ -295,6 +295,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
     }
 
+
     public static Boolean getBooleanPreferenceViaContextWithoutException(Context context, String key, Boolean defaultValue) {
         try {
             return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(key, defaultValue);
@@ -640,7 +641,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             preference.setTitle(preference.getTitle().toString().replaceAll("  \\([a-z0-9A-Z]+\\)$", "") + "  (" + value.toString() + ")");
             if (do_update) {
                 preference.getEditor().putString(preference.getKey(), value.toString()).apply(); // update prefs now
-                UpdateActivity.last_check_time = -2; //only performs check if automatic update checks are enabled
+                UpdateActivity.last_check_time = -2;
                 UpdateActivity.checkForAnUpdate(preference.getContext());
             }
             return true;
@@ -1453,17 +1454,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 }
             });
 
-            final Preference app_version = findPreference("version_check");
-            app_version.setSummary("CURRENT: " + JoH.getVersionDetails());
-            app_version.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    if (JoH.ratelimit("manual-update-check", 5)) {
-                        UpdateActivity.forceUpdateCheckNow();
-                    }
-                    return true;
-                }
-            });
+
+
 
             units_pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
 
