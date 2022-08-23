@@ -165,7 +165,7 @@
     <string name="minutes_ago">{0, choice,0#{0, number, integer} Minuty temu|1#{0, number, integer} Minuta temu|1&lt;{0, number, integer} Minuty temu}</string>
     <string name="expires_days">{0, choice,0#Sensor wygasł!|1#Koniec za {0, number} dzień|1&lt;Koniec za {0, number} dni}</string>
     <string name="expires_at">Kończy się {0}</string>
-    <string name="space_minutes_ago">" Minuty temu"</string>
+    <string name="space_minutes_ago">" minut temu"</string>
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"W trybie Libre dla całego domu: nie zebrano jeszcze żadnych pomiarów."</string>
     <string name="in_libre_all_house_mode_last_data_collected">"W trybie Libre dla całego domu: Ostatni pomiar "</string>
     <string name="space_minute_ago">" Minuta temu"</string>
@@ -280,7 +280,7 @@
     <string name="statistics">Statystyka</string>
     <string name="snooze_alert">Wycisz Alarm</string>
     <string name="less_common_settings">Mniej istotne ustawienia</string>
-    <string name="view_recent_errors_warnings">Najnowsze Błędy / ostrzeżenia</string>
+    <string name="view_recent_errors_warnings">Najnowsze błędy/ostrzeżenia</string>
     <string name="other_settings">Inne ustawienia</string>
     <string name="older_gratuitous_wakelocks">Starsze wakelocks które mogą rozładowywać baterię, ale mogą być potrzebne do NightWatch lub Android Wear</string>
     <string name="use_excessive_wakelocks">Użyj nadmiernej Wakelocks</string>
@@ -371,7 +371,7 @@
     <string name="install_pebble_watchface">Instalowanie Pebble Watchface</string>
     <string name="glucose_history">Historia poziomu glukozy</string>
     <string name="import_database">Import bazy danych</string>
-    <string name="sensor_table">Tabela Sensor</string>
+    <string name="sensor_table">Tabela Czujników</string>
     <string name="bg_readings_table">Tabela Odczytów Glikemii</string>
     <string name="long_press_to_split_or_delete">Długie naciśnięcie do Splitu lub Usuń</string>
     <string name="press_and_hold_on_the_background_to_split_or_delete">Wciśnij i przytrzymaj na tle podziału żeby usunąć lub podzielić blok czasowy</string>
@@ -419,7 +419,7 @@
     <string name="choose_sound_used_for_predicted_low_alarm">Wybierz dźwięk alarmu używany do przewidywanego niskiego poziomu.</string>
     <string name="notify_when_parakeet_device_stops_checking_in">Powiadom, jeśli urządzenie Parakeet przestanie nadawać</string>
     <string name="parakeet_related_alerts">Alerty związane z Parakeet</string>
-    <string name="raise_parakeet_notification_silently_when_charging">Podczas ładowania wycisz notyfikacje parakeet</string>
+    <string name="raise_parakeet_notification_silently_when_charging">Podczas ładowania wycisz powiadomienie parakeet</string>
     <string name="silent_alert_when_charging">Ciche ostrzeżenie podczas ładowania</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Przy starcie alarm jest uspiony przez pewien czas, po którym następuje uruchomienie.</string>
     <string name="alarms_silenced_during_telephone_calls">Alarmy wyciszone w czasie rozmów telefonicznych</string>
