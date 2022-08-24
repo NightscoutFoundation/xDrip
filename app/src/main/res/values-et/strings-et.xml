@@ -246,11 +246,11 @@
     <string name="extra_tags_dialog_title">Sisesta logimiseks rohkem märgiseid</string>
     <string name="data_source_settings">Andmeallika sätted</string>
     <string name="smart_watch_features">Nutikella funktsioonid</string>
-    <string name="wear_integration">Wear ühendamine</string>
+    <string name="wear_integration">Wear OS ühendamine</string>
     <string name="send_data_to_android_wear_watch">Saada andmed Android Wear kella avakuvale.</string>
-    <string name="android_wear_integration">Android Weari integratsioon</string>
+    <string name="android_wear_integration">Android Wear OS integratsioon</string>
     <string name="pref_enable_wearG5">Luba Wear kogumisteenus</string>
-    <string name="pref_summary_enable_wearG5">Ühenda Wear BT saatjaga kui telefon on levist väljas</string>
+    <string name="pref_summary_enable_wearG5">Muuda kell BT vastuvõtjaks kui telefon on levist väljas</string>
     <string name="pref_force_wearG5">Sunni Wear kogumisteenus</string>
     <string name="pref_summary_force_wearG5">Sunni telefoni Wear kogumisteenust kasutama</string>
     <string name="pref_disable_wearG5_on_lowbattery">Katkesta sundus madala akutaseme korral</string>
