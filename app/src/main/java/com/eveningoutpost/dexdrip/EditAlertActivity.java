@@ -9,7 +9,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Paint;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -723,8 +722,7 @@ public class EditAlertActivity extends ActivityWithMenu {
                         // select the file names. We might also have to
                         // - See more at: http://blog.kerul.net/2011/12/pick-file-using-intentactiongetcontent.html#sthash.c8xtIr1Y.cx7s9nxH.dpuf
 
-                        //MEDIA GALLERY
-                        String selectedAudioPath = getRealPathFromURI(selectedAudioUri);
+                        String selectedAudioPath = getDisplayNameFromURI(selectedAudioUri);
                         if (selectedAudioPath == null) {
                             //OI FILE Manager
                             selectedAudioPath = selectedAudioUri.getPath();
@@ -740,21 +738,30 @@ public class EditAlertActivity extends ActivityWithMenu {
         }
     }
 
-    private String getRealPathFromURI(final Uri contentUri) {
+    private static String getDisplayNameFromURI(final Uri contentUri) {
+        val title = getFieldFromURI(MediaStore.Audio.Media.TITLE, contentUri);
+        if (title == null || contentUri.toString().endsWith(title)) {
+            return getFieldFromURI(MediaStore.Audio.Media.DISPLAY_NAME, contentUri);
+        }
+        return title;
+    }
+
+    private static String getFieldFromURI(final String column, final Uri contentUri) {
         try {
-            String[] projection = {MediaStore.Images.Media.DATA};
-            val loader = new CursorLoader(mContext, contentUri, projection, null, null, null);
+            String[] projection = { column };
+            val loader = new CursorLoader(xdrip.getAppContext(), contentUri, projection, null, null, null);
             val cursor = loader.loadInBackground();
-            val column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            val column_index = cursor.getColumnIndexOrThrow(column);
             cursor.moveToFirst();
             val result = cursor.getString(column_index);
             cursor.close();
             return result;
         } catch (Exception e) {
-            Log.d(TAG, "Got exception parsing uri " + e);
+            Log.d(TAG, "Got exception extracting data for uri " + e);
             return null;
         }
     }
+
 
     static public String timeFormatString(Context context, int hour, int minute) {
         SimpleDateFormat timeFormat24 = new SimpleDateFormat("HH:mm");
@@ -786,24 +793,33 @@ public class EditAlertActivity extends ActivityWithMenu {
         return ringtone != null;
     }
 
-    public String shortPath(String path) {
-        if(isPathRingtone(mContext, path)) {
-            Ringtone ringtone = RingtoneManager.getRingtone(mContext, Uri.parse(path));
-            // Just verified that the ringtone exists... not checking for null
-            return ringtone.getTitle(mContext);
-        }
-        if(path == null) {
+    static String shortPath(final String path) {
+        if (path == null) {
             return "";
         }
-        if(path.length() == 0) {
+        if (path.length() == 0) {
             return "xDrip Default";
         }
+        if (path.startsWith("content:")) {
+            val result = getDisplayNameFromURI(Uri.parse(path));
+            if (result != null) return result;
+        }
+        // This may not actually be used anymore
+        if (isPathRingtone(xdrip.getAppContext(), path)) {
+            val ringtone = RingtoneManager.getRingtone(xdrip.getAppContext(), Uri.parse(path));
+            // Just verified that the ringtone exists... not checking for null
+            val result = ringtone.getTitle(xdrip.getAppContext());
+            Log.d(TAG,"Ringtone title: "+result);
+            return result;
+        }
+
         String[] segments = path.split("/");
         if (segments.length > 1) {
             return segments[segments.length - 1];
         }
         return path;
     }
+
     public void setDefaultSnoozeSpinner(int defaultSnooze) {
         editSnooze.setText(String.valueOf(defaultSnooze));
         editSnooze.setOnTouchListener(new View.OnTouchListener() {
