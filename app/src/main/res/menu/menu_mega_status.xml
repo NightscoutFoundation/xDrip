@@ -1,9 +1,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.eveningoutpost.dexdrip.MegaStatus">
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never"
-        android:title="@string/settings" />
+
+    <item android:id="@+id/userEvents"
+        android:title="@string/view_events_log"
+        android:checkable="false"
+        android:orderInCategory="1"
+        android:onClick="viewEventLog"
+        android:visible="true"
+        app:showAsAction="never" />
+    
 </menu>
