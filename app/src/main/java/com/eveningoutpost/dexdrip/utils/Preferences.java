@@ -434,7 +434,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         try {
             if (!prefs.getBoolean("engineering_mode", false)) { // If engineering mode has been disabled
                 try {
-                    prefs.edit().putBoolean("lower_fuzzer", false).apply(); // Disable lower_fuzzer
                 } catch (Exception e) {
                     //
                 }
