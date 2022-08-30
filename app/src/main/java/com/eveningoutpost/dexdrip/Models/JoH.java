@@ -77,6 +77,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -185,7 +186,7 @@ public class JoH {
     }
 
     public static long uptime() {
-        return SystemClock.uptimeMillis();
+        return SystemClock.elapsedRealtime();
     }
 
     public static boolean upForAtLeastMins(int mins) {
@@ -1118,12 +1119,41 @@ public class JoH {
         }).start();
     }
 
+    public static boolean setMediaDataSource(final Context context, final MediaPlayer mp, final Uri uri) {
+        try {
+            if (uri.toString().startsWith("/")) {
+                UserError.Log.d(TAG, "Setting old style uri: " + uri);
+                mp.setDataSource(context, uri);
+            } else {
+                UserError.Log.d(TAG, "Setting new style uri: " + uri);
+                val pfd = context.getContentResolver().openFileDescriptor(uri, "r");
+                mp.setDataSource(pfd.getFileDescriptor());
+                pfd.close();
+            }
+            return true;
+        } catch (IOException | NullPointerException | IllegalArgumentException | SecurityException ex) {
+            UserError.Log.e(TAG, "setMediaDataSource from uri failed: uri = " + uri.toString(), ex);
+            // fall through
+        }
+        return false;
+    }
+
     public static void playSoundUri(final String soundUri) {
         try {
             playerLock.acquire();
             try {
                 JoH.getWakeLock("joh-playsound", 10000);
                 player = MediaPlayer.create(xdrip.getAppContext(), Uri.parse(soundUri));
+                if (player == null) {
+                    player = new MediaPlayer();
+                    if (!setMediaDataSource(xdrip.getAppContext(), player, Uri.parse(soundUri))) {
+                        UserError.Log.e(TAG, "Failed to set data source for " + soundUri + " reverting to default");
+                        player = MediaPlayer.create(xdrip.getAppContext(), Uri.parse(getResourceURI(R.raw.reminder_default_notification)));
+                        if (player == null) {
+                            UserError.Log.wtf(TAG, "Can't even create media player for default sound");
+                        }
+                    }
+                }
                 player.setOnCompletionListener(mp -> {
                     UserError.Log.i(TAG, "playSoundUri: onCompletion called (finished playing) ");
                     delayedMediaPlayerRelease(mp);
@@ -1297,6 +1327,21 @@ public class JoH {
         view.setDrawingCacheEnabled(true);
         view.buildDrawingCache(true);
         final Bitmap bitmap = view.getDrawingCache(true);
+        return bitmap;
+    }
+
+    public static Bitmap getBitmapFromView(final View root, final int width, final int height) {
+        val params = new ViewGroup.LayoutParams(width, height);
+        root.setLayoutParams(params);
+        val measuredWidth = View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY);
+        val measuredHeight = View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY);
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        val canvas = new Canvas(bitmap);
+        canvas.drawColor(Color.WHITE);
+        root.destroyDrawingCache();
+        root.measure(measuredWidth, measuredHeight);
+        root.layout(0, 0, root.getMeasuredWidth(), root.getMeasuredHeight());
+        root.draw(canvas);
         return bitmap;
     }
 
@@ -1720,6 +1765,20 @@ public class JoH {
             UserError.Log.e(TAG, "Exception during unbond! " + transmitterMAC, e);
         }
         UserError.Log.d(TAG, "unBond() finished");
+    }
+
+    public static Field getField(final Class clazz, final String fieldName)
+            throws NoSuchFieldException {
+        try {
+            return clazz.getDeclaredField(fieldName);
+        } catch (NoSuchFieldException e) {
+            Class superClass = clazz.getSuperclass();
+            if (superClass == null) {
+                throw e;
+            } else {
+                return getField(superClass, fieldName);
+            }
+        }
     }
 
 

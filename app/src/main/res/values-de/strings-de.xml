@@ -108,6 +108,7 @@
     <string name="toast_crash">Da ist etwas schief gegangen :( Ein Bericht über das Problem wurde an die Entwickler versendet.</string>
     <string name="taskerConfigInstruction">Einfach mit einem Klick auf den Haken bestätigen. Die Konfigurationszeile muss nicht geändert werden.</string>
     <string name="taskerConfiguration">Tasker-Konfiguration</string>
+    <string name="finish_preferences_activity">Aktivität der Einstellungen beenden</string>
     <string name="add_widget">Widget hinzufügen</string>
     <string name="title_activity_alert_list">Liste der Warnungen</string>
     <string name="speaktreatment">Behandlung sprechen</string>
@@ -1613,4 +1614,9 @@
     <string name="show_collector_status">Zeige Collector Status</string>
     <string name="show_time_buttons">Zeittasten anzeigen</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Bitte %d Sekunden vor dem Start eines neuen Sensors warten</string>
+    <string name="save_power">Akku schonen</string>
+    <string name="reduce_battery_and_network_overhead">Reduziere den Akkuverbrauch und die Netzwerkbelastung durch Stapelverarbeitung und den Ausschluss unnötiger Daten</string>
+    <string name="simplify_graphs_by_smoothing_out_irregularities">Vereinfache die grafische Darstellung durch das Glätten von Unregelmäßigkeiten</string>
+    <string name="graph_smoothing">Glättung der grafischen Darstellung</string>
+    <string name="last_reading">Letzte Werte</string>
 </resources>

@@ -246,11 +246,11 @@
     <string name="extra_tags_dialog_title">Sisesta logimiseks rohkem märgiseid</string>
     <string name="data_source_settings">Andmeallika sätted</string>
     <string name="smart_watch_features">Nutikella funktsioonid</string>
-    <string name="wear_integration">Wear ühendamine</string>
+    <string name="wear_integration">Wear OS ühendamine</string>
     <string name="send_data_to_android_wear_watch">Saada andmed Android Wear kella avakuvale.</string>
-    <string name="android_wear_integration">Android Weari integratsioon</string>
+    <string name="android_wear_integration">Android Wear OS integratsioon</string>
     <string name="pref_enable_wearG5">Luba Wear kogumisteenus</string>
-    <string name="pref_summary_enable_wearG5">Ühenda Wear BT saatjaga kui telefon on levist väljas</string>
+    <string name="pref_summary_enable_wearG5">Muuda kell BT vastuvõtjaks kui telefon on levist väljas</string>
     <string name="pref_force_wearG5">Sunni Wear kogumisteenus</string>
     <string name="pref_summary_force_wearG5">Sunni telefoni Wear kogumisteenust kasutama</string>
     <string name="pref_disable_wearG5_on_lowbattery">Katkesta sundus madala akutaseme korral</string>
@@ -1662,4 +1662,9 @@
     <string name="please_wait_seconds_before_trying_to_start_sensor">Palun oota %d sekundit enne sensori käivitamist</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">palun värskenda OOP2 või kasuta kalibreerimistel põhinevat algset režiimi</string>
     <string name="special_pairing_workaround">Spetsiaalne sidumise lahendus</string>
+    <string name="save_power">Säästa energiat</string>
+    <string name="reduce_battery_and_network_overhead">Vähenda aku ja võrgu koormust, kasutades pakett-töötlust ja välistades mittevajalikke andmeid</string>
+    <string name="simplify_graphs_by_smoothing_out_irregularities">Lihtsusta graafikuid, siludes ebakorrapärasusi</string>
+    <string name="graph_smoothing">Graafiku silumine</string>
+    <string name="last_reading">Viimane näit</string>
 </resources>

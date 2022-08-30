@@ -21,6 +21,7 @@ import android.widget.RemoteViews;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -54,6 +55,9 @@ public class UiBasedCollector extends NotificationListenerService {
 
     private static final HashSet<String> coOptedPackages = new HashSet<>();
 
+    @VisibleForTesting
+    String lastPackage;
+
     static {
         coOptedPackages.add("com.dexcom.g6");
         coOptedPackages.add("com.dexcom.g6.region1.mmol");
@@ -73,6 +77,7 @@ public class UiBasedCollector extends NotificationListenerService {
             if (getDexCollectionType() == UiBased) {
                 UserError.Log.d(TAG, "Notification from: " + fromPackage);
                 if (sbn.isOngoing()) {
+                    lastPackage = fromPackage;
                     processNotification(sbn.getNotification());
                 }
             } else {
@@ -111,6 +116,16 @@ public class UiBasedCollector extends NotificationListenerService {
         }
     }
 
+    String filterString(final String value) {
+        if (lastPackage == null) return value;
+        switch (lastPackage) {
+            default:
+                return value
+                        .replace("≤", "")
+                        .replace("≥", "");
+        }
+    }
+
     @SuppressWarnings("UnnecessaryLocalVariable")
     private void processRemote(final RemoteViews cview) {
         if (cview == null) return;
@@ -127,14 +142,15 @@ public class UiBasedCollector extends NotificationListenerService {
                 val text = tv.getText() != null ? tv.getText().toString() : "";
                 val desc = tv.getContentDescription() != null ? tv.getContentDescription().toString() : "";
                 UserError.Log.d(TAG, "Examining: >" + text + "< : >" + desc + "<");
+                val ftext = filterString(text);
                 if (Unitized.usingMgDl()) {
-                    mgdl = Integer.parseInt(text);
+                    mgdl = Integer.parseInt(ftext);
                     if (mgdl > 0) {
                         matches++;
                     }
                 } else {
-                    if (isValidMmol(text)) {
-                        val result = JoH.tolerantParseDouble(text, -1);
+                    if (isValidMmol(ftext)) {
+                        val result = JoH.tolerantParseDouble(ftext, -1);
                         if (result != -1) {
                             mgdl = (int) Math.round(Unitized.mgdlConvert(result));
                             if (mgdl > 0) {

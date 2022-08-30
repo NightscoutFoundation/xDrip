@@ -145,11 +145,11 @@
             android:exported="false" />
 
         <activity
-            android:name=".Tables.BgReadingTable"
+            android:name=".tables.BgReadingTable"
             android:configChanges="orientation|screenSize"
             android:label="@string/bg_readings_table" />
         <activity
-            android:name=".Tables.SensorDataTable"
+            android:name=".tables.SensorDataTable"
             android:configChanges="orientation|screenSize"
             android:label="@string/sensor_table" />
         <activity
@@ -235,7 +235,7 @@
             </intent-filter>
         </receiver>
         <activity
-            android:name=".Tables.CalibrationDataTable"
+            android:name=".tables.CalibrationDataTable"
             android:label="@string/calibration_data_table" />
 
         <service android:name=".GcmListenerSvc">
