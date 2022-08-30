@@ -400,7 +400,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             binding.setHome(home);
             homeShelf.set("arrow_configurator", false);
             dialog.setContentView(binding.getRoot());
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             dialog.show();
             return false;
         });
