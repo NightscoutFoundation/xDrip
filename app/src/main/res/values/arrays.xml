@@ -18,6 +18,8 @@
         <item>Medtrum A6</item>
         <item>Nightscout Follower</item>
         <item>Dex Share Follower</item>
+        <item>Web Follower</item>
+        <item>Companion (Testing)</item>
         <item>Disable Collection</item>
     </string-array>
 
@@ -39,6 +41,8 @@
         <item>Medtrum</item>
         <item>NSFollower</item>
         <item>SHFollower</item>
+        <item>WebFollower</item>
+        <item>UiBased</item>
         <item>Disabled</item>
     </string-array>
 

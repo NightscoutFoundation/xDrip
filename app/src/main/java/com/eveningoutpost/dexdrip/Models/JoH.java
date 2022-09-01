@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -54,6 +55,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Surface;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.activeandroid.ActiveAndroid;
@@ -76,6 +78,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -105,6 +108,8 @@ import java.util.zip.Checksum;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
+
+import lombok.val;
 
 /**
  * Created by jamorham on 06/01/16.
@@ -182,7 +187,7 @@ public class JoH {
     }
 
     public static long uptime() {
-        return SystemClock.uptimeMillis();
+        return SystemClock.elapsedRealtime();
     }
 
     public static boolean upForAtLeastMins(int mins) {
@@ -1115,12 +1120,55 @@ public class JoH {
         }).start();
     }
 
+    public static boolean setMediaDataSource(final Context context, final MediaPlayer mp, final Uri uri) {
+        try {
+            if (uri.toString().startsWith("/")) {
+                UserError.Log.d(TAG, "Setting old style uri: " + uri);
+                mp.setDataSource(context, uri);
+            } else {
+                UserError.Log.d(TAG, "Setting new style uri: " + uri);
+                val pfd = context.getContentResolver().openFileDescriptor(uri, "r");
+                mp.setDataSource(pfd.getFileDescriptor());
+                pfd.close();
+            }
+            return true;
+        } catch (IOException | NullPointerException | IllegalArgumentException | SecurityException ex) {
+            UserError.Log.e(TAG, "setMediaDataSource from uri failed: uri = " + uri.toString(), ex);
+            // fall through
+        }
+        return false;
+    }
+
+    // from resource id
+    public static boolean setMediaDataSource(final Context context, final MediaPlayer mp, final int resid) {
+        try {
+            AssetFileDescriptor afd = context.getResources().openRawResourceFd(resid);
+            if (afd == null) return false;
+            mp.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+            afd.close();
+            return true;
+        } catch (IOException | NullPointerException | IllegalArgumentException | SecurityException ex) {
+            UserError.Log.e(TAG, "setMediaDataSource from resource id failed:", ex);
+        }
+        return false;
+    }
+
     public static void playSoundUri(final String soundUri) {
         try {
             playerLock.acquire();
             try {
                 JoH.getWakeLock("joh-playsound", 10000);
                 player = MediaPlayer.create(xdrip.getAppContext(), Uri.parse(soundUri));
+                if (player == null) {
+                    player = new MediaPlayer();
+                    if (!setMediaDataSource(xdrip.getAppContext(), player, Uri.parse(soundUri))) {
+                        UserError.Log.e(TAG, "Failed to set data source for " + soundUri + " reverting to default");
+                        player = MediaPlayer.create(xdrip.getAppContext(), Uri.parse(getResourceURI(R.raw.reminder_default_notification)));
+                        if (player == null) {
+                            UserError.Log.wtf(TAG, "Can't even create media player for default sound");
+                        }
+                    }
+                }
                 player.setOnCompletionListener(mp -> {
                     UserError.Log.i(TAG, "playSoundUri: onCompletion called (finished playing) ");
                     delayedMediaPlayerRelease(mp);
@@ -1294,6 +1342,21 @@ public class JoH {
         view.setDrawingCacheEnabled(true);
         view.buildDrawingCache(true);
         final Bitmap bitmap = view.getDrawingCache(true);
+        return bitmap;
+    }
+
+    public static Bitmap getBitmapFromView(final View root, final int width, final int height) {
+        val params = new ViewGroup.LayoutParams(width, height);
+        root.setLayoutParams(params);
+        val measuredWidth = View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY);
+        val measuredHeight = View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY);
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        val canvas = new Canvas(bitmap);
+        canvas.drawColor(Color.WHITE);
+        root.destroyDrawingCache();
+        root.measure(measuredWidth, measuredHeight);
+        root.layout(0, 0, root.getMeasuredWidth(), root.getMeasuredHeight());
+        root.draw(canvas);
         return bitmap;
     }
 
@@ -1719,6 +1782,20 @@ public class JoH {
         UserError.Log.d(TAG, "unBond() finished");
     }
 
+    public static Field getField(final Class clazz, final String fieldName)
+            throws NoSuchFieldException {
+        try {
+            return clazz.getDeclaredField(fieldName);
+        } catch (NoSuchFieldException e) {
+            Class superClass = clazz.getSuperclass();
+            if (superClass == null) {
+                throw e;
+            } else {
+                return getField(superClass, fieldName);
+            }
+        }
+    }
+
 
     public static Map<String, String> bundleToMap(Bundle bundle) {
         final HashMap<String, String> map = new HashMap<>();
@@ -1744,6 +1821,13 @@ public class JoH {
         bb.put(bytes);
         return bb;
     }
+
+    public static byte[] splitBytes(final byte[] source, final int start, final int length) {
+        final byte[] newBytes = new byte[length];
+        System.arraycopy(source, start, newBytes, 0, length);
+        return newBytes;
+    }
+
 
     public static long checksum(byte[] bytes) {
         if (bytes == null) return 0;

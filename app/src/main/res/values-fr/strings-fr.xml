@@ -28,7 +28,7 @@
     <string name="cancel">Annuler</string>
     <string name="no">Non</string>
     <string name="pref_sensor_location_dont_ask_again"> Ne pas me demander à nouveau</string>
-    <string name="title_activity_error">"Événements et erreurs"</string>
+    <string name="title_activity_error">"Évenements et erreurs"</string>
     <string name="title_activity_main">Activité principale</string>
     <string name="title_activity_fake_numbers">Nombres fictifs</string>
     <string name="title_activity_edit_alert">Modifier l\'alerte</string>
@@ -186,8 +186,9 @@
     <string name="general_settings">Paramètres Généraux</string>
     <string name="high_value">Valeur Haute</string>
     <string name="low_value">Valeur Basse</string>
+    <string name="stats_range_settings">Paramètres de la plage: </string>
     <string name="end_user_license_agreement">Contrat de licence de l\'utilisateur final</string>
-    <string name="save">Sauvegarder</string>
+    <string name="save">Sauver</string>
     <string name="view_important_warning">Voir les avertissements importants</string>
     <string name="view_google_licenses">Voir les Licences Google</string>
     <string name="not_for_medical_use">Non destiné à l\'usage médical - outil de recherche uniquement</string>
@@ -304,6 +305,7 @@
     <string name="high_glucose_values">Valeurs Hyperglycémies</string>
     <string name="in_range_glucose_values">Valeurs de glycémie dans la cible</string>
     <string name="default_color_selected">Couleur par défaut sélectionnée</string>
+    <string name="color_bg_values">Couleurs de valeur de glycémie et de flèche de tendance</string>
     <string name="xdrip_plus_extra_settings">xDrip+ Extra</string>
     <string name="example_chart">Exemple Graphique</string>
     <string name="treatments_prediction_curves">Traitements / Courbes de prévision</string>
@@ -332,7 +334,7 @@
     <string name="active_alert_exists_named">L\'alerte Active existe nommée</string>
     <string name="bracket_not_snoozed">(non mis en veille)</string>
     <string name="all_alerts_disabled_until">"Toutes les alertes désactivées jusqu'à "</string>
-    <string name="low_alerts_disabled_until">"Alertes Basses désactivées jusqu'à ce que "</string>
+    <string name="low_alerts_disabled_until">"Alertes Basses désactivées jusqu'à  "</string>
     <string name="high_alerts_disabled_until">"Alertes Hautes désactivées jusqu'à "</string>
     <string name="default_snooze">Mise en veille par défaut</string>
     <string name="until_you_reenable">Jusqu\'à ce que vous réactivez</string>
@@ -392,7 +394,7 @@
     <string name="optional_contact_info_here_eg_email">Information de contact facultative, par exemple email</string>
     <string name="send_message">Envoyer le message</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">S\'il vous plaît indiquez ce que vous pensez de l\'application en général</string>
-    <string name="preferences_saved_in_sdcard_downloads">Préférences enregistrées dans dossier Downloads sur carte SD</string>
+    <string name="preferences_saved_in_sdcard_downloads">Préférences enregistrées dans dossier Downloads sur stockage interne</string>
     <string name="could_not_write_to_sdcard_check_perms">Impossible d\'écrire sur la carte SD - Vérifier les autorisations ?</string>
     <string name="loaded_preferences_restarting">Préférences chargées! - Redémarrage</string>
     <string name="could_not_load_preferences_check_pers">Impossible de charger les préférences - Verifier les autorisations ou la présence du fichier ?</string>
@@ -871,7 +873,7 @@
     <string name="bluetooth_scan">Scan Bluetooth</string>
     <string name="level_alerts">Alertes de niveau</string>
     <string name="override_calibration">Remplacer la calibration</string>
-    <string name="only_stop_your_sensor_when_you_actually_plan">N\'arrêtez votre capteur que lorsque vous planifiez de l\'enlever, sinon, laissez tourner !</string>
+    <string name="only_stop_your_sensor_when_you_actually_plan">N\'arrêtez votre capteur que lorsque vous planifiez de l\'enlever, sinon laissez fonctionner!</string>
     <string name="restart_collector">Redémarrer le collecteur</string>
     <string name="forget_device">Oublier ce périphérique</string>
     <string name="other_notes">Autres Notes:</string>
@@ -912,6 +914,7 @@
     <string name="offical_msg">L\'application officielle</string>
     <string name="use_conflict_msg">peut essayer d\'accéder au périphérique émetteur et cela peut causer des problèmes avec les deux applications</string>
     <string name="use_confict_msg_glimp">Vous pouvez ajuster les paramètres de Glimp : options -&gt; périphériques -&gt; désélectionner l\'option Bluetooth</string>
+    <string name="eng_mode_is_on">Le mode Ingénierie est activé. Veuillez le désactiver à moins que vous n\'en ayez besoin car il peut causer un comportement inattendu.</string>
     <string name="yes">Oui</string>
     <string name="xdrip_compatible_features">Fonctionnalités %s xDrip+</string>
     <string name="garmin">Garmin</string>
@@ -1197,6 +1200,8 @@
     <string name="send_bg_readings_to_backfill">Envoyer les valeurs BG vers l\'historique de récupération</string>
     <string name="view_old_error_log">Voir l\'ancien journal d\'erreur</string>
     <string name="return_to_home_screen">Retourner à la page d\'accueil</string>
+    <string name="title_broadcast_service_api">API du service Broadcast</string>
+    <string name="summary_broadcast_service_api">Active la communication de xDrip avec des applications tiers en utilisant la nouvelle API</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Synchroniser les données avec les bracelets de fitness MiBand</string>
     <string name="title_miband_enable">Utiliser le bracelet MiBand</string>
@@ -1425,7 +1430,7 @@
     <string name="summary">Récapitulatif</string>
     <string name="auto_refresh">Actualisation automatique</string>
     <string name="set_up_desert_sync_follower">Configurer la synchronisation abonné en milieu desert</string>
-    <string name="version">Version :</string>
+    <string name="version">Version:</string>
     <string name="sensor_start">Démarrage du capteur:</string>
     <string name="plug_in_your_dexcom_reciever">Brancher votre lecteur Dexcom puis appuyer sur ce bouton et croiser les doigts!</string>
     <string name="check_in_dexcom_calibrations">Vérifier les calibrations Dexcom</string>
@@ -1452,7 +1457,7 @@
     <string name="classic_simple">Classic simple</string>
     <string name="libre">Libre</string>
     <string name="what_type_of_libre_bridge_device_do_you_use">Quel type de transmetteur Libre utilisez-vous ?</string>
-    <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Périphérique transmetteur Bluetooth: BluCon, LimiTTer, blueReader, Tomato, etc</string>
+    <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Périphérique transmetteur Bluetooth (BluCon, LimiTTer, blueReader, Tomato, etc.)</string>
     <string name="libre_patched">Libre2 Patché</string>
     <string name="librealarm_app_using_sony_smartwatch">Application LibreAlarm : utilise Sony Smartwatch</string>
     <string name="__data_source_disabled">\n SOURCE DE DONNÉES DÉSACTIVÉE</string>
@@ -1654,4 +1659,12 @@
     <string name="locked_time_period_always_used">Période de vérouillage toujours utilisée</string>
     <string name="show_time_buttons">Afficher les boutons de l\'heure</string>
     <string name="source_wizard_button">Bouton de l\'assistant source</string>
+    <string name="please_wait_seconds_before_trying_to_start_sensor">Veuillez patienter %d secondes avant d\'essayer de démarrer le capteur</string>
+    <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">veuillez mettre à jour OOP2, sinon utilisez le mode de la calibration basée sur les mesures brutes</string>
+    <string name="special_pairing_workaround">Contournement de jumelage spécial</string>
+    <string name="save_power">Économiser l\'énergie</string>
+    <string name="reduce_battery_and_network_overhead">Réduire la charge sur la batterie et le réseau en utilisant le traitement par lots et en excluant les données inutiles</string>
+    <string name="simplify_graphs_by_smoothing_out_irregularities">Simplifier les graphiques en lissant les irrégularités</string>
+    <string name="graph_smoothing">Lissage du graphique</string>
+    <string name="last_reading">Dernière lecture</string>
 </resources>
