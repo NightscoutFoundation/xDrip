@@ -1715,4 +1715,8 @@
     <string name="simplify_graphs_by_smoothing_out_irregularities">Simplify graphs by smoothing out irregularities</string>
     <string name="graph_smoothing">Graph Smoothing</string>
     <string name="last_reading">Last Reading</string>
+    <string name="select_file_for_alert">Select File for Alert</string>
+    <string name="cannot_choose_file_without_permission">Cannot choose file without storage permission</string>
+    <string name="select_time">Select Time</string>
+    <string name="select_tone_for_alerts">Select tone for Alerts</string>
 </resources>
