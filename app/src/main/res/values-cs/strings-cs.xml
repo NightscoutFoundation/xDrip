@@ -925,7 +925,7 @@
     <string name="title_lefun_screen_heart_pressure">Zobrazit srdeční tlak</string>
     <string name="title_lefun_screen_mac_address">Zobrazit MAC adresu</string>
     <string name="title_ob1_g5_use_transmitter_alg">Nativní algoritmus</string>
-    <string name="summary_ob1_g5_restart_sensor">Automaticky restartovat senzor, když se zastaví</string>
+    <string name="summary_ob1_g5_restart_sensor">Automaticky restartovat senzor, než se zastaví</string>
     <string name="title_ob1_g5_restart_sensor">Restartovat senzor</string>
     <string name="summary_ob1_g5_preemptive_restart">Preemptivně restartovat senzor před ukončením relace v 6/9 den, aby se vyhnulo času zahřívání</string>
     <string name="title_ob1_g5_preemptive_restart">Preemptivní restartování</string>
