@@ -593,7 +593,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 if (TextUtils.isEmpty(stringValue)) {
                     // Empty values correspond to 'silent' (no ringtone).
                     preference.setSummary(gs(R.string.pref_ringtone_silent));
-
                 } else {
                     Ringtone ringtone = RingtoneManager.getRingtone(
                             preference.getContext(), Uri.parse(stringValue));
@@ -2256,7 +2255,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     } else if (preference instanceof RingtonePreference) {
                         if (TextUtils.isEmpty(stringValue)) {
                             preference.setSummary(gs(R.string.pref_ringtone_silent));
-
                         } else {
                             Ringtone ringtone = RingtoneManager.getRingtone(
                                     preference.getContext(), Uri.parse(stringValue));
