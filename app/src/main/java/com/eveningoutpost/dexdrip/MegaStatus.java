@@ -447,16 +447,6 @@ public class MegaStatus extends ActivityWithMenu {
         startActivity(new Intent(this, EventLogActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("events", ""));
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        //int id = item.getItemId();
-
-        return super.onOptionsItemSelected(item);
-    }
-
     private void startupInfo() {
 
         final boolean oneshot = true;
