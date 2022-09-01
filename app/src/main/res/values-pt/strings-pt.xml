@@ -1667,4 +1667,5 @@
     <string name="simplify_graphs_by_smoothing_out_irregularities">Simplifique os gráficos facilitando irregularidades</string>
     <string name="graph_smoothing">Suavização do gráfico</string>
     <string name="last_reading">Última Leitura</string>
+    <string name="cannot_choose_file_without_permission">Não pode seleccionar ficheiro sem permissão de armazenamento</string>
 </resources>
