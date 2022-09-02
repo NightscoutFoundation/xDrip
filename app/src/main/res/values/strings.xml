@@ -1620,8 +1620,6 @@
     <string name="enable_streaming_dialog_dont_ask_again">Don\'t ask me that again</string>
     <string name="enable_streaming_dialog_text">Do you want to connect xDrip with this sensor? This will stop Libre reader and LibreLink from receiving alerts. Press yes and scan again to connect (choose don\'t connect if you want to run xDrip with the patched app)</string>
     <string name="enable_streaming_dialog_title">Connecting Libre sensor to Bluetooth</string>
-    <string name="title_lower_fuzzer">Lower FUZZER</string>
-    <string name="summary_lower_fuzzer">Lower the FUZZER value from 2.5 minutes to 37.5 seconds</string>
     <string name="without_camera_permission_cannot_scan_barcode">Without camera permission we cannot scan a barcode</string>
     <string name="summary_create_missing_filtered">Make filtered data as needed</string>
     <string name="title_create_missing_filtered">Create missing filtered</string>
@@ -1715,4 +1713,8 @@
     <string name="simplify_graphs_by_smoothing_out_irregularities">Simplify graphs by smoothing out irregularities</string>
     <string name="graph_smoothing">Graph Smoothing</string>
     <string name="last_reading">Last Reading</string>
+    <string name="select_file_for_alert">Select File for Alert</string>
+    <string name="cannot_choose_file_without_permission">Cannot choose file without storage permission</string>
+    <string name="select_time">Select Time</string>
+    <string name="select_tone_for_alerts">Select tone for Alerts</string>
 </resources>

@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -1134,6 +1135,20 @@ public class JoH {
         } catch (IOException | NullPointerException | IllegalArgumentException | SecurityException ex) {
             UserError.Log.e(TAG, "setMediaDataSource from uri failed: uri = " + uri.toString(), ex);
             // fall through
+        }
+        return false;
+    }
+
+    // from resource id
+    public static boolean setMediaDataSource(final Context context, final MediaPlayer mp, final int resid) {
+        try {
+            AssetFileDescriptor afd = context.getResources().openRawResourceFd(resid);
+            if (afd == null) return false;
+            mp.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+            afd.close();
+            return true;
+        } catch (IOException | NullPointerException | IllegalArgumentException | SecurityException ex) {
+            UserError.Log.e(TAG, "setMediaDataSource from resource id failed:", ex);
         }
         return false;
     }

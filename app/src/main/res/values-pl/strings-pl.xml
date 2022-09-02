@@ -1572,4 +1572,5 @@
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">proszę zaktualizuj OOP2 albo wybierz kalibrację w oparciu o dane surowe</string>
     <string name="graph_smoothing">Wygładzanie wykresu</string>
     <string name="last_reading">Ostatni odczyt</string>
+    <string name="cannot_choose_file_without_permission">Nie można wybrać pliku bez uprawnień do przechowywania</string>
 </resources>

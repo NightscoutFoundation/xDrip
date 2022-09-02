@@ -1667,4 +1667,5 @@
     <string name="simplify_graphs_by_smoothing_out_irregularities">Lihtsusta graafikuid, siludes ebakorrapärasusi</string>
     <string name="graph_smoothing">Graafiku silumine</string>
     <string name="last_reading">Viimane näit</string>
+    <string name="cannot_choose_file_without_permission">Ilma salvestamise loata ei saa faili valida</string>
 </resources>
