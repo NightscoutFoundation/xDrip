@@ -1648,4 +1648,5 @@
     <string name="reduce_battery_and_network_overhead">Уменьшить нагрузку на батарею и сеть, используя пакетную обработку и исключая ненужные данные</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Упростить графики, сглаживая неровности</string>
     <string name="graph_smoothing">Сглаживание графика</string>
+    <string name="cannot_choose_file_without_permission">Невозможно установить звук без прав доступа к хранилищу</string>
 </resources>

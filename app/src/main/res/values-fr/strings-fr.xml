@@ -1667,4 +1667,8 @@
     <string name="simplify_graphs_by_smoothing_out_irregularities">Simplifier les graphiques en lissant les irrégularités</string>
     <string name="graph_smoothing">Lissage du graphique</string>
     <string name="last_reading">Dernière lecture</string>
+    <string name="select_file_for_alert">Sélectionner le son pour l\'alerte</string>
+    <string name="cannot_choose_file_without_permission">Impossible de choisir un fichier sans avoir l\'autorisation de stockage</string>
+    <string name="select_time">Sélectionner l\'horaire</string>
+    <string name="select_tone_for_alerts">Sélectionner le son pour les alertes</string>
 </resources>
