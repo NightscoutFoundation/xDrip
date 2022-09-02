@@ -1547,8 +1547,6 @@
     <string name="enable_streaming_dialog_dont_ask_again">Ne kérdezzen rá többet</string>
     <string name="enable_streaming_dialog_text">Összekapcsolja az xDripet ezzel a szenzorral? Ezután a Libre olvasó és a LibreLink app nem kap riasztást. Nyomja meg az Igen gombot, olvassa le a szenzort a kapcsolódáshoz (Ha a patch-elt LibreLink-et akarja használni, ne kapcsolja össze őket.)</string>
     <string name="enable_streaming_dialog_title">Csatlakozzon Libre szenzorhoz BT-szal</string>
-    <string name="title_lower_fuzzer">FUZZER csökkentése</string>
-    <string name="summary_lower_fuzzer">A FUZZER értékének csökkentése 2,5 percről 37,5 mp-re</string>
     <string name="without_camera_permission_cannot_scan_barcode">Kamerahasználat engedélyezése nélkül nem működik a vonalkód olvasás</string>
     <string name="title_create_missing_filtered">Alkossa meg a hiányzó szűrt adatokat</string>
     <string name="summary_widget_hide_graph">A grafikon elrejtése a widgeteken (a következő olvasáskor jelenik meg)</string>
