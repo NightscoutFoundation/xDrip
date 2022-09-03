@@ -3,6 +3,11 @@ package com.eveningoutpost.dexdrip.cgm.carelinkfollow.client;
 import android.util.Log;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,7 +53,23 @@ public class CareLinkClient {
         return lastStackTraceString;
     }
 
-
+    //Session info
+    protected User sessionUser;
+    public User getSessionUser() {
+        return sessionUser;
+    }
+    protected Profile sessionProfile;
+    public Profile getSessionProfile() {
+        return sessionProfile;
+    }
+    protected CountrySettings sessionCountrySettings;
+    public CountrySettings getSessionCountrySettings() {
+        return sessionCountrySettings;
+    }
+    protected MonitorData sessionMonitorData;
+    public MonitorData getSessionMonitorData() {
+        return sessionMonitorData;
+    }
 
     protected enum RequestType{
         HtmlGet(),
@@ -80,6 +101,24 @@ public class CareLinkClient {
     }
 
 
+    //Wrapper for common request of recent data (last 24 hours)
+    public RecentData getRecentData() {
+
+        // Force login to get basic info
+        if(getAuthorizationToken() != null) {
+            //New BLE Endpoint (for all US calls and all BLE devices)
+            if (CountryUtils.isUS(carelinkCountry) || sessionMonitorData.isBle())
+                return this.getConnectDisplayMessage(this.sessionProfile.username, this.sessionUser.getUserRole(),
+                        sessionCountrySettings.blePereodicDataEndpoint);
+            //Old CareLink data source
+            else
+                return this.getLast24Hours();
+        }
+        else {
+            return null;
+        }
+    }
+
     //Authentication methods
     protected boolean executeAuthenticationProcedure() {
 
@@ -108,14 +147,22 @@ public class CareLinkClient {
             doLoginResponse.close();
             consentResponse.close();
 
-            //Set login success
-            lastLoginSuccess = true;
+            // Get basic infos
+            this.sessionUser = this.getMyUser();
+            this.sessionProfile = this.getMyProfile();
+            this.sessionCountrySettings = this.getMyCountrySettings();
+            this.sessionMonitorData = this.getMonitorData();
 
         } catch (Exception e) {
-            lastErrorMessage = e.getMessage();
-            Log.getStackTraceString(e);
-            return lastLoginSuccess;
+            lastErrorMessage = e.getClass().getSimpleName() + ":" + e.getMessage();
+            // lastStackTraceString = Log.getStackTraceString(e);
+        } finally {
+            loginInProcess = false;
         }
+
+        // Set login success if everything was ok:
+        if(this.sessionUser != null && this.sessionProfile != null && this.sessionCountrySettings != null && this.sessionMonitorData != null)
+            lastLoginSuccess = true;
 
         return lastLoginSuccess;
 
@@ -210,6 +257,7 @@ public class CareLinkClient {
 
     }
 
+    // Response parsing
     protected String extractResponseData(String respBody, String groupRegex, int groupIndex) {
 
         String responseData = null;
@@ -240,76 +288,173 @@ public class CareLinkClient {
 
 
     //CareLink data APIs
-    public ConnectDataResult getLast24Hours() {
 
-        HttpUrl url = null;
+    // My user
+    public User getMyUser() {
+        return this.getData(this.careLinkServer(), "patient/users/me", null, null, User.class);
+    }
+
+    // My profile
+    public Profile getMyProfile() {
+        return this.getData(this.careLinkServer(), "patient/users/me/profile", null, null, Profile.class);
+    }
+
+    // Monitoring data
+    public MonitorData getMonitorData() {
+        return this.getData(this.careLinkServer(), "patient/monitor/data", null, null, MonitorData.class);
+    }
+
+    // Country settings
+    public CountrySettings getMyCountrySettings() {
+
+        Map<String, String> queryParams = null;
+
+        queryParams = new HashMap<String, String>();
+        queryParams.put("countryCode", this.carelinkCountry);
+        queryParams.put("language", CARELINK_LANGUAGE_EN);
+
+        return this.getData(this.careLinkServer(), "patient/countries/settings", queryParams, null,
+                CountrySettings.class);
+
+    }
+
+    public RecentData getLast24Hours() {
+
+        Map<String, String> queryParams = null;
+        RecentData recentData = null;
+
+        queryParams = new HashMap<String, String>();
+        queryParams.put("cpSerialNumber", "NONE");
+        queryParams.put("msgType", "last24hours");
+        queryParams.put("requestTime", String.valueOf(System.currentTimeMillis()));
+
+        try {
+            recentData = this.getData(this.careLinkServer(), "patient/connect/data", queryParams, null, RecentData.class);
+            if (recentData != null)
+                correctTimeInRecentData(recentData);
+        }catch (Exception e){
+            lastErrorMessage = e.getClass().getSimpleName() + ":" + e.getMessage();
+        }
+
+        return recentData;
+
+    }
+
+    // Periodic data from CareLink Cloud
+    public RecentData getConnectDisplayMessage(String username, String role, String endpointUrl) {
+
+        RequestBody requestBody = null;
+        Gson gson = null;
+        JsonObject userJson = null;
+        RecentData recentData = null;
+
+        // Build user json for request
+        userJson = new JsonObject();
+        userJson.addProperty("username", username);
+        userJson.addProperty("role", role);
+
+        gson = new GsonBuilder().create();
+
+        requestBody = RequestBody.create(MediaType.get("application/json; charset=utf-8"), gson.toJson(userJson));
+
+        try {
+            recentData = this.getData(HttpUrl.parse(endpointUrl), requestBody, RecentData.class);
+            if (recentData != null)
+                correctTimeInRecentData(recentData);
+        }catch (Exception e){
+            lastErrorMessage = e.getClass().getSimpleName() + ":" + e.getMessage();
+        }
+        return recentData;
+
+    }
+
+    // General data request for API calls
+    protected <T> T getData(HttpUrl url, RequestBody requestBody, Class<T> dataClass) {
+
         Request.Builder requestBuilder = null;
+        HttpUrl.Builder urlBuilder = null;
         String authToken = null;
-        String currentTime = null;
-        String connectDataString = null;
-        ConnectDataResult connectDataResult = null;
+        String responseString = null;
         Response response = null;
+        Object data = null;
 
+        this.lastDataSuccess = false;
+        this.lastErrorMessage = "";
 
-        lastDataSuccess = false;
-        connectDataResult = new ConnectDataResult();
+        // Get auth token
+        authToken = this.getAuthorizationToken();
 
-        //Get auth token
-        authToken= this.getAuthorizationToken();
-        if(authToken != null){
+        if (authToken != null) {
 
-            // TODO current time ?
-            currentTime = String.valueOf(System.currentTimeMillis());
+            // Create request for URL with authToken
+            requestBuilder = new Request.Builder().url(url).addHeader("Authorization", authToken);
 
-            //Get connect data of last 24 hours
-            url = new HttpUrl.Builder()
-                    .scheme("https")
-                    .host(this.careLinkServer())
-                    .addPathSegments("patient/connect/data")
-                    .addQueryParameter("cpSerialNumber", "NONE")
-                    .addQueryParameter("msgType", "last24hours")
-                    .addQueryParameter("requestTime", currentTime)
-                    .build();
+            // Add header
+            if (requestBody == null) {
+                this.addHttpHeaders(requestBuilder, RequestType.Json);
+            } else {
+                requestBuilder.post(requestBody);
+                this.addHttpHeaders(requestBuilder, RequestType.HtmlPost);
+            }
 
-            requestBuilder = new Request.Builder()
-                    .url(url)
-                    .addHeader("Authorization", authToken);
-
-            this.addHttpHeaders(requestBuilder, RequestType.Json);
-
-            //Get and convert data
+            // Send request
             try {
                 response = this.httpClient.newCall(requestBuilder.build()).execute();
-                connectDataResult.responseCode = response.code();
-                if(response.isSuccessful()) {
-                    connectDataString = response.body().string();
-                    connectDataResult.connectData = (new GsonBuilder().create()).fromJson(connectDataString, ConnectData.class);
-                    //only if there is actual data
-                    if (connectDataResult.connectData != null) lastDataSuccess = true;
+                this.lastResponseCode = response.code();
+                if (response.isSuccessful()) {
+                    try {
+                        responseString = response.body().string();
+                        data = new GsonBuilder().create().fromJson(responseString, dataClass);
+                        this.lastDataSuccess = true;
+                    } catch (Exception e){
+                        lastErrorMessage = e.getClass().getSimpleName() + ":" + e.getMessage();
+                    }
                 }
                 response.close();
             } catch (Exception e) {
-                lastErrorMessage = e.getMessage();
-                lastStackTraceString = Log.getStackTraceString(e);
+                lastErrorMessage = e.getClass().getSimpleName() + ":" + e.getMessage();
             }
 
         }
 
-        //set data request success
-        connectDataResult.success = lastDataSuccess;
-
-        return connectDataResult;
+        //Return result
+        if(data != null)
+            return dataClass.cast(data);
+        else
+            return null;
 
     }
 
+    protected <T> T getData(String host, String path, Map<String, String> queryParams, RequestBody requestBody,
+                            Class<T> dataClass) {
+
+        HttpUrl.Builder urlBuilder = null;
+        HttpUrl url = null;
+
+        // Build url
+        urlBuilder = new HttpUrl.Builder().scheme("https").host(host).addPathSegments(path);
+        if (queryParams != null) {
+            for (Map.Entry<String, String> param : queryParams.entrySet()) {
+                urlBuilder.addQueryParameter(param.getKey(), param.getValue());
+            }
+        }
+
+        url = urlBuilder.build();
+
+        return this.getData(url, requestBody, dataClass);
+
+    }
+
+    // Http header builder for requests
     protected void addHttpHeaders(Request.Builder requestBuilder, RequestType type) {
 
+        //Add common browser headers
         requestBuilder
                 .addHeader("Accept-Language", "en;q=0.9, *;q=0.8")
-                .addHeader("Connection", "keep-alive")
                 .addHeader("sec-ch-ua", "\"Google Chrome\";v=\"87\", \" Not;A Brand\";v=\"99\", \"Chromium\";v=\"87\"")
                 .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36");
 
+        //Set media type based on request type
         switch(type) {
             case Json:
                 requestBuilder.addHeader("Accept", "application/json, text/plain, */*");

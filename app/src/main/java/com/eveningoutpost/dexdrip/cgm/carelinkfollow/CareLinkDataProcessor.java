@@ -5,6 +5,7 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ConnectData;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.RecentData;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.SensorGlucose;
 
 import java.util.Collections;
@@ -28,33 +29,45 @@ public class CareLinkDataProcessor {
     private static  final String EPOCH_0_YEAR = "1970";
 
 
-    static synchronized void processData(final ConnectData connectData, final boolean live) {
+    static synchronized void processData(final RecentData recentData, final boolean live) {
 
-        if (connectData == null) return;
+        UserError.Log.d(TAG, "Start processsing data...");
+
+        //SKIP ALL IF EMPTY!!!
+        if (recentData == null) {
+            UserError.Log.e(TAG, "Recent data is null, processing stopped!");
+            return;
+        }
 
         UserError.Log.d(TAG, "Create Sensor");
         final Sensor sensor = Sensor.createDefaultIfMissing();
 
         //TODO not good for backfill!
         //Sensor status
-        sensor.latest_battery_level = connectData.medicalDeviceBatteryLevelPercent;
+        sensor.latest_battery_level = recentData.medicalDeviceBatteryLevelPercent;
         sensor.save();
 
-        if (connectData.sgs == null) UserError.Log.d(TAG, "SGs is null!");
+        if (recentData.sgs == null) UserError.Log.d(TAG, "SGs is null!");
+
+        //SKIP DATA processing if NO PUMP CONNECTION (time shift seems to be different in this case, needs further analysis)
+        if (recentData.isNGP() && !recentData.pumpCommunicationState) {
+            UserError.Log.d(TAG, "Not connected to pump => time can be wrong, leave processing!");
+            return;
+        }
 
         //1) SGs (if available)
-        if (connectData.sgs != null) {
+        if (recentData.sgs != null) {
             // place in order of oldest first
             UserError.Log.d(TAG, "Sort SGs");
             try {
-                Collections.sort(connectData.sgs, (o1, o2) -> o1.getTimestamp().compareTo(o2.getTimestamp()));
+                Collections.sort(recentData.sgs, (o1, o2) -> o1.datetimeAsDate.compareTo(o2.datetimeAsDate));
             } catch (Exception e) {
                 UserError.Log.e(TAG, "Sort SGs error! Details: " + e);
                 return;
             }
 
             UserError.Log.d(TAG, "For each SG");
-            for (final SensorGlucose sg : connectData.sgs) {
+            for (final SensorGlucose sg : recentData.sgs) {
 
                 //Not NULL SG (shouldn't happen?!)
                 if (sg != null) {
@@ -68,7 +81,7 @@ public class CareLinkDataProcessor {
                             //Not 0 SG (not calibrated?)
                             if (sg.sg > 0) {
 
-                                final long recordTimestamp = sg.getTimestamp();
+                                final long recordTimestamp = sg.datetimeAsDate.getTime();
                                 if (recordTimestamp > 0) {
 
                                     final BgReading existing = BgReading.getForPreciseTimestamp(recordTimestamp, 10_000);
@@ -116,7 +129,7 @@ public class CareLinkDataProcessor {
         }
 
         //2) Markers (if available)
-        if(connectData.markers != null){
+        if(recentData.markers != null){
 
         }
     }
