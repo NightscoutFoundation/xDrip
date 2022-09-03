@@ -35,7 +35,11 @@ public class CareLinkClient {
     protected static final int AUTH_EXPIRE_DEADLINE_MINUTES = 1;
 
     protected OkHttpClient httpClient = null;
-
+    protected boolean loginInProcess = false;
+    protected int lastResponseCode;
+    public int getLastResponseCode() {
+        return lastResponseCode;
+    }
     private boolean lastLoginSuccess;
     public boolean getLastLoginSuccess(){
         return lastLoginSuccess;
