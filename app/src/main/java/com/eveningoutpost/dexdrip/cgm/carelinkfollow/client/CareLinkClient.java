@@ -124,7 +124,7 @@ public class CareLinkClient {
     }
 
     //Authentication methods
-    protected boolean executeAuthenticationProcedure() {
+    protected boolean executeLoginProcedure() {
 
         Response loginSessionResponse = null;
         Response doLoginResponse = null;
@@ -278,11 +278,21 @@ public class CareLinkClient {
 
     protected String getAuthorizationToken() {
 
-
-
-        if(!this.executeAuthenticationProcedure()){
-            return null;
-        };
+        // New token is needed:
+        // a) no token or about to expire => execute authentication
+        // b) last response 401
+        if (!((SimpleOkHttpCookieJar) httpClient.cookieJar()).contains(CARELINK_AUTH_TOKEN_COOKIE_NAME)
+                || !((SimpleOkHttpCookieJar) httpClient.cookieJar()).contains(CARELINK_TOKEN_VALIDTO_COOKIE_NAME)
+                || !((new Date(Date.parse(((SimpleOkHttpCookieJar) httpClient.cookieJar())
+                .getCookies(CARELINK_TOKEN_VALIDTO_COOKIE_NAME).get(0).value())))
+                .after(new Date(new Date(System.currentTimeMillis()).getTime()
+                        + AUTH_EXPIRE_DEADLINE_MINUTES * 60000)))
+                || this.lastResponseCode == 401
+        ) {
+            //execute new login process
+            if(this.loginInProcess || !this.executeLoginProcedure())
+                return null;
+        }
 
         //there can be only one
         return "Bearer" + " " + ((SimpleOkHttpCookieJar) httpClient.cookieJar()).getCookies(CARELINK_AUTH_TOKEN_COOKIE_NAME).get(0).value();
