@@ -132,21 +132,21 @@ public class DexCollectionHelper {
 
             case CLFollow:
                 textSettingDialog(activity,
-                        "connectfollow_country", "CareLink Country",
+                        "clfollow_country", "CareLink Country",
                         "Two letter country ISO code",
                         InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD,
                         new Runnable() {
                             @Override
                             public void run() {
                                 textSettingDialog(activity,
-                                        "connectfollow_user", "CareLink Username",
+                                        "clfollow_user", "CareLink Username",
                                         "Enter CareLink Username",
                                         InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD,
                                         new Runnable() {
                                             @Override
                                             public void run() {
                                                 textSettingDialog(activity,
-                                                        "connectfollow_pass", "CareLink Password",
+                                                        "clfollow_pass", "CareLink Password",
                                                         "Enter CareLink Password",
                                                         InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD,
                                                         new Runnable() {

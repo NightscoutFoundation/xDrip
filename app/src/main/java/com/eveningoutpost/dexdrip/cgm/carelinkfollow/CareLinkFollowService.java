@@ -36,7 +36,7 @@ import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PER
 
 public class CareLinkFollowService extends ForegroundService {
 
-    private static final String TAG = "CLFollow";
+    private static final String TAG = "CareLinkFollow";
     private static final long SAMPLE_PERIOD = DEXCOM_PERIOD;
 
     protected static volatile String lastState = "";
@@ -103,12 +103,12 @@ public class CareLinkFollowService extends ForegroundService {
         wakeup_time = next;
         UserError.Log.d(TAG, "Anticipate next: " + JoH.dateTimeText(next) + "  last BG timestamp: " + JoH.dateTimeText(last));
 
-        JoH.wakeUpIntent(xdrip.getAppContext(), JoH.msTill(next), WakeLockTrampoline.getPendingIntent(CareLinkFollowService.class, Constants.CONNECTFOLLOW_SERVICE_FAILOVER_ID));
+        JoH.wakeUpIntent(xdrip.getAppContext(), JoH.msTill(next), WakeLockTrampoline.getPendingIntent(CareLinkFollowService.class, Constants.CARELINK_SERVICE_FAILOVER_ID));
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        final PowerManager.WakeLock wl = JoH.getWakeLock("CLFollow-osc", 60000);
+        final PowerManager.WakeLock wl = JoH.getWakeLock("CareLinkFollow-osc", 60000);
         try {
 
             UserError.Log.d(TAG, "WAKE UP WAKE UP WAKE UP");
@@ -133,14 +133,14 @@ public class CareLinkFollowService extends ForegroundService {
                 // Get the data
                 if (downloader == null) {
                     downloader = new CareLinkFollowDownloader(
-                            Pref.getString("connectfollow_user", ""),
-                            Pref.getString("connectfollow_pass", ""),
-                            Pref.getString("connectfollow_country", "").toLowerCase()
+                            Pref.getString("clfollow_user", ""),
+                            Pref.getString("clfollow_pass", ""),
+                            Pref.getString("clfollow_country", "").toLowerCase()
                     );
                 }
 
-                if (JoH.ratelimit("last-connect-follow-poll", 5)) {
-                    Inevitable.task("Connect-Follow-Work", 200, () -> {
+                if (JoH.ratelimit("last-carelink-follow-poll", 5)) {
+                    Inevitable.task("CareLink-Follow-Work", 200, () -> {
                         try {
                             downloader.doEverything( );
                         } catch (NullPointerException e) {

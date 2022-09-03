@@ -20,7 +20,7 @@ import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
  */
 public class CareLinkFollowDownloader {
 
-    private static final String TAG = "ConnectFollowDL";
+    private static final String TAG = "CareLinkFollowDL";
     private static final boolean D = false;
 
     private String carelinkUsername;
@@ -81,7 +81,7 @@ public class CareLinkFollowDownloader {
                 return false;
             }
         } else {
-            final String invalid = "Connect login data isn't valid!";
+            final String invalid = "CareLink login data isn't valid!";
             msg(invalid);
             UserError.Log.e(TAG, invalid);
             if(emptyString(carelinkUsername)){
@@ -110,7 +110,7 @@ public class CareLinkFollowDownloader {
     }
 
     private void backgroundProcessConnectData() {
-        Inevitable.task("proc-connect-follow", 100, this::processConnectData);
+        Inevitable.task("proc-carelink-follow", 100, this::processConnectData);
         releaseWakeLock(); // handover to inevitable
     }
 
@@ -174,10 +174,10 @@ public class CareLinkFollowDownloader {
     private CareLinkClient getCareLinkClient() {
         if (careLinkClient == null) {
             try {
-                UserError.Log.d(TAG, "Creating ConnectClient");
+                UserError.Log.d(TAG, "Creating CareLinkClient");
                 careLinkClient = new CareLinkClient(carelinkUsername, carelinkPassword, carelinkCountry);
             } catch (NullPointerException e) {
-                UserError.Log.e(TAG, "Error creating ConnectClient");
+                UserError.Log.e(TAG, "Error creating CareLinkClient");
             }
         }
         return careLinkClient;
