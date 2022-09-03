@@ -13,8 +13,17 @@ import java.util.regex.Pattern;
 
 import okhttp3.*;
 
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ActiveNotification;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ClearedNotification;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ConnectData;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ConnectDataResult;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.CountrySettings;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.Marker;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.MonitorData;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.Profile;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.RecentData;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.SensorGlucose;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.User;
 import com.google.gson.*;
 
 
@@ -33,6 +42,15 @@ public class CareLinkClient {
     protected static final String CARELINK_AUTH_TOKEN_COOKIE_NAME = "auth_tmp_token";
     protected static final String CARELINK_TOKEN_VALIDTO_COOKIE_NAME = "c_token_valid_to";
     protected static final int AUTH_EXPIRE_DEADLINE_MINUTES = 1;
+
+    protected static final SimpleDateFormat[] ZONED_DATE_FORMATS = {
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ"),
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz"),
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ"),
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"),
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX"),
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX")
+    };
 
     protected OkHttpClient httpClient = null;
     protected boolean loginInProcess = false;
@@ -482,6 +500,119 @@ public class CareLinkClient {
                 break;
         }
 
+    }
+
+    protected void correctTimeInRecentData(RecentData recentData){
+
+        boolean timezoneMissing = false;
+        String offsetString = null;
+
+        if(recentData.sMedicalDeviceTime != null && !recentData.sMedicalDeviceTime.isEmpty() &&  recentData.lastMedicalDeviceDataUpdateServerTime > 1) {
+
+            //MedicalDeviceTime string has no timezone information
+            if(parseDateString(recentData.sMedicalDeviceTime) == null) {
+
+                timezoneMissing = true;
+
+                //offset = this.getZonedDate(recentData.lastSG.datetime).getOffset();
+                offsetString = this.getZoneOffset(recentData.lastSG.datetime);
+
+                //Build correct dates with timezone
+                recentData.sMedicalDeviceTime = recentData.sMedicalDeviceTime + offsetString;
+                recentData.medicalDeviceTimeAsString = recentData.medicalDeviceTimeAsString + offsetString;
+                recentData.sLastSensorTime = recentData.sLastSensorTime + offsetString;
+                recentData.lastSensorTSAsString = recentData.lastSensorTSAsString + offsetString;
+
+            } else {
+                timezoneMissing = false;
+            }
+
+            //Parse dates
+            recentData.dMedicalDeviceTime = parseDateString(recentData.sMedicalDeviceTime);
+            recentData.medicalDeviceTimeAsDate = parseDateString(recentData.medicalDeviceTimeAsString);
+            recentData.dLastSensorTime = parseDateString(recentData.sLastSensorTime);
+            recentData.lastSensorTSAsDate = parseDateString(recentData.lastSensorTSAsString);
+
+            //Sensor
+            if (recentData.sgs != null) {
+                for (SensorGlucose sg : recentData.sgs) {
+                    sg.datetimeAsDate = parseDateString(sg.datetime);
+                }
+            }
+
+            //Timezone was present => check if time needs correction
+            if(!timezoneMissing) {
+
+                //Calc time diff between event time and actual local time
+                int diffInHour = (int) Math.round(((recentData.lastMedicalDeviceDataUpdateServerTime - recentData.dMedicalDeviceTime.getTime()) / 3600000D));
+
+                //Correct times if server <> device > 26 mins => possibly different time zones
+                if (diffInHour != 0 && diffInHour < 26) {
+
+
+                    recentData.medicalDeviceTimeAsDate = shiftDateByHours(recentData.medicalDeviceTimeAsDate, diffInHour);
+                    recentData.dMedicalDeviceTime = shiftDateByHours(recentData.dMedicalDeviceTime, diffInHour);
+                    recentData.lastConduitDateTime = shiftDateByHours(recentData.lastConduitDateTime, diffInHour);
+                    recentData.lastSensorTSAsDate = shiftDateByHours(recentData.lastSensorTSAsDate, diffInHour);
+                    recentData.dLastSensorTime = shiftDateByHours(recentData.dLastSensorTime, diffInHour);
+                    //Sensor
+                    if (recentData.sgs != null) {
+                        for (SensorGlucose sg : recentData.sgs) {
+                            sg.datetimeAsDate = shiftDateByHours(sg.datetimeAsDate, diffInHour);
+                        }
+                    }
+                    //Markers
+                    if (recentData.markers != null) {
+                        for (Marker marker : recentData.markers) {
+                            marker.dateTime = shiftDateByHours(marker.dateTime, diffInHour);
+                        }
+                    }
+                    //Notifications
+                    if (recentData.notificationHistory != null) {
+                        if (recentData.notificationHistory.clearedNotifications != null) {
+                            for (ClearedNotification notification : recentData.notificationHistory.clearedNotifications) {
+                                notification.dateTime = shiftDateByHours(notification.dateTime, diffInHour);
+                                notification.triggeredDateTime = shiftDateByHours(notification.triggeredDateTime, diffInHour);
+                            }
+                        }
+                        if (recentData.notificationHistory.activeNotifications != null) {
+                            for (ActiveNotification notification : recentData.notificationHistory.activeNotifications) {
+                                notification.dateTime = shiftDateByHours(notification.dateTime, diffInHour);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+    protected String getZoneOffset(String dateString){
+        Matcher offsetDataMatcher = Pattern.compile(("(.*)([\\+|-].*)")).matcher(dateString);
+        if(offsetDataMatcher.find())
+            return offsetDataMatcher.group(2);
+        else
+            return  null;
+    }
+
+    protected Date parseDateString(String dateString){
+        for(SimpleDateFormat zonedFormat : ZONED_DATE_FORMATS){
+            try {
+                return zonedFormat.parse(dateString);
+            }catch (Exception ex){}
+        }
+        return  null;
+    }
+
+    protected Date shiftDateByHours(Date date, int hours){
+        if(date != null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            calendar.add(Calendar.HOUR_OF_DAY, hours);
+            return calendar.getTime();
+        } else {
+            return  null;
+        }
     }
 
 }
