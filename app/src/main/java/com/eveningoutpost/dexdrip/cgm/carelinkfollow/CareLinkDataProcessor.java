@@ -8,7 +8,9 @@ import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ConnectData;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.RecentData;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.SensorGlucose;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import static com.eveningoutpost.dexdrip.Models.BgReading.SPECIAL_FOLLOWER_PLACEHOLDER;
 
@@ -31,6 +33,8 @@ public class CareLinkDataProcessor {
 
     static synchronized void processData(final RecentData recentData, final boolean live) {
 
+        List<SensorGlucose> filteredSgList;
+
         UserError.Log.d(TAG, "Start processsing data...");
 
         //SKIP ALL IF EMPTY!!!
@@ -42,8 +46,6 @@ public class CareLinkDataProcessor {
         UserError.Log.d(TAG, "Create Sensor");
         final Sensor sensor = Sensor.createDefaultIfMissing();
 
-        //TODO not good for backfill!
-        //Sensor status
         sensor.latest_battery_level = recentData.medicalDeviceBatteryLevelPercent;
         sensor.save();
 
@@ -55,60 +57,69 @@ public class CareLinkDataProcessor {
             return;
         }
 
-        //1) SGs (if available)
+        //1 - SENSOR GLUCOSE (if available
         if (recentData.sgs != null) {
-            // place in order of oldest first
-            UserError.Log.d(TAG, "Sort SGs");
-            try {
-                Collections.sort(recentData.sgs, (o1, o2) -> o1.datetimeAsDate.compareTo(o2.datetimeAsDate));
-            } catch (Exception e) {
-                UserError.Log.e(TAG, "Sort SGs error! Details: " + e);
-                return;
+
+            final BgReading lastBg = BgReading.lastNoSenssor();
+            final long lastBgTimestamp = lastBg != null ? lastBg.timestamp : 0;
+
+            //create filtered sortable SG list
+            filteredSgList = new ArrayList<>();
+            for (SensorGlucose sg : recentData.sgs) {
+                //SG DateTime is null (sensor expired?)
+                if (sg != null & sg.datetimeAsDate != null) {
+                        filteredSgList.add(sg);
+                }
             }
 
-            UserError.Log.d(TAG, "For each SG");
-            for (final SensorGlucose sg : recentData.sgs) {
+            // place in order of oldest first
+            Collections.sort(recentData.sgs, (o1, o2) -> o1.datetimeAsDate.compareTo(o2.datetimeAsDate));
+
+            for (final SensorGlucose sg : filteredSgList) {
 
                 //Not NULL SG (shouldn't happen?!)
                 if (sg != null) {
 
                     //Not NULL DATETIME (sensorchange?)
-                    if (sg.datetime != null) {
+                    if (sg.datetimeAsDate != null) {
 
                         //Not EPOCH 0 (warmup?)
-                        if (!sg.datetime.startsWith(EPOCH_0_YEAR)) {
+                        if (sg.datetimeAsDate.getTime() > 1) {
 
                             //Not 0 SG (not calibrated?)
                             if (sg.sg > 0) {
 
-                                final long recordTimestamp = sg.datetimeAsDate.getTime();
-                                if (recordTimestamp > 0) {
+                                //newer than last BG
+                                if (sg.datetimeAsDate.getTime() > lastBgTimestamp) {
 
-                                    final BgReading existing = BgReading.getForPreciseTimestamp(recordTimestamp, 10_000);
-                                    if (existing == null) {
-                                        UserError.Log.d(TAG, "NEW NEW NEW New entry: " + sg.toS());
+                                    if (sg.datetimeAsDate.getTime() > 0) {
 
-                                        if (live) {
-                                            final BgReading bg = new BgReading();
-                                            bg.timestamp = recordTimestamp;
-                                            bg.calculated_value = (double) sg.sg;
-                                            bg.raw_data = SPECIAL_FOLLOWER_PLACEHOLDER;
-                                            bg.filtered_data = (double) sg.sg;
-                                            bg.noise = "";
-                                            bg.uuid = UUID_CF_PREFIX + UUID_BG_PREFIX + String.valueOf(bg.timestamp);
-                                            bg.calculated_value_slope = 0;
-                                            bg.sensor = sensor;
-                                            bg.sensor_uuid = sensor.uuid;
-                                            bg.source_info = "Connect Follow";
-                                            bg.save();
-                                            bg.find_slope();
-                                            Inevitable.task("entry-proc-post-pr", 500, () -> bg.postProcess(false));
+                                        final BgReading existing = BgReading.getForPreciseTimestamp(sg.datetimeAsDate.getTime(), 10_000);
+                                        if (existing == null) {
+                                            UserError.Log.d(TAG, "NEW NEW NEW New entry: " + sg.toS());
+
+                                            if (live) {
+                                                final BgReading bg = new BgReading();
+                                                bg.timestamp = sg.datetimeAsDate.getTime();
+                                                bg.calculated_value = (double) sg.sg;
+                                                bg.raw_data = SPECIAL_FOLLOWER_PLACEHOLDER;
+                                                bg.filtered_data = (double) sg.sg;
+                                                bg.noise = "";
+                                                bg.uuid = UUID_CF_PREFIX + UUID_BG_PREFIX + String.valueOf(bg.timestamp);
+                                                bg.calculated_value_slope = 0;
+                                                bg.sensor = sensor;
+                                                bg.sensor_uuid = sensor.uuid;
+                                                bg.source_info = "Connect Follow";
+                                                bg.save();
+                                                bg.find_slope();
+                                                Inevitable.task("entry-proc-post-pr", 500, () -> bg.postProcess(false));
+                                            }
+                                        } else {
+                                            //existing entry, not needed
                                         }
                                     } else {
-                                        //existing entry, not needed
+                                        UserError.Log.e(TAG, "Could not parse a timestamp from: " + sg.toS());
                                     }
-                                } else {
-                                    UserError.Log.e(TAG, "Could not parse a timestamp from: " + sg.toS());
                                 }
 
                             } else {
