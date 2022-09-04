@@ -352,7 +352,7 @@
     <string name="download_now">Télécharger maintenant</string>
     <string name="automatically_check_for_updates">Vérifier automatiquement les mises à jour</string>
     <string name="here_you_can_save_the_settings_to_the_external_storage_sdcard">Ici, vous pouvez enregistrer les paramètres vers la mémoire interne (Download/xDrip-export/com.eveningoutpost.dexdrip_preferences.xml).\n\nUne fois enregistrés dans le fichier, il est possible pour toute application de lire les paramètres qui pourraient contenir des informations sensibles.\n\nIl est conseillé de supprimer les paramètres une fois que vous les avez importés à nouveau si vous êtes préoccupé par cela.</string>
-    <string name="save_all_settings_to_sdcard">Enregistrer tous les paramètres à partir du fichier</string>
+    <string name="save_all_settings_to_sdcard">Enregistrer tous les paramètres dans le fichier</string>
     <string name="load_all_settings_from_sdcard">Charger tous les paramètres depuis le fichier</string>
     <string name="delete_any_settings_on_sdcard">Supprimer le dossier de paramètres (Download/xDrip-export)</string>
     <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Utilisez les codes QR pour transférer les paramètres en utilisant Paramètres-> Configuration Automatique]]></string>
