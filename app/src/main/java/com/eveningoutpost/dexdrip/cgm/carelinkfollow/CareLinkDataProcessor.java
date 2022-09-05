@@ -11,6 +11,7 @@ import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.SensorGlucose;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import static com.eveningoutpost.dexdrip.Models.BgReading.SPECIAL_FOLLOWER_PLACEHOLDER;
 
@@ -26,9 +27,7 @@ public class CareLinkDataProcessor {
     private static final String TAG = "ConnectFollowDP";
     private static final boolean D = false;
 
-    private static  final String UUID_CF_PREFIX = "1";
-    private static  final String UUID_BG_PREFIX = "1";
-    private static  final String EPOCH_0_YEAR = "1970";
+    private static final String SOURCE_CARELINK_FOLLOW = "CareLink Follow";
 
 
     static synchronized void processData(final RecentData recentData, final boolean live) {
@@ -104,11 +103,11 @@ public class CareLinkDataProcessor {
                                                     bg.raw_data = SPECIAL_FOLLOWER_PLACEHOLDER;
                                                     bg.filtered_data = (double) sg.sg;
                                                     bg.noise = "";
-                                                    bg.uuid = UUID_CF_PREFIX + UUID_BG_PREFIX + String.valueOf(bg.timestamp);
+                                                    bg.uuid = UUID.randomUUID().toString();
                                                     bg.calculated_value_slope = 0;
                                                     bg.sensor = sensor;
                                                     bg.sensor_uuid = sensor.uuid;
-                                                    bg.source_info = "Connect Follow";
+                                                    bg.source_info = SOURCE_CARELINK_FOLLOW;
                                                     bg.save();
                                                     bg.find_slope();
                                                     Inevitable.task("entry-proc-post-pr", 500, () -> bg.postProcess(false));
