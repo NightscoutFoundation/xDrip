@@ -60,7 +60,7 @@ public class CareLinkDataProcessor {
             filteredSgList = new ArrayList<>();
             for (SensorGlucose sg : recentData.sgs) {
                 //SG DateTime is null (sensor expired?)
-                if (sg != null & sg.datetimeAsDate != null) {
+                if (sg != null && sg.datetimeAsDate != null) {
                         filteredSgList.add(sg);
                 }
             }
