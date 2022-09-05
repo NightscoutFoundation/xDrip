@@ -1263,11 +1263,15 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             final Preference carelinkFollowUser = findPreference("clfollow_user");
             final Preference carelinkFollowPass = findPreference("clfollow_pass");
             final Preference carelinkFollowCountry = findPreference("clfollow_country");
+            final Preference carelinkFollowGracePeriod = findPreference("clfollow_grace_period");
+            final Preference carelinkFollowMissedPollInterval = findPreference("clfollow_missed_poll_interval");
             if (collectionType == DexCollectionType.CLFollow) {
                 //Add CL prefs
                 collectionCategory.addPreference(carelinkFollowUser);
                 collectionCategory.addPreference(carelinkFollowPass);
                 collectionCategory.addPreference(carelinkFollowCountry);
+                collectionCategory.addPreference(carelinkFollowGracePeriod);
+                collectionCategory.addPreference(carelinkFollowMissedPollInterval);
                 //Create prefChange handler
                 final Preference.OnPreferenceChangeListener carelinkFollowListener = new Preference.OnPreferenceChangeListener() {
                     @Override
@@ -1282,6 +1286,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     carelinkFollowUser.setOnPreferenceChangeListener(carelinkFollowListener);
                     carelinkFollowPass.setOnPreferenceChangeListener(carelinkFollowListener);
                     carelinkFollowCountry.setOnPreferenceChangeListener(carelinkFollowListener);
+                    carelinkFollowGracePeriod.setOnPreferenceChangeListener(carelinkFollowListener);
+                    carelinkFollowMissedPollInterval.setOnPreferenceChangeListener(carelinkFollowListener);
                 } catch (Exception e) {
                     //
                 }
@@ -1290,6 +1296,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     collectionCategory.removePreference(carelinkFollowUser);
                     collectionCategory.removePreference(carelinkFollowPass);
                     collectionCategory.removePreference(carelinkFollowCountry);
+                    collectionCategory.removePreference(carelinkFollowGracePeriod);
+                    collectionCategory.removePreference(carelinkFollowMissedPollInterval);
                 } catch (Exception e) {
                     //
                 }
@@ -1625,6 +1633,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     collectionCategory.removePreference(carelinkFollowCountry);
                     collectionCategory.removePreference(carelinkFollowPass);
                     collectionCategory.removePreference(carelinkFollowUser);
+                    collectionCategory.removePreference(carelinkFollowGracePeriod);
+                    collectionCategory.removePreference(carelinkFollowMissedPollInterval);
                 } catch (Exception e) {
                     //
                 }

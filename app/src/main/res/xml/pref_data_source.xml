@@ -207,6 +207,13 @@
             android:summary="Login password for Dex Share Following"
             android:title="Share Password" />
 
+        <ListPreference
+            android:defaultValue="gb"
+            android:entries="@array/carelinkCountryEntries"
+            android:entryValues="@array/carelinkCountryValues"
+            android:key="clfollow_country"
+            android:summary="@string/summary_clfollow_country"
+            android:title="@string/title_clfollow_country" />
         <EditTextPreference
             android:defaultValue=""
             android:inputType="textNoSuggestions|textVisiblePassword"

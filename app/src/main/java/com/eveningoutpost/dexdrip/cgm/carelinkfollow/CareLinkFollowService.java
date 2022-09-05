@@ -13,7 +13,6 @@ import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
-import com.eveningoutpost.dexdrip.cgm.nsfollow.utils.Anticipate;
 import com.eveningoutpost.dexdrip.utils.framework.BuggySamsung;
 import com.eveningoutpost.dexdrip.utils.framework.ForegroundService;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -50,8 +49,8 @@ public class CareLinkFollowService extends ForegroundService {
     private static volatile long lastBgTime;
 
     private static CareLinkFollowDownloader downloader;
-
-    private static final long WAKE_UP_GRACE_SECOND = 20;
+    private static volatile int gracePeriod = 0;
+    private static volatile int missedPollInterval = 0;
 
 
     @Override
@@ -85,6 +84,8 @@ public class CareLinkFollowService extends ForegroundService {
 
     public static void resetInstance() {
         downloader = null;
+        gracePeriod = 0;
+        missedPollInterval = 0;
     }
 
     private static boolean shouldServiceRun() {
@@ -92,18 +93,49 @@ public class CareLinkFollowService extends ForegroundService {
     }
 
     private static long getGraceMillis() {
-        return Constants.SECOND_IN_MS * WAKE_UP_GRACE_SECOND;
+        return Constants.SECOND_IN_MS * gracePeriod;
+    }
+
+    private static long getMissedIntervalMillis() {
+        if(missedPollInterval == 0)
+            return SAMPLE_PERIOD;
+        else
+            return Constants.MINUTE_IN_MS * missedPollInterval;
     }
 
     static void scheduleWakeUp() {
         final BgReading lastBg = BgReading.lastNoSenssor();
         final long last = lastBg != null ? lastBg.timestamp : 0;
 
-        final long next = Anticipate.next(JoH.tsl(), last, SAMPLE_PERIOD, getGraceMillis()) + getGraceMillis();
+        final long next = anticipateNextWakeUp(JoH.tsl(), last, SAMPLE_PERIOD, getGraceMillis(), getMissedIntervalMillis());
         wakeup_time = next;
         UserError.Log.d(TAG, "Anticipate next: " + JoH.dateTimeText(next) + "  last BG timestamp: " + JoH.dateTimeText(last));
 
         JoH.wakeUpIntent(xdrip.getAppContext(), JoH.msTill(next), WakeLockTrampoline.getPendingIntent(CareLinkFollowService.class, Constants.CARELINK_SERVICE_FAILOVER_ID));
+    }
+
+    public static long anticipateNextWakeUp(long now, final long last, final long period, final long grace, final long missedInterval) {
+
+        long next;
+
+        //recent reading (less then data period) => last + period + grace
+        if((now - last) < period) {
+            next = last + period + grace;
+        }
+        //old reading => anticipated next + grace
+        else{
+            //last expected
+            next = now + ((last - now) % period);
+            //add missed poll interval until future time is reached
+            while(next < now){
+                next += missedInterval;
+            }
+            //add grace
+            next += grace;
+        }
+
+        return  next;
+
     }
 
     @Override
@@ -125,6 +157,10 @@ public class CareLinkFollowService extends ForegroundService {
             last_wakeup = JoH.tsl();
 
             // Check current
+            if(gracePeriod == 0)
+                gracePeriod = Pref.getStringToInt("clfollow_grace_period", 30);
+            if(missedPollInterval == 0)
+                missedPollInterval = Pref.getStringToInt("clfollow_missed_poll_interval", 5);
             lastBg = BgReading.lastNoSenssor();
             if (lastBg != null) {
                 lastBgTime = lastBg.timestamp;
@@ -152,8 +188,6 @@ public class CareLinkFollowService extends ForegroundService {
             } else {
                 UserError.Log.d(TAG, "Already have recent reading: " + msSince(lastBg.timestamp));
             }
-
-
             scheduleWakeUp();
         } finally {
             JoH.releaseWakeLock(wl);
