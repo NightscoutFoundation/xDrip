@@ -231,6 +231,9 @@ public class CareLinkFollowService extends ForegroundService {
 
         megaStatus.add(new StatusItem("Latest BG", ageLastBg + (lastBg != null ? " ago" : ""), bgAgeHighlight));
         megaStatus.add(new StatusItem("BG receive delay", ageOfBgLastPoll, ageOfLastBgPollHighlight));
+        megaStatus.add(new StatusItem("Data period:", JoH.niceTimeScalar(SAMPLE_PERIOD)));
+        megaStatus.add(new StatusItem("Grace period:", JoH.niceTimeScalar(getGraceMillis())));
+        megaStatus.add(new StatusItem("Missed poll interval:", JoH.niceTimeScalar(getMissedIntervalMillis())));
         megaStatus.add(new StatusItem());
         megaStatus.add(new StatusItem("Last poll", lastPoll > 0 ? JoH.niceTimeScalar(JoH.msSince(lastPoll)) + " ago" : "n/a"));
         megaStatus.add(new StatusItem("Last wakeup", last_wakeup > 0 ? JoH.niceTimeScalar(JoH.msSince(last_wakeup)) + " ago" : "n/a"));
@@ -238,6 +241,7 @@ public class CareLinkFollowService extends ForegroundService {
         if (lastBg != null) {
             megaStatus.add(new StatusItem("Last BG time", JoH.dateTimeText(lastBg.timestamp)));
         }
+        megaStatus.add(new StatusItem("Last poll time", lastPoll > 0 ?  JoH.dateTimeText(lastPoll) : "n/a"));
         megaStatus.add(new StatusItem("Next poll time", JoH.dateTimeText(wakeup_time)));
         megaStatus.add(new StatusItem());
         megaStatus.add(new StatusItem("Buggy Samsung", JoH.buggy_samsung ? "Yes" : "No"));
