@@ -1574,8 +1574,6 @@
     <string name="enable_streaming_dialog_dont_ask_again">Ära küsi seda enam uuesti</string>
     <string name="enable_streaming_dialog_text">Kas soovid ühendada xDrip\'i selle sensoriga? See ei lase Libre lugejal ja LibreLink\'il hoiatusi saada. Vajuta \"JAH\" ja skaneeri uuesti ühenduse loomiseks (vali \"ÄRA ÜHENDA\", kui soovid käivitada xDrip\'i muudetud rakendusega)</string>
     <string name="enable_streaming_dialog_title">Libre sensori ühendamine Bluetooth\'iga</string>
-    <string name="title_lower_fuzzer">Vähenda FUZZER\'it</string>
-    <string name="summary_lower_fuzzer">Vähenda FUZZER\'i väärtust 2.5 minutilt 37.5 sekundile</string>
     <string name="without_camera_permission_cannot_scan_barcode">Ilma kaamera loata ei saa me vöötkoodi skaneerida</string>
     <string name="summary_create_missing_filtered">Vajadusel tee filtreeritud andmeid</string>
     <string name="title_create_missing_filtered">Loo puuduolevad väärtused</string>
@@ -1667,5 +1665,8 @@
     <string name="simplify_graphs_by_smoothing_out_irregularities">Lihtsusta graafikuid, siludes ebakorrapärasusi</string>
     <string name="graph_smoothing">Graafiku silumine</string>
     <string name="last_reading">Viimane näit</string>
+    <string name="select_file_for_alert">Vali fail Alarmi jaoks</string>
     <string name="cannot_choose_file_without_permission">Ilma salvestamise loata ei saa faili valida</string>
+    <string name="select_time">Vali aeg</string>
+    <string name="select_tone_for_alerts">Vali helin alarmi jaoks</string>
 </resources>
