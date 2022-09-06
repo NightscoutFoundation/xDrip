@@ -1574,8 +1574,6 @@
     <string name="enable_streaming_dialog_dont_ask_again">No volver a preguntarme</string>
     <string name="enable_streaming_dialog_text">¿Quieres conectar xDrip con este sensor? Esto provocará que el lector Libre y LibreLink dejen de recibir alertas. Pulsa sí y escanea de nuevo para conectar (elige no conectar si quieres ejecutar xDrip con la aplicación modificada)</string>
     <string name="enable_streaming_dialog_title">Conectando sensor Libre a Bluetooth</string>
-    <string name="title_lower_fuzzer">Baja FUZZER</string>
-    <string name="summary_lower_fuzzer">Bajar el valor de FUZZER de 2.5 minutos a 37.5 segundos</string>
     <string name="without_camera_permission_cannot_scan_barcode">Sin el permiso de usar la cámara, no podemos escanear un código de barras</string>
     <string name="summary_create_missing_filtered">Make filtered data as needed</string>
     <string name="title_create_missing_filtered">Crear filtros faltantes</string>

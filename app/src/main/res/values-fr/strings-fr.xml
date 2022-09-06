@@ -352,7 +352,7 @@
     <string name="download_now">Télécharger maintenant</string>
     <string name="automatically_check_for_updates">Vérifier automatiquement les mises à jour</string>
     <string name="here_you_can_save_the_settings_to_the_external_storage_sdcard">Ici, vous pouvez enregistrer les paramètres vers la mémoire interne (Download/xDrip-export/com.eveningoutpost.dexdrip_preferences.xml).\n\nUne fois enregistrés dans le fichier, il est possible pour toute application de lire les paramètres qui pourraient contenir des informations sensibles.\n\nIl est conseillé de supprimer les paramètres une fois que vous les avez importés à nouveau si vous êtes préoccupé par cela.</string>
-    <string name="save_all_settings_to_sdcard">Enregistrer tous les paramètres à partir du fichier</string>
+    <string name="save_all_settings_to_sdcard">Enregistrer tous les paramètres dans le fichier</string>
     <string name="load_all_settings_from_sdcard">Charger tous les paramètres depuis le fichier</string>
     <string name="delete_any_settings_on_sdcard">Supprimer le dossier de paramètres (Download/xDrip-export)</string>
     <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Utilisez les codes QR pour transférer les paramètres en utilisant Paramètres-> Configuration Automatique]]></string>
@@ -1574,8 +1574,6 @@
     <string name="enable_streaming_dialog_dont_ask_again">Ne plus me le demander</string>
     <string name="enable_streaming_dialog_text">Voulez-vous connecter xDrip à ce capteur? Cela empêchera le lecteur Freestyle et l\'application LibreLink de recevoir les alertes. Appuyez sur oui et scannez vous à nouveau pour vous connecter (choisissez de ne pas vous connecter si vous voulez exécuter xDrip avec l\'application patchée)</string>
     <string name="enable_streaming_dialog_title">Connexion du capteur Libre au Bluetooth</string>
-    <string name="title_lower_fuzzer">Réduire FUZZER</string>
-    <string name="summary_lower_fuzzer">Réduire la valeur de FUZZER de 2,5 minutes à 37,5 secondes</string>
     <string name="without_camera_permission_cannot_scan_barcode">Impossible de scanner le code-barres sans la permission caméra</string>
     <string name="summary_create_missing_filtered">Rendre les données filtrées si nécessaire</string>
     <string name="title_create_missing_filtered">Créer les filtrées manquantes</string>
@@ -1668,7 +1666,7 @@
     <string name="graph_smoothing">Lissage du graphique</string>
     <string name="last_reading">Dernière lecture</string>
     <string name="select_file_for_alert">Sélectionner le son pour l\'alerte</string>
-    <string name="cannot_choose_file_without_permission">Impossible de choisir un fichier sans avoir l\'autorisation de stockage</string>
+    <string name="cannot_choose_file_without_permission">Impossible de choisir le fichier sans l\'autorisation de stockage</string>
     <string name="select_time">Sélectionner l\'horaire</string>
     <string name="select_tone_for_alerts">Sélectionner le son pour les alertes</string>
 </resources>

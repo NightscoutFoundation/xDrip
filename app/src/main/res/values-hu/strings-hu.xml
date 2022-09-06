@@ -1547,8 +1547,6 @@
     <string name="enable_streaming_dialog_dont_ask_again">Ne kérdezzen rá többet</string>
     <string name="enable_streaming_dialog_text">Összekapcsolja az xDripet ezzel a szenzorral? Ezután a Libre olvasó és a LibreLink app nem kap riasztást. Nyomja meg az Igen gombot, olvassa le a szenzort a kapcsolódáshoz (Ha a patch-elt LibreLink-et akarja használni, ne kapcsolja össze őket.)</string>
     <string name="enable_streaming_dialog_title">Csatlakozzon Libre szenzorhoz BT-szal</string>
-    <string name="title_lower_fuzzer">FUZZER csökkentése</string>
-    <string name="summary_lower_fuzzer">A FUZZER értékének csökkentése 2,5 percről 37,5 mp-re</string>
     <string name="without_camera_permission_cannot_scan_barcode">Kamerahasználat engedélyezése nélkül nem működik a vonalkód olvasás</string>
     <string name="title_create_missing_filtered">Alkossa meg a hiányzó szűrt adatokat</string>
     <string name="summary_widget_hide_graph">A grafikon elrejtése a widgeteken (a következő olvasáskor jelenik meg)</string>
@@ -1603,6 +1601,8 @@
     <string name="basal_profile_editor">Bázisinzulin-profil szerkesztő</string>
     <string name="import_sounds">Hangok importálása</string>
     <string name="play_sounds_when_importing">Hangjelzés fontos adatok pl. profilok importálásakor</string>
+    <string name="show_action_buttons_within_alerts">Műveleti gombok megjelenítése (pl. szundi) a riasztási értesítésekben</string>
+    <string name="alert_buttons">Riasztás gombok</string>
     <string name="show_sensor_expiry">Szenzor lejárat mutatása</string>
     <string name="show_collector_status">Kollektor állapot muitatása</string>
     <string name="show_chart_preview">Grafikon előnézet mutatása</string>
@@ -1615,5 +1615,8 @@
     <string name="simplify_graphs_by_smoothing_out_irregularities">A grafikon egyszerűsítése a kiugró értékek elsimításával</string>
     <string name="graph_smoothing">Grafikon simítása</string>
     <string name="last_reading">Utolsó leolvasás</string>
+    <string name="select_file_for_alert">Válassza ki a riasztás fájlját</string>
     <string name="cannot_choose_file_without_permission">Tárhelyengedély nélkül nem nyithat meg fájlokat</string>
+    <string name="select_time">Időpont kiválasztása</string>
+    <string name="select_tone_for_alerts">Válassza ki a riasztás hangját</string>
 </resources>
