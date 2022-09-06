@@ -1717,4 +1717,6 @@
     <string name="cannot_choose_file_without_permission">Cannot choose file without storage permission</string>
     <string name="select_time">Select Time</string>
     <string name="select_tone_for_alerts">Select tone for Alerts</string>
+    <string name="show_unsmoothed">Show unsmoothed</string>
+    <string name="show_unsmoothed_summary">Show unsmoothed data also if Graph Smoothing is enabled. If calibration plugin is used, will show unsmoothed data instead of plugin data.</string>
 </resources>

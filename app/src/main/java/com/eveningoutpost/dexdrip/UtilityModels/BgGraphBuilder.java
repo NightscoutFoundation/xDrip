@@ -1077,7 +1077,7 @@ public class BgGraphBuilder {
             smbValues.clear();
 
             if (Pref.getBooleanDefaultFalse("graph_smoothing")) {
-                if (Home.get_engineering_mode() && Pref.getBooleanDefaultFalse("show-unsmoothed-values-as-plugin")) {
+                if (Pref.getBooleanDefaultFalse("show-unsmoothed-values-as-plugin")) {
                     showUnSmoothedValues(bgReadings);
                 }
                 SmootherFactory.get(Pref.getString("main-chart-smoothing-alg","")).smoothBgReadings(bgReadings);
