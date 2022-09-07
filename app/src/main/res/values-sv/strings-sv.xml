@@ -1119,4 +1119,6 @@
     <string name="cannot_choose_file_without_permission">Kan inte välja fil utan behörigheter för lagringsutrymme</string>
     <string name="select_time">Välj Tid</string>
     <string name="select_tone_for_alerts">Välj ljud för Larm</string>
+    <string name="show_unsmoothed">Visa ej-utjämnad</string>
+    <string name="show_unsmoothed_summary">Visa icke-utjämnad data om också Grafutjämning är aktiverad. Om kalibreringsplugin används, kommer icke-utjämnade data visas istället för plugindata.</string>
 </resources>
