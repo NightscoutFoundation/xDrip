@@ -1,15 +1,19 @@
 package com.eveningoutpost.dexdrip.cgm.carelinkfollow;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ConnectData;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.Marker;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.RecentData;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.SensorGlucose;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,6 +37,7 @@ public class CareLinkDataProcessor {
     static synchronized void processData(final RecentData recentData, final boolean live) {
 
         List<SensorGlucose> filteredSgList;
+        List<Marker> filteredMarkerList;
 
         UserError.Log.d(TAG, "Start processsing data...");
 
@@ -50,7 +55,7 @@ public class CareLinkDataProcessor {
             return;
         }
 
-        //1 - SENSOR GLUCOSE (if available
+        //SENSOR GLUCOSE (if available)
         if (recentData.sgs != null) {
 
             final BgReading lastBg = BgReading.lastNoSenssor();
@@ -139,9 +144,63 @@ public class CareLinkDataProcessor {
             }
         }
 
-        //2) Markers (if available)
-        if(recentData.markers != null){
 
+        //MARKERS (if available)
+        if (recentData.markers != null) {
+
+            //Filter, correct markers
+            filteredMarkerList = new ArrayList<>();
+            for (Marker marker : recentData.markers) {
+                if (marker != null) {
+                    if (marker.type != null) {
+                        //Try to determine correct date/time
+                        try {
+                            if (marker.dateTime == null)
+                                marker.dateTime = calcTimeByIndex(recentData.dLastSensorTime, marker.index, true);
+                        } catch (Exception ex) {
+                            UserError.Log.d(TAG, "Time calculation error!");
+                            continue;
+                        }
+                        //Add filtered marker ith correct date/time
+                        if (marker.dateTime != null)
+                            filteredMarkerList.add(marker);
+                    }
+                }
+            }
+
+            if(filteredMarkerList.size() > 0) {
+                //sort markers by time
+                Collections.sort(filteredMarkerList, (o1, o2) -> o1.dateTime.compareTo(o2.dateTime));
+
+                //process markers one-by-one
+                for (Marker marker : filteredMarkerList) {
+
+                    //FINGER BG
+                    if (marker.isBloodGlucose() && Pref.getBooleanDefaultFalse("clfollow_download_finger_bgs")) {
+                        //check required values
+                        if (marker.value != null && !marker.value.equals(0)) {
+                            //new blood test
+                            if (BloodTest.getForPreciseTimestamp(marker.dateTime.getTime(), 10000) == null) {
+                                BloodTest.create(marker.dateTime.getTime(), marker.value, SOURCE_CARELINK_FOLLOW);
+                            }
+                        }
+                    }
+
+                }
+            }
         }
+
     }
+
+    //Calculate DateTime using graph index (1 index = 5 minute)
+    protected static Date calcTimeByIndex(Date lastSensorTime, int index, boolean round){
+        if(lastSensorTime == null)
+            return null;
+        else if(round)
+            //round to 10 minutes
+            return new Date((Math.round((calcTimeByIndex(lastSensorTime,index,false).getTime()) / 600_000D) * 600_000L));
+        else
+            return new Date((lastSensorTime.getTime() - ((287 - index) * 300_000L)));
+    }
+
 }

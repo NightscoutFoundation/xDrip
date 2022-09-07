@@ -1265,6 +1265,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             final Preference carelinkFollowCountry = findPreference("clfollow_country");
             final Preference carelinkFollowGracePeriod = findPreference("clfollow_grace_period");
             final Preference carelinkFollowMissedPollInterval = findPreference("clfollow_missed_poll_interval");
+            final Preference carelinkFollowDownloadFingerBGs = findPreference("clfollow_download_finger_bgs");
+            //Add CL prefs for CLFollower
             if (collectionType == DexCollectionType.CLFollow) {
                 //Add CL prefs
                 collectionCategory.addPreference(carelinkFollowUser);
@@ -1272,6 +1274,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 collectionCategory.addPreference(carelinkFollowCountry);
                 collectionCategory.addPreference(carelinkFollowGracePeriod);
                 collectionCategory.addPreference(carelinkFollowMissedPollInterval);
+                collectionCategory.addPreference(carelinkFollowDownloadFingerBGs);
                 //Create prefChange handler
                 final Preference.OnPreferenceChangeListener carelinkFollowListener = new Preference.OnPreferenceChangeListener() {
                     @Override
@@ -1291,6 +1294,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 } catch (Exception e) {
                     //
                 }
+            //Remove CL prefs for NON CLFollower
             } else {
                 try {
                     collectionCategory.removePreference(carelinkFollowUser);
@@ -1298,6 +1302,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     collectionCategory.removePreference(carelinkFollowCountry);
                     collectionCategory.removePreference(carelinkFollowGracePeriod);
                     collectionCategory.removePreference(carelinkFollowMissedPollInterval);
+                    collectionCategory.removePreference(carelinkFollowDownloadFingerBGs);
                 } catch (Exception e) {
                     //
                 }
@@ -1628,6 +1633,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 }
             }
 
+            //Remove CL prefs for NON CLFollower
             if (collectionType != DexCollectionType.CLFollow) {
                 try {
                     collectionCategory.removePreference(carelinkFollowCountry);
@@ -1635,6 +1641,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     collectionCategory.removePreference(carelinkFollowUser);
                     collectionCategory.removePreference(carelinkFollowGracePeriod);
                     collectionCategory.removePreference(carelinkFollowMissedPollInterval);
+                    collectionCategory.removePreference(carelinkFollowDownloadFingerBGs);
                 } catch (Exception e) {
                     //
                 }

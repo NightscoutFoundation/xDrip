@@ -246,6 +246,11 @@
             android:singleLine="true"
             android:summary="@string/summary_clfollow_missed_poll_interval"
             android:title="@string/title_clfollow_missed_poll_interval" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="clfollow_download_finger_bgs"
+            android:summary="@string/summary_clfollow_download_finger_bgs"
+            android:title="@string/title_clfollow_download_finger_bgs" />
 
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="xdrip_plus_g5_extra_settings"
