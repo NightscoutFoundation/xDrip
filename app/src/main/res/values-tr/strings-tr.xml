@@ -1668,4 +1668,6 @@
     <string name="cannot_choose_file_without_permission">Depolama izni olmadan dosya seçilemiyor</string>
     <string name="select_time">Saati Seçin</string>
     <string name="select_tone_for_alerts">Uyarılar için ton seçin</string>
+    <string name="show_unsmoothed">Pürüzlü verileri göster</string>
+    <string name="show_unsmoothed_summary">Grafik yumuşatma etkinleştirilse bile pürüzlü verileri de gösterir. Kalibrasyon eklentisi kullanılıyorsa, eklenti verileri yerine pürüzlü verileri gösterecektir.</string>
 </resources>
