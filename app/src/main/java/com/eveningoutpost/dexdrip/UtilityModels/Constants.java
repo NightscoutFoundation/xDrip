@@ -14,6 +14,7 @@ public class Constants {
     public static final long DAY_IN_MS = 86_400_000;
     public static final long WEEK_IN_MS = DAY_IN_MS * 7;
     public static final long MONTH_IN_MS = DAY_IN_MS * 30;
+    public static final long YEAR_IN_MS = DAY_IN_MS * 365;
 
     public static final double LIBRE_MULTIPLIER = 117.64705; // to match (raw/8.5)*1000
 
@@ -59,6 +60,7 @@ public class Constants {
     public static final int INCOMPATIBLE_BASE_ID = 5000;
     public static final int COMPATIBLE_BASE_ID = 6000;
     public static final int DEX_BASE_ID = 6400;
+    public static final int SETTINGS_INADVISABLE_BASE_ID = 7000;
 
     //
     public static final int HEART_RATE_JOB_ID = 60920012;

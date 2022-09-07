@@ -303,6 +303,7 @@
     <string name="high_glucose_values">ערכי סוכר גבוהים</string>
     <string name="in_range_glucose_values">ערכי סוכר בטווח</string>
     <string name="default_color_selected">נבחר צבע ברירת מחדל</string>
+    <string name="color_bg_values">צבע של קריאות סוכר וחץ כיוון</string>
     <string name="xdrip_plus_extra_settings">הגדרות נוספות</string>
     <string name="example_chart">גרף לדוגמה</string>
     <string name="treatments_prediction_curves">טיפולים \\ עקומות חיזוי</string>
@@ -901,6 +902,7 @@
     <string name="days">ימים</string>
     <string name="bluereader_position">בדוק את המיקום של ה-blueReader על הסנסור, אחרת יצליח לקרוא!</string>
     <string name="offical_msg">האפליקציה הרשמית</string>
+    <string name="eng_mode_is_on">מצב המהנדסים פועל. נא לבטלו אלא אם אתם בטוחים שאתם זקוקים לו כי הוא עלול לגרום להתנהגות בלתי צפויה.</string>
     <string name="yes">כן</string>
     <string name="xdrip_compatible_features">תכונות %s xDrip</string>
     <string name="garmin">Garmin</string>
@@ -1522,4 +1524,10 @@
     <string name="show_action_buttons_within_alerts">הצג כפתורי פעולות (לדוגמה נודניק) בתוך ההתראות</string>
     <string name="alert_buttons">כפתורי פעולות</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">אנא המתינו %d שניות לפני שתנסו להפעיל חיישן</string>
+    <string name="save_power">חסוך בסוללה</string>
+    <string name="reduce_battery_and_network_overhead">חסוך בסוללה ובשימוש בנתונים בעזרת ניתוח נתונים במכה, וכן הפחתה של מידע לא נחוץ</string>
+    <string name="simplify_graphs_by_smoothing_out_irregularities">פשט את הגרפים בעזרת החלקה של נתונים יוצאי דופן</string>
+    <string name="graph_smoothing">החלקת הגרף</string>
+    <string name="last_reading">קריאה אחרונה</string>
+    <string name="cannot_choose_file_without_permission">אין אפשרות לבחור קובץ בלי הרשאה לאחסון</string>
 </resources>

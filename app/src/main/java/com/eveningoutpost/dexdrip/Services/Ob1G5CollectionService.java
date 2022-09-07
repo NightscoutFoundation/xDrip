@@ -1,5 +1,43 @@
 package com.eveningoutpost.dexdrip.Services;
 
+import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getUUIDName;
+import static com.eveningoutpost.dexdrip.G5Model.CalibrationState.Ok;
+import static com.eveningoutpost.dexdrip.G5Model.CalibrationState.Unknown;
+import static com.eveningoutpost.dexdrip.G5Model.G6CalibrationParameters.getCurrentSensorCode;
+import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.CLOSED_OK_TEXT;
+import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.evaluateG6Settings;
+import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingCalibration;
+import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingStart;
+import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingStop;
+import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.usingAlt;
+import static com.eveningoutpost.dexdrip.Models.JoH.niceTimeScalar;
+import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
+import static com.eveningoutpost.dexdrip.Models.JoH.upForAtLeastMins;
+import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.BOND;
+import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.CLOSE;
+import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.CLOSED;
+import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.CONNECT;
+import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.CONNECT_NOW;
+import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.DISCOVER;
+import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.GET_DATA;
+import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.INIT;
+import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.PREBOND;
+import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.SCAN;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_CALIBRATION_REQUEST;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_FAILED;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_RESTARTED;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_STARTED;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.SECOND_IN_MS;
+import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.BAD;
+import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.CRITICAL;
+import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.NORMAL;
+import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.NOTICE;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
+import static com.eveningoutpost.dexdrip.utils.bt.Subscription.addErrorHandler;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
+
 import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
@@ -90,62 +128,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
 
-import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getUUIDName;
-import static com.eveningoutpost.dexdrip.G5Model.CalibrationState.Ok;
-import static com.eveningoutpost.dexdrip.G5Model.CalibrationState.Unknown;
-import static com.eveningoutpost.dexdrip.G5Model.G6CalibrationParameters.getCurrentSensorCode;
-import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.CLOSED_OK_TEXT;
-import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.evaluateG6Settings;
-import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingCalibration;
-import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingStart;
-import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingStop;
-import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.usingAlt;
-import static com.eveningoutpost.dexdrip.Models.JoH.niceTimeScalar;
-import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
-import static com.eveningoutpost.dexdrip.Models.JoH.upForAtLeastMins;
-import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.BOND;
-import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.CLOSE;
-import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.CLOSED;
-import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.CONNECT;
-import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.CONNECT_NOW;
-import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.DISCOVER;
-import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.GET_DATA;
-import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.INIT;
-import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.PREBOND;
-import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.SCAN;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_CALIBRATION_REQUEST;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_FAILED;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_RESTARTED;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_STARTED;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.SECOND_IN_MS;
-import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.BAD;
-import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.CRITICAL;
-import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.NORMAL;
-import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.NOTICE;
-import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
-import static com.eveningoutpost.dexdrip.utils.bt.Subscription.addErrorHandler;
-import static com.eveningoutpost.dexdrip.xdrip.gs;
-
-/*import com.polidea.rxandroidble.RxBleClient;
-import com.polidea.rxandroidble.RxBleConnection;
-import com.polidea.rxandroidble.RxBleCustomOperation;
-import com.polidea.rxandroidble.RxBleDevice;
-import com.polidea.rxandroidble.RxBleDeviceServices;
-import com.polidea.rxandroidble.exceptions.BleGattCallbackTimeoutException;
-import com.polidea.rxandroidble.exceptions.BleScanException;
-import com.polidea.rxandroidble.internal.RxBleLog;
-import com.polidea.rxandroidble.internal.connection.RxBleGattCallback;
-import com.polidea.rxandroidble.scan.ScanFilter;
-import com.polidea.rxandroidble.scan.ScanResult;
-import com.polidea.rxandroidble.scan.ScanSettings;
-*/
-//import rx.Observable;
-//import rx.Scheduler;
-//import rx.Subscription;
-//import rx.schedulers.Schedulers;
-
 
 /**
  * OB1 G5/G6 collector
@@ -225,14 +207,15 @@ public class Ob1G5CollectionService extends G5BaseService {
     private int error_backoff_ms = 1000;
     private static final int max_error_backoff_ms = 10000;
     private static final long TOLERABLE_JITTER = 10000;
-
+    private static volatile String wasBonded = "";
+    private static volatile int skippedConnects = 0;
     private static final boolean d = false;
 
     private static boolean use_auto_connect = false;
     private static volatile boolean minimize_scanning = false; // set by preference
     private static volatile boolean always_scan = false;
     private static volatile boolean scan_next_run = true;
-    private static boolean always_discover = true;
+    private static final boolean always_discover = true;
     private static boolean always_connect = false;
     private static boolean do_discovery = true;
     private static final boolean do_auth = true;
@@ -303,6 +286,10 @@ public class Ob1G5CollectionService extends G5BaseService {
         }).start();
     }
 
+    private boolean specialPairingWorkaround() {
+        return Pref.getBooleanDefaultFalse("ob1_special_pairing_workaround");
+    }
+
     private synchronized void automata() {
 
         if ((last_automata_state != state) || state == INIT || (JoH.ratelimit("jam-g5-dupe-auto", 2))) {
@@ -336,13 +323,27 @@ public class Ob1G5CollectionService extends G5BaseService {
                         }
                         break;
                     case CONNECT_NOW:
-                        connect_to_device(false);
+                        if (specialPairingWorkaround()) {
+                            val locallyBonded = isDeviceLocallyBonded();
+                            UserError.Log.d(TAG, "wasbonded = " + wasBonded + " local: " + locallyBonded);
+                            if (wasBonded.equals(getTransmitterID()) && !locallyBonded && skippedConnects < 10) {
+                                skippedConnects++;
+                                UserError.Log.wtf(TAG, "Appears to have lost bonding, skipping this connect! @ " + skippedConnects);
+                                changeState(CLOSE);
+                            } else {
+                                wasBonded = locallyBonded ? getTransmitterID() : "";
+                                skippedConnects = 0;
+                                connect_to_device(specialPairingWorkaround());
+                            }
+                        } else {
+                            connect_to_device(false);
+                        }
                         break;
                     case CONNECT:
                         connect_to_device(true);
                         break;
                     case DISCOVER:
-                        if (wear_broadcast && usingAlt()) {
+                        if ((wear_broadcast && usingAlt()) || specialPairingWorkaround()){
                             msg("Pausing");
                             UserError.Log.d(TAG, "Pausing for alt: ");
                             JoH.threadSleep(1000);
@@ -616,6 +617,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
                     last_connect_started = tsl();
                     // Attempt to establish a connection // TODO does this need different connection timeout for auto vs normal?
+                    UserError.Log.d(TAG, "Connecting with auto: " + auto);
                     connectionSubscription = new Subscription(bleDevice.establishConnection(auto)
                             .timeout(7, TimeUnit.MINUTES)
                             // .flatMap(RxBleConnection::discoverServices)
@@ -1231,11 +1233,12 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     private boolean resetBondIfAllowed(boolean force) {
-        if (Pref.getBoolean("ob1_g5_allow_resetbond", true)) {
+        if (Pref.getBoolean("ob1_g5_allow_resetbond", false)
+                && !specialPairingWorkaround()) {
             reset_bond(force);
             return true;
         } else {
-            UserError.Log.e(TAG, "Would have tried to unpair but preference setting prevents it. (resetbond)");
+            UserError.Log.w(TAG, "Would have tried to unpair but preference setting prevents it. (resetbond) Allow OB1 unbonding setting and disable pairing workaround");
             return false;
         }
     }
@@ -1409,7 +1412,14 @@ public class Ob1G5CollectionService extends G5BaseService {
                 if (!always_discover) {
                     do_discovery = false;
                 }
-                changeState(STATE.CHECK_AUTH);
+
+                if (specialPairingWorkaround()) {
+                    UserError.Log.d(TAG,"Samsung additional delay");
+                    Inevitable.task("samsung delay", 1000, () -> changeState(STATE.CHECK_AUTH));
+                } else {
+                    changeState(STATE.CHECK_AUTH);
+                }
+
                 return;
             }
         }
@@ -1972,7 +1982,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
 
         if (transmitterID != null) {
-            l.add(new StatusItem("Sensor Device", transmitterID + ((transmitterMAC != null && Home.get_engineering_mode()) ? "\n" + transmitterMAC : "")));
+            l.add(new StatusItem("Transmitter ID", transmitterID + ((transmitterMAC != null && Home.get_engineering_mode()) ? "\n" + transmitterMAC : "")));
         }
 
         if (static_connection_state != null) {

@@ -304,6 +304,7 @@
     <string name="high_glucose_values">Magas VC-értékek</string>
     <string name="in_range_glucose_values">Céltartományon belüli VC-értékek</string>
     <string name="default_color_selected">Alapértelmezett szín</string>
+    <string name="color_bg_values">VC-értékek és trendnyilak színe</string>
     <string name="xdrip_plus_extra_settings">xDrip+ egyéb beállítások</string>
     <string name="example_chart">Minta grafikon</string>
     <string name="treatments_prediction_curves">Kezelési/előrejelzési görbék</string>
@@ -909,6 +910,7 @@
     <string name="bluereaderuglystate">blueReader kapcsolat megszakadt! Magától kikapcsol, eztán pár másodperc múlva kapcsolja be (Nyomja meg a gombot!). Eztán a blueReader ismét működik!</string>
     <string name="offical_msg">A hivatalos app</string>
     <string name="use_conflict_msg">megpróbálhatja elérni a transmittert, ami mindkét app-nál gondot okozhat</string>
+    <string name="eng_mode_is_on">Fejlesztői mód aktiválva. Kapcsolja ki, kivéve, ha biztos benne, hogy szüksége van rá, mert az app váratlan működését okozhatja.</string>
     <string name="yes">Igen</string>
     <string name="xdrip_compatible_features">xDrip+ %s beállítások</string>
     <string name="garmin">Garmin</string>
@@ -1185,6 +1187,8 @@
     <string name="send_bg_readings_to_backfill">VC-értékek visszatöltésre küldése</string>
     <string name="view_old_error_log">Régi naplóforma</string>
     <string name="return_to_home_screen">Vissza a kezdőképernyőre</string>
+    <string name="title_broadcast_service_api">Adattovábbitási API</string>
+    <string name="summary_broadcast_service_api">Lehetővé teszi az xDrip adatcseréjét harmadik féltől származó applikációkkal</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Adatok szinkronizálása MiBand-del</string>
     <string name="title_miband_enable">MiBand használata</string>
@@ -1543,8 +1547,6 @@
     <string name="enable_streaming_dialog_dont_ask_again">Ne kérdezzen rá többet</string>
     <string name="enable_streaming_dialog_text">Összekapcsolja az xDripet ezzel a szenzorral? Ezután a Libre olvasó és a LibreLink app nem kap riasztást. Nyomja meg az Igen gombot, olvassa le a szenzort a kapcsolódáshoz (Ha a patch-elt LibreLink-et akarja használni, ne kapcsolja össze őket.)</string>
     <string name="enable_streaming_dialog_title">Csatlakozzon Libre szenzorhoz BT-szal</string>
-    <string name="title_lower_fuzzer">FUZZER csökkentése</string>
-    <string name="summary_lower_fuzzer">A FUZZER értékének csökkentése 2,5 percről 37,5 mp-re</string>
     <string name="without_camera_permission_cannot_scan_barcode">Kamerahasználat engedélyezése nélkül nem működik a vonalkód olvasás</string>
     <string name="title_create_missing_filtered">Alkossa meg a hiányzó szűrt adatokat</string>
     <string name="summary_widget_hide_graph">A grafikon elrejtése a widgeteken (a következő olvasáskor jelenik meg)</string>
@@ -1562,6 +1564,8 @@
     <string name="title_broadcast_snooze">Helyi adatszórás</string>
     <string name="summary_accept_broadcast_snooze">Szundi elfogadása más app-tól ezen készüléken</string>
     <string name="title_accept_broadcast_snooze">Helyi adatszórás engedélyezése</string>
+    <string name="title_bg_compensate_noise">\u26A0 szenzorzaj csökkentése</string>
+    <string name="title_bg_compensate_noise_ultrasensitive">\u26A0 szenzorzaj csökkentése (nagy érzékenységű üzemmód)</string>
     <string name="no_battery_optimization_whitelisting">Úgy tűnik, a készüléke nem vezet kivétellistát az akku optimalizált app-okról!</string>
     <string name="no_i_really_know">Nem, tényleg tudom, mit csinálok</string>
     <string name="use_for_calibration">Használja a %s értéket kalibrációra?</string>
@@ -1597,10 +1601,22 @@
     <string name="basal_profile_editor">Bázisinzulin-profil szerkesztő</string>
     <string name="import_sounds">Hangok importálása</string>
     <string name="play_sounds_when_importing">Hangjelzés fontos adatok pl. profilok importálásakor</string>
+    <string name="show_action_buttons_within_alerts">Műveleti gombok megjelenítése (pl. szundi) a riasztási értesítésekben</string>
+    <string name="alert_buttons">Riasztás gombok</string>
     <string name="show_sensor_expiry">Szenzor lejárat mutatása</string>
     <string name="show_collector_status">Kollektor állapot muitatása</string>
     <string name="show_chart_preview">Grafikon előnézet mutatása</string>
     <string name="source_wizard_button">Varázsló gomb mutatása</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Várj %d másodpercet, mielőtt indítod a szenzort</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">frissítse az OOP2-t vagy használja a nyers adatokon alapuló kalibrációs módot</string>
+    <string name="special_pairing_workaround">Eljárás speciális párosításhoz</string>
+    <string name="save_power">Akkukímélés</string>
+    <string name="reduce_battery_and_network_overhead">Az akkumulátor- és hálózati terhelés csökkentése batch programozással és a felesleges adatok kizárásával</string>
+    <string name="simplify_graphs_by_smoothing_out_irregularities">A grafikon egyszerűsítése a kiugró értékek elsimításával</string>
+    <string name="graph_smoothing">Grafikon simítása</string>
+    <string name="last_reading">Utolsó leolvasás</string>
+    <string name="select_file_for_alert">Válassza ki a riasztás fájlját</string>
+    <string name="cannot_choose_file_without_permission">Tárhelyengedély nélkül nem nyithat meg fájlokat</string>
+    <string name="select_time">Időpont kiválasztása</string>
+    <string name="select_tone_for_alerts">Válassza ki a riasztás hangját</string>
 </resources>

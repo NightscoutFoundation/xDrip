@@ -50,6 +50,7 @@
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
                         app:colorpicker_showHex="false" />
+
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#ffffff"
                         android:key="color_bad_values"
@@ -62,6 +63,33 @@
                         android:defaultValue="#a0a0a0"
                         android:key="color_filtered"
                         android:title="@string/filtered_values"
+                        app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
+                        app:colorpicker_selectNoneButtonText="@string/revert_to_default"
+                        app:colorpicker_showHex="false" />
+                </PreferenceCategory>
+
+                <PreferenceCategory
+                    android:key="xdrip_plus_display_textcolorset1"
+                    android:title="@string/color_bg_values">
+                    <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#FFBB33"
+                        android:key="color_high_bg_values"
+                        android:title="@string/high_glucose_values"
+                        app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
+                        app:colorpicker_selectNoneButtonText="@string/revert_to_default"
+                        app:colorpicker_showHex="false" />
+                    <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#FFFFFF"
+                        android:key="color_inrange_bg_values"
+                        android:title="@string/in_range_glucose_values"
+                        app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
+                        app:colorpicker_selectNoneButtonText="@string/revert_to_default"
+                        app:colorpicker_showHex="false" />
+
+                    <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#C30909"
+                        android:key="color_low_bg_values"
+                        android:title="@string/low_glucose_values"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
                         app:colorpicker_showHex="false" />
@@ -324,6 +352,14 @@
                 android:summary="@string/summary_xdrip_plus_graph_display_settings"
                 android:title="@string/title_xdrip_plus_graph_display_settings">
 
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:key="graph_smoothing"
+                    android:summary="@string/simplify_graphs_by_smoothing_out_irregularities"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="@string/graph_smoothing" />
+
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="rewrite_history"
@@ -423,12 +459,6 @@
                     android:key="illustrate_remote_data"
                     android:summary="@string/summary_illustrate_remote_data"
                     android:title="@string/title_illustrate_remote_data" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:dependency="engineering_mode"
-                    android:key="lower_fuzzer"
-                    android:summary="@string/summary_lower_fuzzer"
-                    android:title="@string/title_lower_fuzzer" />
             </PreferenceScreen>
 
             <CheckBoxPreference
@@ -681,19 +711,6 @@
                 </intent>
             </Preference>
         </PreferenceCategory>
-        <PreferenceCategory
-            android:key="title_I_understandb"
-            android:title="@string/eula">
-            <Preference
-                android:key="I_understandb"
-                android:summary="@string/not_for_medical_use"
-                android:title="@string/end_user_license_agreement">
-                <intent
-                    android:action="android.intent.action.MAIN"
-                    android:targetClass="com.eveningoutpost.dexdrip.LicenseAgreementActivity"
-                    android:targetPackage="@string/local_target_package" />
-            </Preference>
-        </PreferenceCategory>
 
         <PreferenceScreen
             android:dependency="I_understand"
@@ -732,6 +749,19 @@
             </PreferenceCategory>
         </PreferenceScreen>
 
+        <PreferenceCategory
+            android:key="title_I_understandb"
+            android:title="@string/eula">
+            <Preference
+                android:key="I_understandb"
+                android:summary="@string/not_for_medical_use"
+                android:title="@string/end_user_license_agreement">
+                <intent
+                    android:action="android.intent.action.MAIN"
+                    android:targetClass="com.eveningoutpost.dexdrip.LicenseAgreementActivity"
+                    android:targetPackage="@string/local_target_package" />
+            </Preference>
+        </PreferenceCategory>
     </PreferenceScreen>
 
     <PreferenceScreen
@@ -767,6 +797,11 @@
                 android:key="plus_accept_follower_actions"
                 android:summary="@string/summary_plus_accept_follower_actions"
                 android:title="@string/title_plus_accept_follower_actions" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="plus_follower_save_power"
+                android:summary="@string/reduce_battery_and_network_overhead"
+                android:title="@string/save_power" />
             <SwitchPreference
                 android:defaultValue="false"
                 android:dependency="plus_follow_master"

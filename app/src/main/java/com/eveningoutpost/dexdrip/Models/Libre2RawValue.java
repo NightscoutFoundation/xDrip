@@ -1,14 +1,16 @@
 package com.eveningoutpost.dexdrip.Models;
 
 
-        import android.provider.BaseColumns;
+import android.provider.BaseColumns;
 
-        import com.activeandroid.annotation.Column;
-        import com.activeandroid.annotation.Table;
-        import com.activeandroid.query.Select;
+import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Delete;
+import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 
-        import java.util.Date;
-        import java.util.List;
+import java.util.Date;
+import java.util.List;
 
 @Table(name = "Libre2RawValue2", id = BaseColumns._ID)
 public class Libre2RawValue extends PlusModel {
@@ -53,6 +55,14 @@ public class Libre2RawValue extends PlusModel {
                 .where("glucose != 0")
                 .orderBy("ts desc")
                 .limit(number)
+                .execute();
+    }
+
+    public static List<Libre2RawValue> cleanup(final int retention_days) {
+        updateDB();
+        return new Delete()
+                .from(Libre2RawValue.class)
+                .where("ts < ?", JoH.tsl() - (retention_days * Constants.DAY_IN_MS))
                 .execute();
     }
 

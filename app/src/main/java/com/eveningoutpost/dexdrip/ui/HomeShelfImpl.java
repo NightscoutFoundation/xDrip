@@ -20,6 +20,7 @@ public class HomeShelfImpl extends BaseShelf {
         map.put("sensor_expiry", "Sensor Expiry");
         defaults.put("chart_preview", true);
         defaults.put("collector_nano_status", true);
+        defaults.put("sensor_expiry", true);
         populate();
     }
 

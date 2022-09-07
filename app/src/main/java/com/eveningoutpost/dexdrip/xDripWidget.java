@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip;
 
+import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
+
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -233,17 +235,17 @@ public class xDripWidget extends AppWidgetProvider {
                     views.setViewVisibility(R.id.widgetStatusLine, View.GONE);
                 }
                 if (bgGraphBuilder.unitized(estimate) <= bgGraphBuilder.lowMark) {
-                    views.setTextColor(R.id.widgetBg, Color.parseColor("#C30909"));
-                    views.setTextColor(R.id.widgetDelta, Color.parseColor("#C30909"));
-                    views.setTextColor(R.id.widgetArrow, Color.parseColor("#C30909"));
+                    views.setTextColor(R.id.widgetBg, getCol(ColorCache.X.color_low_bg_values));
+                    views.setTextColor(R.id.widgetDelta, getCol(ColorCache.X.color_low_bg_values));
+                    views.setTextColor(R.id.widgetArrow, getCol(ColorCache.X.color_low_bg_values));
                 } else if (bgGraphBuilder.unitized(estimate) >= bgGraphBuilder.highMark) {
-                    views.setTextColor(R.id.widgetBg, Color.parseColor("#FFBB33"));
-                    views.setTextColor(R.id.widgetDelta, Color.parseColor("#FFBB33"));
-                    views.setTextColor(R.id.widgetArrow, Color.parseColor("#FFBB33"));
+                    views.setTextColor(R.id.widgetBg, getCol(ColorCache.X.color_high_bg_values));
+                    views.setTextColor(R.id.widgetDelta, getCol(ColorCache.X.color_high_bg_values));
+                    views.setTextColor(R.id.widgetArrow, getCol(ColorCache.X.color_high_bg_values));
                 } else {
-                    views.setTextColor(R.id.widgetBg, Color.WHITE);
-                    views.setTextColor(R.id.widgetDelta, Color.WHITE);
-                    views.setTextColor(R.id.widgetArrow, Color.WHITE);
+                    views.setTextColor(R.id.widgetBg, getCol(ColorCache.X.color_inrange_bg_values));
+                    views.setTextColor(R.id.widgetDelta, getCol(ColorCache.X.color_inrange_bg_values));
+                    views.setTextColor(R.id.widgetArrow, getCol(ColorCache.X.color_inrange_bg_values));
                 }
             } catch (RuntimeException e) {
                 Log.e(TAG, "Got exception in displaycurrentinfo: " + e);

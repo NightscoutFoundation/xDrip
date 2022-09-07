@@ -27,23 +27,23 @@ import java.util.concurrent.TimeUnit;
 import static com.eveningoutpost.dexdrip.Home.get_engineering_mode;
 import static com.eveningoutpost.dexdrip.Models.Libre2Sensor.Libre2Sensors;
 
+import lombok.val;
+
 /**
  * Created by jamorham on 14/11/2016.
  */
 
 public class LibreReceiver extends BroadcastReceiver {
 
-    private static final String TAG = "xdrip libre_receiver";
-    private static final boolean debug = false;
+    private static final String TAG = LibreReceiver.class.getSimpleName();
     private static final boolean d = false;
-    private static SharedPreferences prefs;
     private static final Object lock = new Object();
-    private static String libre_calc_doku="wait for next reading...";
-    private static long last_reading=0;
+    private static String libre_calc_doku = "wait for next reading...";
+    private static long last_reading = 0;
 
     @Override
     public void onReceive(final Context context, final Intent intent) {
-        if(DexCollectionType.getDexCollectionType() != DexCollectionType.LibreReceiver)
+        if (DexCollectionType.getDexCollectionType() != DexCollectionType.LibreReceiver)
             return;
         new Thread() {
             @Override
@@ -54,15 +54,8 @@ public class LibreReceiver extends BroadcastReceiver {
 
                         Log.d(TAG, "libre onReceiver: " + intent.getAction());
                         JoH.benchmark(null);
-                        // check source
-                        if (prefs == null)
-                            prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-                        final Bundle bundle = intent.getExtras();
-                        //  BundleScrubber.scrub(bundle);
                         final String action = intent.getAction();
-
-
 
                         if (action == null) return;
 
@@ -78,16 +71,19 @@ public class LibreReceiver extends BroadcastReceiver {
 
                             case Intents.LIBRE2_BG:
                                 Libre2RawValue currentRawValue = processIntent(intent);
+                                //JoH.dumpBundle(intent.getExtras(), TAG);
+
                                 if (currentRawValue == null) return;
-                                Log.v(TAG,"got bg reading: from sensor:"+currentRawValue.serial+" rawValue:"+currentRawValue.glucose+" at:"+currentRawValue.timestamp);
+
+                                Log.v(TAG, "got bg reading: from sensor:" + currentRawValue.serial + " rawValue:" + currentRawValue.glucose + " at:" + currentRawValue.timestamp);
                                 // period of 4.5 minutes to collect 5 readings
-                                if(!BgReading.last_within_millis(45 * 6 * 1000 )) {
+                                if (!BgReading.last_within_millis(DexCollectionType.getCurrentDeduplicationPeriod())) {
                                     List<Libre2RawValue> smoothingValues = Libre2RawValue.last20Minutes();
                                     smoothingValues.add(currentRawValue);
                                     processValues(currentRawValue, smoothingValues, context);
                                 }
                                 currentRawValue.save();
-
+                                clearNFCsensorAge();
                                 break;
 
                             default:
@@ -95,12 +91,19 @@ public class LibreReceiver extends BroadcastReceiver {
                                 break;
                         }
                     } finally {
-                        JoH.benchmark("NSEmulator process");
+                        JoH.benchmark(TAG);
                         JoH.releaseWakeLock(wl);
                     }
                 } // lock
             }
         }.start();
+    }
+
+    private static void clearNFCsensorAge() {
+        val PREF_KEY = "nfc_sensor_age";
+        if (Pref.getInt(PREF_KEY, 0) != 0) {
+            Pref.setInt(PREF_KEY, 0); // clear any nfc related sensor age cached from another collector
+        }
     }
 
     private static Libre2RawValue processIntent(Intent intent) {
@@ -109,10 +112,10 @@ public class LibreReceiver extends BroadcastReceiver {
             if (sas != null)
                 saveSensorStartTime(sas.getBundle("currentSensor"), intent.getBundleExtra("bleManager").getString("sensorSerial"));
         } catch (NullPointerException e) {
-            Log.e(TAG,"Null pointer exception in processIntent: " + e);
+            Log.e(TAG, "Null pointer exception in processIntent: " + e);
         }
         if (!intent.hasExtra("glucose") || !intent.hasExtra("timestamp") || !intent.hasExtra("bleManager")) {
-            Log.e(TAG,"Received faulty intent from LibreLink.");
+            Log.e(TAG, "Received faulty intent from LibreLink.");
             return null;
         }
         double glucose = intent.getDoubleExtra("glucose", 0);
@@ -120,7 +123,7 @@ public class LibreReceiver extends BroadcastReceiver {
         last_reading = timestamp;
         String serial = intent.getBundleExtra("bleManager").getString("sensorSerial");
         if (serial == null) {
-            Log.e(TAG,"Received faulty intent from LibreLink.");
+            Log.e(TAG, "Received faulty intent from LibreLink.");
             return null;
         }
         Libre2RawValue rawValue = new Libre2RawValue();
@@ -129,6 +132,7 @@ public class LibreReceiver extends BroadcastReceiver {
         rawValue.serial = serial;
         return rawValue;
     }
+
     private static void processValues(Libre2RawValue currentValue, List<Libre2RawValue> smoothingValues, Context context) {
         if (Sensor.currentSensor() == null) {
             Sensor.create(currentValue.timestamp, currentValue.serial);
@@ -136,8 +140,7 @@ public class LibreReceiver extends BroadcastReceiver {
         }
 
         double value = calculateWeightedAverage(smoothingValues, currentValue.timestamp);
-
-        BgReading.bgReadingInsertLibre2(value, currentValue.timestamp,currentValue.glucose);
+        BgReading.bgReadingInsertLibre2(value, currentValue.timestamp, currentValue.glucose);
     }
 
     private static void saveSensorStartTime(Bundle sensor, String serial) {
@@ -145,33 +148,34 @@ public class LibreReceiver extends BroadcastReceiver {
             long sensorStartTime = sensor.getLong("sensorStartTime");
 
             Sensor last = Sensor.currentSensor();
-            if(last!=null) {
+            if (last != null) {
                 if (!last.uuid.equals(serial)) {
                     Sensor.stopSensor();
                     last = null;
                 }
             }
 
-            if(last==null) {
-                Sensor.create(sensorStartTime,serial);
+            if (last == null) {
+                Sensor.create(sensorStartTime, serial);
             }
         }
     }
+
     private static long SMOOTHING_DURATION = TimeUnit.MINUTES.toMillis(25);
 
 
     private static double calculateWeightedAverage(List<Libre2RawValue> rawValues, long now) {
         double sum = 0;
         double weightSum = 0;
-        DecimalFormat longformat = new DecimalFormat( "#,###,###,##0.00" );
+        DecimalFormat longformat = new DecimalFormat("#,###,###,##0.00");
 
-        libre_calc_doku="";
+        libre_calc_doku = "";
         for (Libre2RawValue rawValue : rawValues) {
             double weight = 1 - ((now - rawValue.timestamp) / (double) SMOOTHING_DURATION);
             sum += rawValue.glucose * weight;
             weightSum += weight;
-            libre_calc_doku += DateFormat.format("kk:mm:ss :",rawValue.timestamp) + " w:" + longformat.format(weight) +" raw: " + rawValue.glucose  + "\n" ;
-           }
+            libre_calc_doku += DateFormat.format("kk:mm:ss :", rawValue.timestamp) + " w:" + longformat.format(weight) + " raw: " + rawValue.glucose + "\n";
+        }
         return Math.round(sum / weightSum);
     }
 
@@ -182,12 +186,14 @@ public class LibreReceiver extends BroadcastReceiver {
         if (sensor != null) {
             l.add(new StatusItem("Libre2 Sensor", sensor.uuid + "\nStart: " + DateFormat.format("dd.MM.yyyy kk:mm", sensor.started_at)));
         }
-        String lastReading ="";
-        try {
-            lastReading = DateFormat.format("dd.MM.yyyy kk:mm:ss", last_reading).toString();
-            l.add(new StatusItem("Last Reading", lastReading));
-        } catch (Exception e) {
-            Log.e(TAG, "Error readlast: " + e);
+        if (last_reading > 0) {
+            String lastReading = "";
+            try {
+                lastReading = DateFormat.format("dd.MM.yyyy kk:mm:ss", last_reading).toString();
+                l.add(new StatusItem(xdrip.gs(R.string.last_reading), lastReading));
+            } catch (Exception e) {
+                Log.e(TAG, "Error readlast: " + e);
+            }
         }
         if (get_engineering_mode()) {
             l.add(new StatusItem("Last Calc.", libre_calc_doku));
