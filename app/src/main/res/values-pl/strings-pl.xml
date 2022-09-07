@@ -1576,4 +1576,6 @@
     <string name="cannot_choose_file_without_permission">Nie można wybrać pliku bez uprawnień do przechowywania</string>
     <string name="select_time">Wybierz Czas</string>
     <string name="select_tone_for_alerts">Wybierz dźwięk dla alarmów</string>
+    <string name="show_unsmoothed">Pokaż niewygładzone</string>
+    <string name="show_unsmoothed_summary">Pokaż niewygładzone dane również, jeśli wygładzanie wykresu jest włączone. Jeśli używana jest wtyczka kalibracyjna, pokaże niewygładzone dane zamiast danych wtyczki.</string>
 </resources>
