@@ -1655,4 +1655,6 @@
     <string name="cannot_choose_file_without_permission">Kan geen bestand kiezen zonder opslagmachtiging</string>
     <string name="select_time">Selecteer tijd</string>
     <string name="select_tone_for_alerts">Selecteer geluid voor waarschuwingen</string>
+    <string name="show_unsmoothed">Toon niet-afgevlakte waarden</string>
+    <string name="show_unsmoothed_summary">Toon niet-afgevlakte waarden ook als grafiekafvlakking is ingeschakeld. Als de kalibratieplugin aanstaat, dan worden niet-afgevlakte waarden getoond in plaats van plugin data.</string>
 </resources>
