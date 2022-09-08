@@ -12,6 +12,7 @@ import android.util.Log;
 import com.eveningoutpost.dexdrip.AddCalibration;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.JoH;
 
 import com.eveningoutpost.dexdrip.Models.Sensor;
@@ -188,26 +189,16 @@ public class AidexReceiver extends BroadcastReceiver {
                     Home.toaststaticnext(gs(R.string.got_calibration_in_the_future__cannot_process));
                     return;
                 }
+                
+                double valueMgDl = bgValue;
 
-                final String local_units = Pref.getString("units", "mgdl");
-                if (AidexBroadcastIntents.UNIT_MG_DL.equals(units) && (!local_units.equals("mgdl"))) {
-                    bgValue = bgValue * Constants.MGDL_TO_MMOLL;
-                    Log.d(TAG, "Converting from mgdl to mmol: " + JoH.qs(bgValue, 2));
-                } else if (AidexBroadcastIntents.UNIT_MMOL_L.equals(units) && (!local_units.equals("mmol"))) {
-                    bgValue = bgValue * Constants.MMOLL_TO_MGDL;
-                    Log.d(TAG, "Converting from mmol to mgdl: " + JoH.qs(bgValue, 2));
+                if (AidexBroadcastIntents.UNIT_MMOL_L.equals(units)) {
+                    valueMgDl = bgValue * Constants.MMOLL_TO_MGDL;
                 }
 
-                UserError.Log.ueh(TAG, "Processing broadcasted calibration: " + JoH.qs(bgValue, 2) + " offset ms: " + JoH.qs(timeoffset, 0));
-                final Intent calintent = new Intent(xdrip.getAppContext(), AddCalibration.class);
-                calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                calintent.putExtra("timestamp", JoH.tsl());
-                calintent.putExtra("bg_string", JoH.qs(bgValue));
-                calintent.putExtra("bg_age", Long.toString(timeoffset / 1000));
-                calintent.putExtra("allow_undo", "true");
-                calintent.putExtra("note_only", "false");
-                calintent.putExtra("cal_source", AIDEX_RECEIVER);
-                Home.startIntentThreadWithDelayedRefresh(calintent);
+                UserError.Log.ueh(TAG, "Adding blood test calibration: " + JoH.qs(bgValue, 2) + " offset ms: " + JoH.qs(timeoffset, 0));
+
+                BloodTest.create(calibration_timestamp, valueMgDl, "Aidex", null);
             } else {
                 Log.e(TAG, "Received broadcast calibration without glucose number");
             }
