@@ -573,6 +573,14 @@ public class Treatments extends Model {
                 .executeSingle();
     }
 
+    public static List<Treatments> listByTimestamp(long timestamp) {
+        return new Select()
+                .from(Treatments.class)
+                .where("timestamp = ?", timestamp)
+                .orderBy("timestamp desc")
+                .execute();
+    }
+
     public static void delete_all() {
         delete_all(false);
     }

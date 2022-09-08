@@ -251,6 +251,16 @@
             android:key="clfollow_download_finger_bgs"
             android:summary="@string/summary_clfollow_download_finger_bgs"
             android:title="@string/title_clfollow_download_finger_bgs" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="clfollow_download_boluses"
+            android:summary="@string/summary_clfollow_download_boluses"
+            android:title="@string/title_clfollow_download_boluses" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="clfollow_download_meals"
+            android:summary="@string/summary_clfollow_download_meals"
+            android:title="@string/title_clfollow_download_meals" />
 
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="xdrip_plus_g5_extra_settings"

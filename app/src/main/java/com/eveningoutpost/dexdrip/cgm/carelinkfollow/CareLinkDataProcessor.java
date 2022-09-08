@@ -1,8 +1,10 @@
 package com.eveningoutpost.dexdrip.cgm.carelinkfollow;
 
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.eveningoutpost.dexdrip.Models.BgReading.SPECIAL_FOLLOWER_PLACEHOLDER;
+import static com.eveningoutpost.dexdrip.Models.Treatments.pushTreatmentSyncToWatch;
 
 
 /**
@@ -184,6 +187,49 @@ public class CareLinkDataProcessor {
                                 BloodTest.create(marker.dateTime.getTime(), marker.value, SOURCE_CARELINK_FOLLOW);
                             }
                         }
+
+                    //INSULIN, MEAL => Treatment
+                    } else if ((marker.type.equals(Marker.MARKER_TYPE_INSULIN) && Pref.getBooleanDefaultFalse("clfollow_download_boluses"))
+                            || (marker.type.equals(Marker.MARKER_TYPE_MEAL) && Pref.getBooleanDefaultFalse("clfollow_download_meals"))) {
+
+                        //insulin, meal only for pumps (not value in case of GC)
+                        if (recentData.isNGP()) {
+
+                            final Treatments t;
+                            double carbs = 0;
+                            double insulin = 0;
+
+                            //Extract treament infos (carbs, insulin)
+                            //Insulin
+                            if (marker.type.equals(Marker.MARKER_TYPE_INSULIN)) {
+                                carbs = 0;
+                                if (marker.deliveredExtendedAmount != null && marker.deliveredFastAmount != null) {
+                                    insulin = marker.deliveredExtendedAmount + marker.deliveredFastAmount;
+                                }
+                                //SKIP if insulin = 0
+                                if (insulin == 0) continue;
+                            //Carbs
+                            } else if (marker.type.equals(Marker.MARKER_TYPE_MEAL)) {
+                                if (marker.amount != null) {
+                                    carbs = marker.amount;
+                                }
+                                insulin = 0;
+                                //SKIP if carbs = 0
+                                if (carbs == 0) continue;
+                            }
+
+                            //new Treatment
+                            if (newTreatment(carbs, insulin, marker.dateTime.getTime())) {
+                                t = Treatments.create(carbs, insulin, marker.dateTime.getTime());
+                                if (t != null) {
+                                    t.enteredBy = SOURCE_CARELINK_FOLLOW;
+                                    t.save();
+                                    if (Home.get_show_wear_treatments())
+                                        pushTreatmentSyncToWatch(t, true);
+                                }
+                            }
+                        }
+
                     }
 
                 }
@@ -201,6 +247,21 @@ public class CareLinkDataProcessor {
             return new Date((Math.round((calcTimeByIndex(lastSensorTime,index,false).getTime()) / 600_000D) * 600_000L));
         else
             return new Date((lastSensorTime.getTime() - ((287 - index) * 300_000L)));
+    }
+
+    //Check if treatment is new (no identical entry (timestamp, carbs, insulin) exists)
+    protected static boolean newTreatment(double carbs, double insulin, long timestamp){
+
+        List<Treatments> treatmentsList;
+        //Treatment with same timestamp and carbs + insulin exists?
+        treatmentsList = Treatments.listByTimestamp(timestamp);
+        if(treatmentsList != null) {
+            for (Treatments treatments : treatmentsList) {
+                if (treatments.carbs == carbs && treatments.insulin == insulin)
+                    return  false;
+            }
+        }
+        return  true;
     }
 
 }

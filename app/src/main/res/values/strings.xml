@@ -1343,6 +1343,10 @@
     <string name="summary_clfollow_missed_poll_interval">Polling interval after missed data in minutes</string>
     <string name="title_clfollow_download_finger_bgs">Finger BGs</string>
     <string name="summary_clfollow_download_finger_bgs">Download finger BGs from CareLink</string>
+    <string name="title_clfollow_download_boluses">Boluses</string>
+    <string name="summary_clfollow_download_boluses">Download boluses from CareLink</string>
+    <string name="title_clfollow_download_meals">Meals</string>
+    <string name="summary_clfollow_download_meals">Download meals from CareLink</string>
     <string name="title_ob1_options">OB1 G5/G6 Collector Settings</string>
     <string name="summary_use_ob1_g5_collector_service">Complete re-write, should work on Android 4.4 - 9, supports native mode and more</string>
     <string name="title_use_ob1_g5_collector_service">Use the OB1 Collector</string>

@@ -1266,6 +1266,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             final Preference carelinkFollowGracePeriod = findPreference("clfollow_grace_period");
             final Preference carelinkFollowMissedPollInterval = findPreference("clfollow_missed_poll_interval");
             final Preference carelinkFollowDownloadFingerBGs = findPreference("clfollow_download_finger_bgs");
+            final Preference carelinkFollowDownloadBoluses = findPreference("clfollow_download_boluses");
+            final Preference carelinkFollowDownloadMeals = findPreference("clfollow_download_meals");
             //Add CL prefs for CLFollower
             if (collectionType == DexCollectionType.CLFollow) {
                 //Add CL prefs
@@ -1275,6 +1277,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 collectionCategory.addPreference(carelinkFollowGracePeriod);
                 collectionCategory.addPreference(carelinkFollowMissedPollInterval);
                 collectionCategory.addPreference(carelinkFollowDownloadFingerBGs);
+                collectionCategory.addPreference(carelinkFollowDownloadBoluses);
+                collectionCategory.addPreference(carelinkFollowDownloadMeals);
                 //Create prefChange handler
                 final Preference.OnPreferenceChangeListener carelinkFollowListener = new Preference.OnPreferenceChangeListener() {
                     @Override
@@ -1303,6 +1307,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     collectionCategory.removePreference(carelinkFollowGracePeriod);
                     collectionCategory.removePreference(carelinkFollowMissedPollInterval);
                     collectionCategory.removePreference(carelinkFollowDownloadFingerBGs);
+                    collectionCategory.removePreference(carelinkFollowDownloadBoluses);
+                    collectionCategory.removePreference(carelinkFollowDownloadMeals);
                 } catch (Exception e) {
                     //
                 }
@@ -1642,6 +1648,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     collectionCategory.removePreference(carelinkFollowGracePeriod);
                     collectionCategory.removePreference(carelinkFollowMissedPollInterval);
                     collectionCategory.removePreference(carelinkFollowDownloadFingerBGs);
+                    collectionCategory.removePreference(carelinkFollowDownloadMeals);
                 } catch (Exception e) {
                     //
                 }
