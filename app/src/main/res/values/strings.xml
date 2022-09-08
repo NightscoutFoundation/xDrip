@@ -1719,13 +1719,4 @@
     <string name="select_tone_for_alerts">Select tone for Alerts</string>
     <string name="show_unsmoothed">Show unsmoothed</string>
     <string name="show_unsmoothed_summary">Show unsmoothed data also if Graph Smoothing is enabled. If calibration plugin is used, will show unsmoothed data instead of plugin data.</string>
-
-    <!-- Aidex Messages -->
-    <string name="aidex_sensor_error">Aidex - Sensor Error</string>
-    <string name="aidex_transmitter_error">Aidex - Transmitter Error</string>
-    <string name="aidex_calibration_requested">Aidex - Calibration Requested</string>
-    <string name="aidex_glucose_invalid">Aidex - Glucose invalid</string>
-    <string name="aidex_battery_low">Aidex - Battery Low</string>
-    <string name="aidex_battery_empty">Aidex - Battery Empty</string>
-    <string name="aidex_sensor_expired">Aidex - Sensor Expired</string>
 </resources>

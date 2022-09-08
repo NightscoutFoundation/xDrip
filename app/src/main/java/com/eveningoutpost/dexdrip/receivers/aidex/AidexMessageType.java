@@ -8,13 +8,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum AidexMessageType {
-    SENSOR_ERROR(R.string.aidex_sensor_error),
-    TRANSMITTER_ERROR(R.string.aidex_transmitter_error),
-    CALIBRATION_REQUESTED(R.string.aidex_calibration_requested),
-    GLUCOSE_INVALID(R.string.aidex_glucose_invalid),
-    BATTERY_LOW(R.string.aidex_battery_low),
-    BATTERY_EMPTY(R.string.aidex_battery_empty),
-    SENSOR_EXPIRED(R.string.aidex_sensor_expired),
+    SENSOR_ERROR(null),
+    TRANSMITTER_ERROR(null),
+    CALIBRATION_REQUESTED(null),
+    GLUCOSE_INVALID(null),
+    BATTERY_LOW(null),
+    BATTERY_EMPTY(null),
+    SENSOR_EXPIRED(null),
     OTHER(null);
 
     static Map<String,AidexMessageType> mapByKey;

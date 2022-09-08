@@ -189,7 +189,7 @@ public class AidexReceiver extends BroadcastReceiver {
                     Home.toaststaticnext(gs(R.string.got_calibration_in_the_future__cannot_process));
                     return;
                 }
-                
+
                 double valueMgDl = bgValue;
 
                 if (AidexBroadcastIntents.UNIT_MMOL_L.equals(units)) {
@@ -289,12 +289,7 @@ public class AidexReceiver extends BroadcastReceiver {
             UserError.Log.i(TAG, "  Notification type=" + messageType);
         }
 
-        AidexMessageType messageTypeEnum = AidexMessageType.getByKey(messageType);
-
-        if (messageTypeEnum!=AidexMessageType.OTHER) {
-            // TODO display this message
-        }
-
+        // this messages could also be displayed as notifications but for now, we just log them
     }
 
 }
