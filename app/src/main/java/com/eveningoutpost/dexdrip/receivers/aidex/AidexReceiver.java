@@ -80,29 +80,29 @@ public class AidexReceiver extends BroadcastReceiver {
 
                         switch (action) {
 
-                            case AidexBroadcastIntents.ACTION_NEW_BG_ESTIMATE: {
+                            case AidexBroadcastIntents.ACTION_NEW_BG_ESTIMATE:
                                 processNewBGEstimate(bundle);
-                            } break;
+                                break;
 
-                            case AidexBroadcastIntents.ACTION_CALIBRATION: {
+                            case AidexBroadcastIntents.ACTION_CALIBRATION:
                                 processCalibration(bundle);
-                            } break;
+                                break;
 
-                            case AidexBroadcastIntents.ACTION_SENSOR_NEW: {
+                            case AidexBroadcastIntents.ACTION_SENSOR_NEW:
                                 processSensorStart(bundle);
-                            } break;
+                                break;
 
-                            case AidexBroadcastIntents.ACTION_SENSOR_RESTART: {
+                            case AidexBroadcastIntents.ACTION_SENSOR_RESTART:
                                 processSensorRestart(bundle);
-                            } break;
+                                break;
 
-                            case AidexBroadcastIntents.ACTION_SENSOR_STOP: {
+                            case AidexBroadcastIntents.ACTION_SENSOR_STOP:
                                 processSensorStop(bundle);
-                            } break;
+                                break;
 
-                            case AidexBroadcastIntents.ACTION_NOTIFICATION: {
+                            case AidexBroadcastIntents.ACTION_NOTIFICATION:
                                 processNotification(bundle);
-                            } break;
+                                break;
 
                             default:
                                 UserError.Log.e(TAG, "Unknown action! " + action);
@@ -178,7 +178,7 @@ public class AidexReceiver extends BroadcastReceiver {
 
             final long calibration_timestamp = bundle.getLong(AIDEX_TIMESTAMP, -1);
             double bgValue = bundle.getDouble(AIDEX_BG_VALUE, -1);
-            final String units = bundle.getString(AIDEX_BG_TYPE, "mg/dl");
+            final String units = bundle.getString(AIDEX_BG_TYPE, AidexBroadcastIntents.UNIT_MG_DL);
 
             final long timeoffset = JoH.tsl() - calibration_timestamp;
 
