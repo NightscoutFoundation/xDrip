@@ -115,6 +115,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.VoiceCommands;
 import com.eveningoutpost.dexdrip.calibrations.NativeCalibrationPipe;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
+import com.eveningoutpost.dexdrip.cloud.backup.BackupActivity;
 import com.eveningoutpost.dexdrip.dagger.Injectors;
 import com.eveningoutpost.dexdrip.databinding.ActivityHomeBinding;
 import com.eveningoutpost.dexdrip.databinding.ActivityHomeShelfSettingsBinding;
@@ -1115,6 +1116,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (even_even_more.length() > 0) intent.putExtra(extra + "3", even_even_more);
         Log.e("xxxxx", "calling startActivity");
         context.startActivity(intent);
+    }
+
+    public void cloudBackup(MenuItem x) {
+        JoH.startActivity(BackupActivity.class);
     }
 
     public void crowdTranslate(MenuItem x) {

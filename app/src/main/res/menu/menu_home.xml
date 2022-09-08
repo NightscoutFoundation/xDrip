@@ -29,6 +29,15 @@
         android:orderInCategory="1">
 
         <menu>
+
+            <item
+                android:id="@+id/cloud_backup"
+                android:title="@string/cloud_backup"
+                android:checkable="false"
+                android:orderInCategory="1"
+                android:onClick="cloudBackup"
+                android:showAsAction="never"/>
+
     <item android:id="@+id/action_export_database"
         android:title="@string/menu_export_database"
         android:checkable="false"
