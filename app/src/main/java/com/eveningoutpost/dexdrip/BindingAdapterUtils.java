@@ -34,8 +34,20 @@ public class BindingAdapterUtils {
 
     @BindingAdapter(value = {"showIfTrueAnimated"}, requireAll = true)
     public static void setShowIfTrueAnimatedBoolean(@NonNull View view, Boolean isVisible) {
-       setShowIfTrueAnimated(view, isVisible != null ? isVisible : false);
+        setShowIfTrueAnimated(view, isVisible != null ? isVisible : false);
     }
+
+
+    @BindingAdapter(value = {"showIfTrueAnimatedFastOff"}, requireAll = true)
+    public static void setShowIfTrueAnimatedFastOff(@NonNull View view, boolean isVisible) {
+        setVisibility(view, isVisible ? View.VISIBLE : View.GONE, 50, 600);
+    }
+
+    @BindingAdapter(value = {"showIfTrueAnimatedFastOff"}, requireAll = true)
+    public static void setShowIfTrueAnimatedBooleanFastOff(@NonNull View view, Boolean isVisible) {
+        setVisibility(view, isVisible ? View.VISIBLE : View.GONE, 50, 600);
+    }
+
 
     @BindingAdapter(value = {"showIfTrue"}, requireAll = true)
     public static void setShowIfTrue(@NonNull View view, boolean isVisible) {
@@ -96,6 +108,12 @@ public class BindingAdapterUtils {
     @BindingAdapter(value = {"animatedVisibility"})
     public static synchronized void setVisibility(@NonNull final View view,
                                                   final int visibility) {
+        setVisibility(view, visibility, 600, 600);
+    }
+
+    public static synchronized void setVisibility(@NonNull final View view,
+                                                  final int visibility, int offSpeed, int onSpeed) {
+
         // Were we animating before? If so, what was the visibility?
         Integer endAnimVisibility = (Integer) view.getTag(FINAL_VISIBILITY_ID);
         int oldVisibility = endAnimVisibility == null
@@ -122,8 +140,8 @@ public class BindingAdapterUtils {
         // Create the animator
         final ObjectAnimator alpha = ObjectAnimator.ofFloat(view, View.ALPHA, startAlpha, endAlpha);
 
-        final long duration = 600;
-        final long stagger = 150;
+        final long duration = willBeVisible ? onSpeed : offSpeed;
+        final long stagger = duration / 4;
         alpha.setDuration(duration);
 
         // Stagger animations keyed at the same moment
@@ -160,6 +178,5 @@ public class BindingAdapterUtils {
         });
         alpha.start();
     }
-
 }
 
