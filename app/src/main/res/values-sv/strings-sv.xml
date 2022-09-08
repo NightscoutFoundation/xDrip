@@ -1043,6 +1043,10 @@
     <string name="summary_write_Battery_Information_for_additional_analytic">skriv Batteriinformation för ytterligare analys till fil. Vänligen använd endast detta, om du blir ombedd av en utvecklare!</string>
     <string name="title_Batterylog">Batterilogg</string>
     <string name="summary_Choose_to_display_the_bridge_battery_level">Välj att visa bryggans batterinivå</string>
+    <string name="title_Glucose_Retention">Glukosretention</string>
+    <string name="summary_Erase_data_older_than_this_many_days">Ta bort data äldre än så här många dagar. 0 = ta inte bort något</string>
+    <string name="title_Other_misc_options">Övriga inatällningar</string>
+    <string name="summary_allow_testing_with_dead_sensor">tillåt testning med en icke-fungerande sensor</string>
     <string name="next_in">nästa i</string>
     <string name="repeats_every">upprepas varje</string>
     <string name="next">nästa</string>
@@ -1111,4 +1115,8 @@
     <string name="simplify_graphs_by_smoothing_out_irregularities">Förenkla grafer genom att jämna ut avvikelser</string>
     <string name="graph_smoothing">Grafutjämning</string>
     <string name="last_reading">Senaste avläsning</string>
+    <string name="select_file_for_alert">Välj fil för larm</string>
+    <string name="cannot_choose_file_without_permission">Kan inte välja fil utan behörigheter för lagringsutrymme</string>
+    <string name="select_time">Välj Tid</string>
+    <string name="select_tone_for_alerts">Välj ljud för Larm</string>
 </resources>

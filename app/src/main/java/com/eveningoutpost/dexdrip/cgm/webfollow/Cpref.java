@@ -6,12 +6,17 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
+import lombok.val;
+
 /**
  * JamOrHam
  * Preference handling repository
  */
 
 public class Cpref {
+
+    private static final String DEFAULT_PORT = "8080";
+
     public static String get(final String which) {
 
         switch (which) {
@@ -28,7 +33,9 @@ public class Cpref {
             case "HA":
                 return Pref.getStringTrimmed("webfollow_proxy_address", null);
             case "HP":
-                return Pref.getStringTrimmed("webfollow_proxy_port", null);
+                val p = Pref.getStringTrimmed("webfollow_proxy_port", null);
+                return (validatePort(p) ? p : DEFAULT_PORT);
+
         }
         return null;
     }
@@ -53,6 +60,15 @@ public class Cpref {
 
     static void startWithRefresh(boolean full) {
         Inevitable.task("webfollow-preference-changed", 2000, () -> JoH.startService(WebFollowService.class, "function", full ? "fullrefresh" : "refresh"));
+    }
+
+    private static boolean validatePort(final String p) {
+        try {
+            val i = Integer.parseInt(p);
+            return i >= 1 && i <= 65535;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
 }

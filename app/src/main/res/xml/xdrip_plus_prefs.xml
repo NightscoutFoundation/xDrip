@@ -459,12 +459,6 @@
                     android:key="illustrate_remote_data"
                     android:summary="@string/summary_illustrate_remote_data"
                     android:title="@string/title_illustrate_remote_data" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:dependency="engineering_mode"
-                    android:key="lower_fuzzer"
-                    android:summary="@string/summary_lower_fuzzer"
-                    android:title="@string/title_lower_fuzzer" />
             </PreferenceScreen>
 
             <CheckBoxPreference
@@ -804,7 +798,7 @@
                 android:summary="@string/summary_plus_accept_follower_actions"
                 android:title="@string/title_plus_accept_follower_actions" />
             <CheckBoxPreference
-                android:defaultValue="false"
+                android:defaultValue="true"
                 android:key="plus_follower_save_power"
                 android:summary="@string/reduce_battery_and_network_overhead"
                 android:title="@string/save_power" />

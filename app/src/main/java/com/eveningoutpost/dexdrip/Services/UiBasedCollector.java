@@ -172,7 +172,7 @@ public class UiBasedCollector extends NotificationListenerService {
             val timestamp = JoH.tsl();
             UserError.Log.d(TAG, "Found specific value: " + mgdl);
 
-            if ((mgdl >= 40 && mgdl <= 400)) {
+            if ((mgdl >= 40 && mgdl <= 405)) {
                 if (BgReading.getForPreciseTimestamp(timestamp, DexCollectionType.getCurrentDeduplicationPeriod(), false) == null) {
                     if (isJammed(mgdl)) {
                         UserError.Log.wtf(TAG, "Apparently value is jammed at: " + mgdl);

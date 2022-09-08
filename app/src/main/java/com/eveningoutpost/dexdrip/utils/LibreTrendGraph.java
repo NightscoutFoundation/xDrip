@@ -173,8 +173,8 @@ public class LibreTrendGraph extends BaseAppCompatActivity {
             if(max < bg) {
                 max = bg;
             }
-            
-            lineValues.add(new HPointValue(-i, bg * conversion_factor_mmol));
+            // Values here are relatice to zero, so no need to use HPointValue
+            lineValues.add(new PointValue(-i, bg * conversion_factor_mmol));
             i++;
         }
 
@@ -193,8 +193,9 @@ public class LibreTrendGraph extends BaseAppCompatActivity {
             float average = (max + min) /2;
             List<PointValue> dummyPointValues = new ArrayList<PointValue>();
             Line dummyPointLine = new Line(dummyPointValues);
-            dummyPointValues.add(new HPointValue(0, (average - MIN_GRAPH / 2) * conversion_factor_mmol));
-            dummyPointValues.add(new HPointValue(0, (average + MIN_GRAPH / 2) * conversion_factor_mmol));
+            // Values here are relatice to zero, so no need to use HPointValue
+            dummyPointValues.add(new PointValue(0, (average - MIN_GRAPH / 2) * conversion_factor_mmol));
+            dummyPointValues.add(new PointValue(0, (average + MIN_GRAPH / 2) * conversion_factor_mmol));
             dummyPointLine.setColor(ChartUtils.COLOR_RED);
             dummyPointLine.setHasLines(false);
             dummyPointLine.setHasPoints(false);
