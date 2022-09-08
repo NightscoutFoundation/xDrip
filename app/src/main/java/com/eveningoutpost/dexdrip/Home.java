@@ -394,13 +394,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         mToolbar.setOnLongClickListener(v -> {
             // show configurator
             final ActivityHomeShelfSettingsBinding binding = ActivityHomeShelfSettingsBinding.inflate(getLayoutInflater());
-            final Dialog dialog = new Dialog(v.getContext());
+            final Dialog dialog = new Dialog(home);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             binding.setVs(homeShelf);
             binding.setHome(home);
             homeShelf.set("arrow_configurator", false);
             dialog.setContentView(binding.getRoot());
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             dialog.show();
             return false;
         });
@@ -2018,7 +2017,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 gestureDetector.set(previewChartTouchHandler, new InterceptingGestureHandler(this, previewActiveDetector));
             }
         } catch (NullPointerException | NoSuchFieldException | IllegalAccessException | ClassCastException e) {
-            e.printStackTrace();
+            UserError.Log.d(TAG, "Exception injecting touch handler: " + e);
         }
 
         chart.getChartData().setAxisXTop(null);
