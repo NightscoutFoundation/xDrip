@@ -131,8 +131,13 @@ public class CareLinkFollowDownloader {
 
             //Try twice in case of 401 error
             for(int i = 0; i < 2; i++) {
-            recentData = getCareLinkClient().getRecentData();
-            lastResponseCode = carelinkClient.getLastResponseCode();
+
+                try {
+                    recentData = getCareLinkClient().getRecentData();
+                    lastResponseCode = carelinkClient.getLastResponseCode();
+                } catch (Exception e) {
+                    UserError.Log.e(TAG, "Got exception for CareLink data download" + e);
+                }
 
             //Got recent data
             if (carelinkClient.getLastDataSuccess()) {
