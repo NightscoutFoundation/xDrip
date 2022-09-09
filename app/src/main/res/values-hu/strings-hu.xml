@@ -1619,4 +1619,16 @@
     <string name="cannot_choose_file_without_permission">Tárhelyengedély nélkül nem nyithat meg fájlokat</string>
     <string name="select_time">Időpont kiválasztása</string>
     <string name="select_tone_for_alerts">Válassza ki a riasztás hangját</string>
+    <string name="you_can_use_google_drive_for_backup">Használhatja a Google Drive-ot a biztonsági mentéshez</string>
+    <string name="select_backup_location">Biztonsági mentés helye</string>
+    <string name="do_backup_now">Biztonsági mentés készítése</string>
+    <string name="automatic_daily_backup">Automatikus biztonsági mentés naponta</string>
+    <string name="restore_from_backup">Visszaállítás biztonsági mentésből</string>
+    <string name="are_you_really_sure_question">Biztos vagy benne?</string>
+    <string name="backup_source_confirm">Biztonsági mentés forrásának megerősítése</string>
+    <string name="nothing_to_restore_please_select">Nincs mit helyreállítani - kérjük, válassza ki a forrást</string>
+    <string name="no_backup_location_set">Nincs megadva a biztonsági mentés helye</string>
+    <string name="backing_up">Biztonsági mentés</string>
+    <string name="did_backup_ok">Biztonsági mentés kész</string>
+    <string name="backup_failed">Biztonsági mentés meghiúsult</string>
 </resources>
