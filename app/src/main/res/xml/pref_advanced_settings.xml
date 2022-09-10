@@ -1479,9 +1479,8 @@
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="show-unsmoothed-values-as-plugin"
-                    android:dependency="engineering_mode"
-                    android:summary="Show unsmoothed data in place of plugin (engineering mode only)"
-                    android:title="Debug smoothing" />
+                    android:summary="@string/show_unsmoothed_summary"
+                    android:title="@string/show_unsmoothed" />
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:dependency="engineering_mode"

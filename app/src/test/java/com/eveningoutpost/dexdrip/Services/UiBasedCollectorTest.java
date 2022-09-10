@@ -4,6 +4,8 @@ import static com.google.common.truth.Truth.assertWithMessage;
 
 import org.junit.Test;
 
+import lombok.val;
+
 public class UiBasedCollectorTest {
 
     @Test
@@ -24,5 +26,22 @@ public class UiBasedCollectorTest {
         assertWithMessage("bad 9").that(UiBasedCollector.isValidMmol("5")).isFalse();
 
 
+    }
+
+    @Test
+    public void filterStringTest() {
+        val i = new UiBasedCollector();
+        val spec1 = "non spec";
+        val spec2 = "≤5.123";
+        val spec2p = "5.123";
+        val spec3 = "≥100.123";
+        val spec3p = "100.123";
+        assertWithMessage("null test pass through 1").that(i.filterString(spec1)).isEqualTo(spec1);
+        assertWithMessage("null test pass through 2").that(i.filterString(spec2)).isEqualTo(spec2);
+        assertWithMessage("null test pass through 3").that(i.filterString(spec3)).isEqualTo(spec3);
+        i.lastPackage = "hello world";
+        assertWithMessage("non 1").that(i.filterString(spec1)).isEqualTo(spec1);
+        assertWithMessage("gte 1").that(i.filterString(spec2)).isEqualTo(spec2p);
+        assertWithMessage("lte 1").that(i.filterString(spec3)).isEqualTo(spec3p);
     }
 }

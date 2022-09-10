@@ -1597,4 +1597,5 @@
     <string name="sensor_expired">Термін дії закінчився!</string>
     <string name="external_status_strings_eg_tbr">Зовнішні рядки стану, наприклад TBR від AAPS</string>
     <string name="accept_external_status">Приймати зовнішній статус</string>
+    <string name="cannot_choose_file_without_permission">Неможливо встановити звук без прав доступу до сховища</string>
 </resources>

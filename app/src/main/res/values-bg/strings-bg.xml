@@ -423,8 +423,6 @@
     <string name="enable_streaming_dialog_dont_ask_again">Не ме питай повече</string>
     <string name="enable_streaming_dialog_text">Искате ли да свържите xDrip с този сензор? Това ще преустанови Libre четецът и LibreLink приложението да получават аларми. Натисни да и сканиране отново за да се свържеш (избери не се свързвай, ако искате да свъжите xDrip с кракнатата аппликация на Patched Libre app)</string>
     <string name="enable_streaming_dialog_title">Свържи Libre сонзор към Bluetooth</string>
-    <string name="title_lower_fuzzer">Намалете стойността на FUZZER</string>
-    <string name="summary_lower_fuzzer">Намалете стойността на FUZZER от 2,5 минути на 37,5 секунди</string>
     <string name="title_widget_hide_graph">Скрии графиката на Widget-а</string>
     <string name="summary_illustrate_remote_data">Покажи данни получени отдаличено (само за диагностика)</string>
     <string name="title_illustrate_remote_data">Визуализирай отдаличени данни</string>

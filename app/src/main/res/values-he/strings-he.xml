@@ -1529,4 +1529,5 @@
     <string name="simplify_graphs_by_smoothing_out_irregularities">פשט את הגרפים בעזרת החלקה של נתונים יוצאי דופן</string>
     <string name="graph_smoothing">החלקת הגרף</string>
     <string name="last_reading">קריאה אחרונה</string>
+    <string name="cannot_choose_file_without_permission">אין אפשרות לבחור קובץ בלי הרשאה לאחסון</string>
 </resources>

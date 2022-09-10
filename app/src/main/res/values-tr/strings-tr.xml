@@ -1573,8 +1573,6 @@
     <string name="enable_streaming_dialog_dont_ask_again"> Bunu bir daha sorma</string>
     <string name="enable_streaming_dialog_text">Bu sensörle xDrip\'i bağlamak istiyor musunuz? Bu, Libre okuyucunun ve LibreLink\'in uyarı almasını durduracaktır. Evet\'e basın ve bağlanmak için tekrar tarayın (xDrip\'i yamalı uygulamayla çalıştırmak istiyorsanız bağlanmayın)</string>
     <string name="enable_streaming_dialog_title">Libre sensörü Bluetooth\'a bağlama</string>
-    <string name="title_lower_fuzzer">Düşük FUZZER</string>
-    <string name="summary_lower_fuzzer">FUZZER değerini 2,5 dakikadan 37,5 saniyeye düşürün</string>
     <string name="without_camera_permission_cannot_scan_barcode">Kamera izni olmadan barkod okunamaz</string>
     <string name="summary_create_missing_filtered">Gerektiğinde filtrelenmiş veriler yapın</string>
     <string name="title_create_missing_filtered">Eksik okuma filtresi oluştur</string>
@@ -1666,4 +1664,8 @@
     <string name="simplify_graphs_by_smoothing_out_irregularities">Düzensizlikleri yumuşatarak grafikleri basitleştirin</string>
     <string name="graph_smoothing">Grafik Yumuşatma</string>
     <string name="last_reading">Son Okuma Değeri</string>
+    <string name="select_file_for_alert">Uyarı için Dosya Seçin</string>
+    <string name="cannot_choose_file_without_permission">Depolama izni olmadan dosya seçilemiyor</string>
+    <string name="select_time">Saati Seçin</string>
+    <string name="select_tone_for_alerts">Uyarılar için ton seçin</string>
 </resources>

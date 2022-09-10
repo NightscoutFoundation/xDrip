@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -44,6 +45,7 @@ import android.os.PowerManager;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.CursorLoader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
@@ -78,6 +80,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -88,6 +91,7 @@ import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
@@ -417,6 +421,23 @@ public class JoH {
         return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
     }
 
+    public static String readLine(final InputStream stream) {
+        try {
+            val buffer = new byte[512];
+            for (int i = 0; i < buffer.length; i++) {
+                val b = stream.read();
+                if (b == -1) return null;
+                if (b == '\n') {
+                    return new String(buffer, 0, i, StandardCharsets.UTF_8);
+                }
+                buffer[i] = (byte) b;
+            }
+        } catch (IOException e) {
+            UserError.Log.e(TAG, "Error reading line: " + e);
+        }
+        return null; // too big
+    }
+
     public static boolean isSamsung() {
         return Build.MANUFACTURER.toLowerCase().contains("samsung");
     }
@@ -435,6 +456,22 @@ public class JoH {
         if (!buggy_samsung) {
             JoH.buggy_samsung = true;
             PersistentStore.incrementLong(BUGGY_SAMSUNG_ENABLED);
+        }
+    }
+
+    public static String getFieldFromURI(final String column, final Uri contentUri) {
+        try {
+            final String[] projection = { column };
+            val loader = new CursorLoader(xdrip.getAppContext(), contentUri, projection, null, null, null);
+            val cursor = loader.loadInBackground();
+            val column_index = cursor.getColumnIndexOrThrow(column);
+            cursor.moveToFirst();
+            val result = cursor.getString(column_index);
+            cursor.close();
+            return result;
+        } catch (Exception e) {
+            UserError.Log.d(TAG, "Got exception extracting data for uri " + e);
+            return null;
         }
     }
 
@@ -1134,6 +1171,20 @@ public class JoH {
         } catch (IOException | NullPointerException | IllegalArgumentException | SecurityException ex) {
             UserError.Log.e(TAG, "setMediaDataSource from uri failed: uri = " + uri.toString(), ex);
             // fall through
+        }
+        return false;
+    }
+
+    // from resource id
+    public static boolean setMediaDataSource(final Context context, final MediaPlayer mp, final int resid) {
+        try {
+            AssetFileDescriptor afd = context.getResources().openRawResourceFd(resid);
+            if (afd == null) return false;
+            mp.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+            afd.close();
+            return true;
+        } catch (IOException | NullPointerException | IllegalArgumentException | SecurityException ex) {
+            UserError.Log.e(TAG, "setMediaDataSource from resource id failed:", ex);
         }
         return false;
     }
