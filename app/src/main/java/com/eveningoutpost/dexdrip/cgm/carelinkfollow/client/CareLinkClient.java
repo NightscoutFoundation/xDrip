@@ -502,15 +502,15 @@ public class CareLinkClient {
 
     }
 
-    protected void correctTimeInRecentData(RecentData recentData){
+    protected void correctTimeInRecentData(RecentData recentData) {
 
         boolean timezoneMissing = false;
         String offsetString = null;
 
-        if(recentData.sMedicalDeviceTime != null && !recentData.sMedicalDeviceTime.isEmpty() &&  recentData.lastMedicalDeviceDataUpdateServerTime > 1) {
+        if (recentData.sMedicalDeviceTime != null && !recentData.sMedicalDeviceTime.isEmpty() && recentData.lastMedicalDeviceDataUpdateServerTime > 1) {
 
             //MedicalDeviceTime string has no timezone information
-            if(parseDateString(recentData.sMedicalDeviceTime) == null) {
+            if (parseDateString(recentData.sMedicalDeviceTime) == null) {
 
                 timezoneMissing = true;
 
@@ -541,7 +541,7 @@ public class CareLinkClient {
             }
 
             //Timezone was present => check if time needs correction
-            if(!timezoneMissing) {
+            if (!timezoneMissing) {
 
                 //Calc time diff between event time and actual local time
                 int diffInHour = (int) Math.round(((recentData.lastMedicalDeviceDataUpdateServerTime - recentData.dMedicalDeviceTime.getTime()) / 3600000D));
