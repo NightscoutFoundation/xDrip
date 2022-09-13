@@ -583,6 +583,20 @@ public class CareLinkClient {
                     }
                 }
             }
+
+        }
+
+        //Set dateTime of Markers using index if dateTime is missing (Guardian Connect)
+        if (recentData.dLastSensorTime != null && recentData.markers != null) {
+            for (Marker marker : recentData.markers) {
+                if (marker != null && marker.dateTime == null) {
+                    try {
+                        marker.dateTime = calcTimeByIndex(recentData.dLastSensorTime, marker.index, true);
+                    } catch (Exception ex) {
+                        continue;
+                    }
+                }
+            }
         }
 
     }
@@ -613,6 +627,17 @@ public class CareLinkClient {
         } else {
             return  null;
         }
+    }
+
+    //Calculate DateTime using graph index (1 index = 5 minute)
+    protected static Date calcTimeByIndex(Date lastSensorTime, int index, boolean round){
+        if(lastSensorTime == null)
+            return null;
+        else if(round)
+            //round to 10 minutes
+            return new Date((Math.round((calcTimeByIndex(lastSensorTime,index,false).getTime()) / 600_000D) * 600_000L));
+        else
+            return new Date((lastSensorTime.getTime() - ((287 - index) * 300_000L)));
     }
 
 }

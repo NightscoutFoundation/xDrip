@@ -140,23 +140,11 @@ public class CareLinkDataProcessor {
         //MARKERS (if available)
         if (recentData.markers != null) {
 
-            //Filter, correct markers
+            //Filter markers
             filteredMarkerList = new ArrayList<>();
             for (Marker marker : recentData.markers) {
-                if (marker != null) {
-                    if (marker.type != null) {
-                        //Try to determine correct date/time
-                        try {
-                            if (marker.dateTime == null)
-                                marker.dateTime = calcTimeByIndex(recentData.dLastSensorTime, marker.index, true);
-                        } catch (Exception ex) {
-                            UserError.Log.d(TAG, "Time calculation error!");
-                            continue;
-                        }
-                        //Add filtered marker ith correct date/time
-                        if (marker.dateTime != null)
-                            filteredMarkerList.add(marker);
-                    }
+                if (marker != null && marker.type != null && marker.dateTime != null) {
+                    filteredMarkerList.add(marker);
                 }
             }
 
@@ -256,17 +244,6 @@ public class CareLinkDataProcessor {
             }
         }
 
-    }
-
-    //Calculate DateTime using graph index (1 index = 5 minute)
-    protected static Date calcTimeByIndex(Date lastSensorTime, int index, boolean round){
-        if(lastSensorTime == null)
-            return null;
-        else if(round)
-            //round to 10 minutes
-            return new Date((Math.round((calcTimeByIndex(lastSensorTime,index,false).getTime()) / 600_000D) * 600_000L));
-        else
-            return new Date((lastSensorTime.getTime() - ((287 - index) * 300_000L)));
     }
 
     //Check if treatment is new (no identical entry (timestamp, carbs, insulin) exists)
