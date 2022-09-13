@@ -36,8 +36,6 @@ public class CareLinkFollowDownloader {
 
     private String status;
 
-    private long loginBlockedTill = 0;
-    private long loginBackoff = Constants.MINUTE_IN_MS;
     private int lastResponseCode = 0;
 
     public String getStatus(){
@@ -52,8 +50,6 @@ public class CareLinkFollowDownloader {
     }
 
     public static void resetInstance() {
-        //retrofit = null;
-        //service = null;
         UserError.Log.d(TAG, "Instance reset");
         CollectionServiceStarter.restartCollectionServiceBackground();
     }
@@ -63,7 +59,6 @@ public class CareLinkFollowDownloader {
 
         if (D) UserError.Log.e(TAG, "doEverything called");
         if (loginDataLooksOkay) {
-            if (JoH.tsl() > loginBlockedTill) {
                 try {
                     if (getCareLinkClient() != null) {
                         extendWakeLock(30_000);
@@ -78,12 +73,8 @@ public class CareLinkFollowDownloader {
                     releaseWakeLock();
                     return false;
                 }
-            } else {
-                UserError.Log.e(TAG, "Not trying to login due to backoff timer for login failures until: " + JoH.dateTimeText(loginBlockedTill));
-                return false;
-            }
         } else {
-            final String invalid = "CareLink login data isn't valid!";
+            final String invalid = "Invalid CareLink login data!";
             msg(invalid);
             UserError.Log.e(TAG, invalid);
             if(emptyString(carelinkUsername)){
@@ -122,7 +113,6 @@ public class CareLinkFollowDownloader {
         RecentData recentData = null;
         CareLinkClient carelinkClient = null;
 
-        loginBackoff = 0;
 
         //Get client
         carelinkClient = getCareLinkClient();
@@ -130,53 +120,56 @@ public class CareLinkFollowDownloader {
         if (carelinkClient != null) {
 
             //Try twice in case of 401 error
-            for(int i = 0; i < 2; i++) {
+            for (int i = 0; i < 2; i++) {
 
+                //Get data
                 try {
                     recentData = getCareLinkClient().getRecentData();
                     lastResponseCode = carelinkClient.getLastResponseCode();
                 } catch (Exception e) {
-                    UserError.Log.e(TAG, "Got exception for CareLink data download" + e);
+                    UserError.Log.e(TAG, "Exception in CareLink data download: " + e);
                 }
 
-            //Got recent data
-            if (carelinkClient.getLastDataSuccess()) {
-                UserError.Log.d(TAG, "Success get data! Response code: " + carelinkClient.getLastResponseCode());
-                try {
-                    if (recentData == null) {
-                        UserError.Log.e(TAG, "Received recent data is empty, nothing to process!");
-                        msg("Received data is empty!");
-                    } else {
-                        if (D) UserError.Log.d(TAG, "Start process data");
+                //Process data
+                if (recentData != null) {
+                    UserError.Log.d(TAG, "Success get data!");
+                    try {
+                        UserError.Log.d(TAG, "Start process data");
                         //Process CareLink data (conversion and update xDrip data)
                         CareLinkDataProcessor.processData(recentData, true);
-                        if (D) UserError.Log.d(TAG, "ProcessData finished!");
+                        UserError.Log.d(TAG, "ProcessData finished!");
                         //Update Service status
                         CareLinkFollowService.updateBgReceiveDelay();
-                        if (D) UserError.Log.d(TAG, "UpdateBgReceiveDelay finished!");
                         msg(null);
+                    } catch (Exception e) {
+                        UserError.Log.e(TAG, "Exception in data processing: " + e);
+                        msg("Data processing error!");
                     }
-                } catch (Exception e) {
-                    UserError.Log.e(TAG, "Got exception for data update" + e);
+                //Data receive error
+                } else {
+                    //first 401 error => TRY AGAIN, only debug log
+                    if (carelinkClient.getLastResponseCode() == 401 && i == 0) {
+                        UserError.Log.d(TAG, "Try get data again due to 401 response code." + getCareLinkClient().getLastErrorMessage());
+                    //second 401 error => unauthorized error
+                    } else if (carelinkClient.getLastResponseCode() == 401) {
+                        UserError.Log.e(TAG, "CareLink login error!  Response code: " + carelinkClient.getLastResponseCode());
+                        msg("Login error!");
+                    //login error
+                    } else if (!getCareLinkClient().getLastLoginSuccess()){
+                        UserError.Log.e(TAG, "CareLink login error!  Response code: " + carelinkClient.getLastResponseCode());
+                        UserError.Log.e(TAG, "Error message: " + getCareLinkClient().getLastErrorMessage());
+                        msg("Login error!");
+                    //other error in download
+                    } else {
+                        UserError.Log.e(TAG, "CareLink download error! Response code: " + carelinkClient.getLastResponseCode());
+                        UserError.Log.e(TAG, "Error message: " + getCareLinkClient().getLastErrorMessage());
+                        msg("Data request error!");
+                    }
                 }
-            //Error during data download
-            } else {
-                if (!getCareLinkClient().getLastLoginSuccess()) {
-                    UserError.Log.e(TAG, "CareLink login error!  Response code: " + carelinkClient.getLastResponseCode());
-                    loginBackoff += Constants.MINUTE_IN_MS;
-                    loginBlockedTill = JoH.tsl() + loginBackoff;
-                    msg("Login error!");
-                } else if (!getCareLinkClient().getLastDataSuccess()) {
-                    UserError.Log.e(TAG, "CareLink download error! Response code: " + carelinkClient.getLastResponseCode());
-                    UserError.Log.e(TAG, "Error message: " + getCareLinkClient().getLastErrorMessage());
-                    msg("Data request error!");
-                }
-            }
 
-                if(carelinkClient.getLastResponseCode() != 401)
+                //Next try only for 401 error and first attempt
+                if (!(carelinkClient.getLastResponseCode() == 401 && i == 0))
                     break;
-                else
-                    UserError.Log.e(TAG, "Try get data again due to 401 response code." + getCareLinkClient().getLastErrorMessage());
 
             }
 
@@ -190,8 +183,8 @@ public class CareLinkFollowDownloader {
             try {
                 UserError.Log.d(TAG, "Creating CareLinkClient");
                 careLinkClient = new CareLinkClient(carelinkUsername, carelinkPassword, carelinkCountry);
-            } catch (NullPointerException e) {
-                UserError.Log.e(TAG, "Error creating CareLinkClient");
+            } catch (Exception e) {
+                UserError.Log.e(TAG, "Error creating CareLinkClient", e);
             }
         }
         return careLinkClient;
