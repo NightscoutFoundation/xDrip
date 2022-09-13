@@ -261,6 +261,11 @@
             android:key="clfollow_download_meals"
             android:summary="@string/summary_clfollow_download_meals"
             android:title="@string/title_clfollow_download_meals" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="clfollow_download_notifications"
+            android:summary="@string/summary_clfollow_download_notifications"
+            android:title="@string/title_clfollow_download_notifications" />
 
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="xdrip_plus_g5_extra_settings"

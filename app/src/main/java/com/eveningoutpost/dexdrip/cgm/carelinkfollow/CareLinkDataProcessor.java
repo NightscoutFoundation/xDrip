@@ -3,15 +3,20 @@ package com.eveningoutpost.dexdrip.cgm.carelinkfollow;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
+import com.eveningoutpost.dexdrip.Models.DateUtil;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ActiveNotification;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.Alarm;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ClearedNotification;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ConnectData;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.Marker;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.RecentData;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.SensorGlucose;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.TextMap;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -220,6 +225,37 @@ public class CareLinkDataProcessor {
             }
         }
 
+
+        // LAST ALARM -> NOTE (only for GC)
+        if (Pref.getBooleanDefaultFalse("clfollow_download_notifications")) {
+
+            // Only Guardian Connect, NGP has all in notifications
+            if (recentData.isGM() && recentData.lastAlarm != null) {
+                //Add notification from alarm
+                if (recentData.lastAlarm.datetime != null && recentData.lastAlarm.kind != null)
+                    addNotification(recentData.lastAlarm.datetime, recentData.getDeviceFamily(), recentData.lastAlarm);
+            }
+        }
+
+
+        //NOTIFICATIONS -> NOTE
+        if (Pref.getBooleanDefaultFalse("clfollow_download_notifications")) {
+            if (recentData.notificationHistory != null) {
+                //Active Notifications
+                if (recentData.notificationHistory.activeNotifications != null) {
+                    for (ActiveNotification activeNotification : recentData.notificationHistory.activeNotifications) {
+                        addNotification(activeNotification.dateTime, recentData.getDeviceFamily(), activeNotification.messageId, activeNotification.faultId);
+                    }
+                }
+                //Cleared Notifications
+                if (recentData.notificationHistory.clearedNotifications != null) {
+                    for (ClearedNotification clearedNotification : recentData.notificationHistory.clearedNotifications) {
+                        addNotification(clearedNotification.triggeredDateTime, recentData.getDeviceFamily(), clearedNotification.messageId, clearedNotification.faultId);
+                    }
+                }
+            }
+        }
+
     }
 
     //Calculate DateTime using graph index (1 index = 5 minute)
@@ -246,6 +282,70 @@ public class CareLinkDataProcessor {
             }
         }
         return  true;
+    }
+
+
+    //Create notification from CareLink messageId
+    protected static boolean addNotification(Date date, String deviceFamily, String messageId, int faultId){
+
+        if(deviceFamily != null && messageId != null)
+            return addNotification(date, TextMap.getNotificationMessage(deviceFamily, messageId, faultId));
+        else
+            return false;
+
+    }
+
+    //Create notification from CareLink Alarm
+    protected static boolean addNotification(Date date, String deviceFamily, Alarm alarm){
+
+        if(deviceFamily != null && alarm != null && alarm.kind != null)
+            return addNotification(date, TextMap.getAlarmMessage(deviceFamily, alarm));
+        else
+            return false;
+
+    }
+
+    //Create notification from CareLink note info
+    protected static boolean addNotification(Date date, String noteText){
+
+        //Valid date
+        if(date != null && noteText != null) {
+            //New note
+            if (newNote(noteText, date.getTime())) {
+                //create_note in Treatment is not good, because of automatic link to other treatments in 5 mins range
+                Treatments note = new Treatments();
+                note.notes = noteText;
+                note.timestamp = date.getTime();
+                note.created_at = DateUtil.toISOString(note.timestamp);
+                note.uuid = UUID.randomUUID().toString();
+                note.enteredBy = SOURCE_CARELINK_FOLLOW;
+                note.save();
+                if (Home.get_show_wear_treatments())
+                    pushTreatmentSyncToWatch(note, true);
+                return true;
+            }
+        }
+
+        return false;
+
+    }
+
+
+    //Check note is new
+    protected static boolean newNote(String note, long timestamp){
+
+        List<Treatments> treatmentsList;
+        //Treatment with same timestamp and note text exists?
+        treatmentsList = Treatments.listByTimestamp(timestamp);
+        if(treatmentsList != null) {
+            for (Treatments treatments : treatmentsList) {
+                if (treatments.notes.contains(note))
+                    return  false;
+            }
+        }
+
+        return  true;
+
     }
 
 }
