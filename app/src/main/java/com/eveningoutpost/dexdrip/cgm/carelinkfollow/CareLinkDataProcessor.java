@@ -84,7 +84,7 @@ public class CareLinkDataProcessor {
                 sensor.save();
 
                 // place in order of oldest first
-                Collections.sort(recentData.sgs, (o1, o2) -> o1.datetimeAsDate.compareTo(o2.datetimeAsDate));
+                Collections.sort(filteredSgList, (o1, o2) -> o1.datetimeAsDate.compareTo(o2.datetimeAsDate));
 
                 for (final SensorGlucose sg : filteredSgList) {
 
