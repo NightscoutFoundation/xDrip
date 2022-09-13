@@ -150,23 +150,32 @@ public class CareLinkClient {
 
 
         lastLoginSuccess = false;
+        loginInProcess = true;
+        lastErrorMessage = "";
 
         try {
-            //TODO handle login errors when occur, check results
-
             //Clear cookies
             ((SimpleOkHttpCookieJar) this.httpClient.cookieJar()).deleteAllCookies();
 
+            // Clear basic infos
+            this.sessionUser = null;
+            this.sessionProfile = null;
+            this.sessionCountrySettings = null;
+            this.sessionMonitorData = null;
+
             //Open login (get SessionId and SessionData)
             loginSessionResponse = this.getLoginSession();
+            this.lastResponseCode = loginSessionResponse.code();
 
             //Login
             doLoginResponse = this.doLogin(loginSessionResponse);
+            this.lastResponseCode = doLoginResponse.code();
             loginSessionResponse.close();
 
             //Consent
             consentResponse = this.doConsent(doLoginResponse);
             doLoginResponse.close();
+            this.lastResponseCode = consentResponse.code();
             consentResponse.close();
 
             // Get basic infos
@@ -185,6 +194,9 @@ public class CareLinkClient {
         // Set login success if everything was ok:
         if(this.sessionUser != null && this.sessionProfile != null && this.sessionCountrySettings != null && this.sessionMonitorData != null)
             lastLoginSuccess = true;
+        //Clear cookies if error occured during logon
+        else
+            ((SimpleOkHttpCookieJar) this.httpClient.cookieJar()).deleteAllCookies();
 
         return lastLoginSuccess;
 
@@ -306,6 +318,7 @@ public class CareLinkClient {
                 .after(new Date(new Date(System.currentTimeMillis()).getTime()
                         + AUTH_EXPIRE_DEADLINE_MINUTES * 60000)))
                 || this.lastResponseCode == 401
+                || (!loginInProcess && !this.lastLoginSuccess)
         ) {
             //execute new login process
             if(this.loginInProcess || !this.executeLoginProcedure())
