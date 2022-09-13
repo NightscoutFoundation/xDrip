@@ -29,14 +29,14 @@ import static com.eveningoutpost.dexdrip.Models.Treatments.pushTreatmentSyncToWa
 
 
 /**
- * Medtronic CareLink Connect Data Processor
+ * Medtronic CareLink Data Processor
  *   - process CareLink data and convert to xDrip internal data
  *   - update xDrip internal data
  */
 public class CareLinkDataProcessor {
 
 
-    private static final String TAG = "ConnectFollowDP";
+    private static final String TAG = "CareLinkFollowDP";
     private static final boolean D = false;
 
     private static final String SOURCE_CARELINK_FOLLOW = "CareLink Follow";

@@ -15,7 +15,7 @@ import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.RecentData;
 import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
 
 /**
- * Medtronic CareLink Connect Downloader
+ * Medtronic CareLink Downloader
  *   - download data from CareLink
  *   - execute data conversion and update xDrip data
  */
