@@ -1665,5 +1665,10 @@
     <string name="simplify_graphs_by_smoothing_out_irregularities">Simplificar los gráficos suavizando las irregularidades</string>
     <string name="graph_smoothing">Suavizar gráficos</string>
     <string name="last_reading">Última lectura</string>
+    <string name="select_file_for_alert">Seleccione archivo para alerta</string>
     <string name="cannot_choose_file_without_permission">No se puede elegir el archivo sin permiso de almacenamiento</string>
+    <string name="select_time">Seleccionar el Tiempo</string>
+    <string name="select_tone_for_alerts">Seleccionar tono de alerta</string>
+    <string name="show_unsmoothed">Mostrar no suavizados</string>
+    <string name="show_unsmoothed_summary">Mostrar datos sin suavizar también si el suavizado gráfico está habilitado. Si se utiliza el plugin de calibración, se mostrarán datos sin suavizar en lugar de datos del plugin.</string>
 </resources>
