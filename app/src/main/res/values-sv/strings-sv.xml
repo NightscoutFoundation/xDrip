@@ -1119,4 +1119,21 @@
     <string name="cannot_choose_file_without_permission">Kan inte välja fil utan behörigheter för lagringsutrymme</string>
     <string name="select_time">Välj Tid</string>
     <string name="select_tone_for_alerts">Välj ljud för Larm</string>
+    <string name="show_unsmoothed">Visa ej-utjämnad</string>
+    <string name="show_unsmoothed_summary">Visa icke-utjämnad data om också Grafutjämning är aktiverad. Om kalibreringsplugin används, kommer icke-utjämnade data visas istället för plugindata.</string>
+    <string name="you_can_use_google_drive_for_backup">Du kan använda Google Drive för backup</string>
+    <string name="select_backup_location">Välj backup plats</string>
+    <string name="do_backup_now">Genomför backup nu</string>
+    <string name="automatic_daily_backup">Automatiska dagliga backuper</string>
+    <string name="restore_from_backup">Återställ från backup</string>
+    <string name="are_you_really_sure_question">Är du verkligen säker?</string>
+    <string name="backup_source_confirm">Bekräfta backupkälla</string>
+    <string name="nothing_to_restore_please_select">Inget att återställa - vänligen välj plats</string>
+    <string name="no_backup_location_set">Inge backupplats vald</string>
+    <string name="backing_up">Backar upp</string>
+    <string name="did_backup_ok">Genomförde backup ok</string>
+    <string name="backup_failed">Misslyckad backup</string>
+    <string name="automatically_manage_backup">Hantera automatiskt</string>
+    <string name="use_alternate_file">Använd alternativ fil</string>
+    <string name="choose_backup_file">Välj en backupfil</string>
 </resources>

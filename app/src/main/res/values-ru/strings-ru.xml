@@ -1647,4 +1647,6 @@
     <string name="simplify_graphs_by_smoothing_out_irregularities">Упростить графики, сглаживая неровности</string>
     <string name="graph_smoothing">Сглаживание графика</string>
     <string name="cannot_choose_file_without_permission">Невозможно установить звук без прав доступа к хранилищу</string>
+    <string name="show_unsmoothed">Показывать несглаженные</string>
+    <string name="show_unsmoothed_summary">Показывать также несглаженные данные, если включено Сглаживание графика. Если используется плагин калибровки, то будут показываться несглаженные данные вместо данных от плагина.</string>
 </resources>
