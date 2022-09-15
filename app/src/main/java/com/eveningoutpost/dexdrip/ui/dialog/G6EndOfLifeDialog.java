@@ -15,7 +15,6 @@ public class G6EndOfLifeDialog {
     public static void show(final Activity activity, Runnable runnable) {
         String Title = activity.getString(R.string.reminder);
         String Message = activity.getString(R.string.TX_EOL_reminder);
-        int TX_dys = DexTimeKeeper.getTransmitterAgeInDays(getTransmitterID());
         if (PersistentStore.getBoolean("TX_EOL")) { // Cannot start sensors
             Title = activity.getString(R.string.notification);
             Message = activity.getString(R.string.TX_EOL_notification);
