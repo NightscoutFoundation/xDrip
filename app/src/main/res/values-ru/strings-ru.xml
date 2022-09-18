@@ -1655,6 +1655,7 @@
     <string name="automatic_daily_backup">Автоматическое ежедневное резервное копирование</string>
     <string name="restore_from_backup">Восстановить из резервной копии</string>
     <string name="are_you_really_sure_question">Вы точно уверены?</string>
+    <string name="backup_source_confirm">Подтверждение расположения резервной копии</string>
     <string name="nothing_to_restore_please_select">Нечего восстанавливать - пожалуйста, выберите расположение</string>
     <string name="no_backup_location_set">Расположение резервной копии не выбрано</string>
     <string name="backing_up">Резервное копирование</string>
@@ -1665,7 +1666,10 @@
     <string name="choose_backup_file">Выберите файл резервной копии</string>
     <string name="select_alternate_file">Выберите альтернативный файл</string>
     <string name="change_account">Сменить аккаунт</string>
+    <string name="keep_same_account">Оставить тот же аккаунт</string>
+    <string name="change_google_account">Сменить Google Аккаунт</string>
     <string name="attempting_restore">Попытка восстановления</string>
+    <string name="restore_succeeded_restarting">Восстановление успешно - перезапуск приложения</string>
     <string name="restore_failed">Восстановление НЕ УДАЛОСЬ!</string>
     <string name="error_exclamation">Ошибка!</string>
     <string name="checking_file">Проверка файла</string>
@@ -1690,5 +1694,13 @@
     <string name="drive_permission_blurb">Для автоматического резервного копирования xDrip требуется разрешение на использование Google Диска.\n\nРазработчики xDrip не смогут получить доступ к любому из ваших файлов или видеть вашу личную информацию.</string>
     <string name="cloud_backup">Облачное резервное копирование</string>
     <string name="select_automatic_or_select_alternate">Выберите Автоматически, чтобы xDrip управлял файлами на Google Диске, или выберите альтернативный файл, если вам нужно восстановление из другого места.</string>
+    <string name="restoring_backup_will_erase_warning">Восстановление из резервной копии сотрет ваши текущие настройки и данные и восстановит их содержащимися в резервной копии.\n\nВы абсолютно уверены, что хотите это сделать?</string>
+    <string name="this_backup_looks_like_came_from_different_format_string">Похоже, эта резервная копия пришла с другого устройства:\n%s\nВы уверены, что хотите восстановиться из этой резервной копии?</string>
     <string name="megabyte_format_string">%.1f МБ</string>
+    <string name="manual_selection_google_drive_file_warning">Вы выбрали файл с Google Диска, но он не автоматически управляется xDrip, поэтому он может быть использован только для ручных резервных копий и восстановления.\n\nАвтоматического резервного копирования с этим файлом не будет.\n\nПродолжить?</string>
+    <string name="alternate_file_selected_warning">Вы выбрали альтернативный файл. Обычно это нужно просто для восстановления из локально сохраненной резервной копии.\n\nАвтоматического резервного копирования с этим файлом не будет.\n\nПродолжить?</string>
+    <string name="backup_file_security_error_advice">Файл резервной копии сообщает об ошибке безопасности. Обычно это означает, что вам нужно повторно выбрать его, чтобы разрешить доступ xDrip.</string>
+    <string name="invalid_time">Недопустимое время</string>
+    <string name="none">нет</string>
+    <string name="format_string_ago">%s назад</string>
 </resources>
