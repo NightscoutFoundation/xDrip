@@ -91,46 +91,52 @@ public class CareLinkDataProcessor {
                     //Not EPOCH 0 (warmup?)
                     if (sg.datetimeAsDate.getTime() > 1) {
 
-                        //Not 0 SG (not calibrated?)
-                        if (sg.sg > 0) {
+                        //Not in the future
+                        if (sg.datetimeAsDate.getTime() < new Date().getTime() + 300_000) {
 
-                            //newer than last BG
-                            if (sg.datetimeAsDate.getTime() > lastBgTimestamp) {
+                            //Not 0 SG (not calibrated?)
+                            if (sg.sg > 0) {
 
-                                if (sg.datetimeAsDate.getTime() > 0) {
+                                //newer than last BG
+                                if (sg.datetimeAsDate.getTime() > lastBgTimestamp) {
 
-                                    //New entry
-                                    if (BgReading.getForPreciseTimestamp(sg.datetimeAsDate.getTime(), 10_000) == null) {
-                                        UserError.Log.d(TAG, "NEW NEW NEW New entry: " + sg.toS());
+                                    if (sg.datetimeAsDate.getTime() > 0) {
 
-                                        if (live) {
-                                            final BgReading bg = new BgReading();
-                                            bg.timestamp = sg.datetimeAsDate.getTime();
-                                            bg.calculated_value = (double) sg.sg;
-                                            bg.raw_data = SPECIAL_FOLLOWER_PLACEHOLDER;
-                                            bg.filtered_data = (double) sg.sg;
-                                            bg.noise = "";
-                                            bg.uuid = UUID.randomUUID().toString();
-                                            bg.calculated_value_slope = 0;
-                                            bg.sensor = sensor;
-                                            bg.sensor_uuid = sensor.uuid;
-                                            bg.source_info = SOURCE_CARELINK_FOLLOW;
-                                            bg.save();
-                                            bg.find_slope();
-                                            Inevitable.task("entry-proc-post-pr", 500, () -> bg.postProcess(false));
+                                        //New entry
+                                        if (BgReading.getForPreciseTimestamp(sg.datetimeAsDate.getTime(), 10_000) == null) {
+                                            UserError.Log.d(TAG, "NEW NEW NEW New entry: " + sg.toS());
+
+                                            if (live) {
+                                                final BgReading bg = new BgReading();
+                                                bg.timestamp = sg.datetimeAsDate.getTime();
+                                                bg.calculated_value = (double) sg.sg;
+                                                bg.raw_data = SPECIAL_FOLLOWER_PLACEHOLDER;
+                                                bg.filtered_data = (double) sg.sg;
+                                                bg.noise = "";
+                                                bg.uuid = UUID.randomUUID().toString();
+                                                bg.calculated_value_slope = 0;
+                                                bg.sensor = sensor;
+                                                bg.sensor_uuid = sensor.uuid;
+                                                bg.source_info = SOURCE_CARELINK_FOLLOW;
+                                                bg.save();
+                                                bg.find_slope();
+                                                Inevitable.task("entry-proc-post-pr", 500, () -> bg.postProcess(false));
+                                            }
                                         }
+                                    } else {
+                                        UserError.Log.e(TAG, "Could not parse a timestamp from: " + sg.toS());
                                     }
-                                } else {
-                                    UserError.Log.e(TAG, "Could not parse a timestamp from: " + sg.toS());
                                 }
+
+                            } else {
+                                UserError.Log.d(TAG, "SG is 0 (calibration missed?)");
                             }
 
                         } else {
-                            UserError.Log.d(TAG, "SG is 0 (calibration missed?)");
+                            UserError.Log.d(TAG, "SG DateTime is 0 (warmup phase?)");
                         }
-
                     } else {
-                        UserError.Log.d(TAG, "SG DateTime is 0 (warmup phase?)");
+                        UserError.Log.d(TAG, "SG DateTime in future: " + sg.datetime);
                     }
                 }
             }
