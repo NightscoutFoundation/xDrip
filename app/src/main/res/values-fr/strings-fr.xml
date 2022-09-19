@@ -1671,4 +1671,14 @@
     <string name="select_tone_for_alerts">Sélectionner le son pour les alertes</string>
     <string name="show_unsmoothed">Afficher non-lissées</string>
     <string name="show_unsmoothed_summary">Afficher les données non lissées même si le lissage du graphique est activé. Si le plugin d\'étalonnage est utilisé, les données non lissées (au lieu des données du plugin) seront affichées.</string>
+    <string name="you_can_use_google_drive_for_backup">Vous pouvez utiliser Google Drive pour la sauvegarde</string>
+    <string name="select_backup_location">Sélectionner l\'emplacement de la sauvegarde</string>
+    <string name="do_backup_now">Sauvegarder Maintenant</string>
+    <string name="automatic_daily_backup">Sauvegarde journalière automatique</string>
+    <string name="restore_from_backup">Restaurer depuis la sauvegarde</string>
+    <string name="are_you_really_sure_question">Êtes-vous vraiment sûr ?</string>
+    <string name="backup_source_confirm">Confirmation de l\'emplacement de sauvegarde</string>
+    <string name="nothing_to_restore_please_select">Rien à restaurer - merci de sélectionner l\'emplacement</string>
+    <string name="no_backup_location_set">Aucun emplacement de sauvegarde sélectionné</string>
+    <string name="backing_up">Sauvegarde en cours</string>
 </resources>
