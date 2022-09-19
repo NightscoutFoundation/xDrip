@@ -31,6 +31,9 @@ import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.LocationHelper;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
+import com.eveningoutpost.dexdrip.G5Model.DexTimeKeeper;
+import com.eveningoutpost.dexdrip.G5Model.FirmwareCapability;
+import com.eveningoutpost.dexdrip.ui.dialog.G6EndOfLifeDialog;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -39,6 +42,9 @@ import java.util.Locale;
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 import static com.eveningoutpost.dexdrip.Models.BgReading.AGE_ADJUSTMENT_TIME;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
+import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.getTransmitterID;
+
+import lombok.val;
 
 public class StartNewSensor extends ActivityWithMenu {
     // public static String menu_name = "Start Sensor";
@@ -169,7 +175,17 @@ public class StartNewSensor extends ActivityWithMenu {
         if (Ob1G5CollectionService.usingCollector() && Ob1G5StateMachine.usingG6()) {
             if (JoH.pratelimit("dex-stop-start", cap)) {
                 JoH.clearRatelimit("dex-stop-start");
-                G6CalibrationCodeDialog.ask(this, this::startSensorAndSetIntent);
+                val transmitterAgeInDays = DexTimeKeeper.getTransmitterAgeInDays(getTransmitterID());
+                val modified = FirmwareCapability.isTransmitterModified(getTransmitterID());
+                val endOfLife = transmitterAgeInDays > 179 || (!modified && transmitterAgeInDays > 99);
+                if (transmitterAgeInDays < 69 || (modified && transmitterAgeInDays < 149)) {
+                    // More than 30 days left of starting sensors - just ask for code
+                    G6CalibrationCodeDialog.ask(this, this::startSensorAndSetIntent);
+                } else { // 30 or less days left of starting sensors - give additional message first
+                    G6EndOfLifeDialog.show(activity, () ->
+                            G6CalibrationCodeDialog.ask(this, this::startSensorAndSetIntent),
+                            endOfLife, modified, transmitterAgeInDays);
+                }
             } else {
                 JoH.static_toast_long(String.format(Locale.ENGLISH, getString(R.string.please_wait_seconds_before_trying_to_start_sensor), cap));
             }
