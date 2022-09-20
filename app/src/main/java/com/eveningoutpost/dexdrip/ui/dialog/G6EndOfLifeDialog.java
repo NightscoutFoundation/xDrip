@@ -8,6 +8,9 @@ import com.eveningoutpost.dexdrip.R;
 // Navid200
 
 public class G6EndOfLifeDialog {
+
+    private static final int MAX_START_DAYS = 99;
+
     // Inform the user that Transmitter Days is approaching maximum, or that it has passed.
     public static void show(final Activity activity, final Runnable runnable, final boolean endOfLife, final boolean modified, final int currentDays) {
         String title = activity.getString(R.string.reminder);
@@ -19,7 +22,7 @@ public class G6EndOfLifeDialog {
             if (modified) { // modified transmitter
                 message = activity.getString(R.string.TX_EOL_reminder_mod, currentDays);
             } else {
-                message = activity.getString(R.string.TX_EOL_reminder, currentDays);
+                message = activity.getString(R.string.TX_EOL_reminder, MAX_START_DAYS, currentDays);
             }
         }
         final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(activity)
