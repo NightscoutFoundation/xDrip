@@ -1237,4 +1237,5 @@ Je nutné zakázať v prípade, že chcete používať xdrip cifreník. (Požado
     <string name="locked_time_period_always_used">Vždy sa použije uzamknutý rozsah času</string>
     <string name="show_time_buttons">Zobraziť tlačidlá času</string>
     <string name="source_wizard_button">Tlačidlo pomocníka výberu zdroja</string>
+    <string name="special_pairing_workaround">Špeciálne párovanie pre Samsung</string>
 </resources>
