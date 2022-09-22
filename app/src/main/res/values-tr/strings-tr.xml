@@ -1658,6 +1658,12 @@
     <string name="source_wizard_button">Kaynak Sihirbazı Düğmesi</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Sensörü başlatmayı denemeden önce lütfen %d saniye bekleyin</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">lütfen OOP2\'yi güncelleyin, aksi takdirde ham glikoza ölçümlerine dayalı kalibrasyon modunu kullanın</string>
+    <string name="reminder">Hatırlatıcı</string>
+    <string name="notification">Bildirim</string>
+    <string name="TX_EOL_reminder">Sistem durumu sayfasındaki Verici Günleri %1$d\'ye ulaştığında, bu vericide bir sensör başlatmak için son fırsat olacaktır. Şu anda %2$d gündür.</string>
+    <string name="TX_EOL_notification">Devam edip sensörü başlatırsanız, Verici Günlerinin maksimuma ulaşması nedeniyle başarısız olması çok muhtemeldir.</string>
+    <string name="TX_EOL_reminder_mod">Verici Günleri maksimuma yaklaşıyor. Yakında bu vericideki sensörleri çalıştıramayacaksınız. Şu anda %d gündür.</string>
+    <string name="proceed">Devam Edin</string>
     <string name="special_pairing_workaround">Geçici Özel Eşleştirme Çözümü</string>
     <string name="save_power">Güç tasarrufu</string>
     <string name="reduce_battery_and_network_overhead">Toplu işlemeyi kullanarak ve gereksiz verileri hariç tutarak pil ve ağ yükünü azaltın</string>
