@@ -1126,6 +1126,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
        // startActivity(new Intent(this, LanguageEditor.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://crowdin.com/project/xdrip")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
+    
+    public void documentationSupport(MenuItem x) {
+        // startActivity(new Intent(this, LanguageEditor.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://navid200.github.io/xDrip/")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+    }
 
     public void testFeature(MenuItem x) {
         TestFeature.testFeature1();

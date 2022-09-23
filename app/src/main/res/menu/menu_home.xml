@@ -175,6 +175,14 @@
         android:onClick="sendFeedback"
         android:showAsAction="never"/>
 
+    <item android:id="@+id/documentationsupport"
+        android:title="@string/documentation_support"
+        android:checkable="false"
+        android:orderInCategory="1"
+        android:onClick="documentationSupport"
+        android:visible="true"
+        android:showAsAction="never"/>
+
     <item android:id="@+id/action_toggle_speakreadings"
         android:title="@string/speak_readings"
         android:checkable="true"

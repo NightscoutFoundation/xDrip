@@ -388,6 +388,7 @@
     <string name="temporary_work_around_disable_all_sync_detail">Tijdelijke work-around optie, stopt alle synchronisatie volledig. Moet mogelijk opnieuw worden opgestart nadat het opnieuw is ingeschakeld. Voorzichtig gebruiken!</string>
     <string name="automatic_updates_crash_reports_and_feedback">Automatische updates, crashrapporten en Feedback aan Developer</string>
     <string name="crowd_sourced_translation">Crowd-sourced vertaling</string>
+    <string name="documentation_support">Documentatie & hulp</string>
     <string name="please_enter_your_question_or_comments_here">Vul hier uw vraag of opmerking hier.\nAls u een e-mailadres op te geven kunt u een reactie te krijgen.\n\n</string>
     <string name="optional_contact_info_here_eg_email">Optionele contactgegevens hier, bijv. e-mail</string>
     <string name="send_message">Bericht verzenden</string>

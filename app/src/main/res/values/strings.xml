@@ -410,6 +410,7 @@
     <string name="temporary_work_around_disable_all_sync_detail">Temporary work-around option, completely stops all synchronization. May need reboot after being re-enabled. Use with care!</string>
     <string name="automatic_updates_crash_reports_and_feedback">Automatic Updates, crash reports and Feedback to Developer</string>
     <string name="crowd_sourced_translation">Crowd-sourced translation</string>
+    <string name="documentation_support">Documentation & support</string>
     <string name="please_enter_your_question_or_comments_here">Please enter your question or comments here.\n\nIf you supply an email address you may get a response.\n\n</string>
     <string name="optional_contact_info_here_eg_email">Optional contact info here, e.g. email</string>
     <string name="send_message">Send Message</string>
