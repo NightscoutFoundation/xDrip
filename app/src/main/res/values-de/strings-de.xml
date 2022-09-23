@@ -1645,6 +1645,12 @@
     <string name="source_wizard_button">Quell-Assistent-Button</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Bitte %d Sekunden vor dem Start eines neuen Sensors warten</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">bitte aktualisieren Sie OOP2 oder schalten Sie auf Kalibrieren im Rohmodus um</string>
+    <string name="reminder">Erinnerung</string>
+    <string name="notification">Benachrichtigung</string>
+    <string name="TX_EOL_reminder">Wenn auf der System-Status-Seite %1$d Transmitter-Tage erreicht werden, ist das die letzte Gelegenheit, einen Sensor mit diesem Transmitter zu starten. Derzeit %2$d Tage.</string>
+    <string name="TX_EOL_notification">Wenn Sie fortfahren und einen Sensor starten, wird das sehr wahrscheinlich fehlschlagen, da der Transmitter die maximale Anzahl Tage erreicht hat.</string>
+    <string name="TX_EOL_reminder_mod">Die Transmitter-Tage, derzeit %d, nähern sich dem Maximum an. Bald können keine Sensoren mehr mit diesem Transmitter gestartet werden.</string>
+    <string name="proceed">Weiter</string>
     <string name="special_pairing_workaround">Besonderer Kopplungs-Workaround</string>
     <string name="save_power">Akku schonen</string>
     <string name="reduce_battery_and_network_overhead">Reduziere den Akkuverbrauch und die Netzwerkbelastung durch Stapelverarbeitung und den Ausschluss unnötiger Daten</string>
