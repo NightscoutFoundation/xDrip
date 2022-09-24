@@ -1,6 +1,17 @@
 package com.eveningoutpost.dexdrip.cgm.carelinkfollow.client;
 
-import android.util.Log;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ActiveNotification;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ClearedNotification;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.CountrySettings;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.Marker;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.MonitorData;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.Profile;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.RecentData;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.SensorGlucose;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.User;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -11,25 +22,18 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import okhttp3.*;
-
-import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ActiveNotification;
-import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ClearedNotification;
-import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ConnectData;
-import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ConnectDataResult;
-import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.CountrySettings;
-import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.Marker;
-import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.MonitorData;
-import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.Profile;
-import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.RecentData;
-import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.SensorGlucose;
-import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.User;
-import com.google.gson.*;
+import okhttp3.FormBody;
+import okhttp3.HttpUrl;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 
 /**
- * Medtronic CareLink Follower Client
- *   - API client for communication with CareLink
+ * CareLink Follower Client
+ * - API client for communication with CareLink
  */
 public class CareLinkClient {
     protected String carelinkUsername;
@@ -55,45 +59,61 @@ public class CareLinkClient {
     protected OkHttpClient httpClient = null;
     protected boolean loginInProcess = false;
     protected int lastResponseCode;
+
     public int getLastResponseCode() {
         return lastResponseCode;
     }
+
     private boolean lastLoginSuccess;
-    public boolean getLastLoginSuccess(){
+
+    public boolean getLastLoginSuccess() {
         return lastLoginSuccess;
     }
+
     private boolean lastDataSuccess;
-    public boolean getLastDataSuccess(){
+
+    public boolean getLastDataSuccess() {
         return lastDataSuccess;
     }
+
     private String lastErrorMessage;
-    public String getLastErrorMessage(){
+
+    public String getLastErrorMessage() {
         return lastErrorMessage;
     }
+
     private String lastStackTraceString;
-    public String getLastStackTraceString(){
+
+    public String getLastStackTraceString() {
         return lastStackTraceString;
     }
 
     //Session info
     protected User sessionUser;
+
     public User getSessionUser() {
         return sessionUser;
     }
+
     protected Profile sessionProfile;
+
     public Profile getSessionProfile() {
         return sessionProfile;
     }
+
     protected CountrySettings sessionCountrySettings;
+
     public CountrySettings getSessionCountrySettings() {
         return sessionCountrySettings;
     }
+
     protected MonitorData sessionMonitorData;
+
     public MonitorData getSessionMonitorData() {
         return sessionMonitorData;
     }
 
-    protected enum RequestType{
+    protected enum RequestType {
         HtmlGet(),
         HtmlPost(),
         Json()
@@ -116,7 +136,7 @@ public class CareLinkClient {
     }
 
     protected String careLinkServer() {
-        if(this.carelinkCountry.equals("us"))
+        if (this.carelinkCountry.equals("us"))
             return CARELINK_CONNECT_SERVER_US;
         else
             return CARELINK_CONNECT_SERVER_EU;
@@ -127,16 +147,15 @@ public class CareLinkClient {
     public RecentData getRecentData() {
 
         // Force login to get basic info
-        if(getAuthorizationToken() != null) {
+        if (getAuthorizationToken() != null) {
             //New BLE Endpoint (for all US calls and all BLE devices)
             if (CountryUtils.isUS(carelinkCountry) || sessionMonitorData.isBle())
                 return this.getConnectDisplayMessage(this.sessionProfile.username, this.sessionUser.getUserRole(),
                         sessionCountrySettings.blePereodicDataEndpoint);
-            //Old CareLink data source
+                //Old CareLink data source
             else
                 return this.getLast24Hours();
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -192,9 +211,9 @@ public class CareLinkClient {
         }
 
         // Set login success if everything was ok:
-        if(this.sessionUser != null && this.sessionProfile != null && this.sessionCountrySettings != null && this.sessionMonitorData != null)
+        if (this.sessionUser != null && this.sessionProfile != null && this.sessionCountrySettings != null && this.sessionMonitorData != null)
             lastLoginSuccess = true;
-        //Clear cookies if error occured during logon
+            //Clear cookies if error occured during logon
         else
             ((SimpleOkHttpCookieJar) this.httpClient.cookieJar()).deleteAllCookies();
 
@@ -298,7 +317,7 @@ public class CareLinkClient {
         Matcher responseDataMatcher = null;
 
         responseDataMatcher = Pattern.compile(groupRegex).matcher(respBody);
-        if(responseDataMatcher.find()) {
+        if (responseDataMatcher.find()) {
             responseData = responseDataMatcher.group(groupIndex);
         }
 
@@ -321,7 +340,7 @@ public class CareLinkClient {
                 || (!loginInProcess && !this.lastLoginSuccess)
         ) {
             //execute new login process
-            if(this.loginInProcess || !this.executeLoginProcedure())
+            if (this.loginInProcess || !this.executeLoginProcedure())
                 return null;
         }
 
@@ -377,7 +396,7 @@ public class CareLinkClient {
             recentData = this.getData(this.careLinkServer(), "patient/connect/data", queryParams, null, RecentData.class);
             if (recentData != null)
                 correctTimeInRecentData(recentData);
-        }catch (Exception e){
+        } catch (Exception e) {
             lastErrorMessage = e.getClass().getSimpleName() + ":" + e.getMessage();
         }
 
@@ -406,7 +425,7 @@ public class CareLinkClient {
             recentData = this.getData(HttpUrl.parse(endpointUrl), requestBody, RecentData.class);
             if (recentData != null)
                 correctTimeInRecentData(recentData);
-        }catch (Exception e){
+        } catch (Exception e) {
             lastErrorMessage = e.getClass().getSimpleName() + ":" + e.getMessage();
         }
         return recentData;
@@ -451,7 +470,7 @@ public class CareLinkClient {
                         responseString = response.body().string();
                         data = new GsonBuilder().create().fromJson(responseString, dataClass);
                         this.lastDataSuccess = true;
-                    } catch (Exception e){
+                    } catch (Exception e) {
                         lastErrorMessage = e.getClass().getSimpleName() + ":" + e.getMessage();
                     }
                 }
@@ -463,7 +482,7 @@ public class CareLinkClient {
         }
 
         //Return result
-        if(data != null)
+        if (data != null)
             return dataClass.cast(data);
         else
             return null;
@@ -500,7 +519,7 @@ public class CareLinkClient {
                 .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36");
 
         //Set media type based on request type
-        switch(type) {
+        switch (type) {
             case Json:
                 requestBuilder.addHeader("Accept", "application/json, text/plain, */*");
                 requestBuilder.addHeader("Content-Type", "application/json; charset=utf-8");
@@ -614,41 +633,42 @@ public class CareLinkClient {
 
     }
 
-    protected String getZoneOffset(String dateString){
+    protected String getZoneOffset(String dateString) {
         Matcher offsetDataMatcher = Pattern.compile(("(.*)([\\+|-].*)")).matcher(dateString);
-        if(offsetDataMatcher.find())
+        if (offsetDataMatcher.find())
             return offsetDataMatcher.group(2);
         else
-            return  null;
+            return null;
     }
 
-    protected Date parseDateString(String dateString){
-        for(SimpleDateFormat zonedFormat : ZONED_DATE_FORMATS){
+    protected Date parseDateString(String dateString) {
+        for (SimpleDateFormat zonedFormat : ZONED_DATE_FORMATS) {
             try {
                 return zonedFormat.parse(dateString);
-            }catch (Exception ex){}
+            } catch (Exception ex) {
+            }
         }
-        return  null;
+        return null;
     }
 
-    protected Date shiftDateByHours(Date date, int hours){
-        if(date != null) {
+    protected Date shiftDateByHours(Date date, int hours) {
+        if (date != null) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(date);
             calendar.add(Calendar.HOUR_OF_DAY, hours);
             return calendar.getTime();
         } else {
-            return  null;
+            return null;
         }
     }
 
     //Calculate DateTime using graph index (1 index = 5 minute)
-    protected static Date calcTimeByIndex(Date lastSensorTime, int index, boolean round){
-        if(lastSensorTime == null)
+    protected static Date calcTimeByIndex(Date lastSensorTime, int index, boolean round) {
+        if (lastSensorTime == null)
             return null;
-        else if(round)
+        else if (round)
             //round to 10 minutes
-            return new Date((Math.round((calcTimeByIndex(lastSensorTime,index,false).getTime()) / 600_000D) * 600_000L));
+            return new Date((Math.round((calcTimeByIndex(lastSensorTime, index, false).getTime()) / 600_000D) * 600_000L));
         else
             return new Date((lastSensorTime.getTime() - ((287 - index) * 300_000L)));
     }

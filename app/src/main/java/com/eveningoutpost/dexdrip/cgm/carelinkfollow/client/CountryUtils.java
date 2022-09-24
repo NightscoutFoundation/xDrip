@@ -121,11 +121,11 @@ public class CountryUtils {
             "pe"
     };
 
-    public static boolean isSupportedCountry(String countryCode){
+    public static boolean isSupportedCountry(String countryCode) {
         return Arrays.asList(supportedCountryCodes).contains(countryCode);
     }
 
-    public static boolean isUS(String countryCode){
+    public static boolean isUS(String countryCode) {
         return countryCode.equals("us");
     }
 

@@ -26,11 +26,11 @@ public class User {
     public boolean mfaEnabled;
 
     public boolean isCarePartner() {
-        return(this.role.equals(ROLE_CARE_PARTNER_US) || this.role.equals(ROLE_CARE_PARTNER_OUS));
+        return (this.role.equals(ROLE_CARE_PARTNER_US) || this.role.equals(ROLE_CARE_PARTNER_OUS));
     }
 
     public String getUserRole() {
-        if(isCarePartner())
+        if (isCarePartner())
             return USER_ROLE_CARE_PARTNER;
         else
             return USER_ROLE_PATIENT;

@@ -301,33 +301,32 @@ public class TextMap {
 
     }
 
-    public static String getAlarmMessage(String deviceFamily, Alarm alarm){
+    public static String getAlarmMessage(String deviceFamily, Alarm alarm) {
 
         return getErrorMessage(deviceFamily, alarm.kind, alarm.code);
 
     }
 
-    public static String getNotificationMessage(String deviceFamily, ClearedNotification notification){
+    public static String getNotificationMessage(String deviceFamily, ClearedNotification notification) {
         return getErrorMessage(deviceFamily, notification.messageId, notification.faultId);
     }
 
-    public static String getNotificationMessage(String deviceFamily, String messageId, int faultId){
+    public static String getNotificationMessage(String deviceFamily, String messageId, int faultId) {
         return getErrorMessage(deviceFamily, messageId, faultId);
     }
 
-    public static String getErrorMessage(String deviceFamily, String guardianErrorCode, int ngpErrorCode)
-    {
+    public static String getErrorMessage(String deviceFamily, String guardianErrorCode, int ngpErrorCode) {
         String errorTextId;
         String internalEC;
 
-        if(deviceFamily.equals(RecentData.DEVICE_FAMILY_GUARDIAN)){
-            if(guardianErrorCode != null)
+        if (deviceFamily.equals(RecentData.DEVICE_FAMILY_GUARDIAN)) {
+            if (guardianErrorCode != null)
                 errorTextId = ERROR_TEXT_PREFIX_GUARDIAN + guardianErrorCode;
             else
                 errorTextId = null;
-        } else if (deviceFamily.equals(RecentData.DEVICE_FAMILY_NGP)){
+        } else if (deviceFamily.equals(RecentData.DEVICE_FAMILY_NGP)) {
             String formattedEC = String.format("%03d", ngpErrorCode);
-            if(errorCodeMap.containsKey(formattedEC))
+            if (errorCodeMap.containsKey(formattedEC))
                 internalEC = errorCodeMap.get(formattedEC);
             else
                 internalEC = formattedEC;
@@ -336,7 +335,7 @@ public class TextMap {
             errorTextId = null;
         }
 
-        if(errorTextId != null && errorTextMap.containsKey(errorTextId))
+        if (errorTextId != null && errorTextMap.containsKey(errorTextId))
             return errorTextMap.get(errorTextId);
         else
             return null;

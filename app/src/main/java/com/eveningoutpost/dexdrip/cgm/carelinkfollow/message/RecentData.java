@@ -33,7 +33,7 @@ public class RecentData {
 
     //autoModeShieldState
     public static final String AUTOMODE_SHIELD_AUTO_BASAL = "AUTO_BASAL";
-    public static final String AUTOMODE_SHIELD_FEATURE_OFF= "FEATURE_OFF";
+    public static final String AUTOMODE_SHIELD_FEATURE_OFF = "FEATURE_OFF";
 
     //autoModeReadinessState
     public static final String AUTOMODE_READINESS_NO_ACTION_REQUIRED = "NO_ACTION_REQUIRED";
@@ -43,13 +43,15 @@ public class RecentData {
     public static final String LGS_STATE_MONITORING = "MONITORING";
 
 
-    public String getDeviceFamily(){
+    public String getDeviceFamily() {
         return medicalDeviceFamily;
     }
-    public boolean isGM(){
+
+    public boolean isGM() {
         return getDeviceFamily().equals(DEVICE_FAMILY_GUARDIAN);
     }
-    public boolean isNGP(){
+
+    public boolean isNGP() {
         return getDeviceFamily().equals(DEVICE_FAMILY_NGP);
     }
 

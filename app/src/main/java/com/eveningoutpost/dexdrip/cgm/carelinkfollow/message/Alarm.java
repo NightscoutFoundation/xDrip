@@ -7,7 +7,7 @@ import java.util.Date;
  */
 public class Alarm {
 
-    public String getMessageAlarmCode(){
+    public String getMessageAlarmCode() {
         return null;
     }
 

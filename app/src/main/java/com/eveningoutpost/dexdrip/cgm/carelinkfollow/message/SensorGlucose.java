@@ -21,8 +21,12 @@ public class SensorGlucose {
 
     public String toS() {
         String dt;
-        if (datetime == null) { dt = ""; } else{ dt = datetime; }
-        return dt + " "  + sg;
+        if (datetime == null) {
+            dt = "";
+        } else {
+            dt = datetime;
+        }
+        return dt + " " + sg;
     }
 
 }

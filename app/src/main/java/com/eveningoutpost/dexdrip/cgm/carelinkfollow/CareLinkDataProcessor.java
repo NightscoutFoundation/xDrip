@@ -12,7 +12,6 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ActiveNotification;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.Alarm;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ClearedNotification;
-import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ConnectData;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.Marker;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.RecentData;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.SensorGlucose;
@@ -30,8 +29,8 @@ import static com.eveningoutpost.dexdrip.Models.Treatments.pushTreatmentSyncToWa
 
 /**
  * Medtronic CareLink Data Processor
- *   - process CareLink data and convert to xDrip internal data
- *   - update xDrip internal data
+ * - process CareLink data and convert to xDrip internal data
+ * - update xDrip internal data
  */
 public class CareLinkDataProcessor {
 
@@ -74,11 +73,11 @@ public class CareLinkDataProcessor {
             for (SensorGlucose sg : recentData.sgs) {
                 //SG DateTime is null (sensor expired?)
                 if (sg != null && sg.datetimeAsDate != null) {
-                        filteredSgList.add(sg);
+                    filteredSgList.add(sg);
                 }
             }
 
-            if(filteredSgList.size() > 0) {
+            if (filteredSgList.size() > 0) {
 
                 final Sensor sensor = Sensor.createDefaultIfMissing();
                 sensor.save();
@@ -154,7 +153,7 @@ public class CareLinkDataProcessor {
                 }
             }
 
-            if(filteredMarkerList.size() > 0) {
+            if (filteredMarkerList.size() > 0) {
                 //sort markers by time
                 Collections.sort(filteredMarkerList, (o1, o2) -> o1.dateTime.compareTo(o2.dateTime));
 
@@ -171,7 +170,7 @@ public class CareLinkDataProcessor {
                             }
                         }
 
-                    //INSULIN, MEAL => Treatment
+                        //INSULIN, MEAL => Treatment
                     } else if ((marker.type.equals(Marker.MARKER_TYPE_INSULIN) && Pref.getBooleanDefaultFalse("clfollow_download_boluses"))
                             || (marker.type.equals(Marker.MARKER_TYPE_MEAL) && Pref.getBooleanDefaultFalse("clfollow_download_meals"))) {
 
@@ -191,7 +190,7 @@ public class CareLinkDataProcessor {
                                 }
                                 //SKIP if insulin = 0
                                 if (insulin == 0) continue;
-                            //Carbs
+                                //Carbs
                             } else if (marker.type.equals(Marker.MARKER_TYPE_MEAL)) {
                                 if (marker.amount != null) {
                                     carbs = marker.amount;
@@ -253,25 +252,25 @@ public class CareLinkDataProcessor {
     }
 
     //Check if treatment is new (no identical entry (timestamp, carbs, insulin) exists)
-    protected static boolean newTreatment(double carbs, double insulin, long timestamp){
+    protected static boolean newTreatment(double carbs, double insulin, long timestamp) {
 
         List<Treatments> treatmentsList;
         //Treatment with same timestamp and carbs + insulin exists?
         treatmentsList = Treatments.listByTimestamp(timestamp);
-        if(treatmentsList != null) {
+        if (treatmentsList != null) {
             for (Treatments treatments : treatmentsList) {
                 if (treatments.carbs == carbs && treatments.insulin == insulin)
-                    return  false;
+                    return false;
             }
         }
-        return  true;
+        return true;
     }
 
 
     //Create notification from CareLink messageId
-    protected static boolean addNotification(Date date, String deviceFamily, String messageId, int faultId){
+    protected static boolean addNotification(Date date, String deviceFamily, String messageId, int faultId) {
 
-        if(deviceFamily != null && messageId != null)
+        if (deviceFamily != null && messageId != null)
             return addNotification(date, TextMap.getNotificationMessage(deviceFamily, messageId, faultId));
         else
             return false;
@@ -279,9 +278,9 @@ public class CareLinkDataProcessor {
     }
 
     //Create notification from CareLink Alarm
-    protected static boolean addNotification(Date date, String deviceFamily, Alarm alarm){
+    protected static boolean addNotification(Date date, String deviceFamily, Alarm alarm) {
 
-        if(deviceFamily != null && alarm != null && alarm.kind != null)
+        if (deviceFamily != null && alarm != null && alarm.kind != null)
             return addNotification(date, TextMap.getAlarmMessage(deviceFamily, alarm));
         else
             return false;
@@ -289,10 +288,10 @@ public class CareLinkDataProcessor {
     }
 
     //Create notification from CareLink note info
-    protected static boolean addNotification(Date date, String noteText){
+    protected static boolean addNotification(Date date, String noteText) {
 
         //Valid date
-        if(date != null && noteText != null) {
+        if (date != null && noteText != null) {
             //New note
             if (newNote(noteText, date.getTime())) {
                 //create_note in Treatment is not good, because of automatic link to other treatments in 5 mins range
@@ -315,19 +314,19 @@ public class CareLinkDataProcessor {
 
 
     //Check note is new
-    protected static boolean newNote(String note, long timestamp){
+    protected static boolean newNote(String note, long timestamp) {
 
         List<Treatments> treatmentsList;
         //Treatment with same timestamp and note text exists?
         treatmentsList = Treatments.listByTimestamp(timestamp);
-        if(treatmentsList != null) {
+        if (treatmentsList != null) {
             for (Treatments treatments : treatmentsList) {
                 if (treatments.notes.contains(note))
-                    return  false;
+                    return false;
             }
         }
 
-        return  true;
+        return true;
 
     }
 

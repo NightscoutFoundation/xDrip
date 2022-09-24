@@ -10,14 +10,14 @@ public class Marker {
     public static final String MARKER_TYPE_MEAL = "MEAL";
     public static final String MARKER_TYPE_CALIBRATION = "CALIBRATION";
     public static final String MARKER_TYPE_BG_READING = "BG_READING";
-    public static final String MARKER_TYPE_BG         = "BG";
+    public static final String MARKER_TYPE_BG = "BG";
     public static final String MARKER_TYPE_INSULIN = "INSULIN";
     public static final String MARKER_TYPE_AUTO_BASAL = "AUTO_BASAL_DELIVERY";
     public static final String MARKER_TYPE_AUTO_MODE_STATUS = "AUTO_MODE_STATUS";
 
-    public boolean isBloodGlucose(){
-        if(type == null)
-            return  false;
+    public boolean isBloodGlucose() {
+        if (type == null)
+            return false;
         else
             return (type.equals(MARKER_TYPE_BG_READING) || type.equals(MARKER_TYPE_CALIBRATION) || type.equals(MARKER_TYPE_BG));
     }
