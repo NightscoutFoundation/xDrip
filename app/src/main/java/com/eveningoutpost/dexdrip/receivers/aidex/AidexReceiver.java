@@ -165,8 +165,10 @@ public class AidexReceiver extends BroadcastReceiver {
         Sensor currentSensor = Sensor.currentSensor();
         if(currentSensor!=null) {
             if (!currentSensor.uuid.equals(sensorId)) {
-                Sensor.stopSensor();
-                Sensor.create(timeStamp - 10000, sensorId);
+                if (JoH.pratelimit("aidex-sensor-restart", 1200)) {
+                    Sensor.stopSensor();
+                    Sensor.create(timeStamp - 10000, sensorId);
+                }
             }
         } else {
             Sensor.create(timeStamp - 10000, sensorId);

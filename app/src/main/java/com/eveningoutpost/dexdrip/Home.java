@@ -831,7 +831,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
     }
 
-    public static void startIntentThreadWithDelayedRefresh(final Intent intent) {
+    static void startIntentThreadWithDelayedRefresh(final Intent intent) {
         new Thread() {
             @Override
             public void run() {
