@@ -1669,4 +1669,6 @@
     <string name="cannot_choose_file_without_permission">Não pode selecionar ficheiro sem permissão de armazenamento</string>
     <string name="select_time">Seleccione a hora</string>
     <string name="select_tone_for_alerts">Selecione o tom para alertas</string>
+    <string name="show_unsmoothed">Mostrar sem suavização</string>
+    <string name="show_unsmoothed_summary">Mostra dados não suavizados também se a suavização do gráfico estiver ativada. Se o plugin de calibração for usado, exibirá dados não suavizados em vez de dados do plugin.</string>
 </resources>

@@ -1,5 +1,10 @@
 package com.eveningoutpost.dexdrip;
 
+import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
+import static com.eveningoutpost.dexdrip.Models.BgReading.AGE_ADJUSTMENT_TIME;
+import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.getTransmitterID;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -13,6 +18,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.G5Model.DexSyncKeeper;
+import com.eveningoutpost.dexdrip.G5Model.DexTimeKeeper;
+import com.eveningoutpost.dexdrip.G5Model.FirmwareCapability;
 import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
@@ -27,6 +34,7 @@ import com.eveningoutpost.dexdrip.profileeditor.DatePickerFragment;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileAdapter;
 import com.eveningoutpost.dexdrip.profileeditor.TimePickerFragment;
 import com.eveningoutpost.dexdrip.ui.dialog.G6CalibrationCodeDialog;
+import com.eveningoutpost.dexdrip.ui.dialog.G6EndOfLifeDialog;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.LocationHelper;
@@ -36,9 +44,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
-import static com.eveningoutpost.dexdrip.Models.BgReading.AGE_ADJUSTMENT_TIME;
-import static com.eveningoutpost.dexdrip.xdrip.gs;
+import lombok.val;
 
 public class StartNewSensor extends ActivityWithMenu {
     // public static String menu_name = "Start Sensor";
@@ -164,12 +170,27 @@ public class StartNewSensor extends ActivityWithMenu {
         timePickerFragment.show(activity.getFragmentManager(), "TimePicker");
     }
 
+    private static final int ABSOLUTE_MAX_AGE_DAYS = 180;
+    private static final int MAX_AGE_DAYS = 100;
+    private static final int MONTH_WARNING_DAYS = 30;
+
     private void startSensorOrAskForG6Code() {
         final int cap = 20;
         if (Ob1G5CollectionService.usingCollector() && Ob1G5StateMachine.usingG6()) {
             if (JoH.pratelimit("dex-stop-start", cap)) {
                 JoH.clearRatelimit("dex-stop-start");
-                G6CalibrationCodeDialog.ask(this, this::startSensorAndSetIntent);
+                val transmitterAgeInDays = DexTimeKeeper.getTransmitterAgeInDays(getTransmitterID());
+                val modified = FirmwareCapability.isTransmitterModified(getTransmitterID());
+                val endOfLife = transmitterAgeInDays >= ABSOLUTE_MAX_AGE_DAYS || (!modified && transmitterAgeInDays >= MAX_AGE_DAYS);
+                if (transmitterAgeInDays < MAX_AGE_DAYS - MONTH_WARNING_DAYS
+                        || (modified && transmitterAgeInDays < ABSOLUTE_MAX_AGE_DAYS - MONTH_WARNING_DAYS)) {
+                    // More than 30 days left of starting sensors - just ask for code
+                    G6CalibrationCodeDialog.ask(this, this::startSensorAndSetIntent);
+                } else { // 30 or less days left of starting sensors - give additional message first
+                    G6EndOfLifeDialog.show(activity, () ->
+                                    G6CalibrationCodeDialog.ask(this, this::startSensorAndSetIntent),
+                            endOfLife, modified, transmitterAgeInDays);
+                }
             } else {
                 JoH.static_toast_long(String.format(Locale.ENGLISH, getString(R.string.please_wait_seconds_before_trying_to_start_sensor), cap));
             }

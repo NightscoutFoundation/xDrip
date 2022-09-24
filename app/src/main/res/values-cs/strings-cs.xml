@@ -88,8 +88,15 @@
     <string name="pref_amazfit_other_alert_enable_summary">Odesílat ostatní výstrahy do hodinek</string>
     <string name="pref_amazfit_other_alert_enable">Povolit</string>
     <string name="pref_amazfit_other_alert_title">Další výstrahy</string>
+    <string name="pref_amazfit_watchface_graph_dots_summary">Zobrazí drobné tečky místo malých</string>
     <string name="pref_amazfit_watchface_graph_enable">Povolit</string>
+    <string name="pref_amazfit_watchface_graph_hours_summary">nastavte počet hodin v grafu</string>
+    <string name="pref_amazfit_widget_graph_hours_title">Graf widgetu</string>
+    <string name="pref_amazfit_widget_graph_hours_summary">nastavte počet hodin v grafu</string>
+    <string name="pref_amazfit_widget_graph_dots_summary">Zobrazí drobné tečky místo malých</string>
     <string name="pref_amazfit_widget_graph_enable">Povolit</string>
+    <string name="pref_amazfit_widget_graph_title">Graf widgetu</string>
+    <string name="pref_amazfit_widget_graph_enable_summary">Zobrazí graf ve widgetu</string>
     <string name="toast_crash">Něco je špatně :( Hlášení o tom bylo odesláno</string>
     <string name="taskerConfigInstruction">Kliknout na Tick ikonu pro potvrzení. Není potřeba měnit konfigurační řetězec.</string>
     <string name="taskerConfiguration">Konfigurace Taskeru</string>
@@ -104,6 +111,7 @@
     <string name="export_submenu">Možnosti importu/exportu</string>
     <string name="action_resend_to_watch">Znovu odeslat glukémii do hodinek</string>
     <string name="action_open_watch_setting">Otevřít nastavení na Android Wear</string>
+    <string name="action_sync_watch_db">Resetovat Wear databázi</string>
     <string name="erase">Vymazat</string>
     <string name="interface_tips_from_start">Všechny tipy budou zobrazeny znovu od začátku</string>
     <string name="note_button">Tlačítko poznámky</string>
@@ -146,12 +154,15 @@
     <string name="checking_for_update">Kontrola aktualizací...</string>
     <string name="signal_missed">Signál nezachycený</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} Minut zpět|1#{0, number, integer} Minuta zpět|1&lt;{0, number, integer} Minut zpět}</string>
+    <string name="expires_at">Končí v {0}</string>
     <string name="space_minutes_ago">" minut zpět"</string>
     <string name="space_minute_ago">" minuta zpět"</string>
     <string name="show_parakeet_map">Zobrazit mapu Parakeetů</string>
     <string name="switch_parakeet_to_setup_mode">Přepnout Parakeet do módu nastavování</string>
     <string name="view_events_log">Zobrazit logy</string>
+    <string name="show_libre_trend">Zobrazovat trend z Libre</string>
     <string name="libre_15_minutes_graph">15-ti minutový graf Libre</string>
+    <string name="libre_last_x_minutes_graph">Graf za posledních %d minut z Libre</string>
     <string name="share_config_via_qr_code">Sdílet konfiguraci QR kódem</string>
     <string name="check_for_updated_version">Kontrola nové verze</string>
     <string name="send_feedback_to_developer">Odeslat zpětnou vazbou vývojářům</string>
@@ -163,6 +174,7 @@
     <string name="general_settings">Obecná nastavení</string>
     <string name="high_value">Vysoká hodnota</string>
     <string name="low_value">Nízká hodnota</string>
+    <string name="stats_range_settings">Nastavení rozsahu: </string>
     <string name="end_user_license_agreement">Licenční ujednání</string>
     <string name="save">Uložit</string>
     <string name="view_important_warning">Zobrazit důležitá varování</string>
@@ -266,6 +278,7 @@
     <string name="upload_data_to_dex_servers">Nahrávat data na servery Dexcom, aby bylo možné je používat s jejich aplikacemi</string>
     <string name="manage_followers">Spravovat následovníky</string>
     <string name="manage_existing_followers">Spravovat existující následovníky a pozvání nových</string>
+    <string name="invite_follower">Pozvat sledujícího</string>
     <string name="glucose_calibration_and_other_alerts">Výstrahy glykémie, kalibrace a další</string>
     <string name="alert_volume_profile">Zvukový profil výstrahy</string>
     <string name="smart_alerting">Inteligentní výstrahy</string>
