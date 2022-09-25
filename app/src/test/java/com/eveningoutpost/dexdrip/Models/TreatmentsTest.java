@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.Models;
 
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.insulin.Insulin;
 import com.eveningoutpost.dexdrip.insulin.InsulinManager;
 
@@ -10,7 +11,12 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MONTH_IN_MS;
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
+
+import lombok.val;
 
 /**
  * Tests for {@link Treatments}
@@ -137,4 +143,18 @@ public class TreatmentsTest extends RobolectricTestWithConfig {
 
     }
 
+    @Test
+    public void cleanupTest() {
+        val ts = JoH.tsl();
+        Treatments.delete_all();
+        for (long offset = 0; offset < MONTH_IN_MS; offset += DAY_IN_MS) {
+            Treatments.createForTest(ts - offset, 1.0);
+        }
+        val before = Treatments.latestForGraph(1000, 0, ts + DAY_IN_MS).size();
+        Treatments.cleanup(5);
+        val after = Treatments.latestForGraph(1000, 0, ts + DAY_IN_MS).size();
+        assertWithMessage("test before").that(before).isEqualTo(30);
+        assertWithMessage("test after").that(after).isEqualTo(5);
+        Treatments.delete_all();
+    }
 }

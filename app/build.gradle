@@ -23,6 +23,7 @@ if (getGradle().getStartParameter().getTaskRequests().toString().contains("Relea
         variantMapsEnabled false
         uploadMapsForVariant ''
     }*/
+    apply plugin: 'com.google.android.gms.oss-licenses-plugin'
 }
 
 repositories {
@@ -137,10 +138,25 @@ android {
         disable 'ExtraTranslation'
     }
 
+    configurations {
+        all {
+            exclude group: 'commons-logging', module: 'commons-logging'
+            exclude group: 'org.apache.httpcomponents'
+        }
+    }
+
     packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/INDEX.LIST'
         exclude 'META-INF/NOTICE.md'
         exclude 'META-INF/LICENSE.md'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'org/apache/http/version.properties'
+        exclude 'org/apache/http/client/version.properties'
+        exclude 'META-INF/ASL2.0'
     }
 
     compileOptions {
@@ -235,12 +251,20 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:26.1.0'
     implementation 'com.android.support:cardview-v7:26.1.0'
     implementation 'com.android.support:preference-v7:26.1.0'
-    //implementation 'com.google.android.gms:play-services-drive:9.4.0'
-    implementation 'com.google.firebase:firebase-messaging:10.2.1'
-    implementation 'com.google.android.gms:play-services-maps:10.2.1'
-    implementation 'com.google.android.gms:play-services-wearable:10.2.1'
-    implementation 'com.google.android.gms:play-services-location:10.2.1'
-    implementation "com.google.android.gms:play-services-gcm:10.2.1"
+
+    implementation ('com.google.apis:google-api-services-drive:v3-rev20220815-2.0.0') {
+        exclude group: 'org.apache.httpcomponents'
+    }
+    implementation 'com.google.api-client:google-api-client-android:1.26.0'
+
+    implementation 'com.google.android.gms:play-services-auth:15.0.0'
+    implementation 'com.google.firebase:firebase-messaging:15.0.0'
+   // implementation 'com.google.android.gms:play-services-maps:15.0.0'
+    implementation 'com.google.android.gms:play-services-wearable:15.0.0'
+    implementation 'com.google.android.gms:play-services-location:15.0.0'
+    implementation "com.google.android.gms:play-services-gcm:15.0.0"
+    implementation "com.google.android.gms:play-services-oss-licenses:15.0.0"
+
     implementation 'com.squareup.wire:wire-runtime:2.2.0'
     implementation 'com.squareup.okhttp:okhttp:2.7.5'
     implementation 'com.squareup.okhttp3:okhttp:3.12.13'

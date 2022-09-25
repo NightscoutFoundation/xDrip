@@ -435,7 +435,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         try {
             if (!prefs.getBoolean("engineering_mode", false)) { // If engineering mode has been disabled
                 try {
-                    prefs.edit().putBoolean("lower_fuzzer", false).apply(); // Disable lower_fuzzer
                 } catch (Exception e) {
                     //
                 }
@@ -1675,24 +1674,36 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     public boolean onPreferenceChange(final Preference preference, final Object newValue) {
                         final AlertDialog.Builder builder = new AlertDialog.Builder(preference.getContext());
                         if ((boolean) newValue) {
-                            builder.setTitle("Stop! Are you sure?");
-                            builder.setMessage("This can sometimes crash / break a sensor!\nWith some phones there can be problems, try on expiring sensor first for safety. You have been warned.");
 
-                            builder.setPositiveButton("I AM SURE", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                    ((SwitchPreference)preference).setChecked(true);
-                                    preference.getEditor().putBoolean("use_nfc_scan", true).apply();
-                                    NFCReaderX.handleHomeScreenScanPreference(xdrip.getAppContext(), (boolean) newValue && prefs.getBoolean("nfc_scan_homescreen", false));
-                                }
-                            });
-                            builder.setNegativeButton("NOPE", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            });
-                            final AlertDialog alert = builder.create();
-                            alert.show();
+                            final boolean paranoidAboutNFC = false;
+                            if (paranoidAboutNFC) {
+                                // TODO changed Jul 2022 as this feature is well established to work and have been no reports of problems. Remove this block after Dec 2022 if no problems reported.
+                                builder.setTitle("Stop! Are you sure?");
+                                builder.setMessage("This can sometimes crash / break a sensor!\nWith some phones there can be problems, try on expiring sensor first for safety. You have been warned.");
+
+                                builder.setPositiveButton("I AM SURE", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                        ((SwitchPreference) preference).setChecked(true);
+                                        preference.getEditor().putBoolean("use_nfc_scan", true).apply();
+                                        NFCReaderX.handleHomeScreenScanPreference(xdrip.getAppContext(), (boolean) newValue && prefs.getBoolean("nfc_scan_homescreen", false));
+                                    }
+                                });
+                                builder.setNegativeButton("NOPE", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                                final AlertDialog alert = builder.create();
+                                alert.show();
+
+                            } else {
+                                ((SwitchPreference) preference).setChecked(true);
+                                preference.getEditor().putBoolean("use_nfc_scan", true).apply();
+                                NFCReaderX.handleHomeScreenScanPreference(xdrip.getAppContext(), (boolean) newValue && prefs.getBoolean("nfc_scan_homescreen", false));
+                                return true;
+                            }
+
                             return false;
                         } else {
                             NFCReaderX.handleHomeScreenScanPreference(xdrip.getAppContext(), (boolean) newValue && prefs.getBoolean("nfc_scan_homescreen", false));

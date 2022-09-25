@@ -1189,7 +1189,7 @@ public class BgReading extends Model implements ShareUploadableBg {
             return null;
         }
         // TODO slope!!
-        final BgReading existing = getForPreciseTimestamp(timestamp, Constants.MINUTE_IN_MS);
+        final BgReading existing = getForPreciseTimestamp(timestamp, DexCollectionType.getCurrentDeduplicationPeriod());
         if (existing == null) {
             Calibration calibration = Calibration.lastValid();
             final BgReading bgReading = new BgReading();

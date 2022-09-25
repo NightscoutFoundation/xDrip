@@ -40,7 +40,7 @@ public class SdcardImportExport extends BaseAppCompatActivity {
     private final static String TAG = "jamorham sdcard";
     private final static int MY_PERMISSIONS_REQUEST_STORAGE = 104;
     public final static int TRIGGER_RESTORE_PERMISSIONS_REQUEST_STORAGE = 9104;
-    private final static String PREFERENCES_FILE = "shared_prefs/" + xdrip.getAppContext().getString(R.string.local_target_package) + "_preferences.xml";
+    public final static String PREFERENCES_FILE = "shared_prefs/" + xdrip.getAppContext().getString(R.string.local_target_package) + "_preferences.xml";
     private final static String EXPORT_FOLDER = "xDrip-export";
     private static boolean backupDismissed;
     //private static Activity activity;
@@ -116,7 +116,7 @@ public class SdcardImportExport extends BaseAppCompatActivity {
     }
 
     public static void hardReset() {
-        JoH.wakeUpIntent(xdrip.getAppContext(), 1000, Home.getHomePendingIntent());
+        JoH.wakeUpIntent(xdrip.getAppContext(), 4000, Home.getHomePendingIntent());
         hardReset_orig();
     }
 
