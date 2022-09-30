@@ -1472,6 +1472,7 @@
     <string name="enable_automatic_calibration">Automatische Kalibrierung aktivieren</string>
     <string name="entered_blood_tests_which_occur_during_flat_trend_periods_can_automatically_be_used_to_recalibrate_after_20_minutes_this_should_provide_the_most_accurate_method_to_calibrate_with__do_you_want_to_enable_this_feature">Eingegebene blutige Messungen bei flacher Trendkurve können nach 20 Minuten automatisch zur Kalibrierung verwendet werden. Dies sollte die genaueste Methode zur Kalibrierung sein.\n\nMöchtest du diese Funktion aktivieren?</string>
     <string name="yes_enable">JA, aktivieren</string>
+    <string name="blood_test_action">Blutige Messung</string>
     <string name="what_would_you_like_to_do">Was möchtest du tun?</string>
     <string name="nothing">Nichts</string>
     <string name="are_you_sure_you_want_to_delete_this_blood_test_result">Bist du sicher, dass du diese blutige Messung entfernen möchtest?</string>
