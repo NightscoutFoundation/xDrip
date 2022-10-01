@@ -1677,4 +1677,13 @@
     <string name="select_tone_for_alerts">Seleccionar tono de alerta</string>
     <string name="show_unsmoothed">Mostrar no suavizados</string>
     <string name="show_unsmoothed_summary">Mostrar datos sin suavizar también si el suavizado gráfico está habilitado. Si se utiliza el plugin de calibración, se mostrarán datos sin suavizar en lugar de datos del plugin.</string>
+    <string name="you_can_use_google_drive_for_backup">Puedes usar Google Drive para hacer una copia de seguridad</string>
+    <string name="select_backup_location">Selecciona ubicación de la copia de seguridad</string>
+    <string name="do_backup_now">Hacer copia de seguridad ahora</string>
+    <string name="automatic_daily_backup">Backup automático diario</string>
+    <string name="restore_from_backup">Restaurar desde una copia de seguridad</string>
+    <string name="are_you_really_sure_question">¿Estás seguro?</string>
+    <string name="backup_source_confirm">Comfirmar origen de la copia de seguridad</string>
+    <string name="nothing_to_restore_please_select">Nada para restaurar. Por favor, seleccione la ubicación</string>
+    <string name="no_backup_location_set">No se ha seleccionado una ubicación de copia de seguridad</string>
 </resources>
