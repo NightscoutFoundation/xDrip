@@ -193,6 +193,10 @@ public class BgReading extends Model implements ShareUploadableBg {
     @Column(name = "source_info")
     public volatile String source_info;
 
+    @Expose
+    @Column(name = "hasNoiseDetection")
+    public boolean noiseDetectionActive = false;
+
     public synchronized static void updateDB() {
         final String[] updates = new String[]{"ALTER TABLE BgReadings ADD COLUMN dg_mgdl REAL;",
                 "ALTER TABLE BgReadings ADD COLUMN dg_slope REAL;",
@@ -482,6 +486,10 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public static BgReading create(double raw_data, double filtered_data, Context context, Long timestamp, boolean quick) {
+        return create(raw_data, filtered_data, context, timestamp, quick, false, 0);
+    }
+
+    public static BgReading create(double raw_data, double filtered_data, Context context, Long timestamp, boolean quick, boolean handleLibreNoise, double noise) {
         if (context == null) context = xdrip.getAppContext();
         BgReading bgReading = new BgReading();
         final Sensor sensor = Sensor.currentSensor();
@@ -528,8 +536,9 @@ public class BgReading extends Model implements ShareUploadableBg {
                 //context.startService(new Intent(context, Notifications.class));
                 // allow this instead to be fired inside handleNewBgReading when noise will have been injected already
             }
-
-            bgReading.postProcess(quick);
+            // Handle noise
+            bgReading.noise = String.valueOf(noise);
+            bgReading.postProcess(quick, handleLibreNoise);
 
         }
 
@@ -539,7 +548,11 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public void postProcess(final boolean quick) {
-        injectNoise(true); // Add noise parameter for nightscout
+        postProcess(quick, false);
+    }
+
+    public void postProcess(final boolean quick, boolean handleLibre2Noise) {
+        injectNoise(true, handleLibre2Noise); // Add noise parameter for nightscout
         injectDisplayGlucose(BestGlucose.getDisplayGlucose()); // Add display glucose for nightscout
         BgSendQueue.handleNewBgReading(this, "create", xdrip.getAppContext(), Home.get_follower(), quick);
     }
@@ -1319,7 +1332,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     // TODO this method shares some code with above.. merge
-    public static void bgReadingInsertFromInt(int value, long timestamp, long margin, boolean do_notification) {
+    public static void bgReadingInsertFromInt(int value, double noise, long timestamp, long margin, boolean do_notification, boolean handleLibreNoise) {
         // TODO sanity check data!
 
         if ((value <= 0) || (timestamp <= 0)) {
@@ -1334,7 +1347,7 @@ public class BgReading extends Model implements ShareUploadableBg {
 
             bgr.timestamp = timestamp;
             bgr.calculated_value = value;
-
+            bgr.noise = String.valueOf(noise);
 
             // rough code for testing!
             bgr.filtered_calculated_value = value;
@@ -1352,11 +1365,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                 if (readingNearTimeStamp(bgr.timestamp, margin) == null) {
                     bgr.save();
                     bgr.find_slope();
-                    if (do_notification) {
-                        // xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), Notifications.class)); // alerts et al
-                        Notifications.start(); // this may not be needed as it is duplicated in handleNewBgReading
-                    }
-                    BgSendQueue.handleNewBgReading(bgr, "create", xdrip.getAppContext(), false, !do_notification); // pebble and widget
+                    bgr.postProcess(!do_notification, handleLibreNoise);
                 } else {
                     Log.d(TAG, "Ignoring duplicate bgr record due to timestamp: " + timestamp);
                 }
@@ -1774,11 +1783,28 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public BgReading injectNoise(boolean save) {
+        return injectNoise(save, false);
+    }
+
+    public BgReading injectNoise(boolean save, boolean handleLibre2Noise) {
         final BgReading bgReading = this;
-        if (JoH.msSince(bgReading.timestamp) > Constants.MINUTE_IN_MS * 20) {
+        if (!handleLibre2Noise && JoH.msSince(bgReading.timestamp) > Constants.MINUTE_IN_MS * 20) {
             bgReading.noise = "0";
         } else {
             BgGraphBuilder.refreshNoiseIfOlderThan(bgReading.timestamp);
+            if (handleLibre2Noise) {
+                // Get our raw noise estimate back from our temporary stashing location
+                double libre2Noise = Double.valueOf(bgReading.noise);
+                if (libre2Noise == Double.NaN) {
+                    BgGraphBuilder.last_noise = -9999;
+                } else {
+                    BgGraphBuilder.last_noise = libre2Noise;
+                    // Noise handled, set flag accordingly
+                    bgReading.noiseDetectionActive = true;
+                }
+                // restore the original value of the field
+                bgReading.noise = "0";
+            }
             if (BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_HIGH) {
                 bgReading.noise = "4";
             } else if (BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_TOO_HIGH_FOR_PREDICT) {
