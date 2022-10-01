@@ -1359,6 +1359,7 @@
     <string name="title_plus_whole_house">Whole-House</string>
     <string name="summary_libre_whole_house_collector">Dieses Telefon wird ein Collector im Whole-House-Netzwerk sein</string>
     <string name="title_libre_whole_house_collector">Libre-Whole-House</string>
+    <string name="summary_xdrip_plus_desert_sync_settings">Desert Sync Zusammenfassung</string>
     <string name="title_xdrip_plus_desert_sync_settings">Desert Sync</string>
     <string name="summary_desert_sync_enabled">Lokale Synchronisation (ohne Internet) aktiviert</string>
     <string name="title_desert_sync_enabled">Desert Sync</string>
@@ -1389,6 +1390,7 @@
     <string name="title_pendiq_pin">Pen-Pincode</string>
     <string name="summary_use_notification_channels">Verwende die Android 8+ Benachrichtigungskanal-Funktion</string>
     <string name="title_use_notification_channels">Benachrichtigungskanäle</string>
+    <string name="summary_ongoing_notification_channel">Dies kann auf einigen Geräten Benachrichtigungen auf dem \"Ambient Display\" auslösen. Tests erforderlich!</string>
     <string name="title_ongoing_notification_channel">Aktuellen Benachrichtigungskanal verwenden</string>
     <string name="summary_notification_channels_grouping">Ob Benachrichtigungen gruppiert werden sollen. Inkompatibel mit \"Nummern-Symbol im Benachrichtigungsbereich\"</string>
     <string name="title_notification_channels_grouping">Gruppiere Benachrichtigungen</string>
@@ -1478,6 +1480,7 @@
     <string name="are_you_sure_you_want_to_delete_this_blood_test_result">Bist du sicher, dass du diese blutige Messung entfernen möchtest?</string>
     <string name="yes_delete">Ja, löschen</string>
     <string name="deleted">Gelöscht!</string>
+    <string name="wifi_sleep_policy_issue">Problem mit den WLAN-Schlafregeln</string>
     <string name="your_wifi_is_set_to_sleep_when_the_phone_screen_is_off__this_may_cause_problems_if_you_dont_have_cellular_data_or_have_devices_on_your_local_network__would_you_like_to_go_to_the_settings_page_to_set__always_keep_wifi_on_during_sleep">Bei ausgeschaltetem Bildschirm ist dein WLAN im Ruhezustand.\n\nDies kann zu Problemen führen, wenn du keine mobilen Daten nutzt oder das Geräte anderweitig über Netzwerkzugang verfügt.\n\nMöchten du zur Einstellung wechseln:\n\nWLAN während des Ruhezustands immer einschalten?</string>
     <string name="maybe_later">Vielleicht später</string>
     <string name="yes_do_it">JA, los gehts</string>
