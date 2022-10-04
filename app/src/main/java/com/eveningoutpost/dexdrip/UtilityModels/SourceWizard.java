@@ -73,7 +73,6 @@ public class SourceWizard {
             other.addChild(new Item("Dex Share Follower", DexCollectionType.SHFollow, R.drawable.nsfollow_icon));
             //
             other.addChild(new Item("EverSense", DexCollectionType.NSEmulator, R.drawable.wikimedia_eversense_icon_pbroks13));
-            //other.addChild(new Item("GlucoRx/Aidex App", DexCollectionType.AidexReceiver, R.drawable.aidex_text_icon));
         }
     }
 

@@ -56,8 +56,6 @@ public class AidexReceiver extends BroadcastReceiver {
                 PowerManager.WakeLock wl = JoH.getWakeLock("aidex-receiver", 60000);
                 synchronized (lock) {
                     try {
-                        //UserError.Log.d(TAG, "Aidex Broadcast: " + gsonInstance.toJson(intent));
-                        
                         UserError.Log.d(TAG, "Aidex onReceiver: " + intent.getAction());
                         JoH.benchmark(null);
 
