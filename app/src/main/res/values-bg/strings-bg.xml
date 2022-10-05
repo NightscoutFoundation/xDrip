@@ -373,7 +373,7 @@
     <string name="title_rest_api_extra_options">Допълнителни опции</string>
     <string name="show_help">Покажи помощно меню</string>
     <string name="delete_all_bg_readings">Изтриване на ВСИЧКИ стойности за КЗ</string>
-    <string name="title_broadcast_service_api">Broadcast API услуга</string>
+    <string name="title_broadcast_service_api">Broadcast API услуга (пр. WatchDrip+)</string>
     <string name="summary_broadcast_service_api">Включи xDrip комуникация с приложения като използват новия API</string>
     <string name="title_miband_units">Единици</string>
     <string name="title_miband_locale_24_hour">24 часов часовник</string>
@@ -454,6 +454,8 @@
     <string name="show_time_buttons">Покажи бутона за Време</string>
     <string name="source_wizard_button">Съветник за източник Бутон</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Моля изчакайте %d секунди преди да стартирате сензор</string>
+    <string name="reminder">Напомняне</string>
+    <string name="notification">Уведомяване</string>
     <string name="save_power">Съхранение на енергия</string>
     <string name="reduce_battery_and_network_overhead">Намаляване консумация на батерия и мрежа използвайки бач процесване на данните</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Опрости графики като изглажда нередни данни</string>

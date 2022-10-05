@@ -1659,6 +1659,12 @@
     <string name="source_wizard_button">Pulsante Assistente Sorgente</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Attendere %d secondi prima di provare ad avviare il sensore</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">Aggiornare OOP2 o passare alla calibrazione basata su glicemia grezza</string>
+    <string name="reminder">Promemoria</string>
+    <string name="notification">Notifica</string>
+    <string name="TX_EOL_reminder">Quando i giorni del trasmettitore nello stato del sistema raggiungeranno %1$d, sarà l\'ultima opportunità di avviare un sensore con questo trasmettitore. Attualmente a %2$d giorni.</string>
+    <string name="TX_EOL_notification">Se vai avanti per avviare il sensore, è molto probabile che fallisca per causa del trasmettitore che ha raggiunto il numero di giorni massimo.</string>
+    <string name="TX_EOL_reminder_mod">I giorni del trasmettitore si avvicinano al massimo. Presto, non potrai avviare sensori con questo trasmettitore. Attualmente a %d giorni.</string>
+    <string name="proceed">Continua</string>
     <string name="special_pairing_workaround">Abbinamento Speciale</string>
     <string name="save_power">Risparmia energia</string>
     <string name="reduce_battery_and_network_overhead">Riduce l\'utilizzo della batteria dei dati di rete con l\'elaborazione in batch escludendo dati inutili</string>
