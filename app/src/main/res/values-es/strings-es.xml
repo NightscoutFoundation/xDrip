@@ -1431,7 +1431,7 @@
     <string name="auto_refresh">Actualizar automáticamente</string>
     <string name="set_up_desert_sync_follower">Configurar seguidor Desert Sync</string>
     <string name="version">Versión:</string>
-    <string name="sensor_start">Inicio del Sensor:</string>
+    <string name="sensor_start">Inicio del sensor:</string>
     <string name="plug_in_your_dexcom_reciever">Conecte su receptor Dexcom, pulse este botón y luego ¡cruce los dedos!</string>
     <string name="check_in_dexcom_calibrations">Verificar calibraciones del Dexcom</string>
     <string name="progress">progreso</string>
@@ -1659,6 +1659,12 @@
     <string name="source_wizard_button">Botón del asistente de origen</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Espere %d segundos antes de intentar iniciar el sensor</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">Por favor, actualiza OOP2 o cambia a calibración basada en modo raw</string>
+    <string name="reminder">Recordatorio</string>
+    <string name="notification">Notificación</string>
+    <string name="TX_EOL_reminder">Cuando los días del transmisor en la página de \"Estado del sistema\"  lleguen a %1$d, puede ser la última vez que puedas iniciar un sensor con ese transmisor. Actualmente muestra %2$d días.</string>
+    <string name="TX_EOL_notification">Si decides iniciar el sensor, es muy probable que falle debido a que el transmisor ha alcanzado su periodo máximo.</string>
+    <string name="TX_EOL_reminder_mod">Estás cerca de alcanzar los días máximos del transmisor. Pronto no podrás iniciar sensores con ese transmisor. Actualmente en %d  días.</string>
+    <string name="proceed">Continuar</string>
     <string name="special_pairing_workaround">Método alternativo especial de emparejamiento</string>
     <string name="save_power">Ahorro de energía</string>
     <string name="reduce_battery_and_network_overhead">Reducir la sobrecarga de la batería y red mediante el procesamiento por lotes y la exclusión de datos innecesarios</string>
@@ -1671,4 +1677,13 @@
     <string name="select_tone_for_alerts">Seleccionar tono de alerta</string>
     <string name="show_unsmoothed">Mostrar no suavizados</string>
     <string name="show_unsmoothed_summary">Mostrar datos sin suavizar también si el suavizado gráfico está habilitado. Si se utiliza el plugin de calibración, se mostrarán datos sin suavizar en lugar de datos del plugin.</string>
+    <string name="you_can_use_google_drive_for_backup">Puedes usar Google Drive para hacer una copia de seguridad</string>
+    <string name="select_backup_location">Selecciona ubicación de la copia de seguridad</string>
+    <string name="do_backup_now">Hacer copia de seguridad ahora</string>
+    <string name="automatic_daily_backup">Backup automático diario</string>
+    <string name="restore_from_backup">Restaurar desde una copia de seguridad</string>
+    <string name="are_you_really_sure_question">¿Estás seguro?</string>
+    <string name="backup_source_confirm">Comfirmar origen de la copia de seguridad</string>
+    <string name="nothing_to_restore_please_select">Nada para restaurar. Por favor, seleccione la ubicación</string>
+    <string name="no_backup_location_set">No se ha seleccionado una ubicación de copia de seguridad</string>
 </resources>
