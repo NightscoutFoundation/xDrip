@@ -1285,8 +1285,13 @@
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="bluetooth_allow_background_scans"
-                    android:summary="Use Android 8+ background scanning feature"
-                    android:title="Use Background Scans" />
+                    android:summary="@string/android_8_background_scanning"
+                    android:title="@string/use_background_scans" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="bluetails_enabled"
+                    android:summary="Use Bluetooth with companion app data source"
+                    android:title="Companion Bluetooth" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="bluetooth_excessive_wakelocks"

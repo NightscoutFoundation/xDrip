@@ -537,13 +537,16 @@ public class JoH {
         }
     }
 
-    public static void dumpBundle(Bundle bundle, String tag) {
+    public static void dumpBundle(final Bundle bundle, final String tag) {
         if (bundle != null) {
             for (String key : bundle.keySet()) {
                 Object value = bundle.get(key);
                 if (value != null) {
                     UserError.Log.d(tag, String.format("%s %s (%s)", key,
                             value.toString(), value.getClass().getName()));
+                    if (value instanceof Bundle) {
+                        dumpBundle((Bundle) value, tag + "::" + key);
+                    }
                 }
             }
         } else {
