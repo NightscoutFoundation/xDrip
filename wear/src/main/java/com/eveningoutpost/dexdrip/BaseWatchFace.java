@@ -15,9 +15,9 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.BatteryManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.wearable.view.WatchViewStub;
 import android.text.TextUtils;
 import android.view.Display;
@@ -28,6 +28,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
@@ -41,13 +43,21 @@ import com.ustwo.clockwise.common.WatchMode;
 import com.ustwo.clockwise.common.WatchShape;
 import com.ustwo.clockwise.wearable.WatchFace;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import lecho.lib.hellocharts.view.LineChartView;
+import org.chromium.net.CronetEngine;
+import org.chromium.net.CronetException;
+import org.chromium.net.UrlRequest;
+import org.chromium.net.UrlResponseInfo;
 
 /**
  * Created by Emma Black on 12/29/14.
@@ -117,9 +127,23 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     private Rect mCardRect = new Rect(0,0,0,0);
     //private static BaseWatchFace mActivity;//TODO
 
+    Handler handler = new Handler();
+
     @Override
     public void onCreate() {
         super.onCreate();
+
+
+
+        final Runnable r = new Runnable() {
+            public void run() {
+                CreateHttpRequest(xdrip.getAppContext());
+                handler.postDelayed(this, 10000);
+            }
+        };
+
+        handler.postDelayed(r, 1000);
+
         //mActivity = this;//TODO
         Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE))
                 .getDefaultDisplay();
@@ -937,5 +961,121 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
             Log.d(TAG, "setupCharts requestData");
             ListenerService.requestData(this);
         }
+    }
+
+    private CronetEngine cronetEngine;
+    private static CronetEngine createDefaultCronetEngine(Context context) {
+        // Cronet makes use of modern protocols like HTTP/2 and QUIC by default. However, to make
+        // the most of servers that support QUIC, one must either specify that a particular domain
+        // supports QUIC explicitly using QUIC hints, or enable the on-disk cache.
+        //
+        // When a QUIC hint is provided, Cronet will attempt to use QUIC from the very beginning
+        // when communicating with the server and if that fails, we fall back to using HTTP. If
+        // no hints are provided, Cronet uses HTTP for the first request issued to the server.
+        // If the server indicates it does support QUIC, Cronet stores the information and will use
+        // QUIC for subsequent request to that domain.
+        //
+        // We recommend that QUIC hints are provided explicitly when working with servers known
+        // to support QUIC.
+        return new CronetEngine.Builder(context)
+                // The storage path must be set first when using a disk cache.
+                .setStoragePath(context.getFilesDir().getAbsolutePath())
+
+                // Enable on-disk cache, this enables automatic QUIC usage for subsequent requests
+                // to the same domain across application restarts. If you also want to cache HTTP
+                // responses, use HTTP_CACHE_DISK instead. Typically you will want to enable caching
+                // in full, we turn it off for this demo to better demonstrate Cronet's behavior
+                // using net protocols.
+                .enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISK_NO_HTTP, 100 * 1024)
+
+                // HTTP2 and QUIC support is enabled by default. When both are enabled (and no hints
+                // are provided), Cronet tries to use both protocols and it's nondeterministic which
+                // one will be used for the first few requests. As soon as Cronet is aware that
+                // a server supports QUIC, it will always attempt to use it first. Try disabling
+                // and enabling HTTP2 support and see how the negotiated protocol changes! Also try
+                // forcing a new connection by enabling and disabling flight mode after the first
+                // request to ensure QUIC usage.
+                .enableHttp2(true)
+                .enableQuic(true)
+
+                // Brotli support is NOT enabled by default.
+                .enableBrotli(true)
+
+                // One can provide a custom user agent if desired.
+                .setUserAgent("CronetSampleApp")
+
+                // As noted above, QUIC hints speed up initial requests to a domain. Multiple hints
+                // can be added. We don't enable them in this demo to demonstrate how QUIC
+                // is being used if no hints are provided.
+
+                // .addQuicHint("storage.googleapis.com", 443, 443)
+                // .addQuicHint("www.googleapis.com", 443, 443)
+                .build();
+    }
+
+
+    void CreateHttpRequest(Context context) {
+        Log.e("yyyy", "CreateHttpRequest called");
+        if(cronetEngine == null) {
+            cronetEngine = createDefaultCronetEngine(this);
+        }
+        //CronetEngine.Builder myBuilder = new CronetEngine.Builder(context);
+        //CronetEngine cronetEngine = myBuilder.build();
+
+        Executor executor = Executors.newSingleThreadExecutor();
+
+        UrlRequest.Builder requestBuilder = cronetEngine.newUrlRequestBuilder(
+                "https://www.example.com", new MyUrlRequestCallback(), executor);
+
+        UrlRequest request = requestBuilder.build();
+
+        Log.e("yyyy", "CreateHttpRequest starting request");
+        request.start();
+        Log.e("yyyy", "CreateHttpRequest after starting request");
+    }
+}
+
+class MyUrlRequestCallback extends UrlRequest.Callback {
+    private static final String TAG = "yyyyy";// "MyUrlRequestCallback";
+
+    @Override
+    public void onRedirectReceived(UrlRequest request, UrlResponseInfo info, String newLocationUrl) {
+        Log.e(TAG, "onRedirectReceived method called.");
+        // You should call the request.followRedirect() method to continue
+        // processing the request.
+        request.followRedirect();
+    }
+
+    @Override
+    public void onResponseStarted(UrlRequest request, UrlResponseInfo info) {
+        Log.e(TAG, "onResponseStarted method called.");
+        // You should call the request.read() method before the request can be
+        // further processed. The following instruction provides a ByteBuffer object
+        // with a capacity of 102400 bytes for the read() method. The same buffer
+        // with data is passed to the onReadCompleted() method.
+        request.read(ByteBuffer.allocateDirect(102400));
+    }
+
+    @Override
+    public void onReadCompleted(UrlRequest request, UrlResponseInfo info, ByteBuffer byteBuffer) {
+        Log.e(TAG, "onReadCompleted method called." + byteBuffer);
+        // You should keep reading the request until there's no more data.
+        byteBuffer.flip();
+        String s = StandardCharsets.UTF_8.decode(byteBuffer).toString();
+        //byteBuffer.array().;
+        Log.e(TAG, "onReadCompleted method called." + s);
+        byteBuffer.clear();
+        request.read(byteBuffer);
+    }
+
+    @Override
+    public void onSucceeded(UrlRequest request, UrlResponseInfo info) {
+        Log.e(TAG, "onSucceeded method called.");
+    }
+
+    @Override
+    public void onFailed(UrlRequest request, UrlResponseInfo info, CronetException error) {
+        // The request has failed. If possible, handle the error.
+        Log.e(TAG, "The request failed.", error);
     }
 }

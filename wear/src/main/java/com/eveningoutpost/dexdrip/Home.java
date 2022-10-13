@@ -3,15 +3,16 @@ package com.eveningoutpost.dexdrip;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
+
+import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import android.support.wearable.watchface.WatchFaceStyle;
 import android.util.Log;
 import android.view.Gravity;

@@ -21,8 +21,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.LocalBroadcastManager;
+
+import androidx.core.app.ActivityCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import android.util.DisplayMetrics;
 import android.widget.Toast;
 
