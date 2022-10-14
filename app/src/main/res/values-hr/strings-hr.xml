@@ -1051,4 +1051,6 @@
     <string name="manual_selection_google_drive_file_warning">Odabrali ste datoteku s Google diska, ali njome ne upravlja automatski xDrip pa se može koristiti samo za ručno sigurnosno kopiranje i vraćanje.\n\nNeće se dogoditi automatsko sigurnosno kopiranje ove datoteke.\n\nNastaviti?
 CONTEXTREQUEST?</string>
     <string name="alternate_file_selected_warning">Odabrali ste alternativnu datoteku. Obično bi to bilo samo vraćanje iz lokalno pohranjene sigurnosne kopije.\n\nNeće se dogoditi automatsko sigurnosno kopiranje ove datoteke.\n\nNastaviti?</string>
+    <string name="use_background_scans">Koristite skeniranje u pozadini</string>
+    <string name="android_8_background_scanning">Koristite Android 8+ značajku skeniranja u pozadini</string>
 </resources>
