@@ -299,6 +299,7 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
                                     fout.write(buffer, 0, count);
                                 }
                                 fout.close();
+                                fout.flush();
                                 dbFile = new File(output_filename);
                                 delete_file = dbFile;
                                 Log.d(TAG, "New filename: " + output_filename);
