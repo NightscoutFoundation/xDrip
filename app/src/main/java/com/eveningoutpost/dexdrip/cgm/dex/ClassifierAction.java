@@ -4,6 +4,7 @@ import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
 
 import com.eveningoutpost.dexdrip.G5Model.BackFillRxMessage;
 import com.eveningoutpost.dexdrip.G5Model.BackFillStream;
+import com.eveningoutpost.dexdrip.G5Model.BaseGlucoseRxMessage;
 import com.eveningoutpost.dexdrip.G5Model.DexTimeKeeper;
 import com.eveningoutpost.dexdrip.G5Model.GlucoseRxMessage;
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -77,7 +78,10 @@ public class ClassifierAction {
                     if (bfc1.isValid() || bfc2.isValid()) {
                         Inevitable.task("Process G6/G7 backfill", 3000, ClassifierAction::processBackfill);
                     } else {
-                        val glucose = new GlucoseRxMessage(data);
+                        BaseGlucoseRxMessage glucose = new GlucoseRxMessage(data);
+                        if (!glucose.usable()) {
+                            glucose = new com.eveningoutpost.dexdrip.G5Model.EGlucoseRxMessage(data);
+                        }
                         if (glucose.usable()) {
                             DexTimeKeeper.updateAge(TXID, glucose.timestamp);
                             stream.reset();
