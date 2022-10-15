@@ -1643,4 +1643,6 @@
     <string name="attempting_restore">Helyreállítás</string>
     <string name="restore_succeeded_restarting">Helyreállítás sikeres - app újraindítása</string>
     <string name="restore_failed">SIKERTELEN visszaállítás!</string>
+    <string name="use_background_scans">Szkennelés háttérben is</string>
+    <string name="android_8_background_scanning">Android 8-astól lehetséges a szkennelés háttérben is</string>
 </resources>
