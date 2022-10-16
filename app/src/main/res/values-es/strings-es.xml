@@ -1686,4 +1686,5 @@
     <string name="backup_source_confirm">Comfirmar origen de la copia de seguridad</string>
     <string name="nothing_to_restore_please_select">Nada para restaurar. Por favor, seleccione la ubicación</string>
     <string name="no_backup_location_set">No se ha seleccionado una ubicación de copia de seguridad</string>
+    <string name="use_background_scans">Usar escaneos de fondo</string>
 </resources>
