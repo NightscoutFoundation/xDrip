@@ -185,6 +185,7 @@
     <string name="general_settings">הגדרות כלליות</string>
     <string name="high_value">ערך גבוה</string>
     <string name="low_value">ערך נמוך</string>
+    <string name="stats_range_settings">הגדרת תחום: </string>
     <string name="end_user_license_agreement">הסכם משתמש קצה</string>
     <string name="save">שמור</string>
     <string name="view_important_warning">צפה באזהרות חשובות</string>
