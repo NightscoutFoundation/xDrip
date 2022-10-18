@@ -1686,5 +1686,8 @@
     <string name="backup_source_confirm">Comfirmar origen de la copia de seguridad</string>
     <string name="nothing_to_restore_please_select">Nada para restaurar. Por favor, seleccione la ubicación</string>
     <string name="no_backup_location_set">No se ha seleccionado una ubicación de copia de seguridad</string>
+    <string name="backing_up">Realizando copia de seguridad</string>
+    <string name="none">Ninguno</string>
     <string name="use_background_scans">Usar escaneos de fondo</string>
+    <string name="android_8_background_scanning">Usar la función de escaneo en segundo plano de Android 8+</string>
 </resources>
