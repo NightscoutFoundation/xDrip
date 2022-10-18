@@ -781,6 +781,7 @@
     <string name="notify_on_low_battery_level">הודע כאשר רמת הסוללה יורדת מתחת</string>
     <string name="collector_battery_alerts">התראות סוללת האוסף</string>
     <string name="low_battery_percentage">אחוז סוללה נמוכה</string>
+    <string name="notify_data_arrives_master"><![CDATA[מעדכן במקרה שמידע מגיע מהמשדר באינטרוולים שגדולים מ-20 דקות.]]></string>
     <string name="follower_chime_new">צליל עוקב חדש</string>
     <string name="carb_ratio">יחס פחמימות</string>
     <string name="enable_dedicated_insulin_profiles">הגדר פרופיל אינסולין</string>
@@ -831,9 +832,11 @@
     <string name="xdrip_motion_tracking">זיהוי תנועה</string>
     <string name="detect_motion_types">השתמש בחיישנים לזיהוי סוג התנועה</string>
     <string name="enable_motion_tracking">אפשר זיהוי תנועה</string>
+    <string name="display_motion_types">שומר סוגי תנועה אחרונים שנקלטו ומצייר אותם על הגרף המרכזי</string>
     <string name="log_and_plot_motion">רשום ושרטט תנועה</string>
     <string name="use_remote_motion_data">נתוני התנועה יגיעו ממכשיר מרוחק במקום מהמכשיר המקומי</string>
     <string name="use_remote_motion">השתמש בתנועה ממכשיר מרוחק</string>
+    <string name="be_motion_master">הגדר את המכשיר כחיישן התזוזה המוביל גם במקרה ומדובר על מכשיר עוקב. סמן אפשרות זו רק עבור מכשיר אחד!</string>
     <string name="act_as_motion_master">היה מקור התנועה</string>
     <string name="vehicle_motion_extras">כאשר מזוהה שימוש ברכב אפשר תכונות נוספות</string>
     <string name="enable_vehicle_mode">אפשר מצב רכב</string>
