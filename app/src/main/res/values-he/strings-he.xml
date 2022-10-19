@@ -781,7 +781,7 @@
     <string name="notify_on_low_battery_level">הודע כאשר רמת הסוללה יורדת מתחת</string>
     <string name="collector_battery_alerts">התראות סוללת האוסף</string>
     <string name="low_battery_percentage">אחוז סוללה נמוכה</string>
-    <string name="notify_data_arrives_master"><![CDATA[מעדכן במקרה שמידע מגיע מהמשדר באינטרוולים שגדולים מ-20 דקות.]]></string>
+    <string name="notify_data_arrives_master"><![CDATA[מעדכן במקרה שמידע מגיע מהמשדר באינטרוול שגדול מ-20 דקות.]]></string>
     <string name="follower_chime_new">צליל עוקב חדש</string>
     <string name="carb_ratio">יחס פחמימות</string>
     <string name="enable_dedicated_insulin_profiles">הגדר פרופיל אינסולין</string>
@@ -840,6 +840,7 @@
     <string name="act_as_motion_master">היה מקור התנועה</string>
     <string name="vehicle_motion_extras">כאשר מזוהה שימוש ברכב אפשר תכונות נוספות</string>
     <string name="enable_vehicle_mode">אפשר מצב רכב</string>
+    <string name="increase_low_alarms_vehicle_mode">מגדיל את העוצמה של התראות הסוכר הנמוך בזמן מצב רכב</string>
     <string name="raise_low_threshold">העלה את סף הסוכר הנמוך</string>
     <string name="notification_sound_vehicle_mode">השמע צליל בכניסה למצב רכב</string>
     <string name="play_sound">השמע צליל</string>
@@ -897,6 +898,7 @@
     <string name="Speech_speed">מהירות ההקראה</string>
     <string name="Speech_pitch">גובה קול ההקראה</string>
     <string name="Speak_Alerts">קרא התראות בקול</string>
+    <string name="Speak_Alerts_Summary">מספק גם התראות קוליות על בסיס הקראת נתונים</string>
     <string name="advanced_bluereader_settings_summary">הגדרות blueReader מתקדמות</string>
     <string name="advanced_bluereader_settings">הגדרות blueReader</string>
     <string name="bluereader_restdays_onhome">ימי מנוחה במסך הבית</string>
