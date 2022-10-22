@@ -950,7 +950,7 @@
     <string name="please_enter_printed_calibration_code">Adja meg a nyomtatott kalibrációs kód értéket (4 számjegy, pl. 5678)</string>
     <string name="enable_update_checks">Engedélyezi a frissítések keresését?</string>
     <string name="you_can_easily_roll_back_dialog_msg">Ha nem tetszik az új xDrip verzió, visszatérhet az előzőhöz, ha újratelepíti a régi APK-t.\n\nEngedélyezi a frissítések keresését?</string>
-    <string name="hey_fam">Hello Fam...</string>
+    <string name="hey_fam">Kapcsolatfelvétel és frissítés</string>
     <string name="you_have_update_checks_off">Kikapcsolta a frissítések keresését!\n\nIgyekszünk a hibákat javítani és új funkciókat adni az xDrip-hez.\n\nEz az emlékeztető 60 naponta jelenik meg.</string>
     <string name="update_checking_enabled">Frissítéskeresés bekapcsolva!</string>
     <string name="cancel_alarm">Riasztás leállítása?</string>
