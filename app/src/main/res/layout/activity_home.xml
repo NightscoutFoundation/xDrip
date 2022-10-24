@@ -48,10 +48,8 @@
             <android.support.v7.widget.Toolbar
                 android:id="@+id/my_toolbar"
                 android:layout_width="match_parent"
-
                 android:layout_height="wrap_content"
-                android:minHeight="?attr/actionBarSize"
-                app:theme="@style/Toolbar" />
+                android:minHeight="?attr/actionBarSize" />
 
             <RelativeLayout
                 android:id="@+id/home_layout_holder"

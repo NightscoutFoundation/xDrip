@@ -1568,8 +1568,6 @@
     <string name="enable_streaming_dialog_dont_ask_again">Vraag me dat niet nog een keer</string>
     <string name="enable_streaming_dialog_text">Wil je xDrip met deze sensor verbinden? Dit zorgt ervoor dat de libre reader en libre link geen waarschuwingen meer ontvangen. Druk op Ja en scan opnieuw om verbinding te maken (kies geen verbinding als u xDrip wilt uitvoeren met de gepatchte app)</string>
     <string name="enable_streaming_dialog_title">Libre-sensor verbinden met bluetooth</string>
-    <string name="title_lower_fuzzer">Verlaag FUZZER</string>
-    <string name="summary_lower_fuzzer">Verlaag de FUZZER waarde van 2.5 minuten naar 37.5 seconden</string>
     <string name="without_camera_permission_cannot_scan_barcode">Zonder camera toestemming kan er geen barcode gescand worden</string>
     <string name="summary_create_missing_filtered">Maak gefilterde gegevens indien nodig</string>
     <string name="title_create_missing_filtered">Ontbrekende gefilterde maken</string>
@@ -1657,4 +1655,6 @@
     <string name="cannot_choose_file_without_permission">Kan geen bestand kiezen zonder opslagmachtiging</string>
     <string name="select_time">Selecteer tijd</string>
     <string name="select_tone_for_alerts">Selecteer geluid voor waarschuwingen</string>
+    <string name="show_unsmoothed">Toon niet-afgevlakte waarden</string>
+    <string name="show_unsmoothed_summary">Toon niet-afgevlakte waarden ook als grafiekafvlakking is ingeschakeld. Als de kalibratieplugin aanstaat, dan worden niet-afgevlakte waarden getoond in plaats van plugin data.</string>
 </resources>

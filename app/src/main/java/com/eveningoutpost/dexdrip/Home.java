@@ -115,6 +115,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.VoiceCommands;
 import com.eveningoutpost.dexdrip.calibrations.NativeCalibrationPipe;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
+import com.eveningoutpost.dexdrip.cloud.backup.BackupActivity;
 import com.eveningoutpost.dexdrip.dagger.Injectors;
 import com.eveningoutpost.dexdrip.databinding.ActivityHomeBinding;
 import com.eveningoutpost.dexdrip.databinding.ActivityHomeShelfSettingsBinding;
@@ -394,13 +395,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         mToolbar.setOnLongClickListener(v -> {
             // show configurator
             final ActivityHomeShelfSettingsBinding binding = ActivityHomeShelfSettingsBinding.inflate(getLayoutInflater());
-            final Dialog dialog = new Dialog(v.getContext());
+            final Dialog dialog = new Dialog(home);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             binding.setVs(homeShelf);
             binding.setHome(home);
             homeShelf.set("arrow_configurator", false);
             dialog.setContentView(binding.getRoot());
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             dialog.show();
             return false;
         });
@@ -1116,6 +1116,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (even_even_more.length() > 0) intent.putExtra(extra + "3", even_even_more);
         Log.e("xxxxx", "calling startActivity");
         context.startActivity(intent);
+    }
+
+    public void cloudBackup(MenuItem x) {
+        JoH.startActivity(BackupActivity.class);
     }
 
     public void crowdTranslate(MenuItem x) {
@@ -2018,7 +2022,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 gestureDetector.set(previewChartTouchHandler, new InterceptingGestureHandler(this, previewActiveDetector));
             }
         } catch (NullPointerException | NoSuchFieldException | IllegalAccessException | ClassCastException e) {
-            e.printStackTrace();
+            UserError.Log.d(TAG, "Exception injecting touch handler: " + e);
         }
 
         chart.getChartData().setAxisXTop(null);

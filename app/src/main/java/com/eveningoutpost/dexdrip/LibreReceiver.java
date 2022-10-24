@@ -1,31 +1,33 @@
 package com.eveningoutpost.dexdrip;
 
+import static com.eveningoutpost.dexdrip.Home.get_engineering_mode;
+import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
+import static com.eveningoutpost.dexdrip.Models.Libre2Sensor.Libre2Sensors;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.preference.PreferenceManager;
 import android.text.format.DateFormat;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.GlucoseData;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Libre2RawValue;
 import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
+import com.eveningoutpost.dexdrip.UtilityModels.Unitized;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import static com.eveningoutpost.dexdrip.Home.get_engineering_mode;
-import static com.eveningoutpost.dexdrip.Models.Libre2Sensor.Libre2Sensors;
 
 import lombok.val;
 
@@ -38,8 +40,10 @@ public class LibreReceiver extends BroadcastReceiver {
     private static final String TAG = LibreReceiver.class.getSimpleName();
     private static final boolean d = false;
     private static final Object lock = new Object();
-    private static String libre_calc_doku = "wait for next reading...";
-    private static long last_reading = 0;
+    private static volatile String libre_calc_doku = "wait for next reading...";
+    private static volatile String bluetoothAddress = "";
+    private static volatile String connectionState = "";
+    private static volatile long last_reading = 0;
 
     @Override
     public void onReceive(final Context context, final Intent intent) {
@@ -67,6 +71,61 @@ public class LibreReceiver extends BroadcastReceiver {
                                 } catch (NullPointerException e) {
                                     Log.e(TAG, "Null pointer in LIBRE2_ACTIVATION: " + e);
                                 }
+                                Sensor.createDefaultIfMissing();
+                                break;
+
+                            case Intents.LIBRE2_SCAN:
+                                Log.v(TAG, "Receiving LibreData scan");
+                                Sensor.createDefaultIfMissing();
+
+                                try {
+                                    val timeslice = DexCollectionType.getCurrentDeduplicationPeriod();
+                                    val data = intent.getBundleExtra("sas").getBundle("realTimeGlucoseReadings");
+                                    for (String key : data.keySet()) {
+                                        val item = data.getBundle(key);
+                                        val glucose = item.getDouble("glucoseValue");
+                                        val timestamp = item.getLong("timestamp");
+                                        if (d) UserError.Log.d(TAG, "Real time item: " + JoH.dateTimeText(timestamp) + " value: " + Unitized.unitized_string_static(glucose));
+                                        BgReading.bgReadingInsertFromInt((int) Math.round(glucose), timestamp, timeslice, false);
+                                    }
+
+                                } catch (Exception e) {
+                                    UserError.Log.e(TAG, "Got exception processing realtime: " + e);
+                                }
+
+                                try {
+                                    val data = intent.getBundleExtra("sas").getBundle("historicGlucoseReadings");
+                                    val gd = new ArrayList<GlucoseData>(data.size());
+                                    for (String key : data.keySet()) {
+                                        val item = data.getBundle(key);
+                                        val glucose = item.getDouble("glucoseValue");
+                                        val timestamp = item.getLong("timestamp");
+                                        if (d) UserError.Log.d(TAG, "Historical item: " + JoH.dateTimeText(timestamp) + " value: " + Unitized.unitized_string_static(glucose));
+                                        val g = new GlucoseData((int) Math.round(glucose), timestamp);
+                                        g.glucoseLevel = g.glucoseLevelRaw;
+                                        gd.add(g);
+                                    }
+                                    LibreAlarmReceiver.insertFromHistory(gd, false);
+
+                                } catch (Exception e) {
+                                    UserError.Log.e(TAG, "Got exception processing history: " + e);
+                                }
+
+                                Home.staticRefreshBGChartsOnIdle();
+                                break;
+
+                            case Intents.LIBRE2_CONNECTION:
+                                JoH.dumpBundle(intent.getExtras(), TAG);
+                                try {
+                                    bluetoothAddress = intent.getBundleExtra("bleManager").getString("sensorAddress");
+                                } catch (Exception e) {
+                                    UserError.Log.e(TAG,"Exception parsing libre2connection sensorAddress: "+e);
+                                }
+                                try {
+                                    connectionState = intent.getStringExtra("connectionState");
+                                } catch (Exception e) {
+                                    UserError.Log.e(TAG,"Exception parsing libre2connection connectionState: "+e);
+                                }
                                 break;
 
                             case Intents.LIBRE2_BG:
@@ -88,6 +147,7 @@ public class LibreReceiver extends BroadcastReceiver {
 
                             default:
                                 Log.e(TAG, "Unknown action! " + action);
+                                JoH.dumpBundle(intent.getExtras(), TAG);
                                 break;
                         }
                     } finally {
@@ -195,8 +255,14 @@ public class LibreReceiver extends BroadcastReceiver {
                 Log.e(TAG, "Error readlast: " + e);
             }
         }
+        if (!emptyString(connectionState)){
+            l.add(new StatusItem("Bluetooth Link", connectionState));
+        }
         if (get_engineering_mode()) {
             l.add(new StatusItem("Last Calc.", libre_calc_doku));
+           if (!emptyString(bluetoothAddress)) {
+               l.add(new StatusItem("Bluetooth Mac", bluetoothAddress));
+           }
         }
         if (Pref.getBooleanDefaultFalse("Libre2_showSensors")) {
             l.add(new StatusItem("Sensors", Libre2Sensors()));

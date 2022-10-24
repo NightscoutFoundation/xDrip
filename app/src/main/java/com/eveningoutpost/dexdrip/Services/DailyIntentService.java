@@ -22,6 +22,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.IncompatibleApps;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
+import com.eveningoutpost.dexdrip.cloud.backup.Backup;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
 import com.eveningoutpost.dexdrip.utils.Telemetry;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
@@ -72,6 +73,12 @@ public class DailyIntentService extends IntentService {
                     } catch (Exception e) {
                         Log.e(TAG, "DailyIntentService exception on Daily Save Database - ", e);
                     }
+                }
+
+                try {
+                    Backup.doCompleteBackupIfEnabled();
+                } catch (Exception e) {
+                    UserError.Log.e(TAG, "Exception with Backup: " + e);
                 }
 
                 // prune old database records

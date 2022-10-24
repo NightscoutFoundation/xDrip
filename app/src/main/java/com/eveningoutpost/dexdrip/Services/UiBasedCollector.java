@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.Services;
 
+import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
+import static com.eveningoutpost.dexdrip.cgm.dex.ClassifierAction.lastReadingTimestamp;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.UiBased;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getDexCollectionType;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
@@ -31,6 +33,7 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Unitized;
+import com.eveningoutpost.dexdrip.cgm.dex.BlueTails;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -79,6 +82,7 @@ public class UiBasedCollector extends NotificationListenerService {
                 if (sbn.isOngoing()) {
                     lastPackage = fromPackage;
                     processNotification(sbn.getNotification());
+                    BlueTails.immortality();
                 }
             } else {
                 if (JoH.pratelimit("warn-notification-access", 7200)) {
@@ -173,7 +177,10 @@ public class UiBasedCollector extends NotificationListenerService {
             UserError.Log.d(TAG, "Found specific value: " + mgdl);
 
             if ((mgdl >= 40 && mgdl <= 405)) {
-                if (BgReading.getForPreciseTimestamp(timestamp, DexCollectionType.getCurrentDeduplicationPeriod(), false) == null) {
+                val grace = DexCollectionType.getCurrentSamplePeriod() * 4;
+                val recent = msSince(lastReadingTimestamp) < grace;
+                val period = recent ? grace : DexCollectionType.getCurrentDeduplicationPeriod();
+                if (BgReading.getForPreciseTimestamp(timestamp, period, false) == null) {
                     if (isJammed(mgdl)) {
                         UserError.Log.wtf(TAG, "Apparently value is jammed at: " + mgdl);
                     } else {

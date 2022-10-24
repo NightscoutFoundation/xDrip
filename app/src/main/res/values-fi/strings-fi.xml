@@ -616,6 +616,8 @@
     <string name="use_external_blukon_algorithm">Libren OOP-algoritmi.</string>
     <string name="calibrate_external_libre_algorithm_summary">Kalibroi OOP-tiedot xDripin kalibrointimenetelmillä.</string>
     <string name="calibrate_external_libre_algorithm_title">OOP-algoritmin kalibrointi</string>
+    <string name="calibrate_external_libre_2_algorithm_summary">Käytettävä kalibrointimenetelmä</string>
+    <string name="calibrate_external_libre_2_algorithm_title">OOP2-algoritmin kalibrointi.</string>
     <string name="libre_use_smoothed_data_summary">Tasoita Libren kuvaajaa laskemalla tulos 5 edellisen lukeman perusteella.</string>
     <string name="libre_use_smoothed_data_title">Tasoita Libren kuvaajaa.</string>
     <string name="retrieve_blukon_history_title">Hae Libren vanhemmat tiedot</string>
@@ -1385,6 +1387,7 @@
     <string name="title_ongoing_notification_channel">Käytä jatkuvaa ilmoituskanavaa</string>
     <string name="summary_notification_channels_grouping">Valinta ilmoitusten ryhmittelemiseksi. Yhteensopimaton \'Numerokuvake yläreunan ilmoituspalkissa\' -valinnan kanssa</string>
     <string name="title_notification_channels_grouping">Ryhmitä ilmoitukset</string>
+    <string name="title_delay_ascending_3min">Viivästetty nouseva äänenvoimakkuus</string>
     <string name="summary_play_sound_for_initial_calibration">Anna äänimerkki, kun ensimmäistä kalibrointia pyydetään</string>
     <string name="title_play_sound_for_initial_calibration">Aloituskalibroinnin hälytys</string>
     <string name="category_noisy_readings">Paljon häiriölukemia</string>
@@ -1512,6 +1515,7 @@
     <string name="nfc_is_not_enabled">NFC ei ole käytössä</string>
     <string name="phone_nfc_is_having_problems">Puhelimen NFC:llä on ongelmia!</string>
     <string name="not_so_quickly_wait_60_seconds">Ei niin nopeasti! Odota 60 sekuntia</string>
+    <string name="not_so_quickly_wait_30_seconds">Ei niin nopeasti, odota 30 sekuntia</string>
     <string name="nfc_diag_timeout">NFC lukuajan raja ylittyi</string>
     <string name="nfc_read_timeout">NFC lukuajan raja ylittyi</string>
     <string name="nfc_invalid_data__try_again">NFC tiedot virheelliset - yritä uudelleen</string>
@@ -1562,6 +1566,9 @@
     <string name="enable_streaming_dialog_text">Haluatko yhdistää tämän sensorin xDripiin? Tämä estää hälytykset Libren lukijassa ja LibreLinkissä. Paina Kyllä ja skannaa uudelleen yhdistääksesi (valitse Älä yhdistä, jos haluat käyttää xDripiä muokatun LibreLink-sovelluksen kanssa)</string>
     <string name="enable_streaming_dialog_title">Yhdistetään Libre-sensori Bluetoothiin</string>
     <string name="without_camera_permission_cannot_scan_barcode">Ilman kameran lupaa emme voi skannata viivakoodia</string>
+    <string name="title_multiple_insulin_types_settings">Useita Insuliinityyppejä</string>
+    <string name="title_multiple_insulin_types">Useita Insuliinityyppejä</string>
+    <string name="use_for_calibration">Käytetäänkö %s kalibrointiin?</string>
     <string name="no_never">Ei, Ei Koskaan</string>
     <string name="cannot_choose_file_without_permission">Tiedostoa ei voida valita ilman tallennustilan käyttöoikeutta</string>
 </resources>

@@ -20,7 +20,6 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.CursorLoader;
 import android.text.InputType;
 import android.text.format.DateFormat;
 import android.text.method.DigitsKeyListener;
@@ -739,27 +738,11 @@ public class EditAlertActivity extends ActivityWithMenu {
     }
 
     private static String getDisplayNameFromURI(final Uri contentUri) {
-        val title = getFieldFromURI(MediaStore.Audio.Media.TITLE, contentUri);
+        val title = JoH.getFieldFromURI(MediaStore.Audio.Media.TITLE, contentUri);
         if (title == null || contentUri.toString().endsWith(title)) {
-            return getFieldFromURI(MediaStore.Audio.Media.DISPLAY_NAME, contentUri);
+            return JoH.getFieldFromURI(MediaStore.Audio.Media.DISPLAY_NAME, contentUri);
         }
         return title;
-    }
-
-    private static String getFieldFromURI(final String column, final Uri contentUri) {
-        try {
-            String[] projection = { column };
-            val loader = new CursorLoader(xdrip.getAppContext(), contentUri, projection, null, null, null);
-            val cursor = loader.loadInBackground();
-            val column_index = cursor.getColumnIndexOrThrow(column);
-            cursor.moveToFirst();
-            val result = cursor.getString(column_index);
-            cursor.close();
-            return result;
-        } catch (Exception e) {
-            Log.d(TAG, "Got exception extracting data for uri " + e);
-            return null;
-        }
     }
 
 

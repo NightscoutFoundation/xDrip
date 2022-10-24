@@ -1574,8 +1574,6 @@
     <string name="enable_streaming_dialog_dont_ask_again">Não voltar a perguntar</string>
     <string name="enable_streaming_dialog_text">Deseja ligar o xDrip com este sensor?  Isto impedirá o leitor do Libre e app LibreLink de receber alertas. Pressione sim e faça leitura por NFC novamente para ligar (escolha não ligar se quiser executar o xDrip com a Libre 2 Patched app)</string>
     <string name="enable_streaming_dialog_title">A ligar o sensor Libre ao bluetooth</string>
-    <string name="title_lower_fuzzer">FUZZER baixo</string>
-    <string name="summary_lower_fuzzer">Diminuir o valor do FUZER de 2,5 minutos para 37,5 segundos</string>
     <string name="without_camera_permission_cannot_scan_barcode">Sem permissão de câmara não podemos digitalizar um código de barras</string>
     <string name="summary_create_missing_filtered">Criar dados filtrados conforme necessário</string>
     <string name="title_create_missing_filtered">Criar valores em falta</string>
@@ -1667,5 +1665,10 @@
     <string name="simplify_graphs_by_smoothing_out_irregularities">Simplifique os gráficos facilitando irregularidades</string>
     <string name="graph_smoothing">Suavização do gráfico</string>
     <string name="last_reading">Última Leitura</string>
-    <string name="cannot_choose_file_without_permission">Não pode seleccionar ficheiro sem permissão de armazenamento</string>
+    <string name="select_file_for_alert">Selecione o ficheiro de alerta</string>
+    <string name="cannot_choose_file_without_permission">Não pode selecionar ficheiro sem permissão de armazenamento</string>
+    <string name="select_time">Seleccione a hora</string>
+    <string name="select_tone_for_alerts">Selecione o tom para alertas</string>
+    <string name="show_unsmoothed">Mostrar sem suavização</string>
+    <string name="show_unsmoothed_summary">Mostra dados não suavizados também se a suavização do gráfico estiver ativada. Se o plugin de calibração for usado, exibirá dados não suavizados em vez de dados do plugin.</string>
 </resources>

@@ -798,7 +798,7 @@
                 android:summary="@string/summary_plus_accept_follower_actions"
                 android:title="@string/title_plus_accept_follower_actions" />
             <CheckBoxPreference
-                android:defaultValue="false"
+                android:defaultValue="true"
                 android:key="plus_follower_save_power"
                 android:summary="@string/reduce_battery_and_network_overhead"
                 android:title="@string/save_power" />

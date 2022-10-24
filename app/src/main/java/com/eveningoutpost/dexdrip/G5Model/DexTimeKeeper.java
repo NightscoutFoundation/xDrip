@@ -6,6 +6,8 @@ import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.getTransmitterID;
 
+import lombok.val;
+
 /**
  * Created by jamorham on 25/11/2016.
  */
@@ -27,7 +29,7 @@ public class DexTimeKeeper {
     // update the activation time stored for a transmitter
     public static void updateAge(final String transmitterId, final int dexTimeStamp, final boolean absolute) {
 
-        if ((transmitterId == null) || (transmitterId.length() != 6)) {
+        if ((transmitterId == null) || (transmitterId.length() != 6 && transmitterId.length() != 17)) {
             UserError.Log.e(TAG, "Invalid dex transmitter in updateAge: " + transmitterId);
             return;
         }
@@ -57,7 +59,7 @@ public class DexTimeKeeper {
 
     public static int getDexTime(String transmitterId, long timestamp) {
 
-        if ((transmitterId == null) || (transmitterId.length() != 6)) {
+        if ((transmitterId == null) || (transmitterId.length() != 6 && transmitterId.length() != 17)) {
             UserError.Log.e(TAG, "Invalid dex transmitter in getDexTime: " + transmitterId);
             return -3;
         }
@@ -113,6 +115,16 @@ public class DexTimeKeeper {
     public static int getTransmitterAgeInDays(final String transmitterId) {
         final int valid_time = getDexTime(transmitterId, JoH.tsl());
         return (valid_time >= 0) ? valid_time / 86400 : -1;
+    }
+
+    private static final int ABSOLUTE_MAX_AGE_DAYS = 180;
+    public static final int MAX_AGE_DAYS = 100;
+
+    public static Integer getTransmitterDaysRemaining(final String transmitterId) {
+        val age = getTransmitterAgeInDays(transmitterId);
+        if (age < 0) return null;
+        val modified = FirmwareCapability.isTransmitterModified(transmitterId);
+        return modified ? ABSOLUTE_MAX_AGE_DAYS - age : MAX_AGE_DAYS - age;
     }
 
     public static String extractForStream(String transmitterId) {
