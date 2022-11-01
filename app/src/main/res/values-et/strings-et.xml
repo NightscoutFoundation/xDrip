@@ -1659,6 +1659,12 @@
     <string name="source_wizard_button">Allika abivahendi nupp</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Palun oota %d sekundit enne sensori käivitamist</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">palun värskenda OOP2 või kasuta kalibreerimistel põhinevat algset režiimi</string>
+    <string name="reminder">Meeldetuletus</string>
+    <string name="notification">Teavitus</string>
+    <string name="TX_EOL_reminder">Kui saatja päevade arv süsteemi staatuse lehel jõuab %1$d-ni, on see viimane võimalus selle saatjaga sensor käivitada. Praegu %2$d päeva.</string>
+    <string name="TX_EOL_notification">Kui jätkad ja käivitad sensori, on väga tõenäoline, et see ebaõnnestub, kuna saatja päevad on saavutanud maksimumi.</string>
+    <string name="TX_EOL_reminder_mod">Saatja päevad lähenevad maksimumile. Varsti ei saa selle saatjaga sensoreid käivitada. Praegu %d päeva.</string>
+    <string name="proceed">Jätka</string>
     <string name="special_pairing_workaround">Spetsiaalne sidumise lahendus</string>
     <string name="save_power">Säästa energiat</string>
     <string name="reduce_battery_and_network_overhead">Vähenda aku ja võrgu koormust, kasutades pakett-töötlust ja välistades mittevajalikke andmeid</string>
@@ -1725,4 +1731,6 @@
     <string name="invalid_time">Ebaõige aeg</string>
     <string name="none">ei midagi</string>
     <string name="format_string_ago">%s tagasi</string>
+    <string name="use_background_scans">Kasuta automaatset skaneerimist</string>
+    <string name="android_8_background_scanning">Kasuta Android 8+ automaatse skaneerimise funktsiooni</string>
 </resources>

@@ -20,6 +20,7 @@
         <item>Dex Share Follower</item>
         <item>Web Follower</item>
         <item>Companion App</item>
+        <item>GlucoRx/Aidex App</item>
         <item>CareLink Follower</item>
         <item>Disable Collection</item>
     </string-array>
@@ -44,6 +45,7 @@
         <item>SHFollower</item>
         <item>WebFollower</item>
         <item>UiBased</item>
+        <item>AidexReceiver</item>
         <item>CLFollower</item>
         <item>Disabled</item>
     </string-array>

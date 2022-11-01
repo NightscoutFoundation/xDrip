@@ -1799,4 +1799,6 @@
     <string name="invalid_time">Invalid time</string>
     <string name="none">none</string>
     <string name="format_string_ago">%s ago</string>
+    <string name="use_background_scans">Use Background Scans</string>
+    <string name="android_8_background_scanning">Use Android 8+ background scanning feature</string>
 </resources>

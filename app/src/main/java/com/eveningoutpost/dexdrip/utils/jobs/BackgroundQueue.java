@@ -87,7 +87,7 @@ public class BackgroundQueue extends HandlerThread {
     }
 
     BackgroundQueue go() {
-        UserError.Log.e(TAG, "go called");
+        UserError.Log.d(TAG, "go called");
         this.start();
         return this;
     }

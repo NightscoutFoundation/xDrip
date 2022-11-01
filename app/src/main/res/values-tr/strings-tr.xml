@@ -1658,6 +1658,12 @@
     <string name="source_wizard_button">Kaynak Sihirbazı Düğmesi</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Sensörü başlatmayı denemeden önce lütfen %d saniye bekleyin</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">lütfen OOP2\'yi güncelleyin, aksi takdirde ham glikoza ölçümlerine dayalı kalibrasyon modunu kullanın</string>
+    <string name="reminder">Hatırlatıcı</string>
+    <string name="notification">Bildirim</string>
+    <string name="TX_EOL_reminder">Sistem durumu sayfasındaki Verici Günleri %1$d\'ye ulaştığında, bu vericide bir sensör başlatmak için son fırsat olacaktır. Şu anda %2$d gündür.</string>
+    <string name="TX_EOL_notification">Devam edip sensörü başlatırsanız, Verici Günlerinin maksimuma ulaşması nedeniyle başarısız olması çok muhtemeldir.</string>
+    <string name="TX_EOL_reminder_mod">Verici Günleri maksimuma yaklaşıyor. Yakında bu vericideki sensörleri çalıştıramayacaksınız. Şu anda %d gündür.</string>
+    <string name="proceed">Devam Edin</string>
     <string name="special_pairing_workaround">Geçici Özel Eşleştirme Çözümü</string>
     <string name="save_power">Güç tasarrufu</string>
     <string name="reduce_battery_and_network_overhead">Toplu işlemeyi kullanarak ve gereksiz verileri hariç tutarak pil ve ağ yükünü azaltın</string>
@@ -1680,7 +1686,7 @@
     <string name="nothing_to_restore_please_select">Geri yüklenecek bir şey yok - lütfen konum seçin</string>
     <string name="no_backup_location_set">Yedekleme konumu ayarlanmadı</string>
     <string name="backing_up">Yedekleniyor</string>
-    <string name="did_backup_ok">Yedekleme yaptı mı</string>
+    <string name="did_backup_ok">Yedekleme tamam mı</string>
     <string name="backup_failed">Yedekleme başarısız</string>
     <string name="automatically_manage_backup">Otomatik Yönet</string>
     <string name="use_alternate_file">Alternatif Dosya Kullan</string>
@@ -1716,7 +1722,7 @@
     <string name="cloud_backup">Bulut yedekleme</string>
     <string name="select_automatic_or_select_alternate">Google Drive\'daki dosyaları yönetmek için xDrip için Otomatik\'i seçin veya başka bir yerden geri yüklemeniz gerekiyorsa kullanmak üzere belirli bir alternatif dosya seçin.</string>
     <string name="restoring_backup_will_erase_warning">Bir yedeği geri yüklemek, mevcut ayarlarınızı ve bununla ilgili verilerinizi yedekten siler.\n\nBunu yapmak istediğinizden kesinlikle emin misiniz?</string>
-    <string name="this_backup_looks_like_came_from_different_format_string">Bu yedekleme, farklı bir cihazdan gelmiş gibi görünüyor:\n%s\nBu yedeklemeden geri yüklemek istediğinizden emin misiniz?</string>
+    <string name="this_backup_looks_like_came_from_different_format_string">Bu yedek farklı bir cihazdan gelmiş gibi görünüyor:\n%s\nBu yedekten geri yüklemek istediğinizden emin misiniz?</string>
     <string name="megabyte_format_string">%.1f MB</string>
     <string name="manual_selection_google_drive_file_warning">Google Drive\'dan bir dosya seçtiniz, ancak bu, xDrip tarafından otomatik olarak yönetilmediğinden, yalnızca manuel yedekleme ve geri yükleme için kullanılabilir.\n\nBu dosyayla otomatik yedekleme yapılmayacaktır.\n\nDevam edilsin mi?</string>
     <string name="alternate_file_selected_warning">Alternatif bir dosya seçtiniz. Genellikle bu yalnızca yerel olarak depolanan bir yedekten geri yüklemek olacaktır.\n\nBu dosyayla otomatik yedekleme yapılmayacaktır.\n\nDevam edilsin mi?</string>
@@ -1724,4 +1730,6 @@
     <string name="invalid_time">Geçersiz süre</string>
     <string name="none">hiçbiri</string>
     <string name="format_string_ago">%s önce</string>
+    <string name="use_background_scans">Arka Plan Taramalarını kullanın</string>
+    <string name="android_8_background_scanning">Android 8+ arka plan tarama özelliğini kullanın</string>
 </resources>

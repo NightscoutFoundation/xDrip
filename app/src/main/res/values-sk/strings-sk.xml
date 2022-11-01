@@ -917,7 +917,7 @@
     <string name="detect_car_audio">Detekcia BT v aute</string>
     <string name="automatically_enable_when_connected_to_car_bluetooth">Automaticky povoľ režim \"v automobile\", keď je pripojené bluetooth v aute</string>
     <string name="enable_speak_readings_when_in_vehicle">Zapne funkciu vyslovenie glykémií v režime \"v automobile\"</string>
-    <string name="bluetooth_watchdog_timers">BT watchdog</string>
+    <string name="bluetooth_watchdog_timers">Nastavenie strážneho psa pre Bluetooth</string>
     <string name="bluetooth_watchdog_timer_sums">Zadaj hodnotu v minútach</string>
     <string name="sensor_is_still_warming_up_please_wait">Senzor sa ešte stále zahrieva, prosím počkaj</string>
     <string name="title_Accept_Calibrations">Potvrdiť kalibrácie</string>
@@ -928,6 +928,10 @@
     <string name="summary_Ask_for_a_second_optional_initial_calibration_blood_test">Požiadavka na druhú voliteľnú kalibráciu z kapilárnej krvi</string>
     <string name="title_Double_Calibrations">Dvojité kalibrácie</string>
     <string name="title_Bypass_quality_check">Preskočiť kontrolu kvality</string>
+    <string name="summary_Scan_before_connecting_on_xBridge_and_Libre_bluetooth">...pred pripojením s xBridge a Libre Bluetooth</string>
+    <string name="title_Use_scanning">Opätovne vyhľadaj...</string>
+    <string name="summary_Use_and_trust_Android_bluetooth_auto_connect_feature">Využi funkciu automatického pripojenia systému Android</string>
+    <string name="title_Trust_Auto_Connect">Dôveruj Auto-Connect</string>
     <string name="title_Glucose_Retention">Archív hodnôt</string>
     <string name="summary_Erase_data_older_than_this_many_days">Zmazať údaje staršie ako zadaný počet dní. 0 = nemazať žiadne údaje</string>
     <string name="title_Other_misc_options">Ďalšie možnosti</string>
@@ -1237,5 +1241,13 @@ Je nutné zakázať v prípade, že chcete používať xdrip cifreník. (Požado
     <string name="locked_time_period_always_used">Vždy sa použije uzamknutý rozsah času</string>
     <string name="show_time_buttons">Zobraziť tlačidlá času</string>
     <string name="source_wizard_button">Tlačidlo pomocníka výberu zdroja</string>
+    <string name="reminder">Pripomienka</string>
+    <string name="notification">Oznámenie</string>
+    <string name="TX_EOL_reminder">Keď počet dní vysielača na stavovej stránke dosiahne %1$d, bude to posledná šanca na spustenie nového senzoru na tomto vysielači. Momentálne je vysielač na %2$d dňoch.</string>
+    <string name="TX_EOL_notification">Ak sa rozhodnete pokračovať v spustení nového senzoru, je veľmi pravdepodobné, že sa to nepodarí nakoľko je dosiahnutý maximálny počet dní vysielača.</string>
+    <string name="TX_EOL_reminder_mod">Doba fungovania vysielača sa blížia ku koncu (momentálne %d dní). Onedlho nebude možné spustiť nový senzor na tomto vysielači.</string>
+    <string name="proceed">Pokračovať</string>
     <string name="special_pairing_workaround">Špeciálne párovanie pre Samsung</string>
+    <string name="use_background_scans">Vyhľadávanie na pozadí</string>
+    <string name="android_8_background_scanning">Využije sa funkcia vyhľadávania na pozadí Android 8+</string>
 </resources>

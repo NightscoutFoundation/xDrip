@@ -6,6 +6,8 @@
     tools:ignore="InnerclassSeparator">
     <!-- To receive data from HAPP. -->
     <uses-permission android:name="com.eveningoutpost.dexdrip.permissions.RECEIVE_EXTERNAL_STATUSLINE" />
+    <!-- To receive data from Aidex -->
+    <uses-permission android:name="com.microtechmd.cgms.aidex.permissions.RECEIVE_BG_ESTIMATE" />
 
     <uses-feature
         android:name="android.hardware.bluetooth_le"
@@ -498,6 +500,16 @@
                 <action android:name="com.eveningoutpost.dexdrip.OOP2_BLUETOOTH_ENABLE_RESULT" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".receivers.aidex.AidexReceiver">
+            <intent-filter>
+                <action android:name="com.microtechmd.cgms.aidex.action.BgEstimate" />
+                <action android:name="com.microtechmd.cgms.aidex.action.Calibration" />
+                <action android:name="com.microtechmd.cgms.aidex.action.SensorNew" />
+                <action android:name="com.microtechmd.cgms.aidex.action.SensorRestart" />
+                <action android:name="com.microtechmd.cgms.aidex.action.SensorStop" />
+                <action android:name="com.microtechmd.cgms.aidex.action.Notification" />
+            </intent-filter>
+        </receiver>
         <receiver android:name=".watch.thinjam.io.ThinJamApiReceiver">
             <intent-filter>
                 <action android:name="com.eveningoutpost.dexdrip.THINJAM_API" />
@@ -507,6 +519,9 @@
             <intent-filter>
                 <action android:name="com.librelink.app.ThirdPartyIntegration.GLUCOSE_READING" />
                 <action android:name="com.librelink.app.ThirdPartyIntegration.SENSOR_ACTIVATE" />
+                <action android:name="com.librelink.app.ThirdPartyIntegration.FOUND_DEVICE" />
+                <action android:name="com.librelink.app.ThirdPartyIntegration.CONNECTION_STATE" />
+                <action android:name="com.librelink.app.ThirdPartyIntegration.SENSOR_SCAN" />
             </intent-filter>
         </receiver>
         <receiver android:name=".UtilityModels.BroadcastSnoozeReceiver">

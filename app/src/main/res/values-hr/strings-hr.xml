@@ -986,6 +986,12 @@
     <string name="locked_time_period_always_used">Zaključano vremensko razdoblje uvijek korišteno</string>
     <string name="show_time_buttons">Prikaži gumbe za vrijeme</string>
     <string name="source_wizard_button">Gumb čarobnjaka izvora</string>
+    <string name="reminder">Podsjetnik</string>
+    <string name="notification">Obavijest</string>
+    <string name="TX_EOL_reminder">Kada broj dana odašiljača na stranici statusa sustava dosegne %1$d, to će biti zadnja prilika za pokretanje senzora na ovom odašiljaču. Trenutačno na %2$d dana.</string>
+    <string name="TX_EOL_notification">Ako nastavite i pokrenete senzor, vrlo je vjerojatno da neće uspjeti jer su dani odašiljača dosegli maksimum.</string>
+    <string name="TX_EOL_reminder_mod">Broj dana odašiljača se približava maksimumu. Uskoro nećete moći pokrenuti senzore na ovom odašiljaču. Trenutno %d dana.</string>
+    <string name="proceed">Nastavi</string>
     <string name="special_pairing_workaround">Zaobilazno rješenje posebnog uparivanja</string>
     <string name="save_power">Štedite energiju</string>
     <string name="reduce_battery_and_network_overhead">Smanjite opterećenje baterije i mreže korištenjem skupne obrade i isključivanjem nepotrebnih podataka</string>
@@ -1045,4 +1051,6 @@
     <string name="manual_selection_google_drive_file_warning">Odabrali ste datoteku s Google diska, ali njome ne upravlja automatski xDrip pa se može koristiti samo za ručno sigurnosno kopiranje i vraćanje.\n\nNeće se dogoditi automatsko sigurnosno kopiranje ove datoteke.\n\nNastaviti?
 CONTEXTREQUEST?</string>
     <string name="alternate_file_selected_warning">Odabrali ste alternativnu datoteku. Obično bi to bilo samo vraćanje iz lokalno pohranjene sigurnosne kopije.\n\nNeće se dogoditi automatsko sigurnosno kopiranje ove datoteke.\n\nNastaviti?</string>
+    <string name="use_background_scans">Koristite skeniranje u pozadini</string>
+    <string name="android_8_background_scanning">Koristite Android 8+ značajku skeniranja u pozadini</string>
 </resources>

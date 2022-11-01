@@ -229,7 +229,7 @@
     <string name="calculate_including_glucose_trend">VC-érték trend számítása is</string>
     <string name="use_trend_momentum">Trendek felhasználása</string>
     <string name="add_calibration">Kalibrálás</string>
-    <string name="system_status">Rendszer állapota</string>
+    <string name="system_status">Rendszerállapot</string>
     <string name="settings">Beállítások</string>
     <string name="calibration_data_table">Kalibrációs adattábla</string>
     <string name="bg_data_table">VC-érték adattábla</string>
@@ -471,10 +471,10 @@
     <string name="bad_glucose_values">Hibás VC-értékek</string>
     <string name="revert_to_default">Alapértelemezett</string>
     <string name="filtered_values">Zajszűrt VC-értékek</string>
-    <string name="treatment_color">Kezelés színe</string>
-    <string name="treatment_color_dark">Kezelés színe (sötét)</string>
-    <string name="predictive_color">Előrejelzés színe</string>
-    <string name="predictive_color_dark">Előrejelzés színe (sötét)</string>
+    <string name="treatment_color">Aktív inzulin</string>
+    <string name="treatment_color_dark">Inzulin aktivitás</string>
+    <string name="predictive_color">VC előrejelzés</string>
+    <string name="predictive_color_dark">Aktív CH</string>
     <string name="average_and_target_lines">Átlag- és célérték vonalak</string>
     <string name="eight_hour_average_line">8 órás átlag vonalként</string>
     <string name="twenty_four_hour_average_line">24 órás átlag vonalként</string>
@@ -950,7 +950,7 @@
     <string name="please_enter_printed_calibration_code">Adja meg a nyomtatott kalibrációs kód értéket (4 számjegy, pl. 5678)</string>
     <string name="enable_update_checks">Engedélyezi a frissítések keresését?</string>
     <string name="you_can_easily_roll_back_dialog_msg">Ha nem tetszik az új xDrip verzió, visszatérhet az előzőhöz, ha újratelepíti a régi APK-t.\n\nEngedélyezi a frissítések keresését?</string>
-    <string name="hey_fam">Hello Fam...</string>
+    <string name="hey_fam">Kapcsolatfelvétel és frissítés</string>
     <string name="you_have_update_checks_off">Kikapcsolta a frissítések keresését!\n\nIgyekszünk a hibákat javítani és új funkciókat adni az xDrip-hez.\n\nEz az emlékeztető 60 naponta jelenik meg.</string>
     <string name="update_checking_enabled">Frissítéskeresés bekapcsolva!</string>
     <string name="cancel_alarm">Riasztás leállítása?</string>
@@ -1609,6 +1609,12 @@
     <string name="source_wizard_button">Varázsló gomb mutatása</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Várj %d másodpercet, mielőtt indítod a szenzort</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">frissítse az OOP2-t vagy használja a nyers adatokon alapuló kalibrációs módot</string>
+    <string name="reminder">Emlékeztető</string>
+    <string name="notification">Értesítés</string>
+    <string name="TX_EOL_reminder">Az lesz az utolsó lehetőség a szenzor indítására, amikor a Rendszerállapot lapon a távadó eléri a %1$d. napját. Jelenleg a %2$d. napnál tart.</string>
+    <string name="TX_EOL_notification">Ha úgy dönt, hogy elindít egy új szenzort, akkor az valószínűleg nem fog működni, mert a távadó elérte az adónapok maximális számát.</string>
+    <string name="TX_EOL_reminder_mod">A távadó közelítő az élettartama végét. Hamarosan ezzel a távadóval nem idnítható új szenzor. Ez a %d. napja.</string>
+    <string name="proceed">Folytatás</string>
     <string name="special_pairing_workaround">Eljárás speciális párosításhoz</string>
     <string name="save_power">Akkukímélés</string>
     <string name="reduce_battery_and_network_overhead">Az akkumulátor- és hálózati terhelés csökkentése batch programozással és a felesleges adatok kizárásával</string>
@@ -1631,4 +1637,12 @@
     <string name="backing_up">Biztonsági mentés</string>
     <string name="did_backup_ok">Biztonsági mentés kész</string>
     <string name="backup_failed">Biztonsági mentés meghiúsult</string>
+    <string name="change_account">Fiókváltás</string>
+    <string name="keep_same_account">Fiók megtartása</string>
+    <string name="change_google_account">Google-fiók váltása</string>
+    <string name="attempting_restore">Helyreállítás</string>
+    <string name="restore_succeeded_restarting">Helyreállítás sikeres - app újraindítása</string>
+    <string name="restore_failed">SIKERTELEN visszaállítás!</string>
+    <string name="use_background_scans">Szkennelés háttérben is</string>
+    <string name="android_8_background_scanning">Android 8-astól lehetséges a szkennelés háttérben is</string>
 </resources>
