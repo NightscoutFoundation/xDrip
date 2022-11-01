@@ -25,7 +25,7 @@ public class DateUtil {
 
     /**
      * Takes in an ISO date string of the following format:
-     * yyyy-MM-dd'T'HH:mm:ss.SSS(Z|+/-HH:mm)
+     * yyyy-MM-dd'T'HH:mm:ss.SSS(Z|+/-HH:mm) and parses it to a Java Date object.
      *
      * The milliseconds and time zone/offset values are optional.
      *
@@ -40,6 +40,21 @@ public class DateUtil {
             OffsetDateTime odt = OffsetDateTime.parse(pOffsetFix.matcher(strDateTime).replaceFirst("$1:$2"));
             return Date.from(odt.toInstant());
         }
+    }
+
+    /**
+     * Takes in an ISO date string of the following format:
+     * yyyy-MM-dd'T'HH:mm:ss.SSS(Z|+/-HH:mm) and parses it to a Java Date object.
+     *
+     * The milliseconds and time zone/offset values are optional.
+     *
+     * @param isoDateString the iso date string to parse
+     * @param omitMilliseconds whether milliseconds should be returned or ignored
+     * @return the date object
+     */
+    public static Date tolerantFromISODateString(String isoDateString, boolean omitMilliseconds) {
+        Date date = tolerantFromISODateString(isoDateString);
+        return new Date(date.getTime() - date.getTime() % 1000);
     }
 
     /**

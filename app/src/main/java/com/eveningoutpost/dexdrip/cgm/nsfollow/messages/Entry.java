@@ -44,7 +44,7 @@ public class Entry extends BaseMessage {
         }
         if (sysTime != null) {
             try {
-                final Date date = DateUtil.tolerantFromISODateString(sysTime);
+                final Date date = DateUtil.tolerantFromISODateString(sysTime, true);
                 return date.getTime();
             } catch (Exception e) {
                 //
@@ -52,7 +52,7 @@ public class Entry extends BaseMessage {
         }
         if (dateString != null) {
             try {
-                final Date date = DateUtil.tolerantFromISODateString(dateString);
+                final Date date = DateUtil.tolerantFromISODateString(dateString, true);
                 return date.getTime();
             } catch (Exception e) {
                 //
