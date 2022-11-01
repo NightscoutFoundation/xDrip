@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 public class DateUtil {
 
     private static final String FORMAT_DATE_ISO = "yyyy-MM-dd'T'HH:mm:ss'Z'"; // eg 2017-03-24T22:03:27Z
-    private static final Pattern pDateFix = Pattern.compile("^(\\d{4}-\\d{2}-\\d{2})[ T](\\d{2}:\\d{2}:\\d{2})(?:\\.\\d+Z?)*[^Z]?$");
+    private static final Pattern pDateFix = Pattern.compile("^(\\d{4}-\\d{2}-\\d{2})[ T](\\d{2}:\\d{2}:\\d{2})(\\.\\d+)*[^Z]?$");
     private static final Pattern pOffsetFix = Pattern.compile("([+-]\\d{2})(\\d{2})$");
 
     /**
@@ -33,7 +33,7 @@ public class DateUtil {
      * @return the date object
      */
     public static Date tolerantFromISODateString(String isoDateString) {
-        String strDateTime = pDateFix.matcher(isoDateString).replaceFirst("$1T$2Z");
+        String strDateTime = pDateFix.matcher(isoDateString).replaceFirst("$1T$2$3Z");
         if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.O) { // use Joda Time classes
             return DateTime.parse(strDateTime).toDate();
         } else {  // use built-in java.time classes

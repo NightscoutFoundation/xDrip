@@ -25,8 +25,10 @@ import static org.junit.Assert.assertEquals;
 public class DateUtilTest {
 
     public static Collection<String> testISODateStrings = Arrays.asList("2018-03-03 11:22:48", "2018-03-03T11:22:48", "2018-03-03T11:22:48Z",
-            "2018-03-03T11:22:48.384Z", "2018-03-03T11:22:48.348", "2018-03-03T12:22:48+01:00", "2018-03-03T05:22:48-06:00", "2018-03-03T14:22:48+0300");
-    public static Date dtExpected = Date.from(Instant.parse("2018-03-03T11:22:48.000Z"));
+            "2018-03-03T12:22:48+01:00", "2018-03-03T05:22:48-06:00", "2018-03-03T14:22:48+0300",
+            "2018-03-03T11:22:48.384Z", "2018-03-03T11:22:48.384", "2018-03-03T12:22:48.384+0100");
+    public static Date dtExpected = Date.from(Instant.parse("2018-03-03T11:22:48.384Z"));
+    public static Date dtExpectedNoMilliseconds = Date.from(dtExpected.toInstant().truncatedTo(ChronoUnit.SECONDS));
 
     static void setFinalStatic(Field field, Object newValue) throws Exception {
         field.setAccessible(true);
@@ -42,7 +44,7 @@ public class DateUtilTest {
         @Parameterized.Parameter
         public String strInput;
 
-        @Parameterized.Parameters(name = "{index}: fromISODate({0})={1}")
+        @Parameterized.Parameters(name = "{index}: {0}")
         public static Collection<String> data() {
             return testISODateStrings;
         }
@@ -50,7 +52,12 @@ public class DateUtilTest {
         @Test
         public void tolerantFromISODateString() {
             try {
-                assertEquals(dtExpected, DateUtil.tolerantFromISODateString(strInput));
+                final Date parsed = DateUtil.tolerantFromISODateString(strInput);
+                if (parsed.getTime() % 1000 > 0) {
+                    assertEquals(dtExpected, parsed);
+                } else {
+                    assertEquals(dtExpectedNoMilliseconds, parsed);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
