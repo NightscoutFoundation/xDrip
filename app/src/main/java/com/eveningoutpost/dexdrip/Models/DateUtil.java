@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 public class DateUtil {
 
     private static final String FORMAT_DATE_ISO = "yyyy-MM-dd'T'HH:mm:ss'Z'"; // eg 2017-03-24T22:03:27Z
-    private static final Pattern pDateFix = Pattern.compile("^(\\d{4}-\\d{2}-\\d{2})[ T](\\d{2}:\\d{2}:\\d{2})(?:.\\d+Z)*[^Z]?$");
+    private static final Pattern pDateFix = Pattern.compile("^(\\d{4}-\\d{2}-\\d{2})[ T](\\d{2}:\\d{2}:\\d{2})(?:\\.\\d+Z?)*[^Z]?$");
     private static final Pattern pOffsetFix = Pattern.compile("([+-]\\d{2})(\\d{2})$");
 
     /**

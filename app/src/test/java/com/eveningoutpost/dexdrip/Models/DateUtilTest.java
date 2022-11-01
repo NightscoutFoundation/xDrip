@@ -25,7 +25,7 @@ import static org.junit.Assert.assertEquals;
 public class DateUtilTest {
 
     public static Collection<String> testISODateStrings = Arrays.asList("2018-03-03 11:22:48", "2018-03-03T11:22:48", "2018-03-03T11:22:48Z",
-            "2018-03-03T11:22:48.384Z", "2018-03-03T12:22:48+01:00", "2018-03-03T05:22:48-06:00", "2018-03-03T14:22:48+0300");
+            "2018-03-03T11:22:48.384Z", "2018-03-03T11:22:48.348", "2018-03-03T12:22:48+01:00", "2018-03-03T05:22:48-06:00", "2018-03-03T14:22:48+0300");
     public static Date dtExpected = Date.from(Instant.parse("2018-03-03T11:22:48.000Z"));
 
     static void setFinalStatic(Field field, Object newValue) throws Exception {
