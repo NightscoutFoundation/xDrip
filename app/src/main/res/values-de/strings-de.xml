@@ -1322,6 +1322,7 @@
     <string name="summary_show_smb_icons">Den Graph durch Symbole für kleine Boli aufräumen</string>
     <string name="title_show_smb_icons">Zeige Micro-Bolus-Symbole</string>
     <string name="summary_show_medtrum_secondary">Zeige alternative Glukosepunkte</string>
+    <string name="title_show_medtrum_secondary">Zeige Medtrum Alternativpunkte</string>
     <string name="summary_illustrate_backfilled_data">Kennzeichne nachgetragene Daten im Graph</string>
     <string name="title_illustrate_backfilled_data">Zeige nachgetragene Daten</string>
     <string name="summary_high_priority_notifications">Zeige Benachrichtigungen und Graph oben (auch auf Sperrbildschirm sinnvoll)</string>
@@ -1359,10 +1360,10 @@
     <string name="title_plus_whole_house">Whole-House</string>
     <string name="summary_libre_whole_house_collector">Dieses Telefon wird ein Collector im Whole-House-Netzwerk sein</string>
     <string name="title_libre_whole_house_collector">Libre-Whole-House</string>
-    <string name="summary_xdrip_plus_desert_sync_settings">Desert Sync Zusammenfassung</string>
-    <string name="title_xdrip_plus_desert_sync_settings">Desert Sync</string>
+    <string name="summary_xdrip_plus_desert_sync_settings">Lokale Synchronisation Zusammenfassung</string>
+    <string name="title_xdrip_plus_desert_sync_settings">Lokale Synchronisation</string>
     <string name="summary_desert_sync_enabled">Lokale Synchronisation (ohne Internet) aktiviert</string>
-    <string name="title_desert_sync_enabled">Desert Sync</string>
+    <string name="title_desert_sync_enabled">Lokale Synchronisation</string>
     <string name="title_desert_sync_master_ip">Master-IP-Adresse</string>
     <string name="summary_send_sync_show_qr">Barcode für Follower um diese automatisch zu konfigurieren</string>
     <string name="title_send_sync_show_qr">Zeige QR-Code</string>
@@ -1527,6 +1528,7 @@
     <string name="nfc_diag_timeout">NFC-Timeout</string>
     <string name="nfc_read_timeout">NFC Lese-Timeout</string>
     <string name="nfc_invalid_data__try_again">ungültige NFC-Daten - versuche es neu</string>
+    <string name="turned_off_anytag_feature">NFC Any-Tag Funktion deaktiviert</string>
     <string name="nfc_invalid_data">ungültige NFC-Daten</string>
     <string name="scanned_ok">Scannen erfolgreich!</string>
     <string name="nfc_io_error">NFC-Fehler</string>
@@ -1535,6 +1537,7 @@
     <string name="please_wait">Bitte warten..</string>
     <string name="didnt_find_any_glucose_readings_in_that_time_period">Keine Glukosemessungen in diesem Zeitraum gefunden</string>
     <string name="got_calibration_in_the_future__cannot_process">Kalibrierung in der Zukunft erhalten - kann nicht verarbeitet werden!</string>
+    <string name="remote_snooze">Entferntes Schlummern...</string>
     <string name="sensor_stopped">Sensor gestoppt</string>
     <string name="restarting_collector">Datensammler neustarten!</string>
     <string name="follower_deleted_succesfully">Follower erfolgreich gelöscht</string>
@@ -1550,7 +1553,9 @@
     <string name="ob1_session_restarted_title">Sensorsitzung neu gestartet</string>
     <string name="ob1_session_restarted_msg">Die Sensorsitzung wurde vorbeugend neu gestartet. Bitte überprüfe, ob die nächsten Messwerte plausibel sind und kalibriere bei Bedarf</string>
     <string name="ob1_session_restarted_note">Sensorsitzung wurde neu gestartet</string>
+    <string name="title_ob1_g5_preemptive_restart_extended_time_travel">Vorverlegung Sensorstartzeit</string>
     <string name="summary_ob1_g5_preemptive_restart_extended_time_travel">Starte die Sitzung neu, um am 3. Tag zu beginnen, zur Vermeidung von Sprüngen</string>
+    <string name="title_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares">Immer Sensorstartzeit vorverlegen</string>
     <string name="summary_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares">Ermöglicht verlängerten Nutzungszeitraum mit allen Firmware-Versionen (nur im Entwicklermodus) </string>
     <string name="collection_summary_ob1_g5_preemptive_restart">Einen Sensor automatisch neu starten, bevor er gestoppt wird</string>
     <string name="title_ob1_g5_preemptive_restart_alert">Alarmiere bei vorbeugendem Neustart</string>
@@ -1576,6 +1581,7 @@
     <string name="title_widget_hide_graph">Graph auf Widgets ausblenden</string>
     <string name="summary_illustrate_remote_data">Empfangene Remote-Daten anzeigen (nur Diagnose)</string>
     <string name="title_illustrate_remote_data">Remote-Daten veranschaulichen</string>
+    <string name="summary_show_accessibility_settings">Wenn Ihr Telefon die Funktion \'Always On Display\' hat, können Sie das xDrip-Widget dafür aktivieren, indem Sie in den Android-Einstellungen bei Eingabehilfe den Dienst xDrip+ aktivieren.</string>
     <string name="title_show_accessibility_settings">xDrip-Bedienungshilfen aktivieren</string>
     <string name="title_multiple_insulin_types_settings">Mehrere Insulintypen</string>
     <string name="summary_multiple_insulin_types_settings">Optionen für die Verwendung mehrerer Insulintypen</string>
@@ -1619,6 +1625,10 @@
         <item quantity="one">Läuft ab: %sd</item>
         <item quantity="other">Läuft ab: %sd</item>
     </plurals>
+    <plurals name="sensor_age">
+        <item quantity="one">Alter: %sd</item>
+        <item quantity="other">Alter: %sd</item>
+    </plurals>
     <string name="external_status_strings_eg_tbr">Externe Statusmeldungen, z.B. TBR von AAPS</string>
     <string name="accept_external_status">Externen Status akzeptieren</string>
     <string name="cancel_by_default">Standardmäßig abbrechen</string>
@@ -1653,7 +1663,7 @@
     <string name="notification">Benachrichtigung</string>
     <string name="TX_EOL_reminder">Wenn auf der System-Status-Seite %1$d Transmitter-Tage erreicht werden, ist das die letzte Gelegenheit, einen Sensor mit diesem Transmitter zu starten. Derzeit %2$d Tage.</string>
     <string name="TX_EOL_notification">Wenn Sie fortfahren und einen Sensor starten, wird das sehr wahrscheinlich fehlschlagen, da der Transmitter die maximale Anzahl Tage erreicht hat.</string>
-    <string name="TX_EOL_reminder_mod">Die Transmitter-Tage, derzeit %d, nähern sich dem Maximum an. Bald können keine Sensoren mehr mit diesem Transmitter gestartet werden.</string>
+    <string name="TX_EOL_reminder_mod">Die Transmitter-Laufzeit (derzeit %d Tage), nähern sich dem Maximum an. Bald können keine Sensoren mehr mit diesem Transmitter gestartet werden.</string>
     <string name="proceed">Weiter</string>
     <string name="special_pairing_workaround">Besonderer Kopplungs-Workaround</string>
     <string name="save_power">Akku schonen</string>

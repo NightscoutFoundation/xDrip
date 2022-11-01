@@ -511,4 +511,6 @@
     <string name="megabyte_format_string">%.1f мегабайт</string>
     <string name="manual_selection_google_drive_file_warning">Вие сте избрали файл от Google drive, но той не се управлява автоматично от xDrip, така че може да се използва само за ръчен баък и възстановяване.\n\nНяма да имате автоматичен бакъп с този файл.\n\nПродължавате ли?</string>
     <string name="alternate_file_selected_warning">Избрали сте алтернативен файл. Обикновено това, ще е възстановяване от локален файл.\n\nНяма да имате автоматичен бакъп с този файл.\n\nПродължавате ли?</string>
+    <string name="use_background_scans">Използвайте сканиране на заден фон</string>
+    <string name="android_8_background_scanning">Използвай функция Android 8+ сканиране на заден фон</string>
 </resources>

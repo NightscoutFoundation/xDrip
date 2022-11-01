@@ -6,6 +6,8 @@
     tools:ignore="InnerclassSeparator">
     <!-- To receive data from HAPP. -->
     <uses-permission android:name="com.eveningoutpost.dexdrip.permissions.RECEIVE_EXTERNAL_STATUSLINE" />
+    <!-- To receive data from Aidex -->
+    <uses-permission android:name="com.microtechmd.cgms.aidex.permissions.RECEIVE_BG_ESTIMATE" />
 
     <uses-feature
         android:name="android.hardware.bluetooth_le"
@@ -496,6 +498,16 @@
                 <action android:name="com.eveningoutpost.dexdrip.OOP2_DECODE_FARM_RESULT" />
                 <action android:name="com.eveningoutpost.dexdrip.OOP2_DECODE_BLE_RESULT" />
                 <action android:name="com.eveningoutpost.dexdrip.OOP2_BLUETOOTH_ENABLE_RESULT" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".receivers.aidex.AidexReceiver">
+            <intent-filter>
+                <action android:name="com.microtechmd.cgms.aidex.action.BgEstimate" />
+                <action android:name="com.microtechmd.cgms.aidex.action.Calibration" />
+                <action android:name="com.microtechmd.cgms.aidex.action.SensorNew" />
+                <action android:name="com.microtechmd.cgms.aidex.action.SensorRestart" />
+                <action android:name="com.microtechmd.cgms.aidex.action.SensorStop" />
+                <action android:name="com.microtechmd.cgms.aidex.action.Notification" />
             </intent-filter>
         </receiver>
         <receiver android:name=".watch.thinjam.io.ThinJamApiReceiver">
