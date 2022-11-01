@@ -1,5 +1,11 @@
 package com.eveningoutpost.dexdrip.receivers.aidex;
 
+import static com.eveningoutpost.dexdrip.receivers.aidex.AidexBroadcastIntents.AIDEX_BG_TYPE;
+import static com.eveningoutpost.dexdrip.receivers.aidex.AidexBroadcastIntents.AIDEX_BG_VALUE;
+import static com.eveningoutpost.dexdrip.receivers.aidex.AidexBroadcastIntents.AIDEX_SENSOR_ID;
+import static com.eveningoutpost.dexdrip.receivers.aidex.AidexBroadcastIntents.AIDEX_TIMESTAMP;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,27 +15,16 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.eveningoutpost.dexdrip.AddCalibration;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.JoH;
-
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
-import com.eveningoutpost.dexdrip.xdrip;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import static com.eveningoutpost.dexdrip.receivers.aidex.AidexBroadcastIntents.AIDEX_BG_TYPE;
-import static com.eveningoutpost.dexdrip.receivers.aidex.AidexBroadcastIntents.AIDEX_BG_VALUE;
-import static com.eveningoutpost.dexdrip.receivers.aidex.AidexBroadcastIntents.AIDEX_SENSOR_ID;
-import static com.eveningoutpost.dexdrip.receivers.aidex.AidexBroadcastIntents.AIDEX_TIMESTAMP;
-import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 
 /**
@@ -66,7 +61,7 @@ public class AidexReceiver extends BroadcastReceiver {
                         final Bundle bundle = intent.getExtras();
                         final String action = intent.getAction();
 
-                        if (bundle==null || action==null) {
+                        if (bundle == null || action == null) {
                             UserError.Log.d(TAG, "Either bundle or action is null.");
                             return;
                         }
@@ -140,7 +135,7 @@ public class AidexReceiver extends BroadcastReceiver {
         if (AidexBroadcastIntents.UNIT_MG_DL.equalsIgnoreCase(bgType)) {
             bgValueMgDl = bgValue.intValue();
         } else if (AidexBroadcastIntents.UNIT_MMOL_L.equalsIgnoreCase(bgType)) {
-            bgValueMgDl = (int)(bgValue * Constants.MMOLL_TO_MGDL);
+            bgValueMgDl = (int) (bgValue * Constants.MMOLL_TO_MGDL);
         } else {
             UserError.Log.e(TAG, "Aidex Broadcast BgType invalid. BgType needs to be either: mg/dl or mmol/l.");
             return;
@@ -161,7 +156,7 @@ public class AidexReceiver extends BroadcastReceiver {
 
     private void checkIfCorrectSensorIsRunning(String sensorId, long timeStamp) {
         Sensor currentSensor = Sensor.currentSensor();
-        if(currentSensor!=null) {
+        if (currentSensor != null) {
             if (!currentSensor.uuid.equals(sensorId)) {
                 if (JoH.pratelimit("aidex-sensor-restart", 1200)) {
                     Sensor.stopSensor();
@@ -235,32 +230,36 @@ public class AidexReceiver extends BroadcastReceiver {
 
     private void processSensorRestart(Bundle bundle) {
         Log.w(TAG, "Received broadcast Sensor Restart from Aidex, but we don't process it.");
-        String sensorId = bundle.getString(AIDEX_SENSOR_ID);
-        Sensor sensorSearch = Sensor.getByUuid(sensorId);
-        long sensorStartTime = bundle.getLong(AIDEX_TIMESTAMP);
+        if (JoH.pratelimit("aidex-sensor-restart", 1200)) {
+            String sensorId = bundle.getString(AIDEX_SENSOR_ID);
+            Sensor sensorSearch = Sensor.getByUuid(sensorId);
+            long sensorStartTime = bundle.getLong(AIDEX_TIMESTAMP);
 
-        if (sensorSearch!=null) {
-            Sensor currentSensor = Sensor.currentSensor();
+            if (sensorSearch != null) {
+                Sensor currentSensor = Sensor.currentSensor();
 
-            if (currentSensor==null) {
-                if (sensorSearch.stopped_at != 0) {
-                    Sensor.restartSensor(sensorId);
-                }
-            } else {
-                if (sensorSearch.equals(currentSensor)) {
-                    return;
-                } else {
-                    stopCurrentSensor("x");
+                if (currentSensor == null) {
                     if (sensorSearch.stopped_at != 0) {
                         Sensor.restartSensor(sensorId);
                     }
+                } else {
+                    if (sensorSearch.equals(currentSensor)) {
+                        return;
+                    } else {
+                        stopCurrentSensor("x");
+                        if (sensorSearch.stopped_at != 0) {
+                            Sensor.restartSensor(sensorId);
+                        }
+                    }
+                }
+
+            } else {
+                if (stopCurrentSensor(sensorId)) {
+                    Sensor.create(sensorStartTime, sensorId);
                 }
             }
-
         } else {
-            if (stopCurrentSensor(sensorId)) {
-                Sensor.create(sensorStartTime, sensorId);
-            }
+            UserError.Log.wtf(TAG, "Exceeded rate limit for sensor restart in processSensorRestart()");
         }
     }
 
@@ -269,7 +268,7 @@ public class AidexReceiver extends BroadcastReceiver {
         String sensorId = bundle.getString(AidexBroadcastIntents.AIDEX_SENSOR_ID);
 
         Sensor last = Sensor.currentSensor();
-        if(last!=null) {
+        if (last != null) {
             if (!last.uuid.equals(sensorId)) {
                 Sensor.stopSensor();
             }
@@ -283,7 +282,7 @@ public class AidexReceiver extends BroadcastReceiver {
         String messageType = bundle.getString(AidexBroadcastIntents.AIDEX_MESSAGE_TYPE);
         String messageValue = bundle.getString(AidexBroadcastIntents.AIDEX_MESSAGE_VALUE);
 
-        if (messageValue!=null && messageValue.length()>0) {
+        if (messageValue != null && messageValue.length() > 0) {
             UserError.Log.i(TAG, "  Notification type=" + messageType + " with value=" + messageValue);
         } else {
             UserError.Log.i(TAG, "  Notification type=" + messageType);
