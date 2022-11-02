@@ -12,6 +12,7 @@ import com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollowService;
 import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
 import com.eveningoutpost.dexdrip.cgm.webfollow.WebFollowService;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.CareLinkFollowService;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -42,6 +43,7 @@ public enum DexCollectionType {
     NSFollow("NSFollower"),
     SHFollow("SHFollower"),
     WebFollow("WebFollower"),
+    CLFollow("CLFollower"),
     Medtrum("Medtrum"),
     UiBased("UiBased"),
     Disabled("Disabled"),
@@ -81,7 +83,7 @@ public enum DexCollectionType {
         Collections.addAll(usesXbridge, DexbridgeWixel, WifiDexBridgeWixel);
         Collections.addAll(usesFiltered, DexbridgeWixel, WifiDexBridgeWixel, DexcomG5, WifiWixel, Follower, Mock); // Bluetooth and Wifi+Bluetooth need dynamic mode
         Collections.addAll(usesLibre, LimiTTer, LibreAlarm, LimiTTerWifi, LibreWifi, LibreReceiver);
-        Collections.addAll(isPassive, NSEmulator, NSFollow, SHFollow, WebFollow, LibreReceiver, UiBased);
+        Collections.addAll(isPassive, NSEmulator, NSFollow, SHFollow, WebFollow, LibreReceiver, UiBased, CLFollow);
         Collections.addAll(usesBattery, BluetoothWixel, DexbridgeWixel, WifiBlueToothWixel, WifiDexBridgeWixel, Follower, LimiTTer, LibreAlarm, LimiTTerWifi, LibreWifi); // parakeet separate
         Collections.addAll(usesDexcomRaw, BluetoothWixel, DexbridgeWixel, WifiWixel, WifiBlueToothWixel, DexcomG5, WifiDexBridgeWixel, Mock);
         Collections.addAll(usesTransmitterBattery, WifiWixel, BluetoothWixel, DexbridgeWixel, WifiBlueToothWixel, WifiDexBridgeWixel); // G4 transmitter battery
@@ -205,6 +207,8 @@ public enum DexCollectionType {
                 return WebFollowService.class;
             case UiBased:
                 return UiBasedCollector.class;
+            case CLFollow:
+                return CareLinkFollowService.class;
             default:
                 return DexCollectionService.class;
         }
@@ -284,6 +288,8 @@ public enum DexCollectionType {
             case UiBased:
                 return "UI Based";
 
+            case CLFollow:
+                return "CareLink";
             default:
                 return dct.name();
         }

@@ -54,6 +54,7 @@ public class Constants {
     public static final int MIBAND_SERVICE_BG_RETRY_ID = 1027;
     public static final int WEBFOLLOW_SERVICE_FAILOVER_ID = 1028;
     public static final int BACKUP_ACTIVITY_ID = 1029;
+    public static final int CARELINK_SERVICE_FAILOVER_ID = 1030;
 
     static final int NIGHTSCOUT_ERROR_NOTIFICATION_ID = 2001;
 

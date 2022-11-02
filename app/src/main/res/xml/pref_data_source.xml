@@ -207,6 +207,66 @@
             android:summary="Login password for Dex Share Following"
             android:title="Share Password" />
 
+        <ListPreference
+            android:defaultValue="gb"
+            android:entries="@array/carelinkCountryEntries"
+            android:entryValues="@array/carelinkCountryValues"
+            android:key="clfollow_country"
+            android:summary="@string/summary_clfollow_country"
+            android:title="@string/title_clfollow_country" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:inputType="textNoSuggestions|textVisiblePassword"
+            android:key="clfollow_user"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:summary="@string/summary_clfollow_user"
+            android:title="@string/title_clfollow_user" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:inputType="textNoSuggestions|textVisiblePassword"
+            android:key="clfollow_pass"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:summary="@string/summary_clfollow_pass"
+            android:title="@string/title_clfollow_pass" />
+        <EditTextPreference
+            android:defaultValue="30"
+            android:inputType="textNoSuggestions|textVisiblePassword"
+            android:key="clfollow_grace_period"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:summary="@string/summary_clfollow_grace_period"
+            android:title="@string/title_clfollow_grace_period" />
+        <EditTextPreference
+            android:defaultValue="1"
+            android:inputType="textNoSuggestions|textVisiblePassword"
+            android:key="clfollow_missed_poll_interval"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:summary="@string/summary_clfollow_missed_poll_interval"
+            android:title="@string/title_clfollow_missed_poll_interval" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="clfollow_download_finger_bgs"
+            android:summary="@string/summary_clfollow_download_finger_bgs"
+            android:title="@string/title_clfollow_download_finger_bgs" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="clfollow_download_boluses"
+            android:summary="@string/summary_clfollow_download_boluses"
+            android:title="@string/title_clfollow_download_boluses" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="clfollow_download_meals"
+            android:summary="@string/summary_clfollow_download_meals"
+            android:title="@string/title_clfollow_download_meals" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="clfollow_download_notifications"
+            android:summary="@string/summary_clfollow_download_notifications"
+            android:title="@string/title_clfollow_download_notifications" />
+
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="xdrip_plus_g5_extra_settings"
             android:summary="@string/advanced_g5_settings"
