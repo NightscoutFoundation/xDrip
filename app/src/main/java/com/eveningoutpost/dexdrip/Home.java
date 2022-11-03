@@ -3304,6 +3304,95 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         startActivity(new Intent(getApplicationContext(), DisplayQRCode.class));
     }
 
+    public void exportDatabase(MenuItem myitem) {
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                int permissionCheck = ContextCompat.checkSelfPermission(Home.this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE);
+                if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(Home.this,
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                            0);
+                    return null;
+                } else {
+                    return DatabaseUtil.saveSql(getBaseContext());
+                }
+
+            }
+
+            @Override
+            protected void onPostExecute(String filename) {
+                super.onPostExecute(filename);
+                if (filename != null) {
+
+                    snackBar(R.string.share, getString(R.string.exported_to) + filename, makeSnackBarUriLauncher(Uri.fromFile(new File(filename)), getString(R.string.share_database)), Home.this);
+                    startActivity(new Intent(xdrip.getAppContext(), SdcardImportExport.class).putExtra("backup", "now").setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                    /*    SnackbarManager.show(
+                                Snackbar.with(Home.this)
+                                        .type(SnackbarType.MULTI_LINE)
+                                        .duration(4000)
+                                        .text(getString(R.string.exported_to) + filename) // text to display
+                                        .actionLabel("Share") // action button label
+                                        .actionListener(new SnackbarUriListener(Uri.fromFile(new File(filename)))),
+                                Home.this);*/
+                } else {
+                    Toast.makeText(Home.this, R.string.could_not_export_database, Toast.LENGTH_LONG).show();
+                }
+            }
+        }.execute();
+    }
+
+    public void restoreDatabase(MenuItem myitem) {
+        startActivity(new Intent(this, ImportDatabaseActivity.class));
+    }
+
+    public void exportCSVasSiDiary(MenuItem myitem) {
+        long from = Pref.getLong("sidiary_last_exportdate", 0);
+        final GregorianCalendar date = new GregorianCalendar();
+        final DatePickerFragment datePickerFragment = new DatePickerFragment();
+        if (from > 0) datePickerFragment.setInitiallySelectedDate(from);
+        datePickerFragment.setAllowFuture(false);
+        datePickerFragment.setTitle(getString(R.string.sidiary_date_title));
+        datePickerFragment.setDateCallback(new ProfileAdapter.DatePickerCallbacks() {
+            @Override
+            public void onDateSet(int year, int month, int day) {
+                date.set(year, month, day);
+                date.set(Calendar.HOUR_OF_DAY, 0);
+                date.set(Calendar.MINUTE, 0);
+                date.set(Calendar.SECOND, 0);
+                date.set(Calendar.MILLISECOND, 0);
+                new AsyncTask<Void, Void, String>() {
+                    @Override
+                    protected String doInBackground(Void... params) {
+                        int permissionCheck = ContextCompat.checkSelfPermission(Home.this,
+                                Manifest.permission.READ_EXTERNAL_STORAGE);
+                        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+                            ActivityCompat.requestPermissions(Home.this,
+                                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                    0);
+                            return null;
+                        } else {
+                            return DatabaseUtil.saveCSV(getBaseContext(), date.getTimeInMillis());
+                        }
+                    }
+
+                    @Override
+                    protected void onPostExecute(String filename) {
+                        super.onPostExecute(filename);
+                        if (filename != null) {
+                            Pref.setLong("sidiary_last_exportdate", System.currentTimeMillis());
+                            snackBar(R.string.share, getString(R.string.exported_to) + filename, makeSnackBarUriLauncher(Uri.fromFile(new File(filename)), getString(R.string.share_database)), Home.this);
+                        } else {
+                            Toast.makeText(Home.this, gs(R.string.could_not_export_csv_), Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }.execute();
+            }
+        });
+        datePickerFragment.show(getFragmentManager(), "DatePicker");
+    }
+
     public void settingsSDcardExport(MenuItem myitem) {
         startActivity(new Intent(getApplicationContext(), SdcardImportExport.class));
     }
@@ -3338,6 +3427,21 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
+    }
+
+    public void resendGlucoseToWatch(MenuItem myitem) {
+        WatchUpdaterService.startServiceAndResendData(0);
+        if (Pref.getBooleanDefaultFalse("pref_amazfit_enable_key")) {
+            Amazfitservice.start("xDrip_synced_SGV_data");
+        }
+    }
+
+    public void openSettingsOnWatch(MenuItem myitem) {
+        startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_OPEN_SETTINGS));
+    }
+
+    public void resetWearDb(MenuItem myitem) {
+        startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_RESET_DB));
     }
 
     public void undoButtonClick(View myitem) {
@@ -3440,6 +3544,14 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
     }
 
+    public void toggleSpeakReadings(MenuItem myitem) {
+        Pref.toggleBoolean("bg_to_speech");
+        invalidateOptionsMenu();
+        if (Pref.getBooleanDefaultFalse("bg_to_speech")) {
+            BgToSpeech.testSpeech();
+        }
+    }
+
     public void sendFeedback(MenuItem myitem) {
         startActivity(new Intent(getApplicationContext(), SendFeedBack.class));
     }
@@ -3472,133 +3584,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-            case R.id.action_resend_last_bg:
-                WatchUpdaterService.startServiceAndResendData(0);
-                if (Pref.getBooleanDefaultFalse("pref_amazfit_enable_key")) {
-                    Amazfitservice.start("xDrip_synced_SGV_data");
-                }
-                break;
-            case R.id.action_open_watch_settings:
-                startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_OPEN_SETTINGS));
-                break;
-            case R.id.action_sync_watch_db:
-                startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_RESET_DB));
-                break;
-        }
-
-        if (item.getItemId() == R.id.action_export_database) {
-            new AsyncTask<Void, Void, String>() {
-                @Override
-                protected String doInBackground(Void... params) {
-                    int permissionCheck = ContextCompat.checkSelfPermission(Home.this,
-                            Manifest.permission.READ_EXTERNAL_STORAGE);
-                    if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(Home.this,
-                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                                0);
-                        return null;
-                    } else {
-                        return DatabaseUtil.saveSql(getBaseContext());
-                    }
-
-                }
-
-                @Override
-                protected void onPostExecute(String filename) {
-                    super.onPostExecute(filename);
-                    if (filename != null) {
-
-                        snackBar(R.string.share, getString(R.string.exported_to) + filename, makeSnackBarUriLauncher(Uri.fromFile(new File(filename)), getString(R.string.share_database)), Home.this);
-                        startActivity(new Intent(xdrip.getAppContext(), SdcardImportExport.class).putExtra("backup", "now").setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                    /*    SnackbarManager.show(
-                                Snackbar.with(Home.this)
-                                        .type(SnackbarType.MULTI_LINE)
-                                        .duration(4000)
-                                        .text(getString(R.string.exported_to) + filename) // text to display
-                                        .actionLabel("Share") // action button label
-                                        .actionListener(new SnackbarUriListener(Uri.fromFile(new File(filename)))),
-                                Home.this);*/
-                    } else {
-                        Toast.makeText(Home.this, R.string.could_not_export_database, Toast.LENGTH_LONG).show();
-                    }
-                }
-            }.execute();
-
-            return true;
-        }
-
-        if (item.getItemId() == R.id.action_import_db) {
-            startActivity(new Intent(this, ImportDatabaseActivity.class));
-            return true;
-        }
-
-       /* // jamorham additions
+        /*// jamorham additions
         if (item.getItemId() == R.id.synctreatments) {
             startActivity(new Intent(this, GoogleDriveInterface.class));
             return true;
 
         }*/
-        ///
-
-        if (item.getItemId() == R.id.action_export_csv_sidiary) {
-
-            long from = Pref.getLong("sidiary_last_exportdate", 0);
-            final GregorianCalendar date = new GregorianCalendar();
-            final DatePickerFragment datePickerFragment = new DatePickerFragment();
-            if (from > 0) datePickerFragment.setInitiallySelectedDate(from);
-            datePickerFragment.setAllowFuture(false);
-            datePickerFragment.setTitle(getString(R.string.sidiary_date_title));
-            datePickerFragment.setDateCallback(new ProfileAdapter.DatePickerCallbacks() {
-                @Override
-                public void onDateSet(int year, int month, int day) {
-                    date.set(year, month, day);
-                    date.set(Calendar.HOUR_OF_DAY, 0);
-                    date.set(Calendar.MINUTE, 0);
-                    date.set(Calendar.SECOND, 0);
-                    date.set(Calendar.MILLISECOND, 0);
-                    new AsyncTask<Void, Void, String>() {
-                        @Override
-                        protected String doInBackground(Void... params) {
-                            int permissionCheck = ContextCompat.checkSelfPermission(Home.this,
-                                    Manifest.permission.READ_EXTERNAL_STORAGE);
-                            if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-                                ActivityCompat.requestPermissions(Home.this,
-                                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                                        0);
-                                return null;
-                            } else {
-                                return DatabaseUtil.saveCSV(getBaseContext(), date.getTimeInMillis());
-                            }
-                        }
-
-                        @Override
-                        protected void onPostExecute(String filename) {
-                            super.onPostExecute(filename);
-                            if (filename != null) {
-                                Pref.setLong("sidiary_last_exportdate", System.currentTimeMillis());
-                                snackBar(R.string.share, getString(R.string.exported_to) + filename, makeSnackBarUriLauncher(Uri.fromFile(new File(filename)), getString(R.string.share_database)), Home.this);
-                            } else {
-                                Toast.makeText(Home.this, gs(R.string.could_not_export_csv_), Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    }.execute();
-                }
-            });
-            datePickerFragment.show(getFragmentManager(), "DatePicker");
-            return true;
-        }
-
-        if (item.getItemId() == R.id.action_toggle_speakreadings) {
-            Pref.toggleBoolean("bg_to_speech");
-            invalidateOptionsMenu();
-            if (Pref.getBooleanDefaultFalse("bg_to_speech")) {
-                BgToSpeech.testSpeech();
-            }
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
