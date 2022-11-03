@@ -1276,6 +1276,7 @@
     <string name="title_nsfollow_url">Adres URL do obserwowania Nightscout</string>
     <string name="summary_nsfollow_download_treatments">Pobierz również zabiegi z Nightscout jako obserwator</string>
     <string name="title_nsfollow_download_treatments">Pobieraj zabiegi</string>
+    <string name="title_clfollow_user">Nazwa użytkownika CareLink</string>
     <string name="title_ob1_options">Ustawienia Kolektora OB1 G5/G6</string>
     <string name="title_use_ob1_g5_collector_service">Użyj kolektora OB1</string>
     <string name="summary_ob1_g5_use_transmitter_alg">Użyj wbudowanego algorytmu transmitera do obliczeń wartości poziomu glukozy kiedy to możliwe.</string>
