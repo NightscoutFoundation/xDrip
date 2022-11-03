@@ -176,7 +176,7 @@ public class MegaStatus extends ActivityWithMenu {
                 addAsection(BLUEJAY_STATUS, "BlueJay Watch Status");
             }
             if (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreReceiver) {
-                addAsection(XDRIP_LIBRE2, "Libre 2 Patched App Status");
+                addAsection(XDRIP_LIBRE2, "Libre Patched App Status");
             }
             if (DexCollectionType.hasWifi()) {
                 addAsection(IP_COLLECTOR, dexCollectionType == DexCollectionType.Mock ? "FAKE / MOCK DATA SOURCE" : "Wifi Wixel / Parakeet Status");
