@@ -65,7 +65,7 @@
     <string name="wifi_recievers_dialog_title">Sisesta vastuvõtja IP aadressid ja pordid (kaasa arvatud mongodb aadressid, kui on vaja)</string>
     <!-- Location Settings -->
     <string name="location_not_found_title">Asukoht pole lubatud</string>
-    <string name="location_not_found_message">Et bluetoothi tuvastamine töötaks uuemates seadmetes, peab asukoht olema lubatud. xDrip ei jälgi teie asukohta, välja arvatud valikulise hädaabisõnumi funktsiooniga</string>
+    <string name="location_not_found_message">Et Bluetooth\'i tuvastamine töötaks uuemates seadmetes, peab asukoht olema lubatud. xDrip ei jälgi teie asukohta, välja arvatud valikulise hädaabisõnumi funktsiooniga</string>
     <string name="location_yes">Luba</string>
     <!-- broadcast settings -->
     <string name="pref_title_broadcast_enabled">Edastage kohapeal</string>
@@ -1283,6 +1283,26 @@
     <string name="title_nsfollow_url">Nightscout jälgimise URL</string>
     <string name="summary_nsfollow_download_treatments">Laadi jälgijana alla ka Nightscout\'i raviandmed</string>
     <string name="title_nsfollow_download_treatments">Laad alla raviandmed</string>
+    <string name="title_clfollow_user">CareLink kasutajanimi</string>
+    <string name="summary_clfollow_user">CareLink sisselogimise kasutajanimi</string>
+    <string name="title_clfollow_pass">CareLink parool</string>
+    <string name="summary_clfollow_pass">CareLink sisselogimise parool</string>
+    <string name="title_clfollow_country">CareLink riik</string>
+    <string name="summary_clfollow_country">Vali enda CareLink riik.</string>
+    <string name="title_clfollow_lang">CareLink keel</string>
+    <string name="summary_clfollow_lang">CareLink keele kood</string>
+    <string name="title_clfollow_grace_period">Ooteperiood</string>
+    <string name="summary_clfollow_grace_period">Andmepäringu ooteperiood sekundites</string>
+    <string name="title_clfollow_missed_poll_interval">Puuduvate andmete päringute intervall</string>
+    <string name="summary_clfollow_missed_poll_interval">Puudulike andmete korduspäringute intervall minutites</string>
+    <string name="title_clfollow_download_finger_bgs">Sõrmeotsa VS</string>
+    <string name="summary_clfollow_download_finger_bgs">Laadi CareLink\'ist alla sõrmeotsa VS näidud</string>
+    <string name="title_clfollow_download_boluses">Boolused</string>
+    <string name="summary_clfollow_download_boluses">Laadi CareLink\'ist alla boolused</string>
+    <string name="title_clfollow_download_meals">Eined</string>
+    <string name="summary_clfollow_download_meals">Laadi CareLink\'ist alla eined</string>
+    <string name="title_clfollow_download_notifications">Teavitused</string>
+    <string name="summary_clfollow_download_notifications">Laadi alla CareLink teavitused</string>
     <string name="title_ob1_options">OB1 G5/G6 vastuvõtja seaded</string>
     <string name="summary_use_ob1_g5_collector_service">Täielik ülekirjutamine, peaks töötama op-süsteemides Android 4.4–9, toetab algupärast režiimi ja palju muud</string>
     <string name="title_use_ob1_g5_collector_service">Kasuta OB1 vastuvõtjat</string>
