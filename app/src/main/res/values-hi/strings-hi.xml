@@ -6,6 +6,7 @@
     <string name="title_activity_start_new_sensor">नया सेंसर प्रारंभ करें</string>
     <string name="title_activity_new_sensor_location">नया सेंसर स्थान बताएं</string>
     <string name="title_activity_stop_sensor">सेंसर बंद करें</string>
+    <string name="title_activity_nav_drawer">नेविगेशन ड्रॉवर</string>
     <string name="navigation_drawer_open">नेविगेशन ड्रॉवर खोलें</string>
     <string name="navigation_drawer_close">नेविगेशन ड्रावर बंद करें</string>
     <string name="ok">ठीक है</string>
