@@ -20,7 +20,7 @@ import lombok.Data;
 public class BackFillStream extends BaseMessage {
 
     private volatile int last_sequence = 0;
-
+    private volatile boolean locked = false;
 
     public BackFillStream() {
         data = ByteBuffer.allocate(1000);
@@ -48,10 +48,23 @@ public class BackFillStream extends BaseMessage {
 
     public synchronized void pushNew(final byte[] packet) {
         if (packet == null) return;
+        if (locked) {
+            UserError.Log.d(TAG, "Locked stream so ignoring");
+            return;
+        }
         if (packet.length == 9) {
             last_sequence = -1;
             data.put(packet);
         } else {
+            if (last_sequence == 0) {
+                if (packet.length > 17) {
+                    if (packet[5] != 0x00 || packet[9] != 0x00 || packet[17] != 0x00) {
+                        UserError.Log.d(TAG, "Non backfill data received - locking stream");
+                        locked = true;
+                        return;
+                    }
+                }
+            }
             push(packet);
         }
     }
@@ -59,6 +72,7 @@ public class BackFillStream extends BaseMessage {
     public void reset() {
         data.clear();
         last_sequence = 0;
+        locked = false;
     }
 
 

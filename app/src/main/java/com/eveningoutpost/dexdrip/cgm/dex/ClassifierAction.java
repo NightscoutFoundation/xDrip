@@ -35,7 +35,7 @@ public class ClassifierAction {
     public static void action(final String type, final byte[] data) {
 
         if (data == null || data.length == 0) return;
-
+        UserError.Log.d(TAG, "Type: " + type + " hex: " + JoH.bytesToHex(data));
         switch (type) {
             case BACKFILL:
                 stream.pushNew(data);
@@ -83,6 +83,7 @@ public class ClassifierAction {
                             glucose = new com.eveningoutpost.dexdrip.G5Model.EGlucoseRxMessage(data);
                         }
                         if (glucose.usable()) {
+                            UserError.Log.d(TAG, "Updating age from timestamp: " + glucose.timestamp);
                             DexTimeKeeper.updateAge(TXID, glucose.timestamp);
                             stream.reset();
                             val ts = DexTimeKeeper.fromDexTime(TXID, glucose.timestamp);
@@ -112,6 +113,7 @@ public class ClassifierAction {
     private static void processBackfill() {
         UserError.Log.d(TAG, "Processing backfill");
         val decoded = stream.decode();
+        stream.reset();
         for (BackFillStream.Backsie backsie : decoded) {
             UserError.Log.d(TAG, "Backsie: " + backsie.getDextime());
             val time = DexTimeKeeper.fromDexTime(TXID, backsie.getDextime());

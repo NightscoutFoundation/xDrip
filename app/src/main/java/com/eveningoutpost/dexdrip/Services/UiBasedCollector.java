@@ -125,8 +125,11 @@ public class UiBasedCollector extends NotificationListenerService {
         switch (lastPackage) {
             default:
                 return value
+                        .replace("mmol/L", "")
+                        .replace("mg/dL", "")
                         .replace("≤", "")
-                        .replace("≥", "");
+                        .replace("≥", "")
+                        .trim();
         }
     }
 
