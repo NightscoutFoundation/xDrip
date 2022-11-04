@@ -1395,6 +1395,7 @@
                 android:title="@string/extra_logging">
                 <CheckBoxPreference
                     android:defaultValue="false"
+                    android:enabled="false"
                     android:key="enable_bugfender"
                     android:summary="@string/send_logs_to_developer"
                     android:title="@string/enable_remote_logging" />
