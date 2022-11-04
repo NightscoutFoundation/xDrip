@@ -99,8 +99,8 @@ public class BgMibandSparklineBuilder extends BgSparklineBuilder {
         chart.setBackgroundColor(backgroundColor);
         chart.setLineChartData(lineData);
         Viewport viewport = chart.getMaximumViewport();
-        viewport.left = HPointValue.convert(start);
-        viewport.right = HPointValue.convert(end);
+        viewport.left = start;
+        viewport.right = end;
         if (height <= SCALE_TRIGGER) {
             viewport.bottom = 0;
             viewport.top = (float) (bgGraphBuilder.doMgdl ? 16 * Constants.MMOLL_TO_MGDL : 16);

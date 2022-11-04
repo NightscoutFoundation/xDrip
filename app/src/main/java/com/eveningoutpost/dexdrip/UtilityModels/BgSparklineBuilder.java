@@ -233,8 +233,8 @@ public class BgSparklineBuilder {
         chart.setBackgroundColor(backgroundColor);
         chart.setLineChartData(lineData);
         Viewport viewport = chart.getMaximumViewport();
-        viewport.left = HPointValue.convert(start);
-        viewport.right = HPointValue.convert(end);
+        viewport.left = start;
+        viewport.right = end;
         if (height<=SCALE_TRIGGER)
         {
             // for pebble classic we always want the lowest mark to be in the same place on the image

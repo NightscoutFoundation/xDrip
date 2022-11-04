@@ -18,7 +18,7 @@ public class PointValueExtended extends HPointValue {
         super(x, y);
         calculatedFilteredValue = filtered;
     }
-    public PointValueExtended(double x, float y) {
+    public PointValueExtended(double x, double y) {
         super(x, y);
         calculatedFilteredValue = -1;
     }

@@ -412,7 +412,7 @@ public class BgGraphBuilder {
                     last_point = new HPointValue((double) pm.timestamp / FUZZER, ypos);
                 } else {
                     final PointValue this_point = new HPointValue((double) pm.timestamp / FUZZER, ypos);
-                    final float time_delta = this_point.getX() - last_point.getX();
+                    final double time_delta = this_point.getX() - last_point.getX();
                     if (time_delta > 1) {
 
                         final List<PointValue> new_points = new ArrayList<>();
@@ -812,14 +812,14 @@ public class BgGraphBuilder {
     public ArrayList<Line> autoSplitLine(Line macroline, final float jumpthresh) {
         // if (d) Log.d(TAG, "Enter autoSplit Line");
         ArrayList<Line> linearray = new ArrayList<Line>();
-        float lastx = -999999;
+        double lastx = -999999;
 
         List<PointValue> macropoints = macroline.getValues();
         List<PointValue> thesepoints = new ArrayList<PointValue>();
 
         if (macropoints.size() > 0) {
 
-            final float endmarker = macropoints.get(macropoints.size() - 1).getX();
+            final double endmarker = macropoints.get(macropoints.size() - 1).getX();
             for (PointValue thispoint : macropoints) {
 
                 // a jump too far for a line? make it a new one
@@ -846,13 +846,13 @@ public class BgGraphBuilder {
     // Produce an array of cubic lines, split as needed
     public ArrayList<Line> filteredLines() {
         ArrayList<Line> linearray = new ArrayList<Line>();
-        float lastx = -999999; // bogus mark value
-        final float jumpthresh = 15; // in minutes
+        double lastx = -999999; // bogus mark value
+        double jumpthresh = 15; // in minutes
         List<PointValue> thesepoints = new ArrayList<PointValue>();
 
         if (filteredValues.size() > 0) {
 
-            final float endmarker = filteredValues.get(filteredValues.size() - 1).getX();
+            final double endmarker = filteredValues.get(filteredValues.size() - 1).getX();
 
             for (PointValue thispoint : filteredValues) {
                 // a jump too far for a line? make it a new one
@@ -1145,7 +1145,7 @@ public class BgGraphBuilder {
                     if (calibration.timestamp < (start_time * FUZZER)) break;
                     if (calibration.slope_confidence != 0) {
                         final long adjusted_timestamp = (calibration.timestamp + (AddCalibration.estimatedInterstitialLagSeconds * 1000));
-                        final PointValueExtended this_point = new PointValueExtended((double) (adjusted_timestamp / FUZZER), (float) unitized(calibration.bg));
+                        final PointValueExtended this_point = new PointValueExtended((double) (adjusted_timestamp / FUZZER), unitized(calibration.bg));
                         if (adjusted_timestamp >= close_to_side_time) {
                             predictivehours = Math.max(predictivehours, 1);
                         }
@@ -1164,7 +1164,7 @@ public class BgGraphBuilder {
             try {
                 for (BloodTest bloodtest : bloodtests) {
                     final long adjusted_timestamp = (bloodtest.timestamp + (AddCalibration.estimatedInterstitialLagSeconds * 1000));
-                    final PointValueExtended this_point = new PointValueExtended((float) (adjusted_timestamp / FUZZER), (float) unitized(bloodtest.mgdl))
+                    final PointValueExtended this_point = new PointValueExtended((double) (adjusted_timestamp / FUZZER), unitized(bloodtest.mgdl))
                            .setType(PointValueExtended.BloodTest)
                             .setUUID(bloodtest.uuid);
                     this_point.real_timestamp = bloodtest.timestamp;
@@ -1570,7 +1570,7 @@ public class BgGraphBuilder {
                             height = treatment.insulin; // some scaling needed I think
                         if (height > highMark) height = highMark;
                         if (height < lowMark) height = lowMark;
-                        final PointValueExtended pv = new PointValueExtended((double) (treatment.timestamp / FUZZER), (float) height);
+                        final PointValueExtended pv = new PointValueExtended((double) (treatment.timestamp / FUZZER), height);
                         pv.real_timestamp = treatment.timestamp;
                         if (treatment.isPenSyncedDose()) {
                             pv.setType(PointValueExtended.AdjustableDose).setUUID(treatment.uuid);
@@ -1608,7 +1608,7 @@ public class BgGraphBuilder {
                             try {
                                 final Matcher m = posPattern.matcher(treatment.enteredBy);
                                 if (m.matches()) {
-                                    pv.set(pv.getX(), (float)Math.min(tolerantParseDouble(m.group(1)), 18 * bgScale)); // don't allow pos note to exceed 18mmol on chart
+                                    pv.set(pv.getX(), Math.min(tolerantParseDouble(m.group(1)), 18 * bgScale)); // don't allow pos note to exceed 18mmol on chart
                                 }
                             } catch (Exception e) {
                                 Log.d(TAG, "Exception matching position: " + e);
@@ -1621,7 +1621,7 @@ public class BgGraphBuilder {
                             if (Math.abs(lastpv.getX() - pv.getX()) < ((10 * 60 * 1000) / FUZZER)) {
                                 // merge label with previous - Intelligent parsing and additions go here
                                 if (d)
-                                    Log.d(TAG, "Merge treatment difference: " + Float.toString(lastpv.getX() - pv.getX()));
+                                    Log.d(TAG, "Merge treatment difference: " + Double.toString(lastpv.getX() - pv.getX()));
                                 String lastlabel = String.valueOf(lastpv.getLabelAsChars());
                                 if (lastlabel.length() > 0) {
                                     lastpv.setLabel(lastlabel + "+" + mylabel);
@@ -1718,7 +1718,7 @@ public class BgGraphBuilder {
                                         height = cob_insulin_max_draw_value;
                                     PointValue pv = new HPointValue((double) fuzzed_timestamp, (float) height);
                                     if (d)
-                                        Log.d(TAG, "Cob total record: " + JoH.qs(height) + " " + JoH.qs(iob.cob) + " " + Float.toString(pv.getY()) + " @ timestamp: " + Long.toString(iob.timestamp));
+                                        Log.d(TAG, "Cob total record: " + JoH.qs(height) + " " + JoH.qs(iob.cob) + " " + Double.toString(pv.getY()) + " @ timestamp: " + Long.toString(iob.timestamp));
                                     cobValues.add(pv); // warning should not be hardcoded
                                 }
 
@@ -2080,7 +2080,7 @@ public class BgGraphBuilder {
             calendar.add(Calendar.HOUR, 1);
         }
         while (calendar.getTimeInMillis() < ((end_time * FUZZER) + ((long) predictivehours * 60 * 60 * 1000))) {
-            xAxisValues.add(new AxisValue((HPointValue.convert((double)calendar.getTimeInMillis() / FUZZER)), (timeFormat.format(calendar.getTimeInMillis())).toCharArray()));
+            xAxisValues.add(new AxisValue(((double)calendar.getTimeInMillis() / FUZZER), (timeFormat.format(calendar.getTimeInMillis())).toCharArray()));
             calendar.add(Calendar.HOUR, 1);
         }
 

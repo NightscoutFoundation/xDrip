@@ -42,11 +42,8 @@ public class GraphLine implements Parcelable {
         values = new ArrayList<>();
         line.update(0);
         for (PointValue pointValue : line.getValues()) {
-            float real_timestamp = pointValue.getX();
-            if (pointValue instanceof HPointValue) {
-                real_timestamp = (float) HPointValue.unconvert(real_timestamp);
-            }
-            values.add(new GraphPoint(real_timestamp, pointValue.getY()));
+            double real_timestamp = pointValue.getX();
+            values.add(new GraphPoint((float)real_timestamp, (float)pointValue.getY()));
         }
         color = line.getColor();
     }

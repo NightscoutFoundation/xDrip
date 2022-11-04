@@ -2292,7 +2292,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         UserError.Log.d(TAG, "VIEWPORT " + source + " moveviewport in setHours: asked " + hours + " vs auto " + ideal_hours_to_show + " = " + hours_to_show + " full chart width: " + bgGraphBuilder.hoursShownOnChart());
 
-        float hour_width = maxViewPort.width() / bgGraphBuilder.hoursShownOnChart();
+        double hour_width = maxViewPort.width() / bgGraphBuilder.hoursShownOnChart();
         holdViewport.left = maxViewPort.right - hour_width * hours_to_show;
         holdViewport.right = maxViewPort.right;
         holdViewport.top = maxViewPort.top;
