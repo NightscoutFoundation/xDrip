@@ -601,7 +601,7 @@
     <string name="reset_bluetooth">Taaskäivita Bluetooth sisse-välja lülitades, kui 20 min jooksul andmeid ei saa</string>
     <string name="bluetooth_watchdog">Bluetoothi jälgija</string>
     <string name="reset_bluetooth_g5">Lähtesta Bluetooth sisse-välja lülitades, et hoida G5 andmeallikas töös. Ilma selleta võib G5 vastuvõtja üles öelda.</string>
-    <string name="g5_bluetooth_watchdog">G5 bluetoothi jälgija</string>
+    <string name="g5_bluetooth_watchdog">Dex Bluetooth jälgija</string>
     <string name="close_gatt">Kui bluetoothi jälgija aktiveerub tihti, võite proovida selle valiku tühistada, et näha kas see aitab</string>
     <string name="older_bluetooth_wakelocks">Vanemad Bluetooth wakelockid, mis võivad akut rohkem kulutada, aga võivad olla vajalikud bluetooth-vastuvõtuks</string>
     <string name="reset_bluetooth_on_off">Lähtesta Bluetooth, lülitades seda iga paari minuti järel sisse-välja! Vali ainult siis kui testid. See võib häirida kõiki muid Bluetooth-seadmeid.</string>
@@ -696,12 +696,12 @@
     <string name="low_level_value">Madala taseme diagnostiline/prototüüp-väärtus</string>
     <string name="transmitter_id">Teie Dexcomi saatja ID, nt. 12AB3</string>
     <string name="advanced_g5_settings">Täiendavad G5 seaded harvaesinevateks olukordadeks</string>
-    <string name="g5_debug_settings">G5/G6 täpsemad seaded</string>
+    <string name="g5_debug_settings">G5/G6/Dex1 silumisseaded</string>
     <string name="g5_scan_constantly">Mõned seadmed töötavad paremini pidevalt skaneerides, teised mitte. Kui see säte pole valitud ja andmed on usaldusväärsed, siis peaks aku tööiga olema pikem. Tavaliselt on parem see mitte valida</string>
     <string name="scan_for_g5_constantly">Skaneeri G5-saatjat pidevalt</string>
     <string name="g5_force_ui_thread">See on oluline mõnede Android seadmete ühenduvuse jaoks, kuid andmed võivad jääda lugemata muude UI intensiivste tegevuste kasutamisel.</string>
     <string name="force_g5_ui_thread">Sunni G5 kasutajaliidese lõimele</string>
-    <string name="authentificate_before_reading">Tuvasta G5 enne igat lugemist</string>
+    <string name="authentificate_before_reading">Autentida enne igat lugemist</string>
     <string name="g5_full_authentification">See proovib täielikku autentimist igal lugemiskatsel. Vajalik uuemate G5 saatja versioonide jaoks.</string>
     <string name="unbond_g5_before_read">Enne iga vastuvõttu katkesta ühendus G5-ga</string>
     <string name="g5_remove_before_read">See eemaldab G5\'e sinu telefoniga seotud seadmete loendist ja proovib iga lugemiskatsega täielikku autentimist ja sidumist.</string>
@@ -1318,8 +1318,8 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Tagasi xDrip\'pi</string>
     <string name="summary_ob1_minimize_scanning">Kasutage heuristikat, et minimeerida Bluetooth skaneerimist ja säästa energiat</string>
     <string name="title_ob1_minimize_scanning">Minimaalne skaneerimine</string>
-    <string name="summary_using_g6">Kasutan G6 sensorit</string>
-    <string name="title_using_g6">G6 tugi</string>
+    <string name="summary_using_g6">Kasutan G6 või Dexcom 1 sensorit</string>
+    <string name="title_using_g6">G6/Dex1 tugi</string>
     <string name="summary_ob1_g5_allow_resetbond">OB1 vastuvõtja võib ühenduse katkestada kui arvab, et andmete töötlemine ebaõnnestus. Kui teil tekib ühenduse katkestamisel probleeme, keelake see valik. Kui te seejärel ühenduse täielikult kaotate, veenduge, et see oleks lubatud.</string>
     <string name="title_ob1_g5_allow_resetbond">Luba OB1 lahtiühendamine</string>
     <string name="summary_ob1_initiate_bonding_flag">OB1 vastuvõtja võib alustada ühendamist.</string>
