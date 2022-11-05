@@ -701,7 +701,7 @@
     <string name="scan_for_g5_constantly">Постоянный поиск G5</string>
     <string name="g5_force_ui_thread">Важный параметр для правильного подключения на некоторых Android устройствах, но может привести к пропускам считанных показаний в случае возникновения других ресурсоемких операций с пользовательским интерфейсом.</string>
     <string name="force_g5_ui_thread">Приоритезация G5 сервиса</string>
-    <string name="authentificate_before_reading">Аутентифицировать G5 перед каждым считыванием</string>
+    <string name="authentificate_before_reading">Аутентификация G5 перед каждым считыванием</string>
     <string name="g5_full_authentification">Приложение будет пытаться произвести полную аутентификацию перед каждым считыванием. Необходимо для новых прошивок G5.</string>
     <string name="unbond_g5_before_read">Отвязать G5 перед каждым считыванием</string>
     <string name="g5_remove_before_read">Сопряжение с G5 будет отменено при попытке считывания и произведена новая привязка и полная аутентификация.</string>

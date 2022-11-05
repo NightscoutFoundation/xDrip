@@ -599,7 +599,7 @@
     <string name="reset_bluetooth">Reset Bluetooth door het uit en weer in te schakelen als we binnen 20 minuten niets ontvangen</string>
     <string name="bluetooth_watchdog">Bluetooth Watchdog</string>
     <string name="reset_bluetooth_g5">Reset Bluetooth door het uit en weer in te schakelen om de G5-gegevensbron te laten werken. Zonder dit kan de G5-collector het begeven.</string>
-    <string name="g5_bluetooth_watchdog">G5 Bluetooth Watchdog</string>
+    <string name="g5_bluetooth_watchdog">G5 Bluetooth Waakhond</string>
     <string name="close_gatt">Als de bluetooth-waakhond vaak wordt geactiveerd, kunt u proberen deze optie uit te schakelen om te zien of dit helpt</string>
     <string name="older_bluetooth_wakelocks">Oudere bluetooth wakelocks die extra batterij kunnen verbruiken, maar misschien nodig zijn voor de bluetooth ontvangst</string>
     <string name="reset_bluetooth_on_off">Reset Bluetooth door het om de paar minuten uit en weer in te schakelen! Selecteer alleen als u aan het testen bent. Het kan andere Bluetooth-verbindingen verstoren.</string>
