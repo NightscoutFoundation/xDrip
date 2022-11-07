@@ -41,6 +41,7 @@
     <string name="pref_share2_scan_barcode_summary">Nebo naskenovat čárový kód na přijímači</string>
     <!-- MongoDB Settings -->
     <string name="pref_title_mongodb">MongoDB</string>
+    <string name="pref_summary_mongodb_enabled">Přímé nahrávání databáze, není pro Nightscout doporučeno</string>
     <string name="pref_title_mongodb_uri">URI</string>
     <string name="pref_dialog_mongodb_uri">Vložte MongoDB URI\"</string>
     <string name="pref_message_mongodb_uri">Přepište příklady {} skutečnými hodnotami. Složené závorky odstraňte.</string>
@@ -88,6 +89,7 @@
     <string name="pref_amazfit_other_alert_enable_summary">Odesílat ostatní výstrahy do hodinek</string>
     <string name="pref_amazfit_other_alert_enable">Povolit</string>
     <string name="pref_amazfit_other_alert_title">Další výstrahy</string>
+    <string name="pref_amazfit_watchface_graph_dots_title">Body grafu v hodinkách</string>
     <string name="pref_amazfit_watchface_graph_dots_summary">Zobrazí drobné tečky místo malých</string>
     <string name="pref_amazfit_watchface_graph_enable">Povolit</string>
     <string name="pref_amazfit_watchface_graph_hours_summary">nastavte počet hodin v grafu</string>
