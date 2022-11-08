@@ -71,6 +71,7 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackages.add("com.camdiab.fx_alert.mgdl");
         coOptedPackages.add("com.camdiab.fx_alert.hx.mmoll");
         coOptedPackages.add("com.camdiab.fx_alert.hx.mgdl");
+        coOptedPackages.add("com.medtronic.diabetes.guardian");
     }
 
     @Override
