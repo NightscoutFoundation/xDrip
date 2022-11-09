@@ -601,7 +601,7 @@
     <string name="reset_bluetooth">Setze Bluetooth zurück, in dem es an und wieder ausgeschaltet wird, wenn keine Daten innerhalb von 20 Minuten empfangen werden.</string>
     <string name="bluetooth_watchdog">Bluetooth-Watchdog</string>
     <string name="reset_bluetooth_g5">Setze Bluetooth zurück, in dem es an und wieder ausgeschaltet wird, damit die G5-Datenquelle funktioniert. Ohne dies wird der G5-Kollektor vielleicht versagen.</string>
-    <string name="g5_bluetooth_watchdog">G5 Bluetooth-Watchdog</string>
+    <string name="g5_bluetooth_watchdog">Dex Bluetooth-Watchdog</string>
     <string name="close_gatt">Wenn der Bluetooth-Watchdog oft aktiviert wird, dann könnte es helfen, diese Option abzuwählen</string>
     <string name="older_bluetooth_wakelocks">Ältere Bluetooth-Wakelocks, die mehr Batterie verbrauchen können, aber möglicherweise für den Bluetoothempfang nötig sind.</string>
     <string name="reset_bluetooth_on_off">Setze Bluetooth zurück indem es alle paar Minuten and und wieder ausgeschaltet wird! Wähle dies nur zum Testen aus. Dies kann Anderes von der Bluetooth-Nutzung abhalten.</string>
@@ -696,12 +696,12 @@
     <string name="low_level_value">Systemnaher Diagnose-/Prototypwert</string>
     <string name="transmitter_id">ID deines Dexcom-Transmitters, z.B. 12AB3</string>
     <string name="advanced_g5_settings">Erweiterte G5-Einstellungen für seltene Situationen</string>
-    <string name="g5_debug_settings">G5 Debugeinstellungen</string>
+    <string name="g5_debug_settings">Dex G5/G6/ONE Debugeinstellungen</string>
     <string name="g5_scan_constantly">Einige Geräte funktionieren besser, wenn sie konstant scannen, andere nicht. Falls das Lesen zuverlässig funktioniert, wenn diese Einstellung nicht ausgewählt ist, solltest du eine längere Batterielaufzeit haben. Normalerweise ist es am besten, dies deaktiviert zu lassen.</string>
     <string name="scan_for_g5_constantly">Konstant nach dem G5 scannen</string>
     <string name="g5_force_ui_thread">Dies ist ausschlaggebend bei einigen Android-Geräten zum korrekten Verbinden, kann aber auch verpasste Werte verursachen, wenn andere UI intensive Activities benutzt werden.</string>
     <string name="force_g5_ui_thread">G5 auf den UI-Thread zwingen</string>
-    <string name="authentificate_before_reading">Das G5 vor jedem Lesen authentifizieren</string>
+    <string name="authentificate_before_reading">Vor jedem Lesen authentifizieren</string>
     <string name="g5_full_authentification">Dies wird eine volle Authentifikation bei jedem Leseversuch versuchen. Notwending für neuere G5-Transmitter Firmwareversionen.</string>
     <string name="unbond_g5_before_read">Das G5 vor jedem Lesen entkoppeln</string>
     <string name="g5_remove_before_read">Dies wird das G5 von der Paring-Geräte-Liste deines Geräts entfernen und eine volle Authentifikation und Bonding bei jedem Lesen versuchen.</string>
@@ -1301,8 +1301,8 @@
     <string name="summary_clfollow_download_boluses">Boli von CareLink herunterladen</string>
     <string name="title_clfollow_download_meals">Mahlzeiten</string>
     <string name="summary_clfollow_download_meals">Mahlzeiten von CareLink herunterladen</string>
-    <string name="title_clfollow_download_notifications">Notizen</string>
-    <string name="summary_clfollow_download_notifications">Notizen von CareLink herunterladen</string>
+    <string name="title_clfollow_download_notifications">Benachrichtigungen</string>
+    <string name="summary_clfollow_download_notifications">Benachrichtigungen von CareLink herunterladen</string>
     <string name="title_ob1_options">OB1 G5/G6 Kollektor-Einstellungen</string>
     <string name="summary_use_ob1_g5_collector_service">Komplett neu gemacht, sollte unter Android 4.4-9 funktionieren, nativen Modus und mehr unterstützen</string>
     <string name="title_use_ob1_g5_collector_service">OB1 Kollektor verwenden</string>
@@ -1318,8 +1318,8 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Auf xDrip zurückgreifen</string>
     <string name="summary_ob1_minimize_scanning">Verwende Heuristiken, um Bluetooth-Scannen zu minimieren und Strom zu sparen</string>
     <string name="title_ob1_minimize_scanning">Scannen minimieren</string>
-    <string name="summary_using_g6">Ich nutze den G6 Sensor</string>
-    <string name="title_using_g6">Unterstützung für G6</string>
+    <string name="summary_using_g6">Ich nutze einen G6 oder ONE Sensor</string>
+    <string name="title_using_g6">Unterstützung für G6/ONE</string>
     <string name="summary_ob1_g5_allow_resetbond">Der OB1 Kollektor kann die Kopplung aufheben, wenn er glaubt, dass die Verschlüsselung fehlgeschlagen ist. Wenn Unpairing zum Problem wird, deaktivierebbdiese Option. Wenn du danach die Verbindung vollständig verlierst, stelle sicher, dass sie aktiviert ist.</string>
     <string name="title_ob1_g5_allow_resetbond">OB1-Entkoppelung erlauben</string>
     <string name="summary_ob1_initiate_bonding_flag">OB1-Datensammler kann Bonding einleiten.</string>
