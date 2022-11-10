@@ -694,12 +694,12 @@
     <string name="low_level_value">Rendszerrel kapcsolatos diagnosztikai/prototípus érték</string>
     <string name="transmitter_id">Dexcom távadó ID, pl. 12AB3</string>
     <string name="advanced_g5_settings">G5 haladó beállítások</string>
-    <string name="g5_debug_settings">G5/G6 hibakeresési beállítások</string>
+    <string name="g5_debug_settings">G5/G6/ONE hibakeresési beállítások</string>
     <string name="g5_scan_constantly">Egyes készülékek jobban működnek folyamatos leolvasással. Ha leolvasás megbízható enélkül is, akkor ne engedélyezze és akkuidőt takarít meg</string>
     <string name="scan_for_g5_constantly">G5 folyamatos leolvasása</string>
     <string name="g5_force_ui_thread">Ez egyes Android-eszközök esetében elengedhetetlen a megfelelő csatlakozáshoz, de más, felhasználói felületet igénylő tevékenységek használata esetén kihagyott méréseket okozhat.</string>
     <string name="force_g5_ui_thread">G5 UI Thread-be kényszerítése</string>
-    <string name="authentificate_before_reading">G5 azonosítása minden olvasás előtt</string>
+    <string name="authentificate_before_reading">Azonosítása minden olvasás előtt</string>
     <string name="g5_full_authentification">Mind VC-érték olvasás előtt azonosítja szenzort. Az újabb G5 szenzorok esetében szükséges.</string>
     <string name="unbond_g5_before_read">Kapcsolat bontása minden olvasás előtt (G5)</string>
     <string name="g5_remove_before_read">Ezzel a G5 szenzor párosítása minden olvasás előtt megszűnik, és lehetővé teszi az azonosítást minden olvasás előtt.</string>
@@ -1269,6 +1269,24 @@
     <string name="title_nsfollow_url">Nightscout követő URL</string>
     <string name="summary_nsfollow_download_treatments">A kezeléseket is töltse le Nightscout követőként</string>
     <string name="title_nsfollow_download_treatments">Kezelések letöltése</string>
+    <string name="title_clfollow_user">CareLink felhasználónév</string>
+    <string name="summary_clfollow_user">Felhasználónév CareLink belépéshez</string>
+    <string name="title_clfollow_pass">CareLink jelszó</string>
+    <string name="summary_clfollow_pass">CareLink bejelentkezési jelszó</string>
+    <string name="title_clfollow_country">CareLink ország</string>
+    <string name="summary_clfollow_country">Válassza ki az országát</string>
+    <string name="title_clfollow_lang">CareLink nyelve</string>
+    <string name="summary_clfollow_lang">CareLink nyelvének kiválasztása</string>
+    <string name="title_clfollow_grace_period">Türelmi idő</string>
+    <string name="summary_clfollow_grace_period">Maximális várakozási idő adatokra (s)</string>
+    <string name="title_clfollow_download_finger_bgs">VC mérés vérből</string>
+    <string name="summary_clfollow_download_finger_bgs">Ujjbegy VC értékek letöltése CareLink-ből</string>
+    <string name="title_clfollow_download_boluses">Bólusok</string>
+    <string name="summary_clfollow_download_boluses">Bólus adagok letöltése CareLink-ből</string>
+    <string name="title_clfollow_download_meals">Étkezések</string>
+    <string name="summary_clfollow_download_meals">Étkezés adatok letöltése CareLink-ből</string>
+    <string name="title_clfollow_download_notifications">Értesítések</string>
+    <string name="summary_clfollow_download_notifications">Értesítések letöltése CareLink-ből</string>
     <string name="title_ob1_options">OB1 G5/G6 kollektor beállítások</string>
     <string name="summary_use_ob1_g5_collector_service">Teljesen újraír kód. Működnie kell a 4.4 - 9-es Android verziókon. Támogatja a natív módot és még sok mást is</string>
     <string name="title_use_ob1_g5_collector_service">OB1 kollektor használata</string>
@@ -1285,7 +1303,7 @@
     <string name="summary_ob1_minimize_scanning">Heurisztikák használata a BT-keresés és az energiafelhasználás csökkentéséért</string>
     <string name="title_ob1_minimize_scanning">Keresés minimalizálása</string>
     <string name="summary_using_g6">G6 szenzort használok</string>
-    <string name="title_using_g6">G6 támogatás</string>
+    <string name="title_using_g6">G6/ONE támogatás</string>
     <string name="summary_ob1_g5_allow_resetbond">Az OB1 kollektor bonthatja a kapcsolatot, ha a titkosítás sikertelen. Ha problémákat okoz a szétkapcsolás, ne engedélyezze ezt a lehetőséget. Ha eztán teljesen megszűnik a kapcsolat, bizonyosodjon meg róla, hogy engedélyezve van.</string>
     <string name="title_ob1_g5_allow_resetbond">OB1 kapcsolatbontás engedélyezése</string>
     <string name="summary_ob1_initiate_bonding_flag">Az OB1 kollektor kezdeményezhet kapcsolatot.</string>
@@ -1643,6 +1661,8 @@
     <string name="attempting_restore">Helyreállítás</string>
     <string name="restore_succeeded_restarting">Helyreállítás sikeres - app újraindítása</string>
     <string name="restore_failed">SIKERTELEN visszaállítás!</string>
+    <string name="error_exclamation">Hiba!</string>
+    <string name="could_not_sign_in">Bejelentkezés sikertelen</string>
     <string name="use_background_scans">Szkennelés háttérben is</string>
     <string name="android_8_background_scanning">Android 8-astól lehetséges a szkennelés háttérben is</string>
 </resources>
