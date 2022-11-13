@@ -1344,8 +1344,10 @@
     <string name="title_number_icon_tested">Ikona wartości przetestowana</string>
     <string name="summary_use_number_icon">Pokazuje bieżącą wartości glukozy jako ikonę paska powiadomień i ekranu blokady</string>
     <string name="title_use_number_icon">Pokaż małą ikonę wartości</string>
+    <string name="summary_use_number_icon_large">Pokazuje większą ikonę w obszarze powiadomień widoczną po otwarciu</string>
     <string name="title_use_number_icon_large">Użyj dużej ikony wartości</string>
     <string name="summary_number_icon_large_arrow">Pokaż strzałkę trendu w dużej ikonie</string>
+    <string name="title_number_icon_large_arrow">Pokaż strzałkę w Dużej Ikonie</string>
     <string name="title_show_home_on_boot">Pokaż xDrip przy uruchomieniu telefonu</string>
     <string name="eula">Licencja</string>
     <string name="summary_plus_accept_follower_actions">Zabiegi, kalibracje i inne działania ze strony obserwatorów będą akceptowane</string>
