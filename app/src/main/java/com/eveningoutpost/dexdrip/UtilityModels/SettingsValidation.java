@@ -43,7 +43,7 @@ public class SettingsValidation {
 
     private static int notify(String short_name, String setting_string, String msg, int id) {
 
-        JoH.showNotification("Inadvisable settings - " + short_name, "Please enable or disable " + setting_string, null, id, true, true, null, null, ((msg.length() > 0) ? msg : ""));
+        JoH.showNotification("Inadvisable settings - " + short_name, "Please enable or disable " + setting_string, null, id, false, false, null, null, ((msg.length() > 0) ? msg : ""));
         return id + 1;
     }
 }
