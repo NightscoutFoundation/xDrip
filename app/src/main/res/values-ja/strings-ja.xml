@@ -172,6 +172,7 @@
     <string name="show_parakeet_map">Parakeetのマップを表示</string>
     <string name="switch_parakeet_to_setup_mode">Parakeetをセットアップモードに切り替える</string>
     <string name="view_events_log">イベントログを見る</string>
+    <string name="show_libre_trend">リブレの傾向を表示</string>
     <string name="libre_15_minutes_graph">リブレの15 分グラフ</string>
     <string name="libre_last_x_minutes_graph">リブレの最後の %d 分グラフ</string>
     <string name="share_config_via_qr_code">QRコードで設定を共有する</string>
@@ -261,6 +262,14 @@
     <string name="pref_summary_disable_wearG5_on_missedreadings">最後に数値を読み取り後、血糖値読み取りサービスを終了する。</string>
     <string name="pref_disable_wearG5_on_missedreadings_level">最後に数値を読み取ってから数分</string>
     <string name="pref_node_wearG5">血糖値読み取りサービスを実行中のデバイス</string>
+    <string name="pref_sync_wear_logs">ウェアログを同期</string>
+    <string name="pref_summary_sync_wear_logs">イベントビューアにウェアログを送信</string>
+    <string name="pref_wear_logs_prefix">ウェアログ　プレフィックス</string>
+    <string name="pref_show_treatments">トリートメントの表示</string>
+    <string name="pref_summary_show_treatments">グラフにトリートメントポイントを表示</string>
+    <string name="pref_use_wear_health">ウェアのヘルスデータを利用</string>
+    <string name="pref_summary_use_wear_health">歩数カウンターが利用可能な場合は表示</string>
+    <string name="pebble_integration">Pebble 統合</string>
     <string name="history">履歴</string>
     <string name="smart_alerting">スマート通知</string>
     <string name="reset">リセット</string>
