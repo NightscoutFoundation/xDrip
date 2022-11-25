@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.util.Base64;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm;
@@ -21,9 +22,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 import static com.eveningoutpost.dexdrip.Models.BgReading.bgReadingInsertFromJson;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 /**
  * Created by jamorham on 14/11/2016.
@@ -128,6 +131,11 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
 
                                 break;
 
+                            case Intents.XDRIP_DECODE_FARM_RESULT:
+                                Log.i(TAG, "recieved message XDRIP_DECODE_FARM_RESULT");
+                                handleOop2DecodeFramResult(bundle);
+                                break;
+
                             default:
                                 Log.e(TAG, "Unknown action! " + action);
                                 break;
@@ -140,6 +148,99 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
             }
         }.start();
     }
+    private double getOOP2Version(final Bundle bundle) {
+        final Double version = bundle.getDouble(Intents.OOP2_VERSION_NAME, 0);
+        return version;
+    }
+
+    private JSONObject extractParams(final Bundle bundle) {
+        if (bundle == null) {
+            Log.e(TAG, "Null bundle passed to extract params");
+            return null;
+        }
+        double version = getOOP2Version(bundle);
+        boolean calibrate_raw = Pref.getString("calibrate_external_libre_2_algorithm_type", "calibrate_raw").equals("calibrate_raw");
+        Log.d(TAG, "oop2 version = " + version + " calibarate_raw " + calibrate_raw);
+        if(version < 1.2 && !calibrate_raw) {
+            // Versions before 1.2 had a bug or missed features which allows them only to work on raw mode.
+            JoH.static_toast_long(gs(R.string.please_update_OOP2_or_move_to_calibrate_based_on_raw_mode));
+            Log.ueh(TAG, "OOP2 is too old to use with no calibration mode. Please update OOP2 or move to 'calibrate based on raw' mode.");
+            return null;
+        }
+
+        final String json = bundle.getString("json");
+        if (json == null) {
+            Log.e(TAG, "json == null returning");
+            return null;
+        }
+        JSONObject json_object;
+        try {
+            json_object = new JSONObject(json);
+            int process_id = json_object.getInt("ROW_ID");
+            if (process_id != android.os.Process.myPid()) {
+                Log.d(TAG, "Ignoring OOP result since process id is wrong " + process_id);
+                return null;
+            }
+
+        } catch (JSONException e) {
+            Log.e(TAG, "Got JSON exception: " + e);
+            return null;
+        }
+        return json_object;
+
+    }
+
+    private void handleOop2DecodeFramResult(Bundle bundle) {
+        if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+            Log.e(TAG, "External OOP algorithm is on, ignoring decoded data.");
+            return;
+        }
+        JSONObject json_object = extractParams(bundle);
+        if (json_object == null) {
+            return;
+        }
+        String decoded_buffer;
+        String patchUidString;
+        String patchInfoString;
+        String tagId;
+        long CaptureDateTime;
+        int[] trend_bg_vals = null;
+        int[] history_bg_vals = null;
+
+        try {
+            decoded_buffer = json_object.getString(Intents.DECODED_BUFFER);
+            patchUidString = json_object.getString(Intents.PATCH_UID);
+            patchInfoString = json_object.getString(Intents.PATCH_INFO);
+            tagId = json_object.getString(Intents.TAG_ID);
+            CaptureDateTime = json_object.getLong(Intents.LIBRE_DATA_TIMESTAMP);
+            if (json_object.has(Intents.TREND_BG) && json_object.has(Intents.HISTORIC_BG)) {
+                JSONArray computed_bg = json_object.getJSONArray(Intents.TREND_BG);
+                trend_bg_vals = new int[computed_bg.length()];
+                for (int i = 0; i < computed_bg.length(); i++) {
+                    trend_bg_vals[i] = computed_bg.getInt(i);
+                }
+                computed_bg = json_object.getJSONArray(Intents.HISTORIC_BG);
+                history_bg_vals = new int[computed_bg.length()];
+                for (int i = 0; i < computed_bg.length(); i++) {
+                    history_bg_vals[i] = computed_bg.getInt(i);
+                }
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "Error JSONException ", e);
+            return;
+        }
+        if (decoded_buffer == null) {
+            Log.e(TAG, "Error could not get decoded_buffer");
+            return;
+        }
+
+        // Does this throws exception???
+        byte[] fram_data = Base64.decode(decoded_buffer, Base64.NO_WRAP);
+        byte[] patchUid = Base64.decode(patchUidString, Base64.NO_WRAP);
+        byte[] patchInfo = Base64.decode(patchInfoString, Base64.NO_WRAP);
+        LibreOOPAlgorithm.handleOop2DecodeFramResult(tagId, CaptureDateTime, fram_data, patchUid, patchInfo, trend_bg_vals, history_bg_vals);
+    }
+
     static public void bgReadingInsertFromData(long timestamp, double sgv, boolean do_notification) {
         Log.e(TAG, "bgReadingInsertFromData called timestamp = " + timestamp+ " bg = " + sgv + " time =" +  JoH.dateTimeText(timestamp));
         JSONObject faux_bgr = new JSONObject();

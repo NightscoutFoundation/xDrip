@@ -6,6 +6,7 @@ import java.text.DecimalFormat;
 // class from LibreAlarm
 
 public class GlucoseData implements Comparable<GlucoseData> {
+    public enum DataSource {NOT_SET, FRAM, BLE}
 
     public long realDate;
     public String sensorId;
@@ -14,6 +15,9 @@ public class GlucoseData implements Comparable<GlucoseData> {
     public int glucoseLevelRaw = -1;
     public long phoneDatabaseId;
     public int glucoseLevelRawSmoothed;
+    public int flags;
+    public int temp;
+    public DataSource source;
 
     public GlucoseData(){}
 
