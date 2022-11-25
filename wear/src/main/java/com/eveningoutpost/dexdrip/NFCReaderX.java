@@ -27,6 +27,7 @@ import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm;
 import com.eveningoutpost.dexdrip.Models.ReadingData;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.LibreUtils;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -218,16 +219,34 @@ public class NFCReaderX {
         return HandleGoodReading(tagId, data1, CaptureDateTime, false, null, null);
     }
 
-    // returns true if checksum passed.
-    public static boolean HandleGoodReading(final String tagId, byte[] data1, final long CaptureDateTime, final boolean allowUpload, byte []patchUid,  byte []patchInfo ) {
+    public static boolean HandleGoodReading(final String tagId, byte[] data1, final long CaptureDateTime, final boolean allowUpload, byte[] patchUid, byte[] patchInfo) {
+        return HandleGoodReading(tagId, data1, CaptureDateTime, allowUpload, patchUid, patchInfo, false, null, null);
+    }
 
+    // returns true if checksum passed.
+    public static boolean HandleGoodReading(final String tagId, byte[] data1, final long CaptureDateTime, final boolean allowUpload, byte[] patchUid, byte[] patchInfo,
+        boolean decripted_data, int[] trend_bg_vals, int[] history_bg_vals) {
+            Log.e(TAG, "HandleGoodReading called dat1 len = " + data1.length);
+            if (data1.length > Constants.LIBRE_1_2_FRAM_SIZE) {
+                // It seems that some times we read a buffer that is bigger than 0x158, but we should only use the first 0x158 bytes.
+                data1 = java.util.Arrays.copyOfRange(data1, 0, Constants.LIBRE_1_2_FRAM_SIZE);
+            }
+            Log.e(TAG, "HANDLE GOOD!!!!");
+            if (LibreOOPAlgorithm.isDecodeableData(patchInfo) && decripted_data == false
+                    && !Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+                // Send to OOP2 for decryption.
+                LibreOOPAlgorithm.logIfOOP2NotAlive();
+                Log.e(TAG, "WILL TRY TO SEND!!!!");
+                LibreOOPAlgorithm.SendData(data1, CaptureDateTime, patchUid, patchInfo, tagId);
+                return true;
+            }
 
         if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             // If oop is used, there is no need to  do the checksum It will be done by the oop.
             // (or actually we don't know how to do it, for us 14/de sensors).
             // Save raw block record (we start from block 0)
             LibreBlock.createAndSave(tagId, CaptureDateTime, data1, 0, allowUpload, patchUid, patchInfo);
-            LibreOOPAlgorithm.SendData(data1, CaptureDateTime, patchUid, patchInfo);
+            LibreOOPAlgorithm.SendData(data1, CaptureDateTime, patchUid, patchInfo, tagId);
         } else {
             final boolean checksum_ok = LibreUtils.verify(data1);
             if (!checksum_ok) {
