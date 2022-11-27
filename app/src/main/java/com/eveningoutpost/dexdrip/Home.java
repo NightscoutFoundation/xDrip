@@ -1928,33 +1928,35 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     }
 
     private void checkWifiSleepPolicy() {
-        if (!JoH.getWifiSleepPolicyNever()) {
-            if (JoH.ratelimit("policy-never", 3600)) {
-                if (Pref.getLong("wifi_warning_never", 0) == 0) {
-                    if (!JoH.isMobileDataOrEthernetConnected()) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                        builder.setTitle(gs(R.string.wifi_sleep_policy_issue));
-                        builder.setMessage(gs(R.string.your_wifi_is_set_to_sleep_when_the_phone_screen_is_off__this_may_cause_problems_if_you_dont_have_cellular_data_or_have_devices_on_your_local_network__would_you_like_to_go_to_the_settings_page_to_set__always_keep_wifi_on_during_sleep));
+        if (Build.VERSION.SDK_INT < 33) {      // setting removed after android 12
+            if (!JoH.getWifiSleepPolicyNever()) {
+                if (JoH.ratelimit("policy-never", 3600)) {
+                    if (Pref.getLong("wifi_warning_never", 0) == 0) {
+                        if (!JoH.isMobileDataOrEthernetConnected()) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                            builder.setTitle(gs(R.string.wifi_sleep_policy_issue));
+                            builder.setMessage(gs(R.string.your_wifi_is_set_to_sleep_when_the_phone_screen_is_off__this_may_cause_problems_if_you_dont_have_cellular_data_or_have_devices_on_your_local_network__would_you_like_to_go_to_the_settings_page_to_set__always_keep_wifi_on_during_sleep));
 
-                        builder.setNeutralButton(gs(R.string.maybe_later), (dialog, which) -> dialog.dismiss());
+                            builder.setNeutralButton(gs(R.string.maybe_later), (dialog, which) -> dialog.dismiss());
 
-                        builder.setPositiveButton(gs(R.string.yes_do_it), (dialog, which) -> {
-                            dialog.dismiss();
-                            toast(gs(R.string.recommend_that_you_change_wifi_to_always_be_on_during_sleep));
-                            try {
-                                startActivity(new Intent(Settings.ACTION_WIFI_IP_SETTINGS));
-                            } catch (ActivityNotFoundException e) {
-                                JoH.static_toast_long(gs(R.string.ooops_this_device_doesnt_seem_to_have_a_wifi_settings_page));
-                            }
-                        });
+                            builder.setPositiveButton(gs(R.string.yes_do_it), (dialog, which) -> {
+                                dialog.dismiss();
+                                toast(gs(R.string.recommend_that_you_change_wifi_to_always_be_on_during_sleep));
+                                try {
+                                    startActivity(new Intent(Settings.ACTION_WIFI_IP_SETTINGS));
+                                } catch (ActivityNotFoundException e) {
+                                    JoH.static_toast_long(gs(R.string.ooops_this_device_doesnt_seem_to_have_a_wifi_settings_page));
+                                }
+                            });
 
-                        builder.setNegativeButton(R.string.no_never, (dialog, which) -> {
-                            dialog.dismiss();
-                            Pref.setLong("wifi_warning_never", (long) JoH.ts());
-                        });
+                            builder.setNegativeButton(R.string.no_never, (dialog, which) -> {
+                                dialog.dismiss();
+                                Pref.setLong("wifi_warning_never", (long) JoH.ts());
+                            });
 
-                        AlertDialog alert = builder.create();
-                        alert.show();
+                            AlertDialog alert = builder.create();
+                            alert.show();
+                        }
                     }
                 }
             }
@@ -2354,7 +2356,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         final StepCounter pm = StepCounter.last();
         final boolean use_pebble_health = Pref.getBoolean("use_pebble_health", true);
         if ((use_pebble_health) && (pm != null)) {
-            stepsButton.setText(Integer.toString(pm.metric));
+            stepsButton.setText(Integer.toString(StepCounter.getDailyTotal()));
             stepsButton.setVisibility(View.VISIBLE);
             // TODO this can be done with PrefsView binding
             stepsButton.setAlpha(Pref.getBoolean("show_pebble_movement_line", true) ? 1.0f : 0.3f);
