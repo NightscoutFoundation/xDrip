@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <string name="title_activity_bluetooth_scan">Bluetooth Scan</string>
@@ -1697,8 +1697,8 @@
     </plurals>
     <string name="external_status_strings_eg_tbr">External status strings, eg TBR from AAPS</string>
     <string name="accept_external_status">Accept External Status</string>
-    <string translatable="false" name="summary_dex_specified_slot">Specify transmitter slot manually, setting this incorrectly will prevent any readings being received.</string>
-    <string translatable="false" name="title_dex_specified_slot">Manual Slot Number</string>
+    <string name="summary_dex_specified_slot" translatable="false">Specify transmitter slot manually, setting this incorrectly will prevent any readings being received.</string>
+    <string name="title_dex_specified_slot" translatable="false">Manual Slot Number</string>
     <string name="cancel_by_default">Cancel by default</string>
     <string name="old">Old</string>
     <string name="neww">New</string>
@@ -1801,4 +1801,5 @@
     <string name="format_string_ago">%s ago</string>
     <string name="use_background_scans">Use Background Scans</string>
     <string name="android_8_background_scanning">Use Android 8+ background scanning feature</string>
+    <string name="close">Close</string>
 </resources>
