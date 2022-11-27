@@ -1165,10 +1165,13 @@ public class DexCollectionService extends Service implements BtCallBack {
                 android.bluetooth.BluetoothDevice.class,
                 android.bluetooth.BluetoothGattService.class
         );
-
         final IntentFilter pairingRequestFilter = new IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST);
         pairingRequestFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY - 1);
-        registerReceiver(mPairingRequestRecevier, pairingRequestFilter);
+        if (Build.VERSION.SDK_INT < 26) {
+            registerReceiver(mPairingRequestRecevier, pairingRequestFilter);
+        } else {
+            Log.d(TAG, "Not starting pairing request receiver on android 8+");
+        }
         Log.i(TAG, "onCreate: STARTING SERVICE: pin code: " + DEFAULT_BT_PIN);
 
         Blukon.unBondIfBlukonAtInit();
