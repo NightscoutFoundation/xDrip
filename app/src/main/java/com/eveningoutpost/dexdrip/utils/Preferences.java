@@ -91,6 +91,8 @@ import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollow;
 import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
 import com.eveningoutpost.dexdrip.cgm.webfollow.Cpref;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.CareLinkFollowService;
+import com.eveningoutpost.dexdrip.healthconnect.HealthConnectEntry;
+import com.eveningoutpost.dexdrip.healthconnect.HealthGamut;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
 import com.eveningoutpost.dexdrip.tidepool.TidepoolUploader;
@@ -309,6 +311,17 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Constants.HEALTH_CONNECT_RESPONSE_ID) {
+            if (HealthConnectEntry.enabled()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    if (JoH.ratelimit("health-connect-bump", 2)) {
+                        HealthGamut.init(this);
+                    }
+                }
+            }
+        }
+
+
         IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         if (scanResult == null || scanResult.getContents() == null) {
@@ -1947,6 +1960,20 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             } catch (Exception e) {
                 //
             }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                try {
+                    findPreference("health_connect_enable").setOnPreferenceChangeListener((preference, newValue) -> {
+                        if ((Boolean) newValue) {
+                            Inevitable.task("check-health-connect", 300, () -> HealthGamut.init(getActivity()));
+                        }
+                        return true;
+                    });
+                } catch (Exception e) {
+                    //
+                }
+            }
+
 
             bindPreferenceSummaryToValue(collectionMethod);
             bindPreferenceSummaryToValue(shareKey);
