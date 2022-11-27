@@ -1296,7 +1296,7 @@
     <string name="title_clfollow_missed_poll_interval">Abrufintervall für verpasste Daten</string>
     <string name="summary_clfollow_missed_poll_interval">Abrufintervall nach verpassten Daten in Minuten</string>
     <string name="title_clfollow_download_finger_bgs">BZ blutig gemessen</string>
-    <string name="summary_clfollow_download_finger_bgs">Blutige BZ Werte von CareLink herunterladen</string>
+    <string name="summary_clfollow_download_finger_bgs">Blutige BZ-Werte von CareLink herunterladen</string>
     <string name="title_clfollow_download_boluses">Boli</string>
     <string name="summary_clfollow_download_boluses">Boli von CareLink herunterladen</string>
     <string name="title_clfollow_download_meals">Mahlzeiten</string>
