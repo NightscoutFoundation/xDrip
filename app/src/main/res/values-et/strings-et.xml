@@ -1753,4 +1753,5 @@
     <string name="format_string_ago">%s tagasi</string>
     <string name="use_background_scans">Kasuta automaatset skaneerimist</string>
     <string name="android_8_background_scanning">Kasuta Android 8+ automaatse skaneerimise funktsiooni</string>
+    <string name="close">Sulge</string>
 </resources>
