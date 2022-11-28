@@ -1634,4 +1634,5 @@
     <string name="restoring_backup_will_erase_warning">Przywracanie kopii zapasowej usunie Twoje bieżące ustawienia i dane z kopii zapasowej.\n\nCzy na pewno chcesz to zrobić?</string>
     <string name="this_backup_looks_like_came_from_different_format_string">Ta kopia zapasowa wygląda jakby pochodziła z innego urządzenia:\n%s\nCzy na pewno chcesz przywrócić z tej kopii zapasowej?</string>
     <string name="megabyte_format_string">%.1f MB</string>
+    <string name="close">Zamknij</string>
 </resources>
