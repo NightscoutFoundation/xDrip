@@ -1753,4 +1753,5 @@
     <string name="format_string_ago">vor %s</string>
     <string name="use_background_scans">Scan im Hintergrund ausführen</string>
     <string name="android_8_background_scanning">Hintergrundscan von Android 8+ nutzen</string>
+    <string name="close">Schließen</string>
 </resources>
