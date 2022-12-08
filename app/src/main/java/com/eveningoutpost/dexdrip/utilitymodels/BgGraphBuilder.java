@@ -743,8 +743,8 @@ public class BgGraphBuilder {
         }
         for (Line lline : previewLineData.getLines()) {
             if (((lline.getPointRadius() == pluginSize) && (lline.getPointColor() == getCol(X.color_secondary_glucose_value)))
-                    || (lline.getColor() == getCol(X.color_step_counter1) || (lline.getColor() == getCol(X.color_step_counter2) ||  (lline.getColor() == getCol(X.color_heart_rate1) ||
-                    (lline.getColor()== getCol(X.color_heart_rate1))||(lline.getColor()== getCol(X.color_basal_tbr) && lline.hasLabels()==true)))) {
+                    || ((lline.getColor() == getCol(X.color_step_counter1) || (lline.getColor() == getCol(X.color_step_counter2) || (lline.getColor() == getCol(X.color_heart_rate1))))
+                    || (lline.getColor()== getCol(X.color_basal_tbr) && lline.hasLabels()==true))) {
                 removeItems.add(lline); // remove plugin or step counter plot from preview graph
             }
 
@@ -790,7 +790,7 @@ public class BgGraphBuilder {
                 lines.addAll(heartLines());
                 lines.addAll(stepsLines());
                 lines.addAll(predictiveLines());
-                if (prefs.getBoolean("status_line_openaps", false)) {
+                if (prefs.getBoolean("status_line_openaps", true)) {
                     lines.addAll(nsBasalLines());
                 }
             }
