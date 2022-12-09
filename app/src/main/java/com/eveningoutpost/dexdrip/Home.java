@@ -330,8 +330,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private static Activity mActivity;
 
     @Getter
-    private static String statusIOB = "";
-    private static String statusBWP = "";
+    private volatile static String statusIOB = "";
+    private volatile static String statusBWP = "";
 
 
     @SuppressLint("ObsoleteSdkInt")
@@ -673,7 +673,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     private void refreshStatusLine() {
         try {
-            String status = ((statusIOB.length() > 0) ? ("IoB: " + statusIOB) : "")
+            final String status = ((statusIOB.length() > 0) ? ("IoB: " + statusIOB) : "")
                     + ((statusBWP.length() > 0) ? (" " + statusBWP) : "");
             Log.d(TAG, "Refresh Status Line: " + status);
             //if (status.length() > 0) {
