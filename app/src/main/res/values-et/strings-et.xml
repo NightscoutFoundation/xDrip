@@ -346,7 +346,7 @@
     <string name="disable_all_alerts">Keela kõik alarmid</string>
     <string name="re_enable_all_alerts">Lubage taas kõik alarmid</string>
     <string name="alert_snoozed_by_watch">Kell vaigistab alarmi</string>
-    <string name="update_channel_colon_space">"Uuenda kanalit: "</string>
+    <string name="update_channel_colon_space">"Värskenduste kanal: "</string>
     <string name="a_new_version_is_available">Uus versioon saadaval</string>
     <string name="version_details">Versiooni üksikasjad</string>
     <string name="download_now">Lae kohe alla</string>
