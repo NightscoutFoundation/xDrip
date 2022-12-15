@@ -39,8 +39,8 @@ public abstract class BackupBaseActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_SIGN_IN) {
             UserError.Log.i(TAG, "Received sign in result code: " + resultCode);
-            if (resultCode == RESULT_OK) {
-                UserError.Log.i(TAG, "Signed in successfully.");
+            if (resultCode == RESULT_OK ||resultCode == RESULT_CANCELED ) {
+                UserError.Log.i(TAG, "Signed in successfully. resultCode = "+ resultCode);
                 processRunnable();
             } else {
                 UserError.Log.w(TAG, "Unable to sign in, result code: " + resultCode);
