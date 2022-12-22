@@ -65,6 +65,8 @@ public interface Intents {
 
     String LIBRE2_BG = "com.librelink.app.ThirdPartyIntegration.GLUCOSE_READING";
     String LIBRE2_ACTIVATION = "com.librelink.app.ThirdPartyIntegration.SENSOR_ACTIVATE";
+    String LIBRE2_SCAN = "com.librelink.app.ThirdPartyIntegration.SENSOR_SCAN";
+    String LIBRE2_CONNECTION = "com.librelink.app.ThirdPartyIntegration.CONNECTION_STATE";
 
 
     // oop 2 

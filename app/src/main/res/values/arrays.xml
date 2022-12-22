@@ -7,19 +7,21 @@
         <item>Wifi Wixel + BT Wixel</item>
         <item>Wifi Wixel + xBridge Wixel</item>
         <item>G4 Share Receiver</item>
-        <item>G5/G6 Transmitter</item>
+        <item>G5/G6/Dex1 Transmitter</item>
         <item>Libre Bluetooth</item>
         <item>Libre Bluetooth + wifi</item>
         <item>Libre wifi</item>
         <item>xDrip+ Sync Follower</item>
         <item>LibreAlarm</item>
-        <item>Libre2 (patched App)</item>
+        <item>Libre (patched App)</item>
         <item>640G / EverSense</item>
         <item>Medtrum A6</item>
         <item>Nightscout Follower</item>
         <item>Dex Share Follower</item>
         <item>Web Follower</item>
-        <item>Companion (Testing)</item>
+        <item>Companion App</item>
+        <item>GlucoRx/Aidex App</item>
+        <item>CareLink Follower</item>
         <item>Disable Collection</item>
     </string-array>
 
@@ -43,6 +45,8 @@
         <item>SHFollower</item>
         <item>WebFollower</item>
         <item>UiBased</item>
+        <item>AidexReceiver</item>
+        <item>CLFollower</item>
         <item>Disabled</item>
     </string-array>
 
@@ -230,6 +234,240 @@
         <item>AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK</item>
         <item>AUDIOFOCUS_GAIN_TRANSIENT</item>
         <item>AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE</item>
+    </string-array>
+
+    <string-array name="carelinkCountryEntries">
+        <item>Albania</item>
+        <item>Algeria</item>
+        <item>Argentina</item>
+        <item>Armenia</item>
+        <item>Aruba</item>
+        <item>Australia</item>
+        <item>Austria</item>
+        <item>Azerbaijan</item>
+        <item>Bahamas</item>
+        <item>Bahrain</item>
+        <item>Barbados</item>
+        <item>Belarus</item>
+        <item>Belgium</item>
+        <item>Bermuda</item>
+        <item>Bolivia</item>
+        <item>Bosnia and Herzegovina</item>
+        <item>Brazil</item>
+        <item>Bulgaria</item>
+        <item>Cambodia</item>
+        <item>Canada</item>
+        <item>Cayman Islands</item>
+        <item>Chile</item>
+        <item>China</item>
+        <item>Colombia</item>
+        <item>Costa Rica</item>
+        <item>Croatia</item>
+        <item>Curacao</item>
+        <item>Cyprus</item>
+        <item>Czech Republic</item>
+        <item>Denmark</item>
+        <item>Dominican Republic</item>
+        <item>Ecuador</item>
+        <item>Egypt</item>
+        <item>El Salvador</item>
+        <item>Estonia</item>
+        <item>Finland</item>
+        <item>France</item>
+        <item>Georgia</item>
+        <item>Germany</item>
+        <item>Greece</item>
+        <item>Guatemala</item>
+        <item>Honduras</item>
+        <item>Hong Kong</item>
+        <item>Hungary</item>
+        <item>Iceland</item>
+        <item>India</item>
+        <item>Indonesia</item>
+        <item>Iran</item>
+        <item>Iraq</item>
+        <item>Ireland</item>
+        <item>Israel</item>
+        <item>Italy</item>
+        <item>Japan</item>
+        <item>Jordan</item>
+        <item>Kosovo</item>
+        <item>Kuwait</item>
+        <item>Latvia</item>
+        <item>Lebanon</item>
+        <item>Libya</item>
+        <item>Lithuania</item>
+        <item>Luxembourg</item>
+        <item>Macau</item>
+        <item>Macedonia</item>
+        <item>Malaysia</item>
+        <item>Maldives</item>
+        <item>Malta</item>
+        <item>Mauritius</item>
+        <item>Mayotte</item>
+        <item>Mexico</item>
+        <item>Moldova</item>
+        <item>Montenegro</item>
+        <item>Morocco</item>
+        <item>Namibia</item>
+        <item>Netherlands</item>
+        <item>New Caledonia</item>
+        <item>New Zealand</item>
+        <item>Nicaragua</item>
+        <item>Nigeria</item>
+        <item>Norway</item>
+        <item>Oman</item>
+        <item>Pakistan</item>
+        <item>Panama</item>
+        <item>Paraguay</item>
+        <item>Peru</item>
+        <item>Philippines</item>
+        <item>Poland</item>
+        <item>Portugal</item>
+        <item>Puerto Rico</item>
+        <item>Qatar</item>
+        <item>Romania</item>
+        <item>Russia</item>
+        <item>Saudi Arabia</item>
+        <item>Serbia</item>
+        <item>Singapore</item>
+        <item>Slovakia</item>
+        <item>Slovenia</item>
+        <item>South Africa</item>
+        <item>South Korea</item>
+        <item>Spain</item>
+        <item>St Martin</item>
+        <item>Sudan</item>
+        <item>Sweden</item>
+        <item>Switzerland</item>
+        <item>Taiwan</item>
+        <item>Thailand</item>
+        <item>Tunisia</item>
+        <item>Turkey</item>
+        <item>Ukraine</item>
+        <item>United Arab Emirates</item>
+        <item>United Kingdom</item>
+        <item>United States</item>
+        <item>Uruguay</item>
+        <item>Venezuela</item>
+        <item>Vietnam</item>
+    </string-array>
+
+    <string-array name="carelinkCountryValues">
+        <item>al</item>
+        <item>dz</item>
+        <item>ar</item>
+        <item>am</item>
+        <item>aw</item>
+        <item>au</item>
+        <item>at</item>
+        <item>az</item>
+        <item>bs</item>
+        <item>bh</item>
+        <item>bb</item>
+        <item>by</item>
+        <item>be</item>
+        <item>bm</item>
+        <item>bo</item>
+        <item>ba</item>
+        <item>br</item>
+        <item>bg</item>
+        <item>kh</item>
+        <item>ca</item>
+        <item>ky</item>
+        <item>cl</item>
+        <item>cn</item>
+        <item>co</item>
+        <item>cr</item>
+        <item>hr</item>
+        <item>cw</item>
+        <item>cy</item>
+        <item>cz</item>
+        <item>dk</item>
+        <item>do</item>
+        <item>ec</item>
+        <item>eg</item>
+        <item>sv</item>
+        <item>ee</item>
+        <item>fi</item>
+        <item>fr</item>
+        <item>ge</item>
+        <item>de</item>
+        <item>gr</item>
+        <item>gt</item>
+        <item>hn</item>
+        <item>hk</item>
+        <item>hu</item>
+        <item>is</item>
+        <item>in</item>
+        <item>id</item>
+        <item>ir</item>
+        <item>iq</item>
+        <item>ie</item>
+        <item>il</item>
+        <item>it</item>
+        <item>jp</item>
+        <item>jo</item>
+        <item>xk</item>
+        <item>kw</item>
+        <item>lv</item>
+        <item>lb</item>
+        <item>ly</item>
+        <item>lt</item>
+        <item>lu</item>
+        <item>mo</item>
+        <item>mk</item>
+        <item>my</item>
+        <item>mv</item>
+        <item>mt</item>
+        <item>mu</item>
+        <item>yt</item>
+        <item>mx</item>
+        <item>md</item>
+        <item>me</item>
+        <item>ma</item>
+        <item>na</item>
+        <item>nl</item>
+        <item>nc</item>
+        <item>nz</item>
+        <item>ni</item>
+        <item>ng</item>
+        <item>no</item>
+        <item>om</item>
+        <item>pk</item>
+        <item>pa</item>
+        <item>py</item>
+        <item>pe</item>
+        <item>ph</item>
+        <item>pl</item>
+        <item>pt</item>
+        <item>pr</item>
+        <item>qa</item>
+        <item>ro</item>
+        <item>ru</item>
+        <item>sa</item>
+        <item>rs</item>
+        <item>sg</item>
+        <item>sk</item>
+        <item>si</item>
+        <item>za</item>
+        <item>kr</item>
+        <item>es</item>
+        <item>mf</item>
+        <item>sd</item>
+        <item>se</item>
+        <item>ch</item>
+        <item>tw</item>
+        <item>th</item>
+        <item>tn</item>
+        <item>tr</item>
+        <item>ua</item>
+        <item>ae</item>
+        <item>gb</item>
+        <item>us</item>
+        <item>uy</item>
+        <item>ve</item>
+        <item>vn</item>
     </string-array>
 
 </resources>

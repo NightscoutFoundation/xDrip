@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <string name="title_activity_bluetooth_scan">Bluetooth Scan</string>
@@ -629,7 +629,7 @@
     <string name="reset_bluetooth">Reset Bluetooth by turning it off and on if we don\'t get anything in 20 minutes</string>
     <string name="bluetooth_watchdog">Bluetooth Watchdog</string>
     <string name="reset_bluetooth_g5">Reset Bluetooth by turning it off and on as a way to keep the G5 data source working. Without this the G5 collector may fail.</string>
-    <string name="g5_bluetooth_watchdog">G5 Bluetooth Watchdog</string>
+    <string name="g5_bluetooth_watchdog">Dex Bluetooth Watchdog</string>
     <string name="close_gatt">If the Bluetooth watchdog activates often then you can try unchecking this option to see if it helps</string>
     <string name="older_bluetooth_wakelocks">Older Bluetooth wakelocks which can drain extra battery but might be needed for Bluetooth reception</string>
     <string name="reset_bluetooth_on_off">Reset Bluetooth by turning it off and on every few minutes! Only select if you are testing. It may disrupt anything else using Bluetooth.</string>
@@ -726,12 +726,12 @@
     <string name="low_level_value">Low level diagnostic/prototype value</string>
     <string name="transmitter_id">ID of your Dexcom Transmitter, e.g. 12AB3</string>
     <string name="advanced_g5_settings">Advanced G5 settings for rare situations</string>
-    <string name="g5_debug_settings">G5/G6 Debug Settings</string>
+    <string name="g5_debug_settings">G5/G6/Dex1 Debug Settings</string>
     <string name="g5_scan_constantly">Some devices work better when scanning constantly, others do not. If reading is reliable when this setting is not selected, you should have improved battery life. Normally best to keep this disabled</string>
     <string name="scan_for_g5_constantly">Scan for G5 constantly</string>
     <string name="g5_force_ui_thread">This is crucial for some Android devices to properly connect, but can cause missed readings when other UI intensive activities are in use.</string>
     <string name="force_g5_ui_thread">Force G5 to UI Thread</string>
-    <string name="authentificate_before_reading">Authenticate G5 before each read</string>
+    <string name="authentificate_before_reading">Authenticate before each read</string>
     <string name="g5_full_authentification">This will attempt a full authentication each read attempt. Needed for newer G5 transmitter firmware versions.</string>
     <string name="unbond_g5_before_read">Unbond G5 before each read</string>
     <string name="g5_remove_before_read">This will remove the G5 from your device\'s paired device list, and attempt a full authentication and bonding with each read attempt.</string>
@@ -1329,6 +1329,26 @@
     <string name="title_nsfollow_url">Nightscout Follow URL</string>
     <string name="summary_nsfollow_download_treatments">Also download treatments from Nightscout as follower</string>
     <string name="title_nsfollow_download_treatments">Download Treatments</string>
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    <string name="title_clfollow_country">CareLink Country</string>
+    <string name="summary_clfollow_country">Select your CareLink country.</string>
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    <string name="title_clfollow_grace_period">Grace Period</string>
+    <string name="summary_clfollow_grace_period">Grace period for data request in seconds</string>
+    <string name="title_clfollow_missed_poll_interval">Missed data poll interval</string>
+    <string name="summary_clfollow_missed_poll_interval">Polling interval after missed data in minutes</string>
+    <string name="title_clfollow_download_finger_bgs">Finger BGs</string>
+    <string name="summary_clfollow_download_finger_bgs">Download finger BGs from CareLink</string>
+    <string name="title_clfollow_download_boluses">Boluses</string>
+    <string name="summary_clfollow_download_boluses">Download boluses from CareLink</string>
+    <string name="title_clfollow_download_meals">Meals</string>
+    <string name="summary_clfollow_download_meals">Download meals from CareLink</string>
+    <string name="title_clfollow_download_notifications">Notifications</string>
+    <string name="summary_clfollow_download_notifications">Download notifications from CareLink</string>
     <string name="title_ob1_options">OB1 G5/G6 Collector Settings</string>
     <string name="summary_use_ob1_g5_collector_service">Complete re-write, should work on Android 4.4 - 9, supports native mode and more</string>
     <string name="title_use_ob1_g5_collector_service">Use the OB1 Collector</string>
@@ -1344,8 +1364,8 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Fallback to xDrip</string>
     <string name="summary_ob1_minimize_scanning">Use heuristics to minimize Bluetooth scanning + save power</string>
     <string name="title_ob1_minimize_scanning">Minimize Scanning</string>
-    <string name="summary_using_g6">I am using a G6 Sensor</string>
-    <string name="title_using_g6">G6 Support</string>
+    <string name="summary_using_g6">I am using a G6 or Dexcom 1 Sensor</string>
+    <string name="title_using_g6">G6/Dex1 Support</string>
     <string name="summary_ob1_g5_allow_resetbond">OB1 collector can unbond if it thinks the encryption has failed. If you get problems with it unpairing then disable this option. If you then totally lose connection, make sure this is enabled.</string>
     <string name="title_ob1_g5_allow_resetbond">Allow OB1 unbonding</string>
     <string name="summary_ob1_initiate_bonding_flag">OB1 collector can initiate bonding.</string>
@@ -1620,8 +1640,6 @@
     <string name="enable_streaming_dialog_dont_ask_again">Don\'t ask me that again</string>
     <string name="enable_streaming_dialog_text">Do you want to connect xDrip with this sensor? This will stop Libre reader and LibreLink from receiving alerts. Press yes and scan again to connect (choose don\'t connect if you want to run xDrip with the patched app)</string>
     <string name="enable_streaming_dialog_title">Connecting Libre sensor to Bluetooth</string>
-    <string name="title_lower_fuzzer">Lower FUZZER</string>
-    <string name="summary_lower_fuzzer">Lower the FUZZER value from 2.5 minutes to 37.5 seconds</string>
     <string name="without_camera_permission_cannot_scan_barcode">Without camera permission we cannot scan a barcode</string>
     <string name="summary_create_missing_filtered">Make filtered data as needed</string>
     <string name="title_create_missing_filtered">Create missing filtered</string>
@@ -1679,8 +1697,8 @@
     </plurals>
     <string name="external_status_strings_eg_tbr">External status strings, eg TBR from AAPS</string>
     <string name="accept_external_status">Accept External Status</string>
-    <string translatable="false" name="summary_dex_specified_slot">Specify transmitter slot manually, setting this incorrectly will prevent any readings being received.</string>
-    <string translatable="false" name="title_dex_specified_slot">Manual Slot Number</string>
+    <string name="summary_dex_specified_slot" translatable="false">Specify transmitter slot manually, setting this incorrectly will prevent any readings being received.</string>
+    <string name="title_dex_specified_slot" translatable="false">Manual Slot Number</string>
     <string name="cancel_by_default">Cancel by default</string>
     <string name="old">Old</string>
     <string name="neww">New</string>
@@ -1709,5 +1727,79 @@
     <string name="source_wizard_button">Source Wizard Button</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Please wait %d seconds before trying to start sensor</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">please update OOP2 or move to calibrate based on raw mode</string>
+    <string name="reminder">Reminder</string>
+    <string name="notification">Notification</string>
+    <string name="TX_EOL_reminder">When Transmitter Days on system status page reaches %1$d, it will be the last opportunity to start a sensor on this transmitter. Currently at %2$d days.</string>
+    <string name="TX_EOL_notification">If you proceed and start sensor, it is very likely it will fail because of Transmitter Days having reached maximum.</string>
+    <string name="TX_EOL_reminder_mod">Transmitter Days is approaching maximum. Soon, you will not be able to start sensors on this transmitter. Currently at %d days.</string>
+    <string name="proceed">Proceed</string>
     <string name="special_pairing_workaround">Special Pairing Workaround</string>
+    <string name="save_power">Save Power</string>
+    <string name="reduce_battery_and_network_overhead">Reduce battery and network overhead by using batch processing and excluding unnecessary data</string>
+    <string name="simplify_graphs_by_smoothing_out_irregularities">Simplify graphs by smoothing out irregularities</string>
+    <string name="graph_smoothing">Graph Smoothing</string>
+    <string name="last_reading">Last Reading</string>
+    <string name="select_file_for_alert">Select File for Alert</string>
+    <string name="cannot_choose_file_without_permission">Cannot choose file without storage permission</string>
+    <string name="select_time">Select Time</string>
+    <string name="select_tone_for_alerts">Select tone for Alerts</string>
+    <string name="show_unsmoothed">Show unsmoothed</string>
+    <string name="show_unsmoothed_summary">Show unsmoothed data also if Graph Smoothing is enabled. If calibration plugin is used, will show unsmoothed data instead of plugin data.</string>
+    <string name="you_can_use_google_drive_for_backup">You can use Google Drive for backup</string>
+    <string name="select_backup_location">Select Backup Location</string>
+    <string name="do_backup_now">Do Backup Now</string>
+    <string name="automatic_daily_backup">Automatic daily backup</string>
+    <string name="restore_from_backup">Restore From Backup</string>
+    <string name="are_you_really_sure_question">Are you really sure?</string>
+    <string name="backup_source_confirm">Backup Source Confirm</string>
+    <string name="nothing_to_restore_please_select">Nothing to restore - please select location</string>
+    <string name="no_backup_location_set">No backup location set</string>
+    <string name="backing_up">Backing up</string>
+    <string name="did_backup_ok">Did backup ok</string>
+    <string name="backup_failed">Backup failed</string>
+    <string name="automatically_manage_backup">Automatically Manage</string>
+    <string name="use_alternate_file">Use Alternate File</string>
+    <string name="choose_backup_file">Choose backup file</string>
+    <string name="select_alternate_file">Select alternate file</string>
+    <string name="change_account">Change account</string>
+    <string name="keep_same_account">Keep same account</string>
+    <string name="change_google_account">Change Google Account</string>
+    <string name="attempting_restore">Attempting Restore</string>
+    <string name="restore_succeeded_restarting">Restore succeeded - restarting app</string>
+    <string name="restore_failed">Restore FAILED!</string>
+    <string name="error_exclamation">Error!</string>
+    <string name="checking_file">Checking file</string>
+    <string name="failed_to_read_file">Failed to read file</string>
+    <string name="permission_problem_retry">Permission problem - retry</string>
+    <string name="alternate_file_selected">Alternate file selected</string>
+    <string name="temporary_google_drive_file">Temporary Google Drive file</string>
+    <string name="no_file_was_chosen">No file was chosen</string>
+    <string name="could_not_sign_in">Could not sign in</string>
+    <string name="problem_with_file_selection">Problem with file selection</string>
+    <string name="selected_file_location">Selected file location</string>
+    <string name="please_reselect_backup_file">Please re-select backup file</string>
+    <string name="ready">Ready</string>
+    <string name="uploading_to_cloud">Uploading to cloud</string>
+    <string name="error_with_local_backup">Error with local backup</string>
+    <string name="upload_successful">Upload successful</string>
+    <string name="error_uploading_to_cloud">Error uploading to cloud</string>
+    <string name="creating_local_backup">Creating local backup</string>
+    <string name="output_error">Output error:</string>
+    <string name="security_error">Security error:</string>
+    <string name="please_grant_permission">Please grant permission</string>
+    <string name="drive_permission_blurb">To automatically back-up xDrip needs permission to use your Google Drive.\n\nxDrip developers cannot access any of your files or see your personal information.</string>
+    <string name="cloud_backup">Cloud Backup</string>
+    <string name="select_automatic_or_select_alternate">Select Automatic for xDrip to manage files in Google Drive or select an alternate specific file to use if you need to restore from elsewhere.</string>
+    <string name="restoring_backup_will_erase_warning">Restoring a backup will erase your current settings and data with that from the backup.\n\nAre you absolutely sure you wish to do this?</string>
+    <string name="this_backup_looks_like_came_from_different_format_string">This backup looks like it came from a different device:\n%s\nAre you sure you wish to restore from this backup?</string>
+    <string name="megabyte_format_string">%.1f MB</string>
+    <string name="manual_selection_google_drive_file_warning">You have selected a file from Google Drive, but this is not automatically managed by xDrip so it can only be used for manual backups and restoring.\n\nNo automatic backing up will occur with this file.\n\nContinue?</string>
+    <string name="alternate_file_selected_warning">You have selected an alternate file. Typically this would just be to restore from a locally stored backup.\n\nNo automatic backing up will occur with this file.\n\nContinue?</string>
+    <string name="backup_file_security_error_advice">Backup file is reporting security error. Normally this means you have to re-select it to continue to allow xDrip access.</string>
+    <string name="invalid_time">Invalid time</string>
+    <string name="none">none</string>
+    <string name="format_string_ago">%s ago</string>
+    <string name="use_background_scans">Use Background Scans</string>
+    <string name="android_8_background_scanning">Use Android 8+ background scanning feature</string>
+    <string name="close">Close</string>
 </resources>

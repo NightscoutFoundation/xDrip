@@ -2,6 +2,8 @@ package com.eveningoutpost.dexdrip.G5Model;
 
 // created by jamorham
 
+import static com.eveningoutpost.dexdrip.G5Model.DexTimeKeeper.fromDexTimeCached;
+
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -15,13 +17,12 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import static com.eveningoutpost.dexdrip.G5Model.DexTimeKeeper.fromDexTimeCached;
-
 public class BackFillStream extends BaseMessage {
 
-    private int last_sequence = 0;
+    private volatile int last_sequence = 0;
+    private volatile boolean locked = false;
 
-    BackFillStream() {
+    public BackFillStream() {
         data = ByteBuffer.allocate(1000);
         data.order(ByteOrder.LITTLE_ENDIAN);
     }
@@ -45,18 +46,53 @@ public class BackFillStream extends BaseMessage {
         }
     }
 
+    public synchronized void pushNew(final byte[] packet) {
+        if (packet == null) return;
+        if (locked) {
+            UserError.Log.d(TAG, "Locked stream so ignoring");
+            return;
+        }
+        if (packet.length == 9) {
+            last_sequence = -1;
+            data.put(packet);
+        } else {
+            if (last_sequence == 0) {
+                if (packet.length > 17) {
+                    if (packet[5] != 0x00 || packet[9] != 0x00 || packet[17] != 0x00) {
+                        UserError.Log.d(TAG, "Non backfill data received - locking stream");
+                        locked = true;
+                        return;
+                    }
+                }
+            }
+            push(packet);
+        }
+    }
+
+    public void reset() {
+        data.clear();
+        last_sequence = 0;
+        locked = false;
+    }
+
+
     public List<Backsie> decode() {
         final List<Backsie> backsies = new LinkedList<>();
 
         int extent = data.position();
         data.rewind();
-        final int length = data.getInt();
+        if (last_sequence >= 0) {
+            final int length = data.getInt();
+        }
         // TODO check length
         try {
             while (data.position() < extent) {
                 final int dexTime = data.getInt();
                 final int glucose = data.getShort();
                 final byte type = data.get();
+                if (last_sequence < 0) {
+                    final byte extra = data.get();
+                }
                 final byte trend = data.get();
 
                 final CalibrationState state = CalibrationState.parse(type);

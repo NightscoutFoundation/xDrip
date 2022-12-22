@@ -798,12 +798,23 @@
     <string name="confirm_remote_snooze">Potvrdiť vzdialené stíšenie</string>
     <string name="are_you_sure_you_wish_to_snooze_all_other_devices_in_your_sync_group">Si istý, že chceš utíšiť všetky ostatné zariadenia v tvojej synchronizačnej skupine?</string>
     <string name="yes_send_it">ÁNO, odoslať!</string>
+    <string name="movement_detection_and_vehicle_mode">Rozpoznanie pohybu a režim v aute</string>
     <string name="xdrip_motion_tracking">xDrip+ Pohybová Aktivita</string>
     <string name="detect_motion_types">Používať senzory na rozoznanie typu pohybu</string>
     <string name="enable_motion_tracking">Sledovať pohybovú aktivitu</string>
+    <string name="display_motion_types">Zaznamená pohybvú aktivitu a zobrazí ju v hlavnom grafe</string>
+    <string name="log_and_plot_motion">Záznam a zobrazenie pohybu</string>
+    <string name="use_remote_motion_data">Údaje o pohybe z vonkajšieho senzora namiesto lokálnej detekcie</string>
+    <string name="use_remote_motion">Vonkajší senzor pohybu</string>
     <string name="be_motion_master">Hlavné zariadenie sledovania pohybovej aktivity aj keď je nasledovníkom. Zapni len na jednom!</string>
     <string name="act_as_motion_master">Byť zdrojom pohybu</string>
+    <string name="vehicle_motion_extras">Ak je zistené spojenie s automobilom, zapni extra funkcie</string>
+    <string name="enable_vehicle_mode">Zapni režim \"v automobile\"</string>
+    <string name="increase_low_alarms_vehicle_mode">Zvýš úroveň alarmu nízkej glykémie v \"AUTO\" režime</string>
+    <string name="raise_low_threshold">Zvýš úroveň nízkej glykémie</string>
+    <string name="notification_sound_vehicle_mode">Zvukové upozornenie pri detekcii \"AUTO\" režimu</string>
     <string name="play_sound">Prehrať zvuk</string>
+    <string name="repeat_notification_every_90_minutes">Opakovať upozornenie každých 90 minút v \"AUTO\" režime</string>
     <string name="repeat_sound">Zopakovať zvuk</string>
     <string name="blukon">BluCon</string>
     <string name="tomato">Tomato</string>
@@ -899,10 +910,14 @@
     <string name="test_message_sending">Test odoslania správy</string>
     <string name="d_selected_contacts_for_text_messages_format">%d vybraných kontaktov pre textové správy</string>
     <string name="xdrip_software_changed_format">xDrip verzia sa zmenila z %1$s na %2$s</string>
+    <string name="when_connected_to_the_audio_device_shown_below_switch_to_vehicle_mode">Aktivuj režim \"v automobile\" pri spojení s jedným z nasledovných audio zariadení.</string>
     <string name="select_device">Vyberte zariadenie</string>
+    <string name="tap_to_set_current_car_audio_device">Ťuknutím sa zobrazí zoznam spárovaných bluetooth audio zariadení</string>
     <string name="learn_current_car_audio">Naučiť sa rozoznať audio v aute</string>
-    <string name="automatically_enable_when_connected_to_car_bluetooth">Automaticky povoľ mód automobilu, keď je pripojené k bluetooth v aute</string>
-    <string name="bluetooth_watchdog_timers">BT watchdog</string>
+    <string name="detect_car_audio">Detekcia BT v aute</string>
+    <string name="automatically_enable_when_connected_to_car_bluetooth">Automaticky povoľ režim \"v automobile\", keď je pripojené bluetooth v aute</string>
+    <string name="enable_speak_readings_when_in_vehicle">Zapne funkciu vyslovenie glykémií v režime \"v automobile\"</string>
+    <string name="bluetooth_watchdog_timers">Nastavenie strážneho psa pre Bluetooth</string>
     <string name="bluetooth_watchdog_timer_sums">Zadaj hodnotu v minútach</string>
     <string name="sensor_is_still_warming_up_please_wait">Senzor sa ešte stále zahrieva, prosím počkaj</string>
     <string name="title_Accept_Calibrations">Potvrdiť kalibrácie</string>
@@ -913,6 +928,10 @@
     <string name="summary_Ask_for_a_second_optional_initial_calibration_blood_test">Požiadavka na druhú voliteľnú kalibráciu z kapilárnej krvi</string>
     <string name="title_Double_Calibrations">Dvojité kalibrácie</string>
     <string name="title_Bypass_quality_check">Preskočiť kontrolu kvality</string>
+    <string name="summary_Scan_before_connecting_on_xBridge_and_Libre_bluetooth">...pred pripojením s xBridge a Libre Bluetooth</string>
+    <string name="title_Use_scanning">Opätovne vyhľadaj...</string>
+    <string name="summary_Use_and_trust_Android_bluetooth_auto_connect_feature">Využi funkciu automatického pripojenia systému Android</string>
+    <string name="title_Trust_Auto_Connect">Dôveruj Auto-Connect</string>
     <string name="title_Glucose_Retention">Archív hodnôt</string>
     <string name="summary_Erase_data_older_than_this_many_days">Zmazať údaje staršie ako zadaný počet dní. 0 = nemazať žiadne údaje</string>
     <string name="title_Other_misc_options">Ďalšie možnosti</string>
@@ -1222,4 +1241,13 @@ Je nutné zakázať v prípade, že chcete používať xdrip cifreník. (Požado
     <string name="locked_time_period_always_used">Vždy sa použije uzamknutý rozsah času</string>
     <string name="show_time_buttons">Zobraziť tlačidlá času</string>
     <string name="source_wizard_button">Tlačidlo pomocníka výberu zdroja</string>
+    <string name="reminder">Pripomienka</string>
+    <string name="notification">Oznámenie</string>
+    <string name="TX_EOL_reminder">Keď počet dní vysielača na stavovej stránke dosiahne %1$d, bude to posledná šanca na spustenie nového senzoru na tomto vysielači. Momentálne je vysielač na %2$d dňoch.</string>
+    <string name="TX_EOL_notification">Ak sa rozhodnete pokračovať v spustení nového senzoru, je veľmi pravdepodobné, že sa to nepodarí nakoľko je dosiahnutý maximálny počet dní vysielača.</string>
+    <string name="TX_EOL_reminder_mod">Doba fungovania vysielača sa blížia ku koncu (momentálne %d dní). Onedlho nebude možné spustiť nový senzor na tomto vysielači.</string>
+    <string name="proceed">Pokračovať</string>
+    <string name="special_pairing_workaround">Špeciálne párovanie pre Samsung</string>
+    <string name="use_background_scans">Vyhľadávanie na pozadí</string>
+    <string name="android_8_background_scanning">Využije sa funkcia vyhľadávania na pozadí Android 8+</string>
 </resources>
