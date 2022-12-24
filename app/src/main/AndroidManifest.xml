@@ -299,6 +299,10 @@
             </intent-filter>
         </service>
 
+        <!-- below fixes regression bugs with google play services where it crashes if play is not installed on a device -->
+        <receiver android:name="com.google.android.gms.measurement.AppMeasurementReceiver" android:enabled="true" android:exported="false" tools:node="remove"/>
+        <service android:name="com.google.android.gms.measurement.AppMeasurementService" android:enabled="true" android:exported="false" tools:node="remove"/>
+
         <activity
             android:name=".stats.StatsActivity"
             android:configChanges="orientation|screenSize"
