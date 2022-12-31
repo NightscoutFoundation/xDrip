@@ -158,6 +158,23 @@ public class Sensor extends Model {
                 .executeSingle();
     }
 
+    public static Sensor restartSensor(String sensorUuid) {
+        Sensor sensor = getByUuid(sensorUuid);
+
+        sensor.stopped_at = 0;
+        UserError.Log.ueh("SENSOR", "Sensor restarted");
+        sensor.save();
+
+        Sensor currentSensor = currentSensor();
+        if (currentSensor != null) {
+            UserError.Log.wtf(TAG, "Failed to update sensor restart in database");
+        }
+        SensorSendQueue.addToQueue(currentSensor);
+        JoH.clearCache();
+
+        return currentSensor;
+    }
+
     public static Sensor getByUuid(String xDrip_sensor_uuid) {
         if(xDrip_sensor_uuid == null) {
             Log.e("SENSOR", "xDrip_sensor_uuid is null");

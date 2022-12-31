@@ -1043,6 +1043,10 @@
     <string name="summary_write_Battery_Information_for_additional_analytic">skriv Batteriinformation för ytterligare analys till fil. Vänligen använd endast detta, om du blir ombedd av en utvecklare!</string>
     <string name="title_Batterylog">Batterilogg</string>
     <string name="summary_Choose_to_display_the_bridge_battery_level">Välj att visa bryggans batterinivå</string>
+    <string name="title_Glucose_Retention">Glukosretention</string>
+    <string name="summary_Erase_data_older_than_this_many_days">Ta bort data äldre än så här många dagar. 0 = ta inte bort något</string>
+    <string name="title_Other_misc_options">Övriga inatällningar</string>
+    <string name="summary_allow_testing_with_dead_sensor">tillåt testning med en icke-fungerande sensor</string>
     <string name="next_in">nästa i</string>
     <string name="repeats_every">upprepas varje</string>
     <string name="next">nästa</string>
@@ -1106,4 +1110,30 @@
     <string name="source_wizard_button">Knapp för assistans källa</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Vänligen vänta %d sekunder innan du försöker starta sensorn</string>
     <string name="special_pairing_workaround">Temporär fix för enhetskoppling</string>
+    <string name="save_power">Spara Ström</string>
+    <string name="reduce_battery_and_network_overhead">Minska batteri- och nätverksanvändning genom batch-behandling och exkludera ickenödvändiga data</string>
+    <string name="simplify_graphs_by_smoothing_out_irregularities">Förenkla grafer genom att jämna ut avvikelser</string>
+    <string name="graph_smoothing">Grafutjämning</string>
+    <string name="last_reading">Senaste avläsning</string>
+    <string name="select_file_for_alert">Välj fil för larm</string>
+    <string name="cannot_choose_file_without_permission">Kan inte välja fil utan behörigheter för lagringsutrymme</string>
+    <string name="select_time">Välj Tid</string>
+    <string name="select_tone_for_alerts">Välj ljud för Larm</string>
+    <string name="show_unsmoothed">Visa ej-utjämnad</string>
+    <string name="show_unsmoothed_summary">Visa icke-utjämnad data om också Grafutjämning är aktiverad. Om kalibreringsplugin används, kommer icke-utjämnade data visas istället för plugindata.</string>
+    <string name="you_can_use_google_drive_for_backup">Du kan använda Google Drive för backup</string>
+    <string name="select_backup_location">Välj backup plats</string>
+    <string name="do_backup_now">Genomför backup nu</string>
+    <string name="automatic_daily_backup">Automatiska dagliga backuper</string>
+    <string name="restore_from_backup">Återställ från backup</string>
+    <string name="are_you_really_sure_question">Är du verkligen säker?</string>
+    <string name="backup_source_confirm">Bekräfta backupkälla</string>
+    <string name="nothing_to_restore_please_select">Inget att återställa - vänligen välj plats</string>
+    <string name="no_backup_location_set">Inge backupplats vald</string>
+    <string name="backing_up">Backar upp</string>
+    <string name="did_backup_ok">Genomförde backup ok</string>
+    <string name="backup_failed">Misslyckad backup</string>
+    <string name="automatically_manage_backup">Hantera automatiskt</string>
+    <string name="use_alternate_file">Använd alternativ fil</string>
+    <string name="choose_backup_file">Välj en backupfil</string>
 </resources>

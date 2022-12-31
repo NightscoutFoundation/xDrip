@@ -23,6 +23,7 @@ if (getGradle().getStartParameter().getTaskRequests().toString().contains("Relea
         variantMapsEnabled false
         uploadMapsForVariant ''
     }*/
+    apply plugin: 'com.google.android.gms.oss-licenses-plugin'
 }
 
 repositories {
@@ -67,7 +68,7 @@ def getLocalProperty(String propertyName) {
 }
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 31
 
     dexOptions {
         javaMaxHeapSize "3g"
@@ -90,7 +91,7 @@ android {
 
     defaultConfig {
         applicationId "com.eveningoutpost.dexdrip"
-        minSdkVersion 19
+        minSdkVersion 21
         // increasing target SDK version can cause compatibility issues with Android 7+
         //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 23
@@ -133,14 +134,31 @@ android {
     }
 
     lintOptions {
+        checkReleaseBuilds false
         disable 'MissingTranslation'
         disable 'ExtraTranslation'
     }
 
+    configurations {
+        all {
+            exclude group: 'commons-logging', module: 'commons-logging'
+            exclude group: 'org.apache.httpcomponents'
+        }
+    }
+
     packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/INDEX.LIST'
         exclude 'META-INF/NOTICE.md'
         exclude 'META-INF/LICENSE.md'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'org/apache/http/version.properties'
+        exclude 'org/apache/http/client/version.properties'
+        exclude 'META-INF/com.android.tools/proguard/coroutines.pro'
+        exclude 'META-INF/ASL2.0'
     }
 
     compileOptions {
@@ -235,12 +253,20 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:26.1.0'
     implementation 'com.android.support:cardview-v7:26.1.0'
     implementation 'com.android.support:preference-v7:26.1.0'
-    //implementation 'com.google.android.gms:play-services-drive:9.4.0'
-    implementation 'com.google.firebase:firebase-messaging:10.2.1'
-    implementation 'com.google.android.gms:play-services-maps:10.2.1'
-    implementation 'com.google.android.gms:play-services-wearable:10.2.1'
-    implementation 'com.google.android.gms:play-services-location:10.2.1'
-    implementation "com.google.android.gms:play-services-gcm:10.2.1"
+
+    implementation ('com.google.apis:google-api-services-drive:v3-rev20220815-2.0.0') {
+        exclude group: 'org.apache.httpcomponents'
+    }
+    implementation 'com.google.api-client:google-api-client-android:1.26.0'
+
+    implementation 'com.google.android.gms:play-services-auth:15.0.0'
+    implementation 'com.google.firebase:firebase-messaging:15.0.0'
+   // implementation 'com.google.android.gms:play-services-maps:15.0.0'
+    implementation 'com.google.android.gms:play-services-wearable:15.0.0'
+    implementation 'com.google.android.gms:play-services-location:15.0.0'
+    implementation "com.google.android.gms:play-services-gcm:15.0.0"
+    implementation "com.google.android.gms:play-services-oss-licenses:15.0.0"
+
     implementation 'com.squareup.wire:wire-runtime:2.2.0'
     implementation 'com.squareup.okhttp:okhttp:2.7.5'
     implementation 'com.squareup.okhttp3:okhttp:4.9.0'
@@ -255,6 +281,9 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
     implementation 'com.getpebble:pebblekit:3.1.0'
+    implementation ("androidx.health.connect:connect-client:1.0.0-alpha07") {
+        exclude group: 'androidx.core', module: 'core'
+    }
     implementation 'com.github.jamorham:amazfitcommunication:master-SNAPSHOT'
     implementation 'com.github.thegrizzlylabs:sardine-android:v0.8'
     implementation 'io.reactivex:rxjava:1.3.3'
@@ -283,6 +312,7 @@ dependencies {
     implementation(name: 'colorpicker', ext: 'aar')
     implementation(name: 'hellocharts-library-release', ext: 'aar')
     implementation(name: 'search-preference', ext: 'aar')
+    implementation(name: 'javakotlininterop', ext: 'aar')
     implementation 'org.apache.commons:commons-text:1.3'
     implementation 'com.google.dagger:dagger:2.25.4'
     implementation "com.evernote:android-job:1.2.6"

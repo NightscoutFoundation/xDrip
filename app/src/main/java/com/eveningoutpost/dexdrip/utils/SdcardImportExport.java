@@ -116,7 +116,7 @@ public class SdcardImportExport extends BaseAppCompatActivity {
     }
 
     public static void hardReset() {
-        JoH.wakeUpIntent(xdrip.getAppContext(), 1000, Home.getHomePendingIntent());
+        JoH.wakeUpIntent(xdrip.getAppContext(), 4000, Home.getHomePendingIntent());
         hardReset_orig();
     }
 

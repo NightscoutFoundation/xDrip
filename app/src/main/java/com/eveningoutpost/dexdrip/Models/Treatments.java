@@ -367,6 +367,17 @@ public class Treatments extends Model {
         return treatment;
     }
 
+    static void createForTest(long timestamp, double insulin) {
+        fixUpTable();
+        val treatment = new Treatments();
+        treatment.notes = "test";
+        treatment.timestamp = timestamp;
+        treatment.created_at = DateUtil.toISOString(timestamp);
+        treatment.uuid = UUID.randomUUID().toString();
+        treatment.insulin = insulin;
+        treatment.save();
+    }
+
     /**
      * Returns a newly created treatment entry in the database for Sensor Start,
      * and pushes the new treatment to followers.
@@ -573,6 +584,14 @@ public class Treatments extends Model {
                 .executeSingle();
     }
 
+    public static List<Treatments> listByTimestamp(long timestamp) {
+        return new Select()
+                .from(Treatments.class)
+                .where("timestamp = ?", timestamp)
+                .orderBy("timestamp desc")
+                .execute();
+    }
+
     public static void delete_all() {
         delete_all(false);
     }
@@ -637,6 +656,14 @@ public class Treatments extends Model {
             thistreat.delete();
         }
         return null;
+    }
+
+    public static void cleanup(final int retention_days) {
+        fixUpTable();
+        new Delete()
+                .from(Treatments.class)
+                .where("timestamp < ?", JoH.tsl() - (retention_days * Constants.DAY_IN_MS))
+                .execute();
     }
 
     public static Treatments fromJSON(String json) {

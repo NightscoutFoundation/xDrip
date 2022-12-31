@@ -599,7 +599,7 @@
     <string name="reset_bluetooth">Reset Bluetooth door het uit en weer in te schakelen als we binnen 20 minuten niets ontvangen</string>
     <string name="bluetooth_watchdog">Bluetooth Watchdog</string>
     <string name="reset_bluetooth_g5">Reset Bluetooth door het uit en weer in te schakelen om de G5-gegevensbron te laten werken. Zonder dit kan de G5-collector het begeven.</string>
-    <string name="g5_bluetooth_watchdog">G5 Bluetooth Watchdog</string>
+    <string name="g5_bluetooth_watchdog">G5 Bluetooth Waakhond</string>
     <string name="close_gatt">Als de bluetooth-waakhond vaak wordt geactiveerd, kunt u proberen deze optie uit te schakelen om te zien of dit helpt</string>
     <string name="older_bluetooth_wakelocks">Oudere bluetooth wakelocks die extra batterij kunnen verbruiken, maar misschien nodig zijn voor de bluetooth ontvangst</string>
     <string name="reset_bluetooth_on_off">Reset Bluetooth door het om de paar minuten uit en weer in te schakelen! Selecteer alleen als u aan het testen bent. Het kan andere Bluetooth-verbindingen verstoren.</string>
@@ -1568,8 +1568,6 @@
     <string name="enable_streaming_dialog_dont_ask_again">Vraag me dat niet nog een keer</string>
     <string name="enable_streaming_dialog_text">Wil je xDrip met deze sensor verbinden? Dit zorgt ervoor dat de libre reader en libre link geen waarschuwingen meer ontvangen. Druk op Ja en scan opnieuw om verbinding te maken (kies geen verbinding als u xDrip wilt uitvoeren met de gepatchte app)</string>
     <string name="enable_streaming_dialog_title">Libre-sensor verbinden met bluetooth</string>
-    <string name="title_lower_fuzzer">Verlaag FUZZER</string>
-    <string name="summary_lower_fuzzer">Verlaag de FUZZER waarde van 2.5 minuten naar 37.5 seconden</string>
     <string name="without_camera_permission_cannot_scan_barcode">Zonder camera toestemming kan er geen barcode gescand worden</string>
     <string name="summary_create_missing_filtered">Maak gefilterde gegevens indien nodig</string>
     <string name="title_create_missing_filtered">Ontbrekende gefilterde maken</string>
@@ -1653,4 +1651,10 @@
     <string name="please_wait_seconds_before_trying_to_start_sensor">Wacht %d seconden voordat u de sensor probeert te starten</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">Update OOP2 of gebruik kalibreren op basis van ruwe modus</string>
     <string name="special_pairing_workaround">Workaround voor speciale koppeling</string>
+    <string name="select_file_for_alert">Selecteer bestand voor alert</string>
+    <string name="cannot_choose_file_without_permission">Kan geen bestand kiezen zonder opslagmachtiging</string>
+    <string name="select_time">Selecteer tijd</string>
+    <string name="select_tone_for_alerts">Selecteer geluid voor waarschuwingen</string>
+    <string name="show_unsmoothed">Toon niet-afgevlakte waarden</string>
+    <string name="show_unsmoothed_summary">Toon niet-afgevlakte waarden ook als grafiekafvlakking is ingeschakeld. Als de kalibratieplugin aanstaat, dan worden niet-afgevlakte waarden getoond in plaats van plugin data.</string>
 </resources>

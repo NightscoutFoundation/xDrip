@@ -18,7 +18,7 @@ public class BaseMessage {
     long postExecuteGuardTime = 50;
     @Expose
     public volatile byte[] byteSequence;
-    public ByteBuffer data;
+    public volatile ByteBuffer data;
 
 
     void init(final byte opcode, final int length) {

@@ -185,6 +185,7 @@
     <string name="general_settings">הגדרות כלליות</string>
     <string name="high_value">ערך גבוה</string>
     <string name="low_value">ערך נמוך</string>
+    <string name="stats_range_settings">הגדרת תחום: </string>
     <string name="end_user_license_agreement">הסכם משתמש קצה</string>
     <string name="save">שמור</string>
     <string name="view_important_warning">צפה באזהרות חשובות</string>
@@ -780,6 +781,7 @@
     <string name="notify_on_low_battery_level">הודע כאשר רמת הסוללה יורדת מתחת</string>
     <string name="collector_battery_alerts">התראות סוללת האוסף</string>
     <string name="low_battery_percentage">אחוז סוללה נמוכה</string>
+    <string name="notify_data_arrives_master"><![CDATA[מעדכן במקרה שמידע מגיע מהמשדר באינטרוול שגדול מ-20 דקות.]]></string>
     <string name="follower_chime_new">צליל עוקב חדש</string>
     <string name="carb_ratio">יחס פחמימות</string>
     <string name="enable_dedicated_insulin_profiles">הגדר פרופיל אינסולין</string>
@@ -830,12 +832,15 @@
     <string name="xdrip_motion_tracking">זיהוי תנועה</string>
     <string name="detect_motion_types">השתמש בחיישנים לזיהוי סוג התנועה</string>
     <string name="enable_motion_tracking">אפשר זיהוי תנועה</string>
+    <string name="display_motion_types">שומר סוגי תנועה אחרונים שנקלטו ומצייר אותם על הגרף המרכזי</string>
     <string name="log_and_plot_motion">רשום ושרטט תנועה</string>
     <string name="use_remote_motion_data">נתוני התנועה יגיעו ממכשיר מרוחק במקום מהמכשיר המקומי</string>
     <string name="use_remote_motion">השתמש בתנועה ממכשיר מרוחק</string>
+    <string name="be_motion_master">הגדר את המכשיר כחיישן התזוזה המוביל גם במקרה ומדובר על מכשיר עוקב. סמן אפשרות זו רק עבור מכשיר אחד!</string>
     <string name="act_as_motion_master">היה מקור התנועה</string>
     <string name="vehicle_motion_extras">כאשר מזוהה שימוש ברכב אפשר תכונות נוספות</string>
     <string name="enable_vehicle_mode">אפשר מצב רכב</string>
+    <string name="increase_low_alarms_vehicle_mode">מגדיל את העוצמה של התראות הסוכר הנמוך בזמן מצב רכב</string>
     <string name="raise_low_threshold">העלה את סף הסוכר הנמוך</string>
     <string name="notification_sound_vehicle_mode">השמע צליל בכניסה למצב רכב</string>
     <string name="play_sound">השמע צליל</string>
@@ -893,15 +898,22 @@
     <string name="Speech_speed">מהירות ההקראה</string>
     <string name="Speech_pitch">גובה קול ההקראה</string>
     <string name="Speak_Alerts">קרא התראות בקול</string>
+    <string name="Speak_Alerts_Summary">מספק גם התראות קוליות על בסיס הקראת נתונים</string>
     <string name="advanced_bluereader_settings_summary">הגדרות blueReader מתקדמות</string>
     <string name="advanced_bluereader_settings">הגדרות blueReader</string>
+    <string name="bluereader_restdays_onhome_sum">מציג הערכה לימים שנותרו ל- \"BlueReader\" על גבי מסך הבית אחרי זמן זה חייבים לטעון את הסוללה</string>
     <string name="bluereader_restdays_onhome">ימי מנוחה במסך הבית</string>
     <string name="bluereader_turnoff_sum">כבה את BlueReader אם רמת הסוללה נמוכה מהערך הנבחר</string>
     <string name="bluereader_turnoff">מתג בטיחות כבוי</string>
     <string name="blueReader_turnoffvalue">ערך באחוזים</string>
+    <string name="blueReader_turnoffvalue_sum">\"BlueReader\" יופסק לאחר ירידה מאחוז סוללה זה</string>
     <string name="days">ימים</string>
+    <string name="bluereaderoff">\"BlueReader\" יופסק לאחר ירידה מאחוז סוללה זה </string>
     <string name="bluereader_position">בדוק את המיקום של ה-blueReader על הסנסור, אחרת יצליח לקרוא!</string>
+    <string name="bluereaderuglystate">\"BlueReader\" נמצא במצב לא טוב! לכן הוא עובר כיבוי, ניתן להדליק את הקורא (בלחיצה על הכפתור). אחרי זה הקורא צריך לעבוד כנדרש!</string>
     <string name="offical_msg">האפליקציה הרשמית</string>
+    <string name="use_conflict_msg">האפליקציה תנסה לגשת למשדר במקביל ומצב זה יכול לגרום לקונפליקט בנתונים</string>
+    <string name="use_confict_msg_glimp">ניתן לבצע התאמה להגדרות Glimp: אפשרויות > מכשירים > בטל בחירה באופציית Bluetooth</string>
     <string name="eng_mode_is_on">מצב המהנדסים פועל. נא לבטלו אלא אם אתם בטוחים שאתם זקוקים לו כי הוא עלול לגרום להתנהגות בלתי צפויה.</string>
     <string name="yes">כן</string>
     <string name="xdrip_compatible_features">תכונות %s xDrip</string>
@@ -978,14 +990,18 @@
     <string name="detect_car_audio">זהה אודיו ברכב</string>
     <string name="automatically_enable_when_connected_to_car_bluetooth">אפשר אוטומטית מצב רכב בעת קישור לבלוטות\' של הרכב</string>
     <string name="enable_speak_readings_when_in_vehicle">אפשר תכונת הקראת קריאות במצב רכב</string>
+    <string name="bluetooth_watchdog_timers">הגדרת זמן עבור BT watchdog</string>
     <string name="bluetooth_watchdog_timer_sums">הזן ערך בדקות</string>
     <string name="basal_editor">עורך תוכנית בזאלית - בחרו שעות לכיוונון</string>
     <string name="sensor_is_still_warming_up_please_wait">הסנסור עדיין מתחמם, אנא המתינו</string>
     <string name="number_wall_config">הגדרת מספר מוצג</string>
     <string name="summary_If_you_plan_to_only_use_a_Wear_collector_and_never_your_phone">אם אתה מתכוון להשתמש בשעון בלבד כאוסף ולא עם הטלפון כלל.</string>
     <string name="title_Only_use_Wear">השתמש רק ב-Wear</string>
+    <string name="summary_Also_show_the_filtered_data_on_the_trend">טרנדים יכללו מידע מפולטר בנוסף</string>
+    <string name="summary_Show_Bolus_Wizard_Preview_Insulin_value_on_watch_when_appropriate">כאשר זה מתאים הצג תצוגה מקדימה של ערך האינסולין על פי אשף הבולוס על גבי השעון</string>
     <string name="title_Display_BWP_Insulin">הצג תצוגה מקדימה של הבולוס מהאשף</string>
     <string name="title_Smartwatch_Sensors">חיישנים בשעונים חכמים</string>
+    <string name="summary_Collect_and_display_Step_counter_and_Heart_rate_when_available">אוסף ומציג את נתוני מונה הצעדים וקצב פעימות הלב כאשר המידע זמין</string>
     <string name="title_Use_Health_Data">השתמש בנתוני Health</string>
     <string name="summary_Activate_heart_rate_sensor_if_available">הפעל חיישן קצב לב אם זמין</string>
     <string name="title_Heart_Rate_Sensor">מד דופק</string>
@@ -993,6 +1009,7 @@
     <string name="title_When_changes_by">כאשר משתנה ב-</string>
     <string name="title_Or_per_number_of_minutes">או לפי מספר דקות</string>
     <string name="title_Identify_receiver">זיהוי מקלט</string>
+    <string name="summary_Only_send_to_named_package">מידע ישלח רק לשם תיקית פרויקט שהוגדר</string>
     <string name="title_Accept_Calibrations">קבל כיולים</string>
     <string name="summary_Operate_a_local_web_server_for_interacting_with_Fitbit_Ionic_etc">הפעל שרת מקומי לאינטראקציה עם Fitbit Ionic וכו\'</string>
     <string name="title_xDrip_Web_Service">שירות ווב של xDrip</string>
@@ -1008,6 +1025,7 @@
     <string name="title_Carb_Insulin_Ratio">יחס פחמ\'\\אינסולין</string>
     <string name="summary_Ask_for_a_second_optional_initial_calibration_blood_test">מבקש בדיקת דם שניה אופציונלית לכיול ראשוני</string>
     <string name="title_Double_Calibrations">כיולים כפולים</string>
+    <string name="summary_Enable_to_allow_variable_slopes_with_Libre_collection_methods">סמן על מנת לאפשר משתנה מגמה בחיישן ליברה</string>
     <string name="title_Non_fixed_Libre_slopes">שיפועי ליברה לא קבועים</string>
     <string name="summary_Allow_initial_calibration_no_good_enough_data">אפשר כיול ראשוני אפילו אם אין נתונים טובים מספיק. נא להיזהר, הכיול עלול להיות לא מדוייק!</string>
     <string name="title_Bypass_quality_check">עקוף בדיקת איכות</string>
@@ -1015,6 +1033,8 @@
     <string name="title_Use_scanning">השתמש בסריקה</string>
     <string name="summary_Use_and_trust_Android_bluetooth_auto_connect_feature">השתמש ובטח בתכונת חיבור אוטומטי של אנדרואיד</string>
     <string name="title_Trust_Auto_Connect">בטח בחיבור אוטומטי</string>
+    <string name="summary_Experimental_support_for_xBridge_polling_feature">תמיכה ניסיונית ביכולת משיכה מ- +xBridge </string>
+    <string name="title_xBridge_Polling_Mode">מוד משיכה מ- +xBridge</string>
     <string name="title_Always_discover_services">תמיד גלה שירותים</string>
     <string name="summary_Only_suitable_for_phones_which_support_automatic_pairing">מתאים רק לטלפונים שתומכים בצימוד אוטומטי</string>
     <string name="title_Allow_blucon_unbonding">אפשר הפרדת Blucon</string>
@@ -1524,4 +1544,13 @@
     <string name="show_action_buttons_within_alerts">הצג כפתורי פעולות (לדוגמה נודניק) בתוך ההתראות</string>
     <string name="alert_buttons">כפתורי פעולות</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">אנא המתינו %d שניות לפני שתנסו להפעיל חיישן</string>
+    <string name="save_power">חסוך בסוללה</string>
+    <string name="reduce_battery_and_network_overhead">חסוך בסוללה ובשימוש בנתונים בעזרת ניתוח נתונים במכה, וכן הפחתה של מידע לא נחוץ</string>
+    <string name="simplify_graphs_by_smoothing_out_irregularities">פשט את הגרפים בעזרת החלקה של נתונים יוצאי דופן</string>
+    <string name="graph_smoothing">החלקת הגרף</string>
+    <string name="last_reading">קריאה אחרונה</string>
+    <string name="cannot_choose_file_without_permission">אין אפשרות לבחור קובץ בלי הרשאה לאחסון</string>
+    <string name="show_unsmoothed">הראה לא מוחלק</string>
+    <string name="show_unsmoothed_summary">הראה מידע לא מוחלק גם עם החלקת הגרף מאופשרצ, 
+אם תוסף הכיול בשימוש יוצג גרף לא מוחלק ולא הגרף מהתוסף.</string>
 </resources>

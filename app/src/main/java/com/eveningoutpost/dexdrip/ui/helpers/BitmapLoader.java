@@ -144,8 +144,8 @@ public class BitmapLoader implements BitmapCacheProvider {
 
 
     // Accessed via interface - protect with proguard or silently fails?
-    public String getScaledKeyName(String key, final float scaler) {
-        if (scaler != 1f) {
+    public String getScaledKeyName(String key, final double scaler) {
+        if (scaler != 1d) {
             key += "-" + scaler;
         }
         return key;
@@ -158,7 +158,7 @@ public class BitmapLoader implements BitmapCacheProvider {
     }
 
     // Accessed via interface
-    public String prepareScaledBitmap(final String originalKey, final float scaler) {
+    public String prepareScaledBitmap(final String originalKey, final double scaler) {
         final String key = getScaledKeyName(originalKey, scaler);
         if (cache.get(key) == null) {
             final Bitmap discard = loadScaledBitmap(originalKey, scaler);
@@ -168,7 +168,7 @@ public class BitmapLoader implements BitmapCacheProvider {
 
     // Accessed via interface - protect with proguard or silently fails
     //  @Override
-    public Bitmap loadScaledBitmap(final String originalKey, final float scaler) {
+    public Bitmap loadScaledBitmap(final String originalKey, final double scaler) {
         String key = originalKey;
         if (scaler != 1f) {
             key += "-" + scaler;

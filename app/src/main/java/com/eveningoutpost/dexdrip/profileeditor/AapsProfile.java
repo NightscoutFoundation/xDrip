@@ -22,7 +22,7 @@ public class AapsProfile {
     @Expose
     String timezone;
 
-    private List<Float> basalByMinute;
+    private List<Double> basalByMinute;
     private List<ProfileItem> profileByMinute;
 
     public boolean usingMgdl() {
@@ -30,12 +30,12 @@ public class AapsProfile {
     }
 
     // explode basal to per minute resolution
-    public List<Float> getBasalByMinute() {
+    public List<Double> getBasalByMinute() {
         if (basalByMinute == null) {
             if (basal != null) {
-                float current = 0f;
+                double current = 0d;
                 int currentMinute = 0;
-                final List<Float> byMinute = new ArrayList<>(1440);
+                final List<Double> byMinute = new ArrayList<>(1440);
                 for (int i = 0; i < 1440; i++) {
                     byMinute.add(current);
                 }

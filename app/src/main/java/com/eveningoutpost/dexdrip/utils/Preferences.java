@@ -90,6 +90,9 @@ import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollow;
 import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
 import com.eveningoutpost.dexdrip.cgm.webfollow.Cpref;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.CareLinkFollowService;
+import com.eveningoutpost.dexdrip.healthconnect.HealthConnectEntry;
+import com.eveningoutpost.dexdrip.healthconnect.HealthGamut;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
 import com.eveningoutpost.dexdrip.tidepool.TidepoolUploader;
@@ -308,6 +311,17 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Constants.HEALTH_CONNECT_RESPONSE_ID) {
+            if (HealthConnectEntry.enabled()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    if (JoH.ratelimit("health-connect-bump", 2)) {
+                        HealthGamut.init(this);
+                    }
+                }
+            }
+        }
+
+
         IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         if (scanResult == null || scanResult.getContents() == null) {
@@ -434,7 +448,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         try {
             if (!prefs.getBoolean("engineering_mode", false)) { // If engineering mode has been disabled
                 try {
-                    prefs.edit().putBoolean("lower_fuzzer", false).apply(); // Disable lower_fuzzer
                 } catch (Exception e) {
                     //
                 }
@@ -1258,6 +1271,63 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 }
             }
 
+            //CareLink Follow preferences
+            final Preference carelinkFollowUser = findPreference("clfollow_user");
+            final Preference carelinkFollowPass = findPreference("clfollow_pass");
+            final Preference carelinkFollowCountry = findPreference("clfollow_country");
+            final Preference carelinkFollowGracePeriod = findPreference("clfollow_grace_period");
+            final Preference carelinkFollowMissedPollInterval = findPreference("clfollow_missed_poll_interval");
+            final Preference carelinkFollowDownloadFingerBGs = findPreference("clfollow_download_finger_bgs");
+            final Preference carelinkFollowDownloadBoluses = findPreference("clfollow_download_boluses");
+            final Preference carelinkFollowDownloadMeals = findPreference("clfollow_download_meals");
+            final Preference carelinkFollowDownloadNotifications = findPreference("clfollow_download_notifications");
+            //Add CL prefs for CLFollower
+            if (collectionType == DexCollectionType.CLFollow) {
+                //Add CL prefs
+                collectionCategory.addPreference(carelinkFollowUser);
+                collectionCategory.addPreference(carelinkFollowPass);
+                collectionCategory.addPreference(carelinkFollowCountry);
+                collectionCategory.addPreference(carelinkFollowGracePeriod);
+                collectionCategory.addPreference(carelinkFollowMissedPollInterval);
+                collectionCategory.addPreference(carelinkFollowDownloadFingerBGs);
+                collectionCategory.addPreference(carelinkFollowDownloadBoluses);
+                collectionCategory.addPreference(carelinkFollowDownloadMeals);
+                collectionCategory.addPreference(carelinkFollowDownloadNotifications);
+                //Create prefChange handler
+                final Preference.OnPreferenceChangeListener carelinkFollowListener = new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object newValue) {
+                        CareLinkFollowService.resetInstanceAndInvalidateSession();
+                        CollectionServiceStarter.restartCollectionServiceBackground();
+                        return true;
+                    }
+                };
+                //Register prefChange handler
+                try {
+                    carelinkFollowUser.setOnPreferenceChangeListener(carelinkFollowListener);
+                    carelinkFollowPass.setOnPreferenceChangeListener(carelinkFollowListener);
+                    carelinkFollowCountry.setOnPreferenceChangeListener(carelinkFollowListener);
+                    carelinkFollowGracePeriod.setOnPreferenceChangeListener(carelinkFollowListener);
+                    carelinkFollowMissedPollInterval.setOnPreferenceChangeListener(carelinkFollowListener);
+                } catch (Exception e) {
+                    //
+                }
+            //Remove CL prefs for NON CLFollower
+            } else {
+                try {
+                    collectionCategory.removePreference(carelinkFollowUser);
+                    collectionCategory.removePreference(carelinkFollowPass);
+                    collectionCategory.removePreference(carelinkFollowCountry);
+                    collectionCategory.removePreference(carelinkFollowGracePeriod);
+                    collectionCategory.removePreference(carelinkFollowMissedPollInterval);
+                    collectionCategory.removePreference(carelinkFollowDownloadFingerBGs);
+                    collectionCategory.removePreference(carelinkFollowDownloadBoluses);
+                    collectionCategory.removePreference(carelinkFollowDownloadMeals);
+                    collectionCategory.removePreference(carelinkFollowDownloadNotifications);
+                } catch (Exception e) {
+                    //
+                }
+            }
 
             final Preference inpen_enabled = findPreference("inpen_enabled");
             try {
@@ -1584,6 +1654,22 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 }
             }
 
+            //Remove CL prefs for NON CLFollower
+            if (collectionType != DexCollectionType.CLFollow) {
+                try {
+                    collectionCategory.removePreference(carelinkFollowCountry);
+                    collectionCategory.removePreference(carelinkFollowPass);
+                    collectionCategory.removePreference(carelinkFollowUser);
+                    collectionCategory.removePreference(carelinkFollowGracePeriod);
+                    collectionCategory.removePreference(carelinkFollowMissedPollInterval);
+                    collectionCategory.removePreference(carelinkFollowDownloadFingerBGs);
+                    collectionCategory.removePreference(carelinkFollowDownloadMeals);
+                    collectionCategory.removePreference(carelinkFollowDownloadNotifications);
+                } catch (Exception e) {
+                    //
+                }
+            }
+
             try {
                 findPreference("nfc_scan_homescreen").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                     @Override
@@ -1601,24 +1687,36 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     public boolean onPreferenceChange(final Preference preference, final Object newValue) {
                         final AlertDialog.Builder builder = new AlertDialog.Builder(preference.getContext());
                         if ((boolean) newValue) {
-                            builder.setTitle("Stop! Are you sure?");
-                            builder.setMessage("This can sometimes crash / break a sensor!\nWith some phones there can be problems, try on expiring sensor first for safety. You have been warned.");
 
-                            builder.setPositiveButton("I AM SURE", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                    ((SwitchPreference)preference).setChecked(true);
-                                    preference.getEditor().putBoolean("use_nfc_scan", true).apply();
-                                    NFCReaderX.handleHomeScreenScanPreference(xdrip.getAppContext(), (boolean) newValue && prefs.getBoolean("nfc_scan_homescreen", false));
-                                }
-                            });
-                            builder.setNegativeButton("NOPE", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            });
-                            final AlertDialog alert = builder.create();
-                            alert.show();
+                            final boolean paranoidAboutNFC = false;
+                            if (paranoidAboutNFC) {
+                                // TODO changed Jul 2022 as this feature is well established to work and have been no reports of problems. Remove this block after Dec 2022 if no problems reported.
+                                builder.setTitle("Stop! Are you sure?");
+                                builder.setMessage("This can sometimes crash / break a sensor!\nWith some phones there can be problems, try on expiring sensor first for safety. You have been warned.");
+
+                                builder.setPositiveButton("I AM SURE", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                        ((SwitchPreference) preference).setChecked(true);
+                                        preference.getEditor().putBoolean("use_nfc_scan", true).apply();
+                                        NFCReaderX.handleHomeScreenScanPreference(xdrip.getAppContext(), (boolean) newValue && prefs.getBoolean("nfc_scan_homescreen", false));
+                                    }
+                                });
+                                builder.setNegativeButton("NOPE", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                                final AlertDialog alert = builder.create();
+                                alert.show();
+
+                            } else {
+                                ((SwitchPreference) preference).setChecked(true);
+                                preference.getEditor().putBoolean("use_nfc_scan", true).apply();
+                                NFCReaderX.handleHomeScreenScanPreference(xdrip.getAppContext(), (boolean) newValue && prefs.getBoolean("nfc_scan_homescreen", false));
+                                return true;
+                            }
+
                             return false;
                         } else {
                             NFCReaderX.handleHomeScreenScanPreference(xdrip.getAppContext(), (boolean) newValue && prefs.getBoolean("nfc_scan_homescreen", false));
@@ -1862,6 +1960,20 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             } catch (Exception e) {
                 //
             }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                try {
+                    findPreference("health_connect_enable").setOnPreferenceChangeListener((preference, newValue) -> {
+                        if ((Boolean) newValue) {
+                            Inevitable.task("check-health-connect", 300, () -> HealthGamut.init(getActivity()));
+                        }
+                        return true;
+                    });
+                } catch (Exception e) {
+                    //
+                }
+            }
+
 
             bindPreferenceSummaryToValue(collectionMethod);
             bindPreferenceSummaryToValue(shareKey);

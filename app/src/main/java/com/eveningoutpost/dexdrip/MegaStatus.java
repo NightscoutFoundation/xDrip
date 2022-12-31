@@ -12,6 +12,7 @@ import static com.eveningoutpost.dexdrip.utils.DexCollectionType.Medtrum;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.NSFollow;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.SHFollow;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.WebFollow;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.CLFollow;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -57,6 +58,7 @@ import com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollowService;
 import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
 import com.eveningoutpost.dexdrip.cgm.webfollow.WebFollowService;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.CareLinkFollowService;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenService;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
@@ -126,6 +128,7 @@ public class MegaStatus extends ActivityWithMenu {
     private static final String NIGHTSCOUT_FOLLOW = "Nightscout Follow";
     private static final String SHARE_FOLLOW = "Dex Share Follow";
     private static final String WEB_FOLLOW = "Web Follower";
+    private static final String CARELINK_FOLLOW = "CareLink Follow";
     private static final String XDRIP_LIBRE2 = "Libre2";
 
     static {
@@ -173,7 +176,7 @@ public class MegaStatus extends ActivityWithMenu {
                 addAsection(BLUEJAY_STATUS, "BlueJay Watch Status");
             }
             if (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreReceiver) {
-                addAsection(XDRIP_LIBRE2, "Libre 2 Patched App Status");
+                addAsection(XDRIP_LIBRE2, "Libre Patched App Status");
             }
             if (DexCollectionType.hasWifi()) {
                 addAsection(IP_COLLECTOR, dexCollectionType == DexCollectionType.Mock ? "FAKE / MOCK DATA SOURCE" : "Wifi Wixel / Parakeet Status");
@@ -204,6 +207,9 @@ public class MegaStatus extends ActivityWithMenu {
             }
             if(dexCollectionType.equals(WebFollow)) {
                 addAsection(WEB_FOLLOW, "Web Follower Status");
+            }
+            if(dexCollectionType.equals(CLFollow)) {
+                addAsection(CARELINK_FOLLOW, "CareLink Follow Status");
             }
 
             //addAsection("Misc", "Currently Empty");
@@ -267,6 +273,9 @@ public class MegaStatus extends ActivityWithMenu {
                 break;
             case WEB_FOLLOW:
                 la.addRows(WebFollowService.megaStatus());
+                break;
+            case CARELINK_FOLLOW:
+                la.addRows(CareLinkFollowService.megaStatus());
                 break;
             case XDRIP_LIBRE2:
                 la.addRows(LibreReceiver.megaStatus());

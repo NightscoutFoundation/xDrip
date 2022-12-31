@@ -26,7 +26,7 @@ public class BasalProfile {
         return BASAL_PREFIX + ref;
     }
 
-    public static void save(final String ref, final List<Float> segments) {
+    public static void save(final String ref, final List<Double> segments) {
         Pref.setString(getPrefix(ref), JoH.defaultGsonInstance().toJson(segments));
         //android.util.Log.d("PROFILEXX", "Saved value:" + Pref.getString(getPrefix(ref), "null"));
     }

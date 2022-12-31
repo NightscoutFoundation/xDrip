@@ -242,8 +242,8 @@ public class UploadChunkTest extends RobolectricTestWithConfig {
             aps.save();
         }
 
-        val fl = new ArrayList<Float>();
-        fl.add(1.0f);
+        val fl = new ArrayList<Double>();
+        fl.add(1.0d);
         BasalProfile.save("1", fl);
     }
 
