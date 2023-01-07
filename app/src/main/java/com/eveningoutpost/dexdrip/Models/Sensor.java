@@ -52,7 +52,7 @@ public class Sensor extends Model {
   @Column(name = "sensor_location")
   public String sensor_location;
 
-    public static Sensor create(long started_at) {
+    public synchronized static Sensor create(long started_at) {
         Sensor sensor = new Sensor();
         sensor.started_at = started_at;
         sensor.uuid = UUID.randomUUID().toString();
@@ -63,7 +63,7 @@ public class Sensor extends Model {
         return sensor;
     }
 
-    public static Sensor create(long started_at, String uuid) {//KS
+    public synchronized static Sensor create(long started_at, String uuid) {//KS
         Sensor sensor = new Sensor();
         sensor.started_at = started_at;
         sensor.uuid = uuid;
@@ -78,6 +78,7 @@ public class Sensor extends Model {
         final Sensor sensor = currentSensor();
         if (sensor == null) {
             Sensor.create(JoH.tsl());
+            UserError.Log.ueh(TAG, "Created new default sensor");
         }
         return currentSensor();
     }
@@ -155,6 +156,23 @@ public class Sensor extends Model {
                 .from(Sensor.class)
                 .where("started_at = ?", started_at)
                 .executeSingle();
+    }
+
+    public static Sensor restartSensor(String sensorUuid) {
+        Sensor sensor = getByUuid(sensorUuid);
+
+        sensor.stopped_at = 0;
+        UserError.Log.ueh("SENSOR", "Sensor restarted");
+        sensor.save();
+
+        Sensor currentSensor = currentSensor();
+        if (currentSensor != null) {
+            UserError.Log.wtf(TAG, "Failed to update sensor restart in database");
+        }
+        SensorSendQueue.addToQueue(currentSensor);
+        JoH.clearCache();
+
+        return currentSensor;
     }
 
     public static Sensor getByUuid(String xDrip_sensor_uuid) {

@@ -83,7 +83,7 @@ public class BgGraphBuilder {
     final int previewAxisTextSize;
     final int hoursPreviewStep;
     private final static double timeshift = 500000;
-    private static final int NUM_VALUES =(60/5)*24;
+    private static final int MAX_VALUES =60*24;
     private final List<BgReading> bgReadings;
     private final List<Calibration> calibrations;
     private List<PointValue> inRangeValues = new ArrayList<PointValue>();
@@ -110,7 +110,7 @@ public class BgGraphBuilder {
     }
 
     public BgGraphBuilder(Context context, long start, long end){
-        this(context, start, end, NUM_VALUES);
+        this(context, start, end, MAX_VALUES);
     }
 
     public BgGraphBuilder(Context context, long start, long end, int numValues, boolean show_prediction) {//KS TODO implement show_prediction

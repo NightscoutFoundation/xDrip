@@ -27,6 +27,14 @@
                     android:key="bg_alert_profile"
                     android:title="@string/alert_volume_profile" />
 
+                <ListPreference
+                    android:defaultValue="AUDIOFOCUS_NONE"
+                    android:entries="@array/AudioFocus"
+                    android:entryValues="@array/AudioFocusValues"
+                    android:key="alert_audio_focus"
+                    android:summary="Choose what to do with other apps while playing alerts and adjusting system volume levels"
+                    android:title="Audio Focus" />
+
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="smart_snoozing"
@@ -50,6 +58,12 @@
                     android:key="buttons_silence_alert"
                     android:summary="@string/volume_buttons_snooze"
                     android:title="@string/buttons_silence_alarms" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="show_buttons_in_alerts"
+                    android:summary="@string/show_action_buttons_within_alerts"
+                    android:title="@string/alert_buttons" />
 
                 <CheckBoxPreference
                     android:defaultValue="false"
@@ -95,6 +109,12 @@
                     android:key="notification_channels_grouping"
                     android:summary="@string/summary_notification_channels_grouping"
                     android:title="@string/title_notification_channels_grouping" />
+
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="delay_ascending_3min"
+                    android:summary="@string/summary_delay_ascending_3min"
+                    android:title="@string/title_delay_ascending_3min" />
 
             </PreferenceScreen>
 
@@ -224,7 +244,6 @@
                         android:key="rising_bg_val"
                         android:title="@string/rising_threshold" />
                 </PreferenceCategory>
-
 
                 <PreferenceCategory android:title="@string/category_alert_prefs">
                     <RingtonePreference

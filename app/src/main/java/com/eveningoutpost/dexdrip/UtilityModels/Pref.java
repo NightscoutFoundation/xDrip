@@ -53,6 +53,11 @@ public class Pref {
         return (prefs != null) && (prefs.getBoolean(pref, def));
     }
 
+    public static boolean isPreferenceSet(final String pref) {
+        initializePrefs();
+        return (prefs != null) && prefs.contains(pref);
+    }
+
     public static boolean setBoolean(final String pref, final boolean lng) {
         initializePrefs();
         if (prefs != null) {
@@ -83,6 +88,12 @@ public class Pref {
             return prefs.getString(pref, def);
         }
         return "";
+    }
+
+    public static String getStringTrimmed(final String pref, final String def) {
+        String str = getString(pref, def);
+        if (str != null) str = str.trim();
+        return str;
     }
 
     public static boolean setString(final String pref, final String str) {

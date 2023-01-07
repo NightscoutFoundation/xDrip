@@ -8,6 +8,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.DateUtil;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.NanoStatus;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.SensorStatus;
@@ -111,6 +112,10 @@ public class WebServiceSgv extends BaseWebService {
             sensor_status_string = SensorStatus.status();
         }
 
+        if (cgi.containsKey("test_trigger_exception")) {
+            throw new RuntimeException("This is a test exception");
+        }
+
         if (cgi.containsKey("brief_mode")) {
             brief = true;
         }
@@ -145,7 +150,12 @@ public class WebServiceSgv extends BaseWebService {
             }
         } else {
             UserError.Log.d(TAG, "Fetching latest " + count + " readings from BgReading");
-            readings = BgReading.latest(count, ignore_sensor);
+            if (brief) {
+                // TODO this de-dupe period calculation should move in to DexCollectionType once a suitable method is available.
+                readings = BgReading.latestDeduplicateToPeriod(count, ignore_sensor, BgGraphBuilder.DEXCOM_PERIOD - BgGraphBuilder.DEXCOM_PERIOD / 6);
+            } else {
+                readings = BgReading.latest(count, ignore_sensor);
+            }
             cachedReadings = readings;
         }
 

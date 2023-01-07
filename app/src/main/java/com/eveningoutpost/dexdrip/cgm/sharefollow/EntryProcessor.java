@@ -7,6 +7,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import static com.eveningoutpost.dexdrip.Models.BgReading.SPECIAL_FOLLOWER_PLACEHOLDER;
 
@@ -42,6 +43,7 @@ public class EntryProcessor {
 
                         if (live) {
                             final BgReading bg = new BgReading();
+                            bg.uuid = UUID.randomUUID().toString();
                             bg.timestamp = recordTimestamp;
                             bg.calculated_value = entry.Value;
                             bg.raw_data = SPECIAL_FOLLOWER_PLACEHOLDER;

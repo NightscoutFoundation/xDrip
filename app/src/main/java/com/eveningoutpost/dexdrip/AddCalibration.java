@@ -23,6 +23,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
 import com.eveningoutpost.dexdrip.calibrations.NativeCalibrationPipe;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import java.util.UUID;
 
@@ -203,7 +204,7 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                             final double calValue = JoH.tolerantParseDouble(string_value);
 
                             if (!Home.get_follower()) {
-                                if (FirmwareCapability.isTransmitterRawIncapable(getTransmitterID())) { // Firefly only
+                                if (DexCollectionType.hasDexcomRaw() && FirmwareCapability.isTransmitterRawIncapable(getTransmitterID())) { // Firefly only
                                     double bg = calValue;
                                     if (unit.compareTo("mgdl") != 0) {
                                         bg = bg * Constants.MMOLL_TO_MGDL;

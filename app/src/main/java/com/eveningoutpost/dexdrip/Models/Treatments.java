@@ -28,6 +28,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.insulin.Insulin;
 import com.eveningoutpost.dexdrip.insulin.InsulinManager;
 import com.eveningoutpost.dexdrip.insulin.MultipleInsulins;
+import com.eveningoutpost.dexdrip.utils.jobs.BackgroundQueue;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
@@ -48,9 +49,12 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import lombok.val;
 
+import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
 import static java.lang.StrictMath.abs;
@@ -252,7 +256,7 @@ public class Treatments extends Model {
         if ((future_seconds > 60) && (future_seconds < 86400) && ((carbs > 0) || (insulinSum > 0))) {
             final Context context = xdrip.getAppContext();
             JoH.scheduleNotification(context, "Treatment Reminder", "@" + JoH.hourMinuteString(timestamp) + " : "
-                    + carbs + " " + context.getString(R.string.carbs) + " / "
+                    + carbs + " g " + context.getString(R.string.carbs) + " / "
                     + insulinSum + " " + context.getString(R.string.units), (int) future_seconds, 34026);
         }
         return create(carbs, insulinSum, insulin, timestamp, -1, suggested_uuid);
@@ -363,6 +367,17 @@ public class Treatments extends Model {
         return treatment;
     }
 
+    static void createForTest(long timestamp, double insulin) {
+        fixUpTable();
+        val treatment = new Treatments();
+        treatment.notes = "test";
+        treatment.timestamp = timestamp;
+        treatment.created_at = DateUtil.toISOString(timestamp);
+        treatment.uuid = UUID.randomUUID().toString();
+        treatment.insulin = insulin;
+        treatment.save();
+    }
+
     /**
      * Returns a newly created treatment entry in the database for Sensor Start,
      * and pushes the new treatment to followers.
@@ -435,22 +450,27 @@ public class Treatments extends Model {
         pushTreatmentSync(treatment, true, null); // new entry by default
     }
 
-    private static void pushTreatmentSync(Treatments treatment, boolean is_new, String suggested_uuid) {
+    private static void pushTreatmentSync(final Treatments treatment, boolean is_new, String suggested_uuid) {
 
-        if (Home.get_master_or_follower()) GcmActivity.pushTreatmentAsync(treatment);
-
-        if (!(Pref.getBoolean("cloud_storage_api_enable", false) || Pref.getBoolean("cloud_storage_mongodb_enable", false))) {
-            NSClientChat.pushTreatmentAsync(treatment);
-        } else {
-            Log.d(TAG, "Skipping NSClient treatment broadcast as nightscout direct sync is enabled");
-        }
-
-        if (suggested_uuid == null) {
-            // only sync to nightscout if source of change was not from nightscout
-            if (UploaderQueue.newEntry(is_new ? "insert" : "update", treatment) != null) {
-                SyncService.startSyncService(3000); // sync in 3 seconds
+        BackgroundQueue.postDelayed(() -> {
+            if (Home.get_master_or_follower()) {
+                GcmActivity.pushTreatmentAsync(treatment);
             }
-        }
+
+            if (!(Pref.getBoolean("cloud_storage_api_enable", false) || Pref.getBoolean("cloud_storage_mongodb_enable", false))) {
+                NSClientChat.pushTreatmentAsync(treatment);
+            } else {
+                Log.d(TAG, "Skipping NSClient treatment broadcast as nightscout direct sync is enabled");
+            }
+
+            if (suggested_uuid == null) {
+                // only sync to nightscout if source of change was not from nightscout
+                if (UploaderQueue.newEntry(is_new ? "insert" : "update", treatment) != null) {
+                    SyncService.startSyncService(3000); // sync in 3 seconds
+                }
+            }
+        },1000);
+
     }
 
     public static void pushTreatmentSyncToWatch(Treatments treatment, boolean is_new) {
@@ -564,6 +584,14 @@ public class Treatments extends Model {
                 .executeSingle();
     }
 
+    public static List<Treatments> listByTimestamp(long timestamp) {
+        return new Select()
+                .from(Treatments.class)
+                .where("timestamp = ?", timestamp)
+                .orderBy("timestamp desc")
+                .execute();
+    }
+
     public static void delete_all() {
         delete_all(false);
     }
@@ -628,6 +656,14 @@ public class Treatments extends Model {
             thistreat.delete();
         }
         return null;
+    }
+
+    public static void cleanup(final int retention_days) {
+        fixUpTable();
+        new Delete()
+                .from(Treatments.class)
+                .where("timestamp < ?", JoH.tsl() - (retention_days * Constants.DAY_IN_MS))
+                .execute();
     }
 
     public static Treatments fromJSON(String json) {
@@ -817,7 +853,7 @@ public class Treatments extends Model {
 */
 
     // when using multiple insulins
-    private static Pair<Double, Double> calculateIobActivityFromTreatmentAtTime(final Treatments treatment, final double time, final boolean useBasal) {
+    private static Pair<Double, Double> calculateIobActivityFromTreatmentAtTime(final Treatments treatment, final long time, final boolean useBasal) {
 
         double iobContrib = 0, activityContrib = 0;
         if (treatment.insulin > 0) {
@@ -842,7 +878,7 @@ public class Treatments extends Model {
     }
 
     // using the original calculation
-    private static Pair<Double, Double> calculateLegacyIobActivityFromTreatmentAtTime(final Treatments treatment, final double time) {
+    private static Pair<Double, Double> calculateLegacyIobActivityFromTreatmentAtTime(final Treatments treatment, final long time) {
 
         final double dia = Profile.insulinActionTime(time); // duration insulin action in hours
         final double peak = 75; // minutes in based on a 3 hour DIA - scaled proportionally (orig 75)
@@ -882,7 +918,7 @@ public class Treatments extends Model {
 
 
 
-    private static Iob calcTreatment(final Treatments treatment, final double time, final boolean useBasal) {
+    private static Iob calcTreatment(final Treatments treatment, final long time, final boolean useBasal) {
         final Iob response = new Iob();
 
         if (MultipleInsulins.isEnabled()) {
@@ -899,7 +935,7 @@ public class Treatments extends Model {
     }
 
     // requires stepms granularity which we should already have
-    private static double timesliceIactivityAtTime(Map<Double, Iob> timeslices, double thistime) {
+    private static double timesliceIactivityAtTime(Map<Long, Iob> timeslices, long thistime) {
         if (timeslices.containsKey(thistime)) {
             return timeslices.get(thistime).jActivity;
         } else {
@@ -907,7 +943,7 @@ public class Treatments extends Model {
         }
     }
 
-    private static void timesliceCarbWriter(Map<Double, Iob> timeslices, double thistime, double carbs) {
+    private static void timesliceCarbWriter(Map<Long, Iob> timeslices, long thistime, double carbs) {
         // offset for carb action time??
         Iob tempiob;
         if (timeslices.containsKey(thistime)) {
@@ -922,7 +958,7 @@ public class Treatments extends Model {
         timeslices.put(thistime, tempiob);
     }
 
-    private static void timesliceInsulinWriter(Map<Double, Iob> timeslices, Iob thisiob, double thistime) {
+    private static void timesliceInsulinWriter(Map<Long, Iob> timeslices, Iob thisiob, long thistime) {
         if (thisiob.iob > 0) {
             if (timeslices.containsKey(thistime)) {
                 Iob tempiob = timeslices.get(thistime);
@@ -938,7 +974,7 @@ public class Treatments extends Model {
     }
 
     // NEW NEW NEW
-    public static List<Iob> ioBForGraph_new(int number, double startTime) {
+    public static List<Iob> ioBForGraph_new(int number, long startTime) {
 
        // Log.d(TAG, "Processing iobforgraph2: main  ");
         JoH.benchmark_method_start();
@@ -956,9 +992,9 @@ public class Treatments extends Model {
         int counter = 0; // iteration counter
 
         final double step_minutes = 5;
-        final double stepms = step_minutes * MINUTE_IN_MS; // 300s = 5 mins
-        double mytime = startTime;
-        double tendtime = startTime;
+        final long stepms = (long) (step_minutes * MINUTE_IN_MS); // 300s = 5 mins
+        long mytime = startTime;
+        long tendtime = startTime;
 
 
         final double carb_delay_minutes = Profile.carbDelayMinutes(mytime); // not likely a time dependent parameter
@@ -969,14 +1005,14 @@ public class Treatments extends Model {
         Map<String, Boolean> carbsEaten = new HashMap<String, Boolean>();
 
         // linear array populated as needed and layered by each treatment etc
-        SortedMap<Double, Iob> timeslices = new TreeMap<Double, Iob>();
+        SortedMap<Long, Iob> timeslices = new TreeMap<>();
         Iob calcreply;
 
         // First process all IoB calculations
         for (Treatments thisTreatment : theTreatments) {
             // early optimisation exclusion
 
-            mytime = ((long) (thisTreatment.timestamp / stepms)) * stepms; // effects of treatment occur only after it is given / fit to slot time
+            mytime = (long) ((thisTreatment.timestamp / stepms) * stepms); // effects of treatment occur only after it is given / fit to slot time
             tendtime = mytime + 36 * HOUR_IN_MS;     // 36 hours max look (24h history plus 12h forecast)
             if (tendtime > startTime + 30 * HOUR_IN_MS)
                 tendtime = startTime + 30 * HOUR_IN_MS;   // dont look more than 6h in future // TODO review time limit
@@ -1003,7 +1039,7 @@ public class Treatments extends Model {
 
             // evaluate insulin impact
             Iob lastiob = null;
-            for (Map.Entry<Double, Iob> entry : timeslices.entrySet()) {
+            for (Map.Entry<Long, Iob> entry : timeslices.entrySet()) {
                 Iob thisiob = entry.getValue();
                 if (lastiob != null) {
                     if ((thisiob.iob != 0) || (lastiob.iob != 0)) {
@@ -1032,7 +1068,7 @@ public class Treatments extends Model {
                 mytime = ((long) (thisTreatment.timestamp / stepms)) * stepms; // effects of treatment occur only after it is given / fit to slot time
                 tendtime = mytime + 6 * HOUR_IN_MS;     // 6 hours max look
 
-                double cob_time = mytime + carb_delay_ms_stepped;
+                long cob_time = (long) (mytime + carb_delay_ms_stepped);
                 double stomachDiff = ((Profile.getCarbAbsorptionRate(cob_time) * stepms) / HOUR_IN_MS); // initial value
                 double newdelayedCarbs = 0;
                 double cob_remain = thisTreatment.carbs;
@@ -1066,7 +1102,7 @@ public class Treatments extends Model {
 
         // evaluate carb impact
         Iob lastiob = null;
-        for (Map.Entry<Double, Iob> entry : timeslices.entrySet()) {
+        for (Map.Entry<Long, Iob> entry : timeslices.entrySet()) {
             Iob thisiob = entry.getValue();
             if (lastiob != null) {
                 if ((thisiob.cob != 0 || (lastiob.cob != 0))) {
@@ -1290,6 +1326,10 @@ public class Treatments extends Model {
                 && ((insulin <= MAX_SMB_UNITS && (notes == null || notes.length() == 0)) || (enteredBy != null && enteredBy.startsWith("openaps:") && insulin <= MAX_OPENAPS_SMB_UNITS)));
     }
 
+    public boolean wasCreatedRecently() {
+        return msSince(DateUtil.tolerantFromISODateString(created_at).getTime()) < HOUR_IN_MS * 12;
+    }
+
     public boolean noteOnly() {
         return carbs == 0 && insulin == 0 && noteHasContent();
     }
@@ -1320,6 +1360,28 @@ public class Treatments extends Model {
                 .serializeSpecialFloatingPointValues()
                 .create();
         return gson.toJson(this);
+    }
+
+    public boolean isPenSyncedDose() {
+        return notes != null && notes.startsWith("PEN");
+    }
+
+    public String getPenSerial() {
+        if (isPenSyncedDose()) {
+            final Pattern penPattern = Pattern.compile(".*PEN ([A-Z0-9]+).*", Pattern.DOTALL);
+            final Matcher m = penPattern.matcher(notes);
+            if (m.matches()) {
+                return m.group(1);
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public boolean isPrimingDose() {
+        return notes != null && notes.startsWith("Priming");
     }
 }
 

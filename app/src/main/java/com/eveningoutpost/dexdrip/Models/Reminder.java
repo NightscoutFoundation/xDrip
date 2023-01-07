@@ -33,6 +33,8 @@ public class Reminder extends Model {
     public static final String REMINDERS_NIGHT_DISABLED = "reminders-at-night-disabled";
     public static final String REMINDERS_RESTART_TOMORROW = "reminders-restart-tomorrow";
     public static final String REMINDERS_ADVANCED_MODE = "reminders-advanced-mode";
+    public static final String REMINDERS_CANCEL_DEFAULT = "reminders-cancel-default";
+    public static final String REMINDERS_GRAPH_ICONS = "reminders-graph-icons";
     private static final String[] schema = {
             "CREATE TABLE Reminder (_id INTEGER PRIMARY KEY AUTOINCREMENT)",
             "ALTER TABLE Reminder ADD COLUMN next_due INTEGER",
@@ -56,6 +58,7 @@ public class Reminder extends Model {
             "ALTER TABLE Reminder ADD COLUMN chime INTEGER DEFAULT 0",
             "ALTER TABLE Reminder ADD COLUMN homeonly INTEGER DEFAULT 0",
             "ALTER TABLE Reminder ADD COLUMN speak INTEGER DEFAULT 0",
+            "ALTER TABLE Reminder ADD COLUMN graphicon INTEGER DEFAULT 0",
             "CREATE INDEX index_Reminder_next_due on Reminder(next_due)",
             "CREATE INDEX index_Reminder_enabled on Reminder(enabled)",
             "CREATE INDEX index_Reminder_weekdays on Reminder(weekdays)",
@@ -105,6 +108,10 @@ public class Reminder extends Model {
     @Expose
     @Column(name = "speak")
     public boolean speak;
+
+    @Expose
+    @Column(name = "graphicon")
+    public boolean graphicon;
 
     @Expose
     @Column(name = "repeating")
@@ -196,11 +203,15 @@ public class Reminder extends Model {
     }
 
     public boolean isDue() {
-        if ((enabled) && (next_due <= JoH.tsl())) {
-            return true;
-        } else {
-            return false;
-        }
+        return (enabled) && (next_due <= JoH.tsl());
+    }
+
+    public boolean isOverdueBy(long ms) {
+       return isDue() && next_due <= (JoH.tsl() - ms);
+    }
+
+    public boolean isOverdue() {
+        return isOverdueBy(Constants.DAY_IN_MS);
     }
 
     public boolean isSnoozed() {
@@ -234,15 +245,26 @@ public class Reminder extends Model {
         Reminders.doAlert(this);
     }
 
-    public synchronized void schedule_next() {
-        this.next_due = this.next_due + this.period;
+    public synchronized long getPotentialNextSchedule() {
+        long now = JoH.tsl();
+        long next = this.next_due + this.period;
         // check it is actually in the future
-        while (this.next_due < JoH.tsl()) {
-            this.next_due = this.next_due + this.period;
+        while (next < now) {
+            next += this.period;
         }
+        return next;
+    }
+
+    public synchronized void schedule_next(long when) {
+        this.next_due = when;
+        UserError.Log.uel(TAG, "Scheduling next for: " + this.title + " to " + JoH.dateTimeText(this.next_due));
         if (alternating) alternate = !alternate;
         alerted_times = 0; // reset counter
         save();
+    }
+
+    public synchronized void schedule_next() {
+        schedule_next(getPotentialNextSchedule());
     }
 
     protected synchronized static void fixUpTable(String[] schema) {

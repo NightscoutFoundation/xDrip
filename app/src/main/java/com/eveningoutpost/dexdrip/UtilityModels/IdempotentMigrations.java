@@ -4,31 +4,36 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
-import com.eveningoutpost.dexdrip.Models.Libre2RawValue;
-import com.eveningoutpost.dexdrip.Models.Libre2Sensor;
 import com.eveningoutpost.dexdrip.Models.APStatus;
+import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
-//import com.eveningoutpost.dexdrip.Models.BgReadingArchive;
 import com.eveningoutpost.dexdrip.Models.DesertSync;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.Libre2RawValue;
+import com.eveningoutpost.dexdrip.Models.Libre2Sensor;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.LibreData;
 import com.eveningoutpost.dexdrip.Models.PenData;
 import com.eveningoutpost.dexdrip.Models.Prediction;
+import com.eveningoutpost.dexdrip.Models.UserNotification;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
-import com.eveningoutpost.dexdrip.Models.AlertType;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import lombok.val;
 
 /**
  * Created by Emma Black on 4/15/15.
  */
 public class IdempotentMigrations {
-    private Context mContext;
-    private SharedPreferences prefs;
+    private final Context mContext;
+    private final SharedPreferences prefs;
+
+    private final static String TAG = IdempotentMigrations.class.getSimpleName();
 
     public IdempotentMigrations(Context context) {
         this.mContext = context;
@@ -49,8 +54,8 @@ public class IdempotentMigrations {
         Libre2Sensor.updateDB();
 //        BgReadingArchive.updateDB();
         AlertType.fixUpTable();
+        UserNotification.updateDB();
         JoH.clearCache();
-
         IncompatibleApps.notifyAboutIncompatibleApps();
         CompatibleApps.notifyAboutCompatibleApps();
 
@@ -69,15 +74,15 @@ public class IdempotentMigrations {
                 highMark = highMark * Constants.MMOLL_TO_MGDL;
                 lowMark = lowMark * Constants.MMOLL_TO_MGDL;
             }
-            boolean bg_sound_in_silent = prefs.getBoolean("bg_sound_in_silent", false);
+            boolean bg_sound_in_silent = prefs.getBoolean("bg_sound_in_silent", true);
             String bg_notification_sound = prefs.getString("bg_notification_sound", "content://settings/system/notification_sound");
 
             int bg_high_snooze = Integer.parseInt(prefs.getString("bg_snooze",  Integer.toString(SnoozeActivity.getDefaultSnooze(true))));
             int bg_low_snooze = Integer.parseInt(prefs.getString("bg_snooze",  Integer.toString(SnoozeActivity.getDefaultSnooze(false))));
 
 
-            AlertType.add_alert(null, mContext.getString(R.string.high_alert), true, highMark, true, 1, bg_notification_sound, 0, 0, bg_sound_in_silent, false, bg_high_snooze, true, true);
-            AlertType.add_alert(null, mContext.getString(R.string.low_alert), false, lowMark, true, 1, bg_notification_sound, 0, 0, bg_sound_in_silent, false, bg_low_snooze, true, true);
+            AlertType.add_alert(null, mContext.getString(R.string.high_alert), true, highMark, true, 1, bg_notification_sound, 0, 0, bg_sound_in_silent, true, bg_high_snooze, true, true);
+            AlertType.add_alert(null, mContext.getString(R.string.low_alert), false, lowMark, true, 1, bg_notification_sound, 0, 0, bg_sound_in_silent, true, bg_low_snooze, true, true);
             prefs.edit().putBoolean("bg_notifications", false).apply();
         }
     }
@@ -122,6 +127,17 @@ public class IdempotentMigrations {
         } else {
             // instead of an empty string: delete the setting to show (but later not read) default string
             prefs.edit().remove("cloud_storage_api_base").apply();
+        }
+    }
+
+    // This function moves us from calibrate_external_libre_2_algorithm which is a boolean to a
+    // multi value list option
+    public static void migrateOOP2CalibrationPreferences() {
+        val oldPref = "calibrate_external_libre_2_algorithm";
+        val newPref = "calibrate_external_libre_2_algorithm_type";
+        if (Pref.isPreferenceSet(oldPref) && !Pref.isPreferenceSet(newPref)) {
+            Log.e(TAG, oldPref + " found - updating to new style");
+            Pref.setString(newPref, Pref.getBooleanDefaultFalse(oldPref) ? "calibrate_raw" : "no_calibration");
         }
     }
 

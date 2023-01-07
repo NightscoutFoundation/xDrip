@@ -8,6 +8,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Unitized;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.messages.Entry;
 
 import java.util.List;
+import java.util.UUID;
 
 import static com.eveningoutpost.dexdrip.Models.BgReading.SPECIAL_FOLLOWER_PLACEHOLDER;
 
@@ -40,6 +41,7 @@ public class EntryProcessor {
 
                         if (live) {
                             final BgReading bg = new BgReading();
+                            bg.uuid = UUID.randomUUID().toString();
                             bg.timestamp = recordTimestamp;
                             bg.calculated_value = entry.sgv;
                             bg.raw_data = entry.unfiltered != 0 ? entry.unfiltered : SPECIAL_FOLLOWER_PLACEHOLDER;

@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.G5Model;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import lombok.Getter;
 // created by jamorham
 
 public class BackFillRxMessage extends BaseMessage {
@@ -10,9 +11,10 @@ public class BackFillRxMessage extends BaseMessage {
     public static final int opcode = 0x51;
     private static final int length = 20;
 
+    @Getter
     private boolean valid = false;
 
-    BackFillRxMessage(byte[] packet) {
+    public BackFillRxMessage(byte[] packet) {
 
         if (packet.length == length) {
             data = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN);

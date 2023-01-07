@@ -16,16 +16,11 @@ import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
-//KS import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
-//KS import android.graphics.Canvas;
-//KS import android.graphics.Color;
-//KS import android.graphics.Paint;
 import android.graphics.Point;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -42,10 +37,6 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.Vibrator;
 import android.provider.Settings;
-//KS import android.support.v7.app.AlertDialog;
-//KS import android.support.v4.app.NotificationCompat;
-//KS import android.support.v7.app.AppCompatActivity;
-//KS import android.support.v7.view.ContextThemeWrapper;
 import android.text.InputType;
 import android.text.method.DigitsKeyListener;
 import android.util.Base64;
@@ -61,7 +52,6 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.utils.BestGZIPOutputStream;
-//KS import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.common.primitives.Bytes;
 import com.google.common.primitives.UnsignedInts;
@@ -100,6 +90,16 @@ import java.util.zip.Inflater;
 import static android.bluetooth.BluetoothDevice.PAIRING_VARIANT_PIN;
 import static android.content.Context.ALARM_SERVICE;
 import static android.content.Context.VIBRATOR_SERVICE;
+
+//KS import android.content.DialogInterface;
+//KS import android.graphics.Canvas;
+//KS import android.graphics.Color;
+//KS import android.graphics.Paint;
+//KS import android.support.v7.app.AlertDialog;
+//KS import android.support.v4.app.NotificationCompat;
+//KS import android.support.v7.app.AppCompatActivity;
+//KS import android.support.v7.view.ContextThemeWrapper;
+//KS import com.eveningoutpost.dexdrip.utils.CipherUtils;
 //KS import static com.eveningoutpost.dexdrip.stats.StatsActivity.SHOW_STATISTICS_PRINT_COLOR;
 
 /**
@@ -909,16 +909,44 @@ public class JoH {
         return ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + xdrip.getAppContext().getPackageName() + "/" + id;
     }
 
-    public static synchronized MediaPlayer playSoundUri(String soundUri) {
+    private static MediaPlayer player;
+    public static synchronized void playSoundUri(String soundUri) {
         try {
             JoH.getWakeLock("joh-playsound", 10000);
-            final MediaPlayer player = MediaPlayer.create(xdrip.getAppContext(), Uri.parse(soundUri));
+            if (player != null) {
+                UserError.Log.i(TAG, "playSoundUri: media player still exists. Releasing it.");
+                player.release();
+                player = null;
+            }
+            player = MediaPlayer.create(xdrip.getAppContext(), Uri.parse(soundUri));
+            player.setOnCompletionListener(mp -> {
+                UserError.Log.i(TAG, "playSoundUri: onCompletion called (finished playing) ");
+                player.release();
+                player = null;
+            });
+            player.setOnErrorListener((mp, what, extra) -> {
+                UserError.Log.e(TAG, "playSoundUri: onError called (what: " + what + ", extra: " + extra);
+                // possibly media player error; release is handled in onCompletionListener
+                return false;
+            });
             player.setLooping(false);
             player.start();
-            return player;
         } catch (Exception e) {
             Log.wtf(TAG, "Failed to play audio: " + soundUri + " exception:" + e);
-            return null;
+        }
+    }
+
+    public static synchronized void stopSoundUri() {
+        if (player != null) {
+            if (player.isPlaying()) {
+                try {
+                    player.stop();
+                } catch (IllegalStateException e) {
+                    UserError.Log.e(TAG, "Exception when stopping sound URI media player: " + e);
+                }
+            }
+            player.release();
+            player = null;
         }
     }
 
@@ -1222,8 +1250,7 @@ public class JoH {
 
     public static boolean areWeRunningOnAndroidWear() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH
-                && (xdrip.getAppContext().getResources().getConfiguration().uiMode
-                & Configuration.UI_MODE_TYPE_MASK) == Configuration.UI_MODE_TYPE_WATCH;
+                && xdrip.getAppContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_WATCH);
     }
 
     public static boolean isAirplaneModeEnabled(Context context) {

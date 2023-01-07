@@ -30,6 +30,7 @@ import com.eveningoutpost.dexdrip.utils.jobs.XDripJobCreator;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
 import com.eveningoutpost.dexdrip.watch.miband.MiBandEntry;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
+import com.eveningoutpost.dexdrip.Services.broadcastservice.BroadcastEntry;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.evernote.android.job.JobManager;
 
@@ -69,6 +70,9 @@ public class xdrip extends MultiDexApplication {
             Log.e(TAG, e.toString());
         }
         executor = new PlusAsyncExecutor();
+
+        IdempotentMigrations.migrateOOP2CalibrationPreferences(); // needs to run before preferences get defaults
+
         PreferenceManager.setDefaultValues(this, R.xml.pref_general, true);
         PreferenceManager.setDefaultValues(this, R.xml.pref_data_sync, true);
         PreferenceManager.setDefaultValues(this, R.xml.pref_advanced_settings, true);
@@ -100,6 +104,7 @@ public class xdrip extends MultiDexApplication {
             BluetoothGlucoseMeter.startIfEnabled();
             LeFunEntry.initialStartIfEnabled();
             MiBandEntry.initialStartIfEnabled();
+            BroadcastEntry.initialStartIfEnabled();
             BlueJayEntry.initialStartIfEnabled();
             XdripWebService.immortality();
             VersionTracker.updateDevice();

@@ -1,5 +1,10 @@
 package com.eveningoutpost.dexdrip.Models;
 
+import static com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants.TREND_ARROW_VALUES.NOT_COMPUTABLE;
+import static com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants.TREND_ARROW_VALUES.getTrend;
+import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPluginFromPreferences;
+import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.newCloseSensorData;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -56,9 +61,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-import static com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants.TREND_ARROW_VALUES.*;
-import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPluginFromPreferences;
-import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.newCloseSensorData;
+import lombok.val;
 
 @Table(name = "BgReadings", id = BaseColumns._ID)
 public class BgReading extends Model implements ShareUploadableBg {
@@ -68,6 +71,8 @@ public class BgReading extends Model implements ShareUploadableBg {
     private final static String PERSISTENT_HIGH_SINCE = "persistent_high_since";
     public static final double AGE_ADJUSTMENT_TIME = 86400000 * 1.9;
     public static final double AGE_ADJUSTMENT_FACTOR = .45;
+    public static final double AGE_ADJUSTMENT_TIME_G6 = 86400000 * 1.9 / 1.8;
+    public static final double AGE_ADJUSTMENT_FACTOR_G6 = .45 / 3;
     //TODO: Have these as adjustable settings!!
     public final static double BESTOFFSET = (60000 * 0); // Assume readings are about x minutes off from actual!
 
@@ -833,10 +838,31 @@ public class BgReading extends Model implements ShareUploadableBg {
         }
     }
 
+    public static List<BgReading> latestDeduplicateToPeriod(final int number, final boolean is_follower, final long period) {
+        val input = latest(number * 6, is_follower);
+        if (input == null) return null;
+        val output = new ArrayList<BgReading>(number);
+        long last = -1L;
+        for (val item : input) {
+            if (Math.abs(item.timestamp - last) >= period) {
+                output.add(item);
+                if (output.size() >= number) break;
+                last = item.timestamp;
+            }
+        }
+        return output;
+    }
+
     public static boolean isDataStale() {
         final BgReading last = lastNoSenssor();
         if (last == null) return true;
         return JoH.msSince(last.timestamp) > Home.stale_data_millis();
+    }
+
+    public static boolean doWeHaveRecentUsableData() {
+        final BgReading last = last();
+        if (last == null) return false;
+        return last.calculated_value > 12 && JoH.msSince(last.timestamp) < Home.stale_data_millis();
     }
 
 
@@ -938,8 +964,12 @@ public class BgReading extends Model implements ShareUploadableBg {
                 .execute();
     }
 
-    public static BgReading readingNearTimeStamp(double startTime) {
-        final double margin = (4 * 60 * 1000);
+    public static BgReading readingNearTimeStamp(long startTime) {
+        long margin = (4 * 60 * 1000);
+        return readingNearTimeStamp(startTime, margin);
+    }
+
+    public static BgReading readingNearTimeStamp(long startTime, final long margin) {
         final DecimalFormat df = new DecimalFormat("#");
         df.setMaximumFractionDigits(1);
         return new Select()
@@ -968,6 +998,8 @@ public class BgReading extends Model implements ShareUploadableBg {
         final ProcessInitialDataQuality.InitialDataQuality idq = ProcessInitialDataQuality.getInitialDataQuality(uncalculated);
         if (!idq.pass) {
             UserError.Log.d(TAG, "Data quality failure for double calibration: " + idq.advice);
+        } else {
+            UserError.Log.d(TAG, "Data quality allows double calibration.");
         }
         return idq.pass || Pref.getBooleanDefaultFalse("bypass_calibration_quality_check");
     }
@@ -1071,7 +1103,7 @@ public class BgReading extends Model implements ShareUploadableBg {
 
                        // TODO can these methods be unified to reduce duplication
                                                                // TODO remember to sync this with wear code base
-    public static synchronized BgReading bgReadingInsertFromG5(double calculated_value, long timestamp, String sourceInfoAppend) {
+    public static synchronized BgReading bgReadingInsertFromG5(double calculated_value, final long timestamp, String sourceInfoAppend) {
 
         final Sensor sensor = Sensor.currentSensor();
         if (sensor == null) {
@@ -1157,7 +1189,7 @@ public class BgReading extends Model implements ShareUploadableBg {
             return null;
         }
         // TODO slope!!
-        final BgReading existing = getForPreciseTimestamp(timestamp, Constants.MINUTE_IN_MS);
+        final BgReading existing = getForPreciseTimestamp(timestamp, DexCollectionType.getCurrentDeduplicationPeriod());
         if (existing == null) {
             Calibration calibration = Calibration.lastValid();
             final BgReading bgReading = new BgReading();
@@ -1278,7 +1310,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                     Log.d(TAG, "Ignoring duplicate bgr record due to timestamp: " + json);
                 }
             } catch (Exception e) {
-                Log.d(TAG, "Could not save BGR: " + e.toString());
+                Log.e(TAG, "Could not save BGR bgReading: ", e);
             }
         } else {
             Log.e(TAG,"Got null bgr from json");
@@ -1287,7 +1319,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     // TODO this method shares some code with above.. merge
-    public static void bgReadingInsertFromInt(int value, long timestamp, boolean do_notification) {
+    public static void bgReadingInsertFromInt(int value, long timestamp, long margin, boolean do_notification) {
         // TODO sanity check data!
 
         if ((value <= 0) || (timestamp <= 0)) {
@@ -1317,11 +1349,11 @@ public class BgReading extends Model implements ShareUploadableBg {
             }
 
             try {
-                if (readingNearTimeStamp(bgr.timestamp) == null) {
+                if (readingNearTimeStamp(bgr.timestamp, margin) == null) {
                     bgr.save();
                     bgr.find_slope();
                     if (do_notification) {
-                       // xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), Notifications.class)); // alerts et al
+                        // xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), Notifications.class)); // alerts et al
                         Notifications.start(); // this may not be needed as it is duplicated in handleNewBgReading
                     }
                     BgSendQueue.handleNewBgReading(bgr, "create", xdrip.getAppContext(), false, !do_notification); // pebble and widget
@@ -1329,10 +1361,10 @@ public class BgReading extends Model implements ShareUploadableBg {
                     Log.d(TAG, "Ignoring duplicate bgr record due to timestamp: " + timestamp);
                 }
             } catch (Exception e) {
-                Log.d(TAG, "Could not save BGR: " + e.toString());
+                Log.e(TAG, "Could not save BGR: ", e);
             }
         } else {
-            Log.e(TAG,"Got null bgr from create");
+            Log.e(TAG, "Got null bgr from create");
         }
     }
 
@@ -1648,9 +1680,10 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public void calculateAgeAdjustedRawValue(){
-        final double adjust_for = AGE_ADJUSTMENT_TIME - time_since_sensor_started;
+        boolean is_g6 = Ob1G5CollectionService.usingG6();
+        final double adjust_for = (is_g6 ? AGE_ADJUSTMENT_TIME_G6 : AGE_ADJUSTMENT_TIME) - time_since_sensor_started;
         if ((adjust_for > 0) && (!DexCollectionType.hasLibre())) {
-            age_adjusted_raw_value = ((AGE_ADJUSTMENT_FACTOR * (adjust_for / AGE_ADJUSTMENT_TIME)) * raw_data) + raw_data;
+            age_adjusted_raw_value = (((is_g6 ? AGE_ADJUSTMENT_FACTOR_G6 : AGE_ADJUSTMENT_FACTOR) * (adjust_for / (is_g6 ? AGE_ADJUSTMENT_TIME_G6 : AGE_ADJUSTMENT_TIME))) * raw_data) + raw_data;
             Log.i(TAG, "calculateAgeAdjustedRawValue: RAW VALUE ADJUSTMENT FROM:" + raw_data + " TO: " + age_adjusted_raw_value);
         } else {
             age_adjusted_raw_value = raw_data;

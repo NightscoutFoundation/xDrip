@@ -1,5 +1,9 @@
 package com.eveningoutpost.dexdrip.Models;
 
+import static android.bluetooth.BluetoothDevice.PAIRING_VARIANT_PIN;
+import static android.content.Context.ALARM_SERVICE;
+import static com.eveningoutpost.dexdrip.stats.StatsActivity.SHOW_STATISTICS_PRINT_COLOR;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -20,7 +24,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
-import android.content.res.Configuration;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -41,6 +45,7 @@ import android.os.PowerManager;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.CursorLoader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
@@ -51,6 +56,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Surface;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.activeandroid.ActiveAndroid;
@@ -73,15 +79,19 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
@@ -95,15 +105,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.Semaphore;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 
-import static android.bluetooth.BluetoothDevice.PAIRING_VARIANT_PIN;
-import static android.content.Context.ALARM_SERVICE;
-import static com.eveningoutpost.dexdrip.stats.StatsActivity.SHOW_STATISTICS_PRINT_COLOR;
+import lombok.val;
 
 /**
  * Created by jamorham on 06/01/16.
@@ -181,7 +190,7 @@ public class JoH {
     }
 
     public static long uptime() {
-        return SystemClock.uptimeMillis();
+        return SystemClock.elapsedRealtime();
     }
 
     public static boolean upForAtLeastMins(int mins) {
@@ -412,6 +421,23 @@ public class JoH {
         return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
     }
 
+    public static String readLine(final InputStream stream) {
+        try {
+            val buffer = new byte[512];
+            for (int i = 0; i < buffer.length; i++) {
+                val b = stream.read();
+                if (b == -1) return null;
+                if (b == '\n') {
+                    return new String(buffer, 0, i, StandardCharsets.UTF_8);
+                }
+                buffer[i] = (byte) b;
+            }
+        } catch (IOException e) {
+            UserError.Log.e(TAG, "Error reading line: " + e);
+        }
+        return null; // too big
+    }
+
     public static boolean isSamsung() {
         return Build.MANUFACTURER.toLowerCase().contains("samsung");
     }
@@ -430,6 +456,22 @@ public class JoH {
         if (!buggy_samsung) {
             JoH.buggy_samsung = true;
             PersistentStore.incrementLong(BUGGY_SAMSUNG_ENABLED);
+        }
+    }
+
+    public static String getFieldFromURI(final String column, final Uri contentUri) {
+        try {
+            final String[] projection = { column };
+            val loader = new CursorLoader(xdrip.getAppContext(), contentUri, projection, null, null, null);
+            val cursor = loader.loadInBackground();
+            val column_index = cursor.getColumnIndexOrThrow(column);
+            cursor.moveToFirst();
+            val result = cursor.getString(column_index);
+            cursor.close();
+            return result;
+        } catch (Exception e) {
+            UserError.Log.d(TAG, "Got exception extracting data for uri " + e);
+            return null;
         }
     }
 
@@ -495,13 +537,16 @@ public class JoH {
         }
     }
 
-    public static void dumpBundle(Bundle bundle, String tag) {
+    public static void dumpBundle(final Bundle bundle, final String tag) {
         if (bundle != null) {
             for (String key : bundle.keySet()) {
                 Object value = bundle.get(key);
                 if (value != null) {
                     UserError.Log.d(tag, String.format("%s %s (%s)", key,
                             value.toString(), value.getClass().getName()));
+                    if (value instanceof Bundle) {
+                        dumpBundle((Bundle) value, tag + "::" + key);
+                    }
                 }
             }
         } else {
@@ -576,7 +621,7 @@ public class JoH {
     public static synchronized boolean ratelimitmilli(String name, int milliseconds) {
         // check if over limit
         if ((rateLimits.containsKey(name)) && (JoH.tsl() - rateLimits.get(name) < (milliseconds))) {
-            Log.d(TAG, name + " rate limited: " + milliseconds + " milliseconds");
+            //Log.d(TAG, name + " rate limited: " + milliseconds + " milliseconds");
             return false;
         }
         // not over limit
@@ -1062,17 +1107,132 @@ public class JoH {
         return ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + xdrip.getAppContext().getPackageName() + "/" + id;
     }
 
-    public static synchronized MediaPlayer playSoundUri(String soundUri) {
-        try {
-            JoH.getWakeLock("joh-playsound", 10000);
-            final MediaPlayer player = MediaPlayer.create(xdrip.getAppContext(), Uri.parse(soundUri));
-            player.setLooping(false);
-            player.start();
-            return player;
-        } catch (Exception e) {
-            Log.wtf(TAG, "Failed to play audio: " + soundUri + " exception:" + e);
-            return null;
+    private static final Semaphore playerLock = new Semaphore(1);
+    private static volatile MediaPlayer player;
+
+    public static synchronized void stopAndReleasePlayer(final MediaPlayer player) {
+        if (player != null) {
+            try {
+                if (player.isPlaying()) {
+                    try {
+                        player.stop();
+                        // kind of brutal that something where the state changes dynamically
+                        // likes to generate exceptions that really can't be avoided as
+                        // the state can change between testing if its playing and telling it
+                        // to stop
+                    } catch (IllegalStateException e) {
+                        UserError.Log.e(TAG, "Exception when stopping sound media player: " + e);
+                    }
+                }
+            } catch (IllegalStateException e) {
+                UserError.Log.d(TAG, "Exception when detecting if media player playing: " + e);
+            }
+            try {
+                player.release();
+            } catch (IllegalStateException e) {
+                UserError.Log.d(TAG, "Exception when releasing media player");
+            }
         }
+    }
+
+    private static void stopReleaseAndNullPlayer() {
+        try {
+            playerLock.acquire();
+            try {
+                stopAndReleasePlayer(player);
+                player = null;
+            } catch (Exception e) {
+                UserError.Log.e(TAG, "Got exception trying to stop and release player: " + e);
+            } finally {
+                playerLock.release();
+            }
+        } catch (InterruptedException e) {
+            UserError.Log.e(TAG, "Got interrupted exception with player semaphore wait 3 " + e);
+        }
+    }
+
+    public static void delayedMediaPlayerRelease(final MediaPlayer mp) {
+        new Thread(() -> {
+            // android calls the onCompletionListener before the sound has actually finished!
+            threadSleep(200);
+            mp.release();
+        }).start();
+    }
+
+    public static boolean setMediaDataSource(final Context context, final MediaPlayer mp, final Uri uri) {
+        try {
+            if (uri.toString().startsWith("/")) {
+                UserError.Log.d(TAG, "Setting old style uri: " + uri);
+                mp.setDataSource(context, uri);
+            } else {
+                UserError.Log.d(TAG, "Setting new style uri: " + uri);
+                val pfd = context.getContentResolver().openFileDescriptor(uri, "r");
+                mp.setDataSource(pfd.getFileDescriptor());
+                pfd.close();
+            }
+            return true;
+        } catch (IOException | NullPointerException | IllegalArgumentException | SecurityException ex) {
+            UserError.Log.e(TAG, "setMediaDataSource from uri failed: uri = " + uri.toString(), ex);
+            // fall through
+        }
+        return false;
+    }
+
+    // from resource id
+    public static boolean setMediaDataSource(final Context context, final MediaPlayer mp, final int resid) {
+        try {
+            AssetFileDescriptor afd = context.getResources().openRawResourceFd(resid);
+            if (afd == null) return false;
+            mp.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+            afd.close();
+            return true;
+        } catch (IOException | NullPointerException | IllegalArgumentException | SecurityException ex) {
+            UserError.Log.e(TAG, "setMediaDataSource from resource id failed:", ex);
+        }
+        return false;
+    }
+
+    public static void playSoundUri(final String soundUri) {
+        try {
+            playerLock.acquire();
+            try {
+                JoH.getWakeLock("joh-playsound", 10000);
+                player = MediaPlayer.create(xdrip.getAppContext(), Uri.parse(soundUri));
+                if (player == null) {
+                    player = new MediaPlayer();
+                    if (!setMediaDataSource(xdrip.getAppContext(), player, Uri.parse(soundUri))) {
+                        UserError.Log.e(TAG, "Failed to set data source for " + soundUri + " reverting to default");
+                        player = MediaPlayer.create(xdrip.getAppContext(), Uri.parse(getResourceURI(R.raw.reminder_default_notification)));
+                        if (player == null) {
+                            UserError.Log.wtf(TAG, "Can't even create media player for default sound");
+                        }
+                    }
+                }
+                player.setOnCompletionListener(mp -> {
+                    UserError.Log.i(TAG, "playSoundUri: onCompletion called (finished playing) ");
+                    delayedMediaPlayerRelease(mp);
+                });
+                player.setOnErrorListener((mp, what, extra) -> {
+                    UserError.Log.e(TAG, "playSoundUri: onError called (what: " + what + ", extra: " + extra);
+                    // possibly media player error; release is handled in onCompletionListener
+                    return false;
+                });
+
+                player.setLooping(false);
+                player.start();
+            } catch (Exception e) {
+                Log.wtf(TAG, "Failed to play audio: " + soundUri + " exception:" + e);
+            } finally {
+                playerLock.release();
+            }
+        } catch (InterruptedException e) {
+            UserError.Log.e(TAG, "Got interrupted exception with player semaphore wait 1 " + e);
+        }
+    }
+
+    public static void stopSoundUri() {
+        UserError.Log.d(TAG, "stopSoundUri called");
+        stopReleaseAndNullPlayer();
     }
 
     public static boolean validateMacAddress(final String mac) {
@@ -1091,11 +1251,14 @@ public class JoH {
         try {
             Object clone = obj.getClass().newInstance();
             for (Field field : obj.getClass().getDeclaredFields()) {
-                field.setAccessible(true);
-                field.set(clone, field.get(obj));
+                if (!Modifier.isFinal(field.getModifiers())) {
+                    field.setAccessible(true);
+                    field.set(clone, field.get(obj));
+                }
             }
             return clone;
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return null;
         }
     }
@@ -1218,6 +1381,21 @@ public class JoH {
         view.setDrawingCacheEnabled(true);
         view.buildDrawingCache(true);
         final Bitmap bitmap = view.getDrawingCache(true);
+        return bitmap;
+    }
+
+    public static Bitmap getBitmapFromView(final View root, final int width, final int height) {
+        val params = new ViewGroup.LayoutParams(width, height);
+        root.setLayoutParams(params);
+        val measuredWidth = View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY);
+        val measuredHeight = View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY);
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        val canvas = new Canvas(bitmap);
+        canvas.drawColor(Color.WHITE);
+        root.destroyDrawingCache();
+        root.measure(measuredWidth, measuredHeight);
+        root.layout(0, 0, root.getMeasuredWidth(), root.getMeasuredHeight());
+        root.draw(canvas);
         return bitmap;
     }
 
@@ -1400,8 +1578,7 @@ public class JoH {
 
     public static boolean areWeRunningOnAndroidWear() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH
-                && (xdrip.getAppContext().getResources().getConfiguration().uiMode
-                & Configuration.UI_MODE_TYPE_MASK) == Configuration.UI_MODE_TYPE_WATCH;
+                && xdrip.getAppContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_WATCH);
     }
 
     public static boolean isAirplaneModeEnabled(Context context) {
@@ -1644,6 +1821,20 @@ public class JoH {
         UserError.Log.d(TAG, "unBond() finished");
     }
 
+    public static Field getField(final Class clazz, final String fieldName)
+            throws NoSuchFieldException {
+        try {
+            return clazz.getDeclaredField(fieldName);
+        } catch (NoSuchFieldException e) {
+            Class superClass = clazz.getSuperclass();
+            if (superClass == null) {
+                throw e;
+            } else {
+                return getField(superClass, fieldName);
+            }
+        }
+    }
+
 
     public static Map<String, String> bundleToMap(Bundle bundle) {
         final HashMap<String, String> map = new HashMap<>();
@@ -1669,6 +1860,13 @@ public class JoH {
         bb.put(bytes);
         return bb;
     }
+
+    public static byte[] splitBytes(final byte[] source, final int start, final int length) {
+        final byte[] newBytes = new byte[length];
+        System.arraycopy(source, start, newBytes, 0, length);
+        return newBytes;
+    }
+
 
     public static long checksum(byte[] bytes) {
         if (bytes == null) return 0;

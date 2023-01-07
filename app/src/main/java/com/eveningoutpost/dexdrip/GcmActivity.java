@@ -52,6 +52,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.eveningoutpost.dexdrip.Models.JoH.isOldVersion;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 /**
@@ -202,6 +203,7 @@ public class GcmActivity extends FauxActivity {
                 if (datum != null) {
                     if (overHeated()) break;
                     if ((timenow - datum.timestamp) > MAX_QUEUE_AGE
+                            || !isOldVersion(context)
                             || datum.resent > MAX_RESENT) {
                         queuechanged = true;
                         Log.i(TAG, "Removing old unacknowledged queue item: resent: " + datum.resent);
@@ -698,8 +700,11 @@ public class GcmActivity extends FauxActivity {
             Log.e(TAG, "Rate limited start libre-allhouse");
             return;
         }
-
-        GcmActivity.sendMessage(myIdentity(), "libreBlock", libreBlock);
+        if (!Pref.getBooleanDefaultFalse("plus_follower_save_power")) {
+            GcmActivity.sendMessage(myIdentity(), "libreBlock", libreBlock);
+        } else {
+            UserError.Log.d(TAG, "Saving power and network by not sending libreBlock");
+        }
     }
 
     public static void clearLastCalibration(String uuid) {
@@ -921,7 +926,7 @@ public class GcmActivity extends FauxActivity {
             if (GcmActivity.last_send_previous > GcmActivity.last_ack) {
                 if (Pref.getLong("sync_warning_never", 0) == 0) {
 
-                    if (PreferencesNames.SYNC_VERSION.equals("1") && JoH.isOldVersion(context)) {
+                    if (PreferencesNames.SYNC_VERSION.equals("1") && isOldVersion(context)) {
                         final long since_send = JoH.tsl() - GcmActivity.last_send_previous;
                         if (since_send > 60000) {
                             if (!DesertSync.isEnabled()) {

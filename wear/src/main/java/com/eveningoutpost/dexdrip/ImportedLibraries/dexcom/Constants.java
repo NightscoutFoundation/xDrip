@@ -94,8 +94,8 @@ public class Constants {
         DOWN_45(5,"\u2198", "FortyFiveDown", -1d),
         SINGLE_DOWN(6,"\u2193", "SingleDown", -2d),
         DOUBLE_DOWN(7,"\u21CA", "DoubleDown", -3.5d),
-        NOT_COMPUTABLE(8, "", "NOT_COMPUTABLE"),
-        OUT_OF_RANGE(9, "", "OUT_OF_RANGE");
+        NOT_COMPUTABLE(8, "", "NotComputable"),
+        OUT_OF_RANGE(9, "", "RateOutOfRange");
 
         private String arrowSymbol;
         private String trendName;
@@ -114,6 +114,7 @@ public class Constants {
             this.trendName = name;
             this.threshold = threshold;
         }
+
         TREND_ARROW_VALUES(int id) {
             this(id,null, null, null);
         }
@@ -132,20 +133,22 @@ public class Constants {
 
         public String friendlyTrendName() {
             if (trendName == null) {
-                return this.name().replace("_", " ");
+                return name().replace("_", " ");
             } else {
-                return this.trendName;
+                return trendName;
             }
         }
 
-        public int getID(){
+        public int getID() {
             return myID;
         }
+
         public static TREND_ARROW_VALUES getTrend(double value) {
             TREND_ARROW_VALUES finalTrend = NONE;
             for (TREND_ARROW_VALUES trend : values()) {
                 if (trend.threshold == null)
                     continue;
+
                 if (value > trend.threshold)
                     return finalTrend;
                 else
@@ -158,6 +161,26 @@ public class Constants {
                 if (trend.trendName.equalsIgnoreCase(value))
                     return trend.threshold;
             throw new IllegalArgumentException();
+        }
+
+        public static TREND_ARROW_VALUES getEnum(int id) {
+            for (TREND_ARROW_VALUES t : values()) {
+                if (t.myID == id)
+                    return t;
+            }
+            return OUT_OF_RANGE;
+        }
+
+        public static TREND_ARROW_VALUES getEnum(String value) {
+            try {
+                int val = Integer.parseInt(value);
+                return getEnum(val);
+            } catch (NumberFormatException e) {
+                for (TREND_ARROW_VALUES trend : values())
+                    if (trend.friendlyTrendName().equalsIgnoreCase(value) || trend.name().equalsIgnoreCase(value))
+                        return trend;
+            }
+            return OUT_OF_RANGE;
         }
 
     }

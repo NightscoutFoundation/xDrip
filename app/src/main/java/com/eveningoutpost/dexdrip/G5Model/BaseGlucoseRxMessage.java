@@ -30,7 +30,7 @@ public abstract class BaseGlucoseRxMessage extends BaseMessage {
         return CalibrationState.parse(state);
     }
 
-    boolean usable() {
+    public boolean usable() {
         return calibrationState().usableGlucose();
     }
 
