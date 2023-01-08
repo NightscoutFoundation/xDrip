@@ -483,12 +483,12 @@ public class BluetoothGlucoseMeter extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        if (Build.VERSION.SDK_INT < 29) {
+        if (Build.VERSION.SDK_INT < 26) {
             final IntentFilter pairingRequestFilter = new IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST);
             pairingRequestFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY - 1);
             registerReceiver(mPairingRequestRecevier, pairingRequestFilter);
         } else {
-            UserError.Log.d(TAG, "Not registering pairing receiver on Android 10+");
+            UserError.Log.d(TAG, "Not registering pairing receiver on Android 8+");
         }
     }
 

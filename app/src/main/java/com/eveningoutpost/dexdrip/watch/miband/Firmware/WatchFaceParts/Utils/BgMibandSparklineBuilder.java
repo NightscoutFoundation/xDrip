@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 
 import com.eveningoutpost.dexdrip.UtilityModels.BgSparklineBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.HPointValue;
 
 import java.util.ArrayList;
 import java.util.List;

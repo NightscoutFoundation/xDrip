@@ -311,23 +311,23 @@
             android:name=".UpdateActivity"
             />
         <activity
-            android:name=".Tables.CalibrationDataTable"
+            android:name=".tables.CalibrationDataTable"
             android:configChanges="orientation|screenSize"
             android:label="@string/calibration_data_table" />
         <activity
-            android:name=".Tables.BgReadingTable"
+            android:name=".tables.BgReadingTable"
             android:configChanges="orientation|screenSize"
             android:label="@string/bg_readings_table" />
         <activity
-            android:name=".Tables.SensorDataTable"
+            android:name=".tables.SensorDataTable"
             android:configChanges="orientation|screenSize"
             android:label="@string/sensor_table" />
         <activity
-            android:name=".Tables.BloodTestTable"
+            android:name=".tables.BloodTestTable"
             android:configChanges="orientation|screenSize"
             android:label="@string/bg_readings_table" />
         <activity
-            android:name=".Tables.TreatmentsTable"
+            android:name=".tables.TreatmentsTable"
             android:configChanges="orientation|screenSize"
             android:label="@string/bg_readings_table" />
         <activity android:name=".SensorPermissionActivity" />

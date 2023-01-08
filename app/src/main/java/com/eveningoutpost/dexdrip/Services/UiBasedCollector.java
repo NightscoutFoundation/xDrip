@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.Services;
 
+import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
+import static com.eveningoutpost.dexdrip.cgm.dex.ClassifierAction.lastReadingTimestamp;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.UiBased;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getDexCollectionType;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
@@ -21,6 +23,7 @@ import android.widget.RemoteViews;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -30,6 +33,7 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Unitized;
+import com.eveningoutpost.dexdrip.cgm.dex.BlueTails;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -54,6 +58,9 @@ public class UiBasedCollector extends NotificationListenerService {
 
     private static final HashSet<String> coOptedPackages = new HashSet<>();
 
+    @VisibleForTesting
+    String lastPackage;
+
     static {
         coOptedPackages.add("com.dexcom.g6");
         coOptedPackages.add("com.dexcom.g6.region1.mmol");
@@ -64,6 +71,9 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackages.add("com.camdiab.fx_alert.mgdl");
         coOptedPackages.add("com.camdiab.fx_alert.hx.mmoll");
         coOptedPackages.add("com.camdiab.fx_alert.hx.mgdl");
+        coOptedPackages.add("com.medtronic.diabetes.guardian");
+        coOptedPackages.add("com.medtronic.diabetes.minimedmobile.eu");
+        coOptedPackages.add("com.medtronic.diabetes.minimedmobile.us");
     }
 
     @Override
@@ -73,7 +83,9 @@ public class UiBasedCollector extends NotificationListenerService {
             if (getDexCollectionType() == UiBased) {
                 UserError.Log.d(TAG, "Notification from: " + fromPackage);
                 if (sbn.isOngoing()) {
+                    lastPackage = fromPackage;
                     processNotification(sbn.getNotification());
+                    BlueTails.immortality();
                 }
             } else {
                 if (JoH.pratelimit("warn-notification-access", 7200)) {
@@ -111,6 +123,19 @@ public class UiBasedCollector extends NotificationListenerService {
         }
     }
 
+    String filterString(final String value) {
+        if (lastPackage == null) return value;
+        switch (lastPackage) {
+            default:
+                return value
+                        .replace("mmol/L", "")
+                        .replace("mg/dL", "")
+                        .replace("≤", "")
+                        .replace("≥", "")
+                        .trim();
+        }
+    }
+
     @SuppressWarnings("UnnecessaryLocalVariable")
     private void processRemote(final RemoteViews cview) {
         if (cview == null) return;
@@ -127,14 +152,15 @@ public class UiBasedCollector extends NotificationListenerService {
                 val text = tv.getText() != null ? tv.getText().toString() : "";
                 val desc = tv.getContentDescription() != null ? tv.getContentDescription().toString() : "";
                 UserError.Log.d(TAG, "Examining: >" + text + "< : >" + desc + "<");
+                val ftext = filterString(text);
                 if (Unitized.usingMgDl()) {
-                    mgdl = Integer.parseInt(text);
+                    mgdl = Integer.parseInt(ftext);
                     if (mgdl > 0) {
                         matches++;
                     }
                 } else {
-                    if (isValidMmol(text)) {
-                        val result = JoH.tolerantParseDouble(text, -1);
+                    if (isValidMmol(ftext)) {
+                        val result = JoH.tolerantParseDouble(ftext, -1);
                         if (result != -1) {
                             mgdl = (int) Math.round(Unitized.mgdlConvert(result));
                             if (mgdl > 0) {
@@ -156,8 +182,11 @@ public class UiBasedCollector extends NotificationListenerService {
             val timestamp = JoH.tsl();
             UserError.Log.d(TAG, "Found specific value: " + mgdl);
 
-            if ((mgdl >= 40 && mgdl <= 400)) {
-                if (BgReading.getForPreciseTimestamp(timestamp, DexCollectionType.getCurrentDeduplicationPeriod(), false) == null) {
+            if ((mgdl >= 40 && mgdl <= 405)) {
+                val grace = DexCollectionType.getCurrentSamplePeriod() * 4;
+                val recent = msSince(lastReadingTimestamp) < grace;
+                val period = recent ? grace : DexCollectionType.getCurrentDeduplicationPeriod();
+                if (BgReading.getForPreciseTimestamp(timestamp, period, false) == null) {
                     if (isJammed(mgdl)) {
                         UserError.Log.wtf(TAG, "Apparently value is jammed at: " + mgdl);
                     } else {

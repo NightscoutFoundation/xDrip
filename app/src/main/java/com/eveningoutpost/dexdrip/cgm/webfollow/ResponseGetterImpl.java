@@ -75,7 +75,7 @@ public class ResponseGetterImpl implements ResponseGetter {
                     UserError.Log.d(TAG, "RES: " + res);
                     return res;
                 } else {
-                    throw new RuntimeException("Got failure response code: " + response.code() + "\n" + (response.body() != null ? response.body().string() : ""));
+                    throw new RuntimeException(response.code() + " Got failure response code: " + response.code() + "\n" + (response.body() != null ? response.body().string() : ""));
                 }
             } catch (IOException | NullPointerException exception) {
                 val msg = "Error: " + exception + " " + c.url;

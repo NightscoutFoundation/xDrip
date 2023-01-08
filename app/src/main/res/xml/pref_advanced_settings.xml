@@ -1005,6 +1005,30 @@
                 android:key="broadcast_service_enabled"
                 android:summary="@string/summary_broadcast_service_api"
                 android:title="@string/title_broadcast_service_api" />
+            <PreferenceScreen
+                android:title="Google Health Connect"
+                android:summary="Send and receive data from Google Health Connect and Google Fit"
+                android:key="health_connect_screen">
+
+                <SwitchPreference
+                    android:key="health_connect_enable"
+                    android:title="Use Health Connect"
+                    android:summary="Requires Android 8+ and Google companion application"
+                    />
+                <SwitchPreference
+                    android:key="health_connect_receive"
+                    android:defaultValue="true"
+                    android:summary="Get data from Health Connect"
+                    android:dependency="health_connect_enable"
+                    />
+                <SwitchPreference
+                    android:key="health_connect_send"
+                    android:summary="Send data to Health Connect"
+                    android:dependency="health_connect_enable"
+                    />
+
+
+            </PreferenceScreen>
         </PreferenceScreen>
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="xdrip_less_common_settings"
@@ -1285,8 +1309,13 @@
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="bluetooth_allow_background_scans"
-                    android:summary="Use Android 8+ background scanning feature"
-                    android:title="Use Background Scans" />
+                    android:summary="@string/android_8_background_scanning"
+                    android:title="@string/use_background_scans" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="bluetails_enabled"
+                    android:summary="Use Bluetooth with companion app data source"
+                    android:title="Companion Bluetooth" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="bluetooth_excessive_wakelocks"
@@ -1390,6 +1419,7 @@
                 android:title="@string/extra_logging">
                 <CheckBoxPreference
                     android:defaultValue="false"
+                    android:enabled="false"
                     android:key="enable_bugfender"
                     android:summary="@string/send_logs_to_developer"
                     android:title="@string/enable_remote_logging" />
@@ -1476,6 +1506,11 @@
                     android:key="predictive_bg"
                     android:summary="@string/predictive_readings_old"
                     android:title="@string/display_predictive_values" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="show-unsmoothed-values-as-plugin"
+                    android:summary="@string/show_unsmoothed_summary"
+                    android:title="@string/show_unsmoothed" />
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:dependency="engineering_mode"

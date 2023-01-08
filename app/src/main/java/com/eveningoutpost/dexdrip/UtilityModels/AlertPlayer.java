@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 import static com.eveningoutpost.dexdrip.Models.JoH.delayedMediaPlayerRelease;
+import static com.eveningoutpost.dexdrip.Models.JoH.setMediaDataSource;
 import static com.eveningoutpost.dexdrip.Models.JoH.stopAndReleasePlayer;
 
 import android.app.Notification;
@@ -313,34 +314,6 @@ public class AlertPlayer {
     }
 
 
-    // from file uri
-    private boolean setMediaDataSource(Context context, MediaPlayer mp, Uri uri) {
-        try {
-            mp.setDataSource(context, uri);
-            return true;
-        } catch (IOException | NullPointerException | IllegalArgumentException | SecurityException ex) {
-            Log.e(TAG, "setMediaDataSource from uri failed: uri = " + uri.toString(), ex);
-            // fall through
-        }
-        return false;
-    }
-
-    // from resource id
-    private boolean setMediaDataSource(Context context, MediaPlayer mp, int resid) {
-        try {
-            AssetFileDescriptor afd = context.getResources().openRawResourceFd(resid);
-            if (afd == null) return false;
-
-            mp.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
-            afd.close();
-
-            return true;
-        } catch (IOException | NullPointerException | IllegalArgumentException | SecurityException ex) {
-            Log.e(TAG, "setMediaDataSource from resource id failed:", ex);
-        }
-        return false;
-    }
-
     protected synchronized void playFile(final Context ctx, final String fileName, final float volumeFrac, final boolean forceSpeaker, final boolean overrideSilentMode) {
         Log.i(TAG, "playFile: called fileName = " + fileName);
         if (volumeFrac <= 0) {
@@ -390,6 +363,7 @@ public class AlertPlayer {
         try {
             requestAudioFocus();
             mediaPlayer.setAudioStreamType(streamType);
+            mediaPlayer.setLooping(false);
             mediaPlayer.setOnPreparedListener(mp -> {
                 adjustCurrentVolumeForAlert(streamType, volumeFrac, overrideSilentMode);
                 mediaPlayer.start();

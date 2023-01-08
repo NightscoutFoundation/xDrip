@@ -1,5 +1,10 @@
 package com.eveningoutpost.dexdrip.Models;
 
+import static com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants.TREND_ARROW_VALUES.NOT_COMPUTABLE;
+import static com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants.TREND_ARROW_VALUES.getTrend;
+import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPluginFromPreferences;
+import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.newCloseSensorData;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -56,9 +61,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-import static com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants.TREND_ARROW_VALUES.*;
-import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPluginFromPreferences;
-import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.newCloseSensorData;
+import lombok.val;
 
 @Table(name = "BgReadings", id = BaseColumns._ID)
 public class BgReading extends Model implements ShareUploadableBg {
@@ -835,6 +838,21 @@ public class BgReading extends Model implements ShareUploadableBg {
         }
     }
 
+    public static List<BgReading> latestDeduplicateToPeriod(final int number, final boolean is_follower, final long period) {
+        val input = latest(number * 6, is_follower);
+        if (input == null) return null;
+        val output = new ArrayList<BgReading>(number);
+        long last = -1L;
+        for (val item : input) {
+            if (Math.abs(item.timestamp - last) >= period) {
+                output.add(item);
+                if (output.size() >= number) break;
+                last = item.timestamp;
+            }
+        }
+        return output;
+    }
+
     public static boolean isDataStale() {
         final BgReading last = lastNoSenssor();
         if (last == null) return true;
@@ -1171,7 +1189,7 @@ public class BgReading extends Model implements ShareUploadableBg {
             return null;
         }
         // TODO slope!!
-        final BgReading existing = getForPreciseTimestamp(timestamp, Constants.MINUTE_IN_MS);
+        final BgReading existing = getForPreciseTimestamp(timestamp, DexCollectionType.getCurrentDeduplicationPeriod());
         if (existing == null) {
             Calibration calibration = Calibration.lastValid();
             final BgReading bgReading = new BgReading();

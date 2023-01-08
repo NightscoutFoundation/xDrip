@@ -50,6 +50,7 @@
     <string name="pref_dialog_mongodb_collection">Εισάγετε όνομα συλλογής</string>
     <string name="pref_message_mongodb_collection">Αυτό είναι το όνομα της συλλογής όπου θα αποθηκεύονται τα δεδομένα CGM</string>
     <string name="pref_title_mongodb_device_status_collection">Όνομα συλλογής κατάστασης συσκευής</string>
+    <string name="pref_dialog_mongodb_device_status_collection">Όνομα συλλογής κατάστασης συσκευής\"</string>
     <string name="pref_message_mongodb_device_status_collection">Όνομα συλλογής όπου θα αποθηκεύονται τα δεδομένα μπαταρίας και άλλων συσκευών</string>
     <!-- API Settings -->
     <string name="pref_title_api">Συγχρονισμός Nightscout (REST-API)</string>

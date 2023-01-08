@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="InnerclassSeparator"
     package="com.eveningoutpost.dexdrip"
-    android:installLocation="internalOnly">
+    android:installLocation="internalOnly"
+    tools:ignore="InnerclassSeparator">
+
+    <uses-sdk tools:overrideLibrary="androidx.health.connect.client" />
     <!-- To receive data from HAPP. -->
-    <uses-permission android:name="com.eveningoutpost.dexdrip.permissions.RECEIVE_EXTERNAL_STATUSLINE" />
+    <uses-permission android:name="com.eveningoutpost.dexdrip.permissions.RECEIVE_EXTERNAL_STATUSLINE" /> <!-- To receive data from Aidex -->
+    <uses-permission android:name="com.microtechmd.cgms.aidex.permissions.RECEIVE_BG_ESTIMATE" />
 
     <uses-feature
         android:name="android.hardware.bluetooth_le"
@@ -62,9 +65,25 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
-        android:usesCleartextTraffic="true"
+        android:maxAspectRatio="2.1"
         android:theme="@style/AppTheme"
-        android:maxAspectRatio="2.1">
+        android:usesCleartextTraffic="true">
+        <activity
+            android:name=".HealthPrivacy"
+            android:label="xDrip Privacy Policy"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+            </intent-filter>
+            <meta-data
+                android:name="health_permissions"
+                android:resource="@array/health_permissions" />
+        </activity>
+        <activity
+            android:name=".cloud.backup.BackupActivity"
+            android:exported="false"
+            android:label="Cloud Backup" />
+
         <meta-data
             android:name="AA_DB_NAME"
             android:value="DexDrip.db" />
@@ -87,8 +106,9 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
+                android:resource="@xml/provider_paths" />
         </provider>
+
         <activity
             android:name=".Home"
             android:label="@string/app_name_launcher"
@@ -109,8 +129,7 @@
             android:name=".Services.DexCollectionService"
             android:enabled="true"
             android:exported="true"
-            android:foregroundServiceType="connectedDevice|location"
-            />
+            android:foregroundServiceType="connectedDevice|location" />
         <service
             android:name=".Services.WifiCollectionService"
             android:enabled="true"
@@ -120,7 +139,7 @@
         <service
             android:name=".Services.broadcastservice.BroadcastService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
         <service
             android:name=".wearintegration.WatchUpdaterService"
             android:exported="true">
@@ -145,11 +164,11 @@
             android:exported="false" />
 
         <activity
-            android:name=".Tables.BgReadingTable"
+            android:name=".tables.BgReadingTable"
             android:configChanges="orientation|screenSize"
             android:label="@string/bg_readings_table" />
         <activity
-            android:name=".Tables.SensorDataTable"
+            android:name=".tables.SensorDataTable"
             android:configChanges="orientation|screenSize"
             android:label="@string/sensor_table" />
         <activity
@@ -229,13 +248,16 @@
                 <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".utils.framework.IncomingCallsReceiver" android:enabled="true" >
+        <receiver
+            android:name=".utils.framework.IncomingCallsReceiver"
+            android:enabled="true">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
             </intent-filter>
         </receiver>
+
         <activity
-            android:name=".Tables.CalibrationDataTable"
+            android:name=".tables.CalibrationDataTable"
             android:label="@string/calibration_data_table" />
 
         <service android:name=".GcmListenerSvc">
@@ -264,19 +286,22 @@
             android:name=".Services.SyncService"
             android:enabled="true"
             android:exported="true" />
-
         <service
             android:name=".ImportedLibraries.dexcom.SyncingService"
             android:enabled="true"
             android:exported="true" />
-
-        <service android:name=".Services.UiBasedCollector"
+        <service
+            android:name=".Services.UiBasedCollector"
             android:label="UiBasedCollector"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
+
+        <!-- below fixes regression bugs with google play services where it crashes if play is not installed on a device -->
+        <receiver android:name="com.google.android.gms.measurement.AppMeasurementReceiver" android:enabled="true" android:exported="false" tools:node="remove"/>
+        <service android:name="com.google.android.gms.measurement.AppMeasurementService" android:enabled="true" android:exported="false" tools:node="remove"/>
 
         <activity
             android:name=".stats.StatsActivity"
@@ -369,20 +394,18 @@
             android:exported="true" />
         <service
             android:name=".Services.Ob1G5CollectionService"
-            android:foregroundServiceType="connectedDevice|location"
-            android:enabled="true" />
+            android:enabled="true"
+            android:foregroundServiceType="connectedDevice|location" />
         <service
             android:name=".insulin.pendiq.PendiqService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="connectedDevice|location"
-            />
+            android:foregroundServiceType="connectedDevice|location" />
         <service
             android:name=".cgm.medtrum.MedtrumCollectionService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="connectedDevice|location"
-            />
+            android:foregroundServiceType="connectedDevice|location" />
 
         <activity
             android:name=".ShareTest"
@@ -443,8 +466,7 @@
             android:name=".UtilityModels.pebble.PebbleWatchSync"
             android:enabled="true"
             android:exported="true"
-            android:foregroundServiceType="connectedDevice|location"
-            />
+            android:foregroundServiceType="connectedDevice|location" />
         <service
             android:name=".Services.DailyIntentService"
             android:exported="false" />
@@ -494,7 +516,17 @@
                 <action android:name="com.eveningoutpost.dexdrip.OOP2_BLUETOOTH_ENABLE_RESULT" />
             </intent-filter>
         </receiver>
-        <receiver android:name="com.eveningoutpost.dexdrip.watch.thinjam.io.ThinJamApiReceiver">
+        <receiver android:name=".receivers.aidex.AidexReceiver">
+            <intent-filter>
+                <action android:name="com.microtechmd.cgms.aidex.action.BgEstimate" />
+                <action android:name="com.microtechmd.cgms.aidex.action.Calibration" />
+                <action android:name="com.microtechmd.cgms.aidex.action.SensorNew" />
+                <action android:name="com.microtechmd.cgms.aidex.action.SensorRestart" />
+                <action android:name="com.microtechmd.cgms.aidex.action.SensorStop" />
+                <action android:name="com.microtechmd.cgms.aidex.action.Notification" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".watch.thinjam.io.ThinJamApiReceiver">
             <intent-filter>
                 <action android:name="com.eveningoutpost.dexdrip.THINJAM_API" />
             </intent-filter>
@@ -503,6 +535,9 @@
             <intent-filter>
                 <action android:name="com.librelink.app.ThirdPartyIntegration.GLUCOSE_READING" />
                 <action android:name="com.librelink.app.ThirdPartyIntegration.SENSOR_ACTIVATE" />
+                <action android:name="com.librelink.app.ThirdPartyIntegration.FOUND_DEVICE" />
+                <action android:name="com.librelink.app.ThirdPartyIntegration.CONNECTION_STATE" />
+                <action android:name="com.librelink.app.ThirdPartyIntegration.SENSOR_SCAN" />
             </intent-filter>
         </receiver>
         <receiver android:name=".UtilityModels.BroadcastSnoozeReceiver">
@@ -529,8 +564,8 @@
         <receiver
             android:name=".receiver.ReminderReceiver"
             android:enabled="true"
-            android:exported="true">
-        </receiver>
+            android:exported="true"></receiver>
+
         <service
             android:name=".TaskService"
             android:exported="true"
@@ -539,11 +574,16 @@
                 <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY" />
             </intent-filter>
         </service>
-        <service android:name=".Services.AlwaysOnDisplayService" android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+        <service
+            android:name=".Services.AlwaysOnDisplayService"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService"/>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
-            <meta-data android:name="android.accessibilityservice" android:resource="@xml/accessibility_service"/>
+
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service" />
         </service>
         <service
             android:name=".UtilityModels.XDripDreamService"
@@ -598,7 +638,6 @@
             android:name=".utils.SdcardImportExport"
             android:configChanges="orientation|screenSize"
             android:label="@string/settings_on_external_storage" />
-
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -616,18 +655,17 @@
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_maps"
             android:noHistory="true" />
+        <activity
+            android:name=".profileeditor.BasalProfileEditor"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/basal_editor"
+            android:screenOrientation="landscape" />
 
-                <activity
-                    android:name=".profileeditor.BasalProfileEditor"
-                    android:configChanges="orientation|keyboardHidden"
-                    android:label="@string/basal_editor"
-                    android:screenOrientation="landscape" />
         <service
             android:name=".Services.DoNothingService"
             android:enabled="true"
             android:exported="true"
-            android:foregroundServiceType="connectedDevice|location"
-            />
+            android:foregroundServiceType="connectedDevice|location" />
 
         <activity android:name=".HelpActivity" />
         <activity
@@ -718,21 +756,24 @@
             android:name=".wearintegration.Amazfitservice"
             android:enabled="true"
             android:exported="true" />
-        <service android:name=".watch.lefun.LeFunService"
-            android:foregroundServiceType="connectedDevice|location"
-            />
-        <service android:name=".watch.miband.MiBandService"
-            android:foregroundServiceType="connectedDevice|location"
-            />
-        <service android:name=".cgm.nsfollow.NightscoutFollowService"
-            android:foregroundServiceType="dataSync"
-            />
-        <service android:name=".insulin.inpen.InPenService"
-            android:foregroundServiceType="connectedDevice|location"
-            />
-        <service android:name=".cgm.sharefollow.ShareFollowService"
-            android:foregroundServiceType="dataSync"
-            />
+        <service
+            android:name=".watch.lefun.LeFunService"
+            android:foregroundServiceType="connectedDevice|location" />
+        <service
+            android:name=".watch.miband.MiBandService"
+            android:foregroundServiceType="connectedDevice|location" />
+        <service
+            android:name=".cgm.nsfollow.NightscoutFollowService"
+            android:foregroundServiceType="dataSync" />
+        <service
+            android:name=".insulin.inpen.InPenService"
+            android:foregroundServiceType="connectedDevice|location" />
+        <service
+            android:name=".cgm.sharefollow.ShareFollowService"
+            android:foregroundServiceType="dataSync" />
+        <service
+            android:name=".cgm.carelinkfollow.CareLinkFollowService"
+            android:foregroundServiceType="dataSync" />
 
         <activity
             android:name=".EventLogActivity"
@@ -744,7 +785,6 @@
         <activity
             android:name=".ui.activities.SelectAudioDevice"
             android:label="@string/select_device" />
-
         <activity
             android:name=".UtilityModels.MtpConfigureActivity"
             android:label="USB programmer" />
@@ -752,16 +792,19 @@
             android:name=".ui.activities.NumberWallPreview"
             android:exported="true"
             android:label="@string/number_wall_config" />
-        <activity android:name=".ui.activities.TimePickerPrefActivity"></activity>
-        <activity android:name=".ui.activities.DatabaseAdmin"
-            android:label="Database Admin"/>
-        <activity android:name=".ui.activities.ThinJamActivity"
+        <activity android:name=".ui.activities.TimePickerPrefActivity" />
+        <activity
+            android:name=".ui.activities.DatabaseAdmin"
+            android:label="Database Admin" />
+        <activity
+            android:name=".ui.activities.ThinJamActivity"
             android:configChanges="orientation|screenSize"
-            android:launchMode="singleTask"
-            android:label="BlueJay Admin"/>
-        <service android:name=".watch.thinjam.BlueJayService"
-            android:foregroundServiceType="connectedDevice|location"
-            />
+            android:label="BlueJay Admin"
+            android:launchMode="singleTask" />
+
+        <service
+            android:name=".watch.thinjam.BlueJayService"
+            android:foregroundServiceType="connectedDevice|location" />
         <service android:name=".cgm.webfollow.WebFollowService" />
     </application>
 
