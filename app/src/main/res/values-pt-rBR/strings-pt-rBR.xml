@@ -815,7 +815,13 @@
     <string name="default_liver_maximum_impact">Impacto Máximo do Fígado Padrão (0-1)</string>
     <string name="remote_snoozes">Enviar e receber adiamentos remotos</string>
     <string name="remote_snoozing">Adiamento remoto</string>
+    <string name="allow_remotes_silence">Permite dispositivos móveis remotos enviar comando silenciar alarmes</string>
+    <string name="acccept_remote_snoozes">Aceitar Silenciar remoto</string>
+    <string name="yes_send_it">SIM, enviar!</string>
+    <string name="movement_detection_and_vehicle_mode">Detecção de Movimento e Modo Veículo</string>
     <string name="xdrip_motion_tracking">Detecção de Movimento</string>
+    <string name="detect_motion_types">Usar sensores para detectar tipos de movimento</string>
+    <string name="enable_motion_tracking">Activar Detecção de Movimento</string>
     <string name="stop_sensor">Parar Sensor</string>
     <string name="initial_calibration">Calibração dupla</string>
     <string name="bluetooth_scan">Procura Bluetooth</string>
