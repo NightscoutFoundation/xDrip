@@ -458,10 +458,6 @@ public class NFCReaderX {
                     long now = JoH.tsl();
                     String SensorSn = LibreUtils.decodeSerialNumberKey(tag.getId());
 
-                    if (SensorSanity.checkLibreSensorChangeIfEnabled(SensorSn)) {
-                        Log.e(TAG, "Problem with Libre Serial Number - not processing");
-                        return;
-                    }
                     // Set the time of the current reading
                     PersistentStore.setLong("libre-reading-timestamp", JoH.tsl());
 
@@ -664,6 +660,15 @@ public class NFCReaderX {
 
                         SensorType sensorType = LibreOOPAlgorithm.getSensorType(patchInfo);
                         Log.uel(TAG, "Libre sensor of type " + sensorType.name() + " detected.");
+
+                        String SensorSn = LibreUtils.decodeSerialNumberKey(patchUid);
+                        // In the case that the wrong sensor was scanned we don't continue processing the data, but we also
+                        // don't stop the sensor. This is a manual case, and the user can scan the correct sensor.
+                        if (SensorSanity.checkLibreSensorChangeIfEnabled(SensorSn, false)) {
+                            Log.e(TAG, "Problem with Libre Serial Number - not processing");
+                            return null;
+                        }
+
                         if (addressed && sensorType != SensorType.Libre1 && sensorType != SensorType.Libre1New) {
                             Log.d(TAG, "Not using addressed mode since not a libre 1 sensor");
                             addressed = false;
