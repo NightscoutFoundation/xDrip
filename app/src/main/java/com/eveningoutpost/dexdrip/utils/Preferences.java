@@ -94,6 +94,7 @@ import com.eveningoutpost.dexdrip.cgm.carelinkfollow.CareLinkFollowService;
 import com.eveningoutpost.dexdrip.healthconnect.HealthConnectEntry;
 import com.eveningoutpost.dexdrip.healthconnect.HealthGamut;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
+import com.eveningoutpost.dexdrip.plugin.Dialog;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
 import com.eveningoutpost.dexdrip.tidepool.TidepoolUploader;
 import com.eveningoutpost.dexdrip.tidepool.UploadChunk;
@@ -127,6 +128,7 @@ import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.val;
 
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
@@ -2234,9 +2236,11 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             transmitterId.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    val activity = getActivity();
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
+                            Dialog.askIfNeeded(activity, (String)newValue);
                             try {
                                 Thread.sleep(1000);
                             } catch (InterruptedException e) {

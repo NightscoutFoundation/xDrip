@@ -81,8 +81,9 @@ public class LocationHelper {
      * Android 6 (Marshmallow) needs GPS enabled for Bluetooth discovery to work.
      *
      * @param activity The currently visible activity.
+     * @return true if we have needed permissions, false if we needed to ask for more
      */
-    public static void requestLocationForBluetooth(final Activity activity) {
+    public static boolean requestLocationForBluetooth(final Activity activity) {
         // Location needs to be enabled for Bluetooth discovery on Marshmallow.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
@@ -102,30 +103,33 @@ public class LocationHelper {
                         }
                     }
                 });
+                return false;
             } else {
                 // Android 10 check additional permissions
                 if (Build.VERSION.SDK_INT >= 29) {
                     if (ContextCompat.checkSelfPermission(activity,
                             ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-                    JoH.show_ok_dialog(activity, activity.getString(R.string.please_allow_permission), activity.getString(R.string.android_10_need_background_location), new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                ActivityCompat.requestPermissions(activity,
-                                        new String[]{ACCESS_BACKGROUND_LOCATION},
-                                        0);
-                            } catch (Exception e) {
-                                JoH.static_toast_long("Got Exception with Android 10 Location Permission: " + e);
+                        JoH.show_ok_dialog(activity, activity.getString(R.string.please_allow_permission), activity.getString(R.string.android_10_need_background_location), new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    ActivityCompat.requestPermissions(activity,
+                                            new String[]{ACCESS_BACKGROUND_LOCATION},
+                                            0);
+                                } catch (Exception e) {
+                                    JoH.static_toast_long("Got Exception with Android 10 Location Permission: " + e);
+                                }
                             }
-                        }
-                    });
+                        });
+                        return false;
                     }
                 }
             }
 
             LocationHelper.requestLocation(activity);
         }
+        return true;
     }
 
     public static void requestLocationForEmergencyMessage(final Activity activity) {

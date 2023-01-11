@@ -13,6 +13,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.CareLinkFollowService;
+import com.eveningoutpost.dexdrip.plugin.Dialog;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import static com.eveningoutpost.dexdrip.ui.dialog.QuickSettingsDialogs.booleanSettingDialog;
@@ -49,7 +50,9 @@ public class DexCollectionHelper {
                             public void run() {
                                 // InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS does not seem functional here
                                 Pref.setString(pref, Pref.getString(pref, "").toUpperCase());
-                                Home.staticRefreshBGCharts();
+                                if (!Dialog.askIfNeeded(activity, Pref.getString(pref, ""))) {
+                                    Home.staticRefreshBGCharts();
+                                }
                                 CollectionServiceStarter.restartCollectionServiceBackground();
                             }
                         });

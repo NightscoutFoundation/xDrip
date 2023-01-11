@@ -20,6 +20,7 @@ import com.eveningoutpost.dexdrip.Services.UiBasedCollector;
 import com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService;
 import com.eveningoutpost.dexdrip.cloud.backup.BackupActivity;
 import com.eveningoutpost.dexdrip.insulin.opennov.data.SaveCompleted;
+import com.eveningoutpost.dexdrip.plugin.Registry;
 import com.eveningoutpost.dexdrip.profileeditor.BasalProfileEditor;
 import com.eveningoutpost.dexdrip.ui.activities.DatabaseAdmin;
 import com.eveningoutpost.dexdrip.ui.dialog.G6CalibrationCodeDialog;
@@ -172,6 +173,10 @@ public class VoiceCommands {
                 break;
             case "start usb configuration":
                 JoH.startActivity(MtpConfigureActivity.class);
+                break;
+            case "erase all plugins":
+                Registry.eraseAll();
+                JoH.static_toast_long("Erasing all plugins");
                 break;
             case "database administration":
                 JoH.startActivity(DatabaseAdmin.class);
