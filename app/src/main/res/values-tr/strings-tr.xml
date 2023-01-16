@@ -1752,4 +1752,5 @@
     <string name="format_string_ago">%s önce</string>
     <string name="use_background_scans">Arka Plan Taramalarını kullanın</string>
     <string name="android_8_background_scanning">Android 8+ arka plan tarama özelliğini kullanın</string>
+    <string name="close">Kapat</string>
 </resources>

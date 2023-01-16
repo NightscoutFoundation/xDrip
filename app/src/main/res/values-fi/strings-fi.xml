@@ -1571,4 +1571,5 @@
     <string name="use_for_calibration">Käytetäänkö %s kalibrointiin?</string>
     <string name="no_never">Ei, Ei Koskaan</string>
     <string name="cannot_choose_file_without_permission">Tiedostoa ei voida valita ilman tallennustilan käyttöoikeutta</string>
+    <string name="close">Sulje</string>
 </resources>

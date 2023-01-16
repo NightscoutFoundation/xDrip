@@ -58,6 +58,7 @@
     <string name="pref_summary_api_enabled">REST API هو الطريقة القياسية للاتصال بنايتسكاوت</string>
     <string name="pref_title_api_url">الرابط الأساسي</string>
     <string name="pref_dialog_api_url">أدخل رابط API الأساسي</string>
+    <string name="pref_message_api_url">هذا فقط عنوان URL الأساسي، سيلحق / إدخالات لبوست. API_SECRET على الخادم يجب أن تتطابق مع عبارة المرور الخاصة بك في هذا الإعداد.</string>
     <string name="pref_default_api_url">https://yourpassphrase@{YOUR-SITE}.azurewebsites.net/api/v1/</string>
     <!-- wifi Settings -->
     <string name="wifi_recievers_dialog_title">أدخل عناوين IP والبورتات لأجهزة الاستقبال (بما في ذلك عناوين Mongodb إذا لزم الأمر)</string>

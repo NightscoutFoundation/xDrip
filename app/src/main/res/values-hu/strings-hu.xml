@@ -1665,4 +1665,5 @@
     <string name="could_not_sign_in">Bejelentkezés sikertelen</string>
     <string name="use_background_scans">Szkennelés háttérben is</string>
     <string name="android_8_background_scanning">Android 8-astól lehetséges a szkennelés háttérben is</string>
+    <string name="close">Bezárás</string>
 </resources>

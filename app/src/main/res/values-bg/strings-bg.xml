@@ -513,4 +513,5 @@
     <string name="alternate_file_selected_warning">Избрали сте алтернативен файл. Обикновено това, ще е възстановяване от локален файл.\n\nНяма да имате автоматичен бакъп с този файл.\n\nПродължавате ли?</string>
     <string name="use_background_scans">Използвайте сканиране на заден фон</string>
     <string name="android_8_background_scanning">Използвай функция Android 8+ сканиране на заден фон</string>
+    <string name="close">Затвори</string>
 </resources>
