@@ -9,6 +9,7 @@ import android.os.Looper;
 import android.text.format.DateFormat;
 import android.widget.Toast;
 
+import com.activeandroid.ActiveAndroid;
 import com.activeandroid.Cache;
 import com.activeandroid.Configuration;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -354,6 +355,10 @@ public class DatabaseUtil {
                 destStream = new FileOutputStream(currentDBtmp);
                 dst = destStream.getChannel();
                 dst.transferFrom(src, 0, src.size());
+                destStream.flush();
+                // Close all active db connections before database import.
+                ActiveAndroid.clearCache();
+                ActiveAndroid.dispose();
                 currentDB.renameTo(currentDBold);
                 currentDBtmp.renameTo(currentDB);
                 currentDBold.delete();
