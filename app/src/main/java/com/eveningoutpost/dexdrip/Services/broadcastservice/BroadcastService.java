@@ -326,6 +326,9 @@ public class BroadcastService extends Service {
                     bundle.putString("message", intent.getStringExtra("message"));
                     sendBroadcast(function, receiver, bundle);
                     break;
+                case Const.CMD_CANCEL_ALERT:
+                    sendBroadcast(function, receiver, bundle);
+                    break;
             }
         }
 
@@ -349,6 +352,9 @@ public class BroadcastService extends Service {
             case Const.CMD_UPDATE_BG_FORCE:
                 broadcastModel = broadcastEntities.get(receiver);
                 bundle = prepareBgBundle(broadcastModel);
+                break;
+            case Const.CMD_CANCEL_ALERT:
+                receiver = null; //broadcast
                 break;
             case Const.CMD_SNOOZE_ALERT:
                 String alertName = "";
