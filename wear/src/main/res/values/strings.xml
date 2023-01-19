@@ -258,6 +258,7 @@
     <string name="nfc_is_not_enabled">NFC is not enabled</string>
     <string name="phone_nfc_is_having_problems">Phone NFC is having problems!</string>
     <string name="not_so_quickly_wait_60_seconds">Not so quickly, wait 60 seconds</string>
+    <string name="not_so_quickly_wait_30_seconds">Not so quickly, wait 30 seconds</string>
     <string name="nfc_diag_timeout">NFC diag timeout</string>
     <string name="nfc_read_timeout">NFC read timeout</string>
     <string name="nfc_invalid_data__try_again">NFC invalid data - try again</string>

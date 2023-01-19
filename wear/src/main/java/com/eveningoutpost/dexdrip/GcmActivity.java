@@ -20,6 +20,9 @@ public class GcmActivity {
 
     }
 
+    public static void pushLibreBlock(String libreBlock) {
+    }
+
     public static void sendMimeoGraphUpdate(String result) {
 
     }

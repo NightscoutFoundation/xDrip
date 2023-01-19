@@ -54,8 +54,10 @@ public class Constants {
     public static final int MIBAND_SERVICE_BG_RETRY_ID = 1027;
     public static final int WEBFOLLOW_SERVICE_FAILOVER_ID = 1028;
     public static final int BACKUP_ACTIVITY_ID = 1029;
+    public static final int CARELINK_SERVICE_FAILOVER_ID = 1030;
 
     static final int NIGHTSCOUT_ERROR_NOTIFICATION_ID = 2001;
+    public static final int HEALTH_CONNECT_RESPONSE_ID = 2002;
 
     // increments from this start number
     public static final int INCOMPATIBLE_BASE_ID = 5000;
@@ -68,4 +70,9 @@ public class Constants {
     public static final int APK_DOWNLOAD_JOB_ID = 60920014;
 
     public static final int LIBRE_1_2_FRAM_SIZE = 344;
+
+    public static final int LIBREPRO_HEADER1_SIZE = 40;
+    public static final int LIBREPRO_HEADER2_SIZE = 32;
+    public static final int LIBREPRO_HEADER3_SIZE = 104;
+
 }
