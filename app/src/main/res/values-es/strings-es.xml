@@ -604,7 +604,7 @@
     <string name="g5_bluetooth_watchdog">Vigilante Bluetooth del G5</string>
     <string name="close_gatt">Si el vigilante del Bluetooth se activa frecuentemente puede intentar desactivar esta opción para ver si ayuda</string>
     <string name="older_bluetooth_wakelocks">Antiguos wakelocks bluetooth pueden drenar la batería pero pueden requerirse para la recepción bluetooth</string>
-    <string name="reset_bluetooth_on_off">Resetear Bluetooth apagándolo y encendiéndolo cada pocos minutos! Solo seleccionar para probar. Puede interrumpir cualquier otro uso de bluetooth.</string>
+    <string name="reset_bluetooth_on_off">Reinicia el Bluetooth apagándolo y encendiéndolo cada pocos minutos. Seleccione esta opción sólo si estás realizando pruebas. Puede interrumpir cualquier otra cosa que utilice Bluetooth.</string>
     <string name="constantly_reset_bluetooth">Reinicializar constantemente Bluetooth</string>
     <string name="experimental_transmitter_fpv_uav">Soporte experimental para el dispositivo \'colector\' de @FPV-UAV - sólo pruebas</string>
     <string name="transmitter_pl_support">Compatibilidad para Colector (PL)</string>
@@ -681,7 +681,7 @@
     <string name="nfc_options">Opciones para escaneo con el teléfono de sensores basados en NFC</string>
     <string name="nfc_scan_features">Características de escaneo NFC</string>
     <string name="use_nfc_feature">Usar función NFC</string>
-    <string name="allow_sensor_scanning">Permitir buscar sensores cuando la aplicación esté abierta. Los datos históricos se completarán. ¡Muy experimental! Tenga en cuenta que esto puede estropear el sensor. Primero pruebe la compatibilidad del teléfono con un sensor casi vencido. ¡Está advertido!</string>
+    <string name="allow_sensor_scanning">Permite escanear los sensores cuando la aplicación está abierta. Los datos históricos se volverán a rellenar. Muy experimental. Cuidado, esto puede romper un sensor. Prueba primero la compatibilidad del teléfono con un sensor casi caducado. Estás advertido.</string>
     <string name="sensor_age_or_expiry">Edad o caducidad del sensor</string>
     <string name="show_expiry_time">Mostrar la caducidad del sensor en base a 14,5 días</string>
     <string name="show_sensor_age">Mostrar la antigüedad del sensor en la pantalla principal</string>
@@ -696,7 +696,7 @@
     <string name="low_level_value">Valor de nivel bajo de diagnóstico/prototipo</string>
     <string name="transmitter_id">ID del transmisor Dexcom, ej: 12AB3</string>
     <string name="advanced_g5_settings">Ajustes avanzados para situaciones raras del G5</string>
-    <string name="g5_debug_settings">Configuración de depuración de G5/G6</string>
+    <string name="g5_debug_settings">Configuración de depuración G5/G6/DexOne</string>
     <string name="g5_scan_constantly">Algunos dispositivos funcionan mejor cuando buscan constantemente, otros no. Si la lectura es fiable cuando ésta configuración está desactivada, la duración de la batería debería aumentar. Normalmente es mejor mantener esto desactivo</string>
     <string name="scan_for_g5_constantly">Buscar el G5 constantemente</string>
     <string name="g5_force_ui_thread">Esto es crucial para que algunos dispositivos Android se conecten correctamente, pero puede causar que se pierdan lecturas cuando otras actividades intensivas de la interfaz del usuario estén en uso.</string>
@@ -710,12 +710,12 @@
     <string name="data_sync">Sincronización de datos</string>
     <string name="options_for_upload">Opciones para subida de datos de Nightscout, MongoDB o Dexcom Share</string>
     <string name="cloud_upload">Subir a la nube</string>
-    <string name="enable_mongo_sync">Habilitar la sincronización de la BD Nightscout Mongo</string>
+    <string name="enable_mongo_sync">Habilitar sincronización Nightscout MongoDB</string>
     <string name="mongo_db_uri">MongoDB URI</string>
     <string name="skip_local_lan">Para servidores locales con direcciones 192.168.x.x , omitir subidas cuando no hay conectividad de red local.</string>
     <string name="skip_lan_uploads">Omitir subidas LAN</string>
     <string name="mongo_load_transmitter_data_title">Cargar datos de transmisores Libre</string>
-    <string name="mongo_load_transmitter_data_summary">Permite que más de un xDrip se conecte a los dispositivos BT y almacene los datos que reciben en la nube. Esto debería permitir la cobertura en toda la casa para libre con miaomiao, o 2 padres utilizando el mismo dispositivo BT transparentemente.</string>
+    <string name="mongo_load_transmitter_data_summary">Permitir que más de un xDrip+ se conecte a dispositivos BT y almacene los datos que reciben en la nube. Esto debería permitir la cobertura de toda la casa para Libre con MiaoMiao, o dos padres utilizando el mismo dispositivo BT de forma transparente.</string>
     <string name="influxdb_sync">Habilitar la sincronización de InfluxDB</string>
     <string name="influxdb_uri">IUR de InfluxDB</string>
     <string name="influxdb_database_name">Nombre de la base de datos de InfluxDB</string>
@@ -734,7 +734,7 @@
     <string name="dexcom_test_mode_serial">Número de serie de 10 caracteres del modo de prueba</string>
     <string name="glucose_meters">Glucometros</string>
     <string name="glucose_meter_options">Opciones para glucometros inalambricos</string>
-    <string name="auto_connect_to_meter">Conecta y recupera automáticamente los datos de un medidor de glucosa compatible con los estándares, como el Contour Next One</string>
+    <string name="auto_connect_to_meter">Conectar y recuperar automáticamente los datos de un medidor de glucosa conforme a la norma, como el Contour Next One</string>
     <string name="use_bluetooth_meter">Usar glucometro Bluetooth</string>
     <string name="scan_for_bluetooth_meter">Escanea para buscar glucometro Bluetooth</string>
     <string name="meter_connect_sound">Habilitar esto reproduce efectos de sonido cuando el medidor se conecta, desconecta o sincroniza datos</string>
@@ -848,7 +848,7 @@
     <string name="repeat_sound">Repetir sonido</string>
     <string name="enable_telemetry">Habilitar Telemetría</string>
     <string name="send_data_to_developers">Enviar datos a los desarrolladores sobre las tasas de éxito de los diferentes dispositivos</string>
-    <string name="try_to_work_around_noisy_readings_ultrasensitive">Empezar a solucionar las lecturas ruidosas incluso en niveles de ruido muy bajos (sólo en modo ingeniería)</string>
+    <string name="try_to_work_around_noisy_readings_ultrasensitive">Empieza a trabajar con lecturas ruidosas incluso con niveles de ruido muy bajos (sólo en modo ingeniería)</string>
     <string name="sidiary_date_title">¿Desde cuando se exporta?</string>
     <string name="blukon">BluCon</string>
     <string name="tomato">Tomato</string>
@@ -1273,7 +1273,7 @@
     <string name="title_lefun_screen_heart_pressure">Mostrar presión cardíaca</string>
     <string name="title_lefun_screen_find_phone">Mostrar Buscar Teléfono/Diferir</string>
     <string name="title_lefun_screen_mac_address">Mostrar dirección MAC</string>
-    <string name="summary_allow_samsung_workaround">Utilizar alternativas para evitar el comportamiento no estándar de Android en teléfonos Samsung. Sin esto, los recolectores generalmente no pueden obtener datos.</string>
+    <string name="summary_allow_samsung_workaround">Utiliza soluciones para evitar el comportamiento no estándar de Android de los terminales Samsung. Sin esto, los recolectores no suelen obtener datos.</string>
     <string name="title_allow_samsung_workaround">Soluciones Alternativas de Samsung</string>
     <string name="summary_medtrum_use_native">Usar calibración del transmisor como principal en lugar de xDrip</string>
     <string name="title_medtrum_use_native">Medtrum Nativo</string>
@@ -1304,7 +1304,7 @@
     <string name="title_clfollow_download_notifications">Notificaciones</string>
     <string name="summary_clfollow_download_notifications">Descargar notificaciones de CareLink</string>
     <string name="title_ob1_options">Configuración del colector OB1 G5/G6</string>
-    <string name="summary_use_ob1_g5_collector_service">Reescritura completa, debería funcionar en Android 4.4–9, compatible con el modo nativo y otros</string>
+    <string name="summary_use_ob1_g5_collector_service">Reescritura completa, debería funcionar en Android 4.4-9, soporta modo nativo y más</string>
     <string name="title_use_ob1_g5_collector_service">Utilizar colector OB1</string>
     <string name="summary_ob1_g5_use_transmitter_alg">Utilizar algoritmo interno del transmisor para calcular valores de glucosa cuando sea posible.</string>
     <string name="title_ob1_g5_use_transmitter_alg">Algoritmo nativo</string>
@@ -1316,10 +1316,10 @@
     <string name="title_ob1_g5_use_insufficiently_calibrated">Continuar sin calibraciones</string>
     <string name="summary_ob1_g5_fallback_to_xdrip">Volver al algoritmo xDrip si G5 no proporciona datos de glucosa (¡Potencialmente peligroso!)</string>
     <string name="title_ob1_g5_fallback_to_xdrip">Volver a xDrip</string>
-    <string name="summary_ob1_minimize_scanning">Utilizar heurística para minimizar búsqueda de Bluetooth y ahorrar energía</string>
+    <string name="summary_ob1_minimize_scanning">Utiliza la heurística para minimizar el escaneo de Bluetooth y ahorrar energía</string>
     <string name="title_ob1_minimize_scanning">Minimizar búsqueda</string>
-    <string name="summary_using_g6">Estoy usando un sensor G6</string>
-    <string name="title_using_g6">Compatibilidad G6</string>
+    <string name="summary_using_g6">Estoy usando un sensor Dexcom G6 o One</string>
+    <string name="title_using_g6">Soporte G6/DexOne</string>
     <string name="summary_ob1_g5_allow_resetbond">El recopilador OB1 puede desvincularse si detecta que el cifrado ha fallado. Si tiene problemas para desvincularlo, desactive esta opción. Si pierde totalmente la conexión, asegúrese de que esté habilitado.</string>
     <string name="title_ob1_g5_allow_resetbond">Permitir desvincular OB1</string>
     <string name="summary_ob1_initiate_bonding_flag">El receptor OB1 puede iniciar la vinculación.</string>
@@ -1374,7 +1374,7 @@
     <string name="summary_show_home_on_boot">Mostrar la pantalla xDrip automáticamente después de que se inicie el dispositivo</string>
     <string name="title_show_home_on_boot">Mostrar xDrip al arrancar</string>
     <string name="eula">CLUF</string>
-    <string name="summary_plus_accept_follower_actions">Se aceptarán tratamientos y calibraciones de seguidores</string>
+    <string name="summary_plus_accept_follower_actions">Se aceptarán tratamientos, calibraciones y otras acciones de los seguidores</string>
     <string name="title_plus_accept_follower_actions">Aceptar acciones de los seguidores</string>
     <string name="summary_plus_whole_house">Participar en una Red Casera</string>
     <string name="title_plus_whole_house">Red Casera</string>
@@ -1742,7 +1742,15 @@
     <string name="drive_permission_blurb">Para realizar copias de seguridad automáticas, xDrip+ necesita permiso para utilizar tu Google Drive.\n\nLos desarrolladores de xDrip+ no pueden acceder a ninguno de tus archivos ni ver tu información personal.</string>
     <string name="cloud_backup">Copia de seguridad en la nube</string>
     <string name="select_automatic_or_select_alternate">Selecciona Automático para que xDrip+ gestione los archivos de Google Drive, o selecciona un archivo específico alternativo para utilizarlo si necesitas restaurar desde otro lugar.</string>
+    <string name="restoring_backup_will_erase_warning">La restauración de una copia de seguridad borrará la configuración y los datos actuales con los de la copia de seguridad.\n\n¿Estás absolutamente seguro de que deseas hacer esto?</string>
+    <string name="this_backup_looks_like_came_from_different_format_string">Esta copia de seguridad parece provenir de un dispositivo diferente:\n%s\n¿Seguro que desea restaurar desde esta copia de seguridad?</string>
+    <string name="megabyte_format_string">%.1f MB</string>
+    <string name="manual_selection_google_drive_file_warning">Has seleccionado un archivo de Google Drive, pero este no es gestionado automáticamente por xDrip+, por lo que solo puede ser utilizado para copias de seguridad y restauraciones manuales.\nNo se realizará ninguna copia de seguridad automática con este archivo.\n¿Continuar?</string>
+    <string name="alternate_file_selected_warning">Has seleccionado un archivo alternativo. Por lo general, esto sería sólo para restaurar desde una copia de seguridad almacenada localmente.\nNo se realizará ninguna copia de seguridad automática con este archivo.\n¿Continuar?</string>
+    <string name="backup_file_security_error_advice">El archivo de copia de seguridad informa de un error de seguridad. Normalmente esto significa que tiene que volver a seleccionarlo para seguir permitiendo el acceso a xDrip+.</string>
+    <string name="invalid_time">Hora inválida</string>
     <string name="none">Ninguno</string>
+    <string name="format_string_ago">hace %s</string>
     <string name="use_background_scans">Usar escaneos de fondo</string>
     <string name="android_8_background_scanning">Usar la función de escaneo en segundo plano de Android 8+</string>
     <string name="close">Cerrar</string>
