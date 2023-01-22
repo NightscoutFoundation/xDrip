@@ -134,7 +134,7 @@
     <string name="share">Compartir</string>
     <string name="title_activity_profile_editor">Editor de Perfiles de Tratamiento</string>
     <string name="first_use_menu_to_scan">¡Primero use el menú para busca su dispositivo BT o cambiar el Origen de Datos en Ajustes!</string>
-    <string name="first_configure_ip_address">Primero configure las direcciones IP del lector Wixel WiFi o la URL parakeet</string>
+    <string name="first_configure_ip_address">Primero configura las direcciones IP de tu lector WiFi Wixel o la URL de Parakeet</string>
     <string name="now_start_your_sensor">Ahora Inicie su sensor o verifique ajustes</string>
     <string name="please_wait_while_sensor_warms_up">¡Espere mientras que el sensor se calienta! (</string>
     <string name="minutes_with_bracket">" minutos)"</string>
@@ -153,7 +153,7 @@
     <string name="low_predicted">Baja pronosticada</string>
     <string name="in">en</string>
     <string name="yes_enter_setup_mode">Sí, entrar en el modo de ajustes</string>
-    <string name="nokeep_parakeet_as_it_is">No; mantener Parakeet como está</string>
+    <string name="nokeep_parakeet_as_it_is">No, mantén a Parakeet como está</string>
     <string name="are_you_sure_you_want_switch_parakeet_to_setup">¿Está seguro de querer cambiar Parakeet al modo de ajustes?\n\nNormalmente esto sólo se usa para enviar mensajes de texto adicionales para que Parakeet reconfigure el transmisor por el que escucha, etc.</string>
     <string name="split_delete_or_do_nothing">Dividir, eliminar o no hacer nada</string>
     <string name="split_this_block_in_two">Dividir este bloque en dos</string>
@@ -166,7 +166,7 @@
     <string name="expires_days">{0, choice,0#¡El sensor expiró!|1#Termina en {0, number} día|1&lt;Termina en {0, number} días}</string>
     <string name="expires_at">Termina en {0}</string>
     <string name="space_minutes_ago">" Minutos antes"</string>
-    <string name="in_libre_all_house_mode_no_readings_collected_yet">"En modo Libre red casera: no se han recopilado lecturas."</string>
+    <string name="in_libre_all_house_mode_no_readings_collected_yet">"En modo Libre red casera: no se han recogido lecturas"</string>
     <string name="in_libre_all_house_mode_last_data_collected">"En modo Libre red casera: Última lectura "</string>
     <string name="space_minute_ago">" Minuto antes"</string>
     <string name="show_parakeet_map">Ver mapa Parakeet</string>
@@ -186,7 +186,7 @@
     <string name="general_settings">Ajustes Generales</string>
     <string name="high_value">Valor Alto</string>
     <string name="low_value">Valor Bajo</string>
-    <string name="stats_range_settings">Ajustes de Rango: </string>
+    <string name="stats_range_settings">Ajustes de rango:</string>
     <string name="end_user_license_agreement">Acuerdo de licencia de usuario final</string>
     <string name="save">Guardar</string>
     <string name="view_important_warning">Ver Aviso Importante</string>
@@ -206,7 +206,7 @@
     <string name="send_feedback_message">Enviar mensaje de retroalimentación</string>
     <string name="copying_settings">Copiando ajustes</string>
     <string name="show_settings_qr_codes">Mostrar códigos QR de Ajustes</string>
-    <string name="load_save_settings_to_sdcard">Cargar/Guardar ajustes en tarjeta SD</string>
+    <string name="load_save_settings_to_sdcard">Cargar/Guardar ajustes </string>
     <string name="alarms_and_alerts">Alarmas y alertas</string>
     <string name="alerts_and_notifications">Alertas y notificaciones</string>
     <string name="glucose_level_alerts_list">Lista de alertas de niveles de glucosa</string>
@@ -239,7 +239,7 @@
     <string name="enter_ten_character_dexcom_receiver_serial">Introduzca los 10 caracteres del número de serie del receptor Dexcom</string>
     <string name="dexcom_transmitter_id">ID del transmisor Dexcom</string>
     <string name="run_collector_in_foreground">Ejecutar Colector en primer plano</string>
-    <string name="shows_a_persistent_notification">Muestra un gráfico de notificación permanente, visible en el bloqueo de pantalla y evita que android mate el servicio.</string>
+    <string name="shows_a_persistent_notification">Muestra un gráfico de notificación permanente, visible en la pantalla de bloqueo y evita que Android elimine el servicio.</string>
     <string name="list_of_receivers">Lista de Receptores</string>
     <string name="extra_tags_for_logging">Etiquetas extra para el registro</string>
     <string name="extra_tags_dialog_message">Las etiquetas introducidas aquí serán registradas en xDrip. El formato es \'etiqueta:nivel\'. El nivel puede ser v,d,i. Por ejemplo bgreading:i, DexCollectionService:v. Éstas etiquetas serán registradas con prioridad baja en las listas de errores y de eventos.</string>
@@ -318,8 +318,8 @@
     <string name="space_units">" Unidades"</string>
     <string name="units">unidades</string>
     <string name="carbs">carbohidratos</string>
-    <string name="when">cuando</string>
-    <string name="speak_your_treatment">Dí tu tratamiento, por ejemplo:\nx.x unidades de insulina / xx gramos de carbohidratos</string>
+    <string name="when">cuando (HHMM)</string>
+    <string name="speak_your_treatment">Diga su tratamiento p.ej. \nx.x unidades insulina / xx gramos de carbohidratos</string>
     <string name="speech_recognition_is_not_supported">El reconocimiento de voz no es compatible</string>
     <string name="treatment_note">Nota de Tratamiento</string>
     <string name="accessibility_description">xDrip utiliza la función de Accesibilidad sólo para ajustar la pantalla cuando el dispositivo está bloqueado. Es probable que sólo sea útil si tiene un teléfono con la función Always On Display y la tiene activada. xDrip no interactúa con Android de ninguna otra manera.</string>
@@ -329,7 +329,7 @@
     <string name="done">Hecho</string>
     <string name="entering_a_calibration_now_will_override_your_previously_entered_calibration">Introduciendo una calibración ahora anulará su calibración anterior.</string>
     <string name="enter_blood_glucose_value">Introduzca Valor de glucosa en sangre</string>
-    <string name="this_does_not_get_used_for_anything_its_just_to_keep_track_of_differences_for_algorithem_improvement_purposes">Esto sólo se utiliza para hacer un seguimiento de las diferencias con el propósito de mejorar el algoritmo</string>
+    <string name="this_does_not_get_used_for_anything_its_just_to_keep_track_of_differences_for_algorithem_improvement_purposes">Esto no se utiliza para nada, es sólo para mantener un registro de las diferencias con fines de mejora del algoritmo</string>
     <string name="no_active_alert_exists">No existe ninguna alerta activa</string>
     <string name="active_alert_exists_named">Nombre de Alerta existente</string>
     <string name="bracket_not_snoozed">(No silenciada)</string>
@@ -581,7 +581,7 @@
     <string name="attach_to_button">Adjuntarlo a un botón Pebble para diferir instantáneamente cualquier alerta activa de su reloj. También para la función Diferir a Distancia.</string>
     <string name="for_interacting_compatible_apps">Para interacciones con aplicaciones compatibles</string>
     <string name="interapp_settings">Ajustes entre aplicaciones</string>
-    <string name="use_plugins_for_brodcast">Usar valores suavizados de complementos (si están habilitados) para valores de emisión</string>
+    <string name="use_plugins_for_brodcast">Utilice el suavizado de ruido y los plugins, etc. (si están activados) para el valor emitido</string>
     <string name="send_display_glucose">Enviar Glucosa Mostrada</string>
     <string name="send_broadcasts_old_permission_model">Enviar transmisiones sin bloqueo al modelo de permiso anterior</string>
     <string name="process_nsclient_treatments">Procesar datos de tratamiento recibidos de la app NSClient</string>
@@ -592,7 +592,7 @@
     <string name="short_speak_readings_shortcut">Mostrar acceso directo en el menú ☰ para conmutar Lecturas Habladas</string>
     <string name="speak_readings_shortcut">Acceso directo Lecturas Habladas</string>
     <string name="battery_optimization_off">En Android 6+ garantiza que la optimización de la batería está apagada. Recomendado</string>
-    <string name="battery_optimization_on">No insistir sobre la optimización de batería. No recomendado.</string>
+    <string name="battery_optimization_on">No sigas preguntando por la optimización de la batería (no recomendable)</string>
     <string name="battery_optimization_prompt">Aviso de optimización de Batería</string>
     <string name="advanced_bluetooth_settings">Ajustes Bluetooth Avanzados</string>
     <string name="bluetooth_settings">Ajustes Bluetooth</string>
@@ -603,7 +603,7 @@
     <string name="reset_bluetooth_g5">Resetear Bluetooth apagándolo y encendiéndolo para intentar que G5 siga funcionando. Sin esto el colector de G5 puede fallar.</string>
     <string name="g5_bluetooth_watchdog">Vigilante Bluetooth del G5</string>
     <string name="close_gatt">Si el vigilante del Bluetooth se activa frecuentemente puede intentar desactivar esta opción para ver si ayuda</string>
-    <string name="older_bluetooth_wakelocks">Antiguos wakelocks bluetooth pueden drenar la batería pero pueden requerirse para la recepción bluetooth</string>
+    <string name="older_bluetooth_wakelocks">Wakelocks Bluetooth más antiguos que pueden consumir más batería pero que pueden ser necesarios para la recepción Bluetooth</string>
     <string name="reset_bluetooth_on_off">Reinicia el Bluetooth apagándolo y encendiéndolo cada pocos minutos. Seleccione esta opción sólo si estás realizando pruebas. Puede interrumpir cualquier otra cosa que utilice Bluetooth.</string>
     <string name="constantly_reset_bluetooth">Reinicializar constantemente Bluetooth</string>
     <string name="experimental_transmitter_fpv_uav">Soporte experimental para el dispositivo \'colector\' de @FPV-UAV - sólo pruebas</string>
@@ -701,7 +701,7 @@
     <string name="scan_for_g5_constantly">Buscar el G5 constantemente</string>
     <string name="g5_force_ui_thread">Esto es crucial para que algunos dispositivos Android se conecten correctamente, pero puede causar que se pierdan lecturas cuando otras actividades intensivas de la interfaz del usuario estén en uso.</string>
     <string name="force_g5_ui_thread">Forzar G5 al hilo de la interfaz de usuario</string>
-    <string name="authentificate_before_reading">Autentificar el G5 antes de cada lectura</string>
+    <string name="authentificate_before_reading">Autenticar antes de cada lectura</string>
     <string name="g5_full_authentification">Esto intentará una autenticación completa en cada intento de lectura. Necesario para las versiones más recientes de microprograma del colector G5.</string>
     <string name="unbond_g5_before_read">Desvincular G5 antes de cada lectura</string>
     <string name="g5_remove_before_read">Esto eliminará el G5 de la lista de dispositivos vinculados de su móvil e intentará una autenticación y vinculación completas en cada intento de lectura.</string>
@@ -823,7 +823,7 @@
     <string name="allow_remotes_silence">Permitir silenciar alarmas desde dispositivos remotos</string>
     <string name="acccept_remote_snoozes">Aceptar silenciar remotamente</string>
     <string name="send_remote_snooze">Enviar Diferir a Distancia</string>
-    <string name="only_accept_same_network">Solo aceptar si el wifi remoto empieza con las misma letras que el nuestro y se parece mucho</string>
+    <string name="only_accept_same_network">Solo aceptar si el WiFi remoto empieza con las misma letras que el nuestro y se parece mucho</string>
     <string name="wifi_name_must_match">El nombre del WiFi debe coincidir</string>
     <string name="confirm_remote_snooze">Confirmar Diferir a Distancia</string>
     <string name="are_you_sure_you_wish_to_snooze_all_other_devices_in_your_sync_group">¿Está seguro de que desea diferir todos los demás móviles de su grupo de sincronización?</string>
@@ -1520,11 +1520,11 @@
     <string name="prepare_to_test">¡Prepárese para la prueba!</string>
     <string name="after_you_click_ok_look_for_a_number_icon_in_the_notification_area_if_you_see_123_then_the_test_has_succeeded__on_some_phones_this_test_will_crash_the_phone__after_30_seconds_we_will_shut_off_the_notification_if_your_phone_does_not_recover_after_this_then_hold_the_power_button_to_reboot_it">Después de hacer clic en Aceptar, busque el icono numérico en el área de notificación.\nSi ve 123, la prueba se realizó correctamente.\n\nEn algunos teléfonos, esta prueba bloquea el móvil.\n\nDespués de 30 segundos, la notificación se apagará. Si su teléfono se bloquea, mantenga presionado el botón de encendido para reiniciarlo.</string>
     <string name="running_test_with_number_123">Ejecutando prueba con número: 123</string>
-    <string name="unusual_internal_context_problem__please_report">Inusual problema de contexto interno - por favor informe</string>
-    <string name="cannot_start__please_report_context_problem">No se puede iniciar - por favor, informe de problema de contexto</string>
+    <string name="unusual_internal_context_problem__please_report">Problema inusual de contexto interno - por favor, informe</string>
+    <string name="cannot_start__please_report_context_problem">No se puede iniciar - por favor, informe del problema de contexto</string>
     <string name="xdrip_will_not_work_below_android_version_42">xDrip+ no funcionará con una versión anterior a la 4.2 de Android</string>
     <string name="xdrip_oop2_not_installed">xDrip+ necesita OOP2 para manejar sensores Libre2/LibreUS.</string>
-    <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Esta aplicación necesita estar en la lista blanca de optimización de la batería o no funcionará bien. Por favor restablece las preferencias de la aplicación</string>
+    <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Esta aplicación necesita que la optimización de la batería esté en una lista blanca o no funcionará bien. Restablezca las preferencias de la aplicación</string>
     <string name="setting_disabled_">Configuración deshabilitada :)</string>
     <string name="yes_please">Sí</string>
     <string name="automated_calibration_enabled">Calibración automatizada habilitada</string>
