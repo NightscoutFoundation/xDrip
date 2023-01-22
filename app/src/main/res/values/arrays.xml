@@ -470,4 +470,31 @@
         <item>vn</item>
     </string-array>
 
+    <string-array name="ymin_entries">
+        <item>40 mg/dL (2.2 mmol/L) ></item>
+        <item>50 mg/dL (2.8 mmol/L)</item>
+        <item>60 mg/dL (3.3 mmol/L)</item>
+        <item>70 mg/dL (3.9 mmol/L)</item>
+    </string-array>
+    <string-array name="ymin_values">
+        <item>40</item>
+        <item>50</item>
+        <item>60</item>
+        <item>70</item>
+    </string-array>
+    <string-array name="ymax_entries">
+        <item>210 mg/dL (11.7 mmol/L)</item>
+        <item>230 mg/dL (12.8 mmol/L)</item>
+        <item>250 mg/dL (13.9 mmol/L) ></item>
+        <item>300 mg/dL (16.7 mmol/L)</item>
+        <item>400 mg/dL (22.2 mmol/L)</item>
+    </string-array>
+    <string-array name="ymax_values">
+        <item>210</item>
+        <item>230</item>
+        <item>250</item>
+        <item>300</item>
+        <item>400</item>
+    </string-array>
+
 </resources>

@@ -100,6 +100,9 @@ public class BgGraphBuilder {
     private static long noise_processed_till_timestamp = -1;
     private final static String TAG = "jamorham graph";
     //private final static int pluginColor = Color.parseColor("#AA00FFFF"); // temporary
+    public boolean custimze_y_range = Pref.getBoolean("Customize_yRange", false);
+    public static int default_ymin = getDefaultyMin();
+    public static int default_ymax = getDefaultyMax();
 
     private final static int pluginSize = 2;
     final int pointSize;
@@ -245,6 +248,10 @@ public class BgGraphBuilder {
         this.doMgdl = (prefs.getString("units", "mgdl").equals("mgdl"));
         defaultMinY = unitized(40);
         defaultMaxY = unitized(250);
+        if (custimze_y_range) { // If Customize_yRange  is enabled
+            defaultMaxY = unitized(default_ymax); // Let the user define MaxY
+            defaultMinY = unitized(default_ymin); // Let the user define MinY
+        }
         pointSize = isXLargeTablet(context) ? 5 : 3;
         axisTextSize = isXLargeTablet(context) ? 20 : Axis.DEFAULT_TEXT_SIZE_SP;
         previewAxisTextSize = isXLargeTablet(context) ? 12 : 5;
@@ -270,6 +277,26 @@ public class BgGraphBuilder {
 
     public static double mmolConvert(double mgdl) {
         return mgdl * Constants.MGDL_TO_MMOLL;
+    }
+
+    public static int getDefaultyMin() {
+        int value = 40;
+        try {
+            value = Integer.parseInt(Pref.getString("default_ymin", "40"));
+        } catch (NumberFormatException e) {
+            UserError.Log.e(TAG, "Cannot process default ymin value: " + e);
+        }
+        return value;
+    }
+
+    public static int getDefaultyMax() {
+        int value = 250;
+        try {
+            value = Integer.parseInt(Pref.getString("default_ymax", "250"));
+        } catch (NumberFormatException e) {
+            UserError.Log.e(TAG, "Cannot process default ymax value: " + e);
+        }
+        return value;
     }
 
     public static String noiseString(double thisnoise) {
@@ -1165,7 +1192,7 @@ public class BgGraphBuilder {
                 for (BloodTest bloodtest : bloodtests) {
                     final long adjusted_timestamp = (bloodtest.timestamp + (AddCalibration.estimatedInterstitialLagSeconds * 1000));
                     final PointValueExtended this_point = new PointValueExtended((double) (adjusted_timestamp / FUZZER), unitized(bloodtest.mgdl))
-                           .setType(PointValueExtended.BloodTest)
+                            .setType(PointValueExtended.BloodTest)
                             .setUUID(bloodtest.uuid);
                     this_point.real_timestamp = bloodtest.timestamp;
                     // exclude any which have been used for calibration
