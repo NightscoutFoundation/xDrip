@@ -889,7 +889,7 @@
     <string name="DoubleDown">Baisse rapide</string>
     <string name="SingleDown">Baisse</string>
     <string name="FortyFiveDown">Baisse faible</string>
-    <string name="Flat">Cohérente</string>
+    <string name="Flat">Inchangé</string>
     <string name="FortyFiveUp">Hausse légère</string>
     <string name="SingleUp">Hausse</string>
     <string name="DoubleUp">Hausse rapide</string>
