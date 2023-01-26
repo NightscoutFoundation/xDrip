@@ -96,6 +96,7 @@ import com.eveningoutpost.dexdrip.healthconnect.HealthGamut;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
 import com.eveningoutpost.dexdrip.plugin.Dialog;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
+import com.eveningoutpost.dexdrip.tidepool.AuthFlowOut;
 import com.eveningoutpost.dexdrip.tidepool.TidepoolUploader;
 import com.eveningoutpost.dexdrip.tidepool.UploadChunk;
 import com.eveningoutpost.dexdrip.ui.LockScreenWallPaper;
@@ -1212,15 +1213,35 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
             final Preference tidepoolTestLogin = findPreference("tidepool_test_login");
             tidepoolTestLogin.setOnPreferenceClickListener(preference -> {
-                Inevitable.task("tidepool-upload", 200, TidepoolUploader::doLoginFromUi);
+                if (Pref.getBooleanDefaultFalse("tidepool_new_auth")) {
+                    Inevitable.task("tidepool-upload", 200, AuthFlowOut::doTidePoolInitialLogin);
+                } else {
+                    Inevitable.task("tidepool-upload", 200, TidepoolUploader::doLoginFromUi);
+                }
                 return false;
             });
 
-            final Preference tidePoolType = findPreference("tidepool_dev_servers");
-            tidePoolType.setOnPreferenceChangeListener((preference, newValue) -> {
+            try {
+                final Preference tidePoolType = findPreference("tidepool_dev_servers");
+                tidePoolType.setOnPreferenceChangeListener((preference, newValue) -> {
                     TidepoolUploader.resetInstance();
                     return true;
-            });
+                });
+                findPreference("tidepool_username")
+                        .setOnPreferenceChangeListener((preference, newValue) -> {
+                            TidepoolUploader.resetInstance();
+                            return true;
+                        });
+                findPreference("tidepool_password")
+                        .setOnPreferenceChangeListener((preference, newValue) -> {
+                            TidepoolUploader.resetInstance();
+                            AuthFlowOut.doTidePoolInitialLogin();
+                            return true;
+                        });
+            } catch (Exception e) {
+                UserError.Log.e(TAG,"Could not attach listener for tidepool prefs: " + e);
+            }
+
 
             final Preference nsFollowDownload = findPreference("nsfollow_download_treatments");
             final Preference nsFollowUrl = findPreference("nsfollow_url");

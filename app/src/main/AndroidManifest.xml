@@ -121,6 +121,19 @@
             </intent-filter>
         </activity>
         <activity
+            android:name="net.openid.appauth.RedirectUriReceiverActivity"
+            android:exported="true"
+            tools:node="replace">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="xdrip"
+                    android:path="/callback/tidepool"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".tidepool.AuthFlowIn" android:exported="true"/>
+        <activity
             android:name=".BluetoothScan"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_bluetooth_scan" />
@@ -801,6 +814,7 @@
             android:configChanges="orientation|screenSize"
             android:label="BlueJay Admin"
             android:launchMode="singleTask" />
+
 
         <service
             android:name=".watch.thinjam.BlueJayService"
