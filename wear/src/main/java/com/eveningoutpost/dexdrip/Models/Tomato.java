@@ -46,8 +46,9 @@ public class Tomato {
         if (activeBluetoothDevice == null || activeBluetoothDevice.name == null) {
             return false;
         }
-        Log.e(TAG, "Bluetooth Sensor: " + activeBluetoothDevice.name);
-        return activeBluetoothDevice.name.startsWith("miaomiao");
+
+        return activeBluetoothDevice.name.startsWith("miaomiao")
+                || activeBluetoothDevice.name.toLowerCase().startsWith("watlaa");
     }
 
     public static BridgeResponse decodeTomatoPacket(byte[] buffer, int len) {
@@ -125,6 +126,7 @@ public class Tomato {
                 if(s_recviedEnoughData) {
                     reply.SetGotAllData();
                 }
+                
             } catch (RuntimeException e) {
                 // if the checksum failed lets ask for the data set again but not more than once per minute
                 if (e.getMessage().equals(CHECKSUM_FAILED)) {
@@ -166,7 +168,7 @@ public class Tomato {
         }
 
         if(s_acumulatedSize < Constants.LIBRE_1_2_FRAM_SIZE + TOMATO_HEADER_LENGTH + 1 ) {
-            Log.e(TAG,"Getting out, since not enough data s_acumulatedSize = " + s_acumulatedSize);
+            //Log.e(TAG,"Getting out, since not enough data s_acumulatedSize = " + s_acumulatedSize);
             return;   
         }
         byte[] data = Arrays.copyOfRange(s_full_data, TOMATO_HEADER_LENGTH, TOMATO_HEADER_LENGTH + Constants.LIBRE_1_2_FRAM_SIZE);
@@ -188,6 +190,14 @@ public class Tomato {
         Pref.setInt("bridge_battery", s_full_data[13]);
         // Set the time of the current reading
         PersistentStore.setLong("libre-reading-timestamp", JoH.tsl());
+
+        if(NFCReaderX.use_fake_de_data()) {
+            FakeData libreData = FakeLibreData.getInstance().getFakeData();
+            data = libreData.data;
+            patchUid = libreData.patchUid;
+            patchInfo = libreData.patchInfo;
+        }
+
         boolean checksum_ok = NFCReaderX.HandleGoodReading(SensorSn, data, now, true, patchUid, patchInfo);
         Log.e(TAG, "We have all the data that we need " + s_acumulatedSize + " checksum_ok = " + checksum_ok + HexDump.dumpHexString(data));
 
@@ -206,6 +216,7 @@ public class Tomato {
         PersistentStore.setString("EXTERNAL_ALG_PACKAGES", "com.hg4.oopalgorithm.oopalgorithm2");
         
     }
+
 
     // This is the function that we should have once we are able to read all data realiably.
     static void AreWeDoneMax() {
