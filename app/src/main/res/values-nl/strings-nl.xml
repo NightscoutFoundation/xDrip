@@ -790,7 +790,7 @@
     <string name="step_counter_2nd_color">Stappenteller 2e kleur</string>
     <string name="flair_colors">Flair kleuren</string>
     <string name="use_flair_colors">Aangepaste titel/navigatie balk</string>
-    <string name="upper_title_bar_flair">Kleur Bovenste Titelbalk</string>
+    <string name="upper_title_bar_flair">Bovenste Titelbalk</string>
     <string name="lower_button_bar_falir">Lagere Navigatiebalk</string>
     <string name="force_english_text">Forceer Engelse tekst</string>
     <string name="using_local_language">Gebruikt momenteel de lokale taal van uw apparaat</string>
@@ -1222,7 +1222,7 @@
     <string name="title_miband_colect_heartrate">Verzamel HR</string>
     <string name="summary_miband_colect_heartrate">De hartslaggegevens van de band verzamelen. Update-interval kan worden geconfigureerd in MiFit of een andere applicatie van derden</string>
     <string name="title_miband_authkey">Authenticatie Sleutel</string>
-    <string name="summary_miband_authkey">Stel de autorisatiesleutel in voor MiBand4 (volg de instructies op https://www.freemyband.com om de autorisatie sleutel te krijgen)</string>
+    <string name="summary_miband_authkey">Stel de autorisatie sleutel in voor MiBand4 (volg de instructies op https://www.freemyband.com/ om de autorisatie sleutel te krijgen)</string>
     <string name="summary_miband_mac">Laat leeg voor automatisch zoeken</string>
     <string name="title_miband_send_readings_as_notification">BG-waarden als melding</string>
     <string name="summary_miband_send_readings_as_notification">Zal een melding gebruiken om BG-metingen te verzenden. De datum zal niet gewijzigd worden, dus alle bandfuncties kunnen worden gebruikt.        Moet uitgeschakeld worden als u de xDrip-wijzerplaat wilt gebruiken (het is vereist om de officiële MiFit-applicatie te verwijderen om datumoverschrijvingen te voorkomen)</string>
@@ -1292,8 +1292,8 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Terugvallen naar xDrip</string>
     <string name="summary_ob1_minimize_scanning">Gebruik heuristieken om bluetooth-scannen te minimaliseren + energie te besparen</string>
     <string name="title_ob1_minimize_scanning">Minimaliseer het scannen</string>
-    <string name="summary_using_g6">Ik gebruik een G6-sensor</string>
-    <string name="title_using_g6">G6 ondersteuning</string>
+    <string name="summary_using_g6">Ik gebruik een G6 of Dexcom ONE sensor</string>
+    <string name="title_using_g6">G6/ONE ondersteuning</string>
     <string name="summary_ob1_g5_allow_resetbond">De OB1-verzamelaar kan de verbinding verbreken als hij denkt dat de codering is mislukt. Schakel deze optie uit als u problemen ondervindt bij het ontkoppelen. Als u dan de verbinding volledig verliest, zorg er dan voor dat dit is ingeschakeld.</string>
     <string name="title_ob1_g5_allow_resetbond">OB1 ontkoppelen toestaan</string>
     <string name="summary_ob1_initiate_bonding_flag">OB1-verzamelaar kan de koppeling initiëren.</string>
@@ -1348,7 +1348,7 @@
     <string name="summary_show_home_on_boot">Open het xDrip-scherm automatisch nadat het apparaat is opgestart</string>
     <string name="title_show_home_on_boot">Toon xDrip tijdens het opstarten</string>
     <string name="eula">EULA</string>
-    <string name="summary_plus_accept_follower_actions">Behandelingen, kalibraties en andere acties van volgers worden overgenomen</string>
+    <string name="summary_plus_accept_follower_actions">Behandelingen, kalibraties en andere acties van volgers zullen geaccepteerd worden</string>
     <string name="title_plus_accept_follower_actions">Accepteer acties van volgers</string>
     <string name="summary_plus_whole_house">Neem deel aan een hele huis netwerk</string>
     <string name="title_plus_whole_house">Hele huis</string>
@@ -1580,8 +1580,8 @@
     <string name="title_multiple_insulin_types_settings">Meerdere insulinesoorten</string>
     <string name="summary_multiple_insulin_types_settings">Opties om met meerdere insulinesoorten te werken</string>
     <string name="title_multiple_insulin_types">Meerdere insulinesoorten</string>
-    <string name="summary_multiple_insulin_use_basal_activity">Plan basale activiteit op de grafiek en voeg samen in het voorspellende model</string>
-    <string name="title_multiple_insulin_use_basal_activity">Gebruik basale activiteit</string>
+    <string name="summary_multiple_insulin_use_basal_activity">Plot basaal activiteit op de grafiek en integreer in het voorspellend model</string>
+    <string name="title_multiple_insulin_use_basal_activity">Gebruik basaal activiteit</string>
     <string name="title_xdrip_plus_snooze_broadcast">Lokale uitzending</string>
     <string name="summary_broadcast_snooze">Verzend snoozes naar andere apps op dit apparaat</string>
     <string name="title_broadcast_snooze">Lokale uitzending</string>
@@ -1636,7 +1636,7 @@
     <string name="Dose">Dosis</string>
     <string name="choose_type">Kies type</string>
     <string name="invalid_serial">Ongeldig serienummer</string>
-    <string name="set_pen_to_format">Zet Pen %s op %s</string>
+    <string name="set_pen_to_format">Zet Pen %s naar %s</string>
     <string name="pen_contains_which_insulin_type">Welk type insuline bevat pen %s?</string>
     <string name="allow_do_not_disturb_text">Om de optionele mogelijkheid te hebben om te waarschuwen, zelfs als Android Niet-Storen is ingeschakeld, geef xDrip deze toestemming in de systeeminstellingen op de volgende pagina</string>
     <string name="graphical_editor_for_pump_basal">Grafische editor voor pomp basale profielen</string>
