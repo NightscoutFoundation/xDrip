@@ -4,10 +4,12 @@ import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Base64;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import net.openid.appauth.AppAuthConfiguration;
@@ -18,6 +20,10 @@ import net.openid.appauth.AuthorizationServiceConfiguration;
 import net.openid.appauth.ResponseTypeValues;
 import net.openid.appauth.browser.BrowserAllowList;
 import net.openid.appauth.browser.VersionedBrowserMatcher;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import lombok.val;
 
@@ -96,6 +102,10 @@ public class AuthFlowOut {
     }
 
     public static void doTidePoolInitialLogin() {
+        doTidePoolInitialLogin(false);
+    }
+
+    public static void doTidePoolInitialLogin(boolean full) {
 
         if (!Pref.getBooleanDefaultFalse("tidepool_new_auth")) {
             Log.d(TAG, "Not using new authentication mechanism");
@@ -116,16 +126,38 @@ public class AuthFlowOut {
                     Pref.setString(PREF_TIDEPOOL_SERVICE_CONFIGURATON, serviceConfiguration.toJsonString());
                     resetAll();
 
+                    val codeVerifierChallengeMethod = "S256";
+                    val messageDigestAlgorithm = "SHA-256";
+                    val encoding = Base64.URL_SAFE | Base64.NO_PADDING | Base64.NO_WRAP;
+                    val challenge = CipherUtils.getRandomKey(64);
+                    val codeVerifier = Base64.encodeToString(challenge, encoding);
+                    MessageDigest digest;
+                    try {
+                        digest = MessageDigest.getInstance(messageDigestAlgorithm);
+                    } catch (NoSuchAlgorithmException e) {
+                        Log.wtf(TAG, "Failed to get message digest: " + e);
+                        return;
+                    }
+                    val hash = digest.digest(codeVerifier.getBytes(StandardCharsets.UTF_8));
+                    val codeChallenge = Base64.encodeToString(hash, encoding);
+
                     val authRequestBuilder = new AuthorizationRequest.Builder(
                             serviceConfiguration, // the authorization service configuration
                             MY_CLIENT_ID, // the client ID, typically pre-registered and static
                             ResponseTypeValues.CODE, // the response_type value: we want a code
                             MY_REDIRECT_URI); // the redirect URI to which the auth response is sent
 
-                    val authRequest = authRequestBuilder
+                    authRequestBuilder
                             .setScopes("openid", "offline_access")
                             .setLoginHint(Pref.getString("tidepool_username", ""))
-                            .build();
+                            .setCodeVerifier(codeVerifier, codeChallenge, codeVerifierChallengeMethod);
+
+                    if (full) {
+                        // full relogin wanted
+                        authRequestBuilder.setPrompt("login");
+                    }
+
+                    val authRequest = authRequestBuilder.build();
 
                     Log.d(TAG, "Firing off request");
                     getAuthService().performAuthorizationRequest(

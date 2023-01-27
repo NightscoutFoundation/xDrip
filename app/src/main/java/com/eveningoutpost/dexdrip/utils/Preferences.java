@@ -1230,12 +1230,16 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 findPreference("tidepool_username")
                         .setOnPreferenceChangeListener((preference, newValue) -> {
                             TidepoolUploader.resetInstance();
+                            if (!newValue.equals(Pref.getStringDefaultBlank("tidepool_username"))) {
+                                Pref.setString("tidepool_username", (String) newValue);
+                                AuthFlowOut.doTidePoolInitialLogin(true);
+                            }
                             return true;
                         });
                 findPreference("tidepool_password")
                         .setOnPreferenceChangeListener((preference, newValue) -> {
                             TidepoolUploader.resetInstance();
-                            AuthFlowOut.doTidePoolInitialLogin();
+                            AuthFlowOut.doTidePoolInitialLogin(true);
                             return true;
                         });
             } catch (Exception e) {
