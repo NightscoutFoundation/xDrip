@@ -635,7 +635,7 @@
     <string name="only_enable_on_trouble">Luba ainult siis, kui äpiga on probleeme.</string>
     <string name="store_logs">Säilita logid tõrgete otsinguks</string>
     <string name="show_datatables_in_app_drawer">Kuva rakenduste menüüs kalibreerimise ja VS andmetabelid.</string>
-    <string name="disable_log_transmitter_battery_warning">Peida hoiatus, mida kuvatakse saatja madala aku korral avaekraanil. (Asjakohane vaid isetehtud vasuvõtjate puhul)</string>
+    <string name="disable_log_transmitter_battery_warning">Peida hoiatus, mida kuvatakse saatja madala akutaseme korral avaekraanil. (Asjakohane vaid isetehtud vastuvõtjate puhul)</string>
     <string name="engineering_mode">Tehniline režiim</string>
     <string name="allow_unsafe_settings">Lubab muuta kõige riskantsemaid seadeid, mis võivad äpi lõhkuda!</string>
     <string name="daily_save_db">Salvesta andmebaas iga päev</string>
