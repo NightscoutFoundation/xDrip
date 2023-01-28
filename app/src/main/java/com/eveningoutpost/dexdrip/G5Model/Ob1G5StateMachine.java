@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.G5Model;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Build;
 import android.os.PowerManager;
 
@@ -57,11 +58,14 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
 import io.reactivex.schedulers.Schedulers;
+import lombok.val;
 
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.Authentication;
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.Control;
+import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.ExtraData;
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.ProbablyBackfill;
 import static com.eveningoutpost.dexdrip.G5Model.FirmwareCapability.isTransmitterG6Rev2;
+import static com.eveningoutpost.dexdrip.Models.JoH.bytesToHex;
 import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.Models.JoH.pratelimit;
 import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
@@ -70,6 +74,7 @@ import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_BATTERY_LEVEL
 import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_BATTERY_MARKER;
 import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_BATTERY_WEARABLE_SEND;
 import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_FIRMWARE_MARKER;
+import static com.eveningoutpost.dexdrip.Services.G5BaseService.unBondAndStop;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.android_wear;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.getTransmitterID;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.onlyUsingNativeMode;
@@ -144,7 +149,7 @@ public class Ob1G5StateMachine {
                     .subscribe(bytes -> {
                         // incoming indications
                         lastAuthenticationStream = tsl();
-                        UserError.Log.d(TAG, "Received Authentication indication bytes: " + JoH.bytesToHex(bytes));
+                        UserError.Log.d(TAG, "Received Authentication indication bytes: " + bytesToHex(bytes));
                         authenticationProcessor(parent, connection, bytes);
                     }, throwable -> handleAuthenticationThrowable(throwable, parent));
         } else {
@@ -159,10 +164,110 @@ public class Ob1G5StateMachine {
                     .subscribe(bytes -> {
                         // incoming notifications
                         lastAuthenticationStream = tsl();
-                        UserError.Log.d(TAG, "Received Authentication notification bytes: " + JoH.bytesToHex(bytes));
+                        UserError.Log.d(TAG, "Received Authentication notification bytes: " + bytesToHex(bytes));
                         authenticationProcessor(parent, connection, bytes);
                     }, throwable -> handleAuthenticationThrowable(throwable, parent));
         }
+        return true;
+    }
+
+
+    private static void doNext(final Ob1G5CollectionService parent, final RxBleConnection connection) {
+        try {
+            val p = parent.plugin.aNext();
+            if (p == null) {
+                UserError.Log.d(TAG, "Null value returned via plugin");
+                return;
+            }
+            val cmd = p[0];
+
+            if (p.length == 2) {
+                val data = p[1];
+                if (data != null) {
+                    connection.getCharacteristic(ExtraData)
+                            .blockingGet().setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
+                    val len = data.length;
+                    for (int i = 0; i < len; i = i + 20) {
+                        val size = Math.min(20, len - i);
+                        val buf = new byte[size];
+                        System.arraycopy(data, i, buf, 0, size);
+                        UserError.Log.d(TAG, "Sending auth data: " + bytesToHex(buf));
+                        connection.writeCharacteristic(ExtraData, nn(buf)).subscribe();
+                    }
+                    // TODO wait for completion?
+                    threadSleep(500);
+                }
+                if (cmd != null) {
+                    UserError.Log.d(TAG, "Sending auth command: " + HexDump.dumpHexString(cmd));
+                    connection.getCharacteristic(Authentication)
+                            .blockingGet().setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
+                    connection.writeCharacteristic(Authentication, nn(cmd)).subscribe();
+                }
+            } else if (p.length == 1) {
+                if (cmd != null) {
+                    parent.changeState(Ob1G5CollectionService.STATE.GET_DATA);
+                }
+            } else if (p.length == 3) {
+                if (parent.isDeviceLocallyBonded()) {
+                    parent.changeState(Ob1G5CollectionService.STATE.UNBOND);
+                }
+            }
+        } catch (Exception e) {
+            UserError.Log.wtf(TAG, "Got exception in doNext() " + e);
+        }
+    }
+
+    @SuppressLint("CheckResult")
+    public static boolean doCheckAuth2(final Ob1G5CollectionService parent, final RxBleConnection connection) {
+        if (connection == null) return false;
+        parent.msg("Authorizing 2");
+
+        if (parent.android_wear) {
+            speakSlowly = true;
+            UserError.Log.d(TAG, "Setting speak slowly to true"); // WARN should be reactive or on named devices
+        }
+
+        try {
+            parent.plugin.amConnected();
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Got exception in plugin: " + e);
+        }
+        connection.setupNotification(ExtraData)
+                .timeout(15, TimeUnit.SECONDS) // WARN
+                .doOnNext(notificationObservable -> {
+                    UserError.Log.d(TAG,"Extra data notifications enabled");
+                    connection.setupIndication(Authentication)
+                            .timeout(15, TimeUnit.SECONDS) // WARN
+                            .doOnNext(notificationObservable2 -> doNext(parent, connection))
+                            .flatMap(notificationObservable2 -> notificationObservable2)
+                            .subscribe(bytes -> {
+                                lastAuthenticationStream = tsl();
+                                UserError.Log.d(TAG, "Received Authentication 2 indication bytes: " + bytesToHex(bytes));
+                                try {
+                                    if (parent.plugin.bondNow(bytes)) {
+                                        UserError.Log.d(TAG, "Creating bond!!");
+                                        parent.changeState(Ob1G5CollectionService.STATE.BOND);
+                                    }
+                                    if (parent.plugin.receivedResponse(bytes)) {
+                                        doNext(parent, connection);
+                                    }
+                                } catch (Exception e) {
+                                    UserError.Log.e(TAG,"Got exception in plugin: " + e);
+                                }
+                            }, throwable -> handleAuthenticationThrowable(throwable, parent));
+                })
+                .flatMap(notificationObservable -> notificationObservable)
+                .subscribe(bytes -> {
+                    lastAuthenticationStream = tsl();
+                    UserError.Log.d(TAG, "Received extra data indication bytes: " + bytesToHex(bytes));
+                    try {
+                        if (parent.plugin.receivedData(bytes)) {
+                            doNext(parent, connection);
+                        }
+                    } catch (Exception e) {
+                        UserError.Log.e(TAG, "Got exception in plugin: " + e);
+                    }
+                }, throwable -> handleAuthenticationThrowable(throwable, parent));
         return true;
     }
 
@@ -172,14 +277,14 @@ public class Ob1G5StateMachine {
         final AuthRequestTxMessage authRequest = (specifiedSlot == -1) ? new AuthRequestTxMessage(getTokenSize(), usingAlt())
         : new AuthRequestTxMessage(getTokenSize(), specifiedSlot);
         lastAuthPacket = authRequest;
-        UserError.Log.i(TAG, "AuthRequestTX: " + JoH.bytesToHex(authRequest.byteSequence));
+        UserError.Log.i(TAG, "AuthRequestTX: " + bytesToHex(authRequest.byteSequence));
 
         connection.writeCharacteristic(Authentication, nn(authRequest.byteSequence))
                 .subscribe(
                         characteristicValue -> {
                             // Characteristic value confirmed.
                             if (d)
-                                UserError.Log.d(TAG, "Wrote authrequest, got: " + JoH.bytesToHex(characteristicValue));
+                                UserError.Log.d(TAG, "Wrote authrequest, got: " + bytesToHex(characteristicValue));
                             speakSlowly();
                             if ((msSince(lastAuthenticationStream) > 500) && !isTransmitterG6Rev2(getTransmitterID())) {
                                 connection.readCharacteristic(Authentication).subscribe(
@@ -237,7 +342,7 @@ public class Ob1G5StateMachine {
     @SuppressLint("CheckResult")
     private static void authenticationProcessor(final Ob1G5CollectionService parent, final RxBleConnection connection, final byte[] readValue) {
         PacketShop pkt = classifyPacket(readValue);
-        UserError.Log.d(TAG, "Read from auth request: " + pkt.type + " " + JoH.bytesToHex(readValue));
+        UserError.Log.d(TAG, "Read from auth request: " + pkt.type + " " + bytesToHex(readValue));
 
         switch (pkt.type) {
             case AuthChallengeRxMessage:
@@ -342,7 +447,7 @@ public class Ob1G5StateMachine {
                 break;
 
             default:
-                UserError.Log.e(TAG, "Unhandled packet type in reply: " + pkt.type + " " + JoH.bytesToHex(readValue));
+                UserError.Log.e(TAG, "Unhandled packet type in reply: " + pkt.type + " " + bytesToHex(readValue));
                 parent.incrementErrors();
                 // TODO what to do here?
                 break;
@@ -412,14 +517,14 @@ public class Ob1G5StateMachine {
                             connection.writeCharacteristic(Authentication, nn(new BondRequestTxMessage().byteSequence))
                                     .subscribe(
                                             bondRequestValue -> {
-                                                UserError.Log.d(TAG, "Wrote bond request value: " + JoH.bytesToHex(bondRequestValue));
+                                                UserError.Log.d(TAG, "Wrote bond request value: " + bytesToHex(bondRequestValue));
                                                 speakSlowly();
                                                 connection.readCharacteristic(Authentication)
                                                         .observeOn(Schedulers.io())
                                                         .timeout(10, TimeUnit.SECONDS)
                                                         .subscribe(
                                                                 status_value -> {
-                                                                    UserError.Log.d(TAG, "Got status read after keepalive " + JoH.bytesToHex(status_value));
+                                                                    UserError.Log.d(TAG, "Got status read after keepalive " + bytesToHex(status_value));
                                                                     authenticationProcessor(parent, connection, status_value);
                                                                     throw new OperationSuccess("Bond requested");
                                                                 }, throwable -> {
@@ -459,7 +564,11 @@ public class Ob1G5StateMachine {
     public static boolean doUnBond(final Ob1G5CollectionService parent, RxBleConnection connection) {
         if (connection == null) return false;
         parent.msg("Unbond Transmitter a:" + usingAlt());
-        localUnbondAndStop(parent, connection);
+        if (unBondAndStop) {
+            localUnbondAndStop(parent, connection);
+        } else {
+            parent.unBond();
+        }
         return true;
     }
 
@@ -517,6 +626,8 @@ public class Ob1G5StateMachine {
             parent.lastSensorStatus = null; // not applicable
             parent.lastUsableGlucosePacketTime = 0;
         }
+        connection.getCharacteristic(Control)
+                .blockingGet().setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
 
         connection.setupIndication(Control)
 
@@ -547,7 +658,7 @@ public class Ob1G5StateMachine {
                 .timeout(6, TimeUnit.SECONDS)
                 .subscribe(bytes -> {
                     // incoming data notifications
-                    UserError.Log.d(TAG, "Received indication bytes: " + JoH.bytesToHex(bytes));
+                    UserError.Log.d(TAG, "Received indication bytes: " + bytesToHex(bytes));
                     final PacketShop data_packet = classifyPacket(bytes);
                     switch (data_packet.type) {
                         case SensorRxMessage:
@@ -761,7 +872,7 @@ public class Ob1G5StateMachine {
                             break;
 
                         default:
-                            UserError.Log.e(TAG, "Got unknown packet rx: " + JoH.bytesToHex(bytes));
+                            UserError.Log.e(TAG, "Got unknown packet rx: " + bytesToHex(bytes));
                             break;
                     }
                     if (!queued(parent, connection)) {
@@ -1333,13 +1444,23 @@ public class Ob1G5StateMachine {
         if (changed) saveQueue();
     }
 
+    private static void checkAndActivateSensor() {
+        // automagically start an xDrip sensor session if  transmitter already has active sensor
+        if (!Sensor.isActive() && Ob1G5CollectionService.isG5SensorStarted() && !Sensor.stoppedRecently()) {
+            JoH.static_toast_long(xdrip.gs(R.string.auto_starting_sensor));
+            // TODO possibly here we want to look at last sensor stop time and not backtrack before that
+            Sensor.create(tsl() - HOUR_IN_MS * 3);
+        }
+    }
+
     private static void processGlucoseRxMessage(Ob1G5CollectionService parent, final BaseGlucoseRxMessage glucose) {
         if (glucose == null) return;
         lastGlucosePacket = tsl();
         DexTimeKeeper.updateAge(getTransmitterID(), glucose.timestamp);
         if (glucose.usable() || (glucose.insufficient() && Pref.getBoolean("ob1_g5_use_insufficiently_calibrated", true))) {
-            UserError.Log.d(TAG, "Got usable glucose data from G5!!");
+            UserError.Log.d(TAG, "Got usable glucose data from transmitter!!");
             final long rxtimestamp = tsl();
+            checkAndActivateSensor();
             final BgReading bgReading = BgReading.bgReadingInsertFromG5(glucose.glucose, rxtimestamp);
             if (bgReading != null) {
                 try {
@@ -1536,7 +1657,7 @@ public class Ob1G5StateMachine {
     }
 
     public static boolean setStoredFirmwareBytes(String transmitterId, int type, byte[] data, boolean from_bluetooth) {
-        if (from_bluetooth) UserError.Log.e(TAG, "Store: VersionRX dbg: " + JoH.bytesToHex(data));
+        if (from_bluetooth) UserError.Log.e(TAG, "Store: VersionRX dbg: " + bytesToHex(data));
         if (transmitterId.length() != 6) return false;
         if (data.length < 9) return false;
         if (JoH.ratelimit("store-firmware-bytes" + type, 60)) {
@@ -1552,7 +1673,7 @@ public class Ob1G5StateMachine {
     }
 
     public synchronized static boolean setStoredBatteryBytes(String transmitterId, byte[] data) {
-        UserError.Log.e(TAG, "Store: BatteryRX dbg: " + JoH.bytesToHex(data));
+        UserError.Log.e(TAG, "Store: BatteryRX dbg: " + bytesToHex(data));
         if (transmitterId.length() != 6) return false;
         if (data.length < 10) return false;
         final BatteryInfoRxMessage batteryInfoRxMessage = new BatteryInfoRxMessage(data);
@@ -1688,7 +1809,7 @@ public class Ob1G5StateMachine {
                 .observeOn(Schedulers.newThread())
                 .flatMap(notificationObservable -> notificationObservable)
                 .subscribe(bytes -> {
-                            UserError.Log.d(TAG, "Received backfill notification bytes: " + JoH.bytesToHex(bytes));
+                            UserError.Log.d(TAG, "Received backfill notification bytes: " + bytesToHex(bytes));
                             backfill.push(bytes);
                             inevitableDisconnect(parent, connection);
                             Inevitable.task("Process G5 backfill", 3000, () -> processBacksies(backfill.decode()));

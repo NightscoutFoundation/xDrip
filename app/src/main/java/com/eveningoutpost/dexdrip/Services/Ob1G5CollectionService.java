@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.Services;
 
+import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.ExtraData;
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getUUIDName;
 import static com.eveningoutpost.dexdrip.G5Model.CalibrationState.Ok;
 import static com.eveningoutpost.dexdrip.G5Model.CalibrationState.Unknown;
@@ -34,6 +35,7 @@ import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.BAD;
 import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.CRITICAL;
 import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.NORMAL;
 import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.NOTICE;
+import static com.eveningoutpost.dexdrip.plugin.Dialog.txIdMatch;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
 import static com.eveningoutpost.dexdrip.utils.bt.Subscription.addErrorHandler;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
@@ -92,6 +94,9 @@ import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight;
 import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.WholeHouse;
+import com.eveningoutpost.dexdrip.plugin.IPluginDA;
+import com.eveningoutpost.dexdrip.plugin.Loader;
+import com.eveningoutpost.dexdrip.plugin.Registry;
 import com.eveningoutpost.dexdrip.ui.helpers.Span;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.bt.Subscription;
@@ -186,6 +191,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     private Subscription discoverSubscription;
     private RxBleDevice bleDevice;
     private RxBleConnection connection;
+    public volatile IPluginDA plugin;
 
     private PowerManager.WakeLock connection_linger;
     private volatile PowerManager.WakeLock scanWakeLock;
@@ -358,7 +364,15 @@ public class Ob1G5CollectionService extends G5BaseService {
                     case CHECK_AUTH:
                         if (do_auth) {
                             final PowerManager.WakeLock linger_wl_connect = JoH.getWakeLock("jam-g5-check-linger", 6000);
-                            if (!Ob1G5StateMachine.doCheckAuth(this, connection)) resetState();
+                            if (plugin != null) {
+                                if (!Ob1G5StateMachine.doCheckAuth2(this, connection)) {
+                                    resetState();
+                                }
+                            } else {
+                                if (!Ob1G5StateMachine.doCheckAuth(this, connection)) {
+                                    resetState();
+                                }
+                            }
                         } else {
                             UserError.Log.d(TAG, "Skipping authentication");
                             changeState(GET_DATA);
@@ -383,8 +397,8 @@ public class Ob1G5CollectionService extends G5BaseService {
                         create_bond();
                         break;
                     case UNBOND:
-                        UserError.Log.d(TAG, "Unbond state - not yet implemented");
-                        //Ob1G5StateMachine.doUnBond(this, connection);
+                        UserError.Log.d(TAG, "Unbond state");
+                        Ob1G5StateMachine.doUnBond(this, connection);
                         break;
 
                     case RESET:
@@ -668,6 +682,7 @@ public class Ob1G5CollectionService extends G5BaseService {
             try {
                 msg("Bonding");
                 do_create_bond();
+                DexSyncKeeper.clear(getTransmitterID());
                 //state = STATE.CONNECT_NOW;
                 //background_automata(15000);
             } catch (Exception e) {
@@ -1413,6 +1428,22 @@ public class Ob1G5CollectionService extends G5BaseService {
                     do_discovery = false;
                 }
 
+                if (txIdMatch(getTransmitterID()) && service.getCharacteristic(ExtraData) != null) {
+                    try {
+                        plugin = Loader.getInstance(Registry.get("keks"), getTransmitterID());
+                        if (plugin == null) {
+                            val msg = "Unable to load keks plugin - please re-enter transmitter id";
+                            UserError.Log.wtf(TAG, msg);
+                            JoH.static_toast_long(msg);
+                        }
+                    } catch (Exception e) {
+                        UserError.Log.e(TAG, "Exception getting instance: "+e);
+                        e.printStackTrace();
+                    }
+                } else {
+                    plugin = null;
+                }
+
                 if (specialPairingWorkaround()) {
                     UserError.Log.d(TAG,"Samsung additional delay");
                     Inevitable.task("samsung delay", 1000, () -> changeState(STATE.CHECK_AUTH));
@@ -2150,7 +2181,9 @@ public class Ob1G5CollectionService extends G5BaseService {
             l.add(new StatusItem("Voltage A", parsedBattery.voltageA(), parsedBattery.voltageAWarning() ? BAD : NORMAL));
             l.add(new StatusItem("Voltage B", parsedBattery.voltageB(), parsedBattery.voltageBWarning() ? BAD : NORMAL));
             if (vr != null && FirmwareCapability.isFirmwareResistanceCapable(vr.firmware_version_string)) {
-                l.add(new StatusItem("Resistance", parsedBattery.resistance(), parsedBattery.resistanceStatus().highlight));
+               if (parsedBattery.resistance() != 0) {
+                   l.add(new StatusItem("Resistance", parsedBattery.resistance(), parsedBattery.resistanceStatus().highlight));
+               }
             }
             if (vr != null && FirmwareCapability.isFirmwareTemperatureCapable(vr.firmware_version_string)) {
                 l.add(new StatusItem("Temperature", parsedBattery.temperature() + " \u2103"));

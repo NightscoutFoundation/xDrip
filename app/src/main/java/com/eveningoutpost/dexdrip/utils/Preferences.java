@@ -94,7 +94,9 @@ import com.eveningoutpost.dexdrip.cgm.carelinkfollow.CareLinkFollowService;
 import com.eveningoutpost.dexdrip.healthconnect.HealthConnectEntry;
 import com.eveningoutpost.dexdrip.healthconnect.HealthGamut;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
+import com.eveningoutpost.dexdrip.plugin.Dialog;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
+import com.eveningoutpost.dexdrip.tidepool.AuthFlowOut;
 import com.eveningoutpost.dexdrip.tidepool.TidepoolUploader;
 import com.eveningoutpost.dexdrip.tidepool.UploadChunk;
 import com.eveningoutpost.dexdrip.ui.LockScreenWallPaper;
@@ -127,6 +129,7 @@ import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.val;
 
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
@@ -1210,15 +1213,39 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
             final Preference tidepoolTestLogin = findPreference("tidepool_test_login");
             tidepoolTestLogin.setOnPreferenceClickListener(preference -> {
-                Inevitable.task("tidepool-upload", 200, TidepoolUploader::doLoginFromUi);
+                if (Pref.getBooleanDefaultFalse("tidepool_new_auth")) {
+                    Inevitable.task("tidepool-upload", 200, AuthFlowOut::doTidePoolInitialLogin);
+                } else {
+                    Inevitable.task("tidepool-upload", 200, TidepoolUploader::doLoginFromUi);
+                }
                 return false;
             });
 
-            final Preference tidePoolType = findPreference("tidepool_dev_servers");
-            tidePoolType.setOnPreferenceChangeListener((preference, newValue) -> {
+            try {
+                final Preference tidePoolType = findPreference("tidepool_dev_servers");
+                tidePoolType.setOnPreferenceChangeListener((preference, newValue) -> {
                     TidepoolUploader.resetInstance();
                     return true;
-            });
+                });
+                findPreference("tidepool_username")
+                        .setOnPreferenceChangeListener((preference, newValue) -> {
+                            TidepoolUploader.resetInstance();
+                            if (!newValue.equals(Pref.getStringDefaultBlank("tidepool_username"))) {
+                                Pref.setString("tidepool_username", (String) newValue);
+                                AuthFlowOut.doTidePoolInitialLogin(true);
+                            }
+                            return true;
+                        });
+                findPreference("tidepool_password")
+                        .setOnPreferenceChangeListener((preference, newValue) -> {
+                            TidepoolUploader.resetInstance();
+                            AuthFlowOut.doTidePoolInitialLogin(true);
+                            return true;
+                        });
+            } catch (Exception e) {
+                UserError.Log.e(TAG,"Could not attach listener for tidepool prefs: " + e);
+            }
+
 
             final Preference nsFollowDownload = findPreference("nsfollow_download_treatments");
             final Preference nsFollowUrl = findPreference("nsfollow_url");
@@ -2234,9 +2261,11 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             transmitterId.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    val activity = getActivity();
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
+                            Dialog.askIfNeeded(activity, (String)newValue);
                             try {
                                 Thread.sleep(1000);
                             } catch (InterruptedException e) {

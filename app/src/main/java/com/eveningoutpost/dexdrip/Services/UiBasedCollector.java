@@ -89,7 +89,7 @@ public class UiBasedCollector extends NotificationListenerService {
                 }
             } else {
                 if (JoH.pratelimit("warn-notification-access", 7200)) {
-                    UserError.Log.wtf(TAG, "Receiving notifications that we are not enabled to process");
+                    UserError.Log.wtf(TAG, "Receiving notifications that we are not enabled to process: " + fromPackage);
                 }
             }
         }
@@ -129,7 +129,9 @@ public class UiBasedCollector extends NotificationListenerService {
             default:
                 return value
                         .replace("mmol/L", "")
+                        .replace("mmol/l", "")
                         .replace("mg/dL", "")
+                        .replace("mg/dl", "")
                         .replace("≤", "")
                         .replace("≥", "")
                         .trim();

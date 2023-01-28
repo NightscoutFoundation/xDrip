@@ -1745,4 +1745,5 @@
     <string name="megabyte_format_string">%.1f MB</string>
     <string name="manual_selection_google_drive_file_warning">Hai selezionato un file da Google Drive, ma questo non è gestito automaticamente da xDrip. Può essere utilizzato solo per backup e ripristino manuali.\n\nNon verrà effettuato alcun backup automatico con questo file.\n\nContinuare?</string>
     <string name="alternate_file_selected_warning">Hai selezionato un file alternativo. In genere serve solo per ripristinare un backup salvato localmente.\n\nNon verrà effettuato alcun backup automatico con questo file.\n\nContinuare?</string>
+    <string name="close">Chiudi</string>
 </resources>

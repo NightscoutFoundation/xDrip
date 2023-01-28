@@ -1707,7 +1707,26 @@
     <string name="nothing_to_restore_please_select">Nada para restaurar. Por favor, seleccione la ubicación</string>
     <string name="no_backup_location_set">No se ha seleccionado una ubicación de copia de seguridad</string>
     <string name="backing_up">Realizando copia de seguridad</string>
+    <string name="backup_failed">La copia de seguridad ha fallado</string>
+    <string name="choose_backup_file">Selecciona el archivo de copia de seguridad</string>
+    <string name="select_alternate_file">Seleccionar archivo alternativo</string>
+    <string name="change_account">Cambiar cuenta</string>
+    <string name="keep_same_account">Mantener la misma cuenta</string>
+    <string name="change_google_account">Cambiar la cuenta de Google</string>
+    <string name="attempting_restore">Intentando restaurar</string>
+    <string name="restore_succeeded_restarting">Restauración correcta - reiniciando la aplicación</string>
+    <string name="restore_failed">Restauración FALLIDA!</string>
+    <string name="error_exclamation">Error</string>
+    <string name="checking_file">Comprobando archivo</string>
+    <string name="failed_to_read_file">Error al leer el archivo</string>
+    <string name="permission_problem_retry">Problema de permisos - reintentar</string>
+    <string name="alternate_file_selected">Archivo alternativo seleccionado</string>
+    <string name="temporary_google_drive_file">Archivo temporal de Google Drive</string>
+    <string name="no_file_was_chosen">No se ha seleccionado ningún archivo</string>
+    <string name="could_not_sign_in">No se ha podido iniciar la sesión</string>
+    <string name="problem_with_file_selection">Problema con la selección de archivo</string>
     <string name="none">Ninguno</string>
     <string name="use_background_scans">Usar escaneos de fondo</string>
     <string name="android_8_background_scanning">Usar la función de escaneo en segundo plano de Android 8+</string>
+    <string name="close">Cerrar</string>
 </resources>

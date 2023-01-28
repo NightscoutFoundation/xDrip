@@ -21,7 +21,7 @@ public class BaseMessage {
     public volatile ByteBuffer data;
 
 
-    void init(final byte opcode, final int length) {
+    protected void init(final byte opcode, final int length) {
         data = ByteBuffer.allocate(length).order(ByteOrder.LITTLE_ENDIAN);
         data.put(opcode);
         if (length == 1) {

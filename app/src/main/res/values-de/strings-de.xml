@@ -1158,7 +1158,7 @@
     <string name="need_permission_to_access_audio_files">Benötige Berechtigung um auf Audio-Dateien zugreifen zu können</string>
     <string name="need_contacts_permission_to_select_message_recipients">Benötige Kontakte-Berechtigung um Nachrichtenempfänger auswählen zu können</string>
     <string name="need_storage_permission_to_access_all_ringtones">Benötige Speichermedium-Berechtigung um auf alle Klingeltöne zugreifen zu können</string>
-    <string name="xdrip_needs_whitelisting_for_proper_performance">xDrip+ benötigt die Eintragung auf der \"Withelist\" damit es gut funktioniert</string>
+    <string name="xdrip_needs_whitelisting_for_proper_performance">xDrip+ muss auf der \"Whitelist\" eingetragen sein, damit es gut funktioniert</string>
     <string name="overwrite_slope_engineering_only">Überschreibe Steigung (nur Entwicklermodus!)</string>
     <string name="overwrite_intercept_engineering_only">Überschreibe Achsenabschnitt (nur Entwicklermodus!)</string>
     <string name="manual_overwrite_not_possible">Manuelles Überschreiben nicht möglich!</string>
@@ -1753,4 +1753,5 @@
     <string name="format_string_ago">vor %s</string>
     <string name="use_background_scans">Scan im Hintergrund ausführen</string>
     <string name="android_8_background_scanning">Hintergrundscan von Android 8+ nutzen</string>
+    <string name="close">Schließen</string>
 </resources>
