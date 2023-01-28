@@ -48,6 +48,10 @@ import lecho.lib.hellocharts.model.Line;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
 
+// External status line from AAPS added
+import static com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService.getLastStatusLine;
+import static com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService.getLastStatusLineTime;
+
 /**
  *  Broadcast API which provides common data like, bg values, graph info, statistic info.
  *  Also it can handle different alarms, save HR data, steps and treatments.
@@ -570,10 +574,16 @@ public class BroadcastService extends Service {
                 bundle.putParcelable("graph.predictedBg", new GraphLine(treatments[5]));  // predictive
                 bundle.putParcelable("graph.cob", new GraphLine(treatments[6]));  //cobValues
                 bundle.putParcelable("graph.polyBg", new GraphLine(treatments[7]));  //poly predict ;
+
             }
 
             bundle.putString("predict.IOB", predictedIOB);
             bundle.putString("predict.BWP", predictedBWP);
+
+            // External status line from AAPS added
+            bundle.putString("external.statusLine", getLastStatusLine());
+            bundle.putLong("external.timeStamp", getLastStatusLineTime());
+
         }
         return bundle;
     }
