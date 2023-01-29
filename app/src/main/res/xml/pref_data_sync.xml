@@ -93,6 +93,11 @@
                         android:key="nightscout_device_append_source_info"
                         android:summary="@string/summary_nightscout_device_append_source_info"
                         android:title="@string/title_nightscout_device_append_source_info" />
+                    <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:key="upload_adjusted_bgreadings"
+                        android:summary="@string/summary_upload_adjusted_bgreadings"
+                        android:title="@string/title_upload_adjusted_bgreadings" />
                     <Preference
                         android:key="back_fill_data_activity_intent_key"
                         android:summary="@string/summary_tap_to_send_historical_data"
