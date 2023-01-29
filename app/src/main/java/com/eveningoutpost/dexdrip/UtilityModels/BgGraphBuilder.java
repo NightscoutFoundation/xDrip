@@ -1246,19 +1246,35 @@ public class BgGraphBuilder {
                 }
 
                 if ((show_filtered) && (bgReading.filtered_calculated_value > 0) && (bgReading.filtered_calculated_value != bgReading.calculated_value)) {
-                    filteredValues.add(new HPointValue((double) ((bgReading.timestamp - timeshift) / FUZZER), (float) unitized(bgReading.filtered_calculated_value)));
+                    if (bgReading.filtered_calculated_value < 400) {
+                        filteredValues.add(new HPointValue((double) ((bgReading.timestamp - timeshift) / FUZZER), (float) unitized(bgReading.filtered_calculated_value)));
+                    } else {
+                        filteredValues.add(new HPointValue((double) ((bgReading.timestamp - timeshift) / FUZZER), (float) unitized(400)));
+                    }
                 } else if (show_pseudo_filtered) {
                     // TODO differentiate between filtered and pseudo-filtered when both may be in play at different times
                     final double rollingValue = rollingAverage.put(bgReading.calculated_value);
                     if (rollingAverage.reachedPeak()) {
-                        filteredValues.add(new HPointValue((double) ((bgReading.timestamp + rollingOffset) / FUZZER), (float) unitized(rollingValue)));
+                        if (rollingValue < 400) {
+                            filteredValues.add(new HPointValue((double) ((bgReading.timestamp + rollingOffset) / FUZZER), (float) unitized(rollingValue)));
+                        } else {
+                            filteredValues.add(new HPointValue((double) ((bgReading.timestamp + rollingOffset) / FUZZER), (float) unitized(400)));
+                        }
                     }
                 }
                 if ((interpret_raw && (bgReading.raw_calculated > 0))) {
-                    rawInterpretedValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.raw_calculated)));
+                    if (bgReading.raw_calculated < 400) {
+                        rawInterpretedValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.raw_calculated)));
+                    } else {
+                        rawInterpretedValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(400)));
+                    }
                 }
                 if ((!glucose_from_plugin) && (plugin != null) && (cd != null)) {
-                    pluginValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(plugin.getGlucoseFromBgReading(bgReading, cd))));
+                    if (plugin.getGlucoseFromBgReading(bgReading, cd) < 400) {
+                        pluginValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(plugin.getGlucoseFromBgReading(bgReading, cd))));
+                    } else {
+                        pluginValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(400)));
+                    }
                 }
                 if (bgReading.ignoreForStats) {
                     badValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
