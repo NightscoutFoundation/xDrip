@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.Models;
 
-import android.databinding.BaseObservable;
+import androidx.databinding.BaseObservable;
 
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;

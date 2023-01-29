@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.os.PowerManager;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;

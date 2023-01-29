@@ -19,8 +19,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
+
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 //KS import com.eveningoutpost.dexdrip.AddCalibration;
 //KS import com.eveningoutpost.dexdrip.BestGlucose;
