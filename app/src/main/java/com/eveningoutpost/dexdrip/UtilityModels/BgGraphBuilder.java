@@ -1246,24 +1246,24 @@ public class BgGraphBuilder {
                 }
 
                 if ((show_filtered) && (bgReading.filtered_calculated_value > 0) && (bgReading.filtered_calculated_value != bgReading.calculated_value)) {
-                    filteredValues.add(new HPointValue((double) ((bgReading.timestamp - timeshift) / FUZZER), (float) unitized(Math.min(bgReading.filtered_calculated_value, 400))));
+                    filteredValues.add(new HPointValue((double) ((bgReading.timestamp - timeshift) / FUZZER), (float) unitized(Math.min(bgReading.filtered_calculated_value, BgReading.BG_READING_MAXIMUM_VALUE))));
                 } else if (show_pseudo_filtered) {
                     // TODO differentiate between filtered and pseudo-filtered when both may be in play at different times
                     final double rollingValue = rollingAverage.put(bgReading.calculated_value);
                     if (rollingAverage.reachedPeak()) {
-                        filteredValues.add(new HPointValue((double) ((bgReading.timestamp + rollingOffset) / FUZZER), (float) unitized(Math.min(rollingValue, 400))));
+                        filteredValues.add(new HPointValue((double) ((bgReading.timestamp + rollingOffset) / FUZZER), (float) unitized(Math.min(rollingValue, BgReading.BG_READING_MAXIMUM_VALUE))));
                     }
                 }
                 if ((interpret_raw && (bgReading.raw_calculated > 0))) {
-                    rawInterpretedValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(Math.min(bgReading.raw_calculated, 400))));
+                    rawInterpretedValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(Math.min(bgReading.raw_calculated, BgReading.BG_READING_MAXIMUM_VALUE))));
                 }
                 if ((!glucose_from_plugin) && (plugin != null) && (cd != null)) {
-                    pluginValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(Math.min(plugin.getGlucoseFromBgReading(bgReading, cd), 400))));
+                    pluginValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(Math.min(plugin.getGlucoseFromBgReading(bgReading, cd), BgReading.BG_READING_MAXIMUM_VALUE))));
                 }
                 if (bgReading.ignoreForStats) {
                     badValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
-                } else if (bgReading.calculated_value >= 400) {
-                    highValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(400)));
+                } else if (bgReading.calculated_value >= BgReading.BG_READING_MAXIMUM_VALUE) {
+                    highValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(BgReading.BG_READING_MAXIMUM_VALUE)));
                 } else if (unitized(bgReading.calculated_value) >= highMark) {
                     highValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
                 } else if (unitized(bgReading.calculated_value) >= lowMark) {
