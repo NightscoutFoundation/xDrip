@@ -19,11 +19,10 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.NewDataObserver;
-import com.eveningoutpost.dexdrip.Services.SyncService;
+import com.eveningoutpost.dexdrip.services.SyncService;
 import com.eveningoutpost.dexdrip.WidgetUpdateService;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.xDripWidget;
-import com.rits.cloning.Cloner;
 
 import java.util.List;
 

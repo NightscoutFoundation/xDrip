@@ -1,7 +1,5 @@
 package com.eveningoutpost.dexdrip;
 
-import android.R.integer;
-
 /**
  * Created by jamorham on 11/01/16.
  */
@@ -31,7 +29,7 @@ import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
+import com.eveningoutpost.dexdrip.services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.NanoStatus;
@@ -56,7 +54,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static android.support.v4.content.WakefulBroadcastReceiver.completeWakefulIntent;
 import static com.eveningoutpost.dexdrip.Models.JoH.isAnyNetworkConnected;
 import static com.eveningoutpost.dexdrip.Models.JoH.showNotification;
 

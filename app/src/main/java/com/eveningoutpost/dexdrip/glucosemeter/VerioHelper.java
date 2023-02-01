@@ -2,7 +2,7 @@ package com.eveningoutpost.dexdrip.glucosemeter;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Services.BluetoothGlucoseMeter;
+import com.eveningoutpost.dexdrip.services.BluetoothGlucoseMeter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 
@@ -10,8 +10,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.UUID;
 
-import static com.eveningoutpost.dexdrip.Services.BluetoothGlucoseMeter.mBluetoothDeviceAddress;
-import static com.eveningoutpost.dexdrip.Services.BluetoothGlucoseMeter.statusUpdate;
+import static com.eveningoutpost.dexdrip.services.BluetoothGlucoseMeter.mBluetoothDeviceAddress;
+import static com.eveningoutpost.dexdrip.services.BluetoothGlucoseMeter.statusUpdate;
 import static com.eveningoutpost.dexdrip.utils.CRC16ccitt.crc16ccitt;
 
 /**

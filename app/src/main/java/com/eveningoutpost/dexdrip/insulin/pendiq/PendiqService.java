@@ -10,7 +10,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.Services.JamBaseBluetoothService;
+import com.eveningoutpost.dexdrip.services.JamBaseBluetoothService;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.RxBleProvider;
@@ -45,9 +45,6 @@ import lombok.RequiredArgsConstructor;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
 */
-import io.reactivex.Observable;
-import io.reactivex.Scheduler;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.msSince;

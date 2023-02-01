@@ -8,18 +8,17 @@ import android.content.SharedPreferences;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-//KS import com.eveningoutpost.dexdrip.Services.DailyIntentService;
-import com.eveningoutpost.dexdrip.Services.DexCollectionService;
-import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
-//KS import com.eveningoutpost.dexdrip.Services.DoNothingService;
-import com.eveningoutpost.dexdrip.Services.G5CollectionService;
-//KS import com.eveningoutpost.dexdrip.Services.SyncService;
-//KS import com.eveningoutpost.dexdrip.Services.WifiCollectionService;
+//KS import com.eveningoutpost.dexdrip.services.DailyIntentService;
+import com.eveningoutpost.dexdrip.services.DexCollectionService;
+import com.eveningoutpost.dexdrip.services.DexShareCollectionService;
+//KS import com.eveningoutpost.dexdrip.services.DoNothingService;
+import com.eveningoutpost.dexdrip.services.G5CollectionService;
+//KS import com.eveningoutpost.dexdrip.services.SyncService;
+//KS import com.eveningoutpost.dexdrip.services.WifiCollectionService;
 //KS import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 //KS import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
-import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
+import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 //KS import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -228,7 +227,7 @@ public class CollectionServiceStarter {
             String filePath = Environment.getExternalStorageDirectory() + "/xdriplogcat.txt";
             try {
                 String[] cmd = {"/system/bin/sh", "-c", "ps | grep logcat  || logcat -f " + filePath +
-                        " -v threadtime AlertPlayer:V com.eveningoutpost.dexdrip.Services.WixelReader:V *:E "};
+                        " -v threadtime AlertPlayer:V com.eveningoutpost.dexdrip.services.WixelReader:V *:E "};
                 Runtime.getRuntime().exec(cmd);
             } catch (IOException e2) {
                 Log.e(TAG, "running logcat failed, is the device rooted?", e2);
