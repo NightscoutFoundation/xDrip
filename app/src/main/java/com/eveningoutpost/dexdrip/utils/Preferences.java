@@ -955,8 +955,10 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             static_units = this.prefs.getString("units", "mgdl");
             addPreferencesFromResource(R.xml.pref_license);
             addPreferencesFromResource(R.xml.pref_general);
+            bindPreferenceSummaryToValueAndEnsureNumeric(findPreference("veryhighValue"));
             bindPreferenceSummaryToValueAndEnsureNumeric(findPreference("highValue"));
             bindPreferenceSummaryToValueAndEnsureNumeric(findPreference("lowValue"));
+            bindPreferenceSummaryToValueAndEnsureNumeric(findPreference("verylowValue"));
             units_pref = findPreference("units");
             bindPreferenceSummaryToValue(units_pref);
 
@@ -2876,14 +2878,21 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 preferences = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
             }
 
+            final Double veryhighVal = Double.parseDouble(preferences.getString("veryhighValue", "0"));
             final Double highVal = Double.parseDouble(preferences.getString("highValue", "0"));
             final Double lowVal = Double.parseDouble(preferences.getString("lowValue", "0"));
+            final Double verylowVal = Double.parseDouble(preferences.getString("verylowValue", "0"));
             final Double default_insulin_sensitivity = Double.parseDouble(preferences.getString("profile_insulin_sensitivity_default", "54"));
             final Double default_target_glucose = Double.parseDouble(preferences.getString("plus_target_range", "100"));
 
 
             static_units = newValue.toString();
             if (newValue.toString().equals("mgdl")) {
+                if (veryhighVal < 36) {
+                    ProfileEditor.convertData(Constants.MMOLL_TO_MGDL);
+                    preferences.edit().putString("veryhighValue", Long.toString(Math.round(highVal * Constants.MMOLL_TO_MGDL))).apply();
+                    Profile.invalidateProfile();
+                }
                 if (highVal < 36) {
                     ProfileEditor.convertData(Constants.MMOLL_TO_MGDL);
                     preferences.edit().putString("highValue", Long.toString(Math.round(highVal * Constants.MMOLL_TO_MGDL))).apply();
@@ -2898,8 +2907,18 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     preferences.edit().putString("plus_target_range", Long.toString(Math.round(default_target_glucose * Constants.MMOLL_TO_MGDL))).apply();
                     Profile.invalidateProfile();
                 }
+                if (lowVal < 36) {
+                    ProfileEditor.convertData(Constants.MMOLL_TO_MGDL);
+                    preferences.edit().putString("verylowValue", Long.toString(Math.round(lowVal * Constants.MMOLL_TO_MGDL))).apply();
+                    Profile.invalidateProfile();
+                }
 
             } else {
+                if (highVal > 35) {
+                    ProfileEditor.convertData(Constants.MGDL_TO_MMOLL);
+                    preferences.edit().putString("veryhighValue", JoH.qs(highVal * Constants.MGDL_TO_MMOLL, 1)).apply();
+                    Profile.invalidateProfile();
+                }
                 if (highVal > 35) {
                     ProfileEditor.convertData(Constants.MGDL_TO_MMOLL);
                     preferences.edit().putString("highValue", JoH.qs(highVal * Constants.MGDL_TO_MMOLL, 1)).apply();
@@ -2914,11 +2933,18 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     preferences.edit().putString("plus_target_range", JoH.qs(default_target_glucose * Constants.MGDL_TO_MMOLL,1)).apply();
                     Profile.invalidateProfile();
                 }
+                if (lowVal > 35) {
+                    ProfileEditor.convertData(Constants.MGDL_TO_MMOLL);
+                    preferences.edit().putString("verylowValue", JoH.qs(lowVal * Constants.MGDL_TO_MMOLL, 1)).apply();
+                    Profile.invalidateProfile();
+                }
             }
             if (preference != null) preference.setSummary(newValue.toString());
             if (allPrefsFragment != null) {
+                allPrefsFragment.setSummary("veryhighValue");
                 allPrefsFragment.setSummary("highValue");
                 allPrefsFragment.setSummary("lowValue");
+                allPrefsFragment.setSummary("verylowValue");
             }
             if (profile_insulin_sensitivity_default != null) {
                 Log.d(TAG, "refreshing profile insulin sensitivity default display");

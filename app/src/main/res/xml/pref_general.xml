@@ -15,6 +15,12 @@
                 android:entryValues="@array/bgUnitValues"
                 android:defaultValue="mgdl"/>
             <EditTextPreference
+                android:key="veryhighValue"
+                android:title="@string/veryhigh_value"
+                android:inputType="numberDecimal"
+                android:summary="@string/maximum_value"
+                android:defaultValue="250" />
+            <EditTextPreference
                 android:key="highValue"
                 android:title="@string/high_value"
                 android:inputType="numberDecimal"
@@ -26,6 +32,12 @@
                 android:inputType="numberDecimal"
                 android:summary="@string/minimum_value"
                 android:defaultValue="70" />
+            <EditTextPreference
+                android:key="verylowValue"
+                android:title="@string/verylow_value"
+                android:inputType="numberDecimal"
+                android:summary="@string/minimum_value"
+                android:defaultValue="54" />
         </PreferenceCategory>
     </PreferenceScreen>
 </PreferenceScreen>
