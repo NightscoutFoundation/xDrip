@@ -43,7 +43,7 @@ public class Bubble {
         if (!Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             if (patchInfo != null && patchInfo.length > 0) {
                 int first = 0xff & patchInfo[0];
-                if (first == 0x9D || first == 0xE5) {//Libre us and libre2 Libre pro
+                if (first == 0x9D || first == 0xE5 || first == 0xE6) {//Libre us and libre2 Libre pro
                     if (fv >= 2.6) {
                         ackMessage.put(0, (byte) 0x08);
                     }
