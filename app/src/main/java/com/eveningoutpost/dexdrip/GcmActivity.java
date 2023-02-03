@@ -26,7 +26,7 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.Services.PlusSyncService;
+import com.eveningoutpost.dexdrip.services.PlusSyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.InstalledApps;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;

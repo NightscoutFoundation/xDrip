@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Services.G5CollectionService;
+import com.eveningoutpost.dexdrip.services.G5CollectionService;
 import com.google.gson.annotations.Expose;
 
 import java.nio.ByteBuffer;

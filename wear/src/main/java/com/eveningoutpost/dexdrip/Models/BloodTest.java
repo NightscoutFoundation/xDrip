@@ -12,7 +12,7 @@ import com.activeandroid.util.SQLiteUtils;
 //KS import com.eveningoutpost.dexdrip.AddCalibration;
 //KS import com.eveningoutpost.dexdrip.GlucoseMeter.GlucoseReadingRx;
 import com.eveningoutpost.dexdrip.Home;
-//KS import com.eveningoutpost.dexdrip.Services.SyncService;
+//KS import com.eveningoutpost.dexdrip.services.SyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 //KS import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 //KS import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;

@@ -22,7 +22,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
+import com.eveningoutpost.dexdrip.services.SnoozeOnNotificationDismissService;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
 
 import java.io.IOException;

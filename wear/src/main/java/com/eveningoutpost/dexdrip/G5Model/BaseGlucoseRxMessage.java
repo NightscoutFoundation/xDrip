@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
-import com.eveningoutpost.dexdrip.Services.G5CollectionService;
+import com.eveningoutpost.dexdrip.services.G5CollectionService;
 
 import lombok.NoArgsConstructor;
 

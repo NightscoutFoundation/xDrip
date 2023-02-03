@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.Models;
 import com.activeandroid.query.Delete;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
-import com.eveningoutpost.dexdrip.Services.DexCollectionService;
+import com.eveningoutpost.dexdrip.services.DexCollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;

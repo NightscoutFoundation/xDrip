@@ -29,6 +29,10 @@ public class MAuthReply {
     @SerializedName("username")
     String username;
 
+    public MAuthReply(final String userid) {
+        this.userid = userid;
+    }
+
     public String toS() {
         return JoH.defaultGsonInstance().toJson(this);
     }

@@ -61,12 +61,12 @@ import com.eveningoutpost.dexdrip.Models.UserNotification;
 import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.ParakeetHelper;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
-import com.eveningoutpost.dexdrip.Services.BluetoothGlucoseMeter;
-import com.eveningoutpost.dexdrip.Services.DexCollectionService;
-import com.eveningoutpost.dexdrip.Services.G5BaseService;
-import com.eveningoutpost.dexdrip.Services.PlusSyncService;
-import com.eveningoutpost.dexdrip.Services.UiBasedCollector;
+import com.eveningoutpost.dexdrip.services.ActivityRecognizedService;
+import com.eveningoutpost.dexdrip.services.BluetoothGlucoseMeter;
+import com.eveningoutpost.dexdrip.services.DexCollectionService;
+import com.eveningoutpost.dexdrip.services.G5BaseService;
+import com.eveningoutpost.dexdrip.services.PlusSyncService;
+import com.eveningoutpost.dexdrip.services.UiBasedCollector;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
@@ -96,6 +96,7 @@ import com.eveningoutpost.dexdrip.healthconnect.HealthGamut;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
 import com.eveningoutpost.dexdrip.plugin.Dialog;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
+import com.eveningoutpost.dexdrip.tidepool.AuthFlowOut;
 import com.eveningoutpost.dexdrip.tidepool.TidepoolUploader;
 import com.eveningoutpost.dexdrip.tidepool.UploadChunk;
 import com.eveningoutpost.dexdrip.ui.LockScreenWallPaper;
@@ -108,7 +109,7 @@ import com.eveningoutpost.dexdrip.watch.thinjam.BlueJay;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayAdapter;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
-import com.eveningoutpost.dexdrip.Services.broadcastservice.BroadcastService;
+import com.eveningoutpost.dexdrip.services.broadcastservice.BroadcastService;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.eveningoutpost.dexdrip.xDripWidget;
@@ -1212,15 +1213,39 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
             final Preference tidepoolTestLogin = findPreference("tidepool_test_login");
             tidepoolTestLogin.setOnPreferenceClickListener(preference -> {
-                Inevitable.task("tidepool-upload", 200, TidepoolUploader::doLoginFromUi);
+                if (Pref.getBooleanDefaultFalse("tidepool_new_auth")) {
+                    Inevitable.task("tidepool-upload", 200, AuthFlowOut::doTidePoolInitialLogin);
+                } else {
+                    Inevitable.task("tidepool-upload", 200, TidepoolUploader::doLoginFromUi);
+                }
                 return false;
             });
 
-            final Preference tidePoolType = findPreference("tidepool_dev_servers");
-            tidePoolType.setOnPreferenceChangeListener((preference, newValue) -> {
+            try {
+                final Preference tidePoolType = findPreference("tidepool_dev_servers");
+                tidePoolType.setOnPreferenceChangeListener((preference, newValue) -> {
                     TidepoolUploader.resetInstance();
                     return true;
-            });
+                });
+                findPreference("tidepool_username")
+                        .setOnPreferenceChangeListener((preference, newValue) -> {
+                            TidepoolUploader.resetInstance();
+                            if (!newValue.equals(Pref.getStringDefaultBlank("tidepool_username"))) {
+                                Pref.setString("tidepool_username", (String) newValue);
+                                AuthFlowOut.doTidePoolInitialLogin(true);
+                            }
+                            return true;
+                        });
+                findPreference("tidepool_password")
+                        .setOnPreferenceChangeListener((preference, newValue) -> {
+                            TidepoolUploader.resetInstance();
+                            AuthFlowOut.doTidePoolInitialLogin(true);
+                            return true;
+                        });
+            } catch (Exception e) {
+                UserError.Log.e(TAG,"Could not attach listener for tidepool prefs: " + e);
+            }
+
 
             final Preference nsFollowDownload = findPreference("nsfollow_download_treatments");
             final Preference nsFollowUrl = findPreference("nsfollow_url");

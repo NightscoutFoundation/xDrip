@@ -12,7 +12,7 @@ import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
+import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.tables.BgReadingTable;
 import com.eveningoutpost.dexdrip.tables.CalibrationDataTable;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
@@ -24,7 +24,7 @@ import com.eveningoutpost.dexdrip.utils.Preferences;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.getTransmitterID;
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.getTransmitterID;
 
 /**
  * Created by Emma Black on 11/5/14.

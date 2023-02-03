@@ -9,7 +9,7 @@ import android.os.Build;
 
 import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.G5Model.Ob1DexTransmitterBattery;
-import com.eveningoutpost.dexdrip.Services.DexCollectionService;
+import com.eveningoutpost.dexdrip.services.DexCollectionService;
 
 import org.json.JSONException;
 import org.json.JSONObject;

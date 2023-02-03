@@ -23,8 +23,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-//KS import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
-//KS import com.eveningoutpost.dexdrip.Services.MissedReadingService;
+//KS import com.eveningoutpost.dexdrip.services.ActivityRecognizedService;
+//KS import com.eveningoutpost.dexdrip.services.MissedReadingService;
 
 /**
  * Created by Emma Black on 1/14/15.

@@ -11,7 +11,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -28,7 +27,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
+import com.eveningoutpost.dexdrip.services.SnoozeOnNotificationDismissService;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
 import com.eveningoutpost.dexdrip.eassist.AlertTracker;
@@ -39,12 +38,11 @@ import com.eveningoutpost.dexdrip.watch.miband.MiBand;
 import com.eveningoutpost.dexdrip.watch.miband.MiBandEntry;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
-import com.eveningoutpost.dexdrip.Services.broadcastservice.BroadcastEntry;
+import com.eveningoutpost.dexdrip.services.broadcastservice.BroadcastEntry;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
-import com.eveningoutpost.dexdrip.Services.broadcastservice.Const;
+import com.eveningoutpost.dexdrip.services.broadcastservice.Const;
 import com.eveningoutpost.dexdrip.xdrip;
 
-import java.io.IOException;
 import java.util.Date;
 
 
