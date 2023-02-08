@@ -72,7 +72,10 @@
     <string name="pref_summary_broadcast_enabled">Ενεργοποίηση τοπικής μετάδοσης δεδομένων ώστε άλλες εφαρμογές (π.χ. το NightWatch) θα μπορούν να λαμβάνουν νέες τιμές</string>
     <string name="title_activity_share_test">Κοινοποίηση Test</string>
     <!-- pebble settings -->
+    <string name="pref_pebble_trend_watchface">Χρήση πρόσοψη ρολογιού Pebble Trend</string>
+    <string name="pref_summary_pebble_trend_watchface">Χρήση/εγκατάσταση πρόσοψη ρολογιού Pebble Trend (πειραματική επιλογή)</string>
     <string name="pref_pebble_display_trend">Εμφάνιση Τάσης</string>
+    <string name="pref_summary_display_trend">Εμφάνιση της τάσης γλυκόζης αίματος στην πρόσοψη ρολογιού xDrip Pebble.</string>
     <string name="pref_pebble_display_high_line">Εμφάνιση Υψηλής Γραμμής</string>
     <string name="pref_pebble_display_low_line">Εμφάνιση Χαμηλής Γραμμής</string>
     <!-- Amazfit Settings -->
@@ -86,15 +89,25 @@
     <string name="pref_amazfit_other_alert_enable_summary">Αποστολή άλλων ειδοποιήσεων στο smartwatch</string>
     <string name="pref_amazfit_other_alert_enable">Ενεργοποίηση</string>
     <string name="pref_amazfit_other_alert_title">Άλλες Ειδοποιήσεις</string>
+    <string name="pref_amazfit_watchface_graph_dots_title">Εμφάνιση σημείων γραφήματος στην πρόσοψη ρολογιού</string>
     <string name="pref_amazfit_watchface_graph_dots_summary">Δείχνει μικροσκοπικές τελείες αντί για μικρές</string>
     <string name="pref_amazfit_watchface_graph_enable">Ενεργοποίηση</string>
+    <string name="pref_amazfit_watchface_graph_title">Γράφημα πρόσοψης ρολογιού</string>
+    <string name="pref_amazfit_watchface_graph_enable_summary">Εμφανίζει το γράφημα στο φόντο επιφάνειας ρολογιού</string>
+    <string name="pref_amazfit_watchface_graph_hours_title">Γράφημα πρόσοψης ρολογιού</string>
     <string name="pref_amazfit_watchface_graph_hours_summary">ορισμός πόσες ώρες στο γράφημα</string>
+    <string name="pref_amazfit_widget_graph_hours_title">Widget Γραφήματος</string>
     <string name="pref_amazfit_widget_graph_hours_summary">ορισμός πόσες ώρες στο γράφημα</string>
+    <string name="pref_amazfit_widget_graph_dots_title">Widget σημείων γραφήματος</string>
     <string name="pref_amazfit_widget_graph_dots_summary">Δείχνει μικροσκοπικές τελείες αντί για μικρές</string>
     <string name="pref_amazfit_widget_graph_enable">Ενεργοποίηση</string>
+    <string name="pref_amazfit_widget_graph_title">Widget Γραφήματος</string>
+    <string name="pref_amazfit_widget_graph_enable_summary">Εμφανίζει το γράφημα στο widget</string>
+    <string name="pref_amazfit_watchface_settings">Ρυθμίσεις πρόσοψης ρολογιού (ενδέχεται να χρειαστεί περισσότερη μπαταρία)</string>
     <string name="pref_amazfit_widget_settings">Ρυθμίσεις widget (ενδέχεται να χρειαστεί περισσότερη μπαταρία)</string>
     <string name="toast_crash">Κάτι πήγε στραβά :( μια αναφορά έχει σταλεί για τη βοήθεια επίλυσης του προβλήματος.</string>
     <string name="taskerConfigInstruction">Απλά κάντε κλικ στο εικονίδιο Tick εδώ για να επιβεβαιώσετε. Δεν θα πρέπει να αλλάξετε τη συμβολοσειρά ρυθμίσεων.</string>
+    <string name="taskerConfiguration">Διαμόρφωση Tasker</string>
     <string name="finish_preferences_activity">τερματισμός_προτιμίσεις_δραστηριότητα</string>
     <string name="add_widget">Προσθήκη γραφικού στοιχείου</string>
     <string name="title_activity_alert_list">Λίστα Ειδοποιήσεων</string>
@@ -121,6 +134,7 @@
     <string name="share">Κοινοποίηση</string>
     <string name="title_activity_profile_editor">Επεξεργασία Προφίλ Θεραπείας</string>
     <string name="first_use_menu_to_scan">Χρησιμοποιήστε πρώτα το μενού για σάρωση της BT συσκευής σας ή αλλάξτε την Πηγή Δεδομένων στις Ρυθμίσεις!</string>
+    <string name="first_configure_ip_address">Ρυθμίστε πρώτα τις διευθύνσεις IP αναγνώστη Wixel WiFi ή το URL του Parakeet</string>
     <string name="now_start_your_sensor">Τώρα ξεκινήστε τον αισθητήρα σας ή ελέγξτε τις ρυθμίσεις</string>
     <string name="please_wait_while_sensor_warms_up">Παρακαλώ περιμένετε όσο ο αισθητήρας προθερμαίνεται! (</string>
     <string name="minutes_with_bracket">" λεπτά)"</string>
@@ -216,7 +230,12 @@
     <string name="system_status">Κατάσταση Συστήματος</string>
     <string name="settings">Ρυθμίσεις</string>
     <string name="calibration_data_table">Πίνακας Δεδομένων Βαθμονόμησης</string>
+    <string name="bg_data_table">Πίνακας γλυκόζης αίματος</string>
+    <string name="cannot_calibrate_right_now">Αδυναμία βαθμονόμησης αυτή τη στιγμή</string>
+    <string name="hardware_data_source">Πηγή δεδομένων αισθητήρα</string>
+    <string name="enter_ten_character_dexcom_receiver_serial">Εισάγετε τον σειριακό αριθμό 10 χαρακτήρων του αισθητήρα Dexcom</string>
     <string name="dexcom_transmitter_id">Αναγνωριστικό (ID) Πομπού Dexcom</string>
+    <string name="run_collector_in_foreground">Εκτέλεση συλλέκτη στο προσκήνιο</string>
     <string name="pref_disable_wearG5_on_lowbattery">Απενεργοποίηση εξαναγκασμού σε χαμηλή μπαταρία</string>
     <string name="pref_node_wearG5">Η συσκευή εκτελεί την υπηρεσία συλλογής</string>
     <string name="pref_sync_wear_logs">Συγχρονισμός Αρχείων Καταγραφής Wear</string>
