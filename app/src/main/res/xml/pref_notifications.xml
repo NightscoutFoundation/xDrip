@@ -355,7 +355,15 @@
                         android:summary=""
                         android:title="@string/low_battery_percentage" />
                     <SwitchPreference
+                        android:defaultValue="false"
+                        android:switchTextOff="@string/short_off_text_for_switches"
+                        android:switchTextOn="@string/short_on_text_for_switches"
+                        android:key="alert_raise_for_sensor_expiry"
+                        android:summary="Raise a notification when the sensor gets close to expiry."
+                        android:title="Sensor Expiry Alerts" />
+                    <SwitchPreference
                         android:defaultValue="true"
+                        android:dependency="engineering_mode"
                         android:key="parakeet_status_alerts"
                         android:summary="@string/notify_when_parakeet_device_stops_checking_in"
                         android:title="@string/parakeet_related_alerts" />

@@ -61,6 +61,7 @@ import com.eveningoutpost.dexdrip.Models.UserNotification;
 import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.ParakeetHelper;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.alert.Registry;
 import com.eveningoutpost.dexdrip.services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.services.BluetoothGlucoseMeter;
 import com.eveningoutpost.dexdrip.services.DexCollectionService;
@@ -492,6 +493,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(BroadcastService.prefListener);
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(BlueJayEntry.prefListener);
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(uiPrefListener);
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(Registry.prefListener);
         LocalBroadcastManager.getInstance(this).registerReceiver(mibandStatusReceiver,
                 new IntentFilter(Intents.PREFERENCE_INTENT));
     }
@@ -506,6 +508,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(BroadcastService.prefListener);
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(BlueJayEntry.prefListener);
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(uiPrefListener);
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(Registry.prefListener);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mibandStatusReceiver);
         pFragment = null;
         super.onPause();

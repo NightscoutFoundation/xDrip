@@ -58,6 +58,8 @@ public class Constants {
 
     static final int NIGHTSCOUT_ERROR_NOTIFICATION_ID = 2001;
     public static final int HEALTH_CONNECT_RESPONSE_ID = 2002;
+    public static final int SENSORY_EXPIRY_NOTIFICATION_ID = 2003;
+
 
     // increments from this start number
     public static final int INCOMPATIBLE_BASE_ID = 5000;
