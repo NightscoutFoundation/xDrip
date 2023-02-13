@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Services.G5CollectionService;
+import com.eveningoutpost.dexdrip.services.G5CollectionService;
 import com.google.gson.annotations.Expose;
 
 import java.nio.ByteBuffer;
@@ -18,10 +18,10 @@ public class BaseMessage {
     long postExecuteGuardTime = 50;
     @Expose
     public volatile byte[] byteSequence;
-    public ByteBuffer data;
+    public volatile ByteBuffer data;
 
 
-    void init(final byte opcode, final int length) {
+    protected void init(final byte opcode, final int length) {
         data = ByteBuffer.allocate(length).order(ByteOrder.LITTLE_ENDIAN);
         data.put(opcode);
         if (length == 1) {

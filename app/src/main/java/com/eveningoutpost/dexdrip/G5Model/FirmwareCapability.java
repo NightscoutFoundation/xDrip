@@ -18,6 +18,7 @@ public class FirmwareCapability {
     private static final ImmutableSet<String> KNOWN_G6_REV2_FIRMWARES = ImmutableSet.of("2.18.2.67", "2.18.2.88", "2.18.2.98", "2.24.2.88", "2.27.2.98", "2.27.2.103");
     private static final ImmutableSet<String> KNOWN_G6_REV2_RAW_FIRMWARES = ImmutableSet.of("2.18.2.67");
     private static final ImmutableSet<String> KNOWN_G6_PLUS_FIRMWARES = ImmutableSet.of("2.4.2.88");
+    private static final ImmutableSet<String> KNOWN_ONE_FIRMWARES = ImmutableSet.of("30.192.103.34");
     private static final ImmutableSet<String> KNOWN_TIME_TRAVEL_TESTED = ImmutableSet.of("1.6.5.25");
 
     // new G6 firmware versions will need to be added here / above
@@ -29,7 +30,12 @@ public class FirmwareCapability {
                 || version.startsWith("2.18.")
                 || version.startsWith("2.24.")
                 || version.startsWith("2.27.")
-                || version.startsWith("2.4."));
+                || version.startsWith("2.4.")
+                || isDex1Firmware(version));
+    }
+
+    static boolean isDex1Firmware(final String version) {
+        return version.startsWith("30.");
     }
 
     public static boolean isG6Rev2(final String version) {
@@ -123,6 +129,7 @@ public class FirmwareCapability {
         return (version == null || version.equals("")
                 || KNOWN_G5_FIRMWARES.contains(version)
                 || KNOWN_G6_FIRMWARES.contains(version)
+                || KNOWN_ONE_FIRMWARES.contains(version)
                 || KNOWN_G6_REV2_FIRMWARES.contains(version)
                 || KNOWN_G6_PLUS_FIRMWARES.contains(version));
     }

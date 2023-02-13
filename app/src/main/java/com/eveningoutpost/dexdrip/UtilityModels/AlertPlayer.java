@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 import static com.eveningoutpost.dexdrip.Models.JoH.delayedMediaPlayerRelease;
+import static com.eveningoutpost.dexdrip.Models.JoH.setMediaDataSource;
 import static com.eveningoutpost.dexdrip.Models.JoH.stopAndReleasePlayer;
 
 import android.app.Notification;
@@ -10,12 +11,12 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 
@@ -27,22 +28,27 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
+import com.eveningoutpost.dexdrip.services.SnoozeOnNotificationDismissService;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
 import com.eveningoutpost.dexdrip.eassist.AlertTracker;
+import com.eveningoutpost.dexdrip.ui.FlashLight;
 import com.eveningoutpost.dexdrip.ui.helpers.AudioFocusType;
+import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFun;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
 import com.eveningoutpost.dexdrip.watch.miband.MiBand;
 import com.eveningoutpost.dexdrip.watch.miband.MiBandEntry;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
+import com.eveningoutpost.dexdrip.services.broadcastservice.BroadcastEntry;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
+import com.eveningoutpost.dexdrip.services.broadcastservice.Const;
 import com.eveningoutpost.dexdrip.xdrip;
 
-import java.io.IOException;
 import java.util.Date;
+
+import lombok.Getter;
 
 
 // A helper class to create the mediaplayer on the UI thread.
@@ -103,7 +109,8 @@ class MediaPlayerCreaterHelper {
 public class AlertPlayer {
 
     private volatile static AlertPlayer alertPlayerInstance;
-
+    @Getter
+    private volatile static long lastVolumeChange = 0;
     private final static String TAG = AlertPlayer.class.getSimpleName();
     private volatile MediaPlayer mediaPlayer = null;
     private final AudioManager manager = (AudioManager)xdrip.getAppContext().getSystemService(Context.AUDIO_SERVICE);
@@ -311,34 +318,6 @@ public class AlertPlayer {
     }
 
 
-    // from file uri
-    private boolean setMediaDataSource(Context context, MediaPlayer mp, Uri uri) {
-        try {
-            mp.setDataSource(context, uri);
-            return true;
-        } catch (IOException | NullPointerException | IllegalArgumentException | SecurityException ex) {
-            Log.e(TAG, "setMediaDataSource from uri failed: uri = " + uri.toString(), ex);
-            // fall through
-        }
-        return false;
-    }
-
-    // from resource id
-    private boolean setMediaDataSource(Context context, MediaPlayer mp, int resid) {
-        try {
-            AssetFileDescriptor afd = context.getResources().openRawResourceFd(resid);
-            if (afd == null) return false;
-
-            mp.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
-            afd.close();
-
-            return true;
-        } catch (IOException | NullPointerException | IllegalArgumentException | SecurityException ex) {
-            Log.e(TAG, "setMediaDataSource from resource id failed:", ex);
-        }
-        return false;
-    }
-
     protected synchronized void playFile(final Context ctx, final String fileName, final float volumeFrac, final boolean forceSpeaker, final boolean overrideSilentMode) {
         Log.i(TAG, "playFile: called fileName = " + fileName);
         if (volumeFrac <= 0) {
@@ -355,6 +334,10 @@ public class AlertPlayer {
         if (mediaPlayer == null) {
             Log.wtf(TAG, "MediaPlayerCreaterHelper().createMediaPlayer failed !!");
             return;
+        }
+
+        if (Pref.getBooleanDefaultFalse("wake_phone_during_alerts")) {
+            mediaPlayer.setWakeMode(ctx, PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP);
         }
 
         mediaPlayer.setOnCompletionListener(mp -> {
@@ -388,6 +371,7 @@ public class AlertPlayer {
         try {
             requestAudioFocus();
             mediaPlayer.setAudioStreamType(streamType);
+            mediaPlayer.setLooping(false);
             mediaPlayer.setOnPreparedListener(mp -> {
                 adjustCurrentVolumeForAlert(streamType, volumeFrac, overrideSilentMode);
                 mediaPlayer.start();
@@ -455,6 +439,7 @@ public class AlertPlayer {
             return;
         }
         try {
+            lastVolumeChange = JoH.tsl();
             manager.setStreamVolume(streamType, volume, 0);
             Log.d(TAG, "Adjusted volume to: " + volume);
         } catch (SecurityException e) {
@@ -624,9 +609,19 @@ public class AlertPlayer {
             MiBand.sendAlert(alert.name, highlow + " " + bgValue, alert.default_snooze);
         }
 
+        if (ActiveBgAlert.currentlyAlerting()) {
+            BroadcastEntry.sendAlert(Const.BG_ALERT_TYPE, highlow + " " + bgValue);
+        }
+
         // speak alert
         if (Pref.getBooleanDefaultFalse("speak_alerts")) {
             SpeechUtil.say(highlow + ", " + bgValue, 3000);
+        }
+
+        if (Pref.getBooleanDefaultFalse("flash_torch_alerts_charging")) {
+            if (PowerStateReceiver.is_power_connected()) {
+                FlashLight.torchPulse();
+            }
         }
     }
 

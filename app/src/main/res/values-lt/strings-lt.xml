@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_activity_bluetooth_scan">„Bluetooth“ nuskaitymas</string>
+    <string name="connected">Prijungta</string>
+    <string name="disconnected">Atjungta</string>
+    <string name="menu_scan">Nuskaityti</string>
+    <string name="menu_stop">Sustabdyti</string>
+    <string name="menu_refresh">Atnaujinti</string>
+    <string name="menu_export_database">Eksportuoti duomenų bazę</string>
+    <string name="menu_import_db">Atkurti duomenų bazę</string>
+    <string name="error_bluetooth_not_supported">Klaida: šis įrenginys nepalaiko Bluetooth</string>
+    <string name="unknown_device">Neatpažintas įrenginys</string>
+    <string name="connecting_to_device">Jungiamasi prie įrenginio</string>
+    <string name="title_activity_start_new_sensor">Startuoti naują sensorių</string>
+    <string name="title_activity_stop_sensor">Sustabdyti sensorių</string>
+    <string name="snooze">Snausti</string>
+    <string name="ok">Gerai</string>
+    <string name="cancel">Atšaukti</string>
+    <string name="no">Ne</string>
+    <string name="pref_sensor_location_dont_ask_again">Daugiau manęs to neklauskite</string>
+    <string name="title_activity_error">"Klaidų ir įvykių sąrašas"</string>
+    <string name="title_activity_main">Pagrindinė veikla</string>
+    <string name="title_activity_edit_alert">Redaguoti įspėjimą</string>
+    <string name="title_activity_double_calibration">Pirma kalibracija</string>
+    <string name="pref_header_cloud_storage">Saugykla debesyje</string>
+    <string name="auto_configure_title">Autokonfigūracija</string>
+    <string name="prefs_auto_config_summary">Autokonfigūracija naudojant barkodą.</string>
+    <!-- MongoDB Settings -->
+    <string name="pref_title_mongodb">MongoDB</string>
+    <!-- API Settings -->
+    <string name="pref_title_api_enabled">Įjungtas</string>
+    <string name="pref_summary_api_enabled">REST API yra standartinis būdas prisijungti prie Nightscout</string>
+    <string name="pref_title_api_url">Pagr. URL</string>
+    <string name="pref_dialog_api_url">Įveskite pagrindinį API URL</string>
+    <!-- wifi Settings -->
+    <!-- Location Settings -->
+    <string name="location_not_found_title">Neįjungtas Vietovės nustatymas</string>
+    <string name="location_yes">Įjungti</string>
+    <!-- broadcast settings -->
+    <!-- pebble settings -->
+    <!-- Amazfit Settings -->
+    <string name="pref_amazfit_enable">Įjungti</string>
+    <string name="pref_amazfit_BG_alert_enable">Įjungti</string>
+    <string name="pref_amazfit_BG_alert_title">KG Įspėjimai</string>
+    <string name="pref_amazfit_other_alert_enable">Įjungti</string>
+    <string name="pref_amazfit_other_alert_title">Kiti įspėjimai</string>
+    <string name="pref_amazfit_watchface_graph_enable">Įjungti</string>
+    <string name="pref_amazfit_watchface_graph_hours_summary">pasirinkti valandų skaičių grafike</string>
+    <string name="pref_amazfit_widget_graph_hours_summary">pasirinkti valandų skaičių grafike</string>
+    <string name="pref_amazfit_widget_graph_enable">Įjungti</string>
+    <string name="toast_crash">Kažkas nepavyko :( Nusiųsta ataskaita, padėsianti ištaisyti klaidą.</string>
+    <string name="title_activity_alert_list">Įspėjimų sąrašas</string>
+    <string name="title_activity_update">galimas xDrip+ atnaujinimas</string>
+    <string name="title_activity_display_qrcode">Dalintis nustatymais QR kodo pagalba</string>
+    <string name="title_activity_send_feed_back">Siųsti atsiliepimą Jamorham</string>
+    <string name="title_activity_display_preferences">Ekrano nuostatos</string>
+    <string name="erase">Trinti</string>
+    <string name="note_button">Užrašo mygtukas</string>
+    <string name="please_wait_while_sensor_warms_up">Prašome palaukti kol sensorius apšils! (</string>
+    <string name="minutes_with_bracket">" minutės)"</string>
+    <string name="now_choose_start_sensor_in_settings">Dabar nustatymuose pasirinkite paleisti sensorių</string>
+    <string name="till">iki</string>
+    <string name="checking_for_update">Ieškoma atnaujinimų...</string>
+    <string name="expires_at">Baigiasi {0}</string>
+    <string name="send_feedback_message">Siųsti atsiliepimo žinutę</string>
+    <string name="show_settings_qr_codes">Rodyti nustatytų QR kodus</string>
+    <string name="load_save_settings_to_sdcard">Užkrauti / Saugoti nustatymus</string>
+    <string name="alerts_and_notifications">Įspėjimai ir Pranešimai</string>
+    <string name="calibration_alerts">Kalibravimo Įspėjimai</string>
+    <string name="other_alerts">Kiti Įspėjimai</string>
+    <string name="extra_alerts_xdrip_plus">Papildomi Įspėjimai (xDrip+)</string>
+    <string name="carb_absorption_rate">Angliavandenių Įsisavinimo greitis</string>
+    <string name="use_trend_momentum">Naudoti momentinį pokytį</string>
+    <string name="add_calibration">Kalibruoti</string>
+    <string name="system_status">Sistemos būsena</string>
+    <string name="settings">Nustatymai</string>
+    <string name="calibration_data_table">Kalibravimo duomenų lentelė</string>
+    <string name="bg_data_table">KG duomenų lentelė</string>
+    <string name="cannot_calibrate_right_now">Šiuo metu negalima kalibruoti</string>
+    <string name="enter_ten_character_dexcom_receiver_serial">Įveskite 10 skaitmenų Dexcom imtuvo serijos numerį</string>
+    <string name="dexcom_transmitter_id">Dexcom siųstuvo ID</string>
+    <string name="pebble_integration">Pebble integracija</string>
+    <string name="history">Istorija</string>
+    <string name="statistics">Statistika</string>
+    <string name="other_settings">Kiti nustatymai</string>
+    <string name="extra_status_line">Papildoma būsenos eilutė</string>
+    <string name="manage_followers">Tvarkyti sekėjus</string>
+    <string name="manage_existing_followers">Tvarkyti esamus sekėjus ir pakviesti naujus.</string>
+    <string name="invite_follower">Pakviesti sekėją</string>
+    <string name="units">vienetai</string>
+    <string name="carbs">angliavandeniai</string>
+    <string name="when">kada (val. min.)</string>
+    <string name="speech_recognition_is_not_supported">Kalbos atpažinimas neveikia</string>
+    <string name="could_not_export_database">Nepavyko eksportuoti duomenų bazės :(</string>
+    <string name="exported_to">"Eksportuota į "</string>
+    <string name="done">Padaryta</string>
+    <string name="stop_sensor">Sustabdyti sensorių</string>
+    <string name="initial_calibration">Pirma kalibracija</string>
+    <string name="bluetooth_scan">„Bluetooth“ nuskaitymas</string>
+    <!-- trend arrow for speak -->
+    <string name="enable_streaming_dialog_dont_ask_again">Daugiau manęs to neklauskite</string>
+</resources>

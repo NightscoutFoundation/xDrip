@@ -12,12 +12,12 @@ import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.Services.DexCollectionService;
-import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
-import com.eveningoutpost.dexdrip.Services.DoNothingService;
-import com.eveningoutpost.dexdrip.Services.G5CollectionService;
-import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
-import com.eveningoutpost.dexdrip.Services.WifiCollectionService;
+import com.eveningoutpost.dexdrip.services.DexCollectionService;
+import com.eveningoutpost.dexdrip.services.DexShareCollectionService;
+import com.eveningoutpost.dexdrip.services.DoNothingService;
+import com.eveningoutpost.dexdrip.services.G5CollectionService;
+import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
+import com.eveningoutpost.dexdrip.services.WifiCollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -27,6 +27,8 @@ import com.eveningoutpost.dexdrip.xdrip;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.Medtrum;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.NSFollow;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.SHFollow;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.WebFollow;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.CLFollow;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getCollectorServiceClass;
 
 /**
@@ -229,6 +231,8 @@ public class CollectionServiceStarter {
         JoH.stopService(getCollectorServiceClass(Medtrum));
         JoH.stopService(getCollectorServiceClass(NSFollow));
         JoH.stopService(getCollectorServiceClass(SHFollow));
+        JoH.stopService(getCollectorServiceClass(WebFollow));
+        JoH.stopService(getCollectorServiceClass(CLFollow));
     }
 
     private void start(Context context, String collection_method) {
@@ -331,7 +335,10 @@ public class CollectionServiceStarter {
             startFollowerThread();
         } else {
             // TODO newer item startups should be consolidated in to a DexCollectionType has set to avoid duplicating logic
-            if (DexCollectionType.hasBluetooth() || DexCollectionType.getDexCollectionType() == NSFollow || DexCollectionType.getDexCollectionType() == SHFollow) {
+            if (DexCollectionType.hasBluetooth() || DexCollectionType.getDexCollectionType() == NSFollow
+                    || DexCollectionType.getDexCollectionType() == SHFollow
+                    || DexCollectionType.getDexCollectionType() == WebFollow
+                    || DexCollectionType.getDexCollectionType() == CLFollow) { // TODO make this a set lookup
                 Log.d(TAG, "Starting service based on collector lookup");
                 startServiceCompat(new Intent(context, DexCollectionType.getCollectorServiceClass()));
             }

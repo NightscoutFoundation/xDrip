@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import static com.eveningoutpost.dexdrip.Models.BgReading.bgReadingInsertFromJson;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 /**
  * Created by jamorham on 14/11/2016.
@@ -226,12 +227,26 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
             }
         }.start();
     }
+    private double getOOP2Version(final Bundle bundle) {
+        final Double version = bundle.getDouble(Intents.OOP2_VERSION_NAME, 0);
+        return version;
+    }
 
     private JSONObject extractParams(final Bundle bundle) {
         if (bundle == null) {
             Log.e(TAG, "Null bundle passed to extract params");
             return null;
         }
+        double version = getOOP2Version(bundle);
+        boolean calibrate_raw = Pref.getString("calibrate_external_libre_2_algorithm_type", "calibrate_raw").equals("calibrate_raw");
+        Log.d(TAG, "oop2 version = " + version + " calibarate_raw " + calibrate_raw);
+        if(version < 1.2 && !calibrate_raw) {
+            // Versions before 1.2 had a bug or missed features which allows them only to work on raw mode.
+            JoH.static_toast_long(gs(R.string.please_update_OOP2_or_move_to_calibrate_based_on_raw_mode));
+            Log.ueh(TAG, "OOP2 is too old to use with no calibration mode. Please update OOP2 or move to 'calibrate based on raw' mode.");
+            return null;
+        }
+
         final String json = bundle.getString("json");
         if (json == null) {
             Log.e(TAG, "json == null returning");
@@ -348,6 +363,8 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
             return;
         }
 
+        Sensor.createDefaultIfMissing();
+
         // Does this throws exception???
         byte[] ble_data = Base64.decode(decoded_buffer, Base64.NO_WRAP);
         byte[] patchUid = Base64.decode(patchUidString, Base64.NO_WRAP);
@@ -424,6 +441,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
         }
 
         Log.d(TAG, "Received NSEmulator SGV: " + faux_bgr);
+        Sensor.createDefaultIfMissing();
         return bgReadingInsertFromJson(faux_bgr.toString(), do_notification, true); // notify and force sensor
     }
 }

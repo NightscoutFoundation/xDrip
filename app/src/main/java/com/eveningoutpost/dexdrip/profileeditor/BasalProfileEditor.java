@@ -495,11 +495,11 @@ public class BasalProfileEditor extends AppCompatActivity implements AdapterView
         basalStepLabel.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
     }
 
-    private List<Float> getListOfValues() {
+    private List<Double> getListOfValues() {
         final int columns = chart.getChartData().getColumns().size();
-        final ArrayList<Float> values = new ArrayList<>(columns);
+        final ArrayList<Double> values = new ArrayList<>(columns);
         for (int col = 0; col < columns; col++) {
-            values.add(JoH.roundFloat(chart.getChartData().getColumns().get(col).getValues().get(0).getValue(), 2));
+            values.add(JoH.roundDouble(chart.getChartData().getColumns().get(col).getValues().get(0).getValue(), 2));
         }
         return values;
     }

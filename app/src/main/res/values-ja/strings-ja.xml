@@ -13,30 +13,30 @@
     <string name="unknown_device">認識不可のデバイス</string>
     <string name="connecting_to_device">デバイスに接続しています</string>
     <string name="title_activity_raw_data_table">表形式のデータ</string>
-    <string name="title_activity_calculated_data_table">表形式の計算済みデータ</string>
+    <string name="title_activity_calculated_data_table">計算済みデータ</string>
     <string name="title_activity_start_new_sensor">新しいセンサーを開始</string>
     <string name="title_activity_new_sensor_location">新しいセンサーの位置</string>
-    <string name="title_activity_stop_sensor">センサーを中止</string>
+    <string name="title_activity_stop_sensor">センサーを停止</string>
     <string name="title_activity_nav_drawer">ナビパネル</string>
     <string name="navigation_drawer_open">ナビゲーション バネルを開く</string>
     <string name="navigation_drawer_close">ナビゲーション バネルを閉じる</string>
-    <string name="title_activity_calibration_check_in">カリブレーションの記録</string>
-    <string name="title_activity_usb_connected">接続済みUSBの一覧</string>
+    <string name="title_activity_calibration_check_in">キャリブレーション履歴</string>
+    <string name="title_activity_usb_connected">接続済みのUSB</string>
     <string name="snooze">スヌーズ</string>
     <string name="snooze_hint">X 分のスヌーズ通知</string>
     <string name="ok">OK</string>
     <string name="cancel">キャンセル</string>
     <string name="no">No</string>
-    <string name="pref_sensor_location_dont_ask_again"> 今後表示しないで下さい</string>
+    <string name="pref_sensor_location_dont_ask_again">次回から表示しない</string>
     <string name="title_activity_error">"エラーとイベントの一覧"</string>
     <string name="title_activity_main">主要な記録</string>
     <string name="title_activity_fake_numbers">偽の番号</string>
     <string name="title_activity_edit_alert">通知を編集</string>
     <string name="title_activity_double_calibration">初期キリブレーション</string>
-    <string name="title_activity_calibration_override">カリブレーションの変更</string>
+    <string name="title_activity_calibration_override">キャリブレーションの上書</string>
     <string name="pref_header_cloud_storage">クラウドストレージ</string>
     <string name="auto_configure_title">自動構成</string>
-    <string name="prefs_auto_config_summary">バーコードで自動構成</string>
+    <string name="prefs_auto_config_summary">バーコードを利用で自動設定。</string>
     <string name="scan_share2_barcode">共有のバーコードをスキャン</string>
     <string name="pref_share2_scan_barcode_summary">または共有の受信機のバーコードをスキャンする</string>
     <!-- MongoDB Settings -->
@@ -46,11 +46,11 @@
     <string name="pref_title_mongodb_uri">URI</string>
     <string name="pref_dialog_mongodb_uri">MongoDBのURIを入力</string>
     <string name="pref_message_mongodb_uri">{} の中にある値の例を
-貴方の正しい値に置き換えて下さい</string>
+自身の正しい値に置き換えて下さい</string>
     <string name="pref_default_mongodb_uri">mongodb://{user}:{password}@{host}.mongolab.com:{11111}/{database}</string>
     <string name="pref_title_mongodb_collection">コレクション名</string>
     <string name="pref_dialog_mongodb_collection">コレクション名を入力</string>
-    <string name="pref_message_mongodb_collection">CGMデータが保存されるのコレクション名</string>
+    <string name="pref_message_mongodb_collection">CGMデータが保存されるコレクション名</string>
     <string name="pref_title_mongodb_device_status_collection">デバイスの状態のコレクション名</string>
     <string name="pref_dialog_mongodb_device_status_collection">デバイスの状態のコレクション名\"を入力</string>
     <string name="pref_message_mongodb_device_status_collection">電池と他のデバイスデータが保存されるのコレクション名</string>
@@ -172,6 +172,7 @@
     <string name="show_parakeet_map">Parakeetのマップを表示</string>
     <string name="switch_parakeet_to_setup_mode">Parakeetをセットアップモードに切り替える</string>
     <string name="view_events_log">イベントログを見る</string>
+    <string name="show_libre_trend">リブレの傾向を表示</string>
     <string name="libre_15_minutes_graph">リブレの15 分グラフ</string>
     <string name="libre_last_x_minutes_graph">リブレの最後の %d 分グラフ</string>
     <string name="share_config_via_qr_code">QRコードで設定を共有する</string>
@@ -185,6 +186,7 @@
     <string name="general_settings">一般設定</string>
     <string name="high_value">高値</string>
     <string name="low_value">低血糖</string>
+    <string name="stats_range_settings">レンジ設定 </string>
     <string name="end_user_license_agreement">エンドユーザーの使用許諾契約</string>
     <string name="save">保存</string>
     <string name="view_important_warning">重要な警告を見る</string>
@@ -260,9 +262,21 @@
     <string name="pref_summary_disable_wearG5_on_missedreadings">最後に数値を読み取り後、血糖値読み取りサービスを終了する。</string>
     <string name="pref_disable_wearG5_on_missedreadings_level">最後に数値を読み取ってから数分</string>
     <string name="pref_node_wearG5">血糖値読み取りサービスを実行中のデバイス</string>
+    <string name="pref_sync_wear_logs">ウェアログを同期</string>
+    <string name="pref_summary_sync_wear_logs">イベントビューアにウェアログを送信</string>
+    <string name="pref_wear_logs_prefix">ウェアログ　プレフィックス</string>
+    <string name="pref_show_treatments">トリートメントの表示</string>
+    <string name="pref_summary_show_treatments">グラフにトリートメントポイントを表示</string>
+    <string name="pref_use_wear_health">ウェアのヘルスデータを利用</string>
+    <string name="pref_summary_use_wear_health">歩数カウンターが利用可能な場合は表示</string>
+    <string name="pebble_integration">Pebble 統合</string>
+    <string name="send_data_to_pebble_watchface">Pebbleにデータを表示</string>
+    <string name="pebble_watch_integration">Pebble 統合</string>
     <string name="history">履歴</string>
+    <string name="snooze_alert">スヌーズ　アラート</string>
     <string name="smart_alerting">スマート通知</string>
     <string name="reset">リセット</string>
+    <string name="xdrip_plus_extra_settings">xDrip+ 追加設定</string>
     <string name="everyday">毎日</string>
     <string name="very_low">非常に低い</string>
     <string name="low">低い</string>
@@ -294,7 +308,7 @@
     <string name="label_show_steps_km">km:%1$s</string>
     <string name="label_show_steps_mi">mi:%1$s</string>
     <string name="pref_message_influxdb_uri">{} の中にある値の例を
-貴方の正しい値に置き換えて下さい</string>
+自身の正しい値に置き換えて下さい</string>
     <string name="pref_dialog_influxdb_database">データベース</string>
     <string name="pref_dialog_influxdb_username">ユーザー</string>
     <string name="pref_dialog_influxdb_password">パスワード</string>
@@ -306,12 +320,13 @@
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
     <string name="error">エラー</string>
-    <string name="stop_sensor">センサーを中止</string>
+    <string name="stop_sensor">センサーを停止</string>
     <string name="initial_calibration">初期キリブレーション</string>
     <string name="bluetooth_scan">Bluetoothスキャン</string>
     <!-- trend arrow for speak -->
     <string name="Flat">フラット</string>
     <string name="days">日</string>
+    <string name="eng_mode_is_on">エンジニアリングモードが有効になっています。予期せぬ動作を引き起こす可能性があるため、必要な場合以外は無効にしてください。</string>
     <string name="yes">はい</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
@@ -350,6 +365,7 @@
     <string name="unit_weeks">週\"</string>
     <string name="no_data">データがありません。</string>
     <string name="title_tidepool">Tidepool</string>
+    <string name="summary_broadcast_service_api">新しいAPIを使用して、サードパーティのアプリケーションとxDrip通信を有効にします。</string>
     <string name="title_features">機能</string>
     <string name="title_screens">画面</string>
     <string name="title_color_smb_icon">SMBアイコン</string>
@@ -377,7 +393,7 @@
     <string name="prepare_to_test">テストの準備をします！</string>
     <string name="not_so_quickly_wait_30_seconds">急がず30秒待ちます</string>
     <string name="scanning">スキャン中</string>
-    <string name="enable_streaming_dialog_dont_ask_again"> 今後表示しないで下さい</string>
+    <string name="enable_streaming_dialog_dont_ask_again">次回から表示しない</string>
     <string name="zero_value">ゼロ値</string>
     <string name="adjust_dose">用量を調整</string>
     <string name="Dose">投与量</string>
@@ -386,4 +402,7 @@
     <string name="play_sounds_when_importing">プロファイルなどの重要なデータをインポートしたときに音を鳴らす</string>
     <string name="show_action_buttons_within_alerts">警報通知内にアクションボタン\"(\"スヌーズ等\")\"を表示する</string>
     <string name="alert_buttons">警報ボタン</string>
+    <string name="please_wait_seconds_before_trying_to_start_sensor">センサーを起動する前に %d 秒お待ちください</string>
+    <string name="save_power">節電</string>
+    <string name="graph_smoothing">グラフのスムージング</string>
 </resources>

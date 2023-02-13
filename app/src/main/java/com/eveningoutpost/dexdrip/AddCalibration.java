@@ -27,7 +27,7 @@ import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import java.util.UUID;
 
-import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.getTransmitterID;
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.getTransmitterID;
 
 public class AddCalibration extends AppCompatActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     // Unit used

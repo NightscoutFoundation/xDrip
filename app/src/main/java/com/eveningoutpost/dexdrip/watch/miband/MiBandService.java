@@ -14,7 +14,7 @@ import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer;
+import com.eveningoutpost.dexdrip.services.JamBaseBluetoothSequencer;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
@@ -58,10 +58,10 @@ import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
 import static com.eveningoutpost.dexdrip.Models.JoH.getResourceURI;
 import static com.eveningoutpost.dexdrip.Models.JoH.msTill;
 import static com.eveningoutpost.dexdrip.Models.JoH.niceTimeScalar;
-import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.CLOSE;
-import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.CLOSED;
-import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.INIT;
-import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.SLEEP;
+import static com.eveningoutpost.dexdrip.services.JamBaseBluetoothSequencer.BaseState.CLOSE;
+import static com.eveningoutpost.dexdrip.services.JamBaseBluetoothSequencer.BaseState.CLOSED;
+import static com.eveningoutpost.dexdrip.services.JamBaseBluetoothSequencer.BaseState.INIT;
+import static com.eveningoutpost.dexdrip.services.JamBaseBluetoothSequencer.BaseState.SLEEP;
 import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NOTIFY_TYPE_ALARM;
 import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NOTIFY_TYPE_CALL;
 import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NOTIFY_TYPE_CANCEL;
@@ -560,10 +560,14 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     private void getModelName() {
         I.connection.readCharacteristic(Const.UUID_CHAR_DEVICE_NAME).subscribe(
                 readValue -> {
-                    String name = new String(readValue);
-                    if (d)
-                        UserError.Log.d(TAG, "Got device name: " + name);
-                    MiBand.setModel(name, MiBand.getPersistentAuthMac());
+                    if (readValue != null) {
+                        String name = new String(readValue);
+                        if (d)
+                            UserError.Log.d(TAG, "Got device name: " + name);
+                        MiBand.setModel(name, MiBand.getPersistentAuthMac());
+                    } else {
+                        UserError.Log.e(TAG, "Got null device name");
+                    }
                     changeNextState();
                 }, throwable -> {
                     if (d)

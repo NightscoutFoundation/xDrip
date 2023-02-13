@@ -1,5 +1,10 @@
 package com.eveningoutpost.dexdrip.Models;
 
+import static com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants.TREND_ARROW_VALUES.NOT_COMPUTABLE;
+import static com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants.TREND_ARROW_VALUES.getTrend;
+import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPluginFromPreferences;
+import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.newCloseSensorData;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -20,8 +25,8 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
-import com.eveningoutpost.dexdrip.Services.SyncService;
+import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
+import com.eveningoutpost.dexdrip.services.SyncService;
 import com.eveningoutpost.dexdrip.ShareModels.ShareUploadableBg;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
@@ -56,9 +61,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-import static com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants.TREND_ARROW_VALUES.*;
-import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPluginFromPreferences;
-import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.newCloseSensorData;
+import lombok.val;
 
 @Table(name = "BgReadings", id = BaseColumns._ID)
 public class BgReading extends Model implements ShareUploadableBg {
@@ -68,6 +71,8 @@ public class BgReading extends Model implements ShareUploadableBg {
     private final static String PERSISTENT_HIGH_SINCE = "persistent_high_since";
     public static final double AGE_ADJUSTMENT_TIME = 86400000 * 1.9;
     public static final double AGE_ADJUSTMENT_FACTOR = .45;
+    public static final double AGE_ADJUSTMENT_TIME_G6 = 86400000 * 1.9 / 1.8;
+    public static final double AGE_ADJUSTMENT_FACTOR_G6 = .45 / 3;
     //TODO: Have these as adjustable settings!!
     public final static double BESTOFFSET = (60000 * 0); // Assume readings are about x minutes off from actual!
 
@@ -833,6 +838,21 @@ public class BgReading extends Model implements ShareUploadableBg {
         }
     }
 
+    public static List<BgReading> latestDeduplicateToPeriod(final int number, final boolean is_follower, final long period) {
+        val input = latest(number * 6, is_follower);
+        if (input == null) return null;
+        val output = new ArrayList<BgReading>(number);
+        long last = -1L;
+        for (val item : input) {
+            if (Math.abs(item.timestamp - last) >= period) {
+                output.add(item);
+                if (output.size() >= number) break;
+                last = item.timestamp;
+            }
+        }
+        return output;
+    }
+
     public static boolean isDataStale() {
         final BgReading last = lastNoSenssor();
         if (last == null) return true;
@@ -1169,7 +1189,7 @@ public class BgReading extends Model implements ShareUploadableBg {
             return null;
         }
         // TODO slope!!
-        final BgReading existing = getForPreciseTimestamp(timestamp, Constants.MINUTE_IN_MS);
+        final BgReading existing = getForPreciseTimestamp(timestamp, DexCollectionType.getCurrentDeduplicationPeriod());
         if (existing == null) {
             Calibration calibration = Calibration.lastValid();
             final BgReading bgReading = new BgReading();
@@ -1660,9 +1680,10 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public void calculateAgeAdjustedRawValue(){
-        final double adjust_for = AGE_ADJUSTMENT_TIME - time_since_sensor_started;
+        boolean is_g6 = Ob1G5CollectionService.usingG6();
+        final double adjust_for = (is_g6 ? AGE_ADJUSTMENT_TIME_G6 : AGE_ADJUSTMENT_TIME) - time_since_sensor_started;
         if ((adjust_for > 0) && (!DexCollectionType.hasLibre())) {
-            age_adjusted_raw_value = ((AGE_ADJUSTMENT_FACTOR * (adjust_for / AGE_ADJUSTMENT_TIME)) * raw_data) + raw_data;
+            age_adjusted_raw_value = (((is_g6 ? AGE_ADJUSTMENT_FACTOR_G6 : AGE_ADJUSTMENT_FACTOR) * (adjust_for / (is_g6 ? AGE_ADJUSTMENT_TIME_G6 : AGE_ADJUSTMENT_TIME))) * raw_data) + raw_data;
             Log.i(TAG, "calculateAgeAdjustedRawValue: RAW VALUE ADJUSTMENT FROM:" + raw_data + " TO: " + age_adjusted_raw_value);
         } else {
             age_adjusted_raw_value = raw_data;
