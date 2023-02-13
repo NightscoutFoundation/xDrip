@@ -42,12 +42,19 @@ public class VoiceCommands {
         } else if (get_engineering_mode() && allWords.contentEquals("enable fake data source")) {
             Pref.setString(DexCollectionType.DEX_COLLECTION_METHOD, DexCollectionType.Mock.toString());
             JoH.static_toast_long("YOU ARE NOW USING FAKE DATA!!!");
+            MockDataSource.defaults();
         } else if (get_engineering_mode() && allWords.equals("break fake data source")) {
             JoH.static_toast_long("Breaking fake data source");
             MockDataSource.breakRaw();
         } else if (get_engineering_mode() && allWords.equals("repair fake data source")) {
             JoH.static_toast_long("Repairing fake data source");
             MockDataSource.fixRaw();
+        } else if (get_engineering_mode() && allWords.equals("speed up fake data source")) {
+            JoH.static_toast_long("Speeding up fake data source");
+            MockDataSource.speedup();
+        } else if (get_engineering_mode() && allWords.equals("amplify fake data source")) {
+            JoH.static_toast_long("Amplifying fake data source");
+            MockDataSource.amplify();
         } else if (allWords.contentEquals("set sensor code")) {
             G6CalibrationCodeDialog.ask(mActivity, null);
         } else if (allWords.contentEquals("multiple start")) {

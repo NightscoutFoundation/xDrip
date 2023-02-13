@@ -86,6 +86,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Experience;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
+import com.eveningoutpost.dexdrip.UtilityModels.MockDataSource;
 import com.eveningoutpost.dexdrip.UtilityModels.NanoStatus;
 import com.eveningoutpost.dexdrip.UtilityModels.NightscoutUploader;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
@@ -2355,6 +2356,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             }
         } else if (collector.equals(DexCollectionType.Mock)) {
             notificationText.append("\n USING FAKE DATA SOURCE !!!");
+            if (MockDataSource.divisor_scale == 1500000) {
+                notificationText.append(" F");
+            }
+            if (MockDataSource.amplify_cnst == 330000) {
+                notificationText.append(" Amp");
+            }
         }
         if (Pref.getLong("alerts_disabled_until", 0) > new Date().getTime()) {
             notificationText.append("\n " + getString(R.string.all_alerts_currently_disabled));
