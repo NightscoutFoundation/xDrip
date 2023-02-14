@@ -359,8 +359,8 @@
                         android:switchTextOff="@string/short_off_text_for_switches"
                         android:switchTextOn="@string/short_on_text_for_switches"
                         android:key="alert_raise_for_sensor_expiry"
-                        android:summary="Raise a notification when the sensor gets close to expiry."
-                        android:title="Sensor Expiry Alerts" />
+                        android:summary="@string/summary_sens_expiry_notify"
+                        android:title="@string/title_sens_expiry_notify" />
                     <SwitchPreference
                         android:defaultValue="true"
                         android:dependency="engineering_mode"

@@ -1801,5 +1801,7 @@
     <string name="format_string_ago">%s ago</string>
     <string name="use_background_scans">Use Background Scans</string>
     <string name="android_8_background_scanning">Use Android 8+ background scanning feature</string>
+    <string name="title_sens_expiry_notify">Sensor expiry</string>
+    <string name="summary_sens_expiry_notify">Raise notifications when approaching (24, 9 and 2 hours) sensor expiry.</string>
     <string name="close">Close</string>
 </resources>
