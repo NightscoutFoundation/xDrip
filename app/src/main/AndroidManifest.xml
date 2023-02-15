@@ -29,6 +29,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission-sdk-23 android:name="android.permission.CAMERA" />
     <uses-permission-sdk-23 android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -139,18 +140,18 @@
             android:label="@string/title_activity_bluetooth_scan" />
 
         <service
-            android:name=".Services.DexCollectionService"
+            android:name=".services.DexCollectionService"
             android:enabled="true"
             android:exported="true"
             android:foregroundServiceType="connectedDevice|location" />
         <service
-            android:name=".Services.WifiCollectionService"
+            android:name=".services.WifiCollectionService"
             android:enabled="true"
             android:exported="true" />
-        <service android:name=".Services.ActivityRecognizedService" />
-        <service android:name=".Services.BluetoothGlucoseMeter" />
+        <service android:name=".services.ActivityRecognizedService" />
+        <service android:name=".services.BluetoothGlucoseMeter" />
         <service
-            android:name=".Services.broadcastservice.BroadcastService"
+            android:name=".services.broadcastservice.BroadcastService"
             android:enabled="true"
             android:exported="true" />
         <service
@@ -296,7 +297,7 @@
         </service>
         -->
         <service
-            android:name=".Services.SyncService"
+            android:name=".services.SyncService"
             android:enabled="true"
             android:exported="true" />
         <service
@@ -304,7 +305,7 @@
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".Services.UiBasedCollector"
+            android:name=".services.UiBasedCollector"
             android:label="UiBasedCollector"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
@@ -398,15 +399,15 @@
             android:launchMode="singleTask" />
 
         <service
-            android:name=".Services.DexShareCollectionService"
+            android:name=".services.DexShareCollectionService"
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".Services.G5CollectionService"
+            android:name=".services.G5CollectionService"
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".Services.Ob1G5CollectionService"
+            android:name=".services.Ob1G5CollectionService"
             android:enabled="true"
             android:foregroundServiceType="connectedDevice|location" />
         <service
@@ -466,10 +467,10 @@
             android:label="@string/manage_followers" />
 
         <service
-            android:name=".Services.SnoozeOnNotificationDismissService"
+            android:name=".services.SnoozeOnNotificationDismissService"
             android:exported="false" />
         <service
-            android:name=".Services.MissedReadingService"
+            android:name=".services.MissedReadingService"
             android:enabled="true"
             android:exported="true" />
         <service
@@ -481,7 +482,7 @@
             android:exported="true"
             android:foregroundServiceType="connectedDevice|location" />
         <service
-            android:name=".Services.DailyIntentService"
+            android:name=".services.DailyIntentService"
             android:exported="false" />
 
         <activity
@@ -588,7 +589,7 @@
             </intent-filter>
         </service>
         <service
-            android:name=".Services.AlwaysOnDisplayService"
+            android:name=".services.AlwaysOnDisplayService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
@@ -615,7 +616,7 @@
                 android:resource="@xml/xdrip_dream" />
         </service>
         <service
-            android:name=".Services.PlusSyncService"
+            android:name=".services.PlusSyncService"
             android:enabled="true"
             android:exported="true" />
 
@@ -675,7 +676,7 @@
             android:screenOrientation="landscape" />
 
         <service
-            android:name=".Services.DoNothingService"
+            android:name=".services.DoNothingService"
             android:enabled="true"
             android:exported="true"
             android:foregroundServiceType="connectedDevice|location" />

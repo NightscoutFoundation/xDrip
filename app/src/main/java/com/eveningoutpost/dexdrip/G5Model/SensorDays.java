@@ -4,7 +4,6 @@ package com.eveningoutpost.dexdrip.G5Model;
 import android.text.SpannableString;
 
 import com.eveningoutpost.dexdrip.Models.Sensor;
-import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -25,9 +24,9 @@ import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.getFirmwareXD
 import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.Models.JoH.roundDouble;
 import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
-import static com.eveningoutpost.dexdrip.Services.G5BaseService.usingG6;
-import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.getTransmitterID;
-import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.usingNativeMode;
+import static com.eveningoutpost.dexdrip.services.G5BaseService.usingG6;
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.getTransmitterID;
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.usingNativeMode;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
@@ -161,7 +160,7 @@ public class SensorDays {
     }
 
     // returns 0 if invalid
-    long getRemainingSensorPeriodInMs() {
+    public long getRemainingSensorPeriodInMs() {
         //UserError.Log.d(TAG, "Get start debug returns: " + JoH.dateTimeText(getStart()));
         if (isValid()) {
             val elapsed = msSince(getStart());

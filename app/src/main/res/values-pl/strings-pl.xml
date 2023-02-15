@@ -1586,6 +1586,11 @@
     <string name="source_wizard_button">Przycisk kreatora źródła</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Poczekaj %d sekund przed próbą uruchomienia czujnika</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">proszę zaktualizuj OOP2 albo wybierz kalibrację w oparciu o dane surowe</string>
+    <string name="reminder">Przypomnienie</string>
+    <string name="notification">Powiadomienie</string>
+    <string name="TX_EOL_notification">Jeśli przejdziesz dalej i wystartujesz czujnik, bardzo prawdopodobne jest, że się to nie powiedzie, ponieważ dni nadajnika dobiegły końca.</string>
+    <string name="proceed">Kontynuuj</string>
+    <string name="save_power">Oszczędzaj energię</string>
     <string name="graph_smoothing">Wygładzanie wykresu</string>
     <string name="last_reading">Ostatni odczyt</string>
     <string name="select_file_for_alert">Wybierz plik dla alarmu</string>
@@ -1601,6 +1606,7 @@
     <string name="restore_from_backup">Przywróć z kopii zapasowej</string>
     <string name="are_you_really_sure_question">Jesteś pewien?</string>
     <string name="backup_source_confirm">Potwierdzenie źródła kopii zapasowej</string>
+    <string name="nothing_to_restore_please_select">Nic do przywrócenia - proszę wybrać lokalizację</string>
     <string name="no_backup_location_set">Nie ustawiono lokalizacji kopii zapasowej</string>
     <string name="backing_up">Tworzenie kopii zapasowej</string>
     <string name="did_backup_ok">Kopia zapasowa ok</string>

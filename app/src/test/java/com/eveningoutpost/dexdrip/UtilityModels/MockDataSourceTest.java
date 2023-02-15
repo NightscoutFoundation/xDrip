@@ -5,7 +5,7 @@ package com.eveningoutpost.dexdrip.UtilityModels;
  */
 
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
-import com.eveningoutpost.dexdrip.Services.TransmitterRawData;
+import com.eveningoutpost.dexdrip.services.TransmitterRawData;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 

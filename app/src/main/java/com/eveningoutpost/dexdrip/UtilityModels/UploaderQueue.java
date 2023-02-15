@@ -12,7 +12,6 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
@@ -35,7 +34,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.eveningoutpost.dexdrip.Services.SyncService.startSyncService;
+import static com.eveningoutpost.dexdrip.services.SyncService.startSyncService;
 
 /**
  * Created by jamorham on 15/11/2016.

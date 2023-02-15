@@ -33,7 +33,7 @@
     <string name="title_activity_fake_numbers">Nombres fictifs</string>
     <string name="title_activity_edit_alert">Modifier l\'alerte</string>
     <string name="title_activity_double_calibration">Étalonnage initial</string>
-    <string name="title_activity_calibration_override">Override de calibration</string>
+    <string name="title_activity_calibration_override">Outrepasser l\'étalonnage</string>
     <string name="pref_header_cloud_storage">Stockage Cloud</string>
     <string name="auto_configure_title">Configuration automatique</string>
     <string name="prefs_auto_config_summary">Configuration automatique en utilisant un code-barres.</string>
@@ -140,7 +140,7 @@
     <string name="minutes_with_bracket">" minutes)"</string>
     <string name="possible_bad_calibration">Possible mauvaise pente de calibration, allez boire un verre d\'eau, lavez-vous les mains, puis recalibrez dans quelques instants!</string>
     <string name="please_wait_need_two_readings_first">L\'émetteur nécessite 2 lectures supplémentaires.</string>
-    <string name="please_enter_two_calibrations_to_get_started">S\'il vous plaît effectuez deux calibrations pour commencer!</string>
+    <string name="please_enter_two_calibrations_to_get_started">Veuillez effectuer deux étalonnages pour commencer!</string>
     <string name="now_pair_with_your_dexcom_share">Maintenant jumeler avec votre Dexcom Share</string>
     <string name="now_choose_start_sensor_in_settings">Maintenant, choisissez démarrer votre capteur dans vos paramètres</string>
     <string name="double_check_dex_receiver_serial_number">Vérifier le numéro de série du récepteur Dex, il devrait être de 10 caractères, ne pas oublier les lettres</string>
@@ -359,7 +359,7 @@
     <string name="xdrip_plus_security_key_settings_only">xDrip+ Clés de Sécurité seulement</string>
     <string name="show_general_and_collection_settings">Afficher les paramètres Généraux et Collection</string>
     <string name="copy_all_settings">Copier tous les paramètres</string>
-    <string name="sensor_is_ready_please_enter_double_calibration">Le capteur est prêt, s\'il vous plaît entrer un double calibrage</string>
+    <string name="sensor_is_ready_please_enter_double_calibration">Le capteur est prêt, veuillez entrer une calibration initiale</string>
     <string name="in_order_to_get_started_please_perform_two_finger">Pour pouvoir commencer, effectuer deux tests de glycémie capillaire et entrer les valeurs ici!</string>
     <string name="enter_first_bg_value">Entrer la première valeur de glycémie</string>
     <string name="enter_second_bg_value">Entrer la seconde valeur de glycémie</string>
@@ -889,7 +889,7 @@
     <string name="DoubleDown">Baisse rapide</string>
     <string name="SingleDown">Baisse</string>
     <string name="FortyFiveDown">Baisse faible</string>
-    <string name="Flat">Cohérente</string>
+    <string name="Flat">Inchangé</string>
     <string name="FortyFiveUp">Hausse légère</string>
     <string name="SingleUp">Hausse</string>
     <string name="DoubleUp">Hausse rapide</string>

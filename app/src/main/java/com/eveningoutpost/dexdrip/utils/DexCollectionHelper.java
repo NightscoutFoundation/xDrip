@@ -8,7 +8,7 @@ import com.eveningoutpost.dexdrip.BluetoothScan;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
+import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
@@ -131,6 +131,10 @@ public class DexCollectionHelper {
 
             case Medtrum:
                 bluetoothScanIfNeeded();
+                break;
+
+            case LibreReceiver:
+                Home.staticRefreshBGChartsOnIdle();
                 break;
 
             case CLFollow:

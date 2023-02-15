@@ -9,7 +9,7 @@ import com.google.common.collect.ImmutableSet;
 
 import lombok.Getter;
 
-import static com.eveningoutpost.dexdrip.Services.G5CollectionService.TAG;
+import static com.eveningoutpost.dexdrip.services.G5CollectionService.TAG;
 
 public enum CalibrationState {
 

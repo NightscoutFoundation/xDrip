@@ -34,7 +34,7 @@ import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
+import com.eveningoutpost.dexdrip.services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.insulin.opennov.Options;
@@ -1246,24 +1246,24 @@ public class BgGraphBuilder {
                 }
 
                 if ((show_filtered) && (bgReading.filtered_calculated_value > 0) && (bgReading.filtered_calculated_value != bgReading.calculated_value)) {
-                    filteredValues.add(new HPointValue((double) ((bgReading.timestamp - timeshift) / FUZZER), (float) unitized(bgReading.filtered_calculated_value)));
+                    filteredValues.add(new HPointValue((double) ((bgReading.timestamp - timeshift) / FUZZER), (float) unitized(Math.min(bgReading.filtered_calculated_value, BgReading.BG_READING_MAXIMUM_VALUE))));
                 } else if (show_pseudo_filtered) {
                     // TODO differentiate between filtered and pseudo-filtered when both may be in play at different times
                     final double rollingValue = rollingAverage.put(bgReading.calculated_value);
                     if (rollingAverage.reachedPeak()) {
-                        filteredValues.add(new HPointValue((double) ((bgReading.timestamp + rollingOffset) / FUZZER), (float) unitized(rollingValue)));
+                        filteredValues.add(new HPointValue((double) ((bgReading.timestamp + rollingOffset) / FUZZER), (float) unitized(Math.min(rollingValue, BgReading.BG_READING_MAXIMUM_VALUE))));
                     }
                 }
                 if ((interpret_raw && (bgReading.raw_calculated > 0))) {
-                    rawInterpretedValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.raw_calculated)));
+                    rawInterpretedValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(Math.min(bgReading.raw_calculated, BgReading.BG_READING_MAXIMUM_VALUE))));
                 }
                 if ((!glucose_from_plugin) && (plugin != null) && (cd != null)) {
-                    pluginValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(plugin.getGlucoseFromBgReading(bgReading, cd))));
+                    pluginValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(Math.min(plugin.getGlucoseFromBgReading(bgReading, cd), BgReading.BG_READING_MAXIMUM_VALUE))));
                 }
                 if (bgReading.ignoreForStats) {
                     badValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
-                } else if (bgReading.calculated_value >= 400) {
-                    highValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(400)));
+                } else if (bgReading.calculated_value >= BgReading.BG_READING_MAXIMUM_VALUE) {
+                    highValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(BgReading.BG_READING_MAXIMUM_VALUE)));
                 } else if (unitized(bgReading.calculated_value) >= highMark) {
                     highValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
                 } else if (unitized(bgReading.calculated_value) >= lowMark) {
@@ -1782,7 +1782,10 @@ public class BgGraphBuilder {
                                         df.setMaximumFractionDigits(2);
                                         df.setMinimumIntegerDigits(1);
                                         //  iv.setLabel("IoB: " + df.format(iob.iob));
-                                        Home.updateStatusLine("iob", df.format(iob.iob));
+                                        val iobformatted = df.format(iob.iob);
+                                        keyStore.putS("last_iob", iobformatted);
+                                        keyStore.putL("last_iob_timestamp", JoH.tsl());
+                                        Home.updateStatusLine("iob", iobformatted);
                                         //  annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
 
                                     }
@@ -1818,18 +1821,20 @@ public class BgGraphBuilder {
                                 if (evaluation[0] > Profile.minimum_carb_recommendation) {
                                     //PointValue iv = new HPointValue((double) fuzzed_timestamp, (float) (10 * bgScale));
                                     //iv.setLabel("+Carbs: " + JoH.qs(evaluation[0], 0));
-                                    bwp_update = "\u224F" + " Carbs: " + JoH.qs(evaluation[0], 0);
+                                    bwp_update = "\u224F" + " Carbs: " + JoH.qs(evaluation[0], 0); // TODO I18n
                                     //annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
                                 } else if (evaluation[1] > Profile.minimum_insulin_recommendation) {
                                     //PointValue iv = new HPointValue((double) fuzzed_timestamp, (float) (11 * bgScale));
                                     //iv.setLabel("+Insulin: " + JoH.qs(evaluation[1], 1));
                                     keyStore.putS("bwp_last_insulin", JoH.qs(evaluation[1], 1) + ((low_occurs_at > 0) ? ("!") : ""));
                                     keyStore.putL("bwp_last_insulin_timestamp", JoH.tsl());
-                                    bwp_update = "\u224F" + " Insulin: " + JoH.qs(evaluation[1], 1) + ((low_occurs_at > 0) ? (" " + "\u26A0") : ""); // warning symbol
+                                    bwp_update = "\u224F" + " Insulin: " + JoH.qs(evaluation[1], 1) + ((low_occurs_at > 0) ? (" " + "\u26A0") : ""); // warning symbol // TODO I18n
                                     //annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
                                 }
                             }
                         }
+                        keyStore.putS("last_bwp", bwp_update);
+                        keyStore.putL("last_bwp_timestamp", JoH.tsl());
                         Home.updateStatusLine("bwp", bwp_update); // always send so we can blank if needed
                     }
 

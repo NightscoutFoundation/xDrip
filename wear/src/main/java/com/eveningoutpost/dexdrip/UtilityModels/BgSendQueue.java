@@ -23,7 +23,7 @@ import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.PebbleMovement;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.Services.CustomComplicationProviderService;
+import com.eveningoutpost.dexdrip.services.CustomComplicationProviderService;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.android.gms.wearable.DataMap;
@@ -37,7 +37,7 @@ import java.util.List;
 //KS import com.eveningoutpost.dexdrip.Models.Calibration;
 //KS following are not used on watch
 /*
-import com.eveningoutpost.dexdrip.Services.SyncService;
+import com.eveningoutpost.dexdrip.services.SyncService;
 import com.eveningoutpost.dexdrip.ShareModels.BgUploader;
 import com.eveningoutpost.dexdrip.ShareModels.Models.ShareUploadPayload;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
