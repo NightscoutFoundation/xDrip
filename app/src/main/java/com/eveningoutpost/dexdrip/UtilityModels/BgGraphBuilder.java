@@ -1782,7 +1782,10 @@ public class BgGraphBuilder {
                                         df.setMaximumFractionDigits(2);
                                         df.setMinimumIntegerDigits(1);
                                         //  iv.setLabel("IoB: " + df.format(iob.iob));
-                                        Home.updateStatusLine("iob", df.format(iob.iob));
+                                        val iobformatted = df.format(iob.iob);
+                                        keyStore.putS("last_iob", iobformatted);
+                                        keyStore.putL("last_iob_timestamp", JoH.tsl());
+                                        Home.updateStatusLine("iob", iobformatted);
                                         //  annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
 
                                     }
@@ -1818,18 +1821,20 @@ public class BgGraphBuilder {
                                 if (evaluation[0] > Profile.minimum_carb_recommendation) {
                                     //PointValue iv = new HPointValue((double) fuzzed_timestamp, (float) (10 * bgScale));
                                     //iv.setLabel("+Carbs: " + JoH.qs(evaluation[0], 0));
-                                    bwp_update = "\u224F" + " Carbs: " + JoH.qs(evaluation[0], 0);
+                                    bwp_update = "\u224F" + " Carbs: " + JoH.qs(evaluation[0], 0); // TODO I18n
                                     //annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
                                 } else if (evaluation[1] > Profile.minimum_insulin_recommendation) {
                                     //PointValue iv = new HPointValue((double) fuzzed_timestamp, (float) (11 * bgScale));
                                     //iv.setLabel("+Insulin: " + JoH.qs(evaluation[1], 1));
                                     keyStore.putS("bwp_last_insulin", JoH.qs(evaluation[1], 1) + ((low_occurs_at > 0) ? ("!") : ""));
                                     keyStore.putL("bwp_last_insulin_timestamp", JoH.tsl());
-                                    bwp_update = "\u224F" + " Insulin: " + JoH.qs(evaluation[1], 1) + ((low_occurs_at > 0) ? (" " + "\u26A0") : ""); // warning symbol
+                                    bwp_update = "\u224F" + " Insulin: " + JoH.qs(evaluation[1], 1) + ((low_occurs_at > 0) ? (" " + "\u26A0") : ""); // warning symbol // TODO I18n
                                     //annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
                                 }
                             }
                         }
+                        keyStore.putS("last_bwp", bwp_update);
+                        keyStore.putL("last_bwp_timestamp", JoH.tsl());
                         Home.updateStatusLine("bwp", bwp_update); // always send so we can blank if needed
                     }
 
