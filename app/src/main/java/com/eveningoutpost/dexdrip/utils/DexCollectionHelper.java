@@ -133,6 +133,10 @@ public class DexCollectionHelper {
                 bluetoothScanIfNeeded();
                 break;
 
+            case LibreReceiver:
+                Home.staticRefreshBGChartsOnIdle();
+                break;
+
             case CLFollow:
                 textSettingDialog(activity,
                         "clfollow_country", "CareLink Country",
