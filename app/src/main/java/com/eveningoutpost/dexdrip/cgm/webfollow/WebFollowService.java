@@ -232,7 +232,7 @@ public class WebFollowService extends ForegroundService {
         megaStatus.add(new StatusItem("Next poll time", JoH.dateTimeText(wakeup_time)));
 
         if (JoH.buggy_samsung) {
-            megaStatus.add(new StatusItem("Buggy Samsung", JoH.buggy_samsung ? gs(R.string.yes) : gs(R.string.no)));
+            megaStatus.add(new StatusItem("Buggy handset", JoH.buggy_samsung ? gs(R.string.yes) : gs(R.string.no)));
         }
 
         if (lastErrorTime != 0L && (msSince(lastErrorTime) < Constants.HOUR_IN_MS)) {

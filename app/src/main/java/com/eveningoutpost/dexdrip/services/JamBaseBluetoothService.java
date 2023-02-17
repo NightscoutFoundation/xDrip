@@ -178,7 +178,7 @@ public abstract class JamBaseBluetoothService extends Service {
 
     protected static void enableBuggySamsungIfNeeded(final String TAG) {
         if ((JoH.isSamsung() && PersistentStore.getLong(BUGGY_SAMSUNG_ENABLED) > 4)) {
-            UserError.Log.d(TAG, "Enabling buggy samsung due to persistent metric");
+            UserError.Log.d(TAG, "Enabling buggy handset due to persistent metric");
             JoH.buggy_samsung = true;
         }
     }
