@@ -12,8 +12,6 @@ import android.os.IBinder;
 import android.os.Parcelable;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
-import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Models.Accuracy;
@@ -31,10 +29,11 @@ import com.eveningoutpost.dexdrip.services.MissedReadingService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.PumpStatus;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
+import com.eveningoutpost.dexdrip.store.FastStore;
+import com.eveningoutpost.dexdrip.store.KeyStore;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.services.broadcastservice.models.BroadcastModel;
 import com.eveningoutpost.dexdrip.services.broadcastservice.models.GraphLine;
@@ -83,10 +82,7 @@ public class BroadcastService extends Service {
     protected String TAG = this.getClass().getSimpleName();
     protected Map<String, BroadcastModel> broadcastEntities;
 
-    private BroadcastReceiver statusReceiver;
-
-    private String predictedBWP;
-    private String predictedIOB;
+    protected KeyStore keyStore = FastStore.getInstance();
 
     /**
      *  The receiver listening {@link  ACTION_WATCH_COMMUNICATION_RECEIVER} action.
@@ -239,24 +235,6 @@ public class BroadcastService extends Service {
 
         JoH.startService(BroadcastService.class, Const.INTENT_FUNCTION_KEY, Const.CMD_START);
 
-        statusReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                final String bwp = intent.getStringExtra("bwp");
-                if (bwp != null) {
-                    predictedBWP = bwp;
-                } else {
-                    final String iob = intent.getStringExtra("iob");
-                    if (iob != null) {
-                        predictedIOB = iob;
-                    }
-                }
-            }
-        };
-
-        LocalBroadcastManager.getInstance(this).registerReceiver(statusReceiver,
-                new IntentFilter(Intents.HOME_STATUS_ACTION));
-
         super.onCreate();
     }
 
@@ -265,12 +243,6 @@ public class BroadcastService extends Service {
         UserError.Log.e(TAG, "killing service");
         broadcastEntities.clear();
         unregisterReceiver(broadcastReceiver);
-
-        try {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(statusReceiver);
-        } catch (Exception e) {
-            Log.e(TAG, "Exception unregistering broadcast receiver: " + e);
-        }
         super.onDestroy();
     }
 
@@ -537,9 +509,6 @@ public class BroadcastService extends Service {
                 bundle.putLong("treatment.timeStamp", treatment.timestamp);
             }
 
-            predictedIOB = "";
-            predictedBWP = "";
-
             if (settings.isDisplayGraph()) {
                 long graphStartOffset = settings.getGraphStart();
                 long graphEndOffset = settings.getGraphEnd();
@@ -574,11 +543,19 @@ public class BroadcastService extends Service {
                 bundle.putParcelable("graph.predictedBg", new GraphLine(treatments[5]));  // predictive
                 bundle.putParcelable("graph.cob", new GraphLine(treatments[6]));  //cobValues
                 bundle.putParcelable("graph.polyBg", new GraphLine(treatments[7]));  //poly predict ;
-
             }
 
-            bundle.putString("predict.IOB", predictedIOB);
-            bundle.putString("predict.BWP", predictedBWP);
+            String last_iob = keyStore.getS("last_iob");
+            if ( last_iob != null){
+                bundle.putString("predict.IOB", last_iob);
+                bundle.putLong("predict.IOB.timeStamp", keyStore.getL("last_iob_timestamp"));
+            }
+
+            String last_bwp = keyStore.getS("last_bwp");
+            if ( last_bwp != null){
+                bundle.putString("predict.BWP", last_bwp);
+                bundle.putLong("predict.BWP.timeStamp", keyStore.getL("last_bwp_timestamp"));
+            }
 
             // External status line from AAPS added
             bundle.putString("external.statusLine", getLastStatusLine());
