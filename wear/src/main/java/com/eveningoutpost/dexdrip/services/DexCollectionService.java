@@ -1141,7 +1141,7 @@ public class DexCollectionService extends Service implements BtCallBack {
             }
             JoH.persistentBuggySamsungCheck();
             if ((wakeup_jitter > TOLERABLE_JITTER) && (!JoH.buggy_samsung) && (JoH.isSamsung())) {
-                UserError.Log.wtf(TAG, "Enabled Buggy handset workaround due to jitter of: " + JoH.niceTimeScalar(wakeup_jitter));
+                UserError.Log.wtf(TAG, "Enabled wake workaround due to jitter of: " + JoH.niceTimeScalar(wakeup_jitter));
                 JoH.setBuggySamsungEnabled();
                 max_wakeup_jitter = 0;
             } else {

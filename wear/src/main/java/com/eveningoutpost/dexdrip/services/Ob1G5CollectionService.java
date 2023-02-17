@@ -855,7 +855,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         UserError.Log.d(TAG, "Checking model: " + this_model);
 
         if ((JoH.isSamsung() && PersistentStore.getLong(BUGGY_SAMSUNG_ENABLED) > 4)) {
-            UserError.Log.d(TAG, "Enabling buggy handset due to persistent metric");
+            UserError.Log.d(TAG, "Enabling wake workaround due to persistent metric");
             JoH.buggy_samsung = true;
         }
 
@@ -934,7 +934,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                     if (wakeup_jitter > 1000) {
                         UserError.Log.d(TAG, "Wake up, time jitter: " + JoH.niceTimeScalar(wakeup_jitter));
                         if ((wakeup_jitter > TOLERABLE_JITTER) && (!JoH.buggy_samsung) && JoH.isSamsung()) {
-                            UserError.Log.wtf(TAG, "Enabled Buggy handset workaround due to jitter of: " + JoH.niceTimeScalar(wakeup_jitter));
+                            UserError.Log.wtf(TAG, "Enabled wake workaround due to jitter of: " + JoH.niceTimeScalar(wakeup_jitter));
                             JoH.buggy_samsung = true;
                             PersistentStore.incrementLong(BUGGY_SAMSUNG_ENABLED);
                             max_wakeup_jitter = 0;

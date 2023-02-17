@@ -449,7 +449,7 @@ public class JoH {
         if (!buggy_samsung) {
            if (JoH.isSamsung() && PersistentStore.getLong(BUGGY_SAMSUNG_ENABLED) > 4) {
                buggy_samsung = true;
-               UserError.Log.d(TAG,"Enabling buggy handset mode due to historical pattern");
+               UserError.Log.d(TAG,"Enabling wake workaround mode due to historical pattern");
            }
         }
     }

@@ -943,7 +943,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         UserError.Log.d(TAG, "Checking model: " + this_model);
 
         if ((JoH.isSamsung() && PersistentStore.getLong(BUGGY_SAMSUNG_ENABLED) > 4)) {
-            UserError.Log.d(TAG, "Enabling buggy handset due to persistent metric");
+            UserError.Log.d(TAG, "Enabling wake workaround due to persistent metric");
             JoH.buggy_samsung = true;
         }
 

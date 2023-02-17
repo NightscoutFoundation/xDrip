@@ -61,7 +61,7 @@ public class BuggySamsung {
     // enable if we have historic markers showing previous enabling
     public void checkWasBuggy() {
         if (!buggy_samsung && isSamsung() && PersistentStore.getLong(BUGGY_SAMSUNG_ENABLED) > 4) {
-            UserError.Log.e(TAG, "Enabling buggy handset due to persistent metric");
+            UserError.Log.e(TAG, "Enabling wake workaround due to persistent metric");
             buggy_samsung = true;
         }
     }
