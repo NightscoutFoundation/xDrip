@@ -1111,6 +1111,9 @@
     <string name="title_cloud_storage_api_download_enable">Baixar dados</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Calibrar utilizando novas leituras de glicose se as condições parecerem corretas para fazer isso sem pedir confirmação (experimental)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Calibragem Automática</string>
+    <string name="summary_tap_to_send_historical_data">Toque para enviar histórico de dados para o Nightscout</string>
+    <string name="title_back_fill_data">Preencher Dados</string>
+    <string name="summary_tidepool_upload_screen">Enviar dados para o serviço Tidepool</string>
     <string name="title_sync_to_tidepool">Sincronizar com o Tidepool</string>
     <string name="summary_tidepool_username">Seu nome de usuário no Tidepool, normalmente seu endereço de e-mail</string>
     <string name="title_tidepool_username">Nome de usuário</string>
@@ -1154,6 +1157,8 @@
     <string name="summary_miband_authkey">Defina a chave de autenticação para MiBand4 (para obter chave de autenticação, siga as instruções em https://www.freemyband.com/)</string>
     <string name="summary_miband_mac">Deixe em branco para pesquisa automática</string>
     <string name="title_miband_send_readings_as_notification">Leituras Glicose como Notificação</string>
+    <string name="title_miband_vibrate_on_readings">Vibrar nas Leituras</string>
+    <string name="title_miband_send_calls">Enviar Chamadas</string>
     <string name="summary_lefun_send_readings">Adeque a data do relógio para representar valores de glicose. Melhor com mmol/l - consulte a documentação</string>
     <string name="title_lefun_send_readings">Enviar Leituras</string>
     <string name="summary_lefun_send_alarms">Enviar notificações de alarmes de glicose para a pulseira</string>
