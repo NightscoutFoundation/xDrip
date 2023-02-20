@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 import android.content.BroadcastReceiver;
@@ -18,6 +19,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.profileeditor.ImportAapsProfile;
+import com.google.gson.GsonBuilder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,6 +28,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.UUID;
 
+import info.nightscout.sdk.localmodel.devicestatus.NSDeviceStatus;
 import lombok.val;
 
 
@@ -57,6 +60,27 @@ public class NSClientReceiver extends BroadcastReceiver {
         if (action == null) return;
 
         switch (action) {
+            case Intents.ACTION_NS_BRIDGE:
+                if (bundle == null) break;
+                if (prefs.getBoolean("accept_nsclient_treatments", true)) {
+
+                    final String device_status_json = bundle.getString("devicestatus", "");
+                    if (!emptyString(device_status_json)) {
+                        try {
+                            val gson = new GsonBuilder().create(); // TODO optimize
+                            val ds = gson.fromJson(device_status_json, NSDeviceStatus.class);
+                            Log.e(TAG, "DEBUG: got device status: " + ds.toString());
+                        } catch (Exception e) {
+                            Log.e(TAG, "Exception processing device status in NS_BRIDGE action: " + e);
+                        }
+                    } else {
+                        Log.e(TAG, "Empty device status received via NS_BRIDGE action");
+                    }
+                } else {
+                    Log.e(TAG, "Cannot accept device status as preference setting prevents it");
+                }
+                break;
+
             case Intents.ACTION_NEW_SGV:
                 if (Home.get_follower() && prefs.getBoolean("accept_nsclient_sgv", true)) {
                     if (bundle == null) break;
