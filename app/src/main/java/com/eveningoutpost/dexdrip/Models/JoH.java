@@ -438,8 +438,10 @@ public class JoH {
         return null; // too big
     }
 
-    public static boolean isSamsung() {
-        return Build.MANUFACTURER.toLowerCase().contains("samsung");
+    public static boolean isSamsung() {     // same workaround for xiaomi, so include that but may want name refactoring later
+        return Build.MANUFACTURER.toLowerCase().contains("samsung")
+            || Build.MANUFACTURER.toLowerCase().contains("xiaomi")
+            || Build.MANUFACTURER.toLowerCase().contains("oneplus");    // experimental test
     }
 
     private static final String BUGGY_SAMSUNG_ENABLED = "buggy-samsung-enabled";
@@ -1500,6 +1502,10 @@ public class JoH {
     }
 
     public static void showNotification(String title, String content, PendingIntent intent, int notificationId, String channelId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri, String bigmsg) {
+        showNotification(title, content, intent, notificationId, channelId, sound, vibrate, deleteIntent, sound_uri, bigmsg, false);
+    }
+
+    public static void showNotification(String title, String content, PendingIntent intent, int notificationId, String channelId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri, String bigmsg, boolean highPriority) {
         final NotificationCompat.Builder mBuilder = notificationBuilder(title, content, intent, channelId);
         final long[] vibratePattern = {0, 1000, 300, 1000, 300, 1000};
         if (vibrate) mBuilder.setVibrate(vibratePattern);
@@ -1512,6 +1518,10 @@ public class JoH {
 
         if (bigmsg != null) {
             mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(bigmsg));
+        }
+
+        if (highPriority) {
+            mBuilder.setPriority(NotificationCompat.PRIORITY_MAX);
         }
 
         final NotificationManager mNotifyMgr = (NotificationManager) xdrip.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);

@@ -14,6 +14,7 @@ import android.util.Log;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Reminder;
+import com.eveningoutpost.dexdrip.alert.Poller;
 import com.eveningoutpost.dexdrip.services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.services.BluetoothGlucoseMeter;
 import com.eveningoutpost.dexdrip.services.MissedReadingService;
@@ -114,6 +115,7 @@ public class xdrip extends MultiDexApplication {
         }
         Reminder.firstInit(xdrip.getAppContext());
         PluggableCalibration.invalidateCache();
+        Poller.init();
     }
 
 
