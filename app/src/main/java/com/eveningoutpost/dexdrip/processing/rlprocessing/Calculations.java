@@ -5,12 +5,14 @@ import com.eveningoutpost.dexdrip.Models.Treatments;
 
 import org.apache.commons.lang3.NotImplementedException;
 
-public class calculations {
+import java.util.List;
+
+public class Calculations {
     /**
      * Using data from the database, calculate the ratios.
      * @return
      */
-    public static modelapi.Ratios calculateRatios() {
+    public static ModelApi.Ratios calculateRatios() {
         // TODO
         throw new NotImplementedException("Ratios are not implemented.");
     }
@@ -29,15 +31,21 @@ public class calculations {
      * @return
      */
     public static Double calculateInsulin() {
-        // TODO
-        throw new NotImplementedException("Insulin not implemented.");
+        ModelApi.RLInput input = getRLInput();
+        return ModelApi.getInstance().inferInsulin(input);
     }
 
     /**
      * Gets all the data needed for the RL model from other classes.
      */
-    public static modelapi.rlInput getRLInput() {
-        // TODO
-        throw new NotImplementedException("Input data has to be implemented.");
+    public static ModelApi.RLInput getRLInput() {
+        // TODO get the data from the database.
+
+        List<Treatments> treatments = Treatments.latest(2016); // TODO: get the number of treatments using timestamps.
+        List<BgReading> bgReadings = BgReading.latest(2016); // TODO: get the number of bg readings using timestamps.
+
+        ModelApi.RLInput input = new ModelApi.RLInput(treatments, bgReadings);
+
+        return input;
     }
 }
