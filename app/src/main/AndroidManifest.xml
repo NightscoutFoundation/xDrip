@@ -5,7 +5,7 @@
     android:installLocation="internalOnly"
     tools:ignore="InnerclassSeparator">
 
-    <uses-sdk tools:overrideLibrary="androidx.health.connect.client" />
+    <uses-sdk tools:overrideLibrary="androidx.health.connect.client, info.nightscout.sdk" />
     <!-- To receive data from HAPP. -->
     <uses-permission android:name="com.eveningoutpost.dexdrip.permissions.RECEIVE_EXTERNAL_STATUSLINE" /> <!-- To receive data from Aidex -->
     <uses-permission android:name="com.microtechmd.cgms.aidex.permissions.RECEIVE_BG_ESTIMATE" />
@@ -498,6 +498,9 @@
         </activity>
 
         <receiver android:name=".NSClientReceiver">
+            <intent-filter>
+                <action android:name="info.nightscout.client.NS_BRIDGE" />
+            </intent-filter>
             <intent-filter>
                 <action android:name="info.nightscout.client.NEW_SGV" />
             </intent-filter>
