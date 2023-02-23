@@ -881,7 +881,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                         if (wakeup_jitter > 1000) {
                             UserError.Log.d(TAG, "Wake up, time jitter: " + JoH.niceTimeScalar(wakeup_jitter));
                             if ((wakeup_jitter > TOLERABLE_JITTER) && (!JoH.buggy_samsung) && JoH.isSamsung()) {
-                                UserError.Log.wtf(TAG, "Enabled Buggy Samsung workaround due to jitter of: " + JoH.niceTimeScalar(wakeup_jitter));
+                                UserError.Log.wtf(TAG, "Enabled wake workaround due to jitter of: " + JoH.niceTimeScalar(wakeup_jitter));
                                 JoH.buggy_samsung = true;
                                 PersistentStore.incrementLong(BUGGY_SAMSUNG_ENABLED);
                                 max_wakeup_jitter = 0;

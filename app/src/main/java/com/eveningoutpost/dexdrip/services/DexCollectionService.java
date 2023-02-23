@@ -1044,7 +1044,7 @@ public class DexCollectionService extends Service implements BtCallBack {
             l.add(new StatusItem("Slowest wake up", JoH.niceTimeScalar(max_wakeup_jitter) + " late", max_wakeup_jitter > 61000 ? StatusItem.Highlight.CRITICAL : StatusItem.Highlight.NORMAL));
         }
         if (JoH.buggy_samsung) {
-            l.add(new StatusItem("Buggy Samsung", "Using workaround", max_wakeup_jitter < TOLERABLE_JITTER ? StatusItem.Highlight.GOOD : StatusItem.Highlight.BAD));
+            l.add(new StatusItem("Buggy handset", "Using workaround", max_wakeup_jitter < TOLERABLE_JITTER ? StatusItem.Highlight.GOOD : StatusItem.Highlight.BAD));
         }
         if (retry_time > 0)
             l.add(new StatusItem("Next Retry", JoH.niceTimeTill(retry_time), JoH.msTill(retry_time) < -2 ? StatusItem.Highlight.CRITICAL : StatusItem.Highlight.NORMAL));
@@ -1190,7 +1190,7 @@ public class DexCollectionService extends Service implements BtCallBack {
             }
             JoH.persistentBuggySamsungCheck();
             if ((wakeup_jitter > TOLERABLE_JITTER) && (!JoH.buggy_samsung) && (JoH.isSamsung())) {
-                UserError.Log.wtf(TAG, "Enabled Buggy Samsung workaround due to jitter of: " + JoH.niceTimeScalar(wakeup_jitter));
+                UserError.Log.wtf(TAG, "Enabled wake workaround due to jitter of: " + JoH.niceTimeScalar(wakeup_jitter));
                 JoH.setBuggySamsungEnabled();
                 max_wakeup_jitter = 0;
             } else {

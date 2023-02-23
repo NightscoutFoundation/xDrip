@@ -244,7 +244,7 @@ public class CareLinkFollowService extends ForegroundService {
         megaStatus.add(new StatusItem("Last poll time", lastPoll > 0 ? JoH.dateTimeText(lastPoll) : "n/a"));
         megaStatus.add(new StatusItem("Next poll time", JoH.dateTimeText(wakeup_time)));
         megaStatus.add(new StatusItem());
-        megaStatus.add(new StatusItem("Buggy Samsung", JoH.buggy_samsung ? "Yes" : "No"));
+        megaStatus.add(new StatusItem("Buggy handset", JoH.buggy_samsung ? "Yes" : "No"));
 
         return megaStatus;
     }
