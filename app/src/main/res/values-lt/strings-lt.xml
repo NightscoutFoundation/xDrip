@@ -7,11 +7,15 @@
     <string name="menu_stop">Sustabdyti</string>
     <string name="menu_refresh">Atnaujinti</string>
     <string name="menu_export_database">Eksportuoti duomenų bazę</string>
+    <string name="menu_export_csv_sidiary">Eksportuoti CSV (SiDiary formatu)</string>
     <string name="menu_import_db">Atkurti duomenų bazę</string>
     <string name="error_bluetooth_not_supported">Klaida: šis įrenginys nepalaiko Bluetooth</string>
     <string name="unknown_device">Neatpažintas įrenginys</string>
     <string name="connecting_to_device">Jungiamasi prie įrenginio</string>
+    <string name="title_activity_raw_data_table">Neapdorotų duomenų lentelė</string>
+    <string name="title_activity_calculated_data_table">Apskaičiuotų duomenų lentelė</string>
     <string name="title_activity_start_new_sensor">Startuoti naują sensorių</string>
+    <string name="title_activity_new_sensor_location">Naujo sensoriaus vieta</string>
     <string name="title_activity_stop_sensor">Sustabdyti sensorių</string>
     <string name="snooze">Snausti</string>
     <string name="ok">Gerai</string>
@@ -27,6 +31,8 @@
     <string name="prefs_auto_config_summary">Autokonfigūracija naudojant barkodą.</string>
     <!-- MongoDB Settings -->
     <string name="pref_title_mongodb">MongoDB</string>
+    <string name="pref_title_mongodb_uri">URI</string>
+    <string name="pref_dialog_mongodb_uri">Įveskite MongoDB URI\"</string>
     <!-- API Settings -->
     <string name="pref_title_api_enabled">Įjungtas</string>
     <string name="pref_summary_api_enabled">REST API yra standartinis būdas prisijungti prie Nightscout</string>
