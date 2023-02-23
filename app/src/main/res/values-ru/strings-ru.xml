@@ -1273,7 +1273,7 @@
     <string name="title_lefun_screen_find_phone">Показывать \"Найти телефон / Отложить\"</string>
     <string name="title_lefun_screen_mac_address">Показывать MAC адрес</string>
     <string name="summary_allow_samsung_workaround">Использовать обходные пути, чтобы избежать нестандартное поведение Android на устройствах Samsung. Без этого коллекторам обычно не удается получить данные.</string>
-    <string name="title_allow_samsung_workaround">Решение для Samsung</string>
+    <string name="title_allow_samsung_workaround">Обходные пути Samsung</string>
     <string name="summary_medtrum_use_native">Использовать калибровку передатчика Medtrum вместо xDrip</string>
     <string name="title_medtrum_use_native">Алгоритм Medtrum</string>
     <string name="summary_medtrum_a_hex">16-тиричные значения диагностики</string>
