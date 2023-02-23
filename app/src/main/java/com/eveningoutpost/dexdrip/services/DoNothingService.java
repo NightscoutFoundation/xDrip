@@ -105,7 +105,7 @@ public class DoNothingService extends Service {
                 max_wake_time_difference = Math.max(max_wake_time_difference, wake_time_difference);
 
                 if (!JoH.buggy_samsung && JoH.isSamsung()) {
-                    UserError.Log.wtf(TAG, "Enabled Buggy Samsung workaround due to jitter of: " + JoH.niceTimeScalar(wake_time_difference));
+                    UserError.Log.wtf(TAG, "Enabled wake workaround due to jitter of: " + JoH.niceTimeScalar(wake_time_difference));
                     JoH.setBuggySamsungEnabled();
                 }
 
@@ -211,7 +211,7 @@ public class DoNothingService extends Service {
             }
 
             if (JoH.buggy_samsung) {
-                l.add(new StatusItem("Buggy Samsung", "Using workaround", max_wake_time_difference < TOLERABLE_JITTER ? StatusItem.Highlight.GOOD : BAD));
+                l.add(new StatusItem("Buggy handset", "Using workaround", max_wake_time_difference < TOLERABLE_JITTER ? StatusItem.Highlight.GOOD : BAD));
             }
 
             if (nextWakeUpTime != -1) {

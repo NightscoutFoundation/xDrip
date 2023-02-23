@@ -1319,8 +1319,8 @@
     <string name="title_lefun_screen_heart_pressure">Show Heart Pressure</string>
     <string name="title_lefun_screen_find_phone">Show Find Phone / Snooze</string>
     <string name="title_lefun_screen_mac_address">Show MAC Address</string>
-    <string name="summary_allow_samsung_workaround">Use workarounds to avoid non-standard Android behavior of Samsung handsets. Without this, collectors usually fail to get data.</string>
-    <string name="title_allow_samsung_workaround">Samsung Workarounds</string>
+    <string name="summary_allow_samsung_workaround">Use workarounds to avoid non-standard Android behavior of some handsets. Without this, collectors usually fail to get data.</string>
+    <string name="title_allow_samsung_workaround">Wake Workarounds</string>
     <string name="summary_medtrum_use_native">Use transmitter calibration instead of xDrip for primary</string>
     <string name="title_medtrum_use_native">Medtrum Native</string>
     <string name="summary_medtrum_a_hex">Hex diagnostic test value</string>
