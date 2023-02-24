@@ -1273,8 +1273,8 @@
     <string name="title_lefun_screen_heart_pressure">Kuva vererõhku</string>
     <string name="title_lefun_screen_find_phone">Kuva \"Otsi telefon / Vaigista\"</string>
     <string name="title_lefun_screen_mac_address">Kuva MAC aadress</string>
-    <string name="summary_allow_samsung_workaround">Kasuta lahendusi, et vältida Samsungi telefonide Androidi ebastandardset käitumist. Ilma selleta ei saa tavaliselt andmeid kätte.</string>
-    <string name="title_allow_samsung_workaround">Samsungi lahendused</string>
+    <string name="summary_allow_samsung_workaround">Kasuta lahendusi, et vältida mõnede telefonide Androidi ebastandardset käitumist. Ilma selleta ei saa tavaliselt andmeid kätte.</string>
+    <string name="title_allow_samsung_workaround">Töös hoidmise lahendused</string>
     <string name="summary_medtrum_use_native">Kasuta algkalibreerimiseks saatja andmeid, mitte xDrip rakendust</string>
     <string name="title_medtrum_use_native">Medtrum algupärane</string>
     <string name="summary_medtrum_a_hex">Hex-diagnostika testväärtus</string>
