@@ -119,7 +119,7 @@ public class FirstPageFragment extends Fragment {
                     break;
             }
             int possibleCaptures = SelectedDays*(24*12);
-            int CgmUsagePercent = Math.round((possibleCaptures/total)*100);
+            int CgmUsagePercent = Math.round((((float)total)/((float)possibleCaptures))*100);
 
             TextView cgmUsage = (TextView) localView.findViewById(R.id.textView_cgm_usage_percents);
             updateText(localView, cgmUsage, CgmUsagePercent + "%");
