@@ -20,14 +20,26 @@ public class MockDataSource {
 
     private static final String PREF_BROKEN_RAW = "MockDataSource-broken-raw";
 
+    private static final String PREF_SPEED_UP = "MockDataSource-speed-up";
+
+    private static final String PREF_AMPLIFY = "MockDataSource-amplify";
+
+    public static double divisor_scale = 5000000;
+    public static double amplify_cnst = 100000;
+
     public static String getFakeWifiData() {
 
         long time = JoH.tsl();
-        double divisor_scale = 5000000;
+        if (Pref.getBooleanDefaultFalse(PREF_SPEED_UP)) {
+            divisor_scale = 1500000;
+        }
         double mod_raw = (time / divisor_scale) % Math.PI;
         double mod_filtered = ((time - 500000) / divisor_scale) % Math.PI;
-        double raw_value = (Math.sin(mod_raw) * 100000) + 50000;
-        double filtered_value = (Math.sin(mod_filtered) * 100000) + 50000;
+        if (Pref.getBooleanDefaultFalse(PREF_AMPLIFY)) {
+            amplify_cnst = 330000;
+        }
+        double raw_value = (Math.sin(mod_raw) * amplify_cnst) + 50000;
+        double filtered_value = (Math.sin(mod_filtered) * amplify_cnst) + 50000;
 
         if (Pref.getBooleanDefaultFalse(PREF_BROKEN_RAW)) {
             raw_value = Math.sin(mod_raw) * 1000;
@@ -50,12 +62,25 @@ public class MockDataSource {
         return json.toString();
     }
 
+    public static void defaults() {
+        Pref.setBoolean(PREF_SPEED_UP, false);
+        Pref.setBoolean(PREF_AMPLIFY, false);
+    }
+
     public static void breakRaw() {
         Pref.setBoolean(PREF_BROKEN_RAW, true);
     }
 
     public static void fixRaw() {
         Pref.setBoolean(PREF_BROKEN_RAW, false);
+    }
+
+    public static void speedup() {
+        Pref.setBoolean(PREF_SPEED_UP, true);
+    }
+
+    public static void amplify() {
+        Pref.setBoolean(PREF_AMPLIFY, true);
     }
 }
 

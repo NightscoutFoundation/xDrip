@@ -215,7 +215,7 @@ public class ShareFollowService extends ForegroundService {
             megaStatus.add(new StatusItem("Last BG time", JoH.dateTimeText(lastBg.timestamp)));
         }
         megaStatus.add(new StatusItem("Next poll time", JoH.dateTimeText(wakeup_time)));
-        megaStatus.add(new StatusItem("Buggy Samsung", JoH.buggy_samsung ? gs(R.string.yes) : gs(R.string.no)));
+        megaStatus.add(new StatusItem("Buggy handset", JoH.buggy_samsung ? gs(R.string.yes) : gs(R.string.no)));
 
         return megaStatus;
     }
