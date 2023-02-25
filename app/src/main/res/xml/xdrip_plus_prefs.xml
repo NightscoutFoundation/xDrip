@@ -750,6 +750,19 @@
         </PreferenceScreen>
 
         <PreferenceCategory
+            android:key="xdrip_plus_rl_category"
+            android:title="RL">
+            <!-- Preference to select if rl is used-->
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="rl_simulations_enabled"
+                android:summary="@string/summary_use_rl"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="@string/title_use_rl" />
+        </PreferenceCategory>
+
+        <PreferenceCategory
             android:key="title_I_understandb"
             android:title="@string/eula">
             <Preference

@@ -844,6 +844,9 @@
     <string name="low_prediction_values">Low level prediction values</string>
     <string name="target_glucose_default">Target Glucose Default</string>
     <string name="default_liver_maximum_impact">Default Liver Maximum Impact (0–1)</string>
+    <string name="rl_predictive_simulation">RL Predictive Simulation</string>
+    <string name="title_use_rl">Use Reinforcement Learning</string>
+    <string name="summary_use_rl">Use Reinforcement Learning for predictive simulation.</string>
     <string name="remote_snoozes">Sending and receiving remote snoozes</string>
     <string name="remote_snoozing">Remote Snoozing</string>
     <string name="snoozes_will_silence_all">Snoozes will silence all handsets in group with the accept setting below enabled on them</string>
