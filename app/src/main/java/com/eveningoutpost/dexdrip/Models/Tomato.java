@@ -181,7 +181,8 @@ public class Tomato {
         byte []patchInfo = null;
         if(s_acumulatedSize >= extended_length) {
             patchUid = Arrays.copyOfRange(s_full_data, 5, 13);
-            patchInfo = Arrays.copyOfRange(s_full_data, TOMATO_HEADER_LENGTH+ Constants.LIBRE_1_2_FRAM_SIZE + 1 , TOMATO_HEADER_LENGTH + Constants.LIBRE_1_2_FRAM_SIZE + 1+ TOMATO_PATCH_INFO);
+            patchInfo = Arrays.copyOfRange(s_full_data, TOMATO_HEADER_LENGTH+ Constants.LIBRE_1_2_FRAM_SIZE + 1,
+                    TOMATO_HEADER_LENGTH + Constants.LIBRE_1_2_FRAM_SIZE + 1+ TOMATO_PATCH_INFO);
         }
         Log.d(TAG, "patchUid = " + HexDump.dumpHexString(patchUid));
         Log.d(TAG, "patchInfo = " + HexDump.dumpHexString(patchInfo));
@@ -189,6 +190,14 @@ public class Tomato {
         Pref.setInt("bridge_battery", s_full_data[13]);
         // Set the time of the current reading
         PersistentStore.setLong("libre-reading-timestamp", JoH.tsl());
+
+        if(NFCReaderX.use_fake_de_data()) {
+            FakeData libreData = FakeLibreData.getInstance().getFakeData();
+            data = libreData.data;
+            patchUid = libreData.patchUid;
+            patchInfo = libreData.patchInfo;
+        }
+
         boolean checksum_ok = NFCReaderX.HandleGoodReading(SensorSn, data, now, true, patchUid, patchInfo);
         Log.e(TAG, "We have all the data that we need " + s_acumulatedSize + " checksum_ok = " + checksum_ok + HexDump.dumpHexString(data));
 
@@ -207,6 +216,7 @@ public class Tomato {
 
         
     }
+
 
     // This is the function that we should have once we are able to read all data realiably.
     static void AreWeDoneMax() {

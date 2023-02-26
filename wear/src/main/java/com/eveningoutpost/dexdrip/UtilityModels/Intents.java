@@ -49,11 +49,11 @@ public interface Intents {
     String LIBRE_ALARM_TO_XDRIP_PLUS = "com.eveningoutpost.dexdrip.FROM_LIBRE_ALARM";
     String XDRIP_PLUS_NS_EMULATOR = "com.eveningoutpost.dexdrip.NS_EMULATOR";
     String BLUEJAY_THINJAM_API = "com.eveningoutpost.dexdrip.THINJAM_API";
-
+    String BLUEJAY_THINJAM_EMIT = "com.eveningoutpost.dexdrip.THINJAM_EMIT";
     // Local Broadcasts
     String HOME_STATUS_ACTION = "com.eveningoutpost.dexdrip.HOME_STATUS_ACTION";
     
-    // Send to LibreXposed
+    // Send to external decoder
     String XDRIP_PLUS_LIBRE_DATA = "com.eveningoutpost.dexdrip.LIBRE_DATA";
     String LIBRE_DATA_BUFFER = "com.eveningoutpost.dexdrip.Extras.DATA_BUFFER";
     String LIBRE_PATCH_UID_BUFFER = "com.eveningoutpost.dexdrip.Extras.LIBRE_PATCH_UID_BUFFER";
@@ -61,8 +61,37 @@ public interface Intents {
 
     String LIBRE_DATA_TIMESTAMP = "com.eveningoutpost.dexdrip.Extras.TIMESTAMP";
     String LIBRE_SN = "com.eveningoutpost.dexdrip.Extras.LIBRE_SN";
+    String LIBRE_RAW_ID = "com.eveningoutpost.dexdrip.Extras.LIBRE_RAW_ID";
 
     String LIBRE2_BG = "com.librelink.app.ThirdPartyIntegration.GLUCOSE_READING";
     String LIBRE2_ACTIVATION = "com.librelink.app.ThirdPartyIntegration.SENSOR_ACTIVATE";
+    String LIBRE2_SCAN = "com.librelink.app.ThirdPartyIntegration.SENSOR_SCAN";
+    String LIBRE2_CONNECTION = "com.librelink.app.ThirdPartyIntegration.CONNECTION_STATE";
 
+
+    // oop 2
+    String XDRIP_DECODE_FARM_RESULT = "com.eveningoutpost.dexdrip.OOP2_DECODE_FARM_RESULT";
+    String XDRIP_DECODE_BLE_RESULT = "com.eveningoutpost.dexdrip.OOP2_DECODE_BLE_RESULT";
+    String XDRIP_BLUETOOTH_ENABLE_RESULT = "com.eveningoutpost.dexdrip.OOP2_BLUETOOTH_ENABLE_RESULT";
+    String XDRIP_PLUS_LIBRE_BLE_DATA = "com.eveningoutpost.dexdrip.LIBRE_BLE_DATA";
+    String XDRIP_PLUS_BLUETOOTH_ENABLE = "com.eveningoutpost.dexdrip.BLUETOOTH_ENABLE";
+    String DECODED_BUFFER = "DecodedBuffer";
+    String PATCH_UID = "PatchUid";
+    String PATCH_INFO = "PatchInfo";
+    String ENABLE_TIME = "EnableTime";
+    String CONNECTION_INDEX = "ConnectionIndex";
+    String BT_UNLOCK_BUFFER_COUNT = "BtUnlockBufferCount";
+    String BT_UNLOCK_BUFFER = "BtUnlockBuffer";
+    String NFC_UNLOCK_BUFFER = "NfcUnlockBuffer";
+    String DEVICE_NAME = "DeviceName";
+    String DEVICE_MAC_ADDRESS = "MacAddress";
+    String BT_UNLOCK_BUFFER_ARRAY = "BtUnlockBufferArray";
+    String TREND_BG = "TrendBg";
+    String HISTORIC_BG = "HistoricBg";
+    String OOP2_VERSION_NAME = "OOP2_VERSION";
+
+    String TAG_ID = "TagId";
+    String ROW_ID = "RowId";
+
+    String PREFERENCE_INTENT = "com.eveningoutpost.dexdrip.utils.PROGRESS";
 }
