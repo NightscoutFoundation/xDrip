@@ -44,7 +44,7 @@ public class SensorExpiry extends BaseAlert {
         val notificationId = SENSORY_EXPIRY_NOTIFICATION_ID;
         cancelNotification(notificationId);
         val expireMsg = String.format("Sensor will expire in %s", expiry); // TODO i18n and format string
-        showNotification("Sensor expiring", expireMsg, null, notificationId, null, true, true, null, null, null, true);
+        showNotification("Sensor expiring", expireMsg, null, notificationId, null, false, false, null, null, null, true);
         Treatments.create_note("Warning: " + expireMsg, tsl()); // TODO i18n but note classifier also needs updating for that
         return true;
     }
