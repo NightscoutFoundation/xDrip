@@ -38,7 +38,7 @@ public class Calculations {
     /**
      * Gets all the data needed for the RL model from other classes.
      */
-    public static ModelApi.RLInput getRLInput() {
+    private static ModelApi.RLInput getRLInput() {
         // TODO get the data from the database.
 
         List<Treatments> treatments = Treatments.latest(2016); // TODO: get the number of treatments using timestamps.

@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.processing.rlprocessing;
 
+import android.util.Log;
+
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 
@@ -17,12 +19,19 @@ public class ModelApi {
      * Variables for the loaded model.
      * TODO: Implement loading the model.
      */
+    // Tag string to identify the class in the logs.
+    private static final String TAG = "RL model:";
     private static ModelApi instance;
     private Interpreter interpreter; // Model interpreter. Used to feed data to the model and get the result.
 
     private ModelApi() {
         String model_location = ""; // TODO change to saved location in shared preferences.
-        this.loadModel(model_location); // TODO use a try catch block to catch errors.
+
+        try {
+            this.loadModel(model_location);  // TODO use a try catch block to catch errors.
+        } catch (Exception e) {
+            Log.e(TAG, "Error loading the model:" + e.getMessage());
+        }
     }
 
     public static ModelApi getInstance() {

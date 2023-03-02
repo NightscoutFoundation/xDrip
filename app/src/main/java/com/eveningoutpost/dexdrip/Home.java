@@ -333,6 +333,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private volatile static String statusIOB = "";
     private volatile static String statusBWP = "";
 
+    private volatile static String rl_insulin_need = "";
+
 
     @SuppressLint("ObsoleteSdkInt")
     @Override
@@ -599,6 +601,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                         refreshStatusLine();
                     }
                 }
+                final String insRL = intent.getStringExtra("insRL");
+                if (insRL != null) {
+                    rl_insulin_need = insRL;
+                    refreshStatusLine();
+                }
             }
         };
 
@@ -674,7 +681,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private void refreshStatusLine() {
         try {
             final String status = ((statusIOB.length() > 0) ? ("IoB: " + statusIOB) : "")
-                    + ((statusBWP.length() > 0) ? (" " + statusBWP) : "");
+                    + ((statusBWP.length() > 0) ? (" " + statusBWP) : "")
+                    + rl_insulin_need;
             Log.d(TAG, "Refresh Status Line: " + status);
             //if (status.length() > 0) {
             getSupportActionBar().setSubtitle(status);

@@ -34,6 +34,7 @@ import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.processing.rlprocessing.Calculations;
 import com.eveningoutpost.dexdrip.services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
@@ -136,6 +137,10 @@ public class BgGraphBuilder {
     private int predictivehours = 0;
     private boolean prediction_enabled = false;
     private boolean simulation_enabled = false;
+
+    // Used to determine if RL option is to be used to predict BG
+    private boolean rl_simulation_enabled = false;
+
     private static double avg1value = 0;
     private static double avg2value = 0;
     private static int avg1counter = 0;
@@ -209,6 +214,8 @@ public class BgGraphBuilder {
         prediction_enabled = show_prediction;
         if (prediction_enabled)
             simulation_enabled = prefs.getBoolean("simulations_enabled", true);
+        if (prediction_enabled)
+            rl_simulation_enabled = prefs.getBoolean("rl_simulations_enabled", true);
         end_time = end / FUZZER;
         start_time = start / FUZZER;
 
@@ -643,6 +650,11 @@ public class BgGraphBuilder {
         return previewLineData;
     }
 
+    /**
+     * Creates lines with all activity (bg values, calibration, annotations...) data that the graph should display.
+     * @param simple
+     * @return List of lines (values) to be displayed on the graph.
+     */
     public synchronized List<Line> defaultLines(boolean simple) {
         List<Line> lines = new ArrayList<Line>();
         try {
@@ -1043,6 +1055,13 @@ public class BgGraphBuilder {
             Log.d(TAG, "BgReadings lock is currently held");
         }
         readings_lock.lock();
+
+        // TODO move this lower down
+        // Use Reinforcement Learning option to predict insulin needs
+        try { rl_prediction(); }
+        catch (Exception e) {
+            Log.e(TAG, "Exception in RL prediction: " + e.toString());
+        }
 
         try {
 
@@ -1641,6 +1660,8 @@ public class BgGraphBuilder {
                     readings_lock.unlock();
                 }
 
+
+
                 try {
 
 
@@ -1840,12 +1861,35 @@ public class BgGraphBuilder {
 
                 } catch (Exception e) {
                     Log.e(TAG, "Exception doing iob values in bggraphbuilder: " + e.toString());
+                    e.printStackTrace();
                 }
             } // if !simple
         } finally {
             readings_lock.unlock();
         }
     }
+
+    /**
+     * This is the main routine for the RL prediction
+     * If RL is enabled it will call the RL model and then calculate the insulin needed
+     * It will updates Home's status line with the needed insulin
+     */
+    private void rl_prediction() {
+        if (prediction_enabled && rl_simulation_enabled) {
+            double insulinNeeded = Calculations.calculateInsulin();
+            Log.i(TAG, "RL insulin needed: " + insulinNeeded);
+            // TODO change this to acount for negative insulin
+
+            String insulinNeededString =  " \u224F" + " insulin(RL): " + insulinNeeded;
+            keyStore.putS("rl_insulin_need", insulinNeededString);
+            Home.updateStatusLine("insRL", insulinNeededString); // always send so we can blank if needed
+        }
+        else {
+            keyStore.putS("rl_insulin_need", "");
+            Home.updateStatusLine("insRL", "");
+        }
+    }
+
 
     public static synchronized double getCurrentLowOccursAt() {
         try {
