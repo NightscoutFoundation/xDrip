@@ -1878,13 +1878,21 @@ public class BgGraphBuilder {
     private void rl_prediction() {
         // Check if RL is enabled
         if (prediction_enabled && rl_simulation_enabled) {
+            double insulinNeeded = 0;
             // Uses RL model to predict BG
-            double insulinNeeded = Calculations.calculateInsulin();
+            try {
+                insulinNeeded = Calculations.calculateInsulin();
+            } catch (Exception e) {
+                Log.e(TAG, "Exception doing RL prediction: " + e.toString());
+                keyStore.putS("rl_insulin_need", "");
+                Home.updateStatusLine("insRL", "error");
+            }
+
             Log.i(TAG, "RL insulin needed: " + insulinNeeded);
             // TODO change this to acount for negative insulin
 
             // String to be shown in Home's status line
-            String insulinNeededString =  " \u224F" + " insulin(RL): " + insulinNeeded;
+            String insulinNeededString =  "insulin(RL): " + insulinNeeded;
             // Save latest calculated insulin needed in storage
             keyStore.putS("rl_insulin_need", String.valueOf(insulinNeeded));
             // Updates Home's status lines RL insulin need string

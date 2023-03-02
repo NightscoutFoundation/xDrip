@@ -684,9 +684,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     private void refreshStatusLine() {
         try {
-            final String status = ((statusIOB.length() > 0) ? ("IoB: " + statusIOB) : "")
-                    + ((statusBWP.length() > 0) ? (" " + statusBWP) : "")
-                    + rl_insulin_need; // RL insulin need. It will be empty if RL is not enabled
+            String status = ((statusIOB.length() > 0) ? ("IoB: " + statusIOB) : "")
+                    + ((statusBWP.length() > 0) ? (" " + statusBWP) : "");
+
+            status = status + ((status.length()>0) ? " \u224F " + rl_insulin_need : rl_insulin_need); // RL insulin need. It will be empty if RL is not enabled
             Log.d(TAG, "Refresh Status Line: " + status);
             //if (status.length() > 0) {
             getSupportActionBar().setSubtitle(status);
