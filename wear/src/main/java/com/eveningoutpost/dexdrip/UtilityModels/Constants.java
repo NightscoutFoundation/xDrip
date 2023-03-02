@@ -14,6 +14,7 @@ public class Constants {
     public static final long DAY_IN_MS = 86_400_000;
     public static final long WEEK_IN_MS = DAY_IN_MS * 7;
     public static final long MONTH_IN_MS = DAY_IN_MS * 30;
+    public static final long YEAR_IN_MS = DAY_IN_MS * 365;
 
     public static final double LIBRE_MULTIPLIER = 117.64705; // to match (raw/8.5)*1000
 
@@ -51,16 +52,27 @@ public class Constants {
     public static final int BLUEJAY_SERVICE_RETRY_ID = 1025;
     public static final int MIBAND_SERVICE_RETRY_ID = 1026;
     public static final int MIBAND_SERVICE_BG_RETRY_ID = 1027;
+    public static final int WEBFOLLOW_SERVICE_FAILOVER_ID = 1028;
+    public static final int BACKUP_ACTIVITY_ID = 1029;
+    public static final int CARELINK_SERVICE_FAILOVER_ID = 1030;
 
     static final int NIGHTSCOUT_ERROR_NOTIFICATION_ID = 2001;
+    public static final int HEALTH_CONNECT_RESPONSE_ID = 2002;
 
     // increments from this start number
     public static final int INCOMPATIBLE_BASE_ID = 5000;
     public static final int COMPATIBLE_BASE_ID = 6000;
     public static final int DEX_BASE_ID = 6400;
+    public static final int SETTINGS_INADVISABLE_BASE_ID = 7000;
 
     //
     public static final int HEART_RATE_JOB_ID = 60920012;
     public static final int APK_DOWNLOAD_JOB_ID = 60920014;
+
+    public static final int LIBRE_1_2_FRAM_SIZE = 344;
+
+    public static final int LIBREPRO_HEADER1_SIZE = 40;
+    public static final int LIBREPRO_HEADER2_SIZE = 32;
+    public static final int LIBREPRO_HEADER3_SIZE = 104;
 
 }

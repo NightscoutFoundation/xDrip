@@ -32,6 +32,7 @@ public class Home extends BaseWatchFace {
     public final static String SHOW_NOTIFICATION = "SHOW_NOTIFICATION";
     public final static String HOME_FULL_WAKEUP = "HOME_FULL_WAKEUP";
     public final static String ACTIVITY_SHOWCASE_INFO = "ACTIVITY_SHOWCASE_INFO";
+    public final static String ENABLE_STREAMING_DIALOG = "ENABLE_STREAMING_DIALOG";
     public static final int SHOWCASE_MOTION_DETECTION = 11;
     private static String nexttoast;//KS
     private static boolean is_follower = false;

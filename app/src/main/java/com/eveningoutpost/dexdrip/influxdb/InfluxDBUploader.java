@@ -4,7 +4,7 @@
  */
 
 
-package com.eveningoutpost.dexdrip.InfluxDB;
+package com.eveningoutpost.dexdrip.influxdb;
 
 import android.content.Context;
 import android.content.SharedPreferences;
