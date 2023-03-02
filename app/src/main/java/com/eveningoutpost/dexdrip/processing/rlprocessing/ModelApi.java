@@ -15,25 +15,24 @@ import java.util.List;
 import java.util.Random;
 
 public class ModelApi {
-    /**
-     * Variables for the loaded model.
-     * TODO: Implement loading the model.
-     */
-    // Tag string to identify the class in the logs.
-    private static final String TAG = "RL model:";
-    private static ModelApi instance;
+    private static final String TAG = "RL model:"; // Tag string to identify the class in the logs.
+    private static ModelApi instance; // Only instance of the class.
     private Interpreter interpreter; // Model interpreter. Used to feed data to the model and get the result.
 
     private ModelApi() {
         String model_location = ""; // TODO change to saved location in shared preferences.
 
         try {
-            this.loadModel(model_location);  // TODO use a try catch block to catch errors.
+            this.loadModel(model_location);
         } catch (Exception e) {
-            Log.e(TAG, "Error loading the model:" + e.getMessage());
+            Log.e(TAG, "Error loading the model:" + e.getMessage()); // TODO Show an error message to the user.
         }
     }
 
+    /**
+     * Singleton pattern.
+     * @return The only instance of the class.
+     */
     public static ModelApi getInstance() {
         if (instance == null) {
             instance = new ModelApi();
@@ -41,14 +40,26 @@ public class ModelApi {
         return instance;
     }
 
+    /**
+     * Using historical BG data, calculate the ratios.
+     * @return Wrapper class containing insulin/carb ratios.
+     */
     public Ratios inferRatios(RLInput input) {
         throw new NotImplementedException("Ratios are not implemented.");
     }
 
+    /**
+     * Using historical BG data, calculate the basal.
+     * @return Needed basal.
+     */
     public Double inferBasal(RLInput input) {
         throw new NotImplementedException("Basal not implemented.");
     }
 
+    /**
+     * Using historical BG data, calculate the insulin.
+     * @return Needed insulin.
+     */
     public Double inferInsulin(RLInput input) {
         // TODO format the input data to the model.
         // TODO feed the data to the model.
@@ -80,11 +91,12 @@ public class ModelApi {
         }
     }
 
+    /**
+     * This class formats the data obtained from the historical data
+     * from other classes and convert them to a easily used wrapper.
+     */
     public static class RLInput {
-        /**
-         * This class has to take any type of data used for RL provided
-         * from other classes and convert them to a easyly used wrapper.
-         */
+
         public RLInput(List<Treatments> treatments, List<BgReading> bgreadings) {
             // TODO format the data to be used by the model.
         }

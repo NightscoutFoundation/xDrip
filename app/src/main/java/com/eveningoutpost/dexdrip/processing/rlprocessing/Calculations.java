@@ -9,8 +9,8 @@ import java.util.List;
 
 public class Calculations {
     /**
-     * Using data from the database, calculate the ratios.
-     * @return
+     * Using historical BG data, calculate the ratios.
+     * @return Wrapper class containing insulin/carb ratios.
      */
     public static ModelApi.Ratios calculateRatios() {
         // TODO
@@ -18,8 +18,8 @@ public class Calculations {
     }
 
     /**
-     * Using data from the database, calculate the basal.
-     * @return
+     * Using historical BG data, calculate the basal.
+     * @return Needed basal.
      */
     public static Double calculateBasal() {
         // TODO
@@ -27,8 +27,8 @@ public class Calculations {
     }
 
     /**
-     * Using data from the database, calculate the insulin.
-     * @return
+     * Using historical BG data, calculate the insulin.
+     * @return Needed insulin.
      */
     public static Double calculateInsulin() {
         ModelApi.RLInput input = getRLInput();

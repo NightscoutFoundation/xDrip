@@ -333,6 +333,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private volatile static String statusIOB = "";
     private volatile static String statusBWP = "";
 
+    // Calculated insulin needed using Reinforcement Learning
     private volatile static String rl_insulin_need = "";
 
 
@@ -601,7 +602,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                         refreshStatusLine();
                     }
                 }
+                // Recieves broadcasted calculated by the Reinforcement Learning feature
                 final String insRL = intent.getStringExtra("insRL");
+                // If there is broadcasted calculated insulin, set the RL insulin need
+                // if not set it uses the default
                 if (insRL != null) {
                     rl_insulin_need = insRL;
                     refreshStatusLine();
@@ -682,7 +686,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         try {
             final String status = ((statusIOB.length() > 0) ? ("IoB: " + statusIOB) : "")
                     + ((statusBWP.length() > 0) ? (" " + statusBWP) : "")
-                    + rl_insulin_need;
+                    + rl_insulin_need; // RL insulin need. It will be empty if RL is not enabled
             Log.d(TAG, "Refresh Status Line: " + status);
             //if (status.length() > 0) {
             getSupportActionBar().setSubtitle(status);

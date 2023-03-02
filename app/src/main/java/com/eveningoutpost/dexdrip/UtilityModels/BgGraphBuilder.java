@@ -214,8 +214,11 @@ public class BgGraphBuilder {
         prediction_enabled = show_prediction;
         if (prediction_enabled)
             simulation_enabled = prefs.getBoolean("simulations_enabled", true);
+
+        // If RL option is enabled, then the insulin need calculated by RL is shown in the status line, alongside the mathematical calculations
         if (prediction_enabled)
             rl_simulation_enabled = prefs.getBoolean("rl_simulations_enabled", true);
+
         end_time = end / FUZZER;
         start_time = start / FUZZER;
 
@@ -1861,7 +1864,6 @@ public class BgGraphBuilder {
 
                 } catch (Exception e) {
                     Log.e(TAG, "Exception doing iob values in bggraphbuilder: " + e.toString());
-                    e.printStackTrace();
                 }
             } // if !simple
         } finally {
@@ -1870,20 +1872,25 @@ public class BgGraphBuilder {
     }
 
     /**
-     * This is the main routine for the RL prediction
      * If RL is enabled it will call the RL model and then calculate the insulin needed
-     * It will updates Home's status line with the needed insulin
+     * It will update Home's status line with the needed insulin
      */
     private void rl_prediction() {
+        // Check if RL is enabled
         if (prediction_enabled && rl_simulation_enabled) {
+            // Uses RL model to predict BG
             double insulinNeeded = Calculations.calculateInsulin();
             Log.i(TAG, "RL insulin needed: " + insulinNeeded);
             // TODO change this to acount for negative insulin
 
+            // String to be shown in Home's status line
             String insulinNeededString =  " \u224F" + " insulin(RL): " + insulinNeeded;
-            keyStore.putS("rl_insulin_need", insulinNeededString);
-            Home.updateStatusLine("insRL", insulinNeededString); // always send so we can blank if needed
+            // Save latest calculated insulin needed in storage
+            keyStore.putS("rl_insulin_need", String.valueOf(insulinNeeded));
+            // Updates Home's status lines RL insulin need string
+            Home.updateStatusLine("insRL", insulinNeededString);
         }
+        // RL prediction is disabled, clear the status line
         else {
             keyStore.putS("rl_insulin_need", "");
             Home.updateStatusLine("insRL", "");
