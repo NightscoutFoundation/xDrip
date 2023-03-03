@@ -1208,6 +1208,21 @@
     <string name="title_ob1_g5_use_transmitter_alg">Algoritmo Nativo</string>
     <string name="summary_ob1_g5_restart_sensor">Reinicia o sensor automaticamente o sensor quando ele parar</string>
     <string name="title_ob1_g5_restart_sensor">Reiniciar Sensor</string>
+    <string name="title_pick_numberwall_stop">Tempo para desligar</string>
+    <string name="title_xdrip_plus_number_icon">Ícone de Número na Área de Notificação</string>
+    <string name="summary_do_number_icon_test">Os ícones de números falham alguns telefones! Toque para executar o teste antes de habilitar o recurso!</string>
+    <string name="title_do_number_icon_test">Executar Teste de Ícone de Número</string>
+    <string name="summary_number_icon_tested">Após confirmação o seu dispositivo pode exibir um ícone de número</string>
+    <string name="title_number_icon_tested">Ícone de Número Testado</string>
+    <string name="summary_use_number_icon">Mostra o número de glicose atual como um ícone para a barra de notificação e tela de bloqueio</string>
+    <string name="title_use_number_icon">Mostrar Ícone de Número Pequeno</string>
+    <string name="summary_use_number_icon_large">Mostra um ícone maior na área de notificação visível apenas quando aberto</string>
+    <string name="title_use_number_icon_large">Usar Ícone de Número Grande</string>
+    <string name="summary_number_icon_large_arrow">Mostra a seta de tendência no ícone grande</string>
+    <string name="title_number_icon_large_arrow">Mostrar Seta em Ícone Grande</string>
+    <string name="summary_show_home_on_boot">Abre automaticamente o xDrip após inicialização do dispositivo.</string>
+    <string name="title_show_home_on_boot">Mostrar xDrip na inicialização</string>
+    <string name="eula">Contrato de Licença de Usuário Final</string>
     <string name="enable_streaming_dialog_dont_ask_again">Não perguntar novamente</string>
     <string name="cannot_choose_file_without_permission">Não é possível escolher o arquivo sem permissão de armazenamento</string>
 </resources>
