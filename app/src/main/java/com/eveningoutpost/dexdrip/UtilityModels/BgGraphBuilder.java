@@ -247,8 +247,8 @@ public class BgGraphBuilder {
         defaultMinY = unitized(40);
         defaultMaxY = unitized(250);
         if (custimze_y_range) { // If Customize y axis range is enabled
-            defaultMinY = unitized(Integer.parseInt(Pref.getString("default_ymin", "40"))); // Use the user-defined ymin
-            defaultMaxY = unitized(Integer.parseInt(Pref.getString("default_ymax", "250"))); // Use the user-defined ymax
+            defaultMinY = unitized(Pref.getStringToInt("default_ymin", 40)); // Use the user-defined ymin
+            defaultMaxY = unitized(Pref.getStringToInt("default_ymax", 250)); // Use the user-defined ymax
         }
         pointSize = isXLargeTablet(context) ? 5 : 3;
         axisTextSize = isXLargeTablet(context) ? 20 : Axis.DEFAULT_TEXT_SIZE_SP;
