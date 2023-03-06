@@ -617,6 +617,7 @@
     <string name="use_external_blukon_algorithm">Зовнішній алгоритм Libre.</string>
     <string name="calibrate_external_libre_algorithm_summary">Застосовувати калібрування xDrip+ до даних OOP</string>
     <string name="calibrate_external_libre_algorithm_title">Калібрування OOP алгоритму</string>
+    <string name="calibrate_external_libre_2_algorithm_title">Калібрування алгоритму OOP2.</string>
     <string name="libre_use_smoothed_data_summary">Використовувати середнє з 5 точок для згладжування показників Libre.</string>
     <string name="libre_use_smoothed_data_title">Згладжувати показників Libre.</string>
     <string name="retrieve_blukon_history_title">Отримувати історію Libre</string>
@@ -911,6 +912,7 @@
     <string name="offical_msg">Офіційний додаток</string>
     <string name="use_conflict_msg">може намагатися отримати доступ до передавального пристрою, що можливо викличе збій обох додатків</string>
     <string name="use_confict_msg_glimp">Ви можете налаштувати Glimp: Опції - Пристрої - Вимкніть налаштування Bluetooth</string>
+    <string name="eng_mode_is_on">Увімкнуто інженерний режим. Бажано вимкнути його, якщо не впевнені навіщо вам це потрібно - це може призвести до неочікуваної поведінки програми.</string>
     <string name="yes">Так</string>
     <string name="xdrip_compatible_features">Функції %s xDrip+</string>
     <string name="garmin">Garmin</string>
@@ -1285,6 +1287,7 @@
     <string name="title_clfollow_lang">Мова CareLink</string>
     <string name="summary_clfollow_lang">Код мови CareLink</string>
     <string name="title_clfollow_download_boluses">Болюси</string>
+    <string name="summary_clfollow_download_boluses">Завантажити болюси з CareLink</string>
     <string name="title_clfollow_download_notifications">Сповіщення</string>
     <string name="title_ob1_options">Налаштування служби збору даних OB1 для G5/G6</string>
     <string name="summary_use_ob1_g5_collector_service">Повністю оновлена, повинна працювати на Android 4.4–9, підтримує нативний режим і багато іншого</string>
