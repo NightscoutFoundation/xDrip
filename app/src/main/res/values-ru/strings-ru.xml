@@ -1756,5 +1756,12 @@
     <string name="format_string_ago">%s назад</string>
     <string name="use_background_scans">Использовать фоновые сканирования</string>
     <string name="android_8_background_scanning">Использовать функцию фонового сканирования Android 8+</string>
+    <string name="title_yRange">Настроить диапазон оси y</string>
+    <string name="titleInside_yRange">Включить</string>
+    <string name="summaryInside_yRange">Здесь можно настроить диапазон вертикальной оси (y).\nОднако, если показания находятся вне этого диапазона, он автоматически расширится в течение нескольких часов, чтобы отобразить их.</string>
+    <string name="title_ymin">Установить минимум по оси y</string>
+    <string name="title_ymax">Установить максимум по оси y</string>
+    <string name="summary_ymin">Укажите y min когда нет меньших показаний.</string>
+    <string name="summary_ymax">Укажите y max когда нет больших показаний.</string>
     <string name="close">Закрыть</string>
 </resources>
