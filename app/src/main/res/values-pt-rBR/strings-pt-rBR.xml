@@ -1299,4 +1299,5 @@
     <string name="wifi_sleep_policy_issue">Problema com a Política de Suspensão WiFi</string>
     <string name="enable_streaming_dialog_dont_ask_again">Não perguntar novamente</string>
     <string name="cannot_choose_file_without_permission">Não é possível escolher o arquivo sem permissão de armazenamento</string>
+    <string name="titleInside_yRange">Ligar</string>
 </resources>
