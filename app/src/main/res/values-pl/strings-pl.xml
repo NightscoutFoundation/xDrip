@@ -257,7 +257,7 @@
     <string name="pref_summary_disable_wearG5_on_lowbattery">Wyłącz funkcję zbierania pomiarów smartwatchem gdy ma on na niski poziomie baterii</string>
     <string name="pref_disable_wearG5_on_missedreadings">Wyłącz wymuszanie przy brakujących odczytach</string>
     <string name="pref_summary_disable_wearG5_on_missedreadings">Wyłącz funkcję zbierania pomiarów smartwatchem gdy odczyty nie docierają do aplikacji</string>
-    <string name="pref_disable_wearG5_on_missedreadings_level">Minuty od ostatniego czytania ze smartwatcha</string>
+    <string name="pref_disable_wearG5_on_missedreadings_level">Minuty od ostatniego odczytu ze smartwatcha</string>
     <string name="pref_node_wearG5">Urządzenie na którym uruchomiona jest usługa zbierania pomiarów</string>
     <string name="pref_summary_node_wearG5">Wymuś użycie pomiarów zbieranych przez ten smartwatch</string>
     <string name="pref_sync_wear_logs">Synchronizuj dzienniki ze smartwatchem</string>
@@ -1640,5 +1640,12 @@
     <string name="restoring_backup_will_erase_warning">Przywracanie kopii zapasowej usunie Twoje bieżące ustawienia i dane z kopii zapasowej.\n\nCzy na pewno chcesz to zrobić?</string>
     <string name="this_backup_looks_like_came_from_different_format_string">Ta kopia zapasowa wygląda jakby pochodziła z innego urządzenia:\n%s\nCzy na pewno chcesz przywrócić z tej kopii zapasowej?</string>
     <string name="megabyte_format_string">%.1f MB</string>
+    <string name="title_yRange">Dostosuj zakres osi y</string>
+    <string name="titleInside_yRange">Włącz</string>
+    <string name="summaryInside_yRange">Tutaj możesz dostosować zakres osi pionowej (y)\nJednak jeśli masz odczyty poza tym zakresem, to automatycznie rozszerzy się na kilka godzin, aby umożliwić wyświetlanie tych odczytów.</string>
+    <string name="title_ymin">Dostosuj wartość minimalną osi y</string>
+    <string name="title_ymax">Dostosuj wartość maksymalną osi y</string>
+    <string name="summary_ymin">Wybierz yMin, gdy nie ma niższych odczytów.</string>
+    <string name="summary_ymax">Wybierz yMax, gdy nie ma wyższych odczytów.</string>
     <string name="close">Zamknij</string>
 </resources>
