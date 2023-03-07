@@ -105,4 +105,5 @@
     <string name="bluetooth_scan">„Bluetooth“ nuskaitymas</string>
     <!-- trend arrow for speak -->
     <string name="enable_streaming_dialog_dont_ask_again">Daugiau manęs to neklauskite</string>
+    <string name="titleInside_yRange">Įjungti</string>
 </resources>
