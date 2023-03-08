@@ -1755,7 +1755,7 @@
     <string name="android_8_background_scanning">Kasuta Android 8+ automaatse skaneerimise funktsiooni</string>
     <string name="title_yRange">Kohanda y-telje vahemikku</string>
     <string name="titleInside_yRange">Luba</string>
-    <string name="summaryInside_yRange">Siin saad seadistada vertikaalse (y) telje vahemiku.\nJuhul kui on näitusid väljaspool seda vahemikku, laiendatakse seda automaatselt mitmeks tunniks, et saaks neid näitusid kuvada.</string>
+    <string name="summaryInside_yRange">Siin saad seadistada vertikaalse (y) telje vahemikku.\nJuhul kui on näitusid väljaspool seda vahemikku, laiendatakse seda automaatselt mitmeks tunniks, et saaks neid näitusid kuvada.</string>
     <string name="title_ymin">Seadista y-telje alampiir</string>
     <string name="title_ymax">Seadista y-telje ülempiir</string>
     <string name="summary_ymin">Vali yMin, kui sellest väiksemaid näitusid ei ole.</string>
