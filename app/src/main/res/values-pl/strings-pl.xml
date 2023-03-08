@@ -1360,8 +1360,14 @@
     <string name="title_xdrip_plus_experimental">Sekcja eksperymentalna</string>
     <string name="summary_inpen_screen">Pobieranie dawek</string>
     <string name="title_inpen_screen">Wstrzykiwacz insuliny InPen</string>
+    <string name="title_inpen_enabled">Wsparcie InPen</string>
+    <string name="summary_inpen_detect_priming">Nie bierz pod uwagę dawek podczas sprawdzania wstrzykiwacza</string>
     <string name="title_inpen_detect_priming">Wykryj sprawdzanie drożności</string>
     <string name="title_inpen_prime_units">Jednostki do sprawdzenia drożności</string>
+    <string name="title_inpen_prime_minutes">Okno czasowe sprawdzania wstrzykiwacza</string>
+    <string name="summary_inpen_orphan_primes_ignored">Zaznacz, aby ignorować dawki sprawdzające, nawet gdy następnie nie została podana właściwa dawka. Odznacz, aby traktować jako dawki</string>
+    <string name="title_inpen_orphan_primes_ignored">Ignoruj testy wstrzykiwacza</string>
+    <string name="summary_inpen_sounds">Użyj dźwięków do sygnalizowania transferu danych ze wstrzykiwaczem</string>
     <string name="title_inpen_sounds">Odtwarzaj dźwięki</string>
     <string name="title_inpen_reset">Znajdź nowy wstrzykiwacz</string>
     <string name="title_pendiq_screen">Wstrzykiwacz insuliny Pendiq 2.0</string>
@@ -1635,9 +1641,9 @@
     <string name="error_uploading_to_cloud">Błąd podczas przesyłania do chmury</string>
     <string name="creating_local_backup">Tworzenie lokalnej kopii zapasowej</string>
     <string name="please_grant_permission">Proszę przyznaj uprawnienia</string>
-    <string name="drive_permission_blurb">Aby automatycznie utworzyć kopię zapasową xDrip potrzebuje uprawnień do korzystania z twojego Dysku Google.\n\nDeweloperzy xDrip nie mogą uzyskać dostępu do żadnych plików ani zobaczyć Twoich danych osobowych.</string>
+    <string name="drive_permission_blurb">Aby automatycznie utworzyć kopię zapasową, xDrip potrzebuje uprawnień do korzystania z twojego Dysku Google.\n\nDeweloperzy xDrip nie mogą uzyskać dostępu do żadnych plików ani zobaczyć Twoich danych osobowych.</string>
     <string name="cloud_backup">Kopia zapasowa w chmurze</string>
-    <string name="restoring_backup_will_erase_warning">Przywracanie kopii zapasowej usunie Twoje bieżące ustawienia i dane z kopii zapasowej.\n\nCzy na pewno chcesz to zrobić?</string>
+    <string name="restoring_backup_will_erase_warning">Przywracanie kopii zapasowej usunie Twoje bieżące ustawienia i nadpisze je danymi z kopii zapasowej.\n\nCzy na pewno chcesz to zrobić?</string>
     <string name="this_backup_looks_like_came_from_different_format_string">Ta kopia zapasowa wygląda jakby pochodziła z innego urządzenia:\n%s\nCzy na pewno chcesz przywrócić z tej kopii zapasowej?</string>
     <string name="megabyte_format_string">%.1f MB</string>
     <string name="title_yRange">Dostosuj zakres osi y</string>
@@ -1645,7 +1651,7 @@
     <string name="summaryInside_yRange">Tutaj możesz dostosować zakres osi pionowej (y)\nJednak jeśli masz odczyty poza tym zakresem, to automatycznie rozszerzy się na kilka godzin, aby umożliwić wyświetlanie tych odczytów.</string>
     <string name="title_ymin">Dostosuj wartość minimalną osi y</string>
     <string name="title_ymax">Dostosuj wartość maksymalną osi y</string>
-    <string name="summary_ymin">Wybierz yMin, gdy nie ma niższych odczytów.</string>
-    <string name="summary_ymax">Wybierz yMax, gdy nie ma wyższych odczytów.</string>
+    <string name="summary_ymin">Wybierz yMin, dla sytuacji, gdy nie ma niższych odczytów.</string>
+    <string name="summary_ymax">Wybierz yMax, dla sytuacji, gdy nie ma wyższych odczytów.</string>
     <string name="close">Zamknij</string>
 </resources>
