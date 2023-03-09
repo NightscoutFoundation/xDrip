@@ -1804,5 +1804,12 @@
     <string name="format_string_ago">%s ago</string>
     <string name="use_background_scans">Use Background Scans</string>
     <string name="android_8_background_scanning">Use Android 8+ background scanning feature</string>
+    <string name="title_yRange">Customize y axis range</string>
+    <string name="titleInside_yRange">Enable</string>
+    <string name="summaryInside_yRange">You can adjust the vertical (y) axis range here.\nHowever, if you have readings outside that range, it will automatically extend, for several hours, to allow those readings to show.</string>
+    <string name="title_ymin">Adjust y axis minimum</string>
+    <string name="title_ymax">Adjust y axis maximum</string>
+    <string name="summary_ymin">Choose yMin for when there are no smaller readings.</string>
+    <string name="summary_ymax">Choose yMax for when there are no greater readings.</string>
     <string name="close">Close</string>
 </resources>

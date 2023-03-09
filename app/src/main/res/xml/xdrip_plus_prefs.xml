@@ -459,6 +459,31 @@
                     android:key="illustrate_remote_data"
                     android:summary="@string/summary_illustrate_remote_data"
                     android:title="@string/title_illustrate_remote_data" />
+                <PreferenceScreen
+                    android:key="Y_axis_range"
+                    android:title="@string/title_yRange">
+                    <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:key="Customize_yRange"
+                        android:title="@string/titleInside_yRange"
+                        android:summary="@string/summaryInside_yRange" />
+                    <ListPreference
+                        android:key="default_ymax"
+                        android:summary="@string/summary_ymax"
+                        android:title="@string/title_ymax"
+                        android:entries="@array/ymax_entries"
+                        android:entryValues="@array/ymax_values"
+                        android:defaultValue="250"
+                        android:dependency="Customize_yRange"/>
+                    <ListPreference
+                        android:key="default_ymin"
+                        android:summary="@string/summary_ymin"
+                        android:title="@string/title_ymin"
+                        android:entries="@array/ymin_entries"
+                        android:entryValues="@array/ymin_values"
+                        android:defaultValue="40"
+                        android:dependency="Customize_yRange"/>
+                </PreferenceScreen>
             </PreferenceScreen>
 
             <CheckBoxPreference
