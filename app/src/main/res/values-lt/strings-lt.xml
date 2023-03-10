@@ -17,7 +17,9 @@
     <string name="title_activity_start_new_sensor">Startuoti naują sensorių</string>
     <string name="title_activity_new_sensor_location">Naujo sensoriaus vieta</string>
     <string name="title_activity_stop_sensor">Sustabdyti sensorių</string>
+    <string name="title_activity_calibration_check_in">Kalibracijos</string>
     <string name="snooze">Snausti</string>
+    <string name="snooze_hint">Nutildyti perspėjimus x min.</string>
     <string name="ok">Gerai</string>
     <string name="cancel">Atšaukti</string>
     <string name="no">Ne</string>
@@ -33,6 +35,11 @@
     <string name="pref_title_mongodb">MongoDB</string>
     <string name="pref_title_mongodb_uri">URI</string>
     <string name="pref_dialog_mongodb_uri">Įveskite MongoDB URI\"</string>
+    <string name="pref_message_mongodb_uri">Skliaustuose {} vietoj pavyzdžio įrašykite savo teisingas reikšmes</string>
+    <string name="pref_default_mongodb_uri">mongodb://{user}:{password}@{host}.mongolab.com:{11111}/{database}</string>
+    <string name="pref_title_mongodb_collection">Rinkinio pavadinimas</string>
+    <string name="pref_dialog_mongodb_collection">Įveskite rinkinio pavadinimą</string>
+    <string name="pref_message_mongodb_collection">Tai duomenų rinkinio, kuriame saugomi sensoriaus duomenys, pavadinimas</string>
     <!-- API Settings -->
     <string name="pref_title_api_enabled">Įjungtas</string>
     <string name="pref_summary_api_enabled">REST API yra standartinis būdas prisijungti prie Nightscout</string>
@@ -100,6 +107,7 @@
     <string name="could_not_export_database">Nepavyko eksportuoti duomenų bazės :(</string>
     <string name="exported_to">"Eksportuota į "</string>
     <string name="done">Padaryta</string>
+    <string name="pref_message_influxdb_uri">Skliaustuose {} vietoj pavyzdžio įrašykite savo teisingas reikšmes</string>
     <string name="stop_sensor">Sustabdyti sensorių</string>
     <string name="initial_calibration">Pirma kalibracija</string>
     <string name="bluetooth_scan">„Bluetooth“ nuskaitymas</string>
