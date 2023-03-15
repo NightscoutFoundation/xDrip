@@ -315,6 +315,21 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode){
+            case Constants.RL_MODEL_FILE_INTENT_ID:
+                Log.d(TAG, "Got RL model file intent");
+                if (resultCode == RESULT_OK) {
+                    Uri uri = data.getData();
+                    if (uri != null) {
+                        String path = uri.getPath();
+                        if (path != null) {
+                            Log.d(TAG, "Got RL model file path: " + path);
+                        }
+                    }
+                }
+                break;
+        }
+
         if (requestCode == Constants.HEALTH_CONNECT_RESPONSE_ID) {
             if (HealthConnectEntry.enabled()) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -2442,7 +2457,28 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 }
             });
 
+            setOpenTFliteFile();
+
             jumpToScreen(jumpTo);
+        }
+
+        /**
+         * This method open file chooser and return the file path
+         * Its used to open the tflite file
+         */
+        private void setOpenTFliteFile() {
+            Preference prefTfliteFile = findPreference("rl_file_picker");
+
+            prefTfliteFile.setOnPreferenceClickListener(preference -> {
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                //intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("*/*");
+
+
+                Log.d(TAG, "Opening explorer for model file location");
+                startActivityForResult(intent, PICK_TFLITE_FILE);
+                return true;
+            });
         }
 
         public static void checkReadPermission(final Activity activity) {

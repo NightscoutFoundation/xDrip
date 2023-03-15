@@ -1812,4 +1812,6 @@
     <string name="summary_ymin">Choose yMin for when there are no smaller readings.</string>
     <string name="summary_ymax">Choose yMax for when there are no greater readings.</string>
     <string name="close">Close</string>
+    <string name="summary_rl_file_picker">Select the file you want to use to be the RL model</string>
+    <string name="title_rl_file_picker">Select File</string>
 </resources>

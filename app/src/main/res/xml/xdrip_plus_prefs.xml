@@ -785,6 +785,11 @@
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/title_use_rl" />
+            <!-- A preference that on clicked will open file explorer -->
+            <Preference
+                android:key="rl_file_picker"
+                android:summary="@string/summary_rl_file_picker"
+                android:title="@string/title_rl_file_picker" />
         </PreferenceCategory>
 
         <PreferenceCategory
