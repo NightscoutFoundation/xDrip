@@ -1695,6 +1695,8 @@
     <string name="cannot_choose_file_without_permission">Impossibile scegliere il file senza i permessi di accesso alla memoria</string>
     <string name="select_time">Seleziona Orario</string>
     <string name="select_tone_for_alerts">Seleziona Tono Allarme</string>
+    <string name="show_unsmoothed">Visualizzazione non lisciata</string>
+    <string name="show_unsmoothed_summary">Mostra i dati non lisciati anche se il lisciamento è abilitato. Se viene utilizzato un plugin di calibrazione, i dati saranno visualizzati non levigati invece dei dati del plugin.</string>
     <string name="you_can_use_google_drive_for_backup">Puoi utilizzare Google Drive per il backup</string>
     <string name="select_backup_location">Seleziona dove salvare il Backup</string>
     <string name="do_backup_now">Esegui ora il backup</string>
@@ -1745,5 +1747,18 @@
     <string name="megabyte_format_string">%.1f MB</string>
     <string name="manual_selection_google_drive_file_warning">Hai selezionato un file da Google Drive, ma questo non è gestito automaticamente da xDrip. Può essere utilizzato solo per backup e ripristino manuali.\n\nNon verrà effettuato alcun backup automatico con questo file.\n\nContinuare?</string>
     <string name="alternate_file_selected_warning">Hai selezionato un file alternativo. In genere serve solo per ripristinare un backup salvato localmente.\n\nNon verrà effettuato alcun backup automatico con questo file.\n\nContinuare?</string>
+    <string name="backup_file_security_error_advice">Il file di backup sta segnalando un errore di sicurezza. Normalmente questo significa che devi ri-selezionarlo per continuare a consentire l\'accesso xDrip.</string>
+    <string name="invalid_time">Ora non valida</string>
+    <string name="none">nessun</string>
+    <string name="format_string_ago">%s fa</string>
+    <string name="use_background_scans">Usa Scansione In Background</string>
+    <string name="android_8_background_scanning">Utilizza la funzione di scansione bluetooth in background Android 8+</string>
+    <string name="title_yRange">Personalizza l\'asse y</string>
+    <string name="titleInside_yRange">Consentire</string>
+    <string name="summaryInside_yRange">Puoi regolare l\'intervallo verticale (asse y).\nSe hai valori fuori dell\'intervallo, si estenderà automaticamente, per diverse ore, per consentirne la visualizzazione.</string>
+    <string name="title_ymin">Imposta il minimo dell\'asse y</string>
+    <string name="title_ymax">Imposta il massimo dell\'asse y</string>
+    <string name="summary_ymin">Scegli yMin per quando non ci sono letture più basse.</string>
+    <string name="summary_ymax">Scegli yMax per quando non ci sono letture più alte.</string>
     <string name="close">Chiudi</string>
 </resources>

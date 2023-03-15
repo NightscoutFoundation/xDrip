@@ -1671,4 +1671,11 @@
     <string name="select_tone_for_alerts">Selecione o tom para alertas</string>
     <string name="show_unsmoothed">Mostrar sem suavização</string>
     <string name="show_unsmoothed_summary">Mostra dados não suavizados também se a suavização do gráfico estiver ativada. Se o plugin de calibração for usado, exibirá dados não suavizados em vez de dados do plugin.</string>
+    <string name="title_yRange">Personalizar os valores do eixo dos y</string>
+    <string name="titleInside_yRange">Ativar</string>
+    <string name="summaryInside_yRange">Pode ajustar aqui o intervalo do eixo vertical (y). \nNo entanto, se houver leituras fora do intervalo, este adaptar-se-á automaticamente, durante um período, para permitir a sua visialização.</string>
+    <string name="title_ymin">Ajustar o valor mínimo para o eixo dos y</string>
+    <string name="title_ymax">Ajustar o valor máximo para o eixo dos y</string>
+    <string name="summary_ymin">Escolha yMin para quando não houver leituras inferiores.</string>
+    <string name="summary_ymax">Escolha yMax para quando não houver leituras maiores.</string>
 </resources>

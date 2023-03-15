@@ -1273,8 +1273,8 @@
     <string name="title_lefun_screen_heart_pressure">Kuva vererõhku</string>
     <string name="title_lefun_screen_find_phone">Kuva \"Otsi telefon / Vaigista\"</string>
     <string name="title_lefun_screen_mac_address">Kuva MAC aadress</string>
-    <string name="summary_allow_samsung_workaround">Kasuta lahendusi, et vältida Samsungi telefonide Androidi ebastandardset käitumist. Ilma selleta ei saa tavaliselt andmeid kätte.</string>
-    <string name="title_allow_samsung_workaround">Samsungi lahendused</string>
+    <string name="summary_allow_samsung_workaround">Kasuta lahendusi, et vältida mõnede telefonide Androidi ebastandardset käitumist. Ilma selleta ei saa tavaliselt andmeid kätte.</string>
+    <string name="title_allow_samsung_workaround">Töös hoidmise lahendused</string>
     <string name="summary_medtrum_use_native">Kasuta algkalibreerimiseks saatja andmeid, mitte xDrip rakendust</string>
     <string name="title_medtrum_use_native">Medtrum algupärane</string>
     <string name="summary_medtrum_a_hex">Hex-diagnostika testväärtus</string>
@@ -1753,5 +1753,12 @@
     <string name="format_string_ago">%s tagasi</string>
     <string name="use_background_scans">Kasuta automaatset skaneerimist</string>
     <string name="android_8_background_scanning">Kasuta Android 8+ automaatse skaneerimise funktsiooni</string>
+    <string name="title_yRange">Kohanda y-telje vahemikku</string>
+    <string name="titleInside_yRange">Luba</string>
+    <string name="summaryInside_yRange">Siin saad seadistada vertikaalse (y) telje vahemikku.\nJuhul kui on näitusid väljaspool seda vahemikku, laiendatakse seda automaatselt mitmeks tunniks, et saaks neid näitusid kuvada.</string>
+    <string name="title_ymin">Seadista y-telje alampiir</string>
+    <string name="title_ymax">Seadista y-telje ülempiir</string>
+    <string name="summary_ymin">Vali yMin, kui sellest väiksemaid näitusid ei ole.</string>
+    <string name="summary_ymax">Vali yMax, kui sellest suuremaid näitusid ei ole.</string>
     <string name="close">Sulge</string>
 </resources>

@@ -226,4 +226,5 @@
     <string name="calibrate">معايرة</string>
     <string name="yes_please">نعم, من فضلك</string>
     <string name="enable_streaming_dialog_dont_ask_again"> لا تسألني ذلك مرة أخرى</string>
+    <string name="titleInside_yRange">تفعيل</string>
 </resources>

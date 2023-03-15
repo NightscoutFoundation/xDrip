@@ -1125,4 +1125,5 @@
     <string name="enable_streaming_never">Nikdy se nepřipojovat k Libre2 senzorům</string>
     <string name="enable_streaming_dialog_dont_ask_again">Znovu se neptat</string>
     <string name="no_never">NE, nikdy</string>
+    <string name="titleInside_yRange">Povolit</string>
 </resources>
