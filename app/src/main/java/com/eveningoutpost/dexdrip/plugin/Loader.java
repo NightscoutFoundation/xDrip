@@ -45,6 +45,15 @@ public class Loader {
         }
     }
 
+    public static synchronized IPluginDA getLocalInstance(final PluginDef def, final String parameter) {
+        switch (def.name) {
+            case "keks":
+                return jamorham.keks.Plugin.getInstance(parameter);
+            default:
+                throw new RuntimeException("Unknown local plugin " + def.name);
+        }
+    }
+
     public static synchronized IPluginDA getInstance(final PluginDef def, final String parameter) {
         if (def == null) return null;
         try {

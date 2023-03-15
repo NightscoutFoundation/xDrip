@@ -245,6 +245,7 @@ dependencies {
     }
 
     implementation project(':localeapi')
+    implementation project(':libkeks')
 
     // add missing JAXB dependencies for JDK 9+
     if (JavaVersion.current().ordinal() >= JavaVersion.VERSION_1_9.ordinal()) {

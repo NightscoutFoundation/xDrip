@@ -75,6 +75,7 @@ import static com.eveningoutpost.dexdrip.services.G5BaseService.G5_BATTERY_MARKE
 import static com.eveningoutpost.dexdrip.services.G5BaseService.G5_BATTERY_WEARABLE_SEND;
 import static com.eveningoutpost.dexdrip.services.G5BaseService.G5_FIRMWARE_MARKER;
 import static com.eveningoutpost.dexdrip.services.G5BaseService.unBondAndStop;
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.GET_DATA;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.android_wear;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.getTransmitterID;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.onlyUsingNativeMode;
@@ -205,11 +206,13 @@ public class Ob1G5StateMachine {
                 }
             } else if (p.length == 1) {
                 if (cmd != null) {
-                    parent.changeState(Ob1G5CollectionService.STATE.GET_DATA);
+                    parent.changeState(GET_DATA);
                 }
             } else if (p.length == 3) {
                 if (parent.isDeviceLocallyBonded()) {
                     parent.changeState(Ob1G5CollectionService.STATE.UNBOND);
+                } else {
+                    UserError.Log.d(TAG, "Device does not appear to be bonded?");
                 }
             }
         } catch (Exception e) {
@@ -414,7 +417,7 @@ public class Ob1G5StateMachine {
                         if (status.isBonded()) {
                             parent.msg("Authenticated");
                             parent.authResult(true);
-                            parent.changeState(Ob1G5CollectionService.STATE.GET_DATA);
+                            parent.changeState(GET_DATA);
                             throw new OperationSuccess("Authenticated");
                         } else {
                             //parent.unBond(); // bond must be invalid or not existing // WARN
@@ -636,7 +639,7 @@ public class Ob1G5StateMachine {
                     if (d) UserError.Log.d(TAG, "Notifications enabled");
                     speakSlowly();
 
-                    connection.writeCharacteristic(Control, nn(use_g5_internal_alg ? (getEGlucose() ? new EGlucoseTxMessage().byteSequence : new GlucoseTxMessage().byteSequence) : new SensorTxMessage().byteSequence))
+                    connection.writeCharacteristic(Control, nn(use_g5_internal_alg ? (getEGlucose(parent) ? new EGlucoseTxMessage().byteSequence : new GlucoseTxMessage().byteSequence) : new SensorTxMessage().byteSequence))
                             .subscribe(
                                     characteristicValue -> {
                                         if (d)
@@ -1971,9 +1974,9 @@ public class Ob1G5StateMachine {
         return Pref.getBooleanDefaultFalse("using_g6");
     }
 
-    private static boolean getEGlucose() {
+    private static boolean getEGlucose(final Ob1G5CollectionService parent) {
         // if (android_wear) {
-        return usingG6() && Pref.getBooleanDefaultFalse("show_g_prediction");
+        return usingG6() && Pref.getBooleanDefaultFalse("show_g_prediction") || parent.plugin != null;
         //  } else {
         //       return usingG6();
         //  }

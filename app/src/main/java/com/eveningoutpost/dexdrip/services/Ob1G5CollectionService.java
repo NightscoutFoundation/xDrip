@@ -399,6 +399,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                     case UNBOND:
                         UserError.Log.d(TAG, "Unbond state");
                         Ob1G5StateMachine.doUnBond(this, connection);
+                        Inevitable.task("unbond close", 10000, () -> changeState(Ob1G5CollectionService.STATE.CLOSE));
                         break;
 
                     case RESET:
@@ -904,6 +905,11 @@ public class Ob1G5CollectionService extends G5BaseService {
         } else {
             state = CLOSED; // Don't poll automata as we want to do this on waking
             stopConnect();
+        }
+
+        if (plugin != null) {
+            UserError.Log.d(TAG, "Saving persistent data for keks");
+            PersistentStore.setBytes("keks1", plugin.getPersistence(1));
         }
 
     }
@@ -1430,11 +1436,13 @@ public class Ob1G5CollectionService extends G5BaseService {
 
                 if (txIdMatch(getTransmitterID()) && service.getCharacteristic(ExtraData) != null) {
                     try {
-                        plugin = Loader.getInstance(Registry.get("keks"), getTransmitterID());
+                        plugin = Loader.getLocalInstance(Registry.get("keks"), getTransmitterID());
                         if (plugin == null) {
                             val msg = "Unable to load keks plugin - please re-enter transmitter id";
                             UserError.Log.wtf(TAG, msg);
                             JoH.static_toast_long(msg);
+                        } else {
+                            plugin.setPersistence(2, PersistentStore.getBytes("keks1"));
                         }
                     } catch (Exception e) {
                         UserError.Log.e(TAG, "Exception getting instance: "+e);

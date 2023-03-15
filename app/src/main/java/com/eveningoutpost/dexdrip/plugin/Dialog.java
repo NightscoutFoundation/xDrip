@@ -51,8 +51,9 @@ public class Dialog {
     }
 
     public static boolean askIfNeeded(final Activity activity, final String txId) {
+        /*
         if (txIdMatch(txId)) {
-            val plugin = Registry.get("keks");
+          val plugin = Registry.get("keks");
             if (!Consent.isGiven(plugin)) {
                 runOnUiThread(() -> ask(activity, plugin, "To use Dex ONE transmitters a plugin is needed.\n\nPlease select YES to download and use the plugin which is published by xDrip+ project lead JamOrHam",
                         () -> Loader.getInstance(plugin, ""),
@@ -62,6 +63,7 @@ public class Dialog {
                 Loader.getInstance(plugin, "");
             }
         }
+        */
         return false;
     }
 
