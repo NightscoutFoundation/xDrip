@@ -771,4 +771,5 @@
     <string name="calibrate">보정</string>
     <string name="phone_has_no_nfc_reader">핸드폰에 NFC 리더기가 없습니다.</string>
     <string name="enable_streaming_dialog_dont_ask_again">다시 묻지 않음</string>
+    <string name="titleInside_yRange">사용</string>
 </resources>

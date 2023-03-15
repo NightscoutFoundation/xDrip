@@ -1273,8 +1273,8 @@
     <string name="title_lefun_screen_heart_pressure">Afficher la pression cardiaque</string>
     <string name="title_lefun_screen_find_phone">Afficher Trouver le téléphone / Mettre en veille</string>
     <string name="title_lefun_screen_mac_address">Afficher l\'adresse MAC</string>
-    <string name="summary_allow_samsung_workaround">Utiliser des contournements pour éviter le comportement android non standard des terminaux Samsung. Sans cela, les collecteurs ne peuvent pas obtenir les données.</string>
-    <string name="title_allow_samsung_workaround">Solutions de contournement Samsung</string>
+    <string name="summary_allow_samsung_workaround">Utiliser des contournements pour éviter le comportement Android non standard de certains terminaux. Sans cela, les collecteurs ne peuvent pas obtenir les données.</string>
+    <string name="title_allow_samsung_workaround">Solutions de contournement Wake</string>
     <string name="summary_medtrum_use_native">Utiliser la calibration de l\'émetteur au lieu de xDrip comme primaire</string>
     <string name="title_medtrum_use_native">Medtrum Natif</string>
     <string name="summary_medtrum_a_hex">Valeur hexa de test de diagnostic</string>
@@ -1753,5 +1753,12 @@
     <string name="format_string_ago">Il y a %s</string>
     <string name="use_background_scans">Utiliser les scans en arrière-plan</string>
     <string name="android_8_background_scanning">Utiliser la fonction de scan en arrière-plan d\'Android 8+</string>
+    <string name="title_yRange">Personnaliser la plage de l\'axe y</string>
+    <string name="titleInside_yRange">Activer</string>
+    <string name="summaryInside_yRange">Vous pouvez ajuster la plage d\'axe vertical (y) ici.\nCependant, si vous avez des valeurs en dehors de cette fourchette, elles s\'étendront automatiquement, pendant plusieurs heures, pour permettre à ces valeurs de s\'afficher.</string>
+    <string name="title_ymin">Ajuster l\'axe y minimum</string>
+    <string name="title_ymax">Ajuster l\'axe y maximum</string>
+    <string name="summary_ymin">Choisir yMin lorsqu\'il n\'y a pas de lectures plus petites.</string>
+    <string name="summary_ymax">Choisir yMax lorsqu\'il n\'y a pas de lectures plus grandes.</string>
     <string name="close">Fermer</string>
 </resources>

@@ -1662,6 +1662,8 @@
     <string name="restore_succeeded_restarting">Helyreállítás sikeres - app újraindítása</string>
     <string name="restore_failed">SIKERTELEN visszaállítás!</string>
     <string name="error_exclamation">Hiba!</string>
+    <string name="checking_file">Fájl ellenőrzése</string>
+    <string name="failed_to_read_file">Fájl beolvasása sikertelen</string>
     <string name="permission_problem_retry">Alkalmazásengedély probléma - újrapróbálkozás</string>
     <string name="could_not_sign_in">Bejelentkezés sikertelen</string>
     <string name="ready">Kész</string>
@@ -1677,5 +1679,12 @@
     <string name="cloud_backup">Biztonsági mentés felhőbe</string>
     <string name="use_background_scans">Szkennelés háttérben is</string>
     <string name="android_8_background_scanning">Android 8-astól lehetséges a szkennelés háttérben is</string>
+    <string name="title_yRange">Y-tengely beállításai</string>
+    <string name="titleInside_yRange">Bekapcsol</string>
+    <string name="summaryInside_yRange">Itt állíthatja be a függőleges Y-tengely tartományát.\nHa azonban az itt megadott tartományon kívül eső mérési értékek vannak, a rendszer automatikusan megnöveli az Y-tengely tartományát néhány órára, hogy ezek a mérési értékek megjelenhessenek.</string>
+    <string name="title_ymin">Y-tengely minimum beállítása</string>
+    <string name="title_ymax">Y-tengely maximum beállítása</string>
+    <string name="summary_ymin">Állítsa be yMin értékét, amelynél kisebbet nem mutat a grafikon.</string>
+    <string name="summary_ymax">Állítsa be yMax értékét, amelynél nagyobbat nem mutat a grafikon.</string>
     <string name="close">Bezárás</string>
 </resources>

@@ -1753,5 +1753,6 @@
     <string name="format_string_ago">hace %s</string>
     <string name="use_background_scans">Usar escaneos de fondo</string>
     <string name="android_8_background_scanning">Usar la función de escaneo en segundo plano de Android 8+</string>
+    <string name="titleInside_yRange">Activar</string>
     <string name="close">Cerrar</string>
 </resources>
