@@ -775,24 +775,6 @@
         </PreferenceScreen>
 
         <PreferenceCategory
-            android:key="xdrip_plus_rl_category"
-            android:title="RL">
-            <!-- Preference to select if rl is used-->
-            <SwitchPreference
-                android:defaultValue="false"
-                android:key="rl_simulations_enabled"
-                android:summary="@string/summary_use_rl"
-                android:switchTextOff="@string/short_off_text_for_switches"
-                android:switchTextOn="@string/short_on_text_for_switches"
-                android:title="@string/title_use_rl" />
-            <!-- A preference that on clicked will open file explorer -->
-            <Preference
-                android:key="rl_file_picker"
-                android:summary="@string/summary_rl_file_picker"
-                android:title="@string/title_rl_file_picker" />
-        </PreferenceCategory>
-
-        <PreferenceCategory
             android:key="title_I_understandb"
             android:title="@string/eula">
             <Preference
@@ -1260,6 +1242,29 @@
                 android:title="@string/title_pendiq_pin" />
 
         </PreferenceScreen>
+        </PreferenceScreen>
+
+        <PreferenceScreen
+            android:key="rl_screen"
+            android:summary="@string/summary_rl_screen"
+            android:title="@string/title_rl_screen">
+            <PreferenceCategory
+                android:key="xdrip_plus_rl_category"
+                android:title="RL">
+                <!-- Preference to select if rl is used-->
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:key="rl_simulations_enabled"
+                    android:summary="@string/summary_use_rl"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="@string/title_use_rl" />
+                <!-- A preference that on clicked will open file explorer -->
+                <Preference
+                    android:key="rl_file_picker"
+                    android:summary="@string/summary_rl_file_picker"
+                    android:title="@string/title_rl_file_picker" />
+            </PreferenceCategory>
         </PreferenceScreen>
 
     </PreferenceCategory>

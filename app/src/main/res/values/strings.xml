@@ -847,6 +847,10 @@
     <string name="rl_predictive_simulation">RL Predictive Simulation</string>
     <string name="title_use_rl">Use Reinforcement Learning</string>
     <string name="summary_use_rl">Use Reinforcement Learning for predictive simulation.</string>
+    <string name="summary_rl_file_picker">Select the file you want to use to be the RL model</string>
+    <string name="title_rl_file_picker">Select File</string>
+    <string name="summary_rl_screen">Reinforcement Learning features for insulin needs simulation</string>
+    <string name="title_rl_screen">Reinforcement Learning</string>
     <string name="remote_snoozes">Sending and receiving remote snoozes</string>
     <string name="remote_snoozing">Remote Snoozing</string>
     <string name="snoozes_will_silence_all">Snoozes will silence all handsets in group with the accept setting below enabled on them</string>
@@ -1812,6 +1816,4 @@
     <string name="summary_ymin">Choose yMin for when there are no smaller readings.</string>
     <string name="summary_ymax">Choose yMax for when there are no greater readings.</string>
     <string name="close">Close</string>
-    <string name="summary_rl_file_picker">Select the file you want to use to be the RL model</string>
-    <string name="title_rl_file_picker">Select File</string>
 </resources>

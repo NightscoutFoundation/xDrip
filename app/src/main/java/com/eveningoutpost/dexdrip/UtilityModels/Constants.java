@@ -56,6 +56,7 @@ public class Constants {
     public static final int BACKUP_ACTIVITY_ID = 1029;
     public static final int CARELINK_SERVICE_FAILOVER_ID = 1030;
     public static final int RL_MODEL_FILE_INTENT_ID = 1031;
+    public static final String RL_MODEL_FILE_PATH = "rl_model_file";
 
     static final int NIGHTSCOUT_ERROR_NOTIFICATION_ID = 2001;
     public static final int HEALTH_CONNECT_RESPONSE_ID = 2002;

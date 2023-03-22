@@ -357,11 +357,13 @@ dependencies {
     testImplementation 'org.powermock:powermock-api-mockito2:1.7.1'
 
     /** Imports for RL functionality */
+    // To be able to use tflite models of recent tensorflow versions
+    implementation 'org.tensorflow:tensorflow-lite:2.11.0'
     // Import tflite dependencies
-    implementation "org.tensorflow:tensorflow-lite:+" // TODO change to specific version
+    implementation "org.tensorflow:tensorflow-lite:2.11.0"
     // The GPU delegate library is optional. Depend on it as needed.
-    implementation 'org.tensorflow:tensorflow-lite-gpu:+' // TODO change to specific version
-    implementation 'org.tensorflow:tensorflow-lite-support:+' // TODO change to specific version
+    implementation 'org.tensorflow:tensorflow-lite-gpu:2.11.0'
+    implementation 'org.tensorflow:tensorflow-lite-support:0.4.3' // TODO change to specific version
 
 
     androidTestImplementation(name: 'barista-1.7.0', ext: 'aar') {

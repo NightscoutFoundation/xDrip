@@ -1064,13 +1064,6 @@ public class BgGraphBuilder {
         }
         readings_lock.lock();
 
-        // TODO move this lower down
-        // Use Reinforcement Learning option to predict insulin needs
-        try { rl_prediction(); }
-        catch (Exception e) {
-            Log.e(TAG, "Exception in RL prediction: " + e.toString());
-        }
-
         try {
 
             if (plugin_adjusted || smoother_adjusted) {
@@ -1870,6 +1863,14 @@ public class BgGraphBuilder {
                 } catch (Exception e) {
                     Log.e(TAG, "Exception doing iob values in bggraphbuilder: " + e.toString());
                 }
+
+                // TODO move this lower down
+                // Use Reinforcement Learning option to predict insulin needs
+                try { rl_prediction(); }
+                catch (Exception e) {
+                    Log.e(TAG, "Exception in RL prediction: " + e.toString());
+                }
+
             } // if !simple
         } finally {
             readings_lock.unlock();
@@ -1881,33 +1882,27 @@ public class BgGraphBuilder {
      * It will update Home's status line with the needed insulin
      */
     private void rl_prediction() {
+        String insulinDisplayed = "";
         // Check if RL is enabled
         if (prediction_enabled && rl_simulation_enabled) {
-            double insulinNeeded = 0;
             // Uses RL model to predict BG
             try {
-                insulinNeeded = Calculations.calculateInsulin();
+                float calculated_insulin = Calculations.calculateInsulin();
+
+                // Round insulin needed to 2 decimal places
+                //DecimalFormat df = new DecimalFormat();
+                //df.setMaximumFractionDigits(2);
+                //calculated_insulin = Float.parseFloat(df.format(calculated_insulin));
+
+                insulinDisplayed =  "insulin(RL): " + calculated_insulin;
             } catch (Exception e) {
-                Log.e(TAG, "Exception doing RL prediction: " + e.toString());
-                keyStore.putS("rl_insulin_need", "");
-                Home.updateStatusLine("insRL", "error");
+                Log.e(TAG, "Exception doing RL prediction: " + e);
+                insulinDisplayed =  "insulin(RL): " + "error";
             }
-
-            Log.i(TAG, "RL insulin needed: " + insulinNeeded);
-            // TODO change this to acount for negative insulin
-
-            // String to be shown in Home's status line
-            String insulinNeededString =  "insulin(RL): " + insulinNeeded;
-            // Save latest calculated insulin needed in storage
-            keyStore.putS("rl_insulin_need", String.valueOf(insulinNeeded));
-            // Updates Home's status lines RL insulin need string
-            Home.updateStatusLine("insRL", insulinNeededString);
         }
-        // RL prediction is disabled, clear the status line
-        else {
-            keyStore.putS("rl_insulin_need", "");
-            Home.updateStatusLine("insRL", "");
-        }
+
+        keyStore.putS("rl_insulin_need", insulinDisplayed);
+        Home.updateStatusLine("insRL", insulinDisplayed);
     }
 
 

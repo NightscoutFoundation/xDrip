@@ -30,7 +30,7 @@ public class Calculations {
      * Using historical BG data, calculate the insulin.
      * @return Needed insulin.
      */
-    public static Double calculateInsulin() {
+    public static float calculateInsulin() {
         ModelApi.RLInput input = getRLInput();
         return ModelApi.getInstance().inferInsulin(input);
     }
@@ -41,11 +41,9 @@ public class Calculations {
     private static ModelApi.RLInput getRLInput() {
         // TODO get the data from the database.
 
-        List<Treatments> treatments = Treatments.latest(2016); // TODO: get the number of treatments using timestamps.
-        List<BgReading> bgReadings = BgReading.latest(2016); // TODO: get the number of bg readings using timestamps.
+        List<Treatments> treatments = Treatments.latest(20); // TODO: get the number of treatments using timestamps.
+        List<BgReading> bgReadings = BgReading.latest(256); // TODO: get the number of bg readings using timestamps.
 
-        ModelApi.RLInput input = new ModelApi.RLInput(treatments, bgReadings);
-
-        return input;
+        return new ModelApi.RLInput(treatments, bgReadings);
     }
 }
