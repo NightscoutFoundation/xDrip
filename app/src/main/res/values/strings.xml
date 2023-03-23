@@ -845,6 +845,7 @@
     <string name="target_glucose_default">Target Glucose Default</string>
     <string name="default_liver_maximum_impact">Default Liver Maximum Impact (0–1)</string>
     <string name="rl_predictive_simulation">RL Predictive Simulation</string>
+    <string name="rl_warning">This feature is in beta. Use it only for testing. Results are dangerous to use. </string>
     <string name="title_use_rl">Use Reinforcement Learning</string>
     <string name="summary_use_rl">Use Reinforcement Learning for predictive simulation.</string>
     <string name="summary_rl_file_picker">Select the file you want to use to be the RL model</string>

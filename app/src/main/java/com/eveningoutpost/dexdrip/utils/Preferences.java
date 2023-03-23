@@ -2446,6 +2446,9 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
             setOpenTFliteFile();
 
+            // method to create a warning every time RL prediction is activated
+            rl_warning();
+
             jumpToScreen(jumpTo);
         }
 
@@ -2455,6 +2458,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
          */
         private void setOpenTFliteFile() {
             Preference prefTfliteFile = findPreference("rl_file_picker");
+            Log.d(TAG, "Preference: " + prefTfliteFile);
 
             prefTfliteFile.setOnPreferenceClickListener(preference -> {
                 Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
@@ -2482,6 +2486,24 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     ModelApi.getInstance().importModel(uri);
                 }
             }
+        }
+
+        private void rl_warning() {
+            final Preference rl_prediction = findPreference("rl_simulations_enabled");
+            rl_prediction.setOnPreferenceChangeListener((preference, newValue) -> {
+                if (newValue.equals(true)) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("WARNING");
+
+                    // retretive warning message from strings.xml
+                    String message = xdrip.getAppContext().getString(R.string.rl_warning);
+
+                    builder.setMessage(message);
+                    builder.setPositiveButton("OK", (dialog, which) -> dialog.dismiss());
+                    builder.show();
+                }
+                return true;
+            });
         }
 
         public static void checkReadPermission(final Activity activity) {
