@@ -1136,4 +1136,5 @@
     <string name="automatically_manage_backup">Hantera automatiskt</string>
     <string name="use_alternate_file">Använd alternativ fil</string>
     <string name="choose_backup_file">Välj en backupfil</string>
+    <string name="titleInside_yRange">Aktivera</string>
 </resources>

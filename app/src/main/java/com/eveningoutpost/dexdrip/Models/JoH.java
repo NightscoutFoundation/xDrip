@@ -438,10 +438,8 @@ public class JoH {
         return null; // too big
     }
 
-    public static boolean isSamsung() {     // same workaround for xiaomi, so include that but may want name refactoring later
-        return Build.MANUFACTURER.toLowerCase().contains("samsung")
-            || Build.MANUFACTURER.toLowerCase().contains("xiaomi")
-            || Build.MANUFACTURER.toLowerCase().contains("oneplus");    // experimental test
+    public static boolean isSamsung() {  // Workaround for all brands
+        return true;
     }
 
     private static final String BUGGY_SAMSUNG_ENABLED = "buggy-samsung-enabled";

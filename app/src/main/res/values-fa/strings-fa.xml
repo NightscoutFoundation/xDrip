@@ -92,4 +92,5 @@
     <!-- trend arrow for speak -->
     <string name="glucose_units_mmol_or_mgdl">واحد قند mmol/L یا mg/dL</string>
     <string name="enable_streaming_dialog_dont_ask_again">دیگه از من نپرس</string>
+    <string name="titleInside_yRange">فعال سازی</string>
 </resources>

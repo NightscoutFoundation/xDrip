@@ -1559,4 +1559,5 @@
     <string name="enable_streaming_dialog_text">Doriți să conectați xDrip cu acest senzor? Acest lucru va face ca cititorul libre și librelink să nu mai primească alerte. Apăsați Da și scanați din nou pentru a vă conecta (alegeți să nu vă conectați dacă doriți să rulați xDrip cu aplicația modificată)</string>
     <string name="enable_streaming_dialog_title">Conectarea senzorului libre la bluetooth</string>
     <string name="cannot_choose_file_without_permission">Nu se poate alege fișierul fără permisiuni de stocare</string>
+    <string name="titleInside_yRange">Permite</string>
 </resources>

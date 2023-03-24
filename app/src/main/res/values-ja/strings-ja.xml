@@ -405,4 +405,5 @@
     <string name="please_wait_seconds_before_trying_to_start_sensor">センサーを起動する前に %d 秒お待ちください</string>
     <string name="save_power">節電</string>
     <string name="graph_smoothing">グラフのスムージング</string>
+    <string name="titleInside_yRange">有効にする</string>
 </resources>

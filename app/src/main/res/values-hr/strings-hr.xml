@@ -1053,4 +1053,11 @@ CONTEXTREQUEST?</string>
     <string name="alternate_file_selected_warning">Odabrali ste alternativnu datoteku. Obično bi to bilo samo vraćanje iz lokalno pohranjene sigurnosne kopije.\n\nNeće se dogoditi automatsko sigurnosno kopiranje ove datoteke.\n\nNastaviti?</string>
     <string name="use_background_scans">Koristite skeniranje u pozadini</string>
     <string name="android_8_background_scanning">Koristite Android 8+ značajku skeniranja u pozadini</string>
+    <string name="title_yRange">Prilagodite raspon y osi</string>
+    <string name="titleInside_yRange">Omogući</string>
+    <string name="summaryInside_yRange">Ovdje možete prilagoditi raspon vertikalne (y) osi.\nMeđutim, ako imate očitanja izvan tog raspona, on će se automatski produžiti na nekoliko sati kako bi se ta očitanja mogla prikazati.</string>
+    <string name="title_ymin">Podesite y os na minimum</string>
+    <string name="title_ymax">Podesite y os na maximum</string>
+    <string name="summary_ymin">Odaberite yMin kada nema manjih očitanja.</string>
+    <string name="summary_ymax">Odaberite yMax kada nema većih očitanja.</string>
 </resources>
