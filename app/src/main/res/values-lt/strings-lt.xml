@@ -336,7 +336,7 @@
     <string name="all_alerts_disabled_until">"Visi aliarmai išjungti iki "</string>
     <string name="low_alerts_disabled_until">"Hipo aliarmai išjungti iki "</string>
     <string name="high_alerts_disabled_until">"Hiper aliarmai išjungti iki "</string>
-    <string name="default_snooze">Numatytasis nutildymas</string>
+    <string name="default_snooze">Nutildymas</string>
     <string name="until_you_reenable">Kol vėl bus įjungta</string>
     <string name="set">Nustatyti</string>
     <string name="disable_low_alerts">Išjungti hipoglikemijos aliarmus</string>
@@ -508,22 +508,22 @@
     <string name="sync_using_custom_security_key">Sinchronizuoti naudojant pasirinktą saugos raktą</string>
     <string name="handset_group_security_key">Įrenginių grupės sinchronizavimo saugos raktas</string>
     <string name="handset_sync_grouping_key">Įrenginių grupinio sinchronizavimo raktas</string>
-    <string name="alert_name_colon">Aliarmo pavadinimas:</string>
+    <string name="alert_name_colon">Pavadinimas:</string>
     <string name="threshold_colon">Slenkstis:</string>
-    <string name="default_snooze_colon">Numatytasis nutildymas:</string>
+    <string name="default_snooze_colon">Nutildymas:</string>
     <string name="re_raise_every_x_minutes_if_unaknowledged">Aliarmuoti kas \n x min., kol\n bus nutildyta:</string>
     <string name="alert_tone_colon">Aliarmo tonas:</string>
     <string name="choose_file">Pasirinkite failą</string>
     <string name="select_time_for_alert_colon">Pasirinkite aliarmo laiką:</string>
     <string name="all_day">visą dieną</string>
-    <string name="tap_to_change">(paspauskite norėdami pakeisti)</string>
+    <string name="tap_to_change">(pakeisti)</string>
     <string name="override_phone_silent_mode_colon">Nepaisyti telefono Netrukdymo režimo:</string>
-    <string name="vibrate_on_alert">Vibruoti aliarmo metu</string>
-    <string name="test_alert">Išbandyti aliarmą</string>
+    <string name="vibrate_on_alert">Vibracija</string>
+    <string name="test_alert">Išbandyti</string>
     <string name="disable_alert">Išjungti aliarmą</string>
-    <string name="save_alert">Išsaugoti aliarmą</string>
-    <string name="remove_alert">Pašalinti aliarmą</string>
-    <string name="snooze_alert_before_it_fires">Nutildyti aliarmą prieš jam suveikiant</string>
+    <string name="save_alert">Išsaugoti</string>
+    <string name="remove_alert">Pašalinti</string>
+    <string name="snooze_alert_before_it_fires">Nutildyti prieš suveikiant</string>
     <string name="create_low_alert">Sukurti hipo aliarmą</string>
     <string name="create_high_alert">Sukurti hiper aliarmą</string>
     <string name="long_press_an_existing_alert_to_edit">(Norėdami redaguoti aliarmą, prispauskite ir palaikykite)</string>
@@ -531,7 +531,7 @@
     <string name="high">aukštas</string>
     <string name="alert">aliarmas</string>
     <string name="high_alert">Hiper aliarmas</string>
-    <string name="low_alert">Hipoglikemijos aliarmas</string>
+    <string name="low_alert">Hipo aliarmas</string>
     <string name="battery">Baterija</string>
     <string name="xbridge_battery">xBridge baterija</string>
     <string name="limitter_battery">Libre baterija</string>
@@ -746,6 +746,7 @@
     <string name="maximum_value">Viršutinė tikslinės glikemijos riba</string>
     <string name="minimum_value">Apatinė tikslinės glikemijos riba</string>
     <string name="volume_buttons_snooze">Kol programėlė atidaryta, aliarmą galima nutildyti paspaudus telefono garsumo mygtuką aukštyn arba žemyn</string>
+    <string name="buttons_silence_alarms">Aliarmų nutildymas mygtukais</string>
     <string name="create_shortcut">Rodyti glikemijos aliarmų sąrašo nuorodą meniu</string>
     <string name="shortcut_to_bg_alerts">Glikemijos aliarmų sąrašo nuoroda</string>
     <string name="suppress_alerts_missed_readings">Atšaukti nutildytus ir aktyvius aliarmus, kai duomenys negaunami nustatytą laiką</string>
@@ -781,6 +782,7 @@
     <string name="collector_battery_alerts">Kolektoriaus baterijos perspėjimai</string>
     <string name="low_battery_percentage">Baterijos įkrovos proc.</string>
     <string name="notify_data_arrives_master"><![CDATA[Informuoti, kai duomenys iš pagr. telefono gaunami > 20 min. intervalais.]]></string>
+    <string name="follower_chime_new">Naujas garsas sekėjui</string>
     <string name="carb_ratio">Insulino-AV santykis</string>
     <string name="enable_dedicated_insulin_profiles">Konfigūruoti insulino profilius</string>
     <string name="desc_enable_dedicated_insulin_profiles">Čia galite pasirinkti ir konfigūruoti įvairių insulinų profilius</string>
@@ -788,6 +790,7 @@
     <string name="secondary_plugin_glucose_value">Papildomo įskiepio glikemijos duomenys</string>
     <string name="step_counter_1st_color">Žingsniamačio pirma spalva</string>
     <string name="step_counter_2nd_color">Žingsniamačio antra spalva</string>
+    <string name="flair_colors">Ryškios spalvos</string>
     <string name="force_english_text">Įjungti anglų kalbą</string>
     <string name="using_local_language">Šiuo metu naudojama Jūsų telefono kalba</string>
     <string name="forcing_alternate_language">Naudojama alternatyvi kalba</string>
@@ -1029,6 +1032,7 @@
     <string name="title_what_time_day">Koks paros laikas?</string>
     <string name="reminder_due">Priminimas apie</string>
     <string name="Please_Allow_Permission">Suteikite leidimą</string>
+    <string name="select_tone_alert">Pasirinkite aliarmo toną:</string>
     <string name="snoozed_for">nutildyta</string>
     <string name="invalid_number">Neteisingas numeris</string>
     <string name="toast_deleted">Pašalinta:</string>
@@ -1084,6 +1088,7 @@
     <string name="without_location_scan_doesnt_work">Android Bluetooth neveikia be Vietos nustatymo leidimo</string>
     <string name="android_10_need_background_location">Android 10 ir naujesnių versijų Bluetooth veikimui reikia įjungti vietos nustatymą</string>
     <string name="without_location_permission_emergency_cannot_get_location">Ekstriniai pranešimai negali naudoti vietovės duomenų, kol nesuteiktas leidimas</string>
+    <string name="force_speaker_colon">Naudoti garsiakalbį</string>
     <string name="choose_data_source">Pasirinkti duomenų šaltinį</string>
     <string name="which_system_do_you_use">Kurią sistemą naudojate?</string>
     <string name="please_allow_permission">Suteikite leidimą</string>
@@ -1234,6 +1239,7 @@
     <string name="connect_device_usb_otg">Prijunkite prietaisą per USB OTG kabelį.</string>
     <string name="connection_status">Susiejimo statusas:</string>
     <string name="range_in_high_low">Ribos: (tikslas/hiper/hipo)</string>
+    <string name="important_warning">Svarbus perspėjimas!</string>
     <string name="i_agree">SUTINKU</string>
     <string name="backup_detected">Aptikta ats. kopija</string>
     <string name="it_looks_like_you_maybe_have_a_settings_backup_shall_we_try_to_restore_it">Panašu, kad turite nustatymų atsarginę kopiją, ar bandyti atstatyti?</string>
@@ -1313,6 +1319,8 @@
     <string name="TX_EOL_reminder">Paskutinį kartą galėsite startuoti sensorių su šiuo siųstuvu, kai Sistemos statuso lange siųstuvo dienų skaičius pasieks %1$d. Šiuo metu siųstuvas naudojamas %2$d d.</string>
     <string name="TX_EOL_notification">Jei tęsite ir bandysite startuoti sensorių, jis greičiausiai neveiks, nes siųstuvo veikimo laikas baigėsi.</string>
     <string name="TX_EOL_reminder_mod">Siųstuvo veikimo laikas artėja prie pabaigos. Nebegalėsite startuoti naujo sensoriaus. Šiuo metu siųstuvas jau veikia %d d.</string>
+    <string name="select_time">Pasirinkti laiką</string>
+    <string name="select_tone_for_alerts">Pasirinkite aliarmų toną</string>
     <string name="you_can_use_google_drive_for_backup">Atsarginėms kopijoms galima naudoti Google diską</string>
     <string name="select_backup_location">Parinkite atsarginės kopijos vietą</string>
     <string name="do_backup_now">Kopijuoti dabar</string>
