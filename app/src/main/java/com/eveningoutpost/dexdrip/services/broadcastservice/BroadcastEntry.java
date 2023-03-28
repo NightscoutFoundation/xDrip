@@ -24,6 +24,12 @@ public class BroadcastEntry {
         }
     }
 
+    public static void cancelAlert() {
+        if (isEnabled()) {
+             JoH.startService(BroadcastService.class, Const.INTENT_FUNCTION_KEY, Const.CMD_CANCEL_ALERT);
+        }
+    }
+
     public static void sendAlert(String type, String message) {
         if (isEnabled()) {
             Inevitable.task("broadcast-service-send-alert", 100, () -> JoH.startService(BroadcastService.class,

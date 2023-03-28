@@ -240,6 +240,8 @@ public class AlertPlayer {
                 && Pref.getBooleanDefaultFalse("pref_amazfit_BG_alert_enable_key")) {
             Amazfitservice.start("xDrip_AlarmCancel");
         }
+
+        BroadcastEntry.cancelAlert();
     }
 
     public synchronized void Snooze(Context ctx, int repeatTime, boolean from_interactive) {
