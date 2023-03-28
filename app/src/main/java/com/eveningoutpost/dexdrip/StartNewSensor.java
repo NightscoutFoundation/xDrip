@@ -102,7 +102,7 @@ public class StartNewSensor extends ActivityWithMenu {
 
         ucalendar = Calendar.getInstance();
         if (Ob1G5CollectionService.usingNativeMode()) {
-            if (!DexSyncKeeper.isReady(Pref.getString("dex_txid", "NULL")) || !(transmitterAgeInDays > -1)) {
+            if (!DexSyncKeeper.isReady(Pref.getString("dex_txid", "NULL")) || transmitterAgeInDays == -1) {
                 JoH.static_toast_long("Need to connect to transmitter before we can start sensor");
                 UserError.Log.e(TAG, "Need to connect to transmitter before we can start sensor");
                 MegaStatus.startStatus(MegaStatus.G5_STATUS);
