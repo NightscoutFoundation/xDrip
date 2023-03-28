@@ -83,7 +83,7 @@
     <string name="pref_amazfit_enable_summary">Включить поддержку данных AmazFit</string>
     <string name="pref_amazfit_enable">Включить</string>
     <string name="pref_amazfit_tile">Синхронизация с AmazFit</string>
-    <string name="pref_amazfit_BG_alert_enable_summary">Отправлять активные оповещения о гликемии на часы</string>
+    <string name="pref_amazfit_BG_alert_enable_summary">Отправляет активные тревоги ГК на умные часы</string>
     <string name="pref_amazfit_BG_alert_enable">Включить</string>
     <string name="pref_amazfit_BG_alert_title">Оповещения о гликемии</string>
     <string name="pref_amazfit_other_alert_enable_summary">Отправлять прочие оповещения на часы</string>
@@ -1588,7 +1588,7 @@
     <string name="enable_streaming_always_allow">Всегда подключаться к сенсорам Libre2</string>
     <string name="enable_streaming_ask_each_time">спрашивать каждый раз</string>
     <string name="enable_streaming_never">Никогда не подключаться к сенсорам Libre2</string>
-    <string name="enable_streaming_dialog_yes">подключиться к этому сенсору Libre2</string>
+    <string name="enable_streaming_dialog_yes">Подключиться к этому сенсору Libre2</string>
     <string name="enable_streaming_dialog_no">Не подключаться к этому датчику Libre2 </string>
     <string name="enable_streaming_dialog_dont_ask_again">Больше не спрашивать</string>
     <string name="enable_streaming_dialog_text">Вы хотите подключить xDrip к этому датчику? Данное действие сделает невозможным получение сигналов тревоги на ридере и в приложении LibreLink. Нажмите \"да\" и просканируйте датчик еще раз, чтобы создать подключение (выберите \"не подключать\", если планируете использовать xDrip с \"пропатченным\" приложением LibreLink)</string>

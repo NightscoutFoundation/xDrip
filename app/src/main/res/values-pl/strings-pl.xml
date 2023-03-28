@@ -243,7 +243,7 @@
     <string name="list_of_receivers">Lista odbiorników</string>
     <string name="extra_tags_for_logging">Dodatkowe tagi logowania</string>
     <string name="extra_tags_dialog_message">Wpisane tutaj tagi będą wpisywane do dziennika xDrip. Format to tag:poziom. Poziom może być v,d,i. Na przykład bgreading:i,DexCollectionService:v. Te tagi będą logowane z niskim priorytetem do listy błędów i zdarzeń.</string>
-    <string name="extra_tags_dialog_title">Wprowadź więcej tagów do bycia logowanym</string>
+    <string name="extra_tags_dialog_title">Wprowadź więcej tagów do zalogowania</string>
     <string name="data_source_settings">Ustawienia źródła danych</string>
     <string name="smart_watch_features">Inteligentne funkcje zegarka</string>
     <string name="wear_integration">Integracja z Android Wear</string>
@@ -1284,6 +1284,7 @@
     <string name="summary_clfollow_country">Wybierz swój kraj CareLink.</string>
     <string name="title_clfollow_lang">Język CareLink</string>
     <string name="summary_clfollow_lang">Kod języka CareLink</string>
+    <string name="title_clfollow_download_finger_bgs">Poziom cukru z palca</string>
     <string name="title_clfollow_download_boluses">Bolusy</string>
     <string name="summary_clfollow_download_boluses">Pobierz bolusy z CareLink</string>
     <string name="title_clfollow_download_meals">Posiłki</string>
@@ -1646,6 +1647,8 @@
     <string name="restoring_backup_will_erase_warning">Przywracanie kopii zapasowej usunie Twoje bieżące ustawienia i nadpisze je danymi z kopii zapasowej.\n\nCzy na pewno chcesz to zrobić?</string>
     <string name="this_backup_looks_like_came_from_different_format_string">Ta kopia zapasowa wygląda jakby pochodziła z innego urządzenia:\n%s\nCzy na pewno chcesz przywrócić z tej kopii zapasowej?</string>
     <string name="megabyte_format_string">%.1f MB</string>
+    <string name="format_string_ago">%s temu</string>
+    <string name="android_8_background_scanning">Użyj funkcji skanowania w tle dla Androida 8+</string>
     <string name="title_yRange">Dostosuj zakres osi y</string>
     <string name="titleInside_yRange">Włącz</string>
     <string name="summaryInside_yRange">Tutaj możesz dostosować zakres osi pionowej (y)\nJednak jeśli masz odczyty poza tym zakresem, to automatycznie rozszerzy się na kilka godzin, aby umożliwić wyświetlanie tych odczytów.</string>

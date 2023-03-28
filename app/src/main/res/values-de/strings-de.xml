@@ -1754,10 +1754,10 @@
     <string name="use_background_scans">Scan im Hintergrund ausführen</string>
     <string name="android_8_background_scanning">Hintergrundscan von Android 8+ nutzen</string>
     <string name="title_yRange">Bereich der y-Achse festlegen</string>
-    <string name="titleInside_yRange">Auswählen</string>
-    <string name="summaryInside_yRange">Du kannst hier den Bereich der vertikalen (y-Achse) einstellen. \nWenn die Werte aber ausserhalb dieses Berrichs liegen, wird dieser automatisch um mehrere Stunden erweitert, damit alle Werte angezeigt werden können.</string>
+    <string name="titleInside_yRange">Aktivieren</string>
+    <string name="summaryInside_yRange">Du kannst hier den Bereich der vertikalen (y-Achse) einstellen. \nWenn die Werte aber außerhalb dieses Bereichs liegen, wird dieser automatisch um mehrere Stunden erweitert, damit alle Werte angezeigt werden können.</string>
     <string name="title_ymin">Stelle das Minimum der y-Achse ein</string>
-    <string name="title_ymax">Stelle das y-Achsen Maximum ein</string>
+    <string name="title_ymax">Stelle das Maximum der y-Achse ein</string>
     <string name="summary_ymin">Wähle yMin, wenn es keine kleineren Werte gibt.</string>
     <string name="summary_ymax">Wähle yMax, wenn es keine größeren Werte gibt.</string>
     <string name="close">Schließen</string>
