@@ -71,7 +71,7 @@ public class AndroidBarcode extends AppCompatActivity
 
     private void actuallyStartScan() {
         new IntentIntegrator(activity)
-                .setPrompt(getString(R.string.scan_to_load_xdrip_settings))
+                .setPrompt(xdrip.gs(R.string.scan_to_load_xdrip_settings))
                 .setDesiredBarcodeFormats(list("QR_CODE", "CODE_128"))
                 .initiateScan();
     }
