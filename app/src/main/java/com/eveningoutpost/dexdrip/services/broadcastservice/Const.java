@@ -19,6 +19,7 @@ public class Const {
     public static final String CMD_SET_SETTINGS = "set_settings";
     public static final String CMD_UPDATE_BG_FORCE = "update_bg_force";
     public static final String CMD_ALERT = "alarm";
+    public static final String CMD_CANCEL_ALERT = "cancel_alarm";
     public static final String CMD_SNOOZE_ALERT = "snooze_alarm";
     public static final String CMD_ADD_STEPS = "add_steps";
     public static final String CMD_ADD_HR = "add_hrs";
