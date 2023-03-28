@@ -164,7 +164,7 @@
     <string name="signal_missed">Señal Perdida</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} Minutos antes|1#{0, number, integer} Minuto antes|1&lt;{0, number, integer} Minutos antes}</string>
     <string name="expires_days">{0, choice,0#¡El sensor expiró!|1#Termina en {0, number} día|1&lt;Termina en {0, number} días}</string>
-    <string name="expires_at">Termina en {0}</string>
+    <string name="expires_at">Termina el {0}</string>
     <string name="space_minutes_ago">" Minutos antes"</string>
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"En modo Libre red casera: no se han recogido lecturas"</string>
     <string name="in_libre_all_house_mode_last_data_collected">"En modo Libre red casera: Última lectura "</string>
@@ -334,15 +334,15 @@
     <string name="active_alert_exists_named">Nombre de Alerta existente</string>
     <string name="bracket_not_snoozed">(No silenciada)</string>
     <string name="all_alerts_disabled_until">"Todas las alertas desactivadas hasta "</string>
-    <string name="low_alerts_disabled_until">"Alertas de baja desactivadas hasta "</string>
-    <string name="high_alerts_disabled_until">"Alertas alta desactivadas hasta "</string>
+    <string name="low_alerts_disabled_until">"Alertas de hipo desactivadas hasta "</string>
+    <string name="high_alerts_disabled_until">"Alertas de hiper desactivadas hasta "</string>
     <string name="default_snooze">Repetir por defecto</string>
     <string name="until_you_reenable">Hasta que vuelva a activar</string>
     <string name="set">Establecer</string>
-    <string name="disable_low_alerts">Desactivar alertas baja</string>
-    <string name="re_enable_low_alerts">Reactivar alertas de Baja</string>
-    <string name="disable_high_alerts">Desactivar alertas alta</string>
-    <string name="re_enable_high_alerts">Reactivar alertas de Alta</string>
+    <string name="disable_low_alerts">Desactivar alertas de Hipo</string>
+    <string name="re_enable_low_alerts">Reactivar alertas de Hipo</string>
+    <string name="disable_high_alerts">Desactivar alertas de Hiper</string>
+    <string name="re_enable_high_alerts">Reactivar alertas de Hiper</string>
     <string name="disable_all_alerts">Desactivar todas las alertas</string>
     <string name="re_enable_all_alerts">Reactivar Todas las alertas</string>
     <string name="alert_snoozed_by_watch">Alerta silenciada por reloj</string>
@@ -352,9 +352,9 @@
     <string name="download_now">Descargar ahora</string>
     <string name="automatically_check_for_updates">Comprobar actualizaciones automáticamente</string>
     <string name="here_you_can_save_the_settings_to_the_external_storage_sdcard">Aquí puede guardar la configuración en la memoria externa (tarjeta SD).\n\nUna vez guardada en el almacenamiento externo es potencialmente posible que cualquier aplicación pueda leerla (puede contener información sensible).\n\nSe recomienda eliminar los ajustes una vez que la haya importado nuevamente si esto le preocupa.</string>
-    <string name="save_all_settings_to_sdcard">Guardar ajustes en tarjeta SD</string>
-    <string name="load_all_settings_from_sdcard">Cargar ajustes de tarjeta SD</string>
-    <string name="delete_any_settings_on_sdcard">Eliminar ajustes de tarjeta SD</string>
+    <string name="save_all_settings_to_sdcard">Guardar todos los ajustes en tarjeta SD</string>
+    <string name="load_all_settings_from_sdcard">Cargar todos los ajustes de tarjeta SD</string>
+    <string name="delete_any_settings_on_sdcard">Elimina carpeta de ajustes (Download/xDrip-export)</string>
     <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Utilizar códigos QR para transferir la configuración usando Preferencias->Función Auto configuración]]></string>
     <string name="xdrip_plus_security_key_settings_only">Sólo Configuración de clave de seguridad xDrip Plus</string>
     <string name="show_general_and_collection_settings">Mostrar Ajustes Generales y de recolección</string>
@@ -378,7 +378,7 @@
     <string name="search">Buscar</string>
     <string name="reset_all_language_data">Restablecer todos los datos de la lengua</string>
     <string name="show_only_customized_entries">Mostrar sólo las entradas personalizadas</string>
-    <string name="settings_on_external_storage">Configurar el almacenamiento externo</string>
+    <string name="settings_on_external_storage">Cargar/Guardar ajustes</string>
     <string name="get_notified_of_new_apk_releases">Ser notificado de nuevos lanzamientos apk</string>
     <string name="choose_stable_beta_or_alpha_releases">Elija versión estable, beta o alfa</string>
     <string name="web_feedback_form_for_sending_messages">Formulario de contacto web para el envío de mensajes y valoraciones de xDrip+ para los desarrolladores</string>
@@ -472,10 +472,10 @@
     <string name="bad_glucose_values">Valores de glucosa incorrectos</string>
     <string name="revert_to_default">Volver a los valores predeterminados</string>
     <string name="filtered_values">Valores filtrados</string>
-    <string name="treatment_color">Color del tratamiento</string>
-    <string name="treatment_color_dark">Tratamiento en Color Obscuro</string>
-    <string name="predictive_color">Color de la Predicción</string>
-    <string name="predictive_color_dark">Color oscuro de la Predicción</string>
+    <string name="treatment_color">Insulina Activa</string>
+    <string name="treatment_color_dark">Actividad de la insulina</string>
+    <string name="predictive_color">Predicción de glucosa</string>
+    <string name="predictive_color_dark">Carbohidratos Activos</string>
     <string name="average_and_target_lines">Líneas de Promedio y Objetivo</string>
     <string name="eight_hour_average_line">Línea promedio de 8 horas</string>
     <string name="twenty_four_hour_average_line">Línea promedio de 24 horas</string>
@@ -523,7 +523,7 @@
     <string name="disable_alert">Desactivar alerta</string>
     <string name="save_alert">Guardar alerta</string>
     <string name="remove_alert">Eliminar alerta</string>
-    <string name="snooze_alert_before_it_fires">Difiere alerta antes de activarla</string>
+    <string name="snooze_alert_before_it_fires">Difiere alerta antes de que se active</string>
     <string name="create_low_alert">Crear alerta de baja</string>
     <string name="create_high_alert">Crear alerta de alta</string>
     <string name="long_press_an_existing_alert_to_edit">(Pulsación larga para editar una alerta existente)</string>
@@ -601,7 +601,7 @@
     <string name="reset_bluetooth">Resetear Bluetooth apagándolo y encendiéndolo si no hay comunicación en 20 minutos</string>
     <string name="bluetooth_watchdog">Vigilante Bluetooth</string>
     <string name="reset_bluetooth_g5">Resetear Bluetooth apagándolo y encendiéndolo para intentar que G5 siga funcionando. Sin esto el colector de G5 puede fallar.</string>
-    <string name="g5_bluetooth_watchdog">Vigilante Bluetooth del G5</string>
+    <string name="g5_bluetooth_watchdog">Vigilante Dex Bluetooth</string>
     <string name="close_gatt">Si el vigilante del Bluetooth se activa frecuentemente puede intentar desactivar esta opción para ver si ayuda</string>
     <string name="older_bluetooth_wakelocks">Wakelocks Bluetooth más antiguos que pueden consumir más batería pero que pueden ser necesarios para la recepción Bluetooth</string>
     <string name="reset_bluetooth_on_off">Reinicia el Bluetooth apagándolo y encendiéndolo cada pocos minutos. Seleccione esta opción sólo si estás realizando pruebas. Puede interrumpir cualquier otra cosa que utilice Bluetooth.</string>
@@ -613,7 +613,7 @@
     <string name="repeatedly_restart_collection_service">Reinicia repetidamente el servicio de recolección ante cualquier atisbo de datos faltantes. Activar sólo si hay pérdida de datos.</string>
     <string name="aggressive_service_restarts">Reinicio agresivo del servicio</string>
     <string name="predictive_readings_old">¡Método antiguo - no recomendado! Intenta predecir las lecturas cada minuto basado en los últimos valores.</string>
-    <string name="use_external_blukon_algorithm_summary">Utilizar un algoritmo externo para el Libre. (blukon/NFC/LibreAlarm)</string>
+    <string name="use_external_blukon_algorithm_summary">Utilizar un algoritmo externo para el Libre. (BluCon/NFC/LibreAlarm)</string>
     <string name="display_predictive_values">Mostrar valores predicción</string>
     <string name="use_external_blukon_algorithm">Algoritmo externo para el Libre.</string>
     <string name="calibrate_external_libre_algorithm_summary">Aplica métodos de calibración de xDrip con los datos del algoritmo externo para el Libre.</string>
@@ -623,7 +623,7 @@
     <string name="libre_use_smoothed_data_summary">Utilizar una media de 5 puntos para obtener datos del libre más suaves.</string>
     <string name="libre_use_smoothed_data_title">Suavizar Datos de Libre.</string>
     <string name="retrieve_blukon_history_title">Recuperar el historial del Libre</string>
-    <string name="retrieve_blukon_history_summary">Recuperar historial pendiente de Blukon cuando se reconecte al sensor</string>
+    <string name="retrieve_blukon_history_summary">Recuperar historial pendiente de BluCon cuando se reconecte al sensor.</string>
     <string name="interpret_share_raw">Si usa Compartir, xDrip mostrará los valores cuando están normalmente ocultos en el receptor.</string>
     <string name="interpret_raw">Interpretar los valores en bruto</string>
     <string name="use_infrequent_calibrations">Si es necesario, usar calibraciones más antiguas, por ejemplo, si las calibraciones se suministran con poca frecuencia.</string>
@@ -791,9 +791,9 @@
     <string name="step_counter_1st_color">Contador pasos 1er Color</string>
     <string name="step_counter_2nd_color">Contador pasos 2do Color</string>
     <string name="flair_colors">Estilos de Colores</string>
-    <string name="use_flair_colors">Usar estilos de colores</string>
-    <string name="upper_title_bar_flair">Estilo de la barra de título superior</string>
-    <string name="lower_button_bar_falir">Estilo de barra de botones inferior</string>
+    <string name="use_flair_colors">Título personalizado/Barra de navegación</string>
+    <string name="upper_title_bar_flair">Barra de título superior</string>
+    <string name="lower_button_bar_falir">Barra de navegación inferior</string>
     <string name="force_english_text">Forzar idioma Inglés</string>
     <string name="using_local_language">Actualmente utilizando el idioma local de su dispositivo</string>
     <string name="forcing_alternate_language">Actualmente forzando el uso de un idioma alternativo</string>
@@ -859,7 +859,7 @@
     <string name="reminders">Recordatorios</string>
     <string name="error">error</string>
     <string name="install_text_to_speech_data_question">¿Installar datos de texto a voz?</string>
-    <string name="after_installation_of_languages_you_might_have_to">(Después de la instalación de los idiomas, es probable que deba presionar \"Reiniciar recopilado\" en Estado del Sistema).</string>
+    <string name="after_installation_of_languages_you_might_have_to">(Después de la instalación de idiomas podrías tener que presionar \"Reiniciar Receptor\" en el estado del sistema.)</string>
     <string name="stop_sensor">Parar Sensor</string>
     <string name="dont_stop_just_reset_all_calibrations">No detener, sólo reiniciar todas las calibraciones</string>
     <string name="initial_calibration">Calibración inicial</string>
@@ -1165,7 +1165,7 @@
     <string name="upload_even_when_using_mobile_data">Subir incluso cuando se utilicen datos móviles</string>
     <string name="use_mobile_data">Usar datos móviles</string>
     <string name="summary_cloud_storage_api_download_enable">También intentar descargar datos de Nightscout</string>
-    <string name="title_cloud_storage_api_download_enable">Descargar datos</string>
+    <string name="title_cloud_storage_api_download_enable">Descargar tratamientos</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Calibrar usando nuevas lecturas de glucosa si las condiciones parecen adecuadas sin pedir confirmación (experimental)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Calibración Automática</string>
     <string name="title_rest_api_extra_options">Opciones Extras</string>
@@ -1193,7 +1193,7 @@
     <string name="title_tidepool_dev_servers">Usar servidores de Integración (prueba)</string>
     <string name="title_tidepool">Tidepool</string>
     <string name="show_help">Mostrar Ayuda</string>
-    <string name="load_save_settings_on_sdcard">Cargar/Guardar ajustes en tarjeta SD</string>
+    <string name="load_save_settings_on_sdcard">Cargar / Guardar Ajustes</string>
     <string name="delete_all_bg_readings">Borrar TODAS las lecturas de glucosa</string>
     <string name="debugging_test_feature">Características de prueba de depuración</string>
     <string name="sync_treatments">Sincronizar Tratamientos</string>
@@ -1295,8 +1295,8 @@
     <string name="summary_clfollow_grace_period">Período de gracia para la solicitud de datos en segundos</string>
     <string name="title_clfollow_missed_poll_interval">Intervalo de sondeo de datos perdidos</string>
     <string name="summary_clfollow_missed_poll_interval">Intervalo de sondeo después de datos perdidos en minutos</string>
-    <string name="title_clfollow_download_finger_bgs">GS en dedo</string>
-    <string name="summary_clfollow_download_finger_bgs">Descargar GS en dedo de CareLink</string>
+    <string name="title_clfollow_download_finger_bgs">Glucosa capilar</string>
+    <string name="summary_clfollow_download_finger_bgs">Descargar analisis capilares de CareLink</string>
     <string name="title_clfollow_download_boluses">Bolos</string>
     <string name="summary_clfollow_download_boluses">Descargar bolos de CareLink</string>
     <string name="title_clfollow_download_meals">Comidas</string>
@@ -1416,7 +1416,7 @@
     <string name="summary_notification_channels_grouping">Si las notificaciones deben agruparse. Incompatible con la opción \'Icono numérico en área de notificación\'</string>
     <string name="title_notification_channels_grouping">Agrupar notificaciones</string>
     <string name="summary_delay_ascending_3min">Para el perfil de volumen ascendente, retrasa 3 minutos el inicio del sonido de la alerta. La vibración (si está activada) se inicia tan pronto como la alerta se active, independientemente de esta configuración.</string>
-    <string name="title_delay_ascending_3min">Retardo del volumen ascendente</string>
+    <string name="title_delay_ascending_3min">Retrasar el volumen ascendente</string>
     <string name="summary_play_sound_for_initial_calibration">Reproducir sonido cuando se solicite la calibración inicial</string>
     <string name="title_play_sound_for_initial_calibration">Alerta Inicial</string>
     <string name="category_noisy_readings">Lecturas Ruidosas</string>
@@ -1753,5 +1753,12 @@
     <string name="format_string_ago">hace %s</string>
     <string name="use_background_scans">Usar escaneos de fondo</string>
     <string name="android_8_background_scanning">Usar la función de escaneo en segundo plano de Android 8+</string>
+    <string name="title_yRange">Personalizar rango eje y</string>
+    <string name="titleInside_yRange">Activar</string>
+    <string name="summaryInside_yRange">Puedes ajustar el rango del eje vertical (y).\nSin embargo, si tienes lecturas fuera de ese rango, se extenderá automáticamente, durante varias horas, para permitir que se muestren esas lecturas.</string>
+    <string name="title_ymin">Ajustar el mínimo del eje y</string>
+    <string name="title_ymax">Ajustar el máximo del eje y</string>
+    <string name="summary_ymin">Escoge yMin para cuando no hay lecturas inferiores.</string>
+    <string name="summary_ymax">Escoge yMin para cuando no hay lecturas superiores.</string>
     <string name="close">Cerrar</string>
 </resources>

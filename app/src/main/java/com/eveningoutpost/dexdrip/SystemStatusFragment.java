@@ -28,8 +28,8 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.eveningoutpost.dexdrip.G5Model.Extensions;
-import com.eveningoutpost.dexdrip.G5Model.Transmitter;
+import com.eveningoutpost.dexdrip.g5model.Extensions;
+import com.eveningoutpost.dexdrip.g5model.Transmitter;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;

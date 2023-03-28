@@ -17,10 +17,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.eveningoutpost.dexdrip.G5Model.DexSyncKeeper;
-import com.eveningoutpost.dexdrip.G5Model.DexTimeKeeper;
-import com.eveningoutpost.dexdrip.G5Model.FirmwareCapability;
-import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
+import com.eveningoutpost.dexdrip.g5model.DexSyncKeeper;
+import com.eveningoutpost.dexdrip.g5model.DexTimeKeeper;
+import com.eveningoutpost.dexdrip.g5model.FirmwareCapability;
+import com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;

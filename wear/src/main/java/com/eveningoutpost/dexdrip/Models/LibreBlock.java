@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip.models;
+package com.eveningoutpost.dexdrip.Models;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -8,11 +8,11 @@ import com.activeandroid.Cache;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
-import com.eveningoutpost.dexdrip.models.UserError.Log;
-import com.eveningoutpost.dexdrip.utilitymodels.Constants;
-import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
-import com.eveningoutpost.dexdrip.utilitymodels.Pref;
-import com.eveningoutpost.dexdrip.utilitymodels.UploaderQueue;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.utils.LibreTrendUtil;
 import com.google.gson.annotations.Expose;
 
@@ -108,7 +108,7 @@ public class LibreBlock extends PlusModel {
         }
         return lb;
     }
-
+    
     public static void Save(LibreBlock lb){
         lb.save();
     }
@@ -173,7 +173,7 @@ public class LibreBlock extends PlusModel {
             return libreBlock;
         }
     }
-    
+
     public static List<LibreBlock> getForTrend(long start_time, long end_time) {
         List<LibreBlock> res1 =  new Select()
                 .from(LibreBlock.class)
@@ -212,7 +212,7 @@ public class LibreBlock extends PlusModel {
         libreBlock.save();
         LibreTrendUtil.getInstance().updateLastReading(libreBlock);
     }
-    
+
     public static LibreBlock findByUuid(String uuid) {
         try {
             return new Select()

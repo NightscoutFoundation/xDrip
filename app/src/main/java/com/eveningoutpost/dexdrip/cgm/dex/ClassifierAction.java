@@ -2,11 +2,11 @@ package com.eveningoutpost.dexdrip.cgm.dex;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
 
-import com.eveningoutpost.dexdrip.G5Model.BackFillRxMessage;
-import com.eveningoutpost.dexdrip.G5Model.BackFillStream;
-import com.eveningoutpost.dexdrip.G5Model.BaseGlucoseRxMessage;
-import com.eveningoutpost.dexdrip.G5Model.DexTimeKeeper;
-import com.eveningoutpost.dexdrip.G5Model.GlucoseRxMessage;
+import com.eveningoutpost.dexdrip.g5model.BackFillRxMessage;
+import com.eveningoutpost.dexdrip.g5model.BackFillStream;
+import com.eveningoutpost.dexdrip.g5model.BaseGlucoseRxMessage;
+import com.eveningoutpost.dexdrip.g5model.DexTimeKeeper;
+import com.eveningoutpost.dexdrip.g5model.GlucoseRxMessage;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -86,7 +86,7 @@ public class ClassifierAction {
                     } else {
                         BaseGlucoseRxMessage glucose = new GlucoseRxMessage(data);
                         if (!glucose.usable()) {
-                            glucose = new com.eveningoutpost.dexdrip.G5Model.EGlucoseRxMessage(data);
+                            glucose = new com.eveningoutpost.dexdrip.g5model.EGlucoseRxMessage(data);
                         }
                         if (glucose.usable()) {
                             UserError.Log.d(TAG, "Updating age from timestamp: " + glucose.timestamp);

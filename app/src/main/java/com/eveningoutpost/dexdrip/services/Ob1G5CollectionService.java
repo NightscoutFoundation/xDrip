@@ -1,16 +1,16 @@
 package com.eveningoutpost.dexdrip.services;
 
-import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.ExtraData;
-import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getUUIDName;
-import static com.eveningoutpost.dexdrip.G5Model.CalibrationState.Ok;
-import static com.eveningoutpost.dexdrip.G5Model.CalibrationState.Unknown;
-import static com.eveningoutpost.dexdrip.G5Model.G6CalibrationParameters.getCurrentSensorCode;
-import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.CLOSED_OK_TEXT;
-import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.evaluateG6Settings;
-import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingCalibration;
-import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingStart;
-import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingStop;
-import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.usingAlt;
+import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.ExtraData;
+import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.getUUIDName;
+import static com.eveningoutpost.dexdrip.g5model.CalibrationState.Ok;
+import static com.eveningoutpost.dexdrip.g5model.CalibrationState.Unknown;
+import static com.eveningoutpost.dexdrip.g5model.G6CalibrationParameters.getCurrentSensorCode;
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.CLOSED_OK_TEXT;
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.evaluateG6Settings;
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.pendingCalibration;
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.pendingStart;
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.pendingStop;
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.usingAlt;
 import static com.eveningoutpost.dexdrip.Models.JoH.niceTimeScalar;
 import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
 import static com.eveningoutpost.dexdrip.Models.JoH.upForAtLeastMins;
@@ -63,18 +63,18 @@ import android.text.SpannableStringBuilder;
 
 import com.eveningoutpost.dexdrip.AddCalibration;
 import com.eveningoutpost.dexdrip.DoubleCalibrationActivity;
-import com.eveningoutpost.dexdrip.G5Model.BatteryInfoRxMessage;
-import com.eveningoutpost.dexdrip.G5Model.BluetoothServices;
-import com.eveningoutpost.dexdrip.G5Model.CalibrationState;
-import com.eveningoutpost.dexdrip.G5Model.DexSyncKeeper;
-import com.eveningoutpost.dexdrip.G5Model.DexTimeKeeper;
-import com.eveningoutpost.dexdrip.G5Model.FirmwareCapability;
-import com.eveningoutpost.dexdrip.G5Model.Ob1DexTransmitterBattery;
-import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
-import com.eveningoutpost.dexdrip.G5Model.TransmitterStatus;
-import com.eveningoutpost.dexdrip.G5Model.VersionRequest1RxMessage;
-import com.eveningoutpost.dexdrip.G5Model.VersionRequest2RxMessage;
-import com.eveningoutpost.dexdrip.G5Model.VersionRequestRxMessage;
+import com.eveningoutpost.dexdrip.g5model.BatteryInfoRxMessage;
+import com.eveningoutpost.dexdrip.g5model.BluetoothServices;
+import com.eveningoutpost.dexdrip.g5model.CalibrationState;
+import com.eveningoutpost.dexdrip.g5model.DexSyncKeeper;
+import com.eveningoutpost.dexdrip.g5model.DexTimeKeeper;
+import com.eveningoutpost.dexdrip.g5model.FirmwareCapability;
+import com.eveningoutpost.dexdrip.g5model.Ob1DexTransmitterBattery;
+import com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine;
+import com.eveningoutpost.dexdrip.g5model.TransmitterStatus;
+import com.eveningoutpost.dexdrip.g5model.VersionRequest1RxMessage;
+import com.eveningoutpost.dexdrip.g5model.VersionRequest2RxMessage;
+import com.eveningoutpost.dexdrip.g5model.VersionRequestRxMessage;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -399,6 +399,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                     case UNBOND:
                         UserError.Log.d(TAG, "Unbond state");
                         Ob1G5StateMachine.doUnBond(this, connection);
+                        Inevitable.task("unbond close", 10000, () -> changeState(Ob1G5CollectionService.STATE.CLOSE));
                         break;
 
                     case RESET:
@@ -904,6 +905,11 @@ public class Ob1G5CollectionService extends G5BaseService {
         } else {
             state = CLOSED; // Don't poll automata as we want to do this on waking
             stopConnect();
+        }
+
+        if (plugin != null) {
+            UserError.Log.d(TAG, "Saving persistent data for keks");
+            PersistentStore.setBytes("keks1", plugin.getPersistence(1));
         }
 
     }
@@ -1430,11 +1436,13 @@ public class Ob1G5CollectionService extends G5BaseService {
 
                 if (txIdMatch(getTransmitterID()) && service.getCharacteristic(ExtraData) != null) {
                     try {
-                        plugin = Loader.getInstance(Registry.get("keks"), getTransmitterID());
+                        plugin = Loader.getLocalInstance(Registry.get("keks"), getTransmitterID());
                         if (plugin == null) {
                             val msg = "Unable to load keks plugin - please re-enter transmitter id";
                             UserError.Log.wtf(TAG, msg);
                             JoH.static_toast_long(msg);
+                        } else {
+                            plugin.setPersistence(2, PersistentStore.getBytes("keks1"));
                         }
                     } catch (Exception e) {
                         UserError.Log.e(TAG, "Exception getting instance: "+e);

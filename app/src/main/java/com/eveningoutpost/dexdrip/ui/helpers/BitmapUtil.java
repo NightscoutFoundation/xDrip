@@ -25,6 +25,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 
+import lombok.val;
+
 public class BitmapUtil {
 
     // note: this recycles the source bitmap - TODO make this more generic
@@ -197,6 +199,19 @@ public class BitmapUtil {
 
     public static float getScreenDensity() {
         return Resources.getSystem().getDisplayMetrics().density;
+    }
+
+    public static Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+        if (bm == null) return null;
+        val width = bm.getWidth();
+        val height = bm.getHeight();
+        val scaleWidth = ((float) newWidth) / width;
+        val scaleHeight = ((float) newHeight) / height;
+        val matrix = new Matrix();
+        matrix.postScale(scaleWidth, scaleHeight);
+        val resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
+        bm.recycle();
+        return resizedBitmap;
     }
 
 }

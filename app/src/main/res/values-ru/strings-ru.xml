@@ -83,7 +83,7 @@
     <string name="pref_amazfit_enable_summary">Включить поддержку данных AmazFit</string>
     <string name="pref_amazfit_enable">Включить</string>
     <string name="pref_amazfit_tile">Синхронизация с AmazFit</string>
-    <string name="pref_amazfit_BG_alert_enable_summary">Отправлять активные оповещения о гликемии на часы</string>
+    <string name="pref_amazfit_BG_alert_enable_summary">Отправляет активные тревоги ГК на умные часы</string>
     <string name="pref_amazfit_BG_alert_enable">Включить</string>
     <string name="pref_amazfit_BG_alert_title">Оповещения о гликемии</string>
     <string name="pref_amazfit_other_alert_enable_summary">Отправлять прочие оповещения на часы</string>
@@ -1273,7 +1273,7 @@
     <string name="title_lefun_screen_find_phone">Показывать \"Найти телефон / Отложить\"</string>
     <string name="title_lefun_screen_mac_address">Показывать MAC адрес</string>
     <string name="summary_allow_samsung_workaround">Использовать обходные пути, чтобы избежать нестандартное поведение Android на устройствах Samsung. Без этого коллекторам обычно не удается получить данные.</string>
-    <string name="title_allow_samsung_workaround">Решение для Samsung</string>
+    <string name="title_allow_samsung_workaround">Обходные пути Samsung</string>
     <string name="summary_medtrum_use_native">Использовать калибровку передатчика Medtrum вместо xDrip</string>
     <string name="title_medtrum_use_native">Алгоритм Medtrum</string>
     <string name="summary_medtrum_a_hex">16-тиричные значения диагностики</string>
@@ -1588,7 +1588,7 @@
     <string name="enable_streaming_always_allow">Всегда подключаться к сенсорам Libre2</string>
     <string name="enable_streaming_ask_each_time">спрашивать каждый раз</string>
     <string name="enable_streaming_never">Никогда не подключаться к сенсорам Libre2</string>
-    <string name="enable_streaming_dialog_yes">подключиться к этому сенсору Libre2</string>
+    <string name="enable_streaming_dialog_yes">Подключиться к этому сенсору Libre2</string>
     <string name="enable_streaming_dialog_no">Не подключаться к этому датчику Libre2 </string>
     <string name="enable_streaming_dialog_dont_ask_again">Больше не спрашивать</string>
     <string name="enable_streaming_dialog_text">Вы хотите подключить xDrip к этому датчику? Данное действие сделает невозможным получение сигналов тревоги на ридере и в приложении LibreLink. Нажмите \"да\" и просканируйте датчик еще раз, чтобы создать подключение (выберите \"не подключать\", если планируете использовать xDrip с \"пропатченным\" приложением LibreLink)</string>
@@ -1756,5 +1756,12 @@
     <string name="format_string_ago">%s назад</string>
     <string name="use_background_scans">Использовать фоновые сканирования</string>
     <string name="android_8_background_scanning">Использовать функцию фонового сканирования Android 8+</string>
+    <string name="title_yRange">Настроить диапазон оси y</string>
+    <string name="titleInside_yRange">Включить</string>
+    <string name="summaryInside_yRange">Здесь можно настроить диапазон вертикальной оси (y).\nОднако, если показания находятся вне этого диапазона, он автоматически расширится в течение нескольких часов, чтобы отобразить их.</string>
+    <string name="title_ymin">Установить минимум по оси y</string>
+    <string name="title_ymax">Установить максимум по оси y</string>
+    <string name="summary_ymin">Укажите y min когда нет меньших показаний.</string>
+    <string name="summary_ymax">Укажите y max когда нет больших показаний.</string>
     <string name="close">Закрыть</string>
 </resources>

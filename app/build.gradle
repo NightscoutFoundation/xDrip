@@ -245,6 +245,7 @@ dependencies {
     }
 
     implementation project(':localeapi')
+    implementation project(':libkeks')
 
     // add missing JAXB dependencies for JDK 9+
     if (JavaVersion.current().ordinal() >= JavaVersion.VERSION_1_9.ordinal()) {
@@ -311,7 +312,7 @@ dependencies {
     implementation 'com.embarkmobile:zxing-android-minimal:2.0.0@aar'
     implementation 'com.embarkmobile:zxing-android-integration:2.0.0@aar'
     //implementation 'com.embarkmobile:zxing-android-legacy:2.0.0@aar'
-    implementation 'com.google.zxing:core:3.1.0'
+    implementation 'com.google.zxing:core:3.5.1'
     implementation 'net.tribe7.seeds:seeds-functional:16.0.1'
     implementation 'net.tribe7.seeds:seeds-primitives:16.0.1'
     implementation 'me.tatarka.bindingcollectionadapter2:bindingcollectionadapter:2.2.0'

@@ -1034,14 +1034,6 @@
             android:key="xdrip_less_common_settings"
             android:summary="@string/debug_and_other_misc_options"
             android:title="@string/less_common_settings">
-            <Preference
-                android:key="recent_errors"
-                android:title="@string/view_recent_errors_warnings">
-                <intent
-                    android:action="android.intent.action.MAIN"
-                    android:targetClass="com.eveningoutpost.dexdrip.ErrorsActivity"
-                    android:targetPackage="@string/local_target_package" />
-            </Preference>
 
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:key="xdrip_extra_status_line"
