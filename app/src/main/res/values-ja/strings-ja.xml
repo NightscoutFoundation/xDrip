@@ -406,4 +406,6 @@
     <string name="save_power">節電</string>
     <string name="graph_smoothing">グラフのスムージング</string>
     <string name="titleInside_yRange">有効にする</string>
+    <string name="import_qr_code_warning">信頼できるソースからの設定のみインポートします！\n\n以下の設定をインポートすることを確認してください：\n\n</string>
+    <string name="scan_to_load_xdrip_settings">xDrip設定を読み込むためにスキャンする</string>
 </resources>
