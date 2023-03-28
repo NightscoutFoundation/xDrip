@@ -1751,4 +1751,6 @@
     <string name="summary_ymin">Виберіть мінімальне значення для осі y, коли немає менших зчитувань.</string>
     <string name="summary_ymax">Виберіть максимальне значення для осі y, коли немає більших зчитувань.</string>
     <string name="close">Закрити</string>
+    <string name="import_qr_code_warning">Імпортуйте настройки лише з джерел, яким ви довіряєте!\n\nБудь ласка, підтвердіть імпорт наступних налаштувань:\n\n</string>
+    <string name="scan_to_load_xdrip_settings">Скануйте для завантаження налаштувань xDrip</string>
 </resources>
