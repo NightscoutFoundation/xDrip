@@ -35,25 +35,25 @@ import android.os.Looper;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
-import com.eveningoutpost.dexdrip.G5Model.AuthChallengeRxMessage;
-import com.eveningoutpost.dexdrip.G5Model.AuthChallengeTxMessage;
-import com.eveningoutpost.dexdrip.G5Model.AuthRequestTxMessage;
-import com.eveningoutpost.dexdrip.G5Model.AuthStatusRxMessage;
-import com.eveningoutpost.dexdrip.G5Model.BatteryInfoRxMessage;
-import com.eveningoutpost.dexdrip.G5Model.BatteryInfoTxMessage;
-import com.eveningoutpost.dexdrip.G5Model.BluetoothServices;
-import com.eveningoutpost.dexdrip.G5Model.BondRequestTxMessage;
-import com.eveningoutpost.dexdrip.G5Model.DisconnectTxMessage;
-import com.eveningoutpost.dexdrip.G5Model.Extensions;
-import com.eveningoutpost.dexdrip.G5Model.GlucoseRxMessage;
-import com.eveningoutpost.dexdrip.G5Model.GlucoseTxMessage;
-import com.eveningoutpost.dexdrip.G5Model.KeepAliveTxMessage;
-import com.eveningoutpost.dexdrip.G5Model.SensorRxMessage;
-import com.eveningoutpost.dexdrip.G5Model.SensorTxMessage;
-import com.eveningoutpost.dexdrip.G5Model.Transmitter;
-import com.eveningoutpost.dexdrip.G5Model.TransmitterStatus;
-import com.eveningoutpost.dexdrip.G5Model.VersionRequestRxMessage;
-import com.eveningoutpost.dexdrip.G5Model.VersionRequestTxMessage;
+import com.eveningoutpost.dexdrip.g5model.AuthChallengeRxMessage;
+import com.eveningoutpost.dexdrip.g5model.AuthChallengeTxMessage;
+import com.eveningoutpost.dexdrip.g5model.AuthRequestTxMessage;
+import com.eveningoutpost.dexdrip.g5model.AuthStatusRxMessage;
+import com.eveningoutpost.dexdrip.g5model.BatteryInfoRxMessage;
+import com.eveningoutpost.dexdrip.g5model.BatteryInfoTxMessage;
+import com.eveningoutpost.dexdrip.g5model.BluetoothServices;
+import com.eveningoutpost.dexdrip.g5model.BondRequestTxMessage;
+import com.eveningoutpost.dexdrip.g5model.DisconnectTxMessage;
+import com.eveningoutpost.dexdrip.g5model.Extensions;
+import com.eveningoutpost.dexdrip.g5model.GlucoseRxMessage;
+import com.eveningoutpost.dexdrip.g5model.GlucoseTxMessage;
+import com.eveningoutpost.dexdrip.g5model.KeepAliveTxMessage;
+import com.eveningoutpost.dexdrip.g5model.SensorRxMessage;
+import com.eveningoutpost.dexdrip.g5model.SensorTxMessage;
+import com.eveningoutpost.dexdrip.g5model.Transmitter;
+import com.eveningoutpost.dexdrip.g5model.TransmitterStatus;
+import com.eveningoutpost.dexdrip.g5model.VersionRequestRxMessage;
+import com.eveningoutpost.dexdrip.g5model.VersionRequestTxMessage;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -91,8 +91,8 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
-import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getStatusName;
-import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getUUIDName;
+import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.getStatusName;
+import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.getUUIDName;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class G5CollectionService extends G5BaseService {

@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip.cgm.dex;
 
-import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.Control;
-import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.ProbablyBackfill;
+import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.Control;
+import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.ProbablyBackfill;
 import static com.eveningoutpost.dexdrip.cgm.dex.ClassifierAction.BACKFILL;
 import static com.eveningoutpost.dexdrip.cgm.dex.ClassifierAction.CONNECT;
 import static com.eveningoutpost.dexdrip.cgm.dex.ClassifierAction.CONTROL;

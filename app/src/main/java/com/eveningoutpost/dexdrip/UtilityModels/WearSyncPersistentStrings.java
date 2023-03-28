@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-import com.eveningoutpost.dexdrip.G5Model.G6CalibrationParameters;
+import com.eveningoutpost.dexdrip.g5model.G6CalibrationParameters;
 
 import java.util.ArrayList;
 import java.util.List;
