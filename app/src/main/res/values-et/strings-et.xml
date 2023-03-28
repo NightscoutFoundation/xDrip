@@ -1761,4 +1761,6 @@
     <string name="summary_ymin">Vali yMin, kui sellest väiksemaid näitusid ei ole.</string>
     <string name="summary_ymax">Vali yMax, kui sellest suuremaid näitusid ei ole.</string>
     <string name="close">Sulge</string>
+    <string name="import_qr_code_warning">Impordi seadeid ainult usaldatud allikatest!\n\nPalun kinnita alljärgnevate seadete importimine:\n\n</string>
+    <string name="scan_to_load_xdrip_settings">Skaneeri xDrip\'i seadete laadimiseks</string>
 </resources>
