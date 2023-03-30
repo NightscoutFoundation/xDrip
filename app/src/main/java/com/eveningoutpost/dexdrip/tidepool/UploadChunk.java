@@ -36,6 +36,7 @@ public class UploadChunk implements NamedSliderProcessor {
     private static final long MAX_UPLOAD_SIZE = Constants.DAY_IN_MS * 7; // don't change this
     private static final long DEFAULT_WINDOW_OFFSET = Constants.MINUTE_IN_MS * 15;
     private static final long MAX_LATENCY_THRESHOLD_MINUTES = 1440; // minutes per day
+    private static long lastBg = 0;
 
     private static final boolean D = false;
 
@@ -48,6 +49,10 @@ public class UploadChunk implements NamedSliderProcessor {
             UserError.Log.d(TAG, "No records in this time period, setting start to best end time");
             setLastEnd(Math.max(session.end, getOldestRecordTimeStamp()));
         }
+        else {
+            session.end = lastBg;
+        }
+        UserError.Log.uel(TAG, "Syncing last BG: " + dateTimeText(session.end));
         return result;
     }
 
@@ -98,7 +103,7 @@ public class UploadChunk implements NamedSliderProcessor {
     public static void setLastEnd(final long when) {
         if (when > getLastEnd()) {
             PersistentStore.setLong(LAST_UPLOAD_END_PREF, when);
-            UserError.Log.d(TAG, "Updating last end to: " + dateTimeText(when));
+            UserError.Log.uel(TAG, "Updating last end to: " + dateTimeText(when));
         } else {
             UserError.Log.e(TAG, "Cannot set last end to: " + dateTimeText(when) + " vs " + dateTimeText(getLastEnd()));
         }
@@ -146,7 +151,13 @@ public class UploadChunk implements NamedSliderProcessor {
     }
 
     static List<ESensorGlucose> getBgReadings(final long start, final long end) {
-        return ESensorGlucose.fromBgReadings(BgReading.latestForGraphAsc(15000, start, end));
+        List<BgReading> bgReadingList = BgReading.latestForGraphAsc(15000, start, end);
+        if (bgReadingList.size() > 0) {
+            BgReading lastBgReading = bgReadingList.get(bgReadingList.size() - 1);
+            lastBg = lastBgReading.timestamp + 1;
+            UserError.Log.uel(TAG, "BgReadings count: " + bgReadingList.size() + " last BG: " + dateTimeText(lastBg) + " BG: " + lastBgReading.calculated_value);
+        }
+        return ESensorGlucose.fromBgReadings(bgReadingList);
     }
 
     private static double getRateForApStatus(final APStatus apStatus) {

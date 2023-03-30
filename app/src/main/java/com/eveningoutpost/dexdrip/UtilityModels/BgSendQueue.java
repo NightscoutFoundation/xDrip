@@ -141,10 +141,7 @@ public class BgSendQueue extends Model {
                     JoH.getWakeLock("broadcstNightWatch", 3000);
                 }
 
-
-            if (!quick) {
-                NewDataObserver.newBgReading(bgReading, is_follower);
-            }
+            NewDataObserver.newBgReading(bgReading, is_follower, quick);
 
             if ((!is_follower) && (Pref.getBoolean("plus_follow_master", false))) {
                 if (Pref.getBoolean("display_glucose_from_plugin", false))
