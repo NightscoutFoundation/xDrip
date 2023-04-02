@@ -1752,6 +1752,14 @@
     <string name="format_string_ago">%s önce</string>
     <string name="use_background_scans">Arka Plan Taramalarını kullanın</string>
     <string name="android_8_background_scanning">Android 8+ arka plan tarama özelliğini kullanın</string>
+    <string name="title_yRange">y ekseni aralığını özelleştir</string>
     <string name="titleInside_yRange">Etkinleştir</string>
+    <string name="summaryInside_yRange">Dikey (y) eksen aralığını buradan ayarlayabilirsiniz.\nAncak bu aralığın dışında okumalarınız varsa, bu okumaların gösterilmesine izin vermek için otomatik olarak birkaç saat uzar.</string>
+    <string name="title_ymin">y ekseni minimumunu ayarla</string>
+    <string name="title_ymax">y ekseni maksimumunu ayarla</string>
+    <string name="summary_ymin">Daha küçük okumalar olmadığında yMin\'i seçin.</string>
+    <string name="summary_ymax">Daha büyük okumalar olmadığında yMax\'i seçin.</string>
     <string name="close">Kapat</string>
+    <string name="import_qr_code_warning">Yalnızca güvendiğiniz kaynaklardan ayarları içe aktarın!\n\nLütfen aşağıdaki ayarları almayı onaylayın:\n\n</string>
+    <string name="scan_to_load_xdrip_settings">xDrip ayarlarını yüklemek için tarayın</string>
 </resources>
