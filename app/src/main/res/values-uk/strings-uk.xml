@@ -1595,6 +1595,7 @@
     <string name="enable_streaming_dialog_title">Підключення сенсора Libre 2 до Bluetooth</string>
     <string name="without_camera_permission_cannot_scan_barcode">Без дозволу на використання камери неможливо сканувати штрих-код</string>
     <string name="summary_create_missing_filtered">Створити відфільтровані дані як належить</string>
+    <string name="title_create_missing_filtered">Створити невідфільтровані значення</string>
     <string name="summary_widget_hide_graph">Приховати графік на віджетах (зобразитися при наступному зчитуванні)</string>
     <string name="title_widget_hide_graph">Приховати віджет з графіком</string>
     <string name="summary_illustrate_remote_data">Показати дані, отримані дистанційно (тільки діагностика)</string>
