@@ -673,7 +673,7 @@
     <string name="use_plugin_glucose">Użyj glukozy z wtyczki</string>
     <string name="main_glucose_plugin">Główna wyświetlana wartość glukozy pochodzi z wtyczki!</string>
     <string name="plugin_override_all">Wtyczka nadpisuje wszystkie inne</string>
-    <string name="all_new_glucose_data_plugin">WSZYSTKIE nowe dane dotyczące glukozy zostaną obliczone i zapisane z wybranej wtyczki, a nie ze standardowego algorytmu xDrip. To jest nieprzetestowane i może być niedokładne i błędne. Używaj ze szczególną ostrożnością.</string>
+    <string name="all_new_glucose_data_plugin">WSZYSTKIE nowe dane dotyczące glukozy będą obliczane i zapisywane z wybranej wtyczki, a nie ze standardowego algorytmu xDrip. To nie zostało przetestowane i może być niedokładne lub nie działać prawidłowo. Używaj ze szczególną ostrożnością.</string>
     <string name="old_school_calibrations">Oryginalny węższy zakres dozwolonych nachyleń w ramach klasycznego algorytmu kalibracji xDrip (sprzed 2017 roku). Domyślne nachylenia bardziej prawdopodobne! (tylko w trybie inżynieryjnym)</string>
     <string name="old_school_calibration_mode">Tryb kalibracji starego typu</string>
     <string name="how_receive_data">W jaki sposób będziesz odbierać dane ze swojego czujnika/transmitera Dexcom?</string>
@@ -1657,4 +1657,6 @@
     <string name="summary_ymin">Wybierz yMin, dla sytuacji, gdy nie ma niższych odczytów.</string>
     <string name="summary_ymax">Wybierz yMax, dla sytuacji, gdy nie ma wyższych odczytów.</string>
     <string name="close">Zamknij</string>
+    <string name="import_qr_code_warning">Importuj ustawienia tylko z zaufanych źródeł!\n\nPotwierdź zaimportowanie następujących ustawień:\n\n</string>
+    <string name="scan_to_load_xdrip_settings">Zeskanuj aby załadować ustawienia xDrip</string>
 </resources>
