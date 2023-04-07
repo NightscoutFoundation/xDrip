@@ -9,6 +9,7 @@ import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.UtilityModels.PumpStatus;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ActiveNotification;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.Alarm;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ClearedNotification;
@@ -218,7 +219,15 @@ public class CareLinkDataProcessor {
             }
         }
 
-
+        //PUMP INFO (Pump Status)
+        if (recentData.isNGP()) {
+            PumpStatus.setReservoir(recentData.reservoirRemainingUnits);
+            PumpStatus.setBattery(recentData.medicalDeviceBatteryLevelPercent);
+            if (recentData.activeInsulin != null)
+                PumpStatus.setBolusIoB(recentData.activeInsulin.amount);
+            PumpStatus.syncUpdate();
+        }
+		
         // LAST ALARM -> NOTE (only for GC)
         if (Pref.getBooleanDefaultFalse("clfollow_download_notifications")) {
 
