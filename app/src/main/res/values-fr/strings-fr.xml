@@ -1761,4 +1761,6 @@
     <string name="summary_ymin">Choisir yMin lorsqu\'il n\'y a pas de lectures plus petites.</string>
     <string name="summary_ymax">Choisir yMax lorsqu\'il n\'y a pas de lectures plus grandes.</string>
     <string name="close">Fermer</string>
+    <string name="import_qr_code_warning">Importer les paramètres eulement des sources de confiance !\n\nVeuillez confirmer l\'importation les paramètres suivants :\n\n</string>
+    <string name="scan_to_load_xdrip_settings">Scanner pour charger les paramètres de xDrip</string>
 </resources>
