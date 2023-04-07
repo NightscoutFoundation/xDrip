@@ -28,6 +28,7 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
 
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission-sdk-23 android:name="android.permission.CAMERA" />
@@ -632,6 +633,7 @@
             android:configChanges="orientation|screenSize"
             android:exported="false"
             android:label="@string/title_activity_display_qrcode"
+
             android:noHistory="true" />
         <activity
             android:name=".utils.LibreTrendGraph"
