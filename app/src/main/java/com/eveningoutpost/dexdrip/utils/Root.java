@@ -15,7 +15,7 @@ import java.util.List;
 public class Root {
 
     private static final String TAG = "RootTools";
-    private static Boolean gotRoot;
+    public static Boolean gotRoot;
 
     public static boolean gotRoot() {
         if (gotRoot == null) {
