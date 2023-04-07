@@ -1765,4 +1765,6 @@
     <string name="summary_ymin">Pasirinkite yMin, kai nėra mažesnių rodmenų.</string>
     <string name="summary_ymax">Pasirinkite yMaks, kai nėra didesnių rodmenų.</string>
     <string name="close">Uždaryti</string>
+    <string name="import_qr_code_warning">Importuokite nustatymus tik iš tų šaltinių, kuriais pasitikite!\n\nPatvirtinkite šių nustatymų importą:\n\n</string>
+    <string name="scan_to_load_xdrip_settings">Skenuokite xDrip nustatymams įkelti</string>
 </resources>
