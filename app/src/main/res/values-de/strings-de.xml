@@ -1761,4 +1761,6 @@
     <string name="summary_ymin">Wähle yMin, wenn es keine kleineren Werte gibt.</string>
     <string name="summary_ymax">Wähle yMax, wenn es keine größeren Werte gibt.</string>
     <string name="close">Schließen</string>
+    <string name="import_qr_code_warning">Nur Einstellungen aus vertrauenswürdigen Quellen importieren!\n\nBitte den Import der folgenden Einstellungen bestätigen:\n\n</string>
+    <string name="scan_to_load_xdrip_settings">Scannen, um xDrip-Einstellungen zu laden</string>
 </resources>
