@@ -127,6 +127,10 @@ public class AlertPlayer {
     final static int MAX_VIBRATING_MINUTES = 2;
     final static int MAX_ASCENDING_MINUTES = 5;
 
+    // Ascending without delay profile
+    final static float NODELAY_ASCENDING_INTERCEPT = 0.3333f; // Lower volumes are silent on some phones.
+    final static float NODELAY_ASCENDING_SLOPE = 0.166675f; // So that the volume reaches 1 (max) in 4 steps (1-2-3-4-5) since in most cases, we have a new reading once every 5 minutes.
+
     public int streamType = AudioManager.STREAM_MUSIC;
 
     private final AudioManager.OnAudioFocusChangeListener focusChangeListener =
@@ -545,11 +549,11 @@ public class AlertPlayer {
         if (profile != ALERT_PROFILE_VIBRATE_ONLY && profile != ALERT_PROFILE_SILENT) {
             float volumeFrac = (float) (minsFromStartPlaying - MAX_VIBRATING_MINUTES) / (MAX_ASCENDING_MINUTES - MAX_VIBRATING_MINUTES);
             // While minsFromStartPlaying <= MAX_VIBRATING_MINUTES, we only vibrate ...
+            if (!Pref.getBoolean("delay_ascending_3min", true)) { // If delay_ascending_3min is disabled, linearly increase volume from start.
+                volumeFrac = (minsFromStartPlaying * NODELAY_ASCENDING_SLOPE + NODELAY_ASCENDING_INTERCEPT);
+            }
             volumeFrac = Math.max(volumeFrac, 0); // Limit volumeFrac to values greater than and equal to 0
             volumeFrac = Math.min(volumeFrac, 1); // Limit volumeFrac to values less than and equal to 1
-            if (!Pref.getBoolean("delay_ascending_3min", true) && volumeFrac < 0.3) {
-                volumeFrac = (float) 0.3; // If delay_ascending_3min is disabled, we never only vibrate.
-            }
             if (profile == ALERT_PROFILE_MEDIUM) {
                 volumeFrac = (float) 0.7;
             }
