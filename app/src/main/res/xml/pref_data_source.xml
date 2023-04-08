@@ -280,7 +280,7 @@
                     android:summary="@string/summary_use_ob1_g5_collector_service"
                     android:title="@string/title_use_ob1_g5_collector_service" />
                 <CheckBoxPreference
-                    android:defaultValue="false"
+                    android:defaultValue="true"
                     android:dependency="use_ob1_g5_collector_service"
                     android:key="ob1_g5_use_transmitter_alg"
                     android:summary="@string/summary_ob1_g5_use_transmitter_alg"
