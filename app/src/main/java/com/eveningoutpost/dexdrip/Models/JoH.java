@@ -68,6 +68,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.XdripNotificationCompat;
 import com.eveningoutpost.dexdrip.utils.BestGZIPOutputStream;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
+import com.eveningoutpost.dexdrip.utils.framework.BuggySamsung;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.common.primitives.Bytes;
 import com.google.common.primitives.UnsignedInts;
@@ -438,8 +439,8 @@ public class JoH {
         return null; // too big
     }
 
-    public static boolean isSamsung() {  // Workaround for all brands
-        return true;
+    public static boolean isSamsung() {
+        return BuggySamsung.isSamsung();
     }
 
     private static final String BUGGY_SAMSUNG_ENABLED = "buggy-samsung-enabled";
