@@ -298,7 +298,8 @@ public class BgGraphBuilder {
         final List<Line> lines = new LinkedList<>();
 
         final boolean g_prediction = Pref.getBooleanDefaultFalse("show_g_prediction");
-        final boolean medtrum = Pref.getBooleanDefaultFalse("show_medtrum_secondary");
+        final boolean medtrum = (DexCollectionType.getDexCollectionType() == DexCollectionType.Medtrum)
+                && Pref.getBooleanDefaultFalse("show_medtrum_secondary");
         if (medtrum || g_prediction) {
             final List<Prediction> plist = Prediction.latestForGraph(4000, loaded_start, loaded_end);
             if (plist.size() > 0) {
