@@ -1,9 +1,14 @@
 package com.eveningoutpost.dexdrip.watch.lefun;
 
+import androidx.annotation.VisibleForTesting;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.google.common.base.Strings;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Jamorham
@@ -21,30 +26,36 @@ public class LeFun {
 
     // convert multi-line text to string for display constraints
     public static void sendAlert(boolean isCall, final String... lines) {
-
-        final int width = ModelFeatures.getScreenWidth();
-
-        final StringBuilder result = new StringBuilder();
-
-        for (final String message : lines) {
-            final StringBuilder messageBuilder = new StringBuilder(message);
-            while (messageBuilder.length() < width) {
-                if ((messageBuilder.length() % 2) == 0) {
-                    messageBuilder.insert(0, " ");
-                } else {
-                    messageBuilder.append(" ");
-                }
-            }
-            result.append(messageBuilder.toString());
-        }
-
-        final String resultRaw = result.toString();
-        final int trailing_space = resultRaw.lastIndexOf(' ');
-        final String resultString = trailing_space >= width ? result.toString().substring(0, trailing_space) : resultRaw;
+        int width = ModelFeatures.getScreenWidth();
+        String formattedMessage = formatAlertMessage(width, Arrays.asList(lines));
 
         Inevitable.task("lefun-send-alert-debounce", isCall ? 300 : 3000, () -> JoH.startService(LeFunService.class, "function", "message",
-                "message", resultString,
+                "message", formattedMessage,
                 "message_type", isCall ? "call" : "glucose"));
+    }
+
+    @VisibleForTesting
+    static String formatAlertMessage(int width, List<String> lines) {
+        StringBuilder result = new StringBuilder();
+        for (String message : lines) {
+            result.append(padToWidth(width, message));
+        }
+        return result.deleteCharAt(result.lastIndexOf(" ")).toString();
+    }
+
+    /** Pads a message with spaces to center it in the given width. */
+    @VisibleForTesting
+    static String padToWidth(int width, String message) {
+        if (width <= message.length()) {
+            return message;
+        }
+        int leftSpaces = (width - message.length()) / 2;
+        int rightSpaces = (width - message.length() + 1) / 2;
+        return new StringBuilder()
+            .append(Strings.repeat(" ", leftSpaces))
+            .append(message)
+            .append(Strings.repeat(" ", rightSpaces))
+            .toString();
     }
 
     public static void showLatestBG() {
