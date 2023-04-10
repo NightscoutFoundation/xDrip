@@ -74,6 +74,16 @@ public class BaseMessage {
         return sb.toString();
     }
 
+    static long longFromData(final ByteBuffer data, final int length) {
+        long result = 0;
+        int shift = 0;
+        for (int i = 0; i < length; i++) {
+            result += (((long) getUnsignedByte(data)) << shift);
+            shift += 8;
+        }
+        return result;
+    }
+
     static int getUnixTime() {
         return (int) (JoH.tsl() / 1000);
     }
