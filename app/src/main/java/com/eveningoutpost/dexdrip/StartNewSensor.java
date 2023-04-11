@@ -54,6 +54,9 @@ public class StartNewSensor extends ActivityWithMenu {
     // private TimePicker tp;
     final Activity activity = this;
     Calendar ucalendar = Calendar.getInstance();
+    private int transmitterAgeInDays() { // Transmitter days reported by the transmitter; 0 on day 1; -1 if unknown due to no connectivity.
+        return DexTimeKeeper.getTransmitterAgeInDays(getTransmitterID());
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,8 +104,9 @@ public class StartNewSensor extends ActivityWithMenu {
 
         ucalendar = Calendar.getInstance();
         if (Ob1G5CollectionService.usingNativeMode()) {
-            if (!DexSyncKeeper.isReady(Pref.getString("dex_txid", "NULL"))) {
-                JoH.static_toast_long("Need to connect to transmitter once before we can start sensor");
+            if (!DexSyncKeeper.isReady(Pref.getString("dex_txid", "NULL")) || transmitterAgeInDays() == -1) {
+                JoH.static_toast_long("Need to connect to transmitter before we can start sensor");
+                UserError.Log.e(TAG, "Need to connect to transmitter before we can start sensor");
                 MegaStatus.startStatus(MegaStatus.G5_STATUS);
             } else {
                 startSensorOrAskForG6Code();   // If we're using native mode, don't bother asking about insertion time
@@ -179,17 +183,16 @@ public class StartNewSensor extends ActivityWithMenu {
         if (Ob1G5CollectionService.usingCollector() && Ob1G5StateMachine.usingG6()) {
             if (JoH.pratelimit("dex-stop-start", cap)) {
                 JoH.clearRatelimit("dex-stop-start");
-                val transmitterAgeInDays = DexTimeKeeper.getTransmitterAgeInDays(getTransmitterID());
                 val modified = FirmwareCapability.isTransmitterModified(getTransmitterID());
-                val endOfLife = transmitterAgeInDays >= ABSOLUTE_MAX_AGE_DAYS || (!modified && transmitterAgeInDays >= MAX_AGE_DAYS);
-                if (transmitterAgeInDays < MAX_AGE_DAYS - MONTH_WARNING_DAYS
-                        || (modified && transmitterAgeInDays < ABSOLUTE_MAX_AGE_DAYS - MONTH_WARNING_DAYS)) {
+                val endOfLife = transmitterAgeInDays() >= ABSOLUTE_MAX_AGE_DAYS || (!modified && transmitterAgeInDays() >= MAX_AGE_DAYS);
+                if (transmitterAgeInDays() < MAX_AGE_DAYS - MONTH_WARNING_DAYS
+                        || (modified && transmitterAgeInDays() < ABSOLUTE_MAX_AGE_DAYS - MONTH_WARNING_DAYS)) {
                     // More than 30 days left of starting sensors - just ask for code
                     G6CalibrationCodeDialog.ask(this, this::startSensorAndSetIntent);
                 } else { // 30 or less days left of starting sensors - give additional message first
                     G6EndOfLifeDialog.show(activity, () ->
                                     G6CalibrationCodeDialog.ask(this, this::startSensorAndSetIntent),
-                            endOfLife, modified, transmitterAgeInDays);
+                            endOfLife, modified, transmitterAgeInDays());
                 }
             } else {
                 JoH.static_toast_long(String.format(Locale.ENGLISH, getString(R.string.please_wait_seconds_before_trying_to_start_sensor), cap));
