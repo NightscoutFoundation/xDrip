@@ -59,6 +59,28 @@
       }
     },
     {
+      "name": "Lispro",
+      "displayName": "Lispro (rapid acting)",
+      "concentration": "U100",
+      "PPN":
+      [
+        "111291061285",
+        "111291059828",
+        "111291064107",
+        "111291063541"
+      ],
+      "Curve":
+      {
+        "type": "linear trapezoid",
+        "data":
+        {
+          "onset": "15",
+          "peak": "90",
+          "duration": "210"
+        }
+      }
+    },
+    {
       "name": "Actrapid",
       "displayName": "Actrapid (short acting)",
       "concentration": "U100",
