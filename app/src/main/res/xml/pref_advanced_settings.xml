@@ -1381,17 +1381,17 @@
 
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:key="xdrip_libre2_advanced_settings"
-                android:title="Advanced settings for Libre 2">
+                android:title="@string/title_advanced_settings_4_Lib2">
                 <SwitchPreference
                     android:defaultValue="false"
                     android:key="Libre2_showRawGraph"
-                    android:summary="switch on to show the raw values on the Graph"
-                    android:title="show Raw values in Graph" />
+                    android:summary="@string/summary_Lib2_show_raw_values"
+                    android:title="@string/title_Lib2_show_raw_values" />
                 <SwitchPreference
                     android:defaultValue="false"
                     android:key="Libre2_showSensors"
-                    android:summary="switch to On to show additional Information's in Status for Libre 2 Sensors"
-                    android:title="show Sensors Infos in Status" />
+                    android:summary="@string/summary_Lib2_show_sense_on_status"
+                    android:title="@string/title_Lib2_show_sense_on_status" />
             </PreferenceScreen>
 
             <CheckBoxPreference
