@@ -10,6 +10,8 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 
 import jamorham.keks.util.Log;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * JamOrHam
@@ -28,6 +30,17 @@ public class Context {
     public byte[] challenge;
     public volatile byte[] savedKey;
     public volatile Packet[] packet = new Packet[4];
+
+    @Getter @Setter
+    private volatile byte[] partA;
+    @Getter @Setter
+    private volatile byte[] partB;
+    @Getter @Setter
+    private volatile byte[] partC;
+
+    public boolean validateParts() {
+        return partA != null && partB != null && partC != null && partA.length > 100 && partB.length > 100 && partC.length > 100;
+    }
 
     public void reset() {
         savedKey = null;

@@ -5,23 +5,25 @@ import static java.lang.System.arraycopy;
 import static jamorham.keks.Config.Get.ALICE;
 import static jamorham.keks.Config.Get.BOB;
 import static jamorham.keks.Config.Get.GETDATA;
-import static jamorham.keks.Config.Get.KEY1A;
-import static jamorham.keks.Config.Get.KEY1B;
-import static jamorham.keks.Config.Get.KEY2A;
-import static jamorham.keks.Config.Get.KEY2B;
+import static jamorham.keks.Config.Get.GETDATA2;
 import static jamorham.keks.Config.Get.KEYCMD;
 import static jamorham.keks.Config.Get.SPARAM;
+import static jamorham.keks.message.CertInfoTxMessage.expectMyCert1;
+import static jamorham.keks.message.CertInfoTxMessage.expectMyCert2;
 import static jamorham.keks.util.Util.arrayAppend;
 import static jamorham.keks.util.Util.bytesToHex;
 
 import com.eveningoutpost.dexdrip.plugin.IPluginDA;
 
+import java.security.InvalidParameterException;
 import java.util.Arrays;
 import java.util.HashSet;
 
 import jamorham.keks.message.AuthChallengeTxMessage;
 import jamorham.keks.message.AuthRequestTxMessage2;
 import jamorham.keks.message.AuthStatusRxMessage;
+import jamorham.keks.message.CertInfoRxMessage;
+import jamorham.keks.message.SignChallengeTxMessage;
 import jamorham.keks.util.Log;
 import lombok.Getter;
 import lombok.val;
@@ -41,6 +43,7 @@ public class Plugin implements IPluginDA {
     private static final byte[] TIME_EXTENDED = Config.Get.TIME_EXTENDED.bytes;
     private static final byte[] TIME_EXTENDED2 = Config.Get.TIME_EXTENDED2.bytes;
     private static final byte[] TIME_EXTENDED3 = Config.Get.TIME_EXTENDED3.bytes;
+    private static final byte[] CHALLENGE_OUT = Config.Get.CHALLENGE_OUT.bytes;
 
     private static final int Init = 0;
     private static final int Unknown = 370018;
@@ -54,7 +57,15 @@ public class Plugin implements IPluginDA {
     private static final int BondFailure = 162087;
     private static final int RequestAuth = 125320;
     private static final int ChallengeReply = 766662;
+    private static final int SendCertificate0 = 975913;
+    private static final int SendCertificate1 = 694702;
+    private static final int SendCertificate2 = 230995;
+    private static final int SendCertificate1out = 842681;
+    private static final int SendCertificate2out = 558830;
+    private static final int SendKeyChallenge = 486262;
+    private static final int SendKeyChallengeOut = 327604;
     private static final int GetData = 734275;
+    private static final int GetData2 = 199434;
 
     private static String stateToName(final int state) {
         switch (state) {
@@ -80,22 +91,48 @@ public class Plugin implements IPluginDA {
                 return "Pairing";
             case RequestAuth:
                 return "Request Auth";
+            case SendCertificate0:
+                return "Send Certificate 0";
+            case SendCertificate1:
+                return "Send Certificate 1";
+            case SendCertificate2:
+                return "Send Certificate 2";
+            case SendCertificate1out:
+                return "Send Certificate 1 Out";
+            case SendCertificate2out:
+                return "Send Certificate 2 Out";
+            case SendKeyChallenge:
+                return "Send Key Challenge";
+            case SendKeyChallengeOut:
+                return "Send Key Challenge Out";
             case ChallengeReply:
                 return "Challenge Reply";
             case GetData:
                 return "Get Data";
+            case GetData2:
+                return "Get Data 2";
+
             default:
                 return "Error " + state;
         }
     }
 
     private static volatile Plugin instance = null;
+    private volatile AuthRequestTxMessage2 lastAuthTx2;
     private volatile int state = 0;
     private volatile byte[] accumulator = new byte[0];
     private volatile byte[] keyToTestAgainst = null;
 
+    static {
+        dontClearAccumulator.add(SendCertificate1);
+        dontClearAccumulator.add(SendCertificate1out);
+        dontClearAccumulator.add(SendCertificate2);
+        dontClearAccumulator.add(SendCertificate2out);
+    }
+
     public Plugin(String password) {
         context.password = password;
+        context.getPasswordBytes();
     }
 
     public Plugin() {
@@ -109,17 +146,14 @@ public class Plugin implements IPluginDA {
         return instance;
     }
 
-    private static final KeyPair key1 = KeyPair.fromBytes(new byte[][]{KEY1A.bytes, KEY1B.bytes});
-    private static final KeyPair key2 = KeyPair.fromBytes(new byte[][]{KEY2A.bytes, KEY2B.bytes});
-
     @Getter
     private final Context context = new Context();
 
     {
         context.alice = ALICE.bytes;
         context.bob = BOB.bytes;
-        context.keyA = key1;
-        context.KeyB = key2;
+        context.keyA = new KeyPair();
+        context.KeyB = new KeyPair();
     }
 
     private synchronized void changeState(int newState) {
@@ -171,11 +205,19 @@ public class Plugin implements IPluginDA {
     private byte[] presponse = null;
 
     private int expectedBytesForState() {
+
         switch (state) {
             case Round1:
             case Round2:
             case Round3:
                 return Curve.PACKET_SIZE;
+            case SendCertificate1:
+            case SendCertificate1out:
+            case SendCertificate2:
+            case SendCertificate2out:
+                return expectedSize > 0 ? expectedSize : 0x179005;
+            case SendKeyChallenge:
+                return 64;
             default:
                 return 0x602910;
         }
@@ -194,6 +236,9 @@ public class Plugin implements IPluginDA {
         Log.d(TAG, "Received remote response: " + bytesToHex(data) + " when in " + stateToName(state));
         switch (state) {
             case RequestAuth:
+                if (!verifyChallenge(data)) {
+                    throw new SecurityException("Mismatch");
+                }
                 context.challenge = new byte[8];
                 arraycopy(data, 9, context.challenge, 0, context.challenge.length);
                 return true;
@@ -216,6 +261,8 @@ public class Plugin implements IPluginDA {
                         Log.d(TAG, "Full success");
                         if (context.passwordBytes.length > 4) {
                             changeState(GetData);
+                        } else {
+                            changeState(GetData2);
                         }
                         return true;
                     } else {
@@ -223,6 +270,12 @@ public class Plugin implements IPluginDA {
                         presponse = null;
                         if (context.passwordBytes.length > 4) {
                             changeState(Pairing);
+                        } else {
+                            if (context.validateParts()) {
+                                changeState(SendCertificate0);
+                            } else {
+                               throw new InvalidParameterException("Missing QR code");
+                            }
                         }
                         return true;
                     }
@@ -230,6 +283,34 @@ public class Plugin implements IPluginDA {
 
             case Pairing:
                 return true;
+
+            case SendCertificate1:
+                val rep = new CertInfoRxMessage(data);
+                if (rep.valid()) {
+                    expectedSize = rep.getSize();
+                    changeState(SendCertificate1);
+                    return true;
+                } else {
+                    return false;
+                }
+            case SendCertificate2:
+                val rep2 = new CertInfoRxMessage(data);
+                if (rep2.valid()) {
+                    expectedSize = rep2.getSize();
+                    changeState(SendCertificate2);
+                    return true;
+                } else {
+                    return false;
+                }
+
+            case SendKeyChallenge:
+                presponse = Calc.challenger(context.getPartC(), data);
+                return true;
+
+            case SendKeyChallengeOut:
+                // TODO validate
+                return true;
+
         }
 
         return false;
@@ -247,6 +328,11 @@ public class Plugin implements IPluginDA {
 
     private boolean alt = false;
 
+    private AuthRequestTxMessage2 getAuthRequestTx2() {
+        lastAuthTx2 = new AuthRequestTxMessage2(8, alt);
+        return lastAuthTx2;
+    }
+
     @Override
     public byte[][] aNext() {
         Log.d(TAG, "Processing anext in state: " + stateToName(state));
@@ -254,7 +340,7 @@ public class Plugin implements IPluginDA {
             case RoundStart:
                 if (context.getRound3Packet() != null || context.savedKey != null) {
                     state = RequestAuth;
-                    return new byte[][]{new AuthRequestTxMessage2(8, alt).byteSequence, null};
+                    return new byte[][]{getAuthRequestTx2().byteSequence, null};
                 } else {
                     state = Round1;
                     return sequencePacket(null);
@@ -267,12 +353,33 @@ public class Plugin implements IPluginDA {
                 return sequencePacket(Calc.getRound2Packet(context).output());
             case Round3:
                 state = RequestAuth;
-                return new byte[][]{new AuthRequestTxMessage2(8, alt).byteSequence, Calc.getRound3Packet(context).output()};
+                return new byte[][]{getAuthRequestTx2().byteSequence, Calc.getRound3Packet(context).output()};
             case RequestAuth:
                 state = ChallengeReply;
                 return new byte[][]{new AuthChallengeTxMessage(Calc.calculateHash(context)).byteSequence, null};
             case ChallengeReply:
                 state = Unknown;
+                return new byte[][]{TIME_EXTENDED, null};
+            case SendCertificate0:
+                state = SendCertificate1;
+                return new byte[][]{expectMyCert1(this), null};
+            case SendCertificate1:
+                state = SendCertificate1out;
+                return new byte[][]{null, context.getPartA()};
+            case SendCertificate1out:
+                state = SendCertificate2;
+                return new byte[][]{expectMyCert2(this), null};
+            case SendCertificate2:
+                state = SendCertificate2out;
+                return new byte[][]{null, context.getPartB()};
+            case SendCertificate2out:
+                state = SendKeyChallenge;
+                return new byte[][]{new SignChallengeTxMessage().byteSequence, null};
+            case SendKeyChallenge:
+                state = SendKeyChallengeOut;
+                return new byte[][]{CHALLENGE_OUT, presponse};
+            case SendKeyChallengeOut:
+                state = GetData;
                 return new byte[][]{TIME_EXTENDED, null};
             case Pairing:
                 state = GetData;
@@ -280,6 +387,9 @@ public class Plugin implements IPluginDA {
             case GetData:
                 state = Unknown;
                 return new byte[][]{GETDATA.bytes};
+            case GetData2:
+                state = Unknown;
+                return new byte[][]{GETDATA2.bytes};
             case BondFailure:
                 state = Unknown;
                 return new byte[][]{GETDATA.bytes, null, null};
@@ -367,6 +477,15 @@ public class Plugin implements IPluginDA {
         if (channel == 7) {
             dontClearAccumulator.clear();
         }
+        if (channel == 8) {
+            context.setPartA(data);
+        }
+        if (channel == 9) {
+            context.setPartB(data);
+        }
+        if (channel == 10) {
+            context.setPartC(data);
+        }
         return false;
     }
 
@@ -393,10 +512,23 @@ public class Plugin implements IPluginDA {
                 return Calc.validateRound2Packet(context);
             case Round3:
                 return Calc.validateRound3Packet(context);
-
+            case SendCertificate1out:
+            case SendCertificate2out:
+                return true;
         }
         Log.d(TAG, "Invalid state for validation: " + stateToName(state));
         return false;
+    }
+
+    private boolean verifyChallenge(byte[] data) {
+        if (context.savedKey != null) return true;
+        context.challenge = lastAuthTx2.singleUseToken;
+        val h = Calc.calculateHash(context);
+        if (h == null) return false;
+        for (int i = 0; i < 8; i++) {
+            if (h[i] != data[i + 1]) return false;
+        }
+        return true;
     }
 
     private byte[][] sequencePacket(final byte[] Packet) {

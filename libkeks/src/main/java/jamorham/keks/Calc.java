@@ -2,6 +2,7 @@ package jamorham.keks;
 
 
 import static org.bouncycastle.util.BigIntegers.fromUnsignedByteArray;
+import static java.lang.System.arraycopy;
 import static jamorham.keks.Config.Get.REFERENCE;
 import static jamorham.keks.util.Util.arrayReduce;
 import static jamorham.keks.util.Util.intToByteArray;
@@ -165,6 +166,13 @@ public class Calc {
     private static void updateDigestIncludingSize(final Digest digest, final byte[] byteArray) {
         digest.update(intToByteArray(byteArray.length));
         digest.update(byteArray);
+    }
+
+    public static byte[] challenger(final byte[] bytes, final byte[] challenge) {
+        val pchallenge = new byte[16];
+        arraycopy(challenge, 2, pchallenge, 0, pchallenge.length);
+        return new DSAChallenger(KeyPair.fromBytes(bytes))
+                .response(pchallenge);
     }
 
 }

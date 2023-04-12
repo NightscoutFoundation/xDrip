@@ -25,6 +25,8 @@ public class Config {
     private static final byte[] TIME_EXTENDED3B = new byte[]{0x06, 0x00};
     private static final byte[] PREFIX_B = new byte[]{0x30, 0x30};
     private static final byte[] ONE_GET_DATA_4E_CMD = new byte[]{0x4e, 0x0a, (byte)0xa9};
+    private static final byte[] GET_DATA_4E_CMD = new byte[]{0x4e};
+    private static final byte[] CHALLENGE_OUTB = new byte[]{0x0d, 0x00, 0x02};
 
     public enum Get {
         SPARAM(SPARAMB),
@@ -40,7 +42,9 @@ public class Config {
         ALICE(ALICE_B),
         BOB(BOB_B),
         REFERENCE(REFERENCE_B),
-        GETDATA(ONE_GET_DATA_4E_CMD);
+        GETDATA(ONE_GET_DATA_4E_CMD),
+        GETDATA2(GET_DATA_4E_CMD),
+        CHALLENGE_OUT(CHALLENGE_OUTB);
 
         public final byte[] bytes;
         Get(byte[] bytes) {
