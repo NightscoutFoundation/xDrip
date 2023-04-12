@@ -43,7 +43,7 @@
                     android:padding="0dp"
                     android:adjustViewBounds="true"
                     android:gravity="center_vertical"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@{viewmodel.qrbitmap}"/>
 
@@ -89,6 +89,16 @@
                     android:layout_weight="1"
                     android:onClick="desertSyncSettings"
                     android:text="@string/set_up_desert_sync_follower" />
+
+                <Button
+                    app:showIfTrue="@{viewmodel.showGkey}"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="28dp"
+                    android:layout_weight="1"
+                    android:onClick="showGKey"
+                    android:text="Export KEKS key to another phone" />
+
 
                 <Button
                     android:id="@+id/button"

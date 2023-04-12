@@ -88,6 +88,9 @@ public class DisplayQRCode extends BaseAppCompatActivity {
                     case "xdrip_plus_desert_sync_qr":
                         desertSyncSettings(null);
                         break;
+                    case "xdrip_plus_keks_qr":
+                        showGKey(null);
+                        break;
                 }
             }
         }
@@ -139,6 +142,36 @@ public class DisplayQRCode extends BaseAppCompatActivity {
         showQRCode();
     }
 
+
+    public boolean generateKeksBinaryPrefs() {
+        binaryPrefsMap.clear();
+        mapChecksum = "error";
+        try {
+            val digest = MessageDigest.getInstance("SHA-256");
+            val tem = "keks_p";
+            for (int i = 1; i < 4; i++) {
+                val pn = tem + i;
+                val bb = JoH.hexStringToByteArray(Pref.getStringDefaultBlank(pn));
+                if (bb == null || bb.length == 0) {
+                    Log.d(TAG, "Null or empty at: " + i);
+                    return false;
+                }
+                val px = "b__" + pn;
+                binaryPrefsMap.put(px, bb);
+                digest.update(px.getBytes(StandardCharsets.UTF_8));
+                digest.update(bb);
+            }
+            mapChecksum = JoH.bytesToHex(digest.digest());
+            return true;
+        } catch (Exception e) {
+            Log.d(TAG, "Got exception making binary prefs map " + e);
+        }
+        return false;
+    }
+
+    public synchronized void showGKey(View view) {
+        showQRCode2("G Key settings\n\n" + Preferences.getMapKeysString(binaryPrefsMap).replace("\n", " ") + "\n\nHash: " + mapChecksum.substring(0, 16));
+    }
 
     public static synchronized void uploadBytes(byte[] result, final int callback_option) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("uploadBytes", 1200000);
@@ -267,8 +300,8 @@ public class DisplayQRCode extends BaseAppCompatActivity {
         Log.d(TAG, "QR bytes: " + bytes.length);
         val bytesc = JoH.compressBytesToBytes(bytes);
         Log.d(TAG, "QR bytes: " + bytesc.length);
-        val desiredPixels = Math.min(getScreenWidth(), getScreenHeight());
-
+        val scale = (getScreenWidth() > getScreenHeight()) ? 0.8d : 1;
+        val desiredPixels = (int) (Math.min(getScreenWidth(), getScreenHeight()) * scale);
         try {
             val bitmap = createQRCodeBitmap(bytesc, desiredPixels, desiredPixels);
             binding.getViewmodel().showQr.set(false);
@@ -299,10 +332,12 @@ public class DisplayQRCode extends BaseAppCompatActivity {
     public class ViewModel {
         public final ObservableBoolean showQr = new ObservableBoolean();
         public final ObservableField<Drawable> qrbitmap = new ObservableField<>();
-
+        public final ObservableBoolean showGkey = new ObservableBoolean();
         public final ObservableField<String> narrative = new ObservableField<>();
 
-
+        {
+            showGkey.set(generateKeksBinaryPrefs());
+        }
 
     }
 }
