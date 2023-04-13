@@ -946,6 +946,7 @@
     <string name="bluereader_position">check position of blueReader on the sensor, as it was not able to read!</string>
     <string name="bluereaderuglystate">The blueReader was found in an ugly state! It will be now turn off now, and you turn it back to on (short press of the button). After that the blueReader should work as expected!</string>
     <string name="offical_msg">The official app</string>
+    <string name="aggressive_power_manager">Your device has an aggressive power management app. Normally accessed via system settings. Please make sure xDrip is excluded from background restrictions.</string>
     <string name="use_conflict_msg">may try to access the transmitter device too and this can cause problems with both apps</string>
     <string name="use_confict_msg_glimp">You can adjust Glimp Settings: options -> devices -> unselect Bluetooth option</string>
     <string name="eng_mode_is_on">Engineering mode is enabled.  Please disable it unless you are certain you need it as it may cause unexpected behavior.</string>

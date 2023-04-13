@@ -11,6 +11,8 @@ import java.util.List;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.INCOMPATIBLE_BASE_ID;
 
+import lombok.val;
+
 /**
  * Created by jamorham on 01/11/2017.
  */
@@ -54,10 +56,24 @@ public class IncompatibleApps {
             }
         }
 
+        final List<String> speedApps = new ArrayList<>();
+        speedApps.add("com.mediatek.duraspeed");
+        for (val app : speedApps) {
+            if (InstalledApps.checkPackageExists(context, app)) {
+                if (JoH.pratelimit(app + NOTIFY_MARKER, RENOTIFY_TIME)) {
+                    id = notify2("Nasty Power Manager", app, "DuraSpeed" + " " + xdrip.getAppContext().getString(R.string.aggressive_power_manager), id);
+                }
+            }
+        }
     }
 
     private static int notify(String short_name, String package_string, String msg, int id) {
         JoH.showNotification("Incompatible App " + short_name, "Please uninstall or disable " + package_string, null, id, true, true, null, null, ((msg.length() > 0) ? msg + "\n\n" : "") + "Another installed app may be incompatible with xDrip. The other app should be uninstalled or disabled to prevent conflicts with shared resources.\nThe package identifier is: " + package_string);
+        return id + 1;
+    }
+
+    private static int notify2(String short_name, String package_string, String msg, int id) {
+        JoH.showNotification(short_name, msg, null, id, true, true, null, null, ((msg.length() > 0) ? msg + "\n\n" : "") + "The Package identifier is: " + package_string);
         return id + 1;
     }
 
