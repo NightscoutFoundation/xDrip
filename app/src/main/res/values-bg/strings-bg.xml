@@ -586,4 +586,6 @@
     <string name="summary_ymin">Избрете yМин в случай, когато няма по-малки стойности.</string>
     <string name="summary_ymax">Избрете yМин в случай, когато няма по-ГОЛЕМИ стойности.</string>
     <string name="close">Затвори</string>
+    <string name="title_advanced_settings_4_Lib2">Разширени настройки за Libre 2</string>
+    <string name="title_Lib2_show_raw_values">Показвай raw стойности в графиката</string>
 </resources>

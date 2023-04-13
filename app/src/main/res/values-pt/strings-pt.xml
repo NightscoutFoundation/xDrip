@@ -1678,4 +1678,9 @@
     <string name="title_ymax">Ajustar o valor máximo para o eixo dos y</string>
     <string name="summary_ymin">Escolha yMin para quando não houver leituras inferiores.</string>
     <string name="summary_ymax">Escolha yMax para quando não houver leituras maiores.</string>
+    <string name="title_advanced_settings_4_Lib2">Definições avançadas para Libre 2</string>
+    <string name="title_Lib2_show_raw_values">Mostrar valores brutos no gráfico</string>
+    <string name="summary_Lib2_show_raw_values">Ative para mostrar os valores brutos no gráfico.</string>
+    <string name="title_Lib2_show_sense_on_status">Mostrar informação do sensor no Estado</string>
+    <string name="summary_Lib2_show_sense_on_status">Ative para mostrar no Estado informação adicional para o sensor Libre 2.</string>
 </resources>

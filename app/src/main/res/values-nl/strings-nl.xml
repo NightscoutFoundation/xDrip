@@ -1658,4 +1658,9 @@
     <string name="show_unsmoothed">Toon niet-afgevlakte waarden</string>
     <string name="show_unsmoothed_summary">Toon niet-afgevlakte waarden ook als grafiekafvlakking is ingeschakeld. Als de kalibratieplugin aanstaat, dan worden niet-afgevlakte waarden getoond in plaats van plugin data.</string>
     <string name="titleInside_yRange">Inschakelen</string>
+    <string name="title_advanced_settings_4_Lib2">Geavanceerde instellingen voor Libre 2</string>
+    <string name="title_Lib2_show_raw_values">Toon ruwe waarden in de grafiek</string>
+    <string name="summary_Lib2_show_raw_values">Inschakelen om ruwe waarden in grafiek weer te geven.</string>
+    <string name="title_Lib2_show_sense_on_status">Toon sensorinfo in Status</string>
+    <string name="summary_Lib2_show_sense_on_status">Inschakelen om extra informatie in Status voor Libre 2-sensor weer te geven.</string>
 </resources>

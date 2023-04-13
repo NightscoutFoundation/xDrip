@@ -1761,6 +1761,11 @@
     <string name="summary_ymin">Choisir yMin lorsqu\'il n\'y a pas de lectures plus petites.</string>
     <string name="summary_ymax">Choisir yMax lorsqu\'il n\'y a pas de lectures plus grandes.</string>
     <string name="close">Fermer</string>
+    <string name="title_advanced_settings_4_Lib2">Paramètres avancés pour Libre 2</string>
+    <string name="title_Lib2_show_raw_values">Afficher les valeurs brutes dans le graphique</string>
+    <string name="summary_Lib2_show_raw_values">Activer pour afficher les valeurs brutes dans le graphique.</string>
+    <string name="title_Lib2_show_sense_on_status">Afficher les informations du capteur dans statut</string>
+    <string name="summary_Lib2_show_sense_on_status">Activez pour afficher des informations supplémentaires du capteur de Libre 2 dans Statut.</string>
     <string name="import_qr_code_warning">Importer les paramètres eulement des sources de confiance !\n\nVeuillez confirmer l\'importation les paramètres suivants :\n\n</string>
     <string name="scan_to_load_xdrip_settings">Scanner pour charger les paramètres de xDrip</string>
 </resources>
