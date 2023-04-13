@@ -19,6 +19,7 @@ public class FirmwareCapability {
     private static final ImmutableSet<String> KNOWN_G6_REV2_RAW_FIRMWARES = ImmutableSet.of("2.18.2.67");
     private static final ImmutableSet<String> KNOWN_G6_PLUS_FIRMWARES = ImmutableSet.of("2.4.2.88");
     private static final ImmutableSet<String> KNOWN_ONE_FIRMWARES = ImmutableSet.of("30.192.103.34");
+    private static final ImmutableSet<String> KNOWN_ALT_FIRMWARES = ImmutableSet.of("29.192.104.59");
     private static final ImmutableSet<String> KNOWN_TIME_TRAVEL_TESTED = ImmutableSet.of("1.6.5.25");
 
     // new G6 firmware versions will need to be added here / above
@@ -130,6 +131,7 @@ public class FirmwareCapability {
                 || KNOWN_G5_FIRMWARES.contains(version)
                 || KNOWN_G6_FIRMWARES.contains(version)
                 || KNOWN_ONE_FIRMWARES.contains(version)
+                || KNOWN_ALT_FIRMWARES.contains(version)
                 || KNOWN_G6_REV2_FIRMWARES.contains(version)
                 || KNOWN_G6_PLUS_FIRMWARES.contains(version));
     }

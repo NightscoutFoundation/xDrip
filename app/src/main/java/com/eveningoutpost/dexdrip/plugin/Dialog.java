@@ -47,7 +47,7 @@ public class Dialog {
     }
 
     public static boolean txIdMatch(final String txId) {
-       return txId != null && txId.length() > 0 && Character.isLetter(txId.charAt(0)) && !txId.equals("ABCDEF");
+       return txId != null && txId.length() > 0 && (txId.length() == 4 || (Character.isLetter(txId.charAt(0)) && !txId.equals("ABCDEF")));
     }
 
     public static boolean askIfNeeded(final Activity activity, final String txId) {

@@ -179,6 +179,10 @@ public class StartNewSensor extends ActivityWithMenu {
     private static final int MONTH_WARNING_DAYS = 30;
 
     private void startSensorOrAskForG6Code() {
+        if (getTransmitterID().length() == 4) {
+            Sensor.createDefaultIfMissing();
+            finish();
+        }
         final int cap = 20;
         if (Ob1G5CollectionService.usingCollector() && Ob1G5StateMachine.usingG6()) {
             if (JoH.pratelimit("dex-stop-start", cap)) {

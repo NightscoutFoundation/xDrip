@@ -1,6 +1,26 @@
 package com.eveningoutpost.dexdrip.services;
 
+import static com.eveningoutpost.dexdrip.Home.get_engineering_mode;
+import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
+import static com.eveningoutpost.dexdrip.Models.JoH.niceTimeScalar;
+import static com.eveningoutpost.dexdrip.Models.JoH.tolerantHexStringToByteArray;
+import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
+import static com.eveningoutpost.dexdrip.Models.JoH.upForAtLeastMins;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_CALIBRATION_REQUEST;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_FAILED;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_RESTARTED;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_STARTED;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.SECOND_IN_MS;
+import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.BAD;
+import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.CRITICAL;
+import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.NORMAL;
+import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.NOTICE;
+import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.Advertisement;
 import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.ExtraData;
+import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.Mask16;
 import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.getUUIDName;
 import static com.eveningoutpost.dexdrip.g5model.CalibrationState.Ok;
 import static com.eveningoutpost.dexdrip.g5model.CalibrationState.Unknown;
@@ -11,9 +31,7 @@ import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.pendingCalibr
 import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.pendingStart;
 import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.pendingStop;
 import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.usingAlt;
-import static com.eveningoutpost.dexdrip.Models.JoH.niceTimeScalar;
-import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
-import static com.eveningoutpost.dexdrip.Models.JoH.upForAtLeastMins;
+import static com.eveningoutpost.dexdrip.plugin.Dialog.txIdMatch;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.BOND;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.CLOSE;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.CLOSED;
@@ -24,18 +42,6 @@ import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.G
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.INIT;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.PREBOND;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.SCAN;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_CALIBRATION_REQUEST;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_FAILED;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_RESTARTED;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_STARTED;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.SECOND_IN_MS;
-import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.BAD;
-import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.CRITICAL;
-import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.NORMAL;
-import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.NOTICE;
-import static com.eveningoutpost.dexdrip.plugin.Dialog.txIdMatch;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
 import static com.eveningoutpost.dexdrip.utils.bt.Subscription.addErrorHandler;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
@@ -55,6 +61,7 @@ import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.ParcelUuid;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -63,18 +70,6 @@ import android.text.SpannableStringBuilder;
 
 import com.eveningoutpost.dexdrip.AddCalibration;
 import com.eveningoutpost.dexdrip.DoubleCalibrationActivity;
-import com.eveningoutpost.dexdrip.g5model.BatteryInfoRxMessage;
-import com.eveningoutpost.dexdrip.g5model.BluetoothServices;
-import com.eveningoutpost.dexdrip.g5model.CalibrationState;
-import com.eveningoutpost.dexdrip.g5model.DexSyncKeeper;
-import com.eveningoutpost.dexdrip.g5model.DexTimeKeeper;
-import com.eveningoutpost.dexdrip.g5model.FirmwareCapability;
-import com.eveningoutpost.dexdrip.g5model.Ob1DexTransmitterBattery;
-import com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine;
-import com.eveningoutpost.dexdrip.g5model.TransmitterStatus;
-import com.eveningoutpost.dexdrip.g5model.VersionRequest1RxMessage;
-import com.eveningoutpost.dexdrip.g5model.VersionRequest2RxMessage;
-import com.eveningoutpost.dexdrip.g5model.VersionRequestRxMessage;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -94,6 +89,18 @@ import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight;
 import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.WholeHouse;
+import com.eveningoutpost.dexdrip.g5model.BatteryInfoRxMessage;
+import com.eveningoutpost.dexdrip.g5model.BluetoothServices;
+import com.eveningoutpost.dexdrip.g5model.CalibrationState;
+import com.eveningoutpost.dexdrip.g5model.DexSyncKeeper;
+import com.eveningoutpost.dexdrip.g5model.DexTimeKeeper;
+import com.eveningoutpost.dexdrip.g5model.FirmwareCapability;
+import com.eveningoutpost.dexdrip.g5model.Ob1DexTransmitterBattery;
+import com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine;
+import com.eveningoutpost.dexdrip.g5model.TransmitterStatus;
+import com.eveningoutpost.dexdrip.g5model.VersionRequest1RxMessage;
+import com.eveningoutpost.dexdrip.g5model.VersionRequest2RxMessage;
+import com.eveningoutpost.dexdrip.g5model.VersionRequestRxMessage;
 import com.eveningoutpost.dexdrip.plugin.IPluginDA;
 import com.eveningoutpost.dexdrip.plugin.Loader;
 import com.eveningoutpost.dexdrip.plugin.Registry;
@@ -121,6 +128,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -152,6 +160,8 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static final int DEFAULT_AUTOMATA_DELAY = 100;
     private static final String BUGGY_SAMSUNG_ENABLED = "buggy-samsung-enabled";
     private static final String STOP_SCAN_TASK_ID = "ob1-g5-scan-timeout_scan";
+    private static final String KEKS = "keks";
+    private static final String KEKS_ONE = "keks1";
     private static volatile STATE state = INIT;
     private static volatile STATE last_automata_state = CLOSED;
 
@@ -231,6 +241,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static final List<String> alwaysScanModelFamilies = Arrays.asList("SM-N910");
     private static final Set<String> alwaysConnectModels = Sets.newHashSet("G Watch");
     private static final Set<String> alwaysBuggyWakeupModels = Sets.newHashSet("Jelly-Pro", "SmartWatch 3");
+    private static final HashMap<String, Long> failureTally = new HashMap<>();
 
     // Internal process state tracking
     public enum STATE {
@@ -309,7 +320,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                         break;
                     case SCAN:
                         // no connection? lets try a restart
-                        if (JoH.msSince(static_last_connected) > 30 * 60 * 1000) {
+                        if (msSince(static_last_connected) > 30 * 60 * 1000) {
                             if (JoH.pratelimit("ob1-collector-restart", 1200)) {
                                 CollectionServiceStarter.restartCollectionServiceBackground();
                                 break;
@@ -461,7 +472,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     private void estimateAnticipateFromLinkedData() {
         final BgReading bg = BgReading.last();
-        if (bg != null && bg.timestamp > static_last_connected && JoH.msSince(bg.timestamp) < HOUR_IN_MS * 3) {
+        if (bg != null && bg.timestamp > static_last_connected && msSince(bg.timestamp) < HOUR_IN_MS * 3) {
             final long ts = bg.timestamp - Constants.SECOND_IN_MS;
             UserError.Log.d(TAG, "Updating Sync Keeper with network learned timestamp: " + JoH.dateTimeText(ts));
             DexSyncKeeper.store(transmitterID, ts);
@@ -519,11 +530,12 @@ public class Ob1G5CollectionService extends G5BaseService {
             msg(gs(R.string.scanning));
             stopScan();
             tryLoadingSavedMAC(); // did we already find it?
+            expireFailures(false);
             if (always_scan || scan_next_run || (transmitterMAC == null) || (!transmitterID.equals(transmitterIDmatchingMAC)) || (static_last_timestamp < 1)) {
                 scan_next_run = false; // reset if set
                 transmitterMAC = null; // reset if set
                 last_scan_started = tsl();
-                scanWakeLock = JoH.getWakeLock("xdrip-jam-g5-scan", (int) Constants.MINUTE_IN_MS * 7);
+                scanWakeLock = JoH.getWakeLock("xdrip-jam-g5-scan", (int) MINUTE_IN_MS * 7);
 
 
                 historicalTransmitterMAC = PersistentStore.getString(OB1G5_MACSTORE + transmitterID); // "" if unset
@@ -539,7 +551,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && localTransmitterID != null && localTransmitterID.length() > 4) {
                         filter = new ScanFilter.Builder().setDeviceName(getTransmitterBluetoothName()).build();
                     } else {
-                        filter = new ScanFilter.Builder().build();
+                        filter = new ScanFilter.Builder().setServiceUuid(new ParcelUuid(Advertisement), new ParcelUuid(Mask16)).build();
                     }
                 }
 
@@ -738,6 +750,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     private String getTransmitterBluetoothName() {
+        if (transmitterID == null || transmitterID.length() <= 4) return null;
         final String transmitterIdLastTwo = getLastTwoCharacters(transmitterID);
         // todo check for bad config
         return "Dexcom" + transmitterIdLastTwo;
@@ -909,9 +922,20 @@ public class Ob1G5CollectionService extends G5BaseService {
 
         if (plugin != null) {
             UserError.Log.d(TAG, "Saving persistent data for keks");
-            PersistentStore.setBytes("keks1", plugin.getPersistence(1));
+            savePersist();
         }
 
+    }
+
+    public synchronized void savePersist() {
+        if (plugin != null) {
+            PersistentStore.setBytes(KEKS_ONE, plugin.getPersistence(1));
+        }
+    }
+
+    public static void clearPersist() {
+        PersistentStore.removeItem(KEKS_ONE);
+        expireFailures(true);
     }
 
     private void scheduleWakeUp(long future, final String info) {
@@ -1025,7 +1049,7 @@ public class Ob1G5CollectionService extends G5BaseService {
             UserError.Log.d(TAG, "WAKE UP WAKE UP WAKE UP WAKE UP @ " + JoH.dateTimeText(tsl()));
             msg("Wake up");
             if (wakeup_time > 0) {
-                wakeup_jitter = JoH.msSince(wakeup_time);
+                wakeup_jitter = msSince(wakeup_time);
                 if (wakeup_jitter < 0) {
                     UserError.Log.d(TAG, "Woke up Early..");
                 } else {
@@ -1051,7 +1075,7 @@ public class Ob1G5CollectionService extends G5BaseService {
             }
 
 
-            scheduleWakeUp(Constants.MINUTE_IN_MS * 6, "fail-over");
+            scheduleWakeUp(MINUTE_IN_MS * 6, "fail-over");
             if ((state == BOND) || (state == PREBOND) || (state == DISCOVER) || (state == CONNECT))
                 state = SCAN;
 
@@ -1141,6 +1165,10 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     private boolean isScanMatch(final String this_address, final String historical_address, final String this_name, final String search_name) {
+        if (search_name == null && (this_address.equalsIgnoreCase(historical_address) || this_name == null || this_name.startsWith("DXCM"))) {
+            return !inFailureTally(this_address);
+        }
+
         boolean result = this_address.equalsIgnoreCase(historical_address) || (this_name != null && this_name.equalsIgnoreCase(search_name));
         if (result) {
             if (historical_address.length() == this_address.length()
@@ -1159,13 +1187,13 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     // Successful result from our bluetooth scan
-    private synchronized void onScanResult(ScanResult bleScanResult) {
+    private synchronized void onScanResult(final ScanResult bleScanResult) {
         // TODO MIN RSSI
         final int this_rssi = bleScanResult.getRssi();
         final String this_name = bleScanResult.getBleDevice().getName();
         final String this_address = bleScanResult.getBleDevice().getMacAddress();
         final String search_name = getTransmitterBluetoothName();
-
+        val mdata = bleScanResult.getScanRecord().getManufacturerSpecificData(0xD << 4);
         if (isScanMatch(this_address, historicalTransmitterMAC, this_name, search_name)) {
             stopScan(); // we got one!
             last_scan_started = 0; // clear scanning for time
@@ -1173,7 +1201,9 @@ public class Ob1G5CollectionService extends G5BaseService {
             UserError.Log.d(TAG, "Got scan result match: " + bleScanResult.getBleDevice().getName() + " " + this_address + " rssi: " + this_rssi);
             transmitterMAC = bleScanResult.getBleDevice().getMacAddress();
             transmitterIDmatchingMAC = transmitterID;
-            PersistentStore.setString(OB1G5_MACSTORE + transmitterID, transmitterMAC);
+            if (search_name != null) {
+              saveTransmitterMac();
+            }
             //if (JoH.ratelimit("ob1-g5-scan-to-connect-transition", 3)) {
             if (state == SCAN) {
                 //  if (always_scan) {
@@ -1191,6 +1221,12 @@ public class Ob1G5CollectionService extends G5BaseService {
                 UserError.Log.d(TAG, "Bluetooth scanned device doesn't match (" + search_name + ") found: " + this_name + " " + bleScanResult.getBleDevice().getMacAddress());
             }
         }
+    }
+
+    public void saveTransmitterMac() {
+        UserError.Log.d(TAG,"Saving transmitter mac: " + transmitterID + " = " + transmitterMAC);
+        PersistentStore.cleanupOld(OB1G5_MACSTORE);
+        PersistentStore.setString(OB1G5_MACSTORE + transmitterID, transmitterMAC);
     }
 
     // Failed result from our bluetooth scan
@@ -1294,7 +1330,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                     UserError.Log.d(TAG, "Setting pre-scan failure marker enabled due to exception type");
                     preScanFailureMarker = true;
                 }
-            } else if (JoH.msSince(last_connect_started) < Constants.SECOND_IN_MS) {
+            } else if (msSince(last_connect_started) < Constants.SECOND_IN_MS) {
                 UserError.Log.d(TAG, "Setting pre-scan failure marker enabled due to exception timing");
                 preScanFailureMarker = true;
             }
@@ -1383,7 +1419,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                 connection_state = "Connected";
                 JoH.releaseWakeLock(floatingWakeLock);
                 floatingWakeLock = JoH.getWakeLock("floating-connected", 40000);
-                final long since_connecting = JoH.msSince(connecting_time);
+                final long since_connecting = msSince(connecting_time);
                 if ((connecting_time > static_last_timestamp) && (since_connecting > Constants.SECOND_IN_MS * 310) && (since_connecting < Constants.SECOND_IN_MS * 620)) {
                     if (!always_scan) {
                         UserError.Log.e(TAG, "Connection time shows missed reading, switching to always scan, metric: " + niceTimeScalar(since_connecting));
@@ -1436,16 +1472,23 @@ public class Ob1G5CollectionService extends G5BaseService {
 
                 if (txIdMatch(getTransmitterID()) && service.getCharacteristic(ExtraData) != null) {
                     try {
-                        plugin = Loader.getLocalInstance(Registry.get("keks"), getTransmitterID());
+                        plugin = Loader.getLocalInstance(Registry.get(KEKS), getTransmitterID());
                         if (plugin == null) {
                             val msg = "Unable to load keks plugin - please re-enter transmitter id";
                             UserError.Log.wtf(TAG, msg);
                             JoH.static_toast_long(msg);
                         } else {
-                            plugin.setPersistence(2, PersistentStore.getBytes("keks1"));
+                            plugin.setPersistence(2, PersistentStore.getBytes(KEKS_ONE));
+                            try {
+                                for (int i = 1; i < 4; i++) {
+                                    plugin.setPersistence(7 + i, tolerantHexStringToByteArray(Pref.getStringDefaultBlank(KEKS + "_p" + i)));
+                                }
+                            } catch (Exception e) {
+                                UserError.Log.e(TAG, "Problem with persistence");
+                            }
                         }
                     } catch (Exception e) {
-                        UserError.Log.e(TAG, "Exception getting instance: "+e);
+                        UserError.Log.e(TAG, "Exception getting instance: " + e);
                         e.printStackTrace();
                     }
                 } else {
@@ -1714,7 +1757,7 @@ public class Ob1G5CollectionService extends G5BaseService {
             return false;
         }
 
-        if (JoH.msSince(lastProcessCalibrationState) < Constants.MINUTE_IN_MS) {
+        if (msSince(lastProcessCalibrationState) < MINUTE_IN_MS) {
             UserError.Log.d(TAG, "Ignoring duplicate processCalibration State");
             return false;
         }
@@ -1819,7 +1862,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     private static CalibrationState getStoredCalibrationState() {
-        if (JoH.msSince(PersistentStore.getLong(OB1G5_STATESTORE_TIME)) < HOUR_IN_MS * 2) {
+        if (msSince(PersistentStore.getLong(OB1G5_STATESTORE_TIME)) < HOUR_IN_MS * 2) {
             return CalibrationState.parse(PersistentStore.getByte(OB1G5_STATESTORE));
         }
         return CalibrationState.Unknown;
@@ -2004,10 +2047,10 @@ public class Ob1G5CollectionService extends G5BaseService {
             l.add(new StatusItem("Turn Sound On!", "You will not hear pairing request with volume set low or do not disturb enabled!", CRITICAL));
         }
 
-        l.add(new StatusItem("Phone Service State", lastState + (BlueJayEntry.isPhoneCollectorDisabled() ? "\nDisabled by BlueJay option" : ""), JoH.msSince(lastStateUpdated) < 300000 ? (lastState.startsWith("Got data") ? Highlight.GOOD : NORMAL) : (isWatchRunning() ? Highlight.GOOD : CRITICAL)));
+        l.add(new StatusItem("Phone Service State", lastState + (BlueJayEntry.isPhoneCollectorDisabled() ? "\nDisabled by BlueJay option" : ""), msSince(lastStateUpdated) < 300000 ? (lastState.startsWith("Got data") ? Highlight.GOOD : NORMAL) : (isWatchRunning() ? Highlight.GOOD : CRITICAL)));
         if (last_scan_started > 0) {
-            final long scanning_time = JoH.msSince(last_scan_started);
-            l.add(new StatusItem("Time scanning", niceTimeScalar(scanning_time), scanning_time > Constants.MINUTE_IN_MS * 5 ? (scanning_time > Constants.MINUTE_IN_MS * 10 ? BAD : NOTICE) : NORMAL));
+            final long scanning_time = msSince(last_scan_started);
+            l.add(new StatusItem("Time scanning", niceTimeScalar(scanning_time), scanning_time > MINUTE_IN_MS * 5 ? (scanning_time > MINUTE_IN_MS * 10 ? BAD : NOTICE) : NORMAL));
         }
         if (lastScanError != null) {
             l.add(new StatusItem("Scan Error", lastScanError, BAD));
@@ -2021,7 +2064,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
 
         if (transmitterID != null) {
-            l.add(new StatusItem("Transmitter ID", transmitterID + ((transmitterMAC != null && Home.get_engineering_mode()) ? "\n" + transmitterMAC : "")));
+            l.add(new StatusItem("Transmitter ID", transmitterID + ((transmitterMAC != null && get_engineering_mode()) ? "\n" + transmitterMAC : "")));
         }
 
         if (static_connection_state != null) {
@@ -2029,14 +2072,14 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
 
         if (static_last_connected > 0) {
-            l.add(new StatusItem("Last Connected", niceTimeScalar(JoH.msSince(static_last_connected)) + " ago"));
+            l.add(new StatusItem("Last Connected", niceTimeScalar(msSince(static_last_connected)) + " ago"));
         }
 
         if ((!lastState.startsWith("Service Stopped")) && (!lastState.startsWith("Not running")))
             l.add(new StatusItem("Brain State", state.getString() + (error_count > 1 ? " Errors: " + error_count : ""), error_count > 1 ? NOTICE : error_count > 4 ? BAD : NORMAL));
 
         if (lastUsableGlucosePacketTime != 0) {
-            if (JoH.msSince(lastUsableGlucosePacketTime) < Constants.MINUTE_IN_MS * 15) {
+            if (msSince(lastUsableGlucosePacketTime) < MINUTE_IN_MS * 15) {
                 l.add(new StatusItem("Native Algorithm", "Data Received " + JoH.hourMinuteString(lastUsableGlucosePacketTime), Highlight.GOOD));
             }
         }
@@ -2070,9 +2113,11 @@ public class Ob1G5CollectionService extends G5BaseService {
             }
         }
 
-        l.add(new StatusItem("Preemptive restarts", !FirmwareCapability.isTransmitterPreemptiveRestartCapable(getTransmitterID()) ? "Not capable" :
-                (Pref.getBooleanDefaultFalse("ob1_g5_preemptive_restart") ? "Enabled" : "Disabled")
-                        + (Ob1G5StateMachine.useExtendedTimeTravel() ? " (extended)" : "")));
+        if (get_engineering_mode() || FirmwareCapability.isTransmitterPreemptiveRestartCapable(getTransmitterID())) {
+            l.add(new StatusItem("Preemptive restarts", !FirmwareCapability.isTransmitterPreemptiveRestartCapable(getTransmitterID()) ? "Not capable" :
+                    (Pref.getBooleanDefaultFalse("ob1_g5_preemptive_restart") ? "Enabled" : "Disabled")
+                            + (Ob1G5StateMachine.useExtendedTimeTravel() ? " (extended)" : "")));
+        }
 
         final VersionRequest1RxMessage vr1 = (VersionRequest1RxMessage) Ob1G5StateMachine.getFirmwareXDetails(tx_id, 1);
         final VersionRequest2RxMessage vr2 = (VersionRequest2RxMessage) Ob1G5StateMachine.getFirmwareXDetails(tx_id, 2);
@@ -2084,12 +2129,17 @@ public class Ob1G5CollectionService extends G5BaseService {
 
                 l.add(new StatusItem("Firmware Version", vr1.firmware_version_string + unknown, !known ? CRITICAL : NORMAL, !known ? "long-press" : null, !known ? (Runnable) Ob1G5CollectionService::handleUnknownFirmwareClick : null));
                 //l.add(new StatusItem("Build Version", "" + vr1.build_version));
-                if (vr1.version_code != 3) {
-                    l.add(new StatusItem("Compat Version", "" + vr1.version_code, Highlight.BAD));
+                if (vr1.version_code != 3 && get_engineering_mode()) {
+                    l.add(new StatusItem("Compat Version", "" + vr1.version_code, NORMAL));
                 }
-                if (vr1.max_runtime_days != 110 && vr1.max_runtime_days != 112) {
+                if (vr1.max_runtime_days != 110 && vr1.max_runtime_days != 112 && vr1.max_runtime_days != 0) {
                     l.add(new StatusItem("Transmitter Life", "" + vr1.max_runtime_days + " " + gs(R.string.days)));
                 }
+
+                if (vr1.serial != 0 && get_engineering_mode()) {
+                    l.add(new StatusItem("Serial", "" + vr1.serial));
+                }
+
             }
         } catch (Exception e) {
             // TODO add message?
@@ -2100,6 +2150,23 @@ public class Ob1G5CollectionService extends G5BaseService {
                 if (vr2.typicalSensorDays != 10 && vr2.typicalSensorDays != 7) {
                     l.add(new StatusItem("Sensor Period", niceTimeScalar(vr2.typicalSensorDays * DAY_IN_MS), Highlight.NOTICE));
                 }
+
+                if (get_engineering_mode()) {
+                    if (vr2.lifeSeconds > 0) {
+                        l.add(new StatusItem("Sensor Life", "" + niceTimeScalar(vr2.lifeSeconds * SECOND_IN_MS)));
+                    }
+                    if (vr2.version1 > 0) {
+                        l.add(new StatusItem("Version 1", "" + vr2.version1));
+                    }
+                    if (vr2.version2 > 0) {
+                        l.add(new StatusItem("Version 2", "" + vr2.version2));
+                    }
+                }
+
+                if (vr3 == null && vr2.version1 != 0 && vr2.warmupSeconds != 0 && vr2.warmupSeconds != 7200) {
+                    l.add(new StatusItem("Warm Up Time", niceTimeScalar(vr2.warmupSeconds * SECOND_IN_MS), Highlight.NOTICE));
+                }
+
                 //l.add(new StatusItem("Feature mask", vr2.featureBits));
             }
         } catch (Exception e) {
@@ -2122,7 +2189,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         try {
             if ((vr != null) && (vr.firmware_version_string.length() > 0)) {
 
-                if (Home.get_engineering_mode()) {
+                if (get_engineering_mode()) {
                     if (vr1 != null && !vr.firmware_version_string.equals(vr1.firmware_version_string)) {
                         l.add(new StatusItem("2nd Firmware Version", vr.firmware_version_string, FirmwareCapability.isG6Rev2(vr.firmware_version_string) ? NOTICE : NORMAL));
                     }
@@ -2131,7 +2198,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                     }
                     l.add(new StatusItem("Other Version", vr.other_firmware_version));
                     //  l.add(new StatusItem("Hardware Version", vr.hardwarev));
-                    if (vr.asic != 61440 && vr.asic != 16705 && vr.asic != 243 && vr.asic != 74 && vr.asic != 226)
+                    if (vr.asic != 61440 && vr.asic != 16705 && vr.asic != 243 && vr.asic != 74 && vr.asic != 226 && vr.asic != 0)
                         l.add(new StatusItem("ASIC", vr.asic, NOTICE));
                 }
             }
@@ -2156,7 +2223,7 @@ public class Ob1G5CollectionService extends G5BaseService {
             updateBatteryWarningLevel();
         }
 
-        if (vr1 != null && Home.get_engineering_mode()) {
+        if (vr1 != null && get_engineering_mode() && vr1.max_inactive_days > 0) {
             l.add(new StatusItem("Shelf Life", "" + vr1.inactive_days + " / " + vr1.max_inactive_days));
         }
 
@@ -2194,7 +2261,9 @@ public class Ob1G5CollectionService extends G5BaseService {
                }
             }
             if (vr != null && FirmwareCapability.isFirmwareTemperatureCapable(vr.firmware_version_string)) {
-                l.add(new StatusItem("Temperature", parsedBattery.temperature() + " \u2103"));
+                if (parsedBattery.temperature() > 0) {
+                    l.add(new StatusItem("Temperature", parsedBattery.temperature() + " \u2103"));
+                }
             }
         } else {
             l.add(new StatusItem("Battery Info Unavailable", "Click to trigger update", NORMAL, "long-press",
@@ -2216,6 +2285,35 @@ public class Ob1G5CollectionService extends G5BaseService {
         scan_next_run = true;
     }
 
+    public synchronized void logFailure() {
+        val localMac = transmitterMAC;
+        if (localMac == null) {
+            UserError.Log.e(TAG, "Could not log failure as mac is null");
+            return;
+        }
+        val tsl = tsl();
+        failureTally.put(localMac, tsl);
+        UserError.Log.d(TAG, "Adding " + localMac + " to failure tally " + JoH.dateTimeText(tsl));
+        resetSomeInternalState();
+    }
+
+    private static void expireFailures(final boolean all) {
+        val remove = new ArrayList<String>();
+        for (val entry : failureTally.entrySet()) {
+            if (all || msSince(entry.getValue()) > (MINUTE_IN_MS * 30)) {
+                remove.add(entry.getKey());
+            }
+        }
+        for (val entry : remove) {
+            UserError.Log.d(TAG, "Removing " + entry + " from failure tally");
+            failureTally.remove(entry);
+        }
+    }
+
+    private static boolean inFailureTally(final String mac) {
+        if (mac == null) return false;
+        return (failureTally.containsKey(mac));
+    }
 
     public void listenForChangeInSettings(boolean listen) {
         try {
@@ -2239,7 +2337,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     // remember needs proguard exclusion due to access by reflection
     public static boolean isCollecting() {
-        return (state == CONNECT_NOW && JoH.msSince(static_last_timestamp) < Constants.MINUTE_IN_MS * 30) || JoH.msSince(static_last_timestamp) < Constants.MINUTE_IN_MS * 6;
+        return (state == CONNECT_NOW && msSince(static_last_timestamp) < MINUTE_IN_MS * 30) || msSince(static_last_timestamp) < MINUTE_IN_MS * 6;
     }
 
     public static boolean usingCollector() {

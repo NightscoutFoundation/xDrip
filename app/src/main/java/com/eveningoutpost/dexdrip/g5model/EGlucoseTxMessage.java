@@ -1,19 +1,20 @@
 package com.eveningoutpost.dexdrip.g5model;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-
-// created by jamorham
+/**
+ * JamOrHam
+ */
 
 
 public class EGlucoseTxMessage extends BaseMessage {
 
     final byte opcode = 0x4e;
 
+    public EGlucoseTxMessage(final boolean small) {
+        init(opcode, small ? 1 : 3);
+    }
+
     public EGlucoseTxMessage() {
-        data = ByteBuffer.allocate(3).order(ByteOrder.LITTLE_ENDIAN);
-        data.put(opcode);
-        appendCRC();
+        this(false);
     }
 
 }

@@ -7,6 +7,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Locale;
 
+import lombok.val;
+
 /**
  * Created by jamorham on 25/11/2016.
  */
@@ -17,6 +19,7 @@ public class BatteryInfoRxMessage extends BaseMessage {
     private final static String TAG = G5CollectionService.TAG; // meh
 
     public static final byte opcode = 0x23;
+    public static final byte opcode2 = 0x22;
 
     public int status;
     public int voltagea;
@@ -28,7 +31,8 @@ public class BatteryInfoRxMessage extends BaseMessage {
     public BatteryInfoRxMessage(byte[] packet) {
         if (packet.length >= 10) {
             data = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN);
-            if (data.get() == opcode) {
+            val oc = data.get();
+            if (oc == opcode || oc == opcode2) {
                 status = data.get();
                 voltagea = getUnsignedShort(data);
                 voltageb = getUnsignedShort(data);

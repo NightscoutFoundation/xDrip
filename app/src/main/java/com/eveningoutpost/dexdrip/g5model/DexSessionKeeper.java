@@ -19,9 +19,15 @@ public class DexSessionKeeper {
         return SensorDays.get().getWarmupMs(); // allow for variable warm up period
     }
 
-    public static void setStart(long when) {
+    public static void setStart(final long when) {
         // TODO sanity check
         PersistentStore.setLong(PREF_SESSION_START, when);
+    }
+
+    public static void setStart(final Long when) {
+        if (when != null) {
+            setStart((long) when);
+        }
     }
 
     public static long getStart() {

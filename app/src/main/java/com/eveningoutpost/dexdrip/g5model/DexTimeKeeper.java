@@ -1,10 +1,10 @@
 package com.eveningoutpost.dexdrip.g5model;
 
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.getTransmitterID;
+
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
-
-import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.getTransmitterID;
 
 import lombok.val;
 
@@ -29,7 +29,7 @@ public class DexTimeKeeper {
     // update the activation time stored for a transmitter
     public static void updateAge(final String transmitterId, final int dexTimeStamp, final boolean absolute) {
 
-        if ((transmitterId == null) || (transmitterId.length() != 6 && transmitterId.length() != 17)) {
+        if ((transmitterId == null) || (transmitterId.length() != 6 && transmitterId.length() != 17 && transmitterId.length() != 4)) {
             UserError.Log.e(TAG, "Invalid dex transmitter in updateAge: " + transmitterId);
             return;
         }
@@ -59,7 +59,7 @@ public class DexTimeKeeper {
 
     public static int getDexTime(String transmitterId, long timestamp) {
 
-        if ((transmitterId == null) || (transmitterId.length() != 6 && transmitterId.length() != 17)) {
+        if ((transmitterId == null) || (transmitterId.length() != 6 && transmitterId.length() != 4 && transmitterId.length() != 17)) {
             UserError.Log.e(TAG, "Invalid dex transmitter in getDexTime: " + transmitterId);
             return -3;
         }
@@ -92,7 +92,7 @@ public class DexTimeKeeper {
 
 
     public static long fromDexTime(String transmitterId, int dexTimeStamp) {
-        if ((transmitterId == null) || (transmitterId.length() != 6)) {
+        if ((transmitterId == null) || (transmitterId.length() != 6 && transmitterId.length() != 4)) {
             UserError.Log.e(TAG, "Invalid dex transmitter in fromDexTime: " + transmitterId);
             return -3;
         }

@@ -5,6 +5,7 @@ import java.nio.ByteOrder;
 import java.util.Locale;
 
 import lombok.Getter;
+import lombok.val;
 
 /**
  * Created by jamorham on 25/11/2016.
@@ -14,11 +15,15 @@ import lombok.Getter;
 public class VersionRequest2RxMessage extends BaseMessage {
 
     public static final byte opcode = 0x53;
+    public static final byte opcode2 = 0x52;
 
     public int status;
     public int typicalSensorDays;
     public int featureBits;
+    public long lifeSeconds;
     public int warmupSeconds;
+    public int version1;
+    public int version2;
     @Getter
     public boolean type2;
 
@@ -28,13 +33,21 @@ public class VersionRequest2RxMessage extends BaseMessage {
         if (packet.length >= 9) {
             // TODO check CRC??
             data = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN);
-            if (data.get() == opcode) {
-                status = data.get();
+            val op = data.get();
+            status = data.get();
+            if (op == opcode) {
                 typicalSensorDays = getUnsignedByte(data);
                 featureBits = getUnsignedShort(data);
                 warmupSeconds = getUnsignedShort(data); // only valid in type 2
                 // 12 more bytes of unknown data
                 // crc
+            }
+            if (op == opcode2) {
+                lifeSeconds = getUnsignedInt(data);
+                warmupSeconds = getUnsignedShort(data);
+                version1 = (int) getUnsignedInt(data);
+                version2 = getUnsignedByte(data);
+                typicalSensorDays =  (int) Math.min(getUnsignedShort(data), lifeSeconds / 86400);
             }
         }
     }

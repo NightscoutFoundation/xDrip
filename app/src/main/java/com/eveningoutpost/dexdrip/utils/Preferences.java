@@ -66,6 +66,7 @@ import com.eveningoutpost.dexdrip.services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.services.BluetoothGlucoseMeter;
 import com.eveningoutpost.dexdrip.services.DexCollectionService;
 import com.eveningoutpost.dexdrip.services.G5BaseService;
+import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.services.PlusSyncService;
 import com.eveningoutpost.dexdrip.services.UiBasedCollector;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
@@ -2301,6 +2302,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                             } catch (Exception e) {
                                 //
                             }
+                            Ob1G5CollectionService.clearPersist();
                             CollectionServiceStarter.restartCollectionService(xdrip.getAppContext());
                         }
                     }).start();
