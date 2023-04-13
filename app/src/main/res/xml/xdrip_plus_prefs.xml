@@ -386,7 +386,7 @@
                     android:summary="@string/useful_for_noise_and_missed_readings"
                     android:title="@string/display_filtered_plot" />
                 <CheckBoxPreference
-                    android:defaultValue="false"
+                    android:defaultValue="true"
                     android:dependency="show_filtered_curve"
                     android:key="show_pseudo_filtered"
                     android:summary="@string/summary_create_missing_filtered"
