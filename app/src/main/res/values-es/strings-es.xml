@@ -1762,8 +1762,10 @@
     <string name="summary_ymax">Escoge yMin para cuando no hay lecturas superiores.</string>
     <string name="close">Cerrar</string>
     <string name="title_advanced_settings_4_Lib2">Ajustes avanzados para Libre 2</string>
+    <string name="title_Lib2_show_raw_values">Mostrar valores en bruto en el gráfico</string>
+    <string name="summary_Lib2_show_raw_values">Activar para mostrar los valores brutos en el gráfico.</string>
     <string name="title_Lib2_show_sense_on_status">Mostrar información del sensor en estado</string>
-    <string name="summary_Lib2_show_sense_on_status">Active para mostrar información adicional de estado para Libre 2.</string>
+    <string name="summary_Lib2_show_sense_on_status">Activar para mostrar información adicional en Estado para el sensor Libre 2.</string>
     <string name="import_qr_code_warning">¡Solo importa la configuración de las fuentes en las que confías!\n\nPor favor, confirma la importación de las siguientes configuraciones:\n\n</string>
     <string name="scan_to_load_xdrip_settings">Escanear para cargar ajustes de xDrip</string>
 </resources>
