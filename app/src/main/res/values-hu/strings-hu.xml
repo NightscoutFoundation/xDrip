@@ -1498,7 +1498,7 @@
     <string name="unusual_internal_context_problem__please_report">Szokatlan belső programhiba - kérem, jelentse</string>
     <string name="cannot_start__please_report_context_problem">Nem lehet indítani - kérem jelentse</string>
     <string name="xdrip_will_not_work_below_android_version_42">Legalább Android 4.2 szükséges az xDrip használatához</string>
-    <string name="xdrip_oop2_not_installed">Libre2/Libre US szenzorok használatához szükséges az oop2 app.</string>
+    <string name="xdrip_oop2_not_installed">Libre 2/Libre US szenzorok használatához szükséges az oop2 app.</string>
     <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Az akkuhasználat optimalizálását kapcsolja ki az xDrip esetében. Állítsa be!</string>
     <string name="setting_disabled_">Beállítás nem aktív :)</string>
     <string name="yes_please">Igen, kérem</string>
@@ -1570,6 +1570,7 @@
     <string name="summary_widget_hide_graph">A grafikon elrejtése a widgeteken (a következő olvasáskor jelenik meg)</string>
     <string name="title_widget_hide_graph">Widget grafikon elrejtése</string>
     <string name="summary_illustrate_remote_data">Kapott távoli adatok megjelenítése (csak diagnosztika)</string>
+    <string name="title_illustrate_remote_data">Távoli adatok eltérő jelölése</string>
     <string name="summary_show_accessibility_settings">Ha telefonja rendelkezik Always On Display funkcióval, akkor az xDrip widgetet ott engedélyezheti az xDrip szolgáltatás engedélyezésével az Android rendszerbeállítások oldalon.</string>
     <string name="title_show_accessibility_settings">xDrip AOD-n (kisegítő szolgáltatásként)</string>
     <string name="title_multiple_insulin_types_settings">Többféle inzulin</string>
@@ -1687,4 +1688,11 @@
     <string name="summary_ymin">Állítsa be yMin értékét, amelynél kisebbet nem mutat a grafikon.</string>
     <string name="summary_ymax">Állítsa be yMax értékét, amelynél nagyobbat nem mutat a grafikon.</string>
     <string name="close">Bezárás</string>
+    <string name="title_advanced_settings_4_Lib2">Libre 2 szenzor további beállításai</string>
+    <string name="title_Lib2_show_raw_values">Nyers adatok mutatása a grafikonon</string>
+    <string name="summary_Lib2_show_raw_values">Nyers adatok mutatása a grafikonon bekapcsolása.</string>
+    <string name="title_Lib2_show_sense_on_status">Szenzoradatok mutatása az Állapot lapon</string>
+    <string name="summary_Lib2_show_sense_on_status">Libre 2 szenzor adatainak mutatása az Állapot lapon.</string>
+    <string name="import_qr_code_warning">Csak megbízható forrásokból importáljon beállításokat!\n\nKérjük, erősítse meg a következő beállítások importálását:\n\n</string>
+    <string name="scan_to_load_xdrip_settings">Szkenneljen az xDrip beállítások betöltéséhez</string>
 </resources>

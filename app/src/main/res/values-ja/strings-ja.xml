@@ -406,6 +406,11 @@
     <string name="save_power">節電</string>
     <string name="graph_smoothing">グラフのスムージング</string>
     <string name="titleInside_yRange">有効にする</string>
+    <string name="title_advanced_settings_4_Lib2">Libre 2の高度な設定</string>
+    <string name="title_Lib2_show_raw_values">グラフに生の値を表示</string>
+    <string name="summary_Lib2_show_raw_values">グラフに生の値を表示するにはオンにします。</string>
+    <string name="title_Lib2_show_sense_on_status">ステータスにセンサー情報を表示する</string>
+    <string name="summary_Lib2_show_sense_on_status">オンにすると、Libre 2センサーのステータスに追加情報が表示されます。</string>
     <string name="import_qr_code_warning">信頼できるソースからの設定のみインポートします！\n\n以下の設定をインポートすることを確認してください：\n\n</string>
     <string name="scan_to_load_xdrip_settings">xDrip設定を読み込むためにスキャンする</string>
 </resources>

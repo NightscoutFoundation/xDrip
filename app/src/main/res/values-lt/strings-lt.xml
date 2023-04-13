@@ -73,9 +73,9 @@
     <string name="title_activity_share_test">Share testas</string>
     <!-- pebble settings -->
     <string name="pref_pebble_trend_watchface">Naudoti Pebble Trend Watchface</string>
-    <string name="pref_summary_pebble_trend_watchface">Naudoti/įdiegti Pebble Trend Watchface (bandomasis)</string>
+    <string name="pref_summary_pebble_trend_watchface">Naudoti/įdiegti Pebble Trend Watchface (eksperimentinis)</string>
     <string name="pref_pebble_display_trend">Rodyti tendencijas</string>
-    <string name="pref_summary_display_trend">Rodyti glikemijos kitimo tendencijas xDrip Pebble.</string>
+    <string name="pref_summary_display_trend">Rodyti glikemijos kitimo tendencijas Pebble xDrip.</string>
     <string name="pref_pebble_display_high_line">Rodyti aukštos glikemijos ribą</string>
     <string name="pref_pebble_display_low_line">Rodyti žemos glikemijos ribą</string>
     <!-- Amazfit Settings -->
@@ -103,16 +103,16 @@
     <string name="pref_amazfit_widget_graph_enable">Įjungti</string>
     <string name="pref_amazfit_widget_graph_title">Valdiklio grafikas</string>
     <string name="pref_amazfit_widget_graph_enable_summary">Rodyti valdiklio grafiką</string>
-    <string name="pref_amazfit_watchface_settings">Laikrodžio ekrano nustatymai (gali eikvoti bateriją)</string>
+    <string name="pref_amazfit_watchface_settings">Laikrodžio ekrano nustatymai (gali sekinti bateriją)</string>
     <string name="pref_amazfit_widget_settings">Valdiklio nustatymai (gali sekinti bateriją)</string>
-    <string name="toast_crash">Kažkas nepavyko :( Nusiųsta ataskaita, padėsianti ištaisyti klaidą.</string>
+    <string name="toast_crash">Kažkas nepavyko. Nusiųsta ataskaita, padėsianti ištaisyti klaidą.</string>
     <string name="taskerConfigInstruction">Norėdami patvirtinti - užžymėkite, eilutės teksto nekeiskite.</string>
     <string name="taskerConfiguration">Tasker konfigūracija</string>
     <string name="finish_preferences_activity">Finish preferences activity</string>
     <string name="add_widget">Pridėti valdiklį</string>
     <string name="title_activity_alert_list">Perspėjimų sąrašas</string>
     <string name="speaktreatment">Įvesti balsu</string>
-    <string name="title_activity_update">Galimas xDrip+ naujinimas</string>
+    <string name="title_activity_update">Galimas xDrip+ naujinys</string>
     <string name="title_activity_display_qrcode">Dalintis nustatymais QR kodo pagalba</string>
     <string name="title_activity_send_feed_back">Siųsti atsiliepimą Jamorham</string>
     <string name="title_activity_maps">Parakeet Map</string>
@@ -273,7 +273,7 @@
     <string name="pebble_watch_integration">Pebble laikrodžio integracija</string>
     <string name="standard_or_trend_pebble_watchface">Standard arba Trend Pebble Watchfaces</string>
     <string name="choose_pebble_watchface">Pasirinkite Pebble Watchface</string>
-    <string name="message_to_display_when_bgl_hits">Žinutė, rodoma, kai glikemija viršija nustatytą ribą</string>
+    <string name="message_to_display_when_bgl_hits">Žinutė, kai glikemija viršija nustatytą ribą</string>
     <string name="text_to_display_when_hitting_special_value">Tekstas, kuris bus rodomas, kai glikemija pasiekia nustatytą specialią ribą</string>
     <string name="special_value">Speciali riba</string>
     <string name="history">Istorija</string>
@@ -282,10 +282,10 @@
     <string name="less_common_settings">Rečiau naudojami nustatymai</string>
     <string name="view_recent_errors_warnings">Rodyti naujausias klaidas/perspėjimus</string>
     <string name="other_settings">Kiti nustatymai</string>
-    <string name="older_gratuitous_wakelocks">Senesni nemokami Wakelock įrenginiai, kurie gali išeikvoti papildomą akumuliatoriaus energiją, bet gali būti reikalingi NightWatch arba Android Wear veikimui</string>
+    <string name="older_gratuitous_wakelocks">Senesni nemokami Wakelock įrenginiai, kurie gali eikvoti papildomą akumuliatoriaus energiją, bet gali būti reikalingi NightWatch arba Android Wear veikimui</string>
     <string name="use_excessive_wakelocks">Naudoti papildomus Wakelock</string>
-    <string name="speak_readings">Ištarti balsu</string>
-    <string name="extra_status_line">Papildoma statuso eilutė</string>
+    <string name="speak_readings">Įvesti balsu</string>
+    <string name="extra_status_line">Papildoma statuso linija</string>
     <string name="dexcom_share_server_upload">Įkėlimai į Dexcom Share serverį</string>
     <string name="upload_data_to_dex_servers">Įkelti duomenis į Dexcom serverius, kad būtų galima juos naudoti su Dexcom programomis</string>
     <string name="manage_followers">Valdyti sekėjus</string>
@@ -306,7 +306,7 @@
     <string name="in_range_glucose_values">Tikslinė glikemija</string>
     <string name="default_color_selected">Numatytoji spalva pasirinkta</string>
     <string name="color_bg_values">Glikemijos reikšmių ir tendencijos rodyklių spalva</string>
-    <string name="xdrip_plus_extra_settings">xDrip+ ekstra nustatymai</string>
+    <string name="xdrip_plus_extra_settings">xDrip+ papildomi nustatymai</string>
     <string name="example_chart">Pavyzdinis grafikas</string>
     <string name="treatments_prediction_curves">Terapija / Prognozės kreivės</string>
     <string name="carbs_per_unit">Insulino-AV santykis</string>
@@ -1765,4 +1765,6 @@
     <string name="summary_ymin">Pasirinkite yMin, kai nėra mažesnių rodmenų.</string>
     <string name="summary_ymax">Pasirinkite yMaks, kai nėra didesnių rodmenų.</string>
     <string name="close">Uždaryti</string>
+    <string name="import_qr_code_warning">Importuokite nustatymus tik iš tų šaltinių, kuriais pasitikite!\n\nPatvirtinkite šių nustatymų importą:\n\n</string>
+    <string name="scan_to_load_xdrip_settings">Skenuokite xDrip nustatymams įkelti</string>
 </resources>
