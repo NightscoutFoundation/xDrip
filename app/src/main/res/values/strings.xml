@@ -37,8 +37,8 @@
     <string name="title_activity_double_calibration">Initial Calibration</string>
     <string name="title_activity_calibration_override">Calibration Override</string>
     <string name="pref_header_cloud_storage">Cloud Storage</string>
-    <string name="auto_configure_title">Auto configure</string>
-    <string name="prefs_auto_config_summary">Auto configure using a barcode.</string>
+    <string name="auto_configure_title">Barcode Scanner</string>
+    <string name="prefs_auto_config_summary">Import settings from QR or barcode</string>
     <string name="scan_share2_barcode">Scan Share Barcode</string>
     <string name="pref_share2_scan_barcode_summary">Or scan the barcode on the share receiver</string>
 
@@ -216,13 +216,16 @@
     <string name="xdrip_plus_prediction_settings">xDrip+ Predictive Simulation settings</string>
     <string name="settings_for_syncing">Settings for syncing between handsets</string>
     <string name="xdrip_plus_sync_settings">xDrip+ Sync settings</string>
-    <string name="xdrip_plus_update_settings">xDrip+ Update Settings</string>
+    <string name="backup_and_update_title">Backup and Update</string>
+    <string name="backup_and_update_summary">App version, feedback, and import/export</string>
     <string name="automatic_update_check">Automatic update check</string>
     <string name="update_channel">Update Channel</string>
     <string name="send_crash_errors_to_developer">Send crash errors to developer</string>
     <string name="automatic_crash_reporting">Automatic Crash Reporting</string>
     <string name="send_feedback_message">Send Feedback Message</string>
-    <string name="copying_settings">Copying Settings</string>
+    <string name="copying_settings">Backup and Restore</string>
+    <string name="app_version">App Version</string>
+    <string name="feedback_and_support">Feedback and Support</string>
     <string name="show_settings_qr_codes">Show Settings QR codes</string>
     <string name="load_save_settings_to_sdcard">Load / Save settings</string>
     <string name="alarms_and_alerts">Alarms and Alerts</string>
@@ -375,7 +378,7 @@
     <string name="save_all_settings_to_sdcard">Save all Settings to the settings file</string>
     <string name="load_all_settings_from_sdcard">Load all settings from the settings file</string>
     <string name="delete_any_settings_on_sdcard">Delete settings folder (Download/xDrip-export)</string>
-    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Use QR codes to transfer settings using Settings->Auto Configure feature]]></string>
+    <string name="qr_code_generator_description"><![CDATA[Generates QR codes containing current app settings.\nImport them on another device using xDrip\'s barcode scanner.]]></string>
     <string name="xdrip_plus_security_key_settings_only">xDrip Plus Security Key Settings only</string>
     <string name="show_general_and_collection_settings">Show General and Collection Settings</string>
     <string name="copy_all_settings">Copy all Settings</string>

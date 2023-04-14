@@ -7,11 +7,6 @@
         android:key="dataSync"
         android:title="@string/data_sync">
         <PreferenceScreen
-            android:icon="@drawable/ic_qrscan"
-            android:key="auto_configure"
-            android:summary="@string/prefs_auto_config_summary"
-            android:title="@string/auto_configure_title" />
-        <PreferenceScreen
             android:icon="@drawable/ic_cloud_upload_grey600_48dp"
             android:key="cloud_data_sync"
             android:summary="@string/options_for_upload"

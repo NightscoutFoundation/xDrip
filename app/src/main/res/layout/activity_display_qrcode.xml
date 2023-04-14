@@ -67,7 +67,7 @@
                     android:id="@+id/textView15"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"
+                    android:text="@string/qr_code_generator_description"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <Button

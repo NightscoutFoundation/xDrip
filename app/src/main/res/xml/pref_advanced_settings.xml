@@ -298,7 +298,6 @@
             </PreferenceCategory>
         </PreferenceScreen>
 
-
         <PreferenceScreen
             android:key="bluejay_preference_screen"
             android:title="BlueJay Watch">
@@ -478,7 +477,6 @@
 
 
         </PreferenceScreen>
-
 
         <PreferenceScreen android:title="@string/title_lefun_band"
             android:key="lefun_preferences">
