@@ -398,6 +398,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     public static BgReading getForTimestamp(double timestamp) {
         Sensor sensor = Sensor.currentSensor();
         if (sensor != null) {
+            long start = JoH.tsl();
             BgReading bgReading = new Select()
                     .from(BgReading.class)
                     .where("Sensor = ? ", sensor.getId())
@@ -406,6 +407,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                     .where("raw_calculated = 0")
                     .orderBy("timestamp desc")
                     .executeSingle();
+            Log.e("xxxx", "Select 1 took " + (JoH.tsl() - start) + " milly seconds" );
             if (bgReading != null && Math.abs(bgReading.timestamp - timestamp) < (3 * 60 * 1000)) { //cool, so was it actually within 4 minutes of that bg reading?
                 Log.i(TAG, "getForTimestamp: Found a BG timestamp match");
                 return bgReading;
@@ -419,12 +421,14 @@ public class BgReading extends Model implements ShareUploadableBg {
     public static BgReading getForTimestampExists(double timestamp) {
         Sensor sensor = Sensor.currentSensor();
         if (sensor != null) {
+            long start = JoH.tsl();
             BgReading bgReading = new Select()
                     .from(BgReading.class)
                     .where("Sensor = ? ", sensor.getId())
                     .where("timestamp <= ?", (timestamp + (60 * 1000))) // 1 minute padding (should never be that far off, but why not)
                     .orderBy("timestamp desc")
                     .executeSingle();
+            Log.e("xxxx", "Select 2 took " + (JoH.tsl() - start) + " milly seconds" );
             if (bgReading != null && Math.abs(bgReading.timestamp - timestamp) < (3 * 60 * 1000)) { //cool, so was it actually within 4 minutes of that bg reading?
                 Log.i(TAG, "getForTimestamp: Found a BG timestamp match");
                 return bgReading;
@@ -441,13 +445,26 @@ public class BgReading extends Model implements ShareUploadableBg {
     public static BgReading getForPreciseTimestamp(long timestamp, long precision, boolean lock_to_sensor) {
         final Sensor sensor = Sensor.currentSensor();
         if ((sensor != null) || !lock_to_sensor) {
+            long start = JoH.tsl();
             final BgReading bgReading = new Select()
                     .from(BgReading.class)
                     .where(lock_to_sensor ? "Sensor = ?" : "timestamp > ?", (lock_to_sensor ? sensor.getId() : 0))
                     .where("timestamp <= ?", (timestamp + precision))
                     .where("timestamp >= ?", (timestamp - precision))
                     .orderBy("abs(timestamp - " + timestamp + ") asc")
+                    .indexedBy("index_BgReadings_timestamp")
                     .executeSingle();
+            Long noIndex = JoH.tsl() - start;
+            start = JoH.tsl();
+            final BgReading bgReading1 = new Select()
+                    .from(BgReading.class)
+                    .where(lock_to_sensor ? "Sensor = ?" : "timestamp > ?", (lock_to_sensor ? sensor.getId() : 0))
+                    .where("timestamp <= ?", (timestamp + precision))
+                    .where("timestamp >= ?", (timestamp - precision))
+                    .orderBy("abs(timestamp - " + timestamp + ") asc")
+                    .executeSingle();
+            Log.e("xxxx", "Select 3 took " + (JoH.tsl() - start) + " compared to " +  noIndex + " milly seconds ");
+
             if (bgReading != null && Math.abs(bgReading.timestamp - timestamp) < precision) { //cool, so was it actually within precision of that bg reading?
                 //Log.d(TAG, "getForPreciseTimestamp: Found a BG timestamp match");
                 return bgReading;
@@ -462,12 +479,14 @@ public class BgReading extends Model implements ShareUploadableBg {
         double timestamp = sensorRecord.getSystemTime().getTime() + addativeOffset;
         Sensor sensor = Sensor.currentSensor();
         if (sensor != null) {
+            long start = JoH.tsl();
             BgReading bgReading = new Select()
                     .from(BgReading.class)
                     .where("Sensor = ? ", sensor.getId())
                     .where("timestamp <= ?", (timestamp + (60 * 1000))) // 1 minute padding (should never be that far off, but why not)
                     .orderBy("timestamp desc")
                     .executeSingle();
+            Log.e("xxxx", "Select 4 took " + (JoH.tsl() - start) + " milly seconds" );
             if (bgReading != null && Math.abs(bgReading.timestamp - timestamp) < (3 * 60 * 1000)) { //cool, so was it actually within 4 minutes of that bg reading?
                 Log.i(TAG, "isNew; Old Reading");
                 return false;
@@ -761,24 +780,43 @@ public class BgReading extends Model implements ShareUploadableBg {
 
     public static BgReading last(boolean is_follower) {
         if (is_follower) {
-            return new Select()
+            long start = JoH.tsl();
+            BgReading tmp =  new Select()
                     .from(BgReading.class)
                     .where("calculated_value != 0")
                     .where("raw_data != 0")
               //      .where("timestamp <= ?", JoH.tsl())
                     .orderBy("timestamp desc")
                     .executeSingle();
+            Log.e("xxxx", "Select 5 took " + (JoH.tsl() - start) + " milly seconds" );
+            return tmp;
         } else {
             Sensor sensor = Sensor.currentSensor();
             if (sensor != null) {
-                return new Select()
+                long start = JoH.tsl();
+                BgReading tmp =  new Select()
                         .from(BgReading.class)
                         .where("Sensor = ? ", sensor.getId())
                         .where("calculated_value != 0")
                         .where("raw_data != 0")
                 //        .where("timestamp <= ?", JoH.tsl())
                         .orderBy("timestamp desc")
+                        .indexedBy("index_BgReadings_timestamp")
                         .executeSingle();
+                Long noIndex = JoH.tsl() - start;
+                start = JoH.tsl();
+                BgReading tmp1 =  new Select()
+                        .from(BgReading.class)
+                        .where("Sensor = ? ", sensor.getId())
+                        .where("calculated_value != 0")
+                        .where("raw_data != 0")
+                        //        .where("timestamp <= ?", JoH.tsl())
+                        .orderBy("timestamp desc")
+
+                        .executeSingle();
+
+                Log.e("xxxx", "Select 6 took " + (JoH.tsl() - start) + " compared to " +  noIndex + " milly seconds ");
+                return tmp;
             }
         }
         return null;
@@ -826,15 +864,31 @@ public class BgReading extends Model implements ShareUploadableBg {
             if (sensor == null) {
                 return null;
             }
-            return new Select()
+            long start = JoH.tsl();
+            List<BgReading> tmp =  new Select()
                     .from(BgReading.class)
                     .where("Sensor = ? ", sensor.getId())
                     .where("calculated_value != 0")
                     .where("raw_data != 0")
               //      .where("timestamp <= ?", JoH.tsl())
                     .orderBy("timestamp desc")
+                    .indexedBy("index_BgReadings_timestamp")
                     .limit(number)
                     .execute();
+
+            Long noIndex = JoH.tsl() - start;
+            List<BgReading> tmp1 =  new Select()
+                    .from(BgReading.class)
+                    .where("Sensor = ? ", sensor.getId())
+                    .where("calculated_value != 0")
+                    .where("raw_data != 0")
+                    //      .where("timestamp <= ?", JoH.tsl())
+                    .orderBy("timestamp desc")
+
+                    .limit(number)
+                    .execute();
+            Log.e("xxxx", "Select 7 took " + (JoH.tsl() - start) + " compared to " +  noIndex + " milly seconds ");
+            return tmp;
         }
     }
 
@@ -869,13 +923,30 @@ public class BgReading extends Model implements ShareUploadableBg {
     public static List<BgReading> latestUnCalculated(int number) {
         Sensor sensor = Sensor.currentSensor();
         if (sensor == null) { return null; }
-        return new Select()
+        long start = JoH.tsl();
+        List<BgReading> tmp =  new Select()
                 .from(BgReading.class)
                 .where("Sensor = ? ", sensor.getId())
                 .where("raw_data != 0")
                 .orderBy("timestamp desc")
                 .limit(number)
+                .indexedBy("index_BgReadings_timestamp")
                 .execute();
+        Long noIndex = JoH.tsl() - start;
+
+        start = JoH.tsl();
+        List<BgReading> tmp1 =  new Select()
+                .from(BgReading.class)
+                .where("Sensor = ? ", sensor.getId())
+                .where("raw_data != 0")
+                .orderBy("timestamp desc")
+                .limit(number)
+
+                .execute();
+        Log.e("xxxx", "Select 8 took " + (JoH.tsl() - start) + " compared to " +  noIndex + " milly seconds ");
+
+
+        return tmp;
     }
 
     public static List<BgReading> latestForGraph(int number, double startTime) {
@@ -887,7 +958,22 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public static List<BgReading> latestForGraph(int number, long startTime, long endTime) {
-        return new Select()
+        long start = JoH.tsl();
+        List<BgReading> tmp = new Select()
+                .from(BgReading.class)
+                .where("timestamp >= " + Math.max(startTime, 0))
+                .where("timestamp <= " + endTime)
+                .where("calculated_value != 0")
+                .where("raw_data != 0")
+                .orderBy("timestamp desc")
+                .indexedBy("index_BgReadings_timestamp")
+                .limit(number)
+                .execute();
+        //Log.e("xxxx", "Select 9 took " + (JoH.tsl() - start) + " milly seconds tmp = " );
+        Long noIndex = JoH.tsl() - start;
+
+        start = JoH.tsl();
+        List<BgReading> tmp1 = new Select()
                 .from(BgReading.class)
                 .where("timestamp >= " + Math.max(startTime, 0))
                 .where("timestamp <= " + endTime)
@@ -896,12 +982,15 @@ public class BgReading extends Model implements ShareUploadableBg {
                 .orderBy("timestamp desc")
                 .limit(number)
                 .execute();
+        Log.e("xxxx", "Select 9 took " + (JoH.tsl() - start) + " compared to " +  noIndex + " milly seconds ");
+        return tmp;
     }
 
     public static List<BgReading> latestForGraphSensor(int number, long startTime, long endTime) {
         Sensor sensor = Sensor.currentSensor();
         if (sensor == null) { return null; }
-        return new Select()
+        long start = JoH.tsl();
+        List<BgReading> tmp = new Select()
                 .from(BgReading.class)
                 .where("Sensor = ? ", sensor.getId())
                 .where("timestamp >= " + Math.max(startTime, 0))
@@ -912,6 +1001,8 @@ public class BgReading extends Model implements ShareUploadableBg {
                 .orderBy("timestamp desc")
                 .limit(number)
                 .execute();
+        Log.e("xxxx", "Select 10 took " + (JoH.tsl() - start) + " milly seconds" );
+        return tmp;
     }
 
     public static List<BgReading> latestForSensorAsc(int number, long startTime, long endTime, boolean follower) {
