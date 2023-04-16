@@ -1,6 +1,6 @@
-package com.eveningoutpost.dexdrip.ShareModels.Models;
+package com.eveningoutpost.dexdrip.sharemodels.models;
 
-import com.eveningoutpost.dexdrip.ShareModels.ShareUploadableBg;
+import com.eveningoutpost.dexdrip.sharemodels.ShareUploadableBg;
 import com.google.gson.annotations.Expose;
 
 import java.util.ArrayList;

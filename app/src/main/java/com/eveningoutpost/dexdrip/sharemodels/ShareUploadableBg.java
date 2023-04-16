@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip.ShareModels;
+package com.eveningoutpost.dexdrip.sharemodels;
 
 /**
  * Created by Emma Black on 8/10/15.
