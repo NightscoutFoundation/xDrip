@@ -326,6 +326,7 @@
     <!-- trend arrow for speak -->
     <string name="Flat">フラット</string>
     <string name="days">日</string>
+    <string name="aggressive_power_manager">お使いのデバイスにはアグレッシブな電源管理アプリがあります。通常、システム設定からアクセスできます。xDripがバックグラウンド制限から除外されていることを確認してください。</string>
     <string name="eng_mode_is_on">エンジニアリングモードが有効になっています。予期せぬ動作を引き起こす可能性があるため、必要な場合以外は無効にしてください。</string>
     <string name="yes">はい</string>
     <string name="garmin">Garmin</string>
