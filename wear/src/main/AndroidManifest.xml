@@ -190,7 +190,7 @@
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".UtilityModels.Notifications"
+            android:name=".utilitymodels.Notifications"
             android:exported="false" />
         <service
             android:name=".services.SnoozeOnNotificationDismissService"

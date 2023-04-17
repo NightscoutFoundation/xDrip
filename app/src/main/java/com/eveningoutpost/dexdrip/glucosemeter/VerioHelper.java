@@ -3,8 +3,8 @@ package com.eveningoutpost.dexdrip.glucosemeter;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.services.BluetoothGlucoseMeter;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

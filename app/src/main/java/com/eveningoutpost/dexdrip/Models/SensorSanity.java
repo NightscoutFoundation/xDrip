@@ -2,8 +2,8 @@ package com.eveningoutpost.dexdrip.Models;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 /**

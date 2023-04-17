@@ -5,7 +5,7 @@
     <data>
         <variable
             name="prefs"
-            type="com.eveningoutpost.dexdrip.UtilityModels.PrefsView" />
+            type="com.eveningoutpost.dexdrip.utilitymodels.PrefsView" />
         <variable name="viewmodel" type="com.eveningoutpost.dexdrip.utils.DisplayQRCode.ViewModel"/>
     </data>
 

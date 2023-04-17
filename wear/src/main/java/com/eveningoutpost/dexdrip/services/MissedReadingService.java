@@ -15,11 +15,11 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Models.UserNotification;
-import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
-import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
+import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.utilitymodels.Notifications;
 //import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 //import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 //import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 

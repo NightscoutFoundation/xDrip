@@ -355,19 +355,19 @@
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_calibration_check_in" />
         <activity
-            android:name=".UtilityModels.pebble.watchface.InstallPebbleWatchFace"
+            android:name=".utilitymodels.pebble.watchface.InstallPebbleWatchFace"
             android:label="@string/install_pebble_watchface" />
         <activity
-            android:name=".UtilityModels.pebble.watchface.InstallPebbleTrendWatchFace"
+            android:name=".utilitymodels.pebble.watchface.InstallPebbleTrendWatchFace"
             android:label="@string/install_pebble_trend_watchface" />
         <activity
-            android:name=".UtilityModels.pebble.watchface.InstallPebbleClassicTrendWatchface"
+            android:name=".utilitymodels.pebble.watchface.InstallPebbleClassicTrendWatchface"
             android:label="@string/install_pebble_classic_trend_watchface" />
         <activity
-            android:name=".UtilityModels.pebble.watchface.InstallPebbleTrendClayWatchFace"
+            android:name=".utilitymodels.pebble.watchface.InstallPebbleTrendClayWatchFace"
             android:label="Install Pebble Clay Watchface" />
         <activity
-            android:name=".UtilityModels.pebble.watchface.InstallPebbleSnoozeControlApp"
+            android:name=".utilitymodels.pebble.watchface.InstallPebbleSnoozeControlApp"
             android:label="@string/install_pebble_snooze_control_app" />
         <activity
             android:name=".UsbConnectedActivity"
@@ -475,10 +475,10 @@
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".UtilityModels.Notifications"
+            android:name=".utilitymodels.Notifications"
             android:exported="false" />
         <service
-            android:name=".UtilityModels.pebble.PebbleWatchSync"
+            android:name=".utilitymodels.pebble.PebbleWatchSync"
             android:enabled="true"
             android:exported="true"
             android:foregroundServiceType="connectedDevice|location" />
@@ -558,7 +558,7 @@
                 <action android:name="com.librelink.app.ThirdPartyIntegration.SENSOR_SCAN" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".UtilityModels.BroadcastSnoozeReceiver">
+        <receiver android:name=".utilitymodels.BroadcastSnoozeReceiver">
             <intent-filter>
                 <action android:name="com.eveningoutpost.dexdrip.Snooze" />
             </intent-filter>
@@ -570,7 +570,7 @@
                 <action android:name="com.twofortyfouram.locale.intent.action.FIRE_SETTING" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".UtilityModels.CompatibleApps">
+        <receiver android:name=".utilitymodels.CompatibleApps">
             <intent-filter android:priority="100">
                 <action android:name="android.intent.action.PACKAGE_ADDED" />
 
@@ -604,7 +604,7 @@
                 android:resource="@xml/accessibility_service" />
         </service>
         <service
-            android:name=".UtilityModels.XDripDreamService"
+            android:name=".utilitymodels.XDripDreamService"
             android:exported="true"
             android:icon="@drawable/ic_launcher"
             android:label="xDrip+"
@@ -625,7 +625,7 @@
             android:exported="true" />
 
         <activity
-            android:name=".UtilityModels.UpdateActivity"
+            android:name=".utilitymodels.UpdateActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_update" />
         <activity
@@ -641,7 +641,7 @@
             android:label="@string/libre_15_minutes_graph"
             android:noHistory="true" />
         <activity
-            android:name=".UtilityModels.SendFeedBack"
+            android:name=".utilitymodels.SendFeedBack"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_send_feed_back"
             android:noHistory="true">
@@ -769,7 +769,7 @@
             android:name="com.sec.android.multiwindow.MINIMUM_SIZE_H"
             android:value="598.0dip" />
 
-        <activity android:name=".UtilityModels.XDripDreamSettingsActivity" />
+        <activity android:name=".utilitymodels.XDripDreamSettingsActivity" />
 
         <service
             android:name=".wearintegration.Amazfitservice"
@@ -805,7 +805,7 @@
             android:name=".ui.activities.SelectAudioDevice"
             android:label="@string/select_device" />
         <activity
-            android:name=".UtilityModels.MtpConfigureActivity"
+            android:name=".utilitymodels.MtpConfigureActivity"
             android:label="USB programmer" />
         <activity
             android:name=".ui.activities.NumberWallPreview"

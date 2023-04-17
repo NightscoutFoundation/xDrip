@@ -9,7 +9,7 @@ import com.activeandroid.Cache;
 import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
 import com.eveningoutpost.dexdrip.databinding.ActivityDatabaseAdminBinding;
 
 import java.io.File;

@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.g5model;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DEX_BASE_ID;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.DEX_BASE_ID;
 
 // jamorham
 

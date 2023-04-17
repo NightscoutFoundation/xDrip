@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.Models;
 
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 
 /**
  * Created by jamorham on 04/03/2018.

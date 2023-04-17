@@ -4,7 +4,7 @@ import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.getTran
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 
 import lombok.val;
 

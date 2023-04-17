@@ -47,17 +47,17 @@ import com.eveningoutpost.dexdrip.services.DexCollectionService;
 import com.eveningoutpost.dexdrip.services.G5CollectionService;
 import com.eveningoutpost.dexdrip.services.HeartRateService;
 import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
-import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
-import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
-import com.eveningoutpost.dexdrip.UtilityModels.Blukon;
-import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.WearSyncBooleans;
-import com.eveningoutpost.dexdrip.UtilityModels.WearSyncPersistentStrings;
+import com.eveningoutpost.dexdrip.utilitymodels.AlertPlayer;
+import com.eveningoutpost.dexdrip.utilitymodels.BgSendQueue;
+import com.eveningoutpost.dexdrip.utilitymodels.Blukon;
+import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
+import com.eveningoutpost.dexdrip.utilitymodels.Notifications;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.WearSyncBooleans;
+import com.eveningoutpost.dexdrip.utilitymodels.WearSyncPersistentStrings;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -101,10 +101,10 @@ import static com.eveningoutpost.dexdrip.services.G5CollectionService.G5_BATTERY
 import static com.eveningoutpost.dexdrip.services.G5CollectionService.G5_BATTERY_WEARABLE_SEND;
 import static com.eveningoutpost.dexdrip.services.G5CollectionService.G5_FIRMWARE_MARKER;
 import static com.eveningoutpost.dexdrip.services.HeartRateService.getWearHeartSensorData;
-import static com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue.doMgdl;
-import static com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue.extraStatusLine;
-import static com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue.resendData;
-import static com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue.sgvLevel;
+import static com.eveningoutpost.dexdrip.utilitymodels.BgSendQueue.doMgdl;
+import static com.eveningoutpost.dexdrip.utilitymodels.BgSendQueue.extraStatusLine;
+import static com.eveningoutpost.dexdrip.utilitymodels.BgSendQueue.resendData;
+import static com.eveningoutpost.dexdrip.utilitymodels.BgSendQueue.sgvLevel;
 
 /**
  * Created by Emma Black on 12/26/14.
@@ -1553,7 +1553,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 long bgTimestamp = last.timestamp;
                 Log.d(TAG, "resetDataToLatest last.timestamp=" + JoH.dateTimeText(bgTimestamp) + " last.calculated_value=" + last.calculated_value);
                 if (bgTimestamp > dmTimestamp) {
-                    dataMap(dataMap, last, mPrefs, new com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder(context));
+                    dataMap(dataMap, last, mPrefs, new com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder(context));
                     return true;
                 }
             }
@@ -1561,7 +1561,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         return false;
     }
 
-    private static void dataMap(DataMap dataMap, BgReading bg, SharedPreferences sPrefs, com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder bgGraphBuilder) {//KS
+    private static void dataMap(DataMap dataMap, BgReading bg, SharedPreferences sPrefs, com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder bgGraphBuilder) {//KS
         Log.d(TAG, "dataMap bgTimestamp=" + JoH.dateTimeText(bg.timestamp) + " calculated_value=" + bg.calculated_value);
         //Double highMark = Double.parseDouble(sPrefs.getString("highValue", "140"));
         //Double lowMark = Double.parseDouble(sPrefs.getString("lowValue", "60"));

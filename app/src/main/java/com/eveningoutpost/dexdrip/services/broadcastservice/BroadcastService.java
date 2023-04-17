@@ -26,11 +26,11 @@ import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserNotification;
 import com.eveningoutpost.dexdrip.services.MissedReadingService;
-import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
-import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.PumpStatus;
+import com.eveningoutpost.dexdrip.utilitymodels.AlertPlayer;
+import com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.PumpStatus;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.store.FastStore;
 import com.eveningoutpost.dexdrip.store.KeyStore;
@@ -45,7 +45,7 @@ import java.util.Map;
 
 import lecho.lib.hellocharts.model.Line;
 
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.DAY_IN_MS;
 
 // External status line from AAPS added
 import static com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService.getLastStatusLine;

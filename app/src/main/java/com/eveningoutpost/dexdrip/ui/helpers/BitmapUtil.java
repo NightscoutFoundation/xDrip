@@ -14,7 +14,7 @@ import android.media.ExifInterface;
 import android.net.Uri;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utils.FileUtils;
 import com.eveningoutpost.dexdrip.xdrip;
 

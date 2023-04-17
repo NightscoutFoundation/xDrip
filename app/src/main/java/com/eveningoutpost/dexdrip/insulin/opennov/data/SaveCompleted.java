@@ -11,7 +11,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.insulin.MultipleInsulins;
 import com.eveningoutpost.dexdrip.insulin.opennov.Machine;
 import com.eveningoutpost.dexdrip.insulin.opennov.Message;

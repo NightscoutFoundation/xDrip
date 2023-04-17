@@ -7,7 +7,7 @@ import com.eveningoutpost.dexdrip.services.G5CollectionService;
 import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.services.UiBasedCollector;
 import com.eveningoutpost.dexdrip.services.WifiCollectionService;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollowService;
 import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;

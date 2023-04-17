@@ -6,8 +6,8 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
-import com.eveningoutpost.dexdrip.UtilityModels.Blukon;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.Blukon;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 
 /**
  * Created by Emma Black on 11/3/14.

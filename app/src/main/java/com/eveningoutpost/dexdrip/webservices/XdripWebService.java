@@ -8,15 +8,13 @@ import android.util.Log;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.dagger.Singleton;
 import com.eveningoutpost.dexdrip.utils.TriState;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
-
-import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -28,7 +26,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.net.URLDecoder;
 import java.time.format.DateTimeFormatter;
 import java.time.ZonedDateTime;
 import java.time.ZoneOffset;

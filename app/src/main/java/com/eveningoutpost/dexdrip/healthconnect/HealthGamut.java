@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.healthconnect;
 
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HEALTH_CONNECT_RESPONSE_ID;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HEALTH_CONNECT_RESPONSE_ID;
 import static kotlin.jvm.internal.Reflection.createKotlinClass;
 
 import android.app.Activity;

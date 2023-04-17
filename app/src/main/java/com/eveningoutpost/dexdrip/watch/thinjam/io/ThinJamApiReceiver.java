@@ -14,7 +14,7 @@ import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayAPI;
 import lombok.val;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
-import static com.eveningoutpost.dexdrip.UtilityModels.Intents.BLUEJAY_THINJAM_API;
+import static com.eveningoutpost.dexdrip.utilitymodels.Intents.BLUEJAY_THINJAM_API;
 
 public class ThinJamApiReceiver extends BroadcastReceiver {
 

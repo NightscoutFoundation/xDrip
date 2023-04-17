@@ -6,7 +6,7 @@ import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.getFirmwareXD
 import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.getRawFirmwareVersionString;
 import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
 
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.google.common.collect.ImmutableSet;
 
 import lombok.val;

@@ -18,10 +18,10 @@ import com.eveningoutpost.dexdrip.Models.Libre2RawValue;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.UtilityModels.Intents;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
-import com.eveningoutpost.dexdrip.UtilityModels.Unitized;
+import com.eveningoutpost.dexdrip.utilitymodels.Intents;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.StatusItem;
+import com.eveningoutpost.dexdrip.utilitymodels.Unitized;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import java.text.DecimalFormat;

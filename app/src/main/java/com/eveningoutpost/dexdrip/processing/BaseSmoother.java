@@ -3,8 +3,8 @@ package com.eveningoutpost.dexdrip.processing;
 import static com.eveningoutpost.dexdrip.Models.JoH.tolerantParseDouble;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.Unitized;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.Unitized;
 
 import java.util.List;
 

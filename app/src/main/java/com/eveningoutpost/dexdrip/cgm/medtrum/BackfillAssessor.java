@@ -5,15 +5,15 @@ import android.util.Pair;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 
 import java.util.List;
 
 import lombok.Setter;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
-import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PERIOD;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
+import static com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder.DEXCOM_PERIOD;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HOUR_IN_MS;
 
 /**
  * jamorham

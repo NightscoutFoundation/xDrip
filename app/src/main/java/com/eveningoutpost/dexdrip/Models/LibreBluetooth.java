@@ -3,16 +3,10 @@ package com.eveningoutpost.dexdrip.Models;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.NFCReaderX;
-import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.UtilityModels.Blukon;
-import com.eveningoutpost.dexdrip.UtilityModels.BridgeResponse;
-import com.eveningoutpost.dexdrip.UtilityModels.LibreUtils;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.BridgeResponse;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 /**
  * Created by Tzachi Dar on 7.3.2018.

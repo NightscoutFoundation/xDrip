@@ -6,7 +6,7 @@ import android.content.DialogInterface;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.isLANConnected;
 

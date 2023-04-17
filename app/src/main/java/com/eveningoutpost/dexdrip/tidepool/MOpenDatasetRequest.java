@@ -2,7 +2,7 @@ package com.eveningoutpost.dexdrip.tidepool;
 
 import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.google.gson.annotations.Expose;
 

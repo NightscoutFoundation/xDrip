@@ -12,7 +12,7 @@ import android.util.Log;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.GoogleDriveInterface;
-import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
+import com.eveningoutpost.dexdrip.utilitymodels.UpdateActivity;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.lang.ref.WeakReference;

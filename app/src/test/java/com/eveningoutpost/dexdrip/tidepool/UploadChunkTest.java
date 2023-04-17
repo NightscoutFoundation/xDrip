@@ -5,7 +5,7 @@ import static com.google.common.truth.Truth.assertWithMessage;
 import com.eveningoutpost.dexdrip.Models.APStatus;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.profileeditor.BasalProfile;
 import com.eveningoutpost.dexdrip.profileeditor.BasalRepository;
 

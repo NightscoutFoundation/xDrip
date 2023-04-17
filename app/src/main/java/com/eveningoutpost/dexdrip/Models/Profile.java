@@ -5,8 +5,8 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.profileeditor.BasalRepository;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileItem;

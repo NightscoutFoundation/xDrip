@@ -2,7 +2,7 @@ package com.eveningoutpost.dexdrip.tidepool;
 
 // jamorham
 
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 
 import okhttp3.Credentials;
 

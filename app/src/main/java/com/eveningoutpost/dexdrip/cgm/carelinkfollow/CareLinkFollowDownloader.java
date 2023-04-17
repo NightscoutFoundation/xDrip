@@ -4,8 +4,8 @@ import android.os.PowerManager;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
+import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.client.CareLinkClient;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.client.CountryUtils;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.RecentData;

@@ -1,9 +1,9 @@
 package com.eveningoutpost.dexdrip.alert;
 
-import static com.eveningoutpost.dexdrip.UtilityModels.PersistentStore.getLong;
-import static com.eveningoutpost.dexdrip.UtilityModels.PersistentStore.getString;
-import static com.eveningoutpost.dexdrip.UtilityModels.PersistentStore.setLong;
-import static com.eveningoutpost.dexdrip.UtilityModels.PersistentStore.setString;
+import static com.eveningoutpost.dexdrip.utilitymodels.PersistentStore.getLong;
+import static com.eveningoutpost.dexdrip.utilitymodels.PersistentStore.getString;
+import static com.eveningoutpost.dexdrip.utilitymodels.PersistentStore.setLong;
+import static com.eveningoutpost.dexdrip.utilitymodels.PersistentStore.setString;
 
 import lombok.RequiredArgsConstructor;
 

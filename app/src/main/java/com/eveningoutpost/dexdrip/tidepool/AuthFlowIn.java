@@ -9,8 +9,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 
 import net.openid.appauth.AppAuthConfiguration;
 import net.openid.appauth.AuthorizationException;

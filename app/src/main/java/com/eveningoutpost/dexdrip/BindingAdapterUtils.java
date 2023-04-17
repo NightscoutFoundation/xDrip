@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.FINAL_VISIBILITY_ID;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.FINAL_VISIBILITY_ID;
 
 
 /**

@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.cgm.sharefollow;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
 
 import java.util.Collections;
 import java.util.List;

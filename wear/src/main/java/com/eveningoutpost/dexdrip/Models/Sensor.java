@@ -1,9 +1,6 @@
 package com.eveningoutpost.dexdrip.Models;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteException;
-import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 
 import com.activeandroid.ActiveAndroid;
@@ -15,12 +12,11 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import android.database.sqlite.SQLiteDatabase;//KS
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.UtilityModels.SensorSendQueue;
+import com.eveningoutpost.dexdrip.utilitymodels.SensorSendQueue;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.internal.bind.DateTypeAdapter;
 
-import java.sql.SQLException;
 import java.util.Date;
 import java.util.UUID;
 

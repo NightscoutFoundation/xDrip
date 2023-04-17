@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.tidepool;
 // jamorham
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
+import com.eveningoutpost.dexdrip.utilitymodels.StatusItem;
 import com.eveningoutpost.dexdrip.store.FastStore;
 import com.eveningoutpost.dexdrip.store.KeyStore;
 

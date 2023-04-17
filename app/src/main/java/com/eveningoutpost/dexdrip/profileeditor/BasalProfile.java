@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.profileeditor;
 import static com.eveningoutpost.dexdrip.Models.JoH.JsonStringToFloatList;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 
 import org.json.JSONArray;
 import org.json.JSONException;

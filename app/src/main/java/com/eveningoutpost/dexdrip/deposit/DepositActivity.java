@@ -9,8 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.PrefsViewImpl;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.PrefsViewImpl;
 import com.eveningoutpost.dexdrip.databinding.ActivityDepositActivityBinding;
 import com.eveningoutpost.dexdrip.ui.dialog.GenericConfirmDialog;
 

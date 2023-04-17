@@ -7,14 +7,13 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
-import com.eveningoutpost.dexdrip.Home;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.utilitymodels.AlertPlayer;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 
 /**
  * Created by Emma Black on 11/29/14.

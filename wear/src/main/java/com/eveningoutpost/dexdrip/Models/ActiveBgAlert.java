@@ -9,7 +9,7 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
-import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
+import com.eveningoutpost.dexdrip.utilitymodels.AlertPlayer;
 
 import java.text.DateFormat;
 import java.util.Date;

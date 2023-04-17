@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.val;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.OPCODE_INBOUND_GLUCOSE;
 
 // jamorham

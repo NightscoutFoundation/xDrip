@@ -14,7 +14,7 @@ import com.activeandroid.Cache;
 import com.activeandroid.Configuration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

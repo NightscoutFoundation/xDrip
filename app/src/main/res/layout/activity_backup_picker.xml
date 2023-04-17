@@ -15,7 +15,7 @@
 
         <variable
             name="prefs"
-            type="com.eveningoutpost.dexdrip.UtilityModels.PrefsViewImpl" />
+            type="com.eveningoutpost.dexdrip.utilitymodels.PrefsViewImpl" />
 
     </data>
 

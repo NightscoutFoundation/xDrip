@@ -17,20 +17,20 @@ import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
-import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
-import com.eveningoutpost.dexdrip.UtilityModels.IncompatibleApps;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
+import com.eveningoutpost.dexdrip.utilitymodels.BgSendQueue;
+import com.eveningoutpost.dexdrip.utilitymodels.CalibrationSendQueue;
+import com.eveningoutpost.dexdrip.utilitymodels.IncompatibleApps;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.UploaderQueue;
 import com.eveningoutpost.dexdrip.cloud.backup.Backup;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
 import com.eveningoutpost.dexdrip.utils.Telemetry;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xdrip;
-import com.eveningoutpost.dexdrip.UtilityModels.SettingsValidation;
+import com.eveningoutpost.dexdrip.utilitymodels.SettingsValidation;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
-import static com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity.checkForAnUpdate;
+import static com.eveningoutpost.dexdrip.utilitymodels.UpdateActivity.checkForAnUpdate;
 
 public class DailyIntentService extends IntentService {
     private final static String TAG = DailyIntentService.class.getSimpleName();

@@ -10,10 +10,8 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.Models.GlucoseData;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
-import com.eveningoutpost.dexdrip.Models.ReadingData;
 
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.utils.LibreTrendPoint;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 

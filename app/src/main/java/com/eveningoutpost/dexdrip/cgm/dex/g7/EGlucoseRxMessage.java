@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.cgm.dex.g7;
 import com.eveningoutpost.dexdrip.g5model.CalibrationState;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

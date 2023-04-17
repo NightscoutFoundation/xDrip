@@ -13,9 +13,9 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.eveningoutpost.dexdrip.Models.Calibration;
-import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
-import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
-import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
+import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.utilitymodels.UndoRedo;
+import com.eveningoutpost.dexdrip.utilitymodels.CalibrationSendQueue;
 import com.eveningoutpost.dexdrip.calibrations.NativeCalibrationPipe;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 

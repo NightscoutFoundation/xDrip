@@ -11,7 +11,7 @@ import static com.google.common.truth.Truth.assertWithMessage;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 
 import org.junit.Test;
 

@@ -17,11 +17,10 @@ import com.eveningoutpost.dexdrip.Models.Forecast;
 import com.eveningoutpost.dexdrip.Models.GlucoseData;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
-import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm;
 import com.eveningoutpost.dexdrip.Models.ReadingData;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Intents;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Intents;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.LibreTrendUtil;
@@ -36,8 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.LIBRE_MULTIPLIER;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.LIBRE_MULTIPLIER;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 import lombok.val;

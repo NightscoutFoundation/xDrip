@@ -14,7 +14,7 @@ import com.eveningoutpost.dexdrip.tables.BgReadingTable;
 import com.eveningoutpost.dexdrip.tables.BloodTestTable;
 import com.eveningoutpost.dexdrip.tables.CalibrationDataTable;
 import com.eveningoutpost.dexdrip.tables.TreatmentsTable;
-import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import java.util.HashMap;

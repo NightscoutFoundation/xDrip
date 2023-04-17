@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
-import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
+import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.getCol;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -18,11 +18,11 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
-import com.eveningoutpost.dexdrip.UtilityModels.BgSparklineBuilder;
-import com.eveningoutpost.dexdrip.UtilityModels.ColorCache;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.StatusLine;
+import com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.utilitymodels.BgSparklineBuilder;
+import com.eveningoutpost.dexdrip.utilitymodels.ColorCache;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.StatusLine;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 
 import java.text.MessageFormat;

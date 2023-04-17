@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -31,9 +30,9 @@ import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.UtilityModels.DexShareAttributes;
-import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
-import com.eveningoutpost.dexdrip.UtilityModels.HM10Attributes;
+import com.eveningoutpost.dexdrip.utilitymodels.DexShareAttributes;
+import com.eveningoutpost.dexdrip.utilitymodels.ForegroundServiceStarter;
+import com.eveningoutpost.dexdrip.utilitymodels.HM10Attributes;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;

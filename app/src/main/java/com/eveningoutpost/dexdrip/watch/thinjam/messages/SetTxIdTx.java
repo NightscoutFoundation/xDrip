@@ -2,8 +2,8 @@ package com.eveningoutpost.dexdrip.watch.thinjam.messages;
 
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.Unitized;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.Unitized;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJay;
 import com.eveningoutpost.dexdrip.xdrip;
 

@@ -7,10 +7,10 @@ import android.os.Build;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.UtilityModels.BridgeBattery;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
-import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
-import com.eveningoutpost.dexdrip.UtilityModels.desertsync.RouteTools;
+import com.eveningoutpost.dexdrip.utilitymodels.BridgeBattery;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
+import com.eveningoutpost.dexdrip.utilitymodels.StatusItem;
+import com.eveningoutpost.dexdrip.utilitymodels.desertsync.RouteTools;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
