@@ -82,7 +82,7 @@ public class SensorSanityTest extends RobolectricTestWithConfig {
     }
 
     private void sensorCheck(final String checkName, final String sn, boolean shouldBeTrue, boolean shouldBeNull) {
-        final boolean result = SensorSanity.checkLibreSensorChange(sn);
+        final boolean result = SensorSanity.checkLibreSensorChange(sn,true);
         final Sensor sensor = Sensor.currentSensor();
 
         //System.out.println("Test: " + checkName + " " + sn + " " + shouldBeTrue + " " + shouldBeNull + " -> " + result + " " + sensor);
@@ -108,35 +108,35 @@ public class SensorSanityTest extends RobolectricTestWithConfig {
         // Start testing: create a sensor, call checkLibreSensorChange twice with same sensor, and once with a new
         // sn, and verify it is closed.
         Sensor.create(JoH.tsl());
-        SensorSanity.checkLibreSensorChange("SN111");
-        SensorSanity.checkLibreSensorChange("SN111");
-        SensorSanity.checkLibreSensorChange("SN222");
+        SensorSanity.checkLibreSensorChange("SN111", true);
+        SensorSanity.checkLibreSensorChange("SN111", true);
+        SensorSanity.checkLibreSensorChange("SN222", true);
         this_sensor = Sensor.currentSensor();
 
         assertWithMessage("Expecting this_sensor to be null after serial change").that(this_sensor).isNull();
 
         // Continue testing: create new one, call with the second sn twice. now call with third sn, sensor should be stopped.
         Sensor.create(JoH.tsl());
-        SensorSanity.checkLibreSensorChange("SN222");
-        SensorSanity.checkLibreSensorChange("SN222");
-        boolean retVal = SensorSanity.checkLibreSensorChange("SN333");
+        SensorSanity.checkLibreSensorChange("SN222", true);
+        SensorSanity.checkLibreSensorChange("SN222", true);
+        boolean retVal = SensorSanity.checkLibreSensorChange("SN333", true);
         assertWithMessage("Expecting true after serial change").that(retVal).isEqualTo(true);
         this_sensor = Sensor.currentSensor();
         assertWithMessage("Expecting this_sensor to be null after serial change").that(this_sensor).isNull();
 
         // Create a new sensor, call check, then stop it and start another, all should be well.
         Sensor.create(JoH.tsl());
-        SensorSanity.checkLibreSensorChange("SN333");
-        SensorSanity.checkLibreSensorChange("SN333");
-        SensorSanity.checkLibreSensorChange("SN333");
+        SensorSanity.checkLibreSensorChange("SN333", true);
+        SensorSanity.checkLibreSensorChange("SN333", true);
+        SensorSanity.checkLibreSensorChange("SN333", true);
         this_sensor = Sensor.currentSensor();
         assertWithMessage("Expecting this_sensor not to be null without serial change").that(this_sensor).isNotNull();
         if (this_sensor != null) {
             Sensor.stopSensor();
         }
         Sensor.create(JoH.tsl());
-        SensorSanity.checkLibreSensorChange("SN333");
-        SensorSanity.checkLibreSensorChange("SN333");
+        SensorSanity.checkLibreSensorChange("SN333", true);
+        SensorSanity.checkLibreSensorChange("SN333", true);
         this_sensor = Sensor.currentSensor();
         assertWithMessage("Expecting this_sensor not to be null without serial change").that(this_sensor).isNotNull();
 
@@ -144,8 +144,8 @@ public class SensorSanityTest extends RobolectricTestWithConfig {
         // Stop the sensor. Start a new one. call checkLibreSensorChange with the new sensor_sn twice. Sensor should be alive.
         Sensor.stopSensor();
         Sensor.create(JoH.tsl());
-        SensorSanity.checkLibreSensorChange("SN444");
-        SensorSanity.checkLibreSensorChange("SN444");
+        SensorSanity.checkLibreSensorChange("SN444", true);
+        SensorSanity.checkLibreSensorChange("SN444", true);
         this_sensor = Sensor.currentSensor();
         assertWithMessage("Expecting this_sensor not to be null without serial change").that(this_sensor).isNotNull();
     }

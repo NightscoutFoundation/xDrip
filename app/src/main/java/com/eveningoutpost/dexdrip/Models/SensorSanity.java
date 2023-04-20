@@ -104,17 +104,20 @@ public class SensorSanity {
         PersistentStore.setString(PREF_LIBRE_SENSOR_UUID, "");
         PersistentStore.setString(PREF_LIBRE_SN, "");
     }
-    
     public static boolean checkLibreSensorChangeIfEnabled(final String sn) {
+        return checkLibreSensorChangeIfEnabled( sn, true);
+    }
+
+    public static boolean checkLibreSensorChangeIfEnabled(final String sn, boolean stop_sensor_on_error) {
         if( Home.get_is_libre_whole_house_collector() && Sensor.currentSensor() != null) {
             Log.e(TAG, "Stopping sensor because in libre whold house coverage sensor must be stopped.");
             Sensor.stopSensor();
         }
-        return Pref.getBoolean("detect_libre_sn_changes", true) && checkLibreSensorChange(sn);
+        return Pref.getBoolean("detect_libre_sn_changes", true) && checkLibreSensorChange(sn, stop_sensor_on_error);
     }
 
     // returns true in the case of an error (had to stop the sensor)
-    public synchronized static boolean checkLibreSensorChange(final String currentSerial) {
+    public synchronized static boolean checkLibreSensorChange(final String currentSerial, boolean stop_sensor_on_error) {
         Log.i(TAG, "checkLibreSensorChange called currentSerial = " + currentSerial);
         if ((currentSerial == null) || currentSerial.length() < 4) return false;
         final Sensor this_sensor = Sensor.currentSensor();
@@ -153,11 +156,13 @@ public class SensorSanity {
             if(this_sensor.uuid.equals(last_uuid)) {
                 // We need to stop the sensor.
                 Log.e(TAG, String.format("Different sensor serial number for same sensor uuid: %s :: %s vs %s", last_uuid, lastSn, currentSerial));
-                Sensor.stopSensor();
-                JoH.static_toast_long("Stopping sensor due to serial number change");
-                // There is no open sensor now.
-                PersistentStore.setString(PREF_LIBRE_SENSOR_UUID, "");
-                PersistentStore.setString(PREF_LIBRE_SN, "");
+                if (stop_sensor_on_error){
+                    Sensor.stopSensor();
+                    JoH.static_toast_long("Stopping sensor due to serial number change");
+                    // There is no open sensor now.
+                    PersistentStore.setString(PREF_LIBRE_SENSOR_UUID, "");
+                    PersistentStore.setString(PREF_LIBRE_SN, "");
+                }
                 return true;
 
             } else {
