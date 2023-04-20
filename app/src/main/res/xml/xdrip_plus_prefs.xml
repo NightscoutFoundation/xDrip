@@ -1060,7 +1060,7 @@
             android:title="@string/send_feedback_message">
             <intent
                 android:action="xdrip_plus_send_developer_feedback"
-                android:targetClass="com.eveningoutpost.dexdrip.UtilityModels.SendFeedBack"
+                android:targetClass="com.eveningoutpost.dexdrip.utilitymodels.SendFeedBack"
                 android:targetPackage="@string/local_target_package" />
         </Preference>
     </PreferenceScreen>

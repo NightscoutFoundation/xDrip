@@ -123,7 +123,7 @@ public class NanoStatus {
             case "collector":
                 return collectorNano(DexCollectionType.getCollectorServiceClass());
             case "mtp-configure":
-                return collectorNano(getClassByName(".UtilityModels.MtpConfigure"));
+                return collectorNano(getClassByName(".utilitymodels.MtpConfigure"));
             case "sensor-expiry":
                 return getLocalOrRemoteSensorExpiry();
             default:
