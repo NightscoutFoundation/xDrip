@@ -2,7 +2,7 @@ package com.eveningoutpost.dexdrip.cgm.webfollow;
 
 import android.content.SharedPreferences;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 

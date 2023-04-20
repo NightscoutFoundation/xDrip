@@ -1,16 +1,12 @@
 package com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records;
 
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Constants;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Arrays;
 import java.util.Date;
 
 // This code and this particular library are from the NightScout android uploader

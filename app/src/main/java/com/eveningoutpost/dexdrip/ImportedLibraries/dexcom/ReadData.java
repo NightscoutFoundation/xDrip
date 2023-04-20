@@ -10,7 +10,7 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.MeterRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.PageHeader;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.UsbSerialDriver;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
 
 import org.w3c.dom.Element;
 

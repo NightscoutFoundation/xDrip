@@ -6,7 +6,7 @@
 
         <variable
             name="idq"
-            type="com.eveningoutpost.dexdrip.Models.ProcessInitialDataQuality.InitialDataQuality" />
+            type="com.eveningoutpost.dexdrip.models.ProcessInitialDataQuality.InitialDataQuality" />
 
         <variable
             name="ms"

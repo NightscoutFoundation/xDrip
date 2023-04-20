@@ -28,7 +28,7 @@ import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbRequest;
 import android.os.Build;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

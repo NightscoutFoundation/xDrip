@@ -10,7 +10,7 @@ import android.support.annotation.StringRes;
 import android.view.View;
 
 import com.eveningoutpost.dexdrip.BR;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.databinding.DialogTreeSelectorBinding;
 import com.eveningoutpost.dexdrip.utils.DexCollectionHelper;

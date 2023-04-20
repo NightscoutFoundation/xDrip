@@ -7,8 +7,8 @@ import android.media.AudioManager;
 import android.os.PowerManager;
 import android.speech.tts.TextToSpeech;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.Locale;

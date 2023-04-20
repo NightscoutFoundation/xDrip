@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.alert;
 
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.google.gson.annotations.Expose;
 
 import java.util.ArrayList;

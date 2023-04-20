@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records;
 
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.CRC16;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.CRCFailRuntimeException;

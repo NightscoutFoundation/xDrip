@@ -29,8 +29,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.eveningoutpost.dexdrip.services.HeartRateService;
 import com.eveningoutpost.dexdrip.utilitymodels.BgSendQueue;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;

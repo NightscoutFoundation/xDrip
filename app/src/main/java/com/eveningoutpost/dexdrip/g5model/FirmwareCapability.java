@@ -4,7 +4,7 @@ package com.eveningoutpost.dexdrip.g5model;
 
 import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.getFirmwareXDetails;
 import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.getRawFirmwareVersionString;
-import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
+import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
 
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.google.common.collect.ImmutableSet;

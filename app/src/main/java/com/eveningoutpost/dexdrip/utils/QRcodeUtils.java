@@ -1,14 +1,14 @@
 package com.eveningoutpost.dexdrip.utils;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.bytesToHex;
-import static com.eveningoutpost.dexdrip.Models.JoH.static_toast_long;
+import static com.eveningoutpost.dexdrip.models.JoH.bytesToHex;
+import static com.eveningoutpost.dexdrip.models.JoH.static_toast_long;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.util.Base64;
 import android.util.Log;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.zxing.BarcodeFormat;

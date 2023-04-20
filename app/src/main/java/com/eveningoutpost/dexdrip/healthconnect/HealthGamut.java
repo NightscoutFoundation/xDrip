@@ -33,9 +33,9 @@ import androidx.health.connect.client.request.ReadRecordsRequest;
 import androidx.health.connect.client.time.TimeRangeFilter;
 import androidx.health.connect.client.units.BloodGlucose;
 
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.time.Instant;

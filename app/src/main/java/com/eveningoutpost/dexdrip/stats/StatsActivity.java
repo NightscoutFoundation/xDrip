@@ -25,8 +25,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.utilitymodels.JamorhamShowcaseDrawer;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
@@ -37,7 +37,7 @@ import com.github.amlcurran.showcaseview.targets.ViewTarget;
 
 import java.io.File;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.goFullScreen;
+import static com.eveningoutpost.dexdrip.models.JoH.goFullScreen;
 import static com.eveningoutpost.dexdrip.R.id.pager;
 
 public class StatsActivity extends ActivityWithMenu {

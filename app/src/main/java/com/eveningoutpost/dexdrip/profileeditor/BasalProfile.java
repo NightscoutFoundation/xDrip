@@ -1,8 +1,8 @@
 package com.eveningoutpost.dexdrip.profileeditor;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.JsonStringToFloatList;
+import static com.eveningoutpost.dexdrip.models.JoH.JsonStringToFloatList;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 
 import org.json.JSONArray;

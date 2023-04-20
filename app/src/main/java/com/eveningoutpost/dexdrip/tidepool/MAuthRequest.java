@@ -6,7 +6,7 @@ import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 
 import okhttp3.Credentials;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
+import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
 
 public class MAuthRequest extends BaseMessage {
 

@@ -4,8 +4,8 @@ import android.os.PowerManager;
 import android.support.annotation.NonNull;
 
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
 
 import java.util.ArrayDeque;
 import java.util.HashMap;

@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.ImportedLibraries.dexcom;
 
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
 
 import java.util.ArrayList;
 import java.util.List;

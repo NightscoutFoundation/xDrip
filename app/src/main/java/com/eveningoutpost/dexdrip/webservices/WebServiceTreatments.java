@@ -4,8 +4,8 @@ import android.util.Log;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.Treatments;
+import com.eveningoutpost.dexdrip.models.UserError;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.ui.dialog;
 import android.app.Activity;
 import android.app.AlertDialog;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.insulin.InsulinManager;
 import com.eveningoutpost.dexdrip.insulin.opennov.data.Pens;

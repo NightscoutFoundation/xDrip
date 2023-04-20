@@ -9,7 +9,7 @@ import android.view.WindowManager;
 import android.widget.EditText;
 
 import com.eveningoutpost.dexdrip.g5model.G6CalibrationParameters;
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.R;
 
 // jamorham

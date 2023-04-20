@@ -24,7 +24,7 @@ package com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

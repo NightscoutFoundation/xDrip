@@ -1,15 +1,11 @@
 package com.eveningoutpost.dexdrip.plugin;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.runOnUiThread;
 import static com.eveningoutpost.dexdrip.plugin.Consent.setGiven;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
-
-import lombok.val;
 
 /**
  * JamOrHam

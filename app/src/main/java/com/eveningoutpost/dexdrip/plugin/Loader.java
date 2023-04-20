@@ -2,7 +2,7 @@ package com.eveningoutpost.dexdrip.plugin;
 
 import static com.eveningoutpost.dexdrip.plugin.Cache.getPath;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.lang.reflect.Method;

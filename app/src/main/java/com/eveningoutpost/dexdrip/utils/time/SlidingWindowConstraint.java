@@ -10,7 +10,7 @@ import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
+import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
 
 /**
  * Created by jamorham on 14/02/2018.

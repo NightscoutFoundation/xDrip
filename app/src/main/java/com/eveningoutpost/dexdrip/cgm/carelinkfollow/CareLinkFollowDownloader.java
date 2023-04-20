@@ -2,15 +2,15 @@ package com.eveningoutpost.dexdrip.cgm.carelinkfollow;
 
 import android.os.PowerManager;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.client.CareLinkClient;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.client.CountryUtils;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.RecentData;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
+import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
 
 /**
  * CareLink Downloader

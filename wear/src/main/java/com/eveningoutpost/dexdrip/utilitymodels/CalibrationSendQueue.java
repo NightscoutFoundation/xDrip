@@ -8,7 +8,7 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
-import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.models.Calibration;
 
 import java.util.List;
 

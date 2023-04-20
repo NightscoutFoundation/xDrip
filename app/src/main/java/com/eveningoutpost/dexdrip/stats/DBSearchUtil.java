@@ -6,12 +6,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
 
 import com.activeandroid.Cache;
 import com.activeandroid.query.Select;
-import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 
 import java.util.Calendar;

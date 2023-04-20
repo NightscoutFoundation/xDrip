@@ -20,8 +20,8 @@ import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.g5model.SensorDays;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.adapters.SpannableSerializer;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
@@ -31,7 +31,7 @@ import java.util.HashMap;
 import lombok.Setter;
 import lombok.val;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
+import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
 
 public class NanoStatus {
 

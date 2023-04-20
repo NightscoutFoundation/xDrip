@@ -10,9 +10,9 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.Treatments;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceParts.Header;
@@ -33,8 +33,8 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
-import static com.eveningoutpost.dexdrip.Models.JoH.hourMinuteString;
-import static com.eveningoutpost.dexdrip.Models.JoH.threadSleep;
+import static com.eveningoutpost.dexdrip.models.JoH.hourMinuteString;
+import static com.eveningoutpost.dexdrip.models.JoH.threadSleep;
 import static com.eveningoutpost.dexdrip.utils.FileUtils.getExternalDir;
 import static com.eveningoutpost.dexdrip.utils.FileUtils.makeSureDirectoryExists;
 

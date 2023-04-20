@@ -5,8 +5,8 @@ import android.os.Bundle;
 import android.os.ParcelUuid;
 import android.os.PowerManager;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
 import com.eveningoutpost.dexdrip.utilitymodels.RxBleProvider;
@@ -29,7 +29,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import lombok.NoArgsConstructor;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.ratelimit;
+import static com.eveningoutpost.dexdrip.models.JoH.ratelimit;
 
 
 // jamorham

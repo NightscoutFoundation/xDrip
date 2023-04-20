@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records;
 
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -8,7 +8,7 @@ import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.Serializable;
+
 import java.io.StringReader;
 import java.util.Arrays;
 

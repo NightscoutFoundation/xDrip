@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.profileeditor;
 import static com.eveningoutpost.dexdrip.profileeditor.BasalProfile.consolidate;
 import static com.google.common.truth.Truth.assertWithMessage;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 
 import org.junit.Test;
 

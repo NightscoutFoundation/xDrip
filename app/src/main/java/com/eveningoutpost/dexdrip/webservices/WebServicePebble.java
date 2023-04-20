@@ -1,16 +1,14 @@
 package com.eveningoutpost.dexdrip.webservices;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.Calibration;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.Calibration;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.dagger.Injectors;
 import com.eveningoutpost.dexdrip.ui.MicroStatus;
-import com.eveningoutpost.dexdrip.ui.MicroStatusImpl;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -1,9 +1,9 @@
 package com.eveningoutpost.dexdrip;
 
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.LibreBlock;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.LibreBlock;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.sharemodels.BgUploader;
 import com.eveningoutpost.dexdrip.sharemodels.models.ShareUploadPayload;
 import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;

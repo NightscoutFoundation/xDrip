@@ -56,7 +56,7 @@
 -keep class org.slf4j.** { *; }
 -keep class rx.internal.util.** { *; }
 -keep class sun.misc.Unsafe { *; }
--keep class com.eveningoutpost.dexdrip.Models.** { *; }
+-keep class com.eveningoutpost.dexdrip.models.** { *; }
 -keep class com.eveningoutpost.dexdrip.models.** { *; }
 -keep class com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.** { *; }
 -keep class com.eveningoutpost.dexdrip.importedlibraries.usbserial.** { *; }

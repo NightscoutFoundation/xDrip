@@ -18,7 +18,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utils.bt.BtCallBack3;
 import com.eveningoutpost.dexdrip.utils.bt.ConnectReceiver;

@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.eassist;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.google.gson.annotations.Expose;
 import com.google.gson.reflect.TypeToken;

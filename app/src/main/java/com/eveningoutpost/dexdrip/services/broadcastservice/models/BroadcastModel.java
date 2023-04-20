@@ -2,7 +2,7 @@ package com.eveningoutpost.dexdrip.services.broadcastservice.models;
 
 import android.os.Bundle;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 
 public class BroadcastModel {

@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.utilitymodels;
 import android.graphics.Color;
 import android.util.Log;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError;
 
 import java.util.EnumMap;
 

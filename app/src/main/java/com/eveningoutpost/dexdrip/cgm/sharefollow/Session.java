@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip.cgm.sharefollow;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import okhttp3.ResponseBody;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
+import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
 import static com.eveningoutpost.dexdrip.cgm.sharefollow.ShareConstants.SESSION_ID_VALIDITY_TIME;
 
 /**

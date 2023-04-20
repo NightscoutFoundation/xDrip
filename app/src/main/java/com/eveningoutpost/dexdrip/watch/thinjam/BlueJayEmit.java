@@ -9,7 +9,7 @@ import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 
 import lombok.val;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
+import static com.eveningoutpost.dexdrip.models.JoH.tsl;
 import static com.eveningoutpost.dexdrip.xdrip.getAppContext;
 
 public class BlueJayEmit {

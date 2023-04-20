@@ -4,7 +4,7 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.text.format.DateFormat;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.utilitymodels.ColorCache;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.profileeditor.BasalProfile;

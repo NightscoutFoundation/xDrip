@@ -1,11 +1,11 @@
 package com.eveningoutpost.dexdrip.utilitymodels;
 
 import com.eveningoutpost.dexdrip.BuildConfig;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.xdrip;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.dateTimeText;
+import static com.eveningoutpost.dexdrip.models.JoH.dateTimeText;
 
 /**
  * jamorham

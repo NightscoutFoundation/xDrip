@@ -2,8 +2,8 @@ package com.eveningoutpost.dexdrip.tidepool;
 
 // jamorham
 
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.google.gson.annotations.Expose;
 
 

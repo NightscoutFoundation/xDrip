@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.insulin.opennov.mt;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
+import static com.eveningoutpost.dexdrip.models.JoH.tsl;
 
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.insulin.opennov.BaseMessage;

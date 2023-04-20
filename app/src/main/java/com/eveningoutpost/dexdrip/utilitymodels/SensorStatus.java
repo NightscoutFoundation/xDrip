@@ -1,12 +1,12 @@
 package com.eveningoutpost.dexdrip.utilitymodels;
 
-import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.models.Sensor;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
+import static com.eveningoutpost.dexdrip.models.JoH.tsl;
 
 // jamorham
 

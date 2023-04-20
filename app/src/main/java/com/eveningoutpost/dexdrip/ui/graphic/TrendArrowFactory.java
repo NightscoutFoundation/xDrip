@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.ui.graphic;
 import android.os.Build;
 import android.widget.ImageView;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;

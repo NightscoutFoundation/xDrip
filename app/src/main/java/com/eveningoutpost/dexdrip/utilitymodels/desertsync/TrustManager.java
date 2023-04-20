@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.utilitymodels.desertsync;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 
 import java.security.KeyManagementException;

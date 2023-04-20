@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.cloud.backup;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.showNotification;
+import static com.eveningoutpost.dexdrip.models.JoH.showNotification;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.BACKUP_ACTIVITY_ID;
 import static com.eveningoutpost.dexdrip.cloud.backup.Backup.cleanPhoneName;
 import static com.eveningoutpost.dexdrip.cloud.backup.Backup.isBackupSuitableForAutomatic;
@@ -14,8 +14,8 @@ import android.databinding.ObservableField;
 import android.net.Uri;
 import android.os.Bundle;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
 import com.eveningoutpost.dexdrip.utilitymodels.PrefsViewImpl;

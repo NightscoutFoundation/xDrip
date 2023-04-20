@@ -4,7 +4,7 @@ package com.eveningoutpost.dexdrip.utilitymodels;
 
 // TODO check this reference handling
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.polidea.rxandroidble2.RxBleClient;
 

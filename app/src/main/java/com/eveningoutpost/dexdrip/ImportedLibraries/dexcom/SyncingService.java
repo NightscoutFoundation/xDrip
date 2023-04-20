@@ -10,8 +10,8 @@ import android.hardware.usb.UsbManager;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
@@ -22,7 +22,7 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.CdcAcmSeria
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.ProbeTable;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.UsbSerialDriver;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.UsbSerialProber;
-import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.models.Calibration;
 
 import org.json.JSONArray;
 

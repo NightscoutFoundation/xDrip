@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.utilitymodels;
 
-import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 
 import org.junit.Test;

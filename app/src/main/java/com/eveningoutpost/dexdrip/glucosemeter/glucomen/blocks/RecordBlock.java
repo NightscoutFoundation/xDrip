@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.glucosemeter.glucomen.blocks;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.roundDouble;
+import static com.eveningoutpost.dexdrip.models.JoH.roundDouble;
 
 import com.eveningoutpost.dexdrip.utilitymodels.Unitized;
 import com.eveningoutpost.dexdrip.buffer.MyByteBuffer;

@@ -2,8 +2,8 @@ package com.eveningoutpost.dexdrip.utilitymodels;
 
 // stub placeholder
 
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.LibreBlock;
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.LibreBlock;
 
 public class UploaderQueue {
 

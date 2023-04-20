@@ -1,11 +1,11 @@
 package com.eveningoutpost.dexdrip.cloud.backup;
 
 
-import static com.eveningoutpost.dexdrip.Models.JoH.readLine;
-import static com.eveningoutpost.dexdrip.Models.JoH.roundDouble;
+import static com.eveningoutpost.dexdrip.models.JoH.readLine;
+import static com.eveningoutpost.dexdrip.models.JoH.roundDouble;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.R;
 
 import java.io.IOException;

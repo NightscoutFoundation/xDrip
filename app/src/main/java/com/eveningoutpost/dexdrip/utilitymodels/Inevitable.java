@@ -2,8 +2,8 @@ package com.eveningoutpost.dexdrip.utilitymodels;
 
 import android.os.PowerManager;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
 
 import java.util.concurrent.ConcurrentHashMap;
 
