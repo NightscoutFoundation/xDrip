@@ -283,7 +283,11 @@ public class HealthGamut {
                     MealType.UNKNOWN, null, new Metadata());
             list.add(record);
             client.insertRecords(list, coroutines.getContinuation((result, throwable) -> {
-                Log.d(TAG, "Insert result: " + result.getRecordIdsList().size());
+                try {
+                    Log.d(TAG, "Insert result: " + result.getRecordIdsList().size());
+                } catch (Exception e) {
+                    Log.e(TAG, "Got exception on insert: " + e);
+                }
             }));
         } else {
             Log.e(TAG, "Could not send Glucose");
