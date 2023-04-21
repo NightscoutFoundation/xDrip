@@ -246,57 +246,61 @@ public class XDripDreamService extends DreamService implements SensorEventListen
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (use_gravity) {
-            final Sensor source = event.sensor;
-            if (source.getType() == Sensor.TYPE_GRAVITY) {
-                // final float z = event.values[2];
-                final float y = event.values[1];
-                final float x = event.values[0];
+        try {
+            if (use_gravity) {
+                final Sensor source = event.sensor;
+                if (source.getType() == Sensor.TYPE_GRAVITY) {
+                    // final float z = event.values[2];
+                    final float y = event.values[1];
+                    final float x = event.values[0];
 
-                // calculate angle from gravity sensor only
-                float rotation = (y * 9) - 90;
-                if (rotation < 0) {
-                    if (x > 0) {
-                        rotation = 0 - rotation;
+                    // calculate angle from gravity sensor only
+                    float rotation = (y * 9) - 90;
+                    if (rotation < 0) {
+                        if (x > 0) {
+                            rotation = 0 - rotation;
+                        }
+                    }
+
+                    // normalize 0-360
+                    rotation = rotation + 180;
+
+                    final int window_rotation = getWindowManager().getDefaultDisplay().getRotation();
+
+                    // compensate for view rotation
+                    switch (window_rotation) {
+                        case Surface.ROTATION_90:
+                            rotation += 270;
+                            break;
+                        case Surface.ROTATION_180:
+                            rotation += 180;
+                            break;
+                        case Surface.ROTATION_270:
+                            rotation += 90;
+                            break;
+                    }
+                    // snap to nearest 90 degree
+                    final float adjust_rotation = ((int) (((rotation + 225) % 360) / 90)) * 90;
+                    // update rotation if something changed
+                    if (adjust_rotation != last_rotation) {
+                        last_rotation = adjust_rotation;
+                        JoH.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                image.setRotation(adjust_rotation);
+                                graphimage.setRotation(adjust_rotation);
+                                inflatedLayout.setRotation(adjust_rotation);
+
+                            }
+                        });
                     }
                 }
-
-                // normalize 0-360
-                rotation = rotation + 180;
-
-                final int window_rotation = getWindowManager().getDefaultDisplay().getRotation();
-
-                // compensate for view rotation
-                switch (window_rotation) {
-                    case Surface.ROTATION_90:
-                        rotation += 270;
-                        break;
-                    case Surface.ROTATION_180:
-                        rotation += 180;
-                        break;
-                    case Surface.ROTATION_270:
-                        rotation += 90;
-                        break;
-                }
-                // snap to nearest 90 degree
-                final float adjust_rotation = ((int) (((rotation + 225) % 360) / 90)) * 90;
-                // update rotation if something changed
-                if (adjust_rotation != last_rotation) {
-                    last_rotation = adjust_rotation;
-                    JoH.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            image.setRotation(adjust_rotation);
-                            graphimage.setRotation(adjust_rotation);
-                            inflatedLayout.setRotation(adjust_rotation);
-
-                        }
-                    });
-                }
+            } else {
+                Log.e(TAG, "Got sensor data when sensor should be disabled");
+                unregister_sensor_receiver();
             }
-        } else {
-            Log.e(TAG, "Got sensor data when sensor should be disabled");
-            unregister_sensor_receiver();
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception handling sensor changed: " + e);
         }
     }
 
