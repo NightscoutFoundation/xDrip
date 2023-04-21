@@ -9,7 +9,7 @@ import android.text.SpannableString;
 import android.util.Pair;
 
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
+import com.eveningoutpost.dexdrip.importedlibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.JoH;

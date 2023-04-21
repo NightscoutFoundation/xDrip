@@ -2,7 +2,7 @@ package com.eveningoutpost.dexdrip.glucosemeter.glucomen.devices;
 
 import android.nfc.Tag;
 
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
+import com.eveningoutpost.dexdrip.importedlibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.models.UserError;
 
 import lombok.val;

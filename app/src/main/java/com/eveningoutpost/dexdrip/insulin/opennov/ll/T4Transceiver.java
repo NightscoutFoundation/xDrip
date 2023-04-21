@@ -6,7 +6,7 @@ import static com.eveningoutpost.dexdrip.insulin.opennov.BaseMessage.d;
 import android.nfc.TagLostException;
 import android.nfc.tech.IsoDep;
 
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
+import com.eveningoutpost.dexdrip.importedlibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.buffer.MyByteBuffer;

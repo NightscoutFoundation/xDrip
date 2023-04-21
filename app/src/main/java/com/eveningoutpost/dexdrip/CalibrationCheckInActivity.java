@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.SyncingService;
+import com.eveningoutpost.dexdrip.importedlibraries.dexcom.SyncingService;
 import com.eveningoutpost.dexdrip.models.Sensor;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 

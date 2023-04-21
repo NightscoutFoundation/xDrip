@@ -6,7 +6,7 @@ import android.os.Build;
 import android.os.PowerManager;
 
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
+import com.eveningoutpost.dexdrip.importedlibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.Prediction;

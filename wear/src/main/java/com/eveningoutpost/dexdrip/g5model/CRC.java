@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.g5model;
 
-import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.CRC16;
+import com.eveningoutpost.dexdrip.importedlibraries.dexcom.CRC16;
 
 /**
  * Created by jcostik1 on 3/24/16.

@@ -9,7 +9,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.PowerManager;
 
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
+import com.eveningoutpost.dexdrip.importedlibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.PenData;
 import com.eveningoutpost.dexdrip.models.UserError;
@@ -57,7 +57,7 @@ import io.reactivex.schedulers.Schedulers;
 
 import static android.bluetooth.BluetoothDevice.BOND_BONDED;
 import static android.bluetooth.BluetoothDevice.BOND_NONE;
-import static com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump.dumpHexString;
+import static com.eveningoutpost.dexdrip.importedlibraries.usbserial.util.HexDump.dumpHexString;
 import static com.eveningoutpost.dexdrip.models.JoH.bytesToHex;
 import static com.eveningoutpost.dexdrip.models.JoH.dateTimeText;
 import static com.eveningoutpost.dexdrip.models.JoH.emptyString;

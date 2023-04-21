@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.webservices;
 
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
+import com.eveningoutpost.dexdrip.importedlibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.DateUtil;
 import com.eveningoutpost.dexdrip.models.Sensor;

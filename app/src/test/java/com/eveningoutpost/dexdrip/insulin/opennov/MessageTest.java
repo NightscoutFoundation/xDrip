@@ -5,7 +5,7 @@ import static com.eveningoutpost.dexdrip.insulin.opennov.mt.ApoepElement.SYS_TYP
 import static com.google.common.truth.Truth.assertWithMessage;
 
 import com.eveningoutpost.dexdrip.HexTestTools;
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
+import com.eveningoutpost.dexdrip.importedlibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 
 import org.junit.Test;

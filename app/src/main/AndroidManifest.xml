@@ -302,7 +302,7 @@
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".ImportedLibraries.dexcom.SyncingService"
+            android:name=".importedlibraries.dexcom.SyncingService"
             android:enabled="true"
             android:exported="true" />
         <service
