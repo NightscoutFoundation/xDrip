@@ -3,13 +3,11 @@ package com.eveningoutpost.dexdrip.g5model;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import lombok.Data;
 
 /**
  * JamOrHam
  */
 
-@Data
 public class AdvMatcher extends BaseMessage {
 
     public byte[] check = new byte[2];
