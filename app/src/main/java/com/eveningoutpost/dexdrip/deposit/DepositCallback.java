@@ -43,7 +43,7 @@ class DepositCallback<T> implements Callback<T> {
     @Override
     public void onResponse(@NonNull Call<T> call, Response<T> response) {
         if (response.isSuccessful() && response.body() != null) {
-            var msg = "Error";
+            String msg = "Error";
             if (response.body() instanceof DepositReply1) {
                 msg = ((DepositReply1) response.body()).result;
             }
