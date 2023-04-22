@@ -116,7 +116,7 @@ public class MegaStatus extends ActivityWithMenu {
     }
 
     private static final String G4_STATUS = "BT Device";
-    public static final String G5_STATUS = "G5/G6 Status";
+    public static final String G5_STATUS = "G5/G6/G7 Status";
     private static final String MEDTRUM_STATUS = "Medtrum Status";
     private static final String IP_COLLECTOR = "IP Collector";
     private static final String XDRIP_PLUS_SYNC = "Followers";
@@ -165,7 +165,7 @@ public class MegaStatus extends ActivityWithMenu {
             }
             if (dexCollectionType.equals(DexcomG5)) {
                 if (Pref.getBooleanDefaultFalse(Ob1G5CollectionService.OB1G5_PREFS)) {
-                    addAsection(G5_STATUS, "OB1 G5/G6 Collector and Transmitter Status");
+                    addAsection(G5_STATUS, "OB1 G5/G6/G7 Collector and Transmitter Status");
                 } else {
                     addAsection(G5_STATUS, "G5 Collector and Transmitter Status");
                 }
