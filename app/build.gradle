@@ -10,7 +10,7 @@ buildscript {
     }
 }
 apply plugin: 'com.android.application'
-apply from: 'token-replace.gradle'
+//apply from: 'token-replace.gradle'
 apply from: '../common.gradle'
 apply plugin: 'kotlin-android'
 
