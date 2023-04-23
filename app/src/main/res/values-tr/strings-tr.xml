@@ -912,6 +912,7 @@
     <string name="bluereader_position">okunamadığından dolayı blueReader\'ın sensör üzerindeki konumunu kontrol edin!</string>
     <string name="bluereaderuglystate">BlueReader ugly state bulundu! O şimdi kapatılacak ve siz onu tekrar açacaksınız (tuşa kısa basın). Bundan sonra blueReader beklenildiği gibi çalışmalıdır!</string>
     <string name="offical_msg">Resmi app</string>
+    <string name="aggressive_power_manager">Cihazınızda agresif bir güç yönetimi uygulaması var. Normalde sistem ayarlarından erişilir. Lütfen xDrip\'in arka plan kısıtlamalarından hariç tutulduğundan emin olun.</string>
     <string name="use_conflict_msg">verici cihazına da erişmeyi deneyebilir ve bu durum her iki uygulamada da sorunlara neden olabilir</string>
     <string name="use_confict_msg_glimp">Glimp ayarlarını yapabilirsiniz: seçenekler -&gt; cihazlar -&gt; Bluetooth seçeneğini kaldır</string>
     <string name="eng_mode_is_on">Mühendislik modu etkinleştirildi. Beklenmeyen davranışlara neden olabileceğinden, ihtiyacınız olduğundan emin değilseniz lütfen devre dışı bırakın.</string>
@@ -1760,6 +1761,11 @@
     <string name="summary_ymin">Daha küçük okumalar olmadığında yMin\'i seçin.</string>
     <string name="summary_ymax">Daha büyük okumalar olmadığında yMax\'i seçin.</string>
     <string name="close">Kapat</string>
+    <string name="title_advanced_settings_4_Lib2">Libre 2 için gelişmiş ayarlar</string>
+    <string name="title_Lib2_show_raw_values">Ham değerleri grafikte göster</string>
+    <string name="summary_Lib2_show_raw_values">Grafikteki ham değerleri göstermek için açın.</string>
+    <string name="title_Lib2_show_sense_on_status">Durumda sensör bilgilerini göster</string>
+    <string name="summary_Lib2_show_sense_on_status">Libre 2 sensörünün Durumunda ek bilgileri göstermek için açın.</string>
     <string name="import_qr_code_warning">Yalnızca güvendiğiniz kaynaklardan ayarları içe aktarın!\n\nLütfen aşağıdaki ayarları almayı onaylayın:\n\n</string>
     <string name="scan_to_load_xdrip_settings">xDrip ayarlarını yüklemek için tarayın</string>
 </resources>
