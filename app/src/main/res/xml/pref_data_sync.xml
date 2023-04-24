@@ -370,7 +370,7 @@
                 android:title="@string/scan_for_bluetooth_meter">
                 <intent
                     android:action="android.intent.action.MAIN"
-                    android:targetClass="com.eveningoutpost.dexdrip.GlucoseMeter.BTGlucoseMeterActivity"
+                    android:targetClass="com.eveningoutpost.dexdrip.glucosemeter.BTGlucoseMeterActivity"
                     android:targetPackage="@string/local_target_package" />
             </Preference>
             <CheckBoxPreference
