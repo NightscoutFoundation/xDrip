@@ -380,7 +380,6 @@
                     android:defaultValue=""
                     android:inputType="number"
                     android:maxLength="1"
-                    android:dependency="engineering_mode"
                     android:key="dex_specified_slot"
                     android:summary="@string/summary_dex_specified_slot"
                     android:title="@string/title_dex_specified_slot" />

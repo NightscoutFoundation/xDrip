@@ -1698,7 +1698,7 @@
     </plurals>
     <string name="external_status_strings_eg_tbr">External status strings, eg TBR from AAPS</string>
     <string name="accept_external_status">Accept External Status</string>
-    <string name="summary_dex_specified_slot" translatable="false">Specify transmitter slot manually, setting this incorrectly will prevent any readings being received.</string>
+    <string name="summary_dex_specified_slot" translatable="false">Specify transmitter slot manually, setting this incorrectly will prevent any readings being received.  Leave blank for default.</string>
     <string name="title_dex_specified_slot" translatable="false">Manual Slot Number</string>
     <string name="cancel_by_default">Cancel by default</string>
     <string name="old">Old</string>

@@ -2084,6 +2084,11 @@ public class Ob1G5CollectionService extends G5BaseService {
             }
         }
 
+        val g6slot_marker = Pref.getStringToInt("dex_specified_slot", -1);
+        if (Pref.getBooleanDefaultFalse("using_g6") && g6slot_marker != 2 && g6slot_marker != -1) { // If G6 is selected and the slot number is not default
+            l.add(new StatusItem("Slot", g6slot_marker, Highlight.NOTICE));
+        }
+
         final int queueSize = Ob1G5StateMachine.queueSize();
         if (queueSize > 0) {
             l.add(new StatusItem("Queue Items", "(" + queueSize + ") " + Ob1G5StateMachine.getFirstQueueItemName()));
