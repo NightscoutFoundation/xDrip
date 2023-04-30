@@ -306,7 +306,7 @@ public class Ob1G5StateMachine {
 
     @SuppressLint("CheckResult")
     private static void handleAuthenticationWrite(final Ob1G5CollectionService parent, final RxBleConnection connection) {
-        final int specifiedSlot = Pref.getBooleanDefaultFalse("engineering_mode") ? Pref.getStringToInt("dex_specified_slot", -1) : -1;
+        final int specifiedSlot = Pref.getStringToInt("dex_specified_slot", -1);
         final AuthRequestTxMessage authRequest = (specifiedSlot == -1) ? new AuthRequestTxMessage(getTokenSize(), usingAlt())
         : new AuthRequestTxMessage(getTokenSize(), specifiedSlot);
         lastAuthPacket = authRequest;
