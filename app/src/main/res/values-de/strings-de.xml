@@ -1304,7 +1304,7 @@
     <string name="summary_clfollow_download_meals">Mahlzeiten von CareLink herunterladen</string>
     <string name="title_clfollow_download_notifications">Benachrichtigungen</string>
     <string name="summary_clfollow_download_notifications">Benachrichtigungen von CareLink herunterladen</string>
-    <string name="title_ob1_options">OB1 G5/G6 Kollektor-Einstellungen</string>
+    <string name="title_ob1_options">OB1 G5/G6/G7 Kollektor-Einstellungen</string>
     <string name="summary_use_ob1_g5_collector_service">Komplett neu gemacht, sollte unter Android 4.4-9 funktionieren, nativen Modus und mehr unterstützen</string>
     <string name="title_use_ob1_g5_collector_service">OB1 Kollektor verwenden</string>
     <string name="summary_ob1_g5_use_transmitter_alg">Nutze den internen Algorithmus des Senders zur Berechnung der Glukosewerte wenn möglich.</string>
