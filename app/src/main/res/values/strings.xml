@@ -801,8 +801,8 @@
     <string name="alert_seconds_reraise">Number of SECONDS to pass before raising the same alert.</string>
     <string name="bg_falling_fast">BG falling fast</string>
     <string name="bg_rising_fast">BG rising fast</string>
-    <string name="falling_threshold">falling threshold</string>
-    <string name="rising_threshold">rising threshold</string>
+    <string name="falling_threshold">falling rate threshold</string>
+    <string name="rising_threshold">rising rate threshold</string>
     <string name="set_sound_for_bg_alerts">Set sound used for BG Alerts.</string>
     <string name="alert_sound">Alert Sound</string>
     <string name="override_silent_mode_these">Override Silent mode on these alerts</string>
