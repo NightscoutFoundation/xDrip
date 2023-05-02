@@ -170,9 +170,9 @@
     </string-array>
 
     <string-array name="risingEntries">
-        <item>1 mg/dl (0.06 mmol/l)</item>
-        <item>2 mg/dl (0.11 mmol/l)</item>
-        <item>3 mg/dl (0.17 mmol/l)</item>
+        <item>1 mg/dl/min (0.06 mmol/l/min)</item>
+        <item>2 mg/dl/min (0.11 mmol/l/min)</item>
+        <item>3 mg/dl/min (0.17 mmol/l/min)</item>
     </string-array>
 
     <string-array name="risingValues">
