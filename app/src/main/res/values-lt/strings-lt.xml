@@ -108,7 +108,7 @@
     <string name="toast_crash">Kažkas nepavyko. Nusiųsta ataskaita, padėsianti ištaisyti klaidą.</string>
     <string name="taskerConfigInstruction">Norėdami patvirtinti - užžymėkite, eilutės teksto nekeiskite.</string>
     <string name="taskerConfiguration">Tasker konfigūracija</string>
-    <string name="finish_preferences_activity">Finish preferences activity</string>
+    <string name="finish_preferences_activity">Užbaigti nustatymus</string>
     <string name="add_widget">Pridėti valdiklį</string>
     <string name="title_activity_alert_list">Perspėjimų sąrašas</string>
     <string name="speaktreatment">Įvesti balsu</string>
@@ -175,7 +175,7 @@
     <string name="show_libre_trend">Rodyti Libre tendencijas</string>
     <string name="libre_15_minutes_graph">Libre 15 min. grafikas</string>
     <string name="libre_last_x_minutes_graph">Libre paskutinių %d min. grafikas</string>
-    <string name="share_config_via_qr_code">Dalintis nustatymais QR kodo pagalba</string>
+    <string name="share_config_via_qr_code">Perkelti nustatymus QR kodo pagalba</string>
     <string name="check_for_updated_version">Tikrinti, ar yra naujinių</string>
     <string name="send_feedback_to_developer">Siųsti atsiliepimą kūrėjams</string>
     <string name="home_screen">Pradžios ekranas</string>
@@ -187,7 +187,7 @@
     <string name="high_value">Hiper riba</string>
     <string name="low_value">Hipo riba</string>
     <string name="stats_range_settings">Glikemijos ribos: </string>
-    <string name="end_user_license_agreement">Galutinio vartotojo licencinė sutartis</string>
+    <string name="end_user_license_agreement">Galutinio naudotojo licencinė sutartis</string>
     <string name="save">Išsaugoti</string>
     <string name="view_important_warning">Rodyti svarbius perspėjimus</string>
     <string name="view_google_licenses">Rodyti Google licencijas</string>
@@ -370,7 +370,7 @@
     <string name="install_pebble_trend_watchface">Įdiegti Pebble Trend Watchface</string>
     <string name="install_pebble_watchface">Įdiegti Pebble Watchface</string>
     <string name="glucose_history">Glikemijos istorija</string>
-    <string name="import_database">Atkurti duomenų bazę</string>
+    <string name="import_database">Atkurti duombazę</string>
     <string name="sensor_table">Sensoriaus lentelė</string>
     <string name="bg_readings_table">Glikemijos duomenų lentelė</string>
     <string name="long_press_to_split_or_delete">Ilgai spauskite norėdami išskaidyti ar pašalinti</string>
@@ -485,12 +485,12 @@
     <string name="blood_test_foreground">Gliukomačio žymos centro spalva</string>
     <string name="treatment_background">Terapijos žymos fono spalva</string>
     <string name="treatment_foreground">Terapijos žymos centro spalva</string>
-    <string name="backgrounds">Fonas</string>
+    <string name="backgrounds">Fonai</string>
     <string name="main_chart_background">Pagrindinio grafiko fonas</string>
-    <string name="notification_chart_background">Perspėjimų grafiko fonas</string>
-    <string name="widget_chart_background">Valdiklio grafiko fonas</string>
+    <string name="notification_chart_background">Perspėjimų fonas</string>
+    <string name="widget_chart_background">Valdiklio fonas</string>
     <string name="try_to_work_around_noisy_readings">Naudoti nepatikimų duomenų filtrus</string>
-    <string name="show_tips_hints">Rodyti patarimus, kaip naudotis programa. Jei norite dar kartą juos peržiūrėti, nuimkite varnelę ir vėl uždėkite</string>
+    <string name="show_tips_hints">Matysite patarimus, kaip naudotis programa. Jei norite dar kartą juos peržiūrėti, nuimkite varnelę ir vėl uždėkite</string>
     <string name="show_interface_hints">Rodyti patarimus</string>
     <string name="show_graph_time_lines">Rodyti grafike laiko tinklelį</string>
     <string name="show_graph_glucose_lines">Rodyti grafike glikemijos linijas</string>

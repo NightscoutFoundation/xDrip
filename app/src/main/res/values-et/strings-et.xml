@@ -912,6 +912,7 @@
     <string name="bluereader_position">kontrolli blueReaderi asukohta sensoril - ta ei saa signaali!</string>
     <string name="bluereaderuglystate">BlueReader avastati vigases olekus! See lülitub nüüd välja ja pead selle uuesti sisse lülitama (nupule lühike vajutus). Pärast seda peaks blueReader töötama ootuspäraselt!</string>
     <string name="offical_msg">Ametlik rakendus</string>
+    <string name="aggressive_power_manager">Su seadmel on agressiivne energiasäästurakendus. Ligipääs on tavaliselt süsteemiseadete kaudu. Veendu, et xDrip on taustal töötamise piirangutest vabastatud.</string>
     <string name="use_conflict_msg">võib püüda ligi pääseda ka saatjale, mis võib põhjustada mõlema äpiga probleeme</string>
     <string name="use_confict_msg_glimp">Saad reguleerida Glimp\'i sätteid: valikud -&gt; seadmed -&gt; tühista Bluetoothi valik</string>
     <string name="eng_mode_is_on">Tehniline režiim on sees. Lülita see välja, välja arvatud juhul kui oled kindel, et seda vajad. Võib põhjustada rakenduse ootamatut käitumist.</string>
@@ -1303,7 +1304,7 @@
     <string name="summary_clfollow_download_meals">Laadi CareLink\'ist alla eined</string>
     <string name="title_clfollow_download_notifications">Teavitused</string>
     <string name="summary_clfollow_download_notifications">Laadi alla CareLink teavitused</string>
-    <string name="title_ob1_options">OB1 G5/G6 vastuvõtja seaded</string>
+    <string name="title_ob1_options">OB1 G5/G6/G7 vastuvõtja seaded</string>
     <string name="summary_use_ob1_g5_collector_service">Täielik ülekirjutamine, peaks töötama op-süsteemides Android 4.4–9, toetab algupärast režiimi ja palju muud</string>
     <string name="title_use_ob1_g5_collector_service">Kasuta OB1 vastuvõtjat</string>
     <string name="summary_ob1_g5_use_transmitter_alg">Võimalusel kasuta VS väärtuste arvutamiseks saatja sisemist algoritmi.</string>

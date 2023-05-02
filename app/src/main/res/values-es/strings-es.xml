@@ -912,6 +912,7 @@
     <string name="bluereader_position">verifica la posición del blueReader en el sensor, ¡ya que no se pudo leer!</string>
     <string name="bluereaderuglystate">Se encontró blueReader ¡en un estado lamentable! Se apagará y tendrá que volver a encenderlo (presione brevemente el botón). Después de esto ¡debería funcionar correctamente!</string>
     <string name="offical_msg">Aplicación oficial</string>
+    <string name="aggressive_power_manager">Su dispositivo tiene una aplicación de administración de energía agresiva. Normalmente se accede a través de la configuración del sistema. Asegúrese de que xDrip esté excluido de las restricciones en segundo plano.</string>
     <string name="use_conflict_msg">también puede intentar acceder al dispositivo transmisor y esto puede causar problemas con ambas aplicaciones</string>
     <string name="use_confict_msg_glimp">Puedes ajustar la configuración de Glimp: opciones -&gt; dispositivos -&gt; deseleccionar la opción Bluetooth</string>
     <string name="eng_mode_is_on">El modo de ingeniería está activado. Deshabilítelo a menos que esté seguro de que lo necesita, ya que puede causar un comportamiento inesperado.</string>

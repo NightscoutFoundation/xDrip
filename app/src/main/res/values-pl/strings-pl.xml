@@ -911,6 +911,7 @@
     <string name="bluereader_position">sprawdź pozycję blueReader \'a na czujniku, ponieważ nie był w stanie dokonać odczytu!</string>
     <string name="bluereaderuglystate">blueReader został znaleziony w brzydkim stanie! Teraz zostanie wyłączony i musisz go z powrotem włączyć (krótkie naciśnięcie przycisku). Następnie blueReder powinien działać zgodnie z oczekiwaniami!</string>
     <string name="offical_msg">Oficjalna aplikacja</string>
+    <string name="aggressive_power_manager">Twoje urządzenie posiada agresywnie działającą aplikację do zarządzania zasilaniem. Zazwyczaj jest ona dostępna w ustawieniach systemowych. Upewnij się, że xDrip jest dodany do wyjątków działania w tle.</string>
     <string name="use_conflict_msg">może próbować uzyskać dostęp do urządzenia nadajnika i może to spowodować problemy z obydwoma aplikacjami</string>
     <string name="use_confict_msg_glimp">Możesz dostosować ustawienia Glimp: opcje -&gt; urządzenia -&gt; odznacz opcję Bluetooth</string>
     <string name="eng_mode_is_on">Tryb inżynieryjny jest włączony. Proszę go wyłączyć, chyba że jesteś pewien, że go potrzebujesz, ponieważ może spowodować nieoczekiwane zachowanie.</string>
