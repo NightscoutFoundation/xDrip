@@ -962,7 +962,7 @@
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/accept_treatments" />
             <CheckBoxPreference
-                android:defaultValue="true"
+                android:defaultValue="false"
                 android:dependency="accept_nsclient_treatments"
                 android:key="profile_import_sound"
                 android:summary="@string/play_sounds_when_importing"
