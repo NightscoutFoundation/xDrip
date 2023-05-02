@@ -1302,7 +1302,7 @@
     <string name="summary_clfollow_download_meals">Скачать блюда с CareLink</string>
     <string name="title_clfollow_download_notifications">Уведомления</string>
     <string name="summary_clfollow_download_notifications">Получать уведомления с CareLink</string>
-    <string name="title_ob1_options">Настройки службы сбора данных OB1 для G5/G6</string>
+    <string name="title_ob1_options">Настройки коллектора OB1 G5/G6</string>
     <string name="summary_use_ob1_g5_collector_service">Полностью переписан, должен работать на Android 4.4-9, поддерживает нативный режим и другое</string>
     <string name="title_use_ob1_g5_collector_service">Использовать службу сбора данных OB1</string>
     <string name="summary_ob1_g5_use_transmitter_alg">По возможности использовать внутренний алгоритм передатчика для расчета значений глюкозы.</string>

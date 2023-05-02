@@ -912,6 +912,7 @@
     <string name="bluereader_position">Bitte Positionierung des BlueReaders auf dem Sensor prüfen!</string>
     <string name="bluereaderuglystate">Der blueReader hat sich aufgehängt! Er wird nun ausgeschaltet. Bitte schalte ihn in ein paar Sekunden wieder ein (Taste nur kurz drücken). Danach sollte der blueReader wieder funktionieren!</string>
     <string name="offical_msg">Die offizielle App</string>
+    <string name="aggressive_power_manager">Das Gerät unterliegt aggressiven Systemeinstellungen zum Energiemanagement. xDrip muss von Beschränkungen im Hintergrund ausgenommen werden.</string>
     <string name="use_conflict_msg">kann versuchen gleichzeitig auf den Transmitter zuzugreifen, was Probleme verursachen kann</string>
     <string name="use_confict_msg_glimp">Du kannst die Glimp-Einstellungen anpassen: Einstellungen -&gt; devices -&gt; deselektieren der Bluetooth-Option</string>
     <string name="eng_mode_is_on">Entwicklermodus ist aktiviert. Bitte deaktivieren Sie ihn, es sei denn, Sie sind sicher, dass Sie ihn benötigen, da er unerwartetes Verhalten verursachen kann.</string>
@@ -1303,7 +1304,7 @@
     <string name="summary_clfollow_download_meals">Mahlzeiten von CareLink herunterladen</string>
     <string name="title_clfollow_download_notifications">Benachrichtigungen</string>
     <string name="summary_clfollow_download_notifications">Benachrichtigungen von CareLink herunterladen</string>
-    <string name="title_ob1_options">OB1 G5/G6 Kollektor-Einstellungen</string>
+    <string name="title_ob1_options">OB1 G5/G6/G7 Kollektor-Einstellungen</string>
     <string name="summary_use_ob1_g5_collector_service">Komplett neu gemacht, sollte unter Android 4.4-9 funktionieren, nativen Modus und mehr unterstützen</string>
     <string name="title_use_ob1_g5_collector_service">OB1 Kollektor verwenden</string>
     <string name="summary_ob1_g5_use_transmitter_alg">Nutze den internen Algorithmus des Senders zur Berechnung der Glukosewerte wenn möglich.</string>
@@ -1761,6 +1762,11 @@
     <string name="summary_ymin">Wähle yMin, wenn es keine kleineren Werte gibt.</string>
     <string name="summary_ymax">Wähle yMax, wenn es keine größeren Werte gibt.</string>
     <string name="close">Schließen</string>
+    <string name="title_advanced_settings_4_Lib2">Erweiterte Einstellungen für Libre 2</string>
+    <string name="title_Lib2_show_raw_values">Rohwerte im Graph anzeigen</string>
+    <string name="summary_Lib2_show_raw_values">Einschalten, um Rohwerte im Graph anzuzeigen.</string>
+    <string name="title_Lib2_show_sense_on_status">Sensorinformationen im Status anzeigen</string>
+    <string name="summary_Lib2_show_sense_on_status">Einschalten, um zusätzliche Informationen im Status für Libre 2 Sensor anzuzeigen.</string>
     <string name="import_qr_code_warning">Nur Einstellungen aus vertrauenswürdigen Quellen importieren!\n\nBitte den Import der folgenden Einstellungen bestätigen:\n\n</string>
     <string name="scan_to_load_xdrip_settings">Scannen, um xDrip-Einstellungen zu laden</string>
 </resources>

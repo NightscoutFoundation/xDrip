@@ -912,6 +912,7 @@
     <string name="bluereader_position">controlla la posizione del blueReader sul sensore, non è stato possibile leggere!</string>
     <string name="bluereaderuglystate">Il blueReader è stato trovato in uno stato terribile! Verrà disattivato ora, e lo devi riaccendere (premere brevemente il pulsante). Dopo di che il blueReader dovrebbe funzionare come previsto!</string>
     <string name="offical_msg">L\'applicazione ufficiale</string>
+    <string name="aggressive_power_manager">Il tuo dispositivo ha un\'app aggressiva per la gestione dell\'alimentazione. La troverai nelle impostazioni del sistema Android. Assicurati che xDrip sia escluso dalle restrizioni in background.</string>
     <string name="use_conflict_msg">potrebbe anche provare ad accedere al trasmettitore e questo può causare problemi con entrambe le app</string>
     <string name="use_confict_msg_glimp">Puoi regolare le impostazioni di Glimp: opzioni -&gt; dispositivi -&gt; opzione Bluetooth deseleziona</string>
     <string name="eng_mode_is_on">La modalità ingegneria è abilitata. Disabilitala se non sei certo di averne bisogno perché potrebbe causare comportamenti imprevedibili.</string>
