@@ -2167,21 +2167,21 @@ public class Ob1G5CollectionService extends G5BaseService {
                 if (!battery_status.equals("OK"))
                     l.add(new StatusItem("Transmitter Status", battery_status, BAD));
             }
-            Highlight TX_dys_highlight = NORMAL; // Transmitter Days highlight
+            Highlight TX_dys_highlight = NORMAL; // Set the default transmitter days highlight to normal
             final int TX_dys = DexTimeKeeper.getTransmitterAgeInDays(tx_id); // Transmitter days
-            if (vr != null && FirmwareCapability.isTransmitterModified(getTransmitterID())) { // Modified Firefly
-                if (TX_dys < 149) { // Transmitter days < 149
-                } else if (TX_dys < 180) { // 148 < Transmitter days < 180
-                    TX_dys_highlight = NOTICE;
-                } else { // Transmitter days > 179
-                    TX_dys_highlight = BAD;
-                }
-            } else if (vr != null && FirmwareCapability.isTransmitterRawIncapable(getTransmitterID())) { // Unmodified Firefly
-                if (TX_dys < 69) { // Transmitter days < 69
-                } else if (TX_dys < 100) { // 68 < Transmitter days < 100
-                    TX_dys_highlight = NOTICE;
-                } else { // Transmitter days > 99
-                    TX_dys_highlight = BAD;
+            if (vr != null) {
+                if (FirmwareCapability.isTransmitterModified(getTransmitterID())) { // Modified Firefly
+                    if (TX_dys > 179) { // No more starts as transmitter days > 179
+                        TX_dys_highlight = BAD;
+                    } else if (TX_dys > 148) { // Transmitter days approaching 180 - may be time to reset
+                        TX_dys_highlight = NOTICE;
+                    }
+                } else if (FirmwareCapability.isTransmitterRawIncapable(getTransmitterID())) { // Unmodified Firefly
+                    if (TX_dys > 99) { // No more starts as transmitter days > 99
+                        TX_dys_highlight = BAD;
+                    } else if (TX_dys > 68) { // Transmitter days approaching 100 - may be time to order a new one
+                        TX_dys_highlight = NOTICE;
+                    }
                 }
             }
             l.add(new StatusItem("Transmitter Days", parsedBattery.daysEstimate(), TX_dys_highlight));
