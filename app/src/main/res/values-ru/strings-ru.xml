@@ -771,8 +771,8 @@
     <string name="alert_seconds_reraise">Задержка (в СЕКУНДАХ), по истечении которой будет повторно показано оповещение.</string>
     <string name="bg_falling_fast">ГК быстро падает</string>
     <string name="bg_rising_fast">ГК быстро растет</string>
-    <string name="falling_threshold">Порог снижения</string>
-    <string name="rising_threshold">Порог роста</string>
+    <string name="falling_threshold">порог падения</string>
+    <string name="rising_threshold">порог повышения</string>
     <string name="set_sound_for_bg_alerts">Установить звук уведомления об уровне глюкозы.</string>
     <string name="alert_sound">Звук уведомления</string>
     <string name="override_silent_mode_these">Игнорировать беззвучный режим для уведомлений</string>
