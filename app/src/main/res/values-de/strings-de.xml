@@ -771,8 +771,8 @@
     <string name="alert_seconds_reraise">Anzahl der Sekunden, die vergehen müssen, bevor derselbe Alarm erneut ertönt.</string>
     <string name="bg_falling_fast">Blutzucker fällt schnell</string>
     <string name="bg_rising_fast">Blutzucker steigt schnell</string>
-    <string name="falling_threshold">Fall-Warngrenze</string>
-    <string name="rising_threshold">Steigungswarngrenze</string>
+    <string name="falling_threshold">Warngrenze \"BZ fallend\"</string>
+    <string name="rising_threshold">Warngrenze \"BZ steigend\"</string>
     <string name="set_sound_for_bg_alerts">Setze den Ton, der für Glukosealarme benutzt wird.</string>
     <string name="alert_sound">Alarmton</string>
     <string name="override_silent_mode_these">Lautlos-Modus bei diesen Alarmen überschreiben</string>
