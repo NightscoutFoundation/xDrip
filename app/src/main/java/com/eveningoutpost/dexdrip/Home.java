@@ -159,6 +159,7 @@ import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.internal.bind.DateTypeAdapter;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -2616,8 +2617,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
         if (!isSensorActive) {
-            // Define a variable (notConnectedToG6Yet) that is only true if G6 has been selected and transmitter days is unknown.
-            boolean notConnectedToG6Yet = Pref.getBooleanDefaultFalse("using_g6") && DexTimeKeeper.getTransmitterAgeInDays(getTransmitterID()) == -1;
+            // Define a variable (notConnectedToG6Yet) that is only true if Native G6 is chosen, but, transmitter days is unknown.
+            boolean notConnectedToG6Yet = DexCollectionType.getDexCollectionType() == DexcomG5 && Pref.getBooleanDefaultFalse("ob1_g5_use_transmitter_alg") && Pref.getBooleanDefaultFalse("using_g6") && DexTimeKeeper.getTransmitterAgeInDays(getTransmitterID()) == -1;
             if (notConnectedToG6Yet) { // Only if G6 has been selected and transmitter days is unknown.
                 notificationText.setText(R.string.wait_to_connect);
             } else { // Only if G6 is not selected or G6 transmitter days is known.
