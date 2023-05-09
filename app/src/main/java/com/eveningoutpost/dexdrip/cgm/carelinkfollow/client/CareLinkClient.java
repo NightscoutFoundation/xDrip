@@ -515,8 +515,8 @@ public class CareLinkClient {
         //Add common browser headers
         requestBuilder
                 .addHeader("Accept-Language", "en;q=0.9, *;q=0.8")
-                .addHeader("sec-ch-ua", "\"Google Chrome\";v=\"87\", \" Not;A Brand\";v=\"99\", \"Chromium\";v=\"87\"")
-                .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36");
+                .addHeader("sec-ch-ua", "\"Chromium\";v=\"112\", \" Google Chrome\";v=\"112\", \"Not:A-Brand\";v=\"99\"")
+                .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36");
 
         //Set media type based on request type
         switch (type) {
