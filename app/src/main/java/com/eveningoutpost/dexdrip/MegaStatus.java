@@ -155,7 +155,7 @@ public class MegaStatus extends ActivityWithMenu {
 
         if (sectionList.isEmpty()) {
 
-            addAsection("Classic Status Page", "Legacy System Status");
+            addAsection("Classic Status Page" + NFCReaderX.libreFilterLength(xdrip.getAppContext()), "Legacy System Status");
 
             final DexCollectionType dexCollectionType = DexCollectionType.getDexCollectionType();
 

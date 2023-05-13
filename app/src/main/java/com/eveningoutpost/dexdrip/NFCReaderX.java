@@ -397,6 +397,16 @@ public class NFCReaderX {
 
     }
 
+    static int libreFilterLength(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String libre_filter_length = prefs.getString("libre_filter_length", "25");
+        int ret = Integer.parseInt(libre_filter_length);
+
+
+        Log.e(TAG, "libreFilterLength returning " + ret);
+        return ret;
+    }
+
     private static class NfcVReaderTask extends AsyncTask<Tag, Void, Tag> {
 
         static ENABLE_BLUETOOTH_SET readEnableBluetoothAllowed(Context context) {
