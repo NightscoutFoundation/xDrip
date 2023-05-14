@@ -1267,7 +1267,9 @@ public class BgGraphBuilder {
                     pluginValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(Math.min(plugin.getGlucoseFromBgReading(bgReading, cd), BgReading.BG_READING_MAXIMUM_VALUE))));
                 }
                 if (bgReading.ignoreForStats) {
-                    badValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
+                    if (unitized(bgReading.calculated_value) <= defaultMaxY) { // Don't display value marked as bad if greater than the default Max (defaultMaxY)
+                        badValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
+                    }
                 } else if (bgReading.calculated_value >= BgReading.BG_READING_MAXIMUM_VALUE) {
                     highValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(BgReading.BG_READING_MAXIMUM_VALUE)));
                 } else if (unitized(bgReading.calculated_value) >= highMark) {
