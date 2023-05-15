@@ -18,7 +18,7 @@ public class SettingsValidation {
         setting_name = "engineering_mode";
         if (Pref.getBooleanDefaultFalse("engineering_mode")) {
             if (JoH.pratelimit(setting_name + NOTIFY_MARKER, RENOTIFY_TIME)) {
-                id = notify("Engineering Mode", setting_name, "" + xdrip.getAppContext().getString(R.string.eng_mode_is_on), id);
+                id = notifyDis("Engineering Mode", setting_name, "" + xdrip.getAppContext().getString(R.string.eng_mode_is_on), id);
             }
         }
 
@@ -26,7 +26,7 @@ public class SettingsValidation {
 
         // OB1 is disabled
 
-        // Samsung workaround is disabled
+        // Wake workaround is disabled
 
         // Bluetooth watchdog is disabled
 
@@ -41,9 +41,15 @@ public class SettingsValidation {
         // Aggressive service restarts is disabled
     }
 
-    private static int notify(String short_name, String setting_string, String msg, int id) {
+    private static int notifyDis(String short_name, String setting_string, String msg, int id) {
 
-        JoH.showNotification("Inadvisable settings - " + short_name, "Please enable or disable " + setting_string, null, id, false, false, null, null, ((msg.length() > 0) ? msg : ""));
+        JoH.showNotification("Inadvisable setting ", "Please disable " + short_name, null, id, false, false, null, null, ((msg.length() > 0) ? msg : ""));
+        return id + 1;
+    }
+
+    private static int notifyEn(String short_name, String setting_string, String msg, int id) {
+
+        JoH.showNotification("Inadvisable setting ", "Please enable " + short_name, null, id, false, false, null, null, ((msg.length() > 0) ? msg : ""));
         return id + 1;
     }
 }
