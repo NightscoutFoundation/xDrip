@@ -6,7 +6,7 @@ import com.eveningoutpost.dexdrip.xdrip;
 
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.SETTINGS_INADVISABLE_BASE_ID;
 
-// navid200
+// Navid200
 
 public class SettingsValidation {
     private static final String NOTIFY_MARKER = "-NOTIFY";
@@ -18,15 +18,16 @@ public class SettingsValidation {
         setting_name = "engineering_mode";
         if (Pref.getBooleanDefaultFalse("engineering_mode")) {
             if (JoH.pratelimit(setting_name + NOTIFY_MARKER, RENOTIFY_TIME)) {
-                id = notify("Engineering Mode", setting_name, "" + xdrip.getAppContext().getString(R.string.eng_mode_is_on), id);
+                id = notifyDis("Engineering Mode", setting_name, "" + xdrip.getAppContext().getString(R.string.eng_mode_is_on), id);
             }
         }
 
         // Todo Add the following items as well
+        // A different method than notifyDis should be created (perhaps notifyEn) for settings that are disabled and are advised to be enabled e.g. OB1.
 
         // OB1 is disabled
 
-        // Samsung workaround is disabled
+        // Wake workaround is disabled
 
         // Bluetooth watchdog is disabled
 
@@ -41,9 +42,9 @@ public class SettingsValidation {
         // Aggressive service restarts is disabled
     }
 
-    private static int notify(String short_name, String setting_string, String msg, int id) {
+    private static int notifyDis(String short_name, String setting_string, String msg, int id) {
 
-        JoH.showNotification("Inadvisable settings - " + short_name, "Please enable or disable " + setting_string, null, id, false, false, null, null, ((msg.length() > 0) ? msg : ""));
+        JoH.showNotification("Inadvisable setting ", "Please disable " + short_name, null, id, false, false, null, null, ((msg.length() > 0) ? msg : ""));
         return id + 1;
     }
 }
