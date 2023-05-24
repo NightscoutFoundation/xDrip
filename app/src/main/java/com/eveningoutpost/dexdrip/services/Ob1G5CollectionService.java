@@ -2107,7 +2107,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
         final String sensorCode = getCurrentSensorCode();
         if (sensorCode != null) {
-            if (usingG6()) {
+            if (usingG6() && FirmwareCapability.isTransmitterG6(getTransmitterID())) {
                 l.add(new StatusItem("Calibration Code", sensorCode));
             }
         }
