@@ -97,6 +97,15 @@
 	            android:key="libre2_enable_bluetooth_streaming"
 	            android:summary="@string/enable_streaming_summary"
 	            android:title="@string/enable_streaming_title" />
+
+            <ListPreference
+                android:defaultValue="25"
+                android:entries="@array/libreFilterLengthMethods"
+                android:entryValues="@array/libreFilterLengthValues"
+                android:key="libre_filter_length"
+                android:summary="@string/libre_filter_length_summary"
+                android:title="@string/libre_filter_length_title" />
+
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="nfc_show_age"
