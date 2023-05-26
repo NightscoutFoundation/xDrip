@@ -645,9 +645,15 @@ public class CareLinkClient {
 
                 timezoneMissing = true;
 
-                //offset = this.getZonedDate(recentData.lastSG.datetime).getOffset();
-                offsetString = this.getZoneOffset(recentData.lastSG.datetime);
+                //Try get TZ offset string: lastSG or lastAlarm
+                if(recentData.lastSG != null && recentData.lastSG.datetime != null)
+                    offsetString = this.getZoneOffset(recentData.lastSG.datetime);
+                else
+                    offsetString = this.getZoneOffset(recentData.lastAlarm.datetime);
 
+                //Set last alarm datetimeAsDate
+                if(recentData.lastAlarm != null && recentData.lastAlarm.datetime != null)
+                    recentData.lastAlarm.datetimeAsDate = parseDateString(recentData.lastAlarm.datetime);
                 //Build correct dates with timezone
                 recentData.sMedicalDeviceTime = recentData.sMedicalDeviceTime + offsetString;
                 recentData.medicalDeviceTimeAsString = recentData.medicalDeviceTimeAsString + offsetString;
