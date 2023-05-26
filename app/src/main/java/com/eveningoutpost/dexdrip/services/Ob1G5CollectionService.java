@@ -2252,6 +2252,9 @@ public class Ob1G5CollectionService extends G5BaseService {
                 TX_dys_highlight = BAD;
             }
             l.add(new StatusItem("Transmitter Days", parsedBattery.daysEstimate(), TX_dys_highlight));
+            if (vr1 != null && vr1.max_inactive_days > 0) {
+                l.add(new StatusItem("Inactive days", "" + vr1.inactive_days));
+            }
             l.add(new StatusItem("Voltage A", parsedBattery.voltageA(), parsedBattery.voltageAWarning() ? BAD : NORMAL));
             l.add(new StatusItem("Voltage B", parsedBattery.voltageB(), parsedBattery.voltageBWarning() ? BAD : NORMAL));
             if (vr != null && FirmwareCapability.isFirmwareResistanceCapable(vr.firmware_version_string)) {
