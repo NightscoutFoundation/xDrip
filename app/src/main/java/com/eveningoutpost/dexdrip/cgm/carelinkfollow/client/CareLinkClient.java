@@ -3,12 +3,14 @@ package com.eveningoutpost.dexdrip.cgm.carelinkfollow.client;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ActiveNotification;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ClearedNotification;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.CountrySettings;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.DataUpload;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.Marker;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.MonitorData;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.Profile;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.Patient;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.M2MEnabled;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.RecentData;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.RecentUploads;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.SensorGlucose;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.User;
 import com.eveningoutpost.dexdrip.models.JoH;
@@ -109,7 +111,14 @@ public class CareLinkClient {
     public CountrySettings getSessionCountrySettings() {
         return sessionCountrySettings;
     }
-
+    protected RecentUploads sessionRecentUploads;
+    public RecentUploads getSessionRecentUploads() {
+        return sessionRecentUploads;
+    }
+    protected Boolean sessionDeviceIsBle;
+    public Boolean getSessionDeviceIsBle() {
+        return sessionDeviceIsBle;
+    }
     protected Boolean sessionM2MEnabled;
     public boolean getSessionM2MEnabled(){
         return sessionM2MEnabled;
@@ -171,7 +180,7 @@ public class CareLinkClient {
             return null;
 
         // 7xxG
-        if (this.sessionMonitorData.isBle())
+        if (this.isBleDevice(patientUsername))
             return this.getConnectDisplayMessage(this.sessionProfile.username, this.sessionUser.getUserRole(), patientUsername,
                     sessionCountrySettings.blePereodicDataEndpoint);
             // Guardian + multi
@@ -201,6 +210,58 @@ public class CareLinkClient {
             return this.sessionProfile.username;
         else
             return null;
+    }
+
+    public boolean isBleDevice(String patientUsername){
+
+        Boolean recentUploadBle;
+
+        // Session device already determined
+        if(sessionDeviceIsBle != null)
+            return sessionDeviceIsBle;
+
+        // Force login to get basic info
+        if(getAuthorizationToken() == null)
+            return  false;
+
+        // Patient: device from recent uploads if possible
+        if(!this.sessionUser.isCarePartner()){
+            recentUploadBle = this.isRecentUploadBle();
+            if(recentUploadBle != null){
+                this.sessionDeviceIsBle = recentUploadBle;
+                return sessionDeviceIsBle;
+            }
+        }
+
+        // Care partner (+M2M): device from patient list
+        if(this.sessionM2MEnabled && this.sessionUser.isCarePartner())
+            if(patientUsername == null || this.sessionPatients == null)
+                return false;
+            else {
+                for (int i = 0; i < this.sessionPatients.length; i++) {
+                    if (sessionPatients[i].username.equals(patientUsername))
+                        return sessionPatients[i].isBle();
+                }
+                return false;
+            }
+        // Other: classic method (session monitor data)
+        else
+            return this.sessionMonitorData.isBle();
+
+    }
+
+    public Boolean isRecentUploadBle(){
+
+        if(this.sessionRecentUploads == null)
+            return null;
+
+        for(DataUpload upload : this.sessionRecentUploads.recentUploads){
+            if(upload.device.toUpperCase().contains("MINIMED"))
+                return  true;
+            else if(upload.device.toUpperCase().contains("GUARDIAN"))
+                return  false;
+        }
+        return null;
     }
 
     //Authentication methods
@@ -247,6 +308,9 @@ public class CareLinkClient {
             this.sessionProfile = this.getMyProfile();
             // Country settings
             this.sessionCountrySettings = this.getMyCountrySettings();
+            // Recent uploads (only for patients)
+            if(!this.sessionUser.isCarePartner())
+                this.sessionRecentUploads = this.getRecentUploads(30);
             // Multi follow enabled on server
             this.sessionM2MEnabled = this.getM2MEnabled().value;
             // Multi follow + Care Partner => patients
@@ -426,6 +490,17 @@ public class CareLinkClient {
     // My profile
     public Profile getMyProfile() {
         return this.getData(this.careLinkServer(), "patient/users/me/profile", null, null, Profile.class);
+    }
+
+    // Recent uploads
+    public RecentUploads getRecentUploads(int numOfUploads) {
+
+        Map<String, String> queryParams = null;
+
+        queryParams = new HashMap<String, String>();
+        queryParams.put("numUploads", String.valueOf(numOfUploads));
+
+        return this.getData(this.careLinkServer(), "patient/dataUpload/recentUploads", queryParams, null, RecentUploads.class);
     }
 
     // Monitoring data
