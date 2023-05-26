@@ -159,9 +159,18 @@ public class DexCollectionHelper {
                                                         new Runnable() {
                                                             @Override
                                                             public void run() {
-                                                                Home.staticRefreshBGCharts();
-                                                                CareLinkFollowService.resetInstanceAndInvalidateSession();
-                                                                CollectionServiceStarter.restartCollectionServiceBackground();
+                                                                textSettingDialog(activity,
+                                                                        "clfollow_patient", "CareLink Patient",
+                                                                        "Enter CareLink Patient (optional)",
+                                                                        InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD,
+                                                                        new Runnable() {
+                                                                            @Override
+                                                                            public void run() {
+                                                                                Home.staticRefreshBGCharts();
+                                                                                CareLinkFollowService.resetInstanceAndInvalidateSession();
+                                                                                CollectionServiceStarter.restartCollectionServiceBackground();
+                                                                            }
+                                                                        });
                                                             }
                                                         });
                                             }

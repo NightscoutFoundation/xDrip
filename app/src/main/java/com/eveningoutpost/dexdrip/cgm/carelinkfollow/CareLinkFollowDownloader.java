@@ -25,6 +25,7 @@ public class CareLinkFollowDownloader {
     private String carelinkUsername;
     private String carelinkPassword;
     private String carelinkCountry;
+    private String carelinkPatient;
 
     private CareLinkClient careLinkClient;
 
@@ -40,10 +41,11 @@ public class CareLinkFollowDownloader {
         return status;
     }
 
-    CareLinkFollowDownloader(String carelinkUsername, String carelinkPassword, String carelinkCountry) {
+    CareLinkFollowDownloader(String carelinkUsername, String carelinkPassword, String carelinkCountry, String carelinkPatient) {
         this.carelinkUsername = carelinkUsername;
         this.carelinkPassword = carelinkPassword;
         this.carelinkCountry = carelinkCountry;
+        this.carelinkPatient = carelinkPatient;
         loginDataLooksOkay = !emptyString(carelinkUsername) && !emptyString(carelinkPassword) && carelinkCountry != null && !emptyString(carelinkCountry);
     }
 
@@ -122,7 +124,10 @@ public class CareLinkFollowDownloader {
 
                 //Get data
                 try {
-                    recentData = getCareLinkClient().getRecentData();
+                    if (JoH.emptyString(this.carelinkPatient))
+                        recentData = getCareLinkClient().getRecentData();
+                    else
+                        recentData = getCareLinkClient().getRecentData(this.carelinkPatient);
                     lastResponseCode = carelinkClient.getLastResponseCode();
                 } catch (Exception e) {
                     UserError.Log.e(TAG, "Exception in CareLink data download: " + e);

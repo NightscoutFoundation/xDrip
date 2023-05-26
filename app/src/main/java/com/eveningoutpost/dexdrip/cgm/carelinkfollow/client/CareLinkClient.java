@@ -3,12 +3,17 @@ package com.eveningoutpost.dexdrip.cgm.carelinkfollow.client;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ActiveNotification;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ClearedNotification;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.CountrySettings;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.DataUpload;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.Marker;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.MonitorData;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.Profile;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.Patient;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.M2MEnabled;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.RecentData;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.RecentUploads;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.SensorGlucose;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.User;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -106,6 +111,22 @@ public class CareLinkClient {
     public CountrySettings getSessionCountrySettings() {
         return sessionCountrySettings;
     }
+    protected RecentUploads sessionRecentUploads;
+    public RecentUploads getSessionRecentUploads() {
+        return sessionRecentUploads;
+    }
+    protected Boolean sessionDeviceIsBle;
+    public Boolean getSessionDeviceIsBle() {
+        return sessionDeviceIsBle;
+    }
+    protected Boolean sessionM2MEnabled;
+    public boolean getSessionM2MEnabled(){
+        return sessionM2MEnabled;
+    }
+    protected Patient[] sessionPatients;
+    public Patient[] getSessionPatients(){
+        return sessionPatients;
+    }
 
     protected MonitorData sessionMonitorData;
 
@@ -146,18 +167,101 @@ public class CareLinkClient {
     //Wrapper for common request of recent data (last 24 hours)
     public RecentData getRecentData() {
 
+        //Use default patient username if not provided
+        return this.getRecentData(this.getDefaultPatientUsername());
+
+    }
+
+    //Get recent data of patient
+    public RecentData getRecentData(String patientUsername) {
+
         // Force login to get basic info
-        if (getAuthorizationToken() != null) {
-            //New BLE Endpoint (for all US calls and all BLE devices)
-            if (CountryUtils.isUS(carelinkCountry) || sessionMonitorData.isBle())
-                return this.getConnectDisplayMessage(this.sessionProfile.username, this.sessionUser.getUserRole(),
-                        sessionCountrySettings.blePereodicDataEndpoint);
-                //Old CareLink data source
-            else
-                return this.getLast24Hours();
-        } else {
+        if (getAuthorizationToken() == null)
             return null;
+
+        // 7xxG
+        if (this.isBleDevice(patientUsername))
+            return this.getConnectDisplayMessage(this.sessionProfile.username, this.sessionUser.getUserRole(), patientUsername,
+                    sessionCountrySettings.blePereodicDataEndpoint);
+            // Guardian + multi
+        else if (this.sessionM2MEnabled)
+            return this.getM2MPatientData(patientUsername);
+            // Guardian + single
+        else
+            return this.getLast24Hours();
+
+    }
+
+    //Determine default patient
+    public String getDefaultPatientUsername() {
+
+        // Force login to get basic info
+        if (getAuthorizationToken() == null)
+            return null;
+
+        // Care Partner + multi follow => first patient
+        if (this.sessionUser.isCarePartner() && this.sessionM2MEnabled)
+            if (this.sessionPatients != null && this.sessionPatients.length > 0)
+                return this.sessionPatients[0].username;
+            else
+                return null;
+            // Not care partner or no multi follow => username from session profile
+        else if (this.sessionProfile.username != null)
+            return this.sessionProfile.username;
+        else
+            return null;
+    }
+
+    public boolean isBleDevice(String patientUsername){
+
+        Boolean recentUploadBle;
+
+        // Session device already determined
+        if(sessionDeviceIsBle != null)
+            return sessionDeviceIsBle;
+
+        // Force login to get basic info
+        if(getAuthorizationToken() == null)
+            return  false;
+
+        // Patient: device from recent uploads if possible
+        if(!this.sessionUser.isCarePartner()){
+            recentUploadBle = this.isRecentUploadBle();
+            if(recentUploadBle != null){
+                this.sessionDeviceIsBle = recentUploadBle;
+                return sessionDeviceIsBle;
+            }
         }
+
+        // Care partner (+M2M): device from patient list
+        if(this.sessionM2MEnabled && this.sessionUser.isCarePartner())
+            if(patientUsername == null || this.sessionPatients == null)
+                return false;
+            else {
+                for (int i = 0; i < this.sessionPatients.length; i++) {
+                    if (sessionPatients[i].username.equals(patientUsername))
+                        return sessionPatients[i].isBle();
+                }
+                return false;
+            }
+        // Other: classic method (session monitor data)
+        else
+            return this.sessionMonitorData.isBle();
+
+    }
+
+    public Boolean isRecentUploadBle(){
+
+        if(this.sessionRecentUploads == null)
+            return null;
+
+        for(DataUpload upload : this.sessionRecentUploads.recentUploads){
+            if(upload.device.toUpperCase().contains("MINIMED"))
+                return  true;
+            else if(upload.device.toUpperCase().contains("GUARDIAN"))
+                return  false;
+        }
+        return null;
     }
 
     //Authentication methods
@@ -197,11 +301,24 @@ public class CareLinkClient {
             this.lastResponseCode = consentResponse.code();
             consentResponse.close();
 
-            // Get basic infos
+            // Get required sessions infos
+            // User
             this.sessionUser = this.getMyUser();
+            // Profile
             this.sessionProfile = this.getMyProfile();
+            // Country settings
             this.sessionCountrySettings = this.getMyCountrySettings();
-            this.sessionMonitorData = this.getMonitorData();
+            // Recent uploads (only for patients)
+            if(!this.sessionUser.isCarePartner())
+                this.sessionRecentUploads = this.getRecentUploads(30);
+            // Multi follow enabled on server
+            this.sessionM2MEnabled = this.getM2MEnabled().value;
+            // Multi follow + Care Partner => patients
+            if (this.sessionM2MEnabled && this.sessionUser.isCarePartner())
+                this.sessionPatients = this.getM2MPatients();
+                // Single follow and/or Patient => monitor data
+            else
+                this.sessionMonitorData = this.getMonitorData();
 
         } catch (Exception e) {
             lastErrorMessage = e.getClass().getSimpleName() + ":" + e.getMessage();
@@ -211,14 +328,26 @@ public class CareLinkClient {
         }
 
         // Set login success if everything was ok:
-        if (this.sessionUser != null && this.sessionProfile != null && this.sessionCountrySettings != null && this.sessionMonitorData != null)
+        if (this.sessionUser != null && this.sessionProfile != null && this.sessionCountrySettings != null && this.sessionM2MEnabled != null &&
+                (((!this.sessionM2MEnabled || !this.sessionUser.isCarePartner()) && this.sessionMonitorData != null) ||
+                        (this.sessionM2MEnabled && this.sessionUser.isCarePartner() && this.sessionPatients != null)))
             lastLoginSuccess = true;
             //Clear cookies if error occured during logon
         else
-            ((SimpleOkHttpCookieJar) this.httpClient.cookieJar()).deleteAllCookies();
+            this.clearSessionInfos();
 
         return lastLoginSuccess;
 
+    }
+
+    protected void clearSessionInfos()
+    {
+        ((SimpleOkHttpCookieJar) this.httpClient.cookieJar()).deleteAllCookies();
+        this.sessionUser = null;
+        this.sessionProfile = null;
+        this.sessionCountrySettings = null;
+        this.sessionMonitorData = null;
+        this.sessionPatients = null;
     }
 
     protected Response getLoginSession() throws IOException {
@@ -363,6 +492,17 @@ public class CareLinkClient {
         return this.getData(this.careLinkServer(), "patient/users/me/profile", null, null, Profile.class);
     }
 
+    // Recent uploads
+    public RecentUploads getRecentUploads(int numOfUploads) {
+
+        Map<String, String> queryParams = null;
+
+        queryParams = new HashMap<String, String>();
+        queryParams.put("numUploads", String.valueOf(numOfUploads));
+
+        return this.getData(this.careLinkServer(), "patient/dataUpload/recentUploads", queryParams, null, RecentUploads.class);
+    }
+
     // Monitoring data
     public MonitorData getMonitorData() {
         return this.getData(this.careLinkServer(), "patient/monitor/data", null, null, MonitorData.class);
@@ -382,6 +522,17 @@ public class CareLinkClient {
 
     }
 
+    // M2M Enabled
+    public M2MEnabled getM2MEnabled() {
+        return this.getData(this.careLinkServer(), "patient/configuration/system/personal.cp.m2m.enabled", null, null, M2MEnabled.class);
+    }
+
+    // M2M Patients
+    public Patient[] getM2MPatients() {
+        return this.getData(this.careLinkServer(), "patient/m2m/links/patients", null, null, Patient[].class);
+    }
+
+    // Classic last24hours webapp data
     public RecentData getLast24Hours() {
 
         Map<String, String> queryParams = null;
@@ -405,7 +556,7 @@ public class CareLinkClient {
     }
 
     // Periodic data from CareLink Cloud
-    public RecentData getConnectDisplayMessage(String username, String role, String endpointUrl) {
+    public RecentData getConnectDisplayMessage(String username, String role, String patientUsername, String endpointUrl) {
 
         RequestBody requestBody = null;
         Gson gson = null;
@@ -416,6 +567,8 @@ public class CareLinkClient {
         userJson = new JsonObject();
         userJson.addProperty("username", username);
         userJson.addProperty("role", role);
+        if(!JoH.emptyString(patientUsername))
+            userJson.addProperty("patientId", patientUsername);
 
         gson = new GsonBuilder().create();
 
@@ -428,6 +581,27 @@ public class CareLinkClient {
         } catch (Exception e) {
             lastErrorMessage = e.getClass().getSimpleName() + ":" + e.getMessage();
         }
+        return recentData;
+
+    }
+
+    // New M2M last24hours webapp data
+    public RecentData getM2MPatientData(String patientUsername) {
+
+        Map<String, String> queryParams = null;
+
+        //Patient username is mandantory!
+        if(patientUsername == null || patientUsername.isEmpty())
+            return null;
+
+        queryParams = new HashMap<String, String>();
+        queryParams.put("cpSerialNumber", "NONE");
+        queryParams.put("msgType", "last24hours");
+        queryParams.put("requestTime", String.valueOf(System.currentTimeMillis()));
+
+        RecentData recentData = this.getData(this.careLinkServer(), "/patient/m2m/connect/data/gc/patients/" + patientUsername, queryParams, null, RecentData.class);
+        if (recentData != null)
+            correctTimeInRecentData(recentData);
         return recentData;
 
     }
@@ -515,8 +689,8 @@ public class CareLinkClient {
         //Add common browser headers
         requestBuilder
                 .addHeader("Accept-Language", "en;q=0.9, *;q=0.8")
-                .addHeader("sec-ch-ua", "\"Google Chrome\";v=\"87\", \" Not;A Brand\";v=\"99\", \"Chromium\";v=\"87\"")
-                .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36");
+                .addHeader("sec-ch-ua", "\"Chromium\";v=\"112\", \"Google Chrome\";v=\"112\", \"Not:A-Brand\";v=\"99\"")
+                .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36");
 
         //Set media type based on request type
         switch (type) {
@@ -546,9 +720,15 @@ public class CareLinkClient {
 
                 timezoneMissing = true;
 
-                //offset = this.getZonedDate(recentData.lastSG.datetime).getOffset();
-                offsetString = this.getZoneOffset(recentData.lastSG.datetime);
+                //Try get TZ offset string: lastSG or lastAlarm
+                if(recentData.lastSG != null && recentData.lastSG.datetime != null)
+                    offsetString = this.getZoneOffset(recentData.lastSG.datetime);
+                else
+                    offsetString = this.getZoneOffset(recentData.lastAlarm.datetime);
 
+                //Set last alarm datetimeAsDate
+                if(recentData.lastAlarm != null && recentData.lastAlarm.datetime != null)
+                    recentData.lastAlarm.datetimeAsDate = parseDateString(recentData.lastAlarm.datetime);
                 //Build correct dates with timezone
                 recentData.sMedicalDeviceTime = recentData.sMedicalDeviceTime + offsetString;
                 recentData.medicalDeviceTimeAsString = recentData.medicalDeviceTimeAsString + offsetString;

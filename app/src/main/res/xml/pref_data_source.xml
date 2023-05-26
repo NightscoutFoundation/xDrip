@@ -231,6 +231,14 @@
             android:summary="@string/summary_clfollow_pass"
             android:title="@string/title_clfollow_pass" />
         <EditTextPreference
+            android:defaultValue=""
+            android:inputType="textNoSuggestions|textVisiblePassword"
+            android:key="clfollow_patient"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:summary="@string/summary_clfollow_patient"
+            android:title="@string/title_clfollow_patient" />
+        <EditTextPreference
             android:defaultValue="30"
             android:inputType="textNoSuggestions|textVisiblePassword"
             android:key="clfollow_grace_period"

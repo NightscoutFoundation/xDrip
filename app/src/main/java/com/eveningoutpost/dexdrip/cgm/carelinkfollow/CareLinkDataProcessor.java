@@ -234,8 +234,8 @@ public class CareLinkDataProcessor {
             // Only Guardian Connect, NGP has all in notifications
             if (recentData.isGM() && recentData.lastAlarm != null) {
                 //Add notification from alarm
-                if (recentData.lastAlarm.datetime != null && recentData.lastAlarm.kind != null)
-                    addNotification(recentData.lastAlarm.datetime, recentData.getDeviceFamily(), recentData.lastAlarm);
+                if (recentData.lastAlarm.datetimeAsDate != null && recentData.lastAlarm.kind != null)
+                    addNotification(recentData.lastAlarm.datetimeAsDate, recentData.getDeviceFamily(), recentData.lastAlarm);
             }
         }
 
