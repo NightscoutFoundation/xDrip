@@ -171,7 +171,8 @@ public class CareLinkFollowService extends ForegroundService {
                     downloader = new CareLinkFollowDownloader(
                             Pref.getString("clfollow_user", ""),
                             Pref.getString("clfollow_pass", ""),
-                            Pref.getString("clfollow_country", "").toLowerCase()
+                            Pref.getString("clfollow_country", "").toLowerCase(),
+                            Pref.getString("clfollow_patient", "")
                     );
                 }
 
