@@ -12,8 +12,7 @@ public class Alarm {
     }
 
     public int code;
-    public String datetime;
-    public Date datetimeAsDate;
+    public Date datetime;
     public String type;
     public boolean flash;
     public String kind;
