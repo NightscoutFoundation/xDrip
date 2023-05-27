@@ -434,6 +434,8 @@
     <string name="title_miband_screen_timer">Покажи таймер</string>
     <string name="title_lefun_mac">МАС адрес</string>
     <string name="summary_lefun_send_readings">Настройте датата на часовника, за да представите стойностите на КЗ. По-добре с ммол/Л - вижте документацията</string>
+    <string name="title_clfollow_patient">CareLink Пациентско Потребителско име</string>
+    <string name="summary_clfollow_patient">CareLink Пациентско Потребителско име(не е зад.)</string>
     <string name="title_insulin_colors">Инсулин Цветове</string>
     <string name="title_show_g_prediction">G6 Предикация</string>
     <string name="title_pick_numberwall_start">Включи</string>
