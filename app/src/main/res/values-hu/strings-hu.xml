@@ -1275,6 +1275,8 @@
     <string name="summary_clfollow_pass">CareLink bejelentkezési jelszó</string>
     <string name="title_clfollow_country">CareLink ország</string>
     <string name="summary_clfollow_country">Válassza ki az országát</string>
+    <string name="title_clfollow_patient">Felhasználónév CareLink belépéshez</string>
+    <string name="summary_clfollow_patient">Felhasználónév CareLink belépéshez (megadható)</string>
     <string name="title_clfollow_lang">CareLink nyelve</string>
     <string name="summary_clfollow_lang">CareLink nyelvének kiválasztása</string>
     <string name="title_clfollow_grace_period">Türelmi idő</string>
