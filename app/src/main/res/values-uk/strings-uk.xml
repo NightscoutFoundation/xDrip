@@ -1289,6 +1289,8 @@
     <string name="summary_clfollow_pass">Пароль для авторизації CareLink</string>
     <string name="title_clfollow_country">Країна CareLink</string>
     <string name="summary_clfollow_country">Оберіть свою країну CareLink.</string>
+    <string name="title_clfollow_patient">Користувацьке ім\'я CareLink Patient</string>
+    <string name="summary_clfollow_patient">Користувацьке ім\'я CareLink patient (необов\'язково)</string>
     <string name="title_clfollow_lang">Мова CareLink</string>
     <string name="summary_clfollow_lang">Код мови CareLink</string>
     <string name="title_clfollow_grace_period">Дозволений Період</string>
