@@ -1290,6 +1290,8 @@
     <string name="summary_clfollow_pass">CareLink Login-Passwort</string>
     <string name="title_clfollow_country">CareLink Land</string>
     <string name="summary_clfollow_country">Wähle Dein CareLink Land aus.</string>
+    <string name="title_clfollow_patient">CareLink Patienten-Benutzername</string>
+    <string name="summary_clfollow_patient">CareLink Patienten-Benutzername (optional)</string>
     <string name="title_clfollow_lang">CareLink Sprache</string>
     <string name="summary_clfollow_lang">CareLink Sprachcode</string>
     <string name="title_clfollow_grace_period">Schonfrist</string>
