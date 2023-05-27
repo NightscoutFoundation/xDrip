@@ -1290,6 +1290,8 @@
     <string name="summary_clfollow_pass">Mot de passe de connexion CareLink</string>
     <string name="title_clfollow_country">Pays CareLink</string>
     <string name="summary_clfollow_country">Sélectionner votre pays CareLink.</string>
+    <string name="title_clfollow_patient">Nom d\'utilisateur du patient CareLink</string>
+    <string name="summary_clfollow_patient">Nom d\'utilisateur du patient CareLink (facultatif)</string>
     <string name="title_clfollow_lang">Langue CareLink</string>
     <string name="summary_clfollow_lang">Code de langue CareLink</string>
     <string name="title_clfollow_grace_period">Délai de grâce</string>
@@ -1304,7 +1306,7 @@
     <string name="summary_clfollow_download_meals">Télécharger les repas depuis CareLink</string>
     <string name="title_clfollow_download_notifications">Notifications</string>
     <string name="summary_clfollow_download_notifications">Télécharger les notifications de CareLink</string>
-    <string name="title_ob1_options">Paramètres de Collecteur OB1 G5/G6</string>
+    <string name="title_ob1_options">Paramètres de Collecteur OB1 G5/G6/G7</string>
     <string name="summary_use_ob1_g5_collector_service">Réécriture complète, devrait fonctionner sur Android 4.4 - 9, supporte le mode natif et plus</string>
     <string name="title_use_ob1_g5_collector_service">Utiliser le Collecteur OB1</string>
     <string name="summary_ob1_g5_use_transmitter_alg">Utiliser l\'algorithme interne de l\'émetteur pour calculer les valeurs de glycémie lorsque cela est possible.</string>
