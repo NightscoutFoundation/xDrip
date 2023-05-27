@@ -1290,6 +1290,8 @@
     <string name="summary_clfollow_pass">Contraseña de acceso a CareLink</string>
     <string name="title_clfollow_country">País de CareLink</string>
     <string name="summary_clfollow_country">Seleccione tu país de CareLink.</string>
+    <string name="title_clfollow_patient">Usuario del paciente de CareLink</string>
+    <string name="summary_clfollow_patient">Usuario del paciente de CareLink (opcional)</string>
     <string name="title_clfollow_lang">Idioma de CareLink</string>
     <string name="summary_clfollow_lang">Código de idioma de CareLink</string>
     <string name="title_clfollow_grace_period">Periodo de gracia</string>
