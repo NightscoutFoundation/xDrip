@@ -110,6 +110,9 @@ public class NightscoutUploader {
 
         private static int failurecount = 0;
 
+        public static int upload_fail_notification_period = 86400; // Failed upload notification will be shown only if there is no upload for this long (seconds).
+        public static int exception_count_trigger = upload_fail_notification_period / 60 / 5 -1;
+
         private Context mContext;
         private Boolean enableRESTUpload;
         private Boolean enableMongoUpload;
@@ -580,14 +583,15 @@ public class NightscoutUploader {
         last_exception = msg;
         last_exception_time = JoH.tsl();
         last_exception_count++;
-        if (last_exception_count > 5) {
+        if (last_exception_count > exception_count_trigger) {
             if (Pref.getBooleanDefaultFalse("warn_nightscout_failures")) {
-                if (JoH.ratelimit("nightscout-error-notification", 1800)) {
+                if (JoH.ratelimit("nightscout-error-notification", upload_fail_notification_period)) {
                     notification_shown = true;
                     JoH.showNotification("Nightscout Failure", "REST-API upload to Nightscout has failed " + last_exception_count
                                     + " times. With message: " + last_exception + " " + ((last_success_time > 0) ? "Last succeeded: " + JoH.dateTimeText(last_success_time) : ""),
 
                             MegaStatus.getStatusPendingIntent("Uploaders"), Constants.NIGHTSCOUT_ERROR_NOTIFICATION_ID, NotificationChannels.NIGHTSCOUT_UPLOADER_CHANNEL, true, true, null, null, msg);
+                    Log.e(TAG, msg);
                 }
             } else {
                 Log.e(TAG, "Cannot alert for nightscout failures as preference setting is disabled");
@@ -598,7 +602,7 @@ public class NightscoutUploader {
                 notification_shown = false;
             }
         }
-        Log.e(TAG, msg);
+        // Log.e(TAG, msg); // This spams the logs once every 5 minutes.  Let's do it differently.
     }
 
     private String getDeviceString(BgReading record) {
