@@ -1290,6 +1290,8 @@
     <string name="summary_clfollow_pass">CareLink sisselogimise parool</string>
     <string name="title_clfollow_country">CareLink riik</string>
     <string name="summary_clfollow_country">Vali enda CareLink riik.</string>
+    <string name="title_clfollow_patient">CareLink patsiendi kasutajanimi</string>
+    <string name="summary_clfollow_patient">CareLink patsiendi kasutajanimi (vabalt valitav)</string>
     <string name="title_clfollow_lang">CareLink keel</string>
     <string name="summary_clfollow_lang">CareLink keele kood</string>
     <string name="title_clfollow_grace_period">Ooteperiood</string>
