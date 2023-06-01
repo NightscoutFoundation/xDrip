@@ -140,7 +140,12 @@ public class LibreReceiver extends BroadcastReceiver {
                                 // period of 4.5 minutes to collect 5 readings
                                 if (!BgReading.last_within_millis(DexCollectionType.getCurrentDeduplicationPeriod())) {
                                     long smoothing_minutes = LibreReceiver.libreFilterLength(xdrip.getAppContext());
-                                    List<Libre2RawValue> smoothingValues = Libre2RawValue.weightedAverageInterval(smoothing_minutes);
+                                    long dataFetchInterval;
+                                    if ( smoothing_minutes == 25L )
+                                        dataFetchInterval = 20L;
+                                    else
+                                        dataFetchInterval = smoothing_minutes;
+                                    List<Libre2RawValue> smoothingValues = Libre2RawValue.weightedAverageInterval(dataFetchInterval);
                                     smoothingValues.add(currentRawValue);
                                     processValues(currentRawValue, smoothingValues, smoothing_minutes, context);
                                 }
