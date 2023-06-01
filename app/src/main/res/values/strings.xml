@@ -1638,7 +1638,7 @@
     <string name="enable_streaming_never">Never connect to Libre2 sensors</string>
     <string name="libre_filter_length_10">10 minutes</string>
     <string name="libre_filter_length_15">15 minutes</string>
-    <string name="libre_filter_length_25">25 minutes</string>
+    <string name="libre_filter_length_25">25 minutes ></string>
     <string name="libre_filter_length_summary">Number of minutes to take in consideration when using librex data</string>
     <string name="libre_filter_length_title">Smooth libre 3 data when using xxx method</string>
     <string name="enable_streaming_dialog_yes">Connect to this Libre2 sensor</string>
