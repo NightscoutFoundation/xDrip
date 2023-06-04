@@ -405,7 +405,7 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
             });
 
             String export = DatabaseUtil.saveSql(xdrip.getAppContext(), "b4import");
-            ConfigureImportExport.dispatchAdditionalExports(export, true, false);
+//            ConfigureImportExport.dispatchAdditionalExports(export, true, false);
 
 
             if (export == null) {
