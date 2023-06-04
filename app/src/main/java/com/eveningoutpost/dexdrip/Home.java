@@ -3378,7 +3378,9 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                                     0);
                             return null;
                         } else {
-                            return DatabaseUtil.saveCSV(getBaseContext(), date.getTimeInMillis());
+                            String f =  DatabaseUtil.saveCSV(getBaseContext(), date.getTimeInMillis());
+                            ConfigureImportExport.dispatchAdditionalExports(f, false, false);
+                            return f;
                         }
                     }
 
@@ -3608,48 +3610,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 break;
         }
 
-        if (item.getItemId() == R.id.action_export_database) {
-            new AsyncTask<Void, Void, String>() {
-                @Override
-                protected String doInBackground(Void... params) {
-                    int permissionCheck = ContextCompat.checkSelfPermission(Home.this,
-                            Manifest.permission.READ_EXTERNAL_STORAGE);
-                    if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(Home.this,
-                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                                0);
-                        return null;
-                    } else {
-                        String f =  DatabaseUtil.saveSql(getBaseContext());
-                        ConfigureImportExport.dispatchAdditionalExports(f, true, false);
-                        return f;
-                    }
-
-                }
-
-                @Override
-                protected void onPostExecute(String filename) {
-                    super.onPostExecute(filename);
-                    if (filename != null) {
-                        snackBar(R.string.share, getString(R.string.exported_to) + filename, makeSnackBarUriLauncher(Uri.fromFile(new File(filename)), getString(R.string.share_database)), Home.this);
-                        startActivity(new Intent(xdrip.getAppContext(), SdcardImportExport.class).putExtra("backup", "now").setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                    /*    SnackbarManager.show(
-                                Snackbar.with(Home.this)
-                                        .type(SnackbarType.MULTI_LINE)
-                                        .duration(4000)
-                                        .text(getString(R.string.exported_to) + filename) // text to display
-                                        .actionLabel("Share") // action button label
-                                        .actionListener(new SnackbarUriListener(Uri.fromFile(new File(filename)))),
-                                Home.this);*/
-                    } else {
-                        Toast.makeText(Home.this, R.string.could_not_export_database, Toast.LENGTH_LONG).show();
-                    }
-                }
-            }.execute();
-
-            return true;
-        }
-
         if (item.getItemId() == R.id.action_import_db) {
             startActivity(new Intent(this, ImportDatabaseActivity.class));
             return true;
@@ -3662,56 +3622,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         }*/
         ///
-
-        if (item.getItemId() == R.id.action_export_csv_sidiary) {
-
-            long from = Pref.getLong("sidiary_last_exportdate", 0);
-            final GregorianCalendar date = new GregorianCalendar();
-            final DatePickerFragment datePickerFragment = new DatePickerFragment();
-            if (from > 0) datePickerFragment.setInitiallySelectedDate(from);
-            datePickerFragment.setAllowFuture(false);
-            datePickerFragment.setTitle(getString(R.string.sidiary_date_title));
-            datePickerFragment.setDateCallback(new ProfileAdapter.DatePickerCallbacks() {
-                @Override
-                public void onDateSet(int year, int month, int day) {
-                    date.set(year, month, day);
-                    date.set(Calendar.HOUR_OF_DAY, 0);
-                    date.set(Calendar.MINUTE, 0);
-                    date.set(Calendar.SECOND, 0);
-                    date.set(Calendar.MILLISECOND, 0);
-                    new AsyncTask<Void, Void, String>() {
-                        @Override
-                        protected String doInBackground(Void... params) {
-                            int permissionCheck = ContextCompat.checkSelfPermission(Home.this,
-                                    Manifest.permission.READ_EXTERNAL_STORAGE);
-                            if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-                                ActivityCompat.requestPermissions(Home.this,
-                                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                                        0);
-                                return null;
-                            } else {
-                                String f =  DatabaseUtil.saveCSV(getBaseContext(), date.getTimeInMillis());
-                                ConfigureImportExport.dispatchAdditionalExports(f, false, false);
-                                return f;
-                            }
-                        }
-
-                        @Override
-                        protected void onPostExecute(String filename) {
-                            super.onPostExecute(filename);
-                            if (filename != null) {
-                                Pref.setLong("sidiary_last_exportdate", System.currentTimeMillis());
-                                snackBar(R.string.share, getString(R.string.exported_to) + filename, makeSnackBarUriLauncher(Uri.fromFile(new File(filename)), getString(R.string.share_database)), Home.this);
-                            } else {
-                                Toast.makeText(Home.this, gs(R.string.could_not_export_csv_), Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    }.execute();
-                }
-            });
-            datePickerFragment.show(getFragmentManager(), "DatePicker");
-            return true;
-        }
 
         if (item.getItemId() == R.id.action_toggle_speakreadings) {
             Pref.toggleBoolean("bg_to_speech");

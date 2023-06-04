@@ -36,31 +36,6 @@
                 android:visible="true"
                 android:orderInCategory="1"
                 android:showAsAction="never"/>
-            <item android:id="@+id/action_export_database"
-                android:title="@string/menu_export_database"
-                android:checkable="false"
-                android:orderInCategory="1"
-                android:showAsAction="never"/>
-
-            <item android:id="@+id/action_import_db"
-                android:title="@string/menu_import_db"
-                android:checkable="false"
-                android:orderInCategory="1"
-                android:showAsAction="never"/>
-
-            <item android:id="@+id/action_export_csv_sidiary"
-                android:title="@string/menu_export_csv_sidiary"
-                android:checkable="false"
-                android:orderInCategory="1"
-                android:showAsAction="never"/>
-
-            <item android:id="@+id/importsettings"
-                android:title="@string/load_save_settings_on_sdcard"
-                android:checkable="false"
-                android:onClick="settingsSDcardExport"
-                android:visible="true"
-                android:orderInCategory="1"
-                android:showAsAction="never"/>
             <item
                 android:id="@+id/cloud_backup"
                 android:title="@string/cloud_backup"
