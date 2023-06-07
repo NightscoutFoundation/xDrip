@@ -139,7 +139,7 @@ public class LibreReceiver extends BroadcastReceiver {
                                 Log.v(TAG, "got bg reading: from sensor:" + currentRawValue.serial + " rawValue:" + currentRawValue.glucose + " at:" + currentRawValue.timestamp);
                                 // period of 4.5 minutes to collect 5 readings
                                 if (!BgReading.last_within_millis(DexCollectionType.getCurrentDeduplicationPeriod())) {
-                                    long smoothing_minutes = LibreReceiver.libreFilterLength(xdrip.getAppContext());
+                                    long smoothing_minutes = Pref.getStringToInt("libre_filter_length", 25);
                                     long dataFetchInterval;
                                     if ( smoothing_minutes == 25L )
                                         dataFetchInterval = 20L;
@@ -166,17 +166,6 @@ public class LibreReceiver extends BroadcastReceiver {
             }
         }.start();
     }
-
-    private static int libreFilterLength(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String libre_filter_length = prefs.getString("libre_filter_length", "25");
-        int ret = Integer.parseInt(libre_filter_length);
-
-
-        Log.e(TAG, "libreFilterLength returning " + ret);
-        return ret;
-    }
-
 
     private static void clearNFCsensorAge() {
         val PREF_KEY = "nfc_sensor_age";
