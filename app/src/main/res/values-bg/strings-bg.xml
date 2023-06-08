@@ -251,6 +251,16 @@
     <string name="android_wear_integration">Интеграция с Android Wear</string>
     <string name="pref_enable_wearG5">Интеграция с Android Wear</string>
     <string name="pref_summary_enable_wearG5">Свържи Часовник като BT колектор, когато телефонът е извън обхват</string>
+    <string name="pref_force_wearG5">Интеграция с Android Wear</string>
+    <string name="pref_summary_force_wearG5">Накарай телефона да използва базата данни</string>
+    <string name="pref_disable_wearG5_on_lowbattery">Деактивирай при спаднала сила на батерията</string>
+    <string name="pref_summary_disable_wearG5_on_lowbattery">Деактивирай услугата по събиране на данните при спаднала батерия</string>
+    <string name="pref_disable_wearG5_on_missedreadings">Деактивирай услугата при липсващи данни</string>
+    <string name="pref_summary_disable_wearG5_on_missedreadings">Деактивирай услугата по събиране на данни след последното разчитане</string>
+    <string name="pref_disable_wearG5_on_missedreadings_level">Mинути от последното разчитане</string>
+    <string name="pref_node_wearG5">Уред използващ базата данни</string>
+    <string name="pref_summary_node_wearG5">Накарай телефона да използва събраната база от данни</string>
+    <string name="pref_wear_logs_prefix">Wear представка за събитията</string>
     <string name="pref_show_treatments">Показване на лечения</string>
     <string name="pebble_integration">Pebble Интеграция</string>
     <string name="text_to_display_when_hitting_special_value">Текст за показване при достигане на специална стойност</string>
@@ -341,6 +351,8 @@
     <string name="this_device_will_send_data_to_followers">Това устройство ще изпраща данни на последователи</string>
     <string name="send_parakeet_map_location_to_followers">Изпратете местоположението на картата на Parakeet на последователите</string>
     <string name="send_message">Изпрати Съобщение</string>
+    <string name="sdcard_not_writable_cannot_save">SD картата не позволява запис - не може да се запише</string>
+    <string name="sdcard_not_readable">SD картата не може да се прочете</string>
     <string name="choose_sound_used_for_persistent_high_alarm">Изберете звук за аларми при постоянно висока КЗ</string>
     <string name="persistent_high_sound">Звук продъжлително висока КЗ</string>
     <string name="forecast_lows">Предвиждане на ниска КЗ</string>
@@ -434,6 +446,8 @@
     <string name="title_miband_screen_timer">Покажи таймер</string>
     <string name="title_lefun_mac">МАС адрес</string>
     <string name="summary_lefun_send_readings">Настройте датата на часовника, за да представите стойностите на КЗ. По-добре с ммол/Л - вижте документацията</string>
+    <string name="title_clfollow_patient">CareLink Пациентско Потребителско име</string>
+    <string name="summary_clfollow_patient">CareLink Пациентско Потребителско име(не е зад.)</string>
     <string name="title_insulin_colors">Инсулин Цветове</string>
     <string name="title_show_g_prediction">G6 Предикация</string>
     <string name="title_pick_numberwall_start">Включи</string>
