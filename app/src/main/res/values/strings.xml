@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <string name="title_activity_bluetooth_scan">Bluetooth Scan</string>
@@ -1638,6 +1638,11 @@
     <string name="enable_streaming_always_allow">Always connect to Libre2 sensors</string>
     <string name="enable_streaming_ask_each_time">Ask each time</string>
     <string name="enable_streaming_never">Never connect to Libre2 sensors</string>
+    <string name="libre_filter_length_10">10 minutes</string>
+    <string name="libre_filter_length_15">15 minutes</string>
+    <string name="libre_filter_length_25">25 minutes ></string>
+    <string name="libre_filter_length_summary">Number of minutes to take in consideration when using librex data</string>
+    <string name="libre_filter_length_title">Smooth libre 3 data when using xxx method</string>
     <string name="enable_streaming_dialog_yes">Connect to this Libre2 sensor</string>
     <string name="enable_streaming_dialog_no">Don\'t connect to this Libre2 sensor </string>
     <string name="enable_streaming_dialog_dont_ask_again">Don\'t ask me that again</string>
