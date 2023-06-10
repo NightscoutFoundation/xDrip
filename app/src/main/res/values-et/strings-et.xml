@@ -1592,6 +1592,11 @@
     <string name="enable_streaming_always_allow">Ühenda alati Libre2 sensoriga</string>
     <string name="enable_streaming_ask_each_time">Küsi iga kord</string>
     <string name="enable_streaming_never">Ära kunagi ühenda Libre2 sensoriga</string>
+    <string name="libre_filter_length_10">10 minutit</string>
+    <string name="libre_filter_length_15">15 minutit</string>
+    <string name="libre_filter_length_25">25 minutit &gt;</string>
+    <string name="libre_filter_length_summary">Arvesse võetavate minutite arv librex andmete kasutamisel</string>
+    <string name="libre_filter_length_title">Libre 3 andmete silumine, xxx meetodi kasutamisel</string>
     <string name="enable_streaming_dialog_yes">Ühenda selle Libre2 sensoriga</string>
     <string name="enable_streaming_dialog_no">Ära ühenda selle Libre2 sensoriga </string>
     <string name="enable_streaming_dialog_dont_ask_again">Ära küsi seda enam uuesti</string>
