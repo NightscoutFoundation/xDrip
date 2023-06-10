@@ -183,7 +183,7 @@
     <string name="calibration_graph">Gráfico de Calibração</string>
     <string name="glucose_units">Unidade de Glicémia</string>
     <string name="mmol_or_mgdl_high_and_low">mmol/l ou mg/dl hiper e hipo</string>
-    <string name="general_settings">Configurações Gerais</string>
+    <string name="general_settings">Configuração geral</string>
     <string name="high_value">Valor de Hiper</string>
     <string name="low_value">Valor de Hipo</string>
     <string name="stats_range_settings">Configurações de Intervalo: </string>
