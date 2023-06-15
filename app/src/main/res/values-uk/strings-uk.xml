@@ -1591,6 +1591,11 @@
     <string name="enable_streaming_always_allow">Завжди підключатися до сенсора Libre 2</string>
     <string name="enable_streaming_ask_each_time">Питати кожного разу при підключені до сенсора</string>
     <string name="enable_streaming_never">Ніколи не підключатися до сенсорів Libre 2</string>
+    <string name="libre_filter_length_10">10 хвилин</string>
+    <string name="libre_filter_length_15">15 хвилин</string>
+    <string name="libre_filter_length_25">25 хвилин &gt;</string>
+    <string name="libre_filter_length_summary">Кількість хвилин, що беруться до уваги, при використанні даних librex</string>
+    <string name="libre_filter_length_title">Згладжувати дані libre 3 при використанні методу xxx</string>
     <string name="enable_streaming_dialog_yes">Підключитися до цього сенсора Libre 2</string>
     <string name="enable_streaming_dialog_no">Не підключатися до цього сенсора Libre 2 </string>
     <string name="enable_streaming_dialog_dont_ask_again">Більше не запитувати</string>
