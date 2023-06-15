@@ -1592,6 +1592,11 @@
     <string name="enable_streaming_always_allow">Conectar siempre a sensores Libre2</string>
     <string name="enable_streaming_ask_each_time">Preguntar cada vez</string>
     <string name="enable_streaming_never">Nunca conectar a sensores Libre2</string>
+    <string name="libre_filter_length_10">10 minutos</string>
+    <string name="libre_filter_length_15">15 minutos</string>
+    <string name="libre_filter_length_25">25 minutos &gt;</string>
+    <string name="libre_filter_length_summary">Número de minutos a tomar en consideración al usar datos librex</string>
+    <string name="libre_filter_length_title">Suavizar datos del Libre 3 cuando usamos el método xxx</string>
     <string name="enable_streaming_dialog_yes">Conectar a este sensor Libre2</string>
     <string name="enable_streaming_dialog_no">No conectar a este sensor Libre2 </string>
     <string name="enable_streaming_dialog_dont_ask_again">No volver a preguntarme</string>

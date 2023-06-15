@@ -394,7 +394,7 @@
     <string name="optional_contact_info_here_eg_email">Opcjonalnie Informacje kontaktowe np. email</string>
     <string name="send_message">Wyślij wiadomość</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Proszę napisz, co myślisz o tej aplikacji.</string>
-    <string name="preferences_saved_in_sdcard_downloads">Ustawienia zapisane na karcie SD w Downloads</string>
+    <string name="preferences_saved_in_sdcard_downloads">Ustawienia zapisane na karcie SD w Download</string>
     <string name="could_not_write_to_sdcard_check_perms">Nie można zapisać na karte - sprawdź uprawnienia?</string>
     <string name="loaded_preferences_restarting">Załadowane Preferencje! - Ponowne uruchomienie</string>
     <string name="could_not_load_preferences_check_pers">Nie udało się załadować ustawień - sprawdź uprawnienia lub plik?</string>
@@ -1535,6 +1535,11 @@
     <string name="enable_streaming_always_allow">Zawsze podłącz do czujników Libre2</string>
     <string name="enable_streaming_ask_each_time">Pytaj za każdym razem</string>
     <string name="enable_streaming_never">Nigdy nie łącz z czujnikami Libre2</string>
+    <string name="libre_filter_length_10">10 minut</string>
+    <string name="libre_filter_length_15">15 minut</string>
+    <string name="libre_filter_length_25">25 minut &gt;</string>
+    <string name="libre_filter_length_summary">Liczba minut do brania pod uwagę podczas korzystania z danych z librex</string>
+    <string name="libre_filter_length_title">Wygładź dane z libre 3 przy użyciu metody xxx</string>
     <string name="enable_streaming_dialog_yes">Połącz się z tym czujnikiem Libre2</string>
     <string name="enable_streaming_dialog_no">Nie łącz się z tym czujnikiem Libre2 </string>
     <string name="enable_streaming_dialog_dont_ask_again">Nie pytaj ponownie</string>
