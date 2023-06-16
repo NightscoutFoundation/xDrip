@@ -111,10 +111,10 @@ public class NightscoutUploader {
 
         private static int failurecount = 0;
 
-        public static final int FAIL_NOTIFICATION_PERIOD = 86400; // Failed upload notification will be shown if there is no upload for 24 hours.
+        public static final int FAIL_NOTIFICATION_PERIOD = 24 * 60 * 60; // Failed upload notification will be shown if there is no upload for 24 hours.
         public static final int FAIl_COUNT_NOTIFICATION = FAIL_NOTIFICATION_PERIOD / 60 / 5 -1; // Number of 5-minute read cycles corresponding to notification period
         public static final int FAIL_LOG_PERIOD = 6 * 60 * 60; // FAILED upload/download log will be shown if there is no upload/download for 6 hours.
-        public static final int FAIL_COUNT_LOG = FAIL_LOG_PERIOD / 60 / 5 -1; // Number of 5-minute read cycles corresponding to 6 hours
+        public static final int FAIL_COUNT_LOG = FAIL_LOG_PERIOD / 60 / 5 -1; // Number of 5-minute read cycles corresponding to log period
 
         private Context mContext;
         private Boolean enableRESTUpload;
@@ -601,7 +601,7 @@ public class NightscoutUploader {
                         JoH.showNotification("Nightscout Failure", "REST-API upload to Nightscout has failed " + last_exception_count
                                         + " times. With message: " + last_exception + " " + ((last_success_time > 0) ? "Last succeeded: " + JoH.dateTimeText(last_success_time) : ""),
 
-                                MegaStatus.getStatusPendingIntent("Uploaders"), Constants.NIGHTSCOUT_ERROR_NOTIFICATION_ID, NotificationChannels.NIGHTSCOUT_UPLOADER_CHANNEL, true, true, null, null, msg);
+                                MegaStatus.getStatusPendingIntent("Uploaders"), Constants.NIGHTSCOUT_ERROR_NOTIFICATION_ID, NotificationChannels.NIGHTSCOUT_UPLOADER_CHANNEL, false, false, null, null, msg);
                     } else {
                         Log.e(TAG, "Cannot alert for nightscout failures as preference setting is disabled");
                     }
