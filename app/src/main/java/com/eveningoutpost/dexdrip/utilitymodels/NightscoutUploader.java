@@ -99,6 +99,7 @@ public class NightscoutUploader {
         public static long last_success_time = -1;
         public static long last_exception_time = -1;
         public static int last_exception_count = 0;
+        public static int last_exception_log_count = 0;
         public static String last_exception;
         public static final String VIA_NIGHTSCOUT_TAG = "via Nightscout";
 
@@ -109,6 +110,11 @@ public class NightscoutUploader {
 
 
         private static int failurecount = 0;
+
+        public static final int FAIL_NOTIFICATION_PERIOD = 24 * 60 * 60; // Failed upload notification will be shown if there is no upload for 24 hours.
+        public static final int FAIl_COUNT_NOTIFICATION = FAIL_NOTIFICATION_PERIOD / 60 / 5 -1; // Number of 5-minute read cycles corresponding to notification period
+        public static final int FAIL_LOG_PERIOD = 6 * 60 * 60; // FAILED upload/download log will be shown if there is no upload/download for 6 hours.
+        public static final int FAIL_COUNT_LOG = FAIL_LOG_PERIOD / 60 / 5 -1; // Number of 5-minute read cycles corresponding to log period
 
         private Context mContext;
         private Boolean enableRESTUpload;
@@ -494,6 +500,7 @@ public class NightscoutUploader {
                     any_successes = true;
                     last_success_time = JoH.tsl();
                     last_exception_count = 0;
+                    last_exception_log_count = 0;
                 } catch (Exception e) {
                     String msg = "Unable to do REST API Upload: " + e.getMessage() + " marking record: " + (any_successes ? "succeeded" : "failed");
                     handleRestFailure(msg);
@@ -574,31 +581,38 @@ public class NightscoutUploader {
                   }
                 }
             }
+
         }
 
     private static synchronized void handleRestFailure(String msg) {
         last_exception = msg;
         last_exception_time = JoH.tsl();
         last_exception_count++;
-        if (last_exception_count > 5) {
-            if (Pref.getBooleanDefaultFalse("warn_nightscout_failures")) {
-                if (JoH.ratelimit("nightscout-error-notification", 1800)) {
-                    notification_shown = true;
-                    JoH.showNotification("Nightscout Failure", "REST-API upload to Nightscout has failed " + last_exception_count
-                                    + " times. With message: " + last_exception + " " + ((last_success_time > 0) ? "Last succeeded: " + JoH.dateTimeText(last_success_time) : ""),
+        last_exception_log_count++;
+        if (last_exception_log_count > FAIL_COUNT_LOG) { // If the number of failed uploads/downloads crosses the logging target
+            if (JoH.pratelimit("nightscout-error-log", FAIL_LOG_PERIOD)) { // If there has been more than 6 hours since the last log
+                Log.e(TAG, msg);
+                last_exception_log_count = 0; // Reset the fail count for logging.
+            }
+            if (last_exception_count > FAIl_COUNT_NOTIFICATION) { // If the number of failed uploads crosses the notification target
+                if (JoH.pratelimit("nightscout-error-notification", FAIL_NOTIFICATION_PERIOD)) { // If there has been more than 24 hours since the last notification
+                    if (Pref.getBooleanDefaultFalse("warn_nightscout_failures")) {
+                        notification_shown = true;
+                        JoH.showNotification("Nightscout Failure", "REST-API upload to Nightscout has failed " + last_exception_count
+                                        + " times. With message: " + last_exception + " " + ((last_success_time > 0) ? "Last succeeded: " + JoH.dateTimeText(last_success_time) : ""),
 
-                            MegaStatus.getStatusPendingIntent("Uploaders"), Constants.NIGHTSCOUT_ERROR_NOTIFICATION_ID, NotificationChannels.NIGHTSCOUT_UPLOADER_CHANNEL, true, true, null, null, msg);
+                                MegaStatus.getStatusPendingIntent("Uploaders"), Constants.NIGHTSCOUT_ERROR_NOTIFICATION_ID, NotificationChannels.NIGHTSCOUT_UPLOADER_CHANNEL, false, false, null, null, msg);
+                    } else {
+                        Log.e(TAG, "Cannot alert for nightscout failures as preference setting is disabled");
+                    }
                 }
             } else {
-                Log.e(TAG, "Cannot alert for nightscout failures as preference setting is disabled");
-            }
-        } else {
-            if (notification_shown) {
-                JoH.cancelNotification(Constants.NIGHTSCOUT_ERROR_NOTIFICATION_ID);
-                notification_shown = false;
+                if (notification_shown) {
+                    JoH.cancelNotification(Constants.NIGHTSCOUT_ERROR_NOTIFICATION_ID);
+                    notification_shown = false;
+                }
             }
         }
-        Log.e(TAG, msg);
     }
 
     private String getDeviceString(BgReading record) {
