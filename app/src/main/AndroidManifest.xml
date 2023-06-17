@@ -503,6 +503,12 @@
                 <action android:name="info.nightscout.client.NS_BRIDGE" />
             </intent-filter>
             <intent-filter>
+                <action android:name="info.nightscout.client.NEW_FOOD" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="info.nightscout.client.NEW_DEVICESTATUS" />
+            </intent-filter>
+            <intent-filter>
                 <action android:name="info.nightscout.client.NEW_SGV" />
             </intent-filter>
             <intent-filter>

@@ -694,6 +694,10 @@ public class Treatments extends Model {
                 Log.d(TAG, "Skipping Temp Basal msg");
                 return false;
             }
+            if (mytreatment.timestamp < 1) {
+                Log.e(TAG, "Invalid treatment timestamp or 0 or less");
+                return false;
+            }
 
             if (mytreatment.uuid == null) {
                 try {

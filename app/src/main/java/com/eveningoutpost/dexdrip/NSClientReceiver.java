@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.eveningoutpost.dexdrip.insulin.aaps.AAPSStatusHandler;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.Treatments;
@@ -19,7 +20,6 @@ import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.Intents;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.profileeditor.ImportAapsProfile;
-import com.google.gson.GsonBuilder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,7 +28,6 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.UUID;
 
-import info.nightscout.sdk.localmodel.devicestatus.NSDeviceStatus;
 import lombok.val;
 
 
@@ -60,6 +59,7 @@ public class NSClientReceiver extends BroadcastReceiver {
         if (action == null) return;
 
         switch (action) {
+            case Intents.ACTION_NEW_DEVICESTATUS:
             case Intents.ACTION_NS_BRIDGE:
                 if (bundle == null) break;
                 if (prefs.getBoolean("accept_nsclient_treatments", true)) {
@@ -67,9 +67,7 @@ public class NSClientReceiver extends BroadcastReceiver {
                     final String device_status_json = bundle.getString("devicestatus", "");
                     if (!emptyString(device_status_json)) {
                         try {
-                            val gson = new GsonBuilder().create(); // TODO optimize
-                            val ds = gson.fromJson(device_status_json, NSDeviceStatus.class);
-                            Log.e(TAG, "DEBUG: got device status: " + ds.toString());
+                            AAPSStatusHandler.processDeviceStatus(device_status_json);
                         } catch (Exception e) {
                             Log.e(TAG, "Exception processing device status in NS_BRIDGE action: " + e);
                         }
@@ -104,6 +102,7 @@ public class NSClientReceiver extends BroadcastReceiver {
                 }
                 break;
 
+            case Intents.ACTION_NEW_FOOD: // action changed unexpectedly
             case Intents.ACTION_NEW_TREATMENT:
                 if (bundle == null) break;
                 if (prefs.getBoolean("accept_nsclient_treatments", true)) {
@@ -281,7 +280,12 @@ public class NSClientReceiver extends BroadcastReceiver {
         try {
             // jsonObject.put("uuid", UUID.fromString(trt_map.get("_id").toString()).toString());
 
-            jsonObject.put("timestamp", trt_map.get("mills"));
+            Object ts =  trt_map.get("mills");
+            if (ts == null) {
+                ts = trt_map.get("date"); // identifier changed at some point
+            }
+
+            jsonObject.put("timestamp", ts);
             jsonObject.put("eventType", trt_map.get("eventType"));
             jsonObject.put("enteredBy", trt_map.get("enteredBy"));
             if (trt_map.containsKey("carbs")) {
