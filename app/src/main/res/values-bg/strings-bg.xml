@@ -273,6 +273,7 @@
     <string name="pebble_watch_integration">Pebble Интеграция</string>
     <string name="standard_or_trend_pebble_watchface">Стандартен или Тенденциозен Pebble циферблат</string>
     <string name="choose_pebble_watchface">Избери Pebble часовник</string>
+    <string name="message_to_display_when_bgl_hits">Появяване на съобщение когато кръвната захар се покачи над зададените стойности</string>
     <string name="text_to_display_when_hitting_special_value">Текст за показване при достигане на специална стойност</string>
     <string name="special_value">Специална стойност</string>
     <string name="history">История</string>
@@ -561,6 +562,9 @@
     <string name="notify_disable_wearG5_on_missedreadings">Деактивиране на услугата Force Wear Collection поради %1$d минути пропуснати четения на часовника!</string>
     <string name="label_show_insulin">Е:%1$sе</string>
     <string name="label_show_carbs">Въглехидрати:%1$sg</string>
+    <string name="label_show_steps">Отброяване на стъпките. Нулират се в полунощ</string>
+    <string name="label_show_steps_km">показване на изминатото разстояние в км</string>
+    <string name="label_show_steps_mi">изминато разстояние в мили</string>
     <string name="pref_summary_influxdb_enabled">Ако използвате частна база данни InfluxDB, това трябва да е активирано</string>
     <string name="pref_message_influxdb_uri">Замени примерните стойности в {} с твоите реални стойности</string>
     <string name="pref_dialog_influxdb_uri">Въведете InfluxDB URI</string>
@@ -594,7 +598,9 @@
     <string name="auto_turn_on_bluetooth">Автоматично активиране на Bluetooth, ако е изключен, когато се опитаме да се свържем с Bluetooth устройство</string>
     <string name="turn_bluetooth_on">Включване на Bluetooth</string>
     <string name="reset_bluetooth">Нулиране на Bluetooth, като го се изклю и включи, ако не се получат данни след 20 минути</string>
+    <string name="bluetooth_watchdog">Следи връзката между телефона Ви и носещото данните устройсво ( което е прикрепено към тялото Ви) да е стабилна и данните да се пренасят точно</string>
     <string name="reset_bluetooth_g5">Нулирайте Bluetooth, като го изключите и включите като начин да поддържате източника на данни G5 работещ. Без това колекционерът G5 може да се провали.</string>
+    <string name="g5_bluetooth_watchdog">Dex - става въпрос за Дексом уреда за продължително проследяване нивото на кръвната захар и връзката му с Bluetooth Watchdog</string>
     <string name="close_gatt">Ако Bluetooth watchdog се активира често, можете да опитате да премахнете отметката от тази опция, за да видите дали помага</string>
     <string name="older_bluetooth_wakelocks">По-стари Bluetooth wakelocks, които могат да изразходват допълнително батерията, но може да са необходими за Bluetooth приемане</string>
     <string name="reset_bluetooth_on_off">Нулиране на Bluetooth д изключване и включване на всеки няколко минути! Изберете само ако тествате. Това може да наруши всичко друго, използвайки Bluetooth.</string>
@@ -635,6 +641,8 @@
     <string name="allow_daily_db_save">Позволява на услугата Daily Intent Service да запазва базата данни преди изтриване</string>
     <string name="options_for_extra_line">Опции за допълнителната линия</string>
     <string name="todays_average_value">Днешна средна стойност.</string>
+    <string name="ac1_estimation_dcct">Гликиран хеемоглобин в %</string>
+    <string name="ac1_estimation_ifcc">Гликиран Хемоглобин измерен в милимол/мол</string>
     <string name="percentage_in_range">Процент на стойностите в диапазона.</string>
     <string name="percentage_below_range">Процент на стойностите под диапазона.</string>
     <string name="percentage_above_range">Процент на стойностите над диапазона.</string>
@@ -1482,6 +1490,7 @@
     <string name="treatment_cancelled">Манипулацията е отказана</string>
     <string name="treatment_time_wrong">Грешно време за лечение</string>
     <string name="treatment_error">Грешка при лечението</string>
+    <string name="treatment_processed">Манипулацията е завършена</string>
     <string name="number_error_">Номер на грешка: %s: </string>
     <string name="starting_sync_to_other_devices">Стартиране на синхронизация с други устройства</string>
     <string name="deleting_all_bg_readings">Изтриване на ВСИЧКИ стойности за КЗ!</string>
