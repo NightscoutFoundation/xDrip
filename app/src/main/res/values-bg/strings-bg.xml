@@ -1168,6 +1168,7 @@
     <string name="title_tidepool_test_login">Тествайте влизането в Tidepool</string>
     <string name="title_tidepool_window_latency">Минимална възраст на данните</string>
     <string name="summary_tidepool_dev_servers">Ако е разрешено, качванията ще отиват на https://int-app.tidepool.org вместо на обичайния https://app.tidepool.org/</string>
+    <string name="title_tidepool">Сървър Tidepool</string>
     <string name="show_help">Покажи помощно меню</string>
     <string name="load_save_settings_on_sdcard">Зареждане / запазване на настройките</string>
     <string name="delete_all_bg_readings">Изтриване на ВСИЧКИ стойности за КЗ</string>
@@ -1202,6 +1203,7 @@
     <string name="summary_miband_interval_in_nightmode">Определя колко често КЗ да се синхронизира в нощен режим</string>
     <string name="title_miband_colect_heartrate">Събирай данни за пулс</string>
     <string name="summary_miband_colect_heartrate">Ще събира данни за пулса от лентата. Интервалът на актуализиране може да бъде конфигуриран в MiFit или всяко приложение на трета страна</string>
+    <string name="title_miband_authkey">Aвторизиращ ключ</string>
     <string name="summary_miband_authkey">Задайте ключа за удостоверяване за MiBand4 (За да получите ключ за удостоверяване, следвайте инструкциите на https://www.freemyband.com/)</string>
     <string name="summary_miband_mac">Оставете празно за автоматично търсене</string>
     <string name="title_miband_send_readings_as_notification">Показания на КЗ като известия</string>
@@ -1253,6 +1255,7 @@
     <string name="summary_medtrum_use_native">Използвайте калибриране на трансмитера вместо xDrip за основен вариант</string>
     <string name="title_medtrum_use_native">Родом от Медтрум</string>
     <string name="summary_medtrum_a_hex">Шестнадесетична диагностична стойност на теста</string>
+    <string name="title_medtrum_a_hex">Коригиране на Медтрум (ако има грешки се отстраняват)</string>
     <string name="summary_nsfollow_url">Уеб адрес за следване</string>
     <string name="title_nsfollow_url">Nightscout URL за следване</string>
     <string name="summary_nsfollow_download_treatments">Също така изтеглете лечения от Nightscout като последовател</string>
@@ -1273,6 +1276,7 @@
     <string name="summary_clfollow_missed_poll_interval">Интервал на опит за прочитане след пропуснати данни в минути</string>
     <string name="title_clfollow_download_finger_bgs">Кръвна захар от тест с убождане на пръста</string>
     <string name="summary_clfollow_download_finger_bgs">Изтеглете тестове с убождане на пръстите от CareLink</string>
+    <string name="title_clfollow_download_boluses">Бързо действащ инсулин</string>
     <string name="summary_clfollow_download_boluses">Изтеглете boluses от CareLink</string>
     <string name="title_clfollow_download_meals">Хранения</string>
     <string name="summary_clfollow_download_meals">Изтеглете хранения от CareLink</string>
@@ -1352,6 +1356,7 @@
     <string name="summary_libre_whole_house_collector">Този телефон ще бъде колекционер в цялата домашна мрежа</string>
     <string name="title_libre_whole_house_collector">Libre цяла къща</string>
     <string name="summary_xdrip_plus_desert_sync_settings">Следване извън мрежата</string>
+    <string name="title_xdrip_plus_desert_sync_settings"> Desert Sync е синхронизация на данните между 2 телефона , когато се намирате в \"пустиня \" - място с ограничен интернет или без интернет </string>
     <string name="summary_desert_sync_enabled">Активирани локални съоръжения за синхронизиране без интернет</string>
     <string name="title_desert_sync_enabled">Активиран Desert Sync</string>
     <string name="title_desert_sync_master_ip">Master IP address</string>
@@ -1373,6 +1378,7 @@
     <string name="title_inpen_reset">Намери нова писалка</string>
     <string name="summary_pendiq_screen">Дози за четене и писане</string>
     <string name="title_pendiq_screen">Pendiq 2.0 Инсулинова Писалка</string>
+    <string name="title_use_pendiq">Подръжка на цифровата писалка Pendiq 2.0</string>
     <string name="summary_pendiq_send_treatments">Подгответе писалката с въведените единици инсулин. Винаги трябва да проверявате повторно това.</string>
     <string name="summary_ongoing_notification_channel">Може да задейства известия за околния дисплей на някои устройства. Нуждае се от тестване!</string>
     <string name="title_ongoing_notification_channel">Използвайте текущ канал за уведомяване</string>
