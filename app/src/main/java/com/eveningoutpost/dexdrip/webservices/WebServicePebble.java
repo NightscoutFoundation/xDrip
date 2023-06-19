@@ -7,6 +7,7 @@ import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.Calibration;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.models.Treatments;
 import com.eveningoutpost.dexdrip.dagger.Injectors;
 import com.eveningoutpost.dexdrip.ui.MicroStatus;
 
@@ -82,7 +83,8 @@ public class WebServicePebble extends BaseWebService {
             }
 
             bgs.put("battery", microStatus.gs("bestBridgeBattery"));
-            bgs.put("iob", 0); // TODO get iob
+            Double iob = Treatments.getCurrentIoB();
+            bgs.put("iob", (iob == null) ? "unknown" : String.format("%.02f", iob));
             // TODO output bwp and bwpo
 
             status_array.put(status);
