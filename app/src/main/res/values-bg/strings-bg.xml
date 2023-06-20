@@ -381,7 +381,7 @@
     <string name="settings_on_external_storage">Зареди/Запази настройките</string>
     <string name="get_notified_of_new_apk_releases">Получаване на известие при нови версии на APK</string>
     <string name="choose_stable_beta_or_alpha_releases">Изберете версия - Стабилна, Бета иили Алфа</string>
-    <string name="web_feedback_form_for_sending_messages">Уеб форма за обратна връзка- за изпращане на съобщения и оценки на разработчиците на xDrip+</string>
+    <string name="web_feedback_form_for_sending_messages">Уеб форма за обратна връзка за изпращане на съобщения и оценки на разработчиците на xDrip+</string>
     <string name="be_master_for_followers">Бъдете управител за последователите</string>
     <string name="this_device_will_send_data_to_followers">Това устройство ще изпраща данни на последователи</string>
     <string name="send_parakeet_map_location_to_followers">Изпратете местоположението на картата на Parakeet на последователите</string>
