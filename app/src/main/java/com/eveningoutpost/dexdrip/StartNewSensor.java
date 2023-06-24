@@ -242,7 +242,7 @@ public class StartNewSensor extends ActivityWithMenu {
 
         LibreAlarmReceiver.clearSensorStats();
         // TODO this is just a timer and could be confusing - consider removing this notification
-       // JoH.scheduleNotification(xdrip.getAppContext(), "Sensor should be ready", xdrip.getAppContext().getString(R.string.please_enter_two_calibrations_to_get_started), 60 * 130, Home.SENSOR_READY_ID);
+        // JoH.scheduleNotification(xdrip.getAppContext(), "Sensor should be ready", xdrip.getAppContext().getString(R.string.please_enter_two_calibrations_to_get_started), 60 * 130, Home.SENSOR_READY_ID);
 
         // Add treatment entry in db
         Treatments.sensorStart(startTime, "Started by xDrip");
