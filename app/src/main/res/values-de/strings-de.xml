@@ -1595,7 +1595,7 @@
     <string name="libre_filter_length_10">10 Minuten</string>
     <string name="libre_filter_length_15">15 Minuten</string>
     <string name="libre_filter_length_25">25 Minuten &gt;</string>
-    <string name="libre_filter_length_summary">Bei Verwendung von LibreX-Daten: Anzahl der Minuten zu berücksichtigen</string>
+    <string name="libre_filter_length_summary">Bei Verwendung von LibreX-Daten: Anzahl der zu berücksichtigenden Minuten</string>
     <string name="libre_filter_length_title">Libre3-Daten glätten, wenn Methode xxx verwendet wird</string>
     <string name="enable_streaming_dialog_yes">Verbinde mit diesem Libre2-Sensor</string>
     <string name="enable_streaming_dialog_no">Nicht mit diesem Libre2-Sensor verbinden </string>
