@@ -1126,4 +1126,5 @@
     <string name="enable_streaming_dialog_dont_ask_again">Znovu se neptat</string>
     <string name="no_never">NE, nikdy</string>
     <string name="titleInside_yRange">Povolit</string>
+    <string name="wait_to_connect">Ověřte nastavení a počkejte na připojení.</string>
 </resources>
