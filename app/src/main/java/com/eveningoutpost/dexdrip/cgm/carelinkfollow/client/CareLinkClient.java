@@ -47,7 +47,6 @@ public class CareLinkClient {
     protected static final String CARELINK_CONNECT_SERVER_EU = "carelink.minimed.eu";
     protected static final String CARELINK_CONNECT_SERVER_US = "carelink.minimed.com";
     protected static final String CARELINK_LANGUAGE_EN = "en";
-    protected static final String CARELINK_LOCALE_EN = "en";
     protected static final String CARELINK_AUTH_TOKEN_COOKIE_NAME = "auth_tmp_token";
     protected static final String CARELINK_TOKEN_VALIDTO_COOKIE_NAME = "c_token_valid_to";
     protected static final int AUTH_EXPIRE_DEADLINE_MINUTES = 1;
@@ -382,7 +381,7 @@ public class CareLinkClient {
         form = new FormBody.Builder()
                 .add("sessionID", loginSessionResponse.request().url().queryParameter("sessionID"))
                 .add("sessionData", loginSessionResponse.request().url().queryParameter("sessionData"))
-                .add("locale", CARELINK_LOCALE_EN)
+                .add("locale", loginSessionResponse.request().url().queryParameter("locale"))
                 .add("action", "login")
                 .add("username", this.carelinkUsername)
                 .add("password", this.carelinkPassword)
@@ -390,11 +389,11 @@ public class CareLinkClient {
                 .build();
 
         url = new HttpUrl.Builder()
-                .scheme("https")
-                .host("mdtlogin-ocl.medtronic.com")
-                .addPathSegments("mmcl/auth/oauth/v2/authorize/login")
-                .addQueryParameter("locale", CARELINK_LOCALE_EN)
-                .addQueryParameter("country", this.carelinkCountry)
+                .scheme(loginSessionResponse.request().url().scheme())
+                .host(loginSessionResponse.request().url().host())
+                .addPathSegments(loginSessionResponse.request().url().encodedPath().substring(1))
+                .addQueryParameter("locale", loginSessionResponse.request().url().queryParameter("locale"))
+                .addQueryParameter("country", loginSessionResponse.request().url().queryParameter("countrycode"))
                 .build();
 
         requestBuilder = new Request.Builder()
