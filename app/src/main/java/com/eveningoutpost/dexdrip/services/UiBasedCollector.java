@@ -82,7 +82,7 @@ public class UiBasedCollector extends NotificationListenerService {
         if (coOptedPackages.contains(fromPackage)) {
             if (getDexCollectionType() == UiBased) {
                 UserError.Log.d(TAG, "Notification from: " + fromPackage);
-                if (sbn.isOngoing()) {
+                if (sbn.isOngoing() || fromPackage.endsWith("e")) {
                     lastPackage = fromPackage;
                     processNotification(sbn.getNotification());
                     BlueTails.immortality();
