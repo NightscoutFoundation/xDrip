@@ -978,7 +978,7 @@ public class Treatments extends Model {
     }
 
     // NEW NEW NEW
-    public static List<Iob> ioBForGraph_new(int number, long startTime) {
+    public static List<Iob> ioBForGraph_new(long startTime) {
 
        // Log.d(TAG, "Processing iobforgraph2: main  ");
         JoH.benchmark_method_start();
@@ -1290,6 +1290,23 @@ public class Treatments extends Model {
         JoH.benchmark_method_end();
         return responses;
     }*/
+
+    public static Double getCurrentIoB() {
+        long now = System.currentTimeMillis();
+
+        final List<Iob> iobInfo = Treatments.ioBForGraph_new(now - 1 * Constants.DAY_IN_MS);
+
+        if (iobInfo != null) {
+            for (Iob iob : iobInfo) {
+                // Find IoB sample close to the current timestamp.
+                if (iob.timestamp > now - 5 * MINUTE_IN_MS && iob.timestamp < now + 5 * MINUTE_IN_MS) {
+                    return iob.iob;
+                }
+            }
+        }
+
+        return null;
+    }
 
     public String getBestShortText() {
         if (!eventType.equals(DEFAULT_EVENT_TYPE)) {
