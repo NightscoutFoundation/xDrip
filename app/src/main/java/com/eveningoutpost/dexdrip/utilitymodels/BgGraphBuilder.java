@@ -1686,7 +1686,7 @@ public class BgGraphBuilder {
                     final double relaxed_predicted_bg_limit = initial_predicted_bg * 1.20;
                     final double cob_insulin_max_draw_value = highMark * 1.20;
                     // final List<Iob> iobinfo_old = Treatments.ioBForGraph(numValues, (start_time * FUZZER));
-                    final List<Iob> iobinfo = (simulation_enabled) ? Treatments.ioBForGraph_new(MAX_VALUES, (start_time * FUZZER)) : null; // for test
+                    final List<Iob> iobinfo = (simulation_enabled) ? Treatments.ioBForGraph_new(start_time * FUZZER) : null; // for test
 
                     long fuzzed_timestamp = (long) end_time; // initial value in case there are no iob records
                     if (d)
