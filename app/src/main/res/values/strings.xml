@@ -1241,6 +1241,10 @@
 
     <string name="title_broadcast_service_api">Broadcast Service API</string>
     <string name="summary_broadcast_service_api">Enables xDrip communication with third-party applications by using new API</string>
+    <string name="title_enable_iob_in_api_endpoint">Enable IoB reporting in API</string>
+    <string name="summary_enable_iob_in_api_endpoint">Enable IoB value reporting in Web Service API endpoint used by some smartwatches</string>
+    <string name="title_fetch_iob_from_omnipod_app">Fetch IoB from the Omnipod 5 App</string>
+    <string name="summary_fetch_iob_from_omnipod_app">Fetch IoB value from the Omnipod 5 App running on the same device</string>
 
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Sync Data with MiBand fitness bands</string>

@@ -44,4 +44,15 @@ public class UiBasedCollectorTest {
         assertWithMessage("gte 1").that(i.filterString(spec2)).isEqualTo(spec2p);
         assertWithMessage("lte 1").that(i.filterString(spec3)).isEqualTo(spec3p);
     }
+
+    @Test
+    public void parseOmnipodIoBTest() {
+        val i = new UiBasedCollector();
+
+        val valid = "Automated Mode (IOB: 5.1 U)";
+        val invalid = "Foobar";
+
+        assertWithMessage("valid IoB message").that(i.parseOmnipodIoB(valid)).isEqualTo(5.1);
+        assertWithMessage("invalid IoB message").that(i.parseOmnipodIoB(invalid)).isNull();
+    }
 }

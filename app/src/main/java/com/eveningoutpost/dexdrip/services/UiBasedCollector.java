@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.services;
 
 import static com.eveningoutpost.dexdrip.models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.cgm.dex.ClassifierAction.lastReadingTimestamp;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.UiBased;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getDexCollectionType;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
@@ -37,9 +38,13 @@ import com.eveningoutpost.dexdrip.cgm.dex.BlueTails;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import lombok.val;
 
@@ -53,10 +58,15 @@ public class UiBasedCollector extends NotificationListenerService {
     private static final String TAG = UiBasedCollector.class.getSimpleName();
     private static final String UI_BASED_STORE_LAST_VALUE = "UI_BASED_STORE_LAST_VALUE";
     private static final String UI_BASED_STORE_LAST_REPEAT = "UI_BASED_STORE_LAST_REPEAT";
+    private static final String OMNIPOD_IOB_ENABLED_PREFERENCE_KEY = "fetch_iob_from_omnipod_app";
+    private static final String OMNIPOD_IOB_VALUE = "OMNIPOD_IOB_VALUE";
+    private static final String OMNIPOD_IOB_VALUE_WRITE_TIMESTAMP = "OMNIPOD_IOB_VALUE_WRITE_TIMESTAMP";
     private static final String ENABLED_NOTIFICATION_LISTENERS = "enabled_notification_listeners";
     private static final String ACTION_NOTIFICATION_LISTENER_SETTINGS = "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS";
 
     private static final HashSet<String> coOptedPackages = new HashSet<>();
+    private static final HashSet<String> omnipodIoBPackages = new HashSet<>();
+    private static boolean debug = true;
 
     @VisibleForTesting
     String lastPackage;
@@ -74,6 +84,8 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackages.add("com.medtronic.diabetes.guardian");
         coOptedPackages.add("com.medtronic.diabetes.minimedmobile.eu");
         coOptedPackages.add("com.medtronic.diabetes.minimedmobile.us");
+
+        omnipodIoBPackages.add("com.insulet.myblue.pdm");
     }
 
     @Override
@@ -93,6 +105,88 @@ public class UiBasedCollector extends NotificationListenerService {
                 }
             }
         }
+
+        if (omnipodIoBPackages.contains(fromPackage)) {
+            processOmnipodOmnipodNotification(sbn.getNotification());
+        }
+    }
+
+    private void processOmnipodOmnipodNotification(final Notification notification) {
+        if (notification == null) {
+            UserError.Log.e(TAG, "Null notification");
+            return;
+        }
+        if (notification.contentView != null) {
+            processOmnipodNotificationCV(notification.contentView);
+        } else {
+            UserError.Log.e(TAG, "Content is empty");
+        }
+    }
+
+    private void processOmnipodNotificationCV(final RemoteViews cview) {
+        if (cview == null) return;
+        val applied = cview.apply(this, null);
+        val root = (ViewGroup) applied.getRootView();
+        val texts = new ArrayList<TextView>();
+        getTextViews(texts, root);
+        if (debug) UserError.Log.d(TAG, "Text views: " + texts.size());
+        Double iob = null;
+        try {
+            for (val view : texts) {
+                val tv = (TextView) view;
+                String text = tv.getText() != null ? tv.getText().toString() : "";
+                val desc = tv.getContentDescription() != null ? tv.getContentDescription().toString() : "";
+                if (debug) UserError.Log.d(TAG, "Examining: >" + text + "< : >" + desc + "<");
+                iob = parseOmnipodIoB(text);
+                if (iob != null) {
+                    break;
+                }
+            }
+
+            if (iob != null) {
+                if (debug) UserError.Log.d(TAG, "Inserting new IoB value: " + iob);
+                PersistentStore.setDouble(OMNIPOD_IOB_VALUE, iob);
+                long now = System.currentTimeMillis();
+                PersistentStore.setLong(OMNIPOD_IOB_VALUE_WRITE_TIMESTAMP, now);
+            }
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "exception in processOmnipodNotificationCV: " + e);
+        }
+
+        texts.clear();
+    }
+    Double parseOmnipodIoB(final String value) {
+        if (!value.contains("IOB:")) {
+            return null;
+        }
+
+        Pattern pattern = Pattern.compile("IOB: ([\\d\\.]+) U");
+        Matcher matcher = pattern.matcher(value);
+
+        if (matcher.find()) {
+            return Double.parseDouble(matcher.group(1));
+        }
+
+        return 0.0;
+    }
+
+    public static Double getCurrentIoB() {
+        Long iobWriteTimestamp = PersistentStore.getLong(OMNIPOD_IOB_VALUE_WRITE_TIMESTAMP);
+        if (debug) {
+            Date date = new Date(iobWriteTimestamp);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String timestamp = dateFormat.format(date);
+            UserError.Log.d(TAG, "iow write time: " + timestamp);
+        }
+
+        Long now = System.currentTimeMillis();
+
+        if (iobWriteTimestamp < now - 5 * MINUTE_IN_MS) {
+            return null;
+        }
+
+        Double iob = PersistentStore.getDouble(OMNIPOD_IOB_VALUE);
+        return iob;
     }
 
     @Override
@@ -257,12 +351,23 @@ public class UiBasedCollector extends NotificationListenerService {
                     //
                 }
             }
+            if (key.equals(OMNIPOD_IOB_ENABLED_PREFERENCE_KEY)) {
+                try {
+                    enableNotificationService(activity);
+                } catch (Exception e) {
+                    UserError.Log.e(TAG, "Exception when enabling NotificationService: " + e);
+                }
+            }
         };
     }
 
     public static void switchToAndEnable(final Activity activity) {
         DexCollectionType.setDexCollectionType(UiBased);
         Sensor.createDefaultIfMissing();
+        enableNotificationService(activity);
+    }
+
+    private static void enableNotificationService(final Activity activity) {
         if (!isNotificationServiceEnabled()) {
             JoH.show_ok_dialog(activity, gs(R.string.please_allow_permission),
                     "Permission is needed to receive data from other applications. xDrip does not do anything beyond this scope. Please enable xDrip on the next screen",
