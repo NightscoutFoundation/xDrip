@@ -21,6 +21,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.services.SyncService;
+import com.eveningoutpost.dexdrip.services.UiBasedCollector;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utilitymodels.UndoRedo;
@@ -57,6 +58,7 @@ import lombok.val;
 import static com.eveningoutpost.dexdrip.models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import static java.lang.StrictMath.abs;
 import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
 
@@ -1292,6 +1294,20 @@ public class Treatments extends Model {
     }*/
 
     public static Double getCurrentIoB() {
+        if (Pref.getBooleanDefaultFalse("fetch_iob_from_companion_app")) {
+            return getCurrentIoBFromCompanionApp();
+        } else {
+            return getCurrentIoBFromGraphCalculation();
+        }
+    }
+
+    public static Double getCurrentIoBFromCompanionApp() {
+        Double iob = UiBasedCollector.getCurrentIoB();
+
+        return iob;
+    }
+
+    public static Double getCurrentIoBFromGraphCalculation() {
         long now = System.currentTimeMillis();
 
         final List<Iob> iobInfo = Treatments.ioBForGraph_new(now - 1 * Constants.DAY_IN_MS);

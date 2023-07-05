@@ -1005,6 +1005,16 @@
                 android:key="broadcast_service_enabled"
                 android:summary="@string/summary_broadcast_service_api"
                 android:title="@string/title_broadcast_service_api" />
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="enable_iob_in_api_endpoint"
+                android:summary="@string/summary_enable_iob_in_api_endpoint"
+                android:title="@string/title_enable_iob_in_api_endpoint" />
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="fetch_iob_from_companion_app"
+                android:summary="@string/summary_fetch_iob_from_companion_app"
+                android:title="@string/title_fetch_iob_from_companion_app" />
             <PreferenceScreen
                 android:title="Google Health Connect"
                 android:summary="Send and receive data from Google Health Connect and Google Fit"
