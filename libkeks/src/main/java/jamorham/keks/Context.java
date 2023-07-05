@@ -30,6 +30,7 @@ public class Context {
     public byte[] challenge;
     public volatile byte[] savedKey;
     public volatile Packet[] packet = new Packet[4];
+    public volatile int sequence;
 
     @Getter @Setter
     private volatile byte[] partA;
@@ -48,6 +49,7 @@ public class Context {
     }
 
     public void resetIfNotReady() {
+        sequence = 0;
         if (savedKey == null && getRound3Packet() == null) {
             reset();
         }

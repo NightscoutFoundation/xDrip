@@ -237,7 +237,12 @@ public class Plugin implements IPluginDA {
         switch (state) {
             case RequestAuth:
                 if (!verifyChallenge(data)) {
-                    throw new SecurityException("Mismatch");
+                    context.reset();
+                    if (context.sequence > 1) {
+                        throw new SecurityException("Mismatch - wait");
+                    } else {
+                        return false;
+                    }
                 }
                 context.challenge = new byte[8];
                 arraycopy(data, 9, context.challenge, 0, context.challenge.length);
@@ -291,7 +296,7 @@ public class Plugin implements IPluginDA {
                     changeState(SendCertificate1);
                     return true;
                 } else {
-                    return false;
+                    throw new InvalidParameterException("Invalid QR code 1");
                 }
             case SendCertificate2:
                 val rep2 = new CertInfoRxMessage(data);
@@ -300,15 +305,17 @@ public class Plugin implements IPluginDA {
                     changeState(SendCertificate2);
                     return true;
                 } else {
-                    return false;
+                    throw new InvalidParameterException("Invalid QR code 2");
                 }
 
             case SendKeyChallenge:
+                if (data.length > 2 && data[1] != 0) {
+                    throw new InvalidParameterException("Invalid QR code 3");
+                }
                 presponse = Calc.challenger(context.getPartC(), data);
                 return true;
 
             case SendKeyChallengeOut:
-                // TODO validate
                 return true;
 
         }
@@ -532,6 +539,7 @@ public class Plugin implements IPluginDA {
     }
 
     private byte[][] sequencePacket(final byte[] Packet) {
+        context.sequence++;
         val param = parameterFromState();
         val command = (param < 0) ? null : new byte[]{KEYCMD.bytes[0], param};
         return new byte[][]{command, Packet};
