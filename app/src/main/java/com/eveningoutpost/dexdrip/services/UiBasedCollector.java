@@ -66,7 +66,7 @@ public class UiBasedCollector extends NotificationListenerService {
 
     private static final HashSet<String> coOptedPackages = new HashSet<>();
     private static final HashSet<String> omnipodIoBPackages = new HashSet<>();
-    private static boolean debug = true;
+    private static boolean debug = false;
 
     @VisibleForTesting
     String lastPackage;
