@@ -202,6 +202,7 @@ public class Ob1G5StateMachine {
                         System.arraycopy(data, i, buf, 0, size);
                         UserError.Log.d(TAG, "Sending auth data: " + bytesToHex(buf));
                         connection.writeCharacteristic(ExtraData, nn(buf)).subscribe();
+                        threadSleep(40);
                     }
                     // TODO wait for completion?
                     threadSleep(500);
@@ -281,6 +282,7 @@ public class Ob1G5StateMachine {
                                         parent.resetSomeInternalState();
                                     } else if (e instanceof SecurityException) {
                                          parent.logFailure();
+                                         parent.clearPersistStore();
                                          parent.changeState(SCAN);
                                     } else {
                                         e.printStackTrace();
