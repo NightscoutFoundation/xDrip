@@ -429,13 +429,8 @@ public class CollectionServiceStarter {
         // stopG5Service(); // TODO diabled due to multiple service restarts but others may suffer same problems - needs rework
         Log.d(TAG, "starting G5 service");
         //if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-        if (!Pref.getBooleanDefaultFalse(Ob1G5CollectionService.OB1G5_PREFS)) {
-            G5CollectionService.keep_running = true;
-            startServiceCompat(new Intent(this.mContext, G5CollectionService.class));
-        } else {
-            Ob1G5CollectionService.keep_running = true;
-            startServiceCompat(new Intent(this.mContext, Ob1G5CollectionService.class));
-        }
+        Ob1G5CollectionService.keep_running = true;
+        startServiceCompat(new Intent(this.mContext, Ob1G5CollectionService.class));
         //}
     }
 

@@ -287,8 +287,7 @@ public class StatsResult {
 
     // equivalent to Ob1G5CollectionService.usingNativeMode()
     public boolean canShowRealtimeCapture() {
-        return Pref.getBooleanDefaultFalse("ob1_g5_use_transmitter_alg") &&
-                Pref.getBooleanDefaultFalse("use_ob1_g5_collector_service");
+        return Pref.getBooleanDefaultFalse("ob1_g5_use_transmitter_alg");
     }
 
     public int getBackfilledNativeG5() {

@@ -331,14 +331,8 @@ public class CollectionServiceStarter {
         Log.d(TAG, "starting G5 service");
         //if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
         PersistentStore.setBoolean(pref_run_wear_collector, true);
-
-        if (!Pref.getBooleanDefaultFalse(Ob1G5CollectionService.OB1G5_PREFS)) {
-            G5CollectionService.keep_running = true;
-            this.mContext.startService(new Intent(this.mContext, G5CollectionService.class));
-        } else {
-            Ob1G5CollectionService.keep_running = true;
-            this.mContext.startService(new Intent(this.mContext, Ob1G5CollectionService.class));
-        }
+        Ob1G5CollectionService.keep_running = true;
+        this.mContext.startService(new Intent(this.mContext, Ob1G5CollectionService.class));
         //}
     }
 

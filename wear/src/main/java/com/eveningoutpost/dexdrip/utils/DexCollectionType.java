@@ -173,11 +173,7 @@ public enum DexCollectionType {
     public static Class<?> getCollectorServiceClass(final DexCollectionType type) {
         switch (type) {
             case DexcomG5:
-                if (Pref.getBooleanDefaultFalse(Ob1G5CollectionService.OB1G5_PREFS)) {
-                    return Ob1G5CollectionService.class;
-                } else {
-                    return G5CollectionService.class;
-                }
+                return Ob1G5CollectionService.class;
             case DexcomShare:
                 return DexShareCollectionService.class;
             case WifiWixel:

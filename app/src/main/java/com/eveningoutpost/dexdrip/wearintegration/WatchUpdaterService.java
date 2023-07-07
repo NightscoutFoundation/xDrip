@@ -1824,7 +1824,7 @@ public class WatchUpdaterService extends WearableListenerService implements
             }
 
             dataMap.putBoolean("show_wear_treatments", Pref.getBooleanDefaultFalse("show_wear_treatments"));
-            dataMap.putBoolean("use_ob1_g5_collector_service", Pref.getBooleanDefaultFalse("use_ob1_g5_collector_service"));
+            dataMap.putBoolean("use_ob1_g5_collector_service", Pref.getBooleanDefaultFalse("true"));
             dataMap.putString(Blukon.BLUKON_PIN_PREF, Pref.getStringDefaultBlank(Blukon.BLUKON_PIN_PREF));
 
             final String dex_time_keeper = Ob1G5StateMachine.extractDexTime();

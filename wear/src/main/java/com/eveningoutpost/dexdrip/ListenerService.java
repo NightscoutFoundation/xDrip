@@ -1712,7 +1712,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             final String extra_tags_for_logging = dataMap.getString("extra_tags_for_logging", "");
             prefs.putString("extra_tags_for_logging", extra_tags_for_logging);
 
-            prefs.putBoolean("use_ob1_g5_collector_service", dataMap.getBoolean("use_ob1_g5_collector_service", false));
+            prefs.putBoolean("use_ob1_g5_collector_service", dataMap.getBoolean("true", false));
 
 
             final String blukon_pin = dataMap.getString(Blukon.BLUKON_PIN_PREF, "");

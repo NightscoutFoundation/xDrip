@@ -182,7 +182,6 @@ public abstract class G5BaseService extends Service {
     }
 
     public static void setG6Defaults() {
-        Pref.setBoolean("use_ob1_g5_collector_service", true);
         Pref.setBoolean("ob1_g5_use_transmitter_alg", true);
         Pref.setBoolean("ob1_g5_fallback_to_xdrip", false);
         Pref.setBoolean("display_glucose_from_plugin", false);

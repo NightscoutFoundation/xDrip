@@ -164,11 +164,7 @@ public class MegaStatus extends ActivityWithMenu {
                 addAsection(G4_STATUS, "Bluetooth Collector Status");
             }
             if (dexCollectionType.equals(DexcomG5)) {
-                if (Pref.getBooleanDefaultFalse(Ob1G5CollectionService.OB1G5_PREFS)) {
-                    addAsection(G5_STATUS, "OB1 G5/G6/G7 Collector and Transmitter Status");
-                } else {
-                    addAsection(G5_STATUS, "G5 Collector and Transmitter Status");
-                }
+                addAsection(G5_STATUS, "OB1 G5/G6/G7 Collector and Transmitter Status");
             } else if (dexCollectionType.equals(Medtrum)) {
                 addAsection(MEDTRUM_STATUS, "Medtrum A6 Status");
             }
@@ -232,11 +228,7 @@ public class MegaStatus extends ActivityWithMenu {
                 la.addRows(DexCollectionService.megaStatus());
                 break;
             case G5_STATUS:
-                if (Pref.getBooleanDefaultFalse(Ob1G5CollectionService.OB1G5_PREFS)) {
-                    la.addRows(Ob1G5CollectionService.megaStatus());
-                } else {
-                    la.addRows(G5CollectionService.megaStatus());
-                }
+                la.addRows(Ob1G5CollectionService.megaStatus());
                 break;
             case MEDTRUM_STATUS:
                 la.addRows(MedtrumCollectionService.megaStatus());

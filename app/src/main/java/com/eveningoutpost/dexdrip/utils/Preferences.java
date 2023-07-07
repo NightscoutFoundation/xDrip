@@ -1135,25 +1135,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 //
             }
 
-            findPreference("use_ob1_g5_collector_service").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                //
-                            }
-                            CollectionServiceStarter.restartCollectionService(xdrip.getAppContext());
-                        }
-                    }).start();
-
-                    return true;
-                }
-            });
-
             final Preference profile_carb_absorption_default = findPreference("profile_carb_absorption_default");
             profile_carb_absorption_default.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override

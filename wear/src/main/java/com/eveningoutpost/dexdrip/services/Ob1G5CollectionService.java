@@ -148,7 +148,6 @@ import com.polidea.rxandroidble.scan.ScanSettings;
 public class Ob1G5CollectionService extends G5BaseService {
 
     public static final String TAG = Ob1G5CollectionService.class.getSimpleName();
-    public static final String OB1G5_PREFS = "use_ob1_g5_collector_service";
     private static final String OB1G5_MACSTORE = "G5-mac-for-txid-";
     private static final String OB1G5_STATESTORE = "ob1-state-store-";
     private static final String OB1G5_STATESTORE_TIME = "ob1-state-store-time";
@@ -695,7 +694,6 @@ public class Ob1G5CollectionService extends G5BaseService {
     // should this service be running? Used to decide when to shut down
     private static boolean shouldServiceRun() {
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return false;
-        if (!Pref.getBooleanDefaultFalse(OB1G5_PREFS)) return false;
         if (!(DexCollectionType.getDexCollectionType() == DexcomG5)) return false;
 
         if (!android_wear) {
@@ -1695,8 +1693,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     // are we using the G5 Transmitter to evaluate readings
     public static boolean usingNativeMode() {
         return usingCollector()
-                && Pref.getBooleanDefaultFalse("ob1_g5_use_transmitter_alg")
-                && Pref.getBooleanDefaultFalse(OB1G5_PREFS);
+                && Pref.getBooleanDefaultFalse("ob1_g5_use_transmitter_alg");
     }
 
     public static boolean onlyUsingNativeMode() {
@@ -1961,6 +1958,6 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     public static boolean usingCollector() {
-        return Pref.getBooleanDefaultFalse(OB1G5_PREFS) && DexCollectionType.getDexCollectionType() == DexcomG5;
+        return DexCollectionType.getDexCollectionType() == DexcomG5;
     }
 }
