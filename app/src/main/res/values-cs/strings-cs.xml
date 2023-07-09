@@ -835,6 +835,7 @@
     <string name="reminders">Připomenutí</string>
     <string name="error">chyba</string>
     <string name="install_text_to_speech_data_question">Instalovat Text-To-Speech data?</string>
+    <string name="after_installation_of_languages_you_might_have_to">(Po instalaci jazyků možná bude potřeba stisknout tlačíko Restartovat kolektor ve Stavu systému.)</string>
     <string name="stop_sensor">Zastavit senzor</string>
     <string name="dont_stop_just_reset_all_calibrations">Nezastavovat, pouze resetovat všechny kalibrace</string>
     <string name="initial_calibration">Výchozí kalibrace</string>
@@ -886,6 +887,8 @@
     <string name="bluereaderoff">blueReader se vypne, když bude kapacita baterie nižší než </string>
     <string name="bluereader_position">Zkontrolovat polohu blueReader na senzoru, když nebylo možné čtení dat!</string>
     <string name="offical_msg">Oficiální aplikace</string>
+    <string name="aggressive_power_manager">Vaše zařízení má agresivní funkci řízení spotřeby energie/power management. Ta je normálně dostupná přes systémové nastavení telefonu. Ujistěte se, prosím, že aplikace xDrip+ je vyloučena z omezení jejího běhu na pozadí.</string>
+    <string name="eng_mode_is_on">Inženýrský režim je povolen. Prosím vypněte jej, pokud si nejste opravdu jisti, že ho potřebujete, může způsobovat neočekávané chování aplikace xDrip+.</string>
     <string name="yes">Ano</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
@@ -902,6 +905,7 @@
     <string name="androidwear">Android Wear OS</string>
     <string name="librealarm">LibreAlarm</string>
     <string name="glucose_units_mmol_or_mgdl">Jednotky glukózy mmol/l nebo mg/dl</string>
+    <string name="is_your_typical_glucose_value">Vyberte jednotku zobrazení glykémie: 5.5 (mmol/L) nebo 100 (mg/dL)</string>
     <string name="settings_updated_to_mmol">Nastavení aktualizováno na mmol/l</string>
     <string name="code_accepted">Kód přijat</string>
     <string name="invalid_or_unsupported_code">Neplatný nebo nepodporovaný kód!</string>
@@ -945,6 +949,10 @@
     <string name="title_Only_use_Wear">Použít pouze Wear</string>
     <string name="summary_Show_Bolus_Wizard_Preview_Insulin_value_on_watch_when_appropriate">Zobrazit v případě potřeby BWP (Bolus Wizard Preview) hodnotu inzulínu na hodinkách</string>
     <string name="title_Display_BWP_Insulin">Zobrazit BWP inzulín</string>
+    <string name="title_Smartwatch_Sensors">Senzory chytrých hodinek/náramků</string>
+    <string name="summary_Collect_and_display_Step_counter_and_Heart_rate_when_available">Sbírat a zobrazovat počet kroků a tepovou frekvenci, pokud jsou k dispozici</string>
+    <string name="title_Use_Health_Data">Použít zdravotní údaje</string>
+    <string name="summary_Activate_heart_rate_sensor_if_available">Aktivovat senzor tepové frekvence, pokud je k dispozici</string>
     <string name="title_Heart_Rate_Sensor">Senzor tepové frekvence</string>
     <string name="title_When_changes_by">Když se změní o</string>
     <string name="title_Or_per_number_of_minutes">Nebo za počet minut</string>
@@ -1067,8 +1075,8 @@
     <string name="title_miband_nightmode_end">Konec nočního režimu</string>
     <string name="title_miband_interval_in_nightmode">Interval</string>
     <string name="summary_miband_interval_in_nightmode">Určit, jak často budou hodnoty glykémie synchronizovány v nočním režimu</string>
-    <string name="title_miband_colect_heartrate">Sběr hodnot srdečního tepu</string>
-    <string name="summary_miband_colect_heartrate">Sběr hodnot srdečního tepu z náramku. Interval aktualizace může být nakonfigurován v MiFit aplikaci nebo v jakékoli aplikaci třetích stran</string>
+    <string name="title_miband_colect_heartrate">Sběr hodnot tepové frekvence</string>
+    <string name="summary_miband_colect_heartrate">Sběr hodnot tepové frekvence z náramku. Interval aktualizace může být nakonfigurován v MiFit aplikaci nebo v jakékoli aplikaci třetích stran</string>
     <string name="title_miband_authkey">Autorizační klíč</string>
     <string name="summary_miband_authkey">Zadat autorizační klíč pro MiBand 4 (pro získání autorizačního klíče postupujte podle instrukcí na https://www.freemyband.com/)</string>
     <string name="summary_miband_mac">Ponechat prázdné pro automatické vyhledávání</string>
@@ -1149,6 +1157,7 @@
     <string name="send_invite">Poslat pozvánku</string>
     <string name="save_sensor_location">Uložit umístění senzoru</string>
     <string name="alerts">Výstrahy</string>
+    <string name="use_internal_downloader">Použít interní stahovač souborů</string>
     <string name="title">Titul</string>
     <string name="summary">Přehled</string>
     <string name="auto_refresh">Automatické obnovení</string>
@@ -1156,6 +1165,7 @@
     <string name="sensor_start">Start senzoru:</string>
     <string name="bluetooth_device">Bluetooth zařízení:   </string>
     <string name="connection_status">Stav připojení:</string>
+    <string name="range_in_high_low">Rozsah: (ok/vysoká/nízká)</string>
     <string name="absolute_s">Celkem #s:</string>
     <string name="median_bg">Medián glykémií:</string>
     <string name="mean_bg">Průměr glykémií:</string>
@@ -1174,6 +1184,7 @@
     <string name="yes_calibrate">ANO, kalibrovat</string>
     <string name="enable_automatic_calibration">Povolit automatickou kalibraci</string>
     <string name="yes_enable">ANO, povolit</string>
+    <string name="what_would_you_like_to_do">Co chcete udělat?</string>
     <string name="nothing">Nic</string>
     <string name="yes_delete">Ano, odstranit</string>
     <string name="deleted">Odstraněno!</string>
