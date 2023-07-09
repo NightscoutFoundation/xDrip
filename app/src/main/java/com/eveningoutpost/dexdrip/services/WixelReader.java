@@ -137,6 +137,9 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
         trd.CaptureDateTime = System.currentTimeMillis() - trd.RelativeTime;
         final List<TransmitterRawData> l = new ArrayList<>();
         l.add(trd);
+        if (Ob1G5CollectionService.usingMockPreCalibrated()) {
+            BgReading.bgReadingInsertFromG5(trd.RawValue / 1000.0, trd.getCaptureDateTime(), "Mock");
+        }
         return l;
     }
 

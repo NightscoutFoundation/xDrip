@@ -9,6 +9,7 @@ import static com.eveningoutpost.dexdrip.g5model.CalibrationState.Ok;
 import static com.eveningoutpost.dexdrip.g5model.CalibrationState.Unknown;
 import static com.eveningoutpost.dexdrip.g5model.G6CalibrationParameters.getCurrentSensorCode;
 import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.CLOSED_OK_TEXT;
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.doKeepAlive;
 import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.evaluateG6Settings;
 import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.pendingCalibration;
 import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.pendingStart;
@@ -162,7 +163,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static final String BUGGY_SAMSUNG_ENABLED = "buggy-samsung-enabled";
     private static final String STOP_SCAN_TASK_ID = "ob1-g5-scan-timeout_scan";
     private static final String KEKS = "keks";
-    private static final String KEKS_ONE = "keks1";
+    private static final String KEKS_ONE = "keks1_";
     private static volatile STATE state = INIT;
     private static volatile STATE last_automata_state = CLOSED;
 
@@ -496,7 +497,12 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     public void changeState(STATE new_state) {
-        changeState(new_state, DEFAULT_AUTOMATA_DELAY);
+        if (shouldServiceRun()) {
+            changeState(new_state, DEFAULT_AUTOMATA_DELAY);
+        } else {
+            UserError.Log.d(TAG, "Stopping service due to having being disabled in preferences");
+            stopSelf();
+        }
     }
 
     public void changeState(STATE new_state, int timeout) {
@@ -737,17 +743,25 @@ public class Ob1G5CollectionService extends G5BaseService {
             unbondIfAllowed();
             changeState(CLOSE);
         } else {
-
             try {
-                Ob1G5StateMachine.doKeepAlive(this, connection, () -> {
-                    weInitiatedBondConfirmation = 1;
-                    instantCreateBondIfAllowed();
-                });
-
+                if (transmitterID.length() > 4) {
+                    doKeepAlive(this, connection, this::startInitiateBondReal);
+                } else {
+                    startInitiateBondReal();
+                }
                 //background_automata(10000);
             } catch (Exception e) {
                 UserError.Log.wtf(TAG, "Got exception in do_create_bond() " + e);
             }
+        }
+    }
+
+    private void startInitiateBondReal() {
+        try {
+            weInitiatedBondConfirmation = 1;
+            instantCreateBondIfAllowed();
+        } catch (Exception e) {
+            UserError.Log.wtf(TAG, "Got exception in startInitiateBondReal() " + e);
         }
     }
 
@@ -794,7 +808,6 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     // should this service be running? Used to decide when to shut down
     private static boolean shouldServiceRun() {
-        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return false;
         if (!Pref.getBooleanDefaultFalse(OB1G5_PREFS)) return false;
         if (!(DexCollectionType.getDexCollectionType() == DexcomG5)) return false;
 
@@ -942,12 +955,17 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     public synchronized void savePersist() {
         if (plugin != null) {
-            PersistentStore.setBytes(KEKS_ONE, plugin.getPersistence(1));
+            PersistentStore.cleanupOld(KEKS_ONE);
+            PersistentStore.setBytes(KEKS_ONE + transmitterMAC, plugin.getPersistence(1));
         }
     }
 
+    public static void clearPersistStore() {
+        PersistentStore.removeItem(KEKS_ONE + transmitterMAC);
+    }
+
     public static void clearPersist() {
-        PersistentStore.removeItem(KEKS_ONE);
+        clearPersistStore();
         expireFailures(true);
     }
 
@@ -1397,27 +1415,33 @@ public class Ob1G5CollectionService extends G5BaseService {
     // We have connected to the device!
     private void onConnectionReceived(RxBleConnection this_connection) {
         msg("Connected");
-        static_last_connected = tsl();
-        lastConnectFailed = false;
-        preScanFailureMarker = false;
 
-        DexSyncKeeper.store(transmitterID, static_last_connected);
-        // TODO check connection already exists - close etc?
-        if (connection_linger != null) JoH.releaseWakeLock(connection_linger);
-        connection = this_connection;
+        if (shouldServiceRun()) {
+            static_last_connected = tsl();
+            lastConnectFailed = false;
+            preScanFailureMarker = false;
 
-        if (state == CONNECT_NOW) {
-            connectNowFailures = -3; // mark good
-        }
-        if (state == CONNECT) {
-            connectFailures = -1; // mark good
-        }
+            DexSyncKeeper.store(transmitterID, static_last_connected);
+            // TODO check connection already exists - close etc?
+            if (connection_linger != null) JoH.releaseWakeLock(connection_linger);
+            connection = this_connection;
 
-        scanTimeouts = 0; // reset counter
-        clearRetries();
+            if (state == CONNECT_NOW) {
+                connectNowFailures = -3; // mark good
+            }
+            if (state == CONNECT) {
+                connectFailures = -1; // mark good
+            }
 
-        if (JoH.ratelimit("g5-to-discover", 1)) {
-            changeState(DISCOVER);
+            scanTimeouts = 0; // reset counter
+            clearRetries();
+
+            if (JoH.ratelimit("g5-to-discover", 1)) {
+                changeState(DISCOVER);
+            }
+        } else {
+            msg("Shutdown");
+            stopSelf();
         }
     }
 
@@ -1491,7 +1515,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                             UserError.Log.wtf(TAG, msg);
                             JoH.static_toast_long(msg);
                         } else {
-                            plugin.setPersistence(2, PersistentStore.getBytes(KEKS_ONE));
+                            plugin.setPersistence(2, PersistentStore.getBytes(KEKS_ONE + transmitterMAC));
                             try {
                                 for (int i = 1; i < 4; i++) {
                                     plugin.setPersistence(7 + i, tolerantHexStringToByteArray(Pref.getStringDefaultBlank(KEKS + "_p" + i)));
@@ -1946,7 +1970,13 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     public static boolean onlyUsingNativeMode() {
-        return usingNativeMode() && !fallbackToXdripAlgorithm();
+        return (usingNativeMode() && !fallbackToXdripAlgorithm())
+                || usingMockPreCalibrated();
+    }
+
+    public static boolean usingMockPreCalibrated() {
+        return Pref.getBooleanDefaultFalse("fake_data_pre_calibrated")
+                && DexCollectionType.getDexCollectionType() == DexCollectionType.Mock;
     }
 
     public static boolean isProvidingNativeGlucoseData() {
