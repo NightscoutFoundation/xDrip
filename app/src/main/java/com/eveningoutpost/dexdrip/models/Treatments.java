@@ -1294,14 +1294,14 @@ public class Treatments extends Model {
     }*/
 
     public static Double getCurrentIoB() {
-        if (Pref.getBooleanDefaultFalse("fetch_iob_from_omnipod_app")) {
-            return getCurrentIoBFromOmnipodApp();
+        if (Pref.getBooleanDefaultFalse("fetch_iob_from_companion_app")) {
+            return getCurrentIoBFromCompanionApp();
         } else {
             return getCurrentIoBFromGraphCalculation();
         }
     }
 
-    public static Double getCurrentIoBFromOmnipodApp() {
+    public static Double getCurrentIoBFromCompanionApp() {
         Double iob = UiBasedCollector.getCurrentIoB();
 
         return iob;

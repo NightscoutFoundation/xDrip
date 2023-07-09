@@ -58,15 +58,15 @@ public class UiBasedCollector extends NotificationListenerService {
     private static final String TAG = UiBasedCollector.class.getSimpleName();
     private static final String UI_BASED_STORE_LAST_VALUE = "UI_BASED_STORE_LAST_VALUE";
     private static final String UI_BASED_STORE_LAST_REPEAT = "UI_BASED_STORE_LAST_REPEAT";
-    private static final String OMNIPOD_IOB_ENABLED_PREFERENCE_KEY = "fetch_iob_from_omnipod_app";
-    private static final String OMNIPOD_IOB_VALUE = "OMNIPOD_IOB_VALUE";
-    private static final String OMNIPOD_IOB_VALUE_WRITE_TIMESTAMP = "OMNIPOD_IOB_VALUE_WRITE_TIMESTAMP";
+    private static final String COMPANION_APP_IOB_ENABLED_PREFERENCE_KEY = "fetch_iob_from_companion_app";
+    private static final String COMPANION_APP_IOB_VALUE = "COMPANION_APP_IOB_VALUE";
+    private static final String COMPANION_APP_IOB_VALUE_WRITE_TIMESTAMP = "COMPANION_APP_IOB_VALUE_WRITE_TIMESTAMP";
     private static final String ENABLED_NOTIFICATION_LISTENERS = "enabled_notification_listeners";
     private static final String ACTION_NOTIFICATION_LISTENER_SETTINGS = "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS";
 
     private static final HashSet<String> coOptedPackages = new HashSet<>();
-    private static final HashSet<String> omnipodIoBPackages = new HashSet<>();
-    private static boolean debug = true;
+    private static final HashSet<String> companionAppIoBPackages = new HashSet<>();
+    private static boolean debug = false;
 
     @VisibleForTesting
     String lastPackage;
@@ -85,7 +85,7 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackages.add("com.medtronic.diabetes.minimedmobile.eu");
         coOptedPackages.add("com.medtronic.diabetes.minimedmobile.us");
 
-        omnipodIoBPackages.add("com.insulet.myblue.pdm");
+        companionAppIoBPackages.add("com.insulet.myblue.pdm");
     }
 
     @Override
@@ -106,24 +106,24 @@ public class UiBasedCollector extends NotificationListenerService {
             }
         }
 
-        if (omnipodIoBPackages.contains(fromPackage)) {
-            processOmnipodOmnipodNotification(sbn.getNotification());
+        if (companionAppIoBPackages.contains(fromPackage)) {
+            processCompanionAppIoBNotification(sbn.getNotification());
         }
     }
 
-    private void processOmnipodOmnipodNotification(final Notification notification) {
+    private void processCompanionAppIoBNotification(final Notification notification) {
         if (notification == null) {
             UserError.Log.e(TAG, "Null notification");
             return;
         }
         if (notification.contentView != null) {
-            processOmnipodNotificationCV(notification.contentView);
+            processCompanionAppIoBNotificationCV(notification.contentView);
         } else {
             UserError.Log.e(TAG, "Content is empty");
         }
     }
 
-    private void processOmnipodNotificationCV(final RemoteViews cview) {
+    private void processCompanionAppIoBNotificationCV(final RemoteViews cview) {
         if (cview == null) return;
         val applied = cview.apply(this, null);
         val root = (ViewGroup) applied.getRootView();
@@ -137,7 +137,7 @@ public class UiBasedCollector extends NotificationListenerService {
                 String text = tv.getText() != null ? tv.getText().toString() : "";
                 val desc = tv.getContentDescription() != null ? tv.getContentDescription().toString() : "";
                 if (debug) UserError.Log.d(TAG, "Examining: >" + text + "< : >" + desc + "<");
-                iob = parseOmnipodIoB(text);
+                iob = parseIoB(text);
                 if (iob != null) {
                     break;
                 }
@@ -145,17 +145,17 @@ public class UiBasedCollector extends NotificationListenerService {
 
             if (iob != null) {
                 if (debug) UserError.Log.d(TAG, "Inserting new IoB value: " + iob);
-                PersistentStore.setDouble(OMNIPOD_IOB_VALUE, iob);
+                PersistentStore.setDouble(COMPANION_APP_IOB_VALUE, iob);
                 long now = System.currentTimeMillis();
-                PersistentStore.setLong(OMNIPOD_IOB_VALUE_WRITE_TIMESTAMP, now);
+                PersistentStore.setLong(COMPANION_APP_IOB_VALUE_WRITE_TIMESTAMP, now);
             }
         } catch (Exception e) {
-            UserError.Log.e(TAG, "exception in processOmnipodNotificationCV: " + e);
+            UserError.Log.e(TAG, "exception in processCompanionAppIoBNotificationCV: " + e);
         }
 
         texts.clear();
     }
-    Double parseOmnipodIoB(final String value) {
+    Double parseIoB(final String value) {
         if (!value.contains("IOB:")) {
             return null;
         }
@@ -171,7 +171,7 @@ public class UiBasedCollector extends NotificationListenerService {
     }
 
     public static Double getCurrentIoB() {
-        Long iobWriteTimestamp = PersistentStore.getLong(OMNIPOD_IOB_VALUE_WRITE_TIMESTAMP);
+        Long iobWriteTimestamp = PersistentStore.getLong(COMPANION_APP_IOB_VALUE_WRITE_TIMESTAMP);
         if (debug) {
             Date date = new Date(iobWriteTimestamp);
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -185,7 +185,7 @@ public class UiBasedCollector extends NotificationListenerService {
             return null;
         }
 
-        Double iob = PersistentStore.getDouble(OMNIPOD_IOB_VALUE);
+        Double iob = PersistentStore.getDouble(COMPANION_APP_IOB_VALUE);
         return iob;
     }
 
@@ -351,7 +351,7 @@ public class UiBasedCollector extends NotificationListenerService {
                     //
                 }
             }
-            if (key.equals(OMNIPOD_IOB_ENABLED_PREFERENCE_KEY)) {
+            if (key.equals(COMPANION_APP_IOB_ENABLED_PREFERENCE_KEY)) {
                 try {
                     enableNotificationService(activity);
                 } catch (Exception e) {

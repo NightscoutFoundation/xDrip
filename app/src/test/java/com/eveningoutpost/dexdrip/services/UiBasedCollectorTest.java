@@ -46,13 +46,13 @@ public class UiBasedCollectorTest {
     }
 
     @Test
-    public void parseOmnipodIoBTest() {
+    public void parseIoBTest() {
         val i = new UiBasedCollector();
 
         val valid = "Automated Mode (IOB: 5.1 U)";
         val invalid = "Foobar";
 
-        assertWithMessage("valid IoB message").that(i.parseOmnipodIoB(valid)).isEqualTo(5.1);
-        assertWithMessage("invalid IoB message").that(i.parseOmnipodIoB(invalid)).isNull();
+        assertWithMessage("valid IoB message").that(i.parseIoB(valid)).isEqualTo(5.1);
+        assertWithMessage("invalid IoB message").that(i.parseIoB(invalid)).isNull();
     }
 }
