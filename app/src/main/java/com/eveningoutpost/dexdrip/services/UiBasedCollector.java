@@ -27,11 +27,13 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
+import com.eveningoutpost.dexdrip.alert.Persist;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.Sensor;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 import com.eveningoutpost.dexdrip.utilitymodels.Unitized;
 import com.eveningoutpost.dexdrip.cgm.dex.BlueTails;
@@ -59,13 +61,14 @@ public class UiBasedCollector extends NotificationListenerService {
     private static final String UI_BASED_STORE_LAST_VALUE = "UI_BASED_STORE_LAST_VALUE";
     private static final String UI_BASED_STORE_LAST_REPEAT = "UI_BASED_STORE_LAST_REPEAT";
     private static final String COMPANION_APP_IOB_ENABLED_PREFERENCE_KEY = "fetch_iob_from_companion_app";
-    private static final String COMPANION_APP_IOB_VALUE = "COMPANION_APP_IOB_VALUE";
-    private static final String COMPANION_APP_IOB_VALUE_WRITE_TIMESTAMP = "COMPANION_APP_IOB_VALUE_WRITE_TIMESTAMP";
+    private static final Persist.DoubleTimeout iob_store =
+            new Persist.DoubleTimeout("COMPANION_APP_IOB_VALUE", Constants.MINUTE_IN_MS * 5);
     private static final String ENABLED_NOTIFICATION_LISTENERS = "enabled_notification_listeners";
     private static final String ACTION_NOTIFICATION_LISTENER_SETTINGS = "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS";
 
     private static final HashSet<String> coOptedPackages = new HashSet<>();
     private static final HashSet<String> companionAppIoBPackages = new HashSet<>();
+    private static final HashSet<Pattern> companionAppIoBRegexes = new HashSet<>();
     private static boolean debug = false;
 
     @VisibleForTesting
@@ -86,6 +89,10 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackages.add("com.medtronic.diabetes.minimedmobile.us");
 
         companionAppIoBPackages.add("com.insulet.myblue.pdm");
+
+        // The IoB value should be captured into the first match group.
+        // English localization of the Omnipod 5 App
+        companionAppIoBRegexes.add(Pattern.compile("IOB: ([\\d\\.,]+) U"));
     }
 
     @Override
@@ -145,9 +152,7 @@ public class UiBasedCollector extends NotificationListenerService {
 
             if (iob != null) {
                 if (debug) UserError.Log.d(TAG, "Inserting new IoB value: " + iob);
-                PersistentStore.setDouble(COMPANION_APP_IOB_VALUE, iob);
-                long now = System.currentTimeMillis();
-                PersistentStore.setLong(COMPANION_APP_IOB_VALUE_WRITE_TIMESTAMP, now);
+                iob_store.set(iob);
             }
         } catch (Exception e) {
             UserError.Log.e(TAG, "exception in processCompanionAppIoBNotificationCV: " + e);
@@ -156,37 +161,19 @@ public class UiBasedCollector extends NotificationListenerService {
         texts.clear();
     }
     Double parseIoB(final String value) {
-        if (!value.contains("IOB:")) {
-            return null;
+        for (Pattern pattern : companionAppIoBRegexes) {
+            Matcher matcher = pattern.matcher(value);
+
+            if (matcher.find()) {
+                return JoH.tolerantParseDouble(matcher.group(1));
+            }
         }
 
-        Pattern pattern = Pattern.compile("IOB: ([\\d\\.]+) U");
-        Matcher matcher = pattern.matcher(value);
-
-        if (matcher.find()) {
-            return Double.parseDouble(matcher.group(1));
-        }
-
-        return 0.0;
+        return null;
     }
 
     public static Double getCurrentIoB() {
-        Long iobWriteTimestamp = PersistentStore.getLong(COMPANION_APP_IOB_VALUE_WRITE_TIMESTAMP);
-        if (debug) {
-            Date date = new Date(iobWriteTimestamp);
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String timestamp = dateFormat.format(date);
-            UserError.Log.d(TAG, "iow write time: " + timestamp);
-        }
-
-        Long now = System.currentTimeMillis();
-
-        if (iobWriteTimestamp < now - 5 * MINUTE_IN_MS) {
-            return null;
-        }
-
-        Double iob = PersistentStore.getDouble(COMPANION_APP_IOB_VALUE);
-        return iob;
+        return iob_store.get();
     }
 
     @Override
