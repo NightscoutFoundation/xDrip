@@ -811,6 +811,7 @@
     <string name="display_mathamatical_simulations">Zobrazit matematické simulace na základě profilu a sacharidových/inzulínových záznamů</string>
     <string name="predictive_simulations">Prediktivní simulace</string>
     <string name="low_prediction_values">Hodnoty predikce nízkoúrovňové</string>
+    <string name="target_glucose_default">Výchozí cílová glykémie</string>
     <string name="wifi_name_must_match">Jméno WiFi se musí shodovat</string>
     <string name="yes_send_it">ANO, odeslat!</string>
     <string name="movement_detection_and_vehicle_mode">Detekce pohybu a režim vozidla</string>
@@ -821,6 +822,7 @@
     <string name="log_and_plot_motion">Zaznamenat a zobrazit pohyb</string>
     <string name="use_remote_motion_data">Data o pohybu vzít z vnějšího senzoru místo lokální detekce</string>
     <string name="use_remote_motion">Použít vnější senzor pohybu</string>
+    <string name="act_as_motion_master">Být zdrojem identifikace pohybu</string>
     <string name="vehicle_motion_extras">Když je detekováno vozidlo, povolit extra funkce</string>
     <string name="enable_vehicle_mode">Povolit režim vozidla</string>
     <string name="increase_low_alarms_vehicle_mode">Zvýšit úroveň pro výstrahy nízké glykémie v režimu vozidla</string>
