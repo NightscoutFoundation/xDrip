@@ -810,8 +810,9 @@
     <string name="enable_reminder_features">Povolit funkce připomenutí</string>
     <string name="display_mathamatical_simulations">Zobrazit matematické simulace na základě profilu a sacharidových/inzulínových záznamů</string>
     <string name="predictive_simulations">Prediktivní simulace</string>
-    <string name="low_prediction_values">Hodnoty predikce nízkoúrovňové</string>
+    <string name="low_prediction_values">Hodnoty pro predikce nízké glykémie</string>
     <string name="target_glucose_default">Výchozí cílová glykémie</string>
+    <string name="default_liver_maximum_impact">Výchozí maximální vliv/reakce jaterního glykogenu na nízké hodnoty glykémie (0-1). S ohledem na nesnadný odhad hodnoty vlivu by měla být ponechána výchozí hodnota</string>
     <string name="wifi_name_must_match">Jméno WiFi se musí shodovat</string>
     <string name="yes_send_it">ANO, odeslat!</string>
     <string name="movement_detection_and_vehicle_mode">Detekce pohybu a režim vozidla</string>
@@ -822,7 +823,6 @@
     <string name="log_and_plot_motion">Zaznamenat a zobrazit pohyb</string>
     <string name="use_remote_motion_data">Data o pohybu vzít z vnějšího senzoru místo lokální detekce</string>
     <string name="use_remote_motion">Použít vnější senzor pohybu</string>
-    <string name="act_as_motion_master">Být zdrojem identifikace pohybu</string>
     <string name="vehicle_motion_extras">Když je detekováno vozidlo, povolit extra funkce</string>
     <string name="enable_vehicle_mode">Povolit režim vozidla</string>
     <string name="increase_low_alarms_vehicle_mode">Zvýšit úroveň pro výstrahy nízké glykémie v režimu vozidla</string>
@@ -967,6 +967,7 @@
     <string name="title_Carb_Insulin_Ratio">Inzulino-sacharidový poměr</string>
     <string name="title_Double_Calibrations">Dvojité kalibrace</string>
     <string name="title_Use_scanning">Použít vyhledávání</string>
+    <string name="summary_Erase_data_older_than_this_many_days">Smazat data starší než zadaný počet dní. Číslo 0 znamená nic nemazat</string>
     <string name="title_Other_misc_options">Další různé možnosti</string>
     <string name="summary_allow_testing_with_dead_sensor">Umožnit testování s \"mrtvým\" senzorem</string>
     <string name="title_You_have_no_reminders_yet">Zatím nemáte žádné připomenutí</string>
@@ -1299,7 +1300,12 @@
     <string name="libre_filter_length_10">10 minut</string>
     <string name="libre_filter_length_15">15 minut</string>
     <string name="enable_streaming_dialog_dont_ask_again">Znovu se neptat</string>
+    <string name="title_multiple_insulin_types_settings">Více druhů inzulínu</string>
+    <string name="summary_multiple_insulin_types_settings">Nastavení možnosti používání pro více druhů inzulínů</string>
+    <string name="title_multiple_insulin_types">Více druhů inzulínu</string>
     <string name="no_never">NE, nikdy</string>
+    <string name="graphical_editor_for_pump_basal">Grafický editor pro bazální profily pumpy</string>
+    <string name="basal_profile_editor">Editor bazálního profilu</string>
     <string name="show_action_buttons_within_alerts">Zobrazit akční tlačítka (jako Potvrdit) v oznámení výstrah</string>
     <string name="alert_buttons">Tlačítka výstrahy</string>
     <string name="show_sensor_expiry">Zobraz konec senzoru</string>
