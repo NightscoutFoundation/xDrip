@@ -1203,6 +1203,7 @@
     <string name="return_to_home_screen">Regresar a la pantalla de Inicio</string>
     <string name="title_broadcast_service_api">API del Servicio de Emisión</string>
     <string name="summary_broadcast_service_api">Permite la comunicación de xDrip con aplicaciones de terceros mediante el uso de la nueva API</string>
+    <string name="title_enable_iob_in_api_endpoint">Habilitar informes IoB en API</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Sincronizar datos con las pulseras de actividad MiBand</string>
     <string name="title_miband_enable">Usar MiBand</string>
