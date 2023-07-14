@@ -1203,6 +1203,10 @@
     <string name="return_to_home_screen">Retourner à la page d\'accueil</string>
     <string name="title_broadcast_service_api">API du service Broadcast</string>
     <string name="summary_broadcast_service_api">Active la communication de xDrip avec des applications tiers en utilisant la nouvelle API</string>
+    <string name="title_enable_iob_in_api_endpoint">Activer le rapport IoB dans l\'API</string>
+    <string name="summary_enable_iob_in_api_endpoint">Activer le rapport de valeur IoB dans le point de terminaison de l\'API Service Web utilisé par certaines smartwatches</string>
+    <string name="title_fetch_iob_from_companion_app">Récupérer IoB depuis l\'application compagnon</string>
+    <string name="summary_fetch_iob_from_companion_app">Récupérer la valeur IoB depuis l\'application compagnon exécutée sur le même appareil, comme l\'application Omnipod 5</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Synchroniser les données avec les bracelets de fitness MiBand</string>
     <string name="title_miband_enable">Utiliser le bracelet MiBand</string>
