@@ -1967,7 +1967,13 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     public static boolean onlyUsingNativeMode() {
-        return usingNativeMode() && !fallbackToXdripAlgorithm();
+        return (usingNativeMode() && !fallbackToXdripAlgorithm())
+                || usingMockPreCalibrated();
+    }
+
+    public static boolean usingMockPreCalibrated() {
+        return Pref.getBooleanDefaultFalse("fake_data_pre_calibrated")
+                && DexCollectionType.getDexCollectionType() == DexCollectionType.Mock;
     }
 
     public static boolean isProvidingNativeGlucoseData() {
