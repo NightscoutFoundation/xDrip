@@ -56,6 +56,7 @@ public class IdempotentMigrations {
         AlertType.fixUpTable();
         UserNotification.updateDB();
         JoH.clearCache();
+        legacySettingsFix();
         IncompatibleApps.notifyAboutIncompatibleApps();
         CompatibleApps.notifyAboutCompatibleApps();
 
@@ -139,6 +140,11 @@ public class IdempotentMigrations {
             Log.e(TAG, oldPref + " found - updating to new style");
             Pref.setString(newPref, Pref.getBooleanDefaultFalse(oldPref) ? "calibrate_raw" : "no_calibration");
         }
+    }
+
+    // Force legacy settings to be at their recommended values
+    private static void legacySettingsFix() {
+        Pref.setBoolean("use_ob1_g5_collector_service", true);
     }
 
 }
