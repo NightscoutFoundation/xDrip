@@ -1179,6 +1179,10 @@
     <string name="return_to_home_screen">Върнете се към началния екран</string>
     <string name="title_broadcast_service_api">Broadcast API услуга (пр. WatchDrip+)</string>
     <string name="summary_broadcast_service_api">Включи xDrip комуникация с приложения като използват новия API</string>
+    <string name="title_enable_iob_in_api_endpoint">Активирайте отчитането на IoB в API</string>
+    <string name="summary_enable_iob_in_api_endpoint">Активирайте отчитането на стойността на IoB в крайната точка на API за уеб услуга, използвана от някои смарт часовници</string>
+    <string name="title_fetch_iob_from_companion_app">Извличане на IoB от придружаващото приложение</string>
+    <string name="summary_fetch_iob_from_companion_app">Извличане на IoB стойност от придружаващото приложение, работещо на същото устройство, като например приложението Omnipod 5</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Синхронизиране на данни с фитнес гривни MiBand</string>
     <string name="title_miband_enable">Използвай гривна MiBand</string>
