@@ -823,6 +823,8 @@
     <string name="log_and_plot_motion">Zaznamenat a zobrazit pohyb</string>
     <string name="use_remote_motion_data">Data o pohybu vzít z vnějšího senzoru místo lokální detekce</string>
     <string name="use_remote_motion">Použít vnější senzor pohybu</string>
+    <string name="be_motion_master">Zařízení sledujícího bude zdrojem informací o pohybu. Zapnout pouze na jednom zařízení!</string>
+    <string name="act_as_motion_master">Být zdrojem informací o pohybu</string>
     <string name="vehicle_motion_extras">Když je detekováno vozidlo, povolit extra funkce</string>
     <string name="enable_vehicle_mode">Povolit režim vozidla</string>
     <string name="increase_low_alarms_vehicle_mode">Zvýšit úroveň pro výstrahy nízké glykémie v režimu vozidla</string>
@@ -831,6 +833,8 @@
     <string name="play_sound">Přehrát zvuk</string>
     <string name="repeat_notification_every_90_minutes">Opakovat zvuk oznámení každých 90 minut v režimu vozidla</string>
     <string name="repeat_sound">Opakovat zvuk</string>
+    <string name="enable_telemetry">Povolit telemetrii</string>
+    <string name="send_data_to_developers">Poslat vývojářům data o úspěšnosti různých zařízeních</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
     <string name="bubble">Bubble</string>
@@ -947,6 +951,7 @@
     <string name="automatically_enable_when_connected_to_car_bluetooth">Automaticky povolit režim vozidla, pokud je telefon připojen k bluetooth vozidla</string>
     <string name="enable_speak_readings_when_in_vehicle">Povolit funkci čtení glykémií v režimu vozidla</string>
     <string name="bluetooth_watchdog_timer_sums">Vložit hodnotu v minutách</string>
+    <string name="basal_editor">Editor bazálního inzulínu - vybrat hodiny pro úpravu</string>
     <string name="summary_If_you_plan_to_only_use_a_Wear_collector_and_never_your_phone">Pokud chcete používat pouze Wear kolektor a nikdy váš telefon.</string>
     <string name="title_Only_use_Wear">Použít pouze Wear</string>
     <string name="summary_Show_Bolus_Wizard_Preview_Insulin_value_on_watch_when_appropriate">Zobrazit v případě potřeby BWP (Bolus Wizard Preview) hodnotu inzulínu na hodinkách</string>
@@ -1334,6 +1339,9 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="authentication_failed_wrong_password">Ověřování se nezdařilo. Špatné heslo?</string>
     <string name="collection_summary_ob1_g5_preemptive_restart">Automaticky restartovat senzor dříve, než se zastaví</string>
     <string name="blood_glucose_graph">Graf glykémie</string>
+    <string name="pref_enable_insulinprofiles">Povolit jeden až tři inzulínové profily</string>
+    <string name="pref_select_basal_insulinprofiles">Zvolit bazální inzulín:</string>
+    <string name="pref_select_bolus_insulinprofiles">Zvolit bolusový inzulín (pro pumpu nebo pero):</string>
     <string name="enable_streaming_title">Připojit se k Libre2 senzoru přes Bluetooth</string>
     <string name="enable_streaming_always_allow">Vždy se připojovat k Libre2 senzorům</string>
     <string name="enable_streaming_ask_each_time">Pokaždé se zeptat</string>
@@ -1352,9 +1360,13 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="title_multiple_insulin_types_settings">Více druhů inzulínu</string>
     <string name="summary_multiple_insulin_types_settings">Nastavení možnosti používání pro více druhů inzulínů</string>
     <string name="title_multiple_insulin_types">Více druhů inzulínu</string>
+    <string name="summary_multiple_insulin_use_basal_activity">Zobrazit bazální inzulín na grafu a zahrnout jej (nedoporučeno pro MDI režim) do předpovědi prediktivního modelu</string>
+    <string name="title_multiple_insulin_use_basal_activity">Bazální inzulín</string>
     <string name="title_bg_compensate_noise">\u26A0 Vyhladit šum senzoru</string>
     <string name="title_bg_compensate_noise_ultrasensitive">\u26A0 Vyhladit ultracitlivý šum senzoru</string>
     <string name="no_never">NE, nikdy</string>
+    <string name="title_motion_detection_warning">Upozornění na detekci pohybu</string>
+    <string name="message_motion_detection_warning">Funkce detekce pohybu je pouze experimentální a je kompatibilní pouze s některými telefony. Jejím hlavním účelem je detekovat režim vozidla.\n\nTelefony vyšší třídy (high-end) by spíše měly mít senzory k úspěšné detekci. Může docházet k nadměrnému vybíjení baterie telefonu.\n\nU Pro pohyb související se cvičením funguje lépe počítadlo kroků v chytrých hodinkách/náramcích.</string>
     <string name="graphical_editor_for_pump_basal">Grafický editor pro bazální profily pumpy</string>
     <string name="basal_profile_editor">Editor bazálního profilu</string>
     <string name="show_action_buttons_within_alerts">Zobrazit akční tlačítka (jako Potvrdit) v oznámení výstrah</string>
