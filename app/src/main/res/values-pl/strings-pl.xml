@@ -1026,13 +1026,16 @@
     <string name="summary_Ask_for_a_second_optional_initial_calibration_blood_test">Zapytaj o drugi opcjonalny wstępny wynik z krwi do kalibracji</string>
     <string name="title_Double_Calibrations">Podwójne kalibracje</string>
     <string name="summary_Enable_to_allow_variable_slopes_with_Libre_collection_methods">Włącz, aby zezwolić na zmienne nachylenia z metodami zbierania Libre</string>
+    <string name="title_Non_fixed_Libre_slopes">Niestałe nachylenia Libre</string>
     <string name="summary_Allow_initial_calibration_no_good_enough_data">Zezwalaj na początkową kalibrację, nawet jeśli nie mamy wystarczająco dobrych danych. Przez to kalibracja może być niedokładna!</string>
     <string name="title_Bypass_quality_check">Pomiń kontrolę jakości</string>
+    <string name="summary_Scan_before_connecting_on_xBridge_and_Libre_bluetooth">Skanuj przed połączeniem na xBridge i Libre Bluetooth</string>
     <string name="title_Use_scanning">Użyj skanowania</string>
     <string name="summary_Use_and_trust_Android_bluetooth_auto_connect_feature">Używaj i ufaj funkcji automatycznego połączenia Bluetooth Android</string>
     <string name="title_Trust_Auto_Connect">Ufaj automatycznemu połączeniu</string>
     <string name="summary_Experimental_support_for_xBridge_polling_feature">Eksperymentalne wsparcie dla funkcji pobierania xBridge+</string>
     <string name="title_xBridge_Polling_Mode">xBridge+ Tryb Odpytywania</string>
+    <string name="summary_Probe_Bluetooth_services_on_every_connect">Sprawdź bluetooth przy każdym połączeniu</string>
     <string name="title_Always_discover_services">Zawsze odkrywaj usługi</string>
     <string name="summary_Only_suitable_for_phones_which_support_automatic_pairing">Odpowiednie tylko dla telefonów wspierających automatyczne parowanie</string>
     <string name="title_Allow_blucon_unbonding">Zezwól na odłączenie blucon</string>
@@ -1186,6 +1189,7 @@
     <string name="summary_tidepool_password">Twoje hasło do Tidepool</string>
     <string name="title_tidepool_password">Hasło logowania</string>
     <string name="title_tidepool_test_login">Sprawdź dostęp do Tidepool</string>
+    <string name="title_tidepool_window_latency">Wiek w minutach</string>
     <string name="summary_tidepool_dev_servers">Po włączeniu, zacznie wysyłać do https://int-app.tidepool.org zamiast zwykłego https://app.tidepool.org/</string>
     <string name="title_tidepool_dev_servers">Użyj serwerów integracyjnych (testowych)</string>
     <string name="title_tidepool">Tidepool</string>
@@ -1197,7 +1201,9 @@
     <string name="send_bg_readings_to_backfill">Wyślij odczyty glikemii do uzupełnienia</string>
     <string name="view_old_error_log">Zobacz stary dziennik błędów</string>
     <string name="return_to_home_screen">Powrót do ekranu głównego</string>
+    <string name="title_broadcast_service_api">Nadawaj Service API</string>
     <string name="summary_broadcast_service_api">Umożliwia komunikację xDrip z aplikacjami innych firm poprzez użycie nowego API</string>
+    <string name="title_enable_iob_in_api_endpoint">Włącz raportowanie IoB w API</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Synchronizuj dane z opaskami MiBand</string>
     <string name="title_miband_enable">Użyj opaski MiBand</string>
@@ -1335,6 +1341,8 @@
     <string name="title_show_g_prediction">Przewidywanie G6</string>
     <string name="summary_show_smb_icons">Uporządkuj wykres z ikonami leczenia dla małych bolusów</string>
     <string name="title_show_smb_icons">Pokaż ikony mikro bolusów</string>
+    <string name="summary_show_medtrum_secondary">Pokaż alternatywne kropki glukozy</string>
+    <string name="title_show_medtrum_secondary">Medtrum drugorzędne</string>
     <string name="summary_illustrate_backfilled_data">Wyróżnij dane uzupełnione wstecz</string>
     <string name="title_illustrate_backfilled_data">Pokaż dane uzupełnione wstecz</string>
     <string name="summary_high_priority_notifications">Pokaż powiadomienia i wykres u góry (również przydatne na ekranie blokady)</string>
@@ -1364,6 +1372,8 @@
     <string name="title_plus_accept_follower_actions">Akceptuj akcje obserwatora</string>
     <string name="summary_plus_whole_house">Weź udział w Whole House Network</string>
     <string name="summary_xdrip_plus_desert_sync_settings">Odbiór bez dostępu do sieci</string>
+    <string name="title_xdrip_plus_desert_sync_settings">Lokalna synchronizacja</string>
+    <string name="title_desert_sync_enabled">Lokalna synchronizacja</string>
     <string name="title_desert_sync_master_ip">Główny adres IP</string>
     <string name="summary_send_sync_show_qr">Kod kreskowy dla obserwatorów do zeskanowania, aby je automatycznie skonfigurować</string>
     <string name="title_send_sync_show_qr">Pokaż kod QR</string>
@@ -1383,6 +1393,7 @@
     <string name="title_inpen_sounds">Odtwarzaj dźwięki</string>
     <string name="summary_inpen_reset">Zresetuj i sparuj nowy pen</string>
     <string name="title_inpen_reset">Znajdź nowy wstrzykiwacz</string>
+    <string name="summary_pendiq_screen">Odczyt i wpisywanie dawek</string>
     <string name="title_pendiq_screen">Wstrzykiwacz insuliny Pendiq 2.0</string>
     <string name="title_use_pendiq">Wsparcie dla Pendiq 2.0</string>
     <string name="summary_pendiq_send_treatments">Przygotuj wstrzykiwacz wprowadzoną dawką insuliny. Zawsze należy dokładnie sprawdzić dawkę na wstrzykiwaczu.</string>
@@ -1398,6 +1409,7 @@
     <string name="title_play_sound_for_initial_calibration">Alarm początkowy</string>
     <string name="category_noisy_readings">Zaszumione odczyty</string>
     <string name="category_falling_rising_bg">Spadająca/Wzrastająca glikemia</string>
+    <string name="category_alert_prefs">Ustawienia alertów (dla tych alertów)</string>
     <string name="summary_persistent_high_alert">Gdy zbyt długo powyżej górnego zakresu i nie zmierza w dół</string>
     <string name="note_search_button">SZUKAJ</string>
     <string name="all_note_button">WSZYSTKIE</string>
@@ -1412,6 +1424,7 @@
     <string name="nothing_found">nic nie znaleziono</string>
     <string name="do_not_hit_start_long">Nie uruchamiaj czujnika, chyba że jest już założony, a nadajnik podłączony.</string>
     <string name="calibration_graph_no_calibration">wykres kalibracji (brak kalibracji)</string>
+    <string name="calibration_plugin_header">nagłówek wtyczki kalibracyjnej</string>
     <string name="usb_device_was_not_recognized">Urządzenie USB nie zostało rozpoznane</string>
     <string name="followers_name">Nazwa obserwatora:</string>
     <string name="your_display_name">Nazwa wyświetlana:</string>
@@ -1424,8 +1437,11 @@
     <string name="title">Tytuł</string>
     <string name="summary">Podsumowanie</string>
     <string name="auto_refresh">Automatyczne odświeżanie</string>
+    <string name="set_up_desert_sync_follower">Skonfiguruj followera lokalnej synchronizacji</string>
     <string name="version">Wersja:</string>
     <string name="sensor_start">Uruchomienie czujnika:</string>
+    <string name="plug_in_your_dexcom_reciever">Podłącz swój odbiornik Dexcom, wciśnij przycisk i trzymaj kciuki!</string>
+    <string name="check_in_dexcom_calibrations">Sprawdź kalibracje Dexcom</string>
     <string name="progress">postęp</string>
     <string name="bluetooth_device">Urządzenie Bluetooth:   </string>
     <string name="transmitter_battery_status">Bateria nadajnika:  </string>
@@ -1486,6 +1502,8 @@
     <string name="calibrate">Kalibruj</string>
     <string name="confirm_delete">Potwierdź usunięcie</string>
     <string name="are_you_sure_you_want_to_delete_this_treatment">Czy na pewno chcesz usunąć ten zabieg?</string>
+    <string name="no_data_received_from_master_yet">Nie otrzymano jeszcze żadnych danych od mastera</string>
+    <string name="last_from_master_">Ostatnia od mastera: </string>
     <string name="prepare_to_test">Przygotuj się do testu!</string>
     <string name="after_you_click_ok_look_for_a_number_icon_in_the_notification_area_if_you_see_123_then_the_test_has_succeeded__on_some_phones_this_test_will_crash_the_phone__after_30_seconds_we_will_shut_off_the_notification_if_your_phone_does_not_recover_after_this_then_hold_the_power_button_to_reboot_it">Po kliknięciu OK, poszukaj ikony z liczbą w obszarze powiadomień.\nJeśli widzisz 123, to test zakończył się sukcesem.\n\nNa niektórych telefonach ten test spowoduje awarię telefonu.\n\nPo 30 sekundach wyłączymy powiadomienie. Jeśli telefon nie odzyska się po tym ustawieniu, przytrzymaj przycisk zasilania, aby go zrestartować.</string>
     <string name="running_test_with_number_123">Uruchamiam test z numerem: 123</string>
