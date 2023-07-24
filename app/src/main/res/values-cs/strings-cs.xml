@@ -991,7 +991,9 @@
     <string name="summary_Display_pump_status_information_if_available">Zobrazit informace o stavu pumpy, pokud jsou k dispozici</string>
     <string name="title_Pump_Status">Stav pumpy</string>
     <string name="title_Carb_Insulin_Ratio">Inzulino-sacharidový poměr</string>
+    <string name="summary_Ask_for_a_second_optional_initial_calibration_blood_test">Požadavek na dobrovolnou druhou hodnotu výchozí kalibraci z krve</string>
     <string name="title_Double_Calibrations">Dvojité kalibrace</string>
+    <string name="summary_Allow_initial_calibration_no_good_enough_data">Povolit výchozí kalibraci i pokud není přijat dostatek dobrých dat k jejímu provedení. Pozor, mohlo by způsobt nepřesnou kalibraci!</string>
     <string name="title_Use_scanning">Použít vyhledávání</string>
     <string name="summary_Erase_data_older_than_this_many_days">Smazat data starší než zadaný počet dní. Číslo 0 znamená nic nemazat</string>
     <string name="title_Other_misc_options">Další různé možnosti</string>
@@ -1214,6 +1216,7 @@
     <string name="title_ob1_g5_restart_sensor">Restartovat senzor</string>
     <string name="summary_ob1_g5_preemptive_restart">Preemptivně restartovat senzor před ukončením relace v 6/9 den, aby se vyhnulo času zahřívání</string>
     <string name="title_ob1_g5_preemptive_restart">Preemptivní restartování</string>
+    <string name="summary_ob1_g5_use_insufficiently_calibrated">Pokračovat v používání hodnot i přes nedostatek dobrých kalibrací (experimentální funkce!)</string>
     <string name="title_ob1_g5_use_insufficiently_calibrated">Pokračovat bez kalibrací</string>
     <string name="summary_ob1_g5_fallback_to_xdrip">Vrátit se k xDrip algoritmu, pokud G5 neposkytuje glykémie (potenciálně riskantní!)</string>
     <string name="title_ob1_minimize_scanning">Minimalizovat skenování</string>
