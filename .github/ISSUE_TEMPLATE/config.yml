@@ -2,4 +2,4 @@ blank_issues_enabled: false
 contact_links:
   - name: xDrip Discussions
     url: https://github.com/NightscoutFoundation/xDrip/discussions
-    about: Please use "Discussions" (link on the right) to communicate with developers and/or other users (bug report, feature request, or questions).
+    about: Please use "Discussions" (link on the right) to report issues or submit feature requests.
