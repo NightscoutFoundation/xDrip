@@ -5,12 +5,12 @@ import android.bluetooth.BluetoothDevice;
 import android.content.SharedPreferences;
 import android.os.PowerManager;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.utilitymodels.ForegroundServiceStarter;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.google.android.gms.wearable.DataMap;
 
 /**
@@ -35,6 +35,7 @@ public abstract class G5BaseService extends Service {
 
     protected static final int G5_LOW_BATTERY_WARNING_DEFAULT = 300;
     protected static final int G6_LOW_BATTERY_WARNING_DEFAULT = 290;
+    public static final int ALT_LOW_BATTERY_WARNING_DEFAULT = 280;
     // updated by updateBatteryWarningLevel(), accessed by Ob1DexTransmitterBattery
     public static int LOW_BATTERY_WARNING_LEVEL = G5_LOW_BATTERY_WARNING_DEFAULT;
 
@@ -111,7 +112,7 @@ public abstract class G5BaseService extends Service {
         PersistentStore.commit();
     }
 
-    protected static void updateBatteryWarningLevel() {
+    public static void updateBatteryWarningLevel() {
         LOW_BATTERY_WARNING_LEVEL = Pref.getStringToInt("g5-battery-warning-level", G5_LOW_BATTERY_WARNING_DEFAULT);
     }
 

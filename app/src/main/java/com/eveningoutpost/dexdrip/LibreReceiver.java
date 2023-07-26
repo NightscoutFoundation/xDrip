@@ -1,27 +1,29 @@
 package com.eveningoutpost.dexdrip;
 
 import static com.eveningoutpost.dexdrip.Home.get_engineering_mode;
-import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
-import static com.eveningoutpost.dexdrip.Models.Libre2Sensor.Libre2Sensors;
+import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
+import static com.eveningoutpost.dexdrip.models.Libre2Sensor.Libre2Sensors;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.preference.PreferenceManager;
 import android.text.format.DateFormat;
 
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.GlucoseData;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.Libre2RawValue;
-import com.eveningoutpost.dexdrip.Models.Sensor;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.UtilityModels.Intents;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
-import com.eveningoutpost.dexdrip.UtilityModels.Unitized;
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.GlucoseData;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.Libre2RawValue;
+import com.eveningoutpost.dexdrip.models.Sensor;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
+import com.eveningoutpost.dexdrip.utilitymodels.Intents;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.StatusItem;
+import com.eveningoutpost.dexdrip.utilitymodels.Unitized;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import java.text.DecimalFormat;
@@ -137,9 +139,15 @@ public class LibreReceiver extends BroadcastReceiver {
                                 Log.v(TAG, "got bg reading: from sensor:" + currentRawValue.serial + " rawValue:" + currentRawValue.glucose + " at:" + currentRawValue.timestamp);
                                 // period of 4.5 minutes to collect 5 readings
                                 if (!BgReading.last_within_millis(DexCollectionType.getCurrentDeduplicationPeriod())) {
-                                    List<Libre2RawValue> smoothingValues = Libre2RawValue.last20Minutes();
+                                    long smoothing_minutes = Pref.getStringToInt("libre_filter_length", 25);
+                                    long dataFetchInterval;
+                                    if ( smoothing_minutes == 25L )
+                                        dataFetchInterval = 20L;
+                                    else
+                                        dataFetchInterval = smoothing_minutes;
+                                    List<Libre2RawValue> smoothingValues = Libre2RawValue.weightedAverageInterval(dataFetchInterval);
                                     smoothingValues.add(currentRawValue);
-                                    processValues(currentRawValue, smoothingValues, context);
+                                    processValues(currentRawValue, smoothingValues, smoothing_minutes, context);
                                 }
                                 currentRawValue.save();
                                 clearNFCsensorAge();
@@ -193,13 +201,13 @@ public class LibreReceiver extends BroadcastReceiver {
         return rawValue;
     }
 
-    private static void processValues(Libre2RawValue currentValue, List<Libre2RawValue> smoothingValues, Context context) {
+    private static void processValues(Libre2RawValue currentValue, List<Libre2RawValue> smoothingValues, long smoothing_minutes, Context context) {
         if (Sensor.currentSensor() == null) {
             Sensor.create(currentValue.timestamp, currentValue.serial);
 
         }
 
-        double value = calculateWeightedAverage(smoothingValues, currentValue.timestamp);
+        double value = calculateWeightedAverage(smoothingValues, currentValue.timestamp, TimeUnit.MINUTES.toMillis(smoothing_minutes));
         BgReading.bgReadingInsertLibre2(value, currentValue.timestamp, currentValue.glucose);
     }
 
@@ -221,24 +229,20 @@ public class LibreReceiver extends BroadcastReceiver {
         }
     }
 
-    private static long SMOOTHING_DURATION = TimeUnit.MINUTES.toMillis(25);
-
-
-    private static double calculateWeightedAverage(List<Libre2RawValue> rawValues, long now) {
+    private static double calculateWeightedAverage(List<Libre2RawValue> rawValues, long now, long smoothing_duration) {
         double sum = 0;
         double weightSum = 0;
         DecimalFormat longformat = new DecimalFormat("#,###,###,##0.00");
 
         libre_calc_doku = "";
         for (Libre2RawValue rawValue : rawValues) {
-            double weight = 1 - ((now - rawValue.timestamp) / (double) SMOOTHING_DURATION);
+            double weight = 1 - ((now - rawValue.timestamp) / (double) smoothing_duration);
             sum += rawValue.glucose * weight;
             weightSum += weight;
             libre_calc_doku += DateFormat.format("kk:mm:ss :", rawValue.timestamp) + " w:" + longformat.format(weight) + " raw: " + rawValue.glucose + "\n";
         }
         return Math.round(sum / weightSum);
     }
-
 
     public static List<StatusItem> megaStatus() {
         final List<StatusItem> l = new ArrayList<>();

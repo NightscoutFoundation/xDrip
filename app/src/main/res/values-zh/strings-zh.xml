@@ -1516,4 +1516,5 @@
     <string name="select_new_sound_source">选择新的声音源</string>
     <string name="snooze_done">← 静默 / 完成 →</string>
     <string name="cannot_choose_file_without_permission">如果没有存储权限, 则无法选择文件</string>
+    <string name="titleInside_yRange">启用</string>
 </resources>

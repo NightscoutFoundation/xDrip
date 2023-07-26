@@ -2,8 +2,8 @@ package com.eveningoutpost.dexdrip.plugin;
 
 import static com.eveningoutpost.dexdrip.utils.FileUtils.readFromFile;
 
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.File;

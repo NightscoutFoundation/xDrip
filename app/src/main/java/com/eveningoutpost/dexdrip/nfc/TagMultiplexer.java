@@ -6,7 +6,7 @@ import android.nfc.Tag;
 
 import com.eveningoutpost.dexdrip.glucosemeter.glucomen.GlucoMen;
 import com.eveningoutpost.dexdrip.glucosemeter.glucomen.GlucoMenNfc;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.insulin.opennov.nfc.TagDispatcher;
 

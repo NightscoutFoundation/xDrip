@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.utils;
 import android.content.Context;
 import android.os.Environment;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.File;

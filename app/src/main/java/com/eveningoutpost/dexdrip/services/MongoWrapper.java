@@ -1,5 +1,5 @@
 package com.eveningoutpost.dexdrip.services;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;

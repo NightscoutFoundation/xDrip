@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.utils;
 
+import static com.eveningoutpost.dexdrip.xdrip.gs;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -47,60 +49,63 @@ import com.bytehamster.lib.preferencesearch.SearchConfiguration;
 import com.bytehamster.lib.preferencesearch.SearchPreferenceResult;
 import com.bytehamster.lib.preferencesearch.SearchPreferenceResultListener;
 import com.eveningoutpost.dexdrip.BasePreferenceActivity;
-import com.eveningoutpost.dexdrip.G5Model.DexSyncKeeper;
-import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Models.DesertSync;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.Profile;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Models.UserError.ExtraLogTags;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.Models.UserNotification;
 import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.ParakeetHelper;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.WidgetUpdateService;
 import com.eveningoutpost.dexdrip.alert.Registry;
+import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.CareLinkFollowService;
+import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollow;
+import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
+import com.eveningoutpost.dexdrip.cgm.webfollow.Cpref;
+import com.eveningoutpost.dexdrip.g5model.DexSyncKeeper;
+import com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine;
+import com.eveningoutpost.dexdrip.healthconnect.HealthConnectEntry;
+import com.eveningoutpost.dexdrip.healthconnect.HealthGamut;
+import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
+import com.eveningoutpost.dexdrip.models.DesertSync;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.Profile;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError.ExtraLogTags;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
+import com.eveningoutpost.dexdrip.models.UserNotification;
+import com.eveningoutpost.dexdrip.plugin.Dialog;
+import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
 import com.eveningoutpost.dexdrip.services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.services.BluetoothGlucoseMeter;
 import com.eveningoutpost.dexdrip.services.DexCollectionService;
 import com.eveningoutpost.dexdrip.services.G5BaseService;
+import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.services.PlusSyncService;
 import com.eveningoutpost.dexdrip.services.UiBasedCollector;
-import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
-import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Experience;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.UtilityModels.Intents;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
-import com.eveningoutpost.dexdrip.UtilityModels.SpeechUtil;
-import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
-import com.eveningoutpost.dexdrip.UtilityModels.WholeHouse;
-import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
-import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
-import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleClassicTrendWatchface;
-import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleSnoozeControlApp;
-import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleTrendClayWatchFace;
-import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleTrendWatchFace;
-import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleWatchFace;
-import com.eveningoutpost.dexdrip.WidgetUpdateService;
-import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
-import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollow;
-import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
-import com.eveningoutpost.dexdrip.cgm.webfollow.Cpref;
-import com.eveningoutpost.dexdrip.cgm.carelinkfollow.CareLinkFollowService;
-import com.eveningoutpost.dexdrip.healthconnect.HealthConnectEntry;
-import com.eveningoutpost.dexdrip.healthconnect.HealthGamut;
-import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
-import com.eveningoutpost.dexdrip.plugin.Dialog;
-import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
+import com.eveningoutpost.dexdrip.services.broadcastservice.BroadcastService;
 import com.eveningoutpost.dexdrip.tidepool.AuthFlowOut;
 import com.eveningoutpost.dexdrip.tidepool.TidepoolUploader;
 import com.eveningoutpost.dexdrip.tidepool.UploadChunk;
 import com.eveningoutpost.dexdrip.ui.LockScreenWallPaper;
+import com.eveningoutpost.dexdrip.ui.dialog.GenericConfirmDialog;
+import com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Experience;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
+import com.eveningoutpost.dexdrip.utilitymodels.Intents;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.ShotStateStore;
+import com.eveningoutpost.dexdrip.utilitymodels.SpeechUtil;
+import com.eveningoutpost.dexdrip.utilitymodels.UpdateActivity;
+import com.eveningoutpost.dexdrip.utilitymodels.WholeHouse;
+import com.eveningoutpost.dexdrip.utilitymodels.pebble.PebbleUtil;
+import com.eveningoutpost.dexdrip.utilitymodels.pebble.PebbleWatchSync;
+import com.eveningoutpost.dexdrip.utilitymodels.pebble.watchface.InstallPebbleClassicTrendWatchface;
+import com.eveningoutpost.dexdrip.utilitymodels.pebble.watchface.InstallPebbleSnoozeControlApp;
+import com.eveningoutpost.dexdrip.utilitymodels.pebble.watchface.InstallPebbleTrendClayWatchFace;
+import com.eveningoutpost.dexdrip.utilitymodels.pebble.watchface.InstallPebbleTrendWatchFace;
+import com.eveningoutpost.dexdrip.utilitymodels.pebble.watchface.InstallPebbleWatchFace;
 import com.eveningoutpost.dexdrip.utils.framework.IncomingCallsReceiver;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
 import com.eveningoutpost.dexdrip.watch.miband.MiBand;
@@ -110,7 +115,6 @@ import com.eveningoutpost.dexdrip.watch.thinjam.BlueJay;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayAdapter;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
-import com.eveningoutpost.dexdrip.services.broadcastservice.BroadcastService;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.eveningoutpost.dexdrip.xDripWidget;
@@ -125,14 +129,13 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.val;
-
-import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -254,7 +257,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
     private void installxDripPlusPreferencesFromQRCode(SharedPreferences prefs, String data) {
         Log.d(TAG, "installing preferences from QRcode");
         try {
-            Map<String, String> prefsmap = DisplayQRCode.decodeString(data);
+            Map<String, String> prefsmap = QRcodeUtils.decodeString(data);
             if (prefsmap != null) {
                 if (prefsmap.containsKey(getString(R.string.all_settings_wizard))) {
                     if (prefsmap.containsKey(getString(R.string.wizard_key))
@@ -268,31 +271,37 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     return;
                 }
 
-                final SharedPreferences.Editor editor = prefs.edit();
-                int changes = 0;
-                for (Map.Entry<String, String> entry : prefsmap.entrySet()) {
-                    String key = entry.getKey();
-                    String value = entry.getValue();
-                    //            Log.d(TAG, "Saving preferences: " + key + " = " + value);
-                    if (value.equals("true") || (value.equals("false"))) {
-                        editor.putBoolean(key, Boolean.parseBoolean(value));
-                        changes++;
-                    } else if (!value.equals("null")) {
-                        editor.putString(key, value);
-                        changes++;
+                val sb = getMapKeysString(prefsmap);
+                val msg = getString(R.string.import_qr_code_warning) + sb;
+
+                GenericConfirmDialog.show(this, gs(R.string.are_you_sure), msg, () -> {
+                    final SharedPreferences.Editor editor = prefs.edit();
+                    int changes = 0;
+                    for (Map.Entry<String, String> entry : prefsmap.entrySet()) {
+                        String key = entry.getKey();
+                        String value = entry.getValue();
+                        //            Log.d(TAG, "Saving preferences: " + key + " = " + value);
+                        if (value.equals("true") || (value.equals("false"))) {
+                            editor.putBoolean(key, Boolean.parseBoolean(value));
+                            changes++;
+                        } else if (!value.equals("null")) {
+                            editor.putString(key, value);
+                            changes++;
+                        }
                     }
-                }
-                editor.apply();
-                refreshFragments();
-                ExtraLogTags.readPreference(Pref.getStringDefaultBlank("extra_tags_for_logging"));
-                Toast.makeText(getApplicationContext(), "Loaded " + Integer.toString(changes) + " preferences from QR code", Toast.LENGTH_LONG).show();
-                PlusSyncService.clearandRestartSyncService(getApplicationContext());
-                DesertSync.settingsChanged(); // refresh
-                if (prefs.getString("dex_collection_method", "").equals("Follower")) {
+                    editor.apply();
+                    refreshFragments();
+                    ExtraLogTags.readPreference(Pref.getStringDefaultBlank("extra_tags_for_logging"));
+                    Toast.makeText(getApplicationContext(), "Loaded " + Integer.toString(changes) + " preferences from QR code", Toast.LENGTH_LONG).show();
                     PlusSyncService.clearandRestartSyncService(getApplicationContext());
-                    GcmActivity.last_sync_request = 0;
-                    GcmActivity.requestBGsync();
-                }
+                    DesertSync.settingsChanged(); // refresh
+                    if (prefs.getString("dex_collection_method", "").equals("Follower")) {
+                        PlusSyncService.clearandRestartSyncService(getApplicationContext());
+                        GcmActivity.last_sync_request = 0;
+                        GcmActivity.requestBGsync();
+                    }
+                });
+
             } else {
                 android.util.Log.e(TAG, "Got null prefsmap during decode");
             }
@@ -300,6 +309,18 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             Log.e(TAG, "Got exception installing preferences");
         }
 
+    }
+
+    public static String getMapKeysString(final Map<String, ?> prefsmap) {
+        val sb = new StringBuilder();
+        val keysSet = prefsmap.keySet();
+        val keyList = new ArrayList<>(keysSet);
+        Collections.sort(keyList);
+        for (val entry : keyList) {
+            sb.append(entry);
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 
 
@@ -334,7 +355,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         if (scanResult.getFormatName().equals("QR_CODE")) {
 
             final String scanresults = scanResult.getContents();
-            if (scanresults.startsWith(DisplayQRCode.qrmarker)) {
+            if (QRcodeUtils.hasDecoderMarker(scanresults)) {
                 installxDripPlusPreferencesFromQRCode(prefs, scanresults);
                 return;
             }
@@ -1114,24 +1135,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 //
             }
 
-            findPreference("use_ob1_g5_collector_service").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                //
-                            }
-                            CollectionServiceStarter.restartCollectionService(xdrip.getAppContext());
-                        }
-                    }).start();
-
-                    return true;
-                }
-            });
 
             final Preference profile_carb_absorption_default = findPreference("profile_carb_absorption_default");
             profile_carb_absorption_default.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -1305,6 +1308,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             final Preference carelinkFollowUser = findPreference("clfollow_user");
             final Preference carelinkFollowPass = findPreference("clfollow_pass");
             final Preference carelinkFollowCountry = findPreference("clfollow_country");
+            final Preference carelinkFollowPatient = findPreference("clfollow_patient");
             final Preference carelinkFollowGracePeriod = findPreference("clfollow_grace_period");
             final Preference carelinkFollowMissedPollInterval = findPreference("clfollow_missed_poll_interval");
             final Preference carelinkFollowDownloadFingerBGs = findPreference("clfollow_download_finger_bgs");
@@ -1317,6 +1321,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 collectionCategory.addPreference(carelinkFollowUser);
                 collectionCategory.addPreference(carelinkFollowPass);
                 collectionCategory.addPreference(carelinkFollowCountry);
+                collectionCategory.addPreference(carelinkFollowPatient);
                 collectionCategory.addPreference(carelinkFollowGracePeriod);
                 collectionCategory.addPreference(carelinkFollowMissedPollInterval);
                 collectionCategory.addPreference(carelinkFollowDownloadFingerBGs);
@@ -1337,6 +1342,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     carelinkFollowUser.setOnPreferenceChangeListener(carelinkFollowListener);
                     carelinkFollowPass.setOnPreferenceChangeListener(carelinkFollowListener);
                     carelinkFollowCountry.setOnPreferenceChangeListener(carelinkFollowListener);
+                    carelinkFollowPatient.setOnPreferenceChangeListener(carelinkFollowListener);
                     carelinkFollowGracePeriod.setOnPreferenceChangeListener(carelinkFollowListener);
                     carelinkFollowMissedPollInterval.setOnPreferenceChangeListener(carelinkFollowListener);
                 } catch (Exception e) {
@@ -1348,6 +1354,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     collectionCategory.removePreference(carelinkFollowUser);
                     collectionCategory.removePreference(carelinkFollowPass);
                     collectionCategory.removePreference(carelinkFollowCountry);
+                    collectionCategory.removePreference(carelinkFollowPatient);
                     collectionCategory.removePreference(carelinkFollowGracePeriod);
                     collectionCategory.removePreference(carelinkFollowMissedPollInterval);
                     collectionCategory.removePreference(carelinkFollowDownloadFingerBGs);
@@ -1688,6 +1695,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             if (collectionType != DexCollectionType.CLFollow) {
                 try {
                     collectionCategory.removePreference(carelinkFollowCountry);
+                    collectionCategory.removePreference(carelinkFollowPatient);
                     collectionCategory.removePreference(carelinkFollowPass);
                     collectionCategory.removePreference(carelinkFollowUser);
                     collectionCategory.removePreference(carelinkFollowGracePeriod);
@@ -2281,6 +2289,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                             } catch (Exception e) {
                                 //
                             }
+                            Ob1G5CollectionService.clearPersist();
                             CollectionServiceStarter.restartCollectionService(xdrip.getAppContext());
                         }
                     }).start();
@@ -2441,11 +2450,25 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     return true;
                 }
             });
-
+            removeLegacyPreferences();
             jumpToScreen(jumpTo);
         }
 
-        public static void checkReadPermission(final Activity activity) {
+       private void removeLegacyPreferences() {
+           //  removePreferenceFromCategory("use_ob1_g5_collector_service", "ob1_options");
+       }
+
+       private void removePreferenceFromCategory(final String preference, final String category) {
+           try {
+               final Preference pref = findPreference(preference);
+               final PreferenceGroup cat = (PreferenceGroup) findPreference(category);
+               cat.removePreference(pref);
+           } catch (Exception e) {
+               UserError.Log.e(TAG, "Exception removing preference " + preference + " from " + category + " " + e);
+           }
+       }
+
+       public static void checkReadPermission(final Activity activity) {
 
             // TODO call log permission - especially for Android 9+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

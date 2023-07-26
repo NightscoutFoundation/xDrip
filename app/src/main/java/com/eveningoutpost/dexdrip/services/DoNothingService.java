@@ -6,36 +6,36 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.IBinder;
-import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.text.SpannableString;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.GcmListenerSvc;
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
-import com.eveningoutpost.dexdrip.UtilityModels.InstalledApps;
-import com.eveningoutpost.dexdrip.UtilityModels.NanoStatus;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.ForegroundServiceStarter;
+import com.eveningoutpost.dexdrip.utilitymodels.InstalledApps;
+import com.eveningoutpost.dexdrip.utilitymodels.NanoStatus;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.StatusItem;
 import com.eveningoutpost.dexdrip.ui.helpers.Span;
 import com.eveningoutpost.dexdrip.utils.framework.WakeLockTrampoline;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import static com.eveningoutpost.dexdrip.GcmListenerSvc.lastMessageReceived;
-import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.BAD;
-import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.NOTICE;
+import static com.eveningoutpost.dexdrip.utilitymodels.StatusItem.Highlight.BAD;
+import static com.eveningoutpost.dexdrip.utilitymodels.StatusItem.Highlight.NOTICE;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
+
+import lombok.val;
 
 public class DoNothingService extends Service {
     private final static String TAG = DoNothingService.class.getSimpleName();
@@ -83,31 +83,32 @@ public class DoNothingService extends Service {
         UserError.Log.i(TAG, "onCreate: STARTING SERVICE");
     }
 
-    private static final long TOLERABLE_JITTER = 10000;
+    private static final long TOLERABLE_JITTER = 300000;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        final PowerManager.WakeLock wl = JoH.getWakeLock("donothing-follower", 60000);
+        val wl = JoH.getWakeLock("donothing-follower", 60000);
         lastState = "Trying to start " + JoH.hourMinuteString();
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            // TODO this block is never used due to min sdk
             stopSelf();
             JoH.releaseWakeLock(wl);
             return START_NOT_STICKY;
         }
 
-        JoH.persistentBuggySamsungCheck();
+        //JoH.persistentBuggySamsungCheck();
 
         if (nextWakeUpTime > 0) {
-            wake_time_difference = Calendar.getInstance().getTimeInMillis() - nextWakeUpTime;
+            wake_time_difference = JoH.tsl() - nextWakeUpTime;
             if (wake_time_difference > TOLERABLE_JITTER) {
                 UserError.Log.e(TAG, "Slow Wake up! time difference in ms: " + wake_time_difference);
                 wakeUpErrors = wakeUpErrors + 3;
                 max_wake_time_difference = Math.max(max_wake_time_difference, wake_time_difference);
 
-                if (!JoH.buggy_samsung && JoH.isSamsung()) {
-                    UserError.Log.wtf(TAG, "Enabled Buggy Samsung workaround due to jitter of: " + JoH.niceTimeScalar(wake_time_difference));
-                    JoH.setBuggySamsungEnabled();
-                }
+               // if (!JoH.buggy_samsung && JoH.isSamsung()) {
+                //    UserError.Log.wtf(TAG, "Enabled wake workaround due to jitter of: " + JoH.niceTimeScalar(wake_time_difference));
+               //     JoH.setBuggySamsungEnabled();
+               // }
 
             } else {
                 if (wakeUpErrors > 0) wakeUpErrors--;
@@ -116,34 +117,32 @@ public class DoNothingService extends Service {
 
         if (CollectionServiceStarter.isFollower(getApplicationContext()) ||
                 CollectionServiceStarter.isLibre2App(getApplicationContext())) {
-            new Thread(new Runnable() {
-                public void run() {
-                    final int minsago = GcmListenerSvc.lastMessageMinutesAgo();
-                    //Log.d(TAG, "Tick: minutes ago: " + minsago);
-                    int sleep_time = 1000;
+            new Thread(() -> {
+                final int minsago = GcmListenerSvc.lastMessageMinutesAgo();
+                //Log.d(TAG, "Tick: minutes ago: " + minsago);
+                int sleep_time = 1000;
 
-                    if ((minsago > 60) && (minsago < 70)) {
-                        if (JoH.ratelimit("slow-service-restart", 60)) {
-                            UserError.Log.e(TAG, "Restarting collection service + full wakeup due to minsago: " + minsago + " !!!");
-                            Home.startHomeWithExtra(getApplicationContext(), Home.HOME_FULL_WAKEUP, "1");
-                            CollectionServiceStarter.restartCollectionService(getApplicationContext());
-                        }
+                if ((minsago > 60) && (minsago < 80)) {
+                    if (JoH.ratelimit("slow-service-restart", 60)) {
+                        UserError.Log.e(TAG, "Restarting collection service + full wakeup due to minsago: " + minsago + " !!!");
+                        Home.startHomeWithExtra(getApplicationContext(), Home.HOME_FULL_WAKEUP, "1");
+                        CollectionServiceStarter.restartCollectionService(getApplicationContext());
                     }
-
-                    if (minsago > 6) {
-                        if (Home.get_follower()) GcmActivity.requestPing();
-                        sleep_time = (minsago < 60) ? ((minsago / 6) * 1000) : 1000; // increase sleep time up to 10s for first hour or revert
-                    }
-
-                    try {
-                        Thread.sleep(sleep_time);
-                    } catch (InterruptedException e) {
-                        //
-                    }
-
-                    setFailOverTimer();
-                    JoH.releaseWakeLock(wl);
                 }
+
+                if (minsago > 6) {
+                    if (Home.get_follower()) GcmActivity.requestPing();
+                    sleep_time = (minsago < 60) ? ((minsago / 6) * 1000) : 1000; // increase sleep time up to 10s for first hour or revert
+                }
+
+                try {
+                    Thread.sleep(sleep_time);
+                } catch (InterruptedException e) {
+                    //
+                }
+
+                setFailOverTimer();
+                JoH.releaseWakeLock(wl);
             }).start();
         } else {
             stopSelf();
@@ -166,8 +165,8 @@ public class DoNothingService extends Service {
 
     private void setFailOverTimer() {
         if (Home.get_follower()) {
-            final long retry_in = (5 * 60 * 1000);
-            UserError.Log.d(TAG, "setFailoverTimer: Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
+            final long retry_in = Constants.MINUTE_IN_MS * 10;
+            UserError.Log.d(TAG, "setFailoverTimer: Restarting in: " + (retry_in / Constants.MINUTE_IN_MS) + " minutes");
             nextWakeUpTime = JoH.tsl() + retry_in;
             //final PendingIntent wakeIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
             final PendingIntent wakeIntent = WakeLockTrampoline.getPendingIntent(this.getClass());
@@ -211,7 +210,7 @@ public class DoNothingService extends Service {
             }
 
             if (JoH.buggy_samsung) {
-                l.add(new StatusItem("Buggy Samsung", "Using workaround", max_wake_time_difference < TOLERABLE_JITTER ? StatusItem.Highlight.GOOD : BAD));
+                l.add(new StatusItem("Buggy handset", "Using workaround", max_wake_time_difference < TOLERABLE_JITTER ? StatusItem.Highlight.GOOD : BAD));
             }
 
             if (nextWakeUpTime != -1) {

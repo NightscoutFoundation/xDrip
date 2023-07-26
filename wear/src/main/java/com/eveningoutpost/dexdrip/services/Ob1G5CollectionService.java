@@ -22,33 +22,33 @@ import android.text.SpannableStringBuilder;
 
 import com.eveningoutpost.dexdrip.AddCalibration;
 import com.eveningoutpost.dexdrip.DoubleCalibrationActivity;
-import com.eveningoutpost.dexdrip.G5Model.BatteryInfoRxMessage;
-import com.eveningoutpost.dexdrip.G5Model.BluetoothServices;
-import com.eveningoutpost.dexdrip.G5Model.CalibrationState;
-import com.eveningoutpost.dexdrip.G5Model.DexSyncKeeper;
-import com.eveningoutpost.dexdrip.G5Model.DexTimeKeeper;
-import com.eveningoutpost.dexdrip.G5Model.FirmwareCapability;
-import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
-import com.eveningoutpost.dexdrip.G5Model.TransmitterStatus;
-import com.eveningoutpost.dexdrip.G5Model.VersionRequest1RxMessage;
-import com.eveningoutpost.dexdrip.G5Model.VersionRequest2RxMessage;
-import com.eveningoutpost.dexdrip.G5Model.VersionRequestRxMessage;
+import com.eveningoutpost.dexdrip.g5model.BatteryInfoRxMessage;
+import com.eveningoutpost.dexdrip.g5model.BluetoothServices;
+import com.eveningoutpost.dexdrip.g5model.CalibrationState;
+import com.eveningoutpost.dexdrip.g5model.DexSyncKeeper;
+import com.eveningoutpost.dexdrip.g5model.DexTimeKeeper;
+import com.eveningoutpost.dexdrip.g5model.FirmwareCapability;
+import com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine;
+import com.eveningoutpost.dexdrip.g5model.TransmitterStatus;
+import com.eveningoutpost.dexdrip.g5model.VersionRequest1RxMessage;
+import com.eveningoutpost.dexdrip.g5model.VersionRequest2RxMessage;
+import com.eveningoutpost.dexdrip.g5model.VersionRequestRxMessage;
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.Sensor;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.Sensor;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.UtilityModels.BroadcastGlucose;
-import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.RxBleProvider;
-import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
-import com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight;
-import com.eveningoutpost.dexdrip.UtilityModels.WholeHouse;
+import com.eveningoutpost.dexdrip.utilitymodels.BroadcastGlucose;
+import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.RxBleProvider;
+import com.eveningoutpost.dexdrip.utilitymodels.StatusItem;
+import com.eveningoutpost.dexdrip.utilitymodels.StatusItem.Highlight;
+import com.eveningoutpost.dexdrip.utilitymodels.WholeHouse;
 import com.eveningoutpost.dexdrip.ui.helpers.Span;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.bt.Subscription;
@@ -82,16 +82,16 @@ import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
 import lombok.Setter;
 
-import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getUUIDName;
-import static com.eveningoutpost.dexdrip.G5Model.CalibrationState.Ok;
-import static com.eveningoutpost.dexdrip.G5Model.CalibrationState.Unknown;
-import static com.eveningoutpost.dexdrip.G5Model.G6CalibrationParameters.getCurrentSensorCode;
-import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.CLOSED_OK_TEXT;
-import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.evaluateG6Settings;
-import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingCalibration;
-import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingStart;
-import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingStop;
-import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.usingAlt;
+import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.getUUIDName;
+import static com.eveningoutpost.dexdrip.g5model.CalibrationState.Ok;
+import static com.eveningoutpost.dexdrip.g5model.CalibrationState.Unknown;
+import static com.eveningoutpost.dexdrip.g5model.G6CalibrationParameters.getCurrentSensorCode;
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.CLOSED_OK_TEXT;
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.evaluateG6Settings;
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.pendingCalibration;
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.pendingStart;
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.pendingStop;
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.usingAlt;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.BOND;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.CLOSE;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.CLOSED;
@@ -102,16 +102,16 @@ import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.G
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.INIT;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.PREBOND;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.SCAN;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_CALIBRATION_REQUEST;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_FAILED;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_RESTARTED;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_STARTED;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.SECOND_IN_MS;
-import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.BAD;
-import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.CRITICAL;
-import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.NORMAL;
-import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.NOTICE;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.G5_CALIBRATION_REQUEST;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.G5_SENSOR_FAILED;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.G5_SENSOR_RESTARTED;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.G5_SENSOR_STARTED;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HOUR_IN_MS;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.SECOND_IN_MS;
+import static com.eveningoutpost.dexdrip.utilitymodels.StatusItem.Highlight.BAD;
+import static com.eveningoutpost.dexdrip.utilitymodels.StatusItem.Highlight.CRITICAL;
+import static com.eveningoutpost.dexdrip.utilitymodels.StatusItem.Highlight.NORMAL;
+import static com.eveningoutpost.dexdrip.utilitymodels.StatusItem.Highlight.NOTICE;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
 import static com.eveningoutpost.dexdrip.utils.bt.Subscription.addErrorHandler;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
@@ -855,7 +855,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         UserError.Log.d(TAG, "Checking model: " + this_model);
 
         if ((JoH.isSamsung() && PersistentStore.getLong(BUGGY_SAMSUNG_ENABLED) > 4)) {
-            UserError.Log.d(TAG, "Enabling buggy samsung due to persistent metric");
+            UserError.Log.d(TAG, "Enabling wake workaround due to persistent metric");
             JoH.buggy_samsung = true;
         }
 
@@ -934,7 +934,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                     if (wakeup_jitter > 1000) {
                         UserError.Log.d(TAG, "Wake up, time jitter: " + JoH.niceTimeScalar(wakeup_jitter));
                         if ((wakeup_jitter > TOLERABLE_JITTER) && (!JoH.buggy_samsung) && JoH.isSamsung()) {
-                            UserError.Log.wtf(TAG, "Enabled Buggy Samsung workaround due to jitter of: " + JoH.niceTimeScalar(wakeup_jitter));
+                            UserError.Log.wtf(TAG, "Enabled wake workaround due to jitter of: " + JoH.niceTimeScalar(wakeup_jitter));
                             JoH.buggy_samsung = true;
                             PersistentStore.incrementLong(BUGGY_SAMSUNG_ENABLED);
                             max_wakeup_jitter = 0;
@@ -1805,7 +1805,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
 
         if (JoH.buggy_samsung) {
-            l.add(new StatusItem("Buggy Samsung", "Using workaround", max_wakeup_jitter < TOLERABLE_JITTER ? Highlight.GOOD : BAD));
+            l.add(new StatusItem("Buggy handset", "Using workaround", max_wakeup_jitter < TOLERABLE_JITTER ? Highlight.GOOD : BAD));
         }
 
         final String tx_id = getTransmitterID();

@@ -2,9 +2,8 @@ package com.eveningoutpost.dexdrip.webservices;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.localeTasker.bundle.PluginBundleManager;
 import com.eveningoutpost.dexdrip.xdrip;
 

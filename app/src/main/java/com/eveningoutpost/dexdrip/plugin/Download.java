@@ -1,13 +1,13 @@
 package com.eveningoutpost.dexdrip.plugin;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.decompressBytesToBytes;
+import static com.eveningoutpost.dexdrip.models.JoH.decompressBytesToBytes;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.Disabled;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.setDexCollectionType;
 import static com.eveningoutpost.dexdrip.utils.FileUtils.writeToFile;
 
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.IOException;

@@ -14,24 +14,26 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
-import com.eveningoutpost.dexdrip.Models.Accuracy;
-import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
-import com.eveningoutpost.dexdrip.Models.AlertType;
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.BloodTest;
-import com.eveningoutpost.dexdrip.Models.HeartRate;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.StepCounter;
-import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Models.UserNotification;
+import com.eveningoutpost.dexdrip.models.Accuracy;
+import com.eveningoutpost.dexdrip.models.ActiveBgAlert;
+import com.eveningoutpost.dexdrip.models.AlertType;
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.BloodTest;
+import com.eveningoutpost.dexdrip.models.HeartRate;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.StepCounter;
+import com.eveningoutpost.dexdrip.models.Treatments;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.models.UserNotification;
 import com.eveningoutpost.dexdrip.services.MissedReadingService;
-import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
-import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.PumpStatus;
+import com.eveningoutpost.dexdrip.utilitymodels.AlertPlayer;
+import com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.PumpStatus;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
+import com.eveningoutpost.dexdrip.store.FastStore;
+import com.eveningoutpost.dexdrip.store.KeyStore;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.services.broadcastservice.models.BroadcastModel;
 import com.eveningoutpost.dexdrip.services.broadcastservice.models.GraphLine;
@@ -43,7 +45,11 @@ import java.util.Map;
 
 import lecho.lib.hellocharts.model.Line;
 
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.DAY_IN_MS;
+
+// External status line from AAPS added
+import static com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService.getLastStatusLine;
+import static com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService.getLastStatusLineTime;
 
 /**
  *  Broadcast API which provides common data like, bg values, graph info, statistic info.
@@ -75,6 +81,8 @@ public class BroadcastService extends Service {
 
     protected String TAG = this.getClass().getSimpleName();
     protected Map<String, BroadcastModel> broadcastEntities;
+
+    protected KeyStore keyStore = FastStore.getInstance();
 
     /**
      *  The receiver listening {@link  ACTION_WATCH_COMMUNICATION_RECEIVER} action.
@@ -209,7 +217,6 @@ public class BroadcastService extends Service {
         }
     };
 
-
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -227,6 +234,7 @@ public class BroadcastService extends Service {
         registerReceiver(broadcastReceiver, new IntentFilter(ACTION_WATCH_COMMUNICATION_RECEIVER));
 
         JoH.startService(BroadcastService.class, Const.INTENT_FUNCTION_KEY, Const.CMD_START);
+
         super.onCreate();
     }
 
@@ -294,6 +302,9 @@ public class BroadcastService extends Service {
                     bundle.putString("message", intent.getStringExtra("message"));
                     sendBroadcast(function, receiver, bundle);
                     break;
+                case Const.CMD_CANCEL_ALERT:
+                    sendBroadcast(function, receiver, bundle);
+                    break;
             }
         }
 
@@ -317,6 +328,9 @@ public class BroadcastService extends Service {
             case Const.CMD_UPDATE_BG_FORCE:
                 broadcastModel = broadcastEntities.get(receiver);
                 bundle = prepareBgBundle(broadcastModel);
+                break;
+            case Const.CMD_CANCEL_ALERT:
+                receiver = null; //broadcast
                 break;
             case Const.CMD_SNOOZE_ALERT:
                 String alertName = "";
@@ -513,7 +527,7 @@ public class BroadcastService extends Service {
                 bundle.putDouble("lowMark", JoH.tolerantParseDouble(prefs.getString("lowValue", "70"), 70));
 
                 BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(xdrip.getAppContext(), start, end);
-                bgGraphBuilder.defaultLines(true); // simple mode
+                bgGraphBuilder.defaultLines(false); // not simple mode in order to receive simulated data
 
                 bundle.putParcelable("graph.lowLine", new GraphLine(bgGraphBuilder.lowLine()));
                 bundle.putParcelable("graph.highLine", new GraphLine(bgGraphBuilder.highLine()));
@@ -530,7 +544,25 @@ public class BroadcastService extends Service {
                 bundle.putParcelable("graph.cob", new GraphLine(treatments[6]));  //cobValues
                 bundle.putParcelable("graph.polyBg", new GraphLine(treatments[7]));  //poly predict ;
             }
+
+            String last_iob = keyStore.getS("last_iob");
+            if ( last_iob != null){
+                bundle.putString("predict.IOB", last_iob);
+                bundle.putLong("predict.IOB.timeStamp", keyStore.getL("last_iob_timestamp"));
+            }
+
+            String last_bwp = keyStore.getS("last_bwp");
+            if ( last_bwp != null){
+                bundle.putString("predict.BWP", last_bwp);
+                bundle.putLong("predict.BWP.timeStamp", keyStore.getL("last_bwp_timestamp"));
+            }
+
+            // External status line from AAPS added
+            bundle.putString("external.statusLine", getLastStatusLine());
+            bundle.putLong("external.timeStamp", getLastStatusLineTime());
+
         }
         return bundle;
     }
+
 }

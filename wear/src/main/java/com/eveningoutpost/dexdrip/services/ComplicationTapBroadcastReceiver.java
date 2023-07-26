@@ -27,8 +27,8 @@ import android.os.Bundle;
 import android.support.wearable.complications.ProviderUpdateRequester;
 
 import com.eveningoutpost.dexdrip.KeypadInputActivity;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 import com.eveningoutpost.dexdrip.xdrip;
 
 /**

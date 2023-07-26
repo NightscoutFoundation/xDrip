@@ -1,8 +1,8 @@
 package com.eveningoutpost.dexdrip.services.broadcastservice;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 
 public class BroadcastEntry {
     //a tiny class created to make sure the service class would not be loaded if service disabled
@@ -21,6 +21,12 @@ public class BroadcastEntry {
     public static void sendLatestBG() {
         if (isEnabled()) {
             JoH.startService(BroadcastService.class, Const.INTENT_FUNCTION_KEY, Const.CMD_UPDATE_BG);
+        }
+    }
+
+    public static void cancelAlert() {
+        if (isEnabled()) {
+             JoH.startService(BroadcastService.class, Const.INTENT_FUNCTION_KEY, Const.CMD_CANCEL_ALERT);
         }
     }
 

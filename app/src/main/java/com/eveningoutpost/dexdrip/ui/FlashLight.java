@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip.ui;
 
 import static android.hardware.camera2.CameraCharacteristics.FLASH_INFO_AVAILABLE;
-import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
+import static com.eveningoutpost.dexdrip.models.JoH.tsl;
 
 import android.content.Context;
 import android.hardware.camera2.CameraAccessException;
@@ -10,11 +10,11 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
-import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
+import com.eveningoutpost.dexdrip.models.ActiveBgAlert;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.security.SecureRandom;

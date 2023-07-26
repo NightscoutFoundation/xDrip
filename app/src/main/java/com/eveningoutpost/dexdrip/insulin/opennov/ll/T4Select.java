@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.insulin.opennov.ll;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.tolerantHexStringToByteArray;
+import static com.eveningoutpost.dexdrip.models.JoH.tolerantHexStringToByteArray;
 
 import com.eveningoutpost.dexdrip.insulin.opennov.BaseMessage;
 

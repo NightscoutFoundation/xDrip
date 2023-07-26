@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.watch.thinjam.assets;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

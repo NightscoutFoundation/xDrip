@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.services;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
+import static com.eveningoutpost.dexdrip.models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.cgm.dex.ClassifierAction.lastReadingTimestamp;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.UiBased;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getDexCollectionType;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
@@ -26,20 +27,26 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.Sensor;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.alert.Persist;
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.Sensor;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
-import com.eveningoutpost.dexdrip.UtilityModels.Unitized;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
+import com.eveningoutpost.dexdrip.utilitymodels.Unitized;
 import com.eveningoutpost.dexdrip.cgm.dex.BlueTails;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import lombok.val;
 
@@ -53,10 +60,16 @@ public class UiBasedCollector extends NotificationListenerService {
     private static final String TAG = UiBasedCollector.class.getSimpleName();
     private static final String UI_BASED_STORE_LAST_VALUE = "UI_BASED_STORE_LAST_VALUE";
     private static final String UI_BASED_STORE_LAST_REPEAT = "UI_BASED_STORE_LAST_REPEAT";
+    private static final String COMPANION_APP_IOB_ENABLED_PREFERENCE_KEY = "fetch_iob_from_companion_app";
+    private static final Persist.DoubleTimeout iob_store =
+            new Persist.DoubleTimeout("COMPANION_APP_IOB_VALUE", Constants.MINUTE_IN_MS * 5);
     private static final String ENABLED_NOTIFICATION_LISTENERS = "enabled_notification_listeners";
     private static final String ACTION_NOTIFICATION_LISTENER_SETTINGS = "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS";
 
     private static final HashSet<String> coOptedPackages = new HashSet<>();
+    private static final HashSet<String> companionAppIoBPackages = new HashSet<>();
+    private static final HashSet<Pattern> companionAppIoBRegexes = new HashSet<>();
+    private static boolean debug = false;
 
     @VisibleForTesting
     String lastPackage;
@@ -74,6 +87,12 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackages.add("com.medtronic.diabetes.guardian");
         coOptedPackages.add("com.medtronic.diabetes.minimedmobile.eu");
         coOptedPackages.add("com.medtronic.diabetes.minimedmobile.us");
+
+        companionAppIoBPackages.add("com.insulet.myblue.pdm");
+
+        // The IoB value should be captured into the first match group.
+        // English localization of the Omnipod 5 App
+        companionAppIoBRegexes.add(Pattern.compile("IOB: ([\\d\\.,]+) U"));
     }
 
     @Override
@@ -82,7 +101,7 @@ public class UiBasedCollector extends NotificationListenerService {
         if (coOptedPackages.contains(fromPackage)) {
             if (getDexCollectionType() == UiBased) {
                 UserError.Log.d(TAG, "Notification from: " + fromPackage);
-                if (sbn.isOngoing()) {
+                if (sbn.isOngoing() || fromPackage.endsWith("e")) {
                     lastPackage = fromPackage;
                     processNotification(sbn.getNotification());
                     BlueTails.immortality();
@@ -93,6 +112,68 @@ public class UiBasedCollector extends NotificationListenerService {
                 }
             }
         }
+
+        if (companionAppIoBPackages.contains(fromPackage)) {
+            processCompanionAppIoBNotification(sbn.getNotification());
+        }
+    }
+
+    private void processCompanionAppIoBNotification(final Notification notification) {
+        if (notification == null) {
+            UserError.Log.e(TAG, "Null notification");
+            return;
+        }
+        if (notification.contentView != null) {
+            processCompanionAppIoBNotificationCV(notification.contentView);
+        } else {
+            UserError.Log.e(TAG, "Content is empty");
+        }
+    }
+
+    private void processCompanionAppIoBNotificationCV(final RemoteViews cview) {
+        if (cview == null) return;
+        val applied = cview.apply(this, null);
+        val root = (ViewGroup) applied.getRootView();
+        val texts = new ArrayList<TextView>();
+        getTextViews(texts, root);
+        if (debug) UserError.Log.d(TAG, "Text views: " + texts.size());
+        Double iob = null;
+        try {
+            for (val view : texts) {
+                val tv = (TextView) view;
+                String text = tv.getText() != null ? tv.getText().toString() : "";
+                val desc = tv.getContentDescription() != null ? tv.getContentDescription().toString() : "";
+                if (debug) UserError.Log.d(TAG, "Examining: >" + text + "< : >" + desc + "<");
+                iob = parseIoB(text);
+                if (iob != null) {
+                    break;
+                }
+            }
+
+            if (iob != null) {
+                if (debug) UserError.Log.d(TAG, "Inserting new IoB value: " + iob);
+                iob_store.set(iob);
+            }
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "exception in processCompanionAppIoBNotificationCV: " + e);
+        }
+
+        texts.clear();
+    }
+    Double parseIoB(final String value) {
+        for (Pattern pattern : companionAppIoBRegexes) {
+            Matcher matcher = pattern.matcher(value);
+
+            if (matcher.find()) {
+                return JoH.tolerantParseDouble(matcher.group(1));
+            }
+        }
+
+        return null;
+    }
+
+    public static Double getCurrentIoB() {
+        return iob_store.get();
     }
 
     @Override
@@ -257,12 +338,23 @@ public class UiBasedCollector extends NotificationListenerService {
                     //
                 }
             }
+            if (key.equals(COMPANION_APP_IOB_ENABLED_PREFERENCE_KEY)) {
+                try {
+                    enableNotificationService(activity);
+                } catch (Exception e) {
+                    UserError.Log.e(TAG, "Exception when enabling NotificationService: " + e);
+                }
+            }
         };
     }
 
     public static void switchToAndEnable(final Activity activity) {
         DexCollectionType.setDexCollectionType(UiBased);
         Sensor.createDefaultIfMissing();
+        enableNotificationService(activity);
+    }
+
+    private static void enableNotificationService(final Activity activity) {
         if (!isNotificationServiceEnabled()) {
             JoH.show_ok_dialog(activity, gs(R.string.please_allow_permission),
                     "Permission is needed to receive data from other applications. xDrip does not do anything beyond this scope. Please enable xDrip on the next screen",

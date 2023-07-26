@@ -1,11 +1,11 @@
 package com.eveningoutpost.dexdrip.insulin.opennov.ll;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.tolerantHexStringToByteArray;
+import static com.eveningoutpost.dexdrip.models.JoH.tolerantHexStringToByteArray;
 import static com.eveningoutpost.dexdrip.insulin.opennov.BaseMessage.d;
 import static com.eveningoutpost.dexdrip.insulin.opennov.BaseMessage.log;
 
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.importedlibraries.usbserial.util.HexDump;
+import com.eveningoutpost.dexdrip.models.UserError;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;

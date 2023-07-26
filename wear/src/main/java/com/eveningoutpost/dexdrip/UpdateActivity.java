@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip;
 import android.app.Activity;
 import android.os.Bundle;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.utils.AdbInstaller;
 import com.eveningoutpost.dexdrip.utils.VersionFixer;
 

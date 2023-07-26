@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip.cloud.backup;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.showNotification;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.BACKUP_ACTIVITY_ID;
+import static com.eveningoutpost.dexdrip.models.JoH.showNotification;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.BACKUP_ACTIVITY_ID;
 import static com.eveningoutpost.dexdrip.cloud.backup.Backup.cleanPhoneName;
 import static com.eveningoutpost.dexdrip.cloud.backup.Backup.isBackupSuitableForAutomatic;
 import static com.eveningoutpost.dexdrip.cloud.backup.DriveManager.BINARY_FILE_TYPE;
@@ -14,11 +14,11 @@ import android.databinding.ObservableField;
 import android.net.Uri;
 import android.os.Bundle;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.UtilityModels.PrefsViewImpl;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
+import com.eveningoutpost.dexdrip.utilitymodels.PrefsViewImpl;
 import com.eveningoutpost.dexdrip.databinding.ActivityBackupPickerBinding;
 import com.eveningoutpost.dexdrip.ui.dialog.GenericConfirmDialog;
 import com.eveningoutpost.dexdrip.xdrip;

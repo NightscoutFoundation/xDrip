@@ -6,11 +6,11 @@ import android.text.InputType;
 
 import com.eveningoutpost.dexdrip.BluetoothScan;
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
+import com.eveningoutpost.dexdrip.models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
-import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.CareLinkFollowService;
 import com.eveningoutpost.dexdrip.plugin.Dialog;
@@ -133,6 +133,10 @@ public class DexCollectionHelper {
                 bluetoothScanIfNeeded();
                 break;
 
+            case LibreReceiver:
+                Home.staticRefreshBGChartsOnIdle();
+                break;
+
             case CLFollow:
                 textSettingDialog(activity,
                         "clfollow_country", "CareLink Country",
@@ -155,9 +159,18 @@ public class DexCollectionHelper {
                                                         new Runnable() {
                                                             @Override
                                                             public void run() {
-                                                                Home.staticRefreshBGCharts();
-                                                                CareLinkFollowService.resetInstanceAndInvalidateSession();
-                                                                CollectionServiceStarter.restartCollectionServiceBackground();
+                                                                textSettingDialog(activity,
+                                                                        "clfollow_patient", "CareLink Patient",
+                                                                        "Enter CareLink Patient (optional)",
+                                                                        InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD,
+                                                                        new Runnable() {
+                                                                            @Override
+                                                                            public void run() {
+                                                                                Home.staticRefreshBGCharts();
+                                                                                CareLinkFollowService.resetInstanceAndInvalidateSession();
+                                                                                CollectionServiceStarter.restartCollectionServiceBackground();
+                                                                            }
+                                                                        });
                                                             }
                                                         });
                                             }

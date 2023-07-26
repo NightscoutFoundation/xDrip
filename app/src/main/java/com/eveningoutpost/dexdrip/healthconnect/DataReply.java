@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.healthconnect;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.defaultGsonInstance;
+import static com.eveningoutpost.dexdrip.models.JoH.defaultGsonInstance;
 
 import androidx.health.connect.client.records.HeartRateRecord;
 import androidx.health.connect.client.records.StepsRecord;

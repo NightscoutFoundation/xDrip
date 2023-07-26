@@ -2,8 +2,8 @@ package com.eveningoutpost.dexdrip.alert;
 
 import android.content.SharedPreferences;
 
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 
 import java.util.ArrayList;
 import java.util.List;

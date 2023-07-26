@@ -23,22 +23,22 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
 
-import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.ReadDataShare;
-import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalRecord;
-import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
-import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
-import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.Calibration;
-import com.eveningoutpost.dexdrip.Models.Sensor;
-import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
-import com.eveningoutpost.dexdrip.UtilityModels.DexShareAttributes;
+import com.eveningoutpost.dexdrip.importedlibraries.dexcom.ReadDataShare;
+import com.eveningoutpost.dexdrip.importedlibraries.dexcom.records.CalRecord;
+import com.eveningoutpost.dexdrip.importedlibraries.dexcom.records.EGVRecord;
+import com.eveningoutpost.dexdrip.importedlibraries.dexcom.records.SensorRecord;
+import com.eveningoutpost.dexdrip.models.ActiveBluetoothDevice;
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.Calibration;
+import com.eveningoutpost.dexdrip.models.Sensor;
+import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.utilitymodels.DexShareAttributes;
 //KS import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
-import com.eveningoutpost.dexdrip.UtilityModels.HM10Attributes;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.utilitymodels.HM10Attributes;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 //KS import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 
 import java.nio.charset.StandardCharsets;

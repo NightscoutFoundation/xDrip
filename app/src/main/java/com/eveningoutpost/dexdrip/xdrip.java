@@ -8,22 +8,21 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.StringRes;
-import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
-import com.eveningoutpost.dexdrip.Models.AlertType;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.Reminder;
+import com.eveningoutpost.dexdrip.models.AlertType;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.Reminder;
 import com.eveningoutpost.dexdrip.alert.Poller;
 import com.eveningoutpost.dexdrip.services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.services.BluetoothGlucoseMeter;
 import com.eveningoutpost.dexdrip.services.MissedReadingService;
 import com.eveningoutpost.dexdrip.services.PlusSyncService;
-import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
-import com.eveningoutpost.dexdrip.UtilityModels.IdempotentMigrations;
-import com.eveningoutpost.dexdrip.UtilityModels.PlusAsyncExecutor;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.VersionTracker;
+import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.utilitymodels.IdempotentMigrations;
+import com.eveningoutpost.dexdrip.utilitymodels.PlusAsyncExecutor;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.VersionTracker;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.utils.NewRelicCrashReporting;
 import com.eveningoutpost.dexdrip.utils.jobs.DailyJob;
@@ -45,7 +44,7 @@ import java.util.Locale;
  * Created by Emma Black on 3/21/15.
  */
 
-public class xdrip extends MultiDexApplication {
+public class xdrip extends Application {
 
     private static final String TAG = "xdrip.java";
     @SuppressLint("StaticFieldLeak")

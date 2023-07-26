@@ -2,7 +2,7 @@ package com.eveningoutpost.dexdrip.plugin;
 
 import static com.eveningoutpost.dexdrip.plugin.Cache.getPath;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.lang.reflect.Method;
@@ -42,6 +42,15 @@ public class Loader {
 
         public Environ(PathClassLoader loader) {
             this.virtualLoader = loader;
+        }
+    }
+
+    public static synchronized IPluginDA getLocalInstance(final PluginDef def, final String parameter) {
+        switch (def.name) {
+            case "keks":
+                return jamorham.keks.Plugin.getInstance(parameter);
+            default:
+                throw new RuntimeException("Unknown local plugin " + def.name);
         }
     }
 

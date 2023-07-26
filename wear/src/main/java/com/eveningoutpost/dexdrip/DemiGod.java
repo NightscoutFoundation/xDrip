@@ -8,8 +8,8 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.support.v4.content.ContextCompat;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 
 public class DemiGod {
 

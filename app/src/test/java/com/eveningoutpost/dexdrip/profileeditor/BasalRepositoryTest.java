@@ -10,7 +10,7 @@ import static com.eveningoutpost.dexdrip.profileeditor.BasalRepository.populateR
 import static com.eveningoutpost.dexdrip.profileeditor.BasalRepository.rates;
 import static com.google.common.truth.Truth.assertWithMessage;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 
 import org.junit.After;

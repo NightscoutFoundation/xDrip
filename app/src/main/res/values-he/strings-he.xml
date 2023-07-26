@@ -1555,4 +1555,5 @@
     <string name="show_unsmoothed">הראה לא מוחלק</string>
     <string name="show_unsmoothed_summary">הראה מידע לא מוחלק גם עם החלקת הגרף מאופשרצ, 
 אם תוסף הכיול בשימוש יוצג גרף לא מוחלק ולא הגרף מהתוסף.</string>
+    <string name="titleInside_yRange">אפשר</string>
 </resources>

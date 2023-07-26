@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.cloud.backup;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError;
 
 public class LogStatus implements BackupStatus {
     private static final String TAG = "Backup";

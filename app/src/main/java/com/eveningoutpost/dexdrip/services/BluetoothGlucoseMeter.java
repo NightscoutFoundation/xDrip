@@ -35,16 +35,16 @@ import com.eveningoutpost.dexdrip.glucosemeter.VerioHelper;
 import com.eveningoutpost.dexdrip.glucosemeter.caresens.ContextRx;
 import com.eveningoutpost.dexdrip.glucosemeter.caresens.TimeTx;
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Models.BloodTest;
-import com.eveningoutpost.dexdrip.Models.Calibration;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.BloodTest;
+import com.eveningoutpost.dexdrip.models.Calibration;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.lang.reflect.Method;
@@ -57,8 +57,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import static com.eveningoutpost.dexdrip.glucosemeter.VerioHelper.VERIO_F7A1_SERVICE;
 import static com.eveningoutpost.dexdrip.glucosemeter.VerioHelper.VERIO_F7A2_WRITE;
 import static com.eveningoutpost.dexdrip.glucosemeter.VerioHelper.VERIO_F7A3_NOTIFICATION;
-import static com.eveningoutpost.dexdrip.Models.CalibrationRequest.isSlopeFlatEnough;
-import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.unitized_string_with_units_static;
+import static com.eveningoutpost.dexdrip.models.CalibrationRequest.isSlopeFlatEnough;
+import static com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder.unitized_string_with_units_static;
 
 /**
  * Created by jamorham on 09/12/2016.

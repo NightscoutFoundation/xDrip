@@ -5,7 +5,7 @@
     android:installLocation="internalOnly"
     tools:ignore="InnerclassSeparator">
 
-    <uses-sdk tools:overrideLibrary="androidx.health.connect.client" />
+    <uses-sdk tools:overrideLibrary="androidx.health.connect.client, info.nightscout.sdk" />
     <!-- To receive data from HAPP. -->
     <uses-permission android:name="com.eveningoutpost.dexdrip.permissions.RECEIVE_EXTERNAL_STATUSLINE" /> <!-- To receive data from Aidex -->
     <uses-permission android:name="com.microtechmd.cgms.aidex.permissions.RECEIVE_BG_ESTIMATE" />
@@ -28,6 +28,7 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
 
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission-sdk-23 android:name="android.permission.CAMERA" />
@@ -93,7 +94,7 @@
             android:value="41" />
         <meta-data
             android:name="AA_MODELS"
-            android:value="com.eveningoutpost.dexdrip.Models.ActiveBgAlert,com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice,com.eveningoutpost.dexdrip.Models.AlertType,com.eveningoutpost.dexdrip.Models.BgReading,com.eveningoutpost.dexdrip.Models.BgReadingArchive,com.eveningoutpost.dexdrip.Models.BgReading,com.eveningoutpost.dexdrip.Models.Calibration,com.eveningoutpost.dexdrip.Models.Calibration,com.eveningoutpost.dexdrip.Models.CalibrationRequest,com.eveningoutpost.dexdrip.Models.Sensor,com.eveningoutpost.dexdrip.Models.TransmitterData,com.eveningoutpost.dexdrip.Models.Treatments,com.eveningoutpost.dexdrip.Models.UserError,com.eveningoutpost.dexdrip.Models.UserNotification,com.eveningoutpost.dexdrip.ShareModels.Models,com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue,com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue,com.eveningoutpost.dexdrip.UtilityModels.SensorSendQueue,com.eveningoutpost.dexdrip.Models.HeartRate,com.eveningoutpost.dexdrip.Models.StepCounter,com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue,com.eveningoutpost.dexdrip.Models.BloodTest,com.eveningoutpost.dexdrip.Models.Accuracy,com.eveningoutpost.dexdrip.Models.Reminder,com.eveningoutpost.dexdrip.Models.LibreData,com.eveningoutpost.dexdrip.Models.LibreBlock,com.eveningoutpost.dexdrip.Models.APStatus,com.eveningoutpost.dexdrip.Models.Prediction,com.eveningoutpost.dexdrip.Models.DesertSync,com.eveningoutpost.dexdrip.Models.PenData,com.eveningoutpost.dexdrip.Models.Libre2RawValue,com.eveningoutpost.dexdrip.Models.Libre2Sensor" />
+            android:value="com.eveningoutpost.dexdrip.models.ActiveBgAlert,com.eveningoutpost.dexdrip.models.ActiveBluetoothDevice,com.eveningoutpost.dexdrip.models.AlertType,com.eveningoutpost.dexdrip.models.BgReading,com.eveningoutpost.dexdrip.models.BgReadingArchive,com.eveningoutpost.dexdrip.models.BgReading,com.eveningoutpost.dexdrip.models.Calibration,com.eveningoutpost.dexdrip.models.Calibration,com.eveningoutpost.dexdrip.models.CalibrationRequest,com.eveningoutpost.dexdrip.models.Sensor,com.eveningoutpost.dexdrip.models.TransmitterData,com.eveningoutpost.dexdrip.models.Treatments,com.eveningoutpost.dexdrip.models.UserError,com.eveningoutpost.dexdrip.models.UserNotification,com.eveningoutpost.dexdrip.sharemodels.models,com.eveningoutpost.dexdrip.utilitymodels.BgSendQueue,com.eveningoutpost.dexdrip.utilitymodels.CalibrationSendQueue,com.eveningoutpost.dexdrip.utilitymodels.SensorSendQueue,com.eveningoutpost.dexdrip.models.HeartRate,com.eveningoutpost.dexdrip.models.StepCounter,com.eveningoutpost.dexdrip.utilitymodels.UploaderQueue,com.eveningoutpost.dexdrip.models.BloodTest,com.eveningoutpost.dexdrip.models.Accuracy,com.eveningoutpost.dexdrip.models.Reminder,com.eveningoutpost.dexdrip.models.LibreData,com.eveningoutpost.dexdrip.models.LibreBlock,com.eveningoutpost.dexdrip.models.APStatus,com.eveningoutpost.dexdrip.models.Prediction,com.eveningoutpost.dexdrip.models.DesertSync,com.eveningoutpost.dexdrip.models.PenData,com.eveningoutpost.dexdrip.models.Libre2RawValue,com.eveningoutpost.dexdrip.models.Libre2Sensor" />
 
         <provider
             android:name="com.activeandroid.content.ContentProvider"
@@ -301,7 +302,7 @@
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".ImportedLibraries.dexcom.SyncingService"
+            android:name=".importedlibraries.dexcom.SyncingService"
             android:enabled="true"
             android:exported="true" />
         <service
@@ -354,19 +355,19 @@
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_calibration_check_in" />
         <activity
-            android:name=".UtilityModels.pebble.watchface.InstallPebbleWatchFace"
+            android:name=".utilitymodels.pebble.watchface.InstallPebbleWatchFace"
             android:label="@string/install_pebble_watchface" />
         <activity
-            android:name=".UtilityModels.pebble.watchface.InstallPebbleTrendWatchFace"
+            android:name=".utilitymodels.pebble.watchface.InstallPebbleTrendWatchFace"
             android:label="@string/install_pebble_trend_watchface" />
         <activity
-            android:name=".UtilityModels.pebble.watchface.InstallPebbleClassicTrendWatchface"
+            android:name=".utilitymodels.pebble.watchface.InstallPebbleClassicTrendWatchface"
             android:label="@string/install_pebble_classic_trend_watchface" />
         <activity
-            android:name=".UtilityModels.pebble.watchface.InstallPebbleTrendClayWatchFace"
+            android:name=".utilitymodels.pebble.watchface.InstallPebbleTrendClayWatchFace"
             android:label="Install Pebble Clay Watchface" />
         <activity
-            android:name=".UtilityModels.pebble.watchface.InstallPebbleSnoozeControlApp"
+            android:name=".utilitymodels.pebble.watchface.InstallPebbleSnoozeControlApp"
             android:label="@string/install_pebble_snooze_control_app" />
         <activity
             android:name=".UsbConnectedActivity"
@@ -474,10 +475,10 @@
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".UtilityModels.Notifications"
+            android:name=".utilitymodels.Notifications"
             android:exported="false" />
         <service
-            android:name=".UtilityModels.pebble.PebbleWatchSync"
+            android:name=".utilitymodels.pebble.PebbleWatchSync"
             android:enabled="true"
             android:exported="true"
             android:foregroundServiceType="connectedDevice|location" />
@@ -498,6 +499,15 @@
         </activity>
 
         <receiver android:name=".NSClientReceiver">
+            <intent-filter>
+                <action android:name="info.nightscout.client.NS_BRIDGE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="info.nightscout.client.NEW_FOOD" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="info.nightscout.client.NEW_DEVICESTATUS" />
+            </intent-filter>
             <intent-filter>
                 <action android:name="info.nightscout.client.NEW_SGV" />
             </intent-filter>
@@ -554,7 +564,7 @@
                 <action android:name="com.librelink.app.ThirdPartyIntegration.SENSOR_SCAN" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".UtilityModels.BroadcastSnoozeReceiver">
+        <receiver android:name=".utilitymodels.BroadcastSnoozeReceiver">
             <intent-filter>
                 <action android:name="com.eveningoutpost.dexdrip.Snooze" />
             </intent-filter>
@@ -566,7 +576,7 @@
                 <action android:name="com.twofortyfouram.locale.intent.action.FIRE_SETTING" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".UtilityModels.CompatibleApps">
+        <receiver android:name=".utilitymodels.CompatibleApps">
             <intent-filter android:priority="100">
                 <action android:name="android.intent.action.PACKAGE_ADDED" />
 
@@ -600,7 +610,7 @@
                 android:resource="@xml/accessibility_service" />
         </service>
         <service
-            android:name=".UtilityModels.XDripDreamService"
+            android:name=".utilitymodels.XDripDreamService"
             android:exported="true"
             android:icon="@drawable/ic_launcher"
             android:label="xDrip+"
@@ -621,7 +631,7 @@
             android:exported="true" />
 
         <activity
-            android:name=".UtilityModels.UpdateActivity"
+            android:name=".utilitymodels.UpdateActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_update" />
         <activity
@@ -629,6 +639,7 @@
             android:configChanges="orientation|screenSize"
             android:exported="false"
             android:label="@string/title_activity_display_qrcode"
+
             android:noHistory="true" />
         <activity
             android:name=".utils.LibreTrendGraph"
@@ -636,7 +647,7 @@
             android:label="@string/libre_15_minutes_graph"
             android:noHistory="true" />
         <activity
-            android:name=".UtilityModels.SendFeedBack"
+            android:name=".utilitymodels.SendFeedBack"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_send_feed_back"
             android:noHistory="true">
@@ -764,7 +775,7 @@
             android:name="com.sec.android.multiwindow.MINIMUM_SIZE_H"
             android:value="598.0dip" />
 
-        <activity android:name=".UtilityModels.XDripDreamSettingsActivity" />
+        <activity android:name=".utilitymodels.XDripDreamSettingsActivity" />
 
         <service
             android:name=".wearintegration.Amazfitservice"
@@ -800,7 +811,7 @@
             android:name=".ui.activities.SelectAudioDevice"
             android:label="@string/select_device" />
         <activity
-            android:name=".UtilityModels.MtpConfigureActivity"
+            android:name=".utilitymodels.MtpConfigureActivity"
             android:label="USB programmer" />
         <activity
             android:name=".ui.activities.NumberWallPreview"

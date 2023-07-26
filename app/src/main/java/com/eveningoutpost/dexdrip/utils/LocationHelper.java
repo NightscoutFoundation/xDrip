@@ -13,8 +13,10 @@ import android.os.Looper;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
 
 /**
  * Helper for checking if location services are enabled on the device.
@@ -22,6 +24,7 @@ import com.eveningoutpost.dexdrip.R;
 public class LocationHelper {
 
     static final String TAG = "xDrip LocationHelper";
+    private static final boolean newType = false;
     /**
      * Determine if Network provider is currently enabled.
      *
@@ -85,6 +88,36 @@ public class LocationHelper {
      */
     public static boolean requestLocationForBluetooth(final Activity activity) {
         // Location needs to be enabled for Bluetooth discovery on Marshmallow.
+
+        if (newType && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if ((ContextCompat.checkSelfPermission(activity,
+                    Manifest.permission.BLUETOOTH_SCAN)
+                    != PackageManager.PERMISSION_GRANTED)
+            || (ContextCompat.checkSelfPermission(activity,
+                    Manifest.permission.BLUETOOTH_CONNECT)
+                    != PackageManager.PERMISSION_GRANTED)) {
+
+                JoH.show_ok_dialog(activity, activity.getString(R.string.please_allow_permission), "Need bluetooth permissions", new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            ActivityCompat.requestPermissions(activity,
+                                    new String[]{Manifest.permission.BLUETOOTH_SCAN
+                                    , Manifest.permission.BLUETOOTH_CONNECT},
+                                    0);
+                            // below is not ideal as we should really trap the activity result but it can come from different activities and there is no parent...
+                            Inevitable.task("location-perm-restart", 6000, CollectionServiceStarter::restartCollectionServiceBackground);
+                        } catch (Exception e) {
+                            JoH.static_toast_long("Got Exception with Bluetooth Permission: " + e);
+                        }
+                    }
+                });
+                return false;
+
+            }
+            return true;
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
             if (ContextCompat.checkSelfPermission(activity,
@@ -98,6 +131,8 @@ public class LocationHelper {
                             ActivityCompat.requestPermissions(activity,
                                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                                     0);
+                            // below is not ideal as we should really trap the activity result but it can come from different activities and there is no parent...
+                            Inevitable.task("location-perm-restart", 6000, CollectionServiceStarter::restartCollectionServiceBackground);
                         } catch (Exception e) {
                             JoH.static_toast_long("Got Exception with Location Permission: " + e);
                         }
@@ -178,13 +213,17 @@ public class LocationHelper {
     }
 
     public static Boolean locationPermission(final Activity activity) {
-        if (Build.VERSION.SDK_INT >= 29) {
-            // check background location as well on android 10+
-            return ((ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-                    && (ActivityCompat.checkSelfPermission(activity, ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED));
-        } else {
-            return ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-        }
+        if (newType && Build.VERSION.SDK_INT >=  Build.VERSION_CODES.S) {
+            return ((ActivityCompat.checkSelfPermission(activity, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED)
+                    && (ActivityCompat.checkSelfPermission(activity, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED));
+        } else if (Build.VERSION.SDK_INT >= 29) {
+                // check background location as well on android 10+
+                return ((ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                        && (ActivityCompat.checkSelfPermission(activity, ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED));
+            } else {
+                return ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+            }
+
     }
 
 }

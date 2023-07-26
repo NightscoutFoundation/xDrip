@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip.services;
 import java.util.Date;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.google.gson.annotations.Expose;
 import com.mongodb.BasicDBObject;
 /**

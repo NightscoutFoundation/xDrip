@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.utils.bt;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError;
 
 import java.util.Date;
 import java.util.Locale;

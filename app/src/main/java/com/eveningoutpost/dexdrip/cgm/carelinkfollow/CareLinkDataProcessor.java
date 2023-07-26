@@ -1,14 +1,15 @@
 package com.eveningoutpost.dexdrip.cgm.carelinkfollow;
 
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.BloodTest;
-import com.eveningoutpost.dexdrip.Models.DateUtil;
-import com.eveningoutpost.dexdrip.Models.Sensor;
-import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.BloodTest;
+import com.eveningoutpost.dexdrip.models.DateUtil;
+import com.eveningoutpost.dexdrip.models.Sensor;
+import com.eveningoutpost.dexdrip.models.Treatments;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.PumpStatus;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ActiveNotification;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.Alarm;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ClearedNotification;
@@ -23,8 +24,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import static com.eveningoutpost.dexdrip.Models.BgReading.SPECIAL_FOLLOWER_PLACEHOLDER;
-import static com.eveningoutpost.dexdrip.Models.Treatments.pushTreatmentSyncToWatch;
+import static com.eveningoutpost.dexdrip.models.BgReading.SPECIAL_FOLLOWER_PLACEHOLDER;
+import static com.eveningoutpost.dexdrip.models.Treatments.pushTreatmentSyncToWatch;
 
 
 /**
@@ -218,15 +219,23 @@ public class CareLinkDataProcessor {
             }
         }
 
-
+        //PUMP INFO (Pump Status)
+        if (recentData.isNGP()) {
+            PumpStatus.setReservoir(recentData.reservoirRemainingUnits);
+            PumpStatus.setBattery(recentData.medicalDeviceBatteryLevelPercent);
+            if (recentData.activeInsulin != null)
+                PumpStatus.setBolusIoB(recentData.activeInsulin.amount);
+            PumpStatus.syncUpdate();
+        }
+		
         // LAST ALARM -> NOTE (only for GC)
         if (Pref.getBooleanDefaultFalse("clfollow_download_notifications")) {
 
             // Only Guardian Connect, NGP has all in notifications
             if (recentData.isGM() && recentData.lastAlarm != null) {
                 //Add notification from alarm
-                if (recentData.lastAlarm.datetime != null && recentData.lastAlarm.kind != null)
-                    addNotification(recentData.lastAlarm.datetime, recentData.getDeviceFamily(), recentData.lastAlarm);
+                if (recentData.lastAlarm.datetimeAsDate != null && recentData.lastAlarm.kind != null)
+                    addNotification(recentData.lastAlarm.datetimeAsDate, recentData.getDeviceFamily(), recentData.lastAlarm);
             }
         }
 
