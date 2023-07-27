@@ -1412,6 +1412,8 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="relative_sd_cv">Relativní směr. odchylka (CV):</string>
     <string name="important_warning">Důležité upozornění!</string>
     <string name="i_agree">SOUHLASÍM</string>
+    <string name="backup_detected">Nalezena záloha</string>
+    <string name="it_looks_like_you_maybe_have_a_settings_backup_shall_we_try_to_restore_it">Vypadá to, že by mohla být uložena záloha nastavení, pokusit se o její obnovení?</string>
     <string name="restore_settings">Obnovit nastavení</string>
     <string name="libre">Libre</string>
     <string name="__data_source_disabled">\n ZDROJ DAT JE VYPNUTÝ</string>
@@ -1434,7 +1436,12 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="are_you_sure_you_want_to_delete_this_blood_test_result">Opravdu chcete smazat tuto hodnotu glykémie z krve?</string>
     <string name="yes_delete">Ano, odstranit</string>
     <string name="deleted">Odstraněno!</string>
+    <string name="wifi_sleep_policy_issue">Problém s vypínámím WiFi</string>
+    <string name="your_wifi_is_set_to_sleep_when_the_phone_screen_is_off__this_may_cause_problems_if_you_dont_have_cellular_data_or_have_devices_on_your_local_network__would_you_like_to_go_to_the_settings_page_to_set__always_keep_wifi_on_during_sleep">WiFi připojení je nastaveno na spánek, když je obrazovka telefonu vypnutá.\n\nTo může způsobit problémy, pokud nejsou zapnuta mobilní data nebo zařízení není připojeno do místní sítě.\n\nChcete přejít do nastavení telefonu a změnit na:\n\nWiFi bude vždy zapnutá i během spánku telefonu?</string>
     <string name="maybe_later">Možná později</string>
+    <string name="yes_do_it">ANO, změnit nastavení</string>
+    <string name="recommend_that_you_change_wifi_to_always_be_on_during_sleep">Doporučeno změnit nastavení WiFi tak, aby byla vždy zapnutá i během spánku telefonu</string>
+    <string name="ooops_this_device_doesnt_seem_to_have_a_wifi_settings_page">Jejda, zdá se že toto zařízení nemá možnost nastavení WiFi!</string>
     <string name="restore_backup">Obnovit zálohu?</string>
     <string name="do_you_want_to_restore_the_backup_file_">Chcete obnovit ze záložního souboru: </string>
     <string name="restore">Obnovit</string>
@@ -1442,6 +1449,11 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="we_have_some_readings__next_we_need_the_first_calibration_blood_test__ready_to_calibrate_now">Máme nějaké hodnoty!\n\nDále potřebujeme provést první kalibraci z krve.\n\nPřipraveni provést kalibraci?</string>
     <string name="calibrate">Kalibrovat</string>
     <string name="confirm_delete">Potvrdit odstranění</string>
+    <string name="are_you_sure_you_want_to_delete_this_treatment">Opravdu chcete smazat toto ošetření?</string>
+    <string name="prepare_to_test">Připravte se na test!</string>
+    <string name="after_you_click_ok_look_for_a_number_icon_in_the_notification_area_if_you_see_123_then_the_test_has_succeeded__on_some_phones_this_test_will_crash_the_phone__after_30_seconds_we_will_shut_off_the_notification_if_your_phone_does_not_recover_after_this_then_hold_the_power_button_to_reboot_it">Po stiskutí tlačítka OK vyhledejte číselnou ikonu v oznamovací liště.\nPokud uvidíte 123, test byl úspěšný.\n\nTento test způsobí pád/zamrznutí některých telefonů.\n\nPo 30 vteřinách bude oznámení vypnuto. Pokud se poté telefon sám neobnoví, podržte tlačítko napájení pro jeho restartování.</string>
+    <string name="running_test_with_number_123">Spuštění testu s číslem: 123</string>
+    <string name="xdrip_will_not_work_below_android_version_42">aplikace xDrip+ vyžaduje verzi Androidu 4.2 a vyšší</string>
     <string name="setting_disabled_">Nastavení vypnuto :)</string>
     <string name="yes_please">ANO, prosím</string>
     <string name="automated_calibration_enabled">Automatická kalibrace zapnuta</string>
@@ -1459,6 +1471,8 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="nfc_io_error">NFC IO chyba</string>
     <string name="nfc_error">Chyba NFC</string>
     <string name="please_wait">Čekejte prosím...</string>
+    <string name="didnt_find_any_glucose_readings_in_that_time_period">Nebyly nalezeny žádné hodnoty glykémie v tomto časovém období</string>
+    <string name="got_calibration_in_the_future__cannot_process">Obdržena hodnota kalibrace v budoucnosti - nelze zpracovat!</string>
     <string name="remote_snooze">Vzdálené potvrzení výstrahy...</string>
     <string name="sensor_stopped">Senzor zastaven</string>
     <string name="restarting_collector">Restartování kolektoru!</string>
