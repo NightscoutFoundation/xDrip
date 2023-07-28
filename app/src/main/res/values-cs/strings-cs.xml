@@ -1533,6 +1533,18 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="simplify_graphs_by_smoothing_out_irregularities">Zjednodušit grafy vyhlazením (odstraněním) odchylých dat</string>
     <string name="graph_smoothing">Vyhlazování grafu</string>
     <string name="cannot_choose_file_without_permission">Pro vybrání souboru je zapotřebí udělit oprávnění k úložišti zařízení</string>
+    <string name="you_can_use_google_drive_for_backup">K zálohování můžete použít Google Drive</string>
+    <string name="select_backup_location">Vyberte umístění zálohy</string>
+    <string name="automatic_daily_backup">Automatická denní záloha</string>
+    <string name="restore_from_backup">Obnovit ze zálohy</string>
+    <string name="are_you_really_sure_question">Jste si opravdu jisti?</string>
+    <string name="error_exclamation">Chyba!</string>
+    <string name="checking_file">Kontrola souboru</string>
+    <string name="failed_to_read_file">Nepodařilo se načíst soubor</string>
+    <string name="permission_problem_retry">Problém s oprávněním - zkuste to znovu</string>
+    <string name="no_file_was_chosen">Nebyl vybrán žádný soubor</string>
+    <string name="could_not_sign_in">Nepodařilo se přihlásit</string>
+    <string name="problem_with_file_selection">Problém s výběrem souboru</string>
     <string name="invalid_time">Neplatný čas</string>
     <string name="format_string_ago">před %s</string>
     <string name="title_yRange">Přizpůsobit rozsah osy y</string>
@@ -1540,8 +1552,11 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="summaryInside_yRange">Zde můžete upravit rozsah svislé osy (y).\nPokud však máte hodnoty mimo tento rozsah, osa se automaticky prodlouží o několik hodin, aby bylo možné tyto hodnoty zobrazit.</string>
     <string name="title_ymin">Upravit minimum osy y</string>
     <string name="title_ymax">Upravit maximum osy y</string>
+    <string name="summary_ymin">Zvolit minimum osy y, pokud se nebudou vyskytovat nižší hodnoty glykémie.</string>
+    <string name="summary_ymax">Zvolit maximum osy y, pokud se nebudou vyskytovat výšší hodnoty glykémie.</string>
     <string name="wait_to_connect">Ověřte nastavení a počkejte na připojení.</string>
     <string name="title_advanced_settings_4_Lib2">Pokročilá nastavení pro Libre 2</string>
     <string name="title_Lib2_show_sense_on_status">Zobrazit informace o senzoru ve Statusu</string>
+    <string name="import_qr_code_warning">Importujte nastavení pouze ze zdrojů, kterým důvěřujete!\n\nProsím potvrďte import následujících nastavení:\n\n</string>
     <string name="scan_to_load_xdrip_settings">Skenovat pro nahrání nastavení aplikace xDrip+</string>
 </resources>
