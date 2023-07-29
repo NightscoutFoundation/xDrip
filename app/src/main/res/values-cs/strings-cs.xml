@@ -1535,9 +1535,16 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="cannot_choose_file_without_permission">Pro vybrání souboru je zapotřebí udělit oprávnění k úložišti zařízení</string>
     <string name="you_can_use_google_drive_for_backup">K zálohování můžete použít Google Drive</string>
     <string name="select_backup_location">Vyberte umístění zálohy</string>
+    <string name="do_backup_now">Zazálohovat nyní</string>
     <string name="automatic_daily_backup">Automatická denní záloha</string>
     <string name="restore_from_backup">Obnovit ze zálohy</string>
     <string name="are_you_really_sure_question">Jste si opravdu jisti?</string>
+    <string name="backup_source_confirm">Potvrdit zdroj zálohy</string>
+    <string name="nothing_to_restore_please_select">Není zde nic k obnově - prosím zvolte umístění zálohy</string>
+    <string name="no_backup_location_set">Není nastaveno umístění zálohy</string>
+    <string name="backing_up">Zálohování</string>
+    <string name="did_backup_ok">Záloha proběhla úspěšně</string>
+    <string name="backup_failed">Záloha se nezdařila</string>
     <string name="error_exclamation">Chyba!</string>
     <string name="checking_file">Kontrola souboru</string>
     <string name="failed_to_read_file">Nepodařilo se načíst soubor</string>
