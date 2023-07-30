@@ -273,6 +273,7 @@
     <string name="send_data_to_pebble_watchface">Pebbleにデータを表示</string>
     <string name="pebble_watch_integration">Pebble 統合</string>
     <string name="history">履歴</string>
+    <string name="statistics">統計</string>
     <string name="snooze_alert">スヌーズ　アラート</string>
     <string name="smart_alerting">スマート通知</string>
     <string name="reset">リセット</string>

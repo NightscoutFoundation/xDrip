@@ -912,6 +912,7 @@
     <string name="bluereader_position">Patikrinkite, ar BlueReader gerai uždėtas ant sensoriaus, nes nėra duomenų!</string>
     <string name="bluereaderuglystate">BlueReader būsena prasta! Jis bus išjungtas, o tada Jūs galėsite įjungti jį vėl (spustelėję mygtuką). Po to BlueReader turėtų vėl veikti gerai!</string>
     <string name="offical_msg">Oficiali programėlė</string>
+    <string name="aggressive_power_manager">Jūsų telefone veikia agresyvi baterijos taupymo programa. Ją galite pasiekti per sistemos nustatymus. Suteikite xDrip išimtį veiklos fone ribojimui.</string>
     <string name="use_conflict_msg">gali taip pat bandyti jungtis su siųstuvu, todėl tinkamai neveiks nė viena programėlė</string>
     <string name="use_confict_msg_glimp">Galite derinti Glimp nustatymus: options -&gt; devices -&gt; unselect Bluetooth option</string>
     <string name="eng_mode_is_on">Įjungtas programavimo režimas. Jei nesate tikri, ką darote, išjunkite jį.</string>
@@ -1202,6 +1203,8 @@
     <string name="return_to_home_screen">Grįžti į pradžią</string>
     <string name="title_broadcast_service_api">Lokalaus perdavimas API</string>
     <string name="summary_broadcast_service_api">Leidžia xDrip komunikuoti su kitomis programėlėmis, naudojant naują API</string>
+    <string name="title_enable_iob_in_api_endpoint">Įgalinti AIO įrašus per API</string>
+    <string name="summary_enable_iob_in_api_endpoint">Įgalinti AIO įrašus per Web Service API, naudojamą kai kuriuose laikrodžiuose</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Sinchronizuoti duomenis su MiBand</string>
     <string name="title_miband_enable">Naudoti MiBand apyrankę</string>
@@ -1289,6 +1292,8 @@
     <string name="summary_clfollow_pass">CareLink prisijungimo slaptažodis</string>
     <string name="title_clfollow_country">CareLink šalis</string>
     <string name="summary_clfollow_country">Pasirinkite savo CareLink šalį.</string>
+    <string name="title_clfollow_patient">CareLink paciento vartotojo vardas</string>
+    <string name="summary_clfollow_patient">CareLink paciento vartotojo vardas (pasirenkama)</string>
     <string name="title_clfollow_lang">CareLink kalba</string>
     <string name="summary_clfollow_lang">CareLink kalbos kodas</string>
     <string name="title_clfollow_grace_period">Delsimo laikas</string>
@@ -1589,6 +1594,10 @@
     <string name="enable_streaming_always_allow">Visada susieti Libre2 sensorius</string>
     <string name="enable_streaming_ask_each_time">Klausti kaskart</string>
     <string name="enable_streaming_never">Niekada nesusieti Libre2 sensorių</string>
+    <string name="libre_filter_length_10">10 min.</string>
+    <string name="libre_filter_length_15">15 min.</string>
+    <string name="libre_filter_length_25">25 min. &gt;</string>
+    <string name="libre_filter_length_title">Glodinti Libre 3 duomenis naudojant xxx metodą</string>
     <string name="enable_streaming_dialog_yes">Susieti šį Libre2 sensorių</string>
     <string name="enable_streaming_dialog_no">Atšaukti susiejimą su šiuo Libre2 sensoriumi </string>
     <string name="enable_streaming_dialog_dont_ask_again">Daugiau neklausti</string>
@@ -1764,7 +1773,13 @@
     <string name="title_ymax">Derinti y ašies maks. reikšmę</string>
     <string name="summary_ymin">Pasirinkite yMin, kai nėra mažesnių rodmenų.</string>
     <string name="summary_ymax">Pasirinkite yMaks, kai nėra didesnių rodmenų.</string>
+    <string name="wait_to_connect">Patikrinkite nustatymus ir laukite sujungimo</string>
     <string name="close">Uždaryti</string>
+    <string name="title_advanced_settings_4_Lib2">Pažangūs Libre 2 nustatymai</string>
+    <string name="title_Lib2_show_raw_values">Rodyti neapdorotus duomenis</string>
+    <string name="summary_Lib2_show_raw_values">Įjungti neapdorotų duomenų rodymą grafike</string>
+    <string name="title_Lib2_show_sense_on_status">Rodyti sensoriaus informaciją statuse</string>
+    <string name="summary_Lib2_show_sense_on_status">Įjungti papildomos Libre 2 sensoriaus informacijos rodymą statuse</string>
     <string name="import_qr_code_warning">Importuokite nustatymus tik iš tų šaltinių, kuriais pasitikite!\n\nPatvirtinkite šių nustatymų importą:\n\n</string>
     <string name="scan_to_load_xdrip_settings">Skenuokite xDrip nustatymams įkelti</string>
 </resources>

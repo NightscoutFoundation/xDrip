@@ -1203,6 +1203,10 @@
     <string name="return_to_home_screen">Zum Startbildschirm zurückkehren</string>
     <string name="title_broadcast_service_api">Broadcast Service API</string>
     <string name="summary_broadcast_service_api">Aktiviert xDrip-Kommunikation mit Drittanbieter-Anwendungen durch neue API</string>
+    <string name="title_enable_iob_in_api_endpoint">IoB-Reporting in API aktivieren</string>
+    <string name="summary_enable_iob_in_api_endpoint">IoB-Werteberichte im Web Service API-Endpunkt aktivieren (von einigen Smartwatches verwendet)</string>
+    <string name="title_fetch_iob_from_companion_app">IoB von der Companion-App holen</string>
+    <string name="summary_fetch_iob_from_companion_app">IoB von der Companion App auf demselben Gerät abholen (z.B. Omnipod 5 App)</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Daten mit MiBand Fitness Bändern synchronisieren</string>
     <string name="title_miband_enable">MiBand verwenden</string>

@@ -1203,6 +1203,10 @@
     <string name="return_to_home_screen">Tagasi avakuvale</string>
     <string name="title_broadcast_service_api">API andmevahetus</string>
     <string name="summary_broadcast_service_api">Lubab xDrip suhtluse kolmanda osapoole rakendustega, kasutades uut API teenust</string>
+    <string name="title_enable_iob_in_api_endpoint">Luba API-s IoB aruandlus</string>
+    <string name="summary_enable_iob_in_api_endpoint">Luba IoB väärtuse aruandlus Web Service API lõpp-punktis, mida mõned nutikellad kasutavad</string>
+    <string name="title_fetch_iob_from_companion_app">Hangi IoB kaasrakendusest</string>
+    <string name="summary_fetch_iob_from_companion_app">Hangi IoB väärtus samas seadmes töötavast kaasrakendusest, näiteks rakendusest Omnipod 5</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Sünkrooni andmed MiBand treeningkellaga</string>
     <string name="title_miband_enable">Kasuta MiBand kella</string>
