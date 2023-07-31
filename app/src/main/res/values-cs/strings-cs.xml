@@ -472,7 +472,7 @@
     <string name="bad_glucose_values">Špatné hodnoty glykémie</string>
     <string name="revert_to_default">Obnovit výchozí nastavení</string>
     <string name="filtered_values">Filtrované hodnoty</string>
-    <string name="treatment_color">Aktivní inzulín (IOB)</string>
+    <string name="treatment_color">Aktivní inzulín (IoB)</string>
     <string name="treatment_color_dark">Aktivita inzulínu</string>
     <string name="predictive_color">Barva předpovědi</string>
     <string name="predictive_color_dark">Aktivní sacharidy</string>
@@ -1167,10 +1167,13 @@
     <string name="show_help">Zobrazit nápovědu</string>
     <string name="load_save_settings_on_sdcard">Načíst / uložit nastavení</string>
     <string name="delete_all_bg_readings">Smazat všechny hodnoty glykémie</string>
+    <string name="sync_treatments">Synchronizovat ošetření</string>
+    <string name="send_bg_readings_to_backfill">Odeslat hodnoty glykémie ke zpětnému vyplnění</string>
     <string name="view_old_error_log">Zobrazit starý protokol chyb</string>
     <string name="return_to_home_screen">Návrat na domovskou obrazovku</string>
     <string name="title_broadcast_service_api">Komunikace prostřednictvím služby API</string>
     <string name="summary_broadcast_service_api">Umožňuje komunikaci aplikace xDrip+ s aplikacemi třetích stran (např. WatchDrip+) pomocí nového API</string>
+    <string name="title_enable_iob_in_api_endpoint">Povolit odesílání aktivního inzulínu (IoB) přes API</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Synchronizovat data s MiBand fitnes náramky (pouze pro MiBand 1-4)</string>
     <string name="title_miband_enable">Použít MiBand náramek</string>
@@ -1273,6 +1276,7 @@
     <string name="summary_ob1_g5_use_insufficiently_calibrated">Pokračovat v používání hodnot i přes nedostatek dobrých kalibrací (experimentální funkce!)</string>
     <string name="title_ob1_g5_use_insufficiently_calibrated">Pokračovat bez kalibrací</string>
     <string name="summary_ob1_g5_fallback_to_xdrip">Vrátit se k xDrip algoritmu, pokud G5 neposkytuje glykémie (potenciálně riskantní!)</string>
+    <string name="title_ob1_g5_fallback_to_xdrip">Návrat k algoritmu xDrip+</string>
     <string name="title_ob1_minimize_scanning">Minimalizovat skenování</string>
     <string name="summary_using_g6">Používám G6 nebo Dexcom One senzor</string>
     <string name="title_using_g6">Podpora G6/Dexcom One</string>
@@ -1457,6 +1461,12 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="setting_disabled_">Nastavení vypnuto :)</string>
     <string name="yes_please">ANO, prosím</string>
     <string name="automated_calibration_enabled">Automatická kalibrace zapnuta</string>
+    <string name="treatment_cancelled">Ošetření bylo zrušeno</string>
+    <string name="treatment_time_wrong">Chybný čas ošetření</string>
+    <string name="treatment_error">Chyba ošetření</string>
+    <string name="treatment_processed">Ošetření bylo zpracováno</string>
+    <string name="starting_sync_to_other_devices">Zahájení sychronizace s ostatními zařízeními</string>
+    <string name="deleting_all_bg_readings">Vymazání VŠECH hodnot glykémie!</string>
     <string name="could_not_export_csv_">Nelze exportovat CSV :(</string>
     <string name="phone_has_no_nfc_reader">Telefon nemá NFC čtečku</string>
     <string name="nfc_is_not_enabled">NFC není zapnuto</string>
@@ -1470,6 +1480,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="scanned_ok">Naskenované OK!</string>
     <string name="nfc_io_error">NFC IO chyba</string>
     <string name="nfc_error">Chyba NFC</string>
+    <string name="still_processing_previous_backfill_request">Stále probíhá zpracování předchozího požadavku na zpětné vyplnění hodnot!</string>
     <string name="please_wait">Čekejte prosím...</string>
     <string name="didnt_find_any_glucose_readings_in_that_time_period">Nebyly nalezeny žádné hodnoty glykémie v tomto časovém období</string>
     <string name="got_calibration_in_the_future__cannot_process">Obdržena hodnota kalibrace v budoucnosti - nelze zpracovat!</string>
