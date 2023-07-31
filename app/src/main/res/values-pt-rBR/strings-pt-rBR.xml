@@ -849,6 +849,7 @@
     <string name="install_text_to_speech_data_question">Instalar dados Texto-Para-Voz?</string>
     <string name="after_installation_of_languages_you_might_have_to">(Após idiomas instalados poderá ser necessário pressionar \"Reiniciar Dispositivo BT\" em Estado do Sistema.)</string>
     <string name="stop_sensor">Parar Sensor</string>
+    <string name="dont_stop_just_reset_all_calibrations">Não parar, apenas limpar todas as calibrações</string>
     <string name="initial_calibration">Calibração dupla</string>
     <string name="calibration_can_not_be_blank">Calibração não pode ficar em branco</string>
     <string name="invalid_calibration_number">Valor de calibração inválido!</string>
@@ -899,6 +900,7 @@
     <string name="bluereader_position">Verificar posição do blueReader no sensor, pois ele não foi capaz de ler!</string>
     <string name="bluereaderuglystate">O blueReader foi detectado em estado erro! Ele será desligado de imediato, mas poderá ser ligado de novo (breve pressão do botão). Após isso o blueReader deverá funcionar como esperado!</string>
     <string name="offical_msg">App Oficial</string>
+    <string name="aggressive_power_manager">Seu dispositivo possui aplicativo de gerenciamento de energia. Pode ser acessado via configurações do sistema. Favor garantir que o xDrip não faz parte das restrições de segundo plano.</string>
     <string name="use_conflict_msg">pode tentar acessar o dispositivo de transmissor também e isso pode causar problemas com os dois apps</string>
     <string name="use_confict_msg_glimp">Ajustar Configurações do Glimp: opções -&gt; dispositivos -&gt; desseleccionar opção Bluetooth</string>
     <string name="eng_mode_is_on">O modo de engenharia está ativado. Desative-o, a menos que tenha certeza que precisa, pois pode causar um comportamento inesperado.</string>
@@ -910,6 +912,7 @@
     <string name="enable_local_web_server_feature_fitbit">Ativar o recurso do servidor web local para o relógio Fitbit?</string>
     <string name="set_data_source_to">Definir Fonte de Dados para: %s ?</string>
     <string name="are_you_sure">Você tem certeza?</string>
+    <string name="g4_share_receiver">Receptor de compartilhamento G4</string>
     <string name="bluetooth_wixel">Bluetooth Wixel</string>
     <string name="parakeet_wifi">Parakeet / Wifi</string>
     <string name="other">Outro</string>
@@ -1300,4 +1303,6 @@
     <string name="enable_streaming_dialog_dont_ask_again">Não perguntar novamente</string>
     <string name="cannot_choose_file_without_permission">Não é possível escolher o arquivo sem permissão de armazenamento</string>
     <string name="titleInside_yRange">Ligar</string>
+    <string name="summary_sens_expiry_notify">Emitir notificações quando o sensor estiver perto de expirar.</string>
+    <string name="title_sens_expiry_notify">Expiração do sensor</string>
 </resources>
