@@ -619,7 +619,7 @@
     <string name="calibrate_external_libre_algorithm_summary">Aplikovat xDrip kalibrační algoritmus na OOP data</string>
     <string name="calibrate_external_libre_algorithm_title">OOP kalibrační algoritmus</string>
     <string name="calibrate_external_libre_2_algorithm_summary">Aplikovat kalibrační algoritmus xDripu na OOP2 data.</string>
-    <string name="calibrate_external_libre_2_algorithm_title">OOP kalibrační algoritmus.</string>
+    <string name="calibrate_external_libre_2_algorithm_title">OOP2 kalibrační algoritmus.</string>
     <string name="libre_use_smoothed_data_summary">Použít průměr z 5 měření, pro získání plynulejších dat z Libre.</string>
     <string name="libre_use_smoothed_data_title">Vyhlazovat data z Libre.</string>
     <string name="retrieve_blukon_history_title">Načíst historii z Libre</string>
@@ -1182,6 +1182,7 @@
     <string name="title_miband_show_date">Zobrazovat datum na obrazovce</string>
     <string name="title_miband_visibility">Viditelnost MiBand náramku</string>
     <string name="summary_miband_visibility">MiBand náramek bude viditelný pro ostatní zařízení</string>
+    <string name="title_miband_switch_display_on_wrist">Zapnout displej náramku pohybem zápěstí</string>
     <string name="title_miband_units">Jednotky</string>
     <string name="summary_miband_units">Zvolit jednotky vzdálenosti použité na náramku </string>
     <string name="title_miband_goal_notification">Oznámení o dosažení cíle</string>
@@ -1225,6 +1226,7 @@
     <string name="summary_lefun_enable">Synchronizovat data s Lefun fitnes náramky</string>
     <string name="title_lefun_enable">Použít Lefun náramek</string>
     <string name="title_lefun_mac">Mac adresa</string>
+    <string name="summary_lefun_send_readings">Pro zobrazení hodnot glykémie použijte datum chytrých hodinek. Lepší s jednotkami mmol/l - viz. dokumentace</string>
     <string name="title_lefun_send_readings">Zobrazit hodnoty glykémie</string>
     <string name="summary_lefun_send_alarms">Zobrazit oznámení výstrah glykémie</string>
     <string name="title_lefun_send_alarms">Zobrazit výstrahy</string>
@@ -1368,6 +1370,9 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="title_pendiq_pin">PIN kód pera</string>
     <string name="summary_use_notification_channels">Použít funkci notifikačního kanálu pro Android 8+</string>
     <string name="title_use_notification_channels">Notifikační kanály</string>
+    <string name="title_ongoing_notification_channel">Použít aktuální notifikační kanál</string>
+    <string name="summary_notification_channels_grouping">Seskupit všechna oznámení v notifikační liště do jednoho oznámení. Není možné použít spolu s možností Hodnota glykémie jako číselná ikona v notifikační liště</string>
+    <string name="title_notification_channels_grouping">Seskupit oznámení do jednoho</string>
     <string name="summary_delay_ascending_3min">Posunout začátek zvukové výstrahy o 3 minuty pro zvukový profil vzestupné hlasitosti. Vibrace (pokud jsou povoleny) začnou ihned po spuštění výstrahy bez ohledu na toto nastavení.</string>
     <string name="title_delay_ascending_3min">Zpozdit vzestupnou hlasitost</string>
     <string name="summary_play_sound_for_initial_calibration">Přehrát zvuk při požadavku na výchozí kalibraci</string>
@@ -1457,7 +1462,10 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="prepare_to_test">Připravte se na test!</string>
     <string name="after_you_click_ok_look_for_a_number_icon_in_the_notification_area_if_you_see_123_then_the_test_has_succeeded__on_some_phones_this_test_will_crash_the_phone__after_30_seconds_we_will_shut_off_the_notification_if_your_phone_does_not_recover_after_this_then_hold_the_power_button_to_reboot_it">Po stiskutí tlačítka OK vyhledejte číselnou ikonu v oznamovací liště.\nPokud uvidíte 123, test byl úspěšný.\n\nTento test způsobí pád/zamrznutí některých telefonů.\n\nPo 30 vteřinách bude oznámení vypnuto. Pokud se poté telefon sám neobnoví, podržte tlačítko napájení pro jeho restartování.</string>
     <string name="running_test_with_number_123">Spuštění testu s číslem: 123</string>
+    <string name="unusual_internal_context_problem__please_report">Neobvyklá interní kontextová chyba systému - prosím nahlaste</string>
+    <string name="cannot_start__please_report_context_problem">Nelze spustit - prosím nahlaste kontextový problém</string>
     <string name="xdrip_will_not_work_below_android_version_42">aplikace xDrip+ vyžaduje verzi Androidu 4.2 a vyšší</string>
+    <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Tato aplikace musí být vyjmuta z optimalizace baterie nebo nebude správně fungovat. Resetujte, prosím, nastavení aplikace</string>
     <string name="setting_disabled_">Nastavení vypnuto :)</string>
     <string name="yes_please">ANO, prosím</string>
     <string name="automated_calibration_enabled">Automatická kalibrace zapnuta</string>
@@ -1465,6 +1473,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="treatment_time_wrong">Chybný čas ošetření</string>
     <string name="treatment_error">Chyba ošetření</string>
     <string name="treatment_processed">Ošetření bylo zpracováno</string>
+    <string name="number_error_">Chyba čísla: </string>
     <string name="starting_sync_to_other_devices">Zahájení sychronizace s ostatními zařízeními</string>
     <string name="deleting_all_bg_readings">Vymazání VŠECH hodnot glykémie!</string>
     <string name="could_not_export_csv_">Nelze exportovat CSV :(</string>
@@ -1505,7 +1514,9 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="enable_streaming_never">Nikdy se nepřipojovat k Libre2 senzorům</string>
     <string name="libre_filter_length_10">10 minut</string>
     <string name="libre_filter_length_15">15 minut</string>
+    <string name="libre_filter_length_25">25 minut &gt;</string>
     <string name="enable_streaming_dialog_dont_ask_again">Znovu se neptat</string>
+    <string name="without_camera_permission_cannot_scan_barcode">Bez udělení oprávnění k použití fotoaparátu zařízení nelze naskenovat QR kód</string>
     <string name="summary_create_missing_filtered">Vytvořit podle potřeby chybějící filtrované hodnoty</string>
     <string name="title_create_missing_filtered">Vytvořit chybějící filtrované hodnoty</string>
     <string name="summary_widget_hide_graph">Skryje graf ve widgetu (po dalším načtení glykémie)</string>
@@ -1526,11 +1537,20 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="title_accept_broadcast_snooze">Přijímat lokální odesílání</string>
     <string name="title_bg_compensate_noise">\u26A0 Vyhladit šum senzoru</string>
     <string name="title_bg_compensate_noise_ultrasensitive">\u26A0 Vyhladit ultracitlivý šum senzoru</string>
+    <string name="no_battery_optimization_whitelisting">Zdá se, že toto zařízení nepodporuje zákaz optimalizace baterie!</string>
+    <string name="no_i_really_know">Ne, opravdu vím, co dělám</string>
+    <string name="use_for_calibration">Použít hodnotu %s pro kalibraci?</string>
+    <string name="problem_loading_speech_lexicon">Vyskytl se problém při načítání hlasového slovníku!</string>
+    <string name="type_treatment_eg">Zadejte ošetření\nnapř.: počet jednotek x.x</string>
+    <string name="word_lexicon_not_loaded">Slovník nebyl načten!</string>
     <string name="no_never">NE, nikdy</string>
     <string name="title_motion_detection_warning">Upozornění na detekci pohybu</string>
     <string name="message_motion_detection_warning">Funkce detekce pohybu je pouze experimentální a je kompatibilní pouze s některými telefony. Jejím hlavním účelem je detekovat režim vozidla.\n\nTelefony vyšší třídy (high-end) by spíše měly mít senzory k úspěšné detekci. Může docházet k nadměrnému vybíjení baterie telefonu.\n\nU Pro pohyb související se cvičením funguje lépe počítadlo kroků v chytrých hodinkách/náramcích.</string>
+    <string name="title_variant">Používáte variantu aplikace xDrip+</string>
+    <string name="message_variant">Varianty aplikace xDrip+ umožňují instalovat vícero aplikací xDrip+ na jednom zařízení. Například nainstalovat jednu experimentální verzi aplikace pro testování a současně druhou stabilní verzi aplikace pro běžné užívání.\n\nU variant aplikace xDrip+ nemusí některé věci fungovat správně, protože buď jedna nebo jiná aplikace má výhradní přístup, například k Bluetooth párování. Uvítáme zpětnou vazbu a hlášení chyb při používání variant aplikace xDrip+!</string>
     <string name="external_status_strings_eg_tbr">Přijmout stav z externího zdroje, např. TBR (dočasná bazální dávka) z AAPS</string>
     <string name="accept_external_status">Přijímat stav z externího zdroje</string>
+    <string name="allow_do_not_disturb_text">Chcete-li mít možnost dostávat upozornění a výstrahy i v případě, že zařízení bude v režimu Nerušit, udělte aplikaci xDrip+ toto oprávnění v nastavení systému na další stránce</string>
     <string name="graphical_editor_for_pump_basal">Grafický editor pro bazální profily pumpy</string>
     <string name="basal_profile_editor">Editor bazálního profilu</string>
     <string name="import_sounds">Zvuk při přijetí dat</string>
@@ -1577,6 +1597,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="problem_with_file_selection">Problém s výběrem souboru</string>
     <string name="please_reselect_backup_file">Prosím zvovu vyberte záložní soubor</string>
     <string name="uploading_to_cloud">Nahrávání do cloudu</string>
+    <string name="error_with_local_backup">Chyba v lokální záloze</string>
     <string name="upload_successful">Nahrání bylo úspěšné</string>
     <string name="error_uploading_to_cloud">Chyba při nahrávání do cloudu</string>
     <string name="creating_local_backup">Vytváření místní zálohy</string>
