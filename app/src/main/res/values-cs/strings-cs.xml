@@ -1370,6 +1370,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="title_pendiq_pin">PIN kód pera</string>
     <string name="summary_use_notification_channels">Použít funkci notifikačního kanálu pro Android 8+</string>
     <string name="title_use_notification_channels">Notifikační kanály</string>
+    <string name="summary_ongoing_notification_channel">Na některých zařízeních může aktivovat zobrazení oznámení při vypnutém displeji (ambient display). Nutno nejdříve otestovat!</string>
     <string name="title_ongoing_notification_channel">Použít aktuální notifikační kanál</string>
     <string name="summary_notification_channels_grouping">Seskupit všechna oznámení v notifikační liště do jednoho oznámení. Není možné použít spolu s možností Hodnota glykémie jako číselná ikona v notifikační liště</string>
     <string name="title_notification_channels_grouping">Seskupit oznámení do jednoho</string>
@@ -1379,6 +1380,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="title_play_sound_for_initial_calibration">Výchozí výstraha</string>
     <string name="category_falling_rising_bg">Pokles/nárůst glykemie</string>
     <string name="category_alert_prefs">Nastavení výstrah (pro tyto výstrahy)</string>
+    <string name="summary_persistent_high_alert">Pokud trvá vysoká glykémie příliš dlouho a neklesá</string>
     <string name="note_search_button">HLEDAT</string>
     <string name="all_note_button">VŠE</string>
     <string name="title_full_screen_mode">Režim celé obrazovky</string>
