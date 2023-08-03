@@ -318,7 +318,7 @@
     <string name="space_units">" Jednotky"</string>
     <string name="units">jednotky</string>
     <string name="carbs">sacharidy</string>
-    <string name="when">kdy (čas HHMM)</string>
+    <string name="when">kdy (čas HH.MM)</string>
     <string name="speak_your_treatment">Řekněte ošetření jako:\nx.x jednotek inzulínu / xx gramů sacharidů - pro zadání v češtině: 3 jednotky inzulínu = \"tři u/ů/jů\" a 55 gramů sacharidů = \"padesát gé\"</string>
     <string name="speech_recognition_is_not_supported">Rozpoznávání hlasu není podporováno</string>
     <string name="treatment_note">Poznámka ošetření</string>
@@ -1337,7 +1337,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="title_plus_accept_follower_actions">Přijímat akce sledujícího</string>
     <string name="summary_plus_whole_house">Účast v Whole House síti</string>
     <string name="title_plus_whole_house">Whole House</string>
-    <string name="summary_libre_whole_house_collector">Toto zařízení bude kolektorem pro whole house síť</string>
+    <string name="summary_libre_whole_house_collector">Toto zařízení bude kolektorem pro Whole House síť</string>
     <string name="title_libre_whole_house_collector">Libre Whole House</string>
     <string name="summary_xdrip_plus_desert_sync_settings">Možnost sledování bez přístupu k internetu</string>
     <string name="title_xdrip_plus_desert_sync_settings">Lokální synchronizace (Desert Sync)</string>
