@@ -1145,6 +1145,8 @@
     <string name="summary_bluetooth_meter_for_calibrations_auto">Kalibrovat bez ptaní, pokud jsou příhodné podmínky (experimentální)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatická kalibrace</string>
     <string name="title_rest_api_extra_options">Další možnosti</string>
+    <string name="summary_send_bridge_battery_to_nightscout">Odeslat stav baterie čtečky do Nightscoutu. Nezaškrtávat, pokud je senzor baterie nefunkční.</string>
+    <string name="title_send_bridge_battery_to_nightscout">Nahrát stav baterie čtečky</string>
     <string name="title_send_dexcom_transmitter_battery_to_nightscout">Nahrát stav baterie vysílače OB1 G5/G6</string>
     <string name="summary_send_treatments_to_nightscout">Odeslat data o ošetření do Nightscout Care Portal. Zrušte zaškrnutí, pokud je portál nedostupný.</string>
     <string name="title_send_treatments_to_nightscout">Nahrát ošetření</string>
