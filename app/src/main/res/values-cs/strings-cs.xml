@@ -1281,7 +1281,8 @@
     <string name="title_ob1_g5_use_insufficiently_calibrated">Pokračovat bez kalibrací</string>
     <string name="summary_ob1_g5_fallback_to_xdrip">Vrátit se k xDrip algoritmu, pokud G5 neposkytuje glykémie (potenciálně riskantní!)</string>
     <string name="title_ob1_g5_fallback_to_xdrip">Návrat k algoritmu xDrip+</string>
-    <string name="title_ob1_minimize_scanning">Minimalizovat skenování</string>
+    <string name="summary_ob1_minimize_scanning">Použít heuristiku pro minimalizaci Bluetooth vyhledávání a úspory baterie</string>
+    <string name="title_ob1_minimize_scanning">Minimalizovat vyhledávání</string>
     <string name="summary_using_g6">Používám G6 nebo Dexcom One senzor</string>
     <string name="title_using_g6">Podpora G6/Dexcom One</string>
     <string name="title_old_g5_options">Nastavení kolektoru pro staré G5</string>
@@ -1619,6 +1620,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="backup_file_security_error_advice">Záložní soubor hlásí bezpečnostní chybu. Obvykle to znamená, že jej musíte znovu vybrat, abyste mohli pokračovat v povolení přístupu pro aplikaci xDrip+.</string>
     <string name="invalid_time">Neplatný čas</string>
     <string name="format_string_ago">před %s</string>
+    <string name="use_background_scans">Použít vyhledávání na pozadí</string>
     <string name="title_yRange">Přizpůsobit rozsah osy y</string>
     <string name="titleInside_yRange">Povolit</string>
     <string name="summaryInside_yRange">Zde můžete upravit rozsah svislé osy (y).\nPokud však máte hodnoty mimo tento rozsah, osa se automaticky prodlouží o několik hodin, aby bylo možné tyto hodnoty zobrazit.</string>
