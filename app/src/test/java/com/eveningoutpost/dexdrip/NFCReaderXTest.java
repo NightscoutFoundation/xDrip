@@ -1,8 +1,8 @@
 package com.eveningoutpost.dexdrip;
 
 
-import com.eveningoutpost.dexdrip.Models.ReadingData;
-import com.eveningoutpost.dexdrip.UtilityModels.LibreUtils;
+import com.eveningoutpost.dexdrip.models.ReadingData;
+import com.eveningoutpost.dexdrip.utilitymodels.LibreUtils;
 import com.google.gson.GsonBuilder;
 
 import org.junit.Test;

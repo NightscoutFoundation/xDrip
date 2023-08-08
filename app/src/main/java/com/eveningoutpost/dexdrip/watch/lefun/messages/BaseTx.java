@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.watch.lefun.messages;
 
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
+import com.eveningoutpost.dexdrip.importedlibraries.usbserial.util.HexDump;
 
 import java.nio.ByteBuffer;
 import java.util.LinkedList;

@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.glucosemeter.glucomen;
 import android.nfc.Tag;
 
 import com.eveningoutpost.dexdrip.glucosemeter.glucomen.devices.Identify;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 
 /**
  * JamOrHam

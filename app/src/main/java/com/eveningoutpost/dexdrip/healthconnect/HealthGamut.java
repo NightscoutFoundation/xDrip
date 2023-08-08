@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.healthconnect;
 
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HEALTH_CONNECT_RESPONSE_ID;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HEALTH_CONNECT_RESPONSE_ID;
 import static kotlin.jvm.internal.Reflection.createKotlinClass;
 
 import android.app.Activity;
@@ -33,9 +33,9 @@ import androidx.health.connect.client.request.ReadRecordsRequest;
 import androidx.health.connect.client.time.TimeRangeFilter;
 import androidx.health.connect.client.units.BloodGlucose;
 
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.time.Instant;
@@ -283,7 +283,11 @@ public class HealthGamut {
                     MealType.UNKNOWN, null, new Metadata());
             list.add(record);
             client.insertRecords(list, coroutines.getContinuation((result, throwable) -> {
-                Log.d(TAG, "Insert result: " + result.getRecordIdsList().size());
+                try {
+                    Log.d(TAG, "Insert result: " + result.getRecordIdsList().size());
+                } catch (Exception e) {
+                    Log.e(TAG, "Got exception on insert: " + e);
+                }
             }));
         } else {
             Log.e(TAG, "Could not send Glucose");

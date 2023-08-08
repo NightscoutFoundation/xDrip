@@ -6,7 +6,7 @@ echo "APK doesn't exist"
 exit 5
 fi
 s=`du -B 1048576 "$f" | cut -f1 | tr -dc '0-9'`
-if [ $s -lt 12 ] || [ $s -gt 14 ]
+if [ $s -lt 12 ] || [ $s -gt 15 ]
 then
 echo "APK out of size range @ ${s}M"
 exit 5

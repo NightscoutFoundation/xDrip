@@ -1250,4 +1250,5 @@ Je nutné zakázať v prípade, že chcete používať xdrip cifreník. (Požado
     <string name="special_pairing_workaround">Špeciálne párovanie pre Samsung</string>
     <string name="use_background_scans">Vyhľadávanie na pozadí</string>
     <string name="android_8_background_scanning">Využije sa funkcia vyhľadávania na pozadí Android 8+</string>
+    <string name="titleInside_yRange">Povoliť</string>
 </resources>

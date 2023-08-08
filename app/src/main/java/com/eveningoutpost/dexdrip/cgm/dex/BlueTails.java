@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip.cgm.dex;
 
-import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.Control;
-import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.ProbablyBackfill;
+import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.Control;
+import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.ProbablyBackfill;
 import static com.eveningoutpost.dexdrip.cgm.dex.ClassifierAction.BACKFILL;
 import static com.eveningoutpost.dexdrip.cgm.dex.ClassifierAction.CONNECT;
 import static com.eveningoutpost.dexdrip.cgm.dex.ClassifierAction.CONTROL;
@@ -17,9 +17,9 @@ import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.os.Bundle;
 
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.importedlibraries.usbserial.util.HexDump;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utils.bt.BtCallBack3;
 import com.eveningoutpost.dexdrip.utils.bt.ConnectReceiver;
 import com.eveningoutpost.dexdrip.xdrip;

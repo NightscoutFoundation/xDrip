@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.processing.sgfilter;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError;
 
 import java.security.InvalidParameterException;
 

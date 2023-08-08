@@ -71,6 +71,22 @@
                     android:summary="@string/alerts_start_out_snoozed_and_must_persist_for_a_while"
                     android:title="@string/start_snoozed" />
 
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:key="wake_phone_during_alerts"
+                    android:summary="Wake up screen during alerts. Might unlock devices that don't have screen lock enabled."
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="Wake Screen" />
+
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:key="flash_torch_alerts_charging"
+                    android:summary="Flash camera light during alerts when connected to a charger"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="Use Camera Light" />
+
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="bg_alerts_from_main_menu"
@@ -339,7 +355,15 @@
                         android:summary=""
                         android:title="@string/low_battery_percentage" />
                     <SwitchPreference
+                        android:defaultValue="false"
+                        android:switchTextOff="@string/short_off_text_for_switches"
+                        android:switchTextOn="@string/short_on_text_for_switches"
+                        android:key="alert_raise_for_sensor_expiry"
+                        android:summary="@string/summary_sens_expiry_notify"
+                        android:title="@string/title_sens_expiry_notify" />
+                    <SwitchPreference
                         android:defaultValue="true"
+                        android:dependency="engineering_mode"
                         android:key="parakeet_status_alerts"
                         android:summary="@string/notify_when_parakeet_device_stops_checking_in"
                         android:title="@string/parakeet_related_alerts" />

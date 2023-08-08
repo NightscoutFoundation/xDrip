@@ -1256,6 +1256,8 @@
     <string name="title_nsfollow_url">כתובת לעוקב נייטסקאוט</string>
     <string name="summary_nsfollow_download_treatments">הורד גם טיפולים מנייטסקאוט כעוקב</string>
     <string name="title_nsfollow_download_treatments">הורד טיפולים</string>
+    <string name="title_clfollow_download_meals">ארוחות</string>
+    <string name="title_clfollow_download_notifications">התראות</string>
     <string name="title_ob1_options">הגדרות איסוף OB1 עבור G5/G6</string>
     <string name="summary_use_ob1_g5_collector_service">שכתוב מלא, עובד על אנדרואיד 4.4-9, תומך במצב נטיבי ועוד</string>
     <string name="title_use_ob1_g5_collector_service">השתמש באוסף OB1</string>
@@ -1553,4 +1555,5 @@
     <string name="show_unsmoothed">הראה לא מוחלק</string>
     <string name="show_unsmoothed_summary">הראה מידע לא מוחלק גם עם החלקת הגרף מאופשרצ, 
 אם תוסף הכיול בשימוש יוצג גרף לא מוחלק ולא הגרף מהתוסף.</string>
+    <string name="titleInside_yRange">אפשר</string>
 </resources>

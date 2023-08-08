@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.insulin.pendiq.messages;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.google.gson.annotations.Expose;
 
 import java.nio.ByteBuffer;

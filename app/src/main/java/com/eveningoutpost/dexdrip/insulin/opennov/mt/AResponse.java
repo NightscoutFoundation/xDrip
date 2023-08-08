@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.insulin.opennov.mt;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.cloneObject;
+import static com.eveningoutpost.dexdrip.models.JoH.cloneObject;
 import static com.eveningoutpost.dexdrip.insulin.opennov.mt.ApoepElement.APOEP;
 import static com.eveningoutpost.dexdrip.insulin.opennov.mt.ApoepElement.SYS_TYPE_MANAGER;
 

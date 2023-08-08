@@ -1,8 +1,8 @@
 package com.eveningoutpost.dexdrip.cgm.webfollow;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.hexStringToByteArray;
+import static com.eveningoutpost.dexdrip.models.JoH.hexStringToByteArray;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError;
 
 import java.security.KeyFactory;
 import java.security.PublicKey;

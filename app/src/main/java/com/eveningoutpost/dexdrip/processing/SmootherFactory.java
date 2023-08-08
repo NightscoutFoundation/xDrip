@@ -1,9 +1,9 @@
 package com.eveningoutpost.dexdrip.processing;
 
-import static com.eveningoutpost.dexdrip.UtilityModels.Unitized.unit;
-import static com.eveningoutpost.dexdrip.UtilityModels.Unitized.usingMgDl;
+import static com.eveningoutpost.dexdrip.utilitymodels.Unitized.unit;
+import static com.eveningoutpost.dexdrip.utilitymodels.Unitized.usingMgDl;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import java.util.HashMap;

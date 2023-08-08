@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.glucosemeter.caresens;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 
 import org.junit.Test;
 

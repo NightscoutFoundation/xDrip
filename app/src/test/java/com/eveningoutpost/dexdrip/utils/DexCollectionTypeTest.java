@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.utils;
 import static com.google.common.truth.Truth.assertWithMessage;
 
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 
 import org.junit.After;
 import org.junit.Before;

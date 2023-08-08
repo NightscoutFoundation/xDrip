@@ -346,7 +346,7 @@
     <string name="disable_all_alerts">Keela kõik alarmid</string>
     <string name="re_enable_all_alerts">Lubage taas kõik alarmid</string>
     <string name="alert_snoozed_by_watch">Kell vaigistab alarmi</string>
-    <string name="update_channel_colon_space">"Uuenda kanalit: "</string>
+    <string name="update_channel_colon_space">"Värskenduste kanal: "</string>
     <string name="a_new_version_is_available">Uus versioon saadaval</string>
     <string name="version_details">Versiooni üksikasjad</string>
     <string name="download_now">Lae kohe alla</string>
@@ -405,8 +405,8 @@
     <string name="sdcard_not_readable">SD kaart pole loetav</string>
     <string name="loading_settings_from_xdrip_mainline">Seadeid laetakse xDrip põhiliinilt</string>
     <string name="warning_settings_from_xdrip_and_plus_exist">Hoiatuste seaded xDripist ja xDrip+st on olemas- laeb xDripi</string>
-    <string name="new_version_date_colon">"Uue versiooni kuupäev: "</string>
-    <string name="old_version_date_colon">"Vana versiooni kuupäev: "</string>
+    <string name="new_version_date_colon">"Uus versioon: "</string>
+    <string name="old_version_date_colon">"Vana versioon: "</string>
     <string name="speak_your_note_text">Öelge oma märkuse tekst</string>
     <string name="alarm_if_above_high_value">Hoiata kui on üle kõrge VS näidu</string>
     <string name="for_longer_than_minutes">kauem kui (minutit)</string>
@@ -635,7 +635,7 @@
     <string name="only_enable_on_trouble">Luba ainult siis, kui äpiga on probleeme.</string>
     <string name="store_logs">Säilita logid tõrgete otsinguks</string>
     <string name="show_datatables_in_app_drawer">Kuva rakenduste menüüs kalibreerimise ja VS andmetabelid.</string>
-    <string name="disable_log_transmitter_battery_warning">Peida hoiatus, mida kuvatakse saatja madala aku korral avaekraanil. (Asjakohane vaid isetehtud vasuvõtjate puhul)</string>
+    <string name="disable_log_transmitter_battery_warning">Peida hoiatus, mida kuvatakse saatja madala akutaseme korral avaekraanil. (Asjakohane vaid isetehtud vastuvõtjate puhul)</string>
     <string name="engineering_mode">Tehniline režiim</string>
     <string name="allow_unsafe_settings">Lubab muuta kõige riskantsemaid seadeid, mis võivad äpi lõhkuda!</string>
     <string name="daily_save_db">Salvesta andmebaas iga päev</string>
@@ -912,6 +912,7 @@
     <string name="bluereader_position">kontrolli blueReaderi asukohta sensoril - ta ei saa signaali!</string>
     <string name="bluereaderuglystate">BlueReader avastati vigases olekus! See lülitub nüüd välja ja pead selle uuesti sisse lülitama (nupule lühike vajutus). Pärast seda peaks blueReader töötama ootuspäraselt!</string>
     <string name="offical_msg">Ametlik rakendus</string>
+    <string name="aggressive_power_manager">Su seadmel on agressiivne energiasäästurakendus. Ligipääs on tavaliselt süsteemiseadete kaudu. Veendu, et xDrip on taustal töötamise piirangutest vabastatud.</string>
     <string name="use_conflict_msg">võib püüda ligi pääseda ka saatjale, mis võib põhjustada mõlema äpiga probleeme</string>
     <string name="use_confict_msg_glimp">Saad reguleerida Glimp\'i sätteid: valikud -&gt; seadmed -&gt; tühista Bluetoothi valik</string>
     <string name="eng_mode_is_on">Tehniline režiim on sees. Lülita see välja, välja arvatud juhul kui oled kindel, et seda vajad. Võib põhjustada rakenduse ootamatut käitumist.</string>
@@ -1202,6 +1203,10 @@
     <string name="return_to_home_screen">Tagasi avakuvale</string>
     <string name="title_broadcast_service_api">API andmevahetus</string>
     <string name="summary_broadcast_service_api">Lubab xDrip suhtluse kolmanda osapoole rakendustega, kasutades uut API teenust</string>
+    <string name="title_enable_iob_in_api_endpoint">Luba API-s IoB aruandlus</string>
+    <string name="summary_enable_iob_in_api_endpoint">Luba IoB väärtuse aruandlus Web Service API lõpp-punktis, mida mõned nutikellad kasutavad</string>
+    <string name="title_fetch_iob_from_companion_app">Hangi IoB kaasrakendusest</string>
+    <string name="summary_fetch_iob_from_companion_app">Hangi IoB väärtus samas seadmes töötavast kaasrakendusest, näiteks rakendusest Omnipod 5</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Sünkrooni andmed MiBand treeningkellaga</string>
     <string name="title_miband_enable">Kasuta MiBand kella</string>
@@ -1273,8 +1278,8 @@
     <string name="title_lefun_screen_heart_pressure">Kuva vererõhku</string>
     <string name="title_lefun_screen_find_phone">Kuva \"Otsi telefon / Vaigista\"</string>
     <string name="title_lefun_screen_mac_address">Kuva MAC aadress</string>
-    <string name="summary_allow_samsung_workaround">Kasuta lahendusi, et vältida Samsungi telefonide Androidi ebastandardset käitumist. Ilma selleta ei saa tavaliselt andmeid kätte.</string>
-    <string name="title_allow_samsung_workaround">Samsungi lahendused</string>
+    <string name="summary_allow_samsung_workaround">Kasuta lahendusi, et vältida mõnede telefonide Androidi ebastandardset käitumist. Ilma selleta ei saa tavaliselt andmeid kätte.</string>
+    <string name="title_allow_samsung_workaround">Töös hoidmise lahendused</string>
     <string name="summary_medtrum_use_native">Kasuta algkalibreerimiseks saatja andmeid, mitte xDrip rakendust</string>
     <string name="title_medtrum_use_native">Medtrum algupärane</string>
     <string name="summary_medtrum_a_hex">Hex-diagnostika testväärtus</string>
@@ -1289,6 +1294,8 @@
     <string name="summary_clfollow_pass">CareLink sisselogimise parool</string>
     <string name="title_clfollow_country">CareLink riik</string>
     <string name="summary_clfollow_country">Vali enda CareLink riik.</string>
+    <string name="title_clfollow_patient">CareLink patsiendi kasutajanimi</string>
+    <string name="summary_clfollow_patient">CareLink patsiendi kasutajanimi (vabalt valitav)</string>
     <string name="title_clfollow_lang">CareLink keel</string>
     <string name="summary_clfollow_lang">CareLink keele kood</string>
     <string name="title_clfollow_grace_period">Ooteperiood</string>
@@ -1303,7 +1310,7 @@
     <string name="summary_clfollow_download_meals">Laadi CareLink\'ist alla eined</string>
     <string name="title_clfollow_download_notifications">Teavitused</string>
     <string name="summary_clfollow_download_notifications">Laadi alla CareLink teavitused</string>
-    <string name="title_ob1_options">OB1 G5/G6 vastuvõtja seaded</string>
+    <string name="title_ob1_options">OB1 G5/G6/G7 vastuvõtja seaded</string>
     <string name="summary_use_ob1_g5_collector_service">Täielik ülekirjutamine, peaks töötama op-süsteemides Android 4.4–9, toetab algupärast režiimi ja palju muud</string>
     <string name="title_use_ob1_g5_collector_service">Kasuta OB1 vastuvõtjat</string>
     <string name="summary_ob1_g5_use_transmitter_alg">Võimalusel kasuta VS väärtuste arvutamiseks saatja sisemist algoritmi.</string>
@@ -1589,6 +1596,11 @@
     <string name="enable_streaming_always_allow">Ühenda alati Libre2 sensoriga</string>
     <string name="enable_streaming_ask_each_time">Küsi iga kord</string>
     <string name="enable_streaming_never">Ära kunagi ühenda Libre2 sensoriga</string>
+    <string name="libre_filter_length_10">10 minutit</string>
+    <string name="libre_filter_length_15">15 minutit</string>
+    <string name="libre_filter_length_25">25 minutit &gt;</string>
+    <string name="libre_filter_length_summary">Arvesse võetavate minutite arv librex-andmete kasutamisel</string>
+    <string name="libre_filter_length_title">Silu Libre 3 andmeid xxx-meetodi kasutamisel</string>
     <string name="enable_streaming_dialog_yes">Ühenda selle Libre2 sensoriga</string>
     <string name="enable_streaming_dialog_no">Ära ühenda selle Libre2 sensoriga </string>
     <string name="enable_streaming_dialog_dont_ask_again">Ära küsi seda enam uuesti</string>
@@ -1753,4 +1765,20 @@
     <string name="format_string_ago">%s tagasi</string>
     <string name="use_background_scans">Kasuta automaatset skaneerimist</string>
     <string name="android_8_background_scanning">Kasuta Android 8+ automaatse skaneerimise funktsiooni</string>
+    <string name="title_yRange">Kohanda y-telje vahemikku</string>
+    <string name="titleInside_yRange">Luba</string>
+    <string name="summaryInside_yRange">Siin saad seadistada vertikaalse (y) telje vahemikku.\nJuhul kui on näitusid väljaspool seda vahemikku, laiendatakse seda automaatselt mitmeks tunniks, et saaks neid näitusid kuvada.</string>
+    <string name="title_ymin">Seadista y-telje alampiir</string>
+    <string name="title_ymax">Seadista y-telje ülempiir</string>
+    <string name="summary_ymin">Vali yMin, kui sellest väiksemaid näitusid ei ole.</string>
+    <string name="summary_ymax">Vali yMax, kui sellest suuremaid näitusid ei ole.</string>
+    <string name="wait_to_connect">Kontrolli seadeid ja oota ühendust.</string>
+    <string name="close">Sulge</string>
+    <string name="title_advanced_settings_4_Lib2">Libre 2 täpsemad sätted</string>
+    <string name="title_Lib2_show_raw_values">Näita graafikus töötlemata väärtuseid</string>
+    <string name="summary_Lib2_show_raw_values">Lülita sisse, et kuvada graafikus töötlemata väärtuseid.</string>
+    <string name="title_Lib2_show_sense_on_status">Kuva staatuse lehel sensori info</string>
+    <string name="summary_Lib2_show_sense_on_status">Lülita sisse, et kuvada staatuse lehel Libre 2 sensori lisainformatsiooni.</string>
+    <string name="import_qr_code_warning">Impordi seadeid ainult usaldusväärsetest allikatest!\n\nKinnita järgmiste seadete importimine:\n\n</string>
+    <string name="scan_to_load_xdrip_settings">Skaneeri xDrip\'i seadete laadimiseks</string>
 </resources>

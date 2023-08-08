@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
-import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.models.BgReading;
 
 import org.json.JSONException;
 import org.json.JSONObject;
