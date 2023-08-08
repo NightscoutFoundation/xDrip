@@ -9,17 +9,17 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
-import com.eveningoutpost.dexdrip.UtilityModels.SpeechUtil;
-import com.eveningoutpost.dexdrip.UtilityModels.VehicleMode;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
+import com.eveningoutpost.dexdrip.utilitymodels.SpeechUtil;
+import com.eveningoutpost.dexdrip.utilitymodels.VehicleMode;
 import com.eveningoutpost.dexdrip.ui.activities.SelectAudioDevice;
 import com.eveningoutpost.dexdrip.xdrip;
 
-import static com.eveningoutpost.dexdrip.UtilityModels.SpeechUtil.TWICE_DELIMITER;
+import static com.eveningoutpost.dexdrip.utilitymodels.SpeechUtil.TWICE_DELIMITER;
 
 /**
  * jamorham

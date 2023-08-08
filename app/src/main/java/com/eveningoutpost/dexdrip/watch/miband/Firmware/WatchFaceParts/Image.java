@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceParts;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceGenerator;
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceParts.Utils.PnnQuantizer;
 

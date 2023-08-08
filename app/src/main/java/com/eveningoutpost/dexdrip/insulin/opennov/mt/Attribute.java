@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip.insulin.opennov.mt;
 
 
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
+import com.eveningoutpost.dexdrip.importedlibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.insulin.opennov.BaseMessage;
 
 import java.nio.ByteBuffer;

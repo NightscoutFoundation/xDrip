@@ -3,14 +3,15 @@ package com.eveningoutpost.dexdrip.ui.dialog;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.text.InputFilter;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 
 // jamorham
 
@@ -71,6 +72,11 @@ public class QuickSettingsDialogs {
         if (input_type != 0) {
             edt.setInputType(input_type);
         }
+
+        if (setting.equals("dex_txid")) {
+            edt.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
+        }
+
 
         edt.setText(Pref.getString(setting, ""));
 

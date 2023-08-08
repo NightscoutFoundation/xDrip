@@ -8,7 +8,7 @@ import android.util.Base64;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.GoogleDriveInterface;
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
@@ -206,11 +206,15 @@ public class CipherUtils {
                 , Base64.NO_WRAP);
     }
 
-    public static byte[] getRandomKey() {
-        byte[] keybytes = new byte[16];
+    public static byte[] getRandomKey(final int length) {
+        byte[] keybytes = new byte[length];
         SecureRandom sr = new SecureRandom();
         sr.nextBytes(keybytes);
         return keybytes;
+    }
+
+    public static byte[] getRandomKey() {
+        return getRandomKey(16);
     }
 
     public static String getRandomHexKey() {

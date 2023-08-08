@@ -9,9 +9,9 @@ import static com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService.g
 import static com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService.getTBRInt;
 import static com.google.common.truth.Truth.assertWithMessage;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 
 import org.junit.Test;
 

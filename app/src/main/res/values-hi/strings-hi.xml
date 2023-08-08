@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="title_activity_bluetooth_scan">ब्लूटूथ स्कैन</string>
+    <string name="connected">जुड़ गया</string>
     <string name="menu_scan">स्कैन करें</string>
     <string name="menu_stop">रोको</string>
     <string name="title_activity_start_new_sensor">नया सेंसर प्रारंभ करें</string>

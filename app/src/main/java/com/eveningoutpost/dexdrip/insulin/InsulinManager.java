@@ -3,11 +3,10 @@ package com.eveningoutpost.dexdrip.insulin;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.io.ByteArrayOutputStream;
@@ -53,10 +52,10 @@ public class InsulinManager {
             for (insulinData d : profiles)
                 for (String ppn : d.PPN)
                     if (PPNs.contains(ppn)) {
-                        Log.d(TAG, "pharmacy product number dupplicated " + ppn + ". that's not allowed!");
+                        Log.d(TAG, "pharmacy product number duplicated " + ppn + ". That's not allowed!");
                         return false;
                     } else PPNs.add(ppn);
-            Log.d(TAG, "pharmacy product numbers uniquee");
+            Log.d(TAG, "pharmacy product numbers unique");
             return true;
         }
     }

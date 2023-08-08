@@ -258,6 +258,7 @@
     <string name="nfc_is_not_enabled">NFC is not enabled</string>
     <string name="phone_nfc_is_having_problems">Phone NFC is having problems!</string>
     <string name="not_so_quickly_wait_60_seconds">Not so quickly, wait 60 seconds</string>
+    <string name="not_so_quickly_wait_30_seconds">Not so quickly, wait 30 seconds</string>
     <string name="nfc_diag_timeout">NFC diag timeout</string>
     <string name="nfc_read_timeout">NFC read timeout</string>
     <string name="nfc_invalid_data__try_again">NFC invalid data - try again</string>
@@ -269,4 +270,6 @@
     <string name="ob1_session_restarted_title">Sensor session restarted</string>
     <string name="ob1_session_restarted_msg">The sensor session was preemptively restarted and set to 3 days, please check if next readings are off and calibrate if needed</string>
     <string name="ob1_session_restarted_note">Transmitter session was restarted</string>
+    <string name="xdrip_oop2_not_installed">xDrip+ needs OOP2 to handle Libre2/LibreUS sensors.</string>
+    <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">please update OOP2 or move to calibrate based on raw mode</string>
 </resources>

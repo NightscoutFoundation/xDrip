@@ -619,7 +619,7 @@
     <string name="calibrate_external_libre_2_algorithm_summary">Pas xDrip-kalibratiemethoden toe op OOP2-gegevens.</string>
     <string name="calibrate_external_libre_2_algorithm_title">OOP2-algoritmekalibratie.</string>
     <string name="libre_use_smoothed_data_summary">Gebruik een gemiddelde van 5 punten om vloeiendere libre gegevens te krijgen.</string>
-    <string name="libre_use_smoothed_data_title">Vloeiende Libregegevens.</string>
+    <string name="libre_use_smoothed_data_title">Vloeiende libre gegevens.</string>
     <string name="retrieve_blukon_history_title">Haal Libre-geschiedenis op</string>
     <string name="retrieve_blukon_history_summary">Haal de gemiste geschiedenis op van het Blukon-apparaat bij het opnieuw verbinden met de sensor.</string>
     <string name="interpret_share_raw">Als u Share gebruikt, toont xDrip waarden wanneer deze normaal gesproken verborgen zijn op de ontvanger.</string>
@@ -632,7 +632,7 @@
     <string name="set_logging_appid">Stel logboekregistratie AppID in</string>
     <string name="only_enable_on_trouble">Alleen inschakelen als u problemen ondervindt met de app.</string>
     <string name="store_logs">Sla logboeken op voor probleemoplossing</string>
-    <string name="show_datatables_in_app_drawer">Toon kalibratie- en BG-gegevens in de app-overzicht.</string>
+    <string name="show_datatables_in_app_drawer">Toon kalibratie- en BG-gegevens in het app-overzicht.</string>
     <string name="disable_log_transmitter_battery_warning">Schakel de waarschuwing voor een lage zender batterij status op het startscherm uit. (Alleen relevant voor DIY-ontvangers.)</string>
     <string name="engineering_mode">Ontwikkelaars modus</string>
     <string name="allow_unsafe_settings">Maakt het mogelijk om de meest onveilige instellingen te wijzigen die alles kapot kunnen maken!</string>
@@ -694,12 +694,12 @@
     <string name="low_level_value">Lage niveau diagnostische/prototype waarde</string>
     <string name="transmitter_id">ID van uw Dexcom-zender, bijv. 12AB3</string>
     <string name="advanced_g5_settings">Geavanceerde G5-instellingen voor zeldzame situaties</string>
-    <string name="g5_debug_settings">G5/G6 Debug Instellingen</string>
+    <string name="g5_debug_settings">G5/G6/Dex1 Debug Instellingen</string>
     <string name="g5_scan_constantly">Sommige apparaten werken beter als ze constant scannen, andere niet. Als het lezen betrouwbaar is wanneer deze instelling niet is geselecteerd, zou de levensduur van de batterij moeten zijn verbeterd. Normaal gesproken kunt u dit het beste uitgeschakeld houden</string>
     <string name="scan_for_g5_constantly">Scan constant naar G5</string>
     <string name="g5_force_ui_thread">Dit is cruciaal voor sommige Android-apparaten om correct verbinding te maken, maar kan gemiste metingen veroorzaken wanneer andere intensieve UI-activiteiten in gebruik zijn.</string>
     <string name="force_g5_ui_thread">Forceer G5 naar UI Thread</string>
-    <string name="authentificate_before_reading">Verifieer G5 vóór elke lezing</string>
+    <string name="authentificate_before_reading">Verifieer vóór elke lezing</string>
     <string name="g5_full_authentification">Dit zal bij elke leespoging een volledige authenticatie proberen. Nodig voor nieuwere firmwareversies van de G5-zender.</string>
     <string name="unbond_g5_before_read">De G5 ontkoppelen voor elke lezing</string>
     <string name="g5_remove_before_read">Hiermee wordt de G5 verwijderd uit de lijst met gekoppelde apparaten van uw apparaat en wordt geprobeerd een volledige authenticatie en koppeling te maken bij elke leespoging.</string>
@@ -789,8 +789,8 @@
     <string name="step_counter_1st_color">Stappenteller 1e kleur</string>
     <string name="step_counter_2nd_color">Stappenteller 2e kleur</string>
     <string name="flair_colors">Flair kleuren</string>
-    <string name="use_flair_colors">Kleuren Navigatiebalk</string>
-    <string name="upper_title_bar_flair">Kleur Bovenste Titelbalk</string>
+    <string name="use_flair_colors">Aangepaste titel/navigatie balk</string>
+    <string name="upper_title_bar_flair">Bovenste Titelbalk</string>
     <string name="lower_button_bar_falir">Lagere Navigatiebalk</string>
     <string name="force_english_text">Forceer Engelse tekst</string>
     <string name="using_local_language">Gebruikt momenteel de lokale taal van uw apparaat</string>
@@ -1222,7 +1222,7 @@
     <string name="title_miband_colect_heartrate">Verzamel HR</string>
     <string name="summary_miband_colect_heartrate">De hartslaggegevens van de band verzamelen. Update-interval kan worden geconfigureerd in MiFit of een andere applicatie van derden</string>
     <string name="title_miband_authkey">Authenticatie Sleutel</string>
-    <string name="summary_miband_authkey">Stel de autorisatiesleutel in voor MiBand4 (volg de instructies op https://www.freemyband.com om de autorisatie sleutel te krijgen)</string>
+    <string name="summary_miband_authkey">Stel de autorisatie sleutel in voor MiBand4 (volg de instructies op https://www.freemyband.com/ om de autorisatie sleutel te krijgen)</string>
     <string name="summary_miband_mac">Laat leeg voor automatisch zoeken</string>
     <string name="title_miband_send_readings_as_notification">BG-waarden als melding</string>
     <string name="summary_miband_send_readings_as_notification">Zal een melding gebruiken om BG-metingen te verzenden. De datum zal niet gewijzigd worden, dus alle bandfuncties kunnen worden gebruikt.        Moet uitgeschakeld worden als u de xDrip-wijzerplaat wilt gebruiken (het is vereist om de officiële MiFit-applicatie te verwijderen om datumoverschrijvingen te voorkomen)</string>
@@ -1292,8 +1292,8 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Terugvallen naar xDrip</string>
     <string name="summary_ob1_minimize_scanning">Gebruik heuristieken om bluetooth-scannen te minimaliseren + energie te besparen</string>
     <string name="title_ob1_minimize_scanning">Minimaliseer het scannen</string>
-    <string name="summary_using_g6">Ik gebruik een G6-sensor</string>
-    <string name="title_using_g6">G6 ondersteuning</string>
+    <string name="summary_using_g6">Ik gebruik een G6 of Dexcom ONE sensor</string>
+    <string name="title_using_g6">G6/ONE ondersteuning</string>
     <string name="summary_ob1_g5_allow_resetbond">De OB1-verzamelaar kan de verbinding verbreken als hij denkt dat de codering is mislukt. Schakel deze optie uit als u problemen ondervindt bij het ontkoppelen. Als u dan de verbinding volledig verliest, zorg er dan voor dat dit is ingeschakeld.</string>
     <string name="title_ob1_g5_allow_resetbond">OB1 ontkoppelen toestaan</string>
     <string name="summary_ob1_initiate_bonding_flag">OB1-verzamelaar kan de koppeling initiëren.</string>
@@ -1348,7 +1348,7 @@
     <string name="summary_show_home_on_boot">Open het xDrip-scherm automatisch nadat het apparaat is opgestart</string>
     <string name="title_show_home_on_boot">Toon xDrip tijdens het opstarten</string>
     <string name="eula">EULA</string>
-    <string name="summary_plus_accept_follower_actions">Behandelingen, kalibraties en andere acties van volgers worden overgenomen</string>
+    <string name="summary_plus_accept_follower_actions">Behandelingen, kalibraties en andere acties van volgers zullen geaccepteerd worden</string>
     <string name="title_plus_accept_follower_actions">Accepteer acties van volgers</string>
     <string name="summary_plus_whole_house">Neem deel aan een hele huis netwerk</string>
     <string name="title_plus_whole_house">Hele huis</string>
@@ -1580,8 +1580,8 @@
     <string name="title_multiple_insulin_types_settings">Meerdere insulinesoorten</string>
     <string name="summary_multiple_insulin_types_settings">Opties om met meerdere insulinesoorten te werken</string>
     <string name="title_multiple_insulin_types">Meerdere insulinesoorten</string>
-    <string name="summary_multiple_insulin_use_basal_activity">Plan basale activiteit op de grafiek en voeg samen in het voorspellende model</string>
-    <string name="title_multiple_insulin_use_basal_activity">Gebruik basale activiteit</string>
+    <string name="summary_multiple_insulin_use_basal_activity">Plot basaal activiteit op de grafiek en integreer in het voorspellend model</string>
+    <string name="title_multiple_insulin_use_basal_activity">Gebruik basaal activiteit</string>
     <string name="title_xdrip_plus_snooze_broadcast">Lokale uitzending</string>
     <string name="summary_broadcast_snooze">Verzend snoozes naar andere apps op dit apparaat</string>
     <string name="title_broadcast_snooze">Lokale uitzending</string>
@@ -1636,7 +1636,7 @@
     <string name="Dose">Dosis</string>
     <string name="choose_type">Kies type</string>
     <string name="invalid_serial">Ongeldig serienummer</string>
-    <string name="set_pen_to_format">Zet Pen %s op %s</string>
+    <string name="set_pen_to_format">Zet Pen %s naar %s</string>
     <string name="pen_contains_which_insulin_type">Welk type insuline bevat pen %s?</string>
     <string name="allow_do_not_disturb_text">Om de optionele mogelijkheid te hebben om te waarschuwen, zelfs als Android Niet-Storen is ingeschakeld, geef xDrip deze toestemming in de systeeminstellingen op de volgende pagina</string>
     <string name="graphical_editor_for_pump_basal">Grafische editor voor pomp basale profielen</string>
@@ -1657,4 +1657,10 @@
     <string name="select_tone_for_alerts">Selecteer geluid voor waarschuwingen</string>
     <string name="show_unsmoothed">Toon niet-afgevlakte waarden</string>
     <string name="show_unsmoothed_summary">Toon niet-afgevlakte waarden ook als grafiekafvlakking is ingeschakeld. Als de kalibratieplugin aanstaat, dan worden niet-afgevlakte waarden getoond in plaats van plugin data.</string>
+    <string name="titleInside_yRange">Inschakelen</string>
+    <string name="title_advanced_settings_4_Lib2">Geavanceerde instellingen voor Libre 2</string>
+    <string name="title_Lib2_show_raw_values">Toon ruwe waarden in de grafiek</string>
+    <string name="summary_Lib2_show_raw_values">Inschakelen om ruwe waarden in grafiek weer te geven.</string>
+    <string name="title_Lib2_show_sense_on_status">Toon sensorinfo in Status</string>
+    <string name="summary_Lib2_show_sense_on_status">Inschakelen om extra informatie in Status voor Libre 2-sensor weer te geven.</string>
 </resources>

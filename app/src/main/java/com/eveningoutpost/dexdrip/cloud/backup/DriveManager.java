@@ -2,8 +2,8 @@ package com.eveningoutpost.dexdrip.cloud.backup;
 
 import android.support.annotation.Nullable;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.common.Scopes;

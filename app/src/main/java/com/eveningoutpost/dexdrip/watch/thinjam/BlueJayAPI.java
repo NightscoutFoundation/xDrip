@@ -2,7 +2,7 @@ package com.eveningoutpost.dexdrip.watch.thinjam;
 
 // jamorham
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError;
 
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_DIALOG;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_OTHER_ALERT;

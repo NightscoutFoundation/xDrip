@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.insulin.opennov.ll;
 import static com.google.common.truth.Truth.assertWithMessage;
 
 import com.eveningoutpost.dexdrip.HexTestTools;
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 
 import org.junit.Test;
 

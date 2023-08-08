@@ -7,8 +7,8 @@ import static com.eveningoutpost.dexdrip.insulin.opennov.mt.Apdu.ApduType.RlrqAp
 import static com.eveningoutpost.dexdrip.insulin.opennov.mt.EventReport.MDC_NOTI_CONFIG;
 import static com.eveningoutpost.dexdrip.insulin.opennov.mt.EventReport.MDC_NOTI_SEGMENT_DATA;
 
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.importedlibraries.usbserial.util.HexDump;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.insulin.opennov.mt.ARequest;
 import com.eveningoutpost.dexdrip.insulin.opennov.mt.AResponse;
 import com.eveningoutpost.dexdrip.insulin.opennov.mt.Apdu;

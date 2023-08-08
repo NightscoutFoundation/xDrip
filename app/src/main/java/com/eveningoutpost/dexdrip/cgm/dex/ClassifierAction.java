@@ -1,18 +1,18 @@
 package com.eveningoutpost.dexdrip.cgm.dex;
 
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HOUR_IN_MS;
 
-import com.eveningoutpost.dexdrip.G5Model.BackFillRxMessage;
-import com.eveningoutpost.dexdrip.G5Model.BackFillStream;
-import com.eveningoutpost.dexdrip.G5Model.BaseGlucoseRxMessage;
-import com.eveningoutpost.dexdrip.G5Model.DexTimeKeeper;
-import com.eveningoutpost.dexdrip.G5Model.GlucoseRxMessage;
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
+import com.eveningoutpost.dexdrip.g5model.BackFillRxMessage;
+import com.eveningoutpost.dexdrip.g5model.BackFillStream;
+import com.eveningoutpost.dexdrip.g5model.BaseGlucoseRxMessage;
+import com.eveningoutpost.dexdrip.g5model.DexTimeKeeper;
+import com.eveningoutpost.dexdrip.g5model.GlucoseRxMessage;
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
 import com.eveningoutpost.dexdrip.cgm.dex.g7.BackfillControlRx;
 import com.eveningoutpost.dexdrip.cgm.dex.g7.EGlucoseRxMessage;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -86,7 +86,7 @@ public class ClassifierAction {
                     } else {
                         BaseGlucoseRxMessage glucose = new GlucoseRxMessage(data);
                         if (!glucose.usable()) {
-                            glucose = new com.eveningoutpost.dexdrip.G5Model.EGlucoseRxMessage(data);
+                            glucose = new com.eveningoutpost.dexdrip.g5model.EGlucoseRxMessage(data);
                         }
                         if (glucose.usable()) {
                             UserError.Log.d(TAG, "Updating age from timestamp: " + glucose.timestamp);

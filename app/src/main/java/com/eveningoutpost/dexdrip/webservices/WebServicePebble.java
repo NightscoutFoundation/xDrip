@@ -1,16 +1,20 @@
 package com.eveningoutpost.dexdrip.webservices;
 
-import android.support.annotation.NonNull;
+import android.content.Context;
+import android.app.Activity;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.Calibration;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.Calibration;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.models.Treatments;
 import com.eveningoutpost.dexdrip.dagger.Injectors;
 import com.eveningoutpost.dexdrip.ui.MicroStatus;
-import com.eveningoutpost.dexdrip.ui.MicroStatusImpl;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.xdrip;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -84,7 +88,12 @@ public class WebServicePebble extends BaseWebService {
             }
 
             bgs.put("battery", microStatus.gs("bestBridgeBattery"));
-            bgs.put("iob", 0); // TODO get iob
+            if (!Pref.getBooleanDefaultFalse("enable_iob_in_api_endpoint")) {
+                bgs.put("iob", 0.0);
+            } else {
+                Double iob = Treatments.getCurrentIoB();
+                bgs.put("iob", (iob == null) ? "unknown" : String.format("%.02f", iob));
+            }
             // TODO output bwp and bwpo
 
             status_array.put(status);

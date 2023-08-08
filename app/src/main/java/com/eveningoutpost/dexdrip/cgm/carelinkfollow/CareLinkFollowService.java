@@ -6,13 +6,13 @@ import android.os.PowerManager;
 import android.support.annotation.Nullable;
 import android.text.SpannableString;
 
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.framework.BuggySamsung;
 import com.eveningoutpost.dexdrip.utils.framework.ForegroundService;
@@ -22,9 +22,9 @@ import com.eveningoutpost.dexdrip.xdrip;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
-import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
-import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PERIOD;
+import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
+import static com.eveningoutpost.dexdrip.models.JoH.msSince;
+import static com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder.DEXCOM_PERIOD;
 
 /**
  * CareLink Follow Service
@@ -171,7 +171,8 @@ public class CareLinkFollowService extends ForegroundService {
                     downloader = new CareLinkFollowDownloader(
                             Pref.getString("clfollow_user", ""),
                             Pref.getString("clfollow_pass", ""),
-                            Pref.getString("clfollow_country", "").toLowerCase()
+                            Pref.getString("clfollow_country", "").toLowerCase(),
+                            Pref.getString("clfollow_patient", "")
                     );
                 }
 
@@ -244,7 +245,7 @@ public class CareLinkFollowService extends ForegroundService {
         megaStatus.add(new StatusItem("Last poll time", lastPoll > 0 ? JoH.dateTimeText(lastPoll) : "n/a"));
         megaStatus.add(new StatusItem("Next poll time", JoH.dateTimeText(wakeup_time)));
         megaStatus.add(new StatusItem());
-        megaStatus.add(new StatusItem("Buggy Samsung", JoH.buggy_samsung ? "Yes" : "No"));
+        megaStatus.add(new StatusItem("Buggy handset", JoH.buggy_samsung ? "Yes" : "No"));
 
         return megaStatus;
     }

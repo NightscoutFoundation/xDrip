@@ -1,14 +1,14 @@
 package com.eveningoutpost.dexdrip.watch.thinjam.messages;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
-import com.eveningoutpost.dexdrip.G5Model.CalibrationState;
-import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.g5model.CalibrationState;
+import com.eveningoutpost.dexdrip.models.BgReading;
 
 import lombok.Getter;
 import lombok.val;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
+import static com.eveningoutpost.dexdrip.models.JoH.msSince;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.OPCODE_INBOUND_GLUCOSE;
 
 // jamorham

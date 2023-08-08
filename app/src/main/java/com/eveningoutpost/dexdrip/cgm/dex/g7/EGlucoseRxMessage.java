@@ -1,9 +1,9 @@
 package com.eveningoutpost.dexdrip.cgm.dex.g7;
 
-import com.eveningoutpost.dexdrip.G5Model.CalibrationState;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.g5model.CalibrationState;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

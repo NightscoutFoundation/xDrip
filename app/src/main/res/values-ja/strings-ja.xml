@@ -273,6 +273,7 @@
     <string name="send_data_to_pebble_watchface">Pebbleにデータを表示</string>
     <string name="pebble_watch_integration">Pebble 統合</string>
     <string name="history">履歴</string>
+    <string name="statistics">統計</string>
     <string name="snooze_alert">スヌーズ　アラート</string>
     <string name="smart_alerting">スマート通知</string>
     <string name="reset">リセット</string>
@@ -326,6 +327,7 @@
     <!-- trend arrow for speak -->
     <string name="Flat">フラット</string>
     <string name="days">日</string>
+    <string name="aggressive_power_manager">お使いのデバイスにはアグレッシブな電源管理アプリがあります。通常、システム設定からアクセスできます。xDripがバックグラウンド制限から除外されていることを確認してください。</string>
     <string name="eng_mode_is_on">エンジニアリングモードが有効になっています。予期せぬ動作を引き起こす可能性があるため、必要な場合以外は無効にしてください。</string>
     <string name="yes">はい</string>
     <string name="garmin">Garmin</string>
@@ -368,6 +370,8 @@
     <string name="summary_broadcast_service_api">新しいAPIを使用して、サードパーティのアプリケーションとxDrip通信を有効にします。</string>
     <string name="title_features">機能</string>
     <string name="title_screens">画面</string>
+    <string name="title_clfollow_patient">CareLink ™のユーザー名</string>
+    <string name="summary_clfollow_patient">CareLink ™のユーザー名 (オプション)</string>
     <string name="title_color_smb_icon">SMBアイコン</string>
     <string name="title_color_smb_line">SMBライン</string>
     <string name="title_pick_numberwall_start">オン</string>
@@ -405,4 +409,13 @@
     <string name="please_wait_seconds_before_trying_to_start_sensor">センサーを起動する前に %d 秒お待ちください</string>
     <string name="save_power">節電</string>
     <string name="graph_smoothing">グラフのスムージング</string>
+    <string name="titleInside_yRange">有効にする</string>
+    <string name="wait_to_connect">設定を確認し、接続を待ちます。</string>
+    <string name="title_advanced_settings_4_Lib2">Libre 2の高度な設定</string>
+    <string name="title_Lib2_show_raw_values">グラフに生の値を表示</string>
+    <string name="summary_Lib2_show_raw_values">グラフに生の値を表示するにはオンにします。</string>
+    <string name="title_Lib2_show_sense_on_status">ステータスにセンサー情報を表示する</string>
+    <string name="summary_Lib2_show_sense_on_status">オンにすると、Libre 2センサーのステータスに追加情報が表示されます。</string>
+    <string name="import_qr_code_warning">信頼できるソースからの設定のみインポートします！\n\n以下の設定をインポートすることを確認してください：\n\n</string>
+    <string name="scan_to_load_xdrip_settings">xDrip設定を読み込むためにスキャンする</string>
 </resources>

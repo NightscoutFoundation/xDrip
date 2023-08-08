@@ -13,8 +13,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utils.FileUtils;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -24,6 +24,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
+
+import lombok.val;
 
 public class BitmapUtil {
 
@@ -197,6 +199,19 @@ public class BitmapUtil {
 
     public static float getScreenDensity() {
         return Resources.getSystem().getDisplayMetrics().density;
+    }
+
+    public static Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+        if (bm == null) return null;
+        val width = bm.getWidth();
+        val height = bm.getHeight();
+        val scaleWidth = ((float) newWidth) / width;
+        val scaleHeight = ((float) newHeight) / height;
+        val matrix = new Matrix();
+        matrix.postScale(scaleWidth, scaleHeight);
+        val resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
+        bm.recycle();
+        return resizedBitmap;
     }
 
 }

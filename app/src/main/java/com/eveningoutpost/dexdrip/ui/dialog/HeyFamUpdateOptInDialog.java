@@ -4,13 +4,13 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Experience;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Experience;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 
-import static com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity.AUTO_UPDATE_PREFS_NAME;
+import static com.eveningoutpost.dexdrip.utilitymodels.UpdateActivity.AUTO_UPDATE_PREFS_NAME;
 
 // jamorham
 

@@ -97,6 +97,15 @@
 	            android:key="libre2_enable_bluetooth_streaming"
 	            android:summary="@string/enable_streaming_summary"
 	            android:title="@string/enable_streaming_title" />
+
+            <ListPreference
+                android:defaultValue="25"
+                android:entries="@array/libreFilterLengthMethods"
+                android:entryValues="@array/libreFilterLengthValues"
+                android:key="libre_filter_length"
+                android:summary="@string/libre_filter_length_summary"
+                android:title="@string/libre_filter_length_title" />
+
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="nfc_show_age"
@@ -231,6 +240,14 @@
             android:summary="@string/summary_clfollow_pass"
             android:title="@string/title_clfollow_pass" />
         <EditTextPreference
+            android:defaultValue=""
+            android:inputType="textNoSuggestions|textVisiblePassword"
+            android:key="clfollow_patient"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:summary="@string/summary_clfollow_patient"
+            android:title="@string/title_clfollow_patient" />
+        <EditTextPreference
             android:defaultValue="30"
             android:inputType="textNoSuggestions|textVisiblePassword"
             android:key="clfollow_grace_period"
@@ -274,14 +291,9 @@
             <PreferenceCategory
                 android:key="ob1_options"
                 android:title="@string/title_ob1_options">
+
                 <CheckBoxPreference
                     android:defaultValue="true"
-                    android:key="use_ob1_g5_collector_service"
-                    android:summary="@string/summary_use_ob1_g5_collector_service"
-                    android:title="@string/title_use_ob1_g5_collector_service" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:dependency="use_ob1_g5_collector_service"
                     android:key="ob1_g5_use_transmitter_alg"
                     android:summary="@string/summary_ob1_g5_use_transmitter_alg"
                     android:title="@string/title_ob1_g5_use_transmitter_alg"
@@ -340,7 +352,6 @@
                     android:title="@string/title_ob1_g5_fallback_to_xdrip" />
                 <CheckBoxPreference
                     android:defaultValue="false"
-                    android:dependency="use_ob1_g5_collector_service"
                     android:key="ob1_minimize_scanning"
                     android:summary="@string/summary_ob1_minimize_scanning"
                     android:title="@string/title_ob1_minimize_scanning" />
@@ -353,26 +364,22 @@
                     android:title="Avoid Scanning" />
                 <CheckBoxPreference
                     android:defaultValue="false"
-                    android:dependency="use_ob1_g5_collector_service"
                     android:key="using_g6"
                     android:summary="@string/summary_using_g6"
                     android:title="@string/title_using_g6" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="ob1_g5_allow_resetbond"
-                    android:dependency="use_ob1_g5_collector_service"
                     android:summary="@string/summary_ob1_g5_allow_resetbond"
                     android:title="@string/title_ob1_g5_allow_resetbond" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="ob1_special_pairing_workaround"
-                    android:dependency="use_ob1_g5_collector_service"
                     android:summary="Some Samsung devices can have an error where they lose the pairing information. This attempts to work around the issue."
                     android:title="@string/special_pairing_workaround" />
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="ob1_initiate_bonding_flag"
-                    android:dependency="use_ob1_g5_collector_service"
                     android:summary="@string/summary_ob1_initiate_bonding_flag"
                     android:title="@string/title_ob1_initiate_bonding_flag"
                     />

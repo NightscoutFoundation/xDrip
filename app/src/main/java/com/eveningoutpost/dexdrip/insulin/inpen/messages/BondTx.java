@@ -2,7 +2,7 @@ package com.eveningoutpost.dexdrip.insulin.inpen.messages;
 
 import android.annotation.SuppressLint;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.insulin.inpen.Constants;
 
 import java.security.SecureRandom;

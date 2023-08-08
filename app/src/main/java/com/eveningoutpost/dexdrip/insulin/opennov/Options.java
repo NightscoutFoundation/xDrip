@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.insulin.opennov;
 
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 
 /**
  * JamOrHam

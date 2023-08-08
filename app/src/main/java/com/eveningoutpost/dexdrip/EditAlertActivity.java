@@ -37,13 +37,13 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.eveningoutpost.dexdrip.Models.AlertType;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
-import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.models.AlertType;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
+import com.eveningoutpost.dexdrip.utilitymodels.AlertPlayer;
+import com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
@@ -941,8 +941,8 @@ public class EditAlertActivity extends ActivityWithMenu {
 
             if (Pref.getBooleanDefaultFalse("start_snoozed"))  {
                 JoH.static_toast_long("Start Snoozed setting means alert would normally start silent");
-            } else if (Pref.getStringDefaultBlank("bg_alert_profile").equals("ascending")) {
-                JoH.static_toast_long("Ascending Volume Profile means it will start silent");
+            } else if (Pref.getStringDefaultBlank("bg_alert_profile").equals("ascending") && Pref.getBoolean("delay_ascending_3min", true)) {
+                JoH.static_toast_long("Ascending Volume Profile + delayed ascending means it will start silent");
             } else if (Pref.getStringDefaultBlank("bg_alert_profile").equals("Silent")) {
                 JoH.static_toast_long("Volume Profile is set to silent!");
             }

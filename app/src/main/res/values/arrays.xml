@@ -6,8 +6,7 @@
         <item>Wifi Wixel / Parakeet</item>
         <item>Wifi Wixel + BT Wixel</item>
         <item>Wifi Wixel + xBridge Wixel</item>
-        <item>G4 Share Receiver</item>
-        <item>G5/G6/Dex1 Transmitter</item>
+        <item>G5/G6/G7/1 Transmitter</item>
         <item>Libre Bluetooth</item>
         <item>Libre Bluetooth + wifi</item>
         <item>Libre wifi</item>
@@ -31,7 +30,6 @@
         <item>WifiWixel</item>
         <item>WifiBlueToothWixel</item>
         <item>WifiDexbridgeWixel</item>
-        <item>DexcomShare</item>
         <item>DexcomG5</item>
         <item>LimiTTer</item>
         <item>LimiTTerWifi</item>
@@ -56,6 +54,24 @@
         <item>@string/enable_streaming_never</item>
     </string-array>
 
+    <string-array name="EnableStreamingValues">
+        <item>enable_streaming_always</item>
+        <item>enable_streaming_ask</item>
+        <item>enable_streaming_never</item>
+    </string-array>
+
+    <string-array name="libreFilterLengthMethods">
+        <item>@string/libre_filter_length_10</item>
+        <item>@string/libre_filter_length_15</item>
+        <item>@string/libre_filter_length_25</item>
+    </string-array>
+
+    <string-array name="libreFilterLengthValues">
+        <item>10</item>
+        <item>15</item>
+        <item>25</item>
+    </string-array>
+
     <string-array name="CalibrateExternalLibre2">
         <item>No calibration</item>
         <item>Calibrate based on raw</item>
@@ -66,12 +82,6 @@
         <item>no_calibration</item>
         <item>calibrate_raw</item>
         <item>calibrate_glucose</item>
-    </string-array>
-
-    <string-array name="EnableStreamingValues">
-        <item>enable_streaming_always</item>
-        <item>enable_streaming_ask</item>
-        <item>enable_streaming_never</item>
     </string-array>
     
     <string-array name="SendToPebbleChoice">
@@ -172,9 +182,9 @@
     </string-array>
 
     <string-array name="risingEntries">
-        <item>1 mg/dl (0.06 mmol/l)</item>
-        <item>2 mg/dl (0.11 mmol/l)</item>
-        <item>3 mg/dl (0.17 mmol/l)</item>
+        <item>1 mg/dl/min (0.06 mmol/l/min)</item>
+        <item>2 mg/dl/min (0.11 mmol/l/min)</item>
+        <item>3 mg/dl/min (0.17 mmol/l/min)</item>
     </string-array>
 
     <string-array name="risingValues">
@@ -239,6 +249,7 @@
     <string-array name="carelinkCountryEntries">
         <item>Albania</item>
         <item>Algeria</item>
+        <item>Andorra</item>
         <item>Argentina</item>
         <item>Armenia</item>
         <item>Aruba</item>
@@ -247,12 +258,14 @@
         <item>Azerbaijan</item>
         <item>Bahamas</item>
         <item>Bahrain</item>
+        <item>Bangladesh</item>
         <item>Barbados</item>
         <item>Belarus</item>
         <item>Belgium</item>
         <item>Bermuda</item>
         <item>Bolivia</item>
         <item>Bosnia and Herzegovina</item>
+        <item>Botswana</item>
         <item>Brazil</item>
         <item>Bulgaria</item>
         <item>Cambodia</item>
@@ -274,6 +287,7 @@
         <item>Estonia</item>
         <item>Finland</item>
         <item>France</item>
+        <item>French Polynesia</item>
         <item>Georgia</item>
         <item>Germany</item>
         <item>Greece</item>
@@ -289,13 +303,17 @@
         <item>Ireland</item>
         <item>Israel</item>
         <item>Italy</item>
+        <item>Jamaica</item>
         <item>Japan</item>
         <item>Jordan</item>
+        <item>Kazakhstan</item>
+        <item>Kenya</item>
         <item>Kosovo</item>
         <item>Kuwait</item>
         <item>Latvia</item>
         <item>Lebanon</item>
         <item>Libya</item>
+        <item>Liechtenstein</item>
         <item>Lithuania</item>
         <item>Luxembourg</item>
         <item>Macau</item>
@@ -342,6 +360,7 @@
         <item>Switzerland</item>
         <item>Taiwan</item>
         <item>Thailand</item>
+        <item>Trinidad and Tobago</item>
         <item>Tunisia</item>
         <item>Turkey</item>
         <item>Ukraine</item>
@@ -349,6 +368,7 @@
         <item>United Kingdom</item>
         <item>United States</item>
         <item>Uruguay</item>
+        <item>Uzbekistan</item>
         <item>Venezuela</item>
         <item>Vietnam</item>
     </string-array>
@@ -356,6 +376,7 @@
     <string-array name="carelinkCountryValues">
         <item>al</item>
         <item>dz</item>
+        <item>ad</item>
         <item>ar</item>
         <item>am</item>
         <item>aw</item>
@@ -364,12 +385,14 @@
         <item>az</item>
         <item>bs</item>
         <item>bh</item>
+        <item>bd</item>
         <item>bb</item>
         <item>by</item>
         <item>be</item>
         <item>bm</item>
         <item>bo</item>
         <item>ba</item>
+        <item>bw</item>
         <item>br</item>
         <item>bg</item>
         <item>kh</item>
@@ -391,6 +414,7 @@
         <item>ee</item>
         <item>fi</item>
         <item>fr</item>
+        <item>pf</item>
         <item>ge</item>
         <item>de</item>
         <item>gr</item>
@@ -406,13 +430,17 @@
         <item>ie</item>
         <item>il</item>
         <item>it</item>
+        <item>jm</item>
         <item>jp</item>
         <item>jo</item>
+        <item>kz</item>
+        <item>ke</item>
         <item>xk</item>
         <item>kw</item>
         <item>lv</item>
         <item>lb</item>
         <item>ly</item>
+        <item>pf</item>
         <item>lt</item>
         <item>lu</item>
         <item>mo</item>
@@ -459,6 +487,7 @@
         <item>ch</item>
         <item>tw</item>
         <item>th</item>
+        <item>tt</item>
         <item>tn</item>
         <item>tr</item>
         <item>ua</item>
@@ -466,8 +495,36 @@
         <item>gb</item>
         <item>us</item>
         <item>uy</item>
+        <item>uz</item>
         <item>ve</item>
         <item>vn</item>
+    </string-array>
+
+    <string-array name="ymin_entries">
+        <item>40 mg/dl (2.2 mmol/l) ></item>
+        <item>50 mg/dl (2.8 mmol/l)</item>
+        <item>60 mg/dl (3.3 mmol/l)</item>
+        <item>70 mg/dl (3.9 mmol/l)</item>
+    </string-array>
+    <string-array name="ymin_values">
+        <item>40</item>
+        <item>50</item>
+        <item>60</item>
+        <item>70</item>
+    </string-array>
+    <string-array name="ymax_entries">
+        <item>210 mg/dl (11.7 mmol/l)</item>
+        <item>230 mg/dl (12.8 mmol/l)</item>
+        <item>250 mg/dl (13.9 mmol/l) ></item>
+        <item>300 mg/dl (16.7 mmol/l)</item>
+        <item>400 mg/dl (22.2 mmol/l)</item>
+    </string-array>
+    <string-array name="ymax_values">
+        <item>210</item>
+        <item>230</item>
+        <item>250</item>
+        <item>300</item>
+        <item>400</item>
     </string-array>
 
 </resources>
