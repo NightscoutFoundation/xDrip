@@ -1696,6 +1696,8 @@
     <string name="summary_ymin">Állítsa be yMin értékét, amelynél kisebbet nem mutat a grafikon.</string>
     <string name="summary_ymax">Állítsa be yMax értékét, amelynél nagyobbat nem mutat a grafikon.</string>
     <string name="wait_to_connect">Beállítások megerősítése és várakozás a kapcsolatfelvételre.</string>
+    <string name="summary_sens_expiry_notify">Értesítés szenzor lejárata előtt.</string>
+    <string name="title_sens_expiry_notify">Szenzor lejár</string>
     <string name="close">Bezárás</string>
     <string name="title_advanced_settings_4_Lib2">Libre 2 szenzor további beállításai</string>
     <string name="title_Lib2_show_raw_values">Nyers adatok mutatása a grafikonon</string>

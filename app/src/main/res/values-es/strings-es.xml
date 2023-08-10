@@ -1770,6 +1770,8 @@
     <string name="summary_ymin">Escoge yMin para cuando no hay lecturas inferiores.</string>
     <string name="summary_ymax">Escoge yMin para cuando no hay lecturas superiores.</string>
     <string name="wait_to_connect">Verificar ajustes y esperar a la conectividad</string>
+    <string name="summary_sens_expiry_notify">Aumentar las notificaciones cuando el sensor se acerca a la caducidad.</string>
+    <string name="title_sens_expiry_notify">Caducidad sensor</string>
     <string name="close">Cerrar</string>
     <string name="title_advanced_settings_4_Lib2">Ajustes avanzados para Libre 2</string>
     <string name="title_Lib2_show_raw_values">Mostrar valores en bruto en el gráfico</string>
