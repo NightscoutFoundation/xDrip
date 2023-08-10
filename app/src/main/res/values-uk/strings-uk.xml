@@ -1764,6 +1764,8 @@
     <string name="summary_ymin">Виберіть мінімальне значення для осі y, коли немає менших зчитувань.</string>
     <string name="summary_ymax">Виберіть максимальне значення для осі y, коли немає більших зчитувань.</string>
     <string name="wait_to_connect">Перевірте налаштування і чекайте підключення.</string>
+    <string name="summary_sens_expiry_notify">Увімкнути сповіщення, коли закінчується термін дії сенсору.</string>
+    <string name="title_sens_expiry_notify">Термін сенсору закінчується</string>
     <string name="close">Закрити</string>
     <string name="title_advanced_settings_4_Lib2">Розширені налаштування для Libre 2</string>
     <string name="title_Lib2_show_raw_values">Показати не скореговані значення на графіку</string>

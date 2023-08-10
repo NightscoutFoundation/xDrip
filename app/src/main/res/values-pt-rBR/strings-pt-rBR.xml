@@ -849,6 +849,7 @@
     <string name="install_text_to_speech_data_question">Instalar dados Texto-Para-Voz?</string>
     <string name="after_installation_of_languages_you_might_have_to">(Após idiomas instalados poderá ser necessário pressionar \"Reiniciar Dispositivo BT\" em Estado do Sistema.)</string>
     <string name="stop_sensor">Parar Sensor</string>
+    <string name="dont_stop_just_reset_all_calibrations">Não parar, apenas limpar todas as calibrações</string>
     <string name="initial_calibration">Calibração dupla</string>
     <string name="calibration_can_not_be_blank">Calibração não pode ficar em branco</string>
     <string name="invalid_calibration_number">Valor de calibração inválido!</string>
@@ -899,6 +900,7 @@
     <string name="bluereader_position">Verificar posição do blueReader no sensor, pois ele não foi capaz de ler!</string>
     <string name="bluereaderuglystate">O blueReader foi detectado em estado erro! Ele será desligado de imediato, mas poderá ser ligado de novo (breve pressão do botão). Após isso o blueReader deverá funcionar como esperado!</string>
     <string name="offical_msg">App Oficial</string>
+    <string name="aggressive_power_manager">Seu dispositivo possui aplicativo de gerenciamento de energia. Pode ser acessado via configurações do sistema. Favor garantir que o xDrip não faz parte das restrições de segundo plano.</string>
     <string name="use_conflict_msg">pode tentar acessar o dispositivo de transmissor também e isso pode causar problemas com os dois apps</string>
     <string name="use_confict_msg_glimp">Ajustar Configurações do Glimp: opções -&gt; dispositivos -&gt; desseleccionar opção Bluetooth</string>
     <string name="eng_mode_is_on">O modo de engenharia está ativado. Desative-o, a menos que tenha certeza que precisa, pois pode causar um comportamento inesperado.</string>
@@ -910,6 +912,7 @@
     <string name="enable_local_web_server_feature_fitbit">Ativar o recurso do servidor web local para o relógio Fitbit?</string>
     <string name="set_data_source_to">Definir Fonte de Dados para: %s ?</string>
     <string name="are_you_sure">Você tem certeza?</string>
+    <string name="g4_share_receiver">Receptor de compartilhamento G4</string>
     <string name="bluetooth_wixel">Bluetooth Wixel</string>
     <string name="parakeet_wifi">Parakeet / Wifi</string>
     <string name="other">Outro</string>
@@ -990,12 +993,20 @@
     <string name="title_Accept_Calibrations">Aceitar Calibrações</string>
     <string name="summary_Operate_a_local_web_server_for_interacting_with_Fitbit_Ionic_etc">Usar um servidor web local para interagir com Fitbit Ionic etc</string>
     <string name="title_xDrip_Web_Service">WebService xDrip</string>
+    <string name="title_xDrip_Web_Service_Secret">Senha do Web Service do xDrip</string>
+    <string name="summary_Display_status_from_other_apps_like_AndroidAPS">Exibir o status de outros apps como o AndroidAPS</string>
+    <string name="summary_Display_pump_status_information_if_available">Exibir informações de status da bomba se disponível</string>
+    <string name="title_Pump_Status">Estado da Bomba</string>
+    <string name="summary_Show_treatment_carb_insulin_ratio">Mostrar relação carboidrato/insulina</string>
+    <string name="title_Carb_Insulin_Ratio">Relação de Carbo/Insulina</string>
+    <string name="title_Double_Calibrations">Calibrações Duplas</string>
     <string name="title_Non_fixed_Libre_slopes">Inclinações não fixas do Libre</string>
     <string name="summary_Allow_initial_calibration_no_good_enough_data">Permite calibração inicial mesmo que não existam dados bons e suficientes. Atenção que isso pode resultar numa calibração incorreta!</string>
     <string name="title_Bypass_quality_check">Ignorar Controle de Qualidade</string>
     <string name="title_Always_discover_services">Sempre descobrir serviços</string>
     <string name="summary_Only_suitable_for_phones_which_support_automatic_pairing">Apenas adequado para telefones que suportam o pareamento automático</string>
     <string name="title_Allow_blucon_unbonding">Permitir desvinculação de BluCon</string>
+    <string name="summary_write_Battery_Information_for_additional_analytic">Escreve em um arquivo as informações sobre a bateria para análise adicional. Por favor, só use isso, se você for solicitado por um desenvolvedor!</string>
     <string name="title_Batterylog">Registo de Bateria</string>
     <string name="summary_Choose_to_display_the_bridge_battery_level">Selecionar para mostrar nível de bateria do transmissor</string>
     <string name="title_Glucose_Retention">Retenção de glicose</string>
@@ -1007,6 +1018,7 @@
     <string name="message_reminders_explanation">Lembretes podem ser usados para situações como mudança de local da bomba e outras coisas.\n\nPodem repetir, ser definidos para vários períodos de tempo. Ser silenciados, adiados, reagendados etc.\n\nCarregar no botão + para adicionar um lembrete.</string>
     <string name="title_swipe_reminder">Deslize para a esquerda ou direita</string>
     <string name="message_swipe_explanation">\u2190 Deslize para ESQUERDA para atrasar ou adiar um lembrete\n\n\u2192 Deslize para DIREITA para programar o próximo lembrete\n\nTocando no título ou horário permite edição. Pressione e segure o título para editar outros parâmetros.</string>
+    <string name="message_snooze_explanaition_undo">O botão Desfazer restaura o lembrete de como estava antes de ser deslizado.</string>
     <string name="title_which_day">Em que dia?</string>
     <string name="title_what_time_day">A que hora do dia?</string>
     <string name="reminder_due">Lembrete concluído</string>
@@ -1300,4 +1312,6 @@
     <string name="enable_streaming_dialog_dont_ask_again">Não perguntar novamente</string>
     <string name="cannot_choose_file_without_permission">Não é possível escolher o arquivo sem permissão de armazenamento</string>
     <string name="titleInside_yRange">Ligar</string>
+    <string name="summary_sens_expiry_notify">Emitir notificações quando o sensor estiver perto de expirar.</string>
+    <string name="title_sens_expiry_notify">Expiração do sensor</string>
 </resources>
