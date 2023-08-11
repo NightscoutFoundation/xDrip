@@ -977,6 +977,7 @@
     <string name="emergency_message_near_format_string">%1$s בקרבת %5$s %4$s %3$s %2$s</string>
     <string name="choose_when_to_send_messages">בחרו מתי לשלוח הודעות:</string>
     <string name="low_alert_not_acknowledged">התראת סוכר נמוך לא אושרה</string>
+    <string name="lowest_alert_not_acknowledged">התראת סוכר נמוך לא אושרה</string>
     <string name="high_alert_not_acknowledged">התראת סוכר גבוה לא אושרה</string>
     <string name="device_inactivity">חוסר פעילות המכשיר</string>
     <string name="test_message_sending">נסה שליחת הודעות</string>
