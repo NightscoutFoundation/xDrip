@@ -1553,6 +1553,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="restarting_collector">Restartování kolektoru!</string>
     <string name="follower_deleted_succesfully">Sledující byl úspěšně odebrán</string>
     <string name="failed_to_delete_follower">Nepodařilo se odstranit sledujícího</string>
+    <string name="input_not_found_cancelled">Záznam nenalezen! Zrušeno!</string>
     <string name="cancelled">Zrušeno!</string>
     <string name="no_sensor_found">Senzor nenalezen</string>
     <string name="checksum_failed__retrying">Kontrolní součet se nezdařil - opakuji</string>
@@ -1560,7 +1561,12 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="authentication_failed_wrong_password">Ověřování se nezdařilo. Špatné heslo?</string>
     <string name="share_login_data_isnt_valid">Neplatné přihlašovací údaje do Share - zkontrolujte uživatelské jméno / heslo</string>
     <string name="connectivity_problem_reaching_share_servers">Problém s připojením k serverům Dexcom Share</string>
+    <string name="ob1_session_restarted_title">Restart relace senzoru</string>
+    <string name="ob1_session_restarted_msg">Relace senzoru byla preventivně restartována. Zkontrolujte hodnoty glykémie ze senzoru a případně zkalibrujte</string>
+    <string name="ob1_session_restarted_note">Relace senzoru byla restartována</string>
     <string name="collection_summary_ob1_g5_preemptive_restart">Automaticky restartovat senzor dříve, než se zastaví</string>
+    <string name="title_ob1_g5_preemptive_restart_alert">Výstraha preventivního restartu</string>
+    <string name="summary_ob1_g5_preemptive_restart_alert">Spustit výstrahu při preventivním restartu relace senzoru</string>
     <string name="blood_glucose_graph">Graf glykémie</string>
     <string name="pref_enable_insulinprofiles">Povolit jeden až tři inzulínové profily</string>
     <string name="pref_select_basal_insulinprofiles">Zvolit bazální inzulín:</string>
@@ -1608,7 +1614,14 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="type_treatment_eg">Zadejte ošetření\nnapř.: počet jednotek x.x</string>
     <string name="word_lexicon_not_loaded">Slovník nebyl načten!</string>
     <string name="no_never">NE, nikdy</string>
+    <string name="auto_starting_sensor">Automatický start senzoru!</string>
+    <string name="start_sensor_confirmation">Zdroj dat je nastaven na: %s\n\nChcete změnit nastavení nebo spustit senzor?</string>
+    <string name="state_not_currently_known">Stav %s  je nyní neznámý. Během dalšího připojení dojde k jeho aktualizaci</string>
+    <string name="unusual_calibration_waiting">Neobvyklý stav kalibrace - čeká se na další data</string>
+    <string name="could_not_find_blood_data">Nelze nalézt informace o hodnotách glykémie z krve! %s</string>
+    <string name="sensor_not_started">Zdá se, že relace senzoru není spuštěna</string>
     <string name="bridge_battery">Baterie čtečky</string>
+    <string name="noise_workings_noise">Šum: %s</string>
     <string name="snoozing_due_button_press">Potvrzení výstrahy stisknutím tlačítka hlasitosti</string>
     <string name="title_motion_detection_warning">Upozornění na detekci pohybu</string>
     <string name="message_motion_detection_warning">Funkce detekce pohybu je pouze experimentální a je kompatibilní pouze s některými telefony. Jejím hlavním účelem je detekovat režim vozidla.\n\nTelefony vyšší třídy (high-end) by spíše měly mít senzory k úspěšné detekci. Může docházet k nadměrnému vybíjení baterie telefonu.\n\nU Pro pohyb související se cvičením funguje lépe počítadlo kroků v chytrých hodinkách/náramcích.</string>
@@ -1618,6 +1631,9 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="sensor_expired">SKONČIL!</string>
     <string name="external_status_strings_eg_tbr">Přijmout stav z externího zdroje, např. TBR (dočasná bazální dávka) z AAPS</string>
     <string name="accept_external_status">Přijímat stav z externího zdroje</string>
+    <string name="cancel_by_default">Defaultně zrušeno</string>
+    <string name="old">Starý</string>
+    <string name="neww">Nový</string>
     <string name="reschedule_with_new_timing">Přeplánovat s novým časem?</string>
     <string name="select_new_sound_source">Vybrat nový zdroj zvuku</string>
     <string name="snooze_done">← Odložit / Hotovo →</string>
@@ -1644,11 +1660,17 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="please_wait_seconds_before_trying_to_start_sensor">Počkejte prosím %d sekund před pokusem o spuštění senzoru</string>
     <string name="reminder">Připomenutí</string>
     <string name="notification">Oznámení</string>
+    <string name="TX_EOL_reminder">Když počet dnů používání vysílače, zobrazený na stránce Stav systému, dosáhne %1$d, tak bude poslední možnost znovu spustit nový senzor s tímto vysílačem. Nyní je vysílač na %2$d dnech.</string>
+    <string name="TX_EOL_notification">Pokud budete dále pokračovat ve spuštění senzor tak velmi pravděpodobně se to nepodaří, protože životnost vysílače dosáhla svého maxima.</string>
+    <string name="TX_EOL_reminder_mod">Doba používání vysílače se blíží svému konci. Nyní je životnost vysílače na %d dnech. Brzy již nebude možno spustit nový senzor s tímto vysílačem.</string>
     <string name="save_power">Úsporný režim</string>
     <string name="reduce_battery_and_network_overhead">Snížit spotřebu baterie a objem přenesených dat pomocí dávkového zpracování a vyloučení nepotřebných dat</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Zjednodušit grafy vyhlazením (odstraněním) odchylých dat</string>
     <string name="graph_smoothing">Vyhlazování grafu</string>
+    <string name="select_file_for_alert">Vybrat soubor pro výstrahu</string>
     <string name="cannot_choose_file_without_permission">Pro vybrání souboru je zapotřebí udělit oprávnění k úložišti zařízení</string>
+    <string name="select_time">Vybrat čas</string>
+    <string name="select_tone_for_alerts">Vybrat tón pro výstrahy</string>
     <string name="you_can_use_google_drive_for_backup">K zálohování můžete použít Google Drive</string>
     <string name="select_backup_location">Vyberte umístění zálohy</string>
     <string name="do_backup_now">Zazálohovat nyní</string>
@@ -1712,8 +1734,10 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="wait_to_connect">Ověřte nastavení a počkejte na připojení.</string>
     <string name="summary_sens_expiry_notify">Upozornit, když se blíží konec senzoru.</string>
     <string name="title_sens_expiry_notify">Senzor bude končit</string>
+    <string name="close">Zavřít</string>
     <string name="title_advanced_settings_4_Lib2">Pokročilá nastavení pro Libre 2</string>
-    <string name="title_Lib2_show_sense_on_status">Zobrazit informace o senzoru ve Statusu</string>
+    <string name="title_Lib2_show_sense_on_status">Zobrazit informace o senzoru</string>
+    <string name="summary_Lib2_show_sense_on_status">Zapnutím zobrazíte dodatečné informace o Libre2 senzoru na stránce Stav systému.</string>
     <string name="import_qr_code_warning">Importujte nastavení pouze ze zdrojů, kterým důvěřujete!\n\nProsím potvrďte import následujících nastavení:\n\n</string>
     <string name="scan_to_load_xdrip_settings">Skenovat pro nahrání nastavení aplikace xDrip+</string>
 </resources>

@@ -186,6 +186,7 @@
     <string name="general_settings">Všeobecné nastavenia</string>
     <string name="high_value">Vysoká hodnota</string>
     <string name="low_value">Nízka hodnota</string>
+    <string name="stats_range_settings">Nastavenia rozsahov: </string>
     <string name="end_user_license_agreement">Licenčná zmluva koncového používateľa</string>
     <string name="save">Uložiť</string>
     <string name="view_important_warning">Zobraziť dôležité varovania</string>
@@ -816,6 +817,7 @@
     <string name="play_sound">Prehrať zvuk</string>
     <string name="repeat_notification_every_90_minutes">Opakovať upozornenie každých 90 minút v \"AUTO\" režime</string>
     <string name="repeat_sound">Zopakovať zvuk</string>
+    <string name="enable_telemetry">Povoliť telemetriu</string>
     <string name="blukon">BluCon</string>
     <string name="tomato">Tomato</string>
     <string name="bubble">Bubble</string>
@@ -838,6 +840,7 @@
     <string name="only_stop_your_sensor_when_you_actually_plan">Zastavte senzor len v prípade, že ste sa skutočne rozhodli ho odstrániť!</string>
     <string name="restart_collector">Reštartovať zberač dát</string>
     <string name="forget_device">Zabudnúť toto zariadenie</string>
+    <string name="other_notes">Iné poznámky:</string>
     <string name="collecting_initial_readings">Zhromažďovanie počiatočných údajov</string>
     <string name="data_collector_running">Zberač dát spustený</string>
     <string name="received_some_recent_data">Prijaté najnovšie údaje</string>
