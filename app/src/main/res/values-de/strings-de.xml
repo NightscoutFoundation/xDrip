@@ -1780,6 +1780,8 @@
     <string name="summary_ymin">Wähle yMin, wenn es keine kleineren Werte gibt.</string>
     <string name="summary_ymax">Wähle yMax, wenn es keine größeren Werte gibt.</string>
     <string name="wait_to_connect">Einstellungen überprüfen und auf Verbindung warten</string>
+    <string name="summary_sens_expiry_notify">Benachrichtigen, wenn Sensor kurz vor Ablauf</string>
+    <string name="title_sens_expiry_notify">Sensor-Ablauf</string>
     <string name="close">Schließen</string>
     <string name="title_advanced_settings_4_Lib2">Erweiterte Einstellungen für Libre 2</string>
     <string name="title_Lib2_show_raw_values">Rohwerte im Graph anzeigen</string>

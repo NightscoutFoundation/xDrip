@@ -85,6 +85,8 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackages.add("com.camdiab.fx_alert.hx.mmoll");
         coOptedPackages.add("com.camdiab.fx_alert.hx.mgdl");
         coOptedPackages.add("com.medtronic.diabetes.guardian");
+        coOptedPackages.add("com.medtronic.diabetes.guardianconnect");
+        coOptedPackages.add("com.medtronic.diabetes.guardianconnect.us");
         coOptedPackages.add("com.medtronic.diabetes.minimedmobile.eu");
         coOptedPackages.add("com.medtronic.diabetes.minimedmobile.us");
 
@@ -209,6 +211,9 @@ public class UiBasedCollector extends NotificationListenerService {
         switch (lastPackage) {
             default:
                 return value
+                        .replace("\u00a0"," ")
+                        .replace("\u2060","")
+                        .replace("\\","/")
                         .replace("mmol/L", "")
                         .replace("mmol/l", "")
                         .replace("mg/dL", "")
