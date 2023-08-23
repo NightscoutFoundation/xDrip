@@ -2,7 +2,6 @@ package com.eveningoutpost.dexdrip.services;
 
 import static com.eveningoutpost.dexdrip.models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.cgm.dex.ClassifierAction.lastReadingTimestamp;
-import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.UiBased;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getDexCollectionType;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
@@ -210,18 +209,43 @@ public class UiBasedCollector extends NotificationListenerService {
         if (lastPackage == null) return value;
         switch (lastPackage) {
             default:
-                return value
-                        .replace("\u00a0"," ")
-                        .replace("\u2060","")
-                        .replace("\\","/")
-                        .replace("mmol/L", "")
-                        .replace("mmol/l", "")
-                        .replace("mg/dL", "")
-                        .replace("mg/dl", "")
-                        .replace("≤", "")
-                        .replace("≥", "")
+                    return (basicFilterString(arrowFilterString(value)))
                         .trim();
         }
+    }
+
+    String basicFilterString(final String value) {
+        return value
+                .replace("\u00a0"," ")
+                .replace("\u2060","")
+                .replace("\\","/")
+                .replace("mmol/L", "")
+                .replace("mmol/l", "")
+                .replace("mg/dL", "")
+                .replace("mg/dl", "")
+                .replace("≤", "")
+                .replace("≥", "");
+    }
+
+    String arrowFilterString(final String value) {
+        return filterUnicodeRange(filterUnicodeRange(filterUnicodeRange(filterUnicodeRange(value,
+                '\u2190', '\u21FF'),
+                '\u2700', '\u27BF'),
+                '\u2900', '\u297F'),
+                '\u2B00', '\u2BFF');
+    }
+
+    public String filterUnicodeRange(final String input, final char bottom, final char top) {
+        if (bottom > top) {
+            throw new RuntimeException("bottom and top of character range invalid");
+        }
+        val filtered = new StringBuilder(input.length());
+        for (final char c : input.toCharArray()) {
+            if (c < bottom || c > top) {
+                filtered.append(c);
+            }
+        }
+        return filtered.toString();
     }
 
     @SuppressWarnings("UnnecessaryLocalVariable")
