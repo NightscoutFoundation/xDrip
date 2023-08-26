@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip.services;
 
-import static com.eveningoutpost.dexdrip.models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.cgm.dex.ClassifierAction.lastReadingTimestamp;
+import static com.eveningoutpost.dexdrip.models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.UiBased;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getDexCollectionType;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
@@ -26,22 +26,20 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.alert.Persist;
+import com.eveningoutpost.dexdrip.cgm.dex.BlueTails;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.Sensor;
 import com.eveningoutpost.dexdrip.models.UserError;
-import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 import com.eveningoutpost.dexdrip.utilitymodels.Unitized;
-import com.eveningoutpost.dexdrip.cgm.dex.BlueTails;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -334,7 +332,14 @@ public class UiBasedCollector extends NotificationListenerService {
         }
         val lastRepeat = PersistentStore.getLong(UI_BASED_STORE_LAST_REPEAT);
         UserError.Log.d(TAG, "Last repeat: " + lastRepeat);
-        return lastRepeat > 3;
+        return lastRepeat > jamThreshold();
+    }
+
+    private int jamThreshold() {
+        if (lastPackage != null) {
+            if (lastPackage.startsWith("com.medtronic")) return 9;
+        }
+        return 4;
     }
 
     private void getTextViews(final List<TextView> output, final ViewGroup parent) {
