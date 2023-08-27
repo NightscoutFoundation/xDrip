@@ -64,6 +64,7 @@ public class UiBasedCollector extends NotificationListenerService {
     private static final String ACTION_NOTIFICATION_LISTENER_SETTINGS = "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS";
 
     private static final HashSet<String> coOptedPackages = new HashSet<>();
+    private static final HashSet<String> coOptedPackagesAll = new HashSet<>();
     private static final HashSet<String> companionAppIoBPackages = new HashSet<>();
     private static final HashSet<Pattern> companionAppIoBRegexes = new HashSet<>();
     private static boolean debug = false;
@@ -87,6 +88,9 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackages.add("com.medtronic.diabetes.minimedmobile.eu");
         coOptedPackages.add("com.medtronic.diabetes.minimedmobile.us");
 
+        coOptedPackagesAll.add("com.dexcom.dexcomone");
+        coOptedPackagesAll.add("com.medtronic.diabetes.guardian");
+
         companionAppIoBPackages.add("com.insulet.myblue.pdm");
 
         // The IoB value should be captured into the first match group.
@@ -100,7 +104,7 @@ public class UiBasedCollector extends NotificationListenerService {
         if (coOptedPackages.contains(fromPackage)) {
             if (getDexCollectionType() == UiBased) {
                 UserError.Log.d(TAG, "Notification from: " + fromPackage);
-                if (sbn.isOngoing() || fromPackage.endsWith("e")) {
+                if (sbn.isOngoing() || coOptedPackagesAll.contains(fromPackage)) {
                     lastPackage = fromPackage;
                     processNotification(sbn.getNotification());
                     BlueTails.immortality();
