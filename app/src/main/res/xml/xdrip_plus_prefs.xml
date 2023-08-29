@@ -817,7 +817,7 @@
                 android:summary="@string/this_device_will_send_data_to_followers"
                 android:title="@string/be_master_for_followers" />
             <CheckBoxPreference
-                android:defaultValue="true"
+                android:defaultValue="false"
                 android:dependency="plus_follow_master"
                 android:key="plus_accept_follower_actions"
                 android:summary="@string/summary_plus_accept_follower_actions"
