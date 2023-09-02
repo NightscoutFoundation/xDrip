@@ -782,6 +782,7 @@
     <string name="collector_battery_alerts">Alarmy úrovně nabití senzoru</string>
     <string name="low_battery_percentage">Nízké procento baterie</string>
     <string name="notify_data_arrives_master"><![CDATA[Upozornit, pokud data dorazí z vysílače se zpožděním > 20 minut.]]></string>
+    <string name="follower_chime_new">Upozornění sledujícího na novou hodnotu</string>
     <string name="carb_ratio">Sacharidový poměr</string>
     <string name="enable_dedicated_insulin_profiles">Nastavení inzulinových profilů</string>
     <string name="desc_enable_dedicated_insulin_profiles">Zde lze povolit nebo konfigurovat různé inzulinové profily</string>
@@ -976,6 +977,7 @@
     <string name="emergency_message_near_format_string">%1$s poblíž %2$s %3$s %4$s %5$s</string>
     <string name="choose_when_to_send_messages">Vyberte, kdy odesílat zprávy:</string>
     <string name="low_alert_not_acknowledged">Výstraha nízké glykémie nepotvrzená</string>
+    <string name="lowest_alert_not_acknowledged">Nepotvrzená výstraha nízké glykémie s nejnižším limitem</string>
     <string name="high_alert_not_acknowledged">Výstraha vysoké glykémie nepotvrzená</string>
     <string name="device_inactivity">Neaktivita zařízení</string>
     <string name="test_message_sending">Test odesílání SMS</string>
@@ -1667,6 +1669,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="reduce_battery_and_network_overhead">Snížit spotřebu baterie a objem přenesených dat pomocí dávkového zpracování a vyloučení nepotřebných dat</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Zjednodušit grafy vyhlazením (odstraněním) odchylých dat</string>
     <string name="graph_smoothing">Vyhlazování grafu</string>
+    <string name="last_reading">Poslední hodnota</string>
     <string name="select_file_for_alert">Vybrat soubor pro výstrahu</string>
     <string name="cannot_choose_file_without_permission">Pro vybrání souboru je zapotřebí udělit oprávnění k úložišti zařízení</string>
     <string name="select_time">Vybrat čas</string>
@@ -1702,7 +1705,9 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="no_file_was_chosen">Nebyl vybrán žádný soubor</string>
     <string name="could_not_sign_in">Nepodařilo se přihlásit</string>
     <string name="problem_with_file_selection">Problém s výběrem souboru</string>
+    <string name="selected_file_location">Umístění zvoleného souboru</string>
     <string name="please_reselect_backup_file">Prosím zvovu vyberte záložní soubor</string>
+    <string name="ready">Připraveno</string>
     <string name="uploading_to_cloud">Nahrávání do cloudu</string>
     <string name="error_with_local_backup">Chyba v lokální záloze</string>
     <string name="upload_successful">Nahrání bylo úspěšné</string>
