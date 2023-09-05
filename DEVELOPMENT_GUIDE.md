@@ -6,7 +6,7 @@ The following steps describe how to set up a development environment required to
 - Select GitHub in the left panel, then click `Log In via GitHub...`.
 - Click `Authorize in GitHub` on the newly opened page.
 - You should now see a list of your GitHub projects, including the newly forked `xDrip`. Select it and click `Clone`.
-- You may encounter an `Unsupported Java` error. To build xDrip, use an older JDK version:
+- You may encounter an `Unsupported Java` error. To be able to build xDrip, an older JDK version is required:
   - Open the following menu: *File* -> *Settings* -> *Build, Execution, Deployment* -> *Build Tools* -> *Gradle*.
   - In the `Gradle JDK` dropdown, select `Download JDK...`.
   - For `Version:`, select `11`; leave the remaining options unchanged.
