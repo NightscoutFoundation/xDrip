@@ -57,14 +57,6 @@
                 android:orderInCategory="1"
                 android:onClick="exportCSVasSiDiary"
                 android:showAsAction="never"/>
-
-            <item android:id="@+id/importsettings"
-                android:title="@string/load_save_settings_on_sdcard"
-                android:checkable="false"
-                android:onClick="settingsSDcardExport"
-                android:visible="true"
-                android:orderInCategory="1"
-                android:showAsAction="never"/>
         </menu>
     </item>
 
