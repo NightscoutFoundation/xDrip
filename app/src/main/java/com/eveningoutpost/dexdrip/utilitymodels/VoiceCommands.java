@@ -159,8 +159,10 @@ public class VoiceCommands {
                 Home.staticRefreshBGChartsOnIdle();
                 break;
             case "stop sensor on master":
-                JoH.static_toast_long(allWords);
-                GcmActivity.push_stop_master_sensor();
+                if (get_engineering_mode()) {
+                    JoH.static_toast_long(allWords);
+                    GcmActivity.push_stop_master_sensor();
+                }
                 break;
             case "start sensor on master":
                 JoH.static_toast_long(allWords);
