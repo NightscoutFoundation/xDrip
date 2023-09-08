@@ -1586,7 +1586,7 @@
     <string name="title_ob1_g5_preemptive_restart_alert">Alerta de reinicio preventivo</string>
     <string name="summary_ob1_g5_preemptive_restart_alert">Generar alerta al reiniciar la sesión de forma preventiva</string>
     <string name="blood_glucose_graph">Gráfico de Glucemia</string>
-    <string name="pref_enable_insulinprofiles">habilitar al menos un máximo de tres perfiles</string>
+    <string name="pref_enable_insulinprofiles">Habilitar al menos uno, máximo tres perfiles</string>
     <string name="pref_select_basal_insulinprofiles">elija perfil de insulina basal.</string>
     <string name="pref_select_bolus_insulinprofiles">elija perfil de insulina para bolo. También se utiliza para la bomba y pluma...</string>
     <string name="enable_streaming_summary">Conectarse a sensores Libre2 después de buscarlos. Esto puede hacer que el lector Libre y LibreLink no reciban alertas</string>
