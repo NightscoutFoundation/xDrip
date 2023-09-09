@@ -149,7 +149,7 @@ public class AidexReceiver extends BroadcastReceiver {
         checkIfCorrectSensorIsRunning(sensorId, timeStamp);
 
         UserError.Log.i(TAG, "Aidex Broadcast NewBGEstimate received: bg=" + bgValueMgDl + ", time=" + JoH.dateTimeText(timeStamp));
-        BgReading.bgReadingInsertFromInt(bgValueMgDl, timeStamp, segmentation_timeslice, false);
+        BgReading.bgReadingInsertFromInt(bgValueMgDl, timeStamp, segmentation_timeslice, true);
 
     }
 

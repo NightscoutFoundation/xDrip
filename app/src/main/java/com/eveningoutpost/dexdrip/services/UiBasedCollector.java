@@ -1,8 +1,7 @@
 package com.eveningoutpost.dexdrip.services;
 
-import static com.eveningoutpost.dexdrip.models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.cgm.dex.ClassifierAction.lastReadingTimestamp;
-import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
+import static com.eveningoutpost.dexdrip.models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.UiBased;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getDexCollectionType;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
@@ -27,22 +26,20 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.alert.Persist;
+import com.eveningoutpost.dexdrip.cgm.dex.BlueTails;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.Sensor;
 import com.eveningoutpost.dexdrip.models.UserError;
-import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 import com.eveningoutpost.dexdrip.utilitymodels.Unitized;
-import com.eveningoutpost.dexdrip.cgm.dex.BlueTails;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -67,6 +64,7 @@ public class UiBasedCollector extends NotificationListenerService {
     private static final String ACTION_NOTIFICATION_LISTENER_SETTINGS = "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS";
 
     private static final HashSet<String> coOptedPackages = new HashSet<>();
+    private static final HashSet<String> coOptedPackagesAll = new HashSet<>();
     private static final HashSet<String> companionAppIoBPackages = new HashSet<>();
     private static final HashSet<Pattern> companionAppIoBRegexes = new HashSet<>();
     private static boolean debug = false;
@@ -90,6 +88,9 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackages.add("com.medtronic.diabetes.minimedmobile.eu");
         coOptedPackages.add("com.medtronic.diabetes.minimedmobile.us");
 
+        coOptedPackagesAll.add("com.dexcom.dexcomone");
+        coOptedPackagesAll.add("com.medtronic.diabetes.guardian");
+
         companionAppIoBPackages.add("com.insulet.myblue.pdm");
 
         // The IoB value should be captured into the first match group.
@@ -103,7 +104,7 @@ public class UiBasedCollector extends NotificationListenerService {
         if (coOptedPackages.contains(fromPackage)) {
             if (getDexCollectionType() == UiBased) {
                 UserError.Log.d(TAG, "Notification from: " + fromPackage);
-                if (sbn.isOngoing() || fromPackage.endsWith("e")) {
+                if (sbn.isOngoing() || coOptedPackagesAll.contains(fromPackage)) {
                     lastPackage = fromPackage;
                     processNotification(sbn.getNotification());
                     BlueTails.immortality();
@@ -210,18 +211,43 @@ public class UiBasedCollector extends NotificationListenerService {
         if (lastPackage == null) return value;
         switch (lastPackage) {
             default:
-                return value
-                        .replace("\u00a0"," ")
-                        .replace("\u2060","")
-                        .replace("\\","/")
-                        .replace("mmol/L", "")
-                        .replace("mmol/l", "")
-                        .replace("mg/dL", "")
-                        .replace("mg/dl", "")
-                        .replace("≤", "")
-                        .replace("≥", "")
+                    return (basicFilterString(arrowFilterString(value)))
                         .trim();
         }
+    }
+
+    String basicFilterString(final String value) {
+        return value
+                .replace("\u00a0"," ")
+                .replace("\u2060","")
+                .replace("\\","/")
+                .replace("mmol/L", "")
+                .replace("mmol/l", "")
+                .replace("mg/dL", "")
+                .replace("mg/dl", "")
+                .replace("≤", "")
+                .replace("≥", "");
+    }
+
+    String arrowFilterString(final String value) {
+        return filterUnicodeRange(filterUnicodeRange(filterUnicodeRange(filterUnicodeRange(value,
+                '\u2190', '\u21FF'),
+                '\u2700', '\u27BF'),
+                '\u2900', '\u297F'),
+                '\u2B00', '\u2BFF');
+    }
+
+    public String filterUnicodeRange(final String input, final char bottom, final char top) {
+        if (bottom > top) {
+            throw new RuntimeException("bottom and top of character range invalid");
+        }
+        val filtered = new StringBuilder(input.length());
+        for (final char c : input.toCharArray()) {
+            if (c < bottom || c > top) {
+                filtered.append(c);
+            }
+        }
+        return filtered.toString();
     }
 
     @SuppressWarnings("UnnecessaryLocalVariable")
@@ -310,7 +336,14 @@ public class UiBasedCollector extends NotificationListenerService {
         }
         val lastRepeat = PersistentStore.getLong(UI_BASED_STORE_LAST_REPEAT);
         UserError.Log.d(TAG, "Last repeat: " + lastRepeat);
-        return lastRepeat > 3;
+        return lastRepeat > jamThreshold();
+    }
+
+    private int jamThreshold() {
+        if (lastPackage != null) {
+            if (lastPackage.startsWith("com.medtronic")) return 9;
+        }
+        return 4;
     }
 
     private void getTextViews(final List<TextView> output, final ViewGroup parent) {
