@@ -103,6 +103,17 @@
                 app:checked="@={prefs[`backup-automatic-enabled`]}"
                 app:showIfTrueAnimatedFastOff="@{vm.showAuto}" />
 
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:dependency="backup-automatic-enabled"
+                android:layout_gravity="center"
+                android:layout_marginBottom="20dp"
+                android:gravity="center"
+                android:text="@string/use_mobile_data"
+                app:checked="@={prefs[`backup-automatic-mobile`]}"
+                app:showIfTrueAnimatedFastOff="@{vm.showAuto}" />
+
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
