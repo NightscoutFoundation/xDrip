@@ -5,7 +5,7 @@
 
         <variable
             name="vm"
-            type="com.eveningoutpost.dexdrip.cloud.backup.BackupActivity.ViewModel" />
+            type="com.eveningoutpost.dexdrip.cloud.backup.BackupActivity.ViewModel" />Changed default to true
 
         <import type="android.databinding.ObservableMap" />
 
@@ -106,13 +106,13 @@
             <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="false"
+                android:checked="true"
                 android:dependency="backup-automatic-enabled"
                 android:layout_gravity="center"
                 android:layout_marginBottom="20dp"
                 android:gravity="center"
-                android:text="@string/use_mobile_data"
-                app:checked="@={prefs[`backup-automatic-mobile`]}"
+                android:text="@string/use_wifi_only"
+                app:checked="@={prefs[`backup-automatic-wifionly`]}"
                 app:showIfTrueAnimatedFastOff="@{vm.showAuto}" />
 
             <Button
