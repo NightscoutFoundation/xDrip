@@ -37,6 +37,8 @@ public interface Intents {
     // From NS Android Client
     // send
     String ACTION_NEW_TREATMENT = "info.nightscout.client.NEW_TREATMENT";
+    String ACTION_NEW_FOOD = "info.nightscout.client.NEW_FOOD";
+    String ACTION_NEW_DEVICESTATUS = "info.nightscout.client.NEW_DEVICESTATUS";
     String ACTION_CHANGED_TREATMENT = "info.nightscout.client.CHANGED_TREATMENT";
     String ACTION_REMOVED_TREATMENT = "info.nightscout.client.REMOVED_TREATMENT";
     String ACTION_NEW_PROFILE = "info.nightscout.client.NEW_PROFILE";

@@ -530,8 +530,8 @@ public class UploaderQueue extends Model {
 
         ///
 
-        if (NightscoutUploader.last_exception_time > 0) {
-            l.add(new StatusItem("REST-API problem\n" + JoH.dateTimeText(NightscoutUploader.last_exception_time) + " (" + NightscoutUploader.last_exception_count + ")", NightscoutUploader.last_exception, JoH.msSince(NightscoutUploader.last_exception_time) < (Constants.MINUTE_IN_MS * 6) ? StatusItem.Highlight.BAD : StatusItem.Highlight.NORMAL));
+        if (NightscoutUploader.last_exception_count > 0) {
+            l.add(new StatusItem("REST-API problem\n" + JoH.dateTimeText(NightscoutUploader.last_exception_time) + " (" + NightscoutUploader.last_exception_count + ")", NightscoutUploader.last_exception, StatusItem.Highlight.BAD));
         }
 
 

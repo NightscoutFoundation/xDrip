@@ -21,6 +21,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.services.SyncService;
+import com.eveningoutpost.dexdrip.services.UiBasedCollector;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utilitymodels.UndoRedo;
@@ -57,6 +58,7 @@ import lombok.val;
 import static com.eveningoutpost.dexdrip.models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import static java.lang.StrictMath.abs;
 import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
 
@@ -694,6 +696,10 @@ public class Treatments extends Model {
                 Log.d(TAG, "Skipping Temp Basal msg");
                 return false;
             }
+            if (mytreatment.timestamp < 1) {
+                Log.e(TAG, "Invalid treatment timestamp or 0 or less");
+                return false;
+            }
 
             if (mytreatment.uuid == null) {
                 try {
@@ -974,7 +980,7 @@ public class Treatments extends Model {
     }
 
     // NEW NEW NEW
-    public static List<Iob> ioBForGraph_new(int number, long startTime) {
+    public static List<Iob> ioBForGraph_new(long startTime) {
 
        // Log.d(TAG, "Processing iobforgraph2: main  ");
         JoH.benchmark_method_start();
@@ -1286,6 +1292,37 @@ public class Treatments extends Model {
         JoH.benchmark_method_end();
         return responses;
     }*/
+
+    public static Double getCurrentIoB() {
+        if (Pref.getBooleanDefaultFalse("fetch_iob_from_companion_app")) {
+            return getCurrentIoBFromCompanionApp();
+        } else {
+            return getCurrentIoBFromGraphCalculation();
+        }
+    }
+
+    public static Double getCurrentIoBFromCompanionApp() {
+        Double iob = UiBasedCollector.getCurrentIoB();
+
+        return iob;
+    }
+
+    public static Double getCurrentIoBFromGraphCalculation() {
+        long now = System.currentTimeMillis();
+
+        final List<Iob> iobInfo = Treatments.ioBForGraph_new(now - 1 * Constants.DAY_IN_MS);
+
+        if (iobInfo != null) {
+            for (Iob iob : iobInfo) {
+                // Find IoB sample close to the current timestamp.
+                if (iob.timestamp > now - 5 * MINUTE_IN_MS && iob.timestamp < now + 5 * MINUTE_IN_MS) {
+                    return iob.iob;
+                }
+            }
+        }
+
+        return null;
+    }
 
     public String getBestShortText() {
         if (!eventType.equals(DEFAULT_EVENT_TYPE)) {

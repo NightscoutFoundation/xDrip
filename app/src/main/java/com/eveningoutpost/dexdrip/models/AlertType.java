@@ -15,6 +15,7 @@ import com.eveningoutpost.dexdrip.services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.utilitymodels.AlertPlayer;
 import com.eveningoutpost.dexdrip.utilitymodels.Notifications;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -24,6 +25,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.internal.bind.DateTypeAdapter;
+
+import lombok.val;
 
 /**
  * Created by Emma Black on 1/14/15.
@@ -439,6 +442,27 @@ public class AlertType extends Model {
             }
         }
         return false;
+    }
+
+    public static AlertType getMostExtremeAlert(boolean highAlerts) {
+        val alerts = getAll(highAlerts);
+        if (alerts == null) return null;
+        val filtered = new ArrayList<AlertType>();
+        for (val alert : alerts) {
+            if (alert.active && alert.in_time_frame()) {    // remove alerts which are not live now
+                filtered.add(alert);
+            }
+        }
+        if (filtered.size() == 0) return null;
+        return filtered.get(filtered.size()-1); // They are sorted with max last
+    }
+
+    public static AlertType getLowestAlert() {
+        return getMostExtremeAlert(false);
+    }
+
+    public static AlertType getHighestAlert() {
+        return getMostExtremeAlert(true);
     }
 
     // This function is used to make sure that we always have a static alert on 55 low.

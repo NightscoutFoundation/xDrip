@@ -1283,6 +1283,8 @@
     <string name="title_nsfollow_url">URL Nightscout</string>
     <string name="summary_nsfollow_download_treatments">Descarregar também tratamentos a partir da Nightscout como seguidor</string>
     <string name="title_nsfollow_download_treatments">Descarregar Tratamentos</string>
+    <string name="title_clfollow_patient">Nome do paciente Regyna</string>
+    <string name="summary_clfollow_patient">Nome do paciente Regyna (opcional)</string>
     <string name="title_ob1_options">Configurações do Dispositivo G5/G6</string>
     <string name="summary_use_ob1_g5_collector_service">Reescrita completa, deverá funcionar em Android 4.4-9, suporta o modo nativo e não só</string>
     <string name="title_use_ob1_g5_collector_service">Usar Dispositivo OB1</string>
@@ -1678,6 +1680,7 @@
     <string name="title_ymax">Ajustar o valor máximo para o eixo dos y</string>
     <string name="summary_ymin">Escolha yMin para quando não houver leituras inferiores.</string>
     <string name="summary_ymax">Escolha yMax para quando não houver leituras maiores.</string>
+    <string name="wait_to_connect">Verifique as configurações e aguarde a ligação.</string>
     <string name="title_advanced_settings_4_Lib2">Definições avançadas para Libre 2</string>
     <string name="title_Lib2_show_raw_values">Mostrar valores brutos no gráfico</string>
     <string name="summary_Lib2_show_raw_values">Ative para mostrar os valores brutos no gráfico.</string>

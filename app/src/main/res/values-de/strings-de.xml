@@ -977,6 +977,7 @@
     <string name="emergency_message_near_format_string">%1$s in der Nähe von %2$s %3$s %4$s %5$s</string>
     <string name="choose_when_to_send_messages">Wähle aus wann Nachrichten gesendet werden sollen:</string>
     <string name="low_alert_not_acknowledged">Nichtwahrnehmung von Niedrig-Alarmen</string>
+    <string name="lowest_alert_not_acknowledged">Niedrigste Warnung nicht bestätigt</string>
     <string name="high_alert_not_acknowledged">Nichtwahrnehmung von Hoch-Alarmen</string>
     <string name="device_inactivity">Geräteinaktivität</string>
     <string name="test_message_sending">Sende Testnachricht</string>
@@ -1203,6 +1204,10 @@
     <string name="return_to_home_screen">Zum Startbildschirm zurückkehren</string>
     <string name="title_broadcast_service_api">Broadcast Service API</string>
     <string name="summary_broadcast_service_api">Aktiviert xDrip-Kommunikation mit Drittanbieter-Anwendungen durch neue API</string>
+    <string name="title_enable_iob_in_api_endpoint">IoB-Reporting in API aktivieren</string>
+    <string name="summary_enable_iob_in_api_endpoint">IoB-Werteberichte im Web Service API-Endpunkt aktivieren (von einigen Smartwatches verwendet)</string>
+    <string name="title_fetch_iob_from_companion_app">IoB von der Companion-App holen</string>
+    <string name="summary_fetch_iob_from_companion_app">IoB von der Companion App auf demselben Gerät abholen (z.B. Omnipod 5 App)</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Daten mit MiBand Fitness Bändern synchronisieren</string>
     <string name="title_miband_enable">MiBand verwenden</string>
@@ -1290,6 +1295,8 @@
     <string name="summary_clfollow_pass">CareLink Login-Passwort</string>
     <string name="title_clfollow_country">CareLink Land</string>
     <string name="summary_clfollow_country">Wähle Dein CareLink Land aus.</string>
+    <string name="title_clfollow_patient">CareLink Patienten-Benutzername</string>
+    <string name="summary_clfollow_patient">CareLink Patienten-Benutzername (optional)</string>
     <string name="title_clfollow_lang">CareLink Sprache</string>
     <string name="summary_clfollow_lang">CareLink Sprachcode</string>
     <string name="title_clfollow_grace_period">Schonfrist</string>
@@ -1590,6 +1597,11 @@
     <string name="enable_streaming_always_allow">Immer mit Libre2-Sensoren verbinden</string>
     <string name="enable_streaming_ask_each_time">jedes Mal nachfragen</string>
     <string name="enable_streaming_never">Niemals mit Libre2-Sensoren verbinden</string>
+    <string name="libre_filter_length_10">10 Minuten</string>
+    <string name="libre_filter_length_15">15 Minuten</string>
+    <string name="libre_filter_length_25">25 Minuten &gt;</string>
+    <string name="libre_filter_length_summary">Bei Verwendung von LibreX-Daten: Anzahl der zu berücksichtigenden Minuten</string>
+    <string name="libre_filter_length_title">Libre3-Daten glätten, wenn Methode xxx verwendet wird</string>
     <string name="enable_streaming_dialog_yes">Verbinde mit diesem Libre2-Sensor</string>
     <string name="enable_streaming_dialog_no">Nicht mit diesem Libre2-Sensor verbinden </string>
     <string name="enable_streaming_dialog_dont_ask_again">Nicht erneut fragen</string>
@@ -1761,6 +1773,9 @@
     <string name="title_ymax">Stelle das Maximum der y-Achse ein</string>
     <string name="summary_ymin">Wähle yMin, wenn es keine kleineren Werte gibt.</string>
     <string name="summary_ymax">Wähle yMax, wenn es keine größeren Werte gibt.</string>
+    <string name="wait_to_connect">Einstellungen überprüfen und auf Verbindung warten</string>
+    <string name="summary_sens_expiry_notify">Benachrichtigen, wenn Sensor kurz vor Ablauf</string>
+    <string name="title_sens_expiry_notify">Sensor-Ablauf</string>
     <string name="close">Schließen</string>
     <string name="title_advanced_settings_4_Lib2">Erweiterte Einstellungen für Libre 2</string>
     <string name="title_Lib2_show_raw_values">Rohwerte im Graph anzeigen</string>
