@@ -299,7 +299,7 @@ public class Backup {
 
     public static void doCompleteBackupIfEnabled() {
         if (Pref.getBooleanDefaultFalse(PREF_AUTO_BACKUP)
-                && isBackupSuitableForAutomatic() && ((!Pref.getBooleanDefaultFalse(PREF_AUTO_BACKUP_WIFI)) || (JoH.isLANConnected()))) {
+                && isBackupSuitableForAutomatic() && ((!Pref.getBooleanDefaultTrue(PREF_AUTO_BACKUP_WIFI)) || (JoH.isLANConnected()))) {
             UserError.Log.e(TAG, "Attempting automatic backup");
             val success = doCompleteBackup(new LogStatus());
             if (!success) {

@@ -48,6 +48,11 @@ public class Pref {
         return (prefs != null) && (prefs.getBoolean(pref, false));
     }
 
+    public static boolean getBooleanDefaultTrue(final String pref) {
+        initializePrefs();
+        return (prefs != null) && (prefs.getBoolean(pref, true));
+    }
+
     public static boolean getBoolean(final String pref, boolean def) {
         initializePrefs();
         return (prefs != null) && (prefs.getBoolean(pref, def));
