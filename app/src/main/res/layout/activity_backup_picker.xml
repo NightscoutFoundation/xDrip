@@ -5,7 +5,7 @@
 
         <variable
             name="vm"
-            type="com.eveningoutpost.dexdrip.cloud.backup.BackupActivity.ViewModel" />Changed default to true
+            type="com.eveningoutpost.dexdrip.cloud.backup.BackupActivity.ViewModel" />
 
         <import type="android.databinding.ObservableMap" />
 
