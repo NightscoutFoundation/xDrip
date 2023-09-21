@@ -80,6 +80,9 @@ public class UpdateActivity extends BaseAppCompatActivity {
     private static String CHECKSUM = "";
 
     public static void checkForAnUpdate(final Context context) {
+        StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+        StackTraceElement stack = stacktrace[3];
+        String callingMethodName = stack.getMethodName(); // Name of the method that has called this one
         if (prefs == null) prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if ((last_check_time != -1) && (!prefs.getBoolean(AUTO_UPDATE_PREFS_NAME, true))) return;
         if (last_check_time == 0)
@@ -169,6 +172,9 @@ public class UpdateActivity extends BaseAppCompatActivity {
                                     }
                                 } else {
                                     Log.i(TAG, "Our current version is the most recent: " + versionnumber + " vs " + newversion);
+                                    if ((callingMethodName).equals("checkForUpdate")) {
+                                        JoH.static_toast_long(xdrip.gs(R.string.current_version_is_up_to_date)); // Only for manual update check
+                                    }
                                 }
                             } catch (Exception e) {
                                 Log.e(TAG, "Got exception parsing update version: " + e.toString());

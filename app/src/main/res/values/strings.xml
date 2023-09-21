@@ -195,6 +195,7 @@
     <string name="libre_last_x_minutes_graph">Libre last %d minutes graph</string>
     <string name="share_config_via_qr_code">Share config via QR code</string>
     <string name="check_for_updated_version">Check for updated version</string>
+    <string name="current_version_is_up_to_date">No update in the selected channel</string>
     <string name="send_feedback_to_developer">Send Feedback to developers</string>
     <string name="home_screen">Home Screen</string>
     <string name="event_logs">Event Logs</string>
