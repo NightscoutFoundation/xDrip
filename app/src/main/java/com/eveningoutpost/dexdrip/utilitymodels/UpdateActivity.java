@@ -173,8 +173,8 @@ public class UpdateActivity extends BaseAppCompatActivity {
                                     }
                                 } else {
                                     Log.i(TAG, "Our current version is the most recent: " + versionnumber + " vs " + newversion);
-                                    if ((callingMethodName).equals("checkForUpdate")) {
-                                        JoH.static_toast_long(xdrip.gs(R.string.current_version_is_up_to_date)); // Only for manual update check
+                                    if (fromUi) { // Only for manual update check
+                                        JoH.static_toast_long(xdrip.gs(R.string.current_version_is_up_to_date));
                                     }
                                 }
                             } catch (Exception e) {
