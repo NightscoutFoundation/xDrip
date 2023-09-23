@@ -80,9 +80,10 @@ public class UpdateActivity extends BaseAppCompatActivity {
     private static String CHECKSUM = "";
 
     public static void checkForAnUpdate(final Context context) {
-        StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
-        StackTraceElement stack = stacktrace[3];
-        String callingMethodName = stack.getMethodName(); // Name of the method that has called this one
+        checkForAnUpdate(context, false);
+    }
+
+    public static void checkForAnUpdate(final Context context, final boolean fromUi) {
         if (prefs == null) prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if ((last_check_time != -1) && (!prefs.getBoolean(AUTO_UPDATE_PREFS_NAME, true))) return;
         if (last_check_time == 0)

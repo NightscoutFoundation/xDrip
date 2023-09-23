@@ -164,6 +164,7 @@
     <string name="signal_missed">信号丢失了</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} 分钟前|1#{0, number, integer} 分钟前|1&lt;{0, number, integer} 分钟前}</string>
     <string name="expires_days">{0, choice,0#传感器过期！|1#结束于{0, number} 天后|1&lt;结束于 {0, number} 天后}</string>
+    <string name="expires_at">{0} 后结束</string>
     <string name="space_minutes_ago">" 分钟以前"</string>
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"瞬感室内全覆盖模式：尚未收集任何读数。"</string>
     <string name="in_libre_all_house_mode_last_data_collected">"瞬感室内全覆盖模式：最近读数 "</string>
@@ -185,6 +186,7 @@
     <string name="general_settings">常用设置</string>
     <string name="high_value">高值</string>
     <string name="low_value">低值</string>
+    <string name="stats_range_settings">范围设定： </string>
     <string name="end_user_license_agreement">终端用户知情同意书</string>
     <string name="save">保存</string>
     <string name="view_important_warning">查看重要报警</string>
@@ -288,6 +290,7 @@
     <string name="upload_data_to_dex_servers">上传数据到Dexcom共享服务器，这样你可以在Dexcoms官方apps上看到你的数据</string>
     <string name="manage_followers">管理跟随者（远程接收者）</string>
     <string name="manage_existing_followers">管理你的现有的跟随者（远程接收者）并邀请新的.</string>
+    <string name="invite_follower">邀请关注</string>
     <string name="glucose_calibration_and_other_alerts">血糖值, 校准和其他警报</string>
     <string name="alert_volume_profile">警报音量配置文件</string>
     <string name="smart_alerting">智能警报</string>
@@ -302,6 +305,7 @@
     <string name="high_glucose_values">高血糖值</string>
     <string name="in_range_glucose_values">正常值范围内的血糖值</string>
     <string name="default_color_selected">选定缺省颜色</string>
+    <string name="color_bg_values">血糖值与趋势箭头颜色</string>
     <string name="xdrip_plus_extra_settings">xDrip+ 额外的设置</string>
     <string name="example_chart">图表例子</string>
     <string name="treatments_prediction_curves">治疗/曲线预测</string>
@@ -465,6 +469,7 @@
     <string name="start_sensor">启动传感器</string>
     <string name="debug_and_other_misc_options">调试和其他杂项选项</string>
     <string name="low_glucose_values">低血糖值</string>
+    <string name="bad_glucose_values">无效血糖值</string>
     <string name="revert_to_default">恢复为默认值</string>
     <string name="filtered_values">过滤后的值</string>
     <string name="treatment_color">治疗颜色</string>
@@ -613,6 +618,8 @@
     <string name="use_external_blukon_algorithm">外部瞬感算法插件</string>
     <string name="calibrate_external_libre_algorithm_summary">对 OOP 数据应用 xDrip 校准方法。</string>
     <string name="calibrate_external_libre_algorithm_title">OOP 算法校准。</string>
+    <string name="calibrate_external_libre_2_algorithm_summary">对OOP2数据应用xDrip校准算法</string>
+    <string name="calibrate_external_libre_2_algorithm_title">OOP2 算法校准。</string>
     <string name="libre_use_smoothed_data_summary">使用五点平均来得到更平滑的数据</string>
     <string name="libre_use_smoothed_data_title">平滑瞬感数据</string>
     <string name="retrieve_blukon_history_title">检索瞬感历史记录</string>
@@ -841,6 +848,7 @@
     <string name="repeat_sound">重复播放声音</string>
     <string name="enable_telemetry">启用遥测</string>
     <string name="send_data_to_developers">将不同设备的成功率数据发送给开发者</string>
+    <string name="try_to_work_around_noisy_readings_ultrasensitive">即使噪音水平极低仍然基于噪音数据工作(仅开发者模式)</string>
     <string name="sidiary_date_title">从何时开始导出？</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">番茄</string>
@@ -903,8 +911,10 @@
     <string name="bluereader_position">检查传感器上的 blueReader 位置, 因为无法读取到数据!</string>
     <string name="bluereaderuglystate">The blueReader was found in an ugly state! It will be now turn off now, and you turn it back to on (short press of the button). After that the blueReader should work as expectet!</string>
     <string name="offical_msg">官方app</string>
+    <string name="aggressive_power_manager">您所用设备的电源管理程序较为严格，请通过系统设置允许xDrip后台运行。</string>
     <string name="use_conflict_msg">可能也在尝试访问发射器, 两个app同时连发射器，这可能有问题</string>
     <string name="use_confict_msg_glimp">您可以调整 Glimp 设置: 选项-&gt; 设备-&gt; 取消选择蓝牙选项</string>
+    <string name="eng_mode_is_on">已启用开发者模式。如无必要请勿开启，否则可能导致意外情况。</string>
     <string name="yes">是的</string>
     <string name="xdrip_compatible_features">xDrip + %s 功能</string>
     <string name="garmin">Garmin</string>
@@ -966,6 +976,7 @@
     <string name="emergency_message_near_format_string">%1$s 接近 %2$s %3$s %4$s %5$s</string>
     <string name="choose_when_to_send_messages">选择发送消息的时间:</string>
     <string name="low_alert_not_acknowledged">低血糖警报没有被确认</string>
+    <string name="lowest_alert_not_acknowledged">最低级别的报警没有被确认。</string>
     <string name="high_alert_not_acknowledged">高血糖警报没有被确认</string>
     <string name="device_inactivity">设备不活动</string>
     <string name="test_message_sending">测试消息中</string>
@@ -1161,6 +1172,8 @@
     <string name="title_rest_api_extra_options">附加选项</string>
     <string name="summary_send_bridge_battery_to_nightscout">向nightscout发送桥式电池水平。如果电池传感器坏了则无需检查。</string>
     <string name="title_send_bridge_battery_to_nightscout">上传桥式电池</string>
+    <string name="summary_send_dexcom_transmitter_battery_to_nightscout">将 Dexcom 发射器电池统计数据发送至 Nightscout。包括收集器状态屏幕上显示的所有数据。</string>
+    <string name="title_send_dexcom_transmitter_battery_to_nightscout">上传 OB1G5/G6 发射器电池数据</string>
     <string name="summary_send_treatments_to_nightscout">将治疗数据发送给Nightscout。如果您的护理门户网站被破坏，请取消检查。</string>
     <string name="title_send_treatments_to_nightscout">上传治疗数据</string>
     <string name="summary_warn_nightscout_failures">如果nightscout上传失败，则显示和声音报警</string>
@@ -1188,6 +1201,8 @@
     <string name="send_bg_readings_to_backfill">发送血糖读数进行回填</string>
     <string name="view_old_error_log">查看旧的错误日志</string>
     <string name="return_to_home_screen">回到主屏幕</string>
+    <string name="title_broadcast_service_api">数据广播服务API</string>
+    <string name="summary_broadcast_service_api">通过使用新的 API 启用xDrip 与第三方应用程序的通信</string>
     <string name="title_miband">小米手环</string>
     <string name="summary_miband_enable">与小米手环同步数据</string>
     <string name="title_miband_enable">使用小米手环</string>
