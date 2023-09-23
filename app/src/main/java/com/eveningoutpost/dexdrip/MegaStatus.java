@@ -709,6 +709,25 @@ public class MegaStatus extends ActivityWithMenu {
                 viewHolder.name.setText(row.value);
                 viewHolder.name.setGravity(Gravity.CENTER_HORIZONTAL);
                 viewHolder.name.setTextColor(Color.parseColor("#fff9c4"));
+            } else if (row.name.equals("blank-button")) {
+                viewHolder.spacer.setVisibility(View.GONE);
+                viewHolder.name.setVisibility(View.INVISIBLE);
+                viewHolder.value.setVisibility(View.GONE);
+                view.setOnClickListener(null);
+                if ((row.runnable != null) && (row.button_name != null) && (row.button_name.equals("long-press"))) {
+                    runnableView = view;
+                    view.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            try {
+                                runOnUiThread(row.runnable);
+                            } catch (Exception e) {
+                            }
+                        }
+                    });
+                } else {
+                    view.setLongClickable(false);
+                }
             } else {
 
                 viewHolder.name.setText(row.name);

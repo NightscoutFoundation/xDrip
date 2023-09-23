@@ -2303,13 +2303,6 @@ public class Ob1G5CollectionService extends G5BaseService {
                     }
                 }
             }
-            if (showInactiveDaysNow) {
-                ++showInactiveDaysCount;
-                l.add(new StatusItem("Inactive days", "" + vr1.inactive_days, NOTICE));
-                if (showInactiveDaysCount > 19) {
-                    showInactiveDaysNow = false;
-                }
-            }
             l.add(new StatusItem("Transmitter Days", parsedBattery.daysEstimate(), TX_dys_highlight));
             l.add(new StatusItem("Voltage A", parsedBattery.voltageA(), parsedBattery.voltageAWarning() ? BAD : NORMAL));
             l.add(new StatusItem("Voltage B", parsedBattery.voltageB(), parsedBattery.voltageBWarning() ? BAD : NORMAL));
@@ -2323,14 +2316,23 @@ public class Ob1G5CollectionService extends G5BaseService {
                     l.add(new StatusItem("Temperature", parsedBattery.temperature() + " \u2103"));
                 }
             }
-            l.add(new StatusItem("", "", NORMAL, "long-press", // A blank entry providing a button to view inactive days
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            showInactiveDaysNow = true;
-                            showInactiveDaysCount = 0;
-                        }
-                    }));
+            if (showInactiveDaysNow) {
+                ++showInactiveDaysCount;
+                l.add(new StatusItem("Inactive days", "" + vr1.inactive_days, NOTICE));
+                if (showInactiveDaysCount > 100) {
+                    showInactiveDaysNow = false;
+                }
+            }
+            if (!showInactiveDaysNow) {
+                l.add(new StatusItem("blank-button", "", NORMAL, "long-press", // A blank entry providing a button to view inactive days
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                showInactiveDaysNow = true;
+                                showInactiveDaysCount = 0;
+                            }
+                        }));
+            }
         } else {
             l.add(new StatusItem("Battery Info Unavailable", "Click to trigger update", NORMAL, "long-press",
                     new Runnable() {
