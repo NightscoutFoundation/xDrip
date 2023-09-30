@@ -110,13 +110,12 @@
             <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="true"
                 android:dependency="backup-automatic-enabled"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:layout_marginBottom="20dp"
-                android:text="@string/daily_backup_even_mobile"
-                app:checked="@={prefs[`backup-automatic-mobile`]}"
+                android:text="@string/daily_backup_wifi_only"
+                app:checked="@={prefs[`backup_auto-wifi_only`]}"
                 app:showIfTrueAnimatedFastOff="@{vm.showAuto}" />
 
             <Button
