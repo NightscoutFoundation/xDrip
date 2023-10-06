@@ -177,6 +177,7 @@
     <string name="libre_last_x_minutes_graph">Graf za posledních %d minut z Libre</string>
     <string name="share_config_via_qr_code">Sdílet konfiguraci QR kódem</string>
     <string name="check_for_updated_version">Kontrola nové verze</string>
+    <string name="current_version_is_up_to_date">Zvolený kanál nemá žádnou aktualizaci</string>
     <string name="send_feedback_to_developer">Odeslat zpětnou vazbou vývojářům</string>
     <string name="home_screen">Domácí obrazovka</string>
     <string name="event_logs">Log událostí</string>

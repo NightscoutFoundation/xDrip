@@ -177,6 +177,7 @@
     <string name="libre_last_x_minutes_graph">Libre-Kurve der letzten %d Minuten</string>
     <string name="share_config_via_qr_code">Einstellungen per QR-Code senden</string>
     <string name="check_for_updated_version">Auf Aktualisierung prüfen</string>
+    <string name="current_version_is_up_to_date">Keine neue Version im gewählten Update-Kanal</string>
     <string name="send_feedback_to_developer">Feedback an Entwickler senden</string>
     <string name="home_screen">Startbildschirm</string>
     <string name="event_logs">Ereignisprotokolle</string>
