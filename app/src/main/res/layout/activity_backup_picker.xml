@@ -111,11 +111,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:dependency="backup-automatic-enabled"
+                android:checked="true"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:layout_marginBottom="20dp"
-                android:text="@string/daily_backup_wifi_only"
-                app:checked="@={prefs[`backup_auto-wifi_only`]}"
+                android:text="@string/daily_backup_even_mobile"
+                app:checked="@={prefs[`backup-automatic-mobile:true`]}"
                 app:showIfTrueAnimatedFastOff="@{vm.showAuto}" />
 
             <Button
