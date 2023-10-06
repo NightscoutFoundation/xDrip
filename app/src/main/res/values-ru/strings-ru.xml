@@ -177,6 +177,7 @@
     <string name="libre_last_x_minutes_graph">График Libre за последние(-юю) %d мин.</string>
     <string name="share_config_via_qr_code">Поделиться настройками через QR-код</string>
     <string name="check_for_updated_version">Проверить обновления</string>
+    <string name="current_version_is_up_to_date">Нет обновлений в выбранном канале</string>
     <string name="send_feedback_to_developer">Отправить отзыв разработчику</string>
     <string name="home_screen">Домашний экран</string>
     <string name="event_logs">Журнал событий</string>

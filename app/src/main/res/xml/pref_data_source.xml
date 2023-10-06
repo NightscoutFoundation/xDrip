@@ -404,11 +404,6 @@
                     android:key="always_get_new_keys"
                     android:summary="@string/g5_full_authentification"
                     android:title="@string/authentificate_before_reading" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="always_unbond_G5"
-                    android:summary="@string/g5_remove_before_read"
-                    android:title="@string/unbond_g5_before_read" />
             </PreferenceCategory>
             <PreferenceCategory
                 android:key="dex_battery_category"

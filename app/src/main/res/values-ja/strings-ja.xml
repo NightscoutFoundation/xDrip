@@ -177,6 +177,7 @@
     <string name="libre_last_x_minutes_graph">リブレの最後の %d 分グラフ</string>
     <string name="share_config_via_qr_code">QRコードで設定を共有する</string>
     <string name="check_for_updated_version">最新バージョンを確認する</string>
+    <string name="current_version_is_up_to_date">選択したチャンネルのアップデートがありません</string>
     <string name="send_feedback_to_developer">開発者にフィードバックを送信</string>
     <string name="home_screen">ホーム画面</string>
     <string name="event_logs">イベントログ</string>
