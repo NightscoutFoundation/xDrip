@@ -177,6 +177,7 @@
     <string name="libre_last_x_minutes_graph">Grafico Libre ultimi %d minuti</string>
     <string name="share_config_via_qr_code">Configura via codice QR</string>
     <string name="check_for_updated_version">Verifica versione aggiornata</string>
+    <string name="current_version_is_up_to_date">Nessun aggiornamento nel canale selezionato</string>
     <string name="send_feedback_to_developer">Invia Feedback agli  sviluppatori</string>
     <string name="home_screen">Schermata Home</string>
     <string name="event_logs">Registro eventi</string>

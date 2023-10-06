@@ -177,6 +177,7 @@
     <string name="libre_last_x_minutes_graph">Wykres ostatnich %d minut z Libre</string>
     <string name="share_config_via_qr_code">Udostepnij konfiguracje poprzez kod QR</string>
     <string name="check_for_updated_version">Sprawdź czy jest nowa wersja</string>
+    <string name="current_version_is_up_to_date">Brak aktualizacji dla wybranego kanału</string>
     <string name="send_feedback_to_developer">Prześlij uwagi do programisty</string>
     <string name="home_screen">Ekran główny</string>
     <string name="event_logs">Dzienniki zdarzeń</string>
