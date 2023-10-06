@@ -91,6 +91,13 @@ public class FirmwareCapability {
         return false;
     }
 
+    public static boolean isTransmitterStandardFirefly(final String tx_id) { // Firefly that has not been modified
+        if (!isTransmitterModified(tx_id) && isTransmitterRawIncapable(tx_id)) {
+            return true;
+        }
+        return false;
+    }
+
     public static boolean isTransmitterG5(final String tx_id) {
         return isG5Firmware(getRawFirmwareVersionString(tx_id));
     }
