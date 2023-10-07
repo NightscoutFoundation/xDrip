@@ -151,7 +151,6 @@ public class CareLinkAuthenticator {
                 } else {
                     return false;
                 }
-
             }
             //error in response
             else {
@@ -200,11 +199,6 @@ public class CareLinkAuthenticator {
                     authDialog.dismiss();
             }
 
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                if (CareLinkAuthenticator.this.extractCookies(url))
-                    authDialog.dismiss();
-            }
         });
 
 
@@ -278,6 +272,10 @@ public class CareLinkAuthenticator {
 
             }
 
+            //Skip cookies if authentication already expired (existing old cookies found)
+            if (validToDate.getTime() < System.currentTimeMillis())
+                return false;
+
             //Update credentials
             this.credentialStore.setCredential(this.carelinkCountry, authToken, validToDate, cookieList.toArray(new Cookie[0]));
             //success
@@ -301,6 +299,5 @@ public class CareLinkAuthenticator {
         }
         return null;
     }
-
 
 }
