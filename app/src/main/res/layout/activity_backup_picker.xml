@@ -111,7 +111,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:dependency="backup-automatic-enabled"
-                android:checked="true"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:layout_marginBottom="20dp"
