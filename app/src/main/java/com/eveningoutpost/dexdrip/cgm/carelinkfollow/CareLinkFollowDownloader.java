@@ -2,6 +2,8 @@ package com.eveningoutpost.dexdrip.cgm.carelinkfollow;
 
 import android.os.PowerManager;
 
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.auth.CareLinkAuthenticator;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.auth.CareLinkCredentialStore;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
@@ -47,6 +49,7 @@ public class CareLinkFollowDownloader {
         this.carelinkCountry = carelinkCountry;
         this.carelinkPatient = carelinkPatient;
         loginDataLooksOkay = !emptyString(carelinkUsername) && !emptyString(carelinkPassword) && carelinkCountry != null && !emptyString(carelinkCountry);
+        loginDataLooksOkay = true;
     }
 
     public static void resetInstance() {
@@ -58,7 +61,21 @@ public class CareLinkFollowDownloader {
         msg("Start download");
 
         if (D) UserError.Log.e(TAG, "doEverything called");
-        if (loginDataLooksOkay) {
+        if (CareLinkCredentialStore.getInstance().getAuthStatus() == CareLinkCredentialStore.AUTHENTICATED) {
+            if (CareLinkCredentialStore.getInstance().getExpiresIn() < 6 * 60_000) {
+                UserError.Log.e(TAG, "Token is about to expire, trying to renew it.");
+                try {
+                    if (!(new CareLinkAuthenticator(CareLinkCredentialStore.getInstance().getCredential().country, CareLinkCredentialStore.getInstance()).refreshToken())) {
+                        UserError.Log.e(TAG, "Error renewing token!");
+                        return false;
+                    } else {
+                        UserError.Log.e(TAG, "Token renewed!");
+                    }
+                } catch (Exception e) {
+                    UserError.Log.e(TAG, "Exception in renewing token! " + e.getMessage());
+                    return false;
+                }
+            }
             try {
                 if (getCareLinkClient() != null) {
                     extendWakeLock(30_000);
@@ -74,19 +91,13 @@ public class CareLinkFollowDownloader {
                 return false;
             }
         } else {
-            final String invalid = "Invalid CareLink login data!";
-            msg(invalid);
-            UserError.Log.e(TAG, invalid);
-            if (emptyString(carelinkUsername)) {
-                UserError.Log.e(TAG, "CareLink Username empty!");
+            if (CareLinkCredentialStore.getInstance().getAuthStatus() == CareLinkCredentialStore.NOT_AUTHENTICATED) {
+                UserError.Log.e(TAG, "Not authenticated! Please login!");
+                msg("Not authenticated!");
             }
-            if (emptyString(carelinkPassword)) {
-                UserError.Log.e(TAG, "CareLink Password empty!");
-            }
-            if (carelinkCountry == null) {
-                UserError.Log.e(TAG, "CareLink Country empty!");
-            } else if (!CountryUtils.isSupportedCountry(carelinkCountry)) {
-                UserError.Log.e(TAG, "CareLink Country not supported!");
+            if (CareLinkCredentialStore.getInstance().getAuthStatus() == CareLinkCredentialStore.TOKEN_EXPIRED) {
+                UserError.Log.e(TAG, "Token expired!");
+                msg("Token expired!");
             }
             return false;
         }
@@ -185,7 +196,8 @@ public class CareLinkFollowDownloader {
         if (careLinkClient == null) {
             try {
                 UserError.Log.d(TAG, "Creating CareLinkClient");
-                careLinkClient = new CareLinkClient(carelinkUsername, carelinkPassword, carelinkCountry);
+                if (CareLinkCredentialStore.getInstance().getAuthStatus() == CareLinkCredentialStore.AUTHENTICATED)
+                    careLinkClient = new CareLinkClient(CareLinkCredentialStore.getInstance());
             } catch (Exception e) {
                 UserError.Log.e(TAG, "Error creating CareLinkClient", e);
             }
