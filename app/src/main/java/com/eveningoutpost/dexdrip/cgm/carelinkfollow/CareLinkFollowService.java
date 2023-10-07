@@ -6,6 +6,7 @@ import android.os.PowerManager;
 import android.support.annotation.Nullable;
 import android.text.SpannableString;
 
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.auth.CareLinkCredentialStore;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
@@ -228,8 +229,31 @@ public class CareLinkFollowService extends ForegroundService {
             }
         }
 
+        // Status of authentication
+        String authStatus = null;
+        StatusItem.Highlight authHighlight = null;
+        switch (CareLinkCredentialStore.getInstance().getAuthStatus()) {
+            case CareLinkCredentialStore.NOT_AUTHENTICATED:
+                authStatus = "NOT AUTHENTICATED";
+                authHighlight = StatusItem.Highlight.CRITICAL;
+                break;
+            case CareLinkCredentialStore.AUTHENTICATED:
+                authHighlight = StatusItem.Highlight.GOOD;
+                authStatus = "AUTHENTICATED";
+                break;
+            case CareLinkCredentialStore.TOKEN_EXPIRED:
+                authHighlight = StatusItem.Highlight.BAD;
+                authStatus = "TOKEN EXPIRED";
+                break;
+        }
+
+
+        //Build status screeen
         List<StatusItem> megaStatus = new ArrayList<>();
 
+        megaStatus.add(new StatusItem("Authentication status", authStatus, authHighlight));
+        megaStatus.add(new StatusItem("Token expires in", JoH.niceTimeScalar(CareLinkCredentialStore.getInstance().getExpiresIn())));
+        megaStatus.add(new StatusItem());
         megaStatus.add(new StatusItem("Latest BG", ageLastBg + (lastBg != null ? " ago" : ""), bgAgeHighlight));
         megaStatus.add(new StatusItem("BG receive delay", ageOfBgLastPoll, ageOfLastBgPollHighlight));
         megaStatus.add(new StatusItem("Data period:", JoH.niceTimeScalar(SAMPLE_PERIOD)));
