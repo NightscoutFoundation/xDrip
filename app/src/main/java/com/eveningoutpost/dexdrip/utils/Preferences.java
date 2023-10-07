@@ -47,6 +47,8 @@ import com.bytehamster.lib.preferencesearch.SearchConfiguration;
 import com.bytehamster.lib.preferencesearch.SearchPreferenceResult;
 import com.bytehamster.lib.preferencesearch.SearchPreferenceResultListener;
 import com.eveningoutpost.dexdrip.BasePreferenceActivity;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.auth.CareLinkAuthenticator;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.auth.CareLinkCredentialStore;
 import com.eveningoutpost.dexdrip.g5model.DexSyncKeeper;
 import com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.GcmActivity;
@@ -1323,10 +1325,11 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             }
 
             //CareLink Follow preferences
-            final Preference carelinkFollowUser = findPreference("clfollow_user");
-            final Preference carelinkFollowPass = findPreference("clfollow_pass");
+            //final Preference carelinkFollowUser = findPreference("clfollow_user");
+            //final Preference carelinkFollowPass = findPreference("clfollow_pass");
             final Preference carelinkFollowCountry = findPreference("clfollow_country");
             final Preference carelinkFollowPatient = findPreference("clfollow_patient");
+            final Preference carelinkFollowLogin = findPreference("clfollow_login");
             final Preference carelinkFollowGracePeriod = findPreference("clfollow_grace_period");
             final Preference carelinkFollowMissedPollInterval = findPreference("clfollow_missed_poll_interval");
             final Preference carelinkFollowDownloadFingerBGs = findPreference("clfollow_download_finger_bgs");
@@ -1336,10 +1339,11 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             //Add CL prefs for CLFollower
             if (collectionType == DexCollectionType.CLFollow) {
                 //Add CL prefs
-                collectionCategory.addPreference(carelinkFollowUser);
-                collectionCategory.addPreference(carelinkFollowPass);
+                //collectionCategory.addPreference(carelinkFollowUser);
+                //collectionCategory.addPreference(carelinkFollowPass);
                 collectionCategory.addPreference(carelinkFollowCountry);
                 collectionCategory.addPreference(carelinkFollowPatient);
+                collectionCategory.addPreference(carelinkFollowLogin);
                 collectionCategory.addPreference(carelinkFollowGracePeriod);
                 collectionCategory.addPreference(carelinkFollowMissedPollInterval);
                 collectionCategory.addPreference(carelinkFollowDownloadFingerBGs);
@@ -1355,24 +1359,55 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                         return true;
                     }
                 };
-                //Register prefChange handler
+                //Pref click handler for Login
+                final Preference.OnPreferenceClickListener carelinkLoginListener = new Preference.OnPreferenceClickListener() {
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
+                        new Thread() {
+                            public void run() {
+                                try {
+                                    String country = Pref.getString("clfollow_country", "").toLowerCase();
+                                    if (country.equals(""))
+                                        JoH.static_toast(preference.getContext(), "Country is required!", Toast.LENGTH_LONG);
+                                    else {
+                                        CareLinkAuthenticator authenticator = new CareLinkAuthenticator(country, CareLinkCredentialStore.getInstance());
+                                        if (authenticator.authenticate(getActivity())) {
+                                            JoH.static_toast(preference.getContext(), "Login completed!", Toast.LENGTH_LONG);
+                                            CareLinkFollowService.resetInstanceAndInvalidateSession();
+                                            CollectionServiceStarter.restartCollectionServiceBackground();
+                                        }
+                                        else
+                                            JoH.static_toast(preference.getContext(), "Login failed!", Toast.LENGTH_LONG);
+                                    }
+                                } catch (InterruptedException e) {
+
+                                }
+                            }
+                        }.start();
+
+                        return true;
+                    }
+                };
+                //Register preference handlers
                 try {
-                    carelinkFollowUser.setOnPreferenceChangeListener(carelinkFollowListener);
-                    carelinkFollowPass.setOnPreferenceChangeListener(carelinkFollowListener);
+                    //carelinkFollowUser.setOnPreferenceChangeListener(carelinkFollowListener);
+                    //carelinkFollowPass.setOnPreferenceChangeListener(carelinkFollowListener);
                     carelinkFollowCountry.setOnPreferenceChangeListener(carelinkFollowListener);
                     carelinkFollowPatient.setOnPreferenceChangeListener(carelinkFollowListener);
-                    carelinkFollowGracePeriod.setOnPreferenceChangeListener(carelinkFollowListener);
-                    carelinkFollowMissedPollInterval.setOnPreferenceChangeListener(carelinkFollowListener);
+                    carelinkFollowLogin.setOnPreferenceClickListener(carelinkLoginListener);
+                    //carelinkFollowGracePeriod.setOnPreferenceChangeListener(carelinkFollowListener);
+                    //carelinkFollowMissedPollInterval.setOnPreferenceChangeListener(carelinkFollowListener);
                 } catch (Exception e) {
                     //
                 }
             //Remove CL prefs for NON CLFollower
             } else {
                 try {
-                    collectionCategory.removePreference(carelinkFollowUser);
-                    collectionCategory.removePreference(carelinkFollowPass);
+                    //collectionCategory.removePreference(carelinkFollowUser);
+                    //collectionCategory.removePreference(carelinkFollowPass);
                     collectionCategory.removePreference(carelinkFollowCountry);
                     collectionCategory.removePreference(carelinkFollowPatient);
+                    collectionCategory.removePreference(carelinkFollowLogin);
                     collectionCategory.removePreference(carelinkFollowGracePeriod);
                     collectionCategory.removePreference(carelinkFollowMissedPollInterval);
                     collectionCategory.removePreference(carelinkFollowDownloadFingerBGs);
