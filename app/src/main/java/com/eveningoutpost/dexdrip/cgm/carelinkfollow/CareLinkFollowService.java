@@ -139,6 +139,18 @@ public class CareLinkFollowService extends ForegroundService {
 
     }
 
+    private static CareLinkFollowDownloader getDownloader(){
+        if (downloader == null) {
+            downloader = new CareLinkFollowDownloader(
+                    Pref.getString("clfollow_user", ""),
+                    Pref.getString("clfollow_pass", ""),
+                    Pref.getString("clfollow_country", "").toLowerCase(),
+                    Pref.getString("clfollow_patient", "")
+            );
+        }
+        return downloader;
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("CareLinkFollow-osc", 60000);
@@ -167,20 +179,10 @@ public class CareLinkFollowService extends ForegroundService {
                 lastBgTime = lastBg.timestamp;
             }
             if (lastBg == null || msSince(lastBg.timestamp) > SAMPLE_PERIOD) {
-                // Get the data
-                if (downloader == null) {
-                    downloader = new CareLinkFollowDownloader(
-                            Pref.getString("clfollow_user", ""),
-                            Pref.getString("clfollow_pass", ""),
-                            Pref.getString("clfollow_country", "").toLowerCase(),
-                            Pref.getString("clfollow_patient", "")
-                    );
-                }
-
                 if (JoH.ratelimit("last-carelink-follow-poll", 5)) {
                     Inevitable.task("CareLink-Follow-Work", 200, () -> {
                         try {
-                            downloader.doEverything();
+                            getDownloader().doEverything(CareLinkCredentialStore.getInstance().getExpiresIn() < 6 * 60_000, true);
                         } catch (NullPointerException e) {
                             UserError.Log.e(TAG, "Caught concurrency exception when trying to run doeverything");
                         }

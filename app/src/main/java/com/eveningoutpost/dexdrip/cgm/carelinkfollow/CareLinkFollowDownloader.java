@@ -57,51 +57,63 @@ public class CareLinkFollowDownloader {
         CollectionServiceStarter.restartCollectionServiceBackground();
     }
 
-    public boolean doEverything() {
-        msg("Start download");
+    public void doEverything(boolean refreshToken, boolean downloadData) {
+        if (refreshToken)
+            this.refreshToken();
+        if (downloadData)
+            this.downloadData();
+    }
 
-        if (D) UserError.Log.e(TAG, "doEverything called");
-        if (CareLinkCredentialStore.getInstance().getAuthStatus() == CareLinkCredentialStore.AUTHENTICATED) {
-            if (CareLinkCredentialStore.getInstance().getExpiresIn() < 6 * 60_000) {
-                UserError.Log.e(TAG, "Token is about to expire, trying to renew it.");
-                try {
-                    if (!(new CareLinkAuthenticator(CareLinkCredentialStore.getInstance().getCredential().country, CareLinkCredentialStore.getInstance()).refreshToken())) {
-                        UserError.Log.e(TAG, "Error renewing token!");
-                        return false;
-                    } else {
-                        UserError.Log.e(TAG, "Token renewed!");
-                    }
-                } catch (Exception e) {
-                    UserError.Log.e(TAG, "Exception in renewing token! " + e.getMessage());
-                    return false;
-                }
-            }
+    private void downloadData() {
+        msg("Start download");
+        if (checkCredentials()) {
             try {
                 if (getCareLinkClient() != null) {
                     extendWakeLock(30_000);
                     backgroundProcessConnectData();
                 } else {
-                    UserError.Log.d(TAG, "Cannot get data as ConnectClient is null");
-                    return false;
+                    UserError.Log.d(TAG, "Cannot get data as CareLinkClient is null");
+                    msg("Download data failed!");
                 }
-                return true;
             } catch (Exception e) {
                 UserError.Log.e(TAG, "Got exception in getData() " + e);
                 releaseWakeLock();
-                return false;
+                msg("Download data failed!");
             }
-        } else {
-            if (CareLinkCredentialStore.getInstance().getAuthStatus() == CareLinkCredentialStore.NOT_AUTHENTICATED) {
-                UserError.Log.e(TAG, "Not authenticated! Please login!");
-                msg("Not authenticated!");
-            }
-            if (CareLinkCredentialStore.getInstance().getAuthStatus() == CareLinkCredentialStore.TOKEN_EXPIRED) {
-                UserError.Log.e(TAG, "Token expired!");
-                msg("Token expired!");
-            }
-            return false;
         }
+    }
 
+    private void refreshToken() {
+        msg("Start refreshing token");
+        if (checkCredentials()) {
+            try {
+                if (new CareLinkAuthenticator(CareLinkCredentialStore.getInstance().getCredential().country, CareLinkCredentialStore.getInstance()).refreshToken()) {
+                    UserError.Log.d(TAG, "Login token renewed!");
+                    msg(null);
+                } else {
+                    UserError.Log.e(TAG, "Error renewing login token!");
+                    msg("Login refresh failed! Will try again!");
+                }
+            } catch (Exception e) {
+                UserError.Log.e(TAG, "Error renewing login token: " + e.getMessage());
+                msg("Login refresh failed! Will try again!");
+            }
+        }
+    }
+
+    private boolean checkCredentials() {
+        // Not authenticated
+        if (CareLinkCredentialStore.getInstance().getAuthStatus() != CareLinkCredentialStore.AUTHENTICATED) {
+            msg("Not logged in! Please log in!");
+            return false;
+            // Token expired
+        } else if (CareLinkCredentialStore.getInstance().getExpiresIn() <= 0) {
+            msg("Login refresh expired! Please log in!");
+            return false;
+            // Credentials are all ok!
+        } else {
+            return true;
+        }
     }
 
     private void msg(final String msg) {
