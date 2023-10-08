@@ -1,10 +1,10 @@
 package com.eveningoutpost.dexdrip.evaluators;
 
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.Sensor;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 
 import org.junit.Test;
 import org.robolectric.shadows.ShadowLog;
@@ -32,6 +32,7 @@ public class PersistentHighTest extends RobolectricTestWithConfig {
         assertWithMessage("Predating sensor should fail").that(PersistentHigh.dataQualityCheck(1000, HIGH_MARK)).isFalse();
         assertWithMessage("Post sensor start no data should fail").that(PersistentHigh.dataQualityCheck(JoH.tsl(), HIGH_MARK)).isFalse();
 
+        BgReading.deleteALL();
         Sensor.create(START_TIME);
         // various all high time slices
         for (int i = 0; i < (12 * 4); i++) {
@@ -43,6 +44,7 @@ public class PersistentHighTest extends RobolectricTestWithConfig {
         }
 
         START_TIME++;
+        BgReading.deleteALL();
         Sensor.create(START_TIME);
         // single dipped point in sequence after a point we might have succeeded
         for (int i = 0; i < (12 * 4); i++) {
@@ -54,6 +56,7 @@ public class PersistentHighTest extends RobolectricTestWithConfig {
         }
 
         START_TIME++;
+        BgReading.deleteALL();
         Sensor.create(START_TIME);
         // single dipped point in sequence before we would succeed
         for (int i = 0; i < (12 * 4); i++) {

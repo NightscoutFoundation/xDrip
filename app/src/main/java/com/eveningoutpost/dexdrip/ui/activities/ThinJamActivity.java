@@ -5,14 +5,18 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.databinding.Observable;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableField;
 import android.databinding.ObservableList;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.ParcelUuid;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.text.method.ScrollingMovementMethod;
@@ -24,12 +28,12 @@ import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.BR;
 import com.eveningoutpost.dexdrip.MegaStatus;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.databinding.ActivityThinJamBinding;
 import com.eveningoutpost.dexdrip.ui.dialog.GenericConfirmDialog;
 import com.eveningoutpost.dexdrip.ui.dialog.QuickSettingsDialogs;
@@ -55,7 +59,7 @@ import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_HUNT_SERVIC
 
 // jamorham
 
-public class ThinJamActivity extends AppCompatActivity implements BtCallBack2 {
+public class ThinJamActivity extends AppCompatActivity implements BtCallBack2, ActivityCompat.OnRequestPermissionsResultCallback {
 
     private static final String TAG = "ThinJamActivity";
     private static final String THINJAM_ACTIVITY_COMMAND = "THINJAM_ACTIVITY_COMMAND";
@@ -521,6 +525,21 @@ public class ThinJamActivity extends AppCompatActivity implements BtCallBack2 {
                 () -> {
                     binding.getVm().doOtaM(null);
                 });
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            for (int i = 0; i < permissions.length; i++) {
+                if (permissions[i].equals(android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                        refreshFromStoredMac();
+                    }
+                }
+            }
+        }
     }
 
     @Override

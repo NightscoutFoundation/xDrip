@@ -8,7 +8,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.ustwo.clockwise.common.WatchMode;
 
 public class LargeHome extends BaseWatchFace {

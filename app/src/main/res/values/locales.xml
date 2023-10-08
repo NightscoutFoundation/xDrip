@@ -1,45 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="LocaleChoices">
-        <item>English</item>
-        <item>Français</item>
-        <item>Deutsch</item>
-        <item>русский</item>
-        <item>Español</item>
-        <item>Svenska</item>
         <item>Bokmal</item>
-        <item>Norsk</item>
-        <item>Română</item>
-        <item>Polski</item>
-        <item>한국어</item>
-        <item>Português</item>
+        <item>български език</item>
         <item>čeština</item>
-        <item>Nederlands</item>
-        <item>Italiano</item>
-        <item>Suomi</item>
+        <item>Deutsch</item>
+        <item>eesti keel</item>
+        <item>English</item>
+        <item>Español</item>
+        <item>Français</item>
         <item>Hrvatski</item>
-        <item>עברית</item>
+        <item>Italiano</item>
+        <item>magyar</item>
+        <item>Nederlands</item>
+        <item>Norsk</item>
+        <item>Polski</item>
+        <item>Português</item>
+        <item>Română</item>
         <item>Slovenčina</item>
+        <item>Suomi</item>
+        <item>Svenska</item>
+        <item>русский</item>
+        <item>עברית</item>
+        <item>한국어</item>
+        <item>Українська</item>
     </string-array>
     <string-array name="LocaleChoicesValues">
-        <item>en</item>
-        <item>fr</item>
-        <item>de</item>
-        <item>ru</item>
-        <item>es</item>
-        <item>sv</item>
         <item>nb</item>
-        <item>no</item>
-        <item>ro</item>
-        <item>pl</item>
-        <item>ko</item>
-        <item>pt</item>
+        <item>bg</item>
         <item>cs</item>
-        <item>nl</item>
-        <item>it</item>
-        <item>fi</item>
+        <item>de</item>
+        <item>et</item>
+        <item>en</item>
+        <item>es</item>
+        <item>fr</item>
         <item>hr</item>
-        <item>iw</item>
+        <item>it</item>
+        <item>hu</item>
+        <item>nl</item>
+        <item>no</item>
+        <item>pl</item>
+        <item>pt</item>
+        <item>ro</item>
         <item>sk</item>
+        <item>fi</item>
+        <item>sv</item>
+        <item>ru</item>
+        <item>iw</item>
+        <item>ko</item>
+        <item>uk</item>
     </string-array>
 </resources>

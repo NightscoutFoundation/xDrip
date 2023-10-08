@@ -6,14 +6,14 @@ import android.annotation.SuppressLint;
 import android.text.format.DateFormat;
 import android.util.Pair;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.tolerantParseInt;
+import static com.eveningoutpost.dexdrip.models.JoH.tolerantParseInt;
 
 public class TimeRangeUtils {
 

@@ -1,12 +1,12 @@
 package com.eveningoutpost.dexdrip.utils;
 
-import com.eveningoutpost.dexdrip.Services.DexCollectionService;
-import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
-import com.eveningoutpost.dexdrip.Services.DoNothingService;
-import com.eveningoutpost.dexdrip.Services.G5CollectionService;
-import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
-import com.eveningoutpost.dexdrip.Services.WifiCollectionService;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.services.DexCollectionService;
+import com.eveningoutpost.dexdrip.services.DexShareCollectionService;
+import com.eveningoutpost.dexdrip.services.DoNothingService;
+import com.eveningoutpost.dexdrip.services.G5CollectionService;
+import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
+import com.eveningoutpost.dexdrip.services.WifiCollectionService;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollowService;
 import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
@@ -295,6 +295,30 @@ public enum DexCollectionType {
         } else {
             return "";
         }
+    }
+
+    public long getSamplePeriod() {
+        return getCollectorSamplePeriod(this);
+    }
+
+    public static long getCollectorSamplePeriod(final DexCollectionType type) {
+        switch (type) {
+            default:
+                return 300_000; // 5 minutes
+        }
+    }
+
+    public static long getCurrentSamplePeriod() {
+        return getDexCollectionType().getSamplePeriod();
+    }
+
+    public static long getCurrentDeduplicationPeriod() {
+        final long period = getDexCollectionType().getSamplePeriod();
+        return period - (period / 6); // TODO this needs more validation
+    }
+
+    public static int getCurrentSamplesForPeriod(final long periodMs) {
+        return (int) (periodMs / getDexCollectionType().getSamplePeriod());
     }
 
 

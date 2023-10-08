@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.cgm.nsfollow;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.store.FastStore;
 
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class BaseCallback<T> implements Callback<T> {
     protected final String TAG = this.getClass().getSimpleName();
 
     //  final Session session;
-    private final String name;
+    protected final String name;
     private Runnable onSuccess;
     private Runnable onFailure;
 

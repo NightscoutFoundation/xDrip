@@ -3,14 +3,17 @@
 buildscript {
     repositories {
         google()
-        jcenter()
         mavenCentral()
-
+        maven { url "https://jitpack.io" }
     }
     dependencies {
+        // Upgrading AGP to a newer version also updates the data binding library.
+        // This causes build failures with mixed case package names currently in use.
         classpath 'com.android.tools.build:gradle:3.4.3'
         classpath 'com.google.gms:google-services:4.3.3'
- //       classpath 'me.tatarka:gradle-retrolambda:3.7.0'
+        classpath 'com.github.jamorham:ReplaceTokenPreprocessor:1.5'
+        classpath 'com.google.android.gms:oss-licenses-plugin:0.9.5'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.21"
 
         apply plugin: 'java'
         apply plugin: 'maven'
@@ -21,8 +24,11 @@ buildscript {
 }
 
 allprojects {
+    tasks.withType(JavaCompile).configureEach {
+        options.fork = true
+    }
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 }

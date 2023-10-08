@@ -12,7 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import static com.eveningoutpost.dexdrip.ui.helpers.ColorUtil.hueFilter;

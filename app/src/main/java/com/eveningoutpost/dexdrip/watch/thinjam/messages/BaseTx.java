@@ -2,7 +2,7 @@ package com.eveningoutpost.dexdrip.watch.thinjam.messages;
 
 // jamorham
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -67,6 +67,9 @@ public abstract class BaseTx {
         return data.getInt() & 0xffffffffL;
     }
 
+    public long getUnsignedInt(int position) {
+        return data.getInt(position) & 0xffffffffL;
+    }
 
     public String toS() {
         return JoH.defaultGsonInstance().toJson(this);

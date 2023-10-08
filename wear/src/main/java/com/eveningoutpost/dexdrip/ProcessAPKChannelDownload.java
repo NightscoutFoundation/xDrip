@@ -5,10 +5,11 @@ import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.JobIntentService;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
+import com.eveningoutpost.dexdrip.utils.AdbInstaller;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.VersionFixer;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -100,6 +101,9 @@ public class ProcessAPKChannelDownload extends JobIntentService {
                                     android.util.Log.d(TAG, "Preparing to read, total: " + apkBytesRead + " out of " + apkBytesOutput.length + " complete " + complete + "%");
                                     if (JoH.quietratelimit("wear-update-notice", 5)) {
                                         JoH.static_toast_long("Updating xDrip " + complete + "%");
+                                        if (JoH.quietratelimit("adb ping", 30)) {
+                                            AdbInstaller.pingIfNoDemigod(null);
+                                        }
                                     }
 
                                     final long startedWaiting = JoH.tsl();

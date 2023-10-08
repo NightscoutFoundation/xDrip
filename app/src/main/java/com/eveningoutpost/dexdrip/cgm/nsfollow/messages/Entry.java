@@ -4,7 +4,7 @@ package com.eveningoutpost.dexdrip.cgm.nsfollow.messages;
 
 // Nightscout Entry data item
 
-import com.eveningoutpost.dexdrip.Models.DateUtil;
+import com.eveningoutpost.dexdrip.models.DateUtil;
 import com.google.gson.annotations.Expose;
 
 import java.util.Date;

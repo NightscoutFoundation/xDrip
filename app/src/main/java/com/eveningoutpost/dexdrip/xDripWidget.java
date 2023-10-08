@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip;
 
+import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.getCol;
+
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -12,15 +14,15 @@ import android.os.PowerManager;
 import android.view.View;
 import android.widget.RemoteViews;
 
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.Sensor;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
-import com.eveningoutpost.dexdrip.UtilityModels.BgSparklineBuilder;
-import com.eveningoutpost.dexdrip.UtilityModels.ColorCache;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.StatusLine;
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.Sensor;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
+import com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.utilitymodels.BgSparklineBuilder;
+import com.eveningoutpost.dexdrip.utilitymodels.ColorCache;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.StatusLine;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 
 import java.text.MessageFormat;
@@ -233,17 +235,17 @@ public class xDripWidget extends AppWidgetProvider {
                     views.setViewVisibility(R.id.widgetStatusLine, View.GONE);
                 }
                 if (bgGraphBuilder.unitized(estimate) <= bgGraphBuilder.lowMark) {
-                    views.setTextColor(R.id.widgetBg, Color.parseColor("#C30909"));
-                    views.setTextColor(R.id.widgetDelta, Color.parseColor("#C30909"));
-                    views.setTextColor(R.id.widgetArrow, Color.parseColor("#C30909"));
+                    views.setTextColor(R.id.widgetBg, getCol(ColorCache.X.color_low_bg_values));
+                    views.setTextColor(R.id.widgetDelta, getCol(ColorCache.X.color_low_bg_values));
+                    views.setTextColor(R.id.widgetArrow, getCol(ColorCache.X.color_low_bg_values));
                 } else if (bgGraphBuilder.unitized(estimate) >= bgGraphBuilder.highMark) {
-                    views.setTextColor(R.id.widgetBg, Color.parseColor("#FFBB33"));
-                    views.setTextColor(R.id.widgetDelta, Color.parseColor("#FFBB33"));
-                    views.setTextColor(R.id.widgetArrow, Color.parseColor("#FFBB33"));
+                    views.setTextColor(R.id.widgetBg, getCol(ColorCache.X.color_high_bg_values));
+                    views.setTextColor(R.id.widgetDelta, getCol(ColorCache.X.color_high_bg_values));
+                    views.setTextColor(R.id.widgetArrow, getCol(ColorCache.X.color_high_bg_values));
                 } else {
-                    views.setTextColor(R.id.widgetBg, Color.WHITE);
-                    views.setTextColor(R.id.widgetDelta, Color.WHITE);
-                    views.setTextColor(R.id.widgetArrow, Color.WHITE);
+                    views.setTextColor(R.id.widgetBg, getCol(ColorCache.X.color_inrange_bg_values));
+                    views.setTextColor(R.id.widgetDelta, getCol(ColorCache.X.color_inrange_bg_values));
+                    views.setTextColor(R.id.widgetArrow, getCol(ColorCache.X.color_inrange_bg_values));
                 }
             } catch (RuntimeException e) {
                 Log.e(TAG, "Got exception in displaycurrentinfo: " + e);

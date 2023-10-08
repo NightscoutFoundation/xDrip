@@ -4,7 +4,7 @@
 
         <variable
             name="prefs"
-            type="com.eveningoutpost.dexdrip.UtilityModels.PrefsView" />
+            type="com.eveningoutpost.dexdrip.utilitymodels.PrefsView" />
         <import type="android.view.View"/>
     </data>
 

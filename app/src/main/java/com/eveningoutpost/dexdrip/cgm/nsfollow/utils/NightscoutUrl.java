@@ -8,7 +8,7 @@ import java.net.URISyntaxException;
 
 import lombok.RequiredArgsConstructor;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
+import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
 
 /**
  * jamorham

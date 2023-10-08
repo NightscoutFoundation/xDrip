@@ -2,7 +2,7 @@ package com.eveningoutpost.dexdrip.cgm.medtrum.messages;
 
 // jamorham
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.google.gson.annotations.Expose;
 
 import java.nio.BufferUnderflowException;
