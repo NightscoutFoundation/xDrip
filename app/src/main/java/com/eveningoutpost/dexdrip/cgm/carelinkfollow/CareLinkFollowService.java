@@ -143,10 +143,8 @@ public class CareLinkFollowService extends ForegroundService {
         if(JoH.msTill(next) < (RATE_LIMIT_SECONDS * Constants.SECOND_IN_MS))
             next = JoH.tsl() + (RATE_LIMIT_SECONDS * Constants.SECOND_IN_MS);
 
-        UserError.Log.d(TAG, "Anticipate next: " + JoH.dateTimeText(next) + scheduleReason + JoH.dateTimeText(last));
-
         wakeup_time = next;
-        UserError.Log.d(TAG, "Anticipate next: " + JoH.dateTimeText(next) + "  last BG timestamp: " + JoH.dateTimeText(last));
+        UserError.Log.d(TAG, "Anticipate next: " + JoH.dateTimeText(next) + scheduleReason + JoH.dateTimeText(last));
 
         JoH.wakeUpIntent(xdrip.getAppContext(), JoH.msTill(next), WakeLockTrampoline.getPendingIntent(CareLinkFollowService.class, Constants.CARELINK_SERVICE_FAILOVER_ID));
     }
