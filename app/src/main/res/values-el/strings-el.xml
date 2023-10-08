@@ -436,6 +436,16 @@
     <string name="title_lefun_screen_heart_rate">Εμφάνιση Καρδιακού Ρυθμού</string>
     <string name="title_lefun_screen_heart_pressure">Εμφάνιση Καρδιακής Πίεσης</string>
     <string name="title_lefun_screen_mac_address">Εμφάνιση Διεύθυνσης MAC</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
     <string name="title_ob1_g5_restart_sensor">Επανεκκίνηση Αισθητήρα</string>
     <string name="summary_using_g6">Χρησιμοποιώ τον αισθητήρα G6</string>
     <string name="title_using_g6">Υποστήριξη για τον αισθητήρα G6</string>
