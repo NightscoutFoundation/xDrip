@@ -1269,16 +1269,20 @@
     <string name="title_nsfollow_url">Nightscout követő URL</string>
     <string name="summary_nsfollow_download_treatments">A kezeléseket is töltse le Nightscout követőként</string>
     <string name="title_nsfollow_download_treatments">Kezelések letöltése</string>
-    <string name="title_clfollow_user">CareLink felhasználónév</string>
-    <string name="summary_clfollow_user">Felhasználónév CareLink belépéshez</string>
-    <string name="title_clfollow_pass">CareLink jelszó</string>
-    <string name="summary_clfollow_pass">CareLink bejelentkezési jelszó</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
     <string name="title_clfollow_country">CareLink ország</string>
     <string name="summary_clfollow_country">Válassza ki az országát</string>
     <string name="title_clfollow_patient">Felhasználónév CareLink belépéshez</string>
     <string name="summary_clfollow_patient">Felhasználónév CareLink belépéshez (megadható)</string>
-    <string name="title_clfollow_lang">CareLink nyelve</string>
-    <string name="summary_clfollow_lang">CareLink nyelvének kiválasztása</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
     <string name="title_clfollow_grace_period">Türelmi idő</string>
     <string name="summary_clfollow_grace_period">Maximális várakozási idő adatokra (s)</string>
     <string name="title_clfollow_download_finger_bgs">VC mérés vérből</string>
