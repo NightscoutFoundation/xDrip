@@ -137,6 +137,7 @@ public class DexCollectionHelper {
                 Home.staticRefreshBGChartsOnIdle();
                 break;
 
+            /* LOGIN via browser is required currently
             case CLFollow:
                 textSettingDialog(activity,
                         "clfollow_country", "CareLink Country",
@@ -178,6 +179,8 @@ public class DexCollectionHelper {
                             }
                         });
                 break;
+
+             */
 
             // TODO G4 Share Receiver
 

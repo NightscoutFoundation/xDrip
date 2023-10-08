@@ -1336,16 +1336,22 @@
     <string name="title_nsfollow_url">Nightscout Follow URL</string>
     <string name="summary_nsfollow_download_treatments">Also download treatments from Nightscout as follower</string>
     <string name="title_nsfollow_download_treatments">Download Treatments</string>
+    <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
     <string name="summary_clfollow_user">CareLink login username</string>
     <string name="title_clfollow_pass">CareLink Password</string>
     <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
     <string name="title_clfollow_country">CareLink Country</string>
     <string name="summary_clfollow_country">Select your CareLink country.</string>
     <string name="title_clfollow_patient">CareLink Patient Username</string>
     <string name="summary_clfollow_patient">CareLink patient username (optional)</string>
+    <!-- Maybe we can use them later?
     <string name="title_clfollow_lang">CareLink Language</string>
     <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
+    <string name="title_clfollow_login">Login</string>
+    <string name="summary_clfollow_login">Login with browser</string>
     <string name="title_clfollow_grace_period">Grace Period</string>
     <string name="summary_clfollow_grace_period">Grace period for data request in seconds</string>
     <string name="title_clfollow_missed_poll_interval">Missed data poll interval</string>
