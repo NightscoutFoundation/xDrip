@@ -1211,6 +1211,16 @@
     <string name="summary_nsfollow_url">Endereço na Web para seguir</string>
     <string name="title_nsfollow_url">URL Nightscout</string>
     <string name="summary_nsfollow_download_treatments">Também baixar tratamentos do Nightscout como seguidor</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
     <string name="title_clfollow_download_notifications">Notificações</string>
     <string name="summary_clfollow_download_notifications">Baixar notificações do CareLink</string>
     <string name="title_ob1_options">Configurações do Dispositivo OB1 G5/G6</string>
