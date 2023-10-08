@@ -1,9 +1,9 @@
 package com.eveningoutpost.dexdrip.profileeditor;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.JsonStringToFloatList;
+import static com.eveningoutpost.dexdrip.models.JoH.JsonStringToFloatList;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,7 +26,7 @@ public class BasalProfile {
         return BASAL_PREFIX + ref;
     }
 
-    public static void save(final String ref, final List<Float> segments) {
+    public static void save(final String ref, final List<Double> segments) {
         Pref.setString(getPrefix(ref), JoH.defaultGsonInstance().toJson(segments));
         //android.util.Log.d("PROFILEXX", "Saved value:" + Pref.getString(getPrefix(ref), "null"));
     }

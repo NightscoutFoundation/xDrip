@@ -3,9 +3,9 @@ package com.eveningoutpost.dexdrip.insulin.opennov;
 import static com.eveningoutpost.dexdrip.insulin.opennov.BaseMessage.d;
 import static com.eveningoutpost.dexdrip.insulin.opennov.FSA.Action.WRITE_READ;
 
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.importedlibraries.usbserial.util.HexDump;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 import com.eveningoutpost.dexdrip.insulin.opennov.data.ICompleted;
 
 import lombok.RequiredArgsConstructor;

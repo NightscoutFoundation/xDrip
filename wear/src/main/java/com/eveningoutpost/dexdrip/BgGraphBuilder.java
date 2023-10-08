@@ -16,9 +16,9 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 
 import lecho.lib.hellocharts.formatter.LineChartValueFormatter;
 import lecho.lib.hellocharts.formatter.SimpleLineChartValueFormatter;
@@ -31,7 +31,7 @@ import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.ValueShape;
 import lecho.lib.hellocharts.model.Viewport;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.cloneObject;
+import static com.eveningoutpost.dexdrip.models.JoH.cloneObject;
 
 /**
  * Created by Emma Black on 11/15/14.

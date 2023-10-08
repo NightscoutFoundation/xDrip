@@ -6,11 +6,11 @@ package com.eveningoutpost.dexdrip;
 
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 import static com.eveningoutpost.dexdrip.Home.SHOWCASE_REMINDER3;
-import static com.eveningoutpost.dexdrip.Models.JoH.dateTimeText;
-import static com.eveningoutpost.dexdrip.Models.JoH.hourMinuteString;
-import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
-import static com.eveningoutpost.dexdrip.Models.JoH.niceTimeScalarNatural;
-import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
+import static com.eveningoutpost.dexdrip.models.JoH.dateTimeText;
+import static com.eveningoutpost.dexdrip.models.JoH.hourMinuteString;
+import static com.eveningoutpost.dexdrip.models.JoH.msSince;
+import static com.eveningoutpost.dexdrip.models.JoH.niceTimeScalarNatural;
+import static com.eveningoutpost.dexdrip.models.JoH.tsl;
 import static lecho.lib.hellocharts.animation.ChartDataAnimator.DEFAULT_ANIMATION_DURATION;
 
 import android.animation.ValueAnimator;
@@ -65,17 +65,17 @@ import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.Reminder;
-import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
-import com.eveningoutpost.dexdrip.UtilityModels.NotificationChannels;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
-import com.eveningoutpost.dexdrip.UtilityModels.SpeechUtil;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.Reminder;
+import com.eveningoutpost.dexdrip.models.Treatments;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.JamorhamShowcaseDrawer;
+import com.eveningoutpost.dexdrip.utilitymodels.NotificationChannels;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.ShotStateStore;
+import com.eveningoutpost.dexdrip.utilitymodels.SpeechUtil;
 import com.eveningoutpost.dexdrip.profileeditor.DatePickerFragment;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileAdapter;
 import com.eveningoutpost.dexdrip.profileeditor.TimePickerFragment;
@@ -612,8 +612,8 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
 
     private void chooseFile() {
         final Intent fileIntent = new Intent();
-        fileIntent.setType("audio/mpeg3");
-        fileIntent.setAction(Intent.ACTION_GET_CONTENT);
+        fileIntent.setType("audio/*");
+        fileIntent.setAction(Intent.ACTION_OPEN_DOCUMENT);
         startActivityForResult(Intent.createChooser(fileIntent, xdrip.getAppContext().getString(R.string.select_file_reminder_sound)), REQUEST_CODE_CHOOSE_FILE);
     }
 
@@ -663,11 +663,12 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
                     final Uri selectedFileUri = data.getData();
                     //JoH.static_toast_long(selectedFileUri.toString());
                     try {
+                        getContentResolver().takePersistableUriPermission(selectedFileUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
                         selectedSound = selectedFileUri.toString();
                         PersistentStore.setString("reminders-last-sound", selectedSound);
                         // play it?
-                    } catch (NullPointerException e) {
-                        JoH.static_toast_long(xdrip.getAppContext().getString(R.string.problem_with_sound));
+                    } catch (Exception e) {
+                        JoH.static_toast_long(xdrip.getAppContext().getString(R.string.problem_with_sound) + " " + e.getMessage());
                     }
                 }
             }

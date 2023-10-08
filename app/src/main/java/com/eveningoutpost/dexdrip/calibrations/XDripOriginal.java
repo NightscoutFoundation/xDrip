@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip.calibrations;
 
-import com.eveningoutpost.dexdrip.Models.Calibration;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.Calibration;
+import com.eveningoutpost.dexdrip.models.UserError;
 
 import java.util.List;
 

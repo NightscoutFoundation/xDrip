@@ -9,19 +9,18 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
-import com.eveningoutpost.dexdrip.Models.SensorSanity;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.Forecast;
-import com.eveningoutpost.dexdrip.Models.GlucoseData;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.LibreBlock;
-import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm;
-import com.eveningoutpost.dexdrip.Models.ReadingData;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Intents;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.models.SensorSanity;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
+import com.eveningoutpost.dexdrip.importedlibraries.usbserial.util.HexDump;
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.Forecast;
+import com.eveningoutpost.dexdrip.models.GlucoseData;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.LibreBlock;
+import com.eveningoutpost.dexdrip.models.ReadingData;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Intents;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.LibreTrendUtil;
@@ -36,9 +35,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.LIBRE_MULTIPLIER;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.LIBRE_MULTIPLIER;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
+
+import lombok.val;
 
 /**
  * Created by jamorham on 04/09/2016.
@@ -49,7 +49,6 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
     private static final String TAG = "jamorham librereceiver";
     private static final boolean debug = false;
     private static final boolean d = true;
-    private static final long segmentation_timeslice = (long) (Constants.MINUTE_IN_MS * 4.5);
     private static SharedPreferences prefs;
     private static long oldest = -1;
     private static long newest = -1;
@@ -105,7 +104,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                 if ((gd.realDate < oldest) || (oldest == -1)) oldest = gd.realDate;
                 if ((gd.realDate > newest) || (newest == -1)) newest = gd.realDate;
 
-                if (BgReading.getForPreciseTimestamp(gd.realDate, segmentation_timeslice, false) == null) {
+                if (BgReading.getForPreciseTimestamp(gd.realDate, DexCollectionType.getCurrentDeduplicationPeriod(), false) == null) {
                     Log.d(TAG, "Creating bgreading at: " + JoH.dateTimeText(gd.realDate));
                     BgReading.create(converted, converted, xdrip.getAppContext(), gd.realDate, quick); // quick lite insert
                 } else {
@@ -228,6 +227,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
     public static void CalculateFromDataTransferObject(ReadingData readingData, boolean use_smoothed_data, boolean use_raw) {
         Log.i(TAG, "CalculateFromDataTransferObject called");
         // insert any recent data we can
+        val segmentation_timeslice = DexCollectionType.getCurrentDeduplicationPeriod();
         final List<GlucoseData> mTrend = readingData.trend;
         if (mTrend != null && mTrend.size() > 0) {
             Collections.sort(mTrend);
@@ -281,60 +281,66 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
             }
 
             // munge and insert the history data if any is missing
-            final List<GlucoseData> mHistory = readingData.history;
-            if ((mHistory != null) && (mHistory.size() > 1)) {
-                Collections.sort(mHistory);
-                //applyTimeShift(mTrend, shiftx);
-                final List<Double> polyxList = new ArrayList<Double>();
-                final List<Double> polyyList = new ArrayList<Double>();
-                for (GlucoseData gd : mHistory) {
-                    if (d)
-                        Log.d(TAG, "history : " + JoH.dateTimeText(gd.realDate) + " " + gd.glucose(false));
-                    polyxList.add((double) gd.realDate);
-                    if (use_raw) {
-                        polyyList.add((double) gd.glucoseLevelRaw);
-                        // For history, data is already averaged, no need for us to use smoothed data
-                        createBGfromGD(gd, false, true);
-                    } else {
-                        polyyList.add((double) gd.glucoseLevel);
-                        // add in the actual value
-                        BgReading.bgReadingInsertFromInt(gd.glucoseLevel, gd.realDate, segmentation_timeslice, false);
-                    }
-                }
-
-                //ConstrainedSplineInterpolator splineInterp = new ConstrainedSplineInterpolator();
-                final SplineInterpolator splineInterp = new SplineInterpolator();
-
-                if (polyxList.size() >= 3) {
-                    // The need to have at least 3 points is a demand from the interpolate function.
-                    try {
-                        PolynomialSplineFunction polySplineF = splineInterp.interpolate(
-                                Forecast.PolyTrendLine.toPrimitiveFromList(polyxList),
-                                Forecast.PolyTrendLine.toPrimitiveFromList(polyyList));
-
-                        final long startTime = mHistory.get(0).realDate;
-                        final long endTime = mHistory.get(mHistory.size() - 1).realDate;
-
-                        for (long ptime = startTime; ptime <= endTime; ptime += 300000) {
-                            if (d)
-                                Log.d(TAG, "Spline: " + JoH.dateTimeText((long) ptime) + " value: " + (int) polySplineF.value(ptime));
-                            if (use_raw) {
-                                // Here we do not use smoothed data, since data is already smoothed for the history
-                                createBGfromGD(new GlucoseData((int) polySplineF.value(ptime), ptime), false, true);
-                            } else {
-                                BgReading.bgReadingInsertFromInt((int) polySplineF.value(ptime), ptime, segmentation_timeslice, false);
-                            }
-                        }
-                    } catch (org.apache.commons.math3.exception.NonMonotonicSequenceException e) {
-                        Log.e(TAG, "NonMonotonicSequenceException: " + e);
-                    }
-                }
-
-            } else {
-                Log.e(TAG, "no librealarm history data");
-            }
+            insertFromHistory(readingData.history, use_raw);
         } else {
             Log.d(TAG, "Trend data is null!");
+        }
+    }
+
+
+    public static void insertFromHistory(final List<GlucoseData> mHistory, final boolean use_raw) {
+        val timeslice = DexCollectionType.getCurrentDeduplicationPeriod();
+        if ((mHistory != null) && (mHistory.size() > 1)) {
+            Collections.sort(mHistory);
+            //applyTimeShift(mTrend, shiftx);
+            final List<Double> polyxList = new ArrayList<Double>();
+            final List<Double> polyyList = new ArrayList<Double>();
+            for (GlucoseData gd : mHistory) {
+                if (d)
+                    Log.d(TAG, "history : " + JoH.dateTimeText(gd.realDate) + " " + gd.glucose(false));
+                polyxList.add((double) gd.realDate);
+                if (use_raw) {
+                    polyyList.add((double) gd.glucoseLevelRaw);
+                    // For history, data is already averaged, no need for us to use smoothed data
+                    createBGfromGD(gd, false, true);
+                } else {
+                    polyyList.add((double) gd.glucoseLevel);
+                    // add in the actual value
+                    BgReading.bgReadingInsertFromInt(gd.glucoseLevel, gd.realDate, timeslice, false);
+                }
+            }
+
+            val period = DexCollectionType.getCurrentSamplePeriod();
+
+            //ConstrainedSplineInterpolator splineInterp = new ConstrainedSplineInterpolator();
+            final SplineInterpolator splineInterp = new SplineInterpolator();
+
+            if (polyxList.size() >= 3) {
+                // The need to have at least 3 points is a demand from the interpolate function.
+                try {
+                    PolynomialSplineFunction polySplineF = splineInterp.interpolate(
+                            Forecast.PolyTrendLine.toPrimitiveFromList(polyxList),
+                            Forecast.PolyTrendLine.toPrimitiveFromList(polyyList));
+
+                    final long startTime = mHistory.get(0).realDate;
+                    final long endTime = mHistory.get(mHistory.size() - 1).realDate;
+
+                    for (long ptime = startTime; ptime <= endTime; ptime += period) {
+                        if (d)
+                            Log.d(TAG, "Spline: " + JoH.dateTimeText((long) ptime) + " value: " + (int) polySplineF.value(ptime));
+                        if (use_raw) {
+                            // Here we do not use smoothed data, since data is already smoothed for the history
+                            createBGfromGD(new GlucoseData((int) polySplineF.value(ptime), ptime), false, true);
+                        } else {
+                            BgReading.bgReadingInsertFromInt((int) polySplineF.value(ptime), ptime, timeslice, false);
+                        }
+                    }
+                } catch (org.apache.commons.math3.exception.NonMonotonicSequenceException e) {
+                    Log.e(TAG, "NonMonotonicSequenceException: " + e);
+                }
+            }
+        } else {
+            Log.e(TAG, "no  history data");
         }
     }
 

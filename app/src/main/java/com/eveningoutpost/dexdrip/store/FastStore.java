@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.store;
 
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by jamorham on 08/11/2017.
@@ -15,8 +16,8 @@ import java.util.HashMap;
 public class FastStore implements KeyStore {
 
     private static final FastStore mFastStore = new FastStore();
-    private static final HashMap<String, String> stringStore = new HashMap<>();
-    private static final HashMap<String, Long> longStore = new HashMap<>();
+    private static final ConcurrentHashMap<String, String> stringStore = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, Long> longStore = new ConcurrentHashMap<>();
 
     // we trade substitution flexibility at the expense of some object creation
 

@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.processing;
 
-import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.models.BgReading;
 
 import java.util.List;
 

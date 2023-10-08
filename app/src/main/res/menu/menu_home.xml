@@ -29,33 +29,45 @@
         android:orderInCategory="1">
 
         <menu>
-    <item android:id="@+id/action_export_database"
-        android:title="@string/menu_export_database"
-        android:checkable="false"
-        android:orderInCategory="1"
-        android:showAsAction="never"/>
+            <item
+                android:id="@+id/cloud_backup"
+                android:title="@string/cloud_backup"
+                android:checkable="false"
+                android:orderInCategory="1"
+                android:onClick="cloudBackup"
+                android:showAsAction="never"/>
 
-    <item android:id="@+id/action_import_db"
-        android:title="@string/menu_import_db"
-        android:checkable="false"
-        android:orderInCategory="1"
-        android:showAsAction="never"/>
+            <item android:id="@+id/action_export_database"
+                android:title="@string/menu_export_database"
+                android:checkable="false"
+                android:orderInCategory="1"
+                android:onClick="exportDatabase"
+                android:showAsAction="never"/>
 
-    <item android:id="@+id/action_export_csv_sidiary"
-        android:title="@string/menu_export_csv_sidiary"
-        android:checkable="false"
-        android:orderInCategory="1"
-        android:showAsAction="never"/>
+            <item android:id="@+id/action_import_db"
+                android:title="@string/menu_import_db"
+                android:checkable="false"
+                android:orderInCategory="1"
+                android:onClick="restoreDatabase"
+                android:showAsAction="never"/>
 
-    <item android:id="@+id/importsettings"
-        android:title="@string/load_save_settings_on_sdcard"
-        android:checkable="false"
-        android:onClick="settingsSDcardExport"
-        android:visible="true"
-        android:orderInCategory="1"
-        android:showAsAction="never"/>
-</menu>
+            <item android:id="@+id/action_export_csv_sidiary"
+                android:title="@string/menu_export_csv_sidiary"
+                android:checkable="false"
+                android:orderInCategory="1"
+                android:onClick="exportCSVasSiDiary"
+                android:showAsAction="never"/>
+
+            <item android:id="@+id/importsettings"
+                android:title="@string/load_save_settings_on_sdcard"
+                android:checkable="false"
+                android:onClick="settingsSDcardExport"
+                android:visible="true"
+                android:orderInCategory="1"
+                android:showAsAction="never"/>
+        </menu>
     </item>
+
     <item android:id="@+id/showmap"
         android:title="@string/show_parakeet_map"
         android:checkable="false"
@@ -76,18 +88,20 @@
         android:id="@+id/action_resend_last_bg"
         android:orderInCategory="100"
         android:title="@string/action_resend_to_watch"
+        android:onClick="resendGlucoseToWatch"
         android:showAsAction="never" />
     <item
         android:id="@+id/action_open_watch_settings"
         android:orderInCategory="100"
         android:title="@string/action_open_watch_setting"
+        android:onClick="openSettingsOnWatch"
         android:showAsAction="never" />
     <item
         android:id="@+id/action_sync_watch_db"
         android:orderInCategory="100"
         android:title="@string/action_sync_watch_db"
+        android:onClick="resetWearDb"
         android:showAsAction="never" />
-
 
     <item android:id="@+id/deleteAllBG"
         android:title="@string/delete_all_bg_readings"
@@ -170,6 +184,7 @@
         android:title="@string/speak_readings"
         android:checkable="true"
         android:orderInCategory="2"
+        android:onClick="toggleSpeakReadings"
         android:visible="false"
         android:showAsAction="never"/>
 </menu>

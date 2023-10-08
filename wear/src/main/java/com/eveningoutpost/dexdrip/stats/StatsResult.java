@@ -1,13 +1,11 @@
 package com.eveningoutpost.dexdrip.stats;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.preference.PreferenceManager;
 
 import com.activeandroid.Cache;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 
 import java.text.DecimalFormat;
 import java.util.Calendar;

@@ -8,11 +8,11 @@ import android.os.Build;
 import android.preference.Preference;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.ui.activities.NumberWallPreview;
 import com.eveningoutpost.dexdrip.ui.helpers.BitmapUtil;
 import com.eveningoutpost.dexdrip.utils.time.TimeRangeUtils;

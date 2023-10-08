@@ -1,21 +1,17 @@
 package com.eveningoutpost.dexdrip.utils;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.GlucoseData;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.LibreBlock;
-import com.eveningoutpost.dexdrip.Models.ReadingData;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.NFCReaderX;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.LibreBlock;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.HPointValue;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -29,7 +25,7 @@ import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.LineChartView;
 
-import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.FUZZER;
+import static com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder.FUZZER;
 
 
 public class LibreTrendGraph extends BaseAppCompatActivity {
@@ -120,7 +116,7 @@ public class LibreTrendGraph extends BaseAppCompatActivity {
              }
              long bg_time = libreTrendLatest.timestamp - time_offset;
              if (bg_time <= end_time && bg_time >= start_time) {
-                 points.add(new PointValue((float) ((double)(bg_time) / FUZZER), bg * conversion_factor_mmol));
+                 points.add(new HPointValue( ((double)(bg_time) / FUZZER), bg * conversion_factor_mmol));
              }
              
              time_offset += Constants.MINUTE_IN_MS;
@@ -138,7 +134,7 @@ public class LibreTrendGraph extends BaseAppCompatActivity {
         chart = (LineChartView) findViewById(R.id.libre_chart);
         List<Line> lines = new ArrayList<Line>();
 
-        List<PointValue> lineValues = new ArrayList<PointValue>();
+        List<PointValue> lineValues = new ArrayList<>();
         final float conversion_factor_mmol = (float) (doMgdl ? 1 : Constants.MGDL_TO_MMOLL);
 
         LibreBlock libreBlock= LibreBlock.getLatestForTrend();
@@ -172,7 +168,7 @@ public class LibreTrendGraph extends BaseAppCompatActivity {
             if(max < bg) {
                 max = bg;
             }
-            
+            // Values here are relatice to zero, so no need to use HPointValue
             lineValues.add(new PointValue(-i, bg * conversion_factor_mmol));
             i++;
         }
@@ -192,6 +188,7 @@ public class LibreTrendGraph extends BaseAppCompatActivity {
             float average = (max + min) /2;
             List<PointValue> dummyPointValues = new ArrayList<PointValue>();
             Line dummyPointLine = new Line(dummyPointValues);
+            // Values here are relatice to zero, so no need to use HPointValue
             dummyPointValues.add(new PointValue(0, (average - MIN_GRAPH / 2) * conversion_factor_mmol));
             dummyPointValues.add(new PointValue(0, (average + MIN_GRAPH / 2) * conversion_factor_mmol));
             dummyPointLine.setColor(ChartUtils.COLOR_RED);

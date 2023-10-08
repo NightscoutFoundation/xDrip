@@ -1,10 +1,10 @@
 package com.eveningoutpost.dexdrip.cgm.medtrum.messages;
 
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.cgm.medtrum.Crypt;
 import com.eveningoutpost.dexdrip.cgm.medtrum.Medtrum;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.tolerantHexStringToByteArray;
+import static com.eveningoutpost.dexdrip.models.JoH.tolerantHexStringToByteArray;
 import static com.eveningoutpost.dexdrip.cgm.medtrum.Const.OPCODE_AUTH_REQST;
 
 // jamorham

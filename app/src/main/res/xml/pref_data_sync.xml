@@ -266,7 +266,6 @@
                     android:summary="@string/summary_tidepool_username"
                     android:title="@string/title_tidepool_username" />
                 <EditTextPreference
-                    android:inputType="textPassword"
                     android:key="tidepool_password"
                     android:summary="@string/summary_tidepool_password"
                     android:title="@string/title_tidepool_password" />
@@ -301,6 +300,11 @@
                     android:key="tidepool_no_treatments"
                     android:summary="Upload only CGM data to avoid duplicates with manual pump upload"
                     android:title="Don't upload treatments" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="tidepool_new_auth"
+                    android:summary="2023 openid authentication method."
+                    android:title="Use new Auth" />
 
             </PreferenceScreen>
 
@@ -365,7 +369,7 @@
                 android:title="@string/scan_for_bluetooth_meter">
                 <intent
                     android:action="android.intent.action.MAIN"
-                    android:targetClass="com.eveningoutpost.dexdrip.GlucoseMeter.BTGlucoseMeterActivity"
+                    android:targetClass="com.eveningoutpost.dexdrip.glucosemeter.BTGlucoseMeterActivity"
                     android:targetPackage="@string/local_target_package" />
             </Preference>
             <CheckBoxPreference

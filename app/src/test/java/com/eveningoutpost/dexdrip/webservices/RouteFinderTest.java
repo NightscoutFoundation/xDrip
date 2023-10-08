@@ -1,14 +1,14 @@
 package com.eveningoutpost.dexdrip.webservices;
 
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.DateUtil;
-import com.eveningoutpost.dexdrip.Models.Sensor;
-import com.eveningoutpost.dexdrip.Models.Treatments;
+import com.eveningoutpost.dexdrip.importedlibraries.usbserial.util.HexDump;
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.DateUtil;
+import com.eveningoutpost.dexdrip.models.Sensor;
+import com.eveningoutpost.dexdrip.models.Treatments;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
-import com.eveningoutpost.dexdrip.UtilityModels.NanoStatus;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.SensorStatus;
+import com.eveningoutpost.dexdrip.utilitymodels.NanoStatus;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.SensorStatus;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import org.json.JSONArray;

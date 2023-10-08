@@ -10,7 +10,7 @@ import static com.eveningoutpost.dexdrip.profileeditor.BasalRepository.populateR
 import static com.eveningoutpost.dexdrip.profileeditor.BasalRepository.rates;
 import static com.google.common.truth.Truth.assertWithMessage;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 
 import org.junit.After;
@@ -31,9 +31,9 @@ public class BasalRepositoryTest extends RobolectricTestWithConfig {
     public void setup() {
         oldTimeZone = TimeZone.getDefault();
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-        final List<Float> segments = new LinkedList<>();
+        final List<Double> segments = new LinkedList<>();
         for (int i = 1; i < 25; i++) {
-            segments.add(i / 10f);
+            segments.add(i / 10d);
         }
         BasalProfile.save(ACTIVE_RATE_NAME, segments);
     }

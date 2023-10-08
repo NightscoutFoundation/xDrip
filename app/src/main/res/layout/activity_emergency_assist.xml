@@ -8,11 +8,11 @@
 
         <variable
             name="prefs"
-            type="com.eveningoutpost.dexdrip.UtilityModels.PrefsViewImpl" />
+            type="com.eveningoutpost.dexdrip.utilitymodels.PrefsViewImpl" />
 
         <variable
             name="sprefs"
-            type="com.eveningoutpost.dexdrip.UtilityModels.PrefsViewString" />
+            type="com.eveningoutpost.dexdrip.utilitymodels.PrefsViewString" />
 
         <variable
             name="model"
@@ -69,7 +69,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="5dp"
                 android:hint="@string/your_name"
                 android:imeOptions="actionDone"
                 android:inputType="text"
@@ -184,6 +184,44 @@
                     android:layout_weight="1"
                     android:minWidth="100dp"
                     android:text="@{activity.prettyMinutes(sprefs[`emergency_assist_low_alert_minutes`])}" />
+            </LinearLayout>
+
+            <Switch
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_weight="1"
+                android:text="@string/lowest_alert_not_acknowledged"
+                appx:boldIfTrue="@{prefs[`emergency_assist_lowest_alert`]}"
+                appx:checked="@={prefs[`emergency_assist_lowest_alert`]}" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                appx:showIfTrueAnimated="@{prefs[`emergency_assist_lowest_alert`]}">
+
+                <SeekBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_weight="1"
+                    android:max="360"
+                    android:thumb="@drawable/ic_av_timer_white_36dp"
+                    android:thumbTint="@color/accent_material_dark"
+                    appx:progressString="@={sprefs[`emergency_assist_lowest_alert_minutes`]}" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:minWidth="100dp"
+                    android:text="@{activity.prettyMinutes(sprefs[`emergency_assist_lowest_alert_minutes`])}" />
             </LinearLayout>
 
 

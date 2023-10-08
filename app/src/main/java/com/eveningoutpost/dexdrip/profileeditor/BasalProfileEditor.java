@@ -19,11 +19,11 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.UtilityModels.ColorCache;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.utilitymodels.ColorCache;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 import com.eveningoutpost.dexdrip.ui.charts.BasalChart;
 import com.eveningoutpost.dexdrip.ui.dialog.GenericConfirmDialog;
 import com.eveningoutpost.dexdrip.ui.helpers.ColorUtil;
@@ -41,7 +41,7 @@ import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.ColumnChartView;
 import lombok.val;
 
-import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
+import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.getCol;
 import static com.eveningoutpost.dexdrip.ui.helpers.UiHelper.convertDpToPixel;
 
 // jamorham
@@ -495,11 +495,11 @@ public class BasalProfileEditor extends AppCompatActivity implements AdapterView
         basalStepLabel.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
     }
 
-    private List<Float> getListOfValues() {
+    private List<Double> getListOfValues() {
         final int columns = chart.getChartData().getColumns().size();
-        final ArrayList<Float> values = new ArrayList<>(columns);
+        final ArrayList<Double> values = new ArrayList<>(columns);
         for (int col = 0; col < columns; col++) {
-            values.add(JoH.roundFloat(chart.getChartData().getColumns().get(col).getValues().get(0).getValue(), 2));
+            values.add(JoH.roundDouble(chart.getChartData().getColumns().get(col).getValues().get(0).getValue(), 2));
         }
         return values;
     }

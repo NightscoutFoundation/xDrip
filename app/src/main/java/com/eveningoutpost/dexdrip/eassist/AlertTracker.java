@@ -1,9 +1,16 @@
 package com.eveningoutpost.dexdrip.eassist;
 
+import static com.eveningoutpost.dexdrip.eassist.EmergencyAssist.Reason.DID_NOT_ACKNOWLEDGE_HIGH_ALERT;
+import static com.eveningoutpost.dexdrip.eassist.EmergencyAssist.Reason.DID_NOT_ACKNOWLEDGE_LOWEST_ALERT;
+import static com.eveningoutpost.dexdrip.eassist.EmergencyAssist.Reason.DID_NOT_ACKNOWLEDGE_LOW_ALERT;
+
 import com.eveningoutpost.dexdrip.BestGlucose;
-import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
-import com.eveningoutpost.dexdrip.Models.AlertType;
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.ActiveBgAlert;
+import com.eveningoutpost.dexdrip.models.AlertType;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
+
+import lombok.val;
 
 // jamorham
 
@@ -29,10 +36,18 @@ public class AlertTracker {
                             //
                         }
                         if (!type.above) {
-                            EmergencyAssist.checkAndActivate(EmergencyAssist.Reason.DID_NOT_ACKNOWLEDGE_LOW_ALERT,
-                                    since, summary);
+                                // Determine if is lowest alert
+                                val lowest = AlertType.getLowestAlert();
+                                val thisAlertType = ActiveBgAlert.alertTypegetOnly(activeBgAlert);
+                                if (lowest == null || thisAlertType == null
+                                        || lowest.threshold == thisAlertType.threshold) {
+                                    // Always flag as lowest unless we know it isn't
+                                    EmergencyAssist.checkAndActivate(DID_NOT_ACKNOWLEDGE_LOWEST_ALERT, since, summary);
+                                }
+
+                            EmergencyAssist.checkAndActivate(DID_NOT_ACKNOWLEDGE_LOW_ALERT, since, summary);
                         } else {
-                            EmergencyAssist.checkAndActivate(EmergencyAssist.Reason.DID_NOT_ACKNOWLEDGE_HIGH_ALERT,
+                            EmergencyAssist.checkAndActivate(DID_NOT_ACKNOWLEDGE_HIGH_ALERT,
                                     since, summary);
                         }
                     }

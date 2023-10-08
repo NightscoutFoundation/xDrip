@@ -9,8 +9,8 @@ import android.os.Message;
 
 import androidx.annotation.NonNull;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
 
 import lombok.val;
 
@@ -87,7 +87,7 @@ public class BackgroundQueue extends HandlerThread {
     }
 
     BackgroundQueue go() {
-        UserError.Log.e(TAG, "go called");
+        UserError.Log.d(TAG, "go called");
         this.start();
         return this;
     }

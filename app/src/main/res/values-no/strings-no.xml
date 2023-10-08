@@ -855,4 +855,5 @@
     <string name="summary_bluetooth_meter_for_calibrations_auto">Kalibrer med nye blodsukkermålinger hvis tilstanden synes riktig uten å be om samtykke (eksperimentell)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatisk kalibrering</string>
     <string name="enable_streaming_dialog_dont_ask_again"> Ikke spør meg igjen</string>
+    <string name="titleInside_yRange">Aktiver</string>
 </resources>

@@ -4,29 +4,17 @@ import android.util.Log;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.DateUtil;
-import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.UtilityModels.NanoStatus;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.SensorStatus;
-import com.eveningoutpost.dexdrip.dagger.Singleton;
-import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.models.Treatments;
+import com.eveningoutpost.dexdrip.models.UserError;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import static com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService.getLastStatusLine;
-import static com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService.getLastStatusLineTime;
 
 
 /**

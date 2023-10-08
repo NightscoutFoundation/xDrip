@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.watch.thinjam.assets;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.watch.thinjam.io.GetURL;
 
 import java.util.Locale;

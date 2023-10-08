@@ -6,17 +6,15 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.wearable.view.WatchViewStub;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Tables.BgReadingTable;
-import com.eveningoutpost.dexdrip.Tables.BloodTestTable;
-import com.eveningoutpost.dexdrip.Tables.CalibrationDataTable;
-import com.eveningoutpost.dexdrip.Tables.TreatmentsTable;
-import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.tables.BgReadingTable;
+import com.eveningoutpost.dexdrip.tables.BloodTestTable;
+import com.eveningoutpost.dexdrip.tables.CalibrationDataTable;
+import com.eveningoutpost.dexdrip.tables.TreatmentsTable;
+import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import java.util.HashMap;

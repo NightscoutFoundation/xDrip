@@ -16,21 +16,21 @@ import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.BloodTest;
-import com.eveningoutpost.dexdrip.Models.Calibration;
-import com.eveningoutpost.dexdrip.Models.DesertSync;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.RollCall;
-import com.eveningoutpost.dexdrip.Models.Sensor;
-import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.Services.PlusSyncService;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.InstalledApps;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.BloodTest;
+import com.eveningoutpost.dexdrip.models.Calibration;
+import com.eveningoutpost.dexdrip.models.DesertSync;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.RollCall;
+import com.eveningoutpost.dexdrip.models.Sensor;
+import com.eveningoutpost.dexdrip.models.Treatments;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
+import com.eveningoutpost.dexdrip.services.PlusSyncService;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.InstalledApps;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.DisplayQRCode;
 import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
@@ -52,6 +52,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.eveningoutpost.dexdrip.models.JoH.isOldVersion;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 /**
@@ -202,6 +203,7 @@ public class GcmActivity extends FauxActivity {
                 if (datum != null) {
                     if (overHeated()) break;
                     if ((timenow - datum.timestamp) > MAX_QUEUE_AGE
+                            || !isOldVersion(context)
                             || datum.resent > MAX_RESENT) {
                         queuechanged = true;
                         Log.i(TAG, "Removing old unacknowledged queue item: resent: " + datum.resent);
@@ -698,8 +700,11 @@ public class GcmActivity extends FauxActivity {
             Log.e(TAG, "Rate limited start libre-allhouse");
             return;
         }
-
-        GcmActivity.sendMessage(myIdentity(), "libreBlock", libreBlock);
+        if (!Pref.getBooleanDefaultFalse("plus_follower_save_power")) {
+            GcmActivity.sendMessage(myIdentity(), "libreBlock", libreBlock);
+        } else {
+            UserError.Log.d(TAG, "Saving power and network by not sending libreBlock");
+        }
     }
 
     public static void clearLastCalibration(String uuid) {
@@ -921,7 +926,7 @@ public class GcmActivity extends FauxActivity {
             if (GcmActivity.last_send_previous > GcmActivity.last_ack) {
                 if (Pref.getLong("sync_warning_never", 0) == 0) {
 
-                    if (PreferencesNames.SYNC_VERSION.equals("1") && JoH.isOldVersion(context)) {
+                    if (PreferencesNames.SYNC_VERSION.equals("1") && isOldVersion(context)) {
                         final long since_send = JoH.tsl() - GcmActivity.last_send_previous;
                         if (since_send > 60000) {
                             if (!DesertSync.isEnabled()) {

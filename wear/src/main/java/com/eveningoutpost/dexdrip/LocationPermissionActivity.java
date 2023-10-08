@@ -11,7 +11,7 @@ import android.util.Log;
 
 import android.view.View;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 
 /**
  * Simple Activity for displaying Permission Rationale to user.

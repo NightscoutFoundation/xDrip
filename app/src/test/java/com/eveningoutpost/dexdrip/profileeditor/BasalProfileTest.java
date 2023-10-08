@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.profileeditor;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.defaultGsonInstance;
+import static com.eveningoutpost.dexdrip.models.JoH.defaultGsonInstance;
 import static com.eveningoutpost.dexdrip.profileeditor.BasalProfile.consolidate;
 import static com.google.common.truth.Truth.assertWithMessage;
 
