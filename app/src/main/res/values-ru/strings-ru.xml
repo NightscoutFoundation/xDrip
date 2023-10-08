@@ -1283,14 +1283,18 @@
     <string name="title_nsfollow_url">URL подписки Nightscout</string>
     <string name="summary_nsfollow_download_treatments">Скачивать введённые пользователем значения из Nightscout для \'фолловеров\'</string>
     <string name="title_nsfollow_download_treatments">Скачивать пользовательские значения</string>
-    <string name="title_clfollow_user">Имя пользователя CareLink</string>
-    <string name="summary_clfollow_user">Имя пользователя CareLink</string>
-    <string name="title_clfollow_pass">Пароль CareLink</string>
-    <string name="summary_clfollow_pass">Пароль CareLink</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
     <string name="title_clfollow_country">Страна CareLink</string>
     <string name="summary_clfollow_country">Выберите вашу страну CareLink.</string>
-    <string name="title_clfollow_lang">Язык CareLink</string>
-    <string name="summary_clfollow_lang">Код языка CareLink</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
     <string name="title_clfollow_grace_period">Пробный период</string>
     <string name="summary_clfollow_grace_period">Пробный период для запросов в секундах</string>
     <string name="title_clfollow_missed_poll_interval">Интервал опроса пропущенных данных</string>
