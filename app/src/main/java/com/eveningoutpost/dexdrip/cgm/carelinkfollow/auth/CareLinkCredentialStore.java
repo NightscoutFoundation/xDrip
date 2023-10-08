@@ -89,6 +89,13 @@ public class CareLinkCredentialStore {
             return credential.tokenValidTo.getTime() - Calendar.getInstance().getTime().getTime();
     }
 
+    public long getExpiresOn() {
+        if (credential == null || credential.tokenValidTo == null)
+            return -1;
+        else
+            return credential.tokenValidTo.getTime();
+    }
+
     synchronized void clear() {
         this.credential = null;
         PersistentStore.setString(PREF_CARELINK_CREDENTIAL, "");
