@@ -1283,14 +1283,18 @@
     <string name="title_nsfollow_url">Nightscout Takip URL\'si</string>
     <string name="summary_nsfollow_download_treatments">Ayrıca tedavileri Nightscout\'tan indirin</string>
     <string name="title_nsfollow_download_treatments">Tedavileri İndir</string>
-    <string name="title_clfollow_user">CareLink Kullanıcı Adı</string>
-    <string name="summary_clfollow_user">CareLink oturum açma kullanıcı adı</string>
-    <string name="title_clfollow_pass">CareLink Parolası</string>
-    <string name="summary_clfollow_pass">CareLink giriş parolası</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
     <string name="title_clfollow_country">CareLink Ülkesi</string>
     <string name="summary_clfollow_country">CareLink ülkenizi seçin.</string>
-    <string name="title_clfollow_lang">CareLink Dili</string>
-    <string name="summary_clfollow_lang">CareLink Dili kodu</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
     <string name="title_clfollow_grace_period">Yetkisiz Kullanım Süresi</string>
     <string name="summary_clfollow_grace_period">Saniye cinsinden veri talebi için yetkisiz kullanım süresi</string>
     <string name="title_clfollow_missed_poll_interval">Kaçırılan veri yoklama aralığı</string>
