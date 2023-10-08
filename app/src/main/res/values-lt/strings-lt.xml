@@ -1286,16 +1286,20 @@
     <string name="title_nsfollow_url">Nightscout Follow URL</string>
     <string name="summary_nsfollow_download_treatments">Įkelti terapijos duomenis iš Nightscout sekėjams</string>
     <string name="title_nsfollow_download_treatments">Įkelti terapiją</string>
-    <string name="title_clfollow_user">CareLink vartotojo vardas</string>
-    <string name="summary_clfollow_user">CareLink prisijungimo vardas</string>
-    <string name="title_clfollow_pass">CareLink slaptažodis</string>
-    <string name="summary_clfollow_pass">CareLink prisijungimo slaptažodis</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
     <string name="title_clfollow_country">CareLink šalis</string>
     <string name="summary_clfollow_country">Pasirinkite savo CareLink šalį.</string>
     <string name="title_clfollow_patient">CareLink paciento vartotojo vardas</string>
     <string name="summary_clfollow_patient">CareLink paciento vartotojo vardas (pasirenkama)</string>
-    <string name="title_clfollow_lang">CareLink kalba</string>
-    <string name="summary_clfollow_lang">CareLink kalbos kodas</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
     <string name="title_clfollow_grace_period">Delsimo laikas</string>
     <string name="summary_clfollow_grace_period">Delsimo laikas užklausoms, sek.</string>
     <string name="title_clfollow_missed_poll_interval">Negautų duomenų užklausos intervalas</string>
