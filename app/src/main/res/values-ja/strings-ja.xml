@@ -371,8 +371,18 @@
     <string name="summary_broadcast_service_api">新しいAPIを使用して、サードパーティのアプリケーションとxDrip通信を有効にします。</string>
     <string name="title_features">機能</string>
     <string name="title_screens">画面</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
     <string name="title_clfollow_patient">CareLink ™のユーザー名</string>
     <string name="summary_clfollow_patient">CareLink ™のユーザー名 (オプション)</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
     <string name="title_color_smb_icon">SMBアイコン</string>
     <string name="title_color_smb_line">SMBライン</string>
     <string name="title_pick_numberwall_start">オン</string>
