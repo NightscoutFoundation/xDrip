@@ -1286,16 +1286,20 @@
     <string name="title_nsfollow_url">Adres URL do obserwowania Nightscout</string>
     <string name="summary_nsfollow_download_treatments">Pobierz również zabiegi z Nightscout jako obserwator</string>
     <string name="title_nsfollow_download_treatments">Pobieraj zabiegi</string>
-    <string name="title_clfollow_user">Nazwa użytkownika CareLink</string>
-    <string name="summary_clfollow_user">Login do CareLink</string>
-    <string name="title_clfollow_pass">Hasło CareLink</string>
-    <string name="summary_clfollow_pass">Hasło logowania do CareLink</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
     <string name="title_clfollow_country">Kraj CareLink</string>
     <string name="summary_clfollow_country">Wybierz swój kraj CareLink.</string>
     <string name="title_clfollow_patient">Nazwa użytkownika pacjenta usługi CareLink</string>
     <string name="summary_clfollow_patient">Nazwa użytkownika pacjenta CareLink (opcjonalnie)</string>
-    <string name="title_clfollow_lang">Język CareLink</string>
-    <string name="summary_clfollow_lang">Kod języka CareLink</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
     <string name="title_clfollow_grace_period">Okres karencji</string>
     <string name="summary_clfollow_grace_period">Okres karencji dla żądania danych w sekundach</string>
     <string name="title_clfollow_download_finger_bgs">Poziom cukru z palca</string>
