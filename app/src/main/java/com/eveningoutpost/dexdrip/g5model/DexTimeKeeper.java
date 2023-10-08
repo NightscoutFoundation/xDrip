@@ -52,8 +52,12 @@ public class DexTimeKeeper {
             return;
         }
 
-        UserError.Log.d(TAG, "Activation time updated to: " + JoH.dateTimeText(activation_time));
-        PersistentStore.setLong(DEX_XMIT_START + transmitterId, activation_time);
+        if (FirmwareCapability.isTransmitterModified(getTransmitterID()) && activation_time < OLDEST_ALLOWED) {
+            UserError.Log.d(TAG, "Activation time would have been updated to: " + JoH.dateTimeText(activation_time));
+        } else { // Update the activation time in the persistent store only if it is not years in the past or if we are not using a modified transmitter.
+            UserError.Log.d(TAG, "Activation time updated to: " + JoH.dateTimeText(activation_time));
+            PersistentStore.setLong(DEX_XMIT_START + transmitterId, activation_time);
+        }
 
     }
 
