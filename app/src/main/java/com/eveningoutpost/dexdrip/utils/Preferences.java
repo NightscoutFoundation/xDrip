@@ -1749,8 +1749,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 try {
                     collectionCategory.removePreference(carelinkFollowCountry);
                     collectionCategory.removePreference(carelinkFollowPatient);
-                    collectionCategory.removePreference(carelinkFollowPass);
-                    collectionCategory.removePreference(carelinkFollowUser);
+                    //collectionCategory.removePreference(carelinkFollowPass);
+                    //collectionCategory.removePreference(carelinkFollowUser);
                     collectionCategory.removePreference(carelinkFollowGracePeriod);
                     collectionCategory.removePreference(carelinkFollowMissedPollInterval);
                     collectionCategory.removePreference(carelinkFollowDownloadFingerBGs);
