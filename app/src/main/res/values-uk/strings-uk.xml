@@ -1303,6 +1303,8 @@
     <string name="title_clfollow_lang">CareLink Language</string>
     <string name="summary_clfollow_lang">CareLink language code</string>
     -->
+    <string name="title_clfollow_login">Логін</string>
+    <string name="summary_clfollow_login">Увійти через браузер</string>
     <string name="title_clfollow_grace_period">Дозволений Період</string>
     <string name="summary_clfollow_grace_period">Припустимий період для запиту даних, секунд</string>
     <string name="title_clfollow_missed_poll_interval">Інтервал опитування при відсутніх даних</string>
