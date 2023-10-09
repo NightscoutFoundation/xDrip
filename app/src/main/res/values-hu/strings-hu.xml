@@ -1277,18 +1277,22 @@
     !-->
     <string name="title_clfollow_country">CareLink ország</string>
     <string name="summary_clfollow_country">Válassza ki az országát</string>
-    <string name="title_clfollow_patient">Felhasználónév CareLink belépéshez</string>
-    <string name="summary_clfollow_patient">Felhasználónév CareLink belépéshez (megadható)</string>
+    <string name="title_clfollow_patient">Követett beteg felhasználóneve</string>
+    <string name="summary_clfollow_patient">Követett betegfiók felhasználóneve (opcionális)</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_lang">CareLink Language</string>
     <string name="summary_clfollow_lang">CareLink language code</string>
     -->
+    <string name="title_clfollow_login">Bejelentkezés</string>
+    <string name="summary_clfollow_login">Bejelentkezés böngészőben</string>
     <string name="title_clfollow_grace_period">Türelmi idő</string>
-    <string name="summary_clfollow_grace_period">Maximális várakozási idő adatokra (s)</string>
+    <string name="summary_clfollow_grace_period">Várakozási idő adatfeltöltésre (s)</string>
+    <string name="title_clfollow_missed_poll_interval">Várakozási idő adatkimaradnásnál</string>
+    <string name="summary_clfollow_missed_poll_interval">Adatlekérdezés-ismétlések közötti várakozási idő adatkimaradásnál</string>
     <string name="title_clfollow_download_finger_bgs">VC mérés vérből</string>
     <string name="summary_clfollow_download_finger_bgs">Ujjbegy VC értékek letöltése CareLink-ből</string>
     <string name="title_clfollow_download_boluses">Bólusok</string>
-    <string name="summary_clfollow_download_boluses">Bólus adagok letöltése CareLink-ből</string>
+    <string name="summary_clfollow_download_boluses">Bólus adatok letöltése CareLink-ből</string>
     <string name="title_clfollow_download_meals">Étkezések</string>
     <string name="summary_clfollow_download_meals">Étkezés adatok letöltése CareLink-ből</string>
     <string name="title_clfollow_download_notifications">Értesítések</string>
@@ -1677,6 +1681,7 @@
     <string name="backing_up">Biztonsági mentés</string>
     <string name="did_backup_ok">Biztonsági mentés kész</string>
     <string name="backup_failed">Biztonsági mentés meghiúsult</string>
+    <string name="automatically_manage_backup">Automatikus biztonsági mentés</string>
     <string name="use_alternate_file">Alternatív File használata</string>
     <string name="choose_backup_file">Biztonsági mentés fájl választása</string>
     <string name="select_alternate_file">Alternatví file kiválasztása</string>
@@ -1708,6 +1713,8 @@
     <string name="please_grant_permission">Alkalmazásengedély adása</string>
     <string name="drive_permission_blurb">Az automatikus biztonsági mentéshez az xDrip-nek engedélyre van szüksége a Google Drive használatához.\n\nAz xDrip fejlesztői nem férhetnek hozzá a fájljaihoz, és nem láthatják a személyes adatait.</string>
     <string name="cloud_backup">Biztonsági mentés felhőbe</string>
+    <string name="restoring_backup_will_erase_warning">A visszaállítás lecseréli a készüléken levő beállításokat a mentettekre.\n\nBiztos, hogy ezt szeretné?</string>
+    <string name="this_backup_looks_like_came_from_different_format_string">Ez a mentés egy másik készülékről való:\n%s\nBiztos, hogy a visszaállítását választja?</string>
     <string name="megabyte_format_string">%.1f MB</string>
     <string name="manual_selection_google_drive_file_warning">Kiválasztott egy fájlt a Google Drive-ról, de ezt nem kezeli automatikusan az xDrip, így csak manuális biztonsági mentéshez és visszaállításhoz használható.\n\nNem történik automatikus biztonsági mentés ezzel a fájllal.\n\nFolytatja?</string>
     <string name="alternate_file_selected_warning">Egy alternatív fájlt választott. Ez általában csak egy helyileg tárolt biztonsági másolatból történő visszaállításra való.\n\nNem történik automatikus biztonsági mentés ezzel a fájllal.\n\nFolytatja?</string>
