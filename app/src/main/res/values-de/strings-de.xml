@@ -1304,6 +1304,8 @@
     <string name="title_clfollow_lang">CareLink Language</string>
     <string name="summary_clfollow_lang">CareLink language code</string>
     -->
+    <string name="title_clfollow_login">CareLink Login</string>
+    <string name="summary_clfollow_login">Mit Browser anmelden</string>
     <string name="title_clfollow_grace_period">Schonfrist</string>
     <string name="summary_clfollow_grace_period">Nachfrist für Datenabfrage in Sekunden</string>
     <string name="title_clfollow_missed_poll_interval">Abrufintervall für verpasste Daten</string>
