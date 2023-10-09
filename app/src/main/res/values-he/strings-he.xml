@@ -1267,6 +1267,8 @@
     <string name="title_clfollow_lang">CareLink Language</string>
     <string name="summary_clfollow_lang">CareLink language code</string>
     -->
+    <string name="title_clfollow_login">התחבר/י</string>
+    <string name="summary_clfollow_login">התחברות בדפדפן</string>
     <string name="title_clfollow_download_meals">ארוחות</string>
     <string name="title_clfollow_download_notifications">התראות</string>
     <string name="title_ob1_options">הגדרות איסוף OB1 עבור G5/G6</string>
