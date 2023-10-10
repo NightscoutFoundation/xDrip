@@ -1300,6 +1300,8 @@
     <string name="title_clfollow_lang">CareLink Language</string>
     <string name="summary_clfollow_lang">CareLink language code</string>
     -->
+    <string name="title_clfollow_login">Zaloguj się</string>
+    <string name="summary_clfollow_login">Zaloguj się za pomocą przeglądarki</string>
     <string name="title_clfollow_grace_period">Okres karencji</string>
     <string name="summary_clfollow_grace_period">Okres karencji dla żądania danych w sekundach</string>
     <string name="title_clfollow_download_finger_bgs">Poziom cukru z palca</string>
