@@ -1612,10 +1612,11 @@ public class Ob1G5StateMachine {
         UserError.Log.d(TAG, "SUCCESS!! unfiltered: " + sensorRx.unfiltered + " filtered: " + sensorRx.filtered + " timestamp: " + sensorRx.timestamp + " " + JoH.qs((double) sensorRx.timestamp / 86400, 1) + " days :: (" + sensorRx.status + ")");
         if (FirmwareCapability.isTransmitterModified(getTransmitterID()) && sensorRx.timestamp > OLDEST_RAW) { // Raw timestamp reported by a mod TX is incorrect until after sensor start.
             UserError.Log.d(TAG, "Will not update age since raw timestamp is incorrect.");
+            Ob1G5CollectionService.setLast_transmitter_timestamp(0);
         } else { // Update age, based on the raw timestamp, only if the raw timestamp is correct.
             DexTimeKeeper.updateAge(getTransmitterID(), sensorRx.timestamp);
+            Ob1G5CollectionService.setLast_transmitter_timestamp(sensorRx.timestamp);
         }
-        Ob1G5CollectionService.setLast_transmitter_timestamp(sensorRx.timestamp);
         if (sensorRx.unfiltered == 0) {
             UserError.Log.e(TAG, "Transmitter sent raw sensor value of 0 !! This isn't good. " + JoH.hourMinuteString());
         } else {
