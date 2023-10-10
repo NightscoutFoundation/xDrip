@@ -1303,6 +1303,8 @@
     <string name="title_clfollow_lang">CareLink Language</string>
     <string name="summary_clfollow_lang">CareLink language code</string>
     -->
+    <string name="title_clfollow_login">Přihlášení</string>
+    <string name="summary_clfollow_login">Přihlásit se pomocí prohlížeče</string>
     <string name="title_clfollow_grace_period">Doba odkladu</string>
     <string name="summary_clfollow_grace_period">Doba odkladu pro požadavek na data v sekundách</string>
     <string name="title_clfollow_missed_poll_interval">Nezachycená data</string>
