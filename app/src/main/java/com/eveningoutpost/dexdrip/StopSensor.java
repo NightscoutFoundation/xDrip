@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.eveningoutpost.dexdrip.g5model.FirmwareCapability;
 import com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.models.Calibration;
 import com.eveningoutpost.dexdrip.models.JoH;
@@ -19,13 +20,15 @@ import com.eveningoutpost.dexdrip.utilitymodels.NanoStatus;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.ui.dialog.GenericConfirmDialog;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.getTransmitterID;
 
 import lombok.val;
 
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 public class StopSensor extends ActivityWithMenu {
-   public Button button;
+    private static String proceedToStop = "";
+    public Button button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +39,11 @@ public class StopSensor extends ActivityWithMenu {
             finish();
         } else {
             JoH.fixActionBar(this);
-            setContentView(R.layout.activity_stop_sensor);
+            if (FirmwareCapability.isTransmitterStandardFirefly(getTransmitterID())) { // Standard Firefly, which does not send raw values
+                setContentView(R.layout.activity_stop_noraw_sensor);
+            } else {
+                setContentView(R.layout.activity_stop_sensor);
+            }
             button = (Button)findViewById(R.id.stop_sensor);
             addListenerOnButton();
         }
@@ -48,15 +55,19 @@ public class StopSensor extends ActivityWithMenu {
     }
 
     public void addListenerOnButton() {
-        button = (Button)findViewById(R.id.stop_sensor);
+        button = (Button) findViewById(R.id.stop_sensor);
+        if (FirmwareCapability.isTransmitterRawIncapable(getTransmitterID())) { // Firefly, modified or not
+            proceedToStop = gs(R.string.sensor_stop_confirm_norestart);
+        } else {
+            proceedToStop = gs(R.string.sensor_stop_confirm);
+        }
         val activity = this;
-        button.setOnClickListener(v -> GenericConfirmDialog.show(activity, gs(R.string.are_you_sure), gs(R.string.sensor_stop_confirm), () -> {
+        button.setOnClickListener(v -> GenericConfirmDialog.show(activity, gs(R.string.are_you_sure), proceedToStop, () -> {
             stop();
             JoH.startActivity(Home.class);
             finish();
         }));
     }
-
     public synchronized static void stop() {
         Sensor.stopSensor();
         Inevitable.task("stop-sensor",1000, Sensor::stopSensor);
