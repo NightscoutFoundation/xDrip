@@ -1290,16 +1290,22 @@
     <string name="title_nsfollow_url">Nightscout jälgimise URL</string>
     <string name="summary_nsfollow_download_treatments">Laadi jälgijana alla ka Nightscout\'i raviandmed</string>
     <string name="title_nsfollow_download_treatments">Laad alla raviandmed</string>
-    <string name="title_clfollow_user">CareLink kasutajanimi</string>
-    <string name="summary_clfollow_user">CareLink sisselogimise kasutajanimi</string>
-    <string name="title_clfollow_pass">CareLink parool</string>
-    <string name="summary_clfollow_pass">CareLink sisselogimise parool</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
     <string name="title_clfollow_country">CareLink riik</string>
     <string name="summary_clfollow_country">Vali enda CareLink riik.</string>
     <string name="title_clfollow_patient">CareLink patsiendi kasutajanimi</string>
     <string name="summary_clfollow_patient">CareLink patsiendi kasutajanimi (vabalt valitav)</string>
-    <string name="title_clfollow_lang">CareLink keel</string>
-    <string name="summary_clfollow_lang">CareLink keele kood</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
+    <string name="title_clfollow_login">Logi sisse</string>
+    <string name="summary_clfollow_login">Logi sisse brauseriga</string>
     <string name="title_clfollow_grace_period">Ooteperiood</string>
     <string name="summary_clfollow_grace_period">Andmepäringu ooteperiood sekundites</string>
     <string name="title_clfollow_missed_poll_interval">Puuduvate andmete päringute intervall</string>

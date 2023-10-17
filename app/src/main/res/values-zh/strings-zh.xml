@@ -1260,6 +1260,16 @@
     <string name="title_nsfollow_url">Nightscout跟踪网址</string>
     <string name="summary_nsfollow_download_treatments">作为关注者也可以在Nightscout下载治疗数据</string>
     <string name="title_nsfollow_download_treatments">下载治疗数据</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
     <string name="title_ob1_options">OB1 G6/G6 收集器设置</string>
     <string name="summary_use_ob1_g5_collector_service">完成重写，应该在Android4.4-9版本下工作，支持本地模式和更多功能</string>
     <string name="title_use_ob1_g5_collector_service">使用OB1收集器</string>

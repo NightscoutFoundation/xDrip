@@ -1289,16 +1289,22 @@
     <string name="title_nsfollow_url">URL підписки Nightscout</string>
     <string name="summary_nsfollow_download_treatments">Завантажувати введені користувачем значення з Nightscout для фоловерів</string>
     <string name="title_nsfollow_download_treatments">Завантажувати користувацькі значення</string>
-    <string name="title_clfollow_user">Ім\'я користувача CareLink</string>
-    <string name="summary_clfollow_user">Логін CareLink</string>
-    <string name="title_clfollow_pass">Пароль CareLink</string>
-    <string name="summary_clfollow_pass">Пароль для авторизації CareLink</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
     <string name="title_clfollow_country">Країна CareLink</string>
     <string name="summary_clfollow_country">Оберіть свою країну CareLink.</string>
     <string name="title_clfollow_patient">Користувацьке ім\'я CareLink Patient</string>
     <string name="summary_clfollow_patient">Користувацьке ім\'я CareLink patient (необов\'язково)</string>
-    <string name="title_clfollow_lang">Мова CareLink</string>
-    <string name="summary_clfollow_lang">Код мови CareLink</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
+    <string name="title_clfollow_login">Логін</string>
+    <string name="summary_clfollow_login">Увійти через браузер</string>
     <string name="title_clfollow_grace_period">Дозволений Період</string>
     <string name="summary_clfollow_grace_period">Припустимий період для запиту даних, секунд</string>
     <string name="title_clfollow_missed_poll_interval">Інтервал опитування при відсутніх даних</string>

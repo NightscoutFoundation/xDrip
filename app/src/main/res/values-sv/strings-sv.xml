@@ -1084,6 +1084,16 @@
     <string name="title_send_dexcom_transmitter_battery_to_nightscout">Ladda upp batteridata för OB1G5/G6-sändare</string>
     <string name="title_broadcast_service_api">API för Broadcast-tjänst</string>
     <string name="summary_broadcast_service_api">Aktiverar, med hjälp av det nya API:et, för tredjepartsapplikationer att kommunicera med xDrip</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
     <string name="summary_ob1_g5_restart_sensor">Starta automatiskt om en sensor när den stoppas</string>
     <string name="title_ob1_g5_restart_sensor">Starta om sensor</string>
     <string name="summary_ob1_g5_preemptive_restart">Starta om en sensor i förebyggande syfte dag 6/9 för att undvika uppvärmningstiden</string>

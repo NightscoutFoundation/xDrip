@@ -1275,6 +1275,16 @@
     <string name="title_nsfollow_url">Nightscout-seuraajan URL</string>
     <string name="summary_nsfollow_download_treatments">Lataa seuraajana myös hoitotapahtumat Nightscoutista</string>
     <string name="title_nsfollow_download_treatments">Lataa hoidot</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
     <string name="title_ob1_options">OB1 G5/G6 tiedonkerääjän asetukset</string>
     <string name="summary_use_ob1_g5_collector_service">Suorita täydellinen uudelleenkirjoitus. Pitäisi toimia Android-versioissa 4.4 - 9. Tukee natiivitilaa ja paljon muuta</string>
     <string name="title_use_ob1_g5_collector_service">Käytä OB1-tiedonkerääjää</string>

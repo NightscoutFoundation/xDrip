@@ -1289,16 +1289,22 @@
     <string name="title_nsfollow_url">Nightscout URL pro sledování</string>
     <string name="summary_nsfollow_download_treatments">Pokusit se také pro sledující stáhnout ošetření z Nightscoutu</string>
     <string name="title_nsfollow_download_treatments">Stáhnout ošetření</string>
-    <string name="title_clfollow_user">Uživatelské jméno pro CareLink</string>
-    <string name="summary_clfollow_user">Přihlašovací jméno pro CareLink</string>
-    <string name="title_clfollow_pass">Heslo pro CareLink</string>
-    <string name="summary_clfollow_pass">Přihlašovací heslo pro CareLink</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
     <string name="title_clfollow_country">Země pro CareLink</string>
     <string name="summary_clfollow_country">Vybrat zemi pro CareLink.</string>
     <string name="title_clfollow_patient">Uživatelské jméno pacienta pro CareLink</string>
     <string name="summary_clfollow_patient">Uživatelské jméno pacienta pro CareLink (volitelné)</string>
-    <string name="title_clfollow_lang">Jazyk pro CareLink</string>
-    <string name="summary_clfollow_lang">Jazykový kód pro CareLink</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
+    <string name="title_clfollow_login">Přihlášení</string>
+    <string name="summary_clfollow_login">Přihlásit se pomocí prohlížeče</string>
     <string name="title_clfollow_grace_period">Doba odkladu</string>
     <string name="summary_clfollow_grace_period">Doba odkladu pro požadavek na data v sekundách</string>
     <string name="title_clfollow_missed_poll_interval">Nezachycená data</string>
