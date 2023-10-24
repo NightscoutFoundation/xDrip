@@ -292,41 +292,61 @@ public class UiBasedCollector extends NotificationListenerService {
         } else if (matches > 1) {
             UserError.Log.e(TAG, "Found too many matches: " + matches);
         } else {
-            Sensor.createDefaultIfMissing();
             val timestamp = JoH.tsl();
-            UserError.Log.d(TAG, "Found specific value: " + mgdl);
-
-            if ((mgdl >= 40 && mgdl <= 405)) {
-                val grace = DexCollectionType.getCurrentSamplePeriod() * 4;
-                val recent = msSince(lastReadingTimestamp) < grace;
-                val period = recent ? grace : DexCollectionType.getCurrentDeduplicationPeriod();
-                if (BgReading.getForPreciseTimestamp(timestamp, period, false) == null) {
-                    if (isJammed(mgdl)) {
-                        UserError.Log.wtf(TAG, "Apparently value is jammed at: " + mgdl);
-                    } else {
-                        UserError.Log.d(TAG, "Inserting new value");
-                        PersistentStore.setLong(UI_BASED_STORE_LAST_VALUE, mgdl);
-                        val bgr = BgReading.bgReadingInsertFromG5(mgdl, timestamp);
-                        if (bgr != null) {
-                            bgr.find_slope();
-                            bgr.noRawWillBeAvailable();
-                            bgr.injectDisplayGlucose(BestGlucose.getDisplayGlucose());
-                        }
-                    }
-                } else {
-                    UserError.Log.d(TAG, "Duplicate value");
-                }
-            } else {
-                UserError.Log.wtf(TAG, "Glucose value outside acceptable range: " + mgdl);
-            }
+            handleNewValue(timestamp, mgdl);
         }
         texts.clear();
+    }
+
+    boolean handleNewValue(final long timestamp, final int mgdl) {
+        Sensor.createDefaultIfMissing();
+
+        UserError.Log.d(TAG, "Found specific value: " + mgdl);
+
+        if ((mgdl >= 40 && mgdl <= 405)) {
+            val grace = DexCollectionType.getCurrentSamplePeriod() * 4;
+            val recentbt = msSince(lastReadingTimestamp) < grace;
+            val dedupe = (!recentbt && isDifferentToLast(mgdl)) ? Constants.SECOND_IN_MS * 10
+                    : DexCollectionType.getCurrentDeduplicationPeriod();
+            val period = recentbt ? grace : dedupe;
+            val existing = BgReading.getForPreciseTimestamp(timestamp, period, false);
+            if (existing == null) {
+                if (isJammed(mgdl)) {
+                    UserError.Log.wtf(TAG, "Apparently value is jammed at: " + mgdl);
+                } else {
+                    UserError.Log.d(TAG, "Inserting new value");
+                    PersistentStore.setLong(UI_BASED_STORE_LAST_VALUE, mgdl);
+                    val bgr = BgReading.bgReadingInsertFromG5(mgdl, timestamp);
+                    if (bgr != null) {
+                        bgr.find_slope();
+                        bgr.noRawWillBeAvailable();
+                        bgr.injectDisplayGlucose(BestGlucose.getDisplayGlucose());
+                        return true;
+                    }
+                }
+            } else {
+                UserError.Log.d(TAG, "Duplicate value: "+existing.timeStamp());
+            }
+        } else {
+            UserError.Log.wtf(TAG, "Glucose value outside acceptable range: " + mgdl);
+        }
+        return false;
     }
 
     static boolean isValidMmol(final String text) {
         return text.matches("[0-9]+[.,][0-9]+");
     }
 
+    private boolean shouldAllowTimeOffsetChange(final int mgdl) {
+        return isDifferentToLast(mgdl); // TODO do we need to rate limit this or not?
+    }
+    // note this method only checks existing stored data
+    private boolean isDifferentToLast(final int mgdl) {
+            val previousValue = PersistentStore.getLong(UI_BASED_STORE_LAST_VALUE);
+            return previousValue != mgdl;
+    }
+
+    // note this method actually updates the stored value
     private boolean isJammed(final int mgdl) {
         val previousValue = PersistentStore.getLong(UI_BASED_STORE_LAST_VALUE);
         if (previousValue == mgdl) {
@@ -343,7 +363,7 @@ public class UiBasedCollector extends NotificationListenerService {
         if (lastPackage != null) {
             if (lastPackage.startsWith("com.medtronic")) return 9;
         }
-        return 4;
+        return 6;
     }
 
     private void getTextViews(final List<TextView> output, final ViewGroup parent) {
