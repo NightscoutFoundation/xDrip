@@ -1166,6 +1166,7 @@
     <string name="overwrite_intercept_engineering_only">Überschreibe Achsenabschnitt (nur Entwicklermodus!)</string>
     <string name="manual_overwrite_not_possible">Manuelles Überschreiben nicht möglich!</string>
     <string name="upload_even_when_using_mobile_data">Auch hochladen wenn mobile Daten verwendet werden</string>
+    <string name="daily_backup_even_mobile">Tägliche Sicherung auch auf Mobildaten</string>
     <string name="use_mobile_data">Mobile Daten verwenden</string>
     <string name="summary_cloud_storage_api_download_enable">Versuche Behandlungen von Nightscout herunterzuladen</string>
     <string name="title_cloud_storage_api_download_enable">Behandlungen herunterladen</string>
