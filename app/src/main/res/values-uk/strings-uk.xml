@@ -1166,6 +1166,7 @@
     <string name="overwrite_intercept_engineering_only">Замінити точку перетину (інженерна функція)</string>
     <string name="manual_overwrite_not_possible">Ручна зміна не можлива</string>
     <string name="upload_even_when_using_mobile_data">Завантажувати навіть при використанні мобільних даних</string>
+    <string name="daily_backup_even_mobile">Щоденне резервне копіювання навіть в мобільній мережі</string>
     <string name="use_mobile_data">Використовувати мобільні дані</string>
     <string name="summary_cloud_storage_api_download_enable">Намагатися, також, завантажувати дані з Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Завантажувати дані</string>
