@@ -1165,6 +1165,7 @@
     <string name="overwrite_intercept_engineering_only">Nadpisz parametr odciętej (tylko w trybie inżynieryjnym)</string>
     <string name="manual_overwrite_not_possible">Ręczne nadpisanie nie jest możliwe!</string>
     <string name="upload_even_when_using_mobile_data">Prześlij nawet podczas korzystania z danych mobilnych</string>
+    <string name="daily_backup_even_mobile">Codzienna kopia zapasowa nawet dla danych mobilnych</string>
     <string name="use_mobile_data">Użyj transmisji danych</string>
     <string name="summary_cloud_storage_api_download_enable">Spróbuj również pobrać zabiegi z Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Pobierz zabiegi</string>
