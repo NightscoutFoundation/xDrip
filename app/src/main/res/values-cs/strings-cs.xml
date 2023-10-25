@@ -1166,6 +1166,7 @@
     <string name="overwrite_intercept_engineering_only">Přepsat průsečík osy Y (pouze pro vývojáře!)</string>
     <string name="manual_overwrite_not_possible">Manuální přepsání není možné!</string>
     <string name="upload_even_when_using_mobile_data">Nahrávat i přes mobilní data</string>
+    <string name="daily_backup_even_mobile">Denní záloha i na mobilních datech</string>
     <string name="use_mobile_data">Použít mobilní data</string>
     <string name="summary_cloud_storage_api_download_enable">Pokusit se také stáhnout ošetření z Nightscoutu</string>
     <string name="title_cloud_storage_api_download_enable">Stáhnout údaje o ošetření</string>
