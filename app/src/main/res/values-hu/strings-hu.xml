@@ -1151,6 +1151,7 @@
     <string name="overwrite_intercept_engineering_only">Metszéspont felülírása (csak fejlesztői módban!)</string>
     <string name="manual_overwrite_not_possible">Nem lehet kézileg felülírni!</string>
     <string name="upload_even_when_using_mobile_data">Feltöltés mobil adatforgalmon át is</string>
+    <string name="daily_backup_even_mobile">Napi mentés mobil hálózaton át is</string>
     <string name="use_mobile_data">Mobil adatforgalom használata</string>
     <string name="summary_cloud_storage_api_download_enable">Próbálja meg letölteni is az adatokat a Nightscout-ból</string>
     <string name="title_cloud_storage_api_download_enable">Adatok letöltése</string>
