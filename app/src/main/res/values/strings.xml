@@ -1413,6 +1413,17 @@
     <string name="summary_public_notifications">Show notification content on secure lockscreen</string>
     <string name="title_public_notifications">Public Notifications</string>
     <string name="title_xdrip_plus_number_wall">Number Wall on Lock Screen</string>
+    <string name="title_xdrip_plus_accessibility">Always On Display Settings</string>
+    <string name="summary_aod_use_top">Use first fifth of screen for AOD Widget</string>
+    <string name="title_aod_use_top">Use top</string>
+    <string name="summary_aod_use_top_center">Use second fifth of screen for AOD Widget</string>
+    <string name="title_aod_use_top_center">Use top center</string>
+    <string name="summary_aod_use_center">Use third fifth of screen for AOD Widget</string>
+    <string name="title_aod_use_center">Use center</string>
+    <string name="summary_aod_use_center_bottom">Use fourth fifth of screen for AOD Widget</string>
+    <string name="title_aod_use_center_bottom">Use center bottom</string>
+    <string name="summary_aod_use_bottom">Use last fifth of screen for AOD Widget</string>
+    <string name="title_aod_use_bottom">Use bottom</string>
     <string name="summary_do_number_wall_configuration">Adjust and preview wall layout</string>
     <string name="title_do_number_wall_configuration">Configure Number Wall</string>
     <string name="summary_number_wall_on_lockscreen">Show on lock-screen. Android 7 and above only!</string>

@@ -1,6 +1,8 @@
 package com.eveningoutpost.dexdrip.utils.math;
 
 
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -69,31 +71,38 @@ public class BlockFinder {
         return b;
     }
 
-    public int findRandomAvailablePositionWithFailSafe(final int height, final int maxHeight) {
-        val pos = findRandomAvailablePosition(height, maxHeight);
-        if (pos < 0) {
-            return new Random().nextInt(maxHeight - height);
-        } else {
-            return pos;
-        }
-    }
-
     // TODO this could be a bit smarter
-    public int findRandomAvailablePosition(final int height, final int maxHeight) {
+    public int findRandomAvailablePositionWithFailSafe(final int height, final int maxHeight) {
+        boolean useTop, useTopCenter, useCenter, useCenterBottom, useBottom;
+        final int sectionSize = maxHeight / 5;
+
+        useTop = Pref.getBooleanDefaultFalse("aod_use_top");
+        useTopCenter = Pref.getBooleanDefaultFalse("aod_use_top_center");
+        useCenter = Pref.getBooleanDefaultFalse("aod_use_center");
+        useCenterBottom = Pref.getBooleanDefaultFalse("aod_use_center_bottom");
+        useBottom = Pref.getBooleanDefaultFalse("aod_use_bottom");
 
         final int bound = maxHeight - height;
-        if (bound < 1) return -2;
 
-        int tries = 200;
-        val random = new Random();
+        if (bound >= 1) {
+            int tries = 200;
+            val random = new Random();
 
-        while (tries-- > 0) {
-            val pos = random.nextInt(bound);
-            if (findOverlappingBlock(pos, pos + height) == null) {
-                return pos;
+            while (tries-- > 0) {
+                int pos = random.nextInt(bound);
+                if (findOverlappingBlock(pos, pos + height) == null) {
+                    if ((pos <= sectionSize && useTop)
+                         || (pos >= sectionSize && pos <= 2 * sectionSize && useTopCenter)
+                         || (pos >= 2 * sectionSize && pos <= 3 * sectionSize && useCenter)
+                         || (pos >= 3 * sectionSize && pos <= 4 * sectionSize && useCenterBottom)
+                         || (pos >= 4 * sectionSize && useBottom)) {
+                        return pos;
+                    }
+                }
             }
         }
-        return -1;
+        // FailSafe
+        return new Random().nextInt(maxHeight);
     }
 
 
