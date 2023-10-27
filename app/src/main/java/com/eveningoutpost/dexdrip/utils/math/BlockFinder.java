@@ -82,6 +82,11 @@ public class BlockFinder {
         useCenterBottom = Pref.getBooleanDefaultFalse("aod_use_center_bottom");
         useBottom = Pref.getBooleanDefaultFalse("aod_use_bottom");
 
+        if (!(useTop || useTopCenter || useCenter || useCenterBottom || useBottom))
+        {
+            useTop = useTopCenter = useCenter = useCenterBottom = useBottom = true;
+        }
+
         final int bound = maxHeight - height;
 
         if (bound >= 1) {
