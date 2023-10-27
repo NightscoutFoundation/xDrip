@@ -1166,6 +1166,7 @@
     <string name="overwrite_intercept_engineering_only">Sovrascrivi Intercetto (solo engineering!)</string>
     <string name="manual_overwrite_not_possible">Sovrascrittura manuale impossibile!</string>
     <string name="upload_even_when_using_mobile_data">Upload anche con rete dati mobile</string>
+    <string name="daily_backup_even_mobile">Backup giornaliero anche su dati mobili</string>
     <string name="use_mobile_data">Utilizza rete dati mobile</string>
     <string name="summary_cloud_storage_api_download_enable">Prova anche a scaricare i dati da Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Scarica dati</string>
