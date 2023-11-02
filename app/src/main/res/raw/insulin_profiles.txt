@@ -3,7 +3,7 @@
   [
     {
       "name": "FIASP",
-      "displayName": "FIASP (ultra-fast acting)",
+      "displayName": "FIASP (ultra fast acting)",
       "concentration": "U100",
       "PPN":
       [
@@ -157,6 +157,44 @@
       }
     },
     {
+      "name": "Toujeo",
+      "displayName": "Toujeo (long acting)",
+      "PPN":
+      [
+        "ToujeoU100"
+      ],
+      "concentration": "U100",
+      "Curve":
+      {
+        "type": "linear trapezoid",
+        "data":
+        {
+          "onset": "180",
+          "peak": "480",
+          "duration": "2160"
+        }
+      }
+    },
+    {
+      "name": "Lantus",
+      "displayName": "Lantus (long acting)",
+      "PPN":
+      [
+        "LantusU100"
+      ],
+      "concentration": "U100",
+      "Curve":
+      {
+        "type": "linear trapezoid",
+        "data":
+        {
+          "onset": "60",
+          "peak": "420-1200",
+          "duration": "2160"
+        }
+      }
+    },
+    {
       "name": "Levemir",
       "displayName": "Levemir (long acting)",
       "PPN":
@@ -176,25 +214,6 @@
       }
     },
     {
-      "name": "Lantus",
-      "displayName": "Lantus (long acting)",
-      "PPN":
-      [
-        "LantusU100"
-      ],
-      "concentration": "U100",
-      "Curve":
-      {
-        "type": "linear trapezoid",
-        "data":
-        {
-          "onset": "60",
-          "peak": "420-1200",
-          "duration": "1440"
-        }
-      }
-    },
-    {
       "name": "Basaglar",
       "displayName": "Basaglar (long acting)",
       "PPN":
@@ -210,25 +229,6 @@
           "onset": "60",
           "peak": "480-1140",
           "duration": "1440"
-        }
-      }
-    },
-    {
-      "name": "Toujeo",
-      "displayName": "Toujeo (ultra-long acting)",
-      "PPN":
-      [
-        "ToujeoU100"
-      ],
-      "concentration": "U100",
-      "Curve":
-      {
-        "type": "linear trapezoid",
-        "data":
-        {
-          "onset": "180",
-          "peak": "480-1560",
-          "duration": "2160"
         }
       }
     },
