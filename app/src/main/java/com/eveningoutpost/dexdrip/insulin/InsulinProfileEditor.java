@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.insulin;
 
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -8,6 +9,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.ScrollView;
 
 import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.R;
@@ -31,6 +33,8 @@ public class InsulinProfileEditor extends BaseAppCompatActivity {
     private Spinner basalSpinner, bolusSpinner;
     private HashMap<Insulin, CheckBox> checkboxes;
     private HashMap<String, Insulin> profiles;
+    private ScrollView parentScrollView;
+    private ScrollView childScrollView;
 
     //private Context mContext;
 
@@ -49,6 +53,19 @@ public class InsulinProfileEditor extends BaseAppCompatActivity {
         linearLayout = (LinearLayout) findViewById(R.id.profile_layout_view);
         basalSpinner = (Spinner) findViewById(R.id.basalSpinner);
         bolusSpinner = (Spinner) findViewById(R.id.bolusSpinner);
+        parentScrollView = (ScrollView) findViewById(R.id.parent_scroll_view);
+        childScrollView = (ScrollView) findViewById(R.id.child_scroll_view);
+
+        parentScrollView.setOnTouchListener((v, event) -> {
+            findViewById(R.id.parent_scroll_view).getParent().requestDisallowInterceptTouchEvent(false);
+            return false;
+        });
+
+        childScrollView.setOnTouchListener((v, event) -> {
+            // Disallow the touch request for parent scroll on touch of  child view
+            v.getParent().getParent().requestDisallowInterceptTouchEvent(true);
+            return false;
+        });
 
         for (Insulin i : InsulinManager.getAllProfiles()) {
             LinearLayout v = new LinearLayout(this);
