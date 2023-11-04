@@ -307,7 +307,7 @@ dependencies {
     }
     implementation 'com.github.jamorham:amazfitcommunication:master-SNAPSHOT'
     implementation 'io.reactivex:rxjava:1.3.3'
-    implementation "com.polidea.rxandroidble2:rxandroidble:1.12.1"
+    implementation "com.polidea.rxandroidble2:rxandroidble:1.17.2"
     implementation 'com.google.guava:guava:24.1-android'
     implementation 'com.embarkmobile:zxing-android-minimal:2.0.0@aar'
     implementation 'com.embarkmobile:zxing-android-integration:2.0.0@aar'

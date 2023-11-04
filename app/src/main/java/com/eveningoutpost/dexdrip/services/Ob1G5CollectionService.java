@@ -118,6 +118,7 @@ import com.polidea.rxandroidble2.RxBleConnection;
 import com.polidea.rxandroidble2.RxBleCustomOperation;
 import com.polidea.rxandroidble2.RxBleDevice;
 import com.polidea.rxandroidble2.RxBleDeviceServices;
+import com.polidea.rxandroidble2.exceptions.BleDisconnectedException;
 import com.polidea.rxandroidble2.exceptions.BleGattCallbackTimeoutException;
 import com.polidea.rxandroidble2.exceptions.BleScanException;
 import com.polidea.rxandroidble2.internal.RxBleLog;
@@ -230,7 +231,6 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static final boolean d = false;
 
     private static final boolean allow_scan_by_mac = false;
-    private static boolean use_auto_connect = false;
     private static volatile boolean minimize_scanning = false; // set by preference
     private static volatile boolean always_scan = false;
     private static volatile boolean scan_next_run = true;
@@ -910,11 +910,11 @@ public class Ob1G5CollectionService extends G5BaseService {
             UserError.Log.d(TAG, "Always scan mode");
             changeState(SCAN);
         } else {
-            if (connectFailures > 0 || (!use_auto_connect && connectNowFailures > 0)) {
+            if (connectFailures > 0 && connectNowFailures > 0) {
                 always_scan = true;
                 UserError.Log.e(TAG, "Switching to scan always mode due to connect failures metric: " + connectFailures);
                 changeState(SCAN);
-            } else if (use_auto_connect && (connectNowFailures > 1) && (connectFailures < 0)) {
+            } else if ((connectNowFailures > 1) && (connectFailures < 0)) {
                 UserError.Log.d(TAG, "Avoiding power connect due to failure metric: " + connectNowFailures + " " + connectFailures);
                 changeState(CONNECT);
             } else {
@@ -1123,6 +1123,8 @@ public class Ob1G5CollectionService extends G5BaseService {
             automata(); // sequence logic
 
             UserError.Log.d(TAG, "Releasing service start");
+            always_scan = false;
+            checkAlwaysScanModels();
             return START_STICKY;
         } finally {
             JoH.releaseWakeLock(wl);
@@ -1338,6 +1340,22 @@ public class Ob1G5CollectionService extends G5BaseService {
         // TODO under what circumstances should we change state or do something here?
         UserError.Log.d(TAG, "Connection Disconnected/Failed: " + throwable);
 
+        if (throwable instanceof BleDisconnectedException && genericBluetoothWatchdog())
+        {
+            int status = ((BleDisconnectedException) throwable).state;
+            UserError.Log.d(TAG, "Received BleDisconnectedException, status = " + status);
+            // Bluetooth gets stuck for some devices with error 'Disconnected from MAC='XX:XX:XX:XX:XX:XX' with status 133 (GATT_ERROR)'
+            if (status == 133) {
+                if (JoH.ratelimit("BleDisconnectedException", 300)) {
+                    UserError.Log.e(TAG, "Initiating bluetooth reset due to BleDisconnectedException with status 133");
+                    JoH.niceRestartBluetooth(xdrip.getAppContext());
+                }
+                else{
+                    UserError.Log.d(TAG, "BleDisconnectedException rate limited");
+                }
+            }
+        }
+
         if (state == DISCOVER) {
             // possible encryption failure
             if (!resetBondIfAllowed(false) && android_wear) {
@@ -1351,7 +1369,7 @@ public class Ob1G5CollectionService extends G5BaseService {
             connectNowFailures++;
             lastConnectFailed = true;
 
-            if ((connectNowFailures % 12 == 7) && genericBluetoothWatchdog()) {
+            if ((connectNowFailures % 4 == 0) && genericBluetoothWatchdog()) {
                 UserError.Log.e(TAG, "Initiating bluetooth watchdog reset");
                 JoH.niceRestartBluetooth(xdrip.getAppContext());
             }
@@ -1425,6 +1443,11 @@ public class Ob1G5CollectionService extends G5BaseService {
             // TODO check connection already exists - close etc?
             if (connection_linger != null) JoH.releaseWakeLock(connection_linger);
             connection = this_connection;
+
+            if (connectNowFailures > 0 && connectFailures > 0)
+            {
+                always_scan = false;
+            }
 
             if (state == CONNECT_NOW) {
                 connectNowFailures = -3; // mark good
