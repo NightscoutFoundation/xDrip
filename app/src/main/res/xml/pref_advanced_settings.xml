@@ -1289,6 +1289,12 @@
                     android:summary="@string/bluetooth_watchdog_timer_sums"
                     android:title="@string/bluetooth_watchdog_timers" />
                 <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="bluetooth_watchdog"
+                    android:key="aggressive_bluetooth_restart"
+                    android:summary="@string/aggressive_bluetooth_restart_description"
+                    android:title="@string/aggressive_bluetooth_restart" />
+                <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="g5_bluetooth_watchdog"
                     android:summary="@string/reset_bluetooth_g5"

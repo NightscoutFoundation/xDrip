@@ -1340,18 +1340,20 @@ public class Ob1G5CollectionService extends G5BaseService {
         // TODO under what circumstances should we change state or do something here?
         UserError.Log.d(TAG, "Connection Disconnected/Failed: " + throwable);
 
-        if (throwable instanceof BleDisconnectedException && genericBluetoothWatchdog())
-        {
-            int status = ((BleDisconnectedException) throwable).state;
-            UserError.Log.d(TAG, "Received BleDisconnectedException, status = " + status);
-            // Bluetooth gets stuck for some devices with error 'Disconnected from MAC='XX:XX:XX:XX:XX:XX' with status 133 (GATT_ERROR)'
-            if (status == 133) {
-                if (JoH.ratelimit("BleDisconnectedException", 300)) {
-                    UserError.Log.e(TAG, "Initiating bluetooth reset due to BleDisconnectedException with status 133");
-                    JoH.niceRestartBluetooth(xdrip.getAppContext());
-                }
-                else{
-                    UserError.Log.d(TAG, "BleDisconnectedException rate limited");
+        boolean aggressive_bluetooth_restart = Pref.getBoolean("aggressive_bluetooth_restart", true);
+        UserError.Log.d(TAG, "aggressive_bluetooth_restart: " + aggressive_bluetooth_restart);
+        if(aggressive_bluetooth_restart == true) {
+            if (throwable instanceof BleDisconnectedException) {
+                int status = ((BleDisconnectedException) throwable).state;
+                UserError.Log.d(TAG, "Received BleDisconnectedException, status = " + status);
+                // Bluetooth gets stuck for some devices with error 'Disconnected from MAC='XX:XX:XX:XX:XX:XX' with status 133 (GATT_ERROR)'
+                if (status == 133) {
+                    if (JoH.ratelimit("BleDisconnectedException", 300)) {
+                        UserError.Log.e(TAG, "Initiating bluetooth reset due to BleDisconnectedException with status 133");
+                        JoH.niceRestartBluetooth(xdrip.getAppContext());
+                    } else {
+                        UserError.Log.d(TAG, "BleDisconnectedException rate limited");
+                    }
                 }
             }
         }
