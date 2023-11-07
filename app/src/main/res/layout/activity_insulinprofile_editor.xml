@@ -78,41 +78,42 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="94dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:layout_weight="1"
+                android:paddingTop="@dimen/activity_vertical_margin"
                 android:gravity="bottom">
 
                 <Button
-                    style="?android:attr/buttonStyleSmall"
-                    android:layout_width="wrap_content"
-                    android:layout_height="32dp"
-                    android:text="@string/cancel"
                     android:id="@+id/profileCancelbtn"
-                    android:onClick="profileCancelButton"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignTop="@+id/profileUndoBtn" />
-
-                <Button
                     style="?android:attr/buttonStyleSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/save"
-                    android:id="@+id/profileSaveBtn"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentEnd="true"
                     android:layout_alignTop="@+id/profileUndoBtn"
-                    android:onClick="profileSaveButton" />
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentBottom="true"
+                    android:onClick="profileCancelButton"
+                    android:text="@string/cancel" />
 
                 <Button
+                    android:id="@+id/profileSaveBtn"
+                    style="?android:attr/buttonStyleSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/reset"
+                    android:layout_alignTop="@+id/profileUndoBtn"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:onClick="profileSaveButton"
+                    android:text="@string/save" />
+
+                <Button
                     android:id="@+id/profileUndoBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
                     android:layout_toEndOf="@+id/profileCancelbtn"
-                    android:onClick="profileUndoButton" />
+                    android:onClick="profileUndoButton"
+                    android:text="@string/reset" />
             </RelativeLayout>
         </LinearLayout>
     </ScrollView>
