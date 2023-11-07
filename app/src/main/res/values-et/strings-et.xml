@@ -1166,6 +1166,7 @@
     <string name="overwrite_intercept_engineering_only">Korrigeeri lõikepunkti (ainult tehniline režiim!)</string>
     <string name="manual_overwrite_not_possible">Käsitsi ülekirjutamine pole võimalik!</string>
     <string name="upload_even_when_using_mobile_data">Laadi üles isegi mobiilse andmeside kasutamisel</string>
+    <string name="daily_backup_even_mobile">Igapäevane varukoopia isegi mobiilse andmeside kasutamisel</string>
     <string name="use_mobile_data">Kasuta mobiilside andmeid</string>
     <string name="summary_cloud_storage_api_download_enable">Proovi ka Nightscout\'i raviandmeid alla laadida</string>
     <string name="title_cloud_storage_api_download_enable">Lae alla raviandmed</string>

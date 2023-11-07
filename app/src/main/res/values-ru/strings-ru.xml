@@ -1164,6 +1164,7 @@
     <string name="overwrite_intercept_engineering_only">Заменить точку пересечения (инженерная функция!)</string>
     <string name="manual_overwrite_not_possible">Ручное изменение не возможно!</string>
     <string name="upload_even_when_using_mobile_data">Загружать даже при использовании мобильных данных</string>
+    <string name="daily_backup_even_mobile">Ежедневное резервное копирование даже через мобильные данные</string>
     <string name="use_mobile_data">Использовать мобильные данные</string>
     <string name="summary_cloud_storage_api_download_enable">Также пытаться загрузить данные из Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Загружать данные</string>

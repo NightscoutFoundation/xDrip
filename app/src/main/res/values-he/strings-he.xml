@@ -1148,6 +1148,7 @@
     <string name="overwrite_intercept_engineering_only">דרוס נק\' חיתוך (מהנדסים בלבד!)</string>
     <string name="manual_overwrite_not_possible">דריסה ידנית לא אפשרית!</string>
     <string name="upload_even_when_using_mobile_data">העלה גם בשימוש בנתונים סלולריים</string>
+    <string name="daily_backup_even_mobile">גבה באופן יומי, גם בזמן שימוש בנתונים ניידים</string>
     <string name="use_mobile_data">השתמש בחבילת גלישה</string>
     <string name="summary_cloud_storage_api_download_enable">נסה גם להוריד נתונים מנייטסקאוט</string>
     <string name="title_cloud_storage_api_download_enable">הורד נתונים</string>
