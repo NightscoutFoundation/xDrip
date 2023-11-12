@@ -294,14 +294,17 @@ public class Mdns {
                 locked_until = 0;
             }
 
+            private boolean isIpV4Addresses(String address) {
+                return !address.contains(":");
+            }
             @Override
             public void onServiceResolved(NsdServiceInfo serviceInfo) {
 
                 final InetAddress host = serviceInfo.getHost();
                 final String address = host.getHostAddress();
-                UserError.Log.d(TAG, serviceInfo.getServiceName() + " Resolved address = " + address);
+                UserError.Log.d(TAG, serviceInfo.getServiceName() + " Resolved address = " + address );
                 final String short_name = shortenName(serviceInfo.getServiceName().toLowerCase());
-                if (!address.contains(":") || (iplookup.get(short_name) == null) || (JoH.msSince(iplookup.get(short_name).received) > 60000)) {
+                if (isIpV4Addresses(address) && ((iplookup.get(short_name) == null) || (JoH.msSince(iplookup.get(short_name).received) > 60000))) {
                     iplookup.put(short_name, new LookUpInfo(address, JoH.tsl(), serviceInfo));
                 } else {
                     UserError.Log.d(TAG, "Skipping overwrite of " + short_name + " with " + address + " due to ipv4 priority");
