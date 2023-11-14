@@ -1840,4 +1840,12 @@
     <string name="summary_Lib2_show_sense_on_status">Switch on to show additional information in Status for Libre 2 sensor.</string>
     <string name="import_qr_code_warning">Only import settings from sources you trust!\n\nPlease confirm to import the following settings:\n\n</string>
     <string name="scan_to_load_xdrip_settings">Scan to load xDrip settings</string>
+    <string name="manage_permissions">Manage permissions</string>
+    <string name="open_health_connect_settings_to_manually_manage_permissions">Open Health Connect Settings to manually manage permissions</string>
+    <string name="send_data_to_health_connect">Send data to Health Connect</string>
+    <string name="get_data_from_health_connect">Get data from Health Connect</string>
+    <string name="requires_android_8_and_google_companion_application_or_android_14">Requires Android 8+ and Google companion application or Android 14+</string>
+    <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Send and receive data from Google Health Connect and Google Fit</string>
+    <string name="google_health_connect">Google Health Connect</string>
+    <string name="google_health_connect_needs_perms">ERROR: Health connect needs permissions! - try from settings menu again</string>
 </resources>
