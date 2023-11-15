@@ -1783,4 +1783,12 @@
     <string name="summary_Lib2_show_sense_on_status">Увімкніть, щоб показувати у Статусі додаткову інформацію про сенсор Libre 2.</string>
     <string name="import_qr_code_warning">Імпортуйте настройки лише з джерел, яким ви довіряєте!\n\nБудь ласка, підтвердіть імпорт наступних налаштувань:\n\n</string>
     <string name="scan_to_load_xdrip_settings">Скануйте для завантаження налаштувань xDrip</string>
+    <string name="manage_permissions">Керувати дозволами</string>
+    <string name="open_health_connect_settings_to_manually_manage_permissions">Відкрити налаштування Health Connect для керування дозволами</string>
+    <string name="send_data_to_health_connect">Надсилати дані до Health Connect</string>
+    <string name="get_data_from_health_connect">Отримувати дані від Health Connect</string>
+    <string name="requires_android_8_and_google_companion_application_or_android_14">Потребує Android 8 + та додаток Google companion або Android 14+</string>
+    <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Надсилати та отримувати дані з Google Health Connect і Google Fit</string>
+    <string name="google_health_connect">Google Health Connect</string>
+    <string name="google_health_connect_needs_perms">Помилка: Health Connect потребує дозволу! - перевірте його у налаштуваннях</string>
 </resources>
