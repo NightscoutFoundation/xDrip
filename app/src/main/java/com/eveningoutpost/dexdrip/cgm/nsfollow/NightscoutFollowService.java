@@ -147,7 +147,7 @@ public class NightscoutFollowService extends ForegroundService {
      */
     public static List<StatusItem> megaStatus() {
         final BgReading lastBg = BgReading.lastNoSenssor();
-        final long lag = Constants.SECOND_IN_MS * Integer.valueOf(Pref.getString("nsfollow_lag", "0")); // Wake delay selected by user
+        final long lag = Constants.SECOND_IN_MS * Pref.getStringToInt("nsfollow_lag", 0); // Wake delay selected by user
 
         String lastPollText = "n/a";
         if (lastPoll > 0) {
