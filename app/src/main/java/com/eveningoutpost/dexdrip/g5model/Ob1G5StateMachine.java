@@ -130,6 +130,7 @@ public class Ob1G5StateMachine {
     private static volatile BgReading lastGlucoseBgReading;
     private static volatile AuthRequestTxMessage lastAuthPacket;
     private static volatile boolean backup_loaded = false;
+    private static final int OLDEST_RAW = 300 * 24 * 60 * 60; // 300 days
 
     // Auth Check + Request
     @SuppressLint("CheckResult")
@@ -770,7 +771,7 @@ public class Ob1G5StateMachine {
                                 if (session_start.isFubar()) {
                                     final long tk = DexTimeKeeper.getDexTime(getTransmitterID(), tsl());
                                     if (tk > 0) {
-                                        if (FirmwareCapability.isTransmitterRawIncapable(getTransmitterID())) {// Firefly, which cannot be hard reset
+                                        if (FirmwareCapability.isTransmitterStandardFirefly(getTransmitterID())) {// Firefly, which cannot be hard reset
                                             UserError.Log.e(TAG, "Unusual session start failure");
                                         } else {
                                             DexResetHelper.offer("Unusual session start failure, is transmitter crashed? Try Hard Reset?");
@@ -1609,8 +1610,13 @@ public class Ob1G5StateMachine {
         }
 
         UserError.Log.d(TAG, "SUCCESS!! unfiltered: " + sensorRx.unfiltered + " filtered: " + sensorRx.filtered + " timestamp: " + sensorRx.timestamp + " " + JoH.qs((double) sensorRx.timestamp / 86400, 1) + " days :: (" + sensorRx.status + ")");
-        DexTimeKeeper.updateAge(getTransmitterID(), sensorRx.timestamp);
-        Ob1G5CollectionService.setLast_transmitter_timestamp(sensorRx.timestamp);
+        if (FirmwareCapability.isTransmitterModified(getTransmitterID()) && sensorRx.timestamp > OLDEST_RAW) { // Raw timestamp reported by a mod TX is incorrect until after sensor start.
+            UserError.Log.d(TAG, "Will not update age since raw timestamp is incorrect.");
+            Ob1G5CollectionService.setLast_transmitter_timestamp(0);
+        } else { // Update age, based on the raw timestamp, only if the raw timestamp is correct.
+            DexTimeKeeper.updateAge(getTransmitterID(), sensorRx.timestamp);
+            Ob1G5CollectionService.setLast_transmitter_timestamp(sensorRx.timestamp);
+        }
         if (sensorRx.unfiltered == 0) {
             UserError.Log.e(TAG, "Transmitter sent raw sensor value of 0 !! This isn't good. " + JoH.hourMinuteString());
         } else {

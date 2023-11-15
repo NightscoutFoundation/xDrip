@@ -864,19 +864,24 @@
     <string name="advanced_bluereader_settings">Nastavenia blueReader</string>
     <string name="blueReader_turnoffvalue">Hodnota v %</string>
     <string name="days">dni</string>
+    <string name="bluereaderuglystate">blueReader nefunguje správne! Bude vypnutý a vy ho zapnite (krátkym stlačením tlačítka). Potom by blueReader mal pracovať správne!</string>
     <string name="offical_msg">Oficiálna aplikácia</string>
     <string name="yes">Áno</string>
     <string name="xdrip_compatible_features">Vlastnosti xDrip+ %s</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
+    <string name="enable_local_web_server_feature">Zapnúť lokálny web server pre Garmin watchface?</string>
+    <string name="enable_local_web_server_feature_fitbit">Zapnúť lokálny web server pre Fitbit watchface?</string>
     <string name="set_data_source_to">Nastaviť zdroj dát na: %s ?</string>
     <string name="are_you_sure">Si si istý?</string>
     <string name="g4_share_receiver">G4 Share prijímač</string>
     <string name="bluetooth_wixel">Bluetooth Wixel</string>
     <string name="parakeet_wifi">Parakeet / Wifi</string>
     <string name="other">Iné</string>
+    <string name="which_software_is_the_wixel_running">Akú verziu softvéru má Wixel?</string>
     <string name="start_source_setup_wizard">Spustiť sprievodcu nastavením zdroju dát</string>
     <string name="hour_format">%s hodín</string>
+    <string name="enter_your_transmitter_id_exactly">Zadajte ID vysielača tak, ako je vytlačené</string>
     <string name="which_type_of_device">S ktorým zdrojom dát sa chceš prepojiť?</string>
     <string name="enable_local_broadcast">Povoliť lokálne vysielanie?</string>
     <string name="androidaps">AndroidAPS</string>
@@ -885,12 +890,19 @@
     <string name="use_librealarm">Použiť aplikáciu LibreAlarm ako zdroj údajov?</string>
     <string name="noise_blocking">Blokovanie šumu</string>
     <string name="level_at_which_noisy_data_should_not_be_broadcast">Úroveň pri ktorej zašumené údaje nebudú vysielané, pretože môžu zmiasť prijímajúce aplikácie</string>
+    <string name="low_parakeet_battery">Nízka úroveň batérie Parkeet-u</string>
     <string name="glucose_units_mmol_or_mgdl">Jednotka merania glukózy (mmol/L alebo mg/dL)</string>
     <string name="is_your_typical_glucose_value">Vyber hodnotu, ktorá sa podobá typickej hodnote tvojej glykémie: 5.5 (mmol/L) alebo 100 (mg/dL)</string>
     <string name="settings_updated_to_mmol">Nastavenia zmenené na mmol/L</string>
+    <string name="channel_name">Hlavná služba</string>
+    <string name="code_accepted">Kód akceptovaný</string>
+    <string name="invalid_or_unsupported_code">Nesprávny alebo nepodporovaný kód!</string>
     <string name="g6_sensor_code">Kód senzoru G6</string>
     <string name="please_enter_printed_calibration_code">Prosím vložte vytlačený číselný kalibračný kód, 4 číslice, napr: 5678</string>
     <string name="enable_update_checks">Povoliť kontrolu aktualizácií?</string>
+    <string name="you_can_easily_roll_back_dialog_msg">S xDrip sa jednoducho viete vrátiť k predchádzajúcej verzii spustením pôvodného APK súboru vo vašich stiahnutých súboroch, ak sa vám nepáči terajšia verzia.\n\nChcete zapnúť automatickú kontrolu aktualizácií?</string>
+    <string name="you_have_update_checks_off">Automatická kontrola aktualizácií je vypnutá!\n\nV xDrip+ pridávame nové funkcie a opravujeme chyby pravidelne.\n\nKaždých 60 dní vás zažiadame o zapnutie automatických aktualizácií.</string>
+    <string name="update_checking_enabled">Kontola aktualizácií je zapnutá!</string>
     <string name="cancel_alarm">Zrušiť výstrahu?</string>
     <string name="please_confirm_to_cancel_the_alert">Naozaj zrušiť výstrahu?</string>
     <string name="yes_cancel">Áno, zrušiť</string>
@@ -908,6 +920,7 @@
     <string name="emergency_message_near_format_string">%1$s blízko %2$s %3$s %4$s %5$s</string>
     <string name="choose_when_to_send_messages">Vyber kedy poslať správu:</string>
     <string name="low_alert_not_acknowledged">Výstraha nízkej glykémie nie je potvrdená</string>
+    <string name="lowest_alert_not_acknowledged">Výstraha prvej spodnej glykémie nie je potvrdená</string>
     <string name="high_alert_not_acknowledged">Výstraha vysokej glykémie nie je potvrdená</string>
     <string name="device_inactivity">Neaktivita zariadenia</string>
     <string name="test_message_sending">Test odoslania správy</string>
@@ -927,6 +940,7 @@
     <string name="summary_Shared_Secret_for_open_web_service">Zdieľané heslo pre otvorenú web službu (má byť zhodné s Nightscout API heslom)</string>
     <string name="summary_Display_status_from_other_apps_like_AndroidAPS">Zobraziť stav z iných aplikácií ako AndroidAPS</string>
     <string name="title_External_Status">Externý stav</string>
+    <string name="title_Pump_Status">Stav pumpy</string>
     <string name="title_Carb_Insulin_Ratio">Sacharidovo-inzulínový pomer</string>
     <string name="summary_Ask_for_a_second_optional_initial_calibration_blood_test">Požiadavka na druhú voliteľnú kalibráciu z kapilárnej krvi</string>
     <string name="title_Double_Calibrations">Dvojité kalibrácie</string>
@@ -1069,6 +1083,16 @@ Je nutné zakázať v prípade, že chcete používať xdrip cifreník. (Požado
     <string name="title_nsfollow_url">URL pre sledovanie Nightscout</string>
     <string name="summary_nsfollow_download_treatments">Ako nasledovník získavaj dáta aj z Nightscout</string>
     <string name="title_nsfollow_download_treatments">Stiahnuť ošetrenia</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
     <string name="title_ob1_options">NASTAVENIA OB1 G5/G6 ZBERAČA DÁT</string>
     <string name="summary_use_ob1_g5_collector_service">Kompletne prepísaný kód, mal by pracovať na Android 4.4 - 9, podporuje natívny mód.</string>
     <string name="title_use_ob1_g5_collector_service">Použi OB1 zberač dát</string>

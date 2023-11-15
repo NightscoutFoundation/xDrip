@@ -1151,6 +1151,7 @@
     <string name="overwrite_intercept_engineering_only">Metszéspont felülírása (csak fejlesztői módban!)</string>
     <string name="manual_overwrite_not_possible">Nem lehet kézileg felülírni!</string>
     <string name="upload_even_when_using_mobile_data">Feltöltés mobil adatforgalmon át is</string>
+    <string name="daily_backup_even_mobile">Napi mentés mobil hálózaton át is</string>
     <string name="use_mobile_data">Mobil adatforgalom használata</string>
     <string name="summary_cloud_storage_api_download_enable">Próbálja meg letölteni is az adatokat a Nightscout-ból</string>
     <string name="title_cloud_storage_api_download_enable">Adatok letöltése</string>
@@ -1269,22 +1270,30 @@
     <string name="title_nsfollow_url">Nightscout követő URL</string>
     <string name="summary_nsfollow_download_treatments">A kezeléseket is töltse le Nightscout követőként</string>
     <string name="title_nsfollow_download_treatments">Kezelések letöltése</string>
-    <string name="title_clfollow_user">CareLink felhasználónév</string>
-    <string name="summary_clfollow_user">Felhasználónév CareLink belépéshez</string>
-    <string name="title_clfollow_pass">CareLink jelszó</string>
-    <string name="summary_clfollow_pass">CareLink bejelentkezési jelszó</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
     <string name="title_clfollow_country">CareLink ország</string>
     <string name="summary_clfollow_country">Válassza ki az országát</string>
-    <string name="title_clfollow_patient">Felhasználónév CareLink belépéshez</string>
-    <string name="summary_clfollow_patient">Felhasználónév CareLink belépéshez (megadható)</string>
-    <string name="title_clfollow_lang">CareLink nyelve</string>
-    <string name="summary_clfollow_lang">CareLink nyelvének kiválasztása</string>
+    <string name="title_clfollow_patient">Követett beteg felhasználóneve</string>
+    <string name="summary_clfollow_patient">Követett betegfiók felhasználóneve (opcionális)</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
+    <string name="title_clfollow_login">Bejelentkezés</string>
+    <string name="summary_clfollow_login">Bejelentkezés böngészőben</string>
     <string name="title_clfollow_grace_period">Türelmi idő</string>
-    <string name="summary_clfollow_grace_period">Maximális várakozási idő adatokra (s)</string>
+    <string name="summary_clfollow_grace_period">Várakozási idő adatfeltöltésre (s)</string>
+    <string name="title_clfollow_missed_poll_interval">Várakozási idő adatkimaradnásnál</string>
+    <string name="summary_clfollow_missed_poll_interval">Adatlekérdezés-ismétlések közötti várakozási idő adatkimaradásnál</string>
     <string name="title_clfollow_download_finger_bgs">VC mérés vérből</string>
     <string name="summary_clfollow_download_finger_bgs">Ujjbegy VC értékek letöltése CareLink-ből</string>
     <string name="title_clfollow_download_boluses">Bólusok</string>
-    <string name="summary_clfollow_download_boluses">Bólus adagok letöltése CareLink-ből</string>
+    <string name="summary_clfollow_download_boluses">Bólus adatok letöltése CareLink-ből</string>
     <string name="title_clfollow_download_meals">Étkezések</string>
     <string name="summary_clfollow_download_meals">Étkezés adatok letöltése CareLink-ből</string>
     <string name="title_clfollow_download_notifications">Értesítések</string>
@@ -1611,6 +1620,14 @@
     <string name="message_variant">Az xDrip+ varánsok lehetővé teszik az alkalmazás több példányban történő telepítését. Akár haladó használatra, akár azért, hogy a kísérleti és az éles rendszer egyszerre legyen telepítve.\n\n A variánsoknál előfordulhat, hogy néhány dolog nem működik megfelelően, mert az egyik vagy másik kizárólagos hozzáféréssel rendelkezik, például a bluetooth párosítás. A variánsokkal kapcsolatos visszajelzéseket és hibajelzéseket szívesen fogadjuk!</string>
     <string name="expires_unknown">Lejárat: ???</string>
     <string name="sensor_expired">LEJÁRT!</string>
+    <plurals name="sensor_expires">
+        <item quantity="one">Lejárat: %sd</item>
+        <item quantity="other">Lejárat: %sd</item>
+    </plurals>
+    <plurals name="sensor_age">
+        <item quantity="one">Kor: %sd</item>
+        <item quantity="other">Kor: %sd</item>
+    </plurals>
     <string name="external_status_strings_eg_tbr">Külső alkalmazásokból származó adatok (pl. AAPS-ből TBR)</string>
     <string name="accept_external_status">Adatfogadás külső alkalmazásokból</string>
     <string name="old">Régi</string>
@@ -1621,6 +1638,7 @@
     <string name="zero_value">Nulla érték</string>
     <string name="adjust_dose">Adagolás beállítása</string>
     <string name="Dose">Adag</string>
+    <string name="choose_type">Válasszon típust</string>
     <string name="invalid_serial">Érvénytelen szériaszám</string>
     <string name="allow_do_not_disturb_text">Adjon Ne zavarjanak-engedélyt az xDrip-nek a rendszerbeállításokban a következő oldalon, hogy akkor is tudjon figyelmeztetni az xDrip, ha az Androidban a Ne zavarjanak funkció aktív</string>
     <string name="graphical_editor_for_pump_basal">Pumpák bázisinzulin-profiljának szerkesztése</string>
@@ -1664,6 +1682,10 @@
     <string name="backing_up">Biztonsági mentés</string>
     <string name="did_backup_ok">Biztonsági mentés kész</string>
     <string name="backup_failed">Biztonsági mentés meghiúsult</string>
+    <string name="automatically_manage_backup">Automatikus biztonsági mentés</string>
+    <string name="use_alternate_file">Alternatív File használata</string>
+    <string name="choose_backup_file">Biztonsági mentés fájl választása</string>
+    <string name="select_alternate_file">Alternatví file kiválasztása</string>
     <string name="change_account">Fiókváltás</string>
     <string name="keep_same_account">Fiók megtartása</string>
     <string name="change_google_account">Google-fiók váltása</string>
@@ -1674,7 +1696,13 @@
     <string name="checking_file">Fájl ellenőrzése</string>
     <string name="failed_to_read_file">Fájl beolvasása sikertelen</string>
     <string name="permission_problem_retry">Alkalmazásengedély probléma - újrapróbálkozás</string>
+    <string name="alternate_file_selected">Alternatív file kiválasztva</string>
+    <string name="temporary_google_drive_file">Ideiglenes Google Drive file</string>
+    <string name="no_file_was_chosen">Nincs fájl kiválasztva</string>
     <string name="could_not_sign_in">Bejelentkezés sikertelen</string>
+    <string name="problem_with_file_selection">Probléma a file kiválasztással</string>
+    <string name="selected_file_location">A kiválasztott fájl helye</string>
+    <string name="please_reselect_backup_file">Kérem válassza ki újra a biztonsági mentést</string>
     <string name="ready">Kész</string>
     <string name="uploading_to_cloud">Feltöltés a felhőbe</string>
     <string name="error_with_local_backup">Sikertelen helyi biztonsági mentés</string>
@@ -1686,6 +1714,15 @@
     <string name="please_grant_permission">Alkalmazásengedély adása</string>
     <string name="drive_permission_blurb">Az automatikus biztonsági mentéshez az xDrip-nek engedélyre van szüksége a Google Drive használatához.\n\nAz xDrip fejlesztői nem férhetnek hozzá a fájljaihoz, és nem láthatják a személyes adatait.</string>
     <string name="cloud_backup">Biztonsági mentés felhőbe</string>
+    <string name="restoring_backup_will_erase_warning">A visszaállítás lecseréli a készüléken levő beállításokat a mentettekre.\n\nBiztos, hogy ezt szeretné?</string>
+    <string name="this_backup_looks_like_came_from_different_format_string">Ez a mentés egy másik készülékről való:\n%s\nBiztos, hogy a visszaállítását választja?</string>
+    <string name="megabyte_format_string">%.1f MB</string>
+    <string name="manual_selection_google_drive_file_warning">Kiválasztott egy fájlt a Google Drive-ról, de ezt nem kezeli automatikusan az xDrip, így csak manuális biztonsági mentéshez és visszaállításhoz használható.\n\nNem történik automatikus biztonsági mentés ezzel a fájllal.\n\nFolytatja?</string>
+    <string name="alternate_file_selected_warning">Egy alternatív fájlt választott. Ez általában csak egy helyileg tárolt biztonsági másolatból történő visszaállításra való.\n\nNem történik automatikus biztonsági mentés ezzel a fájllal.\n\nFolytatja?</string>
+    <string name="backup_file_security_error_advice">A biztonsági másolat fájl biztonsági hibát jelez. Általában ez azt jelenti, hogy újra ki kell választania, hogy továbbra is engedélyezze az xDrip hozzáférést.</string>
+    <string name="invalid_time">Érvénytelen idő</string>
+    <string name="none">semmi</string>
+    <string name="format_string_ago">%s ezelőtt</string>
     <string name="use_background_scans">Szkennelés háttérben is</string>
     <string name="android_8_background_scanning">Android 8-astól lehetséges a szkennelés háttérben is</string>
     <string name="title_yRange">Y-tengely beállításai</string>

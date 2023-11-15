@@ -177,6 +177,7 @@
     <string name="libre_last_x_minutes_graph">Libre-Kurve der letzten %d Minuten</string>
     <string name="share_config_via_qr_code">Einstellungen per QR-Code senden</string>
     <string name="check_for_updated_version">Auf Aktualisierung prüfen</string>
+    <string name="current_version_is_up_to_date">Keine neue Version im gewählten Update-Kanal</string>
     <string name="send_feedback_to_developer">Feedback an Entwickler senden</string>
     <string name="home_screen">Startbildschirm</string>
     <string name="event_logs">Ereignisprotokolle</string>
@@ -1165,6 +1166,7 @@
     <string name="overwrite_intercept_engineering_only">Überschreibe Achsenabschnitt (nur Entwicklermodus!)</string>
     <string name="manual_overwrite_not_possible">Manuelles Überschreiben nicht möglich!</string>
     <string name="upload_even_when_using_mobile_data">Auch hochladen wenn mobile Daten verwendet werden</string>
+    <string name="daily_backup_even_mobile">Tägliche Sicherung auch über Mobildaten</string>
     <string name="use_mobile_data">Mobile Daten verwenden</string>
     <string name="summary_cloud_storage_api_download_enable">Versuche Behandlungen von Nightscout herunterzuladen</string>
     <string name="title_cloud_storage_api_download_enable">Behandlungen herunterladen</string>
@@ -1207,7 +1209,7 @@
     <string name="title_enable_iob_in_api_endpoint">IoB-Reporting in API aktivieren</string>
     <string name="summary_enable_iob_in_api_endpoint">IoB-Werteberichte im Web Service API-Endpunkt aktivieren (von einigen Smartwatches verwendet)</string>
     <string name="title_fetch_iob_from_companion_app">IoB von der Companion-App holen</string>
-    <string name="summary_fetch_iob_from_companion_app">IoB von der Companion App auf demselben Gerät abholen (z.B. Omnipod 5 App)</string>
+    <string name="summary_fetch_iob_from_companion_app">IoB von der Companion-App auf demselben Gerät abholen (z.B. Omnipod 5 App)</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Daten mit MiBand Fitness Bändern synchronisieren</string>
     <string name="title_miband_enable">MiBand verwenden</string>
@@ -1289,16 +1291,22 @@
     <string name="title_nsfollow_url">Nightscout Follower URL</string>
     <string name="summary_nsfollow_download_treatments">Lade auch Behandlungen von Nightscout als Follower herunter</string>
     <string name="title_nsfollow_download_treatments">Behandlungen herunterladen</string>
-    <string name="title_clfollow_user">CareLink Benutzername</string>
-    <string name="summary_clfollow_user">CareLink Login-Benutzername</string>
-    <string name="title_clfollow_pass">CareLink Passwort</string>
-    <string name="summary_clfollow_pass">CareLink Login-Passwort</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
     <string name="title_clfollow_country">CareLink Land</string>
     <string name="summary_clfollow_country">Wähle Dein CareLink Land aus.</string>
     <string name="title_clfollow_patient">CareLink Patienten-Benutzername</string>
     <string name="summary_clfollow_patient">CareLink Patienten-Benutzername (optional)</string>
-    <string name="title_clfollow_lang">CareLink Sprache</string>
-    <string name="summary_clfollow_lang">CareLink Sprachcode</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
+    <string name="title_clfollow_login">CareLink Login</string>
+    <string name="summary_clfollow_login">Mit Browser bei CareLink anmelden</string>
     <string name="title_clfollow_grace_period">Schonfrist</string>
     <string name="summary_clfollow_grace_period">Nachfrist für Datenabfrage in Sekunden</string>
     <string name="title_clfollow_missed_poll_interval">Abrufintervall für verpasste Daten</string>
@@ -1774,7 +1782,7 @@
     <string name="summary_ymin">Wähle yMin, wenn es keine kleineren Werte gibt.</string>
     <string name="summary_ymax">Wähle yMax, wenn es keine größeren Werte gibt.</string>
     <string name="wait_to_connect">Einstellungen überprüfen und auf Verbindung warten</string>
-    <string name="summary_sens_expiry_notify">Benachrichtigen, wenn Sensor kurz vor Ablauf</string>
+    <string name="summary_sens_expiry_notify">Benachrichtigen, wenn Sensor bald abläuft</string>
     <string name="title_sens_expiry_notify">Sensor-Ablauf</string>
     <string name="close">Schließen</string>
     <string name="title_advanced_settings_4_Lib2">Erweiterte Einstellungen für Libre 2</string>

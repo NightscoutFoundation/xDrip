@@ -24,5 +24,15 @@
     <string name="stop_sensor">सेंसर बंद करें</string>
     <string name="bluetooth_scan">ब्लूटूथ स्कैन</string>
     <!-- trend arrow for speak -->
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
     <string name="enable_streaming_dialog_dont_ask_again">फिर से मत पूछना</string>
 </resources>

@@ -177,6 +177,7 @@
     <string name="libre_last_x_minutes_graph">Libre viimase %d minuti graafik</string>
     <string name="share_config_via_qr_code">Jaga seadeid QR koodiga</string>
     <string name="check_for_updated_version">Otsi uuendatud versiooni</string>
+    <string name="current_version_is_up_to_date">Valitud kanalis ei ole värskendust</string>
     <string name="send_feedback_to_developer">Saada arendajale tagasiside</string>
     <string name="home_screen">Avakuva</string>
     <string name="event_logs">Sündmuste logid</string>
@@ -1165,6 +1166,7 @@
     <string name="overwrite_intercept_engineering_only">Korrigeeri lõikepunkti (ainult tehniline režiim!)</string>
     <string name="manual_overwrite_not_possible">Käsitsi ülekirjutamine pole võimalik!</string>
     <string name="upload_even_when_using_mobile_data">Laadi üles isegi mobiilse andmeside kasutamisel</string>
+    <string name="daily_backup_even_mobile">Igapäevane varukoopia isegi mobiilse andmeside kasutamisel</string>
     <string name="use_mobile_data">Kasuta mobiilside andmeid</string>
     <string name="summary_cloud_storage_api_download_enable">Proovi ka Nightscout\'i raviandmeid alla laadida</string>
     <string name="title_cloud_storage_api_download_enable">Lae alla raviandmed</string>
@@ -1289,16 +1291,22 @@
     <string name="title_nsfollow_url">Nightscout jälgimise URL</string>
     <string name="summary_nsfollow_download_treatments">Laadi jälgijana alla ka Nightscout\'i raviandmed</string>
     <string name="title_nsfollow_download_treatments">Laad alla raviandmed</string>
-    <string name="title_clfollow_user">CareLink kasutajanimi</string>
-    <string name="summary_clfollow_user">CareLink sisselogimise kasutajanimi</string>
-    <string name="title_clfollow_pass">CareLink parool</string>
-    <string name="summary_clfollow_pass">CareLink sisselogimise parool</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
     <string name="title_clfollow_country">CareLink riik</string>
     <string name="summary_clfollow_country">Vali enda CareLink riik.</string>
     <string name="title_clfollow_patient">CareLink patsiendi kasutajanimi</string>
     <string name="summary_clfollow_patient">CareLink patsiendi kasutajanimi (vabalt valitav)</string>
-    <string name="title_clfollow_lang">CareLink keel</string>
-    <string name="summary_clfollow_lang">CareLink keele kood</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
+    <string name="title_clfollow_login">Logi sisse</string>
+    <string name="summary_clfollow_login">Logi sisse brauseriga</string>
     <string name="title_clfollow_grace_period">Ooteperiood</string>
     <string name="summary_clfollow_grace_period">Andmepäringu ooteperiood sekundites</string>
     <string name="title_clfollow_missed_poll_interval">Puuduvate andmete päringute intervall</string>

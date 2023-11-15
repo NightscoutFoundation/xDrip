@@ -302,10 +302,9 @@
                     android:title="Don't upload treatments" />
                 <CheckBoxPreference
                     android:defaultValue="false"
-                    android:dependency="engineering_mode"
                     android:key="tidepool_new_auth"
-                    android:summary="Test using 2023 auth method. Only for developers"
-                    android:title="Debug Option" />
+                    android:summary="2023 openid authentication method."
+                    android:title="Use new Auth" />
 
             </PreferenceScreen>
 

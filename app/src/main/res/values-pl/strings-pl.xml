@@ -177,6 +177,7 @@
     <string name="libre_last_x_minutes_graph">Wykres ostatnich %d minut z Libre</string>
     <string name="share_config_via_qr_code">Udostepnij konfiguracje poprzez kod QR</string>
     <string name="check_for_updated_version">Sprawdź czy jest nowa wersja</string>
+    <string name="current_version_is_up_to_date">Brak aktualizacji dla wybranego kanału</string>
     <string name="send_feedback_to_developer">Prześlij uwagi do programisty</string>
     <string name="home_screen">Ekran główny</string>
     <string name="event_logs">Dzienniki zdarzeń</string>
@@ -977,6 +978,7 @@
     <string name="emergency_message_near_format_string">%1$s w pobliżu %2$s %3$s %4$s %5$s</string>
     <string name="choose_when_to_send_messages">Wybierz kiedy wysyłać wiadomości:</string>
     <string name="low_alert_not_acknowledged">Alarm o niskim poziomie nie został potwierdzony</string>
+    <string name="lowest_alert_not_acknowledged">Alarm o niskim poziomie nie został potwierdzony</string>
     <string name="high_alert_not_acknowledged">Alarm o wysokim poziomie nie został potwierdzony</string>
     <string name="device_inactivity">Brak aktywności urządzenia</string>
     <string name="test_message_sending">Wysyłanie wiadomości testowej</string>
@@ -1164,6 +1166,7 @@
     <string name="overwrite_intercept_engineering_only">Nadpisz parametr odciętej (tylko w trybie inżynieryjnym)</string>
     <string name="manual_overwrite_not_possible">Ręczne nadpisanie nie jest możliwe!</string>
     <string name="upload_even_when_using_mobile_data">Prześlij nawet podczas korzystania z danych mobilnych</string>
+    <string name="daily_backup_even_mobile">Codzienna kopia zapasowa nawet dla danych mobilnych</string>
     <string name="use_mobile_data">Użyj transmisji danych</string>
     <string name="summary_cloud_storage_api_download_enable">Spróbuj również pobrać zabiegi z Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Pobierz zabiegi</string>
@@ -1204,6 +1207,8 @@
     <string name="title_broadcast_service_api">Nadawaj Service API</string>
     <string name="summary_broadcast_service_api">Umożliwia komunikację xDrip z aplikacjami innych firm poprzez użycie nowego API</string>
     <string name="title_enable_iob_in_api_endpoint">Włącz raportowanie IoB w API</string>
+    <string name="title_fetch_iob_from_companion_app">Pobierz IoB z aplikacji towarzyszącej</string>
+    <string name="summary_fetch_iob_from_companion_app">Pobierz wartość IoB z aplikacji towarzyszącej działającej na tym samym urządzeniu, np. Omnipod 5 App</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Synchronizuj dane z opaskami MiBand</string>
     <string name="title_miband_enable">Użyj opaski MiBand</string>
@@ -1285,18 +1290,25 @@
     <string name="title_nsfollow_url">Adres URL do obserwowania Nightscout</string>
     <string name="summary_nsfollow_download_treatments">Pobierz również zabiegi z Nightscout jako obserwator</string>
     <string name="title_nsfollow_download_treatments">Pobieraj zabiegi</string>
-    <string name="title_clfollow_user">Nazwa użytkownika CareLink</string>
-    <string name="summary_clfollow_user">Login do CareLink</string>
-    <string name="title_clfollow_pass">Hasło CareLink</string>
-    <string name="summary_clfollow_pass">Hasło logowania do CareLink</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
     <string name="title_clfollow_country">Kraj CareLink</string>
     <string name="summary_clfollow_country">Wybierz swój kraj CareLink.</string>
     <string name="title_clfollow_patient">Nazwa użytkownika pacjenta usługi CareLink</string>
     <string name="summary_clfollow_patient">Nazwa użytkownika pacjenta CareLink (opcjonalnie)</string>
-    <string name="title_clfollow_lang">Język CareLink</string>
-    <string name="summary_clfollow_lang">Kod języka CareLink</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
+    <string name="title_clfollow_login">Zaloguj się</string>
+    <string name="summary_clfollow_login">Zaloguj się za pomocą przeglądarki</string>
     <string name="title_clfollow_grace_period">Okres karencji</string>
     <string name="summary_clfollow_grace_period">Okres karencji dla żądania danych w sekundach</string>
+    <string name="title_clfollow_missed_poll_interval">Interwał ankiet nieodebranych danych</string>
     <string name="title_clfollow_download_finger_bgs">Poziom cukru z palca</string>
     <string name="title_clfollow_download_boluses">Bolusy</string>
     <string name="summary_clfollow_download_boluses">Pobierz bolusy z CareLink</string>

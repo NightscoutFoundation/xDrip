@@ -177,6 +177,7 @@
     <string name="libre_last_x_minutes_graph">Libre laatste %d minuten grafiek</string>
     <string name="share_config_via_qr_code">Deel configuratie via QR-code</string>
     <string name="check_for_updated_version">Controleer op bijgewerkte versie</string>
+    <string name="current_version_is_up_to_date">Geen update in het geselecteerde kanaal</string>
     <string name="send_feedback_to_developer">Stuur feedback naar de ontwikkelaar</string>
     <string name="home_screen">Thuisscherm</string>
     <string name="event_logs">Gebeurtenislogboeken</string>
@@ -304,6 +305,7 @@
     <string name="high_glucose_values">Hoge glucosewaarden</string>
     <string name="in_range_glucose_values">In-range glucosewaarden</string>
     <string name="default_color_selected">Standaard kleur geselecteerd</string>
+    <string name="color_bg_values">Kleuren van de BG-lezing en Trendpijl</string>
     <string name="xdrip_plus_extra_settings">xDrip+ extra instellingen</string>
     <string name="example_chart">Voorbeeld Grafiek</string>
     <string name="treatments_prediction_curves">Behandelingen / Voorspelling Curves</string>
@@ -910,8 +912,10 @@
     <string name="bluereader_position">controleer de positie van blueReader op de sensor, aangezien deze niet kon lezen!</string>
     <string name="bluereaderuglystate">De blueReader is in een lelijke staat gevonden! Het wordt nu uitgeschakeld en u zet het weer aan (korte druk op de knop). Daarna zou de blueReader moeten werken zoals verwacht!</string>
     <string name="offical_msg">De officiële app</string>
+    <string name="aggressive_power_manager">Uw apparaat heeft een agressieve stroombeheerapp. Meestal toegankelijk via systeeminstellingen. Zorg ervoor dat xDrip is uitgesloten van achtergrondbeperkingen.</string>
     <string name="use_conflict_msg">kan ook proberen om toegang te krijgen tot het zenderapparaat en dit kan problemen veroorzaken met beide apps</string>
     <string name="use_confict_msg_glimp">U kunt Glimp instellingen aanpassen: opties -&gt; apparaten -&gt; deselecteer Bluetooth optie</string>
+    <string name="eng_mode_is_on">Engineering mode is ingeschakeld. Schakel het uit, tenzij je zeker weet dat je het nodig hebt, omdat het onverwacht gedrag kan veroorzaken.</string>
     <string name="yes">Ja</string>
     <string name="xdrip_compatible_features">xDrip+ %s functies</string>
     <string name="garmin">Garmin</string>
@@ -973,6 +977,7 @@
     <string name="emergency_message_near_format_string">%1$s in de buurt van %2$s %3$s %4$s %5$s</string>
     <string name="choose_when_to_send_messages">Kies wanneer u berichten wilt verzenden:</string>
     <string name="low_alert_not_acknowledged">Lage waarschuwing niet herkend</string>
+    <string name="lowest_alert_not_acknowledged">Lage waarschuwing niet herkend</string>
     <string name="high_alert_not_acknowledged">Hoge waarschuwing niet herkend</string>
     <string name="device_inactivity">Inactiviteit van het apparaat</string>
     <string name="test_message_sending">Testbericht verzenden</string>
@@ -1277,6 +1282,16 @@
     <string name="title_nsfollow_url">Nightscout Volg URL</string>
     <string name="summary_nsfollow_download_treatments">Download ook behandelingen van Nightscout als volgeling</string>
     <string name="title_nsfollow_download_treatments">Download behandelingen</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
     <string name="title_ob1_options">OB1 G5 / G6 verzamelaar-instellingen</string>
     <string name="summary_use_ob1_g5_collector_service">Volledig opnieuw schrijven, zou moeten werken op Android 4.4-9, ondersteunt native modus en meer</string>
     <string name="title_use_ob1_g5_collector_service">Gebruik de OB1 verzamelaar</string>

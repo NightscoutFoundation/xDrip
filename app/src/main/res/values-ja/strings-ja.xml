@@ -177,6 +177,7 @@
     <string name="libre_last_x_minutes_graph">リブレの最後の %d 分グラフ</string>
     <string name="share_config_via_qr_code">QRコードで設定を共有する</string>
     <string name="check_for_updated_version">最新バージョンを確認する</string>
+    <string name="current_version_is_up_to_date">選択したチャンネルのアップデートがありません</string>
     <string name="send_feedback_to_developer">開発者にフィードバックを送信</string>
     <string name="home_screen">ホーム画面</string>
     <string name="event_logs">イベントログ</string>
@@ -366,12 +367,25 @@
     <string name="unit_days">日\"</string>
     <string name="unit_weeks">週\"</string>
     <string name="no_data">データがありません。</string>
+    <string name="daily_backup_even_mobile">モバイルデータでも毎日バックアップが可能。</string>
     <string name="title_tidepool">Tidepool</string>
     <string name="summary_broadcast_service_api">新しいAPIを使用して、サードパーティのアプリケーションとxDrip通信を有効にします。</string>
     <string name="title_features">機能</string>
     <string name="title_screens">画面</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
     <string name="title_clfollow_patient">CareLink ™のユーザー名</string>
     <string name="summary_clfollow_patient">CareLink ™のユーザー名 (オプション)</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
+    <string name="title_clfollow_login">ログイン</string>
+    <string name="summary_clfollow_login">ブラウザでログインする</string>
     <string name="title_color_smb_icon">SMBアイコン</string>
     <string name="title_color_smb_line">SMBライン</string>
     <string name="title_pick_numberwall_start">オン</string>

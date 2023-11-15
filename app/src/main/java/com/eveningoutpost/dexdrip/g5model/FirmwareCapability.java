@@ -19,7 +19,7 @@ public class FirmwareCapability {
     private static final ImmutableSet<String> KNOWN_G6_REV2_RAW_FIRMWARES = ImmutableSet.of("2.18.2.67");
     private static final ImmutableSet<String> KNOWN_G6_PLUS_FIRMWARES = ImmutableSet.of("2.4.2.88");
     private static final ImmutableSet<String> KNOWN_ONE_FIRMWARES = ImmutableSet.of("30.192.103.34");
-    private static final ImmutableSet<String> KNOWN_ALT_FIRMWARES = ImmutableSet.of("29.192.104.59", "32.192.104.82", "32.192.104.109");
+    private static final ImmutableSet<String> KNOWN_ALT_FIRMWARES = ImmutableSet.of("29.192.104.59", "32.192.104.82", "32.192.104.109", "32.192.105.64");
     private static final ImmutableSet<String> KNOWN_TIME_TRAVEL_TESTED = ImmutableSet.of("1.6.5.25");
 
     // new G6 firmware versions will need to be added here / above
@@ -87,6 +87,13 @@ public class FirmwareCapability {
         val vr1 = (VersionRequest1RxMessage) getFirmwareXDetails(tx_id, 1);
         if (vr1 != null) {
             return vr1.max_runtime_days >= 180;
+        }
+        return false;
+    }
+
+    public static boolean isTransmitterStandardFirefly(final String tx_id) { // Firefly that has not been modified
+        if (!isTransmitterModified(tx_id) && isTransmitterRawIncapable(tx_id)) {
+            return true;
         }
         return false;
     }

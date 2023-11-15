@@ -177,6 +177,7 @@
     <string name="libre_last_x_minutes_graph">График Libre за последние(-юю) %d мин.</string>
     <string name="share_config_via_qr_code">Поделиться настройками через QR-код</string>
     <string name="check_for_updated_version">Проверить обновления</string>
+    <string name="current_version_is_up_to_date">Нет обновлений в выбранном канале</string>
     <string name="send_feedback_to_developer">Отправить отзыв разработчику</string>
     <string name="home_screen">Домашний экран</string>
     <string name="event_logs">Журнал событий</string>
@@ -1163,6 +1164,7 @@
     <string name="overwrite_intercept_engineering_only">Заменить точку пересечения (инженерная функция!)</string>
     <string name="manual_overwrite_not_possible">Ручное изменение не возможно!</string>
     <string name="upload_even_when_using_mobile_data">Загружать даже при использовании мобильных данных</string>
+    <string name="daily_backup_even_mobile">Ежедневное резервное копирование даже через мобильные данные</string>
     <string name="use_mobile_data">Использовать мобильные данные</string>
     <string name="summary_cloud_storage_api_download_enable">Также пытаться загрузить данные из Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Загружать данные</string>
@@ -1282,14 +1284,20 @@
     <string name="title_nsfollow_url">URL подписки Nightscout</string>
     <string name="summary_nsfollow_download_treatments">Скачивать введённые пользователем значения из Nightscout для \'фолловеров\'</string>
     <string name="title_nsfollow_download_treatments">Скачивать пользовательские значения</string>
-    <string name="title_clfollow_user">Имя пользователя CareLink</string>
-    <string name="summary_clfollow_user">Имя пользователя CareLink</string>
-    <string name="title_clfollow_pass">Пароль CareLink</string>
-    <string name="summary_clfollow_pass">Пароль CareLink</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
     <string name="title_clfollow_country">Страна CareLink</string>
     <string name="summary_clfollow_country">Выберите вашу страну CareLink.</string>
-    <string name="title_clfollow_lang">Язык CareLink</string>
-    <string name="summary_clfollow_lang">Код языка CareLink</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
+    <string name="title_clfollow_login">Вход</string>
+    <string name="summary_clfollow_login">Войти в браузере</string>
     <string name="title_clfollow_grace_period">Пробный период</string>
     <string name="summary_clfollow_grace_period">Пробный период для запросов в секундах</string>
     <string name="title_clfollow_missed_poll_interval">Интервал опроса пропущенных данных</string>

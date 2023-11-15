@@ -177,6 +177,7 @@
     <string name="libre_last_x_minutes_graph">Gráfica últimos %d minutos del Libre</string>
     <string name="share_config_via_qr_code">Compartir ajustes a través de código QR</string>
     <string name="check_for_updated_version">Comprobar actualizaciones</string>
+    <string name="current_version_is_up_to_date">No hay actualizaciones en el canal seleccionado</string>
     <string name="send_feedback_to_developer">Enviar comentarios al desarrollador</string>
     <string name="home_screen">Pantalla de inicio</string>
     <string name="event_logs">Registro de Eventos</string>
@@ -1165,6 +1166,7 @@
     <string name="overwrite_intercept_engineering_only">Sobrescribir Intercepción (¡sólo ingeniería!)</string>
     <string name="manual_overwrite_not_possible">¡No se puede sobrescribir manualmente!</string>
     <string name="upload_even_when_using_mobile_data">Subir incluso cuando se utilicen datos móviles</string>
+    <string name="daily_backup_even_mobile">Copia de seguridad diaria incluso en datos móviles</string>
     <string name="use_mobile_data">Usar datos móviles</string>
     <string name="summary_cloud_storage_api_download_enable">También intentar descargar datos de Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Descargar tratamientos</string>
@@ -1286,16 +1288,22 @@
     <string name="title_nsfollow_url">URL de Nightscout a Seguir</string>
     <string name="summary_nsfollow_download_treatments">También descargar tratamientos de Nightscout como seguidor</string>
     <string name="title_nsfollow_download_treatments">Descargar tratamientos</string>
-    <string name="title_clfollow_user">Nombre de usuario de CareLink</string>
-    <string name="summary_clfollow_user">Nombre de usuario de acceso de CareLink</string>
-    <string name="title_clfollow_pass">Contraseña de CareLink</string>
-    <string name="summary_clfollow_pass">Contraseña de acceso a CareLink</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
     <string name="title_clfollow_country">País de CareLink</string>
     <string name="summary_clfollow_country">Seleccione tu país de CareLink.</string>
     <string name="title_clfollow_patient">Usuario del paciente de CareLink</string>
     <string name="summary_clfollow_patient">Usuario del paciente de CareLink (opcional)</string>
-    <string name="title_clfollow_lang">Idioma de CareLink</string>
-    <string name="summary_clfollow_lang">Código de idioma de CareLink</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
+    <string name="title_clfollow_login">Iniciar sesión</string>
+    <string name="summary_clfollow_login">Iniciar sesión con el navegador</string>
     <string name="title_clfollow_grace_period">Periodo de gracia</string>
     <string name="summary_clfollow_grace_period">Período de gracia para la solicitud de datos en segundos</string>
     <string name="title_clfollow_missed_poll_interval">Intervalo de sondeo de datos perdidos</string>
