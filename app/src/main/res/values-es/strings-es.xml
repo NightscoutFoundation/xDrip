@@ -1789,4 +1789,5 @@
     <string name="summary_Lib2_show_sense_on_status">Activar para mostrar información adicional en Estado para el sensor Libre 2.</string>
     <string name="import_qr_code_warning">¡Solo importa la configuración de las fuentes en las que confías!\n\nPor favor, confirma la importación de las siguientes configuraciones:\n\n</string>
     <string name="scan_to_load_xdrip_settings">Escanear para cargar ajustes de xDrip</string>
+    <string name="manage_permissions">Administrar permisos</string>
 </resources>
