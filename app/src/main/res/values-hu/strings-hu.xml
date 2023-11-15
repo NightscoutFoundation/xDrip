@@ -1743,4 +1743,12 @@
     <string name="summary_Lib2_show_sense_on_status">Libre 2 szenzor adatainak mutatása az Állapot lapon.</string>
     <string name="import_qr_code_warning">Csak megbízható forrásokból importáljon beállításokat!\n\nKérjük, erősítse meg a következő beállítások importálását:\n\n</string>
     <string name="scan_to_load_xdrip_settings">Szkenneljen az xDrip beállítások betöltéséhez</string>
+    <string name="manage_permissions">Engedélyek kezelése</string>
+    <string name="open_health_connect_settings_to_manually_manage_permissions">Health Connect megnyitása, kézi beállításokhoz</string>
+    <string name="send_data_to_health_connect">Adatok küldése Health Connect-hez</string>
+    <string name="get_data_from_health_connect">Adatok letöltése Health Connect-ből</string>
+    <string name="requires_android_8_and_google_companion_application_or_android_14">Legalább Android 8+ és Google companion app vagy Android 14+ szükséges</string>
+    <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Adatk küldése és letöltése a Google Health Connect és Google Fit alkalmazásokból</string>
+    <string name="google_health_connect">Google Health Connect</string>
+    <string name="google_health_connect_needs_perms">HIBA: A Health engedélyeket kér! - próbálja meg a beállítokban megint</string>
 </resources>
