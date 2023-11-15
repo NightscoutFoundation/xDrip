@@ -1331,4 +1331,5 @@
     <string name="titleInside_yRange">Ligar</string>
     <string name="summary_sens_expiry_notify">Emitir notificações quando o sensor estiver perto de expirar.</string>
     <string name="title_sens_expiry_notify">Expiração do sensor</string>
+    <string name="manage_permissions">Gerenciar permissões</string>
 </resources>
