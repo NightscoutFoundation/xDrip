@@ -1790,4 +1790,11 @@
     <string name="import_qr_code_warning">¡Solo importa la configuración de las fuentes en las que confías!\n\nPor favor, confirma la importación de las siguientes configuraciones:\n\n</string>
     <string name="scan_to_load_xdrip_settings">Escanear para cargar ajustes de xDrip</string>
     <string name="manage_permissions">Administrar permisos</string>
+    <string name="open_health_connect_settings_to_manually_manage_permissions">Abre los ajustes de Open Health para administrar manualmente los permisos</string>
+    <string name="send_data_to_health_connect">Enviar datos a Health Connect</string>
+    <string name="get_data_from_health_connect">Obtener datos de Health Connect</string>
+    <string name="requires_android_8_and_google_companion_application_or_android_14">Requiere aplicaciones Android 8+ y Google companion o Android 14+</string>
+    <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Enviar y recibir datos de Google Health Connect y Google Fit</string>
+    <string name="google_health_connect">Google Health Connect</string>
+    <string name="google_health_connect_needs_perms">ERROR: ¡Health connect necesita permisos! - intenta de nuevo desde el menú de configuración</string>
 </resources>
