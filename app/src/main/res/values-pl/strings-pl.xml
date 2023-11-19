@@ -1383,6 +1383,7 @@
     <string name="summary_plus_accept_follower_actions">Zabiegi, kalibracje i inne działania ze strony obserwatorów będą akceptowane</string>
     <string name="title_plus_accept_follower_actions">Akceptuj akcje obserwatora</string>
     <string name="summary_plus_whole_house">Weź udział w Whole House Network</string>
+    <string name="summary_libre_whole_house_collector">Ten telefon będzie kolektorem w całej sieci domowej</string>
     <string name="summary_xdrip_plus_desert_sync_settings">Odbiór bez dostępu do sieci</string>
     <string name="title_xdrip_plus_desert_sync_settings">Lokalna synchronizacja</string>
     <string name="title_desert_sync_enabled">Lokalna synchronizacja</string>
