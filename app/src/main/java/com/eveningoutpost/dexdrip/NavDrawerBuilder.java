@@ -101,8 +101,10 @@ public class NavDrawerBuilder {
                         }
                     }
                 }
-                this.nav_drawer_options.add(context.getString(R.string.stop_sensor));
-                this.nav_drawer_intents.add(new Intent(context, StopSensor.class));
+                if (!FirmwareCapability.isDeviceG7(getTransmitterID())) { // Offer a stop sensor option only if this is not a G7.
+                    this.nav_drawer_options.add(context.getString(R.string.stop_sensor));
+                    this.nav_drawer_intents.add(new Intent(context, StopSensor.class));
+                }
             } else {
                 this.nav_drawer_options.add(context.getString(R.string.start_sensor));
                 this.nav_drawer_intents.add(new Intent(context, StartNewSensor.class));
