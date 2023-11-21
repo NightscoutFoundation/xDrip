@@ -164,6 +164,8 @@ android {
         //exclude 'META-INF/androidx.core_core.version'
         exclude 'META-INF/com.android.tools/proguard/coroutines.pro'
         exclude 'META-INF/ASL2.0'
+        exclude 'META-INF/androidx.interpolator_interpolator.version'
+        exclude 'META-INF/androidx.core_core.version'
     }
 
     compileOptions {
@@ -268,12 +270,12 @@ dependencies {
     //implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.8.22'
 
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support:design:26.1.0'
-    implementation 'com.android.support:support-v13:26.1.0'
-    implementation 'com.android.support:recyclerview-v7:26.1.0'
-    implementation 'com.android.support:cardview-v7:26.1.0'
-    implementation 'com.android.support:preference-v7:26.1.0'
+    implementation ('com.android.support:appcompat-v7:28.0.0')
+    implementation ('com.android.support:design:28.0.0')
+    implementation ('com.android.support:support-v13:28.0.0')
+    implementation ('com.android.support:recyclerview-v7:28.0.0')
+    implementation ('com.android.support:cardview-v7:28.0.0')
+    implementation ('com.android.support:preference-v7:28.0.0')
 
     implementation ('com.google.apis:google-api-services-drive:v3-rev20220815-2.0.0') {
         exclude group: 'org.apache.httpcomponents'
@@ -366,7 +368,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     }
-    androidTestImplementation 'com.android.support.test.espresso:espresso-idling-resource:3.0.1'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-idling-resource:3.0.2'
     // add this for intent mocking support
     //androidTestImplementation 'com.android.support.test.espresso:espresso-intents:3.0.1'
     // add this for webview testing support

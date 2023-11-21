@@ -176,10 +176,10 @@ public class NotificationChannels {
 
         // mirror the notification parameters in the channel
         template.setGroup(temp.getChannelId());
-        template.setVibrationPattern(wip.mNotification.vibrate);
-        template.setSound(wip.mNotification.sound, generic_audio);
-        template.setLightColor(wip.mNotification.ledARGB);
-        if ((wip.mNotification.ledOnMS != 0) && (wip.mNotification.ledOffMS != 0))
+        template.setVibrationPattern(wip.getNotification().vibrate);
+        template.setSound(wip.getNotification().sound, generic_audio);
+        template.setLightColor(wip.getNotification().ledARGB);
+        if ((wip.getNotification().ledOnMS != 0) && (wip.getNotification().ledOffMS != 0))
             template.enableLights(true); // weird how this doesn't work like vibration pattern
         template.setDescription(temp.getChannelId() + " " + wip.hashCode());
 
@@ -201,8 +201,8 @@ public class NotificationChannels {
         }
         channel.setDescription(template.getDescription());
         channel.setVibrationPattern(template.getVibrationPattern());
-        template.setLightColor(wip.mNotification.ledARGB);
-        if ((wip.mNotification.ledOnMS != 0) && (wip.mNotification.ledOffMS != 0))
+        template.setLightColor(wip.getNotification().ledARGB);
+        if ((wip.getNotification().ledOnMS != 0) && (wip.getNotification().ledOffMS != 0))
             template.enableLights(true); // weird how this doesn't work like vibration pattern
         template.setDescription(temp.getChannelId() + " " + wip.hashCode());
 

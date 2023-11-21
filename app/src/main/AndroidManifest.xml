@@ -95,6 +95,8 @@
         android:largeHeap="true"
         android:maxAspectRatio="2.1"
         android:theme="@style/AppTheme"
+        tools:replace="android:appComponentFactory"
+        android:appComponentFactory="android.support.v4.app.CoreComponentFactory"
         android:usesCleartextTraffic="true">
         <activity
             android:name=".HealthPrivacy"
