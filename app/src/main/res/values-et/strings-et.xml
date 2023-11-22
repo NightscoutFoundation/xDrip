@@ -1291,6 +1291,7 @@
     <string name="title_nsfollow_url">Nightscout jälgimise URL</string>
     <string name="summary_nsfollow_download_treatments">Laadi jälgijana alla ka Nightscout\'i raviandmed</string>
     <string name="title_nsfollow_download_treatments">Laad alla raviandmed</string>
+    <string name="title_nsfollow_lag">Nightscout jälgimise viivitus</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
     <string name="summary_clfollow_user">CareLink login username</string>
