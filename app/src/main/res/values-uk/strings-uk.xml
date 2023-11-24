@@ -153,7 +153,7 @@
     <string name="low_predicted">Прогнозується гіпоглікемія!</string>
     <string name="in">через</string>
     <string name="yes_enter_setup_mode">Так, увійти в режим налаштувань</string>
-    <string name="nokeep_parakeet_as_it_is">Ні, використовувати Parakeet без змін</string>
+    <string name="nokeep_parakeet_as_it_is">Ні, залишити Parakeet без змін</string>
     <string name="are_you_sure_you_want_switch_parakeet_to_setup">Ви впевнені, що хочете перемкнути Parakeet в режим налаштування?\n\nЗазвичай, даний режим використовується тільки для передачі на Parakeet текстових повідомлень, за допомогою яких можна, наприклад, змінити трансмітер, з якого Parakeet отримує дані тощо.</string>
     <string name="split_delete_or_do_nothing">Розділити, видалити або нічого не робити</string>
     <string name="split_this_block_in_two">Розділити блок на 2 частини</string>
@@ -223,7 +223,7 @@
     <string name="alarm_at_forecasted_low_mins">Сповіщати за (в хвилинах)</string>
     <string name="other_xdrip_plus_alerts">Інші сповіщення</string>
     <string name="xdrip_plus_display_settings">Налаштування відображення</string>
-    <string name="display_customisations">Налаштування зовнішнього вигляду головного екрана та елементів додатку</string>
+    <string name="display_customisations">Налаштування відображення</string>
     <string name="insulin_carb_ratios_etc_for_models">Налаштування інсуліну та вуглеводів для моделі</string>
     <string name="grams_of_carbohydrate_one_unit_covers">Кількість вуглеводів (г), утилізованих 1 од. інсуліну</string>
     <string name="linear_model_carbs_absorbed_per_hour">Лінійна модель кількості засвоюваних вуглеводів протягом години</string>
@@ -319,7 +319,7 @@
     <string name="space_units">" одиниць"</string>
     <string name="units">од.</string>
     <string name="carbs">вугл.</string>
-    <string name="when">Коли (год хв)</string>
+    <string name="when">коли (ГГХХ)</string>
     <string name="speak_your_treatment">Вимовте вголос значення, яке хочете ввести, наприклад:\n N одиниць інсуліну / N грам вуглеводів</string>
     <string name="speech_recognition_is_not_supported">Розпізнавання голосу не підтримується</string>
     <string name="treatment_note">Нотатка до введеного значення</string>
@@ -371,7 +371,7 @@
     <string name="install_pebble_trend_watchface">Встановіть циферблат Pebble Trend</string>
     <string name="install_pebble_watchface">Встановіть циферблат на Pebble</string>
     <string name="glucose_history">Історія глікемії</string>
-    <string name="import_database">Імпорт бази даних</string>
+    <string name="import_database">Відновлення бази даних</string>
     <string name="sensor_table">Таблиця сенсора</string>
     <string name="bg_readings_table">Таблиця значень глюкози</string>
     <string name="long_press_to_split_or_delete">Натисніть і утримуйте, аби розділити або видалити</string>
