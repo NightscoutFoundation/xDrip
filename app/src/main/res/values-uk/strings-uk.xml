@@ -8,7 +8,7 @@
     <string name="menu_refresh">Оновити</string>
     <string name="menu_export_database">Експорт бази даних</string>
     <string name="menu_export_csv_sidiary">Експорт CSV (формат SiDiary)</string>
-    <string name="menu_import_db">Імпорт бази даних</string>
+    <string name="menu_import_db">Відновлення бази даних</string>
     <string name="error_bluetooth_not_supported">Помилка: Bluetooth не підтримується даним пристроєм</string>
     <string name="unknown_device">Невідомий пристрій</string>
     <string name="connecting_to_device">Підключення до пристрою</string>
