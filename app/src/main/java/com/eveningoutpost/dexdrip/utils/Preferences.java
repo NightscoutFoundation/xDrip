@@ -58,6 +58,7 @@ import com.eveningoutpost.dexdrip.WidgetUpdateService;
 import com.eveningoutpost.dexdrip.alert.Registry;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.CareLinkFollowService;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.auth.CareLinkAuthType;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollow;
 import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
 import com.eveningoutpost.dexdrip.cgm.webfollow.Cpref;
@@ -1353,7 +1354,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                                         JoH.static_toast(preference.getContext(), "Country is required!", Toast.LENGTH_LONG);
                                     else {
                                         CareLinkAuthenticator authenticator = new CareLinkAuthenticator(country, CareLinkCredentialStore.getInstance());
-                                        if (authenticator.authenticate(getActivity())) {
+                                        if (authenticator.authenticate(getActivity(), CareLinkAuthType.MobileApp)) {
                                             JoH.static_toast(preference.getContext(), "Login completed!", Toast.LENGTH_LONG);
                                             CareLinkFollowService.resetInstanceAndInvalidateSession();
                                             CollectionServiceStarter.restartCollectionServiceBackground();

@@ -9,7 +9,6 @@ import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.client.CareLinkClient;
-import com.eveningoutpost.dexdrip.cgm.carelinkfollow.client.CountryUtils;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.RecentData;
 
 import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
@@ -66,7 +65,7 @@ public class CareLinkFollowDownloader {
 
     private void downloadData() {
         msg("Start download");
-        if (checkCredentials()) {
+        if (checkCredentials(true, true, true)) {
             try {
                 if (getCareLinkClient() != null) {
                     extendWakeLock(30_000);
@@ -85,35 +84,37 @@ public class CareLinkFollowDownloader {
 
     private void refreshToken() {
         msg("Start refreshing token");
-        if (checkCredentials()) {
+        if (checkCredentials(true, false, true)) {
             try {
                 if (new CareLinkAuthenticator(CareLinkCredentialStore.getInstance().getCredential().country, CareLinkCredentialStore.getInstance()).refreshToken()) {
-                    UserError.Log.d(TAG, "Login token renewed!");
+                    UserError.Log.d(TAG, "Access token renewed!");
                     msg(null);
                 } else {
-                    UserError.Log.e(TAG, "Error renewing login token!");
-                    msg("Login refresh failed! Will try again!");
+                    UserError.Log.e(TAG, "Error renewing access token!");
+                    msg("Access refresh failed! Will try again!");
                 }
             } catch (Exception e) {
-                UserError.Log.e(TAG, "Error renewing login token: " + e.getMessage());
-                msg("Login refresh failed! Will try again!");
+                UserError.Log.e(TAG, "Error renewing access token: " + e.getMessage());
+                msg("Access refresh failed! Will try again!");
             }
         }
     }
 
-    private boolean checkCredentials() {
+    private boolean checkCredentials(boolean checkAuthenticated, boolean checkAccessExpired, boolean checkRefreshExpired) {
         // Not authenticated
-        if (CareLinkCredentialStore.getInstance().getAuthStatus() != CareLinkCredentialStore.AUTHENTICATED) {
+        if (checkAuthenticated && CareLinkCredentialStore.getInstance().getAuthStatus() != CareLinkCredentialStore.AUTHENTICATED) {
             msg("Not logged in! Please log in!");
             return false;
-            // Token expired
-        } else if (CareLinkCredentialStore.getInstance().getExpiresIn() <= 0) {
-            msg("Login refresh expired! Please log in!");
-            return false;
-            // Credentials are all ok!
-        } else {
-            return true;
         }
+        if (checkAccessExpired && CareLinkCredentialStore.getInstance().getAccessExpiresIn() <= 0) {
+            msg("Access expired!");
+            return false;
+        }
+        if (checkRefreshExpired && CareLinkCredentialStore.getInstance().getRefreshExpiresIn() <= 0) {
+            msg("Login expired! Please log in!");
+            return false;
+        }
+        return true;
     }
 
     private void msg(final String msg) {
