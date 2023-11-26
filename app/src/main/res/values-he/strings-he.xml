@@ -176,6 +176,7 @@
     <string name="libre_last_x_minutes_graph">גרף %d דקות אחרונות של הליברה</string>
     <string name="share_config_via_qr_code">שיתוף הגדרות באמצעות קוד QR</string>
     <string name="check_for_updated_version">בדוק האם יש גרסה חדשה</string>
+    <string name="current_version_is_up_to_date">אין עדכון בערוץ הנבחר</string>
     <string name="send_feedback_to_developer">שלח משוב למפתח</string>
     <string name="home_screen">מסך הבית</string>
     <string name="event_logs">יומן אירועים</string>
