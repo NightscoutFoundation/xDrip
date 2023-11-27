@@ -1003,10 +1003,21 @@
     <string name="android_10_need_background_location">Android 10 i iznad trebaju dopuštenje za pozadinsku lokaciju da bi Bluetoth radio</string>
     <string name="without_location_permission_emergency_cannot_get_location">Bez dozvole za lokaciju hitne poruke ne mogu koristiti podatak o lokaciji</string>
     <string name="yes_today">DA, danas</string>
+    <string name="daily_backup_even_mobile">Svakodnevno sigurnosno kopiranje čak i na mobilnim podacima</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Baždari bez traženja potvrde korsiteći nova očitanja glukoze u krvi ukoliko se uvjeti za to čine odgovarajućima (eksperimentalno)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatsko baždarenje</string>
     <string name="title_broadcast_service_api">API usluge emitiranja</string>
     <string name="summary_broadcast_service_api">Omogućuje xDrip komunikaciju s aplikacijama trećih strana pomoću novog API-ja</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
     <string name="enable_streaming_dialog_dont_ask_again">Ne pitaj me ponovno</string>
     <string name="show_action_buttons_within_alerts">Prikažite akcijske gumbe (kao što je Odgoda) unutar obavijesti o upozorenjima</string>
     <string name="alert_buttons">Tipke upozorenja</string>

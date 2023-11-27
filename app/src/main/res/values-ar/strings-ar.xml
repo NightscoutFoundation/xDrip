@@ -278,6 +278,16 @@
     <string name="title_miband_graph_treatment_enable">اظهر الجرعة</string>
     <string name="summary_nsfollow_download_treatments">قم بتحميل بيانات المعالجة من NS كمتابع</string>
     <string name="title_nsfollow_download_treatments">تنزيل بيانات العلاج</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
     <string name="summary_plus_accept_follower_actions">سيتم قبول العلاج والمعايرة والإجراءات الأخرى من المتابعين</string>
     <string name="summary_pendiq_send_treatments">قم بإعداد القلم مع وحدات الأنسولين العلاجية. يجب عليك دائماً التحقق من ذلك.</string>
     <string name="title_pendiq_send_treatments">ارسل المعالجة إلى القلم</string>

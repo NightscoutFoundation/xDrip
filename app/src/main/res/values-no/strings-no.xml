@@ -854,6 +854,16 @@
     <string name="bluereader_turnoff_sum">Skru av blueReader hvis batterinivå er lavere enn valgt verdi</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Kalibrer med nye blodsukkermålinger hvis tilstanden synes riktig uten å be om samtykke (eksperimentell)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatisk kalibrering</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
     <string name="enable_streaming_dialog_dont_ask_again"> Ikke spør meg igjen</string>
     <string name="titleInside_yRange">Aktiver</string>
 </resources>

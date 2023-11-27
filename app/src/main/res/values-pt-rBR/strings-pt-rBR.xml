@@ -1003,6 +1003,7 @@
     <string name="title_Non_fixed_Libre_slopes">Inclinações não fixas do Libre</string>
     <string name="summary_Allow_initial_calibration_no_good_enough_data">Permite calibração inicial mesmo que não existam dados bons e suficientes. Atenção que isso pode resultar numa calibração incorreta!</string>
     <string name="title_Bypass_quality_check">Ignorar Controle de Qualidade</string>
+    <string name="summary_Use_and_trust_Android_bluetooth_auto_connect_feature">Usar e confiar no recurso de conexão automática Bluetooth do Android</string>
     <string name="title_Always_discover_services">Sempre descobrir serviços</string>
     <string name="summary_Only_suitable_for_phones_which_support_automatic_pairing">Apenas adequado para telefones que suportam o pareamento automático</string>
     <string name="title_Allow_blucon_unbonding">Permitir desvinculação de BluCon</string>
@@ -1019,6 +1020,7 @@
     <string name="title_swipe_reminder">Deslize para a esquerda ou direita</string>
     <string name="message_swipe_explanation">\u2190 Deslize para ESQUERDA para atrasar ou adiar um lembrete\n\n\u2192 Deslize para DIREITA para programar o próximo lembrete\n\nTocando no título ou horário permite edição. Pressione e segure o título para editar outros parâmetros.</string>
     <string name="message_snooze_explanaition_undo">O botão Desfazer restaura o lembrete de como estava antes de ser deslizado.</string>
+    <string name="message_snooze_hide">O botão Ocultar oculta o painel de soneca</string>
     <string name="title_which_day">Em que dia?</string>
     <string name="title_what_time_day">A que hora do dia?</string>
     <string name="reminder_due">Lembrete concluído</string>
@@ -1051,6 +1053,7 @@
     <string name="nothing_to_undo">Nada para desfazer!</string>
     <string name="something_went_wrong_reminder">Algo deu errado ao criar o lembrete</string>
     <string name="snoozed_reminder_for">Lembrete silenciado para</string>
+    <string name="id_reference">ID de referência</string>
     <string name="reminder_period">Período de Lembrete</string>
     <string name="hour">Hora</string>
     <string name="hours">Horas</string>
@@ -1118,11 +1121,13 @@
     <string name="overwrite_intercept_engineering_only">Sobrescrever Interceptação (apenas engenharia!)</string>
     <string name="manual_overwrite_not_possible">Não é possível sobreescrever manualmente!</string>
     <string name="upload_even_when_using_mobile_data">Enviar mesmo usando dados móveis</string>
+    <string name="daily_backup_even_mobile">Backup diário mesmo utilizando dados móveis</string>
     <string name="use_mobile_data">Usar dados móveis</string>
     <string name="summary_cloud_storage_api_download_enable">Também tentar baixar dados do Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Baixar dados</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Calibrar utilizando novas leituras de glicose se as condições parecerem corretas para fazer isso sem pedir confirmação (experimental)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Calibragem Automática</string>
+    <string name="title_rest_api_extra_options">Opções adicionais</string>
     <string name="summary_tap_to_send_historical_data">Toque para enviar histórico de dados para o Nightscout</string>
     <string name="title_back_fill_data">Preencher Dados</string>
     <string name="summary_tidepool_upload_screen">Enviar dados para o serviço Tidepool</string>
@@ -1211,6 +1216,18 @@
     <string name="summary_nsfollow_url">Endereço na Web para seguir</string>
     <string name="title_nsfollow_url">URL Nightscout</string>
     <string name="summary_nsfollow_download_treatments">Também baixar tratamentos do Nightscout como seguidor</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
+    <string name="title_clfollow_login">Entrar</string>
+    <string name="summary_clfollow_login">Entrar com navegador</string>
     <string name="title_clfollow_download_notifications">Notificações</string>
     <string name="summary_clfollow_download_notifications">Baixar notificações do CareLink</string>
     <string name="title_ob1_options">Configurações do Dispositivo OB1 G5/G6</string>

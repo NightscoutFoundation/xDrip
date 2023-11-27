@@ -21,6 +21,44 @@
       }
     },
     {
+      "name": "Afrezza",
+      "displayName": "Afrezza (inhaled, ultra-fast acting)",
+      "concentration": "U100",
+      "PPN":
+      [
+        "Afrezza-U100"
+      ],
+      "Curve":
+      {
+        "type": "linear trapezoid",
+        "data":
+        {
+          "onset": "5",
+          "peak": "50",
+          "duration": "150"
+        }
+      }
+    },
+    {
+      "name": "Apidra",
+      "displayName": "Apidra (ultra-fast acting)",
+      "concentration": "U100",
+      "PPN":
+      [
+        "Apidra-U100"
+      ],
+      "Curve":
+      {
+        "type": "linear trapezoid",
+        "data":
+        {
+          "onset": "10",
+          "peak": "60-180",
+          "duration": "300"
+        }
+      }
+    },
+    {
       "name": "Novorapid",
       "displayName": "Novorapid (rapid acting)",
       "concentration": "U100",
@@ -153,6 +191,63 @@
           "onset": "60",
           "peak": "420-1200",
           "duration": "2160"
+        }
+      }
+    },
+    {
+      "name": "Levemir",
+      "displayName": "Levemir (long acting)",
+      "PPN":
+      [
+        "LevemirU100"
+      ],
+      "concentration": "U100",
+      "Curve":
+      {
+        "type": "linear trapezoid",
+        "data":
+        {
+          "onset": "60",
+          "peak": "180-840",
+          "duration": "1500"
+        }
+      }
+    },
+    {
+      "name": "Basaglar",
+      "displayName": "Basaglar (long acting)",
+      "PPN":
+      [
+        "BasaglarU100"
+      ],
+      "concentration": "U100",
+      "Curve":
+      {
+        "type": "linear trapezoid",
+        "data":
+        {
+          "onset": "60",
+          "peak": "480-1140",
+          "duration": "1440"
+        }
+      }
+    },
+    {
+      "name": "Tresiba",
+      "displayName": "Tresiba (ultra-long acting)",
+      "PPN":
+      [
+        "TresibaU100"
+      ],
+      "concentration": "U100",
+      "Curve":
+      {
+        "type": "linear trapezoid",
+        "data":
+        {
+          "onset": "90",
+          "peak": "120-2460",
+          "duration": "2520"
         }
       }
     }
