@@ -1696,4 +1696,12 @@
     <string name="summary_Lib2_show_raw_values">Ative para mostrar os valores brutos no gráfico.</string>
     <string name="title_Lib2_show_sense_on_status">Mostrar informação do sensor no Estado</string>
     <string name="summary_Lib2_show_sense_on_status">Ative para mostrar no Estado informação adicional para o sensor Libre 2.</string>
+    <string name="manage_permissions">Gerir permissões</string>
+    <string name="open_health_connect_settings_to_manually_manage_permissions">Configurar Health Connect para gerir permissões manualmente</string>
+    <string name="send_data_to_health_connect">Enviar dados para Health Connect</string>
+    <string name="get_data_from_health_connect">Obter dados do Health Connect</string>
+    <string name="requires_android_8_and_google_companion_application_or_android_14">Necessário Android 8+ e Google companion ou Android 14+</string>
+    <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Enviar e receber dados do Google Health Connect e do Google Fit</string>
+    <string name="google_health_connect">Google Health Connect</string>
+    <string name="google_health_connect_needs_perms">ERRO: São necessárias permissões para o Health connect! - volte ao menu de configurações</string>
 </resources>

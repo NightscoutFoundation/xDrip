@@ -1284,6 +1284,7 @@
     <string name="title_nsfollow_url">URL подписки Nightscout</string>
     <string name="summary_nsfollow_download_treatments">Скачивать введённые пользователем значения из Nightscout для \'фолловеров\'</string>
     <string name="title_nsfollow_download_treatments">Скачивать пользовательские значения</string>
+    <string name="title_nsfollow_lag">Задержка получения из Nightscout</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
     <string name="summary_clfollow_user">CareLink login username</string>

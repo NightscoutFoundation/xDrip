@@ -1291,6 +1291,7 @@
     <string name="title_nsfollow_url">URL abonnés Nightscout</string>
     <string name="summary_nsfollow_download_treatments">Télécharger également les traitements de Nightscout comme abonné</string>
     <string name="title_nsfollow_download_treatments">Télécharger les traitements</string>
+    <string name="title_nsfollow_lag">Délai pour le Suiveur Nightscout</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
     <string name="summary_clfollow_user">CareLink login username</string>
@@ -1792,4 +1793,12 @@
     <string name="summary_Lib2_show_sense_on_status">Activez pour afficher des informations supplémentaires du capteur de Libre 2 dans Statut.</string>
     <string name="import_qr_code_warning">Importer les paramètres eulement des sources de confiance !\n\nVeuillez confirmer l\'importation les paramètres suivants :\n\n</string>
     <string name="scan_to_load_xdrip_settings">Scanner pour charger les paramètres de xDrip</string>
+    <string name="manage_permissions">Gérer les permissions</string>
+    <string name="open_health_connect_settings_to_manually_manage_permissions">Ouvrir les paramètres Health Connect pour gérer manuellement les autorisations</string>
+    <string name="send_data_to_health_connect">Envoyer des données à Health Connect</string>
+    <string name="get_data_from_health_connect">Recevoir les données de Health Connect</string>
+    <string name="requires_android_8_and_google_companion_application_or_android_14">Nécessite Android 8+ et l\'application Google compagnon ou Android 14+</string>
+    <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Envoyer et recevoir des données de Google Health Connect et Google Fit</string>
+    <string name="google_health_connect">Google Health Connect</string>
+    <string name="google_health_connect_needs_perms">ERREUR : Health Connect a besoin d\'autorisations ! - essayez à nouveau dans le menu des paramètres</string>
 </resources>

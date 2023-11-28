@@ -176,6 +176,7 @@
     <string name="libre_last_x_minutes_graph">גרף %d דקות אחרונות של הליברה</string>
     <string name="share_config_via_qr_code">שיתוף הגדרות באמצעות קוד QR</string>
     <string name="check_for_updated_version">בדוק האם יש גרסה חדשה</string>
+    <string name="current_version_is_up_to_date">אין עדכון בערוץ הנבחר</string>
     <string name="send_feedback_to_developer">שלח משוב למפתח</string>
     <string name="home_screen">מסך הבית</string>
     <string name="event_logs">יומן אירועים</string>
@@ -1570,4 +1571,12 @@
     <string name="show_unsmoothed_summary">הראה מידע לא מוחלק גם עם החלקת הגרף מאופשרצ, 
 אם תוסף הכיול בשימוש יוצג גרף לא מוחלק ולא הגרף מהתוסף.</string>
     <string name="titleInside_yRange">אפשר</string>
+    <string name="manage_permissions">ניהול הרשאות</string>
+    <string name="open_health_connect_settings_to_manually_manage_permissions">פתח הגדרות Health Connect כדי לשנות הרשאות ידנית</string>
+    <string name="send_data_to_health_connect">שלח מידע ל-Health Connect</string>
+    <string name="get_data_from_health_connect">קבל נתונים מ-Health Connect</string>
+    <string name="requires_android_8_and_google_companion_application_or_android_14">דרושה גרסת אנדרואיד 8 ומעלה ואפליקציית Google companion או גרסת אנדרוראיד 14 ומעלה</string>
+    <string name="send_and_receive_data_from_google_health_connect_and_google_fit">שלח וקבל התראות מאפליקציות Google Health Connect ו-Google Fit</string>
+    <string name="google_health_connect">Google Health Connect</string>
+    <string name="google_health_connect_needs_perms">שגיאה: Health Connect דורש הרשאות! נסו שנית מתוך חלון ההגדרות</string>
 </resources>
