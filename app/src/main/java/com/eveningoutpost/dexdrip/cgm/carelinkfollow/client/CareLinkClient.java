@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.cgm.carelinkfollow.client;
 
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.auth.CareLinkAuthType;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.auth.CareLinkAuthentication;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.auth.CareLinkCredentialStore;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.auth.EditableCookieJar;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ActiveNotification;
@@ -32,6 +34,7 @@ import java.util.regex.Pattern;
 
 import okhttp3.ConnectionPool;
 import okhttp3.FormBody;
+import okhttp3.Headers;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -176,7 +179,10 @@ public class CareLinkClient {
         EditableCookieJar cookieJar = null;
 
         cookieJar = new EditableCookieJar();
-        cookieJar.AddCookies(this.credentialStore.getCredential().cookies);
+        //Add cookies if there are any
+        if(this.credentialStore.getCredential().cookies != null && this.credentialStore.getCredential().cookies.length > 0) {
+            cookieJar.AddCookies(this.credentialStore.getCredential().cookies);
+        }
 
         this.httpClient = new OkHttpClient.Builder()
                 .cookieJar(cookieJar)
@@ -204,7 +210,7 @@ public class CareLinkClient {
     public RecentData getRecentData(String patientUsername) {
 
         // Force login to get basic info
-        if (getAuthorizationToken() == null)
+        if (getAuthentication() == null)
             return null;
 
         // 7xxG
@@ -224,7 +230,7 @@ public class CareLinkClient {
     public String getDefaultPatientUsername() {
 
         // Force login to get basic info
-        if (getAuthorizationToken() == null)
+        if (getAuthentication() == null)
             return null;
 
         // Care Partner + multi follow => first patient
@@ -249,7 +255,7 @@ public class CareLinkClient {
             return sessionDeviceIsBle;
 
         // Force login to get basic info
-        if(getAuthorizationToken() == null)
+        if(getAuthentication() == null)
             return  false;
 
         // Patient: device from recent uploads if possible
@@ -407,7 +413,7 @@ public class CareLinkClient {
         requestBuilder = new Request.Builder()
                 .url(url);
 
-        this.addHttpHeaders(requestBuilder, RequestType.HtmlGet);
+        this.addHttpHeaders(requestBuilder, RequestType.HtmlGet, true);
 
         return this.httpClient.newCall(requestBuilder.build()).execute();
 
@@ -441,7 +447,7 @@ public class CareLinkClient {
                 .url(url)
                 .post(form);
 
-        this.addHttpHeaders(requestBuilder, RequestType.HtmlGet);
+        this.addHttpHeaders(requestBuilder, RequestType.HtmlGet, true);
 
         return this.httpClient.newCall(requestBuilder.build()).execute();
 
@@ -473,7 +479,7 @@ public class CareLinkClient {
                 .url(consentUrl)
                 .post(form);
 
-        this.addHttpHeaders(requestBuilder, RequestType.HtmlPost);
+        this.addHttpHeaders(requestBuilder, RequestType.HtmlPost, true);
 
         return this.httpClient.newCall(requestBuilder.build()).execute();
 
@@ -494,7 +500,7 @@ public class CareLinkClient {
 
     }
 
-    protected String getAuthorizationToken() {
+    protected CareLinkAuthentication getAuthentication() {
 
         // CredentialStore is used
         if(this.credentialStore != null){
@@ -505,7 +511,7 @@ public class CareLinkClient {
             if(!this.collectingSessionInfos && !this.sessionInfosLoaded)
                 return  null;
             else
-                return this.credentialStore.getCredential().getAuthorizationFieldValue();
+                return this.credentialStore.getCredential().getAuthentication();
         // New token is needed:
         // a) no token or about to expire => execute authentication
         // b) last response 401
@@ -524,8 +530,11 @@ public class CareLinkClient {
                     return null;
             }
 
-            //there can be only one
-            return "Bearer" + " " + ((SimpleOkHttpCookieJar) httpClient.cookieJar()).getCookies(CARELINK_AUTH_TOKEN_COOKIE_NAME).get(0).value();
+            //there can be only one auth cookie
+            return new CareLinkAuthentication(
+                    new Headers.Builder().add("Authorization", "Bearer" + " " + ((SimpleOkHttpCookieJar) httpClient.cookieJar()).getCookies(CARELINK_AUTH_TOKEN_COOKIE_NAME).get(0).value()).build(),
+                    CareLinkAuthType.Browser);
+            //return "Bearer" + " " + ((SimpleOkHttpCookieJar) httpClient.cookieJar()).getCookies(CARELINK_AUTH_TOKEN_COOKIE_NAME).get(0).value();
         }
 
 
@@ -663,28 +672,30 @@ public class CareLinkClient {
 
         Request.Builder requestBuilder = null;
         HttpUrl.Builder urlBuilder = null;
-        String authToken = null;
+        CareLinkAuthentication authentication = null;
         String responseString = null;
         Response response = null;
         Object data = null;
+        boolean isBrowserClient = true;
 
         this.lastDataSuccess = false;
         this.lastErrorMessage = "";
 
-        // Get auth token
-        authToken = this.getAuthorizationToken();
+        // Get authentication
+        authentication = this.getAuthentication();
 
-        if (authToken != null) {
+        if (authentication != null) {
 
             // Create request for URL with authToken
-            requestBuilder = new Request.Builder().url(url).addHeader("Authorization", authToken);
+            //requestBuilder = new Request.Builder().url(url).addHeader("Authorization", authToken);
+            requestBuilder = new Request.Builder().url(url).headers(authentication.getHeaders());
 
-            // Add header
+            // Add additional headers
             if (requestBody == null) {
-                this.addHttpHeaders(requestBuilder, RequestType.Json);
+                this.addHttpHeaders(requestBuilder, RequestType.Json, authentication.authType == CareLinkAuthType.Browser);
             } else {
                 requestBuilder.post(requestBody);
-                this.addHttpHeaders(requestBuilder, RequestType.HtmlPost);
+                this.addHttpHeaders(requestBuilder, RequestType.HtmlPost, authentication.authType == CareLinkAuthType.Browser);
             }
 
             // Send request
@@ -736,14 +747,16 @@ public class CareLinkClient {
     }
 
     // Http header builder for requests
-    protected void addHttpHeaders(Request.Builder requestBuilder, RequestType type) {
+    protected void addHttpHeaders(Request.Builder requestBuilder, RequestType type, boolean isBrowserClient) {
 
         //Add common browser headers
-        requestBuilder
-                .addHeader("Accept-Language", "en;q=0.9, *;q=0.8")
-                .addHeader("Connection", "keep-alive")
-                .addHeader("Sec-Ch-Ua", "\"Google Chrome\";v=\"117\", \"Not;A=Brand\";v=\"8\", \"Chromium\";v=\"117\"")
-                .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Mobile Safari/537.36");
+        if(isBrowserClient) {
+            requestBuilder
+                    .addHeader("Accept-Language", "en;q=0.9, *;q=0.8")
+                    .addHeader("Connection", "keep-alive")
+                    .addHeader("Sec-Ch-Ua", "\"Google Chrome\";v=\"117\", \"Not;A=Brand\";v=\"8\", \"Chromium\";v=\"117\"")
+                    .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Mobile Safari/537.36");
+        }
 
         //Set media type based on request type
         switch (type) {
