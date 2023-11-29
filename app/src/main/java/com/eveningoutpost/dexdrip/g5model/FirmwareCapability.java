@@ -79,6 +79,10 @@ public class FirmwareCapability {
         return isFirmwareRawCapable(version); // hang off this for now as they are currently the same
     }
 
+    static boolean isG7Firmware(final String version) {
+        return KNOWN_ALT_FIRMWARES.contains(version);
+    }
+
     public static boolean isTransmitterPredictiveCapable(final String tx_id) {
         return isG6Firmware(getRawFirmwareVersionString(tx_id));
     }
@@ -96,6 +100,10 @@ public class FirmwareCapability {
             return true;
         }
         return false;
+    }
+
+    public static boolean isDeviceG7(final String tx_id) {
+        return isG7Firmware(getRawFirmwareVersionString(tx_id));
     }
 
     public static boolean isTransmitterG5(final String tx_id) {

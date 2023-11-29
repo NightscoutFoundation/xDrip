@@ -1290,6 +1290,7 @@
     <string name="title_nsfollow_url">Adres URL do obserwowania Nightscout</string>
     <string name="summary_nsfollow_download_treatments">Pobierz również zabiegi z Nightscout jako obserwator</string>
     <string name="title_nsfollow_download_treatments">Pobieraj zabiegi</string>
+    <string name="title_nsfollow_lag">Odstęp czasowy śledzenia Nightscout</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
     <string name="summary_clfollow_user">CareLink login username</string>
@@ -1383,6 +1384,7 @@
     <string name="summary_plus_accept_follower_actions">Zabiegi, kalibracje i inne działania ze strony obserwatorów będą akceptowane</string>
     <string name="title_plus_accept_follower_actions">Akceptuj akcje obserwatora</string>
     <string name="summary_plus_whole_house">Weź udział w Whole House Network</string>
+    <string name="summary_libre_whole_house_collector">Ten telefon będzie kolektorem w całej sieci domowej</string>
     <string name="summary_xdrip_plus_desert_sync_settings">Odbiór bez dostępu do sieci</string>
     <string name="title_xdrip_plus_desert_sync_settings">Lokalna synchronizacja</string>
     <string name="title_desert_sync_enabled">Lokalna synchronizacja</string>
@@ -1743,4 +1745,5 @@
     <string name="summary_Lib2_show_sense_on_status">Włącz, aby wyświetlić dodatkowe informacje o stanie czujnika Libre 2.</string>
     <string name="import_qr_code_warning">Importuj ustawienia tylko z zaufanych źródeł!\n\nPotwierdź zaimportowanie następujących ustawień:\n\n</string>
     <string name="scan_to_load_xdrip_settings">Zeskanuj, aby załadować ustawienia xDrip</string>
+    <string name="manage_permissions">Zarządzaj uprawnieniami</string>
 </resources>
