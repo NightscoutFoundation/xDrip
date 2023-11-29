@@ -111,8 +111,8 @@ public class Ob1G5StateMachine {
     private static int LOW_BATTERY_WARNING_LEVEL = Pref.getStringToInt("g5-battery-warning-level", 300); // voltage a < this value raises warnings;
     private static final long BATTERY_READ_PERIOD_MS = HOUR_IN_MS * 12; // how often to poll battery data (12 hours)
     private static final long MAX_BACKFILL_PERIOD_MS = HOUR_IN_MS * 3; // how far back to request backfill data
+    private static final long MAX_BACKFILL_PERIOD_MS2 = HOUR_IN_MS * 24; // A larger backfill option
     private static final int BACKFILL_CHECK_SMALL = 3;
-    private static final int BACKFILL_CHECK_LARGE = (int) (MAX_BACKFILL_PERIOD_MS / DEXCOM_PERIOD);
 
     private static final boolean getVersionDetails = true; // try to load firmware version details
     private static final boolean getBatteryDetails = true; // try to load battery info details
@@ -131,6 +131,18 @@ public class Ob1G5StateMachine {
     private static volatile AuthRequestTxMessage lastAuthPacket;
     private static volatile boolean backup_loaded = false;
     private static final int OLDEST_RAW = 300 * 24 * 60 * 60; // 300 days
+
+    public static long maxBackfillPeriod_MS = 0;
+    public static long maxBackfillPeriod_MS() {
+        maxBackfillPeriod_MS = MAX_BACKFILL_PERIOD_MS;
+        if (shortTxId()) { // If using G7
+            maxBackfillPeriod_MS = MAX_BACKFILL_PERIOD_MS2;
+        }
+        return maxBackfillPeriod_MS;
+    }
+    public static int backfillCheckLarge() {
+        return (int) (maxBackfillPeriod_MS() / DEXCOM_PERIOD);
+    }
 
     // Auth Check + Request
     @SuppressLint("CheckResult")
@@ -713,7 +725,7 @@ public class Ob1G5StateMachine {
                             if (!setStoredFirmwareBytes(getTransmitterID(), 1, bytes, true)) {
                                 UserError.Log.e(TAG, "Could not save out firmware version!");
                             }
-                            nextBackFillCheckSize = BACKFILL_CHECK_LARGE;
+                            nextBackFillCheckSize = backfillCheckLarge();
                             if (JoH.ratelimit("g6-evaluate", 600)) {
                                 Inevitable.task("evaluteG6Settings", 10000, () -> evaluateG6Settings());
                             }
@@ -723,7 +735,7 @@ public class Ob1G5StateMachine {
                             if (!setStoredFirmwareBytes(getTransmitterID(), 0, bytes, true)) {
                                 UserError.Log.e(TAG, "Could not save out firmware version!");
                             }
-                            nextBackFillCheckSize = BACKFILL_CHECK_LARGE;
+                            nextBackFillCheckSize = backfillCheckLarge();
                             if (JoH.ratelimit("g6-evaluate", 600)) {
                                 Inevitable.task("evaluteG6Settings", 10000, () -> evaluateG6Settings());
                             }
@@ -735,7 +747,7 @@ public class Ob1G5StateMachine {
                                 UserError.Log.e(TAG, "Could not save out firmware version!");
                             }
                             SensorDays.clearCache();
-                            nextBackFillCheckSize = BACKFILL_CHECK_LARGE;
+                            nextBackFillCheckSize = backfillCheckLarge();
                             if (JoH.ratelimit("g6-evaluate", 600)) {
                                 Inevitable.task("evaluteG6Settings", 10000, () -> evaluateG6Settings());
                             }
@@ -749,7 +761,7 @@ public class Ob1G5StateMachine {
                                     PersistentStore.setBoolean(G5_BATTERY_WEARABLE_SEND, true);
                                 }
                             }
-                            nextBackFillCheckSize = BACKFILL_CHECK_LARGE;
+                            nextBackFillCheckSize = backfillCheckLarge();
                             break;
 
                         case SessionStartRxMessage:
@@ -1056,7 +1068,7 @@ public class Ob1G5StateMachine {
         UserError.Log.d(TAG, "Checking " + check_readings + " for backfill requirement");
         final List<BgReading> lastReadings = BgReading.latest_by_size(check_readings);
         boolean ask_for_backfill = false;
-        long earliest_timestamp = tsl() - MAX_BACKFILL_PERIOD_MS;
+        long earliest_timestamp = tsl() - maxBackfillPeriod_MS();
         long latest_timestamp = tsl();
         if ((lastReadings == null) || (lastReadings.size() != check_readings)) {
             ask_for_backfill = true;
@@ -1065,7 +1077,7 @@ public class Ob1G5StateMachine {
                 final BgReading reading = lastReadings.get(i);
                 if ((reading == null) || (msSince(reading.timestamp) > ((DEXCOM_PERIOD * i) + Constants.MINUTE_IN_MS * 7))) {
                     ask_for_backfill = true;
-                    if ((reading != null) && (msSince(reading.timestamp) <= MAX_BACKFILL_PERIOD_MS)) {
+                    if ((reading != null) && (msSince(reading.timestamp) <= maxBackfillPeriod_MS())) {
                         earliest_timestamp = reading.timestamp;
                     }
                     if (reading != null) {
@@ -1082,7 +1094,7 @@ public class Ob1G5StateMachine {
         }
 
         if (ask_for_backfill) {
-            nextBackFillCheckSize = BACKFILL_CHECK_LARGE;
+            nextBackFillCheckSize = backfillCheckLarge();
             monitorBackFill(parent, connection);
             final long startTime = Math.max(earliest_timestamp - (Constants.MINUTE_IN_MS * 5), sensor.started_at);
             final long endTime = latest_timestamp + (Constants.MINUTE_IN_MS * 5);
@@ -1536,6 +1548,9 @@ public class Ob1G5StateMachine {
             JoH.static_toast_long(xdrip.gs(R.string.auto_starting_sensor));
             // TODO possibly here we want to look at last sensor stop time and not backtrack before that
             Sensor.create(tsl() - HOUR_IN_MS * 3);
+            if (shortTxId()) { // If we are using G7
+                Sensor.create(tsl() - HOUR_IN_MS * 24);
+            }
         }
     }
 
@@ -1868,7 +1883,7 @@ public class Ob1G5StateMachine {
         if (JoH.areWeRunningOnAndroidWear()) {
             final String pref_last_send_previous = "last_send_previous";
             final long last_send_previous = PersistentStore.getLong(pref_last_send_previous);
-            PersistentStore.setLong(pref_last_send_previous, Math.min(last_send_previous, tsl() - MAX_BACKFILL_PERIOD_MS));
+            PersistentStore.setLong(pref_last_send_previous, Math.min(last_send_previous, tsl() - maxBackfillPeriod_MS()));
         }
     }
 
@@ -1878,7 +1893,7 @@ public class Ob1G5StateMachine {
             final long time = DexTimeKeeper.fromDexTime(getTransmitterID(), backsie.getDextime());
 
             final long since = JoH.msSince(time);
-            if ((since > HOUR_IN_MS * 6) || (since < 0)) {
+            if ((!shortTxId() && since > HOUR_IN_MS * 6) || (since > HOUR_IN_MS * 25) || (since < 0)) {
                 UserError.Log.wtf(TAG, "Backfill timestamp unrealistic: " + JoH.dateTimeText(time) + " (ignored)");
             } else {
                 if (BgReading.getForPreciseTimestamp(time, Constants.MINUTE_IN_MS * 4) == null) {
