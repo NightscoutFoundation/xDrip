@@ -114,6 +114,7 @@ public class CareLinkAuthenticator {
     private String magIdentifier = null;
     private String authCode = null;
     private OkHttpClient httpClient = null;
+    private boolean authWebViewCancelled = false;
 
 
     public CareLinkAuthenticator(String carelinkCountry, CareLinkCredentialStore credentialStore) {
@@ -164,14 +165,14 @@ public class CareLinkAuthenticator {
 
         try {
 
-            //Show progress dialog
+            //Show progress dialog while preparing for login page
             this.showProgressDialog(context);
 
-            //Generate IDs, models
+            //Generate ID, models
             deviceId = generateDeviceId();
             androidModel = this.generateAndroidModel();
 
-            //Load App config
+            //Load application config
             this.loadAppConfig();
 
             //Create client credential
@@ -197,35 +198,38 @@ public class CareLinkAuthenticator {
             });
             available.acquire();
 
-            //Show progress dialog
-            this.showProgressDialog(context);
+            //Continue if not cancelled
+            if(!this.authWebViewCancelled) {
+                //Show progress dialog while completing authentication
+                this.showProgressDialog(context);
 
-            //Register device
-            UserError.Log.d(TAG, "Register device");
-            Response registerResp = this.registerDevice(deviceId, androidModel, clientId, clientSecret, authCode, codeVerifier);
-            magIdentifier = registerResp.header("mag-identifier");
-            idToken = registerResp.header("id-token");
-            idTokenType = registerResp.header("id-token-type");
+                //Register device
+                UserError.Log.d(TAG, "Register device");
+                Response registerResp = this.registerDevice(deviceId, androidModel, clientId, clientSecret, authCode, codeVerifier);
+                magIdentifier = registerResp.header("mag-identifier");
+                idToken = registerResp.header("id-token");
+                idTokenType = registerResp.header("id-token-type");
 
-            //Get access token
-            UserError.Log.d(TAG, "Get access token");
-            JsonObject tokenObject = this.getAccessToken(clientId, clientSecret, magIdentifier, idToken, idTokenType);
+                //Get access token
+                UserError.Log.d(TAG, "Get access token");
+                JsonObject tokenObject = this.getAccessToken(clientId, clientSecret, magIdentifier, idToken, idTokenType);
 
-            //Store credentials
-            UserError.Log.d(TAG, "Store credentials");
-            this.credentialStore.setMobileAppCredential(this.carelinkCountry,
-                    this.deviceId, this.androidModel, this.clientId, this.clientSecret, this.magIdentifier,
-                    tokenObject.get("access_token").getAsString(), tokenObject.get("refresh_token").getAsString(),
-                    //new Date(Calendar.getInstance().getTime().getTime() + 15 * 60000),
-                    //new Date(Calendar.getInstance().getTime().getTime() + 30 * 60000));
-                    new Date(Calendar.getInstance().getTime().getTime() + (tokenObject.get("expires_in").getAsInt() * 1000)),
-                    new Date(Calendar.getInstance().getTime().getTime() + (this.carepartnerAppConfig.getRefreshLifetimeSec() * 1000)));
+                //Store credentials
+                UserError.Log.d(TAG, "Store credentials");
+                this.credentialStore.setMobileAppCredential(this.carelinkCountry,
+                        this.deviceId, this.androidModel, this.clientId, this.clientSecret, this.magIdentifier,
+                        tokenObject.get("access_token").getAsString(), tokenObject.get("refresh_token").getAsString(),
+                        //new Date(Calendar.getInstance().getTime().getTime() + 15 * 60000),
+                        //new Date(Calendar.getInstance().getTime().getTime() + 30 * 60000));
+                        new Date(Calendar.getInstance().getTime().getTime() + (tokenObject.get("expires_in").getAsInt() * 1000)),
+                        new Date(Calendar.getInstance().getTime().getTime() + (this.carepartnerAppConfig.getRefreshLifetimeSec() * 1000)));
 
-            //Hide progress dialog
-            this.hideProgressDialog();
+                //Hide progress dialog
+                this.hideProgressDialog();
+            }
 
         } catch (Exception ex) {
-            UserError.Log.e(TAG, "Error authenticating as CpApp. Details: " + ex.getMessage());
+            UserError.Log.e(TAG, "Error authenticating as CpApp. Details: \r\n " + ex.getMessage());
             this.hideProgressDialog();
         }
 
@@ -244,7 +248,9 @@ public class CareLinkAuthenticator {
     }
 
     private OkHttpClient getHttpClient() {
-        return new OkHttpClient.Builder().build();
+        if (this.httpClient == null)
+            this.httpClient = new OkHttpClient();
+        return this.httpClient;
     }
 
     private boolean loadAppConfig() {
@@ -258,7 +264,7 @@ public class CareLinkAuthenticator {
             }
             return true;
         } catch (Exception ex) {
-            UserError.Log.e(TAG, "Error getting AppConfig. Details: " + ex.getMessage());
+            UserError.Log.e(TAG, "Error getting CpApp config. Details: \r\n" + ex.getMessage());
             return false;
         }
     }
@@ -313,7 +319,7 @@ public class CareLinkAuthenticator {
             KeyPair keypair = keygen.genKeyPair();
             trimmedCsr = createTrimmedCsr(keypair, "SHA256withRSA", "socialLogin", deviceId, androidModel, "Medtronic");
 
-
+            //Register device and get certificate for CSR
             RequestBody body;
             Request.Builder requestBuilder;
 
@@ -333,7 +339,7 @@ public class CareLinkAuthenticator {
             return response = this.callSsoApi(requestBuilder, carepartnerAppConfig.getMagDeviceRegisterEndpoint(), null);
 
         } catch (Exception ex) {
-            ex.getMessage();
+            UserError.Log.e(TAG, "Error registering device. Details: \r\n" + ex.getMessage());
             return null;
         }
 
@@ -374,7 +380,7 @@ public class CareLinkAuthenticator {
         } catch (Exception ex) {
         }
 
-        //Set query params
+        //Set params
         queryParams = new HashMap<String, String>();
         queryParams.put("client_id", clientId);
         queryParams.put("response_type", "code");
@@ -482,10 +488,13 @@ public class CareLinkAuthenticator {
         JsonObject tokenRefreshResult;
 
         try {
+            //Get config
             this.loadAppConfig();
+            //Refresh token
             tokenRefreshResult = this.refreshToken(
                     credentialStore.getCredential().clientId, credentialStore.getCredential().clientSecret,
                     credentialStore.getCredential().magIdentifier, credentialStore.getCredential().refreshToken);
+            //Save token
             credentialStore.updateMobileAppCredential(
                     tokenRefreshResult.get("access_token").getAsString(),
                     //new Date(Calendar.getInstance().getTime().getTime() + 15 * 60000),
@@ -493,9 +502,10 @@ public class CareLinkAuthenticator {
                     new Date(Calendar.getInstance().getTime().getTime() + (tokenRefreshResult.get("expires_in").getAsInt() * 1000)),
                     new Date(Calendar.getInstance().getTime().getTime() + (this.carepartnerAppConfig.getRefreshLifetimeSec() * 1000)),
                     tokenRefreshResult.get("refresh_token").getAsString());
+            //Completed successfully
             return true;
         } catch (Exception ex) {
-            UserError.Log.e(TAG, "Error refreshing CpApp token! Details: " + ex.getMessage());
+            UserError.Log.e(TAG, "Error refreshing CpApp token! Details: \r\n" + ex.getMessage());
             return false;
         }
     }
@@ -577,11 +587,9 @@ public class CareLinkAuthenticator {
     }
 
     private void hideProgressDialog() {
-
         if (this.progressDialog != null && this.progressDialog.isShowing()) {
             this.progressDialog.dismiss();
         }
-
     }
 
     private AlertDialog getProgressDialog(Activity context) {
@@ -602,7 +610,6 @@ public class CareLinkAuthenticator {
     }
 
     private void showBrowserAuthPage(Activity context, String url) {
-
         final Dialog authDialog = new Dialog(context);
         this.showAuthWebView(authDialog, url, new WebViewClient() {
             @Override
@@ -624,12 +631,15 @@ public class CareLinkAuthenticator {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 if (CareLinkAuthenticator.this.extractCpAppAuthCode(url))
+                    //close browser dialog
                     authDialog.dismiss();
             }
         });
     }
 
     private void showAuthWebView(Dialog authDialog, String url, WebViewClient webViewClient) {
+
+        this.authWebViewCancelled = false;
 
         LinearLayoutCompat layout = new LinearLayoutCompat(authDialog.getContext());
         WebView webView = new WebView(authDialog.getContext());
@@ -643,6 +653,12 @@ public class CareLinkAuthenticator {
                 unlock();
             }
         });
+        authDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialogInterface) {
+                authWebViewCancelled = true;
+            }
+        });
 
         //Configure Webview
         webView.getSettings().setJavaScriptEnabled(true);
@@ -650,7 +666,7 @@ public class CareLinkAuthenticator {
         webView.loadUrl(url);
         webView.setWebViewClient(webViewClient);
 
-        //Set dialog display infos and show it
+        //Set dialog display params and show it
         authDialog.setCancelable(true);
         authDialog.getWindow().setLayout(LinearLayoutCompat.LayoutParams.MATCH_PARENT, LinearLayoutCompat.LayoutParams.MATCH_PARENT);
         authDialog.show();
@@ -659,7 +675,7 @@ public class CareLinkAuthenticator {
 
     private boolean extractCpAppAuthCode(String url) {
 
-        //When directed to redirect uri => extract code
+        //Redirect url => extract code, completed
         if (url.contains(this.carepartnerAppConfig.getOAuthRedirectUri())) {
             try {
                 UrlQuerySanitizer sanitizer = new UrlQuerySanitizer();
@@ -667,14 +683,16 @@ public class CareLinkAuthenticator {
                 sanitizer.parseUrl(url);
                 authCode = sanitizer.getValue("code");
             } catch (Exception ex) {
+                UserError.Log.e(TAG, "Error extracting authCode! Details: \r\n" + ex.getMessage());
             }
             return true;
+            //Other url => authentication not completed yet
         } else
             return false;
 
     }
 
-    private JsonObject getCpAppRegionConfig() {
+    private JsonObject getCpAppRegionConfig() throws IOException {
 
 
         //Get CarePartner app discover
@@ -697,11 +715,11 @@ public class CareLinkAuthenticator {
 
     }
 
-    private JsonObject getCpAppSSOConfig(String url) {
+    private JsonObject getCpAppSSOConfig(String url) throws IOException {
         return this.getConfigJson(url);
     }
 
-    private JsonObject getConfigJson(String url) {
+    private JsonObject getConfigJson(String url) throws IOException {
 
         Request request = null;
 
@@ -709,15 +727,8 @@ public class CareLinkAuthenticator {
                 .url(url)
                 .get()
                 .build();
-        try {
-            Response response = this.getHttpClient().newCall(request).execute();
-            if (response.isSuccessful()) {
-                return JsonParser.parseString(response.body().string()).getAsJsonObject();
-            }
-        } catch (Exception ex) {
-        }
-
-        return null;
+        Response response = this.getHttpClient().newCall(request).execute();
+        return JsonParser.parseString(response.body().string()).getAsJsonObject();
 
     }
 
@@ -806,6 +817,7 @@ public class CareLinkAuthenticator {
 
     private Date parseValidTo(String validToDateString) {
         for (SimpleDateFormat zonedFormat : VALIDTO_DATE_FORMATS) {
+            //try until translate is successful
             try {
                 return zonedFormat.parse(validToDateString);
             } catch (Exception ex) {
