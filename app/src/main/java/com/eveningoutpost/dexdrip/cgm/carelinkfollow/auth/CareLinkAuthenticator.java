@@ -11,6 +11,8 @@ import android.os.Looper;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -107,14 +109,10 @@ public class CareLinkAuthenticator {
     private String carelinkCountry;
     private CareLinkCredentialStore credentialStore;
     private CarePartnerAppConfig carepartnerAppConfig;
-    private String deviceId = null;
-    private String androidModel;
-    private String clientId = null;
-    private String clientSecret = null;
-    private String magIdentifier = null;
     private String authCode = null;
     private OkHttpClient httpClient = null;
     private boolean authWebViewCancelled = false;
+    private boolean carelinkCommunicationError = false;
 
 
     public CareLinkAuthenticator(String carelinkCountry, CareLinkCredentialStore credentialStore) {
@@ -155,15 +153,22 @@ public class CareLinkAuthenticator {
         }
     }
 
-    private void authenticateAsCpApp(Activity context) throws InterruptedException {
+    private void authenticateAsCpApp(Activity context) {
 
+        String deviceId;
+        String androidModel;
+        String clientId;
+        String clientSecret;
+        String magIdentifier;
         JsonObject clientCredential;
-        String codeVerifier = null;
+        String codeVerifier;
         String authUrl;
-        String idToken = null;
-        String idTokenType = null;
+        String idToken;
+        String idTokenType;
 
         try {
+
+            carelinkCommunicationError = false;
 
             //Show progress dialog while preparing for login page
             this.showProgressDialog(context);
@@ -198,8 +203,8 @@ public class CareLinkAuthenticator {
             });
             available.acquire();
 
-            //Continue if not cancelled
-            if(!this.authWebViewCancelled) {
+            //Continue if not cancelled and no error
+            if (!this.authWebViewCancelled && !carelinkCommunicationError) {
                 //Show progress dialog while completing authentication
                 this.showProgressDialog(context);
 
@@ -230,7 +235,28 @@ public class CareLinkAuthenticator {
 
         } catch (Exception ex) {
             UserError.Log.e(TAG, "Error authenticating as CpApp. Details: \r\n " + ex.getMessage());
+            carelinkCommunicationError = true;
             this.hideProgressDialog();
+        }
+
+        //Show communication error
+        if (carelinkCommunicationError) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    new AlertDialog.Builder(context)
+                            .setTitle("Communication error!")
+                            .setMessage("Error communicating with CareLink Server! Please try again later!")
+                            .setCancelable(true)
+                            .setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.cancel();
+                                }
+                            })
+                            .show();
+                }
+            });
         }
 
     }
@@ -253,20 +279,15 @@ public class CareLinkAuthenticator {
         return this.httpClient;
     }
 
-    private boolean loadAppConfig() {
-        try {
-            if (carepartnerAppConfig == null) {
-                carepartnerAppConfig = new CarePartnerAppConfig();
-                UserError.Log.d(TAG, "Get region config");
-                carepartnerAppConfig.regionConfig = this.getCpAppRegionConfig();
-                UserError.Log.d(TAG, "Get SSO config");
-                carepartnerAppConfig.ssoConfig = this.getCpAppSSOConfig(carepartnerAppConfig.getSSOConfigUrl());
-            }
-            return true;
-        } catch (Exception ex) {
-            UserError.Log.e(TAG, "Error getting CpApp config. Details: \r\n" + ex.getMessage());
-            return false;
+    private boolean loadAppConfig() throws IOException {
+        if (carepartnerAppConfig == null) {
+            carepartnerAppConfig = new CarePartnerAppConfig();
+            UserError.Log.d(TAG, "Get region config");
+            carepartnerAppConfig.regionConfig = this.getCpAppRegionConfig();
+            UserError.Log.d(TAG, "Get SSO config");
+            carepartnerAppConfig.ssoConfig = this.getCpAppSSOConfig(carepartnerAppConfig.getSSOConfigUrl());
         }
+        return true;
     }
 
     private JsonObject getAccessToken(String clientId, String clientSecret, String magIdentifier, String idToken, String idTokenType) throws IOException {
@@ -279,8 +300,8 @@ public class CareLinkAuthenticator {
 
     private JsonObject getToken(String clientId, String clientSecret, String magIdentifier, String idToken, String idTokenType, String refreshToken) throws IOException {
 
-        Request.Builder requestBuilder = null;
-        FormBody.Builder form = null;
+        Request.Builder requestBuilder;
+        FormBody.Builder form;
 
         //Common token request params
         form = new FormBody.Builder()
@@ -306,42 +327,38 @@ public class CareLinkAuthenticator {
 
     }
 
-    private Response registerDevice(String deviceId, String androidModel, String clientId, String clientSecret, String authCode, String codeVerifier) {
+    private Response registerDevice(String deviceId, String androidModel, String clientId, String clientSecret, String authCode, String codeVerifier) throws IOException {
 
         String trimmedCsr = null;
-        Response response = null;
-        String cert = null;
 
+        //Create RSA2048 keypair and CSR
         try {
-            //Create RSA2048 keypair and CSR
             KeyPairGenerator keygen = KeyPairGenerator.getInstance("RSA");
             keygen.initialize(2048);
             KeyPair keypair = keygen.genKeyPair();
             trimmedCsr = createTrimmedCsr(keypair, "SHA256withRSA", "socialLogin", deviceId, androidModel, "Medtronic");
-
-            //Register device and get certificate for CSR
-            RequestBody body;
-            Request.Builder requestBuilder;
-
-            body = RequestBody.create(null, trimmedCsr);
-
-            requestBuilder = new Request.Builder()
-                    .post(body)
-                    .addHeader("device-id", Base64.encodeToString(deviceId.getBytes(StandardCharsets.UTF_8), Base64.NO_WRAP))
-                    .addHeader("device-name", Base64.encodeToString(androidModel.getBytes(StandardCharsets.UTF_8), Base64.NO_WRAP))
-                    .addHeader("authorization", "Bearer " + authCode)
-                    .addHeader("client-authorization", "Basic " + Base64.encodeToString((clientId + ":" + clientSecret).getBytes(StandardCharsets.UTF_8), Base64.NO_WRAP))
-                    .addHeader("cert-format", "pem")
-                    .addHeader("create-session", "true")
-                    .addHeader("code-verifier", codeVerifier)
-                    .addHeader("redirect-uri", carepartnerAppConfig.getOAuthRedirectUri());
-
-            return response = this.callSsoApi(requestBuilder, carepartnerAppConfig.getMagDeviceRegisterEndpoint(), null);
-
-        } catch (Exception ex) {
-            UserError.Log.e(TAG, "Error registering device. Details: \r\n" + ex.getMessage());
-            return null;
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Error creating CSR! Details: \r\n" + e.getMessage());
         }
+
+        //Register device and get certificate for CSR
+        RequestBody body;
+        Request.Builder requestBuilder;
+
+        body = RequestBody.create(null, trimmedCsr);
+
+        requestBuilder = new Request.Builder()
+                .post(body)
+                .addHeader("device-id", Base64.encodeToString(deviceId.getBytes(StandardCharsets.UTF_8), Base64.NO_WRAP))
+                .addHeader("device-name", Base64.encodeToString(androidModel.getBytes(StandardCharsets.UTF_8), Base64.NO_WRAP))
+                .addHeader("authorization", "Bearer " + authCode)
+                .addHeader("client-authorization", "Basic " + Base64.encodeToString((clientId + ":" + clientSecret).getBytes(StandardCharsets.UTF_8), Base64.NO_WRAP))
+                .addHeader("cert-format", "pem")
+                .addHeader("create-session", "true")
+                .addHeader("code-verifier", codeVerifier)
+                .addHeader("redirect-uri", carepartnerAppConfig.getOAuthRedirectUri());
+
+        return this.callSsoApi(requestBuilder, carepartnerAppConfig.getMagDeviceRegisterEndpoint(), null);
 
     }
 
@@ -367,10 +384,10 @@ public class CareLinkAuthenticator {
 
     private String prepareAuth(String clientId, String codeVerifier) throws IOException {
 
-        Request.Builder requestBuilder = null;
-        Map<String, String> queryParams = null;
+        Request.Builder requestBuilder;
+        Map<String, String> queryParams;
         String codeChallenge = null;
-        JsonObject providers = null;
+        JsonObject providers;
 
         //Generate SHA-256 code challenge
         try {
@@ -433,7 +450,7 @@ public class CareLinkAuthenticator {
                 stringBuilder.append(String.format("%02x", byteChar));
             return stringBuilder.toString();
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            UserError.Log.e(TAG, "Error generating deviceId! Details: \r\n" + e.getMessage());
         }
 
         return null;
@@ -516,11 +533,11 @@ public class CareLinkAuthenticator {
         if (credentialStore.getAuthStatus() == CareLinkCredentialStore.NOT_AUTHENTICATED)
             return false;
 
-        HttpUrl url = null;
-        OkHttpClient httpClient = null;
-        Request.Builder requestBuilder = null;
-        Response response = null;
-        EditableCookieJar cookieJar = null;
+        HttpUrl url;
+        OkHttpClient httpClient;
+        Request.Builder requestBuilder;
+        Response response;
+        EditableCookieJar cookieJar;
 
 
         //Build client with cookies from CredentialStore
@@ -634,6 +651,15 @@ public class CareLinkAuthenticator {
                     //close browser dialog
                     authDialog.dismiss();
             }
+
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                //Connection error
+                if (error.getErrorCode() == WebViewClient.ERROR_CONNECT) {
+                    carelinkCommunicationError = true;
+                    authDialog.dismiss();
+                }
+            }
         });
     }
 
@@ -721,7 +747,7 @@ public class CareLinkAuthenticator {
 
     private JsonObject getConfigJson(String url) throws IOException {
 
-        Request request = null;
+        Request request;
 
         request = new Request.Builder()
                 .url(url)
