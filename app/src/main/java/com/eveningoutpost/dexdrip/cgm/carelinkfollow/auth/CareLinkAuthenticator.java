@@ -16,7 +16,9 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -125,6 +127,7 @@ public class CareLinkAuthenticator {
         if (Looper.myLooper() == Looper.getMainLooper())
             throw new RuntimeException("don't call authenticate() from the main thread.");
 
+        //Execute authentication method of authentication type
         switch (authType) {
             case Browser:
                 this.authenticateAsBrowser(context);
@@ -134,6 +137,7 @@ public class CareLinkAuthenticator {
                 break;
         }
 
+        //Return: is authenticated
         return (credentialStore.getAuthStatus() == CareLinkCredentialStore.AUTHENTICATED);
     }
 
@@ -222,7 +226,7 @@ public class CareLinkAuthenticator {
                 //Store credentials
                 UserError.Log.d(TAG, "Store credentials");
                 this.credentialStore.setMobileAppCredential(this.carelinkCountry,
-                        this.deviceId, this.androidModel, this.clientId, this.clientSecret, this.magIdentifier,
+                        deviceId, androidModel, clientId, clientSecret, magIdentifier,
                         tokenObject.get("access_token").getAsString(), tokenObject.get("refresh_token").getAsString(),
                         //new Date(Calendar.getInstance().getTime().getTime() + 15 * 60000),
                         //new Date(Calendar.getInstance().getTime().getTime() + 30 * 60000));
@@ -613,7 +617,7 @@ public class CareLinkAuthenticator {
         if (this.progressDialog == null) {
             AlertDialog.Builder builder;
             builder = new AlertDialog.Builder(context);
-            builder.setTitle("Login in progress...");
+            builder.setTitle(xdrip.gs(R.string.carelink_auth_login_in_progress));
             final ProgressBar progressBar = new ProgressBar(context);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
