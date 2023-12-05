@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.cgm.carelinkfollow;
 
 import android.os.PowerManager;
 
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.auth.CareLinkAuthenticator;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.auth.CareLinkCredentialStore;
 import com.eveningoutpost.dexdrip.models.JoH;
@@ -10,6 +11,7 @@ import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.client.CareLinkClient;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.RecentData;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
 
@@ -64,7 +66,7 @@ public class CareLinkFollowDownloader {
     }
 
     private void downloadData() {
-        msg("Start download");
+        msg(xdrip.gs(R.string.carelink_download_start));
         if (checkCredentials(true, true, true)) {
             try {
                 if (getCareLinkClient() != null) {
@@ -72,30 +74,30 @@ public class CareLinkFollowDownloader {
                     backgroundProcessConnectData();
                 } else {
                     UserError.Log.d(TAG, "Cannot get data as CareLinkClient is null");
-                    msg("Download data failed!");
+                    msg(xdrip.gs(R.string.carelink_download_failed));
                 }
             } catch (Exception e) {
                 UserError.Log.e(TAG, "Got exception in getData() " + e);
                 releaseWakeLock();
-                msg("Download data failed!");
+                msg(xdrip.gs(R.string.carelink_download_failed));
             }
         }
     }
 
     private void refreshToken() {
-        msg("Start refreshing token");
+        msg(xdrip.gs(R.string.carelink_refresh_token_start));
         if (checkCredentials(true, false, true)) {
             try {
                 if (new CareLinkAuthenticator(CareLinkCredentialStore.getInstance().getCredential().country, CareLinkCredentialStore.getInstance()).refreshToken()) {
-                    UserError.Log.d(TAG, "Access token renewed!");
+                    UserError.Log.d(TAG, "Access renewed!");
                     msg(null);
                 } else {
                     UserError.Log.e(TAG, "Error renewing access token!");
-                    msg("Access refresh failed! Will try again!");
+                    msg(xdrip.gs(R.string.carelink_refresh_token_failed));
                 }
             } catch (Exception e) {
                 UserError.Log.e(TAG, "Error renewing access token: " + e.getMessage());
-                msg("Access refresh failed! Will try again!");
+                msg(xdrip.gs(R.string.carelink_refresh_token_failed));
             }
         }
     }
@@ -103,15 +105,15 @@ public class CareLinkFollowDownloader {
     private boolean checkCredentials(boolean checkAuthenticated, boolean checkAccessExpired, boolean checkRefreshExpired) {
         // Not authenticated
         if (checkAuthenticated && CareLinkCredentialStore.getInstance().getAuthStatus() != CareLinkCredentialStore.AUTHENTICATED) {
-            msg("Not logged in! Please log in!");
+            msg(xdrip.gs(R.string.carelink_credential_status_not_authenticated));
             return false;
         }
         if (checkAccessExpired && CareLinkCredentialStore.getInstance().getAccessExpiresIn() <= 0) {
-            msg("Access expired!");
+            msg(xdrip.gs(R.string.carelink_credential_status_access_expired));
             return false;
         }
         if (checkRefreshExpired && CareLinkCredentialStore.getInstance().getRefreshExpiresIn() <= 0) {
-            msg("Login expired! Please log in!");
+            msg(xdrip.gs(R.string.carelink_credential_status_refresh_expired));
             return false;
         }
         return true;
