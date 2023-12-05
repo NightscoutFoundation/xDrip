@@ -2493,7 +2493,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
            //  removePreferenceFromCategory("use_ob1_g5_collector_service", "ob1_options");
            //  removePreferenceFromCategory("ob1_g5_fallback_to_xdrip", "ob1_options");
            //  removePreferenceFromCategory("always_unbond_G5", "ob1_options");
-           //  removePreferenceFromCategory("authentificate_before_reading", "ob1_options");
+           //  removePreferenceFromCategory("always_get_new_keys", "ob1_options");
        }
 
        private void removePreferenceFromCategory(final String preference, final String category) {

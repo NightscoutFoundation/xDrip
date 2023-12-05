@@ -147,7 +147,7 @@ public class IdempotentMigrations {
         Pref.setBoolean("use_ob1_g5_collector_service", true);
         Pref.setBoolean("ob1_g5_fallback_to_xdrip", false);
         Pref.setBoolean("always_unbond_G5", false);
-        Pref.setBoolean("authentificate_before_reading", true);
+        Pref.setBoolean("always_get_new_keys", true);
     }
 
 }
