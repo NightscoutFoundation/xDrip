@@ -1801,4 +1801,15 @@
     <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Senden und Empfangen von Daten von Google Health Connect und Google Fit</string>
     <string name="google_health_connect">Google Health Connect</string>
     <string name="google_health_connect_needs_perms">FEHLER: Health Connect braucht Berechtigungen! - Versuche es in den Einstellungen erneut</string>
+    <string name="carelink_auth_country_required">Länderangabe ist erforderlich!</string>
+    <string name="carelink_auth_status_authenticated">Authentifizierter Status!</string>
+    <string name="carelink_auth_status_not_authenticated">Nicht authentifizierter Status!</string>
+    <string name="carelink_auth_login_in_progress">Anmeldung läuft...</string>
+    <string name="carelink_refresh_token_start">Zugangserneuerung starten</string>
+    <string name="carelink_refresh_token_failed">Zugangserneuerung fehlgeschlagen! Neuer Versuch...</string>
+    <string name="carelink_download_start">Download starten</string>
+    <string name="carelink_download_failed">Daten-Download fehlgeschlagen.</string>
+    <string name="carelink_credential_status_not_authenticated">Nicht angemeldet! Bitte einloggen!</string>
+    <string name="carelink_credential_status_access_expired">Zugang abgelaufen! Wird aktualisiert...</string>
+    <string name="carelink_credential_status_refresh_expired">Login abgelaufen! Bitte anmelden!</string>
 </resources>
