@@ -1792,4 +1792,15 @@
     <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Надсилати та отримувати дані з Google Health Connect і Google Fit</string>
     <string name="google_health_connect">Google Health Connect</string>
     <string name="google_health_connect_needs_perms">Помилка: Health Connect потребує дозволу! - перевірте його у налаштуваннях</string>
+    <string name="carelink_auth_country_required">Необхідно вказати країну!</string>
+    <string name="carelink_auth_status_authenticated">Статус підтверджено!</string>
+    <string name="carelink_auth_status_not_authenticated">Статус не підтверджено!</string>
+    <string name="carelink_auth_login_in_progress">Виконується вхід...</string>
+    <string name="carelink_refresh_token_start">Почати відновлення доступу</string>
+    <string name="carelink_refresh_token_failed">Не вдалося відновити доступ! Спробую повторити!</string>
+    <string name="carelink_download_start">Почати завантаження</string>
+    <string name="carelink_download_failed">Завантажити дані не вдалося!</string>
+    <string name="carelink_credential_status_not_authenticated">Спершу, будь ласка, увійдіть у систему!</string>
+    <string name="carelink_credential_status_access_expired">Доступ завершився! Спробую поновити!</string>
+    <string name="carelink_credential_status_refresh_expired">Логін завершено! Увійдіть в систему повторно!</string>
 </resources>
