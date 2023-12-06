@@ -4,6 +4,7 @@ import static com.eveningoutpost.dexdrip.importedlibraries.dexcom.Dex_Constants.
 import static com.eveningoutpost.dexdrip.importedlibraries.dexcom.Dex_Constants.TREND_ARROW_VALUES.getTrend;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPluginFromPreferences;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.newCloseSensorData;
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.getTransmitterID;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -21,6 +22,7 @@ import com.activeandroid.util.SQLiteUtils;
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.g5model.FirmwareCapability;
 import com.eveningoutpost.dexdrip.importedlibraries.dexcom.records.EGVRecord;
 import com.eveningoutpost.dexdrip.importedlibraries.dexcom.records.SensorRecord;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
@@ -1122,7 +1124,11 @@ public class BgReading extends Model implements ShareUploadableBg {
             bgr.calculated_value = calculated_value;
             bgr.raw_data = SPECIAL_G5_PLACEHOLDER; // placeholder
             if (Ob1G5CollectionService.usingG6()) {
-                bgr.appendSourceInfo("G6 Native");
+                if (FirmwareCapability.isDeviceG7(getTransmitterID())) {
+                    bgr.appendSourceInfo("G7");
+                } else {
+                    bgr.appendSourceInfo("G6 Native");
+                }
             } else {
                 bgr.appendSourceInfo("G5 Native");
             }
