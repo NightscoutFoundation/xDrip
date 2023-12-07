@@ -301,18 +301,4 @@ public class NotificationChannels {
         }
     }
 
-    static Notification getNotificationFromInsideBuilder(final NotificationCompat.Builder builder) {
-        try {
-            final Class<?> builderClass = builder.getClass();
-            final Field mNotificationField = builderClass.getDeclaredField("mNotification");
-            mNotificationField.setAccessible(true);
-            return (Notification) mNotificationField.get(builder);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            if (JoH.ratelimit("notification-workaround", 1800)) {
-                UserError.Log.wtf(TAG, "Workaround being used for notification channels no longer works - please report");
-            }
-            return null;
-        }
-    }
-
 }
