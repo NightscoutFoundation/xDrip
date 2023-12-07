@@ -1786,4 +1786,15 @@
     <string name="summary_Lib2_show_sense_on_status">Attiva per mostrare ulteriori informazioni nello stato, per il sensore Libre 2.</string>
     <string name="import_qr_code_warning">Importa solo le impostazioni da fonti affidabili!\n\nConferma di volere importare le impostazioni seguenti:\n\n</string>
     <string name="scan_to_load_xdrip_settings">Scansiona per caricare le impostazioni xDrip</string>
+    <string name="carelink_auth_country_required">Il campo paese è obbligatorio!</string>
+    <string name="carelink_auth_status_authenticated">Stato: autenticato!</string>
+    <string name="carelink_auth_status_not_authenticated">Stato: non autenticato!</string>
+    <string name="carelink_auth_login_in_progress">Login in corso...</string>
+    <string name="carelink_refresh_token_start">Avvia rinnovo di accesso</string>
+    <string name="carelink_refresh_token_failed">Rinnovo accesso fallito! Riproverò!</string>
+    <string name="carelink_download_start">Inizia il download</string>
+    <string name="carelink_download_failed">Download dati fallito!</string>
+    <string name="carelink_credential_status_not_authenticated">Accesso non effettuato! Effettua il login!</string>
+    <string name="carelink_credential_status_access_expired">Accesso scaduto! Si aggiornerà!</string>
+    <string name="carelink_credential_status_refresh_expired">Login scaduto! Effettua il login!</string>
 </resources>
