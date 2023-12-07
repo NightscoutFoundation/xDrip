@@ -2,8 +2,7 @@ package com.eveningoutpost.dexdrip;
 
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
+
 import android.view.View;
 import android.widget.Button;
 
@@ -22,6 +21,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 /**
  * Created by jamorham on 23/05/2017.

@@ -10,7 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
-import android.support.v4.content.LocalBroadcastManager;
+
 import android.util.Log;
 import android.widget.Toast;
 
@@ -90,6 +90,8 @@ import java.util.concurrent.TimeUnit;
 import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.PREF_QUEUE_DRAINED;
 import static com.eveningoutpost.dexdrip.models.JoH.showNotification;
 import static com.eveningoutpost.dexdrip.models.JoH.ts;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 @SuppressLint("LogNotTimber")
 public class WatchUpdaterService extends WearableListenerService implements

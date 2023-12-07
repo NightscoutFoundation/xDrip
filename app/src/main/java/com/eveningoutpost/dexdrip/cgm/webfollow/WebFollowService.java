@@ -9,7 +9,7 @@ import static com.eveningoutpost.dexdrip.xdrip.gs;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.text.SpannableString;
 
 import com.eveningoutpost.dexdrip.models.BgReading;

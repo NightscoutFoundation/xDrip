@@ -44,11 +44,13 @@ import android.os.Handler;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.provider.Settings;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.CursorLoader;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ContextThemeWrapper;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ContextThemeWrapper;
+import androidx.core.app.NotificationCompat;
+import androidx.loader.content.CursorLoader;
+
 import android.text.InputType;
 import android.text.method.DigitsKeyListener;
 import android.util.Base64;

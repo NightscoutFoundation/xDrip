@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.cgm.sharefollow;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.eveningoutpost.dexdrip.importedlibraries.dexcom.Dex_Constants;
 import com.eveningoutpost.dexdrip.models.UserError;

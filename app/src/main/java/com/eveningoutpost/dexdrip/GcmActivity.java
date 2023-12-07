@@ -13,7 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
-import android.support.v4.content.LocalBroadcastManager;
+
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.models.BgReading;
@@ -54,6 +54,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.eveningoutpost.dexdrip.models.JoH.isOldVersion;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 /**
  * Created by jamorham on 11/01/16.

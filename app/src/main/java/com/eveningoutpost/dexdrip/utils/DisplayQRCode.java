@@ -8,8 +8,8 @@ import static com.eveningoutpost.dexdrip.utils.QRcodeUtils.serializeBinaryPrefsM
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.databinding.ObservableBoolean;
-import android.databinding.ObservableField;
+import androidx.databinding.ObservableBoolean;
+import androidx.databinding.ObservableField;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;

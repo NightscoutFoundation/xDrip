@@ -1,11 +1,11 @@
 package com.eveningoutpost.dexdrip.deposit;
 
 import android.app.Activity;
-import android.databinding.Observable;
-import android.databinding.ObservableField;
+import androidx.databinding.Observable;
+import androidx.databinding.ObservableField;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
@@ -14,7 +14,7 @@ import com.eveningoutpost.dexdrip.utilitymodels.PrefsViewImpl;
 import com.eveningoutpost.dexdrip.databinding.ActivityDepositActivityBinding;
 import com.eveningoutpost.dexdrip.ui.dialog.GenericConfirmDialog;
 
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 import lombok.RequiredArgsConstructor;
 
 import static com.eveningoutpost.dexdrip.models.JoH.tsl;

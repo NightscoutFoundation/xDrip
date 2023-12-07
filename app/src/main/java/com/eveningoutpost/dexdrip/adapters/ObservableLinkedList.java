@@ -16,8 +16,8 @@ package com.eveningoutpost.dexdrip.adapters;
  * limitations under the License.
  */
 
-import android.databinding.ListChangeRegistry;
-import android.databinding.ObservableList;
+import androidx.databinding.ListChangeRegistry;
+import androidx.databinding.ObservableList;
 
 
 import java.util.Collection;

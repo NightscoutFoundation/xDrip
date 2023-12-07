@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.utilitymodels;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.support.annotation.StringRes;
+import androidx.annotation.StringRes;
 
 import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.Home;

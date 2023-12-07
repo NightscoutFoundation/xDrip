@@ -4,8 +4,7 @@ package com.eveningoutpost.dexdrip.ui;
  * Created by jamorham on 29/09/2017.
  */
 
-import android.databinding.BaseObservable;
-import android.databinding.Bindable;
+import androidx.databinding.BaseObservable;
 
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
