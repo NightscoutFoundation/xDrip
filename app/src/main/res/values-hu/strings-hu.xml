@@ -1270,6 +1270,7 @@
     <string name="title_nsfollow_url">Nightscout követő URL</string>
     <string name="summary_nsfollow_download_treatments">A kezeléseket is töltse le Nightscout követőként</string>
     <string name="title_nsfollow_download_treatments">Kezelések letöltése</string>
+    <string name="title_nsfollow_lag">Nightscout követő késleltetés</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
     <string name="summary_clfollow_user">CareLink login username</string>
