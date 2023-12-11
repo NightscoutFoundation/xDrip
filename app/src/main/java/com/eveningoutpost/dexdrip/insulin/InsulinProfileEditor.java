@@ -53,7 +53,6 @@ public class InsulinProfileEditor extends BaseAppCompatActivity {
         basalSpinner = (Spinner) findViewById(R.id.basalSpinner);
         bolusSpinner = (Spinner) findViewById(R.id.bolusSpinner);
 
-
         val iprofiles = InsulinManager.getAllProfiles();
         if (iprofiles == null) {
             JoH.static_toast_long("Can't initialize insulin profiles");
