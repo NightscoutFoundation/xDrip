@@ -413,11 +413,6 @@
                     android:key="run_G5_ble_tasks_on_uithread"
                     android:summary="@string/g5_force_ui_thread"
                     android:title="@string/force_g5_ui_thread" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="always_get_new_keys"
-                    android:summary="@string/g5_full_authentification"
-                    android:title="@string/authentificate_before_reading" />
             </PreferenceCategory>
             <PreferenceCategory
                 android:key="dex_battery_category"
