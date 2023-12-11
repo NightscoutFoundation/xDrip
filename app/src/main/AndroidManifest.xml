@@ -7,6 +7,7 @@
 
     <uses-sdk tools:overrideLibrary="androidx.health.connect.client, info.nightscout.sdk" />
     <!-- To receive data from HAPP. -->
+    <uses-permission android:name="android.permission.BROADCAST_CLOSE_SYSTEM_DIALOGS" />
     <uses-permission android:name="com.eveningoutpost.dexdrip.permissions.RECEIVE_EXTERNAL_STATUSLINE" /> <!-- To receive data from Aidex -->
     <uses-permission android:name="com.microtechmd.cgms.aidex.permissions.RECEIVE_BG_ESTIMATE" />
 
@@ -61,6 +62,32 @@
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 
+    <uses-permission android:name="android.permission.MANAGE_HEALTH_DATA"/>
+    <uses-permission android:name="android.permission.MANAGE_HEALTH_PERMISSIONS"/>
+
+    <uses-permission android:name="android.permission.health.READ_HEART_RATE"/>
+    <uses-permission android:name="android.permission.health.READ_BLOOD_GLUCOSE"/>
+    <uses-permission android:name="android.permission.health.WRITE_BLOOD_GLUCOSE"/>
+    <uses-permission android:name="android.permission.health.READ_STEPS"/>
+    <uses-permission android:name="android.permission.health.READ_EXERCISE"/>
+    <uses-permission android:name="android.permission.health.READ_TOTAL_CALORIES_BURNED"/>
+    <uses-permission android:name="android.permission.health.READ_WEIGHT"/>
+    <uses-permission android:name="android.permission.health.READ_DISTANCE"/>
+    <uses-permission android:name="android.permission.health.READ_ELEVATION_GAINED"/>
+    <uses-permission android:name="android.permission.health.READ_FLOORS_CLIMBED"/>
+    <uses-permission android:name="android.permission.health.READ_HEART_RATE_VARIABILITY"/>
+    <uses-permission android:name="android.permission.health.READ_HEIGHT"/>
+    <uses-permission android:name="android.permission.health.READ_HYDRATION"/>
+    <uses-permission android:name="android.permission.health.READ_NUTRITION"/>
+    <uses-permission android:name="android.permission.health.WRITE_NUTRITION"/>
+    <uses-permission android:name="android.permission.health.READ_POWER"/>
+    <uses-permission android:name="android.permission.health.READ_RESTING_HEART_RATE"/>
+    <uses-permission android:name="android.permission.health.READ_SLEEP"/>
+    <uses-permission android:name="android.permission.health.READ_SPEED"/>
+    <uses-permission android:name="android.permission.health.READ_WHEELCHAIR_PUSHES"/>
+
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
+
     <application
         android:name=".xdrip"
         android:allowBackup="false"
@@ -69,6 +96,8 @@
         android:largeHeap="true"
         android:maxAspectRatio="2.1"
         android:theme="@style/AppTheme"
+        tools:replace="android:appComponentFactory"
+        android:appComponentFactory="android.support.v4.app.CoreComponentFactory"
         android:usesCleartextTraffic="true">
         <activity
             android:name=".HealthPrivacy"
@@ -77,10 +106,21 @@
             <intent-filter>
                 <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
             </intent-filter>
-            <meta-data
-                android:name="health_permissions"
-                android:resource="@array/health_permissions" />
         </activity>
+        <activity-alias
+            android:name="AndroidURationaleActivity"
+            android:exported="true"
+            android:targetActivity=".HealthPrivacy">
+            <intent-filter>
+                <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+            </intent-filter>
+            <!-- Permission handling for Android 14 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW_PERMISSION_USAGE"/>
+                <category android:name="android.intent.category.HEALTH_PERMISSIONS"/>
+            </intent-filter>
+        </activity-alias>
+
         <activity
             android:name=".cloud.backup.BackupActivity"
             android:exported="false"
@@ -102,7 +142,7 @@
             android:enabled="true"
             android:exported="false" />
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
             android:exported="false"
             android:grantUriPermissions="true">

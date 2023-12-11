@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.utilitymodels;
 import android.annotation.TargetApi;
 import android.app.Notification;
 import android.os.Build;
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
 
 /**
  * Created by jamorham on 18/10/2017.

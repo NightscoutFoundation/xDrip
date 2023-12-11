@@ -5,6 +5,7 @@ import android.text.SpannableString;
 
 import com.eveningoutpost.dexdrip.models.Sensor;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utilitymodels.StatusItem.Highlight;
@@ -100,6 +101,11 @@ public class SensorDays {
                 ths.warmupMs = Math.min(Constants.SECOND_IN_MS * vr3.warmupSeconds, 2 * HOUR_IN_MS);
             } else {
                ths.warmupMs = 2 * HOUR_IN_MS;
+            }
+
+            if (FirmwareCapability.isDeviceG7(getTransmitterID())) { // If using a G7
+                ths.period = DAY_IN_MS * 10 + HOUR_IN_MS * 12; // The device lasts 10.5 days.
+                ths.warmupMs = 30 * MINUTE_IN_MS; // The warmup time is 30 minutes.
             }
 
         } else {

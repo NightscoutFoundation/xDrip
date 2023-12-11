@@ -97,7 +97,7 @@ import static android.content.Context.VIBRATOR_SERVICE;
 //KS import android.graphics.Paint;
 //KS import android.support.v7.app.AlertDialog;
 //KS import android.support.v4.app.NotificationCompat;
-//KS import android.support.v7.app.AppCompatActivity;
+//KS import androidx.appcompat.app.AppCompatActivity;
 //KS import android.support.v7.view.ContextThemeWrapper;
 //KS import com.eveningoutpost.dexdrip.utils.CipherUtils;
 //KS import static com.eveningoutpost.dexdrip.stats.StatsActivity.SHOW_STATISTICS_PRINT_COLOR;

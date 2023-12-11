@@ -1166,6 +1166,7 @@
     <string name="overwrite_intercept_engineering_only">Přepsat průsečík osy Y (pouze pro vývojáře!)</string>
     <string name="manual_overwrite_not_possible">Manuální přepsání není možné!</string>
     <string name="upload_even_when_using_mobile_data">Nahrávat i přes mobilní data</string>
+    <string name="daily_backup_even_mobile">Denní záloha i na mobilních datech</string>
     <string name="use_mobile_data">Použít mobilní data</string>
     <string name="summary_cloud_storage_api_download_enable">Pokusit se také stáhnout ošetření z Nightscoutu</string>
     <string name="title_cloud_storage_api_download_enable">Stáhnout údaje o ošetření</string>
@@ -1289,6 +1290,7 @@
     <string name="title_nsfollow_url">Nightscout URL pro sledování</string>
     <string name="summary_nsfollow_download_treatments">Pokusit se také pro sledující stáhnout ošetření z Nightscoutu</string>
     <string name="title_nsfollow_download_treatments">Stáhnout ošetření</string>
+    <string name="title_nsfollow_lag">Zpozdění pro Nightscout sledování</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
     <string name="summary_clfollow_user">CareLink login username</string>
@@ -1784,4 +1786,23 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="summary_Lib2_show_sense_on_status">Zapnutím zobrazíte dodatečné informace o Libre2 senzoru na stránce Stav systému.</string>
     <string name="import_qr_code_warning">Importujte nastavení pouze ze zdrojů, kterým důvěřujete!\n\nProsím potvrďte import následujících nastavení:\n\n</string>
     <string name="scan_to_load_xdrip_settings">Skenovat pro nahrání nastavení aplikace xDrip+</string>
+    <string name="manage_permissions">Spravovat oprávnění</string>
+    <string name="open_health_connect_settings_to_manually_manage_permissions">Otevřít nastavení Google Health Connect pro manuální správu oprávnění</string>
+    <string name="send_data_to_health_connect">Odesílat data do Google Health Connect</string>
+    <string name="get_data_from_health_connect">Přijímat data z Google Health Connect</string>
+    <string name="requires_android_8_and_google_companion_application_or_android_14">Vyžaduje alespoň Android 8+ a Google doprovodnou aplikaci nebo Android 14+</string>
+    <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Odesílat a přijímat data z Google Health Connect a Google Fit</string>
+    <string name="google_health_connect">Google Health Connect</string>
+    <string name="google_health_connect_needs_perms">CHYBA: Google Health Connect vyžaduje oprávnění! Upravte manuálně oprávnění v menu nastavení</string>
+    <string name="carelink_auth_country_required">Je potřeba zadat zemi!</string>
+    <string name="carelink_auth_status_authenticated">Ověřený stav!</string>
+    <string name="carelink_auth_status_not_authenticated">Neověřený stav!</string>
+    <string name="carelink_auth_login_in_progress">Probíhá přihlášení...</string>
+    <string name="carelink_refresh_token_start">Spustit obnovení přístupu</string>
+    <string name="carelink_refresh_token_failed">Obnovení přístupu se nezdařilo! Pokusíme se o to znovu!</string>
+    <string name="carelink_download_start">Spustit stahování dat</string>
+    <string name="carelink_download_failed">Stažení dat se nezdařilo!</string>
+    <string name="carelink_credential_status_not_authenticated">Nejste přihlášeni! Prosím, přihlašte se!</string>
+    <string name="carelink_credential_status_access_expired">Platnost přístupu vypršela! Přístup bude obnoven!</string>
+    <string name="carelink_credential_status_refresh_expired">Platnost přihlášení vypršela! Prosím, přihlašte se znovu!</string>
 </resources>

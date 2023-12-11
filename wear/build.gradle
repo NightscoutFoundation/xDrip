@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 apply from: '../common.gradle'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 34
     lintOptions {
         checkReleaseBuilds false
 //        abortOnError false
@@ -102,7 +102,7 @@ android {
 allprojects {
     repositories {
         flatDir {
-            dirs 'libs', '../app/libs'
+            dirs project(':wear').file('libs'), project(':app').file('libs') // Seems to always use the directive from app build.gradle not this one
         }
     }
 }
@@ -111,7 +111,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     compileOnly 'com.google.android.wearable:wearable:2.5.0'
     implementation 'com.google.android.support:wearable:2.5.0'
-    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'androidx.appcompat:appcompat:1.0.0'
     // FIX upgrade to play-services-wearable:17.0.0 requires upgrade to AndroidX libraries, https://developers.google.com/android/guides/releases#june_17_2019
     implementation 'com.google.android.gms:play-services-wearable:10.2.1'
     implementation 'com.squareup.wire:wire-runtime:2.2.0'

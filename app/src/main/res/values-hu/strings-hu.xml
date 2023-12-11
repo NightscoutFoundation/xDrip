@@ -1151,6 +1151,7 @@
     <string name="overwrite_intercept_engineering_only">Metszéspont felülírása (csak fejlesztői módban!)</string>
     <string name="manual_overwrite_not_possible">Nem lehet kézileg felülírni!</string>
     <string name="upload_even_when_using_mobile_data">Feltöltés mobil adatforgalmon át is</string>
+    <string name="daily_backup_even_mobile">Napi mentés mobil hálózaton át is</string>
     <string name="use_mobile_data">Mobil adatforgalom használata</string>
     <string name="summary_cloud_storage_api_download_enable">Próbálja meg letölteni is az adatokat a Nightscout-ból</string>
     <string name="title_cloud_storage_api_download_enable">Adatok letöltése</string>
@@ -1269,6 +1270,7 @@
     <string name="title_nsfollow_url">Nightscout követő URL</string>
     <string name="summary_nsfollow_download_treatments">A kezeléseket is töltse le Nightscout követőként</string>
     <string name="title_nsfollow_download_treatments">Kezelések letöltése</string>
+    <string name="title_nsfollow_lag">Nightscout követő késleltetés</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
     <string name="summary_clfollow_user">CareLink login username</string>
@@ -1742,4 +1744,23 @@
     <string name="summary_Lib2_show_sense_on_status">Libre 2 szenzor adatainak mutatása az Állapot lapon.</string>
     <string name="import_qr_code_warning">Csak megbízható forrásokból importáljon beállításokat!\n\nKérjük, erősítse meg a következő beállítások importálását:\n\n</string>
     <string name="scan_to_load_xdrip_settings">Szkenneljen az xDrip beállítások betöltéséhez</string>
+    <string name="manage_permissions">Engedélyek kezelése</string>
+    <string name="open_health_connect_settings_to_manually_manage_permissions">Health Connect megnyitása, kézi beállításokhoz</string>
+    <string name="send_data_to_health_connect">Adatok küldése Health Connect-hez</string>
+    <string name="get_data_from_health_connect">Adatok letöltése Health Connect-ből</string>
+    <string name="requires_android_8_and_google_companion_application_or_android_14">Legalább Android 8+ és Google companion app vagy Android 14+ szükséges</string>
+    <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Adatk küldése és letöltése a Google Health Connect és Google Fit alkalmazásokból</string>
+    <string name="google_health_connect">Google Health Connect</string>
+    <string name="google_health_connect_needs_perms">HIBA: A Health engedélyeket kér! - próbálja meg a beállítokban megint</string>
+    <string name="carelink_auth_country_required">Ország kötelező!</string>
+    <string name="carelink_auth_status_authenticated">Azonosított állapot!</string>
+    <string name="carelink_auth_status_not_authenticated">Nincs azonosítva!</string>
+    <string name="carelink_auth_login_in_progress">Belépés folyamatban...</string>
+    <string name="carelink_refresh_token_start">Hozzáférés megújítása</string>
+    <string name="carelink_refresh_token_failed">Hozzáférés megújítása sikertelen! Majd újrapróbálja!</string>
+    <string name="carelink_download_start">Adatletöltés indítása</string>
+    <string name="carelink_download_failed">Adatletöltés sikertelen!</string>
+    <string name="carelink_credential_status_not_authenticated">Nincs belépve! Jelentkezzen be!</string>
+    <string name="carelink_credential_status_access_expired">Hozzáférés lejárt! Meg fogja újítani!</string>
+    <string name="carelink_credential_status_refresh_expired">Belépés lejárt! Jelentkezzen be!</string>
 </resources>

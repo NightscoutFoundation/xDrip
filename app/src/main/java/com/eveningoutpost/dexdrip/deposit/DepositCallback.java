@@ -2,8 +2,8 @@ package com.eveningoutpost.dexdrip.deposit;
 
 
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 import com.eveningoutpost.dexdrip.models.UserError;
 

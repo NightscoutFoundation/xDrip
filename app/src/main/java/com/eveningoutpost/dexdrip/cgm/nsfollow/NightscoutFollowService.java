@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.cgm.nsfollow;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.text.SpannableString;
 
 import com.eveningoutpost.dexdrip.models.BgReading;
@@ -13,6 +13,7 @@ import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utilitymodels.StatusItem;
 import com.eveningoutpost.dexdrip.utilitymodels.StatusItem.Highlight;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.utils.Anticipate;
@@ -146,6 +147,7 @@ public class NightscoutFollowService extends ForegroundService {
      */
     public static List<StatusItem> megaStatus() {
         final BgReading lastBg = BgReading.lastNoSenssor();
+        final long lag = Constants.SECOND_IN_MS * Pref.getStringToInt("nsfollow_lag", 0); // Wake delay selected by user
 
         String lastPollText = "n/a";
         if (lastPoll > 0) {
@@ -159,10 +161,10 @@ public class NightscoutFollowService extends ForegroundService {
         Highlight ageOfLastBgPollHighlight = Highlight.NORMAL;
         if (bgReceiveDelay > 0) {
             ageOfBgLastPoll = JoH.niceTimeScalar(bgReceiveDelay);
-            if (bgReceiveDelay > SAMPLE_PERIOD / 2) {
+            if (bgReceiveDelay - lag > SAMPLE_PERIOD / 2) {
                 ageOfLastBgPollHighlight = Highlight.BAD;
             }
-            if (bgReceiveDelay > SAMPLE_PERIOD * 2) {
+            if (bgReceiveDelay - lag > SAMPLE_PERIOD * 2) {
                 ageOfLastBgPollHighlight = Highlight.CRITICAL;
             }
         }
@@ -173,7 +175,7 @@ public class NightscoutFollowService extends ForegroundService {
         if (lastBg != null) {
             long age = JoH.msSince(lastBg.timestamp);
             ageLastBg = JoH.niceTimeScalar(age);
-            if (age > SAMPLE_PERIOD + hightlightGrace) {
+            if (age > SAMPLE_PERIOD + hightlightGrace + lag) {
                 bgAgeHighlight = Highlight.BAD;
             }
         }

@@ -527,4 +527,23 @@
         <item>400</item>
     </string-array>
 
+    <!--    Nightscout follow wake delay, with respect to the source timestamp
+            The default is no delay, and is marked with the single symbol >  -->
+    <string-array name="nsfollowlag_entries">
+        <item>0 ></item>
+        <item>40 s</item>
+        <item>1 min</item>
+        <item>1.5 min</item>
+        <item>2 min</item>
+        <item>3 min</item>
+    </string-array>
+    <string-array name="nsfollowlag_values">
+        <item>0</item>
+        <item>40</item>
+        <item>60</item>
+        <item>90</item>
+        <item>120</item>
+        <item>180</item>
+    </string-array>
+
 </resources>

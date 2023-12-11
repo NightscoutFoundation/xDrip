@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.watch.miband;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.Preference;
-import android.support.v4.content.LocalBroadcastManager;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;

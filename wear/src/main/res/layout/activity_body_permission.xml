@@ -45,7 +45,7 @@
                 app:circle_color="#0086D4"
                 app:circle_radius="20dp" />
 
-            <android.support.v4.widget.Space
+            <androidx.legacy.widget.Space
                 android:layout_width="8dp"
                 android:layout_height="8dp" />
 

@@ -21,8 +21,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.LocalBroadcastManager;
+
 import android.util.DisplayMetrics;
 import android.widget.Toast;
 
@@ -105,6 +104,9 @@ import static com.eveningoutpost.dexdrip.utilitymodels.BgSendQueue.doMgdl;
 import static com.eveningoutpost.dexdrip.utilitymodels.BgSendQueue.extraStatusLine;
 import static com.eveningoutpost.dexdrip.utilitymodels.BgSendQueue.resendData;
 import static com.eveningoutpost.dexdrip.utilitymodels.BgSendQueue.sgvLevel;
+
+import androidx.core.app.ActivityCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 /**
  * Created by Emma Black on 12/26/14.

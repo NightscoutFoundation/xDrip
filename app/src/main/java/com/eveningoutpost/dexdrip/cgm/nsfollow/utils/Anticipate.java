@@ -1,5 +1,8 @@
 package com.eveningoutpost.dexdrip.cgm.nsfollow.utils;
 
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+
 /**
  * Choose optimum anticipation times for re-attempting data collection to minimize
  * number of requests to nightscout but at the same time reduce latency from new
@@ -16,7 +19,10 @@ public class Anticipate {
      * If last + period and a bit < now, ask again after grace
      * If last + period and a bit >= now, ask again after last + period and grace
      */
-    public static long next(long now, final long last, final long period, final long grace) {
+
+    public static long next(long now, final long lastTimeStamp, final long period, final long grace) {
+        final long lag = Constants.SECOND_IN_MS * Pref.getStringToInt("nsfollow_lag", 0); // User can choose a wake delay with a 0 default.
+        final long last = lastTimeStamp + lag; // We delay the source timestamp and use it as the time we received the reading to account for any source delay.
 
         final long since = now - last;
         if (since <= (grace * 2)) {

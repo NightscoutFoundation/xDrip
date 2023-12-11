@@ -5,7 +5,7 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.support.annotation.StringRes;
+import androidx.annotation.StringRes;
 import android.util.Log;
 
 import com.activeandroid.ActiveAndroid;

@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.cgm.carelinkfollow;
 
 import android.os.PowerManager;
 
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.auth.CareLinkAuthenticator;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.auth.CareLinkCredentialStore;
 import com.eveningoutpost.dexdrip.models.JoH;
@@ -9,8 +10,8 @@ import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.client.CareLinkClient;
-import com.eveningoutpost.dexdrip.cgm.carelinkfollow.client.CountryUtils;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.RecentData;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
 
@@ -65,55 +66,57 @@ public class CareLinkFollowDownloader {
     }
 
     private void downloadData() {
-        msg("Start download");
-        if (checkCredentials()) {
+        msg(xdrip.gs(R.string.carelink_download_start));
+        if (checkCredentials(true, true, true)) {
             try {
                 if (getCareLinkClient() != null) {
                     extendWakeLock(30_000);
                     backgroundProcessConnectData();
                 } else {
                     UserError.Log.d(TAG, "Cannot get data as CareLinkClient is null");
-                    msg("Download data failed!");
+                    msg(xdrip.gs(R.string.carelink_download_failed));
                 }
             } catch (Exception e) {
                 UserError.Log.e(TAG, "Got exception in getData() " + e);
                 releaseWakeLock();
-                msg("Download data failed!");
+                msg(xdrip.gs(R.string.carelink_download_failed));
             }
         }
     }
 
     private void refreshToken() {
-        msg("Start refreshing token");
-        if (checkCredentials()) {
+        msg(xdrip.gs(R.string.carelink_refresh_token_start));
+        if (checkCredentials(true, false, true)) {
             try {
                 if (new CareLinkAuthenticator(CareLinkCredentialStore.getInstance().getCredential().country, CareLinkCredentialStore.getInstance()).refreshToken()) {
-                    UserError.Log.d(TAG, "Login token renewed!");
+                    UserError.Log.d(TAG, "Access renewed!");
                     msg(null);
                 } else {
-                    UserError.Log.e(TAG, "Error renewing login token!");
-                    msg("Login refresh failed! Will try again!");
+                    UserError.Log.e(TAG, "Error renewing access token!");
+                    msg(xdrip.gs(R.string.carelink_refresh_token_failed));
                 }
             } catch (Exception e) {
-                UserError.Log.e(TAG, "Error renewing login token: " + e.getMessage());
-                msg("Login refresh failed! Will try again!");
+                UserError.Log.e(TAG, "Error renewing access token: " + e.getMessage());
+                msg(xdrip.gs(R.string.carelink_refresh_token_failed));
             }
         }
     }
 
-    private boolean checkCredentials() {
+    private boolean checkCredentials(boolean checkAuthenticated, boolean checkAccessExpired, boolean checkRefreshExpired) {
         // Not authenticated
-        if (CareLinkCredentialStore.getInstance().getAuthStatus() != CareLinkCredentialStore.AUTHENTICATED) {
-            msg("Not logged in! Please log in!");
+        if (checkAuthenticated && CareLinkCredentialStore.getInstance().getAuthStatus() != CareLinkCredentialStore.AUTHENTICATED) {
+            msg(xdrip.gs(R.string.carelink_credential_status_not_authenticated));
             return false;
-            // Token expired
-        } else if (CareLinkCredentialStore.getInstance().getExpiresIn() <= 0) {
-            msg("Login refresh expired! Please log in!");
-            return false;
-            // Credentials are all ok!
-        } else {
-            return true;
         }
+        if (checkAccessExpired && CareLinkCredentialStore.getInstance().getAccessExpiresIn() <= 0) {
+            msg(xdrip.gs(R.string.carelink_credential_status_access_expired));
+            return false;
+        }
+        if (checkRefreshExpired && CareLinkCredentialStore.getInstance().getRefreshExpiresIn() <= 0) {
+            msg(xdrip.gs(R.string.carelink_credential_status_refresh_expired));
+            return false;
+        }
+        return true;
     }
 
     private void msg(final String msg) {

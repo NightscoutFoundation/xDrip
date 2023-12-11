@@ -5,7 +5,7 @@ import android.bluetooth.BluetoothGatt;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;

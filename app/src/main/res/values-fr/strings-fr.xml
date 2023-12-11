@@ -1166,6 +1166,7 @@
     <string name="overwrite_intercept_engineering_only">Remplacer Intercept (utilisateurs avancés seulement!)</string>
     <string name="manual_overwrite_not_possible">L\'écrasement manuel n\'est pas possible !</string>
     <string name="upload_even_when_using_mobile_data">Charger même en utilisant les données mobiles</string>
+    <string name="daily_backup_even_mobile">Sauvegarde quotidienne même en utilisant les données mobiles</string>
     <string name="use_mobile_data">Utiliser les données mobiles</string>
     <string name="summary_cloud_storage_api_download_enable">Essayer également de télécharger des données depuis Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Télécharger les données</string>
@@ -1290,6 +1291,7 @@
     <string name="title_nsfollow_url">URL abonnés Nightscout</string>
     <string name="summary_nsfollow_download_treatments">Télécharger également les traitements de Nightscout comme abonné</string>
     <string name="title_nsfollow_download_treatments">Télécharger les traitements</string>
+    <string name="title_nsfollow_lag">Délai pour le Suiveur Nightscout</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
     <string name="summary_clfollow_user">CareLink login username</string>
@@ -1791,4 +1793,23 @@
     <string name="summary_Lib2_show_sense_on_status">Activez pour afficher des informations supplémentaires du capteur de Libre 2 dans Statut.</string>
     <string name="import_qr_code_warning">Importer les paramètres eulement des sources de confiance !\n\nVeuillez confirmer l\'importation les paramètres suivants :\n\n</string>
     <string name="scan_to_load_xdrip_settings">Scanner pour charger les paramètres de xDrip</string>
+    <string name="manage_permissions">Gérer les permissions</string>
+    <string name="open_health_connect_settings_to_manually_manage_permissions">Ouvrir les paramètres Health Connect pour gérer manuellement les autorisations</string>
+    <string name="send_data_to_health_connect">Envoyer des données à Health Connect</string>
+    <string name="get_data_from_health_connect">Recevoir les données de Health Connect</string>
+    <string name="requires_android_8_and_google_companion_application_or_android_14">Nécessite Android 8+ et l\'application Google compagnon ou Android 14+</string>
+    <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Envoyer et recevoir des données de Google Health Connect et Google Fit</string>
+    <string name="google_health_connect">Google Health Connect</string>
+    <string name="google_health_connect_needs_perms">ERREUR : Health Connect a besoin d\'autorisations ! - essayez à nouveau dans le menu des paramètres</string>
+    <string name="carelink_auth_country_required">Le pays est requis!</string>
+    <string name="carelink_auth_status_authenticated">Statut authentifié !</string>
+    <string name="carelink_auth_status_not_authenticated">Statut non authentifié !</string>
+    <string name="carelink_auth_login_in_progress">Connexion en cours...</string>
+    <string name="carelink_refresh_token_start">Commencer le renouvellement de l\'accès</string>
+    <string name="carelink_refresh_token_failed">Le renouvellement de l\'accès a échoué ! Vais réessayer !</string>
+    <string name="carelink_download_start">Démarrer le téléchargement</string>
+    <string name="carelink_download_failed">Échec du téléchargement des données !</string>
+    <string name="carelink_credential_status_not_authenticated">Non connecté! Veuillez vous connecter!</string>
+    <string name="carelink_credential_status_access_expired">Accès expiré! Vais actualiser !</string>
+    <string name="carelink_credential_status_refresh_expired">Connexion expirée! Veuillez vous connecter!</string>
 </resources>

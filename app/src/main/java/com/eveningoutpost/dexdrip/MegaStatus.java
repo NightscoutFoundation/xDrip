@@ -15,8 +15,7 @@ import static com.eveningoutpost.dexdrip.utils.DexCollectionType.WebFollow;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.CLFollow;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
+
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -24,9 +23,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v13.app.FragmentStatePagerAdapter;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.ViewPager;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.viewpager.widget.ViewPager;
+
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -301,7 +304,7 @@ public class MegaStatus extends ActivityWithMenu {
         sectionTitles.clear();
         populateSectionList();
 
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);

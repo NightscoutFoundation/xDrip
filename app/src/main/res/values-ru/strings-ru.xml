@@ -1164,6 +1164,7 @@
     <string name="overwrite_intercept_engineering_only">Заменить точку пересечения (инженерная функция!)</string>
     <string name="manual_overwrite_not_possible">Ручное изменение не возможно!</string>
     <string name="upload_even_when_using_mobile_data">Загружать даже при использовании мобильных данных</string>
+    <string name="daily_backup_even_mobile">Ежедневное резервное копирование даже через мобильные данные</string>
     <string name="use_mobile_data">Использовать мобильные данные</string>
     <string name="summary_cloud_storage_api_download_enable">Также пытаться загрузить данные из Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Загружать данные</string>
@@ -1283,6 +1284,7 @@
     <string name="title_nsfollow_url">URL подписки Nightscout</string>
     <string name="summary_nsfollow_download_treatments">Скачивать введённые пользователем значения из Nightscout для \'фолловеров\'</string>
     <string name="title_nsfollow_download_treatments">Скачивать пользовательские значения</string>
+    <string name="title_nsfollow_lag">Задержка получения из Nightscout</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
     <string name="summary_clfollow_user">CareLink login username</string>
@@ -1771,4 +1773,15 @@
     <string name="summary_ymin">Укажите y min когда нет меньших показаний.</string>
     <string name="summary_ymax">Укажите y max когда нет больших показаний.</string>
     <string name="close">Закрыть</string>
+    <string name="carelink_auth_country_required">Необходимо указать страну!</string>
+    <string name="carelink_auth_status_authenticated">Состояние авторизован!</string>
+    <string name="carelink_auth_status_not_authenticated">Состояние не авторизован!</string>
+    <string name="carelink_auth_login_in_progress">Идет вход...</string>
+    <string name="carelink_refresh_token_start">Начать обновление доступа</string>
+    <string name="carelink_refresh_token_failed">Ошибка обновления доступа! Будет новая попытка!</string>
+    <string name="carelink_download_start">Начать загрузку</string>
+    <string name="carelink_download_failed">Ошибка загрузки данных!</string>
+    <string name="carelink_credential_status_not_authenticated">Вход не выполнен! Пожалуйста, войдите!</string>
+    <string name="carelink_credential_status_access_expired">Срок доступа закончился! Будет обновлен!</string>
+    <string name="carelink_credential_status_refresh_expired">Время входа закончилось! Пожалуйста, войдите!</string>
 </resources>
