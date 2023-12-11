@@ -1746,4 +1746,15 @@
     <string name="import_qr_code_warning">Importuj ustawienia tylko z zaufanych źródeł!\n\nPotwierdź zaimportowanie następujących ustawień:\n\n</string>
     <string name="scan_to_load_xdrip_settings">Zeskanuj, aby załadować ustawienia xDrip</string>
     <string name="manage_permissions">Zarządzaj uprawnieniami</string>
+    <string name="carelink_auth_country_required">Kraj jest wymagany!</string>
+    <string name="carelink_auth_status_authenticated">Status uwierzytelniony!</string>
+    <string name="carelink_auth_status_not_authenticated">Brak uwierzytelnionego statusu!</string>
+    <string name="carelink_auth_login_in_progress">Logowanie w toku...</string>
+    <string name="carelink_refresh_token_start">Rozpocznij odnawianie dostępu</string>
+    <string name="carelink_refresh_token_failed">Odnowienie dostępu nie powiodło się! Spróbuj ponownie!</string>
+    <string name="carelink_download_start">Rozpocznij pobieranie</string>
+    <string name="carelink_download_failed">Pobieranie danych się nie powiodło!</string>
+    <string name="carelink_credential_status_not_authenticated">Nie zalogowano! Zaloguj się!</string>
+    <string name="carelink_credential_status_access_expired">Dostęp wygasł! Nastąpi odświeżenie!</string>
+    <string name="carelink_credential_status_refresh_expired">Sesja logowania wygasła! Zaloguj się!</string>
 </resources>

@@ -1773,4 +1773,15 @@
     <string name="summary_ymin">Укажите y min когда нет меньших показаний.</string>
     <string name="summary_ymax">Укажите y max когда нет больших показаний.</string>
     <string name="close">Закрыть</string>
+    <string name="carelink_auth_country_required">Необходимо указать страну!</string>
+    <string name="carelink_auth_status_authenticated">Состояние авторизован!</string>
+    <string name="carelink_auth_status_not_authenticated">Состояние не авторизован!</string>
+    <string name="carelink_auth_login_in_progress">Идет вход...</string>
+    <string name="carelink_refresh_token_start">Начать обновление доступа</string>
+    <string name="carelink_refresh_token_failed">Ошибка обновления доступа! Будет новая попытка!</string>
+    <string name="carelink_download_start">Начать загрузку</string>
+    <string name="carelink_download_failed">Ошибка загрузки данных!</string>
+    <string name="carelink_credential_status_not_authenticated">Вход не выполнен! Пожалуйста, войдите!</string>
+    <string name="carelink_credential_status_access_expired">Срок доступа закончился! Будет обновлен!</string>
+    <string name="carelink_credential_status_refresh_expired">Время входа закончилось! Пожалуйста, войдите!</string>
 </resources>
