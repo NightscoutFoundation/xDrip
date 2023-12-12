@@ -9,7 +9,6 @@ import android.content.IntentFilter;
 import android.os.BatteryManager;
 import android.os.Build;
 
-import com.eveningoutpost.dexdrip.g5model.FirmwareCapability;
 import com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.g5model.Ob1DexTransmitterBattery;
 import com.eveningoutpost.dexdrip.services.DexCollectionService;
@@ -146,7 +145,7 @@ public enum NightscoutBatteryDevice {
         @Override
         String getDeviceName() {
             if (Ob1G5StateMachine.usingG6()) {
-                if (FirmwareCapability.isDeviceG7(getTransmitterID())) {
+                if (getTransmitterID().length() < 6) {
                     return "G7 Device";
                 }
                 return "G6 Transmitter";

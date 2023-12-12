@@ -22,7 +22,6 @@ import com.activeandroid.util.SQLiteUtils;
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.g5model.FirmwareCapability;
 import com.eveningoutpost.dexdrip.importedlibraries.dexcom.records.EGVRecord;
 import com.eveningoutpost.dexdrip.importedlibraries.dexcom.records.SensorRecord;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
@@ -1124,7 +1123,7 @@ public class BgReading extends Model implements ShareUploadableBg {
             bgr.calculated_value = calculated_value;
             bgr.raw_data = SPECIAL_G5_PLACEHOLDER; // placeholder
             if (Ob1G5CollectionService.usingG6()) {
-                if (FirmwareCapability.isDeviceG7(getTransmitterID())) {
+                if (getTransmitterID().length() < 6) {
                     bgr.appendSourceInfo("G7");
                 } else {
                     bgr.appendSourceInfo("G6 Native");
