@@ -1859,8 +1859,10 @@ public class Ob1G5CollectionService extends G5BaseService {
                     final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_RESTARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
                     JoH.showNotification("Auto Start", "Sensor Requesting Restart", pi, G5_SENSOR_RESTARTED, true, true, false);
                 } else {
-                    UserError.Log.uel(TAG, "Marking sensor session as stopped");
-                    Sensor.stopSensor();
+                    if (!Ob1G5CollectionService.usingG6()) { // Never automatically stop a G6 or G7 sensor.
+                        UserError.Log.uel(TAG, "Marking sensor session as stopped");
+                        Sensor.stopSensor();
+                    }
                 }
             }
             final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_STARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
