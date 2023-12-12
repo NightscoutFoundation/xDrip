@@ -296,7 +296,7 @@
         </activity>
         <activity
             android:name=".LocationPermissionActivity"
-            android:label="title_activity_location_permission"
+            android:label="@string/title_activity_location_permission"
             android:launchMode="singleTop">
 
         </activity>

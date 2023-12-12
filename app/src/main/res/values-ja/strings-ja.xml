@@ -442,4 +442,15 @@
     <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Google Health ConnectとGoogle Fitからデータを送受信。</string>
     <string name="google_health_connect">Google Health Connect</string>
     <string name="google_health_connect_needs_perms">ERROR: Health connectには権限が必要です！- 設定メニューからもう一度お試しください。</string>
+    <string name="carelink_auth_country_required">国が必要です！</string>
+    <string name="carelink_auth_status_authenticated">認証済みのステータス！</string>
+    <string name="carelink_auth_status_not_authenticated">ステータスが認証されていません！</string>
+    <string name="carelink_auth_login_in_progress">ログイン中...</string>
+    <string name="carelink_refresh_token_start">アクセスの更新を開始</string>
+    <string name="carelink_refresh_token_failed">アクセスの更新に失敗しました！再度お試しください！</string>
+    <string name="carelink_download_start">ダウンロードを開始</string>
+    <string name="carelink_download_failed">ダウンロードに失敗しました！</string>
+    <string name="carelink_credential_status_not_authenticated">ログインしていません！ログインしてください！</string>
+    <string name="carelink_credential_status_access_expired">アクセスの有効期限が切れました！更新されます！</string>
+    <string name="carelink_credential_status_refresh_expired">ログイン期限が切れました！ログインしてください！</string>
 </resources>

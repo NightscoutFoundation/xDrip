@@ -1579,4 +1579,15 @@
     <string name="send_and_receive_data_from_google_health_connect_and_google_fit">שלח וקבל התראות מאפליקציות Google Health Connect ו-Google Fit</string>
     <string name="google_health_connect">Google Health Connect</string>
     <string name="google_health_connect_needs_perms">שגיאה: Health Connect דורש הרשאות! נסו שנית מתוך חלון ההגדרות</string>
+    <string name="carelink_auth_country_required">חובה להזין מדינה!</string>
+    <string name="carelink_auth_status_authenticated">נדרש אימות!</string>
+    <string name="carelink_auth_status_not_authenticated">לא נמצא סטטוס אימות</string>
+    <string name="carelink_auth_login_in_progress">התחברות בתהליך...</string>
+    <string name="carelink_refresh_token_start">התחל כניסה מחדש</string>
+    <string name="carelink_refresh_token_failed">כניסה מחדש נכשלה, מנסה שנית!</string>
+    <string name="carelink_download_start">התחל הורדה</string>
+    <string name="carelink_download_failed">הורדת המידע נכשלה!</string>
+    <string name="carelink_credential_status_not_authenticated">לא מחובר/ת, אנא התחבר/י</string>
+    <string name="carelink_credential_status_access_expired">פג תוקף הדף, הדף יתרענן אוטומטית!</string>
+    <string name="carelink_credential_status_refresh_expired">פג תוקף כניסתך, אנא התחבר/י מחדש!</string>
 </resources>

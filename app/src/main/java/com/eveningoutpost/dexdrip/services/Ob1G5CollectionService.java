@@ -66,7 +66,7 @@ import android.os.IBinder;
 import android.os.ParcelUuid;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 

@@ -2,8 +2,9 @@ package com.eveningoutpost.dexdrip;
 
 import android.content.Intent;
 import android.os.PowerManager;
-import android.support.annotation.NonNull;
-import android.support.v4.app.JobIntentService;
+import androidx.annotation.NonNull;
+import androidx.core.app.JobIntentService;
+
 
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;

@@ -4,7 +4,7 @@ import android.os.Build;
 
 import java.util.function.Consumer;
 
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
 

@@ -2,7 +2,7 @@ package com.eveningoutpost.dexdrip.ui.activities;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.databinding.ObservableField;
+import androidx.databinding.ObservableField;
 import android.os.Bundle;
 
 import com.activeandroid.Cache;

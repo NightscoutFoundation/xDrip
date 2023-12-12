@@ -9,7 +9,7 @@ import android.mtp.MtpDevice;
 import android.mtp.MtpObjectInfo;
 import android.os.Build;
 import android.os.ParcelFileDescriptor;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError.Log;

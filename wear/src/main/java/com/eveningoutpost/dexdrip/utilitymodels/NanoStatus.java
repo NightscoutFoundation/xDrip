@@ -12,9 +12,11 @@ package com.eveningoutpost.dexdrip.utilitymodels;
  *
  */
 
-import android.databinding.ObservableField;
+
 import android.text.SpannableString;
 import android.util.Log;
+
+import androidx.databinding.ObservableField;
 
 import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.GcmActivity;

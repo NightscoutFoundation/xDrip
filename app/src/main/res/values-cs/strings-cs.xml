@@ -1794,4 +1794,15 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Odesílat a přijímat data z Google Health Connect a Google Fit</string>
     <string name="google_health_connect">Google Health Connect</string>
     <string name="google_health_connect_needs_perms">CHYBA: Google Health Connect vyžaduje oprávnění! Upravte manuálně oprávnění v menu nastavení</string>
+    <string name="carelink_auth_country_required">Je potřeba zadat zemi!</string>
+    <string name="carelink_auth_status_authenticated">Ověřený stav!</string>
+    <string name="carelink_auth_status_not_authenticated">Neověřený stav!</string>
+    <string name="carelink_auth_login_in_progress">Probíhá přihlášení...</string>
+    <string name="carelink_refresh_token_start">Spustit obnovení přístupu</string>
+    <string name="carelink_refresh_token_failed">Obnovení přístupu se nezdařilo! Pokusíme se o to znovu!</string>
+    <string name="carelink_download_start">Spustit stahování dat</string>
+    <string name="carelink_download_failed">Stažení dat se nezdařilo!</string>
+    <string name="carelink_credential_status_not_authenticated">Nejste přihlášeni! Prosím, přihlašte se!</string>
+    <string name="carelink_credential_status_access_expired">Platnost přístupu vypršela! Přístup bude obnoven!</string>
+    <string name="carelink_credential_status_refresh_expired">Platnost přihlášení vypršela! Prosím, přihlašte se znovu!</string>
 </resources>

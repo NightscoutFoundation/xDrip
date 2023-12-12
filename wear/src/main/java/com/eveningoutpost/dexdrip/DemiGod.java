@@ -6,7 +6,9 @@ package com.eveningoutpost.dexdrip;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.support.v4.content.ContextCompat;
+
+
+import androidx.core.content.ContextCompat;
 
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
