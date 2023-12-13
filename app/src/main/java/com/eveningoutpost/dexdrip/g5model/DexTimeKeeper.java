@@ -38,7 +38,7 @@ public class DexTimeKeeper {
             if (dexTimeStamp == 0 && absolute) {
                 if (FirmwareCapability.isTransmitterG5(getTransmitterID()) || FirmwareCapability.isTransmitterTimeTravelCapable(getTransmitterID()) || FirmwareCapability.isTransmitterModified(getTransmitterID())) { // Devices that can be hard reset only
                     DexResetHelper.offer("Your transmitter clock has stopped or never started. Do you want to hard reset it?");
-                } else { // Everything else - future devices will be gere.  If a future device can be hard reset, they should be added to the true (other) side
+                } else { // Everything else - future devices will be here.  If a future device can be hard reset, they should be added to the true (other) side.
                     DexResetHelper.offer("Your transmitter clock has stopped or never started. Do you want to hard reset it?");
                 }
             }
