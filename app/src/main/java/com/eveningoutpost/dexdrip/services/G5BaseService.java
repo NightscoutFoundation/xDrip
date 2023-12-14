@@ -7,7 +7,6 @@ import android.bluetooth.BluetoothDevice;
 import android.content.SharedPreferences;
 import android.os.PowerManager;
 
-import com.eveningoutpost.dexdrip.g5model.FirmwareCapability;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.utilitymodels.ForegroundServiceStarter;
