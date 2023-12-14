@@ -1,10 +1,13 @@
 package com.eveningoutpost.dexdrip.services;
 
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.getTransmitterID;
+
 import android.app.Service;
 import android.bluetooth.BluetoothDevice;
 import android.content.SharedPreferences;
 import android.os.PowerManager;
 
+import com.eveningoutpost.dexdrip.g5model.FirmwareCapability;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.utilitymodels.ForegroundServiceStarter;
@@ -178,6 +181,11 @@ public abstract class G5BaseService extends Service {
         final int battery_warning_level = Pref.getStringToInt("g5-battery-warning-level", G5_LOW_BATTERY_WARNING_DEFAULT);
         if (battery_warning_level == G5_LOW_BATTERY_WARNING_DEFAULT) {
             Pref.setString("g5-battery-warning-level", "" + G6_LOW_BATTERY_WARNING_DEFAULT);
+            if (getTransmitterID().length() < 6) { // If we are using G7 - TODO Navid change to use setting usingG7 after having been created
+                if (battery_warning_level == G6_LOW_BATTERY_WARNING_DEFAULT) {
+                    Pref.setString("g5-battery-warning-level", "" + ALT_LOW_BATTERY_WARNING_DEFAULT);
+                }
+            }
         }
     }
 
