@@ -270,6 +270,7 @@
     <string name="upload_data_to_dex_servers">Laste opp data til Dexcoms servere slik at du kan bruke dine data med Dexcom sine apper</string>
     <string name="manage_followers">Administrer følgere</string>
     <string name="manage_existing_followers">Administrer dine eksisterende følgere og invitere nye.</string>
+    <string name="invite_follower">Inviter en følger</string>
     <string name="glucose_calibration_and_other_alerts">Glukose, Kalibrering og andre varsler</string>
     <string name="alert_volume_profile">Alarmvolum Profil</string>
     <string name="smart_alerting">Smart varsling</string>
@@ -277,6 +278,7 @@
     <string name="start_snoozed">Start Utsatt</string>
     <string name="adjust_all_by_a_factor">Juster alle med en faktor</string>
     <string name="reset">Tilbakestill</string>
+    <string name="pebble_and_android_wear_options">Alternativer for ulike smartklokker</string>
     <string name="customize_colours">Tilpass farger</string>
     <string name="xdrip_plus_color_settings">xDrip+ fargeinnstillinger</string>
     <string name="glucose_values_and_lines">Glukoseverdier og linjer</string>
@@ -881,6 +883,7 @@
     <string name="button_1_hour">1 time</string>
     <string name="button_8_hour">8 timer</string>
     <string name="button_1_week">1 uke</string>
+    <string name="low_and_high_alerts_currently_disabled">LAV- OG HØYALARMER ER DEAKTIVERT</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Kalibrer med nye blodsukkermålinger hvis tilstanden synes riktig uten å be om samtykke (eksperimentell)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatisk kalibrering</string>
     <!-- Maybe we can use them later?
@@ -894,5 +897,6 @@
     <string name="summary_clfollow_lang">CareLink language code</string>
     -->
     <string name="enable_streaming_dialog_dont_ask_again"> Ikke spør meg igjen</string>
+    <string name="external_status_strings_eg_tbr">Eksterne statusstrenger, for eksempel midlertidig basal fra AAPS</string>
     <string name="titleInside_yRange">Aktiver</string>
 </resources>
