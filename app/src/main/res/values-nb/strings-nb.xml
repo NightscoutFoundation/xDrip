@@ -21,13 +21,13 @@
     <string name="navigation_drawer_open">Åpne navigasjonsmenyen</string>
     <string name="navigation_drawer_close">Lukk navigasjonsmenyen</string>
     <string name="title_activity_calibration_check_in">Kalibreringsaktivitet</string>
-    <string name="title_activity_usb_connected">USB-tilkoblet aktivitet</string>
+    <string name="title_activity_usb_connected">USB-tilkoblingsaktivitet</string>
     <string name="snooze">Utsett</string>
     <string name="snooze_hint">Utsett varsling i x minutter</string>
     <string name="ok">OK</string>
     <string name="cancel">Avbryt</string>
     <string name="no">Nei</string>
-    <string name="pref_sensor_location_dont_ask_again"> Ikke spør meg igjen</string>
+    <string name="pref_sensor_location_dont_ask_again">Ikke spør meg igjen</string>
     <string name="title_activity_error">"Feil- og Hendelsesliste"</string>
     <string name="title_activity_main">Hovedaktivitet</string>
     <string name="title_activity_fake_numbers">Falske Nummer</string>
@@ -61,15 +61,15 @@
     <string name="pref_message_api_url">Dette er bare Base-URL, opplaster vil automatisk legge til /oppføringer for POST. API_SECRET på serveren skal samsvare med yourpassphrase i denne innstillingen.</string>
     <string name="pref_default_api_url">https://dittpassord@{YOUR-SITE}.azurewebsites.net/api/v1/</string>
     <!-- wifi Settings -->
-    <string name="wifi_recievers_dialog_message">Kommaseparert liste av ip:port (for eksempel 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
-    <string name="wifi_recievers_dialog_title">Skriv inn IP-adresser og porter mottakere (inkludert mongodb adresser hvis nødvendig)</string>
+    <string name="wifi_recievers_dialog_message">Kommaseparert liste av IP:port (for eksempel 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
+    <string name="wifi_recievers_dialog_title">Skriv inn IP-adresser og porter til mottakere (inkludert mongodb-adresser hvis nødvendig)</string>
     <!-- Location Settings -->
     <string name="location_not_found_title">Stedstjenester er ikke aktivert</string>
     <string name="location_not_found_message">For at blåtannsøk skal virke med nyere enheter, må stedstjenester være aktivert. xDrip kan ikke spore posisjonen din, og det kan deaktiveres etter at paringen er vellykket.</string>
     <string name="location_yes">Aktiver</string>
     <!-- broadcast settings -->
     <string name="pref_title_broadcast_enabled">Kringkaste lokalt</string>
-    <string name="pref_summary_broadcast_enabled">Aktiver lokal kringkasting av data, slik at andre programmer (f.eks. Nightwatch) kan lytte på nye verdier</string>
+    <string name="pref_summary_broadcast_enabled">Aktiver lokal kringkasting av data, slik at andre programmer (f.eks. AAPS) kan lytte på nye verdier</string>
     <string name="title_activity_share_test">Delingstest</string>
     <!-- pebble settings -->
     <string name="pref_pebble_trend_watchface">Bruk Pebble Trend urskive</string>
@@ -79,13 +79,13 @@
     <string name="pref_pebble_display_high_line">Vis Høy Linje</string>
     <string name="pref_pebble_display_low_line">Vis Lav Linje</string>
     <!-- Amazfit Settings -->
-    <string name="amazfit_sync_service">AmazFit Sync Tjeneste</string>
+    <string name="amazfit_sync_service">Tjeneste for AmazFit Sync</string>
     <string name="pref_amazfit_enable_summary">Aktiver støtte for Amazfit Data</string>
     <string name="pref_amazfit_enable">Aktiver</string>
     <string name="pref_amazfit_tile">Tjeneste for Amazfit</string>
-    <string name="pref_amazfit_BG_alert_enable_summary">Sender aktive BS varsler til Smartklokke</string>
+    <string name="pref_amazfit_BG_alert_enable_summary">Sender aktive BS-varsler til smartklokke</string>
     <string name="pref_amazfit_BG_alert_enable">Aktiver</string>
-    <string name="pref_amazfit_BG_alert_title">BS varsler</string>
+    <string name="pref_amazfit_BG_alert_title">BS-varsler</string>
     <string name="pref_amazfit_other_alert_enable_summary">Sender andre varsler til smartklokke</string>
     <string name="pref_amazfit_other_alert_enable">Aktiver</string>
     <string name="pref_amazfit_other_alert_title">Andre varsler</string>
@@ -100,7 +100,7 @@
     <string name="title_activity_alert_list">Alarmliste</string>
     <string name="speaktreatment">Snakk inn behandling</string>
     <string name="title_activity_update">xDrip+ Oppdatering Tilgjengelig</string>
-    <string name="title_activity_display_qrcode">Del Innstillinger Med QR-kode</string>
+    <string name="title_activity_display_qrcode">Del innstillinger med QR-kode</string>
     <string name="title_activity_send_feed_back">Send Tilbakemelding Til Jamorham</string>
     <string name="title_activity_maps">Parakeet Kart</string>
     <string name="title_activity_display_preferences">Vis Innstillinger</string>
@@ -121,7 +121,7 @@
     <string name="share">Del</string>
     <string name="title_activity_profile_editor">Rediger Behandlingprofil</string>
     <string name="first_use_menu_to_scan">Bruk først menyen til å søke etter din BT-enhet eller endre datakilde i Innstillinger!</string>
-    <string name="first_configure_ip_address">Først konfigurere wifi-wixel-leserens ip-adresser eller parakeet URL</string>
+    <string name="first_configure_ip_address">Konfigurer først WiFi Wixel-leserens IP-adresser eller Parakeet URL</string>
     <string name="now_start_your_sensor">Starte sensoren nå, eller sjekk innstillinger</string>
     <string name="please_wait_while_sensor_warms_up">Vennligst vent mens sensoren varmer opp! (</string>
     <string name="minutes_with_bracket">" minutter)"</string>
@@ -130,8 +130,8 @@
     <string name="please_enter_two_calibrations_to_get_started">Legg inn to kalibreringer for å komme i gang!</string>
     <string name="now_pair_with_your_dexcom_share">Parr med Dexcom Share</string>
     <string name="now_choose_start_sensor_in_settings">Velg start sensoren i innstillingene</string>
-    <string name="double_check_dex_receiver_serial_number">Dobbelsjekk Dex Receiver serienummer, skal være 10 tegn, ikke glem bokstavene</string>
-    <string name="please_set_dex_receiver_serial_number">Vennligst angi Dex Receiver serienummer i App-innstillinger</string>
+    <string name="double_check_dex_receiver_serial_number">Dobbelsjekk Dexcom-mottakerens serienummer, skal være 10 tegn, ikke glem bokstavene</string>
+    <string name="please_set_dex_receiver_serial_number">Vennligst angi Dexcom-mottaker sitt serienummer i app-innstillinger</string>
     <string name="unfortunately_andoird_version_no_blueooth_low_energy">Dessverre støtter ikke din android-versjonen Bluetooth Low Energy</string>
     <string name="waiting_for_packet">Venter på pakke</string>
     <string name="persistent_high_for_greater_than">Vedvarende høy i &gt; </string>
@@ -150,6 +150,7 @@
     <string name="checking_for_update">Ser etter oppdatering..</string>
     <string name="signal_missed">Mistet Signal</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} Minutter siden|1#{0, number, integer} Minutt siden|1&lt;{0, number, integer} Minutter siden}</string>
+    <string name="expires_days">{0, choice,0#Sensor utløpt!|1#Slutter om {0, number} dag|1&lt;Slutter om {0, number} dager}</string>
     <string name="expires_at">Slutter {0}</string>
     <string name="space_minutes_ago">" Minutter siden"</string>
     <string name="space_minute_ago">" Minutt siden"</string>
@@ -197,7 +198,7 @@
     <string name="other_alerts">Andre varsler</string>
     <string name="extra_alerts_xdrip_plus">Ekstra varsler (xDrip+)</string>
     <string name="persistent_high_alert">Vedvarende Høy Alarm</string>
-    <string name="forecasted_low_alert">Antatt Lave Verdier Alarm</string>
+    <string name="forecasted_low_alert">Beregnet lav varsel</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Ekstrapolerte data for å prøve å forutsi lave verdier</string>
     <string name="alarm_at_forecasted_low_mins">Alarm ved beregnet lave verdier minutter</string>
     <string name="other_xdrip_plus_alerts">Andre xDrip+ varsler</string>
@@ -258,7 +259,7 @@
     <string name="special_value">Spesiell verdi</string>
     <string name="history">Historikk</string>
     <string name="statistics">Statistikk</string>
-    <string name="snooze_alert">Utsett Alert</string>
+    <string name="snooze_alert">Utsett varsel</string>
     <string name="less_common_settings">Mindre vanlige innstillinger</string>
     <string name="view_recent_errors_warnings">Vis nylige Feil / Advarsler</string>
     <string name="other_settings">Andre innstillinger</string>
@@ -500,7 +501,7 @@
     <string name="disable_alert">deaktivere alarm</string>
     <string name="save_alert">lagre alarme</string>
     <string name="remove_alert">fjerne alarm</string>
-    <string name="snooze_alert_before_it_fires">Utsett varsling først den starter</string>
+    <string name="snooze_alert_before_it_fires">Slumre varsel før den starter</string>
     <string name="create_low_alert">Lag lav alarm</string>
     <string name="create_high_alert">Lag høy alarm</string>
     <string name="long_press_an_existing_alert_to_edit">(Trykk og hold en eksisterende alarm for å redigere)</string>
@@ -561,7 +562,7 @@
     <string name="use_plugins_for_brodcast">Bruk støy-glatting og utvidelser etc (hvis aktivert) for sendte verdier</string>
     <string name="send_display_glucose">Send Display Glukose</string>
     <string name="send_broadcasts_old_permission_model">Send data uten å ta hensyn til den gamle rettighetsmodellen</string>
-    <string name="process_nsclient_treatments">Prosesser behandlingsdata mottatt fra NSKlient modul</string>
+    <string name="process_nsclient_treatments">Prosesser behandlingsdata mottatt fra AAPS eller AAPSClient</string>
     <string name="accept_treatments">Godta behandling</string>
     <string name="process_broadcasted_calibrations">Prosesser kalibrering mottatt fra annen modul</string>
     <string name="spoken_readings_locale">Egenvalgt språk for talte avlesninger, eg: de eller en_IN</string>
@@ -784,8 +785,11 @@
     <string name="confirm_sensing_snooze">Bekreft sending av utsettelse</string>
     <string name="allow_remotes_silence">La andre håndsett dempe alarmer på denne</string>
     <string name="acccept_remote_snoozes">Aksepter utsettelse fra andre</string>
+    <string name="send_remote_snooze">Send fjernslumring</string>
     <string name="only_accept_same_network">Bare aksepter hvis den andre enhetens trådløsnett starter med samme bokstaver som vår og er ganske like</string>
     <string name="wifi_name_must_match">Trådløsnavn på stemme</string>
+    <string name="confirm_remote_snooze">Bekreft fjernslumring</string>
+    <string name="are_you_sure_you_wish_to_snooze_all_other_devices_in_your_sync_group">Er du sikker på at du vil slumre alle andre enheter in din synk-gruppe?</string>
     <string name="yes_send_it">JA, send den!</string>
     <string name="movement_detection_and_vehicle_mode">Oppdag bevegelse og bilmodus</string>
     <string name="xdrip_motion_tracking">xDrip+ følger bevegelser</string>
@@ -852,12 +856,20 @@
     <string name="yes">Ja</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
+    <string name="set_data_source_to">Sett datakilde til: %s ?</string>
     <string name="are_you_sure">Er du sikker?</string>
     <string name="androidaps">AndroidAPS</string>
+    <string name="use_librealarm">Bruk LibreAlarm app som datakilde?</string>
+    <string name="g6_sensor_code">G6 sensorkode</string>
     <string name="enable_update_checks">Aktiver oppdateringssjekker?</string>
     <string name="cancel_alarm">Vil du avbryte Alarm?</string>
     <string name="zero_zero_zero_zero">0000</string>
     <string name="your_name">Ditt navn</string>
+    <string name="sensor_is_still_warming_up_please_wait">Sensor varmer fortsatt opp, vennligst vent</string>
+    <string name="title_Smartwatch_Sensors">Smartklokkesensorer</string>
+    <string name="summary_Activate_heart_rate_sensor_if_available">Aktiver pulssensor hvis tilgjengelig</string>
+    <string name="title_Heart_Rate_Sensor">Pulssensor</string>
+    <string name="summary_allow_testing_with_dead_sensor">tillatt testing med død sensor</string>
     <string name="title_NOT_FOR_PRODUCTION_USE">IKKE FOR PRODUKSJONSBRUK</string>
     <string name="title_You_have_no_reminders_yet">Du har ingen påminnelser ennå</string>
     <string name="title_swipe_reminder">Dra til venstre eller høyre</string>
@@ -883,9 +895,16 @@
     <string name="button_1_hour">1 time</string>
     <string name="button_8_hour">8 timer</string>
     <string name="button_1_week">1 uke</string>
-    <string name="low_and_high_alerts_currently_disabled">LAV- OG HØYALARMER ER DEAKTIVERT</string>
+    <string name="all_alerts_currently_disabled">ALLE VARSLER ER DEAKTIVERT</string>
+    <string name="low_and_high_alerts_currently_disabled">LAVE OG HØYE VARSLER ER DEAKTIVERT</string>
+    <string name="low_alerts_currently_disabled">LAVE VARSLER ER DEAKTIVERT</string>
+    <string name="high_alerts_currently_disabled">HØYE VARSLER ER DEAKTIVERT</string>
+    <string name="choose_data_source">Velg datakilde</string>
+    <string name="new_sensor_started">NY SENSOR STARTED</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Kalibrer med nye blodsukkermålinger hvis tilstanden synes riktig uten å be om samtykke (eksperimentell)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatisk kalibrering</string>
+    <string name="summary_send_dexcom_transmitter_battery_to_nightscout">Send Dexcom-sender batteristatistikk til Nightscout. Dette inkluderer alle data som vises i statusskjerm for datakilde.</string>
+    <string name="title_send_dexcom_transmitter_battery_to_nightscout">Last opp OB1G5/G6 sender batteri</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
     <string name="summary_clfollow_user">CareLink login username</string>
@@ -896,7 +915,19 @@
     <string name="title_clfollow_lang">CareLink Language</string>
     <string name="summary_clfollow_lang">CareLink language code</string>
     -->
-    <string name="enable_streaming_dialog_dont_ask_again"> Ikke spør meg igjen</string>
+    <string name="summary_ob1_g5_restart_sensor">Automatisk restart en sensor hvis den stopper</string>
+    <string name="title_ob1_g5_restart_sensor">Restart sensor</string>
+    <string name="summary_using_g6">Jeg bruker en G6 eller Dexcom 1 sensor</string>
+    <string name="save_sensor_location">Lagre sensorplassering</string>
+    <string name="sensor_start">Sensor started:</string>
+    <string name="plug_in_your_dexcom_reciever">Plugg inn din Dexcom-mottaker og trykk på denne knappen og kryss fingrene!</string>
+    <string name="check_in_dexcom_calibrations">Sjekk inn Dexcom kalibreringer</string>
+    <string name="__data_source_disabled">\n DATAKILDE DEAKTIVERT</string>
+    <string name="data_source_is_set_to_">Datakilde er satt til: </string>
+    <string name="__do_you_want_to_change_settings_or_start_sensor">\n\nVil du endre innstillinger eller starte sensor?</string>
+    <string name="remote_snooze">Fjernslumring...</string>
+    <string name="enable_streaming_dialog_dont_ask_again">Ikke spør meg igjen</string>
+    <string name="start_sensor_confirmation">Datakilde er satt til: %s\n\nVil du endre innstillinger eller starte sensor?</string>
     <string name="external_status_strings_eg_tbr">Eksterne statusstrenger, for eksempel midlertidig basal fra AAPS</string>
     <string name="titleInside_yRange">Aktiver</string>
 </resources>
