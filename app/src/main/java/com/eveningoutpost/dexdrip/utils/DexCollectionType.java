@@ -13,6 +13,7 @@ import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollowService;
 import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
 import com.eveningoutpost.dexdrip.cgm.webfollow.WebFollowService;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.CareLinkFollowService;
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.getTransmitterID;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -276,7 +277,7 @@ public enum DexCollectionType {
                 return "Network G4 and Classic xDrip";
             case DexcomG5:
                 if (Ob1G5CollectionService.usingNativeMode()) {
-                    return Ob1G5CollectionService.usingG6() ? "G6 Native" : "G5 Native";
+                    return Ob1G5CollectionService.usingG6() ? (getTransmitterID().length() < 6 ? "G7" : "G6 Native") : "G5 Native";
                 }
                 return dct.name();
             case LibreWifi:
