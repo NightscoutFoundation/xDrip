@@ -1166,6 +1166,7 @@
     <string name="overwrite_intercept_engineering_only">Sovrascrivi Intercetto (solo engineering!)</string>
     <string name="manual_overwrite_not_possible">Sovrascrittura manuale impossibile!</string>
     <string name="upload_even_when_using_mobile_data">Upload anche con rete dati mobile</string>
+    <string name="daily_backup_even_mobile">Backup giornaliero anche su dati mobili</string>
     <string name="use_mobile_data">Utilizza rete dati mobile</string>
     <string name="summary_cloud_storage_api_download_enable">Prova anche a scaricare i dati da Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Scarica dati</string>
@@ -1286,16 +1287,20 @@
     <string name="title_nsfollow_url">URL Nightscout Follow</string>
     <string name="summary_nsfollow_download_treatments">Scarica anche i trattamenti da Nightscout come follower</string>
     <string name="title_nsfollow_download_treatments">Scarica trattamenti</string>
-    <string name="title_clfollow_user">Nome utente CareLink</string>
-    <string name="summary_clfollow_user">Nome utente di accesso CareLink</string>
-    <string name="title_clfollow_pass">Password CareLink</string>
-    <string name="summary_clfollow_pass">Password di accesso a CareLink</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
     <string name="title_clfollow_country">Paese CareLink</string>
     <string name="summary_clfollow_country">Seleziona il tuo paese CareLink.</string>
     <string name="title_clfollow_patient">Nome Utente Paziente CareLink</string>
     <string name="summary_clfollow_patient">Nome utente paziente CareLink (opzionale)</string>
-    <string name="title_clfollow_lang">Lingua CareLink</string>
-    <string name="summary_clfollow_lang">Codice lingua CareLink</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
     <string name="title_clfollow_grace_period">Periodo di grazia</string>
     <string name="summary_clfollow_grace_period">Periodo di tolleranza per la richiesta di dati in secondi</string>
     <string name="title_clfollow_missed_poll_interval">Intervallo richiesta dati mancanti</string>
@@ -1781,4 +1786,15 @@
     <string name="summary_Lib2_show_sense_on_status">Attiva per mostrare ulteriori informazioni nello stato, per il sensore Libre 2.</string>
     <string name="import_qr_code_warning">Importa solo le impostazioni da fonti affidabili!\n\nConferma di volere importare le impostazioni seguenti:\n\n</string>
     <string name="scan_to_load_xdrip_settings">Scansiona per caricare le impostazioni xDrip</string>
+    <string name="carelink_auth_country_required">Il campo paese è obbligatorio!</string>
+    <string name="carelink_auth_status_authenticated">Stato: autenticato!</string>
+    <string name="carelink_auth_status_not_authenticated">Stato: non autenticato!</string>
+    <string name="carelink_auth_login_in_progress">Login in corso...</string>
+    <string name="carelink_refresh_token_start">Avvia rinnovo di accesso</string>
+    <string name="carelink_refresh_token_failed">Rinnovo accesso fallito! Riproverò!</string>
+    <string name="carelink_download_start">Inizia il download</string>
+    <string name="carelink_download_failed">Download dati fallito!</string>
+    <string name="carelink_credential_status_not_authenticated">Accesso non effettuato! Effettua il login!</string>
+    <string name="carelink_credential_status_access_expired">Accesso scaduto! Si aggiornerà!</string>
+    <string name="carelink_credential_status_refresh_expired">Login scaduto! Effettua il login!</string>
 </resources>

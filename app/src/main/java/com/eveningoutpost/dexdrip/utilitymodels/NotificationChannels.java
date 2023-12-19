@@ -7,14 +7,21 @@ import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.media.AudioAttributes;
-import android.support.v4.app.NotificationCompat;
+
+
+import androidx.core.app.NotificationCompat;
 
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.xdrip;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
+import lombok.val;
 
 /**
  * Created by jwoglom on 10/15/2017.
@@ -99,9 +106,9 @@ public class NotificationChannels {
     @TargetApi(26)
     private static String my_text_hash(NotificationChannel x) {
         String res = "";
-        if (x.getSound() != null) res += "\uD83C\uDFB5"; // 🎵
-        if (x.shouldVibrate()) res += "\uD83D\uDCF3"; // 📳
-        if (x.shouldShowLights()) res += "\uD83D\uDCA1"; // 💡
+        if (x.getSound() != null) res += "\uD83C\uDFB5"; // �
+        if (x.shouldVibrate()) res += "\uD83D\uDCF3"; // �
+        if (x.shouldShowLights()) res += "\uD83D\uDCA1"; // �
         res = (res.equals("")) ? res : "  " + res;
 
         int counter = 1;
@@ -176,11 +183,16 @@ public class NotificationChannels {
 
         // mirror the notification parameters in the channel
         template.setGroup(temp.getChannelId());
-        template.setVibrationPattern(wip.mNotification.vibrate);
-        template.setSound(wip.mNotification.sound, generic_audio);
-        template.setLightColor(wip.mNotification.ledARGB);
-        if ((wip.mNotification.ledOnMS != 0) && (wip.mNotification.ledOffMS != 0))
-            template.enableLights(true); // weird how this doesn't work like vibration pattern
+
+        val mNotification = getNotificationFromInsideBuilder(wip);
+        if (mNotification != null) {
+            template.setVibrationPattern(mNotification.vibrate);
+            template.setSound(mNotification.sound, generic_audio);
+            template.setLightColor(mNotification.ledARGB);
+            if (mNotification.ledOnMS != 0 && mNotification.ledOffMS != 0)
+                template.enableLights(true); // weird how this doesn't work like vibration pattern
+        }
+
         template.setDescription(temp.getChannelId() + " " + wip.hashCode());
 
         // get a nice string to identify the hash
@@ -201,16 +213,20 @@ public class NotificationChannels {
         }
         channel.setDescription(template.getDescription());
         channel.setVibrationPattern(template.getVibrationPattern());
-        template.setLightColor(wip.mNotification.ledARGB);
-        if ((wip.mNotification.ledOnMS != 0) && (wip.mNotification.ledOffMS != 0))
-            template.enableLights(true); // weird how this doesn't work like vibration pattern
+
+        if (mNotification != null) {
+            template.setLightColor(mNotification.ledARGB);
+            if ((mNotification.ledOnMS != 0) && (mNotification.ledOffMS != 0))
+                template.enableLights(true); // weird how this doesn't work like vibration pattern
+        }
+
         template.setDescription(temp.getChannelId() + " " + wip.hashCode());
 
         // create a group to hold this channel if one doesn't exist or update text
         getNotifManager().createNotificationChannelGroup(new NotificationChannelGroup(channel.getGroup(), getString(channel.getGroup())));
         // create this channel if it doesn't exist or update text
         getNotifManager().createNotificationChannel(channel);
-        return channel;
+        return mNotification != null ? channel : null; // Note we return null to fallback old behavior if we can't get reflected access
     }
 
     @TargetApi(26)
@@ -268,7 +284,21 @@ public class NotificationChannels {
         getNotifManager().createNotificationChannelGroup(new NotificationChannelGroup(channel.getGroup(), getString(channel.getGroup())));
         // create this channel if it doesn't exist or update text
         getNotifManager().createNotificationChannel(channel);
-        return channel;
+        return  channel;
+    }
+
+    static Notification getNotificationFromInsideBuilder(final NotificationCompat.Builder builder) {
+        try {
+            final Class<?> builderClass = builder.getClass();
+            final Field mNotificationField = builderClass.getDeclaredField("mNotification");
+            mNotificationField.setAccessible(true);
+            return (Notification) mNotificationField.get(builder);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            if (JoH.ratelimit("notification-workaround", 1800)) {
+                UserError.Log.wtf(TAG, "Workaround being used for notification channels no longer works - please report");
+            }
+            return null;
+        }
     }
 
 }

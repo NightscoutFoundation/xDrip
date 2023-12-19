@@ -952,7 +952,7 @@
     <string name="channel_name">Esiplaani teenus</string>
     <string name="code_accepted">Kood aktsepteeritud</string>
     <string name="invalid_or_unsupported_code">Vale/tundmatu kood!</string>
-    <string name="g6_sensor_code">G6 Sensori kood</string>
+    <string name="g6_sensor_code">Sensori kood</string>
     <string name="please_enter_printed_calibration_code">Palun sisesta prinditud kalibreerimiskood, 4 numbrit, nt. 5678</string>
     <string name="enable_update_checks">Lubada värskenduste kontroll?</string>
     <string name="you_can_easily_roll_back_dialog_msg">Kui sulle uus versioon ei meeldi, siis xDripiga saab lihtsasti vanema versiooni peale tagasi minna, kui taaskäivitad vanema versiooni APK installeri Downloads kaustas.\n\nKas soovid lubada uuenduste kontrolli?</string>
@@ -1166,6 +1166,7 @@
     <string name="overwrite_intercept_engineering_only">Korrigeeri lõikepunkti (ainult tehniline režiim!)</string>
     <string name="manual_overwrite_not_possible">Käsitsi ülekirjutamine pole võimalik!</string>
     <string name="upload_even_when_using_mobile_data">Laadi üles isegi mobiilse andmeside kasutamisel</string>
+    <string name="daily_backup_even_mobile">Igapäevane varukoopia isegi mobiilse andmeside kasutamisel</string>
     <string name="use_mobile_data">Kasuta mobiilside andmeid</string>
     <string name="summary_cloud_storage_api_download_enable">Proovi ka Nightscout\'i raviandmeid alla laadida</string>
     <string name="title_cloud_storage_api_download_enable">Lae alla raviandmed</string>
@@ -1290,16 +1291,23 @@
     <string name="title_nsfollow_url">Nightscout jälgimise URL</string>
     <string name="summary_nsfollow_download_treatments">Laadi jälgijana alla ka Nightscout\'i raviandmed</string>
     <string name="title_nsfollow_download_treatments">Laad alla raviandmed</string>
-    <string name="title_clfollow_user">CareLink kasutajanimi</string>
-    <string name="summary_clfollow_user">CareLink sisselogimise kasutajanimi</string>
-    <string name="title_clfollow_pass">CareLink parool</string>
-    <string name="summary_clfollow_pass">CareLink sisselogimise parool</string>
+    <string name="title_nsfollow_lag">Nightscout jälgimise viivitus</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
     <string name="title_clfollow_country">CareLink riik</string>
     <string name="summary_clfollow_country">Vali enda CareLink riik.</string>
     <string name="title_clfollow_patient">CareLink patsiendi kasutajanimi</string>
     <string name="summary_clfollow_patient">CareLink patsiendi kasutajanimi (vabalt valitav)</string>
-    <string name="title_clfollow_lang">CareLink keel</string>
-    <string name="summary_clfollow_lang">CareLink keele kood</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
+    <string name="title_clfollow_login">Logi sisse</string>
+    <string name="summary_clfollow_login">Logi sisse brauseriga</string>
     <string name="title_clfollow_grace_period">Ooteperiood</string>
     <string name="summary_clfollow_grace_period">Andmepäringu ooteperiood sekundites</string>
     <string name="title_clfollow_missed_poll_interval">Puuduvate andmete päringute intervall</string>
@@ -1327,7 +1335,7 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Tagasi xDrip\'pi</string>
     <string name="summary_ob1_minimize_scanning">Kasutage heuristikat, et minimeerida Bluetooth skaneerimist ja säästa energiat</string>
     <string name="title_ob1_minimize_scanning">Minimaalne skaneerimine</string>
-    <string name="summary_using_g6">Kasutan G6 või Dexcom 1 sensorit</string>
+    <string name="summary_using_g6">Kasutan G6 või Dexcom One sensorit</string>
     <string name="title_using_g6">G6/Dex1 tugi</string>
     <string name="summary_ob1_g5_allow_resetbond">OB1 vastuvõtja võib ühenduse katkestada kui arvab, et andmete töötlemine ebaõnnestus. Kui teil tekib ühenduse katkestamisel probleeme, keelake see valik. Kui te seejärel ühenduse täielikult kaotate, veenduge, et see oleks lubatud.</string>
     <string name="title_ob1_g5_allow_resetbond">Luba OB1 lahtiühendamine</string>
@@ -1785,4 +1793,12 @@
     <string name="summary_Lib2_show_sense_on_status">Lülita sisse, et kuvada staatuse lehel Libre 2 sensori lisainformatsiooni.</string>
     <string name="import_qr_code_warning">Impordi seadeid ainult usaldusväärsetest allikatest!\n\nKinnita järgmiste seadete importimine:\n\n</string>
     <string name="scan_to_load_xdrip_settings">Skaneeri xDrip\'i seadete laadimiseks</string>
+    <string name="manage_permissions">Lubade haldamine</string>
+    <string name="open_health_connect_settings_to_manually_manage_permissions">Ava Health Connect seaded, et lubasid käsitsi hallata</string>
+    <string name="send_data_to_health_connect">Saada andmed Health Connect\'i</string>
+    <string name="get_data_from_health_connect">Hangi andmed Health Connect\'ist</string>
+    <string name="requires_android_8_and_google_companion_application_or_android_14">Vajab Android 8+ ja Google lisarakendust või Android 14+</string>
+    <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Saada ja võta vastu andmeid Google Health Connect\'ist ja Google Fit\'ist</string>
+    <string name="google_health_connect">Google Health Connect</string>
+    <string name="google_health_connect_needs_perms">VIGA: Health Connect vajab luba!  Proovi uuesti seadete menüüst</string>
 </resources>

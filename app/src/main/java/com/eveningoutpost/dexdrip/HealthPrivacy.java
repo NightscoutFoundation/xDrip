@@ -1,8 +1,10 @@
 package com.eveningoutpost.dexdrip;
 
-import android.support.v7.app.AppCompatActivity;
+
 import android.os.Bundle;
 import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.eveningoutpost.dexdrip.models.JoH;
 

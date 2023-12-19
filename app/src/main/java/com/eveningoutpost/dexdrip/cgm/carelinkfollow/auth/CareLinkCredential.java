@@ -4,13 +4,39 @@ import java.util.Calendar;
 import java.util.Date;
 
 import okhttp3.Cookie;
+import okhttp3.Headers;
 
 public class CareLinkCredential {
+
 
     public String country = null;
     public String accessToken = null;
     public Cookie[] cookies = null;
-    public Date tokenValidTo = null;
+    public Date accessValidTo = null;
+    public Date refreshValidTo = null;
+    public CareLinkAuthType authType = null;
+    public String androidModel = null;
+    public String deviceId = null;
+    public String clientId = null;
+    public String clientSecret = null;
+    public String magIdentifier = null;
+    public String refreshToken = null;
+
+
+    public CareLinkAuthentication getAuthentication() {
+
+        //Not authenticated
+        if (this.authType == null || this.getAuthorizationFieldValue() == null)
+            return null;
+
+        //Build authentication
+        Headers.Builder headers = new Headers.Builder();
+        headers.add("Authorization", this.getAuthorizationFieldValue());
+        if (this.authType == CareLinkAuthType.MobileApp)
+            headers.add("mag-identifier", this.magIdentifier);
+        return new CareLinkAuthentication(headers.build(), this.authType);
+
+    }
 
     public String getToken() {
         return accessToken;
@@ -23,11 +49,11 @@ public class CareLinkCredential {
             return "Bearer " + this.getToken();
     }
 
-    public long getExpiresIn() {
-        if (this.tokenValidTo == null)
+    public long getAccessExpiresIn() {
+        if (this.accessValidTo == null)
             return -1;
         else
-            return this.tokenValidTo.getTime() - Calendar.getInstance().getTime().getTime();
+            return this.accessValidTo.getTime() - Calendar.getInstance().getTime().getTime();
     }
 
 }

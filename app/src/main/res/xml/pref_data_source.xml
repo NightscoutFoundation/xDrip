@@ -196,7 +196,14 @@
             android:defaultValue="false"
             android:key="nsfollow_download_treatments"
             android:summary="@string/summary_nsfollow_download_treatments"
-            android:title="@string/title_nsfollow_download_treatments"
+            android:title="@string/title_nsfollow_download_treatments" />
+        <ListPreference
+            android:defaultValue="0"
+            android:key="nsfollow_lag"
+            android:summary=""
+            android:title="@string/title_nsfollow_lag"
+            android:entries="@array/nsfollowlag_entries"
+            android:entryValues="@array/nsfollowlag_values"
             />
 
         <EditTextPreference
@@ -406,11 +413,6 @@
                     android:key="run_G5_ble_tasks_on_uithread"
                     android:summary="@string/g5_force_ui_thread"
                     android:title="@string/force_g5_ui_thread" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="always_get_new_keys"
-                    android:summary="@string/g5_full_authentification"
-                    android:title="@string/authentificate_before_reading" />
             </PreferenceCategory>
             <PreferenceCategory
                 android:key="dex_battery_category"

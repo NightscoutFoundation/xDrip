@@ -11,9 +11,12 @@ import android.widget.Spinner;
 
 import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.models.JoH;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import lombok.val;
 
 /**
  * Created by gruoner on 28/07/2019.
@@ -50,7 +53,13 @@ public class InsulinProfileEditor extends BaseAppCompatActivity {
         basalSpinner = (Spinner) findViewById(R.id.basalSpinner);
         bolusSpinner = (Spinner) findViewById(R.id.bolusSpinner);
 
-        for (Insulin i : InsulinManager.getAllProfiles()) {
+        val iprofiles = InsulinManager.getAllProfiles();
+        if (iprofiles == null) {
+            JoH.static_toast_long("Can't initialize insulin profiles");
+            finish();
+            return;
+        }
+        for (Insulin i : iprofiles) {
             LinearLayout v = new LinearLayout(this);
             v.setOrientation(LinearLayout.HORIZONTAL);
             CheckBox cb = new CheckBox(this);

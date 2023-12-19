@@ -27,7 +27,8 @@ public class SensorExpiry extends BaseAlert {
     private static final long[] THRESHOLDS = {
             // need to be in ascending order so first hit is first applicable to avoid multiple triggers
             Constants.HOUR_IN_MS * 2,
-            Constants.HOUR_IN_MS * 9,
+            Constants.HOUR_IN_MS * 6,
+            Constants.HOUR_IN_MS * 12,
             Constants.HOUR_IN_MS * 24,
     };
 

@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip.ui.charts;
 
-import android.support.annotation.ColorInt;
-import android.support.annotation.NonNull;
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import android.text.format.DateFormat;
 
 import com.eveningoutpost.dexdrip.models.JoH;

@@ -143,6 +143,7 @@ public class BroadcastGlucose {
                 }
 
                 bundle.putInt(Intents.EXTRA_SENSOR_BATTERY, BridgeBattery.getBestBridgeBattery());
+                bundle.putLong(Intents.EXTRA_SENSOR_STARTED_AT, sensor.started_at);
                 bundle.putLong(Intents.EXTRA_TIMESTAMP, bgReading.timestamp);
 
                 //raw value

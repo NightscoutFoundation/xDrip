@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.cgm.carelinkfollow;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.text.SpannableString;
 
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.auth.CareLinkCredentialStore;
@@ -127,20 +127,20 @@ public class CareLinkFollowService extends ForegroundService {
         final BgReading lastBg = BgReading.lastNoSenssor();
         final long last = lastBg != null ? lastBg.timestamp : 0;
 
-        final long nextTokenRefresh = anticipateNextTokenRefresh(JoH.tsl(), CareLinkCredentialStore.getInstance().getExpiresOn(), getRenewBeforeMillis(), getRenewIntervalMillis());
+        final long nextTokenRefresh = anticipateNextTokenRefresh(JoH.tsl(), CareLinkCredentialStore.getInstance().getAccessExpiresOn(), getRenewBeforeMillis(), getRenewIntervalMillis());
         final long nextDataPoll = anticipateNextDataPoll(JoH.tsl(), last, SAMPLE_PERIOD, getGraceMillis(), getMissedIntervalMillis());
 
         // Token needs to refreshed sooner
-        if(nextTokenRefresh <= nextDataPoll){
+        if (nextTokenRefresh <= nextDataPoll) {
             next = nextTokenRefresh;
-            scheduleReason = " as login expires: ";
+            scheduleReason = " as access expires: ";
             // Data is required sooner
         } else {
             next = nextDataPoll;
             scheduleReason = " as last BG timestamp: ";
         }
 
-        if(JoH.msTill(next) < (RATE_LIMIT_SECONDS * Constants.SECOND_IN_MS))
+        if (JoH.msTill(next) < (RATE_LIMIT_SECONDS * Constants.SECOND_IN_MS))
             next = JoH.tsl() + (RATE_LIMIT_SECONDS * Constants.SECOND_IN_MS);
 
         wakeup_time = next;
@@ -149,7 +149,7 @@ public class CareLinkFollowService extends ForegroundService {
         JoH.wakeUpIntent(xdrip.getAppContext(), JoH.msTill(next), WakeLockTrampoline.getPendingIntent(CareLinkFollowService.class, Constants.CARELINK_SERVICE_FAILOVER_ID));
     }
 
-    private static long anticipateNextTokenRefresh(long now, final long expiry, final long before, final long interval){
+    private static long anticipateNextTokenRefresh(long now, final long expiry, final long before, final long interval) {
 
         long next;
 
@@ -188,7 +188,7 @@ public class CareLinkFollowService extends ForegroundService {
 
     }
 
-    private static CareLinkFollowDownloader getDownloader(){
+    private static CareLinkFollowDownloader getDownloader() {
         if (downloader == null) {
             downloader = new CareLinkFollowDownloader(
                     Pref.getString("clfollow_user", ""),
@@ -223,16 +223,16 @@ public class CareLinkFollowService extends ForegroundService {
                 gracePeriod = Pref.getStringToInt("clfollow_grace_period", 30);
             if (missedPollInterval == 0)
                 missedPollInterval = Pref.getStringToInt("clfollow_missed_poll_interval", 5);
-            if(renewBefore == 0)
+            if (renewBefore == 0)
                 renewBefore = 10;
-            if(renewInterval == 0)
+            if (renewInterval == 0)
                 renewInterval = 1;
             lastBg = BgReading.lastNoSenssor();
             if (lastBg != null) {
                 lastBgTime = lastBg.timestamp;
             }
             // Check if downloader needs to be started (last BG old or token needs to be renewed)
-            final boolean refreshToken =  (JoH.msTill(CareLinkCredentialStore.getInstance().getExpiresOn()) < getRenewBeforeMillis()) ? true : false;
+            final boolean refreshToken = (JoH.msTill(CareLinkCredentialStore.getInstance().getAccessExpiresOn()) < getRenewBeforeMillis()) ? true : false;
             final boolean downloadData = (lastBg == null || msSince(lastBg.timestamp) > SAMPLE_PERIOD + getGraceMillis()) ? true : false;
             if (refreshToken || downloadData) {
                 //Only start if rate limit is not exceeded
@@ -262,7 +262,7 @@ public class CareLinkFollowService extends ForegroundService {
     public static List<StatusItem> megaStatus() {
         final BgReading lastBg = BgReading.lastNoSenssor();
 
-        long hightlightGrace = Constants.SECOND_IN_MS * getGraceMillis()  + Constants.SECOND_IN_MS * 10; //garce + 20 seconds for processing
+        long hightlightGrace = Constants.SECOND_IN_MS * getGraceMillis() + Constants.SECOND_IN_MS * 10; //garce + 20 seconds for processing
 
         // Status for BG receive delay (time from bg was recorded till received in xdrip)
         String ageOfBgLastPoll = "n/a";
@@ -300,18 +300,36 @@ public class CareLinkFollowService extends ForegroundService {
                 authHighlight = StatusItem.Highlight.GOOD;
                 authStatus = "AUTHENTICATED";
                 break;
-            case CareLinkCredentialStore.TOKEN_EXPIRED:
+            case CareLinkCredentialStore.ACCESS_EXPIRED:
+                authHighlight = StatusItem.Highlight.NOTICE;
+                authStatus = "ACCESS EXPIRED";
+                break;
+            case CareLinkCredentialStore.REFRESH_EXPIRED:
                 authHighlight = StatusItem.Highlight.BAD;
-                authStatus = "TOKEN EXPIRED";
+                authStatus = "REFRESH EXPIRED";
                 break;
         }
 
+        //Client type
+        String clientType = "Unkown";
+        try {
+            switch (CareLinkCredentialStore.getInstance().getCredential().authType) {
+                case Browser:
+                    clientType = "Browser";
+                    break;
+                case MobileApp:
+                    clientType = "CarePartner app";
+                    break;
+            }
+        } catch (Exception ex) {
+        }
 
         //Build status screeen
         List<StatusItem> megaStatus = new ArrayList<>();
-
+        megaStatus.add(new StatusItem("Client type", clientType));
         megaStatus.add(new StatusItem("Authentication status", authStatus, authHighlight));
-        megaStatus.add(new StatusItem("Login expires in", JoH.niceTimeScalar(CareLinkCredentialStore.getInstance().getExpiresIn())));
+        megaStatus.add(new StatusItem("Access expires in", JoH.niceTimeScalar(CareLinkCredentialStore.getInstance().getAccessExpiresIn())));
+        megaStatus.add(new StatusItem("Login expires in", JoH.niceTimeScalar(CareLinkCredentialStore.getInstance().getRefreshExpiresIn())));
         megaStatus.add(new StatusItem());
         megaStatus.add(new StatusItem("Latest BG", ageLastBg + (lastBg != null ? " ago" : ""), bgAgeHighlight));
         megaStatus.add(new StatusItem("BG receive delay", ageOfBgLastPoll, ageOfLastBgPollHighlight));

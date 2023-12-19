@@ -1166,6 +1166,7 @@
     <string name="overwrite_intercept_engineering_only">Sobrescribir Intercepción (¡sólo ingeniería!)</string>
     <string name="manual_overwrite_not_possible">¡No se puede sobrescribir manualmente!</string>
     <string name="upload_even_when_using_mobile_data">Subir incluso cuando se utilicen datos móviles</string>
+    <string name="daily_backup_even_mobile">Copia de seguridad diaria incluso en datos móviles</string>
     <string name="use_mobile_data">Usar datos móviles</string>
     <string name="summary_cloud_storage_api_download_enable">También intentar descargar datos de Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Descargar tratamientos</string>
@@ -1287,16 +1288,22 @@
     <string name="title_nsfollow_url">URL de Nightscout a Seguir</string>
     <string name="summary_nsfollow_download_treatments">También descargar tratamientos de Nightscout como seguidor</string>
     <string name="title_nsfollow_download_treatments">Descargar tratamientos</string>
-    <string name="title_clfollow_user">Nombre de usuario de CareLink</string>
-    <string name="summary_clfollow_user">Nombre de usuario de acceso de CareLink</string>
-    <string name="title_clfollow_pass">Contraseña de CareLink</string>
-    <string name="summary_clfollow_pass">Contraseña de acceso a CareLink</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
     <string name="title_clfollow_country">País de CareLink</string>
     <string name="summary_clfollow_country">Seleccione tu país de CareLink.</string>
     <string name="title_clfollow_patient">Usuario del paciente de CareLink</string>
     <string name="summary_clfollow_patient">Usuario del paciente de CareLink (opcional)</string>
-    <string name="title_clfollow_lang">Idioma de CareLink</string>
-    <string name="summary_clfollow_lang">Código de idioma de CareLink</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
+    <string name="title_clfollow_login">Iniciar sesión</string>
+    <string name="summary_clfollow_login">Iniciar sesión con el navegador</string>
     <string name="title_clfollow_grace_period">Periodo de gracia</string>
     <string name="summary_clfollow_grace_period">Período de gracia para la solicitud de datos en segundos</string>
     <string name="title_clfollow_missed_poll_interval">Intervalo de sondeo de datos perdidos</string>
@@ -1782,4 +1789,23 @@
     <string name="summary_Lib2_show_sense_on_status">Activar para mostrar información adicional en Estado para el sensor Libre 2.</string>
     <string name="import_qr_code_warning">¡Solo importa la configuración de las fuentes en las que confías!\n\nPor favor, confirma la importación de las siguientes configuraciones:\n\n</string>
     <string name="scan_to_load_xdrip_settings">Escanear para cargar ajustes de xDrip</string>
+    <string name="manage_permissions">Administrar permisos</string>
+    <string name="open_health_connect_settings_to_manually_manage_permissions">Abre los ajustes de Open Health para administrar manualmente los permisos</string>
+    <string name="send_data_to_health_connect">Enviar datos a Health Connect</string>
+    <string name="get_data_from_health_connect">Obtener datos de Health Connect</string>
+    <string name="requires_android_8_and_google_companion_application_or_android_14">Requiere aplicaciones Android 8+ y Google companion o Android 14+</string>
+    <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Enviar y recibir datos de Google Health Connect y Google Fit</string>
+    <string name="google_health_connect">Google Health Connect</string>
+    <string name="google_health_connect_needs_perms">ERROR: ¡Health connect necesita permisos! - intenta de nuevo desde el menú de configuración</string>
+    <string name="carelink_auth_country_required">¡País requerido!</string>
+    <string name="carelink_auth_status_authenticated">¡Estado autenticado!</string>
+    <string name="carelink_auth_status_not_authenticated">¡Estado no autenticado!</string>
+    <string name="carelink_auth_login_in_progress">Inicio de sesión en curso...</string>
+    <string name="carelink_refresh_token_start">Iniciar renovación de acceso</string>
+    <string name="carelink_refresh_token_failed">¡Falló la renovación de acceso! ¡Volverá a intentarlo!</string>
+    <string name="carelink_download_start">Iniciar descarga</string>
+    <string name="carelink_download_failed">¡Fallo al descargar!</string>
+    <string name="carelink_credential_status_not_authenticated">¡No has iniciado sesión! ¡Por favor inicia sesión!</string>
+    <string name="carelink_credential_status_access_expired">¡Acceso expirado! ¡Se actualizará!</string>
+    <string name="carelink_credential_status_refresh_expired">¡Inicio de sesión expirado! ¡Inicie sesión!</string>
 </resources>

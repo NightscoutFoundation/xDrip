@@ -1264,16 +1264,20 @@
     <string name="title_nsfollow_url">Nightscout URL за следване</string>
     <string name="summary_nsfollow_download_treatments">Също така изтеглете лечения от Nightscout като последовател</string>
     <string name="title_nsfollow_download_treatments">Изтегляне на лечения</string>
-    <string name="title_clfollow_user">CareLink Потребител</string>
-    <string name="summary_clfollow_user">CareLink потребителско име за вход</string>
-    <string name="title_clfollow_pass">CareLink Парола</string>
-    <string name="summary_clfollow_pass">CareLink парола за вход</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
     <string name="title_clfollow_country">CareLink Страна</string>
     <string name="summary_clfollow_country">Изберете вашата CareLink страна.</string>
     <string name="title_clfollow_patient">CareLink Пациентско Потребителско име</string>
     <string name="summary_clfollow_patient">CareLink Пациентско Потребителско име(не е зад.)</string>
-    <string name="title_clfollow_lang">CareLink Език</string>
-    <string name="summary_clfollow_lang">CareLink код на езика</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
     <string name="title_clfollow_grace_period">Гратисен период</string>
     <string name="summary_clfollow_grace_period">Гратисен период за заявка за данни в секунди</string>
     <string name="title_clfollow_missed_poll_interval">Пропуснат интервал на прочитане на данни</string>
