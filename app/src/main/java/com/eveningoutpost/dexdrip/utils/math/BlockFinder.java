@@ -35,9 +35,14 @@ public class BlockFinder {
         }
 
         public Block set(final int top, final int bottom) {
-            if (top < 0 || bottom < 0) return null;
-            this.top = top;
-            this.bottom = bottom;
+            if (top < 0 || bottom < 0)
+            {
+                this.top = 0;
+                this.bottom = 0;
+            } else {
+                this.top = top;
+                this.bottom = bottom;
+            }
             return this;
         }
     }
@@ -107,7 +112,7 @@ public class BlockFinder {
             }
         }
         // FailSafe
-        return new Random().nextInt(maxHeight);
+        return new Random().nextInt(bound);
     }
 
 
