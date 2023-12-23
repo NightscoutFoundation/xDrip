@@ -272,7 +272,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             audioPath = getExtra(savedInstanceState, "audioPath" ,alertType.mp3_file);
             alertMp3File.setText(shortPath(audioPath));
 
-            status = "editing " + (above ? "high" : "low") + " alert";
+            status = getString(R.string.editing)+" " + (above ? getString(R.string.high) : getString(R.string.low)) + " "+getString(R.string.alert);
             startHour = AlertType.time2Hours(alertType.start_time_minutes);
             startMinute = AlertType.time2Minutes(alertType.start_time_minutes);
             endHour = AlertType.time2Hours(alertType.end_time_minutes);
