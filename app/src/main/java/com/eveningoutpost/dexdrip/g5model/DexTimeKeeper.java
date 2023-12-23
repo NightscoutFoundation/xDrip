@@ -36,10 +36,10 @@ public class DexTimeKeeper {
         if (dexTimeStamp < 1) {
             UserError.Log.e(TAG, "Invalid dex timestamp in updateAge: " + dexTimeStamp);
             if (dexTimeStamp == 0 && absolute) {
-                if (FirmwareCapability.isTransmitterStandardFirefly(getTransmitterID())) { // Firefly, which cannot be hard reset
-                    UserError.Log.e(TAG, "Your transmitter clock has stopped or never started.");
-                } else {
+                if (FirmwareCapability.isTransmitterG5(getTransmitterID()) || FirmwareCapability.isTransmitterTimeTravelCapable(getTransmitterID()) || FirmwareCapability.isTransmitterModified(getTransmitterID())) { // Devices that can be hard reset only
                     DexResetHelper.offer("Your transmitter clock has stopped or never started. Do you want to hard reset it?");
+                } else { // Everything else - future devices will be here.  If a future device can be hard reset, they should be added to the true (other) side.
+                    UserError.Log.e(TAG, "Your transmitter clock has stopped or never started.");
                 }
             }
             return;
