@@ -1114,7 +1114,7 @@ public class Ob1G5StateMachine {
         }
     }
 
-    private static boolean shortTxId() {
+    public static boolean shortTxId() {
         return getTransmitterID().length() < 6;
     }
 
