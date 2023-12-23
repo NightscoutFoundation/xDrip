@@ -252,6 +252,12 @@ public class Ob1G5StateMachine {
             setG6Defaults();
         }
 
+        if (shortTxId()) {
+            LOW_BATTERY_WARNING_LEVEL = ALT_LOW_BATTERY_WARNING_DEFAULT;
+            Pref.setString("g5-battery-warning-level", "" + ALT_LOW_BATTERY_WARNING_DEFAULT);
+            parent.updateBatteryWarningLevel();
+        }
+
         if (parent.android_wear) {
             speakSlowly = true;
             UserError.Log.d(TAG, "Setting speak slowly to true"); // WARN should be reactive or on named devices

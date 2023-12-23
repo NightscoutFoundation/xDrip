@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip.g5model;
 
 
-import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.getTransmitterID;
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.shortTxId;
 
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.services.G5BaseService;
@@ -95,7 +95,7 @@ public class Ob1DexTransmitterBattery {
     }
 
     public boolean voltageBWarning() {
-        if (getTransmitterID().length() < 6) { // G7 only TODO Navid Replace with usingG7 after the setting is created.
+        if (shortTxId()) { // G7 only
             return voltageB() < (G5BaseService.LOW_BATTERY_WARNING_LEVEL - 25);
         }
         return voltageB() < (G5BaseService.LOW_BATTERY_WARNING_LEVEL - 10);
