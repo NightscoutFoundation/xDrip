@@ -1,10 +1,10 @@
 package com.eveningoutpost.dexdrip.models;
 
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.shortTxId;
 import static com.eveningoutpost.dexdrip.importedlibraries.dexcom.Dex_Constants.TREND_ARROW_VALUES.NOT_COMPUTABLE;
 import static com.eveningoutpost.dexdrip.importedlibraries.dexcom.Dex_Constants.TREND_ARROW_VALUES.getTrend;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPluginFromPreferences;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.newCloseSensorData;
-import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.getTransmitterID;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -1123,7 +1123,7 @@ public class BgReading extends Model implements ShareUploadableBg {
             bgr.calculated_value = calculated_value;
             bgr.raw_data = SPECIAL_G5_PLACEHOLDER; // placeholder
             if (Ob1G5CollectionService.usingG6()) {
-                if (getTransmitterID().length() < 6) {
+                if (shortTxId()) { // If using G7
                     bgr.appendSourceInfo("G7");
                 } else {
                     bgr.appendSourceInfo("G6 Native");
