@@ -21,7 +21,7 @@
         <item>Companion App</item>
         <item>GlucoRx/Aidex App</item>
         <item>CareLink Follower</item>
-        <item>Disable Collection</item>
+        <item>@string/disable_collection</item>
     </string-array>
 
     <string-array name="DexCollectionMethodValues">
