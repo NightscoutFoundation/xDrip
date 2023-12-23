@@ -1860,4 +1860,5 @@
     <string name="carelink_credential_status_not_authenticated">Not logged in! Please log in!</string>
     <string name="carelink_credential_status_access_expired">Access expired! Will refresh!</string>
     <string name="carelink_credential_status_refresh_expired">Login expired! Please log in!</string>
+    <string name="data_source">Data Source:</string>
 </resources>
