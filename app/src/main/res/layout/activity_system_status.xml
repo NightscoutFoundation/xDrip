@@ -214,7 +214,7 @@
 
                     <Button
                         android:id="@+id/forget_device"
-                        android:visibility="@{ms.using_g7() ? View.GONE : View.VISIBLE}"
+                        app:showIfTrue="@{!ms.using_g7()}"
                         style="?android:attr/buttonStyleSmall"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

@@ -4,7 +4,7 @@ package com.eveningoutpost.dexdrip.ui;
  * Created by jamorham on 29/09/2017.
  */
 
-import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.getTransmitterID;
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.shortTxId;
 
 import androidx.databinding.BaseObservable;
 
@@ -42,7 +42,7 @@ public class MicroStatusImpl extends BaseObservable implements MicroStatus {
 
     @Override
     public boolean using_g7() { // True if we are using G7
-        if (DexCollectionType.getDexCollectionType() == DexCollectionType.DexcomG5 && Pref.getBooleanDefaultFalse("using_g6") && getTransmitterID().length() < 6) { // If using G7
+        if (DexCollectionType.getDexCollectionType() == DexCollectionType.DexcomG5 && Pref.getBooleanDefaultFalse("using_g6") && shortTxId()) { // If using G7
             return true;
         }
         return false;
