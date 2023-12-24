@@ -696,7 +696,7 @@
     <string name="use_any_tag">Bruk \"any-tag\" optimalisert lesemetode</string>
     <string name="low_level_value">Lavnivå diagnose/prototype verdi</string>
     <string name="transmitter_id">ID for din Dexcom-sender, f.eks. 123ABC</string>
-    <string name="advanced_g5_settings">Avanserte G5 innstillinger for skjeldne situasjoner</string>
+    <string name="advanced_g5_settings">Avanserte innstillinger for sjeldne situasjoner</string>
     <string name="g5_debug_settings">G5/G6/G7/Dex1 feilsøkingsinnstillinger</string>
     <string name="g5_scan_constantly">Noen enheter virker bedre når de blir skannet hele tiden, andre ikke. Hvis avlesningene er stabile når denne innstillingen ikke er valgt, bør du oppleve forbedret batteribruk. Normalt er det best å beholde denne deaktivert</string>
     <string name="scan_for_g5_constantly">Skan kontinuerling for G5</string>
@@ -1126,7 +1126,7 @@
     <string name="unit_minutes">minutter</string>
     <string name="unit_hours">timer</string>
     <string name="unit_days">dager\"</string>
-    <string name="unit_weeks">uker\"</string>
+    <string name="unit_weeks">uker</string>
     <string name="quiet_at_night">Stille om natten</string>
     <string name="alerts_disabled">Varsler deaktivert</string>
     <string name="restart_in_the_morning">Start på nytt om morgenen</string>
@@ -1812,4 +1812,5 @@
     <string name="carelink_credential_status_not_authenticated">Ikke innlogget! Vennligst logg inn!</string>
     <string name="carelink_credential_status_access_expired">Tilgang utløpt! Vil oppdatere!</string>
     <string name="carelink_credential_status_refresh_expired">Innlogging utløpt! Vennligst Logg inn!</string>
+    <string name="data_source">Datakilde:</string>
 </resources>
