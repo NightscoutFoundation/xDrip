@@ -1800,7 +1800,7 @@
     <string name="requires_android_8_and_google_companion_application_or_android_14">Nécessite Android 8+ et l\'application Google compagnon ou Android 14+</string>
     <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Envoyer et recevoir des données de Google Health Connect et Google Fit</string>
     <string name="google_health_connect">Google Health Connect</string>
-    <string name="google_health_connect_needs_perms">ERREUR : Health Connect a besoin d\'autorisations ! - essayez à nouveau dans le menu des paramètres</string>
+    <string name="google_health_connect_needs_perms">ERREUR: Health Connect a besoin d\'autorisations! Essayer à nouveau dans le menu des paramètres</string>
     <string name="carelink_auth_country_required">Le pays est requis!</string>
     <string name="carelink_auth_status_authenticated">Statut authentifié !</string>
     <string name="carelink_auth_status_not_authenticated">Statut non authentifié !</string>
@@ -1812,4 +1812,5 @@
     <string name="carelink_credential_status_not_authenticated">Non connecté! Veuillez vous connecter!</string>
     <string name="carelink_credential_status_access_expired">Accès expiré! Vais actualiser !</string>
     <string name="carelink_credential_status_refresh_expired">Connexion expirée! Veuillez vous connecter!</string>
+    <string name="data_source">Source de données:</string>
 </resources>
