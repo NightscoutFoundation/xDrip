@@ -132,7 +132,7 @@ public class FirmwareCapability {
         return !emptyString(firmware_version) && !firmware_version.equals("error");
     }
 
-    public static boolean isTransmitterRawIncapable(final String tx_id) {
+    public static boolean isTransmitterRawIncapable(final String tx_id) { // True also for mod transmitters
         val firmware_version = getRawFirmwareVersionString(tx_id);
         return doWeHaveVersion(tx_id) && isKnownFirmware(firmware_version) && !isFirmwareRawCapable(firmware_version);
     }

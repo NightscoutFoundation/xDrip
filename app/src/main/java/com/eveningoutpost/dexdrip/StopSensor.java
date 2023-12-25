@@ -7,12 +7,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import com.eveningoutpost.dexdrip.g5model.FirmwareCapability;
+import com.eveningoutpost.dexdrip.databinding.ActivityStopSensorBinding;
 import com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.models.Calibration;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.Sensor;
 import com.eveningoutpost.dexdrip.models.Treatments;
+import com.eveningoutpost.dexdrip.ui.MicroStatus;
+import com.eveningoutpost.dexdrip.ui.MicroStatusImpl;
 import com.eveningoutpost.dexdrip.utilitymodels.AlertPlayer;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
@@ -20,15 +22,17 @@ import com.eveningoutpost.dexdrip.utilitymodels.NanoStatus;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.ui.dialog.GenericConfirmDialog;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
-import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.getTransmitterID;
 
 import lombok.val;
 
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.shortTxId;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
+import androidx.databinding.DataBindingUtil;
+
 public class StopSensor extends ActivityWithMenu {
-    private static String proceedToStop = "";
     public Button button;
+    MicroStatus microStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,13 +43,9 @@ public class StopSensor extends ActivityWithMenu {
             finish();
         } else {
             JoH.fixActionBar(this);
-            if (FirmwareCapability.isTransmitterStandardFirefly(getTransmitterID())) { // Standard Firefly, which does not send raw values
-                setContentView(R.layout.activity_stop_noraw_sensor);
-            } else {
-                setContentView(R.layout.activity_stop_sensor);
-            }
-            button = (Button)findViewById(R.id.stop_sensor);
-            addListenerOnButton();
+            final ActivityStopSensorBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_stop_sensor);
+            microStatus = new MicroStatusImpl();
+            binding.setMs(microStatus);
         }
     }
 
@@ -54,20 +54,22 @@ public class StopSensor extends ActivityWithMenu {
         return getString(R.string.stop_sensor);
     }
 
-    public void addListenerOnButton() {
-        button = (Button) findViewById(R.id.stop_sensor);
-        if (FirmwareCapability.isTransmitterRawIncapable(getTransmitterID())) { // Firefly, modified or not
-            proceedToStop = gs(R.string.sensor_stop_confirm_norestart);
-        } else {
-            proceedToStop = gs(R.string.sensor_stop_confirm);
+    public void stopSensorListener(View v) {
+        String confirm = gs(R.string.sensor_stop_confirm);
+        if (!microStatus.resettableCals()) { // Dexcom G6 Firefly or G7
+            confirm = gs(R.string.sensor_stop_confirm_norestart);
+            if (shortTxId()) { // Dex G7
+                confirm = gs(R.string.sensor_stop_confirm_really_norestart);
+            }
         }
         val activity = this;
-        button.setOnClickListener(v -> GenericConfirmDialog.show(activity, gs(R.string.are_you_sure), proceedToStop, () -> {
+        GenericConfirmDialog.show(activity, gs(R.string.are_you_sure), confirm, () -> {
             stop();
             JoH.startActivity(Home.class);
             finish();
-        }));
+        });
     }
+
     public synchronized static void stop() {
         Sensor.stopSensor();
         Inevitable.task("stop-sensor",1000, Sensor::stopSensor);
