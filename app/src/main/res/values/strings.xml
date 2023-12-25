@@ -907,7 +907,6 @@
     <string name="level_alerts">Level Alerts</string>
     <string name="override_calibration">Override Calibration</string>
     <string name="only_stop_your_sensor_when_you_actually_plan">Only stop your sensor when you actually plan to remove it, otherwise leave it running!</string>
-    <string name="only_stop_session_if">Only stop sensor to end the sensor session running on the transmitter. Otherwise, leave it running!</string>
     <string name="restart_collector">Restart Collector</string>
     <string name="forget_device">Forget Device</string>
     <string name="other_notes">Other Notes:</string>
