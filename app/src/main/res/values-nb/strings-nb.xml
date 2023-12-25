@@ -238,7 +238,7 @@
     <string name="cannot_calibrate_right_now">Kan ikke kalibrere akkurat nå</string>
     <string name="hardware_data_source">Datakilde</string>
     <string name="enter_ten_character_dexcom_receiver_serial">Skriv inn det 10-tegn lange serienummeret til Dexcom-mottakeren</string>
-    <string name="dexcom_transmitter_id">Dexcom Sender ID</string>
+    <string name="dexcom_transmitter_id">Dexcom sender-ID</string>
     <string name="run_collector_in_foreground">Kjør innsamler i forgrunnen</string>
     <string name="shows_a_persistent_notification">Viser vedvarende varselgraf, synlig på låseskjermen og hindrer android i å stoppe tjenesten.</string>
     <string name="list_of_receivers">Liste over mottakere</string>
@@ -361,7 +361,7 @@
     <string name="show_general_and_collection_settings">Vis Generelle- og innsamlingsinnstillinger</string>
     <string name="copy_all_settings">Kopier alle innstillinger</string>
     <string name="sensor_is_ready_please_enter_double_calibration">Sensor er klar, skriv inn en initiell kalibrering</string>
-    <string name="in_order_to_get_started_please_perform_two_finger">For å komme i gang, må du utføre to fingerstikk tester og angi verdiene her!</string>
+    <string name="in_order_to_get_started_please_perform_two_finger">For å komme i gang, må du utføre en eller to blodsukkermålinger med fingerstikk og angi verdiene her!</string>
     <string name="enter_first_bg_value">Angi første BS-verdi</string>
     <string name="enter_second_bg_value">Angi andre BS-verdi</string>
     <string name="language_editor">Språkredigering</string>
@@ -701,7 +701,7 @@
     <string name="g5_scan_constantly">Noen enheter virker bedre når de blir skannet hele tiden, andre ikke. Hvis avlesningene er stabile når denne innstillingen ikke er valgt, bør du oppleve forbedret batteribruk. Normalt er det best å beholde denne deaktivert</string>
     <string name="scan_for_g5_constantly">Skan kontinuerling for G5</string>
     <string name="g5_force_ui_thread">Dette er viktig for noen Androidenheter for å koble til skikkelig, men kan føre til manglende avlesninger når andre UI intense aktiviteter er i bruk.</string>
-    <string name="force_g5_ui_thread">Tving G5 til UI Tråd</string>
+    <string name="force_g5_ui_thread">Tving G5 til UI-tråd</string>
     <string name="authentificate_before_reading">Autentiser før hver avlesning</string>
     <string name="g5_full_authentification">Dette vil forsøke en full autentisering før hvert leseforsøk. Trengs for nyere G5 fastvare versioner.</string>
     <string name="unbond_g5_before_read">Frigjør G5 før hver avlesning</string>
@@ -861,7 +861,7 @@
     <string name="error">feil</string>
     <string name="install_text_to_speech_data_question">Installer tekst-til-tale data?</string>
     <string name="after_installation_of_languages_you_might_have_to">(Etter installasjon av språk må du kanskje trykke \"Start innsamler på nytt\" i Systemstatus.)</string>
-    <string name="stop_sensor">Stopp Sensor</string>
+    <string name="stop_sensor">Stopp sensor</string>
     <string name="dont_stop_just_reset_all_calibrations">Ikke stopp, bare tilbakestill alle kalibreringer</string>
     <string name="initial_calibration">Initiell kalibrering</string>
     <string name="calibration_can_not_be_blank">Kalibrering kan ikke være tom</string>
@@ -1040,7 +1040,7 @@
     <string name="summary_Probe_Bluetooth_services_on_every_connect">Undersøk Bluetooth-tjenester på hver tilkobling</string>
     <string name="title_Always_discover_services">Oppdag alltid tjenester</string>
     <string name="summary_Only_suitable_for_phones_which_support_automatic_pairing">Kun egnet for telefoner som støtter automatisk sammenkobling</string>
-    <string name="title_Allow_blucon_unbonding">Tillatt BluCon-avbinding</string>
+    <string name="title_Allow_blucon_unbonding">Tillatt BluCon-frakobling</string>
     <string name="summary_Suppress_the_ugly_state_message_if_Problem_appears">Undertrykk den stygge tilstandsmeldingen hvis problem oppstår</string>
     <string name="title_supress_ugly_state_message">undertrykk stygg tilstandsmelding</string>
     <string name="summary_write_Battery_Information_for_additional_analytic">Skriv batteriinformasjonen for ytterligere analyse i en fil. Vennligst bruk dette bare hvis du blir spurt av en utvikler!</string>
@@ -1291,7 +1291,7 @@
     <string name="title_nsfollow_url">Nightscout følger-URL</string>
     <string name="summary_nsfollow_download_treatments">Last også ned behandlinger fra Nightscout som følger</string>
     <string name="title_nsfollow_download_treatments">Last ned behandlinger</string>
-    <string name="title_nsfollow_lag">Nightscoutfølger-forsinkelse</string>
+    <string name="title_nsfollow_lag">Nightscout følgerforsinkelse</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
     <string name="summary_clfollow_user">CareLink login username</string>
@@ -1337,8 +1337,8 @@
     <string name="title_ob1_minimize_scanning">Minimer skanning</string>
     <string name="summary_using_g6">Jeg bruker en G6 eller Dexcom 1 sensor</string>
     <string name="title_using_g6">G6/Dex1-støtte</string>
-    <string name="summary_ob1_g5_allow_resetbond">OB1-innsamleren frigjøre seg hvis den tror krypteringen har mislyktes. Hvis du får problemer med å oppheve sammenkoblingen, deaktiver dette alternativet. Hvis du da mister forbindelsen helt, sørg for at dette er aktivert.</string>
-    <string name="title_ob1_g5_allow_resetbond">Tillat OB1-avbinding</string>
+    <string name="summary_ob1_g5_allow_resetbond">OB1-innsamleren kan frigjøre seg hvis den tror krypteringen har mislyktes. Hvis du får problemer med å oppheve sammenkoblingen, deaktiver dette alternativet. Hvis du da mister forbindelsen helt, sørg for at dette er aktivert.</string>
+    <string name="title_ob1_g5_allow_resetbond">Tillat OB1-frakobling</string>
     <string name="summary_ob1_initiate_bonding_flag">OB1-innsamler kan starte binding.</string>
     <string name="title_ob1_initiate_bonding_flag">Tillat OB1 å starte binding</string>
     <string name="title_old_g5_options">Gammel G5-innsamler innstillinger</string>
