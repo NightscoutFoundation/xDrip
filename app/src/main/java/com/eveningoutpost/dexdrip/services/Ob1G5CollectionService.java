@@ -77,6 +77,7 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.g5model.BatteryInfoRxMessage;
 import com.eveningoutpost.dexdrip.g5model.BluetoothServices;
 import com.eveningoutpost.dexdrip.g5model.CalibrationState;
+import com.eveningoutpost.dexdrip.g5model.DexSessionKeeper;
 import com.eveningoutpost.dexdrip.g5model.DexSyncKeeper;
 import com.eveningoutpost.dexdrip.g5model.DexTimeKeeper;
 import com.eveningoutpost.dexdrip.g5model.FirmwareCapability;
@@ -2100,6 +2101,14 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
         if ((lastSensorStatus != null)) {
             l.add(new StatusItem("Sensor Status", lastSensorStatus, lastSensorState != Ok ? NOTICE : NORMAL));
+            if (FirmwareCapability.isTransmitterRawIncapable(getTransmitterID())) { // G6 Firefly or G7
+                if (Sensor.isActive()) { // Only if there is an active sensor session in xDrip.
+                    if (Sensor.currentSensor().started_at != DexSessionKeeper.getStart()) { // If xDrip start time differs from transmitter start time
+                        Sensor.updateSensorStartTime(DexSessionKeeper.getStart()); // Change xDrip sensor start time to match that reported by transmitter
+                        UserError.Log.e(TAG, "Updating sensor start time from the transmitter");
+                    }
+                }
+            }
         }
 
         if (hardResetTransmitterNow) {
