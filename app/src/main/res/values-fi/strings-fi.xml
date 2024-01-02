@@ -177,6 +177,7 @@
     <string name="libre_last_x_minutes_graph">Libren viimeisen %d minuutin kuvaaja</string>
     <string name="share_config_via_qr_code">Jaa asetukset QR koodilla</string>
     <string name="check_for_updated_version">Etsi ohjelmapäivitystä</string>
+    <string name="current_version_is_up_to_date">Ei päivityksiä valitussa kanavassa</string>
     <string name="send_feedback_to_developer">Lähetä palautetta kehittäjälle</string>
     <string name="home_screen">Aloitusnäyttö</string>
     <string name="event_logs">Tapahtumaloki</string>
@@ -186,6 +187,7 @@
     <string name="general_settings">Yleiset asetukset</string>
     <string name="high_value">Korkea arvo</string>
     <string name="low_value">Matala arvo</string>
+    <string name="stats_range_settings">Rajojen asetukset: </string>
     <string name="end_user_license_agreement">Loppukäyttäjän lisenssisopimus</string>
     <string name="save">Tallenna</string>
     <string name="view_important_warning">Katso tärkeä varoitus</string>
@@ -304,6 +306,7 @@
     <string name="high_glucose_values">Korkean verensokerin arvot</string>
     <string name="in_range_glucose_values">Tavoitealueen verensokerin arvot</string>
     <string name="default_color_selected">Oletusvärit valittu</string>
+    <string name="color_bg_values">Verensokeriarvon ja trendinuolen värit</string>
     <string name="xdrip_plus_extra_settings">xDrip+ lisäasetukset</string>
     <string name="example_chart">Esimerkkikaavio</string>
     <string name="treatments_prediction_curves">Hoitojen / Ennusteiden käyrät</string>
@@ -851,6 +854,7 @@
     <string name="blukon">BluCon</string>
     <string name="tomato">Tomato</string>
     <string name="bubble">Bubble</string>
+    <string name="atom">Atom</string>
     <string name="use_gravity_sensor_to_rotate_items">Kierrätä kohteita kiihtyvyysanturin mukaan</string>
     <string name="low_bridge_battery">Bridgen akun varaustaso alhainen</string>
     <string name="reminders">Muistutukset</string>
@@ -972,6 +976,7 @@
     <string name="emergency_message_near_format_string">%1$s lähellä %2$s %3$s %4$s %5$s</string>
     <string name="choose_when_to_send_messages">Valitse milloin viestejä lähetetään:</string>
     <string name="low_alert_not_acknowledged">Matalan hälytystä ei kuitattu</string>
+    <string name="lowest_alert_not_acknowledged">Matalan hälytystä ei kuitattu</string>
     <string name="high_alert_not_acknowledged">Korkean hälytystä ei kuitattu</string>
     <string name="device_inactivity">Laitteen passiivisuus</string>
     <string name="test_message_sending">Testaa viestin lähetystä</string>
@@ -1159,6 +1164,7 @@
     <string name="overwrite_intercept_engineering_only">Korvaa Y-akselin leikkauspiste (vain ohjelmistokehittäjille!)</string>
     <string name="manual_overwrite_not_possible">Muutoksia ei voi tehdä käsin!</string>
     <string name="upload_even_when_using_mobile_data">Lähetä myös kun käytössä on mobiilidata</string>
+    <string name="daily_backup_even_mobile">Salli varmuuskopionti mobiilidatayhteydellä</string>
     <string name="use_mobile_data">Käytä mobiilidataa</string>
     <string name="summary_cloud_storage_api_download_enable">Yritä myös ladata tietoja Nightscoutista</string>
     <string name="title_cloud_storage_api_download_enable">Tietojen lataaminen</string>
@@ -1194,6 +1200,8 @@
     <string name="send_bg_readings_to_backfill">Lähettää täydennetyt VS-lukemat</string>
     <string name="view_old_error_log">Näytä vanha virheloki</string>
     <string name="return_to_home_screen">Palaa aloitusnäyttöön</string>
+    <string name="title_broadcast_service_api">Broadcast Service API</string>
+    <string name="summary_broadcast_service_api">Sallii xDripin kommunikoida kolmansien osapuolten sovellusten kanssa käytten uutta API: a</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Synkronoi tiedot MiBand-aktiivisuusrannekkeiden kanssa</string>
     <string name="title_miband_enable">Käytä MiBandia</string>
@@ -1281,10 +1289,22 @@
     <string name="title_clfollow_pass">CareLink Password</string>
     <string name="summary_clfollow_pass">CareLink login password</string>
     !-->
+    <string name="title_clfollow_country">CareLink maa</string>
+    <string name="summary_clfollow_country">Valitse CareLink-maa.</string>
+    <string name="title_clfollow_patient">CareLink käyttäjänimi</string>
+    <string name="summary_clfollow_patient">CareLink käyttäjänimi (valinnainen)</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_lang">CareLink Language</string>
     <string name="summary_clfollow_lang">CareLink language code</string>
     -->
+    <string name="title_clfollow_login">Kirjautuminen</string>
+    <string name="summary_clfollow_login">Kirjaudu selaimen kautta</string>
+    <string name="title_clfollow_download_boluses">Bolukset</string>
+    <string name="summary_clfollow_download_boluses">Lataa bolukset CareLinkista</string>
+    <string name="title_clfollow_download_meals">Ateriat</string>
+    <string name="summary_clfollow_download_meals">Lataa ateriat CareLinkistä</string>
+    <string name="title_clfollow_download_notifications">Ilmoitukset</string>
+    <string name="summary_clfollow_download_notifications">Lataa ilmoitukset CareLinkista</string>
     <string name="title_ob1_options">OB1 G5/G6 tiedonkerääjän asetukset</string>
     <string name="summary_use_ob1_g5_collector_service">Suorita täydellinen uudelleenkirjoitus. Pitäisi toimia Android-versioissa 4.4 - 9. Tukee natiivitilaa ja paljon muuta</string>
     <string name="title_use_ob1_g5_collector_service">Käytä OB1-tiedonkerääjää</string>
@@ -1570,12 +1590,17 @@
     <string name="enable_streaming_always_allow">Yhdistä aina libre2-sensoriin</string>
     <string name="enable_streaming_ask_each_time">kysy aina</string>
     <string name="enable_streaming_never">Älä koskaan yhdistä libre2-sensoriin</string>
+    <string name="libre_filter_length_10">10 minuuttia</string>
+    <string name="libre_filter_length_15">15 minuuttia</string>
+    <string name="libre_filter_length_25">25 minutes &gt;</string>
     <string name="enable_streaming_dialog_yes">yhdistä tähän libre2-sensoriin</string>
     <string name="enable_streaming_dialog_no">Älä yhdistä tähän libre2-sensoriin </string>
     <string name="enable_streaming_dialog_dont_ask_again">Älä kysy tätä uudelleen</string>
     <string name="enable_streaming_dialog_text">Haluatko yhdistää tämän sensorin xDripiin? Tämä estää hälytykset Libren lukijassa ja LibreLinkissä. Paina Kyllä ja skannaa uudelleen yhdistääksesi (valitse Älä yhdistä, jos haluat käyttää xDripiä muokatun LibreLink-sovelluksen kanssa)</string>
     <string name="enable_streaming_dialog_title">Yhdistetään Libre-sensori Bluetoothiin</string>
     <string name="without_camera_permission_cannot_scan_barcode">Ilman kameran lupaa emme voi skannata viivakoodia</string>
+    <string name="summary_create_missing_filtered">Suodata dataa tarvittaessa</string>
+    <string name="title_widget_hide_graph">Piilota widgetin kuvaaja</string>
     <string name="title_multiple_insulin_types_settings">Useita Insuliinityyppejä</string>
     <string name="title_multiple_insulin_types">Useita Insuliinityyppejä</string>
     <string name="use_for_calibration">Käytetäänkö %s kalibrointiin?</string>
@@ -1583,4 +1608,5 @@
     <string name="cannot_choose_file_without_permission">Tiedostoa ei voida valita ilman tallennustilan käyttöoikeutta</string>
     <string name="titleInside_yRange">Käytä</string>
     <string name="close">Sulje</string>
+    <string name="data_source">Tietolähde:</string>
 </resources>
