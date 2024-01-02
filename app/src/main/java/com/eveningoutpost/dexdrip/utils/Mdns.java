@@ -23,9 +23,14 @@ import com.eveningoutpost.dexdrip.xdrip;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +84,10 @@ public class Mdns {
     private static final String TAG = "Mdns-discovery";
     private static final boolean d = true;
 
+    private static NetworkInterface wifi_scope_id;
+    private static long wifi_scope_id_received;
+
+
     // resolve a normal or .local hostname
     public static String genericResolver(String name) throws UnknownHostException {
         final String lower = name.toLowerCase();
@@ -92,7 +101,7 @@ public class Mdns {
         }
     }
 
-    public static String fastResolve(String name) {
+    private static String fastResolve(String name) {
         String address = superFastResolve(name);
         if (address != null) return address;
         final long wait_until = JoH.tsl() + NORMAL_RESOLVE_TIMEOUT_MS;
@@ -107,7 +116,7 @@ public class Mdns {
         return address;
     }
 
-    public static String superFastResolve(String name) {
+    private static String superFastResolve(String name) {
         final LookUpInfo li = iplookup.get(name);
         if ((li == null) || (JoH.msSince(li.received) > CACHE_REFRESH_MS)) {
             if (JoH.quietratelimit("mdns-hunting", 60)) {
@@ -121,6 +130,34 @@ public class Mdns {
         }
         if (li == null) return null;
         return li.address;
+    }
+
+    private NetworkInterface getWifiScopeId() {
+        if (wifi_scope_id != null && JoH.msSince(wifi_scope_id_received) < CACHE_REFRESH_MS) {
+            UserError.Log.d(TAG, "Found network interface in cache");
+            return wifi_scope_id;
+        }
+
+        Enumeration<NetworkInterface> networkInterfaces;
+
+        try {
+            networkInterfaces = NetworkInterface.getNetworkInterfaces();
+            while (networkInterfaces.hasMoreElements()) {
+                NetworkInterface networkInterface = networkInterfaces.nextElement();
+                if (networkInterface.getDisplayName().equals("wlan0") || networkInterface.getDisplayName().equals("eth0")) {
+                    UserError.Log.d(TAG, "Found network interface" );
+                    wifi_scope_id_received = JoH.tsl();
+                    wifi_scope_id = networkInterface;
+                    return networkInterface;
+                }
+            }
+        } catch (SocketException e) {
+            UserError.Log.e(TAG,"Error: Got exception in getWifiScopeId", e);
+            return null;
+
+        }
+        UserError.Log.e(TAG,"Error: found network interface not found");
+        return null;
     }
 
     private void hunt() {
@@ -294,15 +331,40 @@ public class Mdns {
                 locked_until = 0;
             }
 
+            // Fix the host addresses returned for LocalLink and sitelocal ipv6 addresses. The address returned for them should
+            // be in the format IPv6-address%scope_id. See https://docs.oracle.com/javase/8/docs/api/java/net/Inet6Address.html
+            // for more details.
+            private String getFixedHostAddress(InetAddress host ) {
+                if(host instanceof Inet6Address){
+                    UserError.Log.d(TAG,"Resolved IPV6"+ host );
+                    Inet6Address i6 = (Inet6Address)host;
+                    if(i6.isLinkLocalAddress() || i6.isSiteLocalAddress()) {
+                        try {
+                            host = Inet6Address.getByAddress(null, host.getAddress(), getWifiScopeId());
+                            return host.getHostAddress();
+                        } catch (UnknownHostException e) {
+                            UserError.Log.e(TAG, "Error: Got exception in Inet6Address.getByAddress ipv6 will probably not work", e);
+                            // Fall back to the original behavior.
+                            return host.getHostAddress();
+                        }
+                    }
+                    UserError.Log.d(TAG,"Resolved IPV6 golbal addresses");
+                    return host.getHostAddress();
+                } else{
+                    UserError.Log.d(TAG,"Resolved IPV4");
+                    return host.getHostAddress();
+                }
+            }
+
             @Override
             public void onServiceResolved(NsdServiceInfo serviceInfo) {
 
                 final InetAddress host = serviceInfo.getHost();
-                final String address = host.getHostAddress();
-                UserError.Log.d(TAG, serviceInfo.getServiceName() + " Resolved address = " + address);
+                final String address = getFixedHostAddress(host);
+                UserError.Log.d(TAG, serviceInfo.getServiceName() + " Resolved address = " + address );
                 final String short_name = shortenName(serviceInfo.getServiceName().toLowerCase());
                 if (!address.contains(":") || (iplookup.get(short_name) == null) || (JoH.msSince(iplookup.get(short_name).received) > 60000)) {
-                    iplookup.put(short_name, new LookUpInfo(address, JoH.tsl(), serviceInfo));
+                    iplookup.put(short_name, new LookUpInfo(address, JoH.tsl(), serviceInfo ));
                 } else {
                     UserError.Log.d(TAG, "Skipping overwrite of " + short_name + " with " + address + " due to ipv4 priority");
                 }
