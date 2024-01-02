@@ -1784,4 +1784,5 @@
     <string name="carelink_credential_status_not_authenticated">Вход не выполнен! Пожалуйста, войдите!</string>
     <string name="carelink_credential_status_access_expired">Срок доступа закончился! Будет обновлен!</string>
     <string name="carelink_credential_status_refresh_expired">Время входа закончилось! Пожалуйста, войдите!</string>
+    <string name="data_source">Источник данных:</string>
 </resources>

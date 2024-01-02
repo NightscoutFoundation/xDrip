@@ -1797,4 +1797,5 @@
     <string name="carelink_credential_status_not_authenticated">Accesso non effettuato! Effettua il login!</string>
     <string name="carelink_credential_status_access_expired">Accesso scaduto! Si aggiornerà!</string>
     <string name="carelink_credential_status_refresh_expired">Login scaduto! Effettua il login!</string>
+    <string name="data_source">Sorgente Dati:</string>
 </resources>
