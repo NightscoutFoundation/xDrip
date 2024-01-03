@@ -40,16 +40,4 @@ public class MicroStatusImpl extends BaseObservable implements MicroStatus {
     public boolean xmitterBattery() {
         return DexCollectionType.usesClassicTransmitterBattery();
     }
-
-    @Override
-    // This is false only for Dexcom G6 Firefly and G7 as of December 2023.
-    // These devices have two common characteristics:
-    // 1- xDrip does not maintain a calibration graph for them.  Therefore, resetting calibrations has no impact.
-    // 2- They cannot be restarted easily or they cannot be restarted at all.
-    public boolean resettableCals() { // Used on the stop sensor menu.
-        if (DexCollectionType.getDexCollectionType() == DexCollectionType.DexcomG5 && Pref.getBooleanDefaultFalse("using_g6") && FirmwareCapability.isTransmitterRawIncapable(getTransmitterID())) {
-            return false; // When calibrations are not resettable
-        }
-        return true; // When cals are resettable or when Firmware is not known yet
-    }
 }

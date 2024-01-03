@@ -12,6 +12,4 @@ public interface MicroStatus {
 
     boolean xmitterBattery();
 
-    boolean resettableCals (); // This is false when native calibration is strongly advised like Firefly or G7.
-
 }
