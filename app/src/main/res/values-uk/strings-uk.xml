@@ -1803,4 +1803,5 @@
     <string name="carelink_credential_status_not_authenticated">Спершу, будь ласка, увійдіть у систему!</string>
     <string name="carelink_credential_status_access_expired">Доступ завершився! Спробую поновити!</string>
     <string name="carelink_credential_status_refresh_expired">Логін завершено! Увійдіть в систему повторно!</string>
+    <string name="data_source">Джерело даних:</string>
 </resources>

@@ -1805,4 +1805,5 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="carelink_credential_status_not_authenticated">Nejste přihlášeni! Prosím, přihlašte se!</string>
     <string name="carelink_credential_status_access_expired">Platnost přístupu vypršela! Přístup bude obnoven!</string>
     <string name="carelink_credential_status_refresh_expired">Platnost přihlášení vypršela! Prosím, přihlašte se znovu!</string>
+    <string name="data_source">Zdroj dat:</string>
 </resources>

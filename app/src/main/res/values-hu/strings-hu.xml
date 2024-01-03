@@ -1763,4 +1763,5 @@
     <string name="carelink_credential_status_not_authenticated">Nincs belépve! Jelentkezzen be!</string>
     <string name="carelink_credential_status_access_expired">Hozzáférés lejárt! Meg fogja újítani!</string>
     <string name="carelink_credential_status_refresh_expired">Belépés lejárt! Jelentkezzen be!</string>
+    <string name="data_source">Adatforrás:</string>
 </resources>

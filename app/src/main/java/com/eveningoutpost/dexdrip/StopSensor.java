@@ -7,32 +7,30 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.eveningoutpost.dexdrip.databinding.ActivityEventLogBinding;
 import com.eveningoutpost.dexdrip.databinding.ActivityStopSensorBinding;
+import com.eveningoutpost.dexdrip.g5model.FirmwareCapability;
 import com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.models.Calibration;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.Sensor;
 import com.eveningoutpost.dexdrip.models.Treatments;
-import com.eveningoutpost.dexdrip.ui.MicroStatus;
-import com.eveningoutpost.dexdrip.ui.MicroStatusImpl;
 import com.eveningoutpost.dexdrip.utilitymodels.AlertPlayer;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
 import com.eveningoutpost.dexdrip.utilitymodels.NanoStatus;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.ui.dialog.GenericConfirmDialog;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import lombok.val;
 
-import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.shortTxId;
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.getTransmitterID;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
-import androidx.databinding.DataBindingUtil;
-
 public class StopSensor extends ActivityWithMenu {
-    public Button button;
-    MicroStatus microStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,31 +41,16 @@ public class StopSensor extends ActivityWithMenu {
             finish();
         } else {
             JoH.fixActionBar(this);
-            final ActivityStopSensorBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_stop_sensor);
-            microStatus = new MicroStatusImpl();
-            binding.setMs(microStatus);
+
+            val binding = ActivityStopSensorBinding.inflate(getLayoutInflater());
+            binding.setModel(new ViewModel());
+            setContentView(binding.getRoot());
         }
     }
 
     @Override
     public String getMenuName() {
         return getString(R.string.stop_sensor);
-    }
-
-    public void stopSensorListener(View v) {
-        String confirm = gs(R.string.sensor_stop_confirm);
-        if (!microStatus.resettableCals()) { // Dexcom G6 Firefly or G7
-            confirm = gs(R.string.sensor_stop_confirm_norestart);
-            if (shortTxId()) { // Dex G7
-                confirm = gs(R.string.sensor_stop_confirm_really_norestart);
-            }
-        }
-        val activity = this;
-        GenericConfirmDialog.show(activity, gs(R.string.are_you_sure), confirm, () -> {
-            stop();
-            JoH.startActivity(Home.class);
-            finish();
-        });
     }
 
     public synchronized static void stop() {
@@ -98,23 +81,35 @@ public class StopSensor extends ActivityWithMenu {
         builder.setTitle(gs(R.string.are_you_sure));
         builder.setMessage(gs(R.string.do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor));
 
-        builder.setNegativeButton(gs(R.string.no), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
+        builder.setNegativeButton(gs(R.string.no), (dialog, which) -> dialog.dismiss());
 
-            }
-        });
-
-        builder.setPositiveButton(gs(R.string.yes), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Calibration.invalidateAllForSensor();
-                dialog.dismiss();
-                finish();
-            }
+        builder.setPositiveButton(gs(R.string.yes), (dialog, which) -> {
+            Calibration.invalidateAllForSensor();
+            dialog.dismiss();
+            finish();
         });
         builder.create().show();
 
+    }
 
+    public class ViewModel {
+        // This is false only for Dexcom G6 Firefly and G7 as of December 2023.
+        // These devices have two common characteristics:
+        // 1- xDrip does not maintain a calibration graph for them.  Therefore, resetting calibrations has no impact.
+        // 2- They cannot be restarted easily or they cannot be restarted at all.
+        // TODO this could be moved to another utility class if the same logic is used elsewhere
+        public boolean resettableCals() { // Used on the stop sensor menu.
+            return DexCollectionType.getDexCollectionType() != DexCollectionType.DexcomG5
+                    || !Pref.getBooleanDefaultFalse("using_g6")
+                    || !FirmwareCapability.isTransmitterRawIncapable(getTransmitterID());
+        }
+
+        public void stopSensorClick() {
+            GenericConfirmDialog.show(StopSensor.this, gs(R.string.are_you_sure), gs(R.string.sensor_stop_confirm), () -> {
+                stop();
+                JoH.startActivity(Home.class);
+                finish();
+            });
+        }
     }
 }

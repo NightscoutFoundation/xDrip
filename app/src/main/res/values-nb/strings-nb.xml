@@ -161,7 +161,7 @@
     <string name="cancel_do_nothing">Avbryt - gjør ingenting</string>
     <string name="added">La til</string>
     <string name="checking_for_update">Ser etter oppdatering...</string>
-    <string name="signal_missed">Signal savnet</string>
+    <string name="signal_missed">Signal mangler</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} minutter siden|1#{0, number, integer} minutt siden|1&lt;{0, number, integer} minutter siden}</string>
     <string name="expires_days">{0, choice,0#Sensor utløpt!|1#Slutter om {0, number} dag|1&lt;Slutter om {0, number} dager}</string>
     <string name="expires_at">Slutter {0}</string>
@@ -238,7 +238,7 @@
     <string name="cannot_calibrate_right_now">Kan ikke kalibrere akkurat nå</string>
     <string name="hardware_data_source">Datakilde</string>
     <string name="enter_ten_character_dexcom_receiver_serial">Skriv inn det 10-tegn lange serienummeret til Dexcom-mottakeren</string>
-    <string name="dexcom_transmitter_id">Dexcom Sender ID</string>
+    <string name="dexcom_transmitter_id">Dexcom sender-ID</string>
     <string name="run_collector_in_foreground">Kjør innsamler i forgrunnen</string>
     <string name="shows_a_persistent_notification">Viser vedvarende varselgraf, synlig på låseskjermen og hindrer android i å stoppe tjenesten.</string>
     <string name="list_of_receivers">Liste over mottakere</string>
@@ -361,7 +361,7 @@
     <string name="show_general_and_collection_settings">Vis Generelle- og innsamlingsinnstillinger</string>
     <string name="copy_all_settings">Kopier alle innstillinger</string>
     <string name="sensor_is_ready_please_enter_double_calibration">Sensor er klar, skriv inn en initiell kalibrering</string>
-    <string name="in_order_to_get_started_please_perform_two_finger">For å komme i gang, må du utføre to fingerstikk tester og angi verdiene her!</string>
+    <string name="in_order_to_get_started_please_perform_two_finger">For å komme i gang, må du utføre en eller to blodsukkermålinger med fingerstikk og angi verdiene her!</string>
     <string name="enter_first_bg_value">Angi første BS-verdi</string>
     <string name="enter_second_bg_value">Angi andre BS-verdi</string>
     <string name="language_editor">Språkredigering</string>
@@ -424,7 +424,7 @@
     <string name="silent_alert_when_charging">Vibrasjon ved lading</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Varsler starter som slumret og må vedvare en stund for å faktisk utløses</string>
     <string name="alarms_silenced_during_telephone_calls">Varslinger dempet under telefonsamtaler</string>
-    <string name="suppress_alerts_if_missed_readings">Undertrykk varsler om manglende avlesninger</string>
+    <string name="suppress_alerts_if_missed_readings">Undertrykk varsler hvis tapte avlesninger</string>
     <string name="bad_noisy_value_alerts">Dårlig verdi varsler (støy)</string>
     <string name="keep_snoozing_if_glucose_is_heading_in_right_direction">Behold slumring hvis glukose er på vei i riktig retning</string>
     <string name="dont_alert_if_glucose_in_right_direction">Ikke varsle hvis glukose er på vei i riktig retning</string>
@@ -442,7 +442,7 @@
     <string name="displays_the_slope_arrows">Viser kurvepiler</string>
     <string name="display_slope_arrows">Vis kurvepiler</string>
     <string name="vibrate_watch_to_alert_no_data">Vibrere klokken for å varsle når vi ikke får noen glukosedata</string>
-    <string name="vibrate_when_missed_signal">Vibrere når manglende signal</string>
+    <string name="vibrate_when_missed_signal">Vibrere når signal mangler</string>
     <string name="vibrate_watch_to_alert_no_bluetooth">Vibrer på klokken for å varsle at bluetooth har koblet fra</string>
     <string name="vibrate_when_no_bluetooth">Vibrer på klokken når bluetooth ikke benyttes</string>
     <string name="special_glucose_value_to_display_message">Spesiell glukoseverdi for å vise meldingen nedenfor</string>
@@ -560,7 +560,7 @@
     <string name="delete">Slett</string>
     <string name="title_activity_btglucose_meter">Meteravlesning</string>
     <string name="notify_when_wear_low_battery">Deaktiverer tvang av Wear innsamlingstjeneste på grunn av lavt batteri på wear-klokke!</string>
-    <string name="notify_disable_wearG5_on_missedreadings">Deaktiverer tvang av Wear innsamlingstjeneste på grunn av %1$d minutter med mistede avlesninger på klokken!</string>
+    <string name="notify_disable_wearG5_on_missedreadings">Deaktiverer tvang av Wear innsamlingstjeneste på grunn av %1$d minutter med tapte avlesninger på klokken!</string>
     <string name="label_show_insulin">E:%1$se</string>
     <string name="label_show_carbs">Karbohydrater:%1$sg</string>
     <string name="label_show_royceratio">C/I:%1$s</string>
@@ -696,12 +696,12 @@
     <string name="use_any_tag">Bruk \"any-tag\" optimalisert lesemetode</string>
     <string name="low_level_value">Lavnivå diagnose/prototype verdi</string>
     <string name="transmitter_id">ID for din Dexcom-sender, f.eks. 123ABC</string>
-    <string name="advanced_g5_settings">Avanserte G5 innstillinger for skjeldne situasjoner</string>
+    <string name="advanced_g5_settings">Avanserte innstillinger for sjeldne situasjoner</string>
     <string name="g5_debug_settings">G5/G6/G7/Dex1 feilsøkingsinnstillinger</string>
     <string name="g5_scan_constantly">Noen enheter virker bedre når de blir skannet hele tiden, andre ikke. Hvis avlesningene er stabile når denne innstillingen ikke er valgt, bør du oppleve forbedret batteribruk. Normalt er det best å beholde denne deaktivert</string>
     <string name="scan_for_g5_constantly">Skan kontinuerling for G5</string>
     <string name="g5_force_ui_thread">Dette er viktig for noen Androidenheter for å koble til skikkelig, men kan føre til manglende avlesninger når andre UI intense aktiviteter er i bruk.</string>
-    <string name="force_g5_ui_thread">Tving G5 til UI Tråd</string>
+    <string name="force_g5_ui_thread">Tving G5 til UI-tråd</string>
     <string name="authentificate_before_reading">Autentiser før hver avlesning</string>
     <string name="g5_full_authentification">Dette vil forsøke en full autentisering før hvert leseforsøk. Trengs for nyere G5 fastvare versioner.</string>
     <string name="unbond_g5_before_read">Frigjør G5 før hver avlesning</string>
@@ -750,7 +750,7 @@
     <string name="buttons_silence_alarms">Knapper slår av varsler</string>
     <string name="create_shortcut">Lag snarvei fra hovedmeny til liste av varsler for BS-nivå</string>
     <string name="shortcut_to_bg_alerts">Snarvei til varsler for BS-nivå</string>
-    <string name="suppress_alerts_missed_readings">Undertrykk slumrede og aktive varsler etter en forhåndsdefinert tid med manglende avlesninger</string>
+    <string name="suppress_alerts_missed_readings">Undertrykk slumrede og aktive varsler etter en forhåndsdefinert tid med tapte avlesninger</string>
     <string name="suppress_alerts_after">Undertrykk slumrede og aktive varsler etter .. minutter (minimum 10)</string>
     <string name="alert_calibration_request">Si fra når kalibrering er nødvendig</string>
     <string name="calibrations_request_time_time_difference">Timer mellom kalibreringsforespørsler</string>
@@ -861,7 +861,7 @@
     <string name="error">feil</string>
     <string name="install_text_to_speech_data_question">Installer tekst-til-tale data?</string>
     <string name="after_installation_of_languages_you_might_have_to">(Etter installasjon av språk må du kanskje trykke \"Start innsamler på nytt\" i Systemstatus.)</string>
-    <string name="stop_sensor">Stopp Sensor</string>
+    <string name="stop_sensor">Stopp sensor</string>
     <string name="dont_stop_just_reset_all_calibrations">Ikke stopp, bare tilbakestill alle kalibreringer</string>
     <string name="initial_calibration">Initiell kalibrering</string>
     <string name="calibration_can_not_be_blank">Kalibrering kan ikke være tom</string>
@@ -1040,7 +1040,7 @@
     <string name="summary_Probe_Bluetooth_services_on_every_connect">Undersøk Bluetooth-tjenester på hver tilkobling</string>
     <string name="title_Always_discover_services">Oppdag alltid tjenester</string>
     <string name="summary_Only_suitable_for_phones_which_support_automatic_pairing">Kun egnet for telefoner som støtter automatisk sammenkobling</string>
-    <string name="title_Allow_blucon_unbonding">Tillatt BluCon-avbinding</string>
+    <string name="title_Allow_blucon_unbonding">Tillatt BluCon-frakobling</string>
     <string name="summary_Suppress_the_ugly_state_message_if_Problem_appears">Undertrykk den stygge tilstandsmeldingen hvis problem oppstår</string>
     <string name="title_supress_ugly_state_message">undertrykk stygg tilstandsmelding</string>
     <string name="summary_write_Battery_Information_for_additional_analytic">Skriv batteriinformasjonen for ytterligere analyse i en fil. Vennligst bruk dette bare hvis du blir spurt av en utvikler!</string>
@@ -1126,7 +1126,7 @@
     <string name="unit_minutes">minutter</string>
     <string name="unit_hours">timer</string>
     <string name="unit_days">dager\"</string>
-    <string name="unit_weeks">uker\"</string>
+    <string name="unit_weeks">uker</string>
     <string name="quiet_at_night">Stille om natten</string>
     <string name="alerts_disabled">Varsler deaktivert</string>
     <string name="restart_in_the_morning">Start på nytt om morgenen</string>
@@ -1137,7 +1137,7 @@
     <string name="low_and_high_alerts_currently_disabled">LAVE OG HØYE VARSLER ER DEAKTIVERT</string>
     <string name="low_alerts_currently_disabled">LAVE VARSLER ER DEAKTIVERT</string>
     <string name="high_alerts_currently_disabled">HØYE VARSLER ER DEAKTIVERT</string>
-    <string name="bg_reading_missed">BS-avlesninger savnet</string>
+    <string name="bg_reading_missed">BS-avlesninger mangler</string>
     <string name="not_connected">Ikke tilkoblet</string>
     <string name="no_data">Ingen data</string>
     <string name="no_bluetooth">Ingen Bluetooth</string>
@@ -1291,7 +1291,7 @@
     <string name="title_nsfollow_url">Nightscout følger-URL</string>
     <string name="summary_nsfollow_download_treatments">Last også ned behandlinger fra Nightscout som følger</string>
     <string name="title_nsfollow_download_treatments">Last ned behandlinger</string>
-    <string name="title_nsfollow_lag">Nightscoutfølger-forsinkelse</string>
+    <string name="title_nsfollow_lag">Nightscout følgerforsinkelse</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
     <string name="summary_clfollow_user">CareLink login username</string>
@@ -1337,8 +1337,8 @@
     <string name="title_ob1_minimize_scanning">Minimer skanning</string>
     <string name="summary_using_g6">Jeg bruker en G6 eller Dexcom 1 sensor</string>
     <string name="title_using_g6">G6/Dex1-støtte</string>
-    <string name="summary_ob1_g5_allow_resetbond">OB1-innsamleren frigjøre seg hvis den tror krypteringen har mislyktes. Hvis du får problemer med å oppheve sammenkoblingen, deaktiver dette alternativet. Hvis du da mister forbindelsen helt, sørg for at dette er aktivert.</string>
-    <string name="title_ob1_g5_allow_resetbond">Tillat OB1-avbinding</string>
+    <string name="summary_ob1_g5_allow_resetbond">OB1-innsamleren kan frigjøre seg hvis den tror krypteringen har mislyktes. Hvis du får problemer med å oppheve sammenkoblingen, deaktiver dette alternativet. Hvis du da mister forbindelsen helt, sørg for at dette er aktivert.</string>
+    <string name="title_ob1_g5_allow_resetbond">Tillat OB1-frakobling</string>
     <string name="summary_ob1_initiate_bonding_flag">OB1-innsamler kan starte binding.</string>
     <string name="title_ob1_initiate_bonding_flag">Tillat OB1 å starte binding</string>
     <string name="title_old_g5_options">Gammel G5-innsamler innstillinger</string>
@@ -1812,4 +1812,5 @@
     <string name="carelink_credential_status_not_authenticated">Ikke innlogget! Vennligst logg inn!</string>
     <string name="carelink_credential_status_access_expired">Tilgang utløpt! Vil oppdatere!</string>
     <string name="carelink_credential_status_refresh_expired">Innlogging utløpt! Vennligst Logg inn!</string>
+    <string name="data_source">Datakilde:</string>
 </resources>
