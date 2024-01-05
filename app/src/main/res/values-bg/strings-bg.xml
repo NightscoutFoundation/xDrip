@@ -177,7 +177,7 @@
     <string name="libre_last_x_minutes_graph">Libre графа последните за последните %d мин</string>
     <string name="share_config_via_qr_code">Сподели настройки чрез QR код</string>
     <string name="check_for_updated_version">Проверка за нова версия</string>
-    <string name="current_version_is_up_to_date">Няма актуализация в изпрания канал</string>
+    <string name="current_version_is_up_to_date">Няма актуализация в избрания канал</string>
     <string name="send_feedback_to_developer">Изпращане на отзиви към разработчика</string>
     <string name="home_screen">Началния екран</string>
     <string name="event_logs">Журнали със събития</string>
@@ -1038,7 +1038,7 @@
     <string name="summary_Choose_to_display_the_bridge_battery_level">Изберете, за да покажете нивото на батерията на моста</string>
     <string name="title_Glucose_Retention">Прогноза за глюкоза</string>
     <string name="summary_Erase_data_older_than_this_many_days">Изтриване на данни, по-стари от толкова много дни. 0 = не изтривайте нищо</string>
-    <string name="title_Other_misc_options">Разни други настроики</string>
+    <string name="title_Other_misc_options">Разни други настройки</string>
     <string name="summary_allow_testing_with_dead_sensor">позволи тестване с мъртъв сензор</string>
     <string name="title_NOT_FOR_PRODUCTION_USE">НЕ Е ЗА ПРОИЗВОДСТВЕНА УПОТРЕБА</string>
     <string name="title_You_have_no_reminders_yet">Все още няма инсталирани напомняния</string>
