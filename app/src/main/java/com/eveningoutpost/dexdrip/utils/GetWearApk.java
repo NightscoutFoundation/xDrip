@@ -84,7 +84,7 @@ public class GetWearApk {
             while ((zipEntry = zip_stream.getNextEntry()) != null) {
                 if (zipEntry.isDirectory()) continue;
                 final String filename = zipEntry.getName();
-                if (filename.endsWith("android_wear_micro_apk.apk")) {
+                if (filename.endsWith(".apk")) {
                     final byte[] buffer = new byte[Math.min((int) zipEntry.getSize(), MAX_BYTES)];
                     final int read_bytes = readAllToBuffer(zip_stream, buffer);
                     if (read_bytes != buffer.length) {
