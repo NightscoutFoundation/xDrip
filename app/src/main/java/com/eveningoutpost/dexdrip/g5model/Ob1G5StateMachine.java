@@ -668,7 +668,7 @@ public class Ob1G5StateMachine {
         if (connection == null) return false;
         // TODO switch modes depending on conditions as to whether we are using internal
         final boolean use_g5_internal_alg = Pref.getBooleanDefaultFalse("ob1_g5_use_transmitter_alg");
-        UserError.Log.d(TAG, use_g5_internal_alg ? ("Requesting Glucose Data " + (usingG6() ? "G6" : "G5")) : "Requesting Sensor Data");
+        UserError.Log.d(TAG, use_g5_internal_alg ? ("Requesting Glucose Data " + (usingG6() ? (shortTxId() ? "G7" : "G6") : "G5")) : "Requesting Sensor Data");
 
         if (!use_g5_internal_alg) {
             parent.lastSensorStatus = null; // not applicable

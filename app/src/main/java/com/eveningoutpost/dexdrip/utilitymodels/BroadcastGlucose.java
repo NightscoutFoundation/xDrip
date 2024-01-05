@@ -63,7 +63,7 @@ public class BroadcastGlucose {
                 UserError.Log.i("SENSOR QUEUE:", "Broadcast data");
 
                 String collectorName = DexCollectionType.getBestCollectorHardwareName();
-                if (collectorName.equals("G6 Native")) {
+                if (collectorName.equals("G6 Native") || collectorName.equals("G7")) {
                     collectorName += " / G5 Native"; // compatibility for older AAPS
                 }
                 bundle.putString(Intents.XDRIP_DATA_SOURCE_DESCRIPTION, collectorName);
