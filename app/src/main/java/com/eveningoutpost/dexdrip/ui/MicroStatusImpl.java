@@ -41,7 +41,11 @@ public class MicroStatusImpl extends BaseObservable implements MicroStatus {
     }
 
     @Override
-    public boolean usingG7() { // True if we are using G7
-        return DexCollectionType.getDexCollectionType() == DexCollectionType.DexcomG5 && Pref.getBooleanDefaultFalse("using_g6") && shortTxId();
+    public boolean usingG7() {
+        try { // True if we are using G7
+            return DexCollectionType.getDexCollectionType() == DexCollectionType.DexcomG5 && Pref.getBooleanDefaultFalse("using_g6") && shortTxId();
+        } catch (Exception e) { // If there are any unknowns, show that we are not using G7
+            return false;
+        }
     }
 }
