@@ -32,7 +32,7 @@ public class MicroStatusImpl extends BaseObservable implements MicroStatus {
 
     @Override
     public boolean bluetooth() { // Dexcom with Bluetooth except G7
-        return DexCollectionType.hasBluetooth() && !using_g7();
+        return DexCollectionType.hasBluetooth() && !usingG7();
     }
 
     @Override
@@ -41,10 +41,7 @@ public class MicroStatusImpl extends BaseObservable implements MicroStatus {
     }
 
     @Override
-    public boolean using_g7() { // True if we are using G7
-        if (DexCollectionType.getDexCollectionType() == DexCollectionType.DexcomG5 && Pref.getBooleanDefaultFalse("using_g6") && shortTxId()) { // If using G7
-            return true;
-        }
-        return false;
+    public boolean usingG7() { // True if we are using G7
+        return DexCollectionType.getDexCollectionType() == DexCollectionType.DexcomG5 && Pref.getBooleanDefaultFalse("using_g6") && shortTxId();
     }
 }
