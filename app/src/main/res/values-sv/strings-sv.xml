@@ -163,7 +163,7 @@
     <string name="checking_for_update">Söker efter uppdateringar ..</string>
     <string name="signal_missed">Signal saknas</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} minuter sedan|1#{0, number, integer} minut sedan|1&lt;{0, number, integer} minuter sedan}</string>
-    <string name="expires_days">{0, choice,0#Sensor utlöpt!|1#Slutar om {0, number} dagar|1&lt;Slutar om {0, number} dag}</string>
+    <string name="expires_days">{0, choice,0#Sensor utlöpt!|1#Slutar om {0, number} dag|1&lt;Slutar om {0, number} dagar}</string>
     <string name="expires_at">Slutar {0}</string>
     <string name="space_minutes_ago">" minuter sedan"</string>
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"I libre alla husläge: inga värden insamlade ännu."</string>
@@ -187,7 +187,7 @@
     <string name="general_settings">Allmänna inställningar</string>
     <string name="high_value">Högt värde</string>
     <string name="low_value">Lågt värde</string>
-    <string name="stats_range_settings">Inställningar för Intervall: </string>
+    <string name="stats_range_settings">Intervallinställning: </string>
     <string name="end_user_license_agreement">Licensavtal för slutanvändare</string>
     <string name="save">Spara</string>
     <string name="view_important_warning">Visa viktig varning</string>
@@ -1183,6 +1183,9 @@
     <string name="title_tidepool_test_login">Testa Tidepool-inloggning</string>
     <string name="summary_tidepool_dev_servers">Om aktiverad, går uppladdningar till https://int-app.tidepool.org istället för den vanliga https://app.tidepool.org/</string>
     <string name="title_tidepool_dev_servers">Använd Integrations- (test) servrar</string>
+    <string name="send_bg_readings_to_backfill">Skicka BG-avläsningar för återfyllning</string>
+    <string name="view_old_error_log">Visa gammal fellogg</string>
+    <string name="return_to_home_screen">Återgå till hemskärmen</string>
     <string name="title_broadcast_service_api">API för Broadcast-tjänst</string>
     <string name="summary_broadcast_service_api">Aktiverar, med hjälp av det nya API:et, för tredjepartsapplikationer att kommunicera med xDrip</string>
     <string name="title_miband_general_settings_category">Allmänna inställningar</string>
@@ -1201,6 +1204,7 @@
     <string name="title_screens">Skärmar</string>
     <string name="summary_nsfollow_url">Webbadress för att följa</string>
     <string name="title_nsfollow_url">Nightscout Follow-länk</string>
+    <string name="summary_nsfollow_download_treatments">Ladda också ned behandlingar från Nightscout som följare</string>
     <string name="title_nsfollow_download_treatments">Ladda ner behandlingar</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
@@ -1277,6 +1281,10 @@
     <string name="eula">LICENSAVTAL</string>
     <string name="summary_plus_accept_follower_actions">Behandlingar, kalibreringar och andra åtgärder från följare kommer att accepteras</string>
     <string name="title_plus_accept_follower_actions">Acceptera följaråtgärder</string>
+    <string name="summary_xdrip_plus_desert_sync_settings">Frånkopplad följning</string>
+    <string name="title_xdrip_plus_desert_sync_settings">Desert Sync</string>
+    <string name="summary_desert_sync_enabled">Aktivera lokal icke-internetsynkronisering</string>
+    <string name="title_desert_sync_enabled">Desert Sync</string>
     <string name="title_desert_sync_master_ip">Huvud-IP-adress</string>
     <string name="summary_send_sync_show_qr">Streckkod för följare att skanna för att automatiskt konfigurera dem</string>
     <string name="title_send_sync_show_qr">Visa QR-kod</string>
@@ -1316,7 +1324,16 @@
     <string name="collecting">samlar...</string>
     <string name="insulin">insulin</string>
     <string name="nothing_found">inget kunde hittas</string>
+    <string name="followers_name">Föjarens namn:</string>
+    <string name="followers_email">Följarens e-post:</string>
+    <string name="set_up_desert_sync_follower">Ställ in en Desert Sync-följare</string>
     <string name="bluetooth_device">Blåtandsenhet:   </string>
+    <string name="range_in_high_low">Mål: (inom/hög/låg)</string>
+    <string name="median_bg">Median-BG:</string>
+    <string name="mean_bg">Medel-BG:</string>
+    <string name="hba1c_est">Upps. hbA1c:</string>
+    <string name="stddev">Std.av:</string>
+    <string name="relative_sd_cv">Variationskoefficient:</string>
     <string name="libre">Libre</string>
     <string name="what_type_of_libre_bridge_device_do_you_use">Vilken typ av Libre-brygga använder du?</string>
     <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Blåtandsbryggenhet: Blucon, Bubble, LimiTTer, Bluereader, Tomato mm</string>
