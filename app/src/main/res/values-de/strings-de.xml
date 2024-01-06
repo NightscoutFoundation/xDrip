@@ -696,7 +696,7 @@
     <string name="use_any_tag">Benutze die Any-Tag-optimierte Lesemethode</string>
     <string name="low_level_value">Systemnaher Diagnose-/Prototypwert</string>
     <string name="transmitter_id">ID deines Dexcom-Transmitters, z.B. 12AB3</string>
-    <string name="advanced_g5_settings">Erweiterte G5-Einstellungen für seltene Situationen</string>
+    <string name="advanced_g5_settings">Erweiterte Dexcom-Einstellungen für seltene Situationen</string>
     <string name="g5_debug_settings">Dex G5/G6/ONE Debugeinstellungen</string>
     <string name="g5_scan_constantly">Einige Geräte funktionieren besser, wenn sie konstant scannen, andere nicht. Falls das Lesen zuverlässig funktioniert, wenn diese Einstellung nicht ausgewählt ist, solltest du eine längere Batterielaufzeit haben. Normalerweise ist es am besten, dies deaktiviert zu lassen.</string>
     <string name="scan_for_g5_constantly">Konstant nach dem G5 scannen</string>
