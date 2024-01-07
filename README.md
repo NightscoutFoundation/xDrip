@@ -5,8 +5,6 @@
 * Release notes: https://navid200.github.io/xDrip/docs/ReleaseNotes.html
 * Guide 1: https://navid200.github.io/xDrip/
 
-<img align="right" src="https://travis-ci.org/jamorham/xDrip-plus.svg?branch=master"><a align="right" title="Crowdin" target="_blank" href="https://crowdin.com/project/xdrip"><img align="right" src="https://badges.crowdin.net/xdrip/localized.svg"></a>
-
 ## Features
 * Voice, Keypad or Watch input of Treatments (Insulin/Carbs/Notes)
 * Visualization of Insulin and Carb action curves + Undo/Redo
@@ -39,16 +37,18 @@ Your data is yours and can be exported in many different ways. xDrip also interc
 ## Ethos
 * Developed using Rapid Prototyping methodology
 * Immediate results favoured to prove concepts
-* Designed to support my personal research goals
 * User Choice always a high priority
 * No registration or Internet access required
 * Community testing and collaboration appreciated!
 
 ## Roadmap
-* Calibration improvements
 * Supporting the large family of devices
 * Increasing automation and data backup and sync options
 * More Nightscout and APS integration
+
+## Translations
+<img align="right" src="https://travis-ci.org/jamorham/xDrip-plus.svg?branch=master"><a align="right" title="Crowdin" target="_blank" href="https://crowdin.com/project/xdrip"><img align="right" src="https://badges.crowdin.net/xdrip/localized.svg"></a>
+
 
 ## Collaboration
 We are very happy if people want to collaborate with this project. Please contact us at [Discussions](https://github.com/NightscoutFoundation/xDrip/discussions) if you want to get involved and study the [collaboration guidelines](CONTRIBUTING.md) before submitting any patches or pull requests.
