@@ -1,8 +1,9 @@
 # Nightscout xDrip+
-> Enhanced personal research version of xDrip
 
- <img align="right" src="Documentation/images/download-xdrip-plus-qr-code.png">
- Info page and APK download: https://jamorham.github.io/#xdrip-plus
+## Guides and Documentation
+* Info page: https://jamorham.github.io/#xdrip-plus
+* Release notes: https://navid200.github.io/xDrip/docs/ReleaseNotes.html
+* Guide 1: https://navid200.github.io/xDrip/
 
 <img align="right" src="https://travis-ci.org/jamorham/xDrip-plus.svg?branch=master"><a align="right" title="Crowdin" target="_blank" href="https://crowdin.com/project/xdrip"><img align="right" src="https://badges.crowdin.net/xdrip/localized.svg"></a>
 
