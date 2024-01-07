@@ -697,7 +697,7 @@
     <string name="low_level_value">Systemnaher Diagnose-/Prototypwert</string>
     <string name="transmitter_id">ID deines Dexcom-Transmitters, z.B. 12AB3</string>
     <string name="advanced_g5_settings">Erweiterte Dexcom-Einstellungen für seltene Situationen</string>
-    <string name="g5_debug_settings">Dex G5/G6/ONE Debugeinstellungen</string>
+    <string name="g5_debug_settings">Dexcom G5/G6/ONE Debug-Einstellungen</string>
     <string name="g5_scan_constantly">Einige Geräte funktionieren besser, wenn sie konstant scannen, andere nicht. Falls das Lesen zuverlässig funktioniert, wenn diese Einstellung nicht ausgewählt ist, solltest du eine längere Batterielaufzeit haben. Normalerweise ist es am besten, dies deaktiviert zu lassen.</string>
     <string name="scan_for_g5_constantly">Konstant nach dem G5 scannen</string>
     <string name="g5_force_ui_thread">Dies ist ausschlaggebend bei einigen Android-Geräten zum korrekten Verbinden, kann aber auch verpasste Werte verursachen, wenn andere UI intensive Activities benutzt werden.</string>
@@ -1176,7 +1176,7 @@
     <string name="summary_send_bridge_battery_to_nightscout">Sende Bridge Batterie-Level an Nightscout. Ausschalten, wenn dein Batteriesensor kaputt ist.</string>
     <string name="title_send_bridge_battery_to_nightscout">Transmitter Batterie hochladen</string>
     <string name="summary_send_dexcom_transmitter_battery_to_nightscout">Sende Dexcom-Transmitter-Batterie-Statistiken an Nightscout. Enthält alle Daten, die auf dem Collector Status Bildschirm angezeigt werden.</string>
-    <string name="title_send_dexcom_transmitter_battery_to_nightscout">OB1G5/G6 Transmitter Batterie hochladen</string>
+    <string name="title_send_dexcom_transmitter_battery_to_nightscout">Dexcom G5/G6/G7/ONE Transmitter-Batterie hochladen</string>
     <string name="summary_send_treatments_to_nightscout">Sende die Behandlungsdaten an Nightscout. Ausschalten wenn dein Careportal defekt ist.</string>
     <string name="title_send_treatments_to_nightscout">Behandlungen hochladen</string>
     <string name="summary_warn_nightscout_failures">Anzeige- und Ton-Benachrichtigung, wenn Nightscout Upload fehlgeschlagen ist.</string>
@@ -1335,14 +1335,14 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Auf xDrip zurückgreifen</string>
     <string name="summary_ob1_minimize_scanning">Verwende Heuristiken, um Bluetooth-Scannen zu minimieren und Strom zu sparen</string>
     <string name="title_ob1_minimize_scanning">Scannen minimieren</string>
-    <string name="summary_using_g6">Ich nutze einen G6 oder ONE Sensor</string>
-    <string name="title_using_g6">Unterstützung für G6/ONE</string>
+    <string name="summary_using_g6">Ich nutze einen Dexcom G6, G7 oder ONE Sensor</string>
+    <string name="title_using_g6">Unterstützung für G6/G7/ONE</string>
     <string name="summary_ob1_g5_allow_resetbond">Der OB1 Kollektor kann die Kopplung aufheben, wenn er glaubt, dass die Verschlüsselung fehlgeschlagen ist. Wenn Unpairing zum Problem wird, deaktivierebbdiese Option. Wenn du danach die Verbindung vollständig verlierst, stelle sicher, dass sie aktiviert ist.</string>
     <string name="title_ob1_g5_allow_resetbond">OB1-Entkoppelung erlauben</string>
     <string name="summary_ob1_initiate_bonding_flag">OB1-Datensammler kann Bonding einleiten.</string>
     <string name="title_ob1_initiate_bonding_flag">OB1 Verbindungsaufbau erlauben</string>
     <string name="title_old_g5_options">Alte G5 Kollektor-Einstellungen</string>
-    <string name="title_g5g6_battery_options">G5/G6 Akku-Optionen</string>
+    <string name="title_g5g6_battery_options">G5/G6/G7/ONE Batterie-Optionen</string>
     <string name="title_g5_battery_warning_level">Batteriewarnung anpassen</string>
     <string name="title_plugins_and_features">Plugins und Funktionen</string>
     <string name="title_color_heart_rate1">Herzfrequenz-Monitor</string>
@@ -1354,8 +1354,8 @@
     <string name="title_xdrip_plus_graph_display_settings">Graph-Einstellungen</string>
     <string name="summary_show_basal_line">TBR-Informationen von externem Status anzeigen</string>
     <string name="title_show_basal_line">Zeige temporäre Basalrate</string>
-    <string name="summary_show_g_prediction">Von G6 vorhergesagte Glukosepunkte anzeigen</string>
-    <string name="title_show_g_prediction">G6-Vorhersage</string>
+    <string name="summary_show_g_prediction">Von G6/G7 vorhergesagte Glukosepunkte anzeigen</string>
+    <string name="title_show_g_prediction">G6/G7-Vorhersage</string>
     <string name="summary_show_smb_icons">Den Graph durch Symbole für kleine Boli aufräumen</string>
     <string name="title_show_smb_icons">Zeige Micro-Bolus-Symbole</string>
     <string name="summary_show_medtrum_secondary">Zeige alternative Glukosepunkte</string>
