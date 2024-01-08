@@ -177,6 +177,7 @@
     <string name="libre_last_x_minutes_graph">Libre gráfico dos últimos %d minutos</string>
     <string name="share_config_via_qr_code">Partilhar config. via QR code</string>
     <string name="check_for_updated_version">Procurar atualizações</string>
+    <string name="current_version_is_up_to_date">Nenhuma atualização disponível na fonte selecionada</string>
     <string name="send_feedback_to_developer">Enviar feedback para o programador</string>
     <string name="home_screen">Tela inicial</string>
     <string name="event_logs">Registro de Eventos</string>
@@ -801,6 +802,7 @@
     <string name="chosse_language">Escolher um Idioma específico</string>
     <string name="widget_range_lines">Linhas do Intervalo no Widget</string>
     <string name="show_range_on_widget">Mostrar linha de hiper e hipo no widget.</string>
+    <string name="delayed_but_more_stable">Atrasado, mas mais estável quando com ruído (não recomendado)</string>
     <string name="show_bolus_wizard_preview">Mostrar Pré-Visualização do Assistente de Bólus</string>
     <string name="display_calculations">Mostra Cálculos Insulina/Carboidratos</string>
     <string name="display_calculations_everytime">Exibe Cálculos Insulina/Carboidratos em todo momento</string>
@@ -815,8 +817,17 @@
     <string name="default_liver_maximum_impact">Impacto Máximo do Fígado Padrão (0-1)</string>
     <string name="remote_snoozes">Enviar e receber adiamentos remotos</string>
     <string name="remote_snoozing">Adiamento remoto</string>
+    <string name="snoozes_will_silence_all">Adiar irá silenciar todos os aparelhos do grupo com a configuração abaixo ativada</string>
+    <string name="send_snooze_to_all">Enviar adiar para todos</string>
+    <string name="confirm_remote_snoozes">Abre uma caixa de diálogo para confirmar que está enviando adiar remoto</string>
+    <string name="confirm_sensing_snooze">Confirmar envio de adiamento</string>
     <string name="allow_remotes_silence">Permite dispositivos móveis remotos enviar comando silenciar alarmes</string>
     <string name="acccept_remote_snoozes">Aceitar Silenciar remoto</string>
+    <string name="send_remote_snooze">Enviar Adiar Remoto</string>
+    <string name="only_accept_same_network">Só aceite se o nome da rede Wi-Fi remota começar com o mesmo nome mesmo que mude os caracteres finais</string>
+    <string name="wifi_name_must_match">O nome do Wi-Fi deve ser compatível</string>
+    <string name="confirm_remote_snooze">Confirmar Adiar Remoto</string>
+    <string name="are_you_sure_you_wish_to_snooze_all_other_devices_in_your_sync_group">Tem certeza de que deseja adiar todos os outros dispositivos do seu grupo de sincronização?</string>
     <string name="yes_send_it">SIM, enviar!</string>
     <string name="movement_detection_and_vehicle_mode">Detecção de Movimento e Modo Veículo</string>
     <string name="xdrip_motion_tracking">Detecção de Movimento</string>
@@ -838,12 +849,14 @@
     <string name="repeat_sound">Repetir som</string>
     <string name="enable_telemetry">Ativar telemetria</string>
     <string name="send_data_to_developers">Envie dados para os desenvolvedores sobre taxas de sucesso de diferentes dispositivos</string>
+    <string name="try_to_work_around_noisy_readings_ultrasensitive">Começar a aceitar as leituras mesmo se forem um pouco ruins (apenas no modo desenvolvimento)</string>
     <string name="sidiary_date_title">Exportar a partir de quando?</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
     <string name="bubble">Bubble</string>
     <string name="atom">Atom</string>
     <string name="use_gravity_sensor_to_rotate_items">Usar sensor de gravidade para girar itens</string>
+    <string name="low_bridge_battery">Bateria do Parakeet baixa</string>
     <string name="reminders">Lembretes</string>
     <string name="error">erro</string>
     <string name="install_text_to_speech_data_question">Instalar dados Texto-Para-Voz?</string>
@@ -928,6 +941,7 @@
     <string name="androidwear">Android Wear OS</string>
     <string name="librealarm">LibreAlarm</string>
     <string name="use_librealarm">Usar o app LibreAlarm como fonte de dados?</string>
+    <string name="noise_blocking">Bloqueio de ruído</string>
     <string name="low_parakeet_battery">Bateria do Parakeet baixa</string>
     <string name="glucose_units_mmol_or_mgdl">Unidades de Glicose mmol/L ou mg/dL</string>
     <string name="is_your_typical_glucose_value">Seu valor típico de glicose no sangue: 5.5 (mmol/L) ou 100 (mg/dL) Por favor, selecione abaixo</string>
@@ -963,6 +977,7 @@
     <string name="emergency_message_near_format_string">%1$s perto de %2$s %3$s %4$s %5$s</string>
     <string name="choose_when_to_send_messages">Escolher quando enviar mensagens:</string>
     <string name="low_alert_not_acknowledged">Alerta de Hipo não reconhecido</string>
+    <string name="lowest_alert_not_acknowledged">Alerta de Hipo não reconhecido</string>
     <string name="high_alert_not_acknowledged">Alerta de Hiper não reconhecido</string>
     <string name="device_inactivity">Inatividade do dispositivo</string>
     <string name="test_message_sending">Envio de Mensagem de Teste</string>
@@ -1019,7 +1034,9 @@
     <string name="message_reminders_explanation">Lembretes podem ser usados para situações como mudança de local da bomba e outras coisas.\n\nPodem repetir, ser definidos para vários períodos de tempo. Ser silenciados, adiados, reagendados etc.\n\nCarregar no botão + para adicionar um lembrete.</string>
     <string name="title_swipe_reminder">Deslize para a esquerda ou direita</string>
     <string name="message_swipe_explanation">\u2190 Deslize para ESQUERDA para atrasar ou adiar um lembrete\n\n\u2192 Deslize para DIREITA para programar o próximo lembrete\n\nTocando no título ou horário permite edição. Pressione e segure o título para editar outros parâmetros.</string>
+    <string name="title_reminder_snooze_undo">Lembrete de Adiar- Desfazer</string>
     <string name="message_snooze_explanaition_undo">O botão Desfazer restaura o lembrete de como estava antes de ser deslizado.</string>
+    <string name="title_snooze_trash">Lembrete Adiar- Lixeira</string>
     <string name="message_snooze_hide">O botão Ocultar oculta o painel de soneca</string>
     <string name="title_which_day">Em que dia?</string>
     <string name="title_what_time_day">A que hora do dia?</string>
