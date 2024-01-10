@@ -567,7 +567,7 @@
     <string name="label_show_steps">Skritt:%1$d</string>
     <string name="label_show_steps_km">km:%1$s</string>
     <string name="label_show_steps_mi">mi:%1$s</string>
-    <string name="pref_summary_influxdb_enabled">Hvis du bruken en private InfluxDB database, bør denne være aktivert</string>
+    <string name="pref_summary_influxdb_enabled">Hvis du bruker en privat InfluxDB database, bør denne være aktivert</string>
     <string name="pref_message_influxdb_uri">Butt ut eksempelverdier i {}\' med dine egne verdier</string>
     <string name="pref_dialog_influxdb_uri">InfluxDB URI</string>
     <string name="pref_message_influxdb_database">Database for å lagre målinger. Husk å lage denne på serveren.</string>

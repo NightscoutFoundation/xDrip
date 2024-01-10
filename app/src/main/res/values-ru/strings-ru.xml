@@ -696,7 +696,7 @@
     <string name="use_any_tag">Использовать метод оптимизации чтения с помощью any-tag</string>
     <string name="low_level_value">Низкоуровневое диагностическое/опытное значение</string>
     <string name="transmitter_id">ID вашего трансмиттера Dexcom, напр. 12AB3</string>
-    <string name="advanced_g5_settings">Расширенные настройки G5 для редких ситуаций</string>
+    <string name="advanced_g5_settings">Продвинутые настройки G5 для редких ситуаций</string>
     <string name="g5_debug_settings">Настройки отладки G5/G6</string>
     <string name="g5_scan_constantly">Некоторые устройства работают лучше когда постоянное сканирование включено, другие наоборот. Если опция отключена и показания с сенсора поступают стабильно, заряд батареи расходуется медленее. Рекомендуется включать эту опцию в случае проблем со стабильностью получения показаний</string>
     <string name="scan_for_g5_constantly">Постоянный поиск G5</string>
@@ -1345,7 +1345,7 @@
     <string name="title_xdrip_plus_graph_display_settings">Настройки графика</string>
     <string name="summary_show_basal_line">Отображать значения TBR из внешних источников</string>
     <string name="title_show_basal_line">Отображать базальный TBR</string>
-    <string name="summary_show_g_prediction">Отображать прогноз значений глюкозы G6</string>
+    <string name="summary_show_g_prediction">Показывать предсказанные G6 точки глюкозы</string>
     <string name="title_show_g_prediction">Прогноз G6</string>
     <string name="summary_show_smb_icons">Не показывать на графике иконки для введённых пользователем маленьких значений болюса</string>
     <string name="title_show_smb_icons">Показывать значки болюсного инсулина</string>

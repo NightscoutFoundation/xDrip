@@ -1331,7 +1331,7 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Awaryjny powrót do algorytmu xDrip</string>
     <string name="summary_ob1_minimize_scanning">Użyj heurystyki, aby zminimalizować skanowanie Bluetooth i oszczędzać energię</string>
     <string name="title_ob1_minimize_scanning">Minimalizuj skanowanie</string>
-    <string name="summary_using_g6">Używam czujnika G6 lub Dexcom 1</string>
+    <string name="summary_using_g6">Używam czujnika G6</string>
     <string name="title_using_g6">Obsługa G6/Dex1</string>
     <string name="summary_ob1_g5_allow_resetbond">Kolektor OB1 może odłączyć, jeśli uzna, że szyfrowanie się nie powiodło. Jeśli wystąpią problemy z odparowaniem, wyłącz tę opcję. Jeśli wtedy całkowicie utracisz połączenie, upewnij się, że jest to włączone.</string>
     <string name="title_ob1_g5_allow_resetbond">Zezwól na odłączenie OB1</string>
