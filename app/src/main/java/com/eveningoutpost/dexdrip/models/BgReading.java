@@ -611,7 +611,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                     Log.d(TAG, "USING CALIBRATION PLUGIN AS PRIMARY!!!");
                     if (plugin.isCalibrationSane(pcalibration)) {
                         bgReading.calculated_value = (pcalibration.slope * bgReading.age_adjusted_raw_value) + pcalibration.intercept;
-                        bgReading.filtered_calculated_value = (pcalibration.slope * bgReading.ageAdjustedFiltered()) + calibration.intercept;
+                        bgReading.filtered_calculated_value = (pcalibration.slope * bgReading.ageAdjustedFiltered()) + pcalibration.intercept;
                     } else {
                         UserError.Log.wtf(TAG, "Calibration plugin failed intercept sanity check: " + pcalibration.toS());
                         Home.toaststaticnext("Calibration plugin failed intercept sanity check");
