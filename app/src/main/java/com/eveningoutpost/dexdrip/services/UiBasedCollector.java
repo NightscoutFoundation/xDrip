@@ -91,6 +91,7 @@ public class UiBasedCollector extends NotificationListenerService {
 
         coOptedPackagesAll.add("com.dexcom.dexcomone");
         coOptedPackagesAll.add("com.medtronic.diabetes.guardian");
+        coOptedPackagesAll.add("com.senseonics.gen12androidapp");
 
         companionAppIoBPackages.add("com.insulet.myblue.pdm");
 
