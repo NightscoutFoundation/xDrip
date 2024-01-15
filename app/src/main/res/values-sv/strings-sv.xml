@@ -1062,6 +1062,7 @@
     <string name="title_snooze_hide">Påminnelsepanel för snooze - Dölj</string>
     <string name="message_snooze_hide">Döljknappen gömmer snooze-panelen</string>
     <string name="title_snooze_times">Påminnelsepanel för Snooze - Tidpunkter</string>
+    <string name="message_snooze_times">De olika knapparna ändras snabbt från standard snooze till en annan snoozeperiod.</string>
     <string name="title_which_day">Vilken dag?</string>
     <string name="title_what_time_day">Vilken tid på dagen?</string>
     <string name="reminder_due">Påminnelse förfaller</string>
