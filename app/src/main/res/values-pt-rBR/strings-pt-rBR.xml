@@ -65,7 +65,7 @@
     <string name="wifi_recievers_dialog_title">Coloque os endereços IP e portas de receptores (incluindo endereços MongoDB se necessário)</string>
     <!-- Location Settings -->
     <string name="location_not_found_title">Localização não está ligada</string>
-    <string name="location_not_found_message">Para que a pesquisa do Bluetooth funcione em dispositivos mais recentes, a localização precisa estar ativada. O xDrip não rastreia a sua localização exceto com o recurso opcional de Mensagem de Emergência</string>
+    <string name="location_not_found_message">Para que a pesquisa do Bluetooth funcione em dispositivos mais recentes, a localização precisa estar ativada. O xDrip não rastreia a sua localização exceto com o recurso opcional de SMS de Emergência</string>
     <string name="location_yes">Ligar</string>
     <!-- broadcast settings -->
     <string name="pref_title_broadcast_enabled">Transmitir localmente</string>
@@ -390,7 +390,7 @@
     <string name="disable_all_sync_features">Desativar todas as sincronizações</string>
     <string name="temporary_work_around_disable_all_sync_detail">Work-around temporario, para por completo toda a sincronização. Pode necessitar de reiniciar após ser ligado novamente. Use com cuidado!</string>
     <string name="automatic_updates_crash_reports_and_feedback">Atualizações automáticas, relatórios de erro e envio de Feedback para Developers</string>
-    <string name="crowd_sourced_translation">Traduções comunitárias</string>
+    <string name="crowd_sourced_translation">Traduções da comunidade</string>
     <string name="please_enter_your_question_or_comments_here">Por favor, insira sua pergunta ou comentários aqui.\n\nSe você fornecer um endereço de e-mail, você pode receber uma resposta.\n\n</string>
     <string name="optional_contact_info_here_eg_email">Informações de contacto opcionais, exemplo: email</string>
     <string name="send_message">Enviar mensagem</string>
@@ -965,7 +965,7 @@
     <string name="automatic_message_from_xdrip">mensagem automática do xDrip+</string>
     <string name="zero_zero_zero_zero">0000</string>
     <string name="emergency_messages">Mensagens de Emergência</string>
-    <string name="emergency_message_feature">Recurso de Mensagem de Emergência</string>
+    <string name="emergency_message_feature">Recurso de SMS de Emergência</string>
     <string name="text_messages_can_be_sent_with_your_location_if_you_do_not_respond_to_alarms_this_feature_is_experimental_and_may_not_be_reliable">Mensagens de texto podem ser enviadas com sua localização se você não responder a alarmes. Este recurso é experimental e pode não ser confiável.</string>
     <string name="your_name">Seu Nome</string>
     <string name="did_not_acknowledge_a_low_glucose_alert">%1$s não reconheceu alerta de hipo por %2$s</string>
@@ -1149,7 +1149,7 @@
     <string name="overwrite_intercept_engineering_only">Sobrescrever Interceptação (apenas engenharia!)</string>
     <string name="manual_overwrite_not_possible">Não é possível sobreescrever manualmente!</string>
     <string name="upload_even_when_using_mobile_data">Enviar mesmo usando dados móveis</string>
-    <string name="daily_backup_even_mobile">Backup diário mesmo utilizando dados móveis</string>
+    <string name="daily_backup_even_mobile">Cópia de segurança diário mesmo utilizando dados móveis</string>
     <string name="use_mobile_data">Usar dados móveis</string>
     <string name="summary_cloud_storage_api_download_enable">Também tentar baixar dados do Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Baixar dados</string>
@@ -1315,6 +1315,8 @@
     <string name="summary_pendiq_send_treatments">Prepara a caneta com unidades de insulina de tratamento inseridas. Você deve sempre checar isso novamente.</string>
     <string name="title_pendiq_send_treatments">Enviar Tratamentos para Pen</string>
     <string name="title_pendiq_pin">Código PIN da caneta</string>
+    <string name="followers_name">Nome dos seguidores:</string>
+    <string name="your_display_name">Seu nome de exibição:</string>
     <string name="plug_in_your_dexcom_reciever">Conecte o receptor Dexcom, pressione este botão e cruze os dedos!</string>
     <string name="progress">progresso</string>
     <string name="bluetooth_device">Dispositivo Bluetooth:   </string>
@@ -1329,8 +1331,8 @@
     <string name="relative_sd_cv">DP relativo (CV):</string>
     <string name="important_warning">Aviso Importante!</string>
     <string name="i_agree">CONCORDO</string>
-    <string name="backup_detected">Backup detectado</string>
-    <string name="it_looks_like_you_maybe_have_a_settings_backup_shall_we_try_to_restore_it">Parece que você tem um backup de configurações, vamos tentar restaurá-lo?</string>
+    <string name="backup_detected">Cópia de segurança detectada</string>
+    <string name="it_looks_like_you_maybe_have_a_settings_backup_shall_we_try_to_restore_it">Parece que você tem uma cópia de segurança das configurações, vamos tentar restaurá-la?</string>
     <string name="restore_settings">Restaurar configurações</string>
     <string name="what_type_of_g4_bridge_device_do_you_use">Que tipo de dispositivo de ponte G4 você usa?</string>
     <string name="xbridge_compatible">xBridge compatível</string>
