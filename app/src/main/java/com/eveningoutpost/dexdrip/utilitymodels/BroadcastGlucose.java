@@ -66,7 +66,7 @@ public class BroadcastGlucose {
                 String collectorName = DexCollectionType.getBestCollectorHardwareName();
                 if (collectorName.equals("G6 Native") || collectorName.equals("G7")) {
                     if (collectorName.equals("G7")) {
-                        collectorName = "G6 Native / G7"; // compatibility for older AAPS
+                        collectorName = "G6 Native"; // compatibility for older AAPS
                     }
                     collectorName += " / G5 Native"; // compatibility for older AAPS
                 }
