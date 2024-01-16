@@ -1124,6 +1124,10 @@ public class Ob1G5StateMachine {
         return getTransmitterID().length() < 6;
     }
 
+    public static boolean usingG5OrG6() { // Using G5 or G6 (Firefly or not, modified or not) but no other devices that depend on G6 basics like G7 or any such future devices
+        return (DexCollectionType.getDexCollectionType() == DexCollectionType.DexcomG5 || usingG6()) && !shortTxId();
+    }
+
     private static Ob1Work enqueueCommand(BaseMessage tm, String msg) {
         if (tm != null) {
             final Ob1Work item = new Ob1Work(tm, msg);

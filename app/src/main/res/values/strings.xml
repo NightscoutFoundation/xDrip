@@ -1388,7 +1388,7 @@
     <string name="summary_ob1_initiate_bonding_flag">OB1 collector can initiate bonding.</string>
     <string name="title_ob1_initiate_bonding_flag">Allow OB1 initiate bonding</string>
     <string name="title_old_g5_options">Old G5 Collector Settings</string>
-    <string name="title_g5g6_battery_options">G5/G6/G7/1 battery options</string>
+    <string name="title_g5g6_battery_options">G5/G6/Dex1 battery options</string>
     <string name="title_g5_battery_warning_level">Adjust battery warning level</string>
     <string name="title_plugins_and_features">Plugins and Features</string>
     <string name="title_color_heart_rate1">Heart rate monitor</string>
