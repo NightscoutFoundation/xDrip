@@ -1336,7 +1336,7 @@
     <string name="summary_ob1_minimize_scanning">Verwende Heuristiken, um Bluetooth-Scannen zu minimieren und Strom zu sparen</string>
     <string name="title_ob1_minimize_scanning">Scannen minimieren</string>
     <string name="summary_using_g6">Ich nutze einen Dexcom G6, G7 oder ONE Sensor</string>
-    <string name="title_using_g6">Unterstützung für G6/G7/ONE</string>
+    <string name="title_using_g6">Unterstützung für Dexcom G6/G7/ONE</string>
     <string name="summary_ob1_g5_allow_resetbond">Der OB1 Kollektor kann die Kopplung aufheben, wenn er glaubt, dass die Verschlüsselung fehlgeschlagen ist. Wenn Unpairing zum Problem wird, deaktivierebbdiese Option. Wenn du danach die Verbindung vollständig verlierst, stelle sicher, dass sie aktiviert ist.</string>
     <string name="title_ob1_g5_allow_resetbond">OB1-Entkoppelung erlauben</string>
     <string name="summary_ob1_initiate_bonding_flag">OB1-Datensammler kann Bonding einleiten.</string>
