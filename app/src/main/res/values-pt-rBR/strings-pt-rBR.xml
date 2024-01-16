@@ -65,7 +65,7 @@
     <string name="wifi_recievers_dialog_title">Coloque os endereços IP e portas de receptores (incluindo endereços MongoDB se necessário)</string>
     <!-- Location Settings -->
     <string name="location_not_found_title">Localização não está ligada</string>
-    <string name="location_not_found_message">Para que a pesquisa do Bluetooth funcione em dispositivos mais recentes, a localização precisa estar ativada. O xDrip não rastreia a sua localização exceto com o recurso opcional de Mensagem de Emergência</string>
+    <string name="location_not_found_message">Para que a pesquisa do Bluetooth funcione em dispositivos mais recentes, a localização precisa estar ativada. O xDrip não rastreia a sua localização exceto com o recurso opcional de SMS de Emergência</string>
     <string name="location_yes">Ligar</string>
     <!-- broadcast settings -->
     <string name="pref_title_broadcast_enabled">Transmitir localmente</string>
@@ -144,7 +144,7 @@
     <string name="now_pair_with_your_dexcom_share">Agora emparelhe com o seu Dexcom Share</string>
     <string name="now_choose_start_sensor_in_settings">Agora escolha iniciar o seu sensor em suas configurações</string>
     <string name="double_check_dex_receiver_serial_number">Verifique o número de serie do Dex Receiver, deve conter 10 carateres, não esqueça as letras</string>
-    <string name="please_set_dex_receiver_serial_number">Por favor introduza o seu núemro de serie do Dex Receiver nas Definições da App</string>
+    <string name="please_set_dex_receiver_serial_number">Por favor, introduza o seu número de série do Dex Receiver nas Configurações</string>
     <string name="unfortunately_andoird_version_no_blueooth_low_energy">Infelizmente a sua versão do Android não suporta Bluetooth Low Energy</string>
     <string name="waiting_for_packet">Aguardando pacote</string>
     <string name="persistent_high_for_greater_than">Hiper periste por &gt; </string>
@@ -390,7 +390,7 @@
     <string name="disable_all_sync_features">Desativar todas as sincronizações</string>
     <string name="temporary_work_around_disable_all_sync_detail">Work-around temporario, para por completo toda a sincronização. Pode necessitar de reiniciar após ser ligado novamente. Use com cuidado!</string>
     <string name="automatic_updates_crash_reports_and_feedback">Atualizações automáticas, relatórios de erro e envio de Feedback para Developers</string>
-    <string name="crowd_sourced_translation">Traduções comunitárias</string>
+    <string name="crowd_sourced_translation">Traduções da comunidade</string>
     <string name="please_enter_your_question_or_comments_here">Por favor, insira sua pergunta ou comentários aqui.\n\nSe você fornecer um endereço de e-mail, você pode receber uma resposta.\n\n</string>
     <string name="optional_contact_info_here_eg_email">Informações de contacto opcionais, exemplo: email</string>
     <string name="send_message">Enviar mensagem</string>
@@ -965,7 +965,7 @@
     <string name="automatic_message_from_xdrip">mensagem automática do xDrip+</string>
     <string name="zero_zero_zero_zero">0000</string>
     <string name="emergency_messages">Mensagens de Emergência</string>
-    <string name="emergency_message_feature">Recurso de Mensagem de Emergência</string>
+    <string name="emergency_message_feature">Recurso de SMS de Emergência</string>
     <string name="text_messages_can_be_sent_with_your_location_if_you_do_not_respond_to_alarms_this_feature_is_experimental_and_may_not_be_reliable">Mensagens de texto podem ser enviadas com sua localização se você não responder a alarmes. Este recurso é experimental e pode não ser confiável.</string>
     <string name="your_name">Seu Nome</string>
     <string name="did_not_acknowledge_a_low_glucose_alert">%1$s não reconheceu alerta de hipo por %2$s</string>
@@ -1015,15 +1015,21 @@
     <string name="title_Open_Web_Service">Abrir Serviço Web</string>
     <string name="title_xDrip_Web_Service_Secret">Senha do Web Service do xDrip</string>
     <string name="summary_Display_status_from_other_apps_like_AndroidAPS">Exibir o status de outros apps como o AndroidAPS</string>
+    <string name="title_External_Status">Status Externo</string>
     <string name="summary_Display_pump_status_information_if_available">Exibir informações de status da bomba se disponível</string>
     <string name="title_Pump_Status">Estado da Bomba</string>
     <string name="summary_Show_treatment_carb_insulin_ratio">Mostrar relação carboidrato/insulina</string>
     <string name="title_Carb_Insulin_Ratio">Relação de Carbo/Insulina</string>
+    <string name="summary_Ask_for_a_second_optional_initial_calibration_blood_test">Pedir uma segunda ponta de dedo opcional para calibração inicial</string>
     <string name="title_Double_Calibrations">Calibrações Duplas</string>
+    <string name="summary_Enable_to_allow_variable_slopes_with_Libre_collection_methods">Habilite para permitir inclinações variáveis com métodos de entrada do Libre</string>
     <string name="title_Non_fixed_Libre_slopes">Inclinações não fixas do Libre</string>
     <string name="summary_Allow_initial_calibration_no_good_enough_data">Permite calibração inicial mesmo que não existam dados bons e suficientes. Atenção que isso pode resultar numa calibração incorreta!</string>
     <string name="title_Bypass_quality_check">Ignorar Controle de Qualidade</string>
+    <string name="summary_Scan_before_connecting_on_xBridge_and_Libre_bluetooth">Escaneie antes de conectar no xBridge e Bluetooth do Libre</string>
     <string name="summary_Use_and_trust_Android_bluetooth_auto_connect_feature">Usar e confiar no recurso de conexão automática Bluetooth do Android</string>
+    <string name="summary_Experimental_support_for_xBridge_polling_feature">Suporte experimental para o recurso de pesquisa do xBridge+</string>
+    <string name="title_xBridge_Polling_Mode">Modo de sondagem xBridge+</string>
     <string name="title_Always_discover_services">Sempre descobrir serviços</string>
     <string name="summary_Only_suitable_for_phones_which_support_automatic_pairing">Apenas adequado para telefones que suportam o pareamento automático</string>
     <string name="title_Allow_blucon_unbonding">Permitir desvinculação de BluCon</string>
@@ -1143,7 +1149,7 @@
     <string name="overwrite_intercept_engineering_only">Sobrescrever Interceptação (apenas engenharia!)</string>
     <string name="manual_overwrite_not_possible">Não é possível sobreescrever manualmente!</string>
     <string name="upload_even_when_using_mobile_data">Enviar mesmo usando dados móveis</string>
-    <string name="daily_backup_even_mobile">Backup diário mesmo utilizando dados móveis</string>
+    <string name="daily_backup_even_mobile">Cópia de segurança diário mesmo utilizando dados móveis</string>
     <string name="use_mobile_data">Usar dados móveis</string>
     <string name="summary_cloud_storage_api_download_enable">Também tentar baixar dados do Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Baixar dados</string>
@@ -1173,6 +1179,8 @@
     <string name="title_broadcast_service_api">API do Serviço de Transmissão</string>
     <string name="summary_broadcast_service_api">Habilita a comunicação xDrip com aplicativos de terceiros usando a nova API</string>
     <string name="title_miband">MiBand</string>
+    <string name="summary_miband_enable">Sincronizar dados  de exercício com MiBand</string>
+    <string name="title_miband_enable">Usar MiBand</string>
     <string name="title_miband_screens_features">Telas MiBand / Características</string>
     <string name="title_miband_screen_battery">Mostrar Bateria</string>
     <string name="title_miband_show_date">Mostrar a data na tela</string>
@@ -1180,12 +1188,14 @@
     <string name="summary_miband_visibility">Miband ficará visível para outros dispositivos</string>
     <string name="title_miband_switch_display_on_wrist">Alternar exibição no pulso</string>
     <string name="title_miband_units">Unidades</string>
+    <string name="summary_miband_units">Escolha a unidade de medida usada no MiBand </string>
     <string name="title_miband_goal_notification">Notificação de objetivo</string>
     <string name="summary_miband_goal_notification">Miband vibrará quando você atingir um objetivo</string>
     <string name="title_miband_locale_24_hour">Relógio 24 Horas</string>
     <string name="summary_miband_locale_24_hour">Mostra Relógio 24 Horas</string>
     <string name="title_miband_nightmode_category">Configurações do modo noturno</string>
     <string name="title_miband_nightmode_enabled">Habilitar configurações do modo noturno</string>
+    <string name="summary_miband_nightmode_enabled">Usar modo noturno no MiBand durante tempo customizado</string>
     <string name="title_miband_nightmode_start">Início do modo noturno</string>
     <string name="title_miband_nightmode_end">Fim do modo noturno</string>
     <string name="title_miband_interval_in_nightmode">Intervalo</string>
@@ -1211,6 +1221,7 @@
     <string name="title_miband_screen_heart_rate">Mostrar Ritmo Cardíaco</string>
     <string name="title_miband_screen_timer">Mostrar Temporizador</string>
     <string name="title_miband_screen_nfc">Mostrar NFC (se disponível)</string>
+    <string name="miband_watchface_istall_success">A customização de tela do MiBand foram enviadas com sucesso!</string>
     <string name="miband_bg_dialog_title">Atualizar dados de Glicose agora?</string>
     <string name="title_lefun_mac">Endereço MAC</string>
     <string name="summary_lefun_send_readings">Adeque a data do relógio para representar valores de glicose. Melhor com mmol/l - consulte a documentação</string>
@@ -1238,6 +1249,8 @@
     <string name="summary_nsfollow_url">Endereço na Web para seguir</string>
     <string name="title_nsfollow_url">URL Nightscout</string>
     <string name="summary_nsfollow_download_treatments">Também baixar tratamentos do Nightscout como seguidor</string>
+    <string name="title_nsfollow_download_treatments">Baixar Tratamentos</string>
+    <string name="title_nsfollow_lag">Atraso para os dados do Nightscout</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
     <string name="summary_clfollow_user">CareLink login username</string>
@@ -1302,6 +1315,8 @@
     <string name="summary_pendiq_send_treatments">Prepara a caneta com unidades de insulina de tratamento inseridas. Você deve sempre checar isso novamente.</string>
     <string name="title_pendiq_send_treatments">Enviar Tratamentos para Pen</string>
     <string name="title_pendiq_pin">Código PIN da caneta</string>
+    <string name="followers_name">Nome dos seguidores:</string>
+    <string name="your_display_name">Seu nome de exibição:</string>
     <string name="plug_in_your_dexcom_reciever">Conecte o receptor Dexcom, pressione este botão e cruze os dedos!</string>
     <string name="progress">progresso</string>
     <string name="bluetooth_device">Dispositivo Bluetooth:   </string>
@@ -1316,8 +1331,8 @@
     <string name="relative_sd_cv">DP relativo (CV):</string>
     <string name="important_warning">Aviso Importante!</string>
     <string name="i_agree">CONCORDO</string>
-    <string name="backup_detected">Backup detectado</string>
-    <string name="it_looks_like_you_maybe_have_a_settings_backup_shall_we_try_to_restore_it">Parece que você tem um backup de configurações, vamos tentar restaurá-lo?</string>
+    <string name="backup_detected">Cópia de segurança detectada</string>
+    <string name="it_looks_like_you_maybe_have_a_settings_backup_shall_we_try_to_restore_it">Parece que você tem uma cópia de segurança das configurações, vamos tentar restaurá-la?</string>
     <string name="restore_settings">Restaurar configurações</string>
     <string name="what_type_of_g4_bridge_device_do_you_use">Que tipo de dispositivo de ponte G4 você usa?</string>
     <string name="xbridge_compatible">xBridge compatível</string>
@@ -1348,8 +1363,30 @@
     <string name="yes_delete">Sim, excluir</string>
     <string name="deleted">Excluído!</string>
     <string name="wifi_sleep_policy_issue">Problema com a Política de Suspensão WiFi</string>
+    <string name="restore_backup">Restaurar cópia de segurança</string>
+    <string name="do_you_want_to_restore_the_backup_file_">Você deseja restaurar a cópia de segurança: </string>
     <string name="enable_streaming_dialog_dont_ask_again">Não perguntar novamente</string>
     <string name="cannot_choose_file_without_permission">Não é possível escolher o arquivo sem permissão de armazenamento</string>
+    <string name="you_can_use_google_drive_for_backup">Você pode usar o Google Drive para guardar uma cópia de segurança</string>
+    <string name="select_backup_location">Selecione o local para guardar uma cópia de segurança</string>
+    <string name="do_backup_now">Fazer uma Cópia de Segurança Agora</string>
+    <string name="automatic_daily_backup">Fazer cópias de segurança diárias automáticas</string>
+    <string name="restore_from_backup">Restaurar de uma cópia de segurança</string>
+    <string name="backup_source_confirm">Confirmar Local de Cópia de Segurança</string>
+    <string name="no_backup_location_set">Nenhum local de cópia de segurança definido</string>
+    <string name="did_backup_ok">A cópia de segurança foi concluída</string>
+    <string name="backup_failed">Cópia de segurança falhou</string>
+    <string name="automatically_manage_backup">Gerenciar Automaticamente</string>
+    <string name="choose_backup_file">Escolha o arquivo da cópia de segurança</string>
+    <string name="please_reselect_backup_file">Por favor, selecione o arquivo da cópia de segurança</string>
+    <string name="error_with_local_backup">Erro na cópia de segurança local</string>
+    <string name="creating_local_backup">Criando cópia de segurança local</string>
+    <string name="cloud_backup">Cópia de segurança na nuvem (Google Drive)</string>
+    <string name="restoring_backup_will_erase_warning">Restaurar uma cópia de segurança apagará suas configurações atuais e dados, substituindo-os pelas da cópia de segurança.\n\nVocê tem absoluta certeza de que deseja fazer isso?</string>
+    <string name="this_backup_looks_like_came_from_different_format_string">Esta cópia de segurança parece ter vindo de um dispositivo diferente:\n%s\nTem certeza que deseja restaurar esta cópia de segurança?</string>
+    <string name="manual_selection_google_drive_file_warning">Você selecionou um arquivo do Google Drive, mas isso não é gerenciado automaticamente pelo xDrip, então só pode ser usado para cópias de segurança manuais e restauração. U\n\nNenhuma cópia de segurança automática ocorrerá com este arquivo.\n\nContinuar?</string>
+    <string name="alternate_file_selected_warning">Você selecionou um arquivo alternativo. Normalmente isso seria apenas para restaurar a partir de uma cópia de segurança armazenada no celular. U\n\nNenhuma cópia de segurança automática ocorrerá com este arquivo.\n\nContinuar?</string>
+    <string name="backup_file_security_error_advice">O arquivo de cópia de segurança está relatando erro de segurança. Normalmente você tem que selecioná-lo novamente para continuar a permitir o acesso ao xDrip.</string>
     <string name="titleInside_yRange">Ligar</string>
     <string name="summary_sens_expiry_notify">Emitir notificações quando o sensor estiver perto de expirar.</string>
     <string name="title_sens_expiry_notify">Expiração do sensor</string>
