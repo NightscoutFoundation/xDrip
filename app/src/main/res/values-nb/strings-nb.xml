@@ -34,7 +34,7 @@
     <string name="title_activity_edit_alert">Rediger varsel</string>
     <string name="title_activity_double_calibration">Innledende kalibrering</string>
     <string name="title_activity_calibration_override">Kalibreringsoverstyring</string>
-    <string name="pref_header_cloud_storage">Skylagring</string>
+    <string name="pref_header_cloud_storage">Nettskylagring</string>
     <string name="auto_configure_title">Autokonfigurer</string>
     <string name="prefs_auto_config_summary">Autokonfigurer med strekkode.</string>
     <string name="scan_share2_barcode">Skan delingsstrekkode</string>
@@ -47,7 +47,7 @@
     <string name="pref_message_mongodb_uri">Erstatt eksempelverdier i {}ene med dine riktige verdier</string>
     <string name="pref_default_mongodb_uri">mongodb://{user}:{password}@{host}.mongolab.com:{11111}/{database}</string>
     <string name="pref_title_mongodb_collection">Samlingsnavn</string>
-    <string name="pref_dialog_mongodb_collection">Skriv inn navnet på samlingen</string>
+    <string name="pref_dialog_mongodb_collection">Angi samlingsnavn</string>
     <string name="pref_message_mongodb_collection">Dette er navnet på samlingen hvor CGM data vil bli lagret</string>
     <string name="pref_title_mongodb_device_status_collection">Samlingsnavn for enhetsstatus</string>
     <string name="pref_dialog_mongodb_device_status_collection">Skriv inn samlingsnavnet for enhetsstatus</string>
@@ -287,7 +287,7 @@
     <string name="use_excessive_wakelocks">Bruk Overdreven Wakelocks</string>
     <string name="speak_readings">Taleavlesninger</string>
     <string name="extra_status_line">Ekstra Statuslinje</string>
-    <string name="dexcom_share_server_upload">Opplasting til Dexcom Share Server</string>
+    <string name="dexcom_share_server_upload">Opplasting til Dexcom Share-server</string>
     <string name="upload_data_to_dex_servers">Laste opp data til Dexcoms servere slik at du kan bruke dine data med Dexcom sine apper</string>
     <string name="manage_followers">Administrer følgere</string>
     <string name="manage_existing_followers">Administrer dine eksisterende følgere og inviter nye.</string>
@@ -709,14 +709,14 @@
     <string name="g5_experimental_mode">Eksperimentell modus som ikke bruker rådata</string>
     <string name="use_calibrated_data">Bruk kalibrert data som kilde</string>
     <string name="data_sync">Datasynkronisering</string>
-    <string name="options_for_upload">Alternativer for Nightscout-, MongoDB- og Dexcom Share-opplasting</string>
-    <string name="cloud_upload">Opplasting til Skyen</string>
+    <string name="options_for_upload">Alternativer for opplasting til Nightscout, Dexcom Share, Tidepool, MongoDB og InfluxDB</string>
+    <string name="cloud_upload">Opplasting til nettskyen</string>
     <string name="enable_mongo_sync">Aktiver synkronisering til Nightscout MongoDB</string>
     <string name="mongo_db_uri">MongoDB URI</string>
     <string name="skip_local_lan">For lokal server med 192.168.x.x addresser, hopp over opplasting hvis ikke koblet til lokalt nettverk.</string>
     <string name="skip_lan_uploads">Hopp over LAN-opplasting</string>
     <string name="mongo_load_transmitter_data_title">Last opp Libre-senderens data</string>
-    <string name="mongo_load_transmitter_data_summary">Tillat mer enn én xDrip å koble til BT-enheter og lagre dataene de mottar i skyen. Dette bør tillate all husdekning for Libre med MiaoMiao, eller 2 foreldre med samme BT-enhet.</string>
+    <string name="mongo_load_transmitter_data_summary">Tillat mer enn én xDrip å koble til BT-enheter og lagre dataene de mottar i nettskyen. Dette bør tillate all husdekning for Libre med MiaoMiao, eller 2 foreldre med samme BT-enhet.</string>
     <string name="influxdb_sync">Aktiver synkronisering til InfluxDB</string>
     <string name="influxdb_uri">InfluxDB URI</string>
     <string name="influxdb_database_name">InfluxDB databasenavn</string>
@@ -1048,7 +1048,7 @@
     <string name="summary_Choose_to_display_the_bridge_battery_level">Velg å vise brobatterinivået</string>
     <string name="title_Glucose_Retention">Glukostilbakeholdelse</string>
     <string name="summary_Erase_data_older_than_this_many_days">Slett data som er eldre enn så mange dager. 0 = ikke slett noe</string>
-    <string name="title_Other_misc_options">Andre div. alternativer</string>
+    <string name="title_Other_misc_options">Andre diverse alternativer</string>
     <string name="summary_allow_testing_with_dead_sensor">tillatt testing med død sensor</string>
     <string name="title_NOT_FOR_PRODUCTION_USE">IKKE FOR PRODUKSJONSBRUK</string>
     <string name="title_You_have_no_reminders_yet">Du har ingen påminnelser ennå</string>
@@ -1503,6 +1503,8 @@
     <string name="change_settings">Endre innstillinger</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Vil du slette og tilbakestille kalibreringene for denne sensoren?</string>
     <string name="sensor_stop_confirm">Vil du stoppe sensoren?</string>
+    <string name="sensor_stop_confirm_norestart">Du vil ikke være i stand til å starte sensoren på nytt.</string>
+    <string name="sensor_stop_confirm_really_norestart">ADVARSEL!\n\nDu vil ikke kunne starte sensoren på nytt.</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Du har en gammel innstilling for eksperimentell glukoseprediksjon aktivert.\n\nDette ANBEFALES IKKE og kan rote til ting.\n\nSkal jeg deaktivere dette for deg?</string>
     <string name="settings_issue">Innstillingsproblem!</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Vil du bruke dette synkroniserte blodsukkerresultatet med fingerstikk til å kalibrere med?\n\n(du kan endre når denne dialogboksen vises i Innstillinger)</string>
@@ -1753,16 +1755,16 @@
     <string name="selected_file_location">Valgt filplassering</string>
     <string name="please_reselect_backup_file">Vennligst velg sikkerhetskopifilen på nytt</string>
     <string name="ready">Klar</string>
-    <string name="uploading_to_cloud">Laster opp til skyen</string>
+    <string name="uploading_to_cloud">Laster opp til nettskyen</string>
     <string name="error_with_local_backup">Feil med lokal sikkerhetskopi</string>
     <string name="upload_successful">Opplastingen var vellykket</string>
-    <string name="error_uploading_to_cloud">Feil ved opplasting til skyen</string>
+    <string name="error_uploading_to_cloud">Feil ved opplasting til nettskyen</string>
     <string name="creating_local_backup">Oppretter lokal sikkerhetskopi</string>
     <string name="output_error">Utdatafeil:</string>
     <string name="security_error">Sikkerhetsfeil:</string>
     <string name="please_grant_permission">Vennligst gi tillatelse</string>
     <string name="drive_permission_blurb">For automatisk sikkerhetskopiering trenger xDrip tillatelse til å bruke Google Disk.\n\nxDrip-utviklere kan ikke få tilgang til noen av filene dine eller se din personlige informasjon.</string>
-    <string name="cloud_backup">Sikkerhetskopi i skyen</string>
+    <string name="cloud_backup">Sikkerhetskopi i nettskyen</string>
     <string name="select_automatic_or_select_alternate">Velg Automatisk for xDrip til å administrere filer i Google Disk eller velg en alternativ spesifikk fil du vil bruke hvis du trenger å gjenopprette fra et annet sted.</string>
     <string name="restoring_backup_will_erase_warning">Gjenoppretting av en sikkerhetskopi vil slette gjeldende innstillinger og data med det fra sikkerhetskopien.\n\nEr du helt sikker på at du vil gjøre dette?</string>
     <string name="this_backup_looks_like_came_from_different_format_string">Denne sikkerhetskopien ser ut som den kom fra en annen enhet:\n%s\nEr du sikker på at du vil gjenopprette fra denne sikkerhetskopien?</string>
