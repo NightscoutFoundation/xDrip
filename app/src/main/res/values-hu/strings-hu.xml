@@ -1474,6 +1474,8 @@
     <string name="change_settings">Beállítások módosítása</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Törölni és visszaállítani akarja ennek a szenzornak a kalibrációit?</string>
     <string name="sensor_stop_confirm">Leállítja a szenzort?</string>
+    <string name="sensor_stop_confirm_norestart">Nem fogja tudni újraindítani a szenzort.</string>
+    <string name="sensor_stop_confirm_really_norestart">FIGYELEM!\n\nNem fogja tudni újraindítani a készüléket.</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Egy egy régi kísérleti VC-érték előrejelzési beállítást aktivált.\n\nEz NEM AJÁNLOTT, és összezavarhatja a dolgokat.\n\nTiltsam le inkább Önnek?</string>
     <string name="settings_issue">Gond van a beállításokkal!</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Szeretné használni ezt a szinkronizált ujjbegyes VC-értéket a kalibráláshoz?\n\n(Ezt megváltoztathatja, amikor ez a párbeszédpanel megjelenik a beállítások között)</string>
