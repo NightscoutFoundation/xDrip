@@ -1446,6 +1446,8 @@
     <string name="change_settings">שנה את ההגדרות</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">האם ברצונכם למחוק ולאפס את הכיולים עבור סנסור זה?</string>
     <string name="sensor_stop_confirm">האם ברצונך לעצור את החיישן?</string>
+    <string name="sensor_stop_confirm_norestart">לא תוכלו להפעיל מחדש את החיישן.</string>
+    <string name="sensor_stop_confirm_really_norestart">שימו לב! \n\nלא ניתן יהיה להפעיל מחדש את החיישן.</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">אתם משתמשים באלגוריתם ישן לחיזוי הסוכר.\n\n זה מאוד לא מומלץ, ועלול לגרום לבעיות\n\n האם לבטל את זה בשבילכם\\ן?</string>
     <string name="settings_issue">בעיה בהגדרות!</string>
     <string name="use_bg_for_calibration">להשתמש בבדיקת דם לכיול?</string>
