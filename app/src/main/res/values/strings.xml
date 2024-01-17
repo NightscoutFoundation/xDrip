@@ -1876,10 +1876,10 @@
     <string name="use_health_connect">Use Health Connect</string>
     <string name="audio_focus">Audio Focus</string>
     <string name="audio_focus_summary">Choose what to do with other apps while playing alerts and adjusting system volume levels</string>
-    <string name="audio_focus_choice_1">Don\'t adjust other app sounds</string>
-    <string name="audio_focus_choice_2">Lower volume of other apps</string>
-    <string name="audio_focus_choice_3">Pause other apps playing audio</string>
-    <string name="audio_focus_choice_4">Pause all other sounds</string>
+    <string name="audio_focus_dont_adjust_other_app_sounds">Don\'t adjust other app sounds</string>
+    <string name="audio_focus_lower_volume_of_other_apps">Lower volume of other apps</string>
+    <string name="audio_focus_pause_other_apps_playing_audio">Pause other apps playing audio</string>
+    <string name="audio_focus_pause_all_other_sounds">Pause all other sounds</string>
     <string name="use_camera_light">Use Camera Light</string>
     <string name="use_camera_light_summary">Flash camera light during alerts when connected to a charger</string>
 </resources>

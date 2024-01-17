@@ -234,10 +234,10 @@
     </string-array>
 
     <string-array name="AudioFocus">
-        <item>@string/audio_focus_choice_1</item>
-        <item>@string/audio_focus_choice_2</item>
-        <item>@string/audio_focus_choice_3</item>
-        <item>@string/audio_focus_choice_4</item>
+        <item>@string/audio_focus_dont_adjust_other_app_sounds</item>
+        <item>@string/audio_focus_lower_volume_of_other_apps</item>
+        <item>@string/audio_focus_pause_other_apps_playing_audio</item>
+        <item>@string/audio_focus_pause_all_other_sounds</item>
     </string-array>
     <string-array name="AudioFocusValues">
         <item>AUDIOFOCUS_NONE</item>
