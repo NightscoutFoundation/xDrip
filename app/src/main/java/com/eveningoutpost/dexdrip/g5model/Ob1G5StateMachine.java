@@ -131,6 +131,7 @@ public class Ob1G5StateMachine {
     private static volatile AuthRequestTxMessage lastAuthPacket;
     private static volatile boolean backup_loaded = false;
     private static final int OLDEST_RAW = 300 * 24 * 60 * 60; // 300 days
+    private static final long ACCEPTABLE_TIME_ERROR = 10 * MINUTE_IN_MS; // 10 minutes
 
     public static long maxBackfillPeriod_MS = 0;
     public static long maxBackfillPeriod_MS() {
@@ -882,7 +883,7 @@ public class Ob1G5StateMachine {
                             } else {
                                 parent.msg("Invalid Glucose");
                             }
-                        break;
+                            break;
 
 
                         case CalibrateRxMessage:
@@ -1552,6 +1553,13 @@ public class Ob1G5StateMachine {
                 Sensor.create(tsl() - HOUR_IN_MS * 24);
             }
         }
+        // If there is already an active sensor, update the start time to agree with the transmitter when needed
+        if (Sensor.isActive() && FirmwareCapability.isTransmitterRawIncapable(getTransmitterID())) { // If there is an active sensor that cannot use preemptive restart
+            if (Math.abs(DexSessionKeeper.getStart() - Sensor.currentSensor().started_at) > ACCEPTABLE_TIME_ERROR) { // If the difference is greater than 10 minutes
+                Sensor.updateSensorStartTime(DexSessionKeeper.getStart()); // Update the sensor start time
+                UserError.Log.d(TAG, "Updating sensor start time from transmitter");
+            }
+        }
     }
 
     private static void processGlucoseRxMessage(Ob1G5CollectionService parent, final BaseGlucoseRxMessage glucose) {
@@ -1561,7 +1569,7 @@ public class Ob1G5StateMachine {
         if (glucose.usable() || (glucose.insufficient() && Pref.getBoolean("ob1_g5_use_insufficiently_calibrated", true))) {
             UserError.Log.d(TAG, "Got usable glucose data from transmitter!!");
             final long rxtimestamp = tsl();
-            checkAndActivateSensor();
+            checkAndActivateSensor(); // Check and activate/update sensor
             final BgReading bgReading = BgReading.bgReadingInsertFromG5(glucose.glucose, rxtimestamp);
             if (bgReading != null) {
                 try {
