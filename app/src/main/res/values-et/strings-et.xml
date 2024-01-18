@@ -1503,6 +1503,8 @@
     <string name="change_settings">Muuda sätteid</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Kas soovid antud sensori kalibreeringud kustutada ja lähtestada?</string>
     <string name="sensor_stop_confirm">Kas soovid sensorit peatada?</string>
+    <string name="sensor_stop_confirm_norestart">Sa ei saa sensorit lihtsalt taaskäivitada.</string>
+    <string name="sensor_stop_confirm_really_norestart">HOIATUS!\n\nSa ei saa seadet taaskäivitada.</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Aegunud/eksperimentaalne veresuhkru prognoosimine on sisse lülitatud.\n\nSee EI OLE SOOVITATUD ja võib jama kokku keerata.\n\nKas lülitame selle välja?</string>
     <string name="settings_issue">Seadete probleem!</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Kas soovid kasutada seda sünkroonitud veresuhkru tulemust kalibreerimiseks?\n\n(saad muuta, millal seda dialoogi kuvatakse, menüüs \"Seaded\")</string>
