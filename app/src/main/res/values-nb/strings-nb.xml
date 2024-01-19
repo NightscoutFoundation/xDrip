@@ -43,7 +43,7 @@
     <string name="pref_title_mongodb">MongoDB</string>
     <string name="pref_summary_mongodb_enabled">Direkte opplasting av database, ikke anbefalt for Nightscout</string>
     <string name="pref_title_mongodb_uri">URI</string>
-    <string name="pref_dialog_mongodb_uri">Skriv inn MongoDB URL</string>
+    <string name="pref_dialog_mongodb_uri">Skriv inn MongoDB URI</string>
     <string name="pref_message_mongodb_uri">Erstatt eksempelverdier i {}ene med dine riktige verdier</string>
     <string name="pref_default_mongodb_uri">mongodb://{user}:{password}@{host}.mongolab.com:{11111}/{database}</string>
     <string name="pref_title_mongodb_collection">Samlingsnavn</string>
@@ -155,7 +155,7 @@
     <string name="yes_enter_setup_mode">Ja, gå inn i oppsett-modus</string>
     <string name="nokeep_parakeet_as_it_is">Nei, beholde Parakeet som den er</string>
     <string name="are_you_sure_you_want_switch_parakeet_to_setup">Er du sikker på at du vil endre Parakeet til oppsettsmodus?\n\nNormalt brukes dette kun for å sende flere tekstmeldinger til Parakeet for å rekonfigurere senderen den lytter etter osv.</string>
-    <string name="split_delete_or_do_nothing">Dele, slette eller gjøre ingenting</string>
+    <string name="split_delete_or_do_nothing">Del, slett eller gjør ingenting</string>
     <string name="split_this_block_in_two">Del denne blokken i to</string>
     <string name="delete_this_time_block">Slett denne tidsblokken</string>
     <string name="cancel_do_nothing">Avbryt - gjør ingenting</string>
@@ -168,7 +168,7 @@
     <string name="space_minutes_ago">" minutter siden"</string>
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"I Libre hele husmodus: ingen avlesninger innsamlet ennå."</string>
     <string name="in_libre_all_house_mode_last_data_collected">"I Libre hele husmodus: Siste avlesning "</string>
-    <string name="space_minute_ago">" Minutt siden"</string>
+    <string name="space_minute_ago">" minutt siden"</string>
     <string name="show_parakeet_map">Vis Parakeet kart</string>
     <string name="switch_parakeet_to_setup_mode">Bytt Parakeet til oppsettsmodus</string>
     <string name="view_events_log">Vis hendelseslogg</string>
