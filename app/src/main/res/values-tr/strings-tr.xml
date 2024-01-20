@@ -1807,4 +1807,11 @@
     <string name="carelink_auth_status_not_authenticated">Kimlik doğrulanmadı!</string>
     <string name="carelink_auth_login_in_progress">Giriş yapılıyor...</string>
     <string name="carelink_refresh_token_start">Erişim yenilemeyi başlat</string>
+    <string name="carelink_refresh_token_failed">Erişim yenileme başarısız oldu! Tekrar denenecek!</string>
+    <string name="carelink_download_start">İndirmeyi başlat</string>
+    <string name="carelink_download_failed">Veri indirme başarısız oldu!</string>
+    <string name="carelink_credential_status_not_authenticated">Giriş yapmadınız! Lütfen giriş yapın!</string>
+    <string name="carelink_credential_status_access_expired">Erişimin süresi doldu! Yenilenecek!</string>
+    <string name="carelink_credential_status_refresh_expired">Oturum açma süresi doldu! Lütfen giriş yapın!</string>
+    <string name="data_source">Veri Kaynağı:</string>
 </resources>
