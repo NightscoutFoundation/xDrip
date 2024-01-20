@@ -75,7 +75,7 @@
     <string name="pref_pebble_trend_watchface">Bruk Pebble Trend urskive</string>
     <string name="pref_summary_pebble_trend_watchface">Bruk / installere Pebble Trend urskive (eksperimentelt)</string>
     <string name="pref_pebble_display_trend">Vis Trend</string>
-    <string name="pref_summary_display_trend">Vis BG trenden på xDrip Pebble urskiven.</string>
+    <string name="pref_summary_display_trend">Vis BS-trenden på xDrip+\'s Pebbleurskive.</string>
     <string name="pref_pebble_display_high_line">Vis Høy Linje</string>
     <string name="pref_pebble_display_low_line">Vis Lav Linje</string>
     <!-- Amazfit Settings -->
@@ -234,7 +234,7 @@
     <string name="system_status">Systemstatus</string>
     <string name="settings">Innstillinger</string>
     <string name="calibration_data_table">Kalibreringsdatatabell</string>
-    <string name="bg_data_table">BG Datatabell</string>
+    <string name="bg_data_table">BS-datatabell</string>
     <string name="cannot_calibrate_right_now">Kan ikke kalibrere akkurat nå</string>
     <string name="hardware_data_source">Datakilde</string>
     <string name="enter_ten_character_dexcom_receiver_serial">Skriv inn det 10-tegn lange serienummeret til Dexcom-mottakeren</string>
@@ -274,7 +274,7 @@
     <string name="pebble_watch_integration">Pebble Klokke Integrasjon</string>
     <string name="standard_or_trend_pebble_watchface">Standard eller Trend Pebble urskive</string>
     <string name="choose_pebble_watchface">Velg Pebble urskive</string>
-    <string name="message_to_display_when_bgl_hits">Melding som skal vises når BGL treffer spesiell verdi over</string>
+    <string name="message_to_display_when_bgl_hits">Melding som skal vises når blodsukkernivå treffer den spesielle verdien over</string>
     <string name="text_to_display_when_hitting_special_value">Tekst som skal vises når du treffer spesiell verdi</string>
     <string name="special_value">Spesiell verdi</string>
     <string name="history">Historikk</string>
@@ -373,7 +373,7 @@
     <string name="glucose_history">Glukosehistorikk</string>
     <string name="import_database">Importer database</string>
     <string name="sensor_table">Sensortabell</string>
-    <string name="bg_readings_table">Tabell over BG-avlesninger</string>
+    <string name="bg_readings_table">Tabell over BS-avlesninger</string>
     <string name="long_press_to_split_or_delete">Langt trykk for å Dele eller Slett</string>
     <string name="press_and_hold_on_the_background_to_split_or_delete">Trykk og hold på bakgrunnen for å dele eller slette en tidsblokk</string>
     <string name="search">Søk</string>
@@ -595,7 +595,7 @@
     <string name="battery_optimization_off">Sørg for at batterioptimalisering er skrudd av for Android 6+ (anbefalt).</string>
     <string name="battery_optimization_on">Ikke fortsett å spørre om batterioptimalisering (ikke anbefalt).</string>
     <string name="battery_optimization_prompt">Batterioptimaliserings forespørsel</string>
-    <string name="advanced_bluetooth_settings">Avanserte Bluetooth-innstillinger</string>
+    <string name="advanced_bluetooth_settings">Avanserte innstillinger for Bluetooth</string>
     <string name="bluetooth_settings">Bluetooth-innstillinger</string>
     <string name="auto_turn_on_bluetooth">Skru på Bluetooth automatisk hvis det er skrudd av når vi prøver å koble til en Bluetooth-enhet</string>
     <string name="turn_bluetooth_on">Skru på Bluetooth</string>
@@ -678,7 +678,7 @@
     <string name="all_new_glucose_data_plugin">ALLE nye glukosedata vil bli beregnet og lagret med plugin og ikke med standard xDrip-algoritme. Dette er ikke testet og kan være unøyaktig og inneholde feil. Bruk med varsomhet.</string>
     <string name="old_school_calibrations">Original kortere rekkevidde for tillatt kurve for xDrip klassisk kalibreringsalgoritme (pre-2017). Mer sannsynlig med standardkukrver! (kun teknisk modus)</string>
     <string name="old_school_calibration_mode">Tradisjonell kalibreringsmodus</string>
-    <string name="how_receive_data">Hvordan skal du motta data fra din Dexcom/Sender?</string>
+    <string name="how_receive_data">Hvordan skal du motta data fra din Dexcom/sender?</string>
     <string name="nfc_options">Alternativer for NFC basert scanning med telefonen</string>
     <string name="nfc_scan_features">NFC Skan funksjoner</string>
     <string name="use_nfc_feature">Bruk NFC funksjon</string>
@@ -696,7 +696,7 @@
     <string name="use_any_tag">Bruk \"any-tag\" optimalisert lesemetode</string>
     <string name="low_level_value">Lavnivå diagnose/prototype verdi</string>
     <string name="transmitter_id">ID for din Dexcom-sender, f.eks. 123ABC</string>
-    <string name="advanced_g5_settings">Avanserte Dexcom-innstillinger for sjeldne situasjoner</string>
+    <string name="advanced_g5_settings">Avanserte innstillinger for Dexcom</string>
     <string name="g5_debug_settings">G5/G6/G7/Dex1 feilsøkingsinnstillinger</string>
     <string name="g5_scan_constantly">Noen enheter virker bedre når de blir skannet hele tiden, andre ikke. Hvis avlesningene er stabile når denne innstillingen ikke er valgt, bør du oppleve forbedret batteribruk. Normalt er det best å beholde denne deaktivert</string>
     <string name="scan_for_g5_constantly">Skan kontinuerling for G5</string>
@@ -728,9 +728,9 @@
     <string name="accounts_inside_usa">Aktivert = Din konto og følger-app er fra USA</string>
     <string name="usa_based_account">USA basert Dexcom-konto</string>
     <string name="dexcom_login">Din innlogging til Dexcom\'s hjemmeside</string>
-    <string name="dexcom_user">Dexcom konto</string>
+    <string name="dexcom_user">Dexcom-konto</string>
     <string name="dexcom_login_password">Ditt passord for Dexcom\'s hjemmeside</string>
-    <string name="dexcom_password">Dexcom passord</string>
+    <string name="dexcom_password">Dexcom-konto passord</string>
     <string name="dexcom_receiver_serial">10-tegn serienummer til Dexcom-mottaker</string>
     <string name="dexcom_test_mode_serial">10-tegns serienummer for test-modus</string>
     <string name="glucose_meters">Glukosemålere</string>
@@ -872,7 +872,7 @@
     <string name="adjust_note_text_here_there_is_no_undo">Juster notatteksten her. Dette kan ikke bli omgjort</string>
     <string name="no_search_term_found">Fant ingen søkeverdi</string>
     <string name="bluetooth_scan">Bluetooth-skanning</string>
-    <string name="level_alerts">Glukosenivå-varsler</string>
+    <string name="level_alerts">Glukosenivåvarsler</string>
     <string name="override_calibration">Overstyr kalibrering</string>
     <string name="only_stop_your_sensor_when_you_actually_plan">Stopp bare sensoren hvis du faktisk skal fjerne den. I alle andre tilfeller skal den være kjørende!</string>
     <string name="restart_collector">Start innsamler på nytt</string>
@@ -900,7 +900,7 @@
     <string name="Speech_pitch">Tale-tonehøyde</string>
     <string name="Speak_Alerts">Talevarsler</string>
     <string name="Speak_Alerts_Summary">Også gi noen varslinger med tale</string>
-    <string name="advanced_bluereader_settings_summary">Avanserte blueReader innstillinger</string>
+    <string name="advanced_bluereader_settings_summary">Avanserte innstillinger for blueReader</string>
     <string name="advanced_bluereader_settings">blueReader innstillinger</string>
     <string name="bluereader_restdays_onhome_sum">Viser estimert gjenværende dager for blueReader på startskjermen etter at batteriet må byttes ut</string>
     <string name="bluereader_restdays_onhome">Resterende dager på startskjermen</string>
