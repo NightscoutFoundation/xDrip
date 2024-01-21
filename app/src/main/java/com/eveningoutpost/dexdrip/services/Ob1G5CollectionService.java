@@ -18,6 +18,7 @@ import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.usingAlt;
 import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
 import static com.eveningoutpost.dexdrip.models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.models.JoH.niceTimeScalar;
+import static com.eveningoutpost.dexdrip.models.JoH.niceTimeScalarEn;
 import static com.eveningoutpost.dexdrip.models.JoH.tolerantHexStringToByteArray;
 import static com.eveningoutpost.dexdrip.models.JoH.tsl;
 import static com.eveningoutpost.dexdrip.models.JoH.upForAtLeastMins;
@@ -2115,7 +2116,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
 
         if (static_last_connected > 0) {
-            l.add(new StatusItem("Last Connected", niceTimeScalar(msSince(static_last_connected)) + " ago"));
+            l.add(new StatusItem("Last Connected", niceTimeScalarEn(msSince(static_last_connected)) + " ago"));
         }
 
         if ((!lastState.startsWith("Service Stopped")) && (!lastState.startsWith("Not running")))

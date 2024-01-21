@@ -780,6 +780,33 @@ public class JoH {
         return qs((double) t, 0) + " " + unit;
     }
 
+    public static String niceTimeScalarEn(long t) { // English only - Please do NOT translate
+        String unit = "second";
+        t = t / 1000;
+        if (t != 1) unit = "seconds";
+        if (t > 59) {
+            unit = "minute";
+            t = t / 60;
+            if (t != 1) unit = "minutes";
+            if (t > 59) {
+                unit = "hour";
+                t = t / 60;
+                if (t != 1) unit = "hours";
+                if (t > 24) {
+                    unit = "day";
+                    t = t / 24;
+                    if (t != 1) unit = "days";
+                    if (t > 28) {
+                        unit = "week";
+                        t = t / 7;
+                        if (t != 1) unit = "weeks";
+                    }
+                }
+            }
+        }
+        return qs((double) t, 0) + " " + unit;
+    }
+
     public static String niceTimeScalar(double t, int digits) {
         String unit = xdrip.getAppContext().getString(R.string.unit_second);
         t = t / 1000;
