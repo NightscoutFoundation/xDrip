@@ -5,7 +5,6 @@ import android.text.SpannableString;
 
 import com.eveningoutpost.dexdrip.models.Sensor;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utilitymodels.StatusItem.Highlight;
@@ -22,7 +21,6 @@ import lombok.Getter;
 import lombok.val;
 
 import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.getFirmwareXDetails;
-import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.shortTxId;
 import static com.eveningoutpost.dexdrip.models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.models.JoH.roundDouble;
 import static com.eveningoutpost.dexdrip.models.JoH.tsl;
@@ -32,8 +30,8 @@ import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.usingNa
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.DAY_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
-import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.None;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getDexCollectionType;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.hasDexcomRaw;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.hasLibre;
@@ -105,7 +103,7 @@ public class SensorDays {
                ths.warmupMs = 2 * HOUR_IN_MS;
             }
 
-            if (DexCollectionType.getDexCollectionType() == DexCollectionType.DexcomG5 && shortTxId()) { // If using a G7
+            if (getBestCollectorHardwareName() == "G7") { // If using a G7
                 ths.period = DAY_IN_MS * 10 + HOUR_IN_MS * 12; // The device lasts 10.5 days.
                 ths.warmupMs = 30 * MINUTE_IN_MS; // The warmup time is 30 minutes.
             }
