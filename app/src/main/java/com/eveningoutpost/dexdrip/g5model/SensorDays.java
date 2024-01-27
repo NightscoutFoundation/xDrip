@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.val;
 
 import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.getFirmwareXDetails;
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.shortTxId;
 import static com.eveningoutpost.dexdrip.models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.models.JoH.roundDouble;
 import static com.eveningoutpost.dexdrip.models.JoH.tsl;
@@ -31,6 +32,7 @@ import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.usingNa
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.DAY_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.None;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getDexCollectionType;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.hasDexcomRaw;
@@ -103,7 +105,7 @@ public class SensorDays {
                ths.warmupMs = 2 * HOUR_IN_MS;
             }
 
-            if (FirmwareCapability.isDeviceG7(getTransmitterID())) { // If using a G7
+            if (DexCollectionType.getDexCollectionType() == DexCollectionType.DexcomG5 && shortTxId()) { // If using a G7
                 ths.period = DAY_IN_MS * 10 + HOUR_IN_MS * 12; // The device lasts 10.5 days.
                 ths.warmupMs = 30 * MINUTE_IN_MS; // The warmup time is 30 minutes.
             }
