@@ -81,11 +81,15 @@ public class BlockFinder {
         boolean useTop, useTopCenter, useCenter, useCenterBottom, useBottom;
         final int sectionSize = maxHeight / 5;
 
-        useTop = Pref.getBooleanDefaultFalse("aod_use_top");
-        useTopCenter = Pref.getBooleanDefaultFalse("aod_use_top_center");
-        useCenter = Pref.getBooleanDefaultFalse("aod_use_center");
-        useCenterBottom = Pref.getBooleanDefaultFalse("aod_use_center_bottom");
-        useBottom = Pref.getBooleanDefaultFalse("aod_use_bottom");
+        try {
+            useTop = Pref.getBooleanDefaultFalse("aod_use_top");
+            useTopCenter = Pref.getBooleanDefaultFalse("aod_use_top_center");
+            useCenter = Pref.getBooleanDefaultFalse("aod_use_center");
+            useCenterBottom = Pref.getBooleanDefaultFalse("aod_use_center_bottom");
+            useBottom = Pref.getBooleanDefaultFalse("aod_use_bottom");
+        } catch (NullPointerException e) {
+            useTop = useTopCenter = useCenter = useCenterBottom = useBottom = true;
+        }
 
         if (!(useTop || useTopCenter || useCenter || useCenterBottom || useBottom))
         {
