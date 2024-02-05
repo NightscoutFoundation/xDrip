@@ -352,7 +352,7 @@
     <string name="version_details">Versjonsdetaljer</string>
     <string name="download_now">Last ned nå</string>
     <string name="automatically_check_for_updates">Sjekk automatisk for oppdateringer</string>
-    <string name="here_you_can_save_the_settings_to_the_external_storage_sdcard">Her kan du lagre alle innstillingene i intern lagring (Download/xDrip-export/).\n\nNår det er lagret er det potensielt mulig for enver applikasjon å lese innstillingene som kan inneholde sensitiv informasjon.\n\nDet anbefales å slette innstillingene når du har importert dem igjen hvis du er bekymret for dette.</string>
+    <string name="here_you_can_save_the_settings_to_the_external_storage_sdcard">Her kan du lagre alle innstillingene i intern lagring (Download/xDrip-export/).\n\nNår det er lagret er det potensielt mulig for enhver applikasjon å lese innstillingene som kan inneholde sensitiv informasjon.\n\nDet anbefales å slette innstillingene når du har importert dem igjen hvis du er bekymret for dette.</string>
     <string name="save_all_settings_to_sdcard">Lagre alle innstillinger i intern lagring</string>
     <string name="load_all_settings_from_sdcard">Last inn alle innstillinger fra intern lagring</string>
     <string name="delete_any_settings_on_sdcard">Slett innstillinger-mappen (Download/xDrip-export)</string>
