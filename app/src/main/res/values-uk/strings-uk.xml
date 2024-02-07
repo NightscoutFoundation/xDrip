@@ -1387,6 +1387,17 @@
     <string name="title_use_number_icon_large">Відображати значення крупно</string>
     <string name="summary_number_icon_large_arrow">Відображати покажчик тренда, для роботи необхідна активація Відображати значення крупно</string>
     <string name="title_number_icon_large_arrow">Відображати тренд</string>
+    <string name="title_xdrip_plus_accessibility">Настройки режиму екрана Always On</string>
+    <string name="summary_aod_use_top">Встановити п\'яту частину екрану для AOD віджету</string>
+    <string name="title_aod_use_top">Встановити вгорі</string>
+    <string name="summary_aod_use_top_center">Зайняти другі 20% екрану для AOD віджету</string>
+    <string name="title_aod_use_top_center">Встановити вгорі по центру</string>
+    <string name="summary_aod_use_center">Зайняти треті 20% екрану для AOD віджету</string>
+    <string name="title_aod_use_center">Встановити у центрі</string>
+    <string name="summary_aod_use_center_bottom">Зайняти четверті 20% екрану для AOD віджету</string>
+    <string name="title_aod_use_center_bottom">Встановити внизу по центру</string>
+    <string name="summary_aod_use_bottom">Зайняти п\'яті 20% екрану для AOD віджету</string>
+    <string name="title_aod_use_bottom">Встановити внизу</string>
     <string name="summary_show_home_on_boot">Автоматично відображати екран xDrip+ після завантаження пристрою</string>
     <string name="title_show_home_on_boot">Показувати xDrip+ після завантаження</string>
     <string name="eula">Ліцензійна угода</string>
