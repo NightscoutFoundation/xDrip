@@ -1434,6 +1434,17 @@
     <string name="title_use_number_icon_large">Use Large Number Icon</string>
     <string name="summary_number_icon_large_arrow">Shows the trend arrow in the large icon</string>
     <string name="title_number_icon_large_arrow">Show Arrow in Large Icon</string>
+    <string name="title_xdrip_plus_accessibility">Always On Display Settings</string>
+    <string name="summary_aod_use_top">Use first fifth of screen for AOD Widget</string>
+    <string name="title_aod_use_top">Use top</string>
+    <string name="summary_aod_use_top_center">Use second fifth of screen for AOD Widget</string>
+    <string name="title_aod_use_top_center">Use top center</string>
+    <string name="summary_aod_use_center">Use third fifth of screen for AOD Widget</string>
+    <string name="title_aod_use_center">Use center</string>
+    <string name="summary_aod_use_center_bottom">Use fourth fifth of screen for AOD Widget</string>
+    <string name="title_aod_use_center_bottom">Use center bottom</string>
+    <string name="summary_aod_use_bottom">Use last fifth of screen for AOD Widget</string>
+    <string name="title_aod_use_bottom">Use bottom</string>
     <string name="summary_show_home_on_boot">Bring up xDrip screen automatically after device boots</string>
     <string name="title_show_home_on_boot">Show xDrip on Boot</string>
     <string name="eula">EULA</string>
