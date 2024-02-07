@@ -1364,6 +1364,17 @@
     <string name="title_use_number_icon_large">Nagyméretű szám mutatása</string>
     <string name="summary_number_icon_large_arrow">Trend nyíl mutatása nagyméret esetén</string>
     <string name="title_number_icon_large_arrow">Trend nyíl mutatása</string>
+    <string name="title_xdrip_plus_accessibility">Always On Display beállítások</string>
+    <string name="summary_aod_use_top">AOD Widget-et a képernyő első ötödén mutassa</string>
+    <string name="title_aod_use_top">Felül legyen</string>
+    <string name="summary_aod_use_top_center">AOD Widget-et a képernyő második ötödén mutassa</string>
+    <string name="title_aod_use_top_center">Középen felül legyen</string>
+    <string name="summary_aod_use_center">AOD Widget-et a képernyő harmadik ötödén mutassa</string>
+    <string name="title_aod_use_center">Középen legyen</string>
+    <string name="summary_aod_use_center_bottom">AOD Widget-et a képernyő negyedik ötödén mutassa</string>
+    <string name="title_aod_use_center_bottom">Középen alul legyen</string>
+    <string name="summary_aod_use_bottom">AOD Widget-et a képernyő utolsó ötödén mutassa</string>
+    <string name="title_aod_use_bottom">Alul legyen</string>
     <string name="summary_show_home_on_boot">xDrip kezdőképernyő mutatása bootolás után automatikusan</string>
     <string name="title_show_home_on_boot">xDrip mutatása bootolás után</string>
     <string name="eula">Végfelhasználói licencszerződés</string>
