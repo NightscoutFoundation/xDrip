@@ -103,7 +103,7 @@ public class NavDrawerBuilder {
                         }
                     }
                 }
-                if (getBestCollectorHardwareName() != "G7" || Pref.getBooleanDefaultFalse("engineering_mode")) { // If we are using G7, offer the stop sensor option in engineering mode only
+                if (!getBestCollectorHardwareName().equals("G7") || Pref.getBooleanDefaultFalse("engineering_mode")) { // If we are using G7, offer the stop sensor option in engineering mode only
                     this.nav_drawer_options.add(context.getString(R.string.stop_sensor));
                     this.nav_drawer_intents.add(new Intent(context, StopSensor.class));
                 }
