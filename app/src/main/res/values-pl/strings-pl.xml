@@ -1207,6 +1207,7 @@
     <string name="title_broadcast_service_api">Nadawaj Service API</string>
     <string name="summary_broadcast_service_api">Umożliwia komunikację xDrip z aplikacjami innych firm poprzez użycie nowego API</string>
     <string name="title_enable_iob_in_api_endpoint">Włącz raportowanie IoB w API</string>
+    <string name="summary_enable_iob_in_api_endpoint"></string>
     <string name="title_fetch_iob_from_companion_app">Pobierz IoB z aplikacji towarzyszącej</string>
     <string name="summary_fetch_iob_from_companion_app">Pobierz wartość IoB z aplikacji towarzyszącej działającej na tym samym urządzeniu, np. Omnipod 5 App</string>
     <string name="title_miband">MiBand</string>
@@ -1310,6 +1311,7 @@
     <string name="title_clfollow_grace_period">Okres karencji</string>
     <string name="summary_clfollow_grace_period">Okres karencji dla żądania danych w sekundach</string>
     <string name="title_clfollow_missed_poll_interval">Interwał ankiet nieodebranych danych</string>
+    <string name="summary_clfollow_missed_poll_interval"></string>
     <string name="title_clfollow_download_finger_bgs">Poziom cukru z palca</string>
     <string name="title_clfollow_download_boluses">Bolusy</string>
     <string name="summary_clfollow_download_boluses">Pobierz bolusy z CareLink</string>
@@ -1487,6 +1489,8 @@
     <string name="change_settings">Zmień ustawienia</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Czy chcesz usunąć i zresetować kalibracje dla tego czujnika?</string>
     <string name="sensor_stop_confirm">Czy chcesz zatrzymać czujnik?</string>
+    <string name="sensor_stop_confirm_norestart">Nie będziesz w stanie po prostu zrestartować czujnika.</string>
+    <string name="sensor_stop_confirm_really_norestart">UWAGA!\n\nNie będziesz w stanie zrestartować urządzenia.</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Masz włączoną starą eksperymentalną opcję przewidywania glikemii.\n\nTo NIE jest zalecane i może wiele popsuć.\n\nCzy mogę ją dla Ciebie wyłączyć?</string>
     <string name="settings_issue">Problem z ustawieniami!</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Czy chcesz użyć tej zsynchronizowanej wartości stężenia glukozy we krwi do kalibracji?\n\n(możesz zmienić kiedy to okno dialogowe jest wyświetlane w Ustawieniach)</string>
