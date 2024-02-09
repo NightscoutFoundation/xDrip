@@ -40,6 +40,7 @@ public abstract class G5BaseService extends Service {
     public static int LOW_BATTERY_WARNING_LEVEL = G5_LOW_BATTERY_WARNING_DEFAULT;
 
     public static volatile boolean getBatteryStatusNow = false;
+    public static volatile boolean showInactiveDaysNow = false;
     protected static volatile boolean hardResetTransmitterNow = false;
     public static volatile boolean unBondAndStop = false;
 
