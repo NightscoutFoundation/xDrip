@@ -34,7 +34,7 @@ import com.eveningoutpost.dexdrip.models.StepCounter;
 import com.eveningoutpost.dexdrip.models.Treatments;
 import com.eveningoutpost.dexdrip.models.UserError;
 
-import com.eveningoutpost.dexdrip.Models.NSBasal;
+import com.eveningoutpost.dexdrip.models.NSBasal;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;

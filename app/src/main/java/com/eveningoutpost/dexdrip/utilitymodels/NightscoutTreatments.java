@@ -8,8 +8,8 @@ import com.eveningoutpost.dexdrip.models.InsulinInjection;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.Treatments;
 import com.eveningoutpost.dexdrip.models.UserError;
-import com.eveningoutpost.dexdrip.Models.NSBasal;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.models.NSBasal;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
