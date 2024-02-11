@@ -1372,6 +1372,7 @@
     <string name="title_use_number_icon_large">Използвай голяма икона с числа</string>
     <string name="summary_number_icon_large_arrow">Показва стрелката на тенденцията в голямата икона</string>
     <string name="title_number_icon_large_arrow">Показване на стрелка в голяма икона</string>
+    <string name="title_xdrip_plus_accessibility">Настройки за винаги включен дисплей</string>
     <string name="summary_show_home_on_boot">Автоматично извикване на xDrip екран след пускане на устройството</string>
     <string name="title_show_home_on_boot">Показване на xDrip при зареждане</string>
     <string name="eula">Лицензионно споразумение с краен потребител</string>
@@ -1485,6 +1486,8 @@
     <string name="change_settings">Промяна на настройките</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Искате ли да изтриете и нулирате калибрациите за този сензор?</string>
     <string name="sensor_stop_confirm">Искате ли да спрете сензора?</string>
+    <string name="sensor_stop_confirm_norestart">Няма да можете просто да рестартирате сензора.</string>
+    <string name="sensor_stop_confirm_really_norestart">ВНИМАНИЕ!\n\nНяма да можете да рестартирате това устройство.</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Имате активирана стара експериментална настройка за прогнозиране на глюкоза..\n\nТова НЕ Е ПРЕПОРЪЧИТЕЛНО и може да обърка нещата сериозно.\n\nДа деактивирам ли това вместо вас?</string>
     <string name="settings_issue">Проблем с настройките!</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Искате ли да използвате този синхронизиран резултат за кръвна захар от пръст за калибриране??\n\n(можете да промените, когато този диалогов прозорец се покаже в Настройки)</string>
