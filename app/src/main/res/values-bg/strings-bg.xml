@@ -1135,6 +1135,7 @@
     <string name="without_location_scan_doesnt_work">Без разрешение за местоположение Android Bluetooth сканирането не работи</string>
     <string name="android_10_need_background_location">Android 10 и по-нови се нуждаят от местоположение във фонов режим, за да работи Bluetooth</string>
     <string name="without_location_permission_emergency_cannot_get_location">Без разрешение за местоположение спешните съобщения не могат да използват GPS данни</string>
+    <string name="force_speaker_colon">Принодително използване на високоговорителя</string>
     <string name="choose_data_source">Изберете Източник на данни</string>
     <string name="which_system_do_you_use">Коя система използвате?</string>
     <string name="please_allow_permission">Моля, позволете разрешение</string>
@@ -1373,6 +1374,16 @@
     <string name="summary_number_icon_large_arrow">Показва стрелката на тенденцията в голямата икона</string>
     <string name="title_number_icon_large_arrow">Показване на стрелка в голяма икона</string>
     <string name="title_xdrip_plus_accessibility">Настройки за винаги включен дисплей</string>
+    <string name="summary_aod_use_top">Използвайте горната една пета от екрата за AOD Widget</string>
+    <string name="title_aod_use_top">Използвайте горната част</string>
+    <string name="summary_aod_use_top_center">Използвайте втората една пета от екрата за AOD Widget</string>
+    <string name="title_aod_use_top_center">Използвайте горната централна част</string>
+    <string name="summary_aod_use_center">Използвайте горната централна част от екрата за AOD Widget</string>
+    <string name="title_aod_use_center">Използвайте централна част</string>
+    <string name="summary_aod_use_center_bottom">Използвайте долната централна част от екрата за AOD Widget</string>
+    <string name="title_aod_use_center_bottom">Използвайте долната централна част</string>
+    <string name="summary_aod_use_bottom">Използвайте последната една пета от екрата за AOD Widget</string>
+    <string name="title_aod_use_bottom">Използвайте долната част</string>
     <string name="summary_show_home_on_boot">Автоматично извикване на xDrip екран след пускане на устройството</string>
     <string name="title_show_home_on_boot">Показване на xDrip при зареждане</string>
     <string name="eula">Лицензионно споразумение с краен потребител</string>
