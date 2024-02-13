@@ -1618,7 +1618,7 @@
     <string name="title_widget_hide_graph">Скрии графиката на Widget-а</string>
     <string name="summary_illustrate_remote_data">Покажи данни получени отдаличено (само за диагностика)</string>
     <string name="title_illustrate_remote_data">Визуализирай отдаличени данни</string>
-    <string name="summary_show_accessibility_settings">Ако телефона има постояно включен екран можете да вкл. xDrip widget-a и така включвате и xDrip услугите за достъпност от страница за Настройки на Андроид.</string>
+    <string name="summary_show_accessibility_settings">Ако телефонът има постоянно включен екран можете да вкл. xDrip widget-a и така включвате и xDrip услугите за достъпност от страница за Настройки на Андроид.</string>
     <string name="title_show_accessibility_settings">Вкл. xDrip достъпност</string>
     <string name="title_multiple_insulin_types_settings">Няколко вида инсулин</string>
     <string name="summary_multiple_insulin_types_settings">Опции за работа с различните видове инсулин</string>
