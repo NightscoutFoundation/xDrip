@@ -1387,6 +1387,17 @@
     <string name="title_use_number_icon_large">Büyük Sayı Simgesi Kullan</string>
     <string name="summary_number_icon_large_arrow">Büyük simgede trend okunu gösterir</string>
     <string name="title_number_icon_large_arrow">Büyük Simgede Trend Oku Göster</string>
+    <string name="title_xdrip_plus_accessibility">Her Zaman Açık Ekran Ayarları</string>
+    <string name="summary_aod_use_top">AOD Widget\'ı için ekranın ilk beşte birini kullanın</string>
+    <string name="title_aod_use_top">Üst kısmı kullan</string>
+    <string name="summary_aod_use_top_center">AOD Widget\'ı için ekranın ikinci beşte birini kullanın</string>
+    <string name="title_aod_use_top_center">Üst ortayı kullan</string>
+    <string name="summary_aod_use_center">AOD Widget\'ı için ekranın üçüncü beşte birini kullanın</string>
+    <string name="title_aod_use_center">Merkezi kullan</string>
+    <string name="summary_aod_use_center_bottom">AOD Widget\'ı için ekranın dördüncü beşte birini kullanın</string>
+    <string name="title_aod_use_center_bottom">Orta alt kısmı kullan</string>
+    <string name="summary_aod_use_bottom">AOD Widget\'ı için ekranın beşinci beşte birini kullanın</string>
+    <string name="title_aod_use_bottom">Alt kısmı kullan</string>
     <string name="summary_show_home_on_boot">Cihaz yeniden başlatılınca xDrip ekranını otomatik olarak açar</string>
     <string name="title_show_home_on_boot">Önyüklemede xDrip\'i Göster</string>
     <string name="eula">EULA</string>

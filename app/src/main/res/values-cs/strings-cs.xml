@@ -1389,6 +1389,17 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="title_use_number_icon_large">Použít velkou číselnou ikonu</string>
     <string name="summary_number_icon_large_arrow">Zobrazit šipku trendu glykémie ve velké číselné ikoně</string>
     <string name="title_number_icon_large_arrow">Zobrazit trend ve velké číselné ikoně</string>
+    <string name="title_xdrip_plus_accessibility">Nastavení funkce Always On Display</string>
+    <string name="summary_aod_use_top">Použít první pětinu obrazovky pro AOD widget</string>
+    <string name="title_aod_use_top">Použít horní část</string>
+    <string name="summary_aod_use_top_center">Použít druhou pětinu obrazovky pro AOD widget</string>
+    <string name="title_aod_use_top_center">Použít mezi horní a prostřední částí</string>
+    <string name="summary_aod_use_center">Použít třetí pětinu obrazovky pro AOD widget</string>
+    <string name="title_aod_use_center">Použít prostřední část</string>
+    <string name="summary_aod_use_center_bottom">Použít čtvrtou pětinu obrazovky pro AOD widget</string>
+    <string name="title_aod_use_center_bottom">Použít mezi prostřední a dolní částí</string>
+    <string name="summary_aod_use_bottom">Použít poslední pětinu obrazovky pro AOD widget</string>
+    <string name="title_aod_use_bottom">Použít spodní část</string>
     <string name="summary_show_home_on_boot">Automaticky zobrazí hlavní obrazovku xDrip+ po restartu telefonu</string>
     <string name="title_show_home_on_boot">Otevřít aplikaci xDrip+ při restartu telefonu</string>
     <string name="eula">Licenční ujednání</string>
@@ -1626,7 +1637,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="title_widget_hide_graph">Skrýt graf ve widgetu</string>
     <string name="summary_illustrate_remote_data">Zobrazit hodnoty přijaté vzdáleně (pouze pro vývojáře)</string>
     <string name="title_illustrate_remote_data">Zobrazit vzdálené hodnoty</string>
-    <string name="summary_show_accessibility_settings">Pokud telefon podporuje funkci Always on display, lze zobrazit xDrip+ widget zapnutím služby xDrip+ Accessibility v systémovém nastavení telefonu.</string>
+    <string name="summary_show_accessibility_settings">Pokud telefon podporuje funkci Always On Display, lze zobrazit xDrip+ widget zapnutím služby xDrip+ Accessibility v systémovém nastavení telefonu.</string>
     <string name="title_show_accessibility_settings">Povolit službu xDrip+ Accessibility</string>
     <string name="title_multiple_insulin_types_settings">Více druhů inzulínu</string>
     <string name="summary_multiple_insulin_types_settings">Nastavení možnosti používání pro více druhů inzulínů</string>
