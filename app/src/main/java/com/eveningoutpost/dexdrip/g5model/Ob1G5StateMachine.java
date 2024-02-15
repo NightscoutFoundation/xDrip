@@ -953,7 +953,7 @@ public class Ob1G5StateMachine {
 
                             switch (hex) {
                                 case "2E01":
-                                    UserError.Log.e(TAG, "Invalid settings, attempting to restore defaults");
+                                    UserError.Log.e(TAG, "Invalid settings, attempting to restore Dex defaults, Native mode, no plugin");
                                     setG6Defaults();
                                     break;
                             }
@@ -1707,11 +1707,12 @@ public class Ob1G5StateMachine {
             if (FirmwareCapability.isTransmitterG6(getTransmitterID())) {
                 if (!usingG6()) {
                     setG6Defaults();
-                    JoH.showNotification("Enabled G6", "G6 Features and default settings automatically enabled", null, Constants.G6_DEFAULTS_MESSAGE, false, true, false);
+                    JoH.showNotification("Enabled defaults", "Default settings automatically enabled", null, Constants.G6_DEFAULTS_MESSAGE, false, true, false);
                 } else if (!onlyUsingNativeMode() && !Home.get_engineering_mode()) {
                     // TODO revisit this now that there is scaling
                     setG6Defaults();
-                    JoH.showNotification("Enabled G6", "G6 Native mode enabled", null, Constants.G6_DEFAULTS_MESSAGE, false, true, false);
+                    UserError.Log.e(TAG, "Dex Native mode enabled.  For your device, non-native mode is either not possible or not recommended.");
+                    JoH.showNotification("Enabled Native", "Native mode enabled", null, Constants.G6_DEFAULTS_MESSAGE, false, true, false);
                 }
             }
         }
