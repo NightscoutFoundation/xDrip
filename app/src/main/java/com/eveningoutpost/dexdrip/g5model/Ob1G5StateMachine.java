@@ -1711,7 +1711,7 @@ public class Ob1G5StateMachine {
                 } else if (!onlyUsingNativeMode() && !Home.get_engineering_mode()) {
                     // TODO revisit this now that there is scaling
                     setG6Defaults();
-                    UserError.Log.e(TAG, "Dex Native mode enabled.  For your device, non-native mode is either not possible or not recommended.");
+                    UserError.Log.uel(TAG, "Dex Native mode enabled.  For your device, non-native mode is either not possible or not recommended.");
                     JoH.showNotification("Enabled Native", "Native mode enabled", null, Constants.G6_DEFAULTS_MESSAGE, false, true, false);
                 }
             }
