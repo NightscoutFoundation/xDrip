@@ -27,7 +27,7 @@ public class ExternalStatusService extends IntentService {
     private static final String EXTRA_STATUSLINE = "com.eveningoutpost.dexdrip.Extras.Statusline";
     public static final String ACTION_NEW_EXTERNAL_STATUSLINE = "com.eveningoutpost.dexdrip.ExternalStatusline";
     //public static final String RECEIVER_PERMISSION = "com.eveningoutpost.dexdrip.permissions.RECEIVE_EXTERNAL_STATUSLINE";
-    private static final int MAX_LEN = 40;
+    private static final int MAX_LEN = 70;
     private final static String TAG = ExternalStatusService.class.getSimpleName();
 
     public ExternalStatusService() {
