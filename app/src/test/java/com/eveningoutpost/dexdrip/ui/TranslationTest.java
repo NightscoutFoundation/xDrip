@@ -38,7 +38,7 @@ public class TranslationTest extends RobolectricTestWithConfig {
     public void testFormatStrings() throws IOException {
         val config = xdrip.getAppContext().getResources().getConfiguration();
         val internal = xdrip.getAppContext().getResources().getStringArray(R.array.LocaleChoicesValues);
-        val extra = new String[]{"ar", "cs", "de", "el", "en", "es", "fi", "fr", "he", "hr", "it", "iw", "ja", "ko", "nb", "nl", "no", "pl", "pt", "ro", "ru", "sk", "sl", "sv", "tr", "zh"};
+        val extra = new String[]{"ar", "cs", "de", "el", "en", "es", "fi", "fr", "he", "hr", "it", "iw", "ja", "ko", "nb", "nl", "pl", "pt", "ro", "ru", "sk", "sl", "sv", "tr", "zh"};
         val inset = "^values-";
         Set<String> locales = new TreeSet<>(Arrays.asList(internal));
         class ResourceLocaleParser implements FileVisitor<Path> {

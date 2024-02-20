@@ -59,6 +59,7 @@ public class IdempotentMigrations {
         legacySettingsFix();
         IncompatibleApps.notifyAboutIncompatibleApps();
         CompatibleApps.notifyAboutCompatibleApps();
+        legacySettingsMoveLanguageFromNoToNb();
 
     }
 
@@ -149,5 +150,11 @@ public class IdempotentMigrations {
         Pref.setBoolean("always_unbond_G5", false);
         Pref.setBoolean("always_get_new_keys", true);
     }
-
+    private static void legacySettingsMoveLanguageFromNoToNb() {
+        // Check if the user's language preference is set to "no"
+        if ("no".equals(Pref.getString("forced_language", ""))) {
+        // Update the language preference to "nb"
+        Pref.setString("forced_language", "nb");
+        }
+    }
 }
