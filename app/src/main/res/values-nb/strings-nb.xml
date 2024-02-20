@@ -338,14 +338,14 @@
     <string name="low_alerts_disabled_until">"Lave varsler deaktivert inntil "</string>
     <string name="high_alerts_disabled_until">"Høye varsler deaktivert inntil "</string>
     <string name="default_snooze">Standard slumring</string>
-    <string name="until_you_reenable">Inntil du re-aktiverer</string>
+    <string name="until_you_reenable">Inntil du reaktiverer</string>
     <string name="set">Angi</string>
     <string name="disable_low_alerts">Deaktiver Lave varsler</string>
-    <string name="re_enable_low_alerts">Re-Aktiver Lave varsler</string>
+    <string name="re_enable_low_alerts">Reaktiver lave varsler</string>
     <string name="disable_high_alerts">Deaktiver Høye varsler</string>
-    <string name="re_enable_high_alerts">Re-Aktiver Høye varsler</string>
+    <string name="re_enable_high_alerts">Reaktiver høye varsler</string>
     <string name="disable_all_alerts">Deaktiver Alle varsler</string>
-    <string name="re_enable_all_alerts">Re-Aktiver Alle varsler</string>
+    <string name="re_enable_all_alerts">Reaktiver alle varsler</string>
     <string name="alert_snoozed_by_watch">Varsel slumret fra klokke</string>
     <string name="update_channel_colon_space">"Oppdateringskanal: "</string>
     <string name="a_new_version_is_available">En ny versjon er tilgjengelig</string>
@@ -512,7 +512,7 @@
     <string name="alert_name_colon">Varselnavn:</string>
     <string name="threshold_colon">Terskel:</string>
     <string name="default_snooze_colon">Standard slumring:</string>
-    <string name="re_raise_every_x_minutes_if_unaknowledged">Re-aktiver hvert \n x\'de minutt hvis\n ikke bekreftet:</string>
+    <string name="re_raise_every_x_minutes_if_unaknowledged">Reaktiver hvert \n x\'de minutt hvis\n ikke bekreftet:</string>
     <string name="alert_tone_colon">Varseltone:</string>
     <string name="choose_file">Velg Fil</string>
     <string name="select_time_for_alert_colon">Velg tid for varsel:</string>
