@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.utils;
 
-import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.usingG5OrG6;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 import android.Manifest;
@@ -1732,7 +1732,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 }
             }
 
-            if (!usingG5OrG6()) { // Remove battery options, from G5/G6/Dex1/G7 Debug Settings, if we are not using either G5 or G6
+            if (getBestCollectorHardwareName().equals("G7")) { // Remove battery options, from G5/G6/Dex1/G7 Debug Settings, if we are using G7 or One+
                 PreferenceScreen screen = (PreferenceScreen) findPreference("xdrip_plus_g5_extra_settings");
                 Preference pref = getPreferenceManager().findPreference("dex_battery_category");
                 screen.removePreference(pref);
