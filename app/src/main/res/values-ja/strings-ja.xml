@@ -389,6 +389,17 @@
     <string name="title_color_smb_icon">SMBアイコン</string>
     <string name="title_color_smb_line">SMBライン</string>
     <string name="title_pick_numberwall_start">オン</string>
+    <string name="title_xdrip_plus_accessibility">常時表示設定</string>
+    <string name="summary_aod_use_top">画面の最初の5分の1をAODウィジェットに使用する。</string>
+    <string name="title_aod_use_top">上部を使用</string>
+    <string name="summary_aod_use_top_center">画面の5分の2をAODウィジェットに使用する。</string>
+    <string name="title_aod_use_top_center">上部の中央を使用</string>
+    <string name="summary_aod_use_center">画面の5分の3をAODウィジェットに使用する。</string>
+    <string name="title_aod_use_center">中央を使用</string>
+    <string name="summary_aod_use_center_bottom">画面の5分の4をAODウィジェットに使用する。</string>
+    <string name="title_aod_use_center_bottom">下部の中央を使用</string>
+    <string name="summary_aod_use_bottom">画面の最後の5分の1をAODウィジェットに使用する。</string>
+    <string name="title_aod_use_bottom">下部を使用</string>
     <string name="eula">EULA</string>
     <string name="note_search_button">検索</string>
     <string name="all_note_button">全て</string>
@@ -453,4 +464,5 @@
     <string name="carelink_credential_status_not_authenticated">ログインしていません！ログインしてください！</string>
     <string name="carelink_credential_status_access_expired">アクセスの有効期限が切れました！更新されます！</string>
     <string name="carelink_credential_status_refresh_expired">ログイン期限が切れました！ログインしてください！</string>
+    <string name="data_source">データソース:</string>
 </resources>

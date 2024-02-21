@@ -468,6 +468,7 @@
     <string name="start_sensor">Spustiť senzor</string>
     <string name="debug_and_other_misc_options">Ladenie a ostatné možnosti</string>
     <string name="low_glucose_values">Hodnoty nízkej glykémie</string>
+    <string name="bad_glucose_values">Hodnoty glukóozy mimo rozsah</string>
     <string name="revert_to_default">Obnoviť východzie nastavenie</string>
     <string name="filtered_values">Filtrované hodnoty</string>
     <string name="treatment_color">Farba ošetrenia</string>
@@ -1142,6 +1143,17 @@ Je nutné zakázať v prípade, že chcete používať xdrip cifreník. (Požado
     <string name="title_use_number_icon_large">Použiť veľkú číselnú ikonu</string>
     <string name="summary_number_icon_large_arrow">Zobraziť šípky trendov vo veľkej ikone</string>
     <string name="title_number_icon_large_arrow">Ukázať šípku vo veľkej ikone</string>
+    <string name="title_xdrip_plus_accessibility">Nastavenie displeja Always On</string>
+    <string name="summary_aod_use_top">Použi prvú pätinu obr. AOD widgetu</string>
+    <string name="title_aod_use_top">Použi vrch obrazovky AOD</string>
+    <string name="summary_aod_use_top_center">Použi druhú pätinu obr. AOD widgetu</string>
+    <string name="title_aod_use_top_center">Použi vrch obrazovky AOD v strede</string>
+    <string name="summary_aod_use_center">Použi tretiu pätinu obr. AOD widgetu</string>
+    <string name="title_aod_use_center">Použi stred obrazovky AOD</string>
+    <string name="summary_aod_use_center_bottom">Použi štvrtú pätinu obr. AOD widgetu</string>
+    <string name="title_aod_use_center_bottom">Použi spodok obrazovky AOD v strede</string>
+    <string name="summary_aod_use_bottom">Použi poslednú pätinu obr. AOD widgetu</string>
+    <string name="title_aod_use_bottom">Použi spodok obrazovky AOD</string>
     <string name="summary_show_home_on_boot">Automaticky zobraz obrazovku xDrip hneď po štarte zariadenia</string>
     <string name="title_show_home_on_boot">Zobraz xDrip po štarte zariadenia</string>
     <string name="summary_plus_accept_follower_actions">Ošetrenia, kalibrácie a iné akcie sledujúcich budú prijaté aj na tomto zariadení</string>

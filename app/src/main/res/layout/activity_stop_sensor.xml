@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/drawer_layout"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="model"
+            type="com.eveningoutpost.dexdrip.StopSensor.ViewModel" />
+
+    </data>
+<androidx.drawerlayout.widget.DrawerLayout
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent" android:layout_height="match_parent"
     tools:context="com.eveningoutpost.dexdrip.Home">
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:weightSum="1"
@@ -49,6 +59,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_alignEnd="@+id/textView3"
                 android:layout_gravity="center_horizontal"
+                android:onClick="@{() -> model.stopSensorClick()}"
                 android:layout_marginTop="30dp" />
 
             <Button
@@ -57,7 +68,9 @@
                 android:layout_height="wrap_content"
                 android:onClick="resetAllCalibrations"
                 android:id="@+id/resetcalibrationbutton"
-                android:layout_marginTop="20dp" />
+                android:layout_marginTop="20dp"
+                android:textAllCaps="false"
+                app:showIfTrue="@{model.resettableCals()}" />
         </LinearLayout>
     </ScrollView>
 
@@ -71,3 +84,4 @@
 
 </androidx.drawerlayout.widget.DrawerLayout>
 
+</layout>

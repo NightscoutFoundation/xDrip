@@ -18,6 +18,7 @@ import com.eveningoutpost.dexdrip.tables.CalibrationDataTable;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utilitymodels.Experience;
 import com.eveningoutpost.dexdrip.stats.StatsActivity;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.getTransmitterID;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
 
 /**
  * Created by Emma Black on 11/5/14.
@@ -101,8 +103,10 @@ public class NavDrawerBuilder {
                         }
                     }
                 }
-                this.nav_drawer_options.add(context.getString(R.string.stop_sensor));
-                this.nav_drawer_intents.add(new Intent(context, StopSensor.class));
+                if (!getBestCollectorHardwareName().equals("G7") || Pref.getBooleanDefaultFalse("engineering_mode")) { // If we are using G7, offer the stop sensor option in engineering mode only
+                    this.nav_drawer_options.add(context.getString(R.string.stop_sensor));
+                    this.nav_drawer_intents.add(new Intent(context, StopSensor.class));
+                }
             } else {
                 this.nav_drawer_options.add(context.getString(R.string.start_sensor));
                 this.nav_drawer_intents.add(new Intent(context, StartNewSensor.class));

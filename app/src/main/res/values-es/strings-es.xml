@@ -1384,6 +1384,9 @@
     <string name="title_use_number_icon_large">Usar icono numérico grande</string>
     <string name="summary_number_icon_large_arrow">Muestra la flecha de tendencia en el icono grande</string>
     <string name="title_number_icon_large_arrow">Mostrar Flecha en Icono Grande</string>
+    <string name="summary_aod_use_top">Usar el primer quinto de la pantalla para el widget AOD</string>
+    <string name="title_aod_use_top_center">Usar centro superior</string>
+    <string name="summary_aod_use_center">Usar el tercer quinto de la pantalla para el Widget AOD</string>
     <string name="summary_show_home_on_boot">Mostrar la pantalla xDrip automáticamente después de que se inicie el dispositivo</string>
     <string name="title_show_home_on_boot">Mostrar xDrip al arrancar</string>
     <string name="eula">CLUF</string>
@@ -1499,6 +1502,8 @@
     <string name="change_settings">Cambiar ajustes</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">¿Quiere borrar o reinicializar las calibraciones para este sensor?</string>
     <string name="sensor_stop_confirm">¿Desea detener el sensor?</string>
+    <string name="sensor_stop_confirm_norestart">No podrás simplemente reactivar el sensor.</string>
+    <string name="sensor_stop_confirm_really_norestart">¡ADVERTENCIA!\n\nNo podrás reiniciar el dispositivo.</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Tiene habilitado ajustes antiguos experimentales de predicción de glucemia.\n\nNO SE RECOMIENDA pues podría dañar muchos elementos.\n\n¿Deshabilitarlo?</string>
     <string name="settings_issue">¡Error en los ajustes!</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">¿Desea calibrar con este resultado de glucemia mediante punción digital sincronizado?\n\n(puede cambiarlo cuando se muestre este diálogo en Ajustes)</string>
@@ -1808,4 +1813,5 @@
     <string name="carelink_credential_status_not_authenticated">¡No has iniciado sesión! ¡Por favor inicia sesión!</string>
     <string name="carelink_credential_status_access_expired">¡Acceso expirado! ¡Se actualizará!</string>
     <string name="carelink_credential_status_refresh_expired">¡Inicio de sesión expirado! ¡Inicie sesión!</string>
+    <string name="data_source">Fuente de datos:</string>
 </resources>

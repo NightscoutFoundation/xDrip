@@ -413,14 +413,14 @@
     <string name="persistent_high_sound">Riasztás hangja</string>
     <string name="forecast_lows">Hypo előrejelzése</string>
     <string name="raise_alarm_on_forecast_low">Riasztás hypo előrejelzésre</string>
-    <string name="notify_when_predicted_low_time_reaches_threshold">Jelzés, amikor a várható hypoig hátralevő idő eléri a határértéket</string>
+    <string name="notify_when_predicted_low_time_reaches_threshold">Jelzés meghatározott idővel a várható hypo előtt</string>
     <string name="predicted_low_sound">Előrejelzett hypo hangja</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Válassza ki az előrejelzett hypo hangját.</string>
     <string name="notify_when_parakeet_device_stops_checking_in">Jelzés, ha a Parakeet készülék nem jelentkezik be</string>
     <string name="parakeet_related_alerts">Parakeet riasztás</string>
     <string name="raise_parakeet_notification_silently_when_charging">Töltés közben a Parakeet jelzés néma</string>
     <string name="silent_alert_when_charging">Nincs riasztás töltés közben</string>
-    <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Riasztás szundizva indul, és csak azután aktiválódik, hogy egy ideáig fennállt</string>
+    <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Riasztás késleltetve indul, és csak azután aktiválódik, hogy egy ideáig fennállt</string>
     <string name="alarms_silenced_during_telephone_calls">Riasztások némák telefonbeszélgetés alatt</string>
     <string name="suppress_alerts_if_missed_readings">Riasztás törlése VC-érték hiányában</string>
     <string name="bad_noisy_value_alerts">Rossz (zajos) adat riasztás</string>
@@ -779,7 +779,7 @@
     <string name="notify_on_low_battery_level">Riasztás, ha akku töltöttsége lecsökken</string>
     <string name="collector_battery_alerts">Kollektor akku riasztás</string>
     <string name="low_battery_percentage">Alacsony akku töltöttségi szint (%)</string>
-    <string name="notify_data_arrives_master"><![CDATA[Jelzés, ha adat érkezik a Master-ről, ha a kihagyás nagyobb mint 20 p.]]></string>
+    <string name="notify_data_arrives_master"><![CDATA[Jelzés, ha legalább 20 p kihagyás után adat érkezik a Master-ről.]]></string>
     <string name="follower_chime_new">Új adat a követőn jelzés</string>
     <string name="carb_ratio">Szénhidrát arány</string>
     <string name="enable_dedicated_insulin_profiles">Inzulin profilok</string>
@@ -1158,7 +1158,7 @@
     <string name="summary_bluetooth_meter_for_calibrations_auto">Új VC-érték alapján kalibráljon kérdezés nélkül, ha a körülmények megfelelőek (kísérleti funkció)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatikus kalibráció</string>
     <string name="title_rest_api_extra_options">További beállítások</string>
-    <string name="summary_send_bridge_battery_to_nightscout">A transzmitter töltöttségének feltöltése a Nightscoutba. Ne engedélyezze, ha az akku hibás.</string>
+    <string name="summary_send_bridge_battery_to_nightscout">A transzmitter töltöttségének feltöltése a Nightscoutba. Ne engedélyezze, ha az akku érzékelője hibás.</string>
     <string name="title_send_bridge_battery_to_nightscout">Transzmitter töltöttség feltöltése</string>
     <string name="summary_send_dexcom_transmitter_battery_to_nightscout">OB1G5/G6 távadó akku adatok feltöltése Nightscout-ba. Ez a Kollektor állapot képernyő összes adatát jelenti.</string>
     <string name="title_send_dexcom_transmitter_battery_to_nightscout">OB1G5/G6 távadó adatok feltöltése</string>
@@ -1169,7 +1169,7 @@
     <string name="summary_nightscout_device_append_source_info">G5 esetén küldi a kollektor típusát (pl. OB1) stb.</string>
     <string name="title_nightscout_device_append_source_info">Adatforrás adatainak küldése</string>
     <string name="summary_tap_to_send_historical_data">Korábbi adatok küldése Nightscout-ba</string>
-    <string name="title_back_fill_data">Régi adatok feltöltése</string>
+    <string name="title_back_fill_data">Korábbi adatok feltöltése</string>
     <string name="summary_tidepool_upload_screen">Adatok feltöltése Tidepool-ba</string>
     <string name="title_sync_to_tidepool">Bekapcsolás</string>
     <string name="summary_tidepool_username">Az Ön Tidepool felhasználóneve, általában az e-mail címe</string>
@@ -1314,7 +1314,7 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Visszatérés az xDriphez</string>
     <string name="summary_ob1_minimize_scanning">Heurisztikák használata a BT-keresés és az energiafelhasználás csökkentéséért</string>
     <string name="title_ob1_minimize_scanning">Keresés minimalizálása</string>
-    <string name="summary_using_g6">G6 szenzort használok</string>
+    <string name="summary_using_g6">Dexcom G6 vagy ONE szenzort használok</string>
     <string name="title_using_g6">G6/ONE támogatás</string>
     <string name="summary_ob1_g5_allow_resetbond">Az OB1 kollektor bonthatja a kapcsolatot, ha a titkosítás sikertelen. Ha problémákat okoz a szétkapcsolás, ne engedélyezze ezt a lehetőséget. Ha eztán teljesen megszűnik a kapcsolat, bizonyosodjon meg róla, hogy engedélyezve van.</string>
     <string name="title_ob1_g5_allow_resetbond">OB1 kapcsolatbontás engedélyezése</string>
@@ -1364,6 +1364,17 @@
     <string name="title_use_number_icon_large">Nagyméretű szám mutatása</string>
     <string name="summary_number_icon_large_arrow">Trend nyíl mutatása nagyméret esetén</string>
     <string name="title_number_icon_large_arrow">Trend nyíl mutatása</string>
+    <string name="title_xdrip_plus_accessibility">Always On Display beállítások</string>
+    <string name="summary_aod_use_top">AOD Widget-et a képernyő első ötödén mutassa</string>
+    <string name="title_aod_use_top">Felül legyen</string>
+    <string name="summary_aod_use_top_center">AOD Widget-et a képernyő második ötödén mutassa</string>
+    <string name="title_aod_use_top_center">Középen felül legyen</string>
+    <string name="summary_aod_use_center">AOD Widget-et a képernyő harmadik ötödén mutassa</string>
+    <string name="title_aod_use_center">Középen legyen</string>
+    <string name="summary_aod_use_center_bottom">AOD Widget-et a képernyő negyedik ötödén mutassa</string>
+    <string name="title_aod_use_center_bottom">Középen alul legyen</string>
+    <string name="summary_aod_use_bottom">AOD Widget-et a képernyő utolsó ötödén mutassa</string>
+    <string name="title_aod_use_bottom">Alul legyen</string>
     <string name="summary_show_home_on_boot">xDrip kezdőképernyő mutatása bootolás után automatikusan</string>
     <string name="title_show_home_on_boot">xDrip mutatása bootolás után</string>
     <string name="eula">Végfelhasználói licencszerződés</string>
@@ -1474,6 +1485,8 @@
     <string name="change_settings">Beállítások módosítása</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Törölni és visszaállítani akarja ennek a szenzornak a kalibrációit?</string>
     <string name="sensor_stop_confirm">Leállítja a szenzort?</string>
+    <string name="sensor_stop_confirm_norestart">Nem fogja tudni újraindítani a szenzort.</string>
+    <string name="sensor_stop_confirm_really_norestart">FIGYELEM!\n\nNem fogja tudni újraindítani a készüléket.</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Egy egy régi kísérleti VC-érték előrejelzési beállítást aktivált.\n\nEz NEM AJÁNLOTT, és összezavarhatja a dolgokat.\n\nTiltsam le inkább Önnek?</string>
     <string name="settings_issue">Gond van a beállításokkal!</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Szeretné használni ezt a szinkronizált ujjbegyes VC-értéket a kalibráláshoz?\n\n(Ezt megváltoztathatja, amikor ez a párbeszédpanel megjelenik a beállítások között)</string>
@@ -1763,4 +1776,5 @@
     <string name="carelink_credential_status_not_authenticated">Nincs belépve! Jelentkezzen be!</string>
     <string name="carelink_credential_status_access_expired">Hozzáférés lejárt! Meg fogja újítani!</string>
     <string name="carelink_credential_status_refresh_expired">Belépés lejárt! Jelentkezzen be!</string>
+    <string name="data_source">Adatforrás:</string>
 </resources>
