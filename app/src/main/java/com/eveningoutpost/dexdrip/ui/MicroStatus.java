@@ -12,6 +12,5 @@ public interface MicroStatus {
 
     boolean xmitterBattery();
 
-    boolean usingG7(); // True when using G7
 
 }
