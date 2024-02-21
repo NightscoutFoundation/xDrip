@@ -27,6 +27,7 @@ import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import lombok.val;
 
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.shortTxId;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.getTransmitterID;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
@@ -105,7 +106,14 @@ public class StopSensor extends ActivityWithMenu {
         }
 
         public void stopSensorClick() {
-            GenericConfirmDialog.show(StopSensor.this, gs(R.string.are_you_sure), gs(R.string.sensor_stop_confirm), () -> {
+            String confirm = gs(R.string.are_you_sure);
+            if (!resettableCals()) { // Dexcom G6 Firefly or G7
+                confirm = gs(R.string.sensor_stop_confirm_norestart);
+                if (shortTxId()) { // Dexcom G7
+                    confirm = gs(R.string.sensor_stop_confirm_really_norestart);
+                }
+            }
+            GenericConfirmDialog.show(StopSensor.this, gs(R.string.are_you_sure), confirm, () -> {
                 stop();
                 JoH.startActivity(Home.class);
                 finish();

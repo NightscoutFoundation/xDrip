@@ -1387,6 +1387,17 @@
     <string name="title_use_number_icon_large">Відображати значення крупно</string>
     <string name="summary_number_icon_large_arrow">Відображати покажчик тренда, для роботи необхідна активація Відображати значення крупно</string>
     <string name="title_number_icon_large_arrow">Відображати тренд</string>
+    <string name="title_xdrip_plus_accessibility">Настройки режиму екрана Always On</string>
+    <string name="summary_aod_use_top">Встановити п\'яту частину екрану для AOD віджету</string>
+    <string name="title_aod_use_top">Встановити вгорі</string>
+    <string name="summary_aod_use_top_center">Зайняти другі 20% екрану для AOD віджету</string>
+    <string name="title_aod_use_top_center">Встановити вгорі по центру</string>
+    <string name="summary_aod_use_center">Зайняти треті 20% екрану для AOD віджету</string>
+    <string name="title_aod_use_center">Встановити у центрі</string>
+    <string name="summary_aod_use_center_bottom">Зайняти четверті 20% екрану для AOD віджету</string>
+    <string name="title_aod_use_center_bottom">Встановити внизу по центру</string>
+    <string name="summary_aod_use_bottom">Зайняти п\'яті 20% екрану для AOD віджету</string>
+    <string name="title_aod_use_bottom">Встановити внизу</string>
     <string name="summary_show_home_on_boot">Автоматично відображати екран xDrip+ після завантаження пристрою</string>
     <string name="title_show_home_on_boot">Показувати xDrip+ після завантаження</string>
     <string name="eula">Ліцензійна угода</string>
@@ -1502,6 +1513,8 @@
     <string name="change_settings">Змінити налаштування</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Хочете видалити або скинути калібрування сенсора?</string>
     <string name="sensor_stop_confirm">Ви бажаєте зупинити сенсор?</string>
+    <string name="sensor_stop_confirm_norestart">Ви не зможете просто перезапустити сенсор.</string>
+    <string name="sensor_stop_confirm_really_norestart">УВАЖНО!\n\nВи не зможете перезапустити пристрій.</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Активований старий експериментальний алгоритм прогнозування глюкози.\n\nЦе НЕ РЕКОМЕНДУЄТЬСЯ, оскільки може серйозно нашкодити.\n\nВимкнути даний алгоритм?</string>
     <string name="settings_issue">Проблема з налаштуваннями</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Ви хочете використовувати ці синхронізовані дані глюкометра для калібрування?\n\n(ці налаштування можуть бути змінені в Параметрах)</string>

@@ -1496,6 +1496,8 @@
     <string name="change_settings">Modifica impostazione</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Eliminare e resettare le calibrazioni per questo sensore?</string>
     <string name="sensor_stop_confirm">Vuoi fermare il sensore?</string>
+    <string name="sensor_stop_confirm_norestart">Non potrai semplicemente riavviare il sensore.</string>
+    <string name="sensor_stop_confirm_really_norestart">ATTENZIONE!\n\nNon potrai riavviare il dispositivo.</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Hai attivato una vecchia impostazione sperimentale di predizione della glicemia.\n\nQuesto non è CONSIGLIATO e potrebbe creare problemi.\n\nVuoi che la disabilito per te?</string>
     <string name="settings_issue">Problema Impostazioni!</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Vuoi usare questa glicemia capillare sincronizzata per calibrare?\n\n(puoi cambiare quando questa finestra di dialogo viene visualizzata nelle impostazioni)</string>

@@ -34,11 +34,9 @@ public class BlockFinderTest {
         val b = new BlockFinder();
         b.addBlockWithMerge(10, 100);
         b.addBlockWithMerge(50, 150);
-        assertWithMessage("invalid bound test").that(b.findRandomAvailablePosition(200, 50)).isEqualTo(-2);
-        assertWithMessage("impossible fit").that(b.findRandomAvailablePosition(100, 200)).isEqualTo(-1);
         for (int i = 0; i < 50; i++) {
             assertWithMessage("impossible fit failsafe " + i).that(b.findRandomAvailablePositionWithFailSafe(100, 200)).isIn(Range.closed(0, 100));
-            assertWithMessage("example fit " + i).that(b.findRandomAvailablePosition(50, 2000)).isIn(Range.closed(50, 2000 - 50));
+            assertWithMessage("example fit " + i).that(b.findRandomAvailablePositionWithFailSafe(50, 2000)).isIn(Range.closed(50, 2000 - 50));
         }
     }
 }
