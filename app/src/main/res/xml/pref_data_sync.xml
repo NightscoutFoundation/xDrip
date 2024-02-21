@@ -53,12 +53,6 @@
                     android:key="cloud_storage_api_download_enable"
                     android:summary="@string/summary_cloud_storage_api_download_enable"
                     android:title="@string/title_cloud_storage_api_download_enable" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:dependency="cloud_storage_api_download_enable"
-                    android:key="bluetooth_meter_for_calibrations_auto"
-                    android:summary="@string/summary_bluetooth_meter_for_calibrations_auto"
-                    android:title="@string/title_bluetooth_meter_for_calibrations_auto" />
                 <PreferenceScreen
                     android:key="rest_api_extra_options"
                     android:summary=""
