@@ -130,7 +130,7 @@ public class NightscoutTreatments {
                     Treatments existing = Treatments.byuuid(nightscout_id);
                     if (existing == null)
                         existing = Treatments.byuuid(uuid);
-                    if ((existing == null) && (!from_xdrip)) {
+                    if (existing == null) {
                         // check for close timestamp duplicates perhaps
                         existing = Treatments.byTimestamp(timestamp, 60000);
                         if (!((existing != null) && (JoH.roundDouble(existing.insulin, 2) == JoH.roundDouble(insulin, 2))
