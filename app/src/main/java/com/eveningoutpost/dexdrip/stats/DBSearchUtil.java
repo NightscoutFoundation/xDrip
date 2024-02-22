@@ -26,6 +26,27 @@ public class DBSearchUtil {
 
     public static final String CUTOFF = "38";
 
+    public static int noReadingsAboveVHRange(Context context) {
+        Bounds bounds = new Bounds().invoke();
+
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean mgdl = "mgdl".equals(settings.getString("units", "mgdl"));
+
+        double veryhigh = Double.parseDouble(settings.getString("veryhighValue", "250"));
+        if (!mgdl) {
+            veryhigh *= Constants.MMOLL_TO_MGDL;
+        }
+
+        int count = new Select()
+                .from(BgReading.class)
+                .where("timestamp >= " + bounds.start)
+                .where("timestamp <= " + bounds.stop)
+                .where("calculated_value > " + CUTOFF)
+                .where("calculated_value > " + veryhigh)
+                .where("snyced == 0").count();
+        Log.d("DrawStats", "VeryHigh count: " + count);
+        return count;
+    }
 
     public static int noReadingsAboveRange(Context context) {
         Bounds bounds = new Bounds().invoke();
@@ -154,6 +175,30 @@ public class DBSearchUtil {
                 .where("snyced == 0")
                 .count();
         Log.d("DrawStats", "Low count: " + count);
+
+        return count;
+    }
+
+    public static int noReadingsBelowVLRange(Context context) {
+        Bounds bounds = new Bounds().invoke();
+
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean mgdl = "mgdl".equals(settings.getString("units", "mgdl"));
+
+        double verylow = Double.parseDouble(settings.getString("verylowValue", "70"));
+        if (!mgdl) {
+            verylow *= Constants.MMOLL_TO_MGDL;
+
+        }
+        int count = new Select()
+                .from(BgReading.class)
+                .where("timestamp >= " + bounds.start)
+                .where("timestamp <= " + bounds.stop)
+                .where("calculated_value > " + CUTOFF)
+                .where("calculated_value < " + verylow)
+                .where("snyced == 0")
+                .count();
+        Log.d("DrawStats", "VeryLow count: " + count);
 
         return count;
     }
