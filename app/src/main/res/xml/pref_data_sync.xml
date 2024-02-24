@@ -47,12 +47,23 @@
                     android:key="cloud_storage_api_base"
                     android:title="@string/pref_title_api_url" />
 
-                <SwitchPreference
-                    android:defaultValue="true"
-                    android:dependency="cloud_storage_api_enable"
-                    android:key="cloud_storage_api_download_enable"
-                    android:summary="@string/summary_cloud_storage_api_download_enable"
-                    android:title="@string/title_cloud_storage_api_download_enable" />
+                <PreferenceScreen
+                    android:key="download_treatments_screen"
+                    android:title="@string/title_cloud_storage_api_download_enable"
+                    android:dependency="cloud_storage_api_enable">
+                    <SwitchPreference
+                        android:defaultValue="true"
+                        android:dependency="cloud_storage_api_enable"
+                        android:key="cloud_storage_api_download_enable"
+                        android:summary="@string/summary_cloud_storage_api_download_enable"
+                        android:title="@string/title_cloud_storage_api_download_enable" />
+                    <SwitchPreference
+                        android:defaultValue="true"
+                        android:dependency="cloud_storage_api_download_enable"
+                        android:key="cloud_storage_api_skip_download_from_xdrip"
+                        android:summary="@string/summary_cloud_storage_api_download_from_xdrip"
+                        android:title="@string/title_cloud_storage_api_download_from_xdrip" />
+                </PreferenceScreen>
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="cloud_storage_api_download_enable"
