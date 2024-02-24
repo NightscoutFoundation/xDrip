@@ -2622,7 +2622,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (!isSensorActive) {
             // Define a variable (notConnectedToG6Yet) that is only true if Native G6 is chosen, but, transmitter days is unknown.
             boolean notConnectedToG6Yet = DexCollectionType.getDexCollectionType() == DexcomG5 && Pref.getBooleanDefaultFalse("ob1_g5_use_transmitter_alg") && Pref.getBooleanDefaultFalse("using_g6") && DexTimeKeeper.getTransmitterAgeInDays(getTransmitterID()) == -1;
-            if (notConnectedToG6Yet) { // Only if G6 has been selected and transmitter days is unknown.
+            if (notConnectedToG6Yet || shortTxId()) { // Only if G6 has been selected and transmitter days is unknown, or if G7 has been selected.
                 notificationText.setText(R.string.wait_to_connect);
             } else { // Only if G6 is not selected or G6 transmitter days is known.
                 notificationText.setText(R.string.now_start_your_sensor);
