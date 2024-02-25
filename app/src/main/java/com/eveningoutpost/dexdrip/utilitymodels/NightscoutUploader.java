@@ -807,12 +807,12 @@ public class NightscoutUploader {
                                     if (!r.isSuccessful()) {
                                         throw new UploaderException(r.message(), r.code());
                                     } else {
-                                        up.completed(THIS_QUEUE);
+                                        //up.completed(THIS_QUEUE); // We may need this if there are more URLs
                                         Log.d(TAG, "Success for RESTAPI treatment delete: " + up.reference_uuid + " _id: " + this_id);
                                     }
                                 } else {
                                     Log.wtf(TAG, "Couldn't find a reference _id for uuid: " + up.reference_uuid + " got: " + this_id);
-                                    up.completed(THIS_QUEUE); // don't retry
+                                    // up.completed(THIS_QUEUE); // don't retry // We may need this if there are more URLs
                                 }
                             }
                         } else {
@@ -821,7 +821,7 @@ public class NightscoutUploader {
                     }
                 } else {
                     Log.wtf(TAG, "Unsupported operation type for treatment: " + up.action);
-                    up.completed(THIS_QUEUE); // don't retry it
+                    //up.completed(THIS_QUEUE); // don't retry it // We may need this if there are more URLs
                 }
             }
             // handle insert types
@@ -836,7 +836,7 @@ public class NightscoutUploader {
                         Log.d(TAG, "Success for RESTAPI treatment insert upload");
                         for (UploaderQueue up : tups) {
                             if (up.action.equals("insert")) {
-                                up.completed(THIS_QUEUE); // approve all types for this queue
+                                //up.completed(THIS_QUEUE); // approve all types for this queue // We may need this if there are more URLs
                             }
                         }
                         checkGzipSupport(r);
@@ -865,7 +865,7 @@ public class NightscoutUploader {
                                 if ((up.action.equals("update") || (up.action.equals("insert")))
                                         && (up.reference_uuid.equals(match_uuid) || (uuid_to_id(up.reference_uuid).equals(match_uuid)))) {
                                     if( d) Log.d(TAG, "upsert: matched");
-                                    up.completed(THIS_QUEUE); // approve all types for this queue
+                                    //up.completed(THIS_QUEUE); // approve all types for this queue // We may need this if there are more URLs
                                     break;
                                 }
                             }
@@ -876,11 +876,12 @@ public class NightscoutUploader {
                         return;
                     }
                 }
-                // if we got this far without exception then mark everything as completed to fix harmless erroneous queue entries
-                for (UploaderQueue up : tups) {
-                    if (d) Log.d(TAG, "Marking all items completed");
-                    up.completed(THIS_QUEUE);
-                }
+                // Commenting the following out because we may need the queue for other URLs
+        //        // if we got this far without exception then mark everything as completed to fix harmless erroneous queue entries
+        //        for (UploaderQueue up : tups) {
+        //            if (d) Log.d(TAG, "Marking all items completed");
+        //            up.completed(THIS_QUEUE);
+        //        }
             }
         }
     }
@@ -1314,7 +1315,7 @@ public class NightscoutUploader {
                                     } else {
                                         Log.d(TAG, "Got null for treatment id: " + up.reference_id);
                                     }
-                                    up.completed(THIS_QUEUE);
+                                    //up.completed(THIS_QUEUE); // We may need this if there are more URLs
                                 } else if (up.action.equals("delete")) {
                                     if (up.reference_uuid != null) {
                                         Log.d(TAG,"Processing treatment delete mongo sync for: "+up.reference_uuid);
@@ -1322,7 +1323,7 @@ public class NightscoutUploader {
                                         Log.d(TAG,treatmentDb.remove(searchQuery, WriteConcern.UNACKNOWLEDGED).toString());
 
                                     }
-                                    up.completed(THIS_QUEUE);
+                                    //up.completed(THIS_QUEUE); // We may need this if there are more URLs
                                 } else {
                                     Log.e(TAG, "Unsupported operation type for treatment: " + up.action);
                                 }
