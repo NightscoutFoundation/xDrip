@@ -1170,6 +1170,8 @@
     <string name="use_mobile_data">Użyj transmisji danych</string>
     <string name="summary_cloud_storage_api_download_enable">Spróbuj również pobrać zabiegi z Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Pobierz zabiegi</string>
+    <string name="title_cloud_storage_api_download_from_xdrip"></string>
+    <string name="summary_cloud_storage_api_download_from_xdrip"></string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Kalibruj bez pytania używając wyniku z glukometru jeżeli warunki są korzystne (funkcja eksperymentalna)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatyczna kalibracja</string>
     <string name="title_rest_api_extra_options">Dodatkowe opcje</string>
@@ -1313,6 +1315,7 @@
     <string name="title_clfollow_missed_poll_interval">Interwał ankiet nieodebranych danych</string>
     <string name="summary_clfollow_missed_poll_interval"></string>
     <string name="title_clfollow_download_finger_bgs">Poziom cukru z palca</string>
+    <string name="summary_clfollow_download_finger_bgs">Download finger BGs from CareLink</string>
     <string name="title_clfollow_download_boluses">Bolusy</string>
     <string name="summary_clfollow_download_boluses">Pobierz bolusy z CareLink</string>
     <string name="title_clfollow_download_meals">Posiłki</string>
@@ -1320,6 +1323,7 @@
     <string name="title_clfollow_download_notifications">Powiadomienia</string>
     <string name="summary_clfollow_download_notifications">Pobierz powiadomienia z CareLink</string>
     <string name="title_ob1_options">Ustawienia Kolektora OB1 G5/G6</string>
+    <string name="summary_use_ob1_g5_collector_service"></string>
     <string name="title_use_ob1_g5_collector_service">Użyj kolektora OB1</string>
     <string name="summary_ob1_g5_use_transmitter_alg">Użyj wbudowanego algorytmu transmitera do obliczeń wartości poziomu glukozy kiedy to możliwe.</string>
     <string name="title_ob1_g5_use_transmitter_alg">Algorytm natywny</string>
@@ -1365,6 +1369,7 @@
     <string name="summary_public_notifications">Pokaż powiadomienia na zabezpieczonym ekranie blokady</string>
     <string name="title_public_notifications">Powiadomienia publiczne</string>
     <string name="title_xdrip_plus_number_wall">Poziom glukozy na ekranie blokady</string>
+    <string name="summary_do_number_wall_configuration">Dostosuj podgląd ściany</string>
     <string name="summary_number_wall_on_lockscreen">Pokaż na zablokowanym ekranie. Tylko Android 7 i nowszy!</string>
     <string name="title_number_wall_on_lockscreen">Użyj na ekranie blokady</string>
     <string name="summary_pick_numberwall_start">Wybierz czas, aby zacząć pokazywać</string>
