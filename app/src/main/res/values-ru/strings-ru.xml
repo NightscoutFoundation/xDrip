@@ -1170,6 +1170,7 @@
     <string name="use_mobile_data">Использовать мобильные данные</string>
     <string name="summary_cloud_storage_api_download_enable">Также пытаться загрузить данные из Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Загружать данные</string>
+    <string name="title_cloud_storage_api_download_from_xdrip"></string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Калибровать используя новые показания глюкозы без запроса подтверждения при благоприятных условиях (экспериментальная функция)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Автоматическая калибровка</string>
     <string name="title_rest_api_extra_options">Дополнительные параметры</string>
