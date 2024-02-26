@@ -1170,6 +1170,7 @@
     <string name="use_mobile_data">Mobile Daten verwenden</string>
     <string name="summary_cloud_storage_api_download_enable">Versuche Behandlungen von Nightscout herunterzuladen</string>
     <string name="title_cloud_storage_api_download_enable">Behandlungen herunterladen</string>
+    <string name="title_cloud_storage_api_download_from_xdrip">Überspringe Elemente aus xDrip</string>
     <string name="summary_cloud_storage_api_download_from_xdrip">Von xDrip hochgeladene Elemente nicht herunterladen</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Ohne zu fragen mit einem neuen Blutzuckerwert kalibrieren, wenn die Bedingungen gut scheinen (experimentell)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatische Kalibrierung</string>
