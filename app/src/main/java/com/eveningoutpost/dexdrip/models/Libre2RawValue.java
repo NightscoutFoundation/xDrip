@@ -86,7 +86,6 @@ public class Libre2RawValue extends PlusModel {
         } catch (JSONException e) {
             UserError.Log.wtf(TAG, "Error producing in toJSON: " + e);
             if (Double.isNaN(glucose)) UserError.Log.e(TAG, "glucose is NaN");
-            if (Double.isNaN(timestamp)) UserError.Log.e(TAG, "timestamp is NaN");
             return "";
         }
     }
