@@ -1733,9 +1733,13 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             }
 
             if (getBestCollectorHardwareName().equals("G7")) { // Remove battery options, from G5/G6/Dex1/G7 Debug Settings, if we are using G7 or One+
-                PreferenceScreen screen = (PreferenceScreen) findPreference("xdrip_plus_g5_extra_settings");
-                Preference pref = getPreferenceManager().findPreference("dex_battery_category");
-                screen.removePreference(pref);
+                try {
+                    PreferenceScreen screen = (PreferenceScreen) findPreference("xdrip_plus_g5_extra_settings");
+                    Preference pref = getPreferenceManager().findPreference("dex_battery_category");
+                    screen.removePreference(pref);
+                } catch (Exception e) {
+                    UserError.Log.wtf(TAG, "Failed to remove G7 battery options");
+                }
             }
 
             //Remove CL prefs for NON CLFollower
