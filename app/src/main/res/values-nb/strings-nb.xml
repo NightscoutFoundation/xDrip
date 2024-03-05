@@ -1170,6 +1170,8 @@
     <string name="use_mobile_data">Bruk mobildata</string>
     <string name="summary_cloud_storage_api_download_enable">Prøv også å laste ned behandlinger fra Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Last ned behandlinger</string>
+    <string name="title_cloud_storage_api_download_from_xdrip">Hopp over elementer fra xDrip</string>
+    <string name="summary_cloud_storage_api_download_from_xdrip">Unngå å laste ned elementer lastet opp av xDrip</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Kalibrer med nye blodsukkermålinger hvis tilstanden synes riktig uten å be om samtykke (eksperimentell)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatisk kalibrering</string>
     <string name="title_rest_api_extra_options">Ekstra alternativer</string>

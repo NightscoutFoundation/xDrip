@@ -90,9 +90,14 @@
     <string name="pref_amazfit_other_alert_enable">تفعيل</string>
     <string name="pref_amazfit_other_alert_title">تنبيهات أخرى</string>
     <string name="pref_amazfit_watchface_graph_dots_title">نقاط مشاهدة الرسوم البيانية</string>
+    <string name="pref_amazfit_watchface_graph_dots_summary">عرض نقاط صغيرة جداً بدلاً من صغيرة</string>
     <string name="pref_amazfit_watchface_graph_enable">تفعيل</string>
+    <string name="pref_amazfit_watchface_graph_title">رسم بياني لواجهة الساعة</string>
+    <string name="pref_amazfit_watchface_graph_enable_summary">يظهر الرسم البياني في خلفية واجهات الساعة</string>
+    <string name="pref_amazfit_watchface_graph_hours_title">رسم بياني لواجهة الساعة</string>
     <string name="pref_amazfit_watchface_graph_hours_summary">تغيير عدد الساعات في الرسم البياني</string>
     <string name="pref_amazfit_widget_graph_hours_summary">تغيير عدد الساعات في الرسم البياني</string>
+    <string name="pref_amazfit_widget_graph_dots_summary">عرض نقاط صغيرة جداً بدلاً من صغيرة</string>
     <string name="pref_amazfit_widget_graph_enable">تفعيل</string>
     <string name="toast_crash">حدث خطأ ما :( تم إرسال تقرير للمساعدة في حل المشكلة.</string>
     <string name="taskerConfiguration">Tasker Configuration</string>
@@ -124,6 +129,7 @@
     <string name="now_choose_start_sensor_in_settings">الآن اختر بدء الحساس الخاص بك في الإعدادات</string>
     <string name="unfortunately_andoird_version_no_blueooth_low_energy">للأسف إصدار الأندرويد الخاص بك لا يدعم البلوتوث منخفض الطاقة</string>
     <string name="persistent_high_for_greater_than">ارتفاع مستمر لـ &gt; </string>
+    <string name="space_mins">" دقائق"</string>
     <string name="till">حتى</string>
     <string name="low_predicted">توقع انخفاض</string>
     <string name="in">في</string>
@@ -145,6 +151,7 @@
     <string name="general_settings">الإعدادات العامة</string>
     <string name="high_value">قيمة مرتفعة</string>
     <string name="low_value">قيمة منخفضة</string>
+    <string name="stats_range_settings">إعدادات النطاق: </string>
     <string name="end_user_license_agreement">انهاء اتفاقية الاستخدام</string>
     <string name="save">حفظ</string>
     <string name="view_important_warning">عرض التحذيرات الهامة</string>

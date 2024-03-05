@@ -1170,6 +1170,8 @@
     <string name="use_mobile_data">Použít mobilní data</string>
     <string name="summary_cloud_storage_api_download_enable">Pokusit se také stáhnout ošetření z Nightscoutu</string>
     <string name="title_cloud_storage_api_download_enable">Stáhnout údaje o ošetření</string>
+    <string name="title_cloud_storage_api_download_from_xdrip">Přeskočit položky z xDripu</string>
+    <string name="summary_cloud_storage_api_download_from_xdrip">Nestahovat položky nahrané aplikací xDrip+</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Kalibrovat bez ptaní, pokud jsou příhodné podmínky (experimentální)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatická kalibrace</string>
     <string name="title_rest_api_extra_options">Další možnosti</string>

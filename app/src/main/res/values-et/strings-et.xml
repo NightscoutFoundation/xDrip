@@ -1170,6 +1170,8 @@
     <string name="use_mobile_data">Kasuta mobiilside andmeid</string>
     <string name="summary_cloud_storage_api_download_enable">Proovi ka Nightscout\'i raviandmeid alla laadida</string>
     <string name="title_cloud_storage_api_download_enable">Lae alla raviandmed</string>
+    <string name="title_cloud_storage_api_download_from_xdrip">Jäta xDrip andmed vahele</string>
+    <string name="summary_cloud_storage_api_download_from_xdrip">Väldi xDrip poolt üleslaaditud andmete allalaadimist</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Kasuta veresuhkruväärtust kalibreerimiseks kui tingimused tunduvad õiged selle tegemiseks ilma luba küsimata (eksperimentaalne)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automaatne kalibreerimine</string>
     <string name="title_rest_api_extra_options">Lisavalikud</string>

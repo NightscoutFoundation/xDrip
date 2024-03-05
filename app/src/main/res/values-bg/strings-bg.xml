@@ -563,6 +563,7 @@
     <string name="notify_disable_wearG5_on_missedreadings">Деактивиране на услугата Force Wear Collection поради %1$d минути пропуснати четения на часовника!</string>
     <string name="label_show_insulin">Е:%1$sе</string>
     <string name="label_show_carbs">Въглехидрати:%1$sg</string>
+    <string name="label_show_royceratio">Вх/И:%1$s</string>
     <string name="label_show_steps">Отброяване на стъпките. Нулират се в полунощ</string>
     <string name="label_show_steps_km">показване на изминатото разстояние в км</string>
     <string name="label_show_steps_mi">изминато разстояние в мили</string>
@@ -931,7 +932,9 @@
     <string name="enable_local_broadcast">Активиране на локален broadcast?</string>
     <string name="broadcast_only_to">Broadcast само до?</string>
     <string name="enable_wear_os_sync">Активирай синхронизиране с Android Wear ОС?</string>
+    <string name="androidaps">AndroidAPS</string>
     <string name="androidwear">Android Wear ОС</string>
+    <string name="librealarm">LibreAlarm</string>
     <string name="use_librealarm">Използвай LibreAlarm приложението за източник на данни?</string>
     <string name="noise_blocking">Блокиране на шум в измерванията</string>
     <string name="level_at_which_noisy_data_should_not_be_broadcast">Ниво, при което шумните данни не трябва да се предават, тъй като това може да обърка приемащите приложения</string>
@@ -1477,6 +1480,7 @@
     <string name="median_bg">Медиана КЗ:</string>
     <string name="mean_bg">Средна КЗ:</string>
     <string name="hba1c_est">HbA1c и т.н.:</string>
+    <string name="stddev">СтандОткл:</string>
     <string name="relative_sd_cv">Относително SD (CV):</string>
     <string name="important_warning">Важно предупреждение!</string>
     <string name="i_agree">СЪГЛАСЕН СЪМ</string>

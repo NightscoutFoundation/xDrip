@@ -1170,6 +1170,8 @@
     <string name="use_mobile_data">Mobil veri kullan</string>
     <string name="summary_cloud_storage_api_download_enable">Tedavi verilerini Nightscout\'tan xDrip\'e indirmeyi deneyin</string>
     <string name="title_cloud_storage_api_download_enable">Tedavileri indirin</string>
+    <string name="title_cloud_storage_api_download_from_xdrip">xDrip\'teki öğeleri atla</string>
+    <string name="summary_cloud_storage_api_download_from_xdrip">xDrip tarafından yüklenen öğeleri indirmekten kaçının</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Koşullar onaylamadan doğru şekilde görünüyorsa, yeni kan şekeri okumalarını kullanarak kalibre edin (deneysel)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Otomatik kalibrasyon</string>
     <string name="title_rest_api_extra_options">Ekstra Seçenekler</string>
