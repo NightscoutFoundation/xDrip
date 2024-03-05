@@ -340,6 +340,11 @@ dependencies {
     annotationProcessor 'com.google.dagger:dagger-compiler:2.25.4'
     implementation 'net.danlew:android.joda:2.10.6.1'
     implementation 'org.bouncycastle:bcpkix-jdk15to18:1.68'
+
+    def appCenterSdkVersion = '4.4.5'
+    implementation "com.microsoft.appcenter:appcenter-analytics:${appCenterSdkVersion}"
+    implementation "com.microsoft.appcenter:appcenter-crashes:${appCenterSdkVersion}"
+
     testImplementation 'joda-time:joda-time:2.10.7'
 
     testImplementation 'junit:junit:4.13.2'
