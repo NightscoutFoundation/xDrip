@@ -1170,6 +1170,8 @@
     <string name="use_mobile_data">Utilizza rete dati mobile</string>
     <string name="summary_cloud_storage_api_download_enable">Prova anche a scaricare i dati da Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Scarica dati</string>
+    <string name="title_cloud_storage_api_download_from_xdrip">Ignora gli elementi provenienti da xDrip</string>
+    <string name="summary_cloud_storage_api_download_from_xdrip">Non scaricare gli elementi caricati da xDrip</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Calibra automaticamente utilizzando le letture di glicemia se le condizioni sembrano giuste, senza chiedere conferma (sperimentale)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Calibrazione automatica</string>
     <string name="title_rest_api_extra_options">Altre opzioni</string>

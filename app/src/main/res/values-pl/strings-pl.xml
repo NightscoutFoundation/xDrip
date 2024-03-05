@@ -1170,6 +1170,8 @@
     <string name="use_mobile_data">Użyj transmisji danych</string>
     <string name="summary_cloud_storage_api_download_enable">Spróbuj również pobrać zabiegi z Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Pobierz zabiegi</string>
+    <string name="title_cloud_storage_api_download_from_xdrip">Pomiń elementy z xDrip</string>
+    <string name="summary_cloud_storage_api_download_from_xdrip">Unikaj pobierania elementów przesłanych przez xDrip</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Kalibruj bez pytania używając wyniku z glukometru jeżeli warunki są korzystne (funkcja eksperymentalna)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatyczna kalibracja</string>
     <string name="title_rest_api_extra_options">Dodatkowe opcje</string>
@@ -1365,6 +1367,7 @@
     <string name="summary_public_notifications">Pokaż powiadomienia na zabezpieczonym ekranie blokady</string>
     <string name="title_public_notifications">Powiadomienia publiczne</string>
     <string name="title_xdrip_plus_number_wall">Poziom glukozy na ekranie blokady</string>
+    <string name="summary_do_number_wall_configuration">Dostosuj podgląd ściany</string>
     <string name="summary_number_wall_on_lockscreen">Pokaż na zablokowanym ekranie. Tylko Android 7 i nowszy!</string>
     <string name="title_number_wall_on_lockscreen">Użyj na ekranie blokady</string>
     <string name="summary_pick_numberwall_start">Wybierz czas, aby zacząć pokazywać</string>
