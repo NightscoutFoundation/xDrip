@@ -1122,7 +1122,7 @@
         <PreferenceScreen
             android:icon="@drawable/ic_mode_edit_grey_600_48dp"
             android:key="pens_screen"
-            android:title="Insulin Pens">
+            android:title="@string/insulin_pens">
             <PreferenceScreen
                 android:icon="@drawable/ic_mode_edit_grey_600_48dp"
                 android:key="opennov_screen"
