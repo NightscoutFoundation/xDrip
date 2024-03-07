@@ -766,7 +766,6 @@
     <string name="alert_noisy_values">Varsel etter x minutter hvis data har støy</string>
     <string name="alert_snooze">Slumre varsel</string>
     <string name="alert_minutes_reraise">Antall minutter før samme varsel utløses etter slumring.</string>
-    <string name="reraise_before_snooze">Gjenopprett varsler før slumretid</string>
     <string name="reraise_not_snoozed_sooner">Gjenopprett varselet hvis det ikke slumres tidligere</string>
     <string name="alert_reraise_time">Tid for å gjenoppta varsel</string>
     <string name="alert_seconds_reraise">Antall SEKUNDER å vente før et varsel blir gjenopptatt.</string>
@@ -1828,4 +1827,25 @@
     <string name="carelink_credential_status_access_expired">Tilgang utløpt! Vil oppdatere!</string>
     <string name="carelink_credential_status_refresh_expired">Innlogging utløpt! Vennligst Logg inn!</string>
     <string name="data_source">Datakilde:</string>
+    <string name="disable_collection">Deaktiver innsamling</string>
+    <string name="insulin_pens">Insulinpenner</string>
+    <string name="editing">Redigerer</string>
+    <string name="enable_missed_reading_alert">Aktiver tapte avlesningsvarsel</string>
+    <string name="alert_if_no_data_received_in_colon">Varsle hvis ingen data mottas etter:</string>
+    <string name="wait_before_raising_the_same_alert_after_snooze_colon">Vent før samme varsel utløses på nytt etter slumring:</string>
+    <string name="reraise_alerts_before_snooze_time">Gjenoppta varsel hvis den ikke slumres</string>
+    <string name="alert_reraise_time_colon">Tid før varsel gjenopptas:</string>
+    <string name="select_start_time">Velg starttidspunkt</string>
+    <string name="select_end_time">Velg sluttidspunkt</string>
+    <string name="accept_glucose">Aksepter glukose</string>
+    <string name="process_glucose_data_received">Prosesser glukosedata mottatt fra AAPS eller AAPSClient</string>
+    <string name="use_health_connect">Bruk Health Connect</string>
+    <string name="audio_focus">Lydfokus</string>
+    <string name="audio_focus_summary">Velg hva som skal gjøres med andre apper når varsler lager lyd og justerer systemvolumnivå</string>
+    <string name="audio_focus_dont_adjust_other_app_sounds">Ikke juster andre applyder</string>
+    <string name="audio_focus_lower_volume_of_other_apps">Lavere volum av andre apper</string>
+    <string name="audio_focus_pause_other_apps_playing_audio">Pause andre apper som lager lyd</string>
+    <string name="audio_focus_pause_all_other_sounds">Sett alle andre lyder på pause</string>
+    <string name="use_camera_light">Bruk kameralys</string>
+    <string name="use_camera_light_summary">Blink kameralys under varsler når tilkoblet en lader</string>
 </resources>
