@@ -1828,4 +1828,24 @@
     <string name="carelink_credential_status_access_expired">Juurdepääs aegunud! Värskenda!</string>
     <string name="carelink_credential_status_refresh_expired">Sisselogimine aegunud! Palun logi sisse!</string>
     <string name="data_source">Andmeallikas:</string>
+    <string name="disable_collection">Keela kogumine</string>
+    <string name="insulin_pens">Insuliini pen-süstlad</string>
+    <string name="editing">Muutmine</string>
+    <string name="enable_missed_reading_alert">Luba vahele jäänud näidu alarm</string>
+    <string name="alert_if_no_data_received_in_colon">Hoiata, kui andmeid pole saabunud:</string>
+    <string name="wait_before_raising_the_same_alert_after_snooze_colon">Oota enne sama märguande uuesti kordamist pärast vaigistust:</string>
+    <string name="reraise_alerts_before_snooze_time">Korda hoiatusi enne edasilükkamise aja täitumist</string>
+    <string name="alert_reraise_time_colon">Alarmi kordamise aeg:</string>
+    <string name="select_start_time">Vali algusaeg</string>
+    <string name="select_end_time">Vali lõppaeg</string>
+    <string name="process_glucose_data_received">Töötle NSClient-rakendusest saadud veresuhkru andmeid</string>
+    <string name="use_health_connect">Kasuta Health Connect\'i</string>
+    <string name="audio_focus">Helifookus</string>
+    <string name="audio_focus_summary">Vali, mida teha teiste rakendustega alarmide esitamise ja süsteemi helitugevuse muutmise ajal</string>
+    <string name="audio_focus_dont_adjust_other_app_sounds">Ära muuda teiste rakenduste helisid</string>
+    <string name="audio_focus_lower_volume_of_other_apps">Vähenda teiste rakenduste helitugevust</string>
+    <string name="audio_focus_pause_other_apps_playing_audio">Peata heli teistes rakendustes</string>
+    <string name="audio_focus_pause_all_other_sounds">Peata kõik teised helid</string>
+    <string name="use_camera_light">Kasuta kaamera välku</string>
+    <string name="use_camera_light_summary">Vilguta alarmide ajal kaamera välku, kui laadija on ühendatud</string>
 </resources>
