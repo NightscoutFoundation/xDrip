@@ -1609,4 +1609,5 @@
     <string name="titleInside_yRange">Käytä</string>
     <string name="close">Sulje</string>
     <string name="data_source">Tietolähde:</string>
+    <string name="reraise_alerts_before_snooze_time">Toista hälytykset ennen torkkuaikaa</string>
 </resources>
