@@ -1542,4 +1542,5 @@
     <string name="snooze_done">← 静默 / 完成 →</string>
     <string name="cannot_choose_file_without_permission">如果没有存储权限, 则无法选择文件</string>
     <string name="titleInside_yRange">启用</string>
+    <string name="reraise_alerts_before_snooze_time">尽管延迟时间没到，重新发起警报</string>
 </resources>
