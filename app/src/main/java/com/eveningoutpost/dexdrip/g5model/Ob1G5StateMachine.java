@@ -1096,8 +1096,10 @@ public class Ob1G5StateMachine {
         if (ask_for_backfill) {
             nextBackFillCheckSize = backfillCheckLarge();
             monitorBackFill(parent, connection);
-            final long startTime = Math.max(earliest_timestamp - (Constants.MINUTE_IN_MS * 5), sensor.started_at);
-            final long endTime = latest_timestamp + (Constants.MINUTE_IN_MS * 5);
+
+            final long txStartTime = DexTimeKeeper.getTxStartTimestamp(getTransmitterID()); // the time the transmitter reports as starting or 0 if we don't know
+            final long startTime = Math.max(earliest_timestamp - DEXCOM_PERIOD, Math.max(txStartTime + DEXCOM_PERIOD, sensor.started_at));
+            final long endTime = latest_timestamp + DEXCOM_PERIOD;
 
             if (startTime >= endTime) {
                 UserError.Log.e(TAG, "Cannot process backfill request where start time would be after end time");
