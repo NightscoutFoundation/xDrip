@@ -80,7 +80,7 @@ public class MissedReadingActivity extends ActivityWithMenu {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         int startMinutes = prefs.getInt("missed_readings_start", 0);
         int endMinutes = prefs.getInt("missed_readings_end", 0);
-        boolean enableAlert = prefs.getBoolean("bg_missed_alerts",false);
+        boolean enableAlert = prefs.getBoolean("bg_missed_alerts",true);
         boolean allDay = prefs.getBoolean("missed_readings_all_day",true);
         boolean enableReraise = prefs.getBoolean("bg_missed_alerts_enable_alerts_reraise",false);
         
