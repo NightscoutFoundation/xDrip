@@ -1124,6 +1124,7 @@ public class Ob1G5StateMachine {
         return getTransmitterID().length() < 6;
     }
 
+
     private static Ob1Work enqueueCommand(BaseMessage tm, String msg) {
         if (tm != null) {
             final Ob1Work item = new Ob1Work(tm, msg);
