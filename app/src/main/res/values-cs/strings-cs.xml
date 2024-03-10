@@ -1821,4 +1821,25 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="carelink_credential_status_access_expired">Platnost přístupu vypršela! Přístup bude obnoven!</string>
     <string name="carelink_credential_status_refresh_expired">Platnost přihlášení vypršela! Prosím, přihlašte se znovu!</string>
     <string name="data_source">Zdroj dat:</string>
+    <string name="disable_collection">Zakázat sběr dat</string>
+    <string name="insulin_pens">Inzulínová pera</string>
+    <string name="editing">Úprava</string>
+    <string name="enable_missed_reading_alert">Povolit výstrahu nezachycených hodnot</string>
+    <string name="alert_if_no_data_received_in_colon">Upozornit, pokud neobdrženy žádné hodnoty během:</string>
+    <string name="wait_before_raising_the_same_alert_after_snooze_colon">Počkat před spuštěním stejné výstrahy po jejím potvrzení:</string>
+    <string name="reraise_alerts_before_snooze_time">Znovu upozornit před časem odložení</string>
+    <string name="alert_reraise_time_colon">Doba opakování upozornění:</string>
+    <string name="select_start_time">Vybrat čas od</string>
+    <string name="select_end_time">Vybrat čas do</string>
+    <string name="accept_glucose">Přijímat glykémie</string>
+    <string name="process_glucose_data_received">Zpracovávat hodnoty glykémie přijatých z NSClient</string>
+    <string name="use_health_connect">Používat Health Connect</string>
+    <string name="audio_focus">Zvukové preference</string>
+    <string name="audio_focus_summary">Zvolte, co udělat se zvuky ostatních aplikací během přehrávání výstrah</string>
+    <string name="audio_focus_dont_adjust_other_app_sounds">Neupravovat zvuky ostatních aplikací</string>
+    <string name="audio_focus_lower_volume_of_other_apps">Snížit hlasitost zvuků ostatních aplikací</string>
+    <string name="audio_focus_pause_other_apps_playing_audio">Pozastavit ostatní aplikace přehrávající zvuky</string>
+    <string name="audio_focus_pause_all_other_sounds">Pozastavit všechny ostatní zvuky</string>
+    <string name="use_camera_light">Používat světlo fotoaparátu</string>
+    <string name="use_camera_light_summary">Blikat světlem fotoaparátu během trvání výstrahy, pokud je telefon připojen k nabíječce</string>
 </resources>

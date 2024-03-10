@@ -1828,4 +1828,25 @@
     <string name="carelink_credential_status_access_expired">Zugang abgelaufen! Wird aktualisiert...</string>
     <string name="carelink_credential_status_refresh_expired">Login abgelaufen! Bitte anmelden!</string>
     <string name="data_source">Datenquelle:</string>
+    <string name="disable_collection">Erfassung stoppen</string>
+    <string name="insulin_pens">Insulin-Pens</string>
+    <string name="editing">Bearbeitung</string>
+    <string name="enable_missed_reading_alert">Bearbeite Benachrichtigung bei verpassten Werten</string>
+    <string name="alert_if_no_data_received_in_colon">Warnen, wenn keine Daten in den letzten:</string>
+    <string name="wait_before_raising_the_same_alert_after_snooze_colon">Wartezeit, bevor dieselbe Warnung nach Snooze wieder ausgelöst wird:</string>
+    <string name="reraise_alerts_before_snooze_time">Alarmiere erneut vor der Schlummer-Zeit</string>
+    <string name="alert_reraise_time_colon">Wiederholzeit für Warnung:</string>
+    <string name="select_start_time">Startzeit wählen</string>
+    <string name="select_end_time">Endzeit wählen</string>
+    <string name="accept_glucose">Glukose akzeptieren</string>
+    <string name="process_glucose_data_received">Von der NSClient-App empfangene Glukose-Daten verarbeiten</string>
+    <string name="use_health_connect">Health Connect verwenden</string>
+    <string name="audio_focus">Audio-Fokus</string>
+    <string name="audio_focus_summary">Auswirkung auf andere Apps beim Abspielen von Warnungen und bei Lautstärkeänderungen</string>
+    <string name="audio_focus_dont_adjust_other_app_sounds">Töne anderer Apps nicht anpassen</string>
+    <string name="audio_focus_lower_volume_of_other_apps">Töne anderer Apps leiser stellen</string>
+    <string name="audio_focus_pause_other_apps_playing_audio">Andere Audio abspielende Apps pausieren</string>
+    <string name="audio_focus_pause_all_other_sounds">Alle anderen Töne pausieren</string>
+    <string name="use_camera_light">Kamera-Licht verwenden</string>
+    <string name="use_camera_light_summary">Kamera-Licht bei Warnungen aufblitzen lassen (nur am Ladegerät)</string>
 </resources>

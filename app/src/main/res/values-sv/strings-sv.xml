@@ -1683,4 +1683,5 @@
     <string name="carelink_refresh_token_failed">Åtkomstförnyelsen misslyckades! Kommer försöka igen!</string>
     <string name="carelink_download_start">Starta nedladdning</string>
     <string name="carelink_download_failed">Nedladdning av data misslyckades!</string>
+    <string name="reraise_alerts_before_snooze_time">Slå larm igen innan snoozetiden</string>
 </resources>

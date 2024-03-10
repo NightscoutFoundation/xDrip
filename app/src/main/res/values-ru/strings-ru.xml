@@ -1812,4 +1812,5 @@
     <string name="carelink_credential_status_access_expired">Срок доступа закончился! Будет обновлен!</string>
     <string name="carelink_credential_status_refresh_expired">Время входа закончилось! Пожалуйста, войдите!</string>
     <string name="data_source">Источник данных:</string>
+    <string name="reraise_alerts_before_snooze_time">Показывать повторные оповещения до истечения времени отсроченного срабатывания</string>
 </resources>

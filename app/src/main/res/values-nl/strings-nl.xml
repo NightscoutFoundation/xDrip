@@ -1678,4 +1678,5 @@
     <string name="summary_Lib2_show_raw_values">Inschakelen om ruwe waarden in grafiek weer te geven.</string>
     <string name="title_Lib2_show_sense_on_status">Toon sensorinfo in Status</string>
     <string name="summary_Lib2_show_sense_on_status">Inschakelen om extra informatie in Status voor Libre 2-sensor weer te geven.</string>
+    <string name="reraise_alerts_before_snooze_time">Verhoog waarschuwingen vóór de sluimertijd</string>
 </resources>
