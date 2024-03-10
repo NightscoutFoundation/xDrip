@@ -1171,7 +1171,7 @@
     <string name="summary_cloud_storage_api_download_enable">Essayer également de télécharger des données depuis Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Télécharger les données</string>
     <string name="title_cloud_storage_api_download_from_xdrip">Ignorer les éléments de xDrip</string>
-    <string name="summary_cloud_storage_api_download_from_xdrip">Éviter de récupérer les éléments poussés par xDrip</string>
+    <string name="summary_cloud_storage_api_download_from_xdrip">Éviter de télécharger les éléments chargés par xDrip</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Calibrer en utilisant de nouvelles lectures de glycémie si les conditions semblent correctes sans demander confirmation (expérimental)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Calibration automatique</string>
     <string name="title_rest_api_extra_options">Options supplémentaires</string>
@@ -1828,4 +1828,25 @@
     <string name="carelink_credential_status_access_expired">Accès expiré! Vais actualiser !</string>
     <string name="carelink_credential_status_refresh_expired">Connexion expirée! Veuillez vous connecter!</string>
     <string name="data_source">Source de données:</string>
+    <string name="disable_collection">Désactiver la collection</string>
+    <string name="insulin_pens">Stylos à Insuline</string>
+    <string name="editing">Modification</string>
+    <string name="enable_missed_reading_alert">Activer l\'alerte de lecture manquée</string>
+    <string name="alert_if_no_data_received_in_colon">Alerte si aucune donnée reçue dans:</string>
+    <string name="wait_before_raising_the_same_alert_after_snooze_colon">Nombre de minutes avant de déclencher la même alerte après sa mise en veille:</string>
+    <string name="reraise_alerts_before_snooze_time">Relancer les alertes avant la durée de mise en veille</string>
+    <string name="alert_reraise_time_colon">Délai de relance de l\'alerte:</string>
+    <string name="select_start_time">Sélectionner l’heure de début</string>
+    <string name="select_end_time">Sélectionner l\'heure de fin</string>
+    <string name="accept_glucose">Accepter la Glycémie</string>
+    <string name="process_glucose_data_received">Traiter les données de glucose reçues de l\'application NSClient</string>
+    <string name="use_health_connect">Utiliser Health Connect</string>
+    <string name="audio_focus">Priorité audio</string>
+    <string name="audio_focus_summary">Choisir ce qu\'il faut faire avec les autres applications lors de lecture d\'alertes et réglage du volume du système</string>
+    <string name="audio_focus_dont_adjust_other_app_sounds">Ne pas ajuster les sons des autres applications</string>
+    <string name="audio_focus_lower_volume_of_other_apps">Réduire le volume des autres applications</string>
+    <string name="audio_focus_pause_other_apps_playing_audio">Mettre en pause les autres applications en cours de lecture audio</string>
+    <string name="audio_focus_pause_all_other_sounds">Mettre en pause tous les autres sons</string>
+    <string name="use_camera_light">Utiliser la lumière de la caméra</string>
+    <string name="use_camera_light_summary">Allumer la lumière de la caméra lors des alertes si connecté à un chargeur</string>
 </resources>

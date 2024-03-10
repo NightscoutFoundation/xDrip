@@ -1101,4 +1101,5 @@ CONTEXTREQUEST?</string>
     <string name="title_ymax">Podesite y os na maximum</string>
     <string name="summary_ymin">Odaberite yMin kada nema manjih očitanja.</string>
     <string name="summary_ymax">Odaberite yMax kada nema većih očitanja.</string>
+    <string name="reraise_alerts_before_snooze_time">Ponovno upozorenje prije roka odgađanja</string>
 </resources>

@@ -1819,4 +1819,15 @@
     <string name="carelink_credential_status_access_expired">Доступ завершився! Спробую поновити!</string>
     <string name="carelink_credential_status_refresh_expired">Логін завершено! Увійдіть в систему повторно!</string>
     <string name="data_source">Джерело даних:</string>
+    <string name="disable_collection">Вимкнути колекцію</string>
+    <string name="insulin_pens">Інсулінові ручки</string>
+    <string name="editing">Редагування</string>
+    <string name="enable_missed_reading_alert">Увімкнути оповіщення про пропущене зчитування</string>
+    <string name="alert_if_no_data_received_in_colon">Попереджати, якщо дані не отримано протягом:</string>
+    <string name="wait_before_raising_the_same_alert_after_snooze_colon">Повторити те ж сповіщення після його відкладання через:</string>
+    <string name="reraise_alerts_before_snooze_time">Показувати повторні сповіщення до закінчення часу відстроченого спрацьовування</string>
+    <string name="alert_reraise_time_colon">Повторити сповіщення через:</string>
+    <string name="select_start_time">Час початку</string>
+    <string name="select_end_time">Виберіть час закінчення</string>
+    <string name="accept_glucose">Прийняти глюкозу</string>
 </resources>

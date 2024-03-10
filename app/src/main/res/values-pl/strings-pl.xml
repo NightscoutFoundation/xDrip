@@ -1776,4 +1776,14 @@
     <string name="carelink_credential_status_access_expired">Dostęp wygasł! Nastąpi odświeżenie!</string>
     <string name="carelink_credential_status_refresh_expired">Sesja logowania wygasła! Zaloguj się!</string>
     <string name="data_source">Źródło danych:</string>
+    <string name="reraise_alerts_before_snooze_time">Odnów alarm przed czasem drzemki</string>
+    <string name="select_start_time">Wybierz czas rozpoczęcia</string>
+    <string name="select_end_time">Wybierz czas zakończenia</string>
+    <string name="audio_focus_summary">Wybierz co zrobić z innymi aplikacjami podczas odtwarzania alarmów i dostosowywania poziomów głośności systemu</string>
+    <string name="audio_focus_dont_adjust_other_app_sounds">Nie dostosowuj dźwięków innych aplikacji</string>
+    <string name="audio_focus_lower_volume_of_other_apps">Zmniejsz głośność innych aplikacji</string>
+    <string name="audio_focus_pause_other_apps_playing_audio">Wstrzymaj odtwarzanie dźwięku innych aplikacji</string>
+    <string name="audio_focus_pause_all_other_sounds">Wstrzymaj wszystkie inne dźwięki</string>
+    <string name="use_camera_light">Użyj latarki aparatu</string>
+    <string name="use_camera_light_summary">Mrugaj latarką aparatu podczas alarmów przy podłączeniu do ładowarki</string>
 </resources>

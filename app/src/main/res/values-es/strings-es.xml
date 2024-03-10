@@ -1816,4 +1816,25 @@
     <string name="carelink_credential_status_access_expired">¡Acceso expirado! ¡Se actualizará!</string>
     <string name="carelink_credential_status_refresh_expired">¡Inicio de sesión expirado! ¡Inicie sesión!</string>
     <string name="data_source">Fuente de datos:</string>
+    <string name="disable_collection">Desactivar colección</string>
+    <string name="insulin_pens">Pluma de insulina</string>
+    <string name="editing">Editando</string>
+    <string name="enable_missed_reading_alert">Activar alerta de lectura perdida</string>
+    <string name="alert_if_no_data_received_in_colon">Alertar si no se recibe ningún dato en:</string>
+    <string name="wait_before_raising_the_same_alert_after_snooze_colon">Espere antes de lanzar la misma alerta después de posponer:</string>
+    <string name="reraise_alerts_before_snooze_time">Regenerar alertas antes de su tiempo de diferido</string>
+    <string name="alert_reraise_time_colon">Tiempo de redisparo alarma:</string>
+    <string name="select_start_time">Seleccionar hora de inicio</string>
+    <string name="select_end_time">Seleccionar hora de finalización</string>
+    <string name="accept_glucose">Aceptar glucosa</string>
+    <string name="process_glucose_data_received">Procesar datos de glucosa recibidos de la aplicación NSClient</string>
+    <string name="use_health_connect">Usar Health Connect</string>
+    <string name="audio_focus">Foco de audio</string>
+    <string name="audio_focus_summary">Elegir qué hacer con otras aplicaciones mientras se reproducen alertas y se ajustan los niveles de volumen del sistema</string>
+    <string name="audio_focus_dont_adjust_other_app_sounds">No ajustar sonidos de otras aplicaciones</string>
+    <string name="audio_focus_lower_volume_of_other_apps">Bajar volumen de otras aplicaciones</string>
+    <string name="audio_focus_pause_other_apps_playing_audio">Pausar otras aplicaciones reproduciendo audio</string>
+    <string name="audio_focus_pause_all_other_sounds">Pausar todos los demás sonidos</string>
+    <string name="use_camera_light">Usar luz de cámara</string>
+    <string name="use_camera_light_summary">Flashear luz de la cámara durante alertas al conectar a un cargador</string>
 </resources>

@@ -1570,4 +1570,5 @@
     <string name="enable_streaming_dialog_title">Conectarea senzorului libre la bluetooth</string>
     <string name="cannot_choose_file_without_permission">Nu se poate alege fișierul fără permisiuni de stocare</string>
     <string name="titleInside_yRange">Permite</string>
+    <string name="reraise_alerts_before_snooze_time">Reactivează alarmele înainte de amânare</string>
 </resources>
