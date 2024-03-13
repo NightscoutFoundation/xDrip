@@ -1344,7 +1344,7 @@
     <string name="summary_ob1_initiate_bonding_flag">OB1 vastuvõtja võib alustada ühendamist.</string>
     <string name="title_ob1_initiate_bonding_flag">Luba OB1 siduda</string>
     <string name="title_old_g5_options">Vana G5 vastuvõtja seaded</string>
-    <string name="title_g5g6_battery_options">G5/G6/G7/1 aku valikud</string>
+    <string name="title_g5g6_battery_options">G5/G6/Dex1 aku valikud</string>
     <string name="title_g5_battery_warning_level">Reguleeri aku hoiatuse taset</string>
     <string name="title_plugins_and_features">Liidesed ja funktsioonid</string>
     <string name="title_color_heart_rate1">Pulsimõõtja</string>
