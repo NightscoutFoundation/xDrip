@@ -49,7 +49,7 @@ public class xdrip extends Application {
 
     private static final String TAG = "xdrip.java";
     @SuppressLint("StaticFieldLeak")
-    private static Context context;
+    private static volatile Context context;
     private static boolean fabricInited = false;
     private static boolean bfInited = false;
     private static Locale LOCALE;
@@ -57,6 +57,12 @@ public class xdrip extends Application {
     public static boolean useBF = false;
     private static Boolean isRunningTestCache;
 
+    public static void setContext(final Context context) {
+        if (context == null) return;
+        if (xdrip.context == null) {
+            xdrip.context = context.getApplicationContext();
+        }
+    }
 
     @Override
     public void onCreate() {
