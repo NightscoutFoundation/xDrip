@@ -294,8 +294,7 @@ public class GcmActivity extends FauxActivity {
         }
     }
 
-    // Synchronization of Libre2 patched app received raw values,
-    // called from LibreReceiver only if option Libre2_showRawGraph is activated.
+    // Synchronization of Libre2 patched app received raw values
     public synchronized static void syncLibre2RawReading(Libre2RawValue rawValue) {
         if (rawValue == null) {
             UserError.Log.wtf(TAG, "Cannot sync null libre2rawvalue - should never occur");

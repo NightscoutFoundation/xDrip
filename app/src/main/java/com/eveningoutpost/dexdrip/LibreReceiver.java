@@ -153,9 +153,10 @@ public class LibreReceiver extends BroadcastReceiver {
 
                                 clearNFCsensorAge();
 
-                                // Libre2 Raw readings are also sent to Sync+ Followers if
-                                // show raw graph for Libre2 option is activated.
-                                if (Pref.getBoolean("plus_follow_master", false) && Pref.getBoolean("Libre2_showRawGraph", false))
+                                // send raw values to sync+ followers
+                                if (Pref.getBooleanDefaultFalse("plus_follow_master") // we are the master
+                                        && !Pref.getBooleanDefaultFalse("plus_follower_save_power") // we don't want to save power
+                                        && Pref.getBooleanDefaultFalse("Libre2_showRawGraph")) // we want to see raw values
                                     GcmActivity.syncLibre2RawReading(currentRawValue);
 
                                 break;
