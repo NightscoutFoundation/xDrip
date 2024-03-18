@@ -90,7 +90,7 @@ public class BlueJayAdapter {
     };
 
     private static boolean alwaysAllowPhoneSlot() {
-        final int specifiedSlot = Pref.getBooleanDefaultFalse("engineering_mode") ? Pref.getStringToInt("dex_specified_slot", -1) : -1;
+        final int specifiedSlot = Pref.getStringToInt("dex_specified_slot", -1);
         return specifiedSlot == 3;
     }
 
