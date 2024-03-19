@@ -754,6 +754,16 @@
     <string name="not_today">오늘이 아님.</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">보정할만한 상황이라 판단되면 확인을 요청하지 않고 새 혈당 데이터 수신정보를 이용하여 보정합니다 (실험적 기능)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">자동 보정</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
     <string name="summary_show_home_on_boot">장치 부팅 후 자동으로 xDrip 화면 불러오기</string>
     <string name="description_sensor_location">향후 xDrip은 보정 알고리즘을 개선하기 위해 익명 센서 데이터를 개발자에게 전송하려고 합니다... 옵션을 선택하면 각 데이터가 전송되기 전에 사용자에게 확인하라는 메세지가 표시됩니다. 사용자의 허가 없이는 데이터가 절대 전송되지 않습니다. 우리가 보정을 이해하고 미세 조정하는 것을 돕기 위해서는 이 센서가 어디에 장착되어 있는지 알고 싶습니다. 만약 취소하려면 뒤로 가기 버튼을 누르십시오.</string>
     <string name="it_looks_like_you_maybe_have_a_settings_backup_shall_we_try_to_restore_it">설정 백업이 있는거 같은데 다시 복구할까요?</string>

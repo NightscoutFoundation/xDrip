@@ -62,7 +62,7 @@
 -keep class com.eveningoutpost.dexdrip.importedlibraries.usbserial.** { *; }
 -keep class ar.com.hjg.pngj.** { *; }
 -keep class android.support.v7.widget.SearchView { *; }
-
+-keep class kotlinx.serialization.Serializable { *; }
 
 -dontwarn java.util.concurrent.**
 

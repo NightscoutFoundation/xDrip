@@ -192,11 +192,28 @@
             android:singleLine="true"
             android:summary="@string/summary_nsfollow_url"
             android:title="@string/title_nsfollow_url" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="nsfollow_download_treatments"
-            android:summary="@string/summary_nsfollow_download_treatments"
-            android:title="@string/title_nsfollow_download_treatments"
+        <PreferenceScreen
+            android:key="nsfollow_download_treatments_screen"
+            android:title="@string/title_nsfollow_download_treatments">
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="nsfollow_download_treatments"
+                android:summary="@string/summary_nsfollow_download_treatments"
+                android:title="@string/title_nsfollow_download_treatments" />
+            <SwitchPreference
+                android:defaultValue="true"
+                android:dependency="nsfollow_download_treatments"
+                android:key="cloud_storage_api_skip_download_from_xdrip"
+                android:summary="@string/summary_cloud_storage_api_download_from_xdrip"
+                android:title="@string/title_cloud_storage_api_download_from_xdrip" />
+        </PreferenceScreen>
+        <ListPreference
+            android:defaultValue="0"
+            android:key="nsfollow_lag"
+            android:summary=""
+            android:title="@string/title_nsfollow_lag"
+            android:entries="@array/nsfollowlag_entries"
+            android:entryValues="@array/nsfollowlag_values"
             />
 
         <EditTextPreference
@@ -223,6 +240,7 @@
             android:key="clfollow_country"
             android:summary="@string/summary_clfollow_country"
             android:title="@string/title_clfollow_country" />
+        <!-- Maybe we can use them later?
         <EditTextPreference
             android:defaultValue=""
             android:inputType="textNoSuggestions|textVisiblePassword"
@@ -239,6 +257,7 @@
             android:singleLine="true"
             android:summary="@string/summary_clfollow_pass"
             android:title="@string/title_clfollow_pass" />
+        !-->
         <EditTextPreference
             android:defaultValue=""
             android:inputType="textNoSuggestions|textVisiblePassword"
@@ -247,6 +266,11 @@
             android:singleLine="true"
             android:summary="@string/summary_clfollow_patient"
             android:title="@string/title_clfollow_patient" />
+        <Preference
+            android:key="clfollow_login"
+            android:summary="@string/summary_clfollow_login"
+            android:title="@string/title_clfollow_login">
+        </Preference>
         <EditTextPreference
             android:defaultValue="30"
             android:inputType="textNoSuggestions|textVisiblePassword"
@@ -399,16 +423,6 @@
                     android:key="run_G5_ble_tasks_on_uithread"
                     android:summary="@string/g5_force_ui_thread"
                     android:title="@string/force_g5_ui_thread" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="always_get_new_keys"
-                    android:summary="@string/g5_full_authentification"
-                    android:title="@string/authentificate_before_reading" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="always_unbond_G5"
-                    android:summary="@string/g5_remove_before_read"
-                    android:title="@string/unbond_g5_before_read" />
             </PreferenceCategory>
             <PreferenceCategory
                 android:key="dex_battery_category"

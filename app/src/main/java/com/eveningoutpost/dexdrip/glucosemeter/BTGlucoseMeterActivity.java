@@ -13,7 +13,7 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
+
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,6 +36,8 @@ import com.eveningoutpost.dexdrip.utils.LocationHelper;
 import java.util.ArrayList;
 
 import static com.eveningoutpost.dexdrip.services.BluetoothGlucoseMeter.start_forget;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 /**
  * Created by jamorham on 09/12/2016.

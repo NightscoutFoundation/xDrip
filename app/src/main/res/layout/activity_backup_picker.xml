@@ -7,7 +7,7 @@
             name="vm"
             type="com.eveningoutpost.dexdrip.cloud.backup.BackupActivity.ViewModel" />
 
-        <import type="android.databinding.ObservableMap" />
+        <import type="androidx.databinding.ObservableMap" />
 
         <variable
             name="map"
@@ -80,19 +80,23 @@
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginBottom="15dp"
                 android:enabled="@{vm.idle}"
                 android:onClick="@{() -> vm.selectFile()}"
-                android:text="@string/select_backup_location" />
+                android:text="@string/select_backup_location"
+                android:textAllCaps="false"/>
 
             <Button
                 android:id="@+id/button30"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginBottom="15dp"
                 android:enabled="@{vm.idle}"
                 android:onClick="@{() -> vm.backupNow()}"
-                android:text="@string/do_backup_now" />
+                android:text="@string/do_backup_now"
+                android:textAllCaps="false"/>
 
             <CheckBox
                 android:layout_width="wrap_content"
@@ -103,13 +107,25 @@
                 app:checked="@={prefs[`backup-automatic-enabled`]}"
                 app:showIfTrueAnimatedFastOff="@{vm.showAuto}" />
 
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:dependency="backup-automatic-enabled"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_marginBottom="20dp"
+                android:text="@string/daily_backup_even_mobile"
+                app:checked="@={prefs[`backup-automatic-mobile:true`]}"
+                app:showIfTrueAnimatedFastOff="@{vm.showAuto}" />
+
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
+                android:layout_marginHorizontal="10dp"
                 android:enabled="@{vm.idle}"
                 android:onClick="@{() -> vm.restoreNow()}"
-                android:text="@string/restore_from_backup" />
+                android:text="@string/restore_from_backup"
+                android:textAllCaps="false"/>
         </LinearLayout>
     </ScrollView>
 </layout>

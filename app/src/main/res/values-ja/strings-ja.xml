@@ -177,6 +177,7 @@
     <string name="libre_last_x_minutes_graph">リブレの最後の %d 分グラフ</string>
     <string name="share_config_via_qr_code">QRコードで設定を共有する</string>
     <string name="check_for_updated_version">最新バージョンを確認する</string>
+    <string name="current_version_is_up_to_date">選択したチャンネルのアップデートがありません</string>
     <string name="send_feedback_to_developer">開発者にフィードバックを送信</string>
     <string name="home_screen">ホーム画面</string>
     <string name="event_logs">イベントログ</string>
@@ -366,15 +367,39 @@
     <string name="unit_days">日\"</string>
     <string name="unit_weeks">週\"</string>
     <string name="no_data">データがありません。</string>
+    <string name="daily_backup_even_mobile">モバイルデータでも毎日バックアップが可能。</string>
     <string name="title_tidepool">Tidepool</string>
     <string name="summary_broadcast_service_api">新しいAPIを使用して、サードパーティのアプリケーションとxDrip通信を有効にします。</string>
     <string name="title_features">機能</string>
     <string name="title_screens">画面</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
     <string name="title_clfollow_patient">CareLink ™のユーザー名</string>
     <string name="summary_clfollow_patient">CareLink ™のユーザー名 (オプション)</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
+    <string name="title_clfollow_login">ログイン</string>
+    <string name="summary_clfollow_login">ブラウザでログインする</string>
     <string name="title_color_smb_icon">SMBアイコン</string>
     <string name="title_color_smb_line">SMBライン</string>
     <string name="title_pick_numberwall_start">オン</string>
+    <string name="title_xdrip_plus_accessibility">常時表示設定</string>
+    <string name="summary_aod_use_top">画面の最初の5分の1をAODウィジェットに使用する。</string>
+    <string name="title_aod_use_top">上部を使用</string>
+    <string name="summary_aod_use_top_center">画面の5分の2をAODウィジェットに使用する。</string>
+    <string name="title_aod_use_top_center">上部の中央を使用</string>
+    <string name="summary_aod_use_center">画面の5分の3をAODウィジェットに使用する。</string>
+    <string name="title_aod_use_center">中央を使用</string>
+    <string name="summary_aod_use_center_bottom">画面の5分の4をAODウィジェットに使用する。</string>
+    <string name="title_aod_use_center_bottom">下部の中央を使用</string>
+    <string name="summary_aod_use_bottom">画面の最後の5分の1をAODウィジェットに使用する。</string>
+    <string name="title_aod_use_bottom">下部を使用</string>
     <string name="eula">EULA</string>
     <string name="note_search_button">検索</string>
     <string name="all_note_button">全て</string>
@@ -420,4 +445,24 @@
     <string name="summary_Lib2_show_sense_on_status">オンにすると、Libre 2センサーのステータスに追加情報が表示されます。</string>
     <string name="import_qr_code_warning">信頼できるソースからの設定のみインポートします！\n\n以下の設定をインポートすることを確認してください：\n\n</string>
     <string name="scan_to_load_xdrip_settings">xDrip設定を読み込むためにスキャンする</string>
+    <string name="manage_permissions">権限の管理</string>
+    <string name="open_health_connect_settings_to_manually_manage_permissions">Health Connectの設定を開き、権限を手動で管理します。</string>
+    <string name="send_data_to_health_connect">Health Connectにデータを送信します。</string>
+    <string name="get_data_from_health_connect">Health Connectからデータを取得する。</string>
+    <string name="requires_android_8_and_google_companion_application_or_android_14">Android 8以降とGoogle companion application、またはAndroid 14以降が必要です。</string>
+    <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Google Health ConnectとGoogle Fitからデータを送受信。</string>
+    <string name="google_health_connect">Google Health Connect</string>
+    <string name="google_health_connect_needs_perms">ERROR: Health connectには権限が必要です！- 設定メニューからもう一度お試しください。</string>
+    <string name="carelink_auth_country_required">国が必要です！</string>
+    <string name="carelink_auth_status_authenticated">認証済みのステータス！</string>
+    <string name="carelink_auth_status_not_authenticated">ステータスが認証されていません！</string>
+    <string name="carelink_auth_login_in_progress">ログイン中...</string>
+    <string name="carelink_refresh_token_start">アクセスの更新を開始</string>
+    <string name="carelink_refresh_token_failed">アクセスの更新に失敗しました！再度お試しください！</string>
+    <string name="carelink_download_start">ダウンロードを開始</string>
+    <string name="carelink_download_failed">ダウンロードに失敗しました！</string>
+    <string name="carelink_credential_status_not_authenticated">ログインしていません！ログインしてください！</string>
+    <string name="carelink_credential_status_access_expired">アクセスの有効期限が切れました！更新されます！</string>
+    <string name="carelink_credential_status_refresh_expired">ログイン期限が切れました！ログインしてください！</string>
+    <string name="data_source">データソース:</string>
 </resources>

@@ -1,21 +1,49 @@
 {
-  "profiles":
-  [
+  "profiles": [
     {
       "name": "FIASP",
       "displayName": "FIASP (ultra fast acting)",
       "concentration": "U100",
-      "PPN":
-      [
+      "PPN": [
         "FIASP-U100"
       ],
-      "Curve":
-      {
+      "Curve": {
         "type": "linear trapezoid",
-        "data":
-        {
+        "data": {
           "onset": "2",
           "peak": "45",
+          "duration": "300"
+        }
+      }
+    },
+    {
+      "name": "Afrezza",
+      "displayName": "Afrezza (inhaled, ultra-fast acting)",
+      "concentration": "U100",
+      "PPN": [
+        "Afrezza-U100"
+      ],
+      "Curve": {
+        "type": "linear trapezoid",
+        "data": {
+          "onset": "5",
+          "peak": "50",
+          "duration": "150"
+        }
+      }
+    },
+    {
+      "name": "Apidra",
+      "displayName": "Apidra (ultra-fast acting)",
+      "concentration": "U100",
+      "PPN": [
+        "Apidra-U100"
+      ],
+      "Curve": {
+        "type": "linear trapezoid",
+        "data": {
+          "onset": "10",
+          "peak": "60-180",
           "duration": "300"
         }
       }
@@ -24,15 +52,12 @@
       "name": "Novorapid",
       "displayName": "Novorapid (rapid acting)",
       "concentration": "U100",
-      "PPN":
-      [
+      "PPN": [
         "1100558736"
       ],
-      "Curve":
-      {
+      "Curve": {
         "type": "linear trapezoid",
-        "data":
-        {
+        "data": {
           "onset": "10",
           "peak": "75",
           "duration": "180"
@@ -43,15 +68,12 @@
       "name": "Humalog",
       "displayName": "Humalog (rapid acting)",
       "concentration": "U100",
-      "PPN":
-      [
+      "PPN": [
         "Humalog-U100"
       ],
-      "Curve":
-      {
+      "Curve": {
         "type": "linear trapezoid",
-        "data":
-        {
+        "data": {
           "onset": "10",
           "peak": "75",
           "duration": "180"
@@ -62,18 +84,15 @@
       "name": "Lispro",
       "displayName": "Lispro (rapid acting)",
       "concentration": "U100",
-      "PPN":
-      [
+      "PPN": [
         "111291061285",
         "111291059828",
         "111291064107",
         "111291063541"
       ],
-      "Curve":
-      {
+      "Curve": {
         "type": "linear trapezoid",
-        "data":
-        {
+        "data": {
           "onset": "15",
           "peak": "90",
           "duration": "210"
@@ -84,15 +103,12 @@
       "name": "Actrapid",
       "displayName": "Actrapid (short acting)",
       "concentration": "U100",
-      "PPN":
-      [
+      "PPN": [
         "1102949004"
       ],
-      "Curve":
-      {
+      "Curve": {
         "type": "linear trapezoid",
-        "data":
-        {
+        "data": {
           "onset": "30",
           "peak": "60-240",
           "duration": "480"
@@ -102,16 +118,13 @@
     {
       "name": "Insulatard",
       "displayName": "Insulatard (NPH)",
-      "PPN":
-      [
+      "PPN": [
         "1105039656"
       ],
       "concentration": "U100",
-      "Curve":
-      {
+      "Curve": {
         "type": "linear trapezoid",
-        "data":
-        {
+        "data": {
           "onset": "60",
           "peak": "120-720",
           "duration": "1440"
@@ -121,16 +134,13 @@
     {
       "name": "Toujeo",
       "displayName": "Toujeo (long acting)",
-      "PPN":
-      [
+      "PPN": [
         "ToujeoU100"
       ],
       "concentration": "U100",
-      "Curve":
-      {
+      "Curve": {
         "type": "linear trapezoid",
-        "data":
-        {
+        "data": {
           "onset": "180",
           "peak": "480",
           "duration": "2160"
@@ -140,19 +150,64 @@
     {
       "name": "Lantus",
       "displayName": "Lantus (long acting)",
-      "PPN":
-      [
+      "PPN": [
         "LantusU100"
       ],
       "concentration": "U100",
-      "Curve":
-      {
+      "Curve": {
         "type": "linear trapezoid",
-        "data":
-        {
+        "data": {
           "onset": "60",
           "peak": "420-1200",
           "duration": "2160"
+        }
+      }
+    },
+    {
+      "name": "Levemir",
+      "displayName": "Levemir (long acting)",
+      "PPN": [
+        "LevemirU100"
+      ],
+      "concentration": "U100",
+      "Curve": {
+        "type": "linear trapezoid",
+        "data": {
+          "onset": "60",
+          "peak": "180-840",
+          "duration": "1500"
+        }
+      }
+    },
+    {
+      "name": "Basaglar",
+      "displayName": "Basaglar (long acting)",
+      "PPN": [
+        "BasaglarU100"
+      ],
+      "concentration": "U100",
+      "Curve": {
+        "type": "linear trapezoid",
+        "data": {
+          "onset": "60",
+          "peak": "480-1140",
+          "duration": "1440"
+        }
+      }
+    },
+    {
+      "name": "Tresiba",
+      "displayName": "Tresiba (ultra-long acting)",
+      "PPN": [
+        "TresibaU100"
+      ],
+      "concentration": "U100",
+      "Curve": {
+        "type": "linear trapezoid",
+        "data": {
+          "onset": "90",
+          "peak": "120-2460",
+          "duration": "2520"
         }
       }
     }

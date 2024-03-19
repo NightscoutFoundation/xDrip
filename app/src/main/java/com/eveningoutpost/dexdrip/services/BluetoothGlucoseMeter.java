@@ -24,7 +24,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.ParcelUuid;
 import android.os.PowerManager;
-import android.support.v4.content.LocalBroadcastManager;
+
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
@@ -59,6 +59,8 @@ import static com.eveningoutpost.dexdrip.glucosemeter.VerioHelper.VERIO_F7A2_WRI
 import static com.eveningoutpost.dexdrip.glucosemeter.VerioHelper.VERIO_F7A3_NOTIFICATION;
 import static com.eveningoutpost.dexdrip.models.CalibrationRequest.isSlopeFlatEnough;
 import static com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder.unitized_string_with_units_static;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 /**
  * Created by jamorham on 09/12/2016.

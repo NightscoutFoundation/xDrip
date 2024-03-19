@@ -59,6 +59,7 @@ public class IdempotentMigrations {
         legacySettingsFix();
         IncompatibleApps.notifyAboutIncompatibleApps();
         CompatibleApps.notifyAboutCompatibleApps();
+        legacySettingsMoveLanguageFromNoToNb();
 
     }
 
@@ -146,6 +147,14 @@ public class IdempotentMigrations {
     private static void legacySettingsFix() {
         Pref.setBoolean("use_ob1_g5_collector_service", true);
         Pref.setBoolean("ob1_g5_fallback_to_xdrip", false);
+        Pref.setBoolean("always_unbond_G5", false);
+        Pref.setBoolean("always_get_new_keys", true);
     }
-
+    private static void legacySettingsMoveLanguageFromNoToNb() {
+        // Check if the user's language preference is set to "no"
+        if ("no".equals(Pref.getString("forced_language", ""))) {
+        // Update the language preference to "nb"
+        Pref.setString("forced_language", "nb");
+        }
+    }
 }

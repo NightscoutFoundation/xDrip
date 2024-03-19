@@ -21,7 +21,7 @@
         <item>Companion App</item>
         <item>GlucoRx/Aidex App</item>
         <item>CareLink Follower</item>
-        <item>Disable Collection</item>
+        <item>@string/disable_collection</item>
     </string-array>
 
     <string-array name="DexCollectionMethodValues">
@@ -234,10 +234,10 @@
     </string-array>
 
     <string-array name="AudioFocus">
-        <item>Don\'t adjust other app sounds</item>
-        <item>Lower volume of other apps</item>
-        <item>Pause other apps playing audio</item>
-        <item>Pause all other sounds</item>
+        <item>@string/audio_focus_dont_adjust_other_app_sounds</item>
+        <item>@string/audio_focus_lower_volume_of_other_apps</item>
+        <item>@string/audio_focus_pause_other_apps_playing_audio</item>
+        <item>@string/audio_focus_pause_all_other_sounds</item>
     </string-array>
     <string-array name="AudioFocusValues">
         <item>AUDIOFOCUS_NONE</item>
@@ -525,6 +525,25 @@
         <item>250</item>
         <item>300</item>
         <item>400</item>
+    </string-array>
+
+    <!--    Nightscout follow wake delay, with respect to the source timestamp
+            The default is no delay, and is marked with the single symbol >  -->
+    <string-array name="nsfollowlag_entries">
+        <item>0 ></item>
+        <item>40 s</item>
+        <item>1 min</item>
+        <item>1.5 min</item>
+        <item>2 min</item>
+        <item>3 min</item>
+    </string-array>
+    <string-array name="nsfollowlag_values">
+        <item>0</item>
+        <item>40</item>
+        <item>60</item>
+        <item>90</item>
+        <item>120</item>
+        <item>180</item>
     </string-array>
 
 </resources>

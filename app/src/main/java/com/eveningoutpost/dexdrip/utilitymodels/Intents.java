@@ -12,6 +12,7 @@ public interface Intents {
     String EXTRA_BG_SLOPE = "com.eveningoutpost.dexdrip.Extras.BgSlope";
     String EXTRA_BG_SLOPE_NAME = "com.eveningoutpost.dexdrip.Extras.BgSlopeName";
     String EXTRA_SENSOR_BATTERY = "com.eveningoutpost.dexdrip.Extras.SensorBattery";
+    String EXTRA_SENSOR_STARTED_AT = "com.eveningoutpost.dexdrip.Extras.SensorStartedAt";
     String EXTRA_TIMESTAMP = "com.eveningoutpost.dexdrip.Extras.Time";
     String EXTRA_RAW = "com.eveningoutpost.dexdrip.Extras.Raw";
     String EXTRA_NOISE = "com.eveningoutpost.dexdrip.Extras.Noise";
@@ -33,6 +34,8 @@ public interface Intents {
     String EXTRA_VEHICLE_MODE_ENABLED = "com.eveningoutpost.dexdrip.VehicleMode.Enabled";
 
     String EXTRA_COLLECTOR_NANOSTATUS = "com.eveningoutpost.dexdrip.Extras.Collector.NanoStatus";
+
+    String EXTRA_DISPLAY_UNITS = "com.eveningoutpost.dexdrip.Extras.Display.Units";
 
     // From NS Android Client
     // send

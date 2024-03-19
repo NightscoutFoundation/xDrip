@@ -176,6 +176,7 @@
     <string name="libre_last_x_minutes_graph">גרף %d דקות אחרונות של הליברה</string>
     <string name="share_config_via_qr_code">שיתוף הגדרות באמצעות קוד QR</string>
     <string name="check_for_updated_version">בדוק האם יש גרסה חדשה</string>
+    <string name="current_version_is_up_to_date">אין עדכון בערוץ הנבחר</string>
     <string name="send_feedback_to_developer">שלח משוב למפתח</string>
     <string name="home_screen">מסך הבית</string>
     <string name="event_logs">יומן אירועים</string>
@@ -1148,9 +1149,12 @@
     <string name="overwrite_intercept_engineering_only">דרוס נק\' חיתוך (מהנדסים בלבד!)</string>
     <string name="manual_overwrite_not_possible">דריסה ידנית לא אפשרית!</string>
     <string name="upload_even_when_using_mobile_data">העלה גם בשימוש בנתונים סלולריים</string>
+    <string name="daily_backup_even_mobile">גבה באופן יומי, גם בזמן שימוש בנתונים ניידים</string>
     <string name="use_mobile_data">השתמש בחבילת גלישה</string>
     <string name="summary_cloud_storage_api_download_enable">נסה גם להוריד נתונים מנייטסקאוט</string>
     <string name="title_cloud_storage_api_download_enable">הורד נתונים</string>
+    <string name="title_cloud_storage_api_download_from_xdrip">דלג על אוביקט מ xDrip</string>
+    <string name="summary_cloud_storage_api_download_from_xdrip">המנע מהורדת קבצים שהועלו על ידי xDrip</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">כייל עם קריאות בדיקות דם חדשות אם התנאים מאפשרים, ללא בקשת אישור (ניסיוני)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">כיול אוטומטי</string>
     <string name="title_rest_api_extra_options">אפשרויות נוספות</string>
@@ -1257,6 +1261,18 @@
     <string name="title_nsfollow_url">כתובת לעוקב נייטסקאוט</string>
     <string name="summary_nsfollow_download_treatments">הורד גם טיפולים מנייטסקאוט כעוקב</string>
     <string name="title_nsfollow_download_treatments">הורד טיפולים</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
+    <string name="title_clfollow_login">התחבר/י</string>
+    <string name="summary_clfollow_login">התחברות בדפדפן</string>
     <string name="title_clfollow_download_meals">ארוחות</string>
     <string name="title_clfollow_download_notifications">התראות</string>
     <string name="title_ob1_options">הגדרות איסוף OB1 עבור G5/G6</string>
@@ -1432,6 +1448,8 @@
     <string name="change_settings">שנה את ההגדרות</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">האם ברצונכם למחוק ולאפס את הכיולים עבור סנסור זה?</string>
     <string name="sensor_stop_confirm">האם ברצונך לעצור את החיישן?</string>
+    <string name="sensor_stop_confirm_norestart">לא תוכלו להפעיל מחדש את החיישן.</string>
+    <string name="sensor_stop_confirm_really_norestart">שימו לב! \n\nלא ניתן יהיה להפעיל מחדש את החיישן.</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">אתם משתמשים באלגוריתם ישן לחיזוי הסוכר.\n\n זה מאוד לא מומלץ, ועלול לגרום לבעיות\n\n האם לבטל את זה בשבילכם\\ן?</string>
     <string name="settings_issue">בעיה בהגדרות!</string>
     <string name="use_bg_for_calibration">להשתמש בבדיקת דם לכיול?</string>
@@ -1557,4 +1575,24 @@
     <string name="show_unsmoothed_summary">הראה מידע לא מוחלק גם עם החלקת הגרף מאופשרצ, 
 אם תוסף הכיול בשימוש יוצג גרף לא מוחלק ולא הגרף מהתוסף.</string>
     <string name="titleInside_yRange">אפשר</string>
+    <string name="manage_permissions">ניהול הרשאות</string>
+    <string name="open_health_connect_settings_to_manually_manage_permissions">פתח הגדרות Health Connect כדי לשנות הרשאות ידנית</string>
+    <string name="send_data_to_health_connect">שלח מידע ל-Health Connect</string>
+    <string name="get_data_from_health_connect">קבל נתונים מ-Health Connect</string>
+    <string name="requires_android_8_and_google_companion_application_or_android_14">דרושה גרסת אנדרואיד 8 ומעלה ואפליקציית Google companion או גרסת אנדרוראיד 14 ומעלה</string>
+    <string name="send_and_receive_data_from_google_health_connect_and_google_fit">שלח וקבל התראות מאפליקציות Google Health Connect ו-Google Fit</string>
+    <string name="google_health_connect">Google Health Connect</string>
+    <string name="google_health_connect_needs_perms">שגיאה: Health Connect דורש הרשאות! נסו שנית מתוך חלון ההגדרות</string>
+    <string name="carelink_auth_country_required">חובה להזין מדינה!</string>
+    <string name="carelink_auth_status_authenticated">נדרש אימות!</string>
+    <string name="carelink_auth_status_not_authenticated">לא נמצא סטטוס אימות</string>
+    <string name="carelink_auth_login_in_progress">התחברות בתהליך...</string>
+    <string name="carelink_refresh_token_start">התחל כניסה מחדש</string>
+    <string name="carelink_refresh_token_failed">כניסה מחדש נכשלה, מנסה שנית!</string>
+    <string name="carelink_download_start">התחל הורדה</string>
+    <string name="carelink_download_failed">הורדת המידע נכשלה!</string>
+    <string name="carelink_credential_status_not_authenticated">לא מחובר/ת, אנא התחבר/י</string>
+    <string name="carelink_credential_status_access_expired">פג תוקף הדף, הדף יתרענן אוטומטית!</string>
+    <string name="carelink_credential_status_refresh_expired">פג תוקף כניסתך, אנא התחבר/י מחדש!</string>
+    <string name="reraise_alerts_before_snooze_time">השמע את ההתראה שוב לפני זמן ההשתקה</string>
 </resources>

@@ -2,13 +2,16 @@ package com.eveningoutpost.dexdrip.cgm.carelinkfollow;
 
 import android.os.PowerManager;
 
+import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.auth.CareLinkAuthenticator;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.auth.CareLinkCredentialStore;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.client.CareLinkClient;
-import com.eveningoutpost.dexdrip.cgm.carelinkfollow.client.CountryUtils;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.RecentData;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
 
@@ -47,6 +50,7 @@ public class CareLinkFollowDownloader {
         this.carelinkCountry = carelinkCountry;
         this.carelinkPatient = carelinkPatient;
         loginDataLooksOkay = !emptyString(carelinkUsername) && !emptyString(carelinkPassword) && carelinkCountry != null && !emptyString(carelinkCountry);
+        loginDataLooksOkay = true;
     }
 
     public static void resetInstance() {
@@ -54,43 +58,65 @@ public class CareLinkFollowDownloader {
         CollectionServiceStarter.restartCollectionServiceBackground();
     }
 
-    public boolean doEverything() {
-        msg("Start download");
+    public void doEverything(boolean refreshToken, boolean downloadData) {
+        if (refreshToken)
+            this.refreshToken();
+        if (downloadData)
+            this.downloadData();
+    }
 
-        if (D) UserError.Log.e(TAG, "doEverything called");
-        if (loginDataLooksOkay) {
+    private void downloadData() {
+        msg(xdrip.gs(R.string.carelink_download_start));
+        if (checkCredentials(true, true, true)) {
             try {
                 if (getCareLinkClient() != null) {
                     extendWakeLock(30_000);
                     backgroundProcessConnectData();
                 } else {
-                    UserError.Log.d(TAG, "Cannot get data as ConnectClient is null");
-                    return false;
+                    UserError.Log.d(TAG, "Cannot get data as CareLinkClient is null");
+                    msg(xdrip.gs(R.string.carelink_download_failed));
                 }
-                return true;
             } catch (Exception e) {
                 UserError.Log.e(TAG, "Got exception in getData() " + e);
                 releaseWakeLock();
-                return false;
+                msg(xdrip.gs(R.string.carelink_download_failed));
             }
-        } else {
-            final String invalid = "Invalid CareLink login data!";
-            msg(invalid);
-            UserError.Log.e(TAG, invalid);
-            if (emptyString(carelinkUsername)) {
-                UserError.Log.e(TAG, "CareLink Username empty!");
+        }
+    }
+
+    private void refreshToken() {
+        msg(xdrip.gs(R.string.carelink_refresh_token_start));
+        if (checkCredentials(true, false, true)) {
+            try {
+                if (new CareLinkAuthenticator(CareLinkCredentialStore.getInstance().getCredential().country, CareLinkCredentialStore.getInstance()).refreshToken()) {
+                    UserError.Log.d(TAG, "Access renewed!");
+                    msg(null);
+                } else {
+                    UserError.Log.e(TAG, "Error renewing access token!");
+                    msg(xdrip.gs(R.string.carelink_refresh_token_failed));
+                }
+            } catch (Exception e) {
+                UserError.Log.e(TAG, "Error renewing access token: " + e.getMessage());
+                msg(xdrip.gs(R.string.carelink_refresh_token_failed));
             }
-            if (emptyString(carelinkPassword)) {
-                UserError.Log.e(TAG, "CareLink Password empty!");
-            }
-            if (carelinkCountry == null) {
-                UserError.Log.e(TAG, "CareLink Country empty!");
-            } else if (!CountryUtils.isSupportedCountry(carelinkCountry)) {
-                UserError.Log.e(TAG, "CareLink Country not supported!");
-            }
+        }
+    }
+
+    private boolean checkCredentials(boolean checkAuthenticated, boolean checkAccessExpired, boolean checkRefreshExpired) {
+        // Not authenticated
+        if (checkAuthenticated && CareLinkCredentialStore.getInstance().getAuthStatus() != CareLinkCredentialStore.AUTHENTICATED) {
+            msg(xdrip.gs(R.string.carelink_credential_status_not_authenticated));
             return false;
         }
-
+        if (checkAccessExpired && CareLinkCredentialStore.getInstance().getAccessExpiresIn() <= 0) {
+            msg(xdrip.gs(R.string.carelink_credential_status_access_expired));
+            return false;
+        }
+        if (checkRefreshExpired && CareLinkCredentialStore.getInstance().getRefreshExpiresIn() <= 0) {
+            msg(xdrip.gs(R.string.carelink_credential_status_refresh_expired));
+            return false;
+        }
+        return true;
     }
 
     private void msg(final String msg) {
@@ -118,64 +144,44 @@ public class CareLinkFollowDownloader {
         carelinkClient = getCareLinkClient();
         //Get RecentData from CareLink client
         if (carelinkClient != null) {
-
-            //Try twice in case of 401 error
-            for (int i = 0; i < 2; i++) {
-
-                //Get data
-                try {
-                    if (JoH.emptyString(this.carelinkPatient))
-                        recentData = getCareLinkClient().getRecentData();
-                    else
-                        recentData = getCareLinkClient().getRecentData(this.carelinkPatient);
-                    lastResponseCode = carelinkClient.getLastResponseCode();
-                } catch (Exception e) {
-                    UserError.Log.e(TAG, "Exception in CareLink data download: " + e);
-                }
-
-                //Process data
-                if (recentData != null) {
-                    UserError.Log.d(TAG, "Success get data!");
-                    try {
-                        UserError.Log.d(TAG, "Start process data");
-                        //Process CareLink data (conversion and update xDrip data)
-                        CareLinkDataProcessor.processData(recentData, true);
-                        UserError.Log.d(TAG, "ProcessData finished!");
-                        //Update Service status
-                        CareLinkFollowService.updateBgReceiveDelay();
-                        msg(null);
-                    } catch (Exception e) {
-                        UserError.Log.e(TAG, "Exception in data processing: " + e);
-                        msg("Data processing error!");
-                    }
-                    //Data receive error
-                } else {
-                    //first 401 error => TRY AGAIN, only debug log
-                    if (carelinkClient.getLastResponseCode() == 401 && i == 0) {
-                        UserError.Log.d(TAG, "Try get data again due to 401 response code." + getCareLinkClient().getLastErrorMessage());
-                        //second 401 error => unauthorized error
-                    } else if (carelinkClient.getLastResponseCode() == 401) {
-                        UserError.Log.e(TAG, "CareLink login error!  Response code: " + carelinkClient.getLastResponseCode());
-                        msg("Login error!");
-                        //login error
-                    } else if (!getCareLinkClient().getLastLoginSuccess()) {
-                        UserError.Log.e(TAG, "CareLink login error!  Response code: " + carelinkClient.getLastResponseCode());
-                        UserError.Log.e(TAG, "Error message: " + getCareLinkClient().getLastErrorMessage());
-                        msg("Login error!");
-                        //other error in download
-                    } else {
-                        UserError.Log.e(TAG, "CareLink download error! Response code: " + carelinkClient.getLastResponseCode());
-                        UserError.Log.e(TAG, "Error message: " + getCareLinkClient().getLastErrorMessage());
-                        msg("Data request error!");
-                    }
-                }
-
-                //Next try only for 401 error and first attempt
-                if (!(carelinkClient.getLastResponseCode() == 401 && i == 0))
-                    break;
-
+            //Get data
+            try {
+                if (JoH.emptyString(this.carelinkPatient))
+                    recentData = getCareLinkClient().getRecentData();
+                else
+                    recentData = getCareLinkClient().getRecentData(this.carelinkPatient);
+                lastResponseCode = carelinkClient.getLastResponseCode();
+            } catch (Exception e) {
+                UserError.Log.e(TAG, "Exception in CareLink data download: " + e);
             }
 
+            //Process data
+            if (recentData != null) {
+                UserError.Log.d(TAG, "Success get data!");
+                try {
+                    UserError.Log.d(TAG, "Start process data");
+                    //Process CareLink data (conversion and update xDrip data)
+                    CareLinkDataProcessor.processData(recentData, true);
+                    UserError.Log.d(TAG, "ProcessData finished!");
+                    //Update Service status
+                    CareLinkFollowService.updateBgReceiveDelay();
+                    msg(null);
+                } catch (Exception e) {
+                    UserError.Log.e(TAG, "Exception in data processing: " + e);
+                    msg("Data processing error!");
+                }
+                //Data receive error
+            } else {
+                if (carelinkClient.getLastResponseCode() == 401) {
+                    UserError.Log.e(TAG, "CareLink login error!  Response code: " + carelinkClient.getLastResponseCode());
+                    msg("Login error!");
+                    //login error
+                } else {
+                    UserError.Log.e(TAG, "CareLink download error! Response code: " + carelinkClient.getLastResponseCode());
+                    UserError.Log.e(TAG, "Error message: " + getCareLinkClient().getLastErrorMessage());
+                    msg("Download data failed!");
+                }
+            }
         }
 
     }
@@ -185,7 +191,8 @@ public class CareLinkFollowDownloader {
         if (careLinkClient == null) {
             try {
                 UserError.Log.d(TAG, "Creating CareLinkClient");
-                careLinkClient = new CareLinkClient(carelinkUsername, carelinkPassword, carelinkCountry);
+                if (CareLinkCredentialStore.getInstance().getAuthStatus() == CareLinkCredentialStore.AUTHENTICATED)
+                    careLinkClient = new CareLinkClient(CareLinkCredentialStore.getInstance());
             } catch (Exception e) {
                 UserError.Log.e(TAG, "Error creating CareLinkClient", e);
             }
