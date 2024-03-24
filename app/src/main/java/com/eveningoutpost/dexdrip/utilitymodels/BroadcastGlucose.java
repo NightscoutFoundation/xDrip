@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.utilitymodels;
 import static com.eveningoutpost.dexdrip.models.JoH.dateTimeText;
 import static com.eveningoutpost.dexdrip.models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
+import static com.eveningoutpost.dexdrip.utilitymodels.Unitized.usingMgDl;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -63,7 +64,10 @@ public class BroadcastGlucose {
                 UserError.Log.i("SENSOR QUEUE:", "Broadcast data");
 
                 String collectorName = DexCollectionType.getBestCollectorHardwareName();
-                if (collectorName.equals("G6 Native")) {
+                if (collectorName.equals("G6 Native") || collectorName.equals("G7")) {
+                    if (collectorName.equals("G7")) {
+                        collectorName = "G6 Native"; // compatibility for older AAPS
+                    }
                     collectorName += " / G5 Native"; // compatibility for older AAPS
                 }
                 bundle.putString(Intents.XDRIP_DATA_SOURCE_DESCRIPTION, collectorName);
@@ -146,6 +150,8 @@ public class BroadcastGlucose {
                 bundle.putLong(Intents.EXTRA_SENSOR_STARTED_AT, sensor.started_at);
                 bundle.putLong(Intents.EXTRA_TIMESTAMP, bgReading.timestamp);
 
+                addDisplayInformation(bundle);
+
                 //raw value
                 double slope = 0, intercept = 0, scale = 0, filtered = 0, unfiltered = 0, raw = 0;
                 final Calibration cal = Calibration.lastValid();
@@ -192,5 +198,9 @@ public class BroadcastGlucose {
         if (result != null) {
             bundle.putString(Intents.EXTRA_COLLECTOR_NANOSTATUS, result);
         }
+    }
+
+    private static void addDisplayInformation(final Bundle bundle) {
+        bundle.putString(Intents.EXTRA_DISPLAY_UNITS, Unitized.unit(usingMgDl()));
     }
 }

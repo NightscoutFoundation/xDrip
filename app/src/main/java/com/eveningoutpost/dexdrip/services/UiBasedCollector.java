@@ -87,9 +87,15 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackages.add("com.medtronic.diabetes.guardianconnect.us");
         coOptedPackages.add("com.medtronic.diabetes.minimedmobile.eu");
         coOptedPackages.add("com.medtronic.diabetes.minimedmobile.us");
+        coOptedPackages.add("com.medtronic.diabetes.simplera.eu");
+        coOptedPackages.add("com.senseonics.gen12androidapp");
+        coOptedPackages.add("com.senseonics.androidapp");
 
         coOptedPackagesAll.add("com.dexcom.dexcomone");
         coOptedPackagesAll.add("com.medtronic.diabetes.guardian");
+        coOptedPackagesAll.add("com.medtronic.diabetes.simplera.eu");
+        coOptedPackagesAll.add("com.senseonics.gen12androidapp");
+        coOptedPackagesAll.add("com.senseonics.androidapp");
 
         companionAppIoBPackages.add("com.insulet.myblue.pdm");
 

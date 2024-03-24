@@ -1786,4 +1786,5 @@
     <string name="summary_Lib2_show_sense_on_status">Įjungti papildomos Libre 2 sensoriaus informacijos rodymą statuse</string>
     <string name="import_qr_code_warning">Importuokite nustatymus tik iš tų šaltinių, kuriais pasitikite!\n\nPatvirtinkite šių nustatymų importą:\n\n</string>
     <string name="scan_to_load_xdrip_settings">Skenuokite xDrip nustatymams įkelti</string>
+    <string name="reraise_alerts_before_snooze_time">Aktyvuoti aliarmą nepasibaigus nutildymo laikui</string>
 </resources>

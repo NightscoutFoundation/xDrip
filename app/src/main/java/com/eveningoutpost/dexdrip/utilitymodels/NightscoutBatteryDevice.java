@@ -1,6 +1,8 @@
 package com.eveningoutpost.dexdrip.utilitymodels;
 
 
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.shortTxId;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -143,6 +145,9 @@ public enum NightscoutBatteryDevice {
         @Override
         String getDeviceName() {
             if (Ob1G5StateMachine.usingG6()) {
+                if (shortTxId()) { // If using G7
+                    return "G7 Device";
+                }
                 return "G6 Transmitter";
             }
             return "G5 Transmitter";

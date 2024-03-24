@@ -696,7 +696,7 @@
     <string name="use_any_tag">Использовать метод оптимизации чтения с помощью any-tag</string>
     <string name="low_level_value">Низкоуровневое диагностическое/опытное значение</string>
     <string name="transmitter_id">ID вашего трансмиттера Dexcom, напр. 12AB3</string>
-    <string name="advanced_g5_settings">Расширенные настройки G5 для редких ситуаций</string>
+    <string name="advanced_g5_settings">Продвинутые настройки G5 для редких ситуаций</string>
     <string name="g5_debug_settings">Настройки отладки G5/G6</string>
     <string name="g5_scan_constantly">Некоторые устройства работают лучше когда постоянное сканирование включено, другие наоборот. Если опция отключена и показания с сенсора поступают стабильно, заряд батареи расходуется медленее. Рекомендуется включать эту опцию в случае проблем со стабильностью получения показаний</string>
     <string name="scan_for_g5_constantly">Постоянный поиск G5</string>
@@ -913,6 +913,7 @@
     <string name="bluereader_position">проверьте правильность установки blueReader, так как данные не могут быть получены!</string>
     <string name="bluereaderuglystate">blueReader был найден в плохом состоянии! Сейчас он будет выключен, и вы включите его обратно (короткое нажатие кнопки). После этого blueReader должен работать, как положено!</string>
     <string name="offical_msg">Официальное приложение</string>
+    <string name="aggressive_power_manager">У вашего устройства есть агрессивное приложение для управления питанием. Обычно доступ к нему осуществляется через системные настройки. Убедитесь, что xDrip исключён из фоновых ограничений.</string>
     <string name="use_conflict_msg">может пытаться получить доступ к передающему устройству что возможно вызовет сбой обоих приложений</string>
     <string name="use_confict_msg_glimp">Вы можете настроить Glimp: Опции -&gt; Устройства -&gt; отключите настройки Bluetooth</string>
     <string name="eng_mode_is_on">Инженерный режим включен. Пожалуйста, выключите его, если вы не уверены, что он нужен, так как он может вызывать неожиданное поведение.</string>
@@ -977,6 +978,7 @@
     <string name="emergency_message_near_format_string">%1$s недалеко от %2$s %3$s %4$s %5$s</string>
     <string name="choose_when_to_send_messages">Отправлять сообщения в случае:</string>
     <string name="low_alert_not_acknowledged">Неподтвержденный сигнал тревоги нижней границы</string>
+    <string name="lowest_alert_not_acknowledged">Неподтвержденный сигнал тревоги нижней границы</string>
     <string name="high_alert_not_acknowledged">Неподтвержденный сигнал тревоги верхней границы</string>
     <string name="device_inactivity">Бездействие устройства</string>
     <string name="test_message_sending">Отправка тестового сообщения</string>
@@ -1168,6 +1170,7 @@
     <string name="use_mobile_data">Использовать мобильные данные</string>
     <string name="summary_cloud_storage_api_download_enable">Также пытаться загрузить данные из Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Загружать данные</string>
+    <string name="title_cloud_storage_api_download_from_xdrip"></string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Калибровать используя новые показания глюкозы без запроса подтверждения при благоприятных условиях (экспериментальная функция)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Автоматическая калибровка</string>
     <string name="title_rest_api_extra_options">Дополнительные параметры</string>
@@ -1204,6 +1207,9 @@
     <string name="return_to_home_screen">Вернуться к домашнему экрану</string>
     <string name="title_broadcast_service_api">API службы трансляции</string>
     <string name="summary_broadcast_service_api">Позволяет xDrip взаимодействовать с другими приложениями, используя новый API</string>
+    <string name="title_enable_iob_in_api_endpoint">Включить IoB сообщения в API</string>
+    <string name="title_fetch_iob_from_companion_app">Получить IoB из приложения спутника</string>
+    <string name="summary_fetch_iob_from_companion_app">Получить значение IoB из приложения, работающего на том же устройстве, например, Omnipod 5 App</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Синхронизация с MiBand браслетами</string>
     <string name="title_miband_enable">Использовать MiBand</string>
@@ -1293,6 +1299,8 @@
     !-->
     <string name="title_clfollow_country">Страна CareLink</string>
     <string name="summary_clfollow_country">Выберите вашу страну CareLink.</string>
+    <string name="title_clfollow_patient">Имя пользователя CareLink</string>
+    <string name="summary_clfollow_patient">Имя пользователя пациента из CareLink (опционально)</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_lang">CareLink Language</string>
     <string name="summary_clfollow_lang">CareLink language code</string>
@@ -1345,7 +1353,7 @@
     <string name="title_xdrip_plus_graph_display_settings">Настройки графика</string>
     <string name="summary_show_basal_line">Отображать значения TBR из внешних источников</string>
     <string name="title_show_basal_line">Отображать базальный TBR</string>
-    <string name="summary_show_g_prediction">Отображать прогноз значений глюкозы G6</string>
+    <string name="summary_show_g_prediction">Показывать предсказанные G6 точки глюкозы</string>
     <string name="title_show_g_prediction">Прогноз G6</string>
     <string name="summary_show_smb_icons">Не показывать на графике иконки для введённых пользователем маленьких значений болюса</string>
     <string name="title_show_smb_icons">Показывать значки болюсного инсулина</string>
@@ -1379,6 +1387,17 @@
     <string name="title_use_number_icon_large">Отображать значение крупно</string>
     <string name="summary_number_icon_large_arrow">Отображать указатель тренда, для работы необходима активация \"Отображать значение крупно\"</string>
     <string name="title_number_icon_large_arrow">Отображать тренд</string>
+    <string name="title_xdrip_plus_accessibility">Настройка дисплей всегда включен</string>
+    <string name="summary_aod_use_top">Использовать первую одну пятую часть экрана для виджета \"всегда на экране\"</string>
+    <string name="title_aod_use_top">Использовать верх</string>
+    <string name="summary_aod_use_top_center">Использовать вторую одну пятую часть экрана для виджета \"всегда на экране\"</string>
+    <string name="title_aod_use_top_center">Использовать верхний центр</string>
+    <string name="summary_aod_use_center">Использовать третью одну пятую часть экрана для виджета \"всегда на экране\"</string>
+    <string name="title_aod_use_center">Использовать центр</string>
+    <string name="summary_aod_use_center_bottom">Использовать четвертую одну пятую часть экрана для виджета \"всегда на экране\"</string>
+    <string name="title_aod_use_center_bottom">Использовать центр снизу</string>
+    <string name="summary_aod_use_bottom">Использовать последнюю одну пятую часть экрана для виджета \"всегда на экране\"</string>
+    <string name="title_aod_use_bottom">Использовать низ</string>
     <string name="summary_show_home_on_boot">Автоматически отображать экран xDrip после загрузки устройства</string>
     <string name="title_show_home_on_boot">Показывать xDrip после загрузки</string>
     <string name="eula">Лицензионное соглашение</string>
@@ -1494,6 +1513,8 @@
     <string name="change_settings">Изменить настройки</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Хотите удалить или сбросить калибровки сенсора?</string>
     <string name="sensor_stop_confirm">Вы хотите остановить датчик?</string>
+    <string name="sensor_stop_confirm_norestart">Вы не сможете просто перезапустить сенсор.</string>
+    <string name="sensor_stop_confirm_really_norestart">ВНИМАНИЕ!\n\nВы не сможете перезапустить устройство.</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Активирована старая экспериментальная настройка прогнозирования глюкозы.\n\nЭто НЕ РЕКОМЕНДУЕТСЯ и может серьезно навредить.\n\nОтключить данную настройку?</string>
     <string name="settings_issue">Проблема с настройками!</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Вы хотите использовать эти синхронизированные данные глюкометра для калибровки?\n\n(эти настройки могут быть изменены в Параметрах)</string>
@@ -1597,6 +1618,11 @@
     <string name="enable_streaming_always_allow">Всегда подключаться к сенсорам Libre2</string>
     <string name="enable_streaming_ask_each_time">спрашивать каждый раз</string>
     <string name="enable_streaming_never">Никогда не подключаться к сенсорам Libre2</string>
+    <string name="libre_filter_length_10">10 минут</string>
+    <string name="libre_filter_length_15">15 минут</string>
+    <string name="libre_filter_length_25">25 минут &gt;</string>
+    <string name="libre_filter_length_summary">Количество минут для рассмотрения при использовании данных librex</string>
+    <string name="libre_filter_length_title">Сглаживать данные Libre3 при использовании ххх метода</string>
     <string name="enable_streaming_dialog_yes">Подключиться к этому сенсору Libre2</string>
     <string name="enable_streaming_dialog_no">Не подключаться к этому датчику Libre2 </string>
     <string name="enable_streaming_dialog_dont_ask_again">Больше не спрашивать</string>
@@ -1772,6 +1798,7 @@
     <string name="title_ymax">Установить максимум по оси y</string>
     <string name="summary_ymin">Укажите y min когда нет меньших показаний.</string>
     <string name="summary_ymax">Укажите y max когда нет больших показаний.</string>
+    <string name="wait_to_connect">Проверьте настройки и дождитесь подключения.</string>
     <string name="close">Закрыть</string>
     <string name="carelink_auth_country_required">Необходимо указать страну!</string>
     <string name="carelink_auth_status_authenticated">Состояние авторизован!</string>
@@ -1784,4 +1811,6 @@
     <string name="carelink_credential_status_not_authenticated">Вход не выполнен! Пожалуйста, войдите!</string>
     <string name="carelink_credential_status_access_expired">Срок доступа закончился! Будет обновлен!</string>
     <string name="carelink_credential_status_refresh_expired">Время входа закончилось! Пожалуйста, войдите!</string>
+    <string name="data_source">Источник данных:</string>
+    <string name="reraise_alerts_before_snooze_time">Показывать повторные оповещения до истечения времени отсроченного срабатывания</string>
 </resources>

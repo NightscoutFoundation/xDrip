@@ -35,6 +35,8 @@ public interface Intents {
 
     String EXTRA_COLLECTOR_NANOSTATUS = "com.eveningoutpost.dexdrip.Extras.Collector.NanoStatus";
 
+    String EXTRA_DISPLAY_UNITS = "com.eveningoutpost.dexdrip.Extras.Display.Units";
+
     // From NS Android Client
     // send
     String ACTION_NEW_TREATMENT = "info.nightscout.client.NEW_TREATMENT";

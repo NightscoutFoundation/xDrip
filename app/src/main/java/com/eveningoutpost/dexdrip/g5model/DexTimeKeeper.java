@@ -86,10 +86,13 @@ public class DexTimeKeeper {
         return (int) (ms_since / 1000L);
     }
 
+    public static long getTxStartTimestamp(String transmitterId) {
+        return PersistentStore.getLong(DEX_XMIT_START + transmitterId);
+    }
+
     public static long fromDexTimeCached(int dexTimeStamp) {
         return fromDexTime(lastTransmitterId, dexTimeStamp);
     }
-
 
     public static long fromDexTime(String transmitterId, int dexTimeStamp) {
         if ((transmitterId == null) || (transmitterId.length() != 6 && transmitterId.length() != 4)) {

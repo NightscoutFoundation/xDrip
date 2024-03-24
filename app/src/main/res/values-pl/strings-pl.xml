@@ -1170,6 +1170,8 @@
     <string name="use_mobile_data">Użyj transmisji danych</string>
     <string name="summary_cloud_storage_api_download_enable">Spróbuj również pobrać zabiegi z Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Pobierz zabiegi</string>
+    <string name="title_cloud_storage_api_download_from_xdrip">Pomiń elementy z xDrip</string>
+    <string name="summary_cloud_storage_api_download_from_xdrip">Unikaj pobierania elementów przesłanych przez xDrip</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Kalibruj bez pytania używając wyniku z glukometru jeżeli warunki są korzystne (funkcja eksperymentalna)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatyczna kalibracja</string>
     <string name="title_rest_api_extra_options">Dodatkowe opcje</string>
@@ -1207,6 +1209,7 @@
     <string name="title_broadcast_service_api">Nadawaj Service API</string>
     <string name="summary_broadcast_service_api">Umożliwia komunikację xDrip z aplikacjami innych firm poprzez użycie nowego API</string>
     <string name="title_enable_iob_in_api_endpoint">Włącz raportowanie IoB w API</string>
+    <string name="summary_enable_iob_in_api_endpoint"></string>
     <string name="title_fetch_iob_from_companion_app">Pobierz IoB z aplikacji towarzyszącej</string>
     <string name="summary_fetch_iob_from_companion_app">Pobierz wartość IoB z aplikacji towarzyszącej działającej na tym samym urządzeniu, np. Omnipod 5 App</string>
     <string name="title_miband">MiBand</string>
@@ -1310,6 +1313,7 @@
     <string name="title_clfollow_grace_period">Okres karencji</string>
     <string name="summary_clfollow_grace_period">Okres karencji dla żądania danych w sekundach</string>
     <string name="title_clfollow_missed_poll_interval">Interwał ankiet nieodebranych danych</string>
+    <string name="summary_clfollow_missed_poll_interval"></string>
     <string name="title_clfollow_download_finger_bgs">Poziom cukru z palca</string>
     <string name="title_clfollow_download_boluses">Bolusy</string>
     <string name="summary_clfollow_download_boluses">Pobierz bolusy z CareLink</string>
@@ -1331,7 +1335,7 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Awaryjny powrót do algorytmu xDrip</string>
     <string name="summary_ob1_minimize_scanning">Użyj heurystyki, aby zminimalizować skanowanie Bluetooth i oszczędzać energię</string>
     <string name="title_ob1_minimize_scanning">Minimalizuj skanowanie</string>
-    <string name="summary_using_g6">Używam czujnika G6 lub Dexcom 1</string>
+    <string name="summary_using_g6">Używam czujnika G6</string>
     <string name="title_using_g6">Obsługa G6/Dex1</string>
     <string name="summary_ob1_g5_allow_resetbond">Kolektor OB1 może odłączyć, jeśli uzna, że szyfrowanie się nie powiodło. Jeśli wystąpią problemy z odparowaniem, wyłącz tę opcję. Jeśli wtedy całkowicie utracisz połączenie, upewnij się, że jest to włączone.</string>
     <string name="title_ob1_g5_allow_resetbond">Zezwól na odłączenie OB1</string>
@@ -1363,6 +1367,7 @@
     <string name="summary_public_notifications">Pokaż powiadomienia na zabezpieczonym ekranie blokady</string>
     <string name="title_public_notifications">Powiadomienia publiczne</string>
     <string name="title_xdrip_plus_number_wall">Poziom glukozy na ekranie blokady</string>
+    <string name="summary_do_number_wall_configuration">Dostosuj podgląd ściany</string>
     <string name="summary_number_wall_on_lockscreen">Pokaż na zablokowanym ekranie. Tylko Android 7 i nowszy!</string>
     <string name="title_number_wall_on_lockscreen">Użyj na ekranie blokady</string>
     <string name="summary_pick_numberwall_start">Wybierz czas, aby zacząć pokazywać</string>
@@ -1378,6 +1383,17 @@
     <string name="title_use_number_icon_large">Użyj dużej ikony wartości</string>
     <string name="summary_number_icon_large_arrow">Pokaż strzałkę trendu w dużej ikonie</string>
     <string name="title_number_icon_large_arrow">Pokaż strzałkę w Dużej Ikonie</string>
+    <string name="title_xdrip_plus_accessibility">Ustawienia niegasnącego wyświetlacza</string>
+    <string name="summary_aod_use_top">Użyj pierwszych 20% ekranu dla widżetu niegasnącego wyświetlacza</string>
+    <string name="title_aod_use_top">Użyj góry</string>
+    <string name="summary_aod_use_top_center">Użyj drugich 20% ekranu dla widżetu niegasnącego wyświetlacza</string>
+    <string name="title_aod_use_top_center">Użyj górnego środka</string>
+    <string name="summary_aod_use_center">Użyj trzecich 20% ekranu dla widżetu niegasnącego wyświetlacza</string>
+    <string name="title_aod_use_center">Użyj środka</string>
+    <string name="summary_aod_use_center_bottom">Użyj czwartych 20% ekranu dla widżetu niegasnącego wyświetlacza</string>
+    <string name="title_aod_use_center_bottom">Użyj środka na dole</string>
+    <string name="summary_aod_use_bottom">Użyj ostatnich 20% ekranu dla widżetu niegasnącego wyświetlacza</string>
+    <string name="title_aod_use_bottom">Użyj dołu</string>
     <string name="summary_show_home_on_boot">Pokaż okno xDrip po uruchomieniu urządzenia</string>
     <string name="title_show_home_on_boot">Pokaż xDrip przy uruchomieniu telefonu</string>
     <string name="eula">Licencja</string>
@@ -1487,6 +1503,8 @@
     <string name="change_settings">Zmień ustawienia</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Czy chcesz usunąć i zresetować kalibracje dla tego czujnika?</string>
     <string name="sensor_stop_confirm">Czy chcesz zatrzymać czujnik?</string>
+    <string name="sensor_stop_confirm_norestart">Nie będziesz w stanie po prostu zrestartować czujnika.</string>
+    <string name="sensor_stop_confirm_really_norestart">UWAGA!\n\nNie będziesz w stanie zrestartować urządzenia.</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Masz włączoną starą eksperymentalną opcję przewidywania glikemii.\n\nTo NIE jest zalecane i może wiele popsuć.\n\nCzy mogę ją dla Ciebie wyłączyć?</string>
     <string name="settings_issue">Problem z ustawieniami!</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Czy chcesz użyć tej zsynchronizowanej wartości stężenia glukozy we krwi do kalibracji?\n\n(możesz zmienić kiedy to okno dialogowe jest wyświetlane w Ustawieniach)</string>
@@ -1757,4 +1775,15 @@
     <string name="carelink_credential_status_not_authenticated">Nie zalogowano! Zaloguj się!</string>
     <string name="carelink_credential_status_access_expired">Dostęp wygasł! Nastąpi odświeżenie!</string>
     <string name="carelink_credential_status_refresh_expired">Sesja logowania wygasła! Zaloguj się!</string>
+    <string name="data_source">Źródło danych:</string>
+    <string name="reraise_alerts_before_snooze_time">Odnów alarm przed czasem drzemki</string>
+    <string name="select_start_time">Wybierz czas rozpoczęcia</string>
+    <string name="select_end_time">Wybierz czas zakończenia</string>
+    <string name="audio_focus_summary">Wybierz co zrobić z innymi aplikacjami podczas odtwarzania alarmów i dostosowywania poziomów głośności systemu</string>
+    <string name="audio_focus_dont_adjust_other_app_sounds">Nie dostosowuj dźwięków innych aplikacji</string>
+    <string name="audio_focus_lower_volume_of_other_apps">Zmniejsz głośność innych aplikacji</string>
+    <string name="audio_focus_pause_other_apps_playing_audio">Wstrzymaj odtwarzanie dźwięku innych aplikacji</string>
+    <string name="audio_focus_pause_all_other_sounds">Wstrzymaj wszystkie inne dźwięki</string>
+    <string name="use_camera_light">Użyj latarki aparatu</string>
+    <string name="use_camera_light_summary">Mrugaj latarką aparatu podczas alarmów przy podłączeniu do ładowarki</string>
 </resources>

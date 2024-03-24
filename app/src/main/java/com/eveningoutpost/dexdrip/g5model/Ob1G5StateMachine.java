@@ -669,7 +669,7 @@ public class Ob1G5StateMachine {
         if (connection == null) return false;
         // TODO switch modes depending on conditions as to whether we are using internal
         final boolean use_g5_internal_alg = Pref.getBooleanDefaultFalse("ob1_g5_use_transmitter_alg");
-        UserError.Log.d(TAG, use_g5_internal_alg ? ("Requesting Glucose Data " + (usingG6() ? "G6" : "G5")) : "Requesting Sensor Data");
+        UserError.Log.d(TAG, use_g5_internal_alg ? ("Requesting Glucose Data " + (usingG6() ? (shortTxId() ? "G7" : "G6") : "G5")) : "Requesting Sensor Data");
 
         if (!use_g5_internal_alg) {
             parent.lastSensorStatus = null; // not applicable
@@ -954,7 +954,7 @@ public class Ob1G5StateMachine {
 
                             switch (hex) {
                                 case "2E01":
-                                    UserError.Log.e(TAG, "Invalid settings, attempting to restore defaults");
+                                    UserError.Log.e(TAG, "Invalid settings, attempting to restore Dex defaults, Native mode, no plugin");
                                     setG6Defaults();
                                     break;
                             }
@@ -1097,8 +1097,10 @@ public class Ob1G5StateMachine {
         if (ask_for_backfill) {
             nextBackFillCheckSize = backfillCheckLarge();
             monitorBackFill(parent, connection);
-            final long startTime = Math.max(earliest_timestamp - (Constants.MINUTE_IN_MS * 5), sensor.started_at);
-            final long endTime = latest_timestamp + (Constants.MINUTE_IN_MS * 5);
+
+            final long txStartTime = DexTimeKeeper.getTxStartTimestamp(getTransmitterID()); // the time the transmitter reports as starting or 0 if we don't know
+            final long startTime = Math.max(earliest_timestamp - DEXCOM_PERIOD, Math.max(txStartTime + DEXCOM_PERIOD, sensor.started_at));
+            final long endTime = latest_timestamp + DEXCOM_PERIOD;
 
             if (startTime >= endTime) {
                 UserError.Log.e(TAG, "Cannot process backfill request where start time would be after end time");
@@ -1124,6 +1126,7 @@ public class Ob1G5StateMachine {
     public static boolean shortTxId() {
         return getTransmitterID().length() < 6;
     }
+
 
     private static Ob1Work enqueueCommand(BaseMessage tm, String msg) {
         if (tm != null) {
@@ -1715,11 +1718,12 @@ public class Ob1G5StateMachine {
             if (FirmwareCapability.isTransmitterG6(getTransmitterID())) {
                 if (!usingG6()) {
                     setG6Defaults();
-                    JoH.showNotification("Enabled G6", "G6 Features and default settings automatically enabled", null, Constants.G6_DEFAULTS_MESSAGE, false, true, false);
+                    JoH.showNotification("Enabled defaults", "Default settings automatically enabled", null, Constants.G6_DEFAULTS_MESSAGE, false, true, false);
                 } else if (!onlyUsingNativeMode() && !Home.get_engineering_mode()) {
                     // TODO revisit this now that there is scaling
                     setG6Defaults();
-                    JoH.showNotification("Enabled G6", "G6 Native mode enabled", null, Constants.G6_DEFAULTS_MESSAGE, false, true, false);
+                    UserError.Log.uel(TAG, "Dex Native mode enabled.  For your device, non-native mode is either not possible or not recommended.");
+                    JoH.showNotification("Enabled Native", "Native mode enabled", null, Constants.G6_DEFAULTS_MESSAGE, false, true, false);
                 }
             }
         }

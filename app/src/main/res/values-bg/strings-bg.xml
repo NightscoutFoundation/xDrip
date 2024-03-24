@@ -88,7 +88,7 @@
     <string name="pref_amazfit_BG_alert_title">Аларми КЗ</string>
     <string name="pref_amazfit_other_alert_enable_summary">Изпраща други аларми за КЗ към часовника</string>
     <string name="pref_amazfit_other_alert_enable">Включи</string>
-    <string name="pref_amazfit_other_alert_title">Други аларми</string>
+    <string name="pref_amazfit_other_alert_title">Други Известия</string>
     <string name="pref_amazfit_watchface_graph_dots_title">Циферблат точки по графиката</string>
     <string name="pref_amazfit_watchface_graph_dots_summary">Показвай по-малки точки</string>
     <string name="pref_amazfit_watchface_graph_enable">Включи</string>
@@ -110,7 +110,7 @@
     <string name="taskerConfiguration">Конфигурация на Tasker</string>
     <string name="finish_preferences_activity">Завършете дейността за предпочитания</string>
     <string name="add_widget">Добави widget</string>
-    <string name="title_activity_alert_list">Списък аларми</string>
+    <string name="title_activity_alert_list">Списък Известия</string>
     <string name="speaktreatment">Изговори манипулацията</string>
     <string name="title_activity_update">xDrip+ има налична актуализация</string>
     <string name="title_activity_display_qrcode">Сподели настройки чрез QR код</string>
@@ -177,6 +177,7 @@
     <string name="libre_last_x_minutes_graph">Libre графа последните за последните %d мин</string>
     <string name="share_config_via_qr_code">Сподели настройки чрез QR код</string>
     <string name="check_for_updated_version">Проверка за нова версия</string>
+    <string name="current_version_is_up_to_date">Няма актуализация в избрания канал</string>
     <string name="send_feedback_to_developer">Изпращане на отзиви към разработчика</string>
     <string name="home_screen">Началния екран</string>
     <string name="event_logs">Журнали със събития</string>
@@ -207,17 +208,17 @@
     <string name="copying_settings">Копиране на настройките</string>
     <string name="show_settings_qr_codes">Покажи QR код за настройките</string>
     <string name="load_save_settings_to_sdcard">Зареди / Запази настройки на SD карта</string>
-    <string name="alarms_and_alerts">Аларми и Алерти</string>
-    <string name="alerts_and_notifications">Аларми и нотификации</string>
+    <string name="alarms_and_alerts">Аларми и Известия</string>
+    <string name="alerts_and_notifications">Аларми и Нотификации</string>
     <string name="glucose_level_alerts_list">Списък на аларми за ниво на глюкозата</string>
-    <string name="glucose_alerts_settings">Настройки на алерти за глюкоза</string>
+    <string name="glucose_alerts_settings">Настройки на Известия за глюкоза</string>
     <string name="smart_snoozing">Смарт-Snooze</string>
-    <string name="calibration_alerts">Алерти за калибрация</string>
+    <string name="calibration_alerts">Известия за калибрация</string>
     <string name="missed_reading_alert">Пропуснат алерт при прочитане</string>
-    <string name="other_alerts">Други алерти</string>
-    <string name="extra_alerts_xdrip_plus">Допълнителни Алерти (xDrip+)</string>
-    <string name="persistent_high_alert">Продължително висока Кз алерт</string>
-    <string name="forecasted_low_alert">Предвижда се Аларма за Ниска КЗ</string>
+    <string name="other_alerts">Други Известия</string>
+    <string name="extra_alerts_xdrip_plus">Допълнителни Известия (xDrip+)</string>
+    <string name="persistent_high_alert">Известие за продължително висока КЗ</string>
+    <string name="forecasted_low_alert">Известие за предвиждана Ниска КЗ</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Екстраполиране на данните в опит да се предвиди ниска КЗ</string>
     <string name="alarm_at_forecasted_low_mins">Аларма при предвиждане на Ниски стойности(Кз)</string>
     <string name="other_xdrip_plus_alerts">Други xDrip+ известия</string>
@@ -335,17 +336,17 @@
     <string name="bracket_not_snoozed">(не е отложено)</string>
     <string name="all_alerts_disabled_until">"Всички аларми спряни до "</string>
     <string name="low_alerts_disabled_until">"Всички аларми спряни до "</string>
-    <string name="high_alerts_disabled_until">"Всички аларми спряни до "</string>
+    <string name="high_alerts_disabled_until">"Всички известия спряни до "</string>
     <string name="default_snooze">Отлагане по подразбиране</string>
     <string name="until_you_reenable">Докато не го вкл.</string>
     <string name="set">Приложи</string>
     <string name="disable_low_alerts">Изкл. ниска КЗ аларми</string>
-    <string name="re_enable_low_alerts">Вкл. аларми ниска КЗ</string>
-    <string name="disable_high_alerts">Изкл. аларми висока КЗ</string>
+    <string name="re_enable_low_alerts">Вкл. известиея за ниска КЗ</string>
+    <string name="disable_high_alerts">Изкл. известия висока КЗ</string>
     <string name="re_enable_high_alerts">Вкл. аларми висока КЗ</string>
-    <string name="disable_all_alerts">Спиране на всички аларми</string>
-    <string name="re_enable_all_alerts">Вкл. на всички аларми</string>
-    <string name="alert_snoozed_by_watch">Отлага на аларми от часовник</string>
+    <string name="disable_all_alerts">Спиране на всички известия</string>
+    <string name="re_enable_all_alerts">Вкл. на всички известия</string>
+    <string name="alert_snoozed_by_watch">Отлага на известия от часовник</string>
     <string name="update_channel_colon_space">"Канал за обновления: "</string>
     <string name="a_new_version_is_available">Има нова версия</string>
     <string name="version_details">Подробности за версия</string>
@@ -418,13 +419,13 @@
     <string name="predicted_low_sound">Звук при предвиждане на ниска КЗ</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Използване на звукова аларма при предвиждане на ниска КЗ.</string>
     <string name="notify_when_parakeet_device_stops_checking_in">Извести когато Parakeet устройството спре да се отичта</string>
-    <string name="parakeet_related_alerts">Parakeet свързани аларми</string>
+    <string name="parakeet_related_alerts">Parakeet свързани известия</string>
     <string name="raise_parakeet_notification_silently_when_charging">Повишете леко Parakeet известията, когато се зарежда</string>
     <string name="silent_alert_when_charging">Безшумно известие при зареждане</string>
-    <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Сигналите започват отложени и трябва да продължат известно време, за да се задействат действително</string>
+    <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Известията започват отложени и трябва да продължат известно време, за да се задействат</string>
     <string name="alarms_silenced_during_telephone_calls">Алармите са заглушени по време на телефонни разговори</string>
     <string name="suppress_alerts_if_missed_readings">Не показвай предупрежденията при пропуснати прочитания</string>
-    <string name="bad_noisy_value_alerts">Сигнали за лоши (шумни) стойности</string>
+    <string name="bad_noisy_value_alerts">Известия за лоши (шумни) стойности</string>
     <string name="keep_snoozing_if_glucose_is_heading_in_right_direction">Отлагане на аларма, ако глюкозата се движи в правилната посока</string>
     <string name="dont_alert_if_glucose_in_right_direction">Не предупреждавай, ако глюкозата се насочва в правилната посока</string>
     <string name="calibration_request_sound">Звук за заявка за калибриране</string>
@@ -467,7 +468,7 @@
     <string name="help_the_community">Помогнете на общността</string>
     <string name="double_tap_or_pinch_to_zoom">Докоснете два пъти или щипнете, за да увеличите.</string>
     <string name="start_sensor">Стартирай сензор</string>
-    <string name="debug_and_other_misc_options">Debug and other misc. options</string>
+    <string name="debug_and_other_misc_options">Дебъг и разни други настройки</string>
     <string name="low_glucose_values">Ниски стойности на глюкозата</string>
     <string name="bad_glucose_values">Високи стойности на глюкозата</string>
     <string name="revert_to_default">Възстановяване на фабрични настройки</string>
@@ -562,6 +563,7 @@
     <string name="notify_disable_wearG5_on_missedreadings">Деактивиране на услугата Force Wear Collection поради %1$d минути пропуснати четения на часовника!</string>
     <string name="label_show_insulin">Е:%1$sе</string>
     <string name="label_show_carbs">Въглехидрати:%1$sg</string>
+    <string name="label_show_royceratio">Вх/И:%1$s</string>
     <string name="label_show_steps">Отброяване на стъпките. Нулират се в полунощ</string>
     <string name="label_show_steps_km">показване на изминатото разстояние в км</string>
     <string name="label_show_steps_mi">изминато разстояние в мили</string>
@@ -708,6 +710,7 @@
     <string name="data_sync">Синхронизиране на данни</string>
     <string name="options_for_upload">Опции за качване в Nightscout, MongoDB или Dexcom Share</string>
     <string name="cloud_upload">Качване в облак</string>
+    <string name="enable_mongo_sync">Позволяване на Nightscout MongoDB синхронизация</string>
     <string name="skip_local_lan">За локални сървъри с адреси 192.168.x.x, пропускайте качванията, когато няма връзка с локална мрежа.</string>
     <string name="skip_lan_uploads">Пропусни LAN качвания/upload</string>
     <string name="mongo_load_transmitter_data_title">Качете данни от Libre предавателите</string>
@@ -769,9 +772,10 @@
     <string name="falling_threshold">падащ праг на ставката</string>
     <string name="rising_threshold">нарастващ праг на ставката</string>
     <string name="set_sound_for_bg_alerts">Задайте звук, използван за КЗ предупреждения.</string>
-    <string name="alert_sound">Звук на уведобленията</string>
+    <string name="alert_sound">Звук на известията</string>
     <string name="override_silent_mode_these">Игнорирай безшумния режим за тези сигнали</string>
     <string name="persistent_repeat_max">Повтаряне максимум на всеки (минути)</string>
+    <string name="momentum_indicates_low">Когато текущата тенденция показва, че ще бъде ниско нивото</string>
     <string name="notify_on_low_battery_level">Уведомяване, когато нивото на батерията падне под</string>
     <string name="collector_battery_alerts">Предупреждение за състоянието на батерията на колектора на данни</string>
     <string name="low_battery_percentage">Нисък процент на батерията</string>
@@ -784,6 +788,7 @@
     <string name="secondary_plugin_glucose_value">Стойност на глюкозата на вторичния плъгин</string>
     <string name="step_counter_1st_color">Брояч на стъпки 1-ви цвят</string>
     <string name="step_counter_2nd_color">Брояч на стъпки 2-ри цвят</string>
+    <string name="flair_colors">Елегантни цветове</string>
     <string name="use_flair_colors">Персонализирано заглавие/Навигационна лента</string>
     <string name="upper_title_bar_flair">Горна лента за известия</string>
     <string name="lower_button_bar_falir">Долна лента за известия</string>
@@ -806,6 +811,7 @@
     <string name="predictive_simulations">Предсказуеми симулации</string>
     <string name="low_prediction_values">Стойности на предсказание за ниска КЗ</string>
     <string name="target_glucose_default">Цел за глюкоза по подразбиране</string>
+    <string name="default_liver_maximum_impact">Максимално въздействие върху черния дроб по подразбиране (0–1)</string>
     <string name="remote_snoozes">Изпращане и получаване на отдалеченo отлагане</string>
     <string name="remote_snoozing">Дистанционно отлагане</string>
     <string name="snoozes_will_silence_all">Отлаганията ще заглушат всички слушалки в групата с активирана на тях настройка за приемане по-долу</string>
@@ -842,6 +848,7 @@
     <string name="send_data_to_developers">Изпращане на данни до разработчиците относно успеваемостта на различни устройства</string>
     <string name="try_to_work_around_noisy_readings_ultrasensitive">Започнете да заобикаляте неточните показания дори при много ниски нива на шум (само инженерен режим)</string>
     <string name="sidiary_date_title">От кога започва експортирането?</string>
+    <string name="blukon">BluCon</string>
     <string name="tomato">Домат</string>
     <string name="bubble">Мехурче</string>
     <string name="atom">Атом</string>
@@ -901,6 +908,7 @@
     <string name="days">дни</string>
     <string name="bluereaderoff">blueReader ще се изключи, когато батерията е по-ниска от </string>
     <string name="bluereader_position">проверете позицията на blueReader върху сензора, тъй като той не може да чете!</string>
+    <string name="bluereaderuglystate">BlueReader беше намерен в лошо състояние! Сега ще бъде изключено и ще го го включите отново (кратко натискане върху бутона). След това blueReader би трябвало да работи, както се очаква!</string>
     <string name="offical_msg">Официалното приложение</string>
     <string name="aggressive_power_manager">Вашето устройство има приложение за агресивно управление на захранването. Обикновено се осъществява чрез системни настройки. Моля, уверете се, че xDrip е изключен от фоновите ограничения.</string>
     <string name="use_conflict_msg">може да се опита да получи достъп и до предавателното устройство и това може да причини проблеми и с двете приложения</string>
@@ -908,6 +916,8 @@
     <string name="eng_mode_is_on">Инженеринг режим активиран. Моля деактивирайте освен, ако не сте сигурни, че ви е нужен, тъй като може да предизвика неочаквани резултати.</string>
     <string name="yes">Да</string>
     <string name="xdrip_compatible_features">xDrip+ %s функции</string>
+    <string name="garmin">Garmin</string>
+    <string name="fitbit">Fitbit</string>
     <string name="enable_local_web_server_feature">Активиране на функцията за локален уеб сървър за часовник Garmin?</string>
     <string name="enable_local_web_server_feature_fitbit">Активиране функцията за локален уеб сървър за циферблат на Fitbit?</string>
     <string name="set_data_source_to">Задайте източник на данни: %s ?</string>
@@ -922,10 +932,16 @@
     <string name="enable_local_broadcast">Активиране на локален broadcast?</string>
     <string name="broadcast_only_to">Broadcast само до?</string>
     <string name="enable_wear_os_sync">Активирай синхронизиране с Android Wear ОС?</string>
+    <string name="androidaps">AndroidAPS</string>
+    <string name="androidwear">Android Wear ОС</string>
+    <string name="librealarm">LibreAlarm</string>
+    <string name="use_librealarm">Използвай LibreAlarm приложението за източник на данни?</string>
     <string name="noise_blocking">Блокиране на шум в измерванията</string>
+    <string name="level_at_which_noisy_data_should_not_be_broadcast">Ниво, при което шумните данни не трябва да се предават, тъй като това може да обърка приемащите приложения</string>
     <string name="glucose_units_mmol_or_mgdl">КЗ единици ммол/Л или мг/дЛ</string>
     <string name="is_your_typical_glucose_value">Коя е Вашата типична стойност на КЗ: 5,5 (mmol/L) или 100 (mg/dL)? Изберете по-долу</string>
     <string name="settings_updated_to_mmol">Настройките са актуализирани до ммол/Л</string>
+    <string name="external_calibration_app">Приложение за външно калибриране</string>
     <string name="use_app_for_calibration">използване приложението за калибриране?</string>
     <string name="channel_name">Услуга на преден план</string>
     <string name="code_accepted">Кодът е приет</string>
@@ -955,6 +971,7 @@
     <string name="emergency_message_near_format_string">%1$s близо до %2$s %3$s %4$s %5$s</string>
     <string name="choose_when_to_send_messages">Изберете кога да изпращате съобщения:</string>
     <string name="low_alert_not_acknowledged">Предупреждението за ниско ниво не е потвърдено</string>
+    <string name="lowest_alert_not_acknowledged">Предупреждението за най- ниско ниво не е потвърдено</string>
     <string name="high_alert_not_acknowledged">Предупреждението за високо ниво не е потвърдено</string>
     <string name="device_inactivity">Неактивност на устройството</string>
     <string name="test_message_sending">Изпращане на тестово съобщение</string>
@@ -1024,7 +1041,7 @@
     <string name="summary_Choose_to_display_the_bridge_battery_level">Изберете, за да покажете нивото на батерията на моста</string>
     <string name="title_Glucose_Retention">Прогноза за глюкоза</string>
     <string name="summary_Erase_data_older_than_this_many_days">Изтриване на данни, по-стари от толкова много дни. 0 = не изтривайте нищо</string>
-    <string name="title_Other_misc_options">Разни други настроики</string>
+    <string name="title_Other_misc_options">Разни други настройки</string>
     <string name="summary_allow_testing_with_dead_sensor">позволи тестване с мъртъв сензор</string>
     <string name="title_NOT_FOR_PRODUCTION_USE">НЕ Е ЗА ПРОИЗВОДСТВЕНА УПОТРЕБА</string>
     <string name="title_You_have_no_reminders_yet">Все още няма инсталирани напомняния</string>
@@ -1121,6 +1138,7 @@
     <string name="without_location_scan_doesnt_work">Без разрешение за местоположение Android Bluetooth сканирането не работи</string>
     <string name="android_10_need_background_location">Android 10 и по-нови се нуждаят от местоположение във фонов режим, за да работи Bluetooth</string>
     <string name="without_location_permission_emergency_cannot_get_location">Без разрешение за местоположение спешните съобщения не могат да използват GPS данни</string>
+    <string name="force_speaker_colon">Принодително използване на високоговорителя</string>
     <string name="choose_data_source">Изберете Източник на данни</string>
     <string name="which_system_do_you_use">Коя система използвате?</string>
     <string name="please_allow_permission">Моля, позволете разрешение</string>
@@ -1141,6 +1159,7 @@
     <string name="overwrite_intercept_engineering_only">Презаписване на прихващането (само инженерство!)</string>
     <string name="manual_overwrite_not_possible">Не е възможно ръчно презаписване!</string>
     <string name="upload_even_when_using_mobile_data">Качвайте дори когато използвате мобилни данни</string>
+    <string name="daily_backup_even_mobile">Ежедневно архивиране дори при мобилни данни</string>
     <string name="use_mobile_data">Използване на мобилни данни</string>
     <string name="summary_cloud_storage_api_download_enable">Опитайте също да изтеглите лечения от Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Изтегляне на лечения</string>
@@ -1168,6 +1187,7 @@
     <string name="title_tidepool_test_login">Тествайте влизането в Tidepool</string>
     <string name="title_tidepool_window_latency">Минимална възраст на данните</string>
     <string name="summary_tidepool_dev_servers">Ако е разрешено, качванията ще отиват на https://int-app.tidepool.org вместо на обичайния https://app.tidepool.org/</string>
+    <string name="title_tidepool_dev_servers">Използвай тестовите сървъри</string>
     <string name="title_tidepool">Сървър Tidepool</string>
     <string name="show_help">Покажи помощно меню</string>
     <string name="load_save_settings_on_sdcard">Зареждане / запазване на настройките</string>
@@ -1278,6 +1298,8 @@
     <string name="title_clfollow_lang">CareLink Language</string>
     <string name="summary_clfollow_lang">CareLink language code</string>
     -->
+    <string name="title_clfollow_login">Вход</string>
+    <string name="summary_clfollow_login">Вход с браузър</string>
     <string name="title_clfollow_grace_period">Гратисен период</string>
     <string name="summary_clfollow_grace_period">Гратисен период за заявка за данни в секунди</string>
     <string name="title_clfollow_missed_poll_interval">Пропуснат интервал на прочитане на данни</string>
@@ -1354,6 +1376,17 @@
     <string name="title_use_number_icon_large">Използвай голяма икона с числа</string>
     <string name="summary_number_icon_large_arrow">Показва стрелката на тенденцията в голямата икона</string>
     <string name="title_number_icon_large_arrow">Показване на стрелка в голяма икона</string>
+    <string name="title_xdrip_plus_accessibility">Настройки за винаги включен дисплей</string>
+    <string name="summary_aod_use_top">Използвайте горната една пета от екрана за AOD Widget</string>
+    <string name="title_aod_use_top">Използвайте горната част</string>
+    <string name="summary_aod_use_top_center">Използвайте втората една пета от екрана за AOD Widget</string>
+    <string name="title_aod_use_top_center">Използвайте горната централна част</string>
+    <string name="summary_aod_use_center">Използвайте горната централна част от екрана за AOD Widget</string>
+    <string name="title_aod_use_center">Използвайте централна част</string>
+    <string name="summary_aod_use_center_bottom">Използвайте долната централна част от екрана за AOD Widget</string>
+    <string name="title_aod_use_center_bottom">Използвайте долната централна част</string>
+    <string name="summary_aod_use_bottom">Използвайте последната една пета от екрана за AOD Widget</string>
+    <string name="title_aod_use_bottom">Използвайте долната част</string>
     <string name="summary_show_home_on_boot">Автоматично извикване на xDrip екран след пускане на устройството</string>
     <string name="title_show_home_on_boot">Показване на xDrip при зареждане</string>
     <string name="eula">Лицензионно споразумение с краен потребител</string>
@@ -1368,6 +1401,7 @@
     <string name="summary_desert_sync_enabled">Активирани локални съоръжения за синхронизиране без интернет</string>
     <string name="title_desert_sync_enabled">Активиран Desert Sync</string>
     <string name="title_desert_sync_master_ip">Master IP address</string>
+    <string name="summary_send_sync_show_qr">Баркод за сканиране от последователи, за да ги конфигурирате автоматично</string>
     <string name="title_send_sync_show_qr">Показване на QR кода</string>
     <string name="summary_desert_use_https">Добавете друг слой на криптиране за споделени мрежи, напр. обществен WiFi</string>
     <string name="title_desert_use_https">Използване на HTTPS</string>
@@ -1380,6 +1414,7 @@
     <string name="title_inpen_prime_units">Единици за почистване на иглата</string>
     <string name="title_inpen_prime_minutes">Времеви прозорец за почистване на иглата</string>
     <string name="summary_inpen_orphan_primes_ignored">Почистване на иглата без следваща доза се игнорират, ако са отметнати. Премахнете отметката, за да третирате като дози</string>
+    <string name="title_inpen_orphan_primes_ignored">Игнориране на дози за почистване на иглата</string>
     <string name="summary_inpen_sounds">Използвайте звуци, за да посочите прехвърлянето на данни с писалката</string>
     <string name="title_inpen_sounds">Възпроизвеждане на звук</string>
     <string name="summary_inpen_reset">Нулиране и търсене на нова писалка в режим на сдвояване</string>
@@ -1388,6 +1423,10 @@
     <string name="title_pendiq_screen">Pendiq 2.0 Инсулинова Писалка</string>
     <string name="title_use_pendiq">Подръжка на цифровата писалка Pendiq 2.0</string>
     <string name="summary_pendiq_send_treatments">Подгответе писалката с въведените единици инсулин. Винаги трябва да проверявате повторно това.</string>
+    <string name="title_pendiq_send_treatments">Изпращане на лечения то писалката</string>
+    <string name="title_pendiq_pin">Пин код на писалката</string>
+    <string name="summary_use_notification_channels">Използвай Android 8+ канал за известия</string>
+    <string name="title_use_notification_channels">Канал за известия</string>
     <string name="summary_ongoing_notification_channel">Може да задейства известия за околния дисплей на някои устройства. Нуждае се от тестване!</string>
     <string name="title_ongoing_notification_channel">Използвайте текущ канал за уведомяване</string>
     <string name="summary_notification_channels_grouping">Дали известията трябва да се групират заедно. Несъвместим с опцията \'Номер на елемент в областта за уведомяване\'</string>
@@ -1440,6 +1479,8 @@
     <string name="absolute_s">Абсолютно #s:</string>
     <string name="median_bg">Медиана КЗ:</string>
     <string name="mean_bg">Средна КЗ:</string>
+    <string name="hba1c_est">HbA1c и т.н.:</string>
+    <string name="stddev">СтандОткл:</string>
     <string name="relative_sd_cv">Относително SD (CV):</string>
     <string name="important_warning">Важно предупреждение!</string>
     <string name="i_agree">СЪГЛАСЕН СЪМ</string>
@@ -1449,6 +1490,7 @@
     <string name="what_type_of_g4_bridge_device_do_you_use">Какъв тип bridge G4 устройство използвате?</string>
     <string name="xbridge_compatible">xBridge съвместим</string>
     <string name="classic_simple">Класически семпъл</string>
+    <string name="libre">Libre</string>
     <string name="what_type_of_libre_bridge_device_do_you_use">Какъв тип bridge Libre устройство използвате?</string>
     <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Bluetooth Bridge устройство: BluCon, Bubble, LimiTTer, blueReader, Tomato и др</string>
     <string name="libre_patched">Libre2 с пач</string>
@@ -1459,6 +1501,8 @@
     <string name="change_settings">Промяна на настройките</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Искате ли да изтриете и нулирате калибрациите за този сензор?</string>
     <string name="sensor_stop_confirm">Искате ли да спрете сензора?</string>
+    <string name="sensor_stop_confirm_norestart">Няма да можете просто да рестартирате сензора.</string>
+    <string name="sensor_stop_confirm_really_norestart">ВНИМАНИЕ!\n\nНяма да можете да рестартирате това устройство.</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Имате активирана стара експериментална настройка за прогнозиране на глюкоза..\n\nТова НЕ Е ПРЕПОРЪЧИТЕЛНО и може да обърка нещата сериозно.\n\nДа деактивирам ли това вместо вас?</string>
     <string name="settings_issue">Проблем с настройките!</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Искате ли да използвате този синхронизиран резултат за кръвна захар от пръст за калибриране??\n\n(можете да промените, когато този диалогов прозорец се покаже в Настройки)</string>
@@ -1518,10 +1562,12 @@
     <string name="phone_nfc_is_having_problems">NFC на телефона има проблеми!</string>
     <string name="not_so_quickly_wait_60_seconds">Не толкова бързо, изчакайте 60 секунди</string>
     <string name="not_so_quickly_wait_30_seconds">Не толкова бързо, изчакай 30 секунди</string>
+    <string name="nfc_read_timeout">NFC забавено четене</string>
     <string name="nfc_invalid_data__try_again">NFC невалидни данни - опитайте отново</string>
     <string name="turned_off_anytag_feature">Изключена е функцията за произволен етикет</string>
     <string name="nfc_invalid_data">NFC невалидни данни</string>
     <string name="scanned_ok">Сканирано успешно!</string>
+    <string name="nfc_io_error">NFC входно/изходна грешка</string>
     <string name="nfc_error">NFC Грешка</string>
     <string name="still_processing_previous_backfill_request">Все още се обработват предишни заявки!</string>
     <string name="please_wait">Моля изчакайте...</string>
@@ -1576,7 +1622,7 @@
     <string name="title_widget_hide_graph">Скрии графиката на Widget-а</string>
     <string name="summary_illustrate_remote_data">Покажи данни получени отдаличено (само за диагностика)</string>
     <string name="title_illustrate_remote_data">Визуализирай отдаличени данни</string>
-    <string name="summary_show_accessibility_settings">Ако телефона има постояно включен екран можете да вкл. xDrip widget-a и така включвате и xDrip услугите за достъпност от страница за Настройки на Андроид.</string>
+    <string name="summary_show_accessibility_settings">Ако телефонът има постоянно включен екран можете да вкл. xDrip widget-a и така включвате и xDrip услугите за достъпност от страница за Настройки на Андроид.</string>
     <string name="title_show_accessibility_settings">Вкл. xDrip достъпност</string>
     <string name="title_multiple_insulin_types_settings">Няколко вида инсулин</string>
     <string name="summary_multiple_insulin_types_settings">Опции за работа с различните видове инсулин</string>
@@ -1711,7 +1757,7 @@
     <string name="security_error">Сигурност грешка:</string>
     <string name="please_grant_permission">Моля дайте права</string>
     <string name="drive_permission_blurb">За да можете автоматично да направите бакъп на xDrip е нужндо да дадете права за достъп до Google drive.\n\nxDrip разработчиците не могат и няма да достъпят вашите файлове или лична информация.</string>
-    <string name="cloud_backup">Обалчен бакъп</string>
+    <string name="cloud_backup">Облачен бекъп</string>
     <string name="select_automatic_or_select_alternate">Избиранет xDrip автоматично да управлява файлвое в Google Drive или изберете алтернативен файл, ако ви е нужно да възстановите настройки.</string>
     <string name="restoring_backup_will_erase_warning">Възстановяване на бакъп, ще изтрие всички сегашни настройки и данни.\n\n Абсолютно сигурни ли сте, че искате това?</string>
     <string name="this_backup_looks_like_came_from_different_format_string">Изглежда бакъпът е от друго устройство:\n%s\nСигурни ли сте, че искате да продължите?</string>
@@ -1731,6 +1777,7 @@
     <string name="title_ymax">Настройване за максимум на \"y\" ос </string>
     <string name="summary_ymin">Избрете yМин в случай, когато няма по-малки стойности.</string>
     <string name="summary_ymax">Избрете yМакс в случай, когато няма по-Големи стойности.</string>
+    <string name="wait_to_connect">Проверете настройките и изчакайте за свързване.</string>
     <string name="summary_sens_expiry_notify">Повиши честотата на известията, когато наближи да изтече срокът на ползване на сензора.</string>
     <string name="title_sens_expiry_notify">Възраст на сензора</string>
     <string name="close">Затвори</string>
@@ -1741,4 +1788,25 @@
     <string name="summary_Lib2_show_sense_on_status">Включете, за да покажете допълнителна информация в Статус за сензор Libre 2.</string>
     <string name="import_qr_code_warning">Импортирайте настройки само от източници, на които имате доверие!\n\nМоля, потвърдете, за да импортирате следните настройки:\n\n</string>
     <string name="scan_to_load_xdrip_settings">Сканирайте, за да заредите настройките на xDrip</string>
+    <string name="manage_permissions">Управление на разрешенията</string>
+    <string name="open_health_connect_settings_to_manually_manage_permissions">Отвори настройките на Health Connect за да управлявате ръчно достъпите</string>
+    <string name="send_data_to_health_connect">Изпращане на данни в Health Connect</string>
+    <string name="get_data_from_health_connect">Взимане на данни от Health Connect</string>
+    <string name="requires_android_8_and_google_companion_application_or_android_14">Изисква Android 8+ и Google companion приложение или Android 14+</string>
+    <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Изпращане и получаване на данни от Google Health Connect и Google Fit</string>
+    <string name="google_health_connect">Звързване с Google Health</string>
+    <string name="google_health_connect_needs_perms">ГРЕШКА: Health connect изисква разрешения! - опитайте отново от менюто с настройки</string>
+    <string name="carelink_auth_country_required">Държавата е задължителна!</string>
+    <string name="carelink_auth_status_authenticated">Статус на удостоверяване!</string>
+    <string name="carelink_auth_status_not_authenticated">Статус на не удостоверен!</string>
+    <string name="carelink_auth_login_in_progress">В процес на влизане...</string>
+    <string name="carelink_refresh_token_start">Започнете подновяване на достъпа</string>
+    <string name="carelink_refresh_token_failed">Подновяването на достъпа е не успешно! Ще се опита отново!</string>
+    <string name="carelink_download_start">Започни теглене</string>
+    <string name="carelink_download_failed">Изтеглянето на данни не успешно!</string>
+    <string name="carelink_credential_status_not_authenticated">Не сте влезли! Моля влезте!</string>
+    <string name="carelink_credential_status_access_expired">Достъпът е изтекъл! Ще се обнови!</string>
+    <string name="carelink_credential_status_refresh_expired">Входът е изтекъл! Моля, влезте!</string>
+    <string name="data_source">Източник на данни:</string>
+    <string name="reraise_alerts_before_snooze_time">Повторно вдигане на сигнали преди времето за отлагане</string>
 </resources>

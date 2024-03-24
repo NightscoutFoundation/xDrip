@@ -1704,4 +1704,6 @@
     <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Enviar e receber dados do Google Health Connect e do Google Fit</string>
     <string name="google_health_connect">Google Health Connect</string>
     <string name="google_health_connect_needs_perms">ERRO: São necessárias permissões para o Health connect! - volte ao menu de configurações</string>
+    <string name="data_source">Origem dos dados:</string>
+    <string name="reraise_alerts_before_snooze_time">Alertar novamente antes do tempo silenciado</string>
 </resources>
