@@ -631,6 +631,8 @@
     <string name="bluetooth_watchdog">Bluetooth Watchdog</string>
     <string name="reset_bluetooth_g5">Reset Bluetooth by turning it off and on as a way to keep the G5 data source working. Without this the G5 collector may fail.</string>
     <string name="g5_bluetooth_watchdog">Dex Bluetooth Watchdog</string>
+    <string name="aggressive_bluetooth_restart">Aggressive Bluetooth restart</string>
+    <string name="aggressive_bluetooth_restart_description">Restart Bluetooth once certain connection errors occur. Enable only if you experience recurring Bluetooth connectivity problems.</string>
     <string name="close_gatt">If the Bluetooth watchdog activates often then you can try unchecking this option to see if it helps</string>
     <string name="older_bluetooth_wakelocks">Older Bluetooth wakelocks which can drain extra battery but might be needed for Bluetooth reception</string>
     <string name="reset_bluetooth_on_off">Reset Bluetooth by turning it off and on every few minutes! Only select if you are testing. It may disrupt anything else using Bluetooth.</string>
