@@ -235,6 +235,16 @@ public class Sensor extends Model {
         sensor.sensor_location = sensor_location;
         sensor.save();
     }
+
+    public static void updateSensorStartTime(long started_at) {
+        Sensor sensor = currentSensor();
+        if (sensor == null) {
+            Log.e(TAG, "updateSensorStartTime called but sensor is null");
+            return;
+        }
+        sensor.started_at = started_at;
+        sensor.save();
+    }
     
     public static void upsertFromMaster(Sensor jsonSensor) {
         if (jsonSensor == null) {
