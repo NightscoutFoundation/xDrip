@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.utilitymodels;
 
 import static com.eveningoutpost.dexdrip.models.JoH.dateTimeText;
 import static com.eveningoutpost.dexdrip.models.JoH.msSince;
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.getTransmitterID;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Unitized.usingMgDl;
 
@@ -10,6 +11,8 @@ import android.os.Bundle;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.BuildConfig;
+import com.eveningoutpost.dexdrip.g5model.DexSessionKeeper;
+import com.eveningoutpost.dexdrip.g5model.FirmwareCapability;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.Calibration;
 import com.eveningoutpost.dexdrip.models.JoH;
@@ -147,7 +150,11 @@ public class BroadcastGlucose {
                 }
 
                 bundle.putInt(Intents.EXTRA_SENSOR_BATTERY, BridgeBattery.getBestBridgeBattery());
-                bundle.putLong(Intents.EXTRA_SENSOR_STARTED_AT, sensor.started_at);
+                if (FirmwareCapability.isDeviceG7(getTransmitterID())) { // If there is connectivity and firmware is known and it is either G7 or One+
+                    bundle.putLong(Intents.EXTRA_SENSOR_STARTED_AT, DexSessionKeeper.getStart());
+                } else { // If there is no connectivity yet or if we are not using G7 ot One+
+                    bundle.putLong(Intents.EXTRA_SENSOR_STARTED_AT, sensor.started_at);
+                }
                 bundle.putLong(Intents.EXTRA_TIMESTAMP, bgReading.timestamp);
 
                 addDisplayInformation(bundle);
