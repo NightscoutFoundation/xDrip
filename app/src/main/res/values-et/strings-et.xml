@@ -1344,7 +1344,7 @@
     <string name="summary_ob1_initiate_bonding_flag">OB1 vastuvõtja võib alustada ühendamist.</string>
     <string name="title_ob1_initiate_bonding_flag">Luba OB1 siduda</string>
     <string name="title_old_g5_options">Vana G5 vastuvõtja seaded</string>
-    <string name="title_g5g6_battery_options">G5/G6/G7/1 aku valikud</string>
+    <string name="title_g5g6_battery_options">G5/G6/Dex1 aku valikud</string>
     <string name="title_g5_battery_warning_level">Reguleeri aku hoiatuse taset</string>
     <string name="title_plugins_and_features">Liidesed ja funktsioonid</string>
     <string name="title_color_heart_rate1">Pulsimõõtja</string>
@@ -1838,6 +1838,7 @@
     <string name="alert_reraise_time_colon">Alarmi kordamise aeg:</string>
     <string name="select_start_time">Vali algusaeg</string>
     <string name="select_end_time">Vali lõppaeg</string>
+    <string name="accept_glucose">Nõustu veresuhkrunäiduga</string>
     <string name="process_glucose_data_received">Töötle NSClient-rakendusest saadud veresuhkru andmeid</string>
     <string name="use_health_connect">Kasuta Health Connect\'i</string>
     <string name="audio_focus">Helifookus</string>
@@ -1847,5 +1848,5 @@
     <string name="audio_focus_pause_other_apps_playing_audio">Peata heli teistes rakendustes</string>
     <string name="audio_focus_pause_all_other_sounds">Peata kõik teised helid</string>
     <string name="use_camera_light">Kasuta kaamera välku</string>
-    <string name="use_camera_light_summary">Vilguta alarmide ajal kaamera välku, kui laadija on ühendatud</string>
+    <string name="use_camera_light_summary">Vilguta alarmide ajal kaamera välku kui laadija on ühendatud</string>
 </resources>

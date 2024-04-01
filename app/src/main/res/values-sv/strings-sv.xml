@@ -1170,6 +1170,8 @@
     <string name="use_mobile_data">Använd mobildata</string>
     <string name="summary_cloud_storage_api_download_enable">Försök också att ladda ner behandlingar från Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Ladda ner behandlingar</string>
+    <string name="title_cloud_storage_api_download_from_xdrip">Hoppa över objekt från xDrip</string>
+    <string name="summary_cloud_storage_api_download_from_xdrip">Undvik att ladda ner objekt uppladdade av xDrip</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Kalibrera med nya glukosvärden om omständigheterna tillåter utan att tillfråga (experimentellt)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatisk kalibrering</string>
     <string name="title_rest_api_extra_options">Ytterligare alternativ</string>
@@ -1209,7 +1211,9 @@
     <string name="title_enable_iob_in_api_endpoint">Aktivera IoB-rapportering i API</string>
     <string name="title_fetch_iob_from_companion_app">Hämta IoB från följarappen</string>
     <string name="title_miband">MiBand</string>
+    <string name="summary_miband_enable">Synkronisera data med träningsband från MiBand</string>
     <string name="title_miband_enable">Använd MiBand Band</string>
+    <string name="title_miband_screen_battery">Visa batteri</string>
     <string name="title_miband_show_date">Visa datum på skärmen</string>
     <string name="title_miband_units">Enheter</string>
     <string name="summary_miband_units">Välj den distansenhet som används på bandet </string>
@@ -1230,6 +1234,8 @@
     <string name="summary_miband_authkey">Ställ in åtkomstnyckeln för MiBand4 (För att få nyckeln, följ instruktionerna på https://www.freemyband.com/)</string>
     <string name="summary_miband_mac">Lämna tomt för automatisk sökning</string>
     <string name="title_miband_send_readings_as_notification">BG-avläsningar som aviseringar</string>
+    <string name="title_miband_graph_enable">Aktivera graf</string>
+    <string name="title_miband_graph_treatment_enable">Visa bolus</string>
     <string name="title_miband_general_settings_category">Allmänna inställningar</string>
     <string name="title_miband_screen_notifications">Visa aviseringar</string>
     <string name="title_miband_screen_weather">Visa väder</string>
@@ -1332,6 +1338,7 @@
     <string name="title_use_number_icon_large">Använd stor nummerikon</string>
     <string name="summary_number_icon_large_arrow">Visar trendpilen i den stora ikonen</string>
     <string name="title_number_icon_large_arrow">Visa pilen i stor ikon</string>
+    <string name="title_xdrip_plus_accessibility">Inställningar för alltid på-skärm</string>
     <string name="summary_show_home_on_boot">Ta fram xDrip-skärmen automatiskt efter att enheten startat upp</string>
     <string name="title_show_home_on_boot">Visa xDrip vid uppstart</string>
     <string name="eula">LICENSAVTAL</string>
@@ -1360,6 +1367,7 @@
     <string name="summary_pendiq_screen">Skriver och läser doser</string>
     <string name="title_pendiq_screen">Pendiq 2.0 Insulinpenna</string>
     <string name="title_use_pendiq">Stöd för Pendiq 2.0</string>
+    <string name="title_pendiq_pin">Pinkod för pennan</string>
     <string name="summary_use_notification_channels">Använd aviseringskanalen i Android 8+</string>
     <string name="title_use_notification_channels">Aviseringskanaler</string>
     <string name="summary_ongoing_notification_channel">Kan utlösa aviseringar i omgivningen på vissa enheter. Behöver testas!</string>
@@ -1384,10 +1392,14 @@
     <string name="collecting">samlar...</string>
     <string name="insulin">insulin</string>
     <string name="nothing_found">inget kunde hittas</string>
+    <string name="calibration_graph_no_calibration">kalibreringsgraf (ingen kalibrering)</string>
+    <string name="usb_device_was_not_recognized">USB-enheten känndes inte igen</string>
     <string name="followers_name">Föjarens namn:</string>
+    <string name="your_display_name">Ditt visningsnamn:</string>
     <string name="followers_email">Följarens e-post:</string>
     <string name="send_invite">Sänd inbjudan</string>
     <string name="alerts">Varningar</string>
+    <string name="use_internal_downloader">Använd den interna nedladdaren</string>
     <string name="title">Titel</string>
     <string name="summary">Sammanfattning</string>
     <string name="auto_refresh">Auto-uppdatera</string>
@@ -1545,6 +1557,7 @@
     <string name="sensor_not_started">Sensorsessionen verkar inte ha startats</string>
     <string name="not_getting_readings">Får inga avläsningar.</string>
     <string name="bridge_battery">Bbryggbatteri</string>
+    <string name="noise_workings_noise">Brus: %s</string>
     <string name="snoozing_due_button_press">Snoozar varning på grund av volymknappstryckning</string>
     <string name="share_database">Dela databas...</string>
     <string name="title_motion_detection_warning">Varning för rörelsedetektion</string>
@@ -1647,6 +1660,7 @@
     <string name="output_error">Utmatningsfel:</string>
     <string name="security_error">Säkerhetsfel:</string>
     <string name="please_grant_permission">Vänligen tillåt åtkomst</string>
+    <string name="cloud_backup">Säkerhetskopiering i molnet​</string>
     <string name="megabyte_format_string">%.1f MB</string>
     <string name="invalid_time">Ogiltig tid</string>
     <string name="none">inget</string>
@@ -1683,5 +1697,15 @@
     <string name="carelink_refresh_token_failed">Åtkomstförnyelsen misslyckades! Kommer försöka igen!</string>
     <string name="carelink_download_start">Starta nedladdning</string>
     <string name="carelink_download_failed">Nedladdning av data misslyckades!</string>
+    <string name="data_source">Datakälla:</string>
     <string name="reraise_alerts_before_snooze_time">Slå larm igen innan snoozetiden</string>
+    <string name="accept_glucose">Acceptera glukos</string>
+    <string name="audio_focus">Ljudfokus</string>
+    <string name="audio_focus_summary">Välj vad som ska göras med andra appar när varningar spelas upp och systemets volym justeras</string>
+    <string name="audio_focus_dont_adjust_other_app_sounds">Justera inte andra appars ljud</string>
+    <string name="audio_focus_lower_volume_of_other_apps">Dämpa andra appars ljud</string>
+    <string name="audio_focus_pause_other_apps_playing_audio">Pausa andra appar som spelar upp ljud</string>
+    <string name="audio_focus_pause_all_other_sounds">Pausa alla andra ljud</string>
+    <string name="use_camera_light">Använd kameramampa</string>
+    <string name="use_camera_light_summary">Blixtra med kameramampan vid varningar när ansluten till en laddare</string>
 </resources>
