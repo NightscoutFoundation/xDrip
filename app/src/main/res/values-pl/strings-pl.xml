@@ -1315,6 +1315,7 @@
     <string name="title_clfollow_missed_poll_interval">Interwał ankiet nieodebranych danych</string>
     <string name="summary_clfollow_missed_poll_interval"></string>
     <string name="title_clfollow_download_finger_bgs">Poziom cukru z palca</string>
+    <string name="summary_clfollow_download_finger_bgs">Download finger BGs from CareLink</string>
     <string name="title_clfollow_download_boluses">Bolusy</string>
     <string name="summary_clfollow_download_boluses">Pobierz bolusy z CareLink</string>
     <string name="title_clfollow_download_meals">Posiłki</string>
