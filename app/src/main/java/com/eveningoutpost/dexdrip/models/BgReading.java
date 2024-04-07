@@ -2040,6 +2040,7 @@ public class BgReading extends Model implements ShareUploadableBg {
             return false;
         }
 
+        // TODO: Should we add documentation to address possible misbehavior in case of 1-minute readings?
         if(above == false) {
             // This is a low alert, we should be going up
             if((latest.get(0).calculated_value - latest.get(1).calculated_value > 4) ||
