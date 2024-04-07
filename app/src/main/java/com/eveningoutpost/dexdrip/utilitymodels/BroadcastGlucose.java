@@ -5,6 +5,7 @@ import static com.eveningoutpost.dexdrip.models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.getTransmitterID;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Unitized.usingMgDl;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -66,7 +67,7 @@ public class BroadcastGlucose {
 
                 UserError.Log.i("SENSOR QUEUE:", "Broadcast data");
 
-                String collectorName = DexCollectionType.getBestCollectorHardwareName();
+                String collectorName = getBestCollectorHardwareName();
                 if (collectorName.equals("G6 Native") || collectorName.equals("G7")) {
                     if (collectorName.equals("G7")) {
                         collectorName = "G6 Native"; // compatibility for older AAPS
@@ -150,9 +151,11 @@ public class BroadcastGlucose {
                 }
 
                 bundle.putInt(Intents.EXTRA_SENSOR_BATTERY, BridgeBattery.getBestBridgeBattery());
-                if (FirmwareCapability.isDeviceG7(getTransmitterID())) { // If there is connectivity and firmware is known and it is either G7 or One+
-                    bundle.putLong(Intents.EXTRA_SENSOR_STARTED_AT, DexSessionKeeper.getStart());
-                } else { // If there is no connectivity yet or if we are not using G7 ot One+
+                if (getBestCollectorHardwareName().equals("G7")) {// If we are using G7 or One+
+                    if (FirmwareCapability.isDeviceG7(getTransmitterID())) { // Only if there is connectivity
+                        bundle.putLong(Intents.EXTRA_SENSOR_STARTED_AT, DexSessionKeeper.getStart());
+                    }
+                } else { // If we are not using G7 or One+
                     bundle.putLong(Intents.EXTRA_SENSOR_STARTED_AT, sensor.started_at);
                 }
                 bundle.putLong(Intents.EXTRA_TIMESTAMP, bgReading.timestamp);
