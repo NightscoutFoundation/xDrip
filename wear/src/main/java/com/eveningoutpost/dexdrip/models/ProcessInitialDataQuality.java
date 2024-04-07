@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.models;
 
-import android.databinding.BaseObservable;
+
 
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -9,6 +9,8 @@ import java.util.List;
 
 import static com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder.DEXCOM_PERIOD;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.STALE_CALIBRATION_CUT_OFF;
+
+import androidx.databinding.BaseObservable;
 
 /**
  * Created by jamorham on 01/10/2017.

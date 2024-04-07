@@ -12,6 +12,7 @@ public interface Intents {
     String EXTRA_BG_SLOPE = "com.eveningoutpost.dexdrip.Extras.BgSlope";
     String EXTRA_BG_SLOPE_NAME = "com.eveningoutpost.dexdrip.Extras.BgSlopeName";
     String EXTRA_SENSOR_BATTERY = "com.eveningoutpost.dexdrip.Extras.SensorBattery";
+    String EXTRA_SENSOR_STARTED_AT = "com.eveningoutpost.dexdrip.Extras.SensorStartedAt";
     String EXTRA_TIMESTAMP = "com.eveningoutpost.dexdrip.Extras.Time";
     String EXTRA_RAW = "com.eveningoutpost.dexdrip.Extras.Raw";
     String EXTRA_NOISE = "com.eveningoutpost.dexdrip.Extras.Noise";
@@ -34,9 +35,13 @@ public interface Intents {
 
     String EXTRA_COLLECTOR_NANOSTATUS = "com.eveningoutpost.dexdrip.Extras.Collector.NanoStatus";
 
+    String EXTRA_DISPLAY_UNITS = "com.eveningoutpost.dexdrip.Extras.Display.Units";
+
     // From NS Android Client
     // send
     String ACTION_NEW_TREATMENT = "info.nightscout.client.NEW_TREATMENT";
+    String ACTION_NEW_FOOD = "info.nightscout.client.NEW_FOOD";
+    String ACTION_NEW_DEVICESTATUS = "info.nightscout.client.NEW_DEVICESTATUS";
     String ACTION_CHANGED_TREATMENT = "info.nightscout.client.CHANGED_TREATMENT";
     String ACTION_REMOVED_TREATMENT = "info.nightscout.client.REMOVED_TREATMENT";
     String ACTION_NEW_PROFILE = "info.nightscout.client.NEW_PROFILE";

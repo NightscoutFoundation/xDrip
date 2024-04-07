@@ -23,7 +23,7 @@ public class BackFillStream extends BaseMessage {
     private volatile boolean locked = false;
 
     public BackFillStream() {
-        data = ByteBuffer.allocate(1000);
+        data = ByteBuffer.allocate(2800);
         data.order(ByteOrder.LITTLE_ENDIAN);
     }
 

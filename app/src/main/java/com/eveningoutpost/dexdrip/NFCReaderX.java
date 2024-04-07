@@ -611,7 +611,7 @@ public class NFCReaderX {
                                     try {
                                         replyBlock = nfcvTag.transceive(diag);
                                         break;
-                                    } catch (IOException e) {
+                                    } catch (IOException | SecurityException e) {
                                         if ((System.currentTimeMillis() > time + 2000)) {
                                             Log.e(TAG, "tag diagnostic read timeout");
                                             JoH.static_toast_short(gs(R.string.nfc_diag_timeout));
@@ -644,7 +644,7 @@ public class NFCReaderX {
                                     patchInfo = Arrays.copyOfRange(patchInfo, 1, patchInfo.length);
                                 }
                                 break;
-                            } catch (IOException e) {
+                            } catch (IOException | SecurityException e) {
                                 if ((System.currentTimeMillis() > time_patch + 2000)) {
                                     Log.e(TAG, "patchInfo tag read timeout");
                                     JoH.static_toast_short(gs(R.string.nfc_read_timeout));
@@ -699,7 +699,7 @@ public class NFCReaderX {
                                     try {
                                         replyBlock = nfcvTag.transceive(cmd);
                                         break;
-                                    } catch (IOException e) {
+                                    } catch (IOException | SecurityException e) {
                                         if ((System.currentTimeMillis() > time + 2000)) {
                                             Log.e(TAG, "tag read timeout");
                                             JoH.static_toast_short(gs(R.string.nfc_read_timeout));
@@ -760,7 +760,7 @@ public class NFCReaderX {
                                         Log.e(TAG, "sending command " + HexDump.toHexString(cmd));
                                         oneBlock = nfcvTag.transceive(cmd);
                                         break;
-                                    } catch (IOException e) {
+                                    } catch (IOException | SecurityException e) {
                                         if ((System.currentTimeMillis() > time + 2000)) {
                                             Log.e(TAG, "tag read timeout");
                                             JoH.static_toast_short(gs(R.string.nfc_read_timeout));
@@ -790,7 +790,7 @@ public class NFCReaderX {
                         JoH.static_toast_short(gs(R.string.scanned_ok));
                         PersistentStore.setLongZeroIfSet("nfc-address-failures");
 
-                    } catch (IOException e) {
+                    } catch (IOException | SecurityException e) {
                         JoH.static_toast_short(gs(R.string.nfc_io_error));
                         vibrate(context, 3);
                     } catch (Exception e) {

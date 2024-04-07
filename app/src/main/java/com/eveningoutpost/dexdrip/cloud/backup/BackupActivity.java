@@ -9,8 +9,8 @@ import static com.eveningoutpost.dexdrip.cloud.backup.DriveManager.BINARY_FILE_T
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.databinding.ObservableArrayMap;
-import android.databinding.ObservableField;
+import androidx.databinding.ObservableArrayMap;
+import androidx.databinding.ObservableField;
 import android.net.Uri;
 import android.os.Bundle;
 

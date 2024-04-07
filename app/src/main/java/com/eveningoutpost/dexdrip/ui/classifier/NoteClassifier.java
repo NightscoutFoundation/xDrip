@@ -3,8 +3,8 @@ package com.eveningoutpost.dexdrip.ui.classifier;
 // jamorham
 
 import android.graphics.Color;
-import android.support.annotation.ColorInt;
-import android.support.annotation.DrawableRes;
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
 
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.utilitymodels.HPointValue;

@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.tidepool;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.eveningoutpost.dexdrip.models.UserError;
 

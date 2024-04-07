@@ -14,7 +14,7 @@ import com.eveningoutpost.dexdrip.tidepool.InfoInterceptor;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 import org.json.JSONArray;
 import lombok.val;
 import okhttp3.MediaType;

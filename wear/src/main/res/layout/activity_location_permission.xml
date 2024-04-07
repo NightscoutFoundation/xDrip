@@ -40,7 +40,7 @@
                 app:circle_color="#0086D4"
                 android:src="@drawable/ic_lock_open_white_24dp"/>
 
-            <android.support.v4.widget.Space
+            <androidx.legacy.widget.Space
                 android:layout_width="8dp"
                 android:layout_height="8dp"/>
 

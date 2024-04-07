@@ -522,14 +522,43 @@
                 android:key="plus_show_reminders"
                 android:summary="@string/show_reminder_features"
                 android:title="@string/enable_reminder_features" />
-            <Preference
-                android:key="show_accessibility_settings"
-                android:summary="@string/summary_show_accessibility_settings"
-                android:title="@string/title_show_accessibility_settings">
-                <intent
-                    android:action="android.settings.ACCESSIBILITY_SETTINGS"
-                    />
-            </Preference>
+            <PreferenceScreen
+                android:key="xdrip_plus_accessibility"
+                android:title="@string/title_xdrip_plus_accessibility">
+                <Preference
+                    android:key="show_accessibility_settings"
+                    android:summary="@string/summary_show_accessibility_settings"
+                    android:title="@string/title_show_accessibility_settings">
+                    <intent
+                        android:action="android.settings.ACCESSIBILITY_SETTINGS"
+                        />
+                </Preference>
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="aod_use_top"
+                    android:summary="@string/summary_aod_use_top"
+                    android:title="@string/title_aod_use_top" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="aod_use_top_center"
+                    android:summary="@string/summary_aod_use_top_center"
+                    android:title="@string/title_aod_use_top_center" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="aod_use_center"
+                    android:summary="@string/summary_aod_use_center"
+                    android:title="@string/title_aod_use_center" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="aod_use_top_center_bottom"
+                    android:summary="@string/summary_aod_use_center_bottom"
+                    android:title="@string/title_aod_use_center_bottom" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="aod_use_bottom"
+                    android:summary="@string/summary_aod_use_bottom"
+                    android:title="@string/title_aod_use_bottom" />
+            </PreferenceScreen>
             <PreferenceScreen
                 android:key="xdrip_plus_number_wall"
                 android:title="@string/title_xdrip_plus_number_wall">
@@ -1093,7 +1122,7 @@
         <PreferenceScreen
             android:icon="@drawable/ic_mode_edit_grey_600_48dp"
             android:key="pens_screen"
-            android:title="Insulin Pens">
+            android:title="@string/insulin_pens">
             <PreferenceScreen
                 android:icon="@drawable/ic_mode_edit_grey_600_48dp"
                 android:key="opennov_screen"

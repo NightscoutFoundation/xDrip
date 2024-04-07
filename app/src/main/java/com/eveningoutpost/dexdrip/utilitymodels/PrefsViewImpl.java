@@ -1,12 +1,14 @@
 package com.eveningoutpost.dexdrip.utilitymodels;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.eveningoutpost.dexdrip.adapters.ObservableArrayMapNoNotify;
 
+import lombok.val;
+
 /**
  * Created by jamorham on 05/10/2017.
- *
+ * <p>
  * Implementation of PrefsView
  */
 
@@ -15,12 +17,14 @@ public class PrefsViewImpl extends ObservableArrayMapNoNotify<String, Boolean> i
     private Runnable runnable;
 
     public boolean getbool(String name) {
-        return Pref.getBooleanDefaultFalse(name);
+        if (name == null) return false;
+        return PrefHandle.parse(name).getBoolean();
     }
 
     public void setbool(String name, boolean value) {
-        Pref.setBoolean(name, value);
-        super.put(name, value);
+        val handle = PrefHandle.parse(name);
+        Pref.setBoolean(handle.key, value);
+        super.put(handle.key, value);
         doRunnable();
     }
 
@@ -42,27 +46,57 @@ public class PrefsViewImpl extends ObservableArrayMapNoNotify<String, Boolean> i
     @NonNull
     @Override
     public Boolean get(Object key) {
-        Boolean value = super.get(key);
+        val handle = PrefHandle.parse((String) key);
+        Boolean value = super.get(handle.key);
         if (value == null) {
             value = getbool((String) key);
-            super.putNoNotify((String) key, value);
+            super.putNoNotify(handle.key, value);
         }
         return value;
     }
 
     @Override
     public Boolean put(String key, Boolean value) {
-        if (!(super.get(key).equals(value))) {
-            Pref.setBoolean(key, value);
-            super.put(key, value);
+        val handle = PrefHandle.parse(key);
+        if (!(super.get(handle.key).equals(value))) {
+            Pref.setBoolean(handle.key, value);
+            super.put(handle.key, value);
             doRunnable();
         }
         return value;
     }
 
     public void put(Object key, boolean value) {
-        if (!(super.get(key).equals(value))) {
-            super.put((String) key, value);
+        val handle = PrefHandle.parse((String) key);
+        if (!(super.get(handle.key).equals(value))) {
+            super.put(handle.key, value);
+        }
+    }
+
+    public static class PrefHandle {
+        public final String key;
+        public final boolean defaultValue;
+
+        public PrefHandle(final String key, final boolean defaultValue) {
+            this.key = key;
+            this.defaultValue = defaultValue;
+        }
+
+        boolean getBoolean() {
+            return Pref.getBoolean(key, defaultValue);
+        }
+
+        public static PrefHandle parse(final String identifier) {
+            if (identifier == null) {
+                return null;
+            }
+
+            final String[] parts = identifier.split(":", 2);
+            if (parts.length == 2) {
+                return new PrefHandle(parts[0], Boolean.parseBoolean(parts[1]));
+            } else {
+                return new PrefHandle(identifier, false);
+            }
         }
     }
 

@@ -46,6 +46,13 @@ public class VoiceCommands {
             Pref.setString(DexCollectionType.DEX_COLLECTION_METHOD, DexCollectionType.Mock.toString());
             JoH.static_toast_long("YOU ARE NOW USING FAKE DATA!!!");
             MockDataSource.defaults();
+            CollectionServiceStarter.restartCollectionServiceBackground();
+        } else if (get_engineering_mode() && allWords.equals("fake data source automatic calibration")) {
+            Pref.setBoolean("fake_data_pre_calibrated", true);
+            JoH.static_toast_long("Fake data pre-calibration ON");
+        } else if (get_engineering_mode() && allWords.equals("fake data source manual calibration")) {
+            Pref.setBoolean("fake_data_pre_calibrated", false);
+            JoH.static_toast_long("Fake data pre-calibration OFF");
         } else if (get_engineering_mode() && allWords.equals("break fake data source")) {
             JoH.static_toast_long("Breaking fake data source");
             MockDataSource.breakRaw();
@@ -152,8 +159,10 @@ public class VoiceCommands {
                 Home.staticRefreshBGChartsOnIdle();
                 break;
             case "stop sensor on master":
-                JoH.static_toast_long(allWords);
-                GcmActivity.push_stop_master_sensor();
+                if (get_engineering_mode()) {
+                    JoH.static_toast_long(allWords);
+                    GcmActivity.push_stop_master_sensor();
+                }
                 break;
             case "start sensor on master":
                 JoH.static_toast_long(allWords);

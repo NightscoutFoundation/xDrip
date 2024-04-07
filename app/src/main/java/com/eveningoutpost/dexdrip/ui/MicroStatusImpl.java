@@ -4,8 +4,9 @@ package com.eveningoutpost.dexdrip.ui;
  * Created by jamorham on 29/09/2017.
  */
 
-import android.databinding.BaseObservable;
-import android.databinding.Bindable;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
+
+import androidx.databinding.BaseObservable;
 
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
@@ -29,12 +30,13 @@ public class MicroStatusImpl extends BaseObservable implements MicroStatus {
     }
 
     @Override
-    public boolean bluetooth() {
-        return DexCollectionType.hasBluetooth();
+    public boolean bluetooth() { // Dexcom with Bluetooth except G7
+        return DexCollectionType.hasBluetooth() && !getBestCollectorHardwareName().equals("G7");
     }
 
     @Override
     public boolean xmitterBattery() {
         return DexCollectionType.usesClassicTransmitterBattery();
     }
+
 }
