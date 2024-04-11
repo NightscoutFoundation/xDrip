@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="LocaleChoices">
-        <item>Bokmal</item>
         <item>български език</item>
         <item>čeština</item>
         <item>Deutsch</item>
@@ -26,7 +25,6 @@
         <item>Українська</item>
     </string-array>
     <string-array name="LocaleChoicesValues">
-        <item>nb</item>
         <item>bg</item>
         <item>cs</item>
         <item>de</item>
@@ -38,7 +36,7 @@
         <item>it</item>
         <item>hu</item>
         <item>nl</item>
-        <item>no</item>
+        <item>nb</item>
         <item>pl</item>
         <item>pt</item>
         <item>ro</item>

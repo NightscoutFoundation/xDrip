@@ -483,6 +483,8 @@
     <string name="i_agree">ΣΥΜΦΩΝΩ</string>
     <string name="libre">Libre</string>
     <string name="sensor_stop_confirm">Θέλετε να σταματήσετε το σένσορα;</string>
+    <string name="sensor_stop_confirm_norestart">Δεν θα μπορείτε απλά να επανεκκινήσετε τον αισθητήρα.</string>
+    <string name="sensor_stop_confirm_really_norestart">ΚΙΝΔΥΝΟΣ! Δεν θα μπορείτε να επανεκκινήσετε τη συσκευή.</string>
     <string name="deleted">Η διαγραφή ολοκληρώθηκε!</string>
     <string name="confirm_delete">Επιβεβαίωση Διαγραφής</string>
     <string name="could_not_export_csv_">Αδυναμία εξαγωγής του αρχείου CSV</string>

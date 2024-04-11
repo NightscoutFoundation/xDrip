@@ -21,7 +21,7 @@
         <item>Companion App</item>
         <item>GlucoRx/Aidex App</item>
         <item>CareLink Follower</item>
-        <item>Disable Collection</item>
+        <item>@string/disable_collection</item>
     </string-array>
 
     <string-array name="DexCollectionMethodValues">
@@ -234,10 +234,10 @@
     </string-array>
 
     <string-array name="AudioFocus">
-        <item>Don\'t adjust other app sounds</item>
-        <item>Lower volume of other apps</item>
-        <item>Pause other apps playing audio</item>
-        <item>Pause all other sounds</item>
+        <item>@string/audio_focus_dont_adjust_other_app_sounds</item>
+        <item>@string/audio_focus_lower_volume_of_other_apps</item>
+        <item>@string/audio_focus_pause_other_apps_playing_audio</item>
+        <item>@string/audio_focus_pause_all_other_sounds</item>
     </string-array>
     <string-array name="AudioFocusValues">
         <item>AUDIOFOCUS_NONE</item>

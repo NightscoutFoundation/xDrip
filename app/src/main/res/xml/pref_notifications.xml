@@ -32,8 +32,8 @@
                     android:entries="@array/AudioFocus"
                     android:entryValues="@array/AudioFocusValues"
                     android:key="alert_audio_focus"
-                    android:summary="Choose what to do with other apps while playing alerts and adjusting system volume levels"
-                    android:title="Audio Focus" />
+                    android:summary="@string/audio_focus_summary"
+                    android:title="@string/audio_focus" />
 
                 <CheckBoxPreference
                     android:defaultValue="true"
@@ -82,10 +82,10 @@
                 <SwitchPreference
                     android:defaultValue="false"
                     android:key="flash_torch_alerts_charging"
-                    android:summary="Flash camera light during alerts when connected to a charger"
+                    android:summary="@string/use_camera_light_summary"
                     android:switchTextOff="@string/short_off_text_for_switches"
                     android:switchTextOn="@string/short_on_text_for_switches"
-                    android:title="Use Camera Light" />
+                    android:title="@string/use_camera_light" />
 
                 <CheckBoxPreference
                     android:defaultValue="false"

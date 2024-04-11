@@ -1364,6 +1364,17 @@
     <string name="title_use_number_icon_large">Nagyméretű szám mutatása</string>
     <string name="summary_number_icon_large_arrow">Trend nyíl mutatása nagyméret esetén</string>
     <string name="title_number_icon_large_arrow">Trend nyíl mutatása</string>
+    <string name="title_xdrip_plus_accessibility">Always On Display beállítások</string>
+    <string name="summary_aod_use_top">AOD Widget-et a képernyő első ötödén mutassa</string>
+    <string name="title_aod_use_top">Felül legyen</string>
+    <string name="summary_aod_use_top_center">AOD Widget-et a képernyő második ötödén mutassa</string>
+    <string name="title_aod_use_top_center">Középen felül legyen</string>
+    <string name="summary_aod_use_center">AOD Widget-et a képernyő harmadik ötödén mutassa</string>
+    <string name="title_aod_use_center">Középen legyen</string>
+    <string name="summary_aod_use_center_bottom">AOD Widget-et a képernyő negyedik ötödén mutassa</string>
+    <string name="title_aod_use_center_bottom">Középen alul legyen</string>
+    <string name="summary_aod_use_bottom">AOD Widget-et a képernyő utolsó ötödén mutassa</string>
+    <string name="title_aod_use_bottom">Alul legyen</string>
     <string name="summary_show_home_on_boot">xDrip kezdőképernyő mutatása bootolás után automatikusan</string>
     <string name="title_show_home_on_boot">xDrip mutatása bootolás után</string>
     <string name="eula">Végfelhasználói licencszerződés</string>
@@ -1474,6 +1485,8 @@
     <string name="change_settings">Beállítások módosítása</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Törölni és visszaállítani akarja ennek a szenzornak a kalibrációit?</string>
     <string name="sensor_stop_confirm">Leállítja a szenzort?</string>
+    <string name="sensor_stop_confirm_norestart">Nem fogja tudni újraindítani a szenzort.</string>
+    <string name="sensor_stop_confirm_really_norestart">FIGYELEM!\n\nNem fogja tudni újraindítani a készüléket.</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Egy egy régi kísérleti VC-érték előrejelzési beállítást aktivált.\n\nEz NEM AJÁNLOTT, és összezavarhatja a dolgokat.\n\nTiltsam le inkább Önnek?</string>
     <string name="settings_issue">Gond van a beállításokkal!</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Szeretné használni ezt a szinkronizált ujjbegyes VC-értéket a kalibráláshoz?\n\n(Ezt megváltoztathatja, amikor ez a párbeszédpanel megjelenik a beállítások között)</string>
@@ -1764,4 +1777,5 @@
     <string name="carelink_credential_status_access_expired">Hozzáférés lejárt! Meg fogja újítani!</string>
     <string name="carelink_credential_status_refresh_expired">Belépés lejárt! Jelentkezzen be!</string>
     <string name="data_source">Adatforrás:</string>
+    <string name="reraise_alerts_before_snooze_time">Riasztás ismétlése szundi alatt</string>
 </resources>

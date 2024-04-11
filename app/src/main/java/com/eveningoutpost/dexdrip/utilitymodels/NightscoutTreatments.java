@@ -55,6 +55,9 @@ public class NightscoutTreatments {
             } catch (JSONException e) {
                 //
             }
+
+            boolean skip_from_xdrip = Pref.getBooleanDefaultFalse("cloud_storage_api_skip_download_from_xdrip");
+
             // extract blood test data if present
             try {
                 if (!from_xdrip) {
@@ -130,7 +133,7 @@ public class NightscoutTreatments {
                     Treatments existing = Treatments.byuuid(nightscout_id);
                     if (existing == null)
                         existing = Treatments.byuuid(uuid);
-                    if ((existing == null) && (!from_xdrip)) {
+                    if ((existing == null) && !(from_xdrip && skip_from_xdrip)) {
                         // check for close timestamp duplicates perhaps
                         existing = Treatments.byTimestamp(timestamp, 60000);
                         if (!((existing != null) && (JoH.roundDouble(existing.insulin, 2) == JoH.roundDouble(insulin, 2))

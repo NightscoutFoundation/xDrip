@@ -1170,6 +1170,8 @@
     <string name="use_mobile_data">Mobil veri kullan</string>
     <string name="summary_cloud_storage_api_download_enable">Tedavi verilerini Nightscout\'tan xDrip\'e indirmeyi deneyin</string>
     <string name="title_cloud_storage_api_download_enable">Tedavileri indirin</string>
+    <string name="title_cloud_storage_api_download_from_xdrip">xDrip\'teki öğeleri atla</string>
+    <string name="summary_cloud_storage_api_download_from_xdrip">xDrip tarafından yüklenen öğeleri indirmekten kaçının</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Koşullar onaylamadan doğru şekilde görünüyorsa, yeni kan şekeri okumalarını kullanarak kalibre edin (deneysel)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Otomatik kalibrasyon</string>
     <string name="title_rest_api_extra_options">Ekstra Seçenekler</string>
@@ -1290,6 +1292,7 @@
     <string name="title_nsfollow_url">Nightscout Takip URL\'si</string>
     <string name="summary_nsfollow_download_treatments">Ayrıca tedavileri Nightscout\'tan indirin</string>
     <string name="title_nsfollow_download_treatments">Tedavileri İndir</string>
+    <string name="title_nsfollow_lag">Nightscout Takip gecikmesi</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
     <string name="summary_clfollow_user">CareLink login username</string>
@@ -1386,6 +1389,17 @@
     <string name="title_use_number_icon_large">Büyük Sayı Simgesi Kullan</string>
     <string name="summary_number_icon_large_arrow">Büyük simgede trend okunu gösterir</string>
     <string name="title_number_icon_large_arrow">Büyük Simgede Trend Oku Göster</string>
+    <string name="title_xdrip_plus_accessibility">Her Zaman Açık Ekran Ayarları</string>
+    <string name="summary_aod_use_top">AOD Widget\'ı için ekranın ilk beşte birini kullanın</string>
+    <string name="title_aod_use_top">Üst kısmı kullan</string>
+    <string name="summary_aod_use_top_center">AOD Widget\'ı için ekranın ikinci beşte birini kullanın</string>
+    <string name="title_aod_use_top_center">Üst ortayı kullan</string>
+    <string name="summary_aod_use_center">AOD Widget\'ı için ekranın üçüncü beşte birini kullanın</string>
+    <string name="title_aod_use_center">Merkezi kullan</string>
+    <string name="summary_aod_use_center_bottom">AOD Widget\'ı için ekranın dördüncü beşte birini kullanın</string>
+    <string name="title_aod_use_center_bottom">Orta alt kısmı kullan</string>
+    <string name="summary_aod_use_bottom">AOD Widget\'ı için ekranın beşinci beşte birini kullanın</string>
+    <string name="title_aod_use_bottom">Alt kısmı kullan</string>
     <string name="summary_show_home_on_boot">Cihaz yeniden başlatılınca xDrip ekranını otomatik olarak açar</string>
     <string name="title_show_home_on_boot">Önyüklemede xDrip\'i Göster</string>
     <string name="eula">EULA</string>
@@ -1501,6 +1515,8 @@
     <string name="change_settings">Ayarları değiştir</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Bu sensör için kalibrasyonları silmek ve sıfırlamak istiyor musunuz?</string>
     <string name="sensor_stop_confirm">Sensörü durdurmak istiyor musunuz?</string>
+    <string name="sensor_stop_confirm_norestart">Sensörü kolayca yeniden başlatamazsınız.</string>
+    <string name="sensor_stop_confirm_really_norestart">UYARI!\n\nCihazı yeniden başlatamayacaksınız.</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Etkinleştirilmiş eski bir deneysel glikoz tahmin ayarına sahipsiniz.\n\nBu TAVSİYE EDİLMEMEKTEDİR ve işleri fena halde karıştırabilir.\n\nBunu sizin için devre dışı bırakayım mı?</string>
     <string name="settings_issue">Ayar Sorunu!</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Bu senkron parmak ölçümü kan şekeri sonucunu kalibre etmek için kullanmak istiyor musunuz?\n\n(Bu iletiyi ayarlar\'da değiştirebilirsiniz)</string>
@@ -1782,6 +1798,7 @@
     <string name="summary_ymax">Daha büyük okumalar olmadığında yMax\'i seçin.</string>
     <string name="wait_to_connect">Ayarları doğrulayın ve bağlantının kurulmasını bekleyin.</string>
     <string name="summary_sens_expiry_notify">Sensör ömrü bitimine yakın bildirimleri artırın.</string>
+    <string name="title_sens_expiry_notify">Sensörün geçerlilik süresi</string>
     <string name="close">Kapat</string>
     <string name="title_advanced_settings_4_Lib2">Libre 2 için gelişmiş ayarlar</string>
     <string name="title_Lib2_show_raw_values">Ham değerleri grafikte göster</string>
@@ -1790,4 +1807,25 @@
     <string name="summary_Lib2_show_sense_on_status">Libre 2 sensörünün Durumunda ek bilgileri göstermek için açın.</string>
     <string name="import_qr_code_warning">Yalnızca güvendiğiniz kaynaklardan ayarları içe aktarın!\n\nLütfen aşağıdaki ayarları almayı onaylayın:\n\n</string>
     <string name="scan_to_load_xdrip_settings">xDrip ayarlarını yüklemek için tarayın</string>
+    <string name="manage_permissions">İzinleri yönet</string>
+    <string name="open_health_connect_settings_to_manually_manage_permissions">İzinleri manuel olarak yönetmek için Health Connect Ayarlarını açın</string>
+    <string name="send_data_to_health_connect">Verileri Health Connect\'e gönder</string>
+    <string name="get_data_from_health_connect">Health Connect\'ten veri al</string>
+    <string name="requires_android_8_and_google_companion_application_or_android_14">Android 8+ ve Google tamamlayıcı uygulaması veya Android 14+ gerektirir</string>
+    <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Google Health Connect ve Google Fit\'ten veri gönderip alın</string>
+    <string name="google_health_connect">Google Health Connect</string>
+    <string name="google_health_connect_needs_perms">HATA: Health Connect\'in izinlere ihtiyacı var! - ayarlar menüsünden tekrar deneyin</string>
+    <string name="carelink_auth_country_required">Ülke gereklidir!</string>
+    <string name="carelink_auth_status_authenticated">Kimlik doğrulama durumu!</string>
+    <string name="carelink_auth_status_not_authenticated">Kimlik doğrulanmadı!</string>
+    <string name="carelink_auth_login_in_progress">Giriş yapılıyor...</string>
+    <string name="carelink_refresh_token_start">Erişim yenilemeyi başlat</string>
+    <string name="carelink_refresh_token_failed">Erişim yenileme başarısız oldu! Tekrar denenecek!</string>
+    <string name="carelink_download_start">İndirmeyi başlat</string>
+    <string name="carelink_download_failed">Veri indirme başarısız oldu!</string>
+    <string name="carelink_credential_status_not_authenticated">Giriş yapmadınız! Lütfen giriş yapın!</string>
+    <string name="carelink_credential_status_access_expired">Erişimin süresi doldu! Yenilenecek!</string>
+    <string name="carelink_credential_status_refresh_expired">Oturum açma süresi doldu! Lütfen giriş yapın!</string>
+    <string name="data_source">Veri Kaynağı:</string>
+    <string name="reraise_alerts_before_snooze_time">Ertelemeden önce uyarıları tekrar yükselt</string>
 </resources>
