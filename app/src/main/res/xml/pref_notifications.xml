@@ -140,6 +140,11 @@
                         android:key="delay_ascending_3min"
                         android:summary="@string/summary_delay_ascending_3min"
                         android:title="@string/title_delay_ascending_3min" />
+                    <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:key="ascending_volume_to_medium"
+                        android:summary="@string/summary_ascending_volume_to_medium"
+                        android:title="@string/title_ascending_volume_to_medium" />
                 </PreferenceScreen>
 
             </PreferenceScreen>
