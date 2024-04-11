@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.insulin.diaconnp8.penlog;
 
+import androidx.annotation.NonNull;
+
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -56,19 +58,17 @@ public class LogInjectionFail {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("LOG_INJ_FAIL{");
-        sb.append("LOG_KIND=").append(PENLOG_KIND);
-        sb.append(", data='").append(data).append('\'');
-        sb.append(", dttm='").append(dttm).append('\'');
-        sb.append(", type=").append(type);
-        sb.append(", kind=").append(kind);
-        sb.append(", setAmt=").append(setAmt);
-        sb.append(", injAmt=").append(injAmt);
-        sb.append(", insulinKind=").append(insulinKind);
-        sb.append(", cartridgeMaker=").append(cartridgeMaker);
-        sb.append(", injFailReason=").append(injFailReason);
-        sb.append('}');
-        return sb.toString();
+        return "LOG_INJ_FAIL{" + "LOG_KIND=" + PENLOG_KIND +
+                ", data='" + data + '\'' +
+                ", dttm='" + dttm + '\'' +
+                ", type=" + type +
+                ", kind=" + kind +
+                ", setAmt=" + setAmt +
+                ", injAmt=" + injAmt +
+                ", insulinKind=" + insulinKind +
+                ", cartridgeMaker=" + cartridgeMaker +
+                ", injFailReason=" + injFailReason +
+                '}';
     }
 
     public String toNote() {

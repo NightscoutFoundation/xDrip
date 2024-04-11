@@ -131,14 +131,10 @@ public class DiaconnP8Service extends JamBaseBluetoothService {
 
         private static final List<STATE> sequence = new ArrayList<>();
 
-        private String str;
+        private final String str;
 
         STATE(String custom) {
             this.str = custom;
-        }
-
-        STATE() {
-            this.str = toString();
         }
 
         static {
@@ -188,39 +184,34 @@ public class DiaconnP8Service extends JamBaseBluetoothService {
     protected synchronized boolean automata() {
         UserError.Log.d(TAG, "automata state: " + state);
         extendWakeLock(3000);
-        try {
-            switch (state) {
-                case INIT:
-                    initialize();
-                    break;
-                case SCAN:
-                    scan_for_device();
-                    break;
-                case CONNECT:
-                    connect_to_device(true);
-                    break;
-                case CONNECT_NOW:
-                    connect_to_device(false);
-                    break;
-                case DISCOVER:
-                    discover_services();
-                    break;
-                case GET_STATUS:
-                    getStatus();
-                    break;
-                case SET_TIME:
-                    setTime();
-                    break;
-                case GET_HISTORY:
-                    getInsulinLog();
-                    break;
-                case CLOSE:
-                    if (!auto_connect) stopConnect();
-                    break;
-
-            }
-        } finally {
-            //
+        switch (state) {
+            case INIT:
+                initialize();
+                break;
+            case SCAN:
+                scan_for_device();
+                break;
+            case CONNECT:
+                connect_to_device(true);
+                break;
+            case CONNECT_NOW:
+                connect_to_device(false);
+                break;
+            case DISCOVER:
+                discover_services();
+                break;
+            case GET_STATUS:
+                getStatus();
+                break;
+            case SET_TIME:
+                setTime();
+                break;
+            case GET_HISTORY:
+                getInsulinLog();
+                break;
+            case CLOSE:
+                if (!auto_connect) stopConnect();
+                break;
         }
         return true;
     }
@@ -709,7 +700,7 @@ public class DiaconnP8Service extends JamBaseBluetoothService {
         inquirePacketList.add(message); // pen status request
         inquirePacketList.add(message3); // pen log status request
         inquirePacketList.add(message2); // pen time request
-        addToWriteQueueWithWakeup(inquirePacketList, 500, 10, true, "Get Status");
+        addToWriteQueueWithWakeup(inquirePacketList, 500, 10, "Get Status");
     }
     private void getInsulinLog() {
         // Pref saved info
@@ -749,7 +740,7 @@ public class DiaconnP8Service extends JamBaseBluetoothService {
                 byte[] message = bigLogInquirePacket.encode(getMsgSequence());
                 inquirePacketList.add(message);
             }
-            addToWriteQueueWithWakeup(inquirePacketList, 200, 30, true, "Get History");
+            addToWriteQueueWithWakeup(inquirePacketList, 200, 30, "Get History");
         } else {
             // no need log sync
             changeState(CLOSE);
@@ -762,7 +753,7 @@ public class DiaconnP8Service extends JamBaseBluetoothService {
         byte[] message = timeSettingPacket.encode(getMsgSequence());
         List<byte[]> packetList = new ArrayList<>();
         packetList.add(message);
-        addToWriteQueueWithWakeup(packetList, 200, 10, true, "Set Time");
+        addToWriteQueueWithWakeup(packetList, 200, 10, "Set Time");
     }
 
     private void setConfirmMessage(byte msgType, int otp) {
@@ -771,7 +762,7 @@ public class DiaconnP8Service extends JamBaseBluetoothService {
         byte[] message = confirmSettingPacket.encode(getMsgSequence());
         List<byte[]> packetList = new ArrayList<>();
         packetList.add(message);
-        addToWriteQueueWithWakeup(packetList, 200, 10, true, "Set Confirm Otp");
+        addToWriteQueueWithWakeup(packetList, 200, 10, "Set Confirm Otp");
     }
 
     /// Queue Handling
@@ -796,16 +787,16 @@ public class DiaconnP8Service extends JamBaseBluetoothService {
         }
         return seq;
     }
-    private void addToWriteQueueWithWakeup(List<byte[]> byteslist, long delay_ms, int timeout_seconds, boolean start_now, String description) {
-        addToWriteQueue(byteslist, delay_ms, timeout_seconds, start_now, description);
+    private void addToWriteQueueWithWakeup(List<byte[]> byteslist, long delay_ms, int timeout_seconds, String description) {
+        addToWriteQueue(byteslist, delay_ms, timeout_seconds, description);
     }
 
-    private void addToWriteQueue(List<byte[]> byteslist, long delay_ms, int timeout_seconds, boolean start_now, String description) {
-        UserError.Log.d(TAG, "addToWriteQueue start_now ==" + start_now);
+    private void addToWriteQueue(List<byte[]> byteslist, long delay_ms, int timeout_seconds, String description) {
+        UserError.Log.d(TAG, "addToWriteQueue start_now ==" + true);
         for (byte[] bytes : byteslist) {
             write_queue.add(new QueueItem(bytes, timeout_seconds, delay_ms, description));
         }
-        if (start_now) writeMultipleFromQueue(write_queue);
+        writeMultipleFromQueue(write_queue);
     }
 
 
