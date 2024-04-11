@@ -554,7 +554,7 @@ public class AlertPlayer {
             }
             volumeFrac = Math.max(volumeFrac, 0); // Limit volumeFrac to values greater than and equal to 0
             volumeFrac = Math.min(volumeFrac, 1); // Limit volumeFrac to values less than and equal to 1
-            if (Pref.getBooleanDefaultFalse("ascending_volume_to_medium")) { // If ascending_volume_to_medium is enabled
+            if (Pref.getBooleanDefaultFalse("ascending_volume_to_medium") && profile == ALERT_PROFILE_ASCENDING) { // If ascending volume profile is chosen and ascending_volume_to_medium is enabled
                 volumeFrac = Math.min(volumeFrac, (float) 0.7); // Clamp the ascending volume at the medium level.
             }
             if (profile == ALERT_PROFILE_MEDIUM) {
