@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.insulin.diaconnp8;
 
 import static com.eveningoutpost.dexdrip.insulin.diaconnp8.Const.BIG_LOG_INQUIRE_RESPONSE_MSG_TYPE;
+import static com.eveningoutpost.dexdrip.insulin.diaconnp8.Const.INCARNATION_INQUIRE_RESPONSE_MSG_TYPE;
 import static com.eveningoutpost.dexdrip.insulin.diaconnp8.Const.INCOMING_CHAR;
 import static com.eveningoutpost.dexdrip.insulin.diaconnp8.Const.INJECTION_EVENT_REPORT_MSG_TYPE;
 import static com.eveningoutpost.dexdrip.insulin.diaconnp8.Const.LOG_BLOCK_SIZE;
@@ -35,6 +36,7 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.insulin.diaconnp8.packet.BigLogInquirePacket;
 import com.eveningoutpost.dexdrip.insulin.diaconnp8.packet.ConfirmSettingPacket;
 import com.eveningoutpost.dexdrip.insulin.diaconnp8.packet.DiaconnP8Packet;
+import com.eveningoutpost.dexdrip.insulin.diaconnp8.packet.IncarnationInquirePacket;
 import com.eveningoutpost.dexdrip.insulin.diaconnp8.packet.LogStatusInquirePacket;
 import com.eveningoutpost.dexdrip.insulin.diaconnp8.packet.SystemStatusInquirePacket;
 import com.eveningoutpost.dexdrip.insulin.diaconnp8.packet.TimeInquirePacket;
@@ -104,6 +106,7 @@ public class DiaconnP8Service extends JamBaseBluetoothService {
 
     private volatile int log_wrapping_count = 0;
     private volatile int log_last_no = 0;
+    private volatile int incarnation_no = 0;
 
     private final ConcurrentLinkedQueue<QueueItem> write_queue = new ConcurrentLinkedQueue<>();
 
@@ -550,6 +553,22 @@ public class DiaconnP8Service extends JamBaseBluetoothService {
                     }
                 }
 
+                if (receivedCommand == INCARNATION_INQUIRE_RESPONSE_MSG_TYPE && result == 16) {
+                    if (DiaconnP8Packet.isSuccInquireResponseResult(result)) {
+                        incarnation_no = DiaconnP8Packet.getShortToInt(byteBuffer);
+                        UserError.Log.d(TAG, "P8 incarnation :" +incarnation_no);
+                        String searial5digitsPref = Pref.getString("diaconnp8_searial_5digits", "00000");
+                        int pref_incarnation = Pref.getInt(DiaconnP8.DIACONN_LOG_INCARNATION + searial5digitsPref,0);
+                        // pref reset if the pen incarnation num and pref value are different
+                        if(incarnation_no != pref_incarnation) {
+                            UserError.Log.d(TAG, "Log Reset!!! incarnation_no is different :: pref: "+pref_incarnation +", pen:" +incarnation_no);
+                            Pref.setInt(DiaconnP8.DIACONN_LOG_LAST_NUM + searial5digitsPref, 0);
+                            Pref.setInt(DiaconnP8.DIACONN_LOG_WRAPPING_COUNT + searial5digitsPref, 0);
+                        }
+                        Pref.setInt(DiaconnP8.DIACONN_LOG_INCARNATION+ searial5digitsPref, incarnation_no);
+                    }
+                }
+
                 if (receivedCommand == TIME_INQUIRE_RESPONSE_MSG_TYPE && result == 16) {
                     if (DiaconnP8Packet.isSuccInquireResponseResult(result)) {
                         int year = DiaconnP8Packet.getByteToInt(byteBuffer);
@@ -573,6 +592,8 @@ public class DiaconnP8Service extends JamBaseBluetoothService {
                     if (DiaconnP8Packet.isSuccSettingResponseResult(result)) {
                         int otp = DiaconnP8Packet.getIntToInt(byteBuffer);
                         setConfirmMessage(TimeSettingPacket.MSG_TYPE, otp);
+                        JoH.threadSleep(1000);
+                        changeState(GET_HISTORY);
                     }
                 }
             } else if (state == GET_HISTORY) {
@@ -692,14 +713,18 @@ public class DiaconnP8Service extends JamBaseBluetoothService {
     private void getStatus() {
         SystemStatusInquirePacket systemStatusInquirePacket = new SystemStatusInquirePacket();
         byte[] message = systemStatusInquirePacket.encode(getMsgSequence());
-        TimeInquirePacket timeInquirePacket = new TimeInquirePacket();
-        byte[] message2 = timeInquirePacket.encode(getMsgSequence());
         LogStatusInquirePacket logStatusInquirePacket = new LogStatusInquirePacket();
-        byte[] message3 = logStatusInquirePacket.encode(getMsgSequence());
+        byte[] message2 = logStatusInquirePacket.encode(getMsgSequence());
+        IncarnationInquirePacket incarnationInquirePacket = new IncarnationInquirePacket();
+        byte[] message3 = incarnationInquirePacket.encode(getMsgSequence());
+        TimeInquirePacket timeInquirePacket = new TimeInquirePacket();
+        byte[] message4 = timeInquirePacket.encode(getMsgSequence());
+
         List<byte[]> inquirePacketList = new ArrayList<>();
         inquirePacketList.add(message); // pen status request
-        inquirePacketList.add(message3); // pen log status request
-        inquirePacketList.add(message2); // pen time request
+        inquirePacketList.add(message2); // pen log status request
+        inquirePacketList.add(message3); // pen incarnation request
+        inquirePacketList.add(message4); // pen time request
         addToWriteQueueWithWakeup(inquirePacketList, 500, 10, "Get Status");
     }
     private void getInsulinLog() {
@@ -707,13 +732,13 @@ public class DiaconnP8Service extends JamBaseBluetoothService {
         String searial5digitsPref = Pref.getString("diaconnp8_searial_5digits", "00000");
         int pref_log_last_no= Pref.getInt(DiaconnP8.DIACONN_LOG_LAST_NUM + searial5digitsPref,0);
         int pref_log_wrapping_count = Pref.getInt(DiaconnP8.DIACONN_LOG_WRAPPING_COUNT + searial5digitsPref,0);
-        int pref_log_incarnation = Pref.getInt(DiaconnP8.DIACONN_LOG_INCARNATION + searial5digitsPref,0);
-        UserError.Log.d(TAG, "log sync [ searial : "+searial5digitsPref+", pref_log_last_no : "+ pref_log_last_no + ", pref_log_wrapping_count : " + pref_log_wrapping_count + ", pref_log_incarnation : "+ pref_log_incarnation +", log_last_no : "+log_last_no + ", log_wrapping_count : " + log_wrapping_count + "]");
+        int pref_incarnation = Pref.getInt(DiaconnP8.DIACONN_LOG_INCARNATION + searial5digitsPref,0);
+        UserError.Log.d(TAG, "log sync [ searial : "+searial5digitsPref+", pref_log_last_no : "+ pref_log_last_no + ", pref_log_wrapping_count : " + pref_log_wrapping_count + ", pref_log_incarnation : "+ pref_incarnation +", log_last_no : "+log_last_no + ", log_wrapping_count : " + log_wrapping_count + "]");
         // log status
         int start;
         int end;
 
-        // when first app install, then last 10 logs sync
+        // when first app install or reset pref, then sync starts last 10 logs
         if(pref_log_wrapping_count == 0 && pref_log_last_no == 0 && log_last_no > 10) {
             pref_log_last_no = log_last_no - 10;
         }
@@ -745,7 +770,6 @@ public class DiaconnP8Service extends JamBaseBluetoothService {
             // no need log sync
             changeState(CLOSE);
         }
-
     }
     private void setTime() {
         JoH.threadSleep(1000);
