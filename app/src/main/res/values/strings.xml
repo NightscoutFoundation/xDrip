@@ -1928,4 +1928,6 @@
     <string name="title_diaconnp8_packet_low_battery_error">Injection is not possible due to low battery.</string>
     <string name="title_diaconnp8_packet_excess_today_volume_error">It cannot be injected due to an excess of injection volume today</string>
     <string name="title_diaconnp8_packet_system_error">Setup is not possible due to system error.</string>
+    <string name="title_diaconnp8_connected">DIACONN P8 Connected</string>
+
 </resources>

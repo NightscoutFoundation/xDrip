@@ -400,19 +400,16 @@ public class DiaconnP8Service extends JamBaseBluetoothService {
         switch (newState) {
             case CONNECTING:
                 connection_state = "Connecting";
-                // connecting_time = JoH.tsl();
                 break;
             case CONNECTED:
                 connection_state = "Connected";
-                JoH.static_toast_short("DIACONN P8 Connected");
+                JoH.static_toast_short(xdrip.gs(R.string.title_diaconnp8_connected));
                 break;
             case DISCONNECTING:
                 connection_state = "Disconnecting";
                 break;
             case DISCONNECTED:
                 connection_state = "Disconnected";
-                JoH.static_toast_short("DIACONN P8 Disconnected");
-                // JoH.releaseWakeLock(floatingWakeLock);
                 break;
         }
         UserError.Log.d(TAG, connection_state);

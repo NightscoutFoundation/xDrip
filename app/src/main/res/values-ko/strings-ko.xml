@@ -812,4 +812,5 @@
     <string name="title_diaconnp8_packet_excess_today_volume_error">디아콘P8의 하루 용량 초과로 주입이 제한됩니다.</string>
     <string name="title_diaconnp8_packet_system_error">디아콘P8의 시스템 에러로 인해 설정이 불가합니다.</string>
     <string name="summary_diaconnp8_sounds">소리를 사용하여 펜으로부터 데이터 전송 알립니다.</string>
+    <string name="title_diaconnp8_connected">디아콘P8 연결됨</string>
 </resources>
