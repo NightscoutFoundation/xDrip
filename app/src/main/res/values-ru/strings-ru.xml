@@ -1171,6 +1171,7 @@
     <string name="summary_cloud_storage_api_download_enable">Также пытаться загрузить данные из Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Загружать данные</string>
     <string name="title_cloud_storage_api_download_from_xdrip"></string>
+    <string name="summary_cloud_storage_api_download_from_xdrip">Избегать загрузки файлов, которые были загружены xDrip</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Калибровать используя новые показания глюкозы без запроса подтверждения при благоприятных условиях (экспериментальная функция)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Автоматическая калибровка</string>
     <string name="title_rest_api_extra_options">Дополнительные параметры</string>
@@ -1799,7 +1800,23 @@
     <string name="summary_ymin">Укажите y min когда нет меньших показаний.</string>
     <string name="summary_ymax">Укажите y max когда нет больших показаний.</string>
     <string name="wait_to_connect">Проверьте настройки и дождитесь подключения.</string>
+    <string name="summary_sens_expiry_notify">Выводить уведомления, когда приближается окончание срока работы сенсора.</string>
+    <string name="title_sens_expiry_notify">Пришло окончание срока работы сенсора</string>
     <string name="close">Закрыть</string>
+    <string name="title_advanced_settings_4_Lib2">Расширенные настройки для Libre 2</string>
+    <string name="title_Lib2_show_raw_values">Показать необработанные значения на графике</string>
+    <string name="summary_Lib2_show_raw_values">Включите для показа необработанных значения на графике.</string>
+    <string name="title_Lib2_show_sense_on_status">Показывать информацию о сенсоре в разделе Статус</string>
+    <string name="summary_Lib2_show_sense_on_status">Включите для показа дополнительной информации в разделе Статус для сенсора Libre 2.</string>
+    <string name="import_qr_code_warning">Импортируйте настройки только из источников, которым вы доверяете!\n\nПожалуйста, подтвердите импорт следующих настроек:\n\n</string>
+    <string name="scan_to_load_xdrip_settings">Сканировать для загрузки настроек xDrip</string>
+    <string name="manage_permissions">Настроить разрешения</string>
+    <string name="open_health_connect_settings_to_manually_manage_permissions">Откройте настройки Health Connect для ручного управления разрешениями</string>
+    <string name="send_data_to_health_connect">Отправить данные в Health Connect</string>
+    <string name="get_data_from_health_connect">Получить данные из Health Connect</string>
+    <string name="requires_android_8_and_google_companion_application_or_android_14">Требуется Android версии 8 и выше, и приложение-компаньон Google, либо Android версии 14 и выше</string>
+    <string name="google_health_connect">Google Health Connect</string>
+    <string name="google_health_connect_needs_perms">ОШИБКА: Использование Google Health Connect требует дополнительных разрешений! Попробуйте снова из меню настроек</string>
     <string name="carelink_auth_country_required">Необходимо указать страну!</string>
     <string name="carelink_auth_status_authenticated">Состояние авторизован!</string>
     <string name="carelink_auth_status_not_authenticated">Состояние не авторизован!</string>
@@ -1812,5 +1829,7 @@
     <string name="carelink_credential_status_access_expired">Срок доступа закончился! Будет обновлен!</string>
     <string name="carelink_credential_status_refresh_expired">Время входа закончилось! Пожалуйста, войдите!</string>
     <string name="data_source">Источник данных:</string>
+    <string name="insulin_pens">Инсулиновые \"ручки\"</string>
+    <string name="editing">Правка</string>
     <string name="reraise_alerts_before_snooze_time">Показывать повторные оповещения до истечения времени отсроченного срабатывания</string>
 </resources>
