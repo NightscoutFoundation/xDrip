@@ -1829,7 +1829,25 @@
     <string name="carelink_credential_status_access_expired">Срок доступа закончился! Будет обновлен!</string>
     <string name="carelink_credential_status_refresh_expired">Время входа закончилось! Пожалуйста, войдите!</string>
     <string name="data_source">Источник данных:</string>
+    <string name="disable_collection">Отключить сбор</string>
     <string name="insulin_pens">Инсулиновые \"ручки\"</string>
     <string name="editing">Правка</string>
+    <string name="enable_missed_reading_alert">Включить оповещение о пропусках в данных</string>
+    <string name="alert_if_no_data_received_in_colon">Предупреждать, если данные не получались в течении:</string>
+    <string name="wait_before_raising_the_same_alert_after_snooze_colon">Задержка, по истечении которой оповещение будет выдано повторно:</string>
     <string name="reraise_alerts_before_snooze_time">Показывать повторные оповещения до истечения времени отсроченного срабатывания</string>
+    <string name="alert_reraise_time_colon">Время повторного появления оповещения:</string>
+    <string name="select_start_time">Выберите время начала</string>
+    <string name="select_end_time">Выберите время окончания</string>
+    <string name="accept_glucose">Задать глюкозу</string>
+    <string name="process_glucose_data_received">Обработка данных ГК, полученных от приложения NSClient</string>
+    <string name="use_health_connect">Использовать Health Connect</string>
+    <string name="audio_focus">Фокусировка аудио</string>
+    <string name="audio_focus_summary">Укажите, что делать с другими приложениями при воспроизведении оповещений и настройке уровней громкости системы</string>
+    <string name="audio_focus_dont_adjust_other_app_sounds">Не настраивать звуки других приложений</string>
+    <string name="audio_focus_lower_volume_of_other_apps">Снизить громкость других приложений</string>
+    <string name="audio_focus_pause_other_apps_playing_audio">Поставить на паузу воспроизведение звука в других приложениях</string>
+    <string name="audio_focus_pause_all_other_sounds">Поставить на паузу все остальные звуки</string>
+    <string name="use_camera_light">Использовать вспышку фотокамеры</string>
+    <string name="use_camera_light_summary">Мигать вспышкой фотокамеры во время оповещений, если телефон подключен к зарядному устройству</string>
 </resources>
