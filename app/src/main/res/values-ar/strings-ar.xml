@@ -61,6 +61,7 @@
     <string name="pref_message_api_url">هذا فقط عنوان URL الأساسي، سيلحق / إدخالات لبوست. API_SECRET على الخادم يجب أن تتطابق مع عبارة المرور الخاصة بك في هذا الإعداد.</string>
     <string name="pref_default_api_url">https://yourpassphrase@{YOUR-SITE}.azurewebsites.net/api/v1/</string>
     <!-- wifi Settings -->
+    <string name="wifi_recievers_dialog_message">قائمة مفصولة بفواصل من IP:port (على سبيل المثال 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
     <string name="wifi_recievers_dialog_title">أدخل عناوين IP والبورتات لأجهزة الاستقبال (بما في ذلك عناوين Mongodb إذا لزم الأمر)</string>
     <!-- Location Settings -->
     <string name="location_not_found_title">الموقع غير مفعل</string>
@@ -68,8 +69,12 @@
     <string name="location_yes">تفعيل</string>
     <!-- broadcast settings -->
     <string name="pref_title_broadcast_enabled">البث محليا</string>
+    <string name="pref_summary_broadcast_enabled">تمكين البث المحلي للبيانات حتى يمكن للتطبيقات الأخرى (مثل المراقبة الليلية) الاستماع إلى قيم جديدة</string>
     <string name="title_activity_share_test">مشاركة الاختبار</string>
     <!-- pebble settings -->
+    <string name="pref_pebble_trend_watchface">استخدام أسهم واجهة ساعة بيبل </string>
+    <string name="pref_summary_pebble_trend_watchface">استخدام/تثبيت بيبل Trend Watchface (تجريبي)</string>
+    <string name="pref_pebble_display_trend">عرض الإتجاه</string>
     <string name="pref_summary_display_trend">إظهار اتجاه قراءة السكر على وجه الساعة.</string>
     <string name="pref_pebble_display_high_line">عرض خط الارتفاع</string>
     <string name="pref_pebble_display_low_line">عرض خط الانخفاض</string>
@@ -84,9 +89,15 @@
     <string name="pref_amazfit_other_alert_enable_summary">ارسال التنبيهات الأخرى إلى الساعة</string>
     <string name="pref_amazfit_other_alert_enable">تفعيل</string>
     <string name="pref_amazfit_other_alert_title">تنبيهات أخرى</string>
+    <string name="pref_amazfit_watchface_graph_dots_title">نقاط مشاهدة الرسوم البيانية</string>
+    <string name="pref_amazfit_watchface_graph_dots_summary">عرض نقاط صغيرة جداً بدلاً من صغيرة</string>
     <string name="pref_amazfit_watchface_graph_enable">تفعيل</string>
+    <string name="pref_amazfit_watchface_graph_title">رسم بياني لواجهة الساعة</string>
+    <string name="pref_amazfit_watchface_graph_enable_summary">يظهر الرسم البياني في خلفية واجهات الساعة</string>
+    <string name="pref_amazfit_watchface_graph_hours_title">رسم بياني لواجهة الساعة</string>
     <string name="pref_amazfit_watchface_graph_hours_summary">تغيير عدد الساعات في الرسم البياني</string>
     <string name="pref_amazfit_widget_graph_hours_summary">تغيير عدد الساعات في الرسم البياني</string>
+    <string name="pref_amazfit_widget_graph_dots_summary">عرض نقاط صغيرة جداً بدلاً من صغيرة</string>
     <string name="pref_amazfit_widget_graph_enable">تفعيل</string>
     <string name="toast_crash">حدث خطأ ما :( تم إرسال تقرير للمساعدة في حل المشكلة.</string>
     <string name="taskerConfiguration">Tasker Configuration</string>
@@ -118,6 +129,7 @@
     <string name="now_choose_start_sensor_in_settings">الآن اختر بدء الحساس الخاص بك في الإعدادات</string>
     <string name="unfortunately_andoird_version_no_blueooth_low_energy">للأسف إصدار الأندرويد الخاص بك لا يدعم البلوتوث منخفض الطاقة</string>
     <string name="persistent_high_for_greater_than">ارتفاع مستمر لـ &gt; </string>
+    <string name="space_mins">" دقائق"</string>
     <string name="till">حتى</string>
     <string name="low_predicted">توقع انخفاض</string>
     <string name="in">في</string>
@@ -139,6 +151,7 @@
     <string name="general_settings">الإعدادات العامة</string>
     <string name="high_value">قيمة مرتفعة</string>
     <string name="low_value">قيمة منخفضة</string>
+    <string name="stats_range_settings">إعدادات النطاق: </string>
     <string name="end_user_license_agreement">انهاء اتفاقية الاستخدام</string>
     <string name="save">حفظ</string>
     <string name="view_important_warning">عرض التحذيرات الهامة</string>

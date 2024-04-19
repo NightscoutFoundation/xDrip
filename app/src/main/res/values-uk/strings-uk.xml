@@ -1170,6 +1170,8 @@
     <string name="use_mobile_data">Використовувати мобільні дані</string>
     <string name="summary_cloud_storage_api_download_enable">Намагатися, також, завантажувати дані з Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Завантажувати дані</string>
+    <string name="title_cloud_storage_api_download_from_xdrip">Ігнорувати елементи xDrip</string>
+    <string name="summary_cloud_storage_api_download_from_xdrip">Не викачувати елементи, завантажені xDrip</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Калібрувати використовуючи нові показники глюкози без запиту підтвердження при сприятливих умовах (експериментальна функція)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Автоматичне калібрування</string>
     <string name="title_rest_api_extra_options">Додаткові параметри</string>
@@ -1387,6 +1389,17 @@
     <string name="title_use_number_icon_large">Відображати значення крупно</string>
     <string name="summary_number_icon_large_arrow">Відображати покажчик тренда, для роботи необхідна активація Відображати значення крупно</string>
     <string name="title_number_icon_large_arrow">Відображати тренд</string>
+    <string name="title_xdrip_plus_accessibility">Настройки режиму екрана Always On</string>
+    <string name="summary_aod_use_top">Встановити п\'яту частину екрану для AOD віджету</string>
+    <string name="title_aod_use_top">Встановити вгорі</string>
+    <string name="summary_aod_use_top_center">Зайняти другі 20% екрану для AOD віджету</string>
+    <string name="title_aod_use_top_center">Встановити вгорі по центру</string>
+    <string name="summary_aod_use_center">Зайняти треті 20% екрану для AOD віджету</string>
+    <string name="title_aod_use_center">Встановити у центрі</string>
+    <string name="summary_aod_use_center_bottom">Зайняти четверті 20% екрану для AOD віджету</string>
+    <string name="title_aod_use_center_bottom">Встановити внизу по центру</string>
+    <string name="summary_aod_use_bottom">Зайняти п\'яті 20% екрану для AOD віджету</string>
+    <string name="title_aod_use_bottom">Встановити внизу</string>
     <string name="summary_show_home_on_boot">Автоматично відображати екран xDrip+ після завантаження пристрою</string>
     <string name="title_show_home_on_boot">Показувати xDrip+ після завантаження</string>
     <string name="eula">Ліцензійна угода</string>
@@ -1502,6 +1515,8 @@
     <string name="change_settings">Змінити налаштування</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Хочете видалити або скинути калібрування сенсора?</string>
     <string name="sensor_stop_confirm">Ви бажаєте зупинити сенсор?</string>
+    <string name="sensor_stop_confirm_norestart">Ви не зможете просто перезапустити сенсор.</string>
+    <string name="sensor_stop_confirm_really_norestart">УВАЖНО!\n\nВи не зможете перезапустити пристрій.</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Активований старий експериментальний алгоритм прогнозування глюкози.\n\nЦе НЕ РЕКОМЕНДУЄТЬСЯ, оскільки може серйозно нашкодити.\n\nВимкнути даний алгоритм?</string>
     <string name="settings_issue">Проблема з налаштуваннями</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Ви хочете використовувати ці синхронізовані дані глюкометра для калібрування?\n\n(ці налаштування можуть бути змінені в Параметрах)</string>
@@ -1804,4 +1819,15 @@
     <string name="carelink_credential_status_access_expired">Доступ завершився! Спробую поновити!</string>
     <string name="carelink_credential_status_refresh_expired">Логін завершено! Увійдіть в систему повторно!</string>
     <string name="data_source">Джерело даних:</string>
+    <string name="disable_collection">Вимкнути колекцію</string>
+    <string name="insulin_pens">Інсулінові ручки</string>
+    <string name="editing">Редагування</string>
+    <string name="enable_missed_reading_alert">Увімкнути оповіщення про пропущене зчитування</string>
+    <string name="alert_if_no_data_received_in_colon">Попереджати, якщо дані не отримано протягом:</string>
+    <string name="wait_before_raising_the_same_alert_after_snooze_colon">Повторити те ж сповіщення після його відкладання через:</string>
+    <string name="reraise_alerts_before_snooze_time">Показувати повторні сповіщення до закінчення часу відстроченого спрацьовування</string>
+    <string name="alert_reraise_time_colon">Повторити сповіщення через:</string>
+    <string name="select_start_time">Час початку</string>
+    <string name="select_end_time">Виберіть час закінчення</string>
+    <string name="accept_glucose">Прийняти глюкозу</string>
 </resources>

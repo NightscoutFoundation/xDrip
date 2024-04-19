@@ -950,10 +950,10 @@
             <SwitchPreference
                 android:defaultValue="true"
                 android:key="accept_nsclient_sgv"
-                android:title="Accept Glucose"
+                android:title="@string/accept_glucose"
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
-                android:summary="Process glucose data received from NSClient app" />
+                android:summary="@string/process_glucose_data_received" />
             <SwitchPreference
                 android:defaultValue="true"
                 android:key="accept_nsclient_treatments"
@@ -1022,7 +1022,7 @@
 
                 <SwitchPreference
                     android:key="health_connect_enable"
-                    android:title="Use Health Connect"
+                    android:title="@string/use_health_connect"
                     android:summary="@string/requires_android_8_and_google_companion_application_or_android_14"
                     />
                 <SwitchPreference

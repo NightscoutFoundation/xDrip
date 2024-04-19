@@ -1170,6 +1170,8 @@
     <string name="use_mobile_data">Utilizza rete dati mobile</string>
     <string name="summary_cloud_storage_api_download_enable">Prova anche a scaricare i dati da Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Scarica dati</string>
+    <string name="title_cloud_storage_api_download_from_xdrip">Ignora gli elementi provenienti da xDrip</string>
+    <string name="summary_cloud_storage_api_download_from_xdrip">Non scaricare gli elementi caricati da xDrip</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Calibra automaticamente utilizzando le letture di glicemia se le condizioni sembrano giuste, senza chiedere conferma (sperimentale)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Calibrazione automatica</string>
     <string name="title_rest_api_extra_options">Altre opzioni</string>
@@ -1496,6 +1498,8 @@
     <string name="change_settings">Modifica impostazione</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Eliminare e resettare le calibrazioni per questo sensore?</string>
     <string name="sensor_stop_confirm">Vuoi fermare il sensore?</string>
+    <string name="sensor_stop_confirm_norestart">Non potrai semplicemente riavviare il sensore.</string>
+    <string name="sensor_stop_confirm_really_norestart">ATTENZIONE!\n\nNon potrai riavviare il dispositivo.</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Hai attivato una vecchia impostazione sperimentale di predizione della glicemia.\n\nQuesto non è CONSIGLIATO e potrebbe creare problemi.\n\nVuoi che la disabilito per te?</string>
     <string name="settings_issue">Problema Impostazioni!</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Vuoi usare questa glicemia capillare sincronizzata per calibrare?\n\n(puoi cambiare quando questa finestra di dialogo viene visualizzata nelle impostazioni)</string>
@@ -1798,4 +1802,25 @@
     <string name="carelink_credential_status_access_expired">Accesso scaduto! Si aggiornerà!</string>
     <string name="carelink_credential_status_refresh_expired">Login scaduto! Effettua il login!</string>
     <string name="data_source">Sorgente Dati:</string>
+    <string name="disable_collection">Disabilita Collezione</string>
+    <string name="insulin_pens">Penne Insuliniche</string>
+    <string name="editing">Modifica</string>
+    <string name="enable_missed_reading_alert">Abilita Avviso Lettura Mancata</string>
+    <string name="alert_if_no_data_received_in_colon">Avviso se non ci sono dati ricevuti in:</string>
+    <string name="wait_before_raising_the_same_alert_after_snooze_colon">Attesa prima di ripetere lo stesso avviso dopo averlo silenziato:</string>
+    <string name="reraise_alerts_before_snooze_time">Ripeti allarmi prima della fine silenziamento</string>
+    <string name="alert_reraise_time_colon">Tempo prima di ripetere l\'avviso:</string>
+    <string name="select_start_time">Seleziona orario inizio</string>
+    <string name="select_end_time">Seleziona orario fine</string>
+    <string name="accept_glucose">Accetta Glucosio</string>
+    <string name="process_glucose_data_received">Usa i dati di glicemia ricevuti dall\'app NSClient</string>
+    <string name="use_health_connect">Usa Health Connect</string>
+    <string name="audio_focus">Focus Audio</string>
+    <string name="audio_focus_summary">Scegli cosa fare con altre app durante la riproduzione degli avvisi e la regolazione dei livelli di volume del sistema</string>
+    <string name="audio_focus_dont_adjust_other_app_sounds">Non regolare il volume delle altre app</string>
+    <string name="audio_focus_lower_volume_of_other_apps">Abbassa il volume delle altre app</string>
+    <string name="audio_focus_pause_other_apps_playing_audio">Pausa le altre applicazioni in riproduzione audio</string>
+    <string name="audio_focus_pause_all_other_sounds">Sospendi tutti gli altri suoni</string>
+    <string name="use_camera_light">Usa Torcia</string>
+    <string name="use_camera_light_summary">Lampeggia la torcia durante gli avvisi quando collegato a un caricabatterie</string>
 </resources>

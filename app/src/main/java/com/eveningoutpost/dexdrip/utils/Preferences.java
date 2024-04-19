@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.utils;
 
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 import android.Manifest;
@@ -1256,7 +1257,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             }
 
 
-            final Preference nsFollowDownload = findPreference("nsfollow_download_treatments");
+            final Preference nsFollowDownload = findPreference("nsfollow_download_treatments_screen");
             final Preference nsFollowUrl = findPreference("nsfollow_url");
             final Preference nsFollowLag = findPreference("nsfollow_lag"); // Show the Nightscout follow wake delay setting only when NS follow is the data source
             bindPreferenceSummaryToValue(findPreference("nsfollow_lag")); // Show the selected value as summary
@@ -1728,6 +1729,16 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     collectionCategory.removePreference(nsFollowLag);
                 } catch (Exception e) {
                     //
+                }
+            }
+
+            if (getBestCollectorHardwareName().equals("G7")) { // Remove battery options, from G5/G6/Dex1/G7 Debug Settings, if we are using G7 or One+
+                try {
+                    PreferenceScreen screen = (PreferenceScreen) findPreference("xdrip_plus_g5_extra_settings");
+                    Preference pref = getPreferenceManager().findPreference("dex_battery_category");
+                    screen.removePreference(pref);
+                } catch (Exception e) {
+                    UserError.Log.wtf(TAG, "Failed to remove G7 battery options");
                 }
             }
 

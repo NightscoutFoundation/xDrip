@@ -1153,6 +1153,8 @@
     <string name="use_mobile_data">השתמש בחבילת גלישה</string>
     <string name="summary_cloud_storage_api_download_enable">נסה גם להוריד נתונים מנייטסקאוט</string>
     <string name="title_cloud_storage_api_download_enable">הורד נתונים</string>
+    <string name="title_cloud_storage_api_download_from_xdrip">דלג על אוביקט מ xDrip</string>
+    <string name="summary_cloud_storage_api_download_from_xdrip">המנע מהורדת קבצים שהועלו על ידי xDrip</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">כייל עם קריאות בדיקות דם חדשות אם התנאים מאפשרים, ללא בקשת אישור (ניסיוני)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">כיול אוטומטי</string>
     <string name="title_rest_api_extra_options">אפשרויות נוספות</string>
@@ -1446,6 +1448,8 @@
     <string name="change_settings">שנה את ההגדרות</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">האם ברצונכם למחוק ולאפס את הכיולים עבור סנסור זה?</string>
     <string name="sensor_stop_confirm">האם ברצונך לעצור את החיישן?</string>
+    <string name="sensor_stop_confirm_norestart">לא תוכלו להפעיל מחדש את החיישן.</string>
+    <string name="sensor_stop_confirm_really_norestart">שימו לב! \n\nלא ניתן יהיה להפעיל מחדש את החיישן.</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">אתם משתמשים באלגוריתם ישן לחיזוי הסוכר.\n\n זה מאוד לא מומלץ, ועלול לגרום לבעיות\n\n האם לבטל את זה בשבילכם\\ן?</string>
     <string name="settings_issue">בעיה בהגדרות!</string>
     <string name="use_bg_for_calibration">להשתמש בבדיקת דם לכיול?</string>
@@ -1590,4 +1594,5 @@
     <string name="carelink_credential_status_not_authenticated">לא מחובר/ת, אנא התחבר/י</string>
     <string name="carelink_credential_status_access_expired">פג תוקף הדף, הדף יתרענן אוטומטית!</string>
     <string name="carelink_credential_status_refresh_expired">פג תוקף כניסתך, אנא התחבר/י מחדש!</string>
+    <string name="reraise_alerts_before_snooze_time">השמע את ההתראה שוב לפני זמן ההשתקה</string>
 </resources>

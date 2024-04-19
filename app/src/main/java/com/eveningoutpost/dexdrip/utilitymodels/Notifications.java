@@ -910,10 +910,10 @@ public class Notifications extends IntentService {
     }
 
     public static void RisingAlert(Context context, boolean on) {
-        RiseDropAlert(context, on, "bg_rise_alert", "bg rising fast" + "  (@" + JoH.hourMinuteString() + ")", riseAlertNotificationId);
+        RiseDropAlert(context, on, "bg_rise_alert", context.getString(R.string.bg_rising_fast) + "  (@" + JoH.hourMinuteString() + ")", riseAlertNotificationId);
     }
     public static void DropAlert(Context context, boolean on) {
-        RiseDropAlert(context, on, "bg_fall_alert", "bg falling fast" + "  (@" + JoH.hourMinuteString() + ")", failAlertNotificationId);
+        RiseDropAlert(context, on, "bg_fall_alert", context.getString(R.string.bg_falling_fast) + "  (@" + JoH.hourMinuteString() + ")", failAlertNotificationId);
     }
 
     public static void lowPredictAlert(Context context, boolean on, String msg) {
