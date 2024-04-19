@@ -1315,6 +1315,7 @@
     <string name="title_clfollow_missed_poll_interval">Interwał ankiet nieodebranych danych</string>
     <string name="summary_clfollow_missed_poll_interval"></string>
     <string name="title_clfollow_download_finger_bgs">Poziom cukru z palca</string>
+    <string name="summary_clfollow_download_finger_bgs">Download finger BGs from CareLink</string>
     <string name="title_clfollow_download_boluses">Bolusy</string>
     <string name="summary_clfollow_download_boluses">Pobierz bolusy z CareLink</string>
     <string name="title_clfollow_download_meals">Posiłki</string>
@@ -1322,6 +1323,7 @@
     <string name="title_clfollow_download_notifications">Powiadomienia</string>
     <string name="summary_clfollow_download_notifications">Pobierz powiadomienia z CareLink</string>
     <string name="title_ob1_options">Ustawienia Kolektora OB1 G5/G6</string>
+    <string name="summary_use_ob1_g5_collector_service"></string>
     <string name="title_use_ob1_g5_collector_service">Użyj kolektora OB1</string>
     <string name="summary_ob1_g5_use_transmitter_alg">Użyj wbudowanego algorytmu transmitera do obliczeń wartości poziomu glukozy kiedy to możliwe.</string>
     <string name="title_ob1_g5_use_transmitter_alg">Algorytm natywny</string>
