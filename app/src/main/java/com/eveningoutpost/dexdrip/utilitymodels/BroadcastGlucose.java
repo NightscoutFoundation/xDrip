@@ -31,6 +31,8 @@ public class BroadcastGlucose {
     private static final String TAG = "BroadcastGlucose";
     private static long lastTimestamp = 0;
     private static long dexStartedAt = 0;
+    private static boolean connectedToG7 = false;
+    private static boolean connectedToG6 = false;
 
     public static void sendLocalBroadcast(final BgReading bgReading) {
         if (SendXdripBroadcast.enabled()) {
@@ -152,14 +154,18 @@ public class BroadcastGlucose {
                 }
 
                 bundle.putInt(Intents.EXTRA_SENSOR_BATTERY, BridgeBattery.getBestBridgeBattery());
-                if (getBestCollectorHardwareName().equals("G7")) {// If we are using G7 or One+
-                    if (FirmwareCapability.isDeviceG7(getTransmitterID())) { // Only if there is connectivity
-                        dexStartedAt = DexSessionKeeper.getStart(); // Session start time reported by the Dexcom transmitter
-                        if (dexStartedAt > 0) { // Only if dexStartedAt is valid
-                            bundle.putLong(Intents.EXTRA_SENSOR_STARTED_AT, dexStartedAt);
-                        }
+                if (getBestCollectorHardwareName().equals("G7") && FirmwareCapability.isDeviceG7(getTransmitterID())) {// If we are using G7 or One+ and there is connectivity
+                    connectedToG7 = true;
+                }
+                if (getBestCollectorHardwareName().equals("G6 Native") && FirmwareCapability.isTransmitterRawIncapable(getTransmitterID())) {// If we are using a Firefly (modified or not) and there is connectivity
+                    connectedToG6 = true;
+                }
+                if (connectedToG6 || connectedToG7) { // Only if there is connectivity with G6 or G7
+                    dexStartedAt = DexSessionKeeper.getStart(); // Session start time reported by the Dexcom transmitter
+                    if (dexStartedAt > 0) { // Only if dexStartedAt is valid
+                        bundle.putLong(Intents.EXTRA_SENSOR_STARTED_AT, dexStartedAt);
                     }
-                } else { // If we are not using G7 or One+
+                } else { // If we are not using G7, One+ or G6, or there is no connectivity yet
                     bundle.putLong(Intents.EXTRA_SENSOR_STARTED_AT, sensor.started_at);
                 }
                 bundle.putLong(Intents.EXTRA_TIMESTAMP, bgReading.timestamp);
