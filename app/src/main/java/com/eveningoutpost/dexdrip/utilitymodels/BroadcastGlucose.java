@@ -33,6 +33,7 @@ public class BroadcastGlucose {
     private static long dexStartedAt = 0;
     private static boolean connectedToG7 = false;
     private static boolean connectedToG6 = false;
+    private static boolean usingG6OrG7 = false;
 
     public static void sendLocalBroadcast(final BgReading bgReading) {
         if (SendXdripBroadcast.enabled()) {
@@ -154,18 +155,23 @@ public class BroadcastGlucose {
                 }
 
                 bundle.putInt(Intents.EXTRA_SENSOR_BATTERY, BridgeBattery.getBestBridgeBattery());
-                if (getBestCollectorHardwareName().equals("G7") && FirmwareCapability.isDeviceG7(getTransmitterID())) {// If we are using G7 or One+ and there is connectivity
+                if (getBestCollectorHardwareName().equals("G7") || getBestCollectorHardwareName().equals("Native G6")) { // If we are using Firefly, G7 or One+
+                    usingG6OrG7 = true;
+                }
+                if (getBestCollectorHardwareName().equals("G7") && FirmwareCapability.isDeviceG7(getTransmitterID())) { // If we are using G7 or One+ and there is connectivity
                     connectedToG7 = true;
                 }
-                if (getBestCollectorHardwareName().equals("G6 Native") && FirmwareCapability.isTransmitterRawIncapable(getTransmitterID())) {// If we are using a Firefly (modified or not) and there is connectivity
+                if (getBestCollectorHardwareName().equals("G6 Native") && FirmwareCapability.isTransmitterRawIncapable(getTransmitterID())) { // If we are using a Firefly (modified or not) and there is connectivity
                     connectedToG6 = true;
                 }
-                if (connectedToG6 || connectedToG7) { // Only if there is connectivity with G6 or G7
-                    dexStartedAt = DexSessionKeeper.getStart(); // Session start time reported by the Dexcom transmitter
-                    if (dexStartedAt > 0) { // Only if dexStartedAt is valid
-                        bundle.putLong(Intents.EXTRA_SENSOR_STARTED_AT, dexStartedAt);
+                if (usingG6OrG7) { // If we are using Firefly or G7
+                    if (connectedToG6 || connectedToG7) { // Only if there is connectivity
+                        dexStartedAt = DexSessionKeeper.getStart(); // Session start time reported by the Dexcom transmitter
+                        if (dexStartedAt > 0) { // Only if dexStartedAt is valid
+                            bundle.putLong(Intents.EXTRA_SENSOR_STARTED_AT, dexStartedAt);
+                        }
                     }
-                } else { // If we are not using G7, One+ or G6, or there is no connectivity yet
+                } else { // If we are not using G7, One+ or Firefly
                     bundle.putLong(Intents.EXTRA_SENSOR_STARTED_AT, sensor.started_at);
                 }
                 bundle.putLong(Intents.EXTRA_TIMESTAMP, bgReading.timestamp);
