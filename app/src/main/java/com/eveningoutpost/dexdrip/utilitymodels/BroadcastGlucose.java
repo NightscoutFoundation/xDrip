@@ -164,14 +164,14 @@ public class BroadcastGlucose {
                 if (getBestCollectorHardwareName().equals("G6 Native") && FirmwareCapability.isTransmitterG6(getTransmitterID())) { // If we are using a G6 in native mode and there is connectivity
                     connectedToG6 = true;
                 }
-                if (usingG6OrG7) { // If we are using Firefly or G7
+                if (usingG6OrG7) { // If we are using G7 or G6 in native mode
                     if (connectedToG6 || connectedToG7) { // Only if there is connectivity
                         dexStartedAt = DexSessionKeeper.getStart(); // Session start time reported by the Dexcom transmitter
                         if (dexStartedAt > 0) { // Only if dexStartedAt is valid
                             bundle.putLong(Intents.EXTRA_SENSOR_STARTED_AT, dexStartedAt);
                         }
                     }
-                } else { // If we are not using G7, One+ or Firefly
+                } else { // If we are not using G7, One+ or G6 in native mode
                     bundle.putLong(Intents.EXTRA_SENSOR_STARTED_AT, sensor.started_at);
                 }
                 bundle.putLong(Intents.EXTRA_TIMESTAMP, bgReading.timestamp);
