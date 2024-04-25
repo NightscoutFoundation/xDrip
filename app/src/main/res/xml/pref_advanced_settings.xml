@@ -1514,11 +1514,6 @@
                     android:summary="@string/predictive_readings_old"
                     android:title="@string/display_predictive_values" />
                 <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="show-unsmoothed-values-as-plugin"
-                    android:summary="@string/show_unsmoothed_summary"
-                    android:title="@string/show_unsmoothed" />
-                <CheckBoxPreference
                     android:defaultValue="true"
                     android:dependency="engineering_mode"
                     android:key="use_proper_ongoing"

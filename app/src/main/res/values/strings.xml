@@ -1773,8 +1773,9 @@
     <string name="special_pairing_workaround">Special Pairing Workaround</string>
     <string name="save_power">Save Power</string>
     <string name="reduce_battery_and_network_overhead">Reduce battery and network overhead by using batch processing and excluding unnecessary data</string>
-    <string name="simplify_graphs_by_smoothing_out_irregularities">Simplify graphs by smoothing out irregularities</string>
+    <string name="simplify_graphs_by_smoothing_out_irregularities">Simplify graphs by smoothing out irregularities in the previous readings.  The current reading, alerts and broadcast value are not affected by this setting.  </string>
     <string name="graph_smoothing">Graph Smoothing</string>
+    <string name="enable_graph_smoothing">Enable</string>
     <string name="last_reading">Last Reading</string>
     <string name="select_file_for_alert">Select File for Alert</string>
     <string name="cannot_choose_file_without_permission">Cannot choose file without storage permission</string>
