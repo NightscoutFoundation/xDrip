@@ -227,11 +227,25 @@ public class Mdns {
         }
     }
 
+    //  This function is here for a workaround in avahi server.
+    // It seems that it can add extra -2 to a name because of a problematic name conflict.
+    // See more info in: https://github.com/avahi/avahi/issues/117
+    // and in https://wiki.archlinux.org/title/avahi (Hostname changes with appending incrementing numbers)
+    private static String RemoveExtraNumbers(String name){
+        if (name.endsWith("-2") || name.endsWith("-3")){
+            String newName = name.substring(0, name.length()-2);
+            UserError.Log.e(TAG, "RemoveExtraNumbers changing name from " + name + " to " + newName);
+            return newName;
+        }
+        return name;
+    }
+
+
     private static String shortenName(String name) {
         try {
-            return name.split(" ")[0];
+            return RemoveExtraNumbers(name.split(" ")[0]);
         } catch (Exception e) {
-            return name;
+            return RemoveExtraNumbers(name);
         }
     }
 
