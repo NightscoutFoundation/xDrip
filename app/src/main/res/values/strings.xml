@@ -1929,5 +1929,7 @@
     <string name="title_diaconnp8_packet_excess_today_volume_error">It cannot be injected due to an excess of injection volume today</string>
     <string name="title_diaconnp8_packet_system_error">Setup is not possible due to system error.</string>
     <string name="title_diaconnp8_connected">DIACONN P8 Connected</string>
-
+    <string name="title_diaconnp8_disconnected">DIACONN P8 Disconnected</string>
+    <string name="title_use_diaconnp8_background_sync">Background sync</string>
+    <string name="summary_use_diaconnp8_background_sync">pen log uploaded periodically in the background, so p8 battery runs out fast.</string>
 </resources>

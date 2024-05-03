@@ -251,7 +251,21 @@ public class DiaconnP8Service extends JamBaseBluetoothService {
     }
 
     private void initialize() {
-        changeState(SCAN);
+        String searial5digitsPref = Pref.getString("diaconnp8_searial_5digits", "00000");
+        String macAddress = Pref.getString(DiaconnP8.DIACONN_MAC_ADDRESS + searial5digitsPref, "");
+
+        if(DiaconnP8.backgroundSyncEnabled()) {
+            Inevitable.task("next-p8-connect-register", DiaconnP8.backgroundSyncTimeMillis(), this::background_automata);
+        }
+
+        if (!"".equals(macAddress)) {
+            address = macAddress;
+            UserError.Log.d(TAG, "connect to address : " + macAddress + " searial5digits : " + searial5digitsPref);
+            changeState(CONNECT_NOW);
+        } else {
+            changeState(SCAN);
+        }
+
     }
 
     private synchronized void scan_for_device() {
@@ -290,9 +304,16 @@ public class DiaconnP8Service extends JamBaseBluetoothService {
 
         if (connectionSubscription != null) {
             connectionSubscription.unsubscribe();
+            connectionSubscription = null;
         }
         if (stateSubscription != null) {
             stateSubscription.unsubscribe();
+            stateSubscription = null;
+            JoH.static_toast_short(xdrip.gs(R.string.title_diaconnp8_disconnected));
+        }
+
+        if(state == CLOSE) {
+            state = INIT;
         }
     }
 
@@ -315,6 +336,8 @@ public class DiaconnP8Service extends JamBaseBluetoothService {
                 address = bleScanResult.getBleDevice().getMacAddress();
                 name = this_name;
                 UserError.Log.d(TAG, "Set address to: " + address);
+                String searial5digitsPref = Pref.getString("diaconnp8_searial_5digits", "00000");
+                Pref.setString(DiaconnP8.DIACONN_MAC_ADDRESS + searial5digitsPref, address);
                 if (auto_connect) {
                     changeState(CONNECT);
                 } else {
@@ -386,7 +409,7 @@ public class DiaconnP8Service extends JamBaseBluetoothService {
                         .subscribe(this::onConnectionReceived, this::onConnectionFailure));
 
             } else {
-                UserError.Log.wtf(TAG, "No transmitter mac address!");
+                UserError.Log.wtf(TAG, "No Diaconn P8 mac address!");
                 changeState(SCAN);
             }
 
@@ -710,10 +733,13 @@ public class DiaconnP8Service extends JamBaseBluetoothService {
     private void getStatus() {
         SystemStatusInquirePacket systemStatusInquirePacket = new SystemStatusInquirePacket();
         byte[] message = systemStatusInquirePacket.encode(getMsgSequence());
+
         LogStatusInquirePacket logStatusInquirePacket = new LogStatusInquirePacket();
         byte[] message2 = logStatusInquirePacket.encode(getMsgSequence());
+
         IncarnationInquirePacket incarnationInquirePacket = new IncarnationInquirePacket();
         byte[] message3 = incarnationInquirePacket.encode(getMsgSequence());
+
         TimeInquirePacket timeInquirePacket = new TimeInquirePacket();
         byte[] message4 = timeInquirePacket.encode(getMsgSequence());
 

@@ -1297,7 +1297,14 @@
                     android:summary="@string/summary_diaconnp8_searial_5digits"
                     android:maxLength="5"
                     android:title="@string/title_diaconnp8_searial_5digits" />
-
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:dependency="use_diaconnp8"
+                    android:key="use_diaconnp8_background_sync"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="@string/title_use_diaconnp8_background_sync"
+                    android:summary="@string/summary_use_diaconnp8_background_sync"/>
             </PreferenceScreen>
         </PreferenceScreen>
 
