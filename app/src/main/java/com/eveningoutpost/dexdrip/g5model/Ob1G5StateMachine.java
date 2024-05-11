@@ -365,7 +365,7 @@ public class Ob1G5StateMachine {
                 // parent.reset_bond(true);
                 // parent.unBond(); // WARN
             } else {
-                UserError.Log.e(TAG, "authentication notification  throwable: (" + parent.getState() + ") " + throwable + " " + JoH.dateTimeText(tsl()));
+                UserError.Log.d(TAG, "authentication notification  throwable: (" + parent.getState() + ") " + throwable + " " + JoH.dateTimeText(tsl()));
                 parent.incrementErrors();
                 if (throwable instanceof BleCannotSetCharacteristicNotificationException
                         || throwable instanceof BleGattCharacteristicException) {
@@ -419,7 +419,7 @@ public class Ob1G5StateMachine {
                                                                 if (throwable instanceof OperationSuccess) {
                                                                     UserError.Log.d(TAG, "Stopping auth challenge listener due to success");
                                                                 } else {
-                                                                    UserError.Log.e(TAG, "Could not read reply to auth challenge: " + throwable);
+                                                                    UserError.Log.d(TAG, "Could not read reply to auth challenge: " + throwable);
                                                                     parent.incrementErrors();
                                                                     speakSlowly = true;
                                                                 }
