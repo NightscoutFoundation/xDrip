@@ -40,6 +40,7 @@ import android.widget.Toast;
 import com.eveningoutpost.dexdrip.models.AlertType;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
+import com.eveningoutpost.dexdrip.ui.dialog.GenericConfirmDialog;
 import com.eveningoutpost.dexdrip.utilitymodels.AlertPlayer;
 import com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
@@ -565,19 +566,20 @@ public class EditAlertActivity extends ActivityWithMenu {
 
         buttonRemove.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
-
-                if (uuid == null) {
-                    Log.wtf(TAG, "Error remove pressed, while we were adding an alert");
-                }  else {
-                    AlertType.remove_alert(uuid);
-                    startWatchUpdaterService(mContext, WatchUpdaterService.ACTION_SYNC_ALERTTYPE, TAG);
-                }
-                Intent returnIntent = new Intent();
-                setResult(RESULT_OK,returnIntent);
-                finish();
+                GenericConfirmDialog.show(EditAlertActivity.this, gs(R.string.are_you_sure), gs(R.string.you_cannot_undo_delete_alert),
+                        () -> { // This, which deletes the alert, will only be executed after confirmation
+                            if (uuid == null) {
+                                Log.wtf(TAG, "Error remove pressed, while we were adding an alert");
+                            } else {
+                                AlertType.remove_alert(uuid);
+                                startWatchUpdaterService(mContext, WatchUpdaterService.ACTION_SYNC_ALERTTYPE, TAG);
+                            }
+                            Intent returnIntent = new Intent();
+                            setResult(RESULT_OK, returnIntent);
+                            finish();
+                        }
+                );
             }
-
         });
 
         buttonTest.setOnClickListener(new View.OnClickListener() {
