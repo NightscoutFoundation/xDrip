@@ -1344,7 +1344,7 @@
     <string name="summary_ob1_initiate_bonding_flag">Le collecteur OB1 peut initier l\'association.</string>
     <string name="title_ob1_initiate_bonding_flag">Permettre à l\'OB1 d\'initier l\'association</string>
     <string name="title_old_g5_options">Ancien paramètres du Collecteur G5</string>
-    <string name="title_g5g6_battery_options">Options de batterie G5/G6/G7/Dex1</string>
+    <string name="title_g5g6_battery_options">Options de batterie G5/G6/Dex1</string>
     <string name="title_g5_battery_warning_level">Ajuster le niveau d\'alerte batterie</string>
     <string name="title_plugins_and_features">Plugins et fonctionnalités</string>
     <string name="title_color_heart_rate1">Capteur de fréquence cardiaque</string>
