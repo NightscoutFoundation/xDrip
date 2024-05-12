@@ -352,13 +352,21 @@
                 android:summary="@string/summary_xdrip_plus_graph_display_settings"
                 android:title="@string/title_xdrip_plus_graph_display_settings">
 
-                <SwitchPreference
-                    android:defaultValue="false"
-                    android:key="graph_smoothing"
-                    android:summary="@string/simplify_graphs_by_smoothing_out_irregularities"
-                    android:switchTextOff="@string/short_off_text_for_switches"
-                    android:switchTextOn="@string/short_on_text_for_switches"
-                    android:title="@string/graph_smoothing" />
+                <PreferenceScreen
+                    android:key="graph_smoothing_screen"
+                    android:title="@string/graph_smoothing">
+                    <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:key="graph_smoothing"
+                        android:summary="@string/simplify_graphs_by_smoothing_out_irregularities"
+                        android:title="@string/enable_graph_smoothing" />
+                    <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:dependency="graph_smoothing"
+                        android:key="show-unsmoothed-values-as-plugin"
+                        android:summary="@string/show_unsmoothed_summary"
+                        android:title="@string/show_unsmoothed" />
+                </PreferenceScreen>
 
                 <CheckBoxPreference
                     android:defaultValue="false"
