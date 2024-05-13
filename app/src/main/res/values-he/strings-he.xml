@@ -1569,6 +1569,7 @@
     <string name="reduce_battery_and_network_overhead">חסוך בסוללה ובשימוש בנתונים בעזרת ניתוח נתונים במכה, וכן הפחתה של מידע לא נחוץ</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">פשט את הגרפים בעזרת החלקה של נתונים יוצאי דופן</string>
     <string name="graph_smoothing">החלקת הגרף</string>
+    <string name="enable_graph_smoothing">אפשר</string>
     <string name="last_reading">קריאה אחרונה</string>
     <string name="cannot_choose_file_without_permission">אין אפשרות לבחור קובץ בלי הרשאה לאחסון</string>
     <string name="show_unsmoothed">הראה לא מוחלק</string>
