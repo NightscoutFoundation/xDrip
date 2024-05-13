@@ -1725,8 +1725,9 @@
     <string name="special_pairing_workaround">Spetsiaalne sidumise lahendus</string>
     <string name="save_power">Säästa energiat</string>
     <string name="reduce_battery_and_network_overhead">Vähenda aku ja võrgu koormust, kasutades pakett-töötlust ja välistades mittevajalikke andmeid</string>
-    <string name="simplify_graphs_by_smoothing_out_irregularities">Lihtsusta graafikuid, siludes ebakorrapärasusi</string>
+    <string name="simplify_graphs_by_smoothing_out_irregularities">Lihtsusta graafikuid, siludes ebakorrapärasusi varasemates näitudes.  See ei mõjuta hetkenäitu, alarme ja edastatud väärtust.  </string>
     <string name="graph_smoothing">Graafiku silumine</string>
+    <string name="enable_graph_smoothing">Luba</string>
     <string name="last_reading">Viimane näit</string>
     <string name="select_file_for_alert">Vali fail hoiatuste jaoks</string>
     <string name="cannot_choose_file_without_permission">Ilma salvestamise loata ei saa faili valida</string>
@@ -1780,6 +1781,7 @@
     <string name="cloud_backup">Varundamine pilve</string>
     <string name="select_automatic_or_select_alternate">Vali xDrip\'i jaoks automaatne viis, et hallata faile Google Drive\'is, või valige alternatiivne konkreetne fail, mida kasutada, kui peate mujalt taastama.</string>
     <string name="restoring_backup_will_erase_warning">Varukoopiast taastamine kustutab teie praegused seaded ja andmed.\n\nKas oled täiesti kindel, et soovid seda teha?</string>
+    <string name="you_cannot_undo_delete_alert">Seda tegevust ei saa tagasi võtta!\n\nKas oled kindel, et soovid selle alarmi kustutada?</string>
     <string name="this_backup_looks_like_came_from_different_format_string">See varukoopia näib olevat pärit teisest seadmest:\n%s\nKas soovid kindlasti sellest varukoopiast taastada?</string>
     <string name="megabyte_format_string">%.1f MB</string>
     <string name="manual_selection_google_drive_file_warning">Valisid Google Drive\'ist faili, kuid seda ei halda xDrip automaatselt, nii et seda saab kasutada ainult käsitsi varundamiseks ja taastamiseks.\n\nSelle failiga ei tehta automaatset varundust.\n\nKas jätkata?</string>
