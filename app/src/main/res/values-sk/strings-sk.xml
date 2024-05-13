@@ -1287,6 +1287,7 @@ Je nutné zakázať v prípade, že chcete používať xdrip cifreník. (Požado
     <string name="TX_EOL_reminder_mod">Doba fungovania vysielača sa blížia ku koncu (momentálne %d dní). Onedlho nebude možné spustiť nový senzor na tomto vysielači.</string>
     <string name="proceed">Pokračovať</string>
     <string name="special_pairing_workaround">Špeciálne párovanie pre Samsung</string>
+    <string name="enable_graph_smoothing">Povoliť</string>
     <string name="use_background_scans">Vyhľadávanie na pozadí</string>
     <string name="android_8_background_scanning">Využije sa funkcia vyhľadávania na pozadí Android 8+</string>
     <string name="titleInside_yRange">Povoliť</string>
