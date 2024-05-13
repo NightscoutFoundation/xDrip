@@ -8,6 +8,7 @@ import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 
 import static com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder.DEXCOM_PERIOD;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
 
 public class DexSyncKeeper {
 
@@ -16,6 +17,7 @@ public class DexSyncKeeper {
     private static final long OLDEST_POSSIBLE = 1533839836123L;
     private static final long GRACE_TIME = 5000;
     private static final long VALIDITY_PERIOD = Constants.DAY_IN_MS;
+    private static final long DEXCOM_G7_PERIOD = 60_000; // 1 minute
 
 
     // store sync time as now
@@ -56,6 +58,7 @@ public class DexSyncKeeper {
     // anticipate next wake up from time
     // -1 means we don't know anything
     static long anticipate(final String transmitterId, final long now) {
+
         final long last = PersistentStore.getLong(DEX_SYNC_STORE + transmitterId);
         if (last < OLDEST_POSSIBLE) {
             return -1;
@@ -70,9 +73,16 @@ public class DexSyncKeeper {
             return -1;
         }
 
+        if (getBestCollectorHardwareName().equals("G7")) { // If we are using G7 or One+
+            final long modulo = (now - last) % DEXCOM_G7_PERIOD;
+            if ((modulo < GRACE_TIME) && ((now - last) > GRACE_TIME)) return now;
+            final long next = now + (DEXCOM_G7_PERIOD - modulo); // Wake up once a minute instead of once every 5 minutes
+            return next;
+        }
+
         final long modulo = (now - last) % DEXCOM_PERIOD;
         if ((modulo < GRACE_TIME) && ((now - last) > GRACE_TIME)) return now;
-        final long next = now + (DEXCOM_PERIOD - modulo);
+        final long next = now + (DEXCOM_PERIOD - modulo); // Wake up once every 5 minutes
         return next;
     }
 
