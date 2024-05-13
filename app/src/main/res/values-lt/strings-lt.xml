@@ -1707,6 +1707,7 @@
     <string name="reduce_battery_and_network_overhead">Sumažinkite akumuliatoriaus ir tinklo sąnaudas naudodami paketinį apdorojimą ir neįtraukdami nereikalingų duomenų</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Supaprastinti grafikus glodinant nelygumus</string>
     <string name="graph_smoothing">Grafiko glodinimas</string>
+    <string name="enable_graph_smoothing">Įjungti</string>
     <string name="last_reading">Paskutinis rodmuo</string>
     <string name="select_file_for_alert">Pasirinkite aliarmo toną</string>
     <string name="cannot_choose_file_without_permission">Negalima pasirinkti failo, nes nėra saugyklos leidimo</string>
