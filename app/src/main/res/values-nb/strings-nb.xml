@@ -1727,6 +1727,7 @@
     <string name="reduce_battery_and_network_overhead">Reduser batteri- og nettverksbruk ved å bruke batchbehandling og ekskludere unødvendige data</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Forenkle grafer ved å utjevne uregelmessigheter</string>
     <string name="graph_smoothing">Grafutjevning</string>
+    <string name="enable_graph_smoothing">Aktiver</string>
     <string name="last_reading">Siste avlesning</string>
     <string name="select_file_for_alert">Velg fil for varsel</string>
     <string name="cannot_choose_file_without_permission">Kan ikke velge fil uten lagringstillatelse</string>
