@@ -1715,6 +1715,7 @@
     <string name="reduce_battery_and_network_overhead">Reducir la sobrecarga de la batería y red mediante el procesamiento por lotes y la exclusión de datos innecesarios</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Simplificar los gráficos suavizando las irregularidades</string>
     <string name="graph_smoothing">Suavizar gráficos</string>
+    <string name="enable_graph_smoothing">Activar</string>
     <string name="last_reading">Última lectura</string>
     <string name="select_file_for_alert">Seleccione archivo para alerta</string>
     <string name="cannot_choose_file_without_permission">No se puede elegir el archivo sin permiso de almacenamiento</string>
