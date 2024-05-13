@@ -1707,12 +1707,13 @@
     <string name="reduce_battery_and_network_overhead">Намаляване консумация на батерия и мрежа използвайки бач процесване на данните</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Опрости графики като изглажда нередни данни</string>
     <string name="graph_smoothing">Изглаждане на графика</string>
+    <string name="enable_graph_smoothing">Включи</string>
     <string name="last_reading">Последно замерено</string>
     <string name="select_file_for_alert">Изберете Файл за предупреждение</string>
     <string name="cannot_choose_file_without_permission">Не може да се избере файл без разрешение за съхранение</string>
     <string name="select_time">Изберете Време</string>
     <string name="select_tone_for_alerts">Изберете мелодия за известия</string>
-    <string name="show_unsmoothed">Покажи незагладена</string>
+    <string name="show_unsmoothed">Покажи неизгладена</string>
     <string name="show_unsmoothed_summary">Показване на неизгладени данни също, ако изглаждането на графиката е активирано. Ако се използва приставка за калибриране, ще покаже неизгладени данни вместо данни от приставката.</string>
     <string name="you_can_use_google_drive_for_backup">Можете да използвате Google Drive за бакъп</string>
     <string name="select_backup_location">Избери локация за бакъп</string>
