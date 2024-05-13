@@ -314,5 +314,6 @@
     <string name="treatment_processed">سيرت المعالجة</string>
     <string name="enable_streaming_dialog_dont_ask_again"> لا تسألني ذلك مرة أخرى</string>
     <string name="type_treatment_eg">نوع المعالجة\nمثال: وحدات x.x</string>
+    <string name="enable_graph_smoothing">تفعيل</string>
     <string name="titleInside_yRange">تفعيل</string>
 </resources>
