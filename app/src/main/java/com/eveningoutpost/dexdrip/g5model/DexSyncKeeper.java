@@ -58,7 +58,6 @@ public class DexSyncKeeper {
     // anticipate next wake up from time
     // -1 means we don't know anything
     static long anticipate(final String transmitterId, final long now) {
-
         final long last = PersistentStore.getLong(DEX_SYNC_STORE + transmitterId);
         if (last < OLDEST_POSSIBLE) {
             return -1;
