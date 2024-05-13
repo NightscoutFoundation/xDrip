@@ -1568,6 +1568,7 @@
     <string name="enable_streaming_dialog_dont_ask_again">Nu mă mai întreba asta din nou</string>
     <string name="enable_streaming_dialog_text">Doriți să conectați xDrip cu acest senzor? Acest lucru va face ca cititorul libre și librelink să nu mai primească alerte. Apăsați Da și scanați din nou pentru a vă conecta (alegeți să nu vă conectați dacă doriți să rulați xDrip cu aplicația modificată)</string>
     <string name="enable_streaming_dialog_title">Conectarea senzorului libre la bluetooth</string>
+    <string name="enable_graph_smoothing">Permite</string>
     <string name="cannot_choose_file_without_permission">Nu se poate alege fișierul fără permisiuni de stocare</string>
     <string name="titleInside_yRange">Permite</string>
     <string name="reraise_alerts_before_snooze_time">Reactivează alarmele înainte de amânare</string>
