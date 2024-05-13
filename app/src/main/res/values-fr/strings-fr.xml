@@ -1727,6 +1727,7 @@
     <string name="reduce_battery_and_network_overhead">Réduire la charge sur la batterie et le réseau en utilisant le traitement par lots et en excluant les données inutiles</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Simplifier les graphiques en lissant les irrégularités</string>
     <string name="graph_smoothing">Lissage du graphique</string>
+    <string name="enable_graph_smoothing">Activer</string>
     <string name="last_reading">Dernière lecture</string>
     <string name="select_file_for_alert">Sélectionner le son pour l\'alerte</string>
     <string name="cannot_choose_file_without_permission">Impossible de choisir le fichier sans l\'autorisation de stockage</string>
@@ -1780,6 +1781,7 @@
     <string name="cloud_backup">Sauvegarde dans le Cloud</string>
     <string name="select_automatic_or_select_alternate">Sélectionner Automatique pour que xDrip gère les fichiers dans Google Drive ou sélectionner un autre fichier spécifique à utiliser si vous devez restaurer à partir d\'ailleurs.</string>
     <string name="restoring_backup_will_erase_warning">Restaurer une sauvegarde effacera vos paramètres et données actuelles de la sauvegarde.\n\nÊtes-vous absolument sûr de vouloir le faire ?</string>
+    <string name="you_cannot_undo_delete_alert">Vous ne pourrez pas annuler cela !\n\nÊtes-vous sûr de vouloir supprimer cette alerte ?</string>
     <string name="this_backup_looks_like_came_from_different_format_string">Cette sauvegarde semble venir d\'un autre appareil :\n%s\nÊtes-vous sûr de vouloir restaurer à partir de cette sauvegarde ?</string>
     <string name="megabyte_format_string">%.1f Mo</string>
     <string name="manual_selection_google_drive_file_warning">Vous avez sélectionné un fichier de Google Drive, mais ce n\'est pas géré automatiquement par xDrip donc il ne peut être utilisé que pour les sauvegardes et la restauration manuelles.\n\nAucune sauvegarde automatique ne se produira avec ce fichier.\n\nContinuer ?</string>
