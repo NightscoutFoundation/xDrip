@@ -1769,6 +1769,7 @@
     <string name="cloud_backup">Copia de seguridad en la nube</string>
     <string name="select_automatic_or_select_alternate">Selecciona Automático para que xDrip+ gestione los archivos de Google Drive, o selecciona un archivo específico alternativo para utilizarlo si necesitas restaurar desde otro lugar.</string>
     <string name="restoring_backup_will_erase_warning">La restauración de una copia de seguridad borrará la configuración y los datos actuales con los de la copia de seguridad.\n\n¿Estás absolutamente seguro de que deseas hacer esto?</string>
+    <string name="you_cannot_undo_delete_alert">¡No podrás deshacer esto!\n\n¿Seguro que quieres eliminar esta alerta?</string>
     <string name="this_backup_looks_like_came_from_different_format_string">Esta copia de seguridad parece provenir de un dispositivo diferente:\n%s\n¿Seguro que desea restaurar desde esta copia de seguridad?</string>
     <string name="megabyte_format_string">%.1f MB</string>
     <string name="manual_selection_google_drive_file_warning">Has seleccionado un archivo de Google Drive, pero este no es gestionado automáticamente por xDrip+, por lo que solo puede ser utilizado para copias de seguridad y restauraciones manuales.\nNo se realizará ninguna copia de seguridad automática con este archivo.\n¿Continuar?</string>
