@@ -1435,7 +1435,10 @@
     <string name="title_ongoing_notification_channel">Użyj bieżącego kanału powiadomień</string>
     <string name="title_notification_channels_grouping">Grupuj powiadomienia</string>
     <string name="summary_delay_ascending_3min">W przypadku rosnącego profilu głośności, opóźnij rozpoczęcie dźwięku alertu o 3 minuty. Wibracja (jeśli jest włączona) rozpoczyna się natychmiast po wyzwoleniu alertu, niezależnie od tego ustawienia.</string>
+    <string name="title_ascending_volume">Ustawienia rosnącej głośności</string>
     <string name="title_delay_ascending_3min">Opóźnij rosnącą głośność</string>
+    <string name="summary_ascending_volume_to_medium">Jeżeli zostanie włączone, głośność będzie rosnąć do średniej głośności zamiast maksymalnej</string>
+    <string name="title_ascending_volume_to_medium">Rośnij do połowy</string>
     <string name="summary_play_sound_for_initial_calibration">Odtwórz dźwięk, gdy żądana jest początkowa kalibracja</string>
     <string name="title_play_sound_for_initial_calibration">Alarm początkowy</string>
     <string name="category_noisy_readings">Zaszumione odczyty</string>
