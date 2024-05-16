@@ -1447,7 +1447,10 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="summary_notification_channels_grouping">Seskupit všechna oznámení v notifikační liště do jednoho oznámení. Není možné použít spolu s možností Hodnota glykémie jako číselná ikona v notifikační liště</string>
     <string name="title_notification_channels_grouping">Seskupit oznámení do jednoho</string>
     <string name="summary_delay_ascending_3min">Posunout začátek zvukové výstrahy o 3 minuty pro zvukový profil vzestupné hlasitosti. Vibrace (pokud jsou povoleny) začnou ihned po spuštění výstrahy bez ohledu na toto nastavení.</string>
+    <string name="title_ascending_volume">Nastavení vzestupné hlasitosti</string>
     <string name="title_delay_ascending_3min">Zpozdit vzestupnou hlasitost</string>
+    <string name="summary_ascending_volume_to_medium">Pokud je povoleno, zvukový profil vzestupné hlasitosti bude místo maximální hlasitosti stoupat na střední hlasitost</string>
+    <string name="title_ascending_volume_to_medium">Vzestup na střední hlasitost</string>
     <string name="summary_play_sound_for_initial_calibration">Přehrát zvuk při požadavku na výchozí kalibraci</string>
     <string name="title_play_sound_for_initial_calibration">Výchozí výstraha</string>
     <string name="category_noisy_readings">Šum v hodnotách glykémie</string>
