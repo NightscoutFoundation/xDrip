@@ -1420,7 +1420,10 @@
     <string name="summary_notification_channels_grouping">Nem használható egyszerre a \"Tételek száma az értesítési sávban\" funkcióval</string>
     <string name="title_notification_channels_grouping">Értesítések csoportosítása</string>
     <string name="summary_delay_ascending_3min">Növekvő hangerő esetén késlelteti a riasztási hangjelzés kezdetét 3 perccel. A rezgés (ha engedélyezve van) ettől a beállítástól függetlenül a riasztással elindul.</string>
+    <string name="title_ascending_volume">Emelkedő hangerő beállítások</string>
     <string name="title_delay_ascending_3min">Növekvő hangerő késleltetése</string>
+    <string name="summary_ascending_volume_to_medium">Ha bekapcsolja, a hangerő a maximális hangerő helyett a közepes hangerőig emelkedik</string>
+    <string name="title_ascending_volume_to_medium">Közepesig emelkedjen</string>
     <string name="summary_play_sound_for_initial_calibration">Hangjelzés figyelmeztessen az indító kalibrációra</string>
     <string name="title_play_sound_for_initial_calibration">Indító kalibráció</string>
     <string name="category_noisy_readings">Zajos értékek</string>
