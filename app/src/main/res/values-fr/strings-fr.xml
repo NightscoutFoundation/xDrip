@@ -1446,7 +1446,10 @@
     <string name="summary_notification_channels_grouping">Si les notifications doivent être groupées ensemble. Incompatible avec l\'option \'Numéro élément dans la zone de notification\'</string>
     <string name="title_notification_channels_grouping">Grouper les notifications par fil</string>
     <string name="summary_delay_ascending_3min">Pour le profil de volume ascendant, retarder le démarrage du son d\'alerte de 3 minutes. Le vibreur (si activé) démarre dès que l\'alerte se déclenche, quel que soit ce paramètre.</string>
+    <string name="title_ascending_volume">Réglages du volume croissant</string>
     <string name="title_delay_ascending_3min">Délai du volume ascendant</string>
+    <string name="summary_ascending_volume_to_medium">Lorsqu\'il est activé, le profil de volume ascendant augmentera vers le volume moyen au lieu du maximum</string>
+    <string name="title_ascending_volume_to_medium">Augmentation vers le milieu</string>
     <string name="summary_play_sound_for_initial_calibration">Émettre un son lorsque la calibration initiale est demandée</string>
     <string name="title_play_sound_for_initial_calibration">Alerte initiale</string>
     <string name="category_noisy_readings">Lectures de bruits</string>
