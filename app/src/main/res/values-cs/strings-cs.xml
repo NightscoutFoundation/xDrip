@@ -1840,7 +1840,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="process_glucose_data_received">Zpracovávat hodnoty glykémie přijatých z NSClient</string>
     <string name="use_health_connect">Používat Health Connect</string>
     <string name="audio_focus">Zvukové preference</string>
-    <string name="audio_focus_summary">Zvolte, co udělat se zvuky ostatních aplikací během přehrávání výstrah</string>
+    <string name="audio_focus_summary">Vyberte, co udělat se zvuky ostatních aplikací během přehrávání výstrah</string>
     <string name="audio_focus_dont_adjust_other_app_sounds">Neupravovat zvuky ostatních aplikací</string>
     <string name="audio_focus_lower_volume_of_other_apps">Snížit hlasitost zvuků ostatních aplikací</string>
     <string name="audio_focus_pause_other_apps_playing_audio">Pozastavit ostatní aplikace přehrávající zvuky</string>
