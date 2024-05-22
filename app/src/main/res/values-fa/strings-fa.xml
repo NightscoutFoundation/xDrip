@@ -102,5 +102,6 @@
     <string name="summary_clfollow_lang">CareLink language code</string>
     -->
     <string name="enable_streaming_dialog_dont_ask_again">دیگه از من نپرس</string>
+    <string name="enable_graph_smoothing">فعال سازی</string>
     <string name="titleInside_yRange">فعال سازی</string>
 </resources>
