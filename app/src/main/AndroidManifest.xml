@@ -150,6 +150,12 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
+        <provider
+            android:name=".receiver.InfoContentProvider"
+            android:authorities="${applicationId}.contentprovider"
+            android:enabled="true"
+            android:exported="true">
+        </provider>
 
         <activity
             android:name=".Home"

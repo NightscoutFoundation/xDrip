@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.MediaType;
@@ -33,6 +34,7 @@ import okio.GzipSink;
 import okio.Okio;
 
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
+import static com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry.isNative;
 
 import androidx.appcompat.app.AlertDialog;
 
@@ -54,7 +56,7 @@ public class SendFeedBack extends BaseAppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_feed_back);
-        send_url = getString(R.string.wserviceurl) + "/joh-feedback";
+        send_url = getString(isNative() ? R.string.qserviceurl : R.string.wserviceurl) + "/joh-feedback";
 
         myrating = (RatingBar) findViewById(R.id.ratingBar);
         ratingtext = (TextView) findViewById(R.id.ratingtext);

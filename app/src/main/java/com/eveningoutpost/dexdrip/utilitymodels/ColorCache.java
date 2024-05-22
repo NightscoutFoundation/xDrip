@@ -26,17 +26,23 @@ public class ColorCache {
     }
 
     public static int getCol(final X color) {
-        if (!the_cache.containsKey(color)) {
-            try {
-                the_cache.put(color, Pref.getInt(color.internalName, 0xABCDEF));
-            } catch (ClassCastException e) {
-                UserError.Log.wtf(TAG, "Cannot set initial value - preference type likely wrong for: " + color.internalName + " " + e);
-                the_cache.put(color, Color.GRAY);
+
+            if (!the_cache.containsKey(color)) {
+                try {
+                    the_cache.put(color, Pref.getInt(color.internalName, 0xABCDEF));
+                } catch (ClassCastException e) {
+                    UserError.Log.wtf(TAG, "Cannot set initial value - preference type likely wrong for: " + color.internalName + " " + e);
+                    the_cache.put(color, Color.GRAY);
+                }
+                if (debug)
+                    UserError.Log.d(TAG, "Setting cache for color: " + color.internalName + " / " + Pref.getInt(color.internalName, 1234));
             }
-            if (debug)
-                UserError.Log.d(TAG, "Setting cache for color: " + color.internalName + " / " + Pref.getInt(color.internalName, 1234));
-        }
-        return the_cache.get(color);
+            int col = the_cache.get(color);
+            if (col == 0xABCDEF && color.internalName.equals("color_low_values")) {
+                the_cache.clear(); // preferences init hasn't run yet as is local default
+            }
+            return col;
+
     }
 
     public enum X {

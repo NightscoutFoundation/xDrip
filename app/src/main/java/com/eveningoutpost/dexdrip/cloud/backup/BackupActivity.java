@@ -17,6 +17,7 @@ import android.os.Bundle;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.receiver.InfoContentProvider;
 import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
 import com.eveningoutpost.dexdrip.utilitymodels.PrefsViewImpl;
 import com.eveningoutpost.dexdrip.databinding.ActivityBackupPickerBinding;
@@ -212,6 +213,7 @@ public class BackupActivity extends BackupBaseActivity implements BackupStatus {
                         if (metaData.exception != null) {
                             status(getString(R.string.error_exclamation) + " " + metaData.exception);
                         }
+                        InfoContentProvider.ping("pref");
                     } finally {
                         idle.set(true);
                     }

@@ -510,7 +510,7 @@ public class CollectionServiceStarter {
     @SuppressWarnings("ConstantConditions")
     private void startServiceCompat(final Intent intent) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                && BuildConfig.targetSDK >= Build.VERSION_CODES.N
+            //    && BuildConfig.targetSDK >= Build.VERSION_CODES.N
                 && ForegroundServiceStarter.shouldRunCollectorInForeground()) {
             try {
                 Log.d(TAG, String.format("Starting oreo foreground service: %s", intent.getComponent().getClassName()));

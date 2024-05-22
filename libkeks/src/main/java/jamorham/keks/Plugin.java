@@ -121,6 +121,7 @@ public class Plugin implements IPluginDA {
     private volatile AuthRequestTxMessage2 lastAuthTx2;
     private volatile int state = 0;
     private volatile byte[] accumulator = new byte[0];
+    private volatile byte[] newFwchal = new byte[0];
     private volatile byte[] keyToTestAgainst = null;
 
     static {
@@ -336,7 +337,7 @@ public class Plugin implements IPluginDA {
     private boolean alt = false;
 
     private AuthRequestTxMessage2 getAuthRequestTx2() {
-        lastAuthTx2 = new AuthRequestTxMessage2(8, alt);
+        lastAuthTx2 = new AuthRequestTxMessage2(8, alt, newFwchal);
         return lastAuthTx2;
     }
 
@@ -480,6 +481,7 @@ public class Plugin implements IPluginDA {
         }
         if (channel == 6) {
             alt = Arrays.equals(data, SPARAM.bytes);
+            newFwchal = data;
         }
         if (channel == 7) {
             dontClearAccumulator.clear();

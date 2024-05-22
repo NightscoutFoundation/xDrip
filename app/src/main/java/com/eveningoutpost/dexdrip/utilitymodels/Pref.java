@@ -30,7 +30,11 @@ public class Pref {
                 }
             } else {
                 if (JoH.ratelimit("prefs-failure2", 20)) {
-                    UserError.Log.wtf(TAG, "Could not initialize preferences due to missing context!!");
+                    try {
+                        UserError.Log.wtf(TAG, "Could not initialize preferences due to missing context!!");
+                    } catch (NullPointerException e) {
+                        android.util.Log.wtf(TAG, "Could not initialize preferences due to missing context and then got null pointer!!");
+                    }
                 }
             }
         }

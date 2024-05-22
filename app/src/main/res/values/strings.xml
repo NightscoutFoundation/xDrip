@@ -1902,4 +1902,5 @@
     <string name="audio_focus_pause_all_other_sounds">Pause all other sounds</string>
     <string name="use_camera_light">Use Camera Light</string>
     <string name="use_camera_light_summary">Flash camera light during alerts when connected to a charger</string>
+    <string name="g7_should_start_automatically">G7 should start automatically</string>
 </resources>
