@@ -401,6 +401,9 @@
     <string name="summary_aod_use_bottom">画面の最後の5分の1をAODウィジェットに使用する。</string>
     <string name="title_aod_use_bottom">下部を使用</string>
     <string name="eula">EULA</string>
+    <string name="title_ascending_volume">ボリュームの上昇設定。</string>
+    <string name="summary_ascending_volume_to_medium">有効にすると、最大音量ではなく中音量に上昇します</string>
+    <string name="title_ascending_volume_to_medium">中程度にに上昇</string>
     <string name="note_search_button">検索</string>
     <string name="all_note_button">全て</string>
     <string name="insulin">インスリン</string>
@@ -434,6 +437,8 @@
     <string name="please_wait_seconds_before_trying_to_start_sensor">センサーを起動する前に %d 秒お待ちください</string>
     <string name="save_power">節電</string>
     <string name="graph_smoothing">グラフのスムージング</string>
+    <string name="enable_graph_smoothing">有効にする</string>
+    <string name="you_cannot_undo_delete_alert">これを元に戻すことはできません！\n\nこのアラートを削除してもよろしいですか？</string>
     <string name="titleInside_yRange">有効にする</string>
     <string name="wait_to_connect">設定を確認し、接続を待ちます。</string>
     <string name="summary_sens_expiry_notify">センサーの有効期限が近づいたら通知します。</string>
