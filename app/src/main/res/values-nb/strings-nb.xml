@@ -1446,7 +1446,10 @@
     <string name="summary_notification_channels_grouping">Om notifikasjoner skal grupperes sammen. Inkompatibel med alternativet \"Nummerikon i notifikasjonsfeltet\"</string>
     <string name="title_notification_channels_grouping">Grupper notifikasjoner sammen</string>
     <string name="summary_delay_ascending_3min">For stigende volumprofil, utsett starten av varsellyden med 3 minutter. Vibrasjonen (hvis aktivert) starter så snart varselet utløses uavhengig av denne innstillingen.</string>
+    <string name="title_ascending_volume">Stigende voluminnstillinger</string>
     <string name="title_delay_ascending_3min">Utsett stigende volum</string>
+    <string name="summary_ascending_volume_to_medium">Når aktivert, vil stigende volumprofil gå opp til middels volum i stedet for maksimum</string>
+    <string name="title_ascending_volume_to_medium">Stig til middels</string>
     <string name="summary_play_sound_for_initial_calibration">Spill av lyd når innledende kalibrering er forespurt</string>
     <string name="title_play_sound_for_initial_calibration">Innledende varsel</string>
     <string name="category_noisy_readings">Støyende avlesninger</string>
@@ -1725,7 +1728,7 @@
     <string name="special_pairing_workaround">Spesiell løsning for sammenkobling</string>
     <string name="save_power">Spar strøm</string>
     <string name="reduce_battery_and_network_overhead">Reduser batteri- og nettverksbruk ved å bruke batchbehandling og ekskludere unødvendige data</string>
-    <string name="simplify_graphs_by_smoothing_out_irregularities">Forenkle grafer ved å utjevne uregelmessigheter</string>
+    <string name="simplify_graphs_by_smoothing_out_irregularities">Forenkle grafer ved å utjevne uregelmessigheter i tidligere avlesninger. Siste avlesning, varsler og kringkastet verdi er ikke påvirket av denne innstillingen.  </string>
     <string name="graph_smoothing">Grafutjevning</string>
     <string name="enable_graph_smoothing">Aktiver</string>
     <string name="last_reading">Siste avlesning</string>
@@ -1781,6 +1784,7 @@
     <string name="cloud_backup">Sikkerhetskopi i nettskyen</string>
     <string name="select_automatic_or_select_alternate">Velg Automatisk for xDrip til å administrere filer i Google Disk eller velg en alternativ spesifikk fil du vil bruke hvis du trenger å gjenopprette fra et annet sted.</string>
     <string name="restoring_backup_will_erase_warning">Gjenoppretting av en sikkerhetskopi vil slette gjeldende innstillinger og data med det fra sikkerhetskopien.\n\nEr du helt sikker på at du vil gjøre dette?</string>
+    <string name="you_cannot_undo_delete_alert">Du vil ikke kunne angre dette!\n\nEr du sikker på at du vil slette denne varselen?</string>
     <string name="this_backup_looks_like_came_from_different_format_string">Denne sikkerhetskopien ser ut som den kom fra en annen enhet:\n%s\nEr du sikker på at du vil gjenopprette fra denne sikkerhetskopien?</string>
     <string name="megabyte_format_string">%.1f MB</string>
     <string name="manual_selection_google_drive_file_warning">Du har valgt en fil fra Google Disk, men denne administreres ikke automatisk av xDrip, så den kan bare brukes til manuell sikkerhetskopiering og gjenoppretting.\n\nIngen automatisk sikkerhetskopiering vil skje med denne filen.\n\nVil du fortsette?</string>
