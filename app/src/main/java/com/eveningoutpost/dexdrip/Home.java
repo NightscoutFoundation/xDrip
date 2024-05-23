@@ -12,6 +12,7 @@ import static com.eveningoutpost.dexdrip.utilitymodels.Constants.DAY_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.SECOND_IN_MS;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 import android.Manifest;
@@ -2623,7 +2624,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         boolean isSensorActive = Sensor.isActive();
 
         // automagically start an xDrip sensor session if G5 transmitter already has active sensor
-        if (!isSensorActive && Ob1G5CollectionService.isG5SensorStarted() && !Sensor.stoppedRecently()) {
+        // There will be no auto start unless the sensor has not been stopped withing the last 2 hours, or unless it is G7 or One+.
+        if (!isSensorActive && Ob1G5CollectionService.isG5SensorStarted() && (!Sensor.stoppedRecently() || getBestCollectorHardwareName().equals("G7"))) {
             JoH.static_toast_long(getString(R.string.auto_starting_sensor));
             Sensor.create(tsl() - HOUR_IN_MS * 3);
             isSensorActive = Sensor.isActive();
@@ -2657,7 +2659,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
                         final Context context = this;
                         builder.setTitle(getString(R.string.start_sensor) + "?");
-                        builder.setMessage(String.format(gs(R.string.start_sensor_confirmation), DexCollectionType.getBestCollectorHardwareName()));
+                        builder.setMessage(String.format(gs(R.string.start_sensor_confirmation), getBestCollectorHardwareName()));
                         builder.setNegativeButton(gs(R.string.change_settings), (dialog, which) -> {
                             dialog.dismiss();
                             startActivity(new Intent(context, Preferences.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
