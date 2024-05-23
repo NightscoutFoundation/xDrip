@@ -1783,4 +1783,5 @@
     <string name="carelink_credential_status_refresh_expired">Belépés lejárt! Jelentkezzen be!</string>
     <string name="data_source">Adatforrás:</string>
     <string name="reraise_alerts_before_snooze_time">Riasztás ismétlése szundi alatt</string>
+    <string name="g7_should_start_automatically">G7 automatikusan indul</string>
 </resources>
