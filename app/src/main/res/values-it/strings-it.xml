@@ -1828,4 +1828,5 @@
     <string name="audio_focus_pause_all_other_sounds">Sospendi tutti gli altri suoni</string>
     <string name="use_camera_light">Usa Torcia</string>
     <string name="use_camera_light_summary">Lampeggia la torcia durante gli avvisi quando collegato a un caricabatterie</string>
+    <string name="g7_should_start_automatically">G7 dovrebbe avviarsi automaticamente</string>
 </resources>
