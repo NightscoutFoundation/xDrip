@@ -1854,4 +1854,5 @@
     <string name="audio_focus_pause_all_other_sounds">Mettre en pause tous les autres sons</string>
     <string name="use_camera_light">Utiliser la lumière de la caméra</string>
     <string name="use_camera_light_summary">Allumer la lumière de la caméra lors des alertes si connecté à un chargeur</string>
+    <string name="g7_should_start_automatically">Le G7 devrait démarrer automatiquement</string>
 </resources>

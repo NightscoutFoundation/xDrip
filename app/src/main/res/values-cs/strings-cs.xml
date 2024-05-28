@@ -1847,4 +1847,5 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="audio_focus_pause_all_other_sounds">Pozastavit všechny ostatní zvuky</string>
     <string name="use_camera_light">Používat světlo fotoaparátu</string>
     <string name="use_camera_light_summary">Blikat světlem fotoaparátu během trvání výstrahy, pokud je telefon připojen k nabíječce</string>
+    <string name="g7_should_start_automatically">Senzor G7 by se měl spustit automaticky</string>
 </resources>
