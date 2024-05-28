@@ -194,7 +194,7 @@ public class BackupActivity extends BackupBaseActivity implements BackupStatus {
                 status(getString(R.string.nothing_to_restore_please_select));
             } else {
                 Runnable restoreRunnable = () -> GenericConfirmDialog.show(BackupActivity.this, getString(R.string.are_you_really_sure_question), getString(R.string.restoring_backup_will_erase_warning), () -> restoreNowReal());
-                if (metaData.sourceDevice.equals(cleanPhoneName())) {
+                if (metaData.sourceDevice != null && metaData.sourceDevice.equals(cleanPhoneName())) {
                     restoreRunnable.run();
                 } else {
                     GenericConfirmDialog.show(BackupActivity.this, getString(R.string.backup_source_confirm), getString(R.string.this_backup_looks_like_came_from_different_format_string, metaData.sourceDevice), restoreRunnable);

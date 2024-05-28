@@ -1551,7 +1551,7 @@ public class Ob1G5StateMachine {
 
     private static void checkAndActivateSensor() {
         // automagically start an xDrip sensor session if  transmitter already has active sensor
-        if (!Sensor.isActive() && Ob1G5CollectionService.isG5SensorStarted() && !Sensor.stoppedRecently()) {
+        if (!Sensor.isActive() && Ob1G5CollectionService.isG5SensorStarted() && (!Sensor.stoppedRecently() || shortTxId())) {
             JoH.static_toast_long(xdrip.gs(R.string.auto_starting_sensor));
             // TODO possibly here we want to look at last sensor stop time and not backtrack before that
             Sensor.create(tsl() - HOUR_IN_MS * 3);
@@ -1565,6 +1565,9 @@ public class Ob1G5StateMachine {
         if (glucose == null) return;
         lastGlucosePacket = tsl();
         DexTimeKeeper.updateAge(getTransmitterID(), glucose.timestamp);
+        if (glucose.calibrationState().warmingUp()) {
+            checkAndActivateSensor();
+        }
         if (glucose.usable() || (glucose.insufficient() && Pref.getBoolean("ob1_g5_use_insufficiently_calibrated", true))) {
             UserError.Log.d(TAG, "Got usable glucose data from transmitter!!");
             final long rxtimestamp = glucose.getRealTimestamp();

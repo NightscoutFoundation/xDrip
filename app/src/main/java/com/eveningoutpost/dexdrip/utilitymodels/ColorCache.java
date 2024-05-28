@@ -1,9 +1,12 @@
 package com.eveningoutpost.dexdrip.utilitymodels;
 
 import android.graphics.Color;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.EnumMap;
 
@@ -25,25 +28,40 @@ public class ColorCache {
         if (debug) Log.i(TAG, "Cache cleared");
     }
 
-    public static int getCol(final X color) {
-
-            if (!the_cache.containsKey(color)) {
-                try {
-                    the_cache.put(color, Pref.getInt(color.internalName, 0xABCDEF));
-                } catch (ClassCastException e) {
-                    UserError.Log.wtf(TAG, "Cannot set initial value - preference type likely wrong for: " + color.internalName + " " + e);
-                    the_cache.put(color, Color.GRAY);
-                }
-                if (debug)
-                    UserError.Log.d(TAG, "Setting cache for color: " + color.internalName + " / " + Pref.getInt(color.internalName, 1234));
-            }
-            int col = the_cache.get(color);
-            if (col == 0xABCDEF && color.internalName.equals("color_low_values")) {
-                the_cache.clear(); // preferences init hasn't run yet as is local default
-            }
-            return col;
-
+    public static void setDefaultsLoaded() {
+        defaultsLoaded = true;
     }
+
+    private static volatile boolean defaultsLoaded = false;
+
+    public static int getCol(final X color) {
+        if (color == null) return 0xABCDEF;
+        if (!the_cache.containsKey(color)) {
+            if (!defaultsLoaded) {
+                try {
+                    the_cache.clear();
+                    PreferenceManager.setDefaultValues(xdrip.getAppContext(), R.xml.xdrip_plus_prefs, false);
+                    setDefaultsLoaded();
+                } catch (Exception e) {
+                    //
+                }
+            }
+            try {
+                the_cache.put(color, Pref.getInt(color.internalName, 0xABCDEF));
+            } catch (ClassCastException e) {
+                UserError.Log.wtf(TAG, "Cannot set initial value - preference type likely wrong for: " + color.internalName + " " + e);
+                the_cache.put(color, Color.GRAY);
+            }
+            if (debug)
+                UserError.Log.d(TAG, "Setting cache for color: " + color.internalName + " / " + Pref.getInt(color.internalName, 1234));
+        }
+        try {
+            return the_cache.get(color);
+        } catch (NullPointerException e) {
+            return 0xABCDEF;
+        }
+    }
+
 
     public enum X {
 

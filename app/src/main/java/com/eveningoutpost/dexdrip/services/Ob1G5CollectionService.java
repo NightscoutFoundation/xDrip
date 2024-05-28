@@ -554,6 +554,8 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
     }
 
+    private volatile boolean lastWasScanByMac = false;
+
     private synchronized void scan_for_device() {
         if (state == SCAN) {
             msg(gs(R.string.scanning));
@@ -590,6 +592,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                     lastScanError = null;
                 }
 
+                lastWasScanByMac = macFilter;
                 scanSubscription = new Subscription(rxBleClient.scanBleDevices(
                                 new ScanSettings.Builder()
                                         //.setScanMode(static_last_timestamp < 1 ? ScanSettings.SCAN_MODE_LOW_LATENCY : ScanSettings.SCAN_MODE_BALANCED)
@@ -1150,7 +1153,7 @@ public class Ob1G5CollectionService extends G5BaseService {
             }
 
             minimize_scanning = Pref.getBooleanDefaultFalse("ob1_minimize_scanning");
-            allow_scan_by_mac = Build.VERSION.SDK_INT >= 32 && shortTxId();
+           // allow_scan_by_mac = Build.VERSION.SDK_INT >= 32 && shortTxId();
             automata(); // sequence logic
 
             UserError.Log.d(TAG, "Releasing service start");
@@ -1300,7 +1303,24 @@ public class Ob1G5CollectionService extends G5BaseService {
             lastScanError = info;
             UserError.Log.d(TAG, info);
 
-            if (((BleScanException) throwable).getReason() == BleScanException.SCAN_FAILED_APPLICATION_REGISTRATION_FAILED) {
+            final int reason = ((BleScanException) throwable).getReason();
+
+            if (reason == BleScanException.SCAN_FAILED_INTERNAL_ERROR) {
+                if (allow_scan_by_mac && lastWasScanByMac) {
+                    allow_scan_by_mac = false;
+                    UserError.Log.wtf(TAG, "Turning scan by by mac off");
+                    if (JoH.ratelimit("bluetooth-internal-error-register", 120)) {
+                        if (Pref.getBooleanDefaultFalse("automatically_turn_bluetooth_on")) {
+                            UserError.Log.wtf(TAG, "Android bluetooth appears broken with scan by mac - attempting to turn off and on");
+                            JoH.niceRestartBluetooth(xdrip.getAppContext());
+                        } else {
+                            UserError.Log.e(TAG, "Cannot reset bluetooth due to preference being disabled");
+                        }
+                    }
+                }
+            }
+
+            if (reason == BleScanException.SCAN_FAILED_APPLICATION_REGISTRATION_FAILED) {
                 if (JoH.ratelimit("bluetooth-cannot-register", 120)) {
                     if (Pref.getBooleanDefaultFalse("automatically_turn_bluetooth_on")) {
                         UserError.Log.wtf(TAG, "Android bluetooth appears broken - attempting to turn off and on");
@@ -1311,7 +1331,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                 }
             }
 
-            if (((BleScanException) throwable).getReason() == BleScanException.BLUETOOTH_DISABLED) {
+            if (reason == BleScanException.BLUETOOTH_DISABLED) {
                 // Attempt to turn bluetooth on
                 if (JoH.ratelimit("bluetooth_toggle_on", 30)) {
                     UserError.Log.d(TAG, "Pause before Turn Bluetooth on");
