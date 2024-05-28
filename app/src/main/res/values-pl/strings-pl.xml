@@ -1792,4 +1792,5 @@
     <string name="audio_focus_pause_all_other_sounds">Wstrzymaj wszystkie inne dźwięki</string>
     <string name="use_camera_light">Użyj latarki aparatu</string>
     <string name="use_camera_light_summary">Mrugaj latarką aparatu podczas alarmów przy podłączeniu do ładowarki</string>
+    <string name="g7_should_start_automatically">G7 powinien uruchomić się automatycznie</string>
 </resources>

@@ -1638,4 +1638,5 @@
     <string name="carelink_credential_status_access_expired">פג תוקף הדף, הדף יתרענן אוטומטית!</string>
     <string name="carelink_credential_status_refresh_expired">פג תוקף כניסתך, אנא התחבר/י מחדש!</string>
     <string name="reraise_alerts_before_snooze_time">השמע את ההתראה שוב לפני זמן ההשתקה</string>
+    <string name="g7_should_start_automatically">חיישן ה-G7 יתחיל אוטומטית</string>
 </resources>

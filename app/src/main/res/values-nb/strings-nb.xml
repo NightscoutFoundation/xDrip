@@ -1854,4 +1854,5 @@
     <string name="audio_focus_pause_all_other_sounds">Sett alle andre lyder på pause</string>
     <string name="use_camera_light">Bruk kameralys</string>
     <string name="use_camera_light_summary">Blink kameralys under varsler når tilkoblet en lader</string>
+    <string name="g7_should_start_automatically">G7 skal starte automatisk</string>
 </resources>
