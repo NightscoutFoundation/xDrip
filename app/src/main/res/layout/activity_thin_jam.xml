@@ -13,7 +13,7 @@
 
         <variable
             name="prefs"
-            type="com.eveningoutpost.dexdrip.UtilityModels.PrefsViewImpl" />
+            type="com.eveningoutpost.dexdrip.utilitymodels.PrefsViewImpl" />
 
     </data>
 
@@ -30,7 +30,7 @@
             android:orientation="vertical"
             app:showIfTrue="@{vm.items.size() > 0}">
 
-            <android.support.v7.widget.RecyclerView
+            <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:paddingBottom="10dp"

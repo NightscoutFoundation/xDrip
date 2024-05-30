@@ -1,7 +1,18 @@
 package com.eveningoutpost.dexdrip.utils;
 
+import static com.eveningoutpost.dexdrip.ui.helpers.BitmapUtil.getScreenHeight;
+import static com.eveningoutpost.dexdrip.ui.helpers.BitmapUtil.getScreenWidth;
+import static com.eveningoutpost.dexdrip.utils.QRcodeUtils.createQRCodeBitmap;
+import static com.eveningoutpost.dexdrip.utils.QRcodeUtils.qrmarker;
+import static com.eveningoutpost.dexdrip.utils.QRcodeUtils.serializeBinaryPrefsMap;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
+import androidx.databinding.ObservableBoolean;
+import androidx.databinding.ObservableField;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
@@ -11,15 +22,14 @@ import android.view.View;
 
 import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.GcmActivity;
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.PrefsViewImpl;
-import com.eveningoutpost.dexdrip.UtilityModels.desertsync.RouteTools;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.PrefsViewImpl;
+import com.eveningoutpost.dexdrip.utilitymodels.desertsync.RouteTools;
 import com.eveningoutpost.dexdrip.databinding.ActivityDisplayQrcodeBinding;
 import com.eveningoutpost.dexdrip.xdrip;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.google.zxing.WriterException;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.OkHttpClient;
@@ -29,47 +39,36 @@ import com.squareup.okhttp.Response;
 
 import org.json.JSONObject;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import lombok.val;
+
 public class DisplayQRCode extends BaseAppCompatActivity {
 
-    public static final String qrmarker = "xdpref:";
+
     private static final String TAG = "jamorham qr";
     private static String send_url;
     private final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
     private static DisplayQRCode mInstance;
     private Map<String, String> prefsMap = new HashMap<>();
+    private Map<String, byte[]> binaryPrefsMap = new HashMap<>();
+    private String mapChecksum = "empty";
 
-    public static Map<String, String> decodeString(String data) {
-        try {
-            if (data.startsWith(qrmarker)) {
-                data = data.substring(qrmarker.length());
-                Log.d(TAG, "String to uncompress: " + data);
-                data = JoH.uncompressString(data);
-                //Log.d(TAG, "Json after decompression: " + data);
-                Map<String, String> mymap = new Gson().fromJson(data, new TypeToken<HashMap<String, String>>() {
-                }.getType());
-                return mymap;
 
-            } else {
-                Log.e(TAG, "No qrmarker on qrcode");
-                return null;
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Got exception during decodingString: " + e.toString());
-            return null;
-        }
 
-    }
+    private ActivityDisplayQrcodeBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mInstance = this;
-        final ActivityDisplayQrcodeBinding binding = ActivityDisplayQrcodeBinding.inflate(getLayoutInflater());
+        binding = ActivityDisplayQrcodeBinding.inflate(getLayoutInflater());
         binding.setPrefs(new PrefsViewImpl());
+        binding.setViewmodel(new ViewModel());
         setContentView(binding.getRoot());
         JoH.fixActionBar(this);
         processIntent(getIntent());
@@ -88,6 +87,9 @@ public class DisplayQRCode extends BaseAppCompatActivity {
                 switch (action) {
                     case "xdrip_plus_desert_sync_qr":
                         desertSyncSettings(null);
+                        break;
+                    case "xdrip_plus_keks_qr":
+                        showGKey(null);
                         break;
                 }
             }
@@ -140,6 +142,36 @@ public class DisplayQRCode extends BaseAppCompatActivity {
         showQRCode();
     }
 
+
+    public boolean generateKeksBinaryPrefs() {
+        binaryPrefsMap.clear();
+        mapChecksum = "error";
+        try {
+            val digest = MessageDigest.getInstance("SHA-256");
+            val tem = "keks_p";
+            for (int i = 1; i < 4; i++) {
+                val pn = tem + i;
+                val bb = JoH.hexStringToByteArray(Pref.getStringDefaultBlank(pn));
+                if (bb == null || bb.length == 0) {
+                    Log.d(TAG, "Null or empty at: " + i);
+                    return false;
+                }
+                val px = "b__" + pn;
+                binaryPrefsMap.put(px, bb);
+                digest.update(px.getBytes(StandardCharsets.UTF_8));
+                digest.update(bb);
+            }
+            mapChecksum = JoH.bytesToHex(digest.digest());
+            return true;
+        } catch (Exception e) {
+            Log.d(TAG, "Got exception making binary prefs map " + e);
+        }
+        return false;
+    }
+
+    public synchronized void showGKey(View view) {
+        showQRCode2("G Key settings\n\n" + Preferences.getMapKeysString(binaryPrefsMap).replace("\n", " ") + "\n\nHash: " + mapChecksum.substring(0, 16));
+    }
 
     public static synchronized void uploadBytes(byte[] result, final int callback_option) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("uploadBytes", 1200000);
@@ -262,6 +294,26 @@ public class DisplayQRCode extends BaseAppCompatActivity {
         integrator.shareText(qrmarker + compressedstring);
     }
 
+
+    private void showQRCode2(final String hint) {
+        val bytes = serializeBinaryPrefsMap(binaryPrefsMap);
+        Log.d(TAG, "QR bytes: " + bytes.length);
+        val bytesc = JoH.compressBytesToBytes(bytes);
+        Log.d(TAG, "QR bytes: " + bytesc.length);
+        val scale = (getScreenWidth() > getScreenHeight()) ? 0.8d : 1;
+        val desiredPixels = (int) (Math.min(getScreenWidth(), getScreenHeight()) * scale);
+        try {
+            val bitmap = createQRCodeBitmap(bytesc, desiredPixels, desiredPixels);
+            binding.getViewmodel().showQr.set(false);
+            binding.getViewmodel().narrative.set(JoH.dateTimeText(JoH.tsl()) + "\n" + Build.MANUFACTURER + " " + Build.MODEL + "\n" + hint);
+            binding.getViewmodel().qrbitmap.set(new BitmapDrawable(xdrip.getAppContext().getResources(), bitmap));
+            binding.getViewmodel().showQr.set(true);
+        } catch (WriterException e) {
+            Log.e(TAG, "ERROR: " + e);
+        }
+    }
+
+
     public void closeNow(View view) {
         try {
             mInstance = null;
@@ -276,4 +328,16 @@ public class DisplayQRCode extends BaseAppCompatActivity {
         JoH.static_toast_short(msg);
     }
 
+
+    public class ViewModel {
+        public final ObservableBoolean showQr = new ObservableBoolean();
+        public final ObservableField<Drawable> qrbitmap = new ObservableField<>();
+        public final ObservableBoolean showGkey = new ObservableBoolean();
+        public final ObservableField<String> narrative = new ObservableField<>();
+
+        {
+            showGkey.set(generateKeksBinaryPrefs());
+        }
+
+    }
 }

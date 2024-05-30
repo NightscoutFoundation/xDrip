@@ -4,7 +4,7 @@ import android.content.Context;
 import android.telephony.SmsManager;
 import android.telephony.TelephonyManager;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.ArrayList;

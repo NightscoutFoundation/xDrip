@@ -6,12 +6,14 @@ import android.text.InputType;
 
 import com.eveningoutpost.dexdrip.BluetoothScan;
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
+import com.eveningoutpost.dexdrip.models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
-import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
+import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.CareLinkFollowService;
+import com.eveningoutpost.dexdrip.plugin.Dialog;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import static com.eveningoutpost.dexdrip.ui.dialog.QuickSettingsDialogs.booleanSettingDialog;
@@ -48,7 +50,9 @@ public class DexCollectionHelper {
                             public void run() {
                                 // InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS does not seem functional here
                                 Pref.setString(pref, Pref.getString(pref, "").toUpperCase());
-                                Home.staticRefreshBGCharts();
+                                if (!Dialog.askIfNeeded(activity, Pref.getString(pref, ""))) {
+                                    Home.staticRefreshBGCharts();
+                                }
                                 CollectionServiceStarter.restartCollectionServiceBackground();
                             }
                         });
@@ -128,6 +132,55 @@ public class DexCollectionHelper {
             case Medtrum:
                 bluetoothScanIfNeeded();
                 break;
+
+            case LibreReceiver:
+                Home.staticRefreshBGChartsOnIdle();
+                break;
+
+            /* LOGIN via browser is required currently
+            case CLFollow:
+                textSettingDialog(activity,
+                        "clfollow_country", "CareLink Country",
+                        "Two letter country ISO code",
+                        InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD,
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                textSettingDialog(activity,
+                                        "clfollow_user", "CareLink Username",
+                                        "Enter CareLink Username",
+                                        InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD,
+                                        new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                textSettingDialog(activity,
+                                                        "clfollow_pass", "CareLink Password",
+                                                        "Enter CareLink Password",
+                                                        InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD,
+                                                        new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                textSettingDialog(activity,
+                                                                        "clfollow_patient", "CareLink Patient",
+                                                                        "Enter CareLink Patient (optional)",
+                                                                        InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD,
+                                                                        new Runnable() {
+                                                                            @Override
+                                                                            public void run() {
+                                                                                Home.staticRefreshBGCharts();
+                                                                                CareLinkFollowService.resetInstanceAndInvalidateSession();
+                                                                                CollectionServiceStarter.restartCollectionServiceBackground();
+                                                                            }
+                                                                        });
+                                                            }
+                                                        });
+                                            }
+                                        });
+                            }
+                        });
+                break;
+
+             */
 
             // TODO G4 Share Receiver
 

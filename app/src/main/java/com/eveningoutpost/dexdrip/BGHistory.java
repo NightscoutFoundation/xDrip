@@ -16,8 +16,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
@@ -50,6 +50,8 @@ public class BGHistory extends ActivityWithMenu {
     private int noDays = 1;
     private SharedPreferences prefs;
     private TextView statisticsTextView;
+    private static final int SAMPLE_PERIOD = 1; // In minutes - The time between two consecutive readings - The lowest period we currently support: 1 minute
+    private static final int GRACE_READINGS_PER_DAY = 2; // When switching from one source to another, there may be a misalignment in sample timing resulting in more readings per day
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,7 +150,7 @@ public class BGHistory extends ActivityWithMenu {
 
         Calendar endDate = (GregorianCalendar) date1.clone();
         endDate.add(Calendar.DATE, noDays);
-        int numValues = noDays * (60 / 2) * 24; // LimiTTer sample rate 1 per 2 minutes
+        int numValues = noDays * (24 * (60 / SAMPLE_PERIOD) + GRACE_READINGS_PER_DAY); // The highest sample rate we currently support
         BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(this, date1.getTimeInMillis(), endDate.getTimeInMillis(), numValues, false);
 
         chart = (LineChartView) findViewById(R.id.chart);

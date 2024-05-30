@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip.cgm.medtrum;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.utils.bt.ScanMeister;
 import com.polidea.rxandroidble2.scan.ScanResult;
 

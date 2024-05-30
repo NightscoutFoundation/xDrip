@@ -17,9 +17,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import android.text.InputType;
 import android.text.format.DateFormat;
 import android.text.method.DigitsKeyListener;
@@ -37,13 +37,14 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.eveningoutpost.dexdrip.Models.AlertType;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
-import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.models.AlertType;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
+import com.eveningoutpost.dexdrip.ui.dialog.GenericConfirmDialog;
+import com.eveningoutpost.dexdrip.utilitymodels.AlertPlayer;
+import com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
@@ -272,7 +273,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             audioPath = getExtra(savedInstanceState, "audioPath" ,alertType.mp3_file);
             alertMp3File.setText(shortPath(audioPath));
 
-            status = "editing " + (above ? "high" : "low") + " alert";
+            status = getString(R.string.editing)+" " + (above ? getString(R.string.high) : getString(R.string.low)) + " "+getString(R.string.alert);
             startHour = AlertType.time2Hours(alertType.start_time_minutes);
             startMinute = AlertType.time2Minutes(alertType.start_time_minutes);
             endHour = AlertType.time2Hours(alertType.end_time_minutes);
@@ -565,19 +566,20 @@ public class EditAlertActivity extends ActivityWithMenu {
 
         buttonRemove.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
-
-                if (uuid == null) {
-                    Log.wtf(TAG, "Error remove pressed, while we were adding an alert");
-                }  else {
-                    AlertType.remove_alert(uuid);
-                    startWatchUpdaterService(mContext, WatchUpdaterService.ACTION_SYNC_ALERTTYPE, TAG);
-                }
-                Intent returnIntent = new Intent();
-                setResult(RESULT_OK,returnIntent);
-                finish();
+                GenericConfirmDialog.show(EditAlertActivity.this, gs(R.string.are_you_sure), gs(R.string.you_cannot_undo_delete_alert),
+                        () -> { // This, which deletes the alert, will only be executed after confirmation
+                            if (uuid == null) {
+                                Log.wtf(TAG, "Error remove pressed, while we were adding an alert");
+                            } else {
+                                AlertType.remove_alert(uuid);
+                                startWatchUpdaterService(mContext, WatchUpdaterService.ACTION_SYNC_ALERTTYPE, TAG);
+                            }
+                            Intent returnIntent = new Intent();
+                            setResult(RESULT_OK, returnIntent);
+                            finish();
+                        }
+                );
             }
-
         });
 
         buttonTest.setOnClickListener(new View.OnClickListener() {
@@ -941,8 +943,8 @@ public class EditAlertActivity extends ActivityWithMenu {
 
             if (Pref.getBooleanDefaultFalse("start_snoozed"))  {
                 JoH.static_toast_long("Start Snoozed setting means alert would normally start silent");
-            } else if (Pref.getStringDefaultBlank("bg_alert_profile").equals("ascending")) {
-                JoH.static_toast_long("Ascending Volume Profile means it will start silent");
+            } else if (Pref.getStringDefaultBlank("bg_alert_profile").equals("ascending") && Pref.getBoolean("delay_ascending_3min", true)) {
+                JoH.static_toast_long("Ascending Volume Profile + delayed ascending means it will start silent");
             } else if (Pref.getStringDefaultBlank("bg_alert_profile").equals("Silent")) {
                 JoH.static_toast_long("Volume Profile is set to silent!");
             }

@@ -3,11 +3,11 @@ package com.eveningoutpost.dexdrip.cloud.backup;
 
 import static android.provider.OpenableColumns.DISPLAY_NAME;
 import static android.provider.OpenableColumns.SIZE;
-import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
-import static com.eveningoutpost.dexdrip.Models.JoH.getFieldFromURI;
-import static com.eveningoutpost.dexdrip.Models.JoH.getLocalBluetoothName;
-import static com.eveningoutpost.dexdrip.Models.JoH.hexStringToByteArray;
-import static com.eveningoutpost.dexdrip.Models.JoH.readLine;
+import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
+import static com.eveningoutpost.dexdrip.models.JoH.getFieldFromURI;
+import static com.eveningoutpost.dexdrip.models.JoH.getLocalBluetoothName;
+import static com.eveningoutpost.dexdrip.models.JoH.hexStringToByteArray;
+import static com.eveningoutpost.dexdrip.models.JoH.readLine;
 import static com.eveningoutpost.dexdrip.utils.SdcardImportExport.PREFERENCES_FILE;
 import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
 
@@ -16,12 +16,12 @@ import android.os.Build;
 import android.util.Pair;
 
 import com.activeandroid.Configuration;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -62,6 +62,7 @@ public class Backup {
     private static final String TAG = "xDrip-Backup";
     private static final String PREF_BACKUP_URI = "backup-document-uri";
     public static final String PREF_AUTO_BACKUP = "backup-automatic-enabled";
+    public static final String PREF_AUTO_BACKUP_MOBILE = "backup-automatic-mobile";
     private static final String XDRIP_CONTENT_TYPE = "xDripBackup://";
     private static final String[] dbSuffix = {"-journal", "-shm", "-wal"};
 
@@ -298,7 +299,7 @@ public class Backup {
 
     public static void doCompleteBackupIfEnabled() {
         if (Pref.getBooleanDefaultFalse(PREF_AUTO_BACKUP)
-                && isBackupSuitableForAutomatic()) {
+                && isBackupSuitableForAutomatic() && ((Pref.getBoolean(PREF_AUTO_BACKUP_MOBILE, true)) || (JoH.isLANConnected()))) {
             UserError.Log.e(TAG, "Attempting automatic backup");
             val success = doCompleteBackup(new LogStatus());
             if (!success) {

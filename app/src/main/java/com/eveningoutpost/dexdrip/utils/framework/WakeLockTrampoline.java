@@ -9,9 +9,9 @@ import android.os.Build;
 import android.util.SparseArray;
 
 import com.eveningoutpost.dexdrip.BuildConfig;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.utilitymodels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.HashMap;
@@ -64,7 +64,7 @@ public class WakeLockTrampoline extends BroadcastReceiver {
         ComponentName startResult;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                && BuildConfig.targetSDK >= Build.VERSION_CODES.N
+            //    && BuildConfig.targetSDK >= Build.VERSION_CODES.N
                 && ForegroundServiceStarter.shouldRunCollectorInForeground()) {
             try {
                 UserError.Log.d(TAG, String.format("Starting oreo foreground service: %s", serviceIntent.getComponent().getClassName()));

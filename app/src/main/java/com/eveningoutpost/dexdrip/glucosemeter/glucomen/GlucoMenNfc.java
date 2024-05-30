@@ -14,9 +14,9 @@ import com.eveningoutpost.dexdrip.glucosemeter.glucomen.devices.BaseDevice;
 import com.eveningoutpost.dexdrip.glucosemeter.glucomen.devices.Identify;
 import com.eveningoutpost.dexdrip.glucosemeter.glucomen.st.T5StRead;
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.importedlibraries.usbserial.util.HexDump;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.utils.jobs.BackgroundQueue;
 

@@ -4,10 +4,10 @@ import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollecto
 import static com.eveningoutpost.dexdrip.utils.NewRelicCrashReporting.StateMonitor.checkReportingInterval;
 
 import com.eveningoutpost.dexdrip.BuildConfig;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.newrelic.agent.android.AgentConfiguration;
 import com.newrelic.agent.android.AndroidAgentImpl;

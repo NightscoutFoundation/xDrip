@@ -208,7 +208,7 @@
                     android:title="@string/install_pebble_snooze_control_app">
                     <intent
                         android:action="android.intent.action.MAIN"
-                        android:targetClass="com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleSnoozeControlApp"
+                        android:targetClass="com.eveningoutpost.dexdrip.utilitymodels.pebble.watchface.InstallPebbleSnoozeControlApp"
                         android:targetPackage="@string/local_target_package" />
                 </Preference>
             </PreferenceCategory>
@@ -950,10 +950,10 @@
             <SwitchPreference
                 android:defaultValue="true"
                 android:key="accept_nsclient_sgv"
-                android:title="Accept Glucose"
+                android:title="@string/accept_glucose"
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
-                android:summary="Process glucose data received from NSClient app" />
+                android:summary="@string/process_glucose_data_received" />
             <SwitchPreference
                 android:defaultValue="true"
                 android:key="accept_nsclient_treatments"
@@ -962,7 +962,7 @@
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/accept_treatments" />
             <CheckBoxPreference
-                android:defaultValue="true"
+                android:defaultValue="false"
                 android:dependency="accept_nsclient_treatments"
                 android:key="profile_import_sound"
                 android:summary="@string/play_sounds_when_importing"
@@ -1005,19 +1005,50 @@
                 android:key="broadcast_service_enabled"
                 android:summary="@string/summary_broadcast_service_api"
                 android:title="@string/title_broadcast_service_api" />
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="enable_iob_in_api_endpoint"
+                android:summary="@string/summary_enable_iob_in_api_endpoint"
+                android:title="@string/title_enable_iob_in_api_endpoint" />
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="fetch_iob_from_companion_app"
+                android:summary="@string/summary_fetch_iob_from_companion_app"
+                android:title="@string/title_fetch_iob_from_companion_app" />
+            <PreferenceScreen
+                android:title="@string/google_health_connect"
+                android:summary="@string/send_and_receive_data_from_google_health_connect_and_google_fit"
+                android:key="health_connect_screen">
+
+                <SwitchPreference
+                    android:key="health_connect_enable"
+                    android:title="@string/use_health_connect"
+                    android:summary="@string/requires_android_8_and_google_companion_application_or_android_14"
+                    />
+                <SwitchPreference
+                    android:key="health_connect_receive"
+                    android:defaultValue="true"
+                    android:summary="@string/get_data_from_health_connect"
+                    android:dependency="health_connect_enable"
+                    />
+                <SwitchPreference
+                    android:key="health_connect_send"
+                    android:summary="@string/send_data_to_health_connect"
+                    android:dependency="health_connect_enable"
+                    />
+                <Preference
+                    android:key="health_connect_manage"
+                    android:title="@string/manage_permissions"
+                    android:summary="@string/open_health_connect_settings_to_manually_manage_permissions"
+                    android:dependency="health_connect_enable"/>
+
+
+            </PreferenceScreen>
         </PreferenceScreen>
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="xdrip_less_common_settings"
             android:summary="@string/debug_and_other_misc_options"
             android:title="@string/less_common_settings">
-            <Preference
-                android:key="recent_errors"
-                android:title="@string/view_recent_errors_warnings">
-                <intent
-                    android:action="android.intent.action.MAIN"
-                    android:targetClass="com.eveningoutpost.dexdrip.ErrorsActivity"
-                    android:targetPackage="@string/local_target_package" />
-            </Preference>
 
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:key="xdrip_extra_status_line"
@@ -1365,17 +1396,17 @@
 
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:key="xdrip_libre2_advanced_settings"
-                android:title="Advanced settings for Libre 2">
+                android:title="@string/title_advanced_settings_4_Lib2">
                 <SwitchPreference
                     android:defaultValue="false"
                     android:key="Libre2_showRawGraph"
-                    android:summary="switch on to show the raw values on the Graph"
-                    android:title="show Raw values in Graph" />
+                    android:summary="@string/summary_Lib2_show_raw_values"
+                    android:title="@string/title_Lib2_show_raw_values" />
                 <SwitchPreference
                     android:defaultValue="false"
                     android:key="Libre2_showSensors"
-                    android:summary="switch to On to show additional Information's in Status for Libre 2 Sensors"
-                    android:title="show Sensors Infos in Status" />
+                    android:summary="@string/summary_Lib2_show_sense_on_status"
+                    android:title="@string/title_Lib2_show_sense_on_status" />
             </PreferenceScreen>
 
             <CheckBoxPreference
@@ -1395,6 +1426,7 @@
                 android:title="@string/extra_logging">
                 <CheckBoxPreference
                     android:defaultValue="false"
+                    android:enabled="false"
                     android:key="enable_bugfender"
                     android:summary="@string/send_logs_to_developer"
                     android:title="@string/enable_remote_logging" />
@@ -1482,11 +1514,6 @@
                     android:summary="@string/predictive_readings_old"
                     android:title="@string/display_predictive_values" />
                 <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="show-unsmoothed-values-as-plugin"
-                    android:summary="@string/show_unsmoothed_summary"
-                    android:title="@string/show_unsmoothed" />
-                <CheckBoxPreference
                     android:defaultValue="true"
                     android:dependency="engineering_mode"
                     android:key="use_proper_ongoing"
@@ -1519,6 +1546,14 @@
                     android:key="retrieve_blukon_history"
                     android:summary="@string/retrieve_blukon_history_summary"
                     android:title="@string/retrieve_blukon_history_title" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="engineering_mode"
+                    android:enabled="true"
+                    android:key="libre_one_minute"
+                    android:summary="Accept data at one minute intervals from Libre source. WARNING: This feature is still under development and may break different things. Currently only for patched app data source. Please report anything you notice not working and to activate changes to this setting you need to reboot your phone. Requires engineering mode to be enabled to change setting."
+                    android:title="Libre one minute" />
 
                 <CheckBoxPreference
                     android:defaultValue="false"

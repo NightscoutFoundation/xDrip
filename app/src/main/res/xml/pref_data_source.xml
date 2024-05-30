@@ -97,6 +97,15 @@
 	            android:key="libre2_enable_bluetooth_streaming"
 	            android:summary="@string/enable_streaming_summary"
 	            android:title="@string/enable_streaming_title" />
+
+            <ListPreference
+                android:defaultValue="25"
+                android:entries="@array/libreFilterLengthMethods"
+                android:entryValues="@array/libreFilterLengthValues"
+                android:key="libre_filter_length"
+                android:summary="@string/libre_filter_length_summary"
+                android:title="@string/libre_filter_length_title" />
+
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="nfc_show_age"
@@ -183,11 +192,28 @@
             android:singleLine="true"
             android:summary="@string/summary_nsfollow_url"
             android:title="@string/title_nsfollow_url" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="nsfollow_download_treatments"
-            android:summary="@string/summary_nsfollow_download_treatments"
-            android:title="@string/title_nsfollow_download_treatments"
+        <PreferenceScreen
+            android:key="nsfollow_download_treatments_screen"
+            android:title="@string/title_nsfollow_download_treatments">
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="nsfollow_download_treatments"
+                android:summary="@string/summary_nsfollow_download_treatments"
+                android:title="@string/title_nsfollow_download_treatments" />
+            <SwitchPreference
+                android:defaultValue="true"
+                android:dependency="nsfollow_download_treatments"
+                android:key="cloud_storage_api_skip_download_from_xdrip"
+                android:summary="@string/summary_cloud_storage_api_download_from_xdrip"
+                android:title="@string/title_cloud_storage_api_download_from_xdrip" />
+        </PreferenceScreen>
+        <ListPreference
+            android:defaultValue="0"
+            android:key="nsfollow_lag"
+            android:summary=""
+            android:title="@string/title_nsfollow_lag"
+            android:entries="@array/nsfollowlag_entries"
+            android:entryValues="@array/nsfollowlag_values"
             />
 
         <EditTextPreference
@@ -207,6 +233,81 @@
             android:summary="Login password for Dex Share Following"
             android:title="Share Password" />
 
+        <ListPreference
+            android:defaultValue="gb"
+            android:entries="@array/carelinkCountryEntries"
+            android:entryValues="@array/carelinkCountryValues"
+            android:key="clfollow_country"
+            android:summary="@string/summary_clfollow_country"
+            android:title="@string/title_clfollow_country" />
+        <!-- Maybe we can use them later?
+        <EditTextPreference
+            android:defaultValue=""
+            android:inputType="textNoSuggestions|textVisiblePassword"
+            android:key="clfollow_user"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:summary="@string/summary_clfollow_user"
+            android:title="@string/title_clfollow_user" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:inputType="textNoSuggestions|textVisiblePassword"
+            android:key="clfollow_pass"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:summary="@string/summary_clfollow_pass"
+            android:title="@string/title_clfollow_pass" />
+        !-->
+        <EditTextPreference
+            android:defaultValue=""
+            android:inputType="textNoSuggestions|textVisiblePassword"
+            android:key="clfollow_patient"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:summary="@string/summary_clfollow_patient"
+            android:title="@string/title_clfollow_patient" />
+        <Preference
+            android:key="clfollow_login"
+            android:summary="@string/summary_clfollow_login"
+            android:title="@string/title_clfollow_login">
+        </Preference>
+        <EditTextPreference
+            android:defaultValue="30"
+            android:inputType="textNoSuggestions|textVisiblePassword"
+            android:key="clfollow_grace_period"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:summary="@string/summary_clfollow_grace_period"
+            android:title="@string/title_clfollow_grace_period" />
+        <EditTextPreference
+            android:defaultValue="1"
+            android:inputType="textNoSuggestions|textVisiblePassword"
+            android:key="clfollow_missed_poll_interval"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:summary="@string/summary_clfollow_missed_poll_interval"
+            android:title="@string/title_clfollow_missed_poll_interval" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="clfollow_download_finger_bgs"
+            android:summary="@string/summary_clfollow_download_finger_bgs"
+            android:title="@string/title_clfollow_download_finger_bgs" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="clfollow_download_boluses"
+            android:summary="@string/summary_clfollow_download_boluses"
+            android:title="@string/title_clfollow_download_boluses" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="clfollow_download_meals"
+            android:summary="@string/summary_clfollow_download_meals"
+            android:title="@string/title_clfollow_download_meals" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="clfollow_download_notifications"
+            android:summary="@string/summary_clfollow_download_notifications"
+            android:title="@string/title_clfollow_download_notifications" />
+
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="xdrip_plus_g5_extra_settings"
             android:summary="@string/advanced_g5_settings"
@@ -214,14 +315,9 @@
             <PreferenceCategory
                 android:key="ob1_options"
                 android:title="@string/title_ob1_options">
+
                 <CheckBoxPreference
                     android:defaultValue="true"
-                    android:key="use_ob1_g5_collector_service"
-                    android:summary="@string/summary_use_ob1_g5_collector_service"
-                    android:title="@string/title_use_ob1_g5_collector_service" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:dependency="use_ob1_g5_collector_service"
                     android:key="ob1_g5_use_transmitter_alg"
                     android:summary="@string/summary_ob1_g5_use_transmitter_alg"
                     android:title="@string/title_ob1_g5_use_transmitter_alg"
@@ -274,13 +370,6 @@
                     android:title="@string/title_ob1_g5_use_insufficiently_calibrated" />
                 <CheckBoxPreference
                     android:defaultValue="false"
-                    android:dependency="ob1_g5_use_transmitter_alg"
-                    android:key="ob1_g5_fallback_to_xdrip"
-                    android:summary="@string/summary_ob1_g5_fallback_to_xdrip"
-                    android:title="@string/title_ob1_g5_fallback_to_xdrip" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:dependency="use_ob1_g5_collector_service"
                     android:key="ob1_minimize_scanning"
                     android:summary="@string/summary_ob1_minimize_scanning"
                     android:title="@string/title_ob1_minimize_scanning" />
@@ -293,26 +382,22 @@
                     android:title="Avoid Scanning" />
                 <CheckBoxPreference
                     android:defaultValue="false"
-                    android:dependency="use_ob1_g5_collector_service"
                     android:key="using_g6"
                     android:summary="@string/summary_using_g6"
                     android:title="@string/title_using_g6" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="ob1_g5_allow_resetbond"
-                    android:dependency="use_ob1_g5_collector_service"
                     android:summary="@string/summary_ob1_g5_allow_resetbond"
                     android:title="@string/title_ob1_g5_allow_resetbond" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="ob1_special_pairing_workaround"
-                    android:dependency="use_ob1_g5_collector_service"
                     android:summary="Some Samsung devices can have an error where they lose the pairing information. This attempts to work around the issue."
                     android:title="@string/special_pairing_workaround" />
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="ob1_initiate_bonding_flag"
-                    android:dependency="use_ob1_g5_collector_service"
                     android:summary="@string/summary_ob1_initiate_bonding_flag"
                     android:title="@string/title_ob1_initiate_bonding_flag"
                     />
@@ -338,16 +423,6 @@
                     android:key="run_G5_ble_tasks_on_uithread"
                     android:summary="@string/g5_force_ui_thread"
                     android:title="@string/force_g5_ui_thread" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="always_get_new_keys"
-                    android:summary="@string/g5_full_authentification"
-                    android:title="@string/authentificate_before_reading" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="always_unbond_G5"
-                    android:summary="@string/g5_remove_before_read"
-                    android:title="@string/unbond_g5_before_read" />
             </PreferenceCategory>
             <PreferenceCategory
                 android:key="dex_battery_category"

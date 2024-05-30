@@ -3,15 +3,15 @@ package com.eveningoutpost.dexdrip;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import android.support.wearable.activity.WearableActivity;
 //import android.support.v4.os.ResultReceiver;
 import android.util.Log;
 
 import android.view.View;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 
 /**
  * Simple Activity for displaying Permission Rationale to user.

@@ -1,0 +1,124 @@
+{
+  "entries": [
+    {
+      "lexicon": "stop",
+      "matchWords": [
+        "stop",
+        "cancel",
+        "done",
+        "end",
+        "top",
+        "ansell",
+        "finished",
+        "finish",
+        "quit"
+      ]
+    },
+    {
+      "lexicon": "rapid",
+      "matchWords": [
+        "rapid",
+        "rapid acting",
+        "rapid-acting",
+        "nova rapid",
+        "nova log",
+        "rapido",
+        "fast-acting",
+        "fast",
+        "resurrecting",
+        "reflecting",
+        "units",
+        "unit",
+        "u",
+        "you"
+      ]
+    },
+    {
+      "lexicon": "long",
+      "matchWords": [
+        "long",
+        "long acting"
+      ]
+    },
+    {
+      "lexicon": "carbs",
+      "matchWords": [
+        "carbs",
+        "cards",
+        "carbohydrate",
+        "carbohydrates",
+        "grams",
+        "gram",
+        "carb",
+        "cars",
+        "car",
+        "g",
+        "gee"
+      ]
+    },
+    {
+      "lexicon": "time",
+      "matchWords": [
+        "time",
+        "times",
+        "clock",
+        "o'clock",
+        "oclock",
+        "hour",
+        "hours",
+        "at"
+      ]
+    },
+    {
+      "lexicon": "ago",
+      "matchWords": [
+        "ago"
+      ]
+    },
+    {
+      "lexicon": "blood",
+      "matchWords": [
+        "mmol",
+        "mmols",
+        "animal",
+        "miles",
+        "mile",
+        "memo",
+        "mobile",
+        "month",
+        "mm",
+        "mg",
+        "bg",
+        "milligram",
+        "milligrams",
+        "normal",
+        "mole",
+        "moles",
+        "sugar",
+        "blood",
+        "test",
+        "blood sugar",
+        "hottest",
+        "obsessed"
+      ]
+    },
+    {
+      "lexicon": "grams",
+      "matchWords": [
+      ]
+    },
+    {
+      "lexicon": "units",
+      "matchWords": [
+      ]
+    },
+    {
+      "lexicon": "note",
+      "matchWords": [
+        "note",
+        "notes",
+        "night"
+      ]
+    }
+  ]
+}

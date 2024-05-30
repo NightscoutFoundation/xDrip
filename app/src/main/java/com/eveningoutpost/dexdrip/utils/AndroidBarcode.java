@@ -5,17 +5,21 @@ import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.annotation.NonNull;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.zxing.client.android.Intents;
 import com.google.zxing.integration.android.IntentIntegrator;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * This is a helper class to facilitate asking for camera permission and returning
@@ -66,7 +70,15 @@ public class AndroidBarcode extends AppCompatActivity
     }
 
     private void actuallyStartScan() {
-        new IntentIntegrator(activity).initiateScan();
+        new IntentIntegrator(activity)
+                .setPrompt(xdrip.gs(R.string.scan_to_load_xdrip_settings))
+                .setDesiredBarcodeFormats(list("QR_CODE", "CODE_128"))
+                .initiateScan();
+    }
+
+    // TODO move to utils
+    private static List<String> list(final String... values) {
+        return Collections.unmodifiableList(Arrays.asList(values));
     }
 
     private void requestPermission() {

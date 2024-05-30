@@ -21,43 +21,42 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.LocalBroadcastManager;
+
 import android.util.DisplayMetrics;
 import android.widget.Toast;
 
 import com.activeandroid.query.Select;
-import com.eveningoutpost.dexdrip.G5Model.CalibrationState;
-import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
-import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
-import com.eveningoutpost.dexdrip.Models.AlertType;
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.BloodTest;
-import com.eveningoutpost.dexdrip.Models.Calibration;
-import com.eveningoutpost.dexdrip.Models.HeartRate;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.PebbleMovement;
-import com.eveningoutpost.dexdrip.Models.Sensor;
-import com.eveningoutpost.dexdrip.Models.TransmitterData;
-import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.Services.CustomComplicationProviderService;
-import com.eveningoutpost.dexdrip.Services.DexCollectionService;
-import com.eveningoutpost.dexdrip.Services.G5CollectionService;
-import com.eveningoutpost.dexdrip.Services.HeartRateService;
-import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
-import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
-import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
-import com.eveningoutpost.dexdrip.UtilityModels.Blukon;
-import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.WearSyncBooleans;
-import com.eveningoutpost.dexdrip.UtilityModels.WearSyncPersistentStrings;
+import com.eveningoutpost.dexdrip.g5model.CalibrationState;
+import com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine;
+import com.eveningoutpost.dexdrip.models.ActiveBluetoothDevice;
+import com.eveningoutpost.dexdrip.models.AlertType;
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.BloodTest;
+import com.eveningoutpost.dexdrip.models.Calibration;
+import com.eveningoutpost.dexdrip.models.HeartRate;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.PebbleMovement;
+import com.eveningoutpost.dexdrip.models.Sensor;
+import com.eveningoutpost.dexdrip.models.TransmitterData;
+import com.eveningoutpost.dexdrip.models.Treatments;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
+import com.eveningoutpost.dexdrip.services.CustomComplicationProviderService;
+import com.eveningoutpost.dexdrip.services.DexCollectionService;
+import com.eveningoutpost.dexdrip.services.G5CollectionService;
+import com.eveningoutpost.dexdrip.services.HeartRateService;
+import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
+import com.eveningoutpost.dexdrip.utilitymodels.AlertPlayer;
+import com.eveningoutpost.dexdrip.utilitymodels.BgSendQueue;
+import com.eveningoutpost.dexdrip.utilitymodels.Blukon;
+import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
+import com.eveningoutpost.dexdrip.utilitymodels.Notifications;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.WearSyncBooleans;
+import com.eveningoutpost.dexdrip.utilitymodels.WearSyncPersistentStrings;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -94,17 +93,20 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
-import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.PREF_QUEUE_DRAINED;
-import static com.eveningoutpost.dexdrip.Models.JoH.ts;
-import static com.eveningoutpost.dexdrip.Services.G5CollectionService.G5_BATTERY_FROM_MARKER;
-import static com.eveningoutpost.dexdrip.Services.G5CollectionService.G5_BATTERY_MARKER;
-import static com.eveningoutpost.dexdrip.Services.G5CollectionService.G5_BATTERY_WEARABLE_SEND;
-import static com.eveningoutpost.dexdrip.Services.G5CollectionService.G5_FIRMWARE_MARKER;
-import static com.eveningoutpost.dexdrip.Services.HeartRateService.getWearHeartSensorData;
-import static com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue.doMgdl;
-import static com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue.extraStatusLine;
-import static com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue.resendData;
-import static com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue.sgvLevel;
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.PREF_QUEUE_DRAINED;
+import static com.eveningoutpost.dexdrip.models.JoH.ts;
+import static com.eveningoutpost.dexdrip.services.G5CollectionService.G5_BATTERY_FROM_MARKER;
+import static com.eveningoutpost.dexdrip.services.G5CollectionService.G5_BATTERY_MARKER;
+import static com.eveningoutpost.dexdrip.services.G5CollectionService.G5_BATTERY_WEARABLE_SEND;
+import static com.eveningoutpost.dexdrip.services.G5CollectionService.G5_FIRMWARE_MARKER;
+import static com.eveningoutpost.dexdrip.services.HeartRateService.getWearHeartSensorData;
+import static com.eveningoutpost.dexdrip.utilitymodels.BgSendQueue.doMgdl;
+import static com.eveningoutpost.dexdrip.utilitymodels.BgSendQueue.extraStatusLine;
+import static com.eveningoutpost.dexdrip.utilitymodels.BgSendQueue.resendData;
+import static com.eveningoutpost.dexdrip.utilitymodels.BgSendQueue.sgvLevel;
+
+import androidx.core.app.ActivityCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 /**
  * Created by Emma Black on 12/26/14.
@@ -1553,7 +1555,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 long bgTimestamp = last.timestamp;
                 Log.d(TAG, "resetDataToLatest last.timestamp=" + JoH.dateTimeText(bgTimestamp) + " last.calculated_value=" + last.calculated_value);
                 if (bgTimestamp > dmTimestamp) {
-                    dataMap(dataMap, last, mPrefs, new com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder(context));
+                    dataMap(dataMap, last, mPrefs, new com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder(context));
                     return true;
                 }
             }
@@ -1561,7 +1563,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         return false;
     }
 
-    private static void dataMap(DataMap dataMap, BgReading bg, SharedPreferences sPrefs, com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder bgGraphBuilder) {//KS
+    private static void dataMap(DataMap dataMap, BgReading bg, SharedPreferences sPrefs, com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder bgGraphBuilder) {//KS
         Log.d(TAG, "dataMap bgTimestamp=" + JoH.dateTimeText(bg.timestamp) + " calculated_value=" + bg.calculated_value);
         //Double highMark = Double.parseDouble(sPrefs.getString("highValue", "140"));
         //Double lowMark = Double.parseDouble(sPrefs.getString("lowValue", "60"));

@@ -1,15 +1,17 @@
 package com.eveningoutpost.dexdrip;
 
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
-import static com.eveningoutpost.dexdrip.Models.JoH.quietratelimit;
-import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
-import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
-import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.SECOND_IN_MS;
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.shortTxId;
+import static com.eveningoutpost.dexdrip.models.JoH.msSince;
+import static com.eveningoutpost.dexdrip.models.JoH.quietratelimit;
+import static com.eveningoutpost.dexdrip.models.JoH.tsl;
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.getTransmitterID;
+import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.X;
+import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.getCol;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.DAY_IN_MS;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HOUR_IN_MS;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.SECOND_IN_MS;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 import android.Manifest;
@@ -29,7 +31,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -39,14 +40,15 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.speech.RecognizerIntent;
-import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -68,51 +70,53 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
-import com.eveningoutpost.dexdrip.G5Model.SensorDays;
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
-import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
-import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.BloodTest;
-import com.eveningoutpost.dexdrip.Models.Calibration;
-import com.eveningoutpost.dexdrip.Models.HeartRate;
-import com.eveningoutpost.dexdrip.Models.InsulinInjection;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.LibreBlock;
-import com.eveningoutpost.dexdrip.Models.ProcessInitialDataQuality;
-import com.eveningoutpost.dexdrip.Models.Sensor;
-import com.eveningoutpost.dexdrip.Models.StepCounter;
-import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
-import com.eveningoutpost.dexdrip.Services.DexCollectionService;
-import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
-import com.eveningoutpost.dexdrip.Services.PlusSyncService;
-import com.eveningoutpost.dexdrip.Services.WixelReader;
-import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
-import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
-import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
-import com.eveningoutpost.dexdrip.UtilityModels.ColorCache;
-import com.eveningoutpost.dexdrip.UtilityModels.CompatibleApps;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Experience;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.UtilityModels.Intents;
-import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
-import com.eveningoutpost.dexdrip.UtilityModels.NanoStatus;
-import com.eveningoutpost.dexdrip.UtilityModels.NightscoutUploader;
-import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.PrefsViewImpl;
-import com.eveningoutpost.dexdrip.UtilityModels.SendFeedBack;
-import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
-import com.eveningoutpost.dexdrip.UtilityModels.SourceWizard;
-import com.eveningoutpost.dexdrip.UtilityModels.StatusLine;
-import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
-import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
-import com.eveningoutpost.dexdrip.UtilityModels.VoiceCommands;
+import com.eveningoutpost.dexdrip.g5model.DexTimeKeeper;
+import com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine;
+import com.eveningoutpost.dexdrip.g5model.SensorDays;
+import com.eveningoutpost.dexdrip.importedlibraries.usbserial.util.HexDump;
+import com.eveningoutpost.dexdrip.models.ActiveBgAlert;
+import com.eveningoutpost.dexdrip.models.ActiveBluetoothDevice;
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.BloodTest;
+import com.eveningoutpost.dexdrip.models.Calibration;
+import com.eveningoutpost.dexdrip.models.HeartRate;
+import com.eveningoutpost.dexdrip.models.InsulinInjection;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.LibreBlock;
+import com.eveningoutpost.dexdrip.models.ProcessInitialDataQuality;
+import com.eveningoutpost.dexdrip.models.Sensor;
+import com.eveningoutpost.dexdrip.models.StepCounter;
+import com.eveningoutpost.dexdrip.models.Treatments;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.services.ActivityRecognizedService;
+import com.eveningoutpost.dexdrip.services.DexCollectionService;
+import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
+import com.eveningoutpost.dexdrip.services.PlusSyncService;
+import com.eveningoutpost.dexdrip.services.WixelReader;
+import com.eveningoutpost.dexdrip.utilitymodels.AlertPlayer;
+import com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.utilitymodels.ColorCache;
+import com.eveningoutpost.dexdrip.utilitymodels.CompatibleApps;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Experience;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
+import com.eveningoutpost.dexdrip.utilitymodels.Intents;
+import com.eveningoutpost.dexdrip.utilitymodels.JamorhamShowcaseDrawer;
+import com.eveningoutpost.dexdrip.utilitymodels.MockDataSource;
+import com.eveningoutpost.dexdrip.utilitymodels.NanoStatus;
+import com.eveningoutpost.dexdrip.utilitymodels.NightscoutUploader;
+import com.eveningoutpost.dexdrip.utilitymodels.Notifications;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.PrefsViewImpl;
+import com.eveningoutpost.dexdrip.utilitymodels.SendFeedBack;
+import com.eveningoutpost.dexdrip.utilitymodels.ShotStateStore;
+import com.eveningoutpost.dexdrip.utilitymodels.SourceWizard;
+import com.eveningoutpost.dexdrip.utilitymodels.StatusLine;
+import com.eveningoutpost.dexdrip.utilitymodels.UndoRedo;
+import com.eveningoutpost.dexdrip.utilitymodels.UpdateActivity;
+import com.eveningoutpost.dexdrip.utilitymodels.VoiceCommands;
 import com.eveningoutpost.dexdrip.calibrations.NativeCalibrationPipe;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.cloud.backup.BackupActivity;
@@ -154,9 +158,11 @@ import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.internal.bind.DateTypeAdapter;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -330,8 +336,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private static Activity mActivity;
 
     @Getter
-    private static String statusIOB = "";
-    private static String statusBWP = "";
+    private volatile static String statusIOB = "";
+    private volatile static String statusBWP = "";
 
 
     @SuppressLint("ObsoleteSdkInt")
@@ -673,7 +679,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     private void refreshStatusLine() {
         try {
-            String status = ((statusIOB.length() > 0) ? ("IoB: " + statusIOB) : "")
+            final String status = ((statusIOB.length() > 0) ? ("IoB: " + statusIOB) : "")
                     + ((statusBWP.length() > 0) ? (" " + statusBWP) : "");
             Log.d(TAG, "Refresh Status Line: " + status);
             //if (status.length() > 0) {
@@ -1123,7 +1129,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     }
 
     public void crowdTranslate(MenuItem x) {
-       // startActivity(new Intent(this, LanguageEditor.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        // startActivity(new Intent(this, LanguageEditor.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://crowdin.com/project/xdrip")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 
@@ -1822,7 +1828,9 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         reset_viewport = true;
         if (activityVisible || override) {
             Intent updateIntent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA);
-            mActivity.sendBroadcast(updateIntent);
+            if (mActivity != null) {
+                mActivity.sendBroadcast(updateIntent);
+            }
         }
     }
 
@@ -1928,33 +1936,35 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     }
 
     private void checkWifiSleepPolicy() {
-        if (!JoH.getWifiSleepPolicyNever()) {
-            if (JoH.ratelimit("policy-never", 3600)) {
-                if (Pref.getLong("wifi_warning_never", 0) == 0) {
-                    if (!JoH.isMobileDataOrEthernetConnected()) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                        builder.setTitle(gs(R.string.wifi_sleep_policy_issue));
-                        builder.setMessage(gs(R.string.your_wifi_is_set_to_sleep_when_the_phone_screen_is_off__this_may_cause_problems_if_you_dont_have_cellular_data_or_have_devices_on_your_local_network__would_you_like_to_go_to_the_settings_page_to_set__always_keep_wifi_on_during_sleep));
+        if (Build.VERSION.SDK_INT < 33) {      // setting removed after android 12
+            if (!JoH.getWifiSleepPolicyNever()) {
+                if (JoH.ratelimit("policy-never", 3600)) {
+                    if (Pref.getLong("wifi_warning_never", 0) == 0) {
+                        if (!JoH.isMobileDataOrEthernetConnected()) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                            builder.setTitle(gs(R.string.wifi_sleep_policy_issue));
+                            builder.setMessage(gs(R.string.your_wifi_is_set_to_sleep_when_the_phone_screen_is_off__this_may_cause_problems_if_you_dont_have_cellular_data_or_have_devices_on_your_local_network__would_you_like_to_go_to_the_settings_page_to_set__always_keep_wifi_on_during_sleep));
 
-                        builder.setNeutralButton(gs(R.string.maybe_later), (dialog, which) -> dialog.dismiss());
+                            builder.setNeutralButton(gs(R.string.maybe_later), (dialog, which) -> dialog.dismiss());
 
-                        builder.setPositiveButton(gs(R.string.yes_do_it), (dialog, which) -> {
-                            dialog.dismiss();
-                            toast(gs(R.string.recommend_that_you_change_wifi_to_always_be_on_during_sleep));
-                            try {
-                                startActivity(new Intent(Settings.ACTION_WIFI_IP_SETTINGS));
-                            } catch (ActivityNotFoundException e) {
-                                JoH.static_toast_long(gs(R.string.ooops_this_device_doesnt_seem_to_have_a_wifi_settings_page));
-                            }
-                        });
+                            builder.setPositiveButton(gs(R.string.yes_do_it), (dialog, which) -> {
+                                dialog.dismiss();
+                                toast(gs(R.string.recommend_that_you_change_wifi_to_always_be_on_during_sleep));
+                                try {
+                                    startActivity(new Intent(Settings.ACTION_WIFI_IP_SETTINGS));
+                                } catch (ActivityNotFoundException e) {
+                                    JoH.static_toast_long(gs(R.string.ooops_this_device_doesnt_seem_to_have_a_wifi_settings_page));
+                                }
+                            });
 
-                        builder.setNegativeButton(R.string.no_never, (dialog, which) -> {
-                            dialog.dismiss();
-                            Pref.setLong("wifi_warning_never", (long) JoH.ts());
-                        });
+                            builder.setNegativeButton(R.string.no_never, (dialog, which) -> {
+                                dialog.dismiss();
+                                Pref.setLong("wifi_warning_never", (long) JoH.ts());
+                            });
 
-                        AlertDialog alert = builder.create();
-                        alert.show();
+                            AlertDialog alert = builder.create();
+                            alert.show();
+                        }
                     }
                 }
             }
@@ -2170,7 +2180,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (!has_libreblock_set) setHasLibreblock();
         return has_libreblock;
     }
-    
+
     public static boolean get_is_libre_whole_house_collector() {
         return Pref.getBooleanDefaultFalse("libre_whole_house_collector");
     }
@@ -2242,7 +2252,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     }
 
     public void sourceWizardButtonClick(View v) {
-        SourceWizard.start(this, true);
+        SourceWizard.start(Home.this, true);
     }
 
     private long whichTimeLocked() {
@@ -2286,22 +2296,32 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 break;
         }
 
-        float ideal_hours_to_show = DEFAULT_CHART_HOURS + bgGraphBuilder.getPredictivehours();
-        // always show at least the ideal number of hours if locked or auto
+        // always show at least the ideal number of hours
+        float ideal_hours_to_show = DEFAULT_CHART_HOURS;
+        // ... and rescale to accommodate predictions if not locked
+        if (! homeShelf.get("time_locked_always")) {
+            ideal_hours_to_show += bgGraphBuilder.getPredictivehours();
+        }
         float hours_to_show =  exactHoursSpecified ? hours : Math.max(hours, ideal_hours_to_show);
 
         UserError.Log.d(TAG, "VIEWPORT " + source + " moveviewport in setHours: asked " + hours + " vs auto " + ideal_hours_to_show + " = " + hours_to_show + " full chart width: " + bgGraphBuilder.hoursShownOnChart());
 
-        float hour_width = maxViewPort.width() / bgGraphBuilder.hoursShownOnChart();
+        double hour_width = maxViewPort.width() / bgGraphBuilder.hoursShownOnChart();
         holdViewport.left = maxViewPort.right - hour_width * hours_to_show;
         holdViewport.right = maxViewPort.right;
         holdViewport.top = maxViewPort.top;
         holdViewport.bottom = maxViewPort.bottom;
 
-    if (d) {
-        UserError.Log.d(TAG, "HOLD VIEWPORT " + holdViewport);
-        UserError.Log.d(TAG, "MAX VIEWPORT " + maxViewPort);
-    }
+        // if locked, center display on current bg values, not predictions
+        if (homeShelf.get("time_locked_always")) {
+            holdViewport.left -= hour_width * bgGraphBuilder.getPredictivehours();
+            holdViewport.right -= hour_width * bgGraphBuilder.getPredictivehours();
+        }
+
+        if (d) {
+            UserError.Log.d(TAG, "HOLD VIEWPORT " + holdViewport);
+            UserError.Log.d(TAG, "MAX VIEWPORT " + maxViewPort);
+        }
 
         chart.setCurrentViewport(holdViewport);
 
@@ -2354,7 +2374,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         final StepCounter pm = StepCounter.last();
         final boolean use_pebble_health = Pref.getBoolean("use_pebble_health", true);
         if ((use_pebble_health) && (pm != null)) {
-            stepsButton.setText(Integer.toString(pm.metric));
+            stepsButton.setText(Integer.toString(StepCounter.getDailyTotal()));
             stepsButton.setVisibility(View.VISIBLE);
             // TODO this can be done with PrefsView binding
             stepsButton.setAlpha(Pref.getBoolean("show_pebble_movement_line", true) ? 1.0f : 0.3f);
@@ -2382,8 +2402,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
         if (reset_viewport) {
             reset_viewport = false;
-          //  holdViewport.set(0, 0, 0, 0);
-           // if (chart != null) chart.setZoomType(ZoomType.HORIZONTAL);
+            //  holdViewport.set(0, 0, 0, 0);
+            // if (chart != null) chart.setZoomType(ZoomType.HORIZONTAL);
             // TODO above reset viewport thing seems defunct now
         }
         setupCharts(source);
@@ -2459,6 +2479,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             }
         } else if (collector.equals(DexCollectionType.Mock)) {
             notificationText.append("\n USING FAKE DATA SOURCE !!!");
+            if (MockDataSource.divisor_scale == 1500000) {
+                notificationText.append(" F");
+            }
+            if (MockDataSource.amplify_cnst == 330000) {
+                notificationText.append(" Amp");
+            }
         }
         if (Pref.getLong("alerts_disabled_until", 0) > new Date().getTime()) {
             notificationText.append("\n " + getString(R.string.all_alerts_currently_disabled));
@@ -2604,7 +2630,13 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
         if (!isSensorActive) {
-            notificationText.setText(R.string.now_start_your_sensor);
+            // Define a variable (notConnectedToG6Yet) that is only true if Native G6 is chosen, but, transmitter days is unknown.
+            boolean notConnectedToG6Yet = DexCollectionType.getDexCollectionType() == DexcomG5 && Pref.getBooleanDefaultFalse("ob1_g5_use_transmitter_alg") && Pref.getBooleanDefaultFalse("using_g6") && DexTimeKeeper.getTransmitterAgeInDays(getTransmitterID()) == -1;
+            if (notConnectedToG6Yet || shortTxId()) { // Only if G6 has been selected and transmitter days is unknown, or if G7 has been selected.
+                notificationText.setText(R.string.wait_to_connect);
+            } else { // Only if G6 is not selected or G6 transmitter days is known.
+                notificationText.setText(R.string.now_start_your_sensor);
+            }
 
             if ((dialog == null) || (!dialog.isShowing())) {
                 if (!Experience.gotData() && Experience.backupAvailable() && JoH.ratelimit("restore-backup-prompt", 10)) {
@@ -2620,11 +2652,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     dialog = builder.create();
                     dialog.show();
                 } else {
-                    if (!Experience.gotData() && !QuickSettingsDialogs.isDialogShowing() && JoH.ratelimit("start-sensor_prompt", 20)) {
+                    if (!Experience.gotData() && !QuickSettingsDialogs.isDialogShowing() && !notConnectedToG6Yet && JoH.ratelimit("start-sensor_prompt", 20)) {
+                        // Show the dialog only if there is no data, and there is no dialog, and G6 is not selected or G6 is connected, and the rate limit is satisfied.
                         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
                         final Context context = this;
                         builder.setTitle(getString(R.string.start_sensor) + "?");
-                        builder.setMessage(String.format(gs(R.string.start_sensor_confirmation), DexCollectionType.getDexCollectionType().toString()));
+                        builder.setMessage(String.format(gs(R.string.start_sensor_confirmation), DexCollectionType.getBestCollectorHardwareName()));
                         builder.setNegativeButton(gs(R.string.change_settings), (dialog, which) -> {
                             dialog.dismiss();
                             startActivity(new Intent(context, Preferences.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
@@ -2670,7 +2703,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         // TODO this logic needed a rework even a year ago, now its a lot more confused with the additional complexity of native mode
         if (Ob1G5CollectionService.isG5ActiveButUnknownState() && Calibration.latestValid(2).size() < 2) {
             // TODO use format string
-            notificationText.setText(String.format(gs(R.string.state_not_currently_known), (Ob1G5StateMachine.usingG6() ? "G6" : "G5")));
+            notificationText.setText(String.format(gs(R.string.state_not_currently_known), (Ob1G5StateMachine.usingG6() ? (shortTxId() ? "G7" : "G6") : "G5")));
             showUncalibratedSlope();
         } else {
 
@@ -3304,6 +3337,95 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         startActivity(new Intent(getApplicationContext(), DisplayQRCode.class));
     }
 
+    public void exportDatabase(MenuItem myitem) {
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                int permissionCheck = ContextCompat.checkSelfPermission(Home.this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE);
+                if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(Home.this,
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                            0);
+                    return null;
+                } else {
+                    return DatabaseUtil.saveSql(getBaseContext());
+                }
+
+            }
+
+            @Override
+            protected void onPostExecute(String filename) {
+                super.onPostExecute(filename);
+                if (filename != null) {
+
+                    snackBar(R.string.share, getString(R.string.exported_to) + filename, makeSnackBarUriLauncher(Uri.fromFile(new File(filename)), getString(R.string.share_database)), Home.this);
+                    startActivity(new Intent(xdrip.getAppContext(), SdcardImportExport.class).putExtra("backup", "now").setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                    /*    SnackbarManager.show(
+                                Snackbar.with(Home.this)
+                                        .type(SnackbarType.MULTI_LINE)
+                                        .duration(4000)
+                                        .text(getString(R.string.exported_to) + filename) // text to display
+                                        .actionLabel("Share") // action button label
+                                        .actionListener(new SnackbarUriListener(Uri.fromFile(new File(filename)))),
+                                Home.this);*/
+                } else {
+                    Toast.makeText(Home.this, R.string.could_not_export_database, Toast.LENGTH_LONG).show();
+                }
+            }
+        }.execute();
+    }
+
+    public void restoreDatabase(MenuItem myitem) {
+        startActivity(new Intent(this, ImportDatabaseActivity.class));
+    }
+
+    public void exportCSVasSiDiary(MenuItem myitem) {
+        long from = Pref.getLong("sidiary_last_exportdate", 0);
+        final GregorianCalendar date = new GregorianCalendar();
+        final DatePickerFragment datePickerFragment = new DatePickerFragment();
+        if (from > 0) datePickerFragment.setInitiallySelectedDate(from);
+        datePickerFragment.setAllowFuture(false);
+        datePickerFragment.setTitle(getString(R.string.sidiary_date_title));
+        datePickerFragment.setDateCallback(new ProfileAdapter.DatePickerCallbacks() {
+            @Override
+            public void onDateSet(int year, int month, int day) {
+                date.set(year, month, day);
+                date.set(Calendar.HOUR_OF_DAY, 0);
+                date.set(Calendar.MINUTE, 0);
+                date.set(Calendar.SECOND, 0);
+                date.set(Calendar.MILLISECOND, 0);
+                new AsyncTask<Void, Void, String>() {
+                    @Override
+                    protected String doInBackground(Void... params) {
+                        int permissionCheck = ContextCompat.checkSelfPermission(Home.this,
+                                Manifest.permission.READ_EXTERNAL_STORAGE);
+                        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+                            ActivityCompat.requestPermissions(Home.this,
+                                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                    0);
+                            return null;
+                        } else {
+                            return DatabaseUtil.saveCSV(getBaseContext(), date.getTimeInMillis());
+                        }
+                    }
+
+                    @Override
+                    protected void onPostExecute(String filename) {
+                        super.onPostExecute(filename);
+                        if (filename != null) {
+                            Pref.setLong("sidiary_last_exportdate", System.currentTimeMillis());
+                            snackBar(R.string.share, getString(R.string.exported_to) + filename, makeSnackBarUriLauncher(Uri.fromFile(new File(filename)), getString(R.string.share_database)), Home.this);
+                        } else {
+                            Toast.makeText(Home.this, gs(R.string.could_not_export_csv_), Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }.execute();
+            }
+        });
+        datePickerFragment.show(getFragmentManager(), "DatePicker");
+    }
+
     public void settingsSDcardExport(MenuItem myitem) {
         startActivity(new Intent(getApplicationContext(), SdcardImportExport.class));
     }
@@ -3338,6 +3460,21 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
+    }
+
+    public void resendGlucoseToWatch(MenuItem myitem) {
+        WatchUpdaterService.startServiceAndResendData(0);
+        if (Pref.getBooleanDefaultFalse("pref_amazfit_enable_key")) {
+            Amazfitservice.start("xDrip_synced_SGV_data");
+        }
+    }
+
+    public void openSettingsOnWatch(MenuItem myitem) {
+        startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_OPEN_SETTINGS));
+    }
+
+    public void resetWearDb(MenuItem myitem) {
+        startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_RESET_DB));
     }
 
     public void undoButtonClick(View myitem) {
@@ -3436,7 +3573,15 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (JoH.ratelimit("manual-update-check", 5)) {
             toast(getString(R.string.checking_for_update));
             UpdateActivity.last_check_time = -1;
-            UpdateActivity.checkForAnUpdate(getApplicationContext());
+            UpdateActivity.checkForAnUpdate(getApplicationContext(), true);
+        }
+    }
+
+    public void toggleSpeakReadings(MenuItem myitem) {
+        Pref.toggleBoolean("bg_to_speech");
+        invalidateOptionsMenu();
+        if (Pref.getBooleanDefaultFalse("bg_to_speech")) {
+            BgToSpeech.testSpeech();
         }
     }
 
@@ -3472,133 +3617,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-            case R.id.action_resend_last_bg:
-                WatchUpdaterService.startServiceAndResendData(0);
-                if (Pref.getBooleanDefaultFalse("pref_amazfit_enable_key")) {
-                    Amazfitservice.start("xDrip_synced_SGV_data");
-                }
-                break;
-            case R.id.action_open_watch_settings:
-                startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_OPEN_SETTINGS));
-                break;
-            case R.id.action_sync_watch_db:
-                startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_RESET_DB));
-                break;
-        }
-
-        if (item.getItemId() == R.id.action_export_database) {
-            new AsyncTask<Void, Void, String>() {
-                @Override
-                protected String doInBackground(Void... params) {
-                    int permissionCheck = ContextCompat.checkSelfPermission(Home.this,
-                            Manifest.permission.READ_EXTERNAL_STORAGE);
-                    if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(Home.this,
-                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                                0);
-                        return null;
-                    } else {
-                        return DatabaseUtil.saveSql(getBaseContext());
-                    }
-
-                }
-
-                @Override
-                protected void onPostExecute(String filename) {
-                    super.onPostExecute(filename);
-                    if (filename != null) {
-
-                        snackBar(R.string.share, getString(R.string.exported_to) + filename, makeSnackBarUriLauncher(Uri.fromFile(new File(filename)), getString(R.string.share_database)), Home.this);
-                        startActivity(new Intent(xdrip.getAppContext(), SdcardImportExport.class).putExtra("backup", "now").setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                    /*    SnackbarManager.show(
-                                Snackbar.with(Home.this)
-                                        .type(SnackbarType.MULTI_LINE)
-                                        .duration(4000)
-                                        .text(getString(R.string.exported_to) + filename) // text to display
-                                        .actionLabel("Share") // action button label
-                                        .actionListener(new SnackbarUriListener(Uri.fromFile(new File(filename)))),
-                                Home.this);*/
-                    } else {
-                        Toast.makeText(Home.this, R.string.could_not_export_database, Toast.LENGTH_LONG).show();
-                    }
-                }
-            }.execute();
-
-            return true;
-        }
-
-        if (item.getItemId() == R.id.action_import_db) {
-            startActivity(new Intent(this, ImportDatabaseActivity.class));
-            return true;
-        }
-
-       /* // jamorham additions
+        /*// jamorham additions
         if (item.getItemId() == R.id.synctreatments) {
             startActivity(new Intent(this, GoogleDriveInterface.class));
             return true;
 
         }*/
-        ///
-
-        if (item.getItemId() == R.id.action_export_csv_sidiary) {
-
-            long from = Pref.getLong("sidiary_last_exportdate", 0);
-            final GregorianCalendar date = new GregorianCalendar();
-            final DatePickerFragment datePickerFragment = new DatePickerFragment();
-            if (from > 0) datePickerFragment.setInitiallySelectedDate(from);
-            datePickerFragment.setAllowFuture(false);
-            datePickerFragment.setTitle(getString(R.string.sidiary_date_title));
-            datePickerFragment.setDateCallback(new ProfileAdapter.DatePickerCallbacks() {
-                @Override
-                public void onDateSet(int year, int month, int day) {
-                    date.set(year, month, day);
-                    date.set(Calendar.HOUR_OF_DAY, 0);
-                    date.set(Calendar.MINUTE, 0);
-                    date.set(Calendar.SECOND, 0);
-                    date.set(Calendar.MILLISECOND, 0);
-                    new AsyncTask<Void, Void, String>() {
-                        @Override
-                        protected String doInBackground(Void... params) {
-                            int permissionCheck = ContextCompat.checkSelfPermission(Home.this,
-                                    Manifest.permission.READ_EXTERNAL_STORAGE);
-                            if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-                                ActivityCompat.requestPermissions(Home.this,
-                                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                                        0);
-                                return null;
-                            } else {
-                                return DatabaseUtil.saveCSV(getBaseContext(), date.getTimeInMillis());
-                            }
-                        }
-
-                        @Override
-                        protected void onPostExecute(String filename) {
-                            super.onPostExecute(filename);
-                            if (filename != null) {
-                                Pref.setLong("sidiary_last_exportdate", System.currentTimeMillis());
-                                snackBar(R.string.share, getString(R.string.exported_to) + filename, makeSnackBarUriLauncher(Uri.fromFile(new File(filename)), getString(R.string.share_database)), Home.this);
-                            } else {
-                                Toast.makeText(Home.this, gs(R.string.could_not_export_csv_), Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    }.execute();
-                }
-            });
-            datePickerFragment.show(getFragmentManager(), "DatePicker");
-            return true;
-        }
-
-        if (item.getItemId() == R.id.action_toggle_speakreadings) {
-            Pref.toggleBoolean("bg_to_speech");
-            invalidateOptionsMenu();
-            if (Pref.getBooleanDefaultFalse("bg_to_speech")) {
-                BgToSpeech.testSpeech();
-            }
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -3617,7 +3641,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     public static double convertToMgDlIfMmol(double value) {
         if (!Pref.getString("units", "mgdl").equals("mgdl")) {
-            return value * com.eveningoutpost.dexdrip.UtilityModels.Constants.MMOLL_TO_MGDL;
+            return value * com.eveningoutpost.dexdrip.utilitymodels.Constants.MMOLL_TO_MGDL;
         } else {
             return value; // no conversion needed
         }
@@ -3625,7 +3649,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     public static void snackBar(int buttonString, String message, View.OnClickListener mOnClickListener, Activity activity) {
 
-        android.support.design.widget.Snackbar.make(
+        Snackbar.make(
 
                 activity.findViewById(android.R.id.content),
                 message, Snackbar.LENGTH_LONG)

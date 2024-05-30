@@ -2,7 +2,7 @@ package com.eveningoutpost.dexdrip.insulin.opennov.mt;
 
 import static com.eveningoutpost.dexdrip.insulin.opennov.mt.ApoepElement.APOEP;
 
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
+import com.eveningoutpost.dexdrip.importedlibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.insulin.opennov.BaseMessage;
 
 import java.nio.ByteBuffer;

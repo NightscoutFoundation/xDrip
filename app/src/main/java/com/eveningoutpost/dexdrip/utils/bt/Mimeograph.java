@@ -1,11 +1,11 @@
 package com.eveningoutpost.dexdrip.utils.bt;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.UtilityModels.WholeHouse;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
+import com.eveningoutpost.dexdrip.utilitymodels.WholeHouse;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.Root;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -22,7 +22,7 @@ import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
+import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
 import static com.eveningoutpost.dexdrip.utils.bt.Mimeograph.SearchState.COPY_COLLISION_KEY;
 import static com.eveningoutpost.dexdrip.utils.bt.Mimeograph.SearchState.COPY_DEVICE_KEY;
 import static com.eveningoutpost.dexdrip.utils.bt.Mimeograph.SearchState.COPY_SCAN;

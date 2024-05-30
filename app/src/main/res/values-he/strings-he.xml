@@ -176,6 +176,7 @@
     <string name="libre_last_x_minutes_graph">גרף %d דקות אחרונות של הליברה</string>
     <string name="share_config_via_qr_code">שיתוף הגדרות באמצעות קוד QR</string>
     <string name="check_for_updated_version">בדוק האם יש גרסה חדשה</string>
+    <string name="current_version_is_up_to_date">אין עדכון בערוץ הנבחר</string>
     <string name="send_feedback_to_developer">שלח משוב למפתח</string>
     <string name="home_screen">מסך הבית</string>
     <string name="event_logs">יומן אירועים</string>
@@ -912,6 +913,7 @@
     <string name="bluereader_position">בדוק את המיקום של ה-blueReader על הסנסור, אחרת יצליח לקרוא!</string>
     <string name="bluereaderuglystate">\"BlueReader\" נמצא במצב לא טוב! לכן הוא עובר כיבוי, ניתן להדליק את הקורא (בלחיצה על הכפתור). אחרי זה הקורא צריך לעבוד כנדרש!</string>
     <string name="offical_msg">האפליקציה הרשמית</string>
+    <string name="aggressive_power_manager">למכשיר שלך יש ניהול סוללה אגרסיבי, שכנראה מוגדר בהגדרות. אנא וודא ש-xDrip אינו חלק מרשימת האפליקציות שאינה יכולה לפעול ברקע.</string>
     <string name="use_conflict_msg">האפליקציה תנסה לגשת למשדר במקביל ומצב זה יכול לגרום לקונפליקט בנתונים</string>
     <string name="use_confict_msg_glimp">ניתן לבצע התאמה להגדרות Glimp: אפשרויות > מכשירים > בטל בחירה באופציית Bluetooth</string>
     <string name="eng_mode_is_on">מצב המהנדסים פועל. נא לבטלו אלא אם אתם בטוחים שאתם זקוקים לו כי הוא עלול לגרום להתנהגות בלתי צפויה.</string>
@@ -977,6 +979,7 @@
     <string name="emergency_message_near_format_string">%1$s בקרבת %5$s %4$s %3$s %2$s</string>
     <string name="choose_when_to_send_messages">בחרו מתי לשלוח הודעות:</string>
     <string name="low_alert_not_acknowledged">התראת סוכר נמוך לא אושרה</string>
+    <string name="lowest_alert_not_acknowledged">התראת סוכר נמוך לא אושרה</string>
     <string name="high_alert_not_acknowledged">התראת סוכר גבוה לא אושרה</string>
     <string name="device_inactivity">חוסר פעילות המכשיר</string>
     <string name="test_message_sending">נסה שליחת הודעות</string>
@@ -998,8 +1001,10 @@
     <string name="summary_If_you_plan_to_only_use_a_Wear_collector_and_never_your_phone">אם אתה מתכוון להשתמש בשעון בלבד כאוסף ולא עם הטלפון כלל.</string>
     <string name="title_Only_use_Wear">השתמש רק ב-Wear</string>
     <string name="summary_Also_show_the_filtered_data_on_the_trend">טרנדים יכללו מידע מפולטר בנוסף</string>
+    <string name="summary_Show_Bolus_Wizard_Preview_Insulin_value_on_watch_when_appropriate">כאשר זה מתאים הצג תצוגה מקדימה של ערך האינסולין על פי אשף הבולוס על גבי השעון</string>
     <string name="title_Display_BWP_Insulin">הצג תצוגה מקדימה של הבולוס מהאשף</string>
     <string name="title_Smartwatch_Sensors">חיישנים בשעונים חכמים</string>
+    <string name="summary_Collect_and_display_Step_counter_and_Heart_rate_when_available">אוסף ומציג את נתוני מונה הצעדים וקצב פעימות הלב כאשר המידע זמין</string>
     <string name="title_Use_Health_Data">השתמש בנתוני Health</string>
     <string name="summary_Activate_heart_rate_sensor_if_available">הפעל חיישן קצב לב אם זמין</string>
     <string name="title_Heart_Rate_Sensor">מד דופק</string>
@@ -1007,6 +1012,7 @@
     <string name="title_When_changes_by">כאשר משתנה ב-</string>
     <string name="title_Or_per_number_of_minutes">או לפי מספר דקות</string>
     <string name="title_Identify_receiver">זיהוי מקלט</string>
+    <string name="summary_Only_send_to_named_package">מידע ישלח רק לשם תיקית פרויקט שהוגדר</string>
     <string name="title_Accept_Calibrations">קבל כיולים</string>
     <string name="summary_Operate_a_local_web_server_for_interacting_with_Fitbit_Ionic_etc">הפעל שרת מקומי לאינטראקציה עם Fitbit Ionic וכו\'</string>
     <string name="title_xDrip_Web_Service">שירות ווב של xDrip</string>
@@ -1022,6 +1028,7 @@
     <string name="title_Carb_Insulin_Ratio">יחס פחמ\'\\אינסולין</string>
     <string name="summary_Ask_for_a_second_optional_initial_calibration_blood_test">מבקש בדיקת דם שניה אופציונלית לכיול ראשוני</string>
     <string name="title_Double_Calibrations">כיולים כפולים</string>
+    <string name="summary_Enable_to_allow_variable_slopes_with_Libre_collection_methods">סמן על מנת לאפשר משתנה מגמה בחיישן ליברה</string>
     <string name="title_Non_fixed_Libre_slopes">שיפועי ליברה לא קבועים</string>
     <string name="summary_Allow_initial_calibration_no_good_enough_data">אפשר כיול ראשוני אפילו אם אין נתונים טובים מספיק. נא להיזהר, הכיול עלול להיות לא מדוייק!</string>
     <string name="title_Bypass_quality_check">עקוף בדיקת איכות</string>
@@ -1029,12 +1036,18 @@
     <string name="title_Use_scanning">השתמש בסריקה</string>
     <string name="summary_Use_and_trust_Android_bluetooth_auto_connect_feature">השתמש ובטח בתכונת חיבור אוטומטי של אנדרואיד</string>
     <string name="title_Trust_Auto_Connect">בטח בחיבור אוטומטי</string>
+    <string name="summary_Experimental_support_for_xBridge_polling_feature">תמיכה ניסיונית ביכולת משיכה מ- +xBridge </string>
+    <string name="title_xBridge_Polling_Mode">מוד משיכה מ- +xBridge</string>
+    <string name="summary_Probe_Bluetooth_services_on_every_connect">בדוק שירותי Bluetooth בכל חיבור</string>
     <string name="title_Always_discover_services">תמיד גלה שירותים</string>
     <string name="summary_Only_suitable_for_phones_which_support_automatic_pairing">מתאים רק לטלפונים שתומכים בצימוד אוטומטי</string>
     <string name="title_Allow_blucon_unbonding">אפשר הפרדת Blucon</string>
+    <string name="summary_Suppress_the_ugly_state_message_if_Problem_appears">הסתר הודעות \"מכוערת\" במקרה של בעייה</string>
+    <string name="title_supress_ugly_state_message">הסתר הודעות מצב \"מכוערות\"</string>
     <string name="summary_write_Battery_Information_for_additional_analytic">רשום את האינפורמציה של הסוללה לצורך ניתוח נוסף. בבקשה השתמש במידע זה רק אם תתבקש לכך על ידי אחד המפתחים!</string>
     <string name="title_Batterylog">יומן סוללה</string>
     <string name="summary_Choose_to_display_the_bridge_battery_level">בחרו כדי להציג רמת הסוללה של מכשיר הגישור</string>
+    <string name="title_Glucose_Retention">שימור סוכר</string>
     <string name="summary_Erase_data_older_than_this_many_days">מחק נתונים ישנים מערך זה (ימים). 0 = לא למחוק כלום</string>
     <string name="title_Other_misc_options">אפשרויות נוספות</string>
     <string name="summary_allow_testing_with_dead_sensor">אפשר בדיקות עם סנסור שיצא משימוש</string>
@@ -1043,14 +1056,22 @@
     <string name="message_reminders_explanation">התזכורות יכולות לשמש לפעולות כגון החלפת מיקום של משאבה או כל פעולה אחרת. \n\n הם יכולים להיות מחזוריים, להיות מכוונים לזמנים שונים. ניתן להשתיק אותם, לדחות או לקבוע לתאריך אחר. \n\n\ לחץ על כפתור ה+ בכדי להוסיף תזכורת.</string>
     <string name="title_swipe_reminder">החליקו שמאלה או ימינה</string>
     <string name="message_swipe_explanation">\u2190 החליקו שמאלה לדחיית או להשתקת תזכורת\n\n\u2192החליקו ימינה לקביעת מועד תזכורת העתידי הבא\n\nלחיצה על הכותרת או השעה מאפשר עריכה. לחצו לחיצה ארוכה על הכותרת כי לשנות פרמטרים אחרים.</string>
+    <string name="title_reminder_snooze_undo">לוח נודניק לתזכורות - בטל פעולה</string>
     <string name="message_snooze_explanaition_undo">לחצן הבטל משחזר את התזכורת לכפי שהיתה לפני שהוחלקה.</string>
+    <string name="title_snooze_trash">לוח נודניק לתזכורות - אשפה</string>
     <string name="message_snooze_trash">כפתור ה\'פח\' מוחק לצמיתות את התזכורת המושתקת!</string>
+    <string name="title_snooze_hide">לוח נודניק לתזכורות - החבא</string>
     <string name="message_snooze_hide">לחצן \"החבא\" מחביא את מסך הנודניק</string>
+    <string name="title_snooze_times">לוח נודניק לתזכורות - פעמים</string>
+    <string name="message_snooze_times">הכפתורים השונים משתנים במהירות מנודניק ברירת המחדל לנודניק אחר.</string>
     <string name="title_which_day">איזה יום?</string>
     <string name="title_what_time_day">איזה שעה ביום?</string>
+    <string name="reminder_due">זמן התזכורת</string>
     <string name="title_add_reminder">הוסף תזכורת</string>
     <string name="title_edit_reminder">ערוך תזכורת</string>
+    <string name="alternate_between_titles">החלפה בין כותרות שונות כל</string>
     <string name="always_use_same_title">תמיד השתמש באותה הכותרת</string>
+    <string name="reminder_will">התזכורת תהיה</string>
     <string name="sound_once">השמע חד-פעמית</string>
     <string name="alert_until_dismissed">התרע עד לאישור</string>
     <string name="and_then_repeat">ואז חזור שוב כל</string>
@@ -1063,6 +1084,8 @@
     <string name="postponed_for">נדחה ב-</string>
     <string name="completed">הושלם</string>
     <string name="next_in">הבא</string>
+    <string name="due">זמן הסיום</string>
+    <string name="due_uppercase">זמן הסיום</string>
     <string name="repeats_every">חזור כל</string>
     <string name="next">הבא</string>
     <string name="last">אחרון</string>
@@ -1074,10 +1097,13 @@
     <string name="nothing_to_undo">אין פעולה לבטל!</string>
     <string name="something_went_wrong_reminder">משהו השתבש ביצירת התזכורת</string>
     <string name="snoozed_reminder_for">תזכורת מושתקת למשך</string>
+    <string name="id_reference">מספר זיהוי</string>
+    <string name="reminder_period">זמן תזכורת</string>
     <string name="hour">שעה</string>
     <string name="hours">שעות</string>
     <string name="weeks">שבועות</string>
     <string name="repeat">חזרה</string>
+    <string name="chime_only">רק צלצול</string>
     <string name="alternating">מתחלף</string>
     <string name="weekdays">ימי השבוע</string>
     <string name="weekends">בסופי השבוע</string>
@@ -1141,9 +1167,12 @@
     <string name="overwrite_intercept_engineering_only">דרוס נק\' חיתוך (מהנדסים בלבד!)</string>
     <string name="manual_overwrite_not_possible">דריסה ידנית לא אפשרית!</string>
     <string name="upload_even_when_using_mobile_data">העלה גם בשימוש בנתונים סלולריים</string>
+    <string name="daily_backup_even_mobile">גבה באופן יומי, גם בזמן שימוש בנתונים ניידים</string>
     <string name="use_mobile_data">השתמש בחבילת גלישה</string>
     <string name="summary_cloud_storage_api_download_enable">נסה גם להוריד נתונים מנייטסקאוט</string>
     <string name="title_cloud_storage_api_download_enable">הורד נתונים</string>
+    <string name="title_cloud_storage_api_download_from_xdrip">דלג על אוביקט מ xDrip</string>
+    <string name="summary_cloud_storage_api_download_from_xdrip">המנע מהורדת קבצים שהועלו על ידי xDrip</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">כייל עם קריאות בדיקות דם חדשות אם התנאים מאפשרים, ללא בקשת אישור (ניסיוני)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">כיול אוטומטי</string>
     <string name="title_rest_api_extra_options">אפשרויות נוספות</string>
@@ -1151,12 +1180,14 @@
     <string name="title_send_bridge_battery_to_nightscout">העלה את רמת סוללת מכשיר הגישור</string>
     <string name="summary_send_dexcom_transmitter_battery_to_nightscout">מעלה את נתוני הסוללה של משדר ה-Dexcom ל-Nightscout. נכללים כל הנתונים שמוצגים במסך סטטוס האוסף.</string>
     <string name="title_send_dexcom_transmitter_battery_to_nightscout">העלה את אחוזי סוללת משדר OB1 G5/G6 ל-Nightscout</string>
+    <string name="summary_send_treatments_to_nightscout">שלח נתוני טיפול ל-Nightscout. בטל סימון אם ה-careportal שלך לא עובד.</string>
     <string name="title_send_treatments_to_nightscout">העלה טיפולים</string>
     <string name="summary_warn_nightscout_failures">הצג והשמע הודעה אם העלאה לנייטסקאוט נכשלת.</string>
     <string name="title_warn_nightscout_failures">התראה על כשלונות</string>
     <string name="summary_nightscout_device_append_source_info">עבור G5, שלח את סוג האוסף (OB1) וסטטוס קריאות שהושלמו (עבור מוד מקורי) לנייטסקאוט.</string>
     <string name="title_nightscout_device_append_source_info">הוסף את שם מקור הנתונים לשם ההתקן</string>
     <string name="summary_tap_to_send_historical_data">לחץ כדי לשלוח נתונים היסטוריים לנייטסקאוט</string>
+    <string name="title_back_fill_data">מלא מידע לאחור</string>
     <string name="summary_tidepool_upload_screen">העלה נתונים ל-Tidepool</string>
     <string name="title_sync_to_tidepool">סנכרון עם Tidepool</string>
     <string name="summary_tidepool_username">שם המשתמש שלך ב-Tidepool, בדרך כלל כתובת הדוא\"ל שלך</string>
@@ -1174,7 +1205,11 @@
     <string name="debugging_test_feature">אפשרות בדיקה לצורך דיבאגינג</string>
     <string name="sync_treatments">סנכרן טיפולים</string>
     <string name="send_bg_readings_to_backfill">שלח השלמות נתונים של קריאות הסוכר</string>
+    <string name="view_old_error_log">צפייה ביומן שגיאות ישן</string>
     <string name="return_to_home_screen">חזור למסך הבית</string>
+    <string name="title_broadcast_service_api">API של שירות שידור</string>
+    <string name="summary_broadcast_service_api">מפעיל את שירות ההתקשרות של xDrip עם אפליקציות צד-שלישי בעזרת ה-API החדש</string>
+    <string name="title_enable_iob_in_api_endpoint">אפשר דיווח IoB (אינסולין שהוזרק) דרך ה API</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">סינכרון נתונים עם צמידי כושר MiBand</string>
     <string name="title_miband_enable">השתמש בצמיד MiBand</string>
@@ -1203,6 +1238,8 @@
     <string name="summary_miband_mac">משאיר ריק לחיפוש אוטומטי</string>
     <string name="title_miband_send_readings_as_notification">קריאות סוכר כהתראות</string>
     <string name="title_miband_vibrate_on_readings">רטט בקבלת קריאה</string>
+    <string name="title_miband_send_calls">בצע שיחות</string>
+    <string name="summary_miband_send_calls">שלח התראות שיחה לצמיד (אנדרואיד 6+)</string>
     <string name="title_miband_graph_category">אפשרויות גרף</string>
     <string name="title_miband_graph_enable">אפשר גרף</string>
     <string name="title_miband_graph_treatment_enable">הצג בולוס</string>
@@ -1220,6 +1257,7 @@
     <string name="miband_watchface_istall_error">שגיאה בזמן העלאת פני שעון ל-MiBand</string>
     <string name="miband_bg_dialog_title">לעדכן נתוני ערכי סוכר עכשיו?</string>
     <string name="title_lefun_band">צמיד Lefun</string>
+    <string name="summary_lefun_enable">סנכרון נתונים עם צמידי כושר Lefun</string>
     <string name="title_lefun_enable">השתמש בצמיד LeFun</string>
     <string name="title_lefun_mac">כתובת MAC</string>
     <string name="summary_lefun_send_readings">הגדירו את תאריך השעון ע\"מ להציג ערכי סוכר. עובד יותר טוב עם mmol/l - עיינו במדריך השימוש</string>
@@ -1250,6 +1288,31 @@
     <string name="title_nsfollow_url">כתובת לעוקב נייטסקאוט</string>
     <string name="summary_nsfollow_download_treatments">הורד גם טיפולים מנייטסקאוט כעוקב</string>
     <string name="title_nsfollow_download_treatments">הורד טיפולים</string>
+    <string name="title_nsfollow_lag">דיליי לעוקב Nightscout</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
+    <string name="title_clfollow_country">המדינה בה מופעל שירות CareLink</string>
+    <string name="summary_clfollow_country">בחר את המדינה בה מופעל שירות ה-CareLink שלך.</string>
+    <string name="title_clfollow_patient">שם המשתמש ב-CareLink</string>
+    <string name="summary_clfollow_patient">שם המשתמש ב-CareLink (אופציונלי)</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
+    <string name="title_clfollow_login">התחבר/י</string>
+    <string name="summary_clfollow_login">התחברות בדפדפן</string>
+    <string name="title_clfollow_download_finger_bgs">בדיקות סוכר באצבע</string>
+    <string name="summary_clfollow_download_finger_bgs">הורדת בדיקות הסוכר באצבע מ-CareLink</string>
+    <string name="title_clfollow_download_boluses">בולוסים</string>
+    <string name="summary_clfollow_download_boluses">הורדת בולוסים מ-CareLink</string>
+    <string name="title_clfollow_download_meals">ארוחות</string>
+    <string name="summary_clfollow_download_meals">הורדת ארוחות מ-CareLink</string>
+    <string name="title_clfollow_download_notifications">התראות</string>
+    <string name="summary_clfollow_download_notifications">הורדת התראות מ-CareLink</string>
     <string name="title_ob1_options">הגדרות איסוף OB1 עבור G5/G6</string>
     <string name="summary_use_ob1_g5_collector_service">שכתוב מלא, עובד על אנדרואיד 4.4-9, תומך במצב נטיבי ועוד</string>
     <string name="title_use_ob1_g5_collector_service">השתמש באוסף OB1</string>
@@ -1318,6 +1381,7 @@
     <string name="title_use_number_icon_large">השתמש באייקון מספר גדול</string>
     <string name="summary_number_icon_large_arrow">מציג את חץ המגמה כאייקון גדול</string>
     <string name="title_number_icon_large_arrow">הצג את חץ המגמה כאייקון גדול</string>
+    <string name="title_xdrip_plus_accessibility">הגדרות Always On Display</string>
     <string name="summary_show_home_on_boot">מציג את מסך xDrip אוטומטית עם הפעלת המכשיר</string>
     <string name="title_show_home_on_boot">הצג את xDrip עם הפעלת המכשיר</string>
     <string name="eula">תנאי שימוש</string>
@@ -1357,6 +1421,9 @@
     <string name="summary_use_notification_channels">משתמש בערוץ ההודעות של Android 8 ומעלה</string>
     <string name="title_use_notification_channels">ערוצי התראות</string>
     <string name="title_notification_channels_grouping">קבץ התראוץ ביחד</string>
+    <string name="title_ascending_volume">הגדרות עוצמת שמע בסדר עולה</string>
+    <string name="summary_ascending_volume_to_medium">כאשר מאופשר, פרופיל שמע עולה יגביר את עוצמת השמע לעוצמה בינונית במקום לעוצמה המירבית</string>
+    <string name="title_ascending_volume_to_medium">הגבר לאמצע</string>
     <string name="summary_play_sound_for_initial_calibration">השמע צליל כשמתבקש כיול ראשוני</string>
     <string name="title_play_sound_for_initial_calibration">התראה ראשונית</string>
     <string name="category_noisy_readings">קריאות רועשות</string>
@@ -1423,6 +1490,8 @@
     <string name="change_settings">שנה את ההגדרות</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">האם ברצונכם למחוק ולאפס את הכיולים עבור סנסור זה?</string>
     <string name="sensor_stop_confirm">האם ברצונך לעצור את החיישן?</string>
+    <string name="sensor_stop_confirm_norestart">לא תוכלו להפעיל מחדש את החיישן.</string>
+    <string name="sensor_stop_confirm_really_norestart">שימו לב! \n\nלא ניתן יהיה להפעיל מחדש את החיישן.</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">אתם משתמשים באלגוריתם ישן לחיזוי הסוכר.\n\n זה מאוד לא מומלץ, ועלול לגרום לבעיות\n\n האם לבטל את זה בשבילכם\\ן?</string>
     <string name="settings_issue">בעיה בהגדרות!</string>
     <string name="use_bg_for_calibration">להשתמש בבדיקת דם לכיול?</string>
@@ -1542,9 +1611,32 @@
     <string name="reduce_battery_and_network_overhead">חסוך בסוללה ובשימוש בנתונים בעזרת ניתוח נתונים במכה, וכן הפחתה של מידע לא נחוץ</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">פשט את הגרפים בעזרת החלקה של נתונים יוצאי דופן</string>
     <string name="graph_smoothing">החלקת הגרף</string>
+    <string name="enable_graph_smoothing">אפשר</string>
     <string name="last_reading">קריאה אחרונה</string>
     <string name="cannot_choose_file_without_permission">אין אפשרות לבחור קובץ בלי הרשאה לאחסון</string>
     <string name="show_unsmoothed">הראה לא מוחלק</string>
     <string name="show_unsmoothed_summary">הראה מידע לא מוחלק גם עם החלקת הגרף מאופשרצ, 
 אם תוסף הכיול בשימוש יוצג גרף לא מוחלק ולא הגרף מהתוסף.</string>
+    <string name="titleInside_yRange">אפשר</string>
+    <string name="manage_permissions">ניהול הרשאות</string>
+    <string name="open_health_connect_settings_to_manually_manage_permissions">פתח הגדרות Health Connect כדי לשנות הרשאות ידנית</string>
+    <string name="send_data_to_health_connect">שלח מידע ל-Health Connect</string>
+    <string name="get_data_from_health_connect">קבל נתונים מ-Health Connect</string>
+    <string name="requires_android_8_and_google_companion_application_or_android_14">דרושה גרסת אנדרואיד 8 ומעלה ואפליקציית Google companion או גרסת אנדרוראיד 14 ומעלה</string>
+    <string name="send_and_receive_data_from_google_health_connect_and_google_fit">שלח וקבל התראות מאפליקציות Google Health Connect ו-Google Fit</string>
+    <string name="google_health_connect">Google Health Connect</string>
+    <string name="google_health_connect_needs_perms">שגיאה: Health Connect דורש הרשאות! נסו שנית מתוך חלון ההגדרות</string>
+    <string name="carelink_auth_country_required">חובה להזין מדינה!</string>
+    <string name="carelink_auth_status_authenticated">נדרש אימות!</string>
+    <string name="carelink_auth_status_not_authenticated">לא נמצא סטטוס אימות</string>
+    <string name="carelink_auth_login_in_progress">התחברות בתהליך...</string>
+    <string name="carelink_refresh_token_start">התחל כניסה מחדש</string>
+    <string name="carelink_refresh_token_failed">כניסה מחדש נכשלה, מנסה שנית!</string>
+    <string name="carelink_download_start">התחל הורדה</string>
+    <string name="carelink_download_failed">הורדת המידע נכשלה!</string>
+    <string name="carelink_credential_status_not_authenticated">לא מחובר/ת, אנא התחבר/י</string>
+    <string name="carelink_credential_status_access_expired">פג תוקף הדף, הדף יתרענן אוטומטית!</string>
+    <string name="carelink_credential_status_refresh_expired">פג תוקף כניסתך, אנא התחבר/י מחדש!</string>
+    <string name="reraise_alerts_before_snooze_time">השמע את ההתראה שוב לפני זמן ההשתקה</string>
+    <string name="g7_should_start_automatically">חיישן ה-G7 יתחיל אוטומטית</string>
 </resources>

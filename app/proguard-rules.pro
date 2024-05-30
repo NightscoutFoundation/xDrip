@@ -56,13 +56,13 @@
 -keep class org.slf4j.** { *; }
 -keep class rx.internal.util.** { *; }
 -keep class sun.misc.Unsafe { *; }
--keep class com.eveningoutpost.dexdrip.Models.** { *; }
 -keep class com.eveningoutpost.dexdrip.models.** { *; }
--keep class com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.** { *; }
+-keep class com.eveningoutpost.dexdrip.models.** { *; }
+-keep class com.eveningoutpost.dexdrip.importedlibraries.usbserial.** { *; }
 -keep class com.eveningoutpost.dexdrip.importedlibraries.usbserial.** { *; }
 -keep class ar.com.hjg.pngj.** { *; }
 -keep class android.support.v7.widget.SearchView { *; }
-
+-keep class kotlinx.serialization.Serializable { *; }
 
 -dontwarn java.util.concurrent.**
 

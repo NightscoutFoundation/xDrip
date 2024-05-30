@@ -9,17 +9,17 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
-import com.eveningoutpost.dexdrip.UtilityModels.SpeechUtil;
-import com.eveningoutpost.dexdrip.UtilityModels.VehicleMode;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
+import com.eveningoutpost.dexdrip.utilitymodels.SpeechUtil;
+import com.eveningoutpost.dexdrip.utilitymodels.VehicleMode;
 import com.eveningoutpost.dexdrip.ui.activities.SelectAudioDevice;
 import com.eveningoutpost.dexdrip.xdrip;
 
-import static com.eveningoutpost.dexdrip.UtilityModels.SpeechUtil.TWICE_DELIMITER;
+import static com.eveningoutpost.dexdrip.utilitymodels.SpeechUtil.TWICE_DELIMITER;
 
 /**
  * jamorham
@@ -44,18 +44,16 @@ public class HeadsetStateReceiver extends BroadcastReceiver {
                 final int state = intent.getIntExtra(BluetoothHeadset.EXTRA_STATE, -1);
                 final int previousState = intent.getIntExtra(BluetoothHeadset.EXTRA_PREVIOUS_STATE, -1);
                 final String deviceInfo = device.getName() + "\n" + device.getAddress() + " " + (device.getBluetoothClass() != null ? device.getBluetoothClass() : "<unknown class>");
-                //UserError.Log.uel(TAG, "Bluetooth audio connection state change: " + state + " was " + previousState + " " + device.getAddress() + " " + device.getName());
+                // UserError.Log.uel(TAG, "Bluetooth audio connection state change: from " + previousState + " to " + state + " " + device.getAddress() + " " + device.getName());
                 if (state == BluetoothProfile.STATE_CONNECTED && previousState != BluetoothProfile.STATE_CONNECTED) {
                     PersistentStore.setString(PREF_LAST_CONNECTED_MAC, device.getAddress());
                     PersistentStore.setString(PREF_LAST_CONNECTED_NAME, device.getName());
                     UserError.Log.uel(TAG, "Bluetooth Audio connected: " + deviceInfo);
                     processDevice(device.getAddress(), true);
-
-                } else if (state == BluetoothProfile.STATE_DISCONNECTED && previousState == BluetoothProfile.STATE_CONNECTED) {
+                } else if (state == BluetoothProfile.STATE_DISCONNECTED && previousState != BluetoothProfile.STATE_DISCONNECTED) {
                     UserError.Log.uel(TAG, "Bluetooth Audio disconnected: " + deviceInfo);
                     processDevice(device.getAddress(), false);
                 }
-
             } else {
                 UserError.Log.d(TAG, "Device was null in intent!");
             }

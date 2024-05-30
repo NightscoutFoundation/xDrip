@@ -2,17 +2,17 @@ package com.eveningoutpost.dexdrip.wearintegration;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.v4.content.WakefulBroadcastReceiver;
+import androidx.annotation.NonNull;
+import androidx.legacy.content.WakefulBroadcastReceiver;
 
-import com.eveningoutpost.dexdrip.Models.APStatus;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+
+import com.eveningoutpost.dexdrip.models.APStatus;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.NewDataObserver;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import lombok.val;
@@ -27,7 +27,7 @@ public class ExternalStatusService extends IntentService {
     private static final String EXTRA_STATUSLINE = "com.eveningoutpost.dexdrip.Extras.Statusline";
     public static final String ACTION_NEW_EXTERNAL_STATUSLINE = "com.eveningoutpost.dexdrip.ExternalStatusline";
     //public static final String RECEIVER_PERMISSION = "com.eveningoutpost.dexdrip.permissions.RECEIVE_EXTERNAL_STATUSLINE";
-    private static final int MAX_LEN = 40;
+    private static final int MAX_LEN = 70;
     private final static String TAG = ExternalStatusService.class.getSimpleName();
 
     public ExternalStatusService() {

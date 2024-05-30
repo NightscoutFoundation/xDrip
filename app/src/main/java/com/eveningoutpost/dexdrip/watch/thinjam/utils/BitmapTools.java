@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.watch.thinjam.utils;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

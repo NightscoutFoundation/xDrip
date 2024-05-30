@@ -8,8 +8,8 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -17,10 +17,10 @@ import android.widget.Toast;
 import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Models.AlertType;
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.AlertType;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.File;
@@ -31,6 +31,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.eveningoutpost.dexdrip.receiver.InfoContentProvider.ping;
 import static com.eveningoutpost.dexdrip.utils.FileUtils.getExternalDir;
 
 
@@ -162,6 +163,7 @@ public class SdcardImportExport extends BaseAppCompatActivity {
 
     public static void storePreferencesFromBytes(byte[] bytes, Context context) {
         if (dataFromBytes(bytes, PREFERENCES_FILE, context)) {
+            ping("pref");
             Log.i(TAG, "Restarting as new preferences loaded from bytes");
             hardReset();
         } else {
@@ -291,6 +293,7 @@ public class SdcardImportExport extends BaseAppCompatActivity {
             JoH.static_toast_long("Restoring Settings");
             if (copyPreferencesFileBack(activity, results.get(0))) {
                 Log.e(TAG, "Restoring preferences succeeded from first match: " + results.get(0));
+                ping("pref");
                 hardReset();
             } else {
                 JoH.static_toast_long("Couldn't restore preferences from: " + results.get(0));

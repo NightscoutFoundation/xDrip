@@ -13,30 +13,30 @@
     <string name="unknown_device">認識不可のデバイス</string>
     <string name="connecting_to_device">デバイスに接続しています</string>
     <string name="title_activity_raw_data_table">表形式のデータ</string>
-    <string name="title_activity_calculated_data_table">表形式の計算済みデータ</string>
+    <string name="title_activity_calculated_data_table">計算済みデータ</string>
     <string name="title_activity_start_new_sensor">新しいセンサーを開始</string>
     <string name="title_activity_new_sensor_location">新しいセンサーの位置</string>
-    <string name="title_activity_stop_sensor">センサーを中止</string>
+    <string name="title_activity_stop_sensor">センサーを停止</string>
     <string name="title_activity_nav_drawer">ナビパネル</string>
     <string name="navigation_drawer_open">ナビゲーション バネルを開く</string>
     <string name="navigation_drawer_close">ナビゲーション バネルを閉じる</string>
-    <string name="title_activity_calibration_check_in">カリブレーションの記録</string>
-    <string name="title_activity_usb_connected">接続済みUSBの一覧</string>
+    <string name="title_activity_calibration_check_in">キャリブレーション履歴</string>
+    <string name="title_activity_usb_connected">接続済みのUSB</string>
     <string name="snooze">スヌーズ</string>
     <string name="snooze_hint">X 分のスヌーズ通知</string>
     <string name="ok">OK</string>
     <string name="cancel">キャンセル</string>
     <string name="no">No</string>
-    <string name="pref_sensor_location_dont_ask_again"> 今後表示しないで下さい</string>
+    <string name="pref_sensor_location_dont_ask_again">次回から表示しない</string>
     <string name="title_activity_error">"エラーとイベントの一覧"</string>
     <string name="title_activity_main">主要な記録</string>
     <string name="title_activity_fake_numbers">偽の番号</string>
     <string name="title_activity_edit_alert">通知を編集</string>
     <string name="title_activity_double_calibration">初期キリブレーション</string>
-    <string name="title_activity_calibration_override">カリブレーションの変更</string>
+    <string name="title_activity_calibration_override">キャリブレーションの上書</string>
     <string name="pref_header_cloud_storage">クラウドストレージ</string>
     <string name="auto_configure_title">自動構成</string>
-    <string name="prefs_auto_config_summary">バーコードで自動構成</string>
+    <string name="prefs_auto_config_summary">バーコードを利用で自動設定。</string>
     <string name="scan_share2_barcode">共有のバーコードをスキャン</string>
     <string name="pref_share2_scan_barcode_summary">または共有の受信機のバーコードをスキャンする</string>
     <!-- MongoDB Settings -->
@@ -46,11 +46,11 @@
     <string name="pref_title_mongodb_uri">URI</string>
     <string name="pref_dialog_mongodb_uri">MongoDBのURIを入力</string>
     <string name="pref_message_mongodb_uri">{} の中にある値の例を
-貴方の正しい値に置き換えて下さい</string>
+自身の正しい値に置き換えて下さい</string>
     <string name="pref_default_mongodb_uri">mongodb://{user}:{password}@{host}.mongolab.com:{11111}/{database}</string>
     <string name="pref_title_mongodb_collection">コレクション名</string>
     <string name="pref_dialog_mongodb_collection">コレクション名を入力</string>
-    <string name="pref_message_mongodb_collection">CGMデータが保存されるのコレクション名</string>
+    <string name="pref_message_mongodb_collection">CGMデータが保存されるコレクション名</string>
     <string name="pref_title_mongodb_device_status_collection">デバイスの状態のコレクション名</string>
     <string name="pref_dialog_mongodb_device_status_collection">デバイスの状態のコレクション名\"を入力</string>
     <string name="pref_message_mongodb_device_status_collection">電池と他のデバイスデータが保存されるのコレクション名</string>
@@ -172,10 +172,12 @@
     <string name="show_parakeet_map">Parakeetのマップを表示</string>
     <string name="switch_parakeet_to_setup_mode">Parakeetをセットアップモードに切り替える</string>
     <string name="view_events_log">イベントログを見る</string>
+    <string name="show_libre_trend">リブレの傾向を表示</string>
     <string name="libre_15_minutes_graph">リブレの15 分グラフ</string>
     <string name="libre_last_x_minutes_graph">リブレの最後の %d 分グラフ</string>
     <string name="share_config_via_qr_code">QRコードで設定を共有する</string>
     <string name="check_for_updated_version">最新バージョンを確認する</string>
+    <string name="current_version_is_up_to_date">選択したチャンネルのアップデートがありません</string>
     <string name="send_feedback_to_developer">開発者にフィードバックを送信</string>
     <string name="home_screen">ホーム画面</string>
     <string name="event_logs">イベントログ</string>
@@ -261,9 +263,22 @@
     <string name="pref_summary_disable_wearG5_on_missedreadings">最後に数値を読み取り後、血糖値読み取りサービスを終了する。</string>
     <string name="pref_disable_wearG5_on_missedreadings_level">最後に数値を読み取ってから数分</string>
     <string name="pref_node_wearG5">血糖値読み取りサービスを実行中のデバイス</string>
+    <string name="pref_sync_wear_logs">ウェアログを同期</string>
+    <string name="pref_summary_sync_wear_logs">イベントビューアにウェアログを送信</string>
+    <string name="pref_wear_logs_prefix">ウェアログ　プレフィックス</string>
+    <string name="pref_show_treatments">トリートメントの表示</string>
+    <string name="pref_summary_show_treatments">グラフにトリートメントポイントを表示</string>
+    <string name="pref_use_wear_health">ウェアのヘルスデータを利用</string>
+    <string name="pref_summary_use_wear_health">歩数カウンターが利用可能な場合は表示</string>
+    <string name="pebble_integration">Pebble 統合</string>
+    <string name="send_data_to_pebble_watchface">Pebbleにデータを表示</string>
+    <string name="pebble_watch_integration">Pebble 統合</string>
     <string name="history">履歴</string>
+    <string name="statistics">統計</string>
+    <string name="snooze_alert">スヌーズ　アラート</string>
     <string name="smart_alerting">スマート通知</string>
     <string name="reset">リセット</string>
+    <string name="xdrip_plus_extra_settings">xDrip+ 追加設定</string>
     <string name="everyday">毎日</string>
     <string name="very_low">非常に低い</string>
     <string name="low">低い</string>
@@ -295,7 +310,7 @@
     <string name="label_show_steps_km">km:%1$s</string>
     <string name="label_show_steps_mi">mi:%1$s</string>
     <string name="pref_message_influxdb_uri">{} の中にある値の例を
-貴方の正しい値に置き換えて下さい</string>
+自身の正しい値に置き換えて下さい</string>
     <string name="pref_dialog_influxdb_database">データベース</string>
     <string name="pref_dialog_influxdb_username">ユーザー</string>
     <string name="pref_dialog_influxdb_password">パスワード</string>
@@ -307,12 +322,13 @@
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
     <string name="error">エラー</string>
-    <string name="stop_sensor">センサーを中止</string>
+    <string name="stop_sensor">センサーを停止</string>
     <string name="initial_calibration">初期キリブレーション</string>
     <string name="bluetooth_scan">Bluetoothスキャン</string>
     <!-- trend arrow for speak -->
     <string name="Flat">フラット</string>
     <string name="days">日</string>
+    <string name="aggressive_power_manager">お使いのデバイスにはアグレッシブな電源管理アプリがあります。通常、システム設定からアクセスできます。xDripがバックグラウンド制限から除外されていることを確認してください。</string>
     <string name="eng_mode_is_on">エンジニアリングモードが有効になっています。予期せぬ動作を引き起こす可能性があるため、必要な場合以外は無効にしてください。</string>
     <string name="yes">はい</string>
     <string name="garmin">Garmin</string>
@@ -351,14 +367,43 @@
     <string name="unit_days">日\"</string>
     <string name="unit_weeks">週\"</string>
     <string name="no_data">データがありません。</string>
+    <string name="daily_backup_even_mobile">モバイルデータでも毎日バックアップが可能。</string>
     <string name="title_tidepool">Tidepool</string>
     <string name="summary_broadcast_service_api">新しいAPIを使用して、サードパーティのアプリケーションとxDrip通信を有効にします。</string>
     <string name="title_features">機能</string>
     <string name="title_screens">画面</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
+    <string name="title_clfollow_patient">CareLink ™のユーザー名</string>
+    <string name="summary_clfollow_patient">CareLink ™のユーザー名 (オプション)</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
+    <string name="title_clfollow_login">ログイン</string>
+    <string name="summary_clfollow_login">ブラウザでログインする</string>
     <string name="title_color_smb_icon">SMBアイコン</string>
     <string name="title_color_smb_line">SMBライン</string>
     <string name="title_pick_numberwall_start">オン</string>
+    <string name="title_xdrip_plus_accessibility">常時表示設定</string>
+    <string name="summary_aod_use_top">画面の最初の5分の1をAODウィジェットに使用する。</string>
+    <string name="title_aod_use_top">上部を使用</string>
+    <string name="summary_aod_use_top_center">画面の5分の2をAODウィジェットに使用する。</string>
+    <string name="title_aod_use_top_center">上部の中央を使用</string>
+    <string name="summary_aod_use_center">画面の5分の3をAODウィジェットに使用する。</string>
+    <string name="title_aod_use_center">中央を使用</string>
+    <string name="summary_aod_use_center_bottom">画面の5分の4をAODウィジェットに使用する。</string>
+    <string name="title_aod_use_center_bottom">下部の中央を使用</string>
+    <string name="summary_aod_use_bottom">画面の最後の5分の1をAODウィジェットに使用する。</string>
+    <string name="title_aod_use_bottom">下部を使用</string>
     <string name="eula">EULA</string>
+    <string name="title_ascending_volume">ボリュームの上昇設定。</string>
+    <string name="summary_ascending_volume_to_medium">有効にすると、最大音量ではなく中音量に上昇します</string>
+    <string name="title_ascending_volume_to_medium">中程度にに上昇</string>
     <string name="note_search_button">検索</string>
     <string name="all_note_button">全て</string>
     <string name="insulin">インスリン</string>
@@ -380,7 +425,7 @@
     <string name="prepare_to_test">テストの準備をします！</string>
     <string name="not_so_quickly_wait_30_seconds">急がず30秒待ちます</string>
     <string name="scanning">スキャン中</string>
-    <string name="enable_streaming_dialog_dont_ask_again"> 今後表示しないで下さい</string>
+    <string name="enable_streaming_dialog_dont_ask_again">次回から表示しない</string>
     <string name="zero_value">ゼロ値</string>
     <string name="adjust_dose">用量を調整</string>
     <string name="Dose">投与量</string>
@@ -392,4 +437,37 @@
     <string name="please_wait_seconds_before_trying_to_start_sensor">センサーを起動する前に %d 秒お待ちください</string>
     <string name="save_power">節電</string>
     <string name="graph_smoothing">グラフのスムージング</string>
+    <string name="enable_graph_smoothing">有効にする</string>
+    <string name="you_cannot_undo_delete_alert">これを元に戻すことはできません！\n\nこのアラートを削除してもよろしいですか？</string>
+    <string name="titleInside_yRange">有効にする</string>
+    <string name="wait_to_connect">設定を確認し、接続を待ちます。</string>
+    <string name="summary_sens_expiry_notify">センサーの有効期限が近づいたら通知します。</string>
+    <string name="title_sens_expiry_notify">センサーの有効期限</string>
+    <string name="title_advanced_settings_4_Lib2">Libre 2の高度な設定</string>
+    <string name="title_Lib2_show_raw_values">グラフに生の値を表示</string>
+    <string name="summary_Lib2_show_raw_values">グラフに生の値を表示するにはオンにします。</string>
+    <string name="title_Lib2_show_sense_on_status">ステータスにセンサー情報を表示する</string>
+    <string name="summary_Lib2_show_sense_on_status">オンにすると、Libre 2センサーのステータスに追加情報が表示されます。</string>
+    <string name="import_qr_code_warning">信頼できるソースからの設定のみインポートします！\n\n以下の設定をインポートすることを確認してください：\n\n</string>
+    <string name="scan_to_load_xdrip_settings">xDrip設定を読み込むためにスキャンする</string>
+    <string name="manage_permissions">権限の管理</string>
+    <string name="open_health_connect_settings_to_manually_manage_permissions">Health Connectの設定を開き、権限を手動で管理します。</string>
+    <string name="send_data_to_health_connect">Health Connectにデータを送信します。</string>
+    <string name="get_data_from_health_connect">Health Connectからデータを取得する。</string>
+    <string name="requires_android_8_and_google_companion_application_or_android_14">Android 8以降とGoogle companion application、またはAndroid 14以降が必要です。</string>
+    <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Google Health ConnectとGoogle Fitからデータを送受信。</string>
+    <string name="google_health_connect">Google Health Connect</string>
+    <string name="google_health_connect_needs_perms">ERROR: Health connectには権限が必要です！- 設定メニューからもう一度お試しください。</string>
+    <string name="carelink_auth_country_required">国が必要です！</string>
+    <string name="carelink_auth_status_authenticated">認証済みのステータス！</string>
+    <string name="carelink_auth_status_not_authenticated">ステータスが認証されていません！</string>
+    <string name="carelink_auth_login_in_progress">ログイン中...</string>
+    <string name="carelink_refresh_token_start">アクセスの更新を開始</string>
+    <string name="carelink_refresh_token_failed">アクセスの更新に失敗しました！再度お試しください！</string>
+    <string name="carelink_download_start">ダウンロードを開始</string>
+    <string name="carelink_download_failed">ダウンロードに失敗しました！</string>
+    <string name="carelink_credential_status_not_authenticated">ログインしていません！ログインしてください！</string>
+    <string name="carelink_credential_status_access_expired">アクセスの有効期限が切れました！更新されます！</string>
+    <string name="carelink_credential_status_refresh_expired">ログイン期限が切れました！ログインしてください！</string>
+    <string name="data_source">データソース:</string>
 </resources>

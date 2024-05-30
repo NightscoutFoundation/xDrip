@@ -1,12 +1,12 @@
 package com.eveningoutpost.dexdrip.ui.charts;
 
-import android.support.annotation.ColorInt;
-import android.support.annotation.NonNull;
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import android.text.format.DateFormat;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.UtilityModels.ColorCache;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.utilitymodels.ColorCache;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.profileeditor.BasalProfile;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -28,7 +28,7 @@ import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.SubcolumnValue;
 import lecho.lib.hellocharts.view.ColumnChartView;
 
-import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
+import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.getCol;
 
 // jamorham
 
@@ -65,7 +65,7 @@ public class BasalChart {
     }
 
     public static void refreshAxis(final ColumnChartView chart) {
-        chart.getChartData().setAxisYRight(chartYAxis(chart.getMaximumViewport().top));
+        chart.getChartData().setAxisYRight(chartYAxis((float) chart.getMaximumViewport().top));
     }
 
     private static List<Column> getColumns(final String profileName, @ColorInt int color) {
@@ -148,7 +148,7 @@ public class BasalChart {
         float max_height = 0.2f;
         for (Column col : lineData.getColumns()) {
             final SubcolumnValue sub = col.getValues().get(0);
-            final float val = Math.max(sub.getValue(), sub.getImmutableOriginValue());
+            final float val = (float) Math.max(sub.getValue(), sub.getImmutableOriginValue());
             if (val > max_height) {
                 max_height = val;
             }

@@ -7,7 +7,7 @@
 
         <variable
             name="error"
-            type="com.eveningoutpost.dexdrip.Models.UserError" />
+            type="com.eveningoutpost.dexdrip.models.UserError" />
 
         <variable
             name="viewModel"

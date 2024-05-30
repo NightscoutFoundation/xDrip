@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.profileeditor;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
+
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -15,7 +15,9 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.R;
 
 import java.util.List;

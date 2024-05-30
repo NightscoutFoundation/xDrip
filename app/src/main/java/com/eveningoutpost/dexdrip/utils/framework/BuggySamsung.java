@@ -2,15 +2,15 @@ package com.eveningoutpost.dexdrip.utils.framework;
 
 import android.os.Build;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.buggy_samsung;
-import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
+import static com.eveningoutpost.dexdrip.models.JoH.buggy_samsung;
+import static com.eveningoutpost.dexdrip.models.JoH.msSince;
 
 /**
  * jamorham
@@ -42,7 +42,7 @@ public class BuggySamsung {
                 if (wakeup_jitter > 1000) {
                     UserError.Log.d(TAG, "Wake up, time jitter: " + JoH.niceTimeScalar(wakeup_jitter));
                     if ((wakeup_jitter > TOLERABLE_JITTER) && (!buggy_samsung) && isSamsung()) {
-                        UserError.Log.wtf(TAG, "Enabled Buggy Samsung workaround due to jitter of: " + JoH.niceTimeScalar(wakeup_jitter));
+                        UserError.Log.wtf(TAG, "Enabled wake workaround due to jitter of: " + JoH.niceTimeScalar(wakeup_jitter));
                         buggy_samsung = true;
                         PersistentStore.incrementLong(BUGGY_SAMSUNG_ENABLED);
                         max_wakeup_jitter = 0;
@@ -61,13 +61,17 @@ public class BuggySamsung {
     // enable if we have historic markers showing previous enabling
     public void checkWasBuggy() {
         if (!buggy_samsung && isSamsung() && PersistentStore.getLong(BUGGY_SAMSUNG_ENABLED) > 4) {
-            UserError.Log.e(TAG, "Enabling buggy samsung due to persistent metric");
+            UserError.Log.e(TAG, "Enabling wake workaround due to persistent metric");
             buggy_samsung = true;
         }
     }
 
     public static boolean isSamsung() {
-        return Build.MANUFACTURER.toLowerCase().contains("samsung");
+        return Build.MANUFACTURER.toLowerCase().contains("samsung")
+                || Build.MANUFACTURER.toLowerCase().contains("xiaomi")
+                || Build.MANUFACTURER.toLowerCase().contains("oneplus")    // experimental test
+                || Build.MANUFACTURER.toLowerCase().contains("oppo")      // experimental test
+                || Build.MANUFACTURER.toLowerCase().contains("huawei");      // experimental test
     }
 
 }

@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip.utils;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.UtilityModels.WholeHouse;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.utilitymodels.WholeHouse;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -15,7 +15,7 @@ import java.util.List;
 public class Root {
 
     private static final String TAG = "RootTools";
-    private static Boolean gotRoot;
+    public static Boolean gotRoot;
 
     public static boolean gotRoot() {
         if (gotRoot == null) {

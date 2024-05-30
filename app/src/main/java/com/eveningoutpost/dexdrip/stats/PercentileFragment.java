@@ -1,9 +1,10 @@
 package com.eveningoutpost.dexdrip.stats;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.eveningoutpost.dexdrip.models.UserError.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

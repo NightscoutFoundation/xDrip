@@ -1,14 +1,14 @@
 package com.eveningoutpost.dexdrip.eassist;
 
-import android.databinding.ObservableField;
+import androidx.databinding.ObservableField;
 import android.os.PowerManager;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utils.SMS;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -28,6 +28,7 @@ public class EmergencyAssist {
 
     public static final String EMERGENCY_ASSIST_PREF = "emergency_assist_enabled";
     public static final String EMERGENCY_LOW_MINS_PREF = "emergency_assist_low_alert_minutes";
+    public static final String EMERGENCY_LOWEST_MINS_PREF = "emergency_assist_lowest_alert_minutes";
     public static final String EMERGENCY_HIGH_MINS_PREF = "emergency_assist_high_alert_minutes";
 
     private static final String TAG = EmergencyAssist.class.getSimpleName();
@@ -78,7 +79,8 @@ public class EmergencyAssist {
     public static boolean isEnabled(Reason reason) {
         if (!isEnabled()) return false;
         switch (reason) {
-
+            case DID_NOT_ACKNOWLEDGE_LOWEST_ALERT:
+                return Pref.getBooleanDefaultFalse("emergency_assist_lowest_alert");
             case DID_NOT_ACKNOWLEDGE_LOW_ALERT:
                 return Pref.getBooleanDefaultFalse("emergency_assist_low_alert");
             case DID_NOT_ACKNOWLEDGE_HIGH_ALERT:
@@ -110,6 +112,7 @@ public class EmergencyAssist {
     private static String getReasonText(Reason reason) {
 
         switch (reason) {
+            case DID_NOT_ACKNOWLEDGE_LOWEST_ALERT:
             case DID_NOT_ACKNOWLEDGE_LOW_ALERT:
                 return getString(R.string.did_not_acknowledge_a_low_glucose_alert);
             case DID_NOT_ACKNOWLEDGE_HIGH_ALERT:
@@ -137,6 +140,8 @@ public class EmergencyAssist {
 
     private static long timeThreshold(Reason reason) {
         switch (reason) {
+            case DID_NOT_ACKNOWLEDGE_LOWEST_ALERT:
+                return minutesToMs(Pref.getString(EMERGENCY_LOWEST_MINS_PREF, "60"));
             case DID_NOT_ACKNOWLEDGE_LOW_ALERT:
                 return minutesToMs(Pref.getString(EMERGENCY_LOW_MINS_PREF, "60"));
             case DID_NOT_ACKNOWLEDGE_HIGH_ALERT:
@@ -231,6 +236,7 @@ public class EmergencyAssist {
     }
 
     public enum Reason {
+        DID_NOT_ACKNOWLEDGE_LOWEST_ALERT,
         DID_NOT_ACKNOWLEDGE_LOW_ALERT,
         DID_NOT_ACKNOWLEDGE_HIGH_ALERT,
         EXTENDED_MISSED_READINGS,
