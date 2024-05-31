@@ -731,7 +731,7 @@
     <string name="g5_scan_constantly">Some devices work better when scanning constantly, others do not. If reading is reliable when this setting is not selected, you should have improved battery life. Normally best to keep this disabled</string>
     <string name="scan_for_g5_constantly">Scan constantly</string>
     <string name="g5_force_ui_thread">This is crucial for some Android devices to properly connect, but can cause missed readings when other UI intensive activities are in use.</string>
-    <string name="force_g5_ui_thread">Force to UI Thread</string>
+    <string name="force_g5_ui_thread">Force Dex to UI Thread</string>
     <string name="authentificate_before_reading">Authenticate before each read</string>
     <string name="g5_full_authentification">This will attempt a full authentication each read attempt. Needed for newer G5 transmitter firmware versions.</string>
     <string name="unbond_g5_before_read">Unbond G5 before each read</string>
