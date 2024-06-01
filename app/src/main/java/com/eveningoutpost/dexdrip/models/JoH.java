@@ -1881,6 +1881,17 @@ public class JoH {
         return newBytes;
     }
 
+    public static byte[] joinBytes(final byte[] first, final byte[] second) {
+        if (first == null || second == null) {
+            throw new IllegalArgumentException("Input arrays cannot be null");
+        }
+        final int totalLength = first.length + second.length;
+        final byte[] result = new byte[totalLength];
+        System.arraycopy(first, 0, result, 0, first.length);
+        System.arraycopy(second, 0, result, first.length, second.length);
+        return result;
+    }
+
 
     public static long checksum(byte[] bytes) {
         if (bytes == null) return 0;

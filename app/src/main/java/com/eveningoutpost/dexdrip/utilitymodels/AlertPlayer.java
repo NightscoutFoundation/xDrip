@@ -4,6 +4,7 @@ import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 import static com.eveningoutpost.dexdrip.models.JoH.delayedMediaPlayerRelease;
 import static com.eveningoutpost.dexdrip.models.JoH.setMediaDataSource;
 import static com.eveningoutpost.dexdrip.models.JoH.stopAndReleasePlayer;
+import static com.eveningoutpost.dexdrip.receiver.InfoContentProvider.ping;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -188,6 +189,7 @@ public class AlertPlayer {
 
         ActiveBgAlert.Create(newAlert.uuid, start_snoozed, nextAlertTime);
         if (!start_snoozed) VibrateNotifyMakeNoise(ctx, newAlert, bgValue, 0);
+        ping("alarm");
         AlertTracker.evaluate();
     }
 
@@ -213,6 +215,7 @@ public class AlertPlayer {
         }
         revertCurrentVolume(streamType);
         releaseAudioFocus();
+        ping("alarm");
     }
 
     // only do something if an alert is active - only call from interactive
@@ -246,6 +249,7 @@ public class AlertPlayer {
         }
 
         BroadcastEntry.cancelAlert();
+        ping("alarm");
     }
 
     public synchronized void Snooze(Context ctx, int repeatTime, boolean from_interactive) {
@@ -554,6 +558,9 @@ public class AlertPlayer {
             }
             volumeFrac = Math.max(volumeFrac, 0); // Limit volumeFrac to values greater than and equal to 0
             volumeFrac = Math.min(volumeFrac, 1); // Limit volumeFrac to values less than and equal to 1
+            if (Pref.getBooleanDefaultFalse("ascending_volume_to_medium") && profile == ALERT_PROFILE_ASCENDING) { // If ascending volume profile is chosen and ascending_volume_to_medium is enabled
+                volumeFrac = Math.min(volumeFrac, (float) 0.7); // Clamp the ascending volume at the medium level.
+            }
             if (profile == ALERT_PROFILE_MEDIUM) {
                 volumeFrac = (float) 0.7;
             }

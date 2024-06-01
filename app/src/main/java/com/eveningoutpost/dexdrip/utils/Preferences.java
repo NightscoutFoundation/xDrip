@@ -79,6 +79,7 @@ import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.eveningoutpost.dexdrip.models.UserNotification;
 import com.eveningoutpost.dexdrip.plugin.Dialog;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
+import com.eveningoutpost.dexdrip.receiver.InfoContentProvider;
 import com.eveningoutpost.dexdrip.services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.services.BluetoothGlucoseMeter;
 import com.eveningoutpost.dexdrip.services.DexCollectionService;
@@ -299,6 +300,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     Toast.makeText(getApplicationContext(), "Loaded " + Integer.toString(changes) + " preferences from QR code", Toast.LENGTH_LONG).show();
                     PlusSyncService.clearandRestartSyncService(getApplicationContext());
                     DesertSync.settingsChanged(); // refresh
+                    InfoContentProvider.ping("pref");
                     if (prefs.getString("dex_collection_method", "").equals("Follower")) {
                         PlusSyncService.clearandRestartSyncService(getApplicationContext());
                         GcmActivity.last_sync_request = 0;

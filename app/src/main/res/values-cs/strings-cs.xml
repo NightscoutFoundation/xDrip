@@ -1447,7 +1447,10 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="summary_notification_channels_grouping">Seskupit všechna oznámení v notifikační liště do jednoho oznámení. Není možné použít spolu s možností Hodnota glykémie jako číselná ikona v notifikační liště</string>
     <string name="title_notification_channels_grouping">Seskupit oznámení do jednoho</string>
     <string name="summary_delay_ascending_3min">Posunout začátek zvukové výstrahy o 3 minuty pro zvukový profil vzestupné hlasitosti. Vibrace (pokud jsou povoleny) začnou ihned po spuštění výstrahy bez ohledu na toto nastavení.</string>
+    <string name="title_ascending_volume">Nastavení vzestupné hlasitosti</string>
     <string name="title_delay_ascending_3min">Zpozdit vzestupnou hlasitost</string>
+    <string name="summary_ascending_volume_to_medium">Pokud je povoleno, zvukový profil vzestupné hlasitosti bude místo maximální hlasitosti stoupat na střední hlasitost</string>
+    <string name="title_ascending_volume_to_medium">Vzestup na střední hlasitost</string>
     <string name="summary_play_sound_for_initial_calibration">Přehrát zvuk při požadavku na výchozí kalibraci</string>
     <string name="title_play_sound_for_initial_calibration">Výchozí výstraha</string>
     <string name="category_noisy_readings">Šum v hodnotách glykémie</string>
@@ -1718,8 +1721,9 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="special_pairing_workaround">Speciální způsob párování pro telefony Samsung</string>
     <string name="save_power">Úsporný režim</string>
     <string name="reduce_battery_and_network_overhead">Snížit spotřebu baterie a objem přenesených dat pomocí dávkového zpracování a vyloučení nepotřebných dat</string>
-    <string name="simplify_graphs_by_smoothing_out_irregularities">Zjednodušit grafy vyhlazením (odstraněním) odchylých dat</string>
+    <string name="simplify_graphs_by_smoothing_out_irregularities">Zjednodušit grafy vyhlazením (odstraněním) odchylných hodnot glykémií. Toto nastavení neovlivní aktuální hodnotu glykémie, výstrahy a odesílanou hodnotu glykémie.  </string>
     <string name="graph_smoothing">Vyhlazování grafu</string>
+    <string name="enable_graph_smoothing">Povolit</string>
     <string name="last_reading">Poslední hodnota</string>
     <string name="select_file_for_alert">Vybrat soubor pro výstrahu</string>
     <string name="cannot_choose_file_without_permission">Pro vybrání souboru je zapotřebí udělit oprávnění k úložišti zařízení</string>
@@ -1773,6 +1777,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="cloud_backup">Záloha v cloudu</string>
     <string name="select_automatic_or_select_alternate">Vyberte automatickou správu souborů aplikací xDrip+ na Google Drive nebo vyberte jiný specifický soubor, který chcete použít v případě obnovy z jiného místa.</string>
     <string name="restoring_backup_will_erase_warning">Obnovení zálohy vymaže Vaše aktuální nastavení a data ze zálohy.\n\nJste si naprosto jisti, že to chcete udělat?</string>
+    <string name="you_cannot_undo_delete_alert">Odstraněnou výstrahu nelze vrátit zpět!\n\nOpravdu chcete odstranit tuto výstrahu?</string>
     <string name="this_backup_looks_like_came_from_different_format_string">Zdá se, že tato záloha pochází z jiného zařízení:\n%s\nJste si jisti, že chcete provést obnovu z této zálohy?</string>
     <string name="megabyte_format_string">%.1f MB</string>
     <string name="manual_selection_google_drive_file_warning">Vybrali jste soubor z Google Drive, který není automaticky spravován aplikací xDrip+. Tento soubor lze použít pouze pro manuální zálohu a obnovení.\n\nNedojde k žádnému automatickému zálohování do tohoto souboru.\n\nChcete pokračovat?</string>
@@ -1835,11 +1840,12 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="process_glucose_data_received">Zpracovávat hodnoty glykémie přijatých z NSClient</string>
     <string name="use_health_connect">Používat Health Connect</string>
     <string name="audio_focus">Zvukové preference</string>
-    <string name="audio_focus_summary">Zvolte, co udělat se zvuky ostatních aplikací během přehrávání výstrah</string>
+    <string name="audio_focus_summary">Vyberte, co udělat se zvuky ostatních aplikací během přehrávání výstrah</string>
     <string name="audio_focus_dont_adjust_other_app_sounds">Neupravovat zvuky ostatních aplikací</string>
     <string name="audio_focus_lower_volume_of_other_apps">Snížit hlasitost zvuků ostatních aplikací</string>
     <string name="audio_focus_pause_other_apps_playing_audio">Pozastavit ostatní aplikace přehrávající zvuky</string>
     <string name="audio_focus_pause_all_other_sounds">Pozastavit všechny ostatní zvuky</string>
     <string name="use_camera_light">Používat světlo fotoaparátu</string>
     <string name="use_camera_light_summary">Blikat světlem fotoaparátu během trvání výstrahy, pokud je telefon připojen k nabíječce</string>
+    <string name="g7_should_start_automatically">Senzor G7 by se měl spustit automaticky</string>
 </resources>

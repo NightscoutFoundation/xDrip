@@ -87,7 +87,7 @@ public class SourceWizard {
     }
 
     public synchronized static void start(Activity activity, boolean force) {
-        if (sw == null) sw = new SourceWizard(activity);
+        if (sw == null || sw.activity != activity) sw = new SourceWizard(activity);
         if (force) {
             if (sw.showing()) sw.dismiss();
         }

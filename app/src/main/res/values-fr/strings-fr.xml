@@ -1344,7 +1344,7 @@
     <string name="summary_ob1_initiate_bonding_flag">Le collecteur OB1 peut initier l\'association.</string>
     <string name="title_ob1_initiate_bonding_flag">Permettre à l\'OB1 d\'initier l\'association</string>
     <string name="title_old_g5_options">Ancien paramètres du Collecteur G5</string>
-    <string name="title_g5g6_battery_options">Options de batterie G5/G6/G7/Dex1</string>
+    <string name="title_g5g6_battery_options">Options de batterie G5/G6/Dex1</string>
     <string name="title_g5_battery_warning_level">Ajuster le niveau d\'alerte batterie</string>
     <string name="title_plugins_and_features">Plugins et fonctionnalités</string>
     <string name="title_color_heart_rate1">Capteur de fréquence cardiaque</string>
@@ -1446,7 +1446,10 @@
     <string name="summary_notification_channels_grouping">Si les notifications doivent être groupées ensemble. Incompatible avec l\'option \'Numéro élément dans la zone de notification\'</string>
     <string name="title_notification_channels_grouping">Grouper les notifications par fil</string>
     <string name="summary_delay_ascending_3min">Pour le profil de volume ascendant, retarder le démarrage du son d\'alerte de 3 minutes. Le vibreur (si activé) démarre dès que l\'alerte se déclenche, quel que soit ce paramètre.</string>
+    <string name="title_ascending_volume">Réglages du volume croissant</string>
     <string name="title_delay_ascending_3min">Délai du volume ascendant</string>
+    <string name="summary_ascending_volume_to_medium">Lorsqu\'il est activé, le profil de volume ascendant augmentera vers le volume moyen au lieu du maximum</string>
+    <string name="title_ascending_volume_to_medium">Augmentation vers le milieu</string>
     <string name="summary_play_sound_for_initial_calibration">Émettre un son lorsque la calibration initiale est demandée</string>
     <string name="title_play_sound_for_initial_calibration">Alerte initiale</string>
     <string name="category_noisy_readings">Lectures de bruits</string>
@@ -1727,6 +1730,7 @@
     <string name="reduce_battery_and_network_overhead">Réduire la charge sur la batterie et le réseau en utilisant le traitement par lots et en excluant les données inutiles</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Simplifier les graphiques en lissant les irrégularités</string>
     <string name="graph_smoothing">Lissage du graphique</string>
+    <string name="enable_graph_smoothing">Activer</string>
     <string name="last_reading">Dernière lecture</string>
     <string name="select_file_for_alert">Sélectionner le son pour l\'alerte</string>
     <string name="cannot_choose_file_without_permission">Impossible de choisir le fichier sans l\'autorisation de stockage</string>
@@ -1780,6 +1784,7 @@
     <string name="cloud_backup">Sauvegarde dans le Cloud</string>
     <string name="select_automatic_or_select_alternate">Sélectionner Automatique pour que xDrip gère les fichiers dans Google Drive ou sélectionner un autre fichier spécifique à utiliser si vous devez restaurer à partir d\'ailleurs.</string>
     <string name="restoring_backup_will_erase_warning">Restaurer une sauvegarde effacera vos paramètres et données actuelles de la sauvegarde.\n\nÊtes-vous absolument sûr de vouloir le faire ?</string>
+    <string name="you_cannot_undo_delete_alert">Vous ne pourrez pas annuler cela !\n\nÊtes-vous sûr de vouloir supprimer cette alerte ?</string>
     <string name="this_backup_looks_like_came_from_different_format_string">Cette sauvegarde semble venir d\'un autre appareil :\n%s\nÊtes-vous sûr de vouloir restaurer à partir de cette sauvegarde ?</string>
     <string name="megabyte_format_string">%.1f Mo</string>
     <string name="manual_selection_google_drive_file_warning">Vous avez sélectionné un fichier de Google Drive, mais ce n\'est pas géré automatiquement par xDrip donc il ne peut être utilisé que pour les sauvegardes et la restauration manuelles.\n\nAucune sauvegarde automatique ne se produira avec ce fichier.\n\nContinuer ?</string>
@@ -1849,4 +1854,5 @@
     <string name="audio_focus_pause_all_other_sounds">Mettre en pause tous les autres sons</string>
     <string name="use_camera_light">Utiliser la lumière de la caméra</string>
     <string name="use_camera_light_summary">Allumer la lumière de la caméra lors des alertes si connecté à un chargeur</string>
+    <string name="g7_should_start_automatically">Le G7 devrait démarrer automatiquement</string>
 </resources>

@@ -1446,7 +1446,10 @@
     <string name="summary_notification_channels_grouping">Teatised tuleks rühmitada. Ei ühildu valikuga „Numbriikoon teavitusalal”.</string>
     <string name="title_notification_channels_grouping">Rühmita teavitused kokku</string>
     <string name="summary_delay_ascending_3min">Kasvava helitugevuse profiili jaoks lükka hoiatusheli algust 3 minutit edasi. Vibratsioon (kui lubatud) algab kohe, kui hoiatus käivitub, olenemata sellest sättest.</string>
+    <string name="title_ascending_volume">Kasvava helitugevuse seaded</string>
     <string name="title_delay_ascending_3min">Helitugevuse kasvu viivitus</string>
+    <string name="summary_ascending_volume_to_medium">Kui aktiveeritud, kasvab helitugevus keskmisele tasemele, mitte maksimumi</string>
+    <string name="title_ascending_volume_to_medium">Kasva keskmisele tasemele</string>
     <string name="summary_play_sound_for_initial_calibration">Esita helimärguanne kui taotletakse esialgset kalibreerimist</string>
     <string name="title_play_sound_for_initial_calibration">Alustamise teavitus</string>
     <string name="category_noisy_readings">Vigased andmed</string>
@@ -1725,8 +1728,9 @@
     <string name="special_pairing_workaround">Spetsiaalne sidumise lahendus</string>
     <string name="save_power">Säästa energiat</string>
     <string name="reduce_battery_and_network_overhead">Vähenda aku ja võrgu koormust, kasutades pakett-töötlust ja välistades mittevajalikke andmeid</string>
-    <string name="simplify_graphs_by_smoothing_out_irregularities">Lihtsusta graafikuid, siludes ebakorrapärasusi</string>
+    <string name="simplify_graphs_by_smoothing_out_irregularities">Lihtsusta graafikuid, siludes ebakorrapärasusi varasemates näitudes.  See ei mõjuta hetkenäitu, alarme ja edastatud väärtust.  </string>
     <string name="graph_smoothing">Graafiku silumine</string>
+    <string name="enable_graph_smoothing">Luba</string>
     <string name="last_reading">Viimane näit</string>
     <string name="select_file_for_alert">Vali fail hoiatuste jaoks</string>
     <string name="cannot_choose_file_without_permission">Ilma salvestamise loata ei saa faili valida</string>
@@ -1780,6 +1784,7 @@
     <string name="cloud_backup">Varundamine pilve</string>
     <string name="select_automatic_or_select_alternate">Vali xDrip\'i jaoks automaatne viis, et hallata faile Google Drive\'is, või valige alternatiivne konkreetne fail, mida kasutada, kui peate mujalt taastama.</string>
     <string name="restoring_backup_will_erase_warning">Varukoopiast taastamine kustutab teie praegused seaded ja andmed.\n\nKas oled täiesti kindel, et soovid seda teha?</string>
+    <string name="you_cannot_undo_delete_alert">Seda tegevust ei saa tagasi võtta!\n\nKas oled kindel, et soovid selle alarmi kustutada?</string>
     <string name="this_backup_looks_like_came_from_different_format_string">See varukoopia näib olevat pärit teisest seadmest:\n%s\nKas soovid kindlasti sellest varukoopiast taastada?</string>
     <string name="megabyte_format_string">%.1f MB</string>
     <string name="manual_selection_google_drive_file_warning">Valisid Google Drive\'ist faili, kuid seda ei halda xDrip automaatselt, nii et seda saab kasutada ainult käsitsi varundamiseks ja taastamiseks.\n\nSelle failiga ei tehta automaatset varundust.\n\nKas jätkata?</string>
@@ -1849,4 +1854,5 @@
     <string name="audio_focus_pause_all_other_sounds">Peata kõik teised helid</string>
     <string name="use_camera_light">Kasuta kaamera välku</string>
     <string name="use_camera_light_summary">Vilguta alarmide ajal kaamera välku kui laadija on ühendatud</string>
+    <string name="g7_should_start_automatically">G7 peaks automaatselt käivituma</string>
 </resources>

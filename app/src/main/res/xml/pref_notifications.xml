@@ -93,44 +93,59 @@
                     android:summary="@string/create_shortcut"
                     android:title="@string/shortcut_to_bg_alerts" />
 
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="disable_alerts_stale_data"
-                    android:summary="@string/suppress_alerts_missed_readings"
-                    android:title="@string/suppress_alerts_if_missed_readings" />
-                <EditTextPreference
-                    android:defaultValue="15"
-                    android:dependency="disable_alerts_stale_data"
-                    android:inputType="number"
-                    android:key="disable_alerts_stale_data_minutes"
-                    android:summary="@string/suppress_alerts_after"
-                    android:title="@string/suppress_alerts_after" />
+                <PreferenceScreen
+                    android:key="suppress_alerts_screen"
+                    android:title="@string/suppress_alerts_if_missed_readings">
+                    <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:key="disable_alerts_stale_data"
+                        android:summary="@string/suppress_alerts_missed_readings"
+                        android:title="@string/suppress_alerts_if_missed_readings" />
+                    <EditTextPreference
+                        android:defaultValue="15"
+                        android:dependency="disable_alerts_stale_data"
+                        android:inputType="number"
+                        android:key="disable_alerts_stale_data_minutes"
+                        android:summary="@string/suppress_alerts_after"
+                        android:title="@string/suppress_alerts_after" />
+                </PreferenceScreen>
 
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="use_notification_channels"
-                    android:summary="@string/summary_use_notification_channels"
-                    android:title="@string/title_use_notification_channels" />
+                <PreferenceScreen
+                    android:key="Notification_Channels_screen"
+                    android:title="@string/title_use_notification_channels">
+                    <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:key="use_notification_channels"
+                        android:summary="@string/summary_use_notification_channels"
+                        android:title="@string/title_use_notification_channels" />
+                    <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:dependency="use_notification_channels"
+                        android:key="ongoing_notification_channel"
+                        android:summary="@string/summary_ongoing_notification_channel"
+                        android:title="@string/title_ongoing_notification_channel" />
+                    <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:dependency="use_notification_channels"
+                        android:key="notification_channels_grouping"
+                        android:summary="@string/summary_notification_channels_grouping"
+                        android:title="@string/title_notification_channels_grouping" />
+                </PreferenceScreen>
 
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:dependency="use_notification_channels"
-                    android:key="ongoing_notification_channel"
-                    android:summary="@string/summary_ongoing_notification_channel"
-                    android:title="@string/title_ongoing_notification_channel" />
-
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:dependency="use_notification_channels"
-                    android:key="notification_channels_grouping"
-                    android:summary="@string/summary_notification_channels_grouping"
-                    android:title="@string/title_notification_channels_grouping" />
-
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="delay_ascending_3min"
-                    android:summary="@string/summary_delay_ascending_3min"
-                    android:title="@string/title_delay_ascending_3min" />
+                <PreferenceScreen
+                    android:key="ascending_volume_settings"
+                    android:title="@string/title_ascending_volume">
+                    <CheckBoxPreference
+                        android:defaultValue="true"
+                        android:key="delay_ascending_3min"
+                        android:summary="@string/summary_delay_ascending_3min"
+                        android:title="@string/title_delay_ascending_3min" />
+                    <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:key="ascending_volume_to_medium"
+                        android:summary="@string/summary_ascending_volume_to_medium"
+                        android:title="@string/title_ascending_volume_to_medium" />
+                </PreferenceScreen>
 
             </PreferenceScreen>
 

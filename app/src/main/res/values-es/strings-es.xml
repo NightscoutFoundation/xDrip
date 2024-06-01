@@ -1434,7 +1434,10 @@
     <string name="summary_notification_channels_grouping">Si las notificaciones deben agruparse. Incompatible con la opción \'Icono numérico en área de notificación\'</string>
     <string name="title_notification_channels_grouping">Agrupar notificaciones</string>
     <string name="summary_delay_ascending_3min">Para el perfil de volumen ascendente, retrasa 3 minutos el inicio del sonido de la alerta. La vibración (si está activada) se inicia tan pronto como la alerta se active, independientemente de esta configuración.</string>
+    <string name="title_ascending_volume">Ajustes de volumen ascendente</string>
     <string name="title_delay_ascending_3min">Retrasar el volumen ascendente</string>
+    <string name="summary_ascending_volume_to_medium">Cuando está activado, el perfil de volumen ascendente ascenderá a volumen medio en lugar de máximo</string>
+    <string name="title_ascending_volume_to_medium">Ascender a medio</string>
     <string name="summary_play_sound_for_initial_calibration">Reproducir sonido cuando se solicite la calibración inicial</string>
     <string name="title_play_sound_for_initial_calibration">Alerta Inicial</string>
     <string name="category_noisy_readings">Lecturas Ruidosas</string>
@@ -1715,6 +1718,7 @@
     <string name="reduce_battery_and_network_overhead">Reducir la sobrecarga de la batería y red mediante el procesamiento por lotes y la exclusión de datos innecesarios</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Simplificar los gráficos suavizando las irregularidades</string>
     <string name="graph_smoothing">Suavizar gráficos</string>
+    <string name="enable_graph_smoothing">Activar</string>
     <string name="last_reading">Última lectura</string>
     <string name="select_file_for_alert">Seleccione archivo para alerta</string>
     <string name="cannot_choose_file_without_permission">No se puede elegir el archivo sin permiso de almacenamiento</string>
@@ -1768,6 +1772,7 @@
     <string name="cloud_backup">Copia de seguridad en la nube</string>
     <string name="select_automatic_or_select_alternate">Selecciona Automático para que xDrip+ gestione los archivos de Google Drive, o selecciona un archivo específico alternativo para utilizarlo si necesitas restaurar desde otro lugar.</string>
     <string name="restoring_backup_will_erase_warning">La restauración de una copia de seguridad borrará la configuración y los datos actuales con los de la copia de seguridad.\n\n¿Estás absolutamente seguro de que deseas hacer esto?</string>
+    <string name="you_cannot_undo_delete_alert">¡No podrás deshacer esto!\n\n¿Seguro que quieres eliminar esta alerta?</string>
     <string name="this_backup_looks_like_came_from_different_format_string">Esta copia de seguridad parece provenir de un dispositivo diferente:\n%s\n¿Seguro que desea restaurar desde esta copia de seguridad?</string>
     <string name="megabyte_format_string">%.1f MB</string>
     <string name="manual_selection_google_drive_file_warning">Has seleccionado un archivo de Google Drive, pero este no es gestionado automáticamente por xDrip+, por lo que solo puede ser utilizado para copias de seguridad y restauraciones manuales.\nNo se realizará ninguna copia de seguridad automática con este archivo.\n¿Continuar?</string>
@@ -1837,4 +1842,5 @@
     <string name="audio_focus_pause_all_other_sounds">Pausar todos los demás sonidos</string>
     <string name="use_camera_light">Usar luz de cámara</string>
     <string name="use_camera_light_summary">Flashear luz de la cámara durante alertas al conectar a un cargador</string>
+    <string name="g7_should_start_automatically">G7 debe iniciarse automáticamente</string>
 </resources>

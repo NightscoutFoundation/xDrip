@@ -82,6 +82,8 @@ import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.G
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.SCAN;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.android_wear;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.getTransmitterID;
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.ignoreBonding;
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.immediateBonding;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.onlyUsingNativeMode;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.resetSomeInternalState;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.wear_broadcast;
@@ -133,6 +135,7 @@ public class Ob1G5StateMachine {
     private static final int OLDEST_RAW = 300 * 24 * 60 * 60; // 300 days
 
     public static long maxBackfillPeriod_MS = 0;
+
     public static long maxBackfillPeriod_MS() {
         maxBackfillPeriod_MS = MAX_BACKFILL_PERIOD_MS;
         if (shortTxId()) { // If using G7
@@ -140,6 +143,7 @@ public class Ob1G5StateMachine {
         }
         return maxBackfillPeriod_MS;
     }
+
     public static int backfillCheckLarge() {
         return (int) (maxBackfillPeriod_MS() / DEXCOM_PERIOD);
     }
@@ -272,7 +276,7 @@ public class Ob1G5StateMachine {
         connection.setupNotification(ExtraData)
                 .timeout(15, TimeUnit.SECONDS) // WARN
                 .doOnNext(notificationObservable -> {
-                    UserError.Log.d(TAG,"Extra data notifications enabled");
+                    UserError.Log.d(TAG, "Extra data notifications enabled");
                     connection.setupIndication(Authentication)
                             .timeout(15, TimeUnit.SECONDS) // WARN
                             .doOnNext(notificationObservable2 -> doNext(parent, connection))
@@ -289,14 +293,14 @@ public class Ob1G5StateMachine {
                                         doNext(parent, connection);
                                     }
                                 } catch (Exception e) {
-                                    UserError.Log.e(TAG,"Got exception in plugin: " + e);
+                                    UserError.Log.e(TAG, "Got exception in plugin: " + e);
                                     parent.lastSensorStatus = e.getMessage();
                                     if (e instanceof InvalidParameterException) {
                                         parent.resetSomeInternalState();
                                     } else if (e instanceof SecurityException) {
-                                         parent.logFailure();
-                                         parent.clearPersistStore();
-                                         parent.changeState(SCAN);
+                                        parent.logFailure();
+                                        parent.clearPersistStore();
+                                        parent.changeState(SCAN);
                                     } else {
                                         e.printStackTrace();
                                     }
@@ -323,7 +327,7 @@ public class Ob1G5StateMachine {
     private static void handleAuthenticationWrite(final Ob1G5CollectionService parent, final RxBleConnection connection) {
         final int specifiedSlot = Pref.getBooleanDefaultFalse("engineering_mode") ? Pref.getStringToInt("dex_specified_slot", -1) : -1;
         final AuthRequestTxMessage authRequest = (specifiedSlot == -1) ? new AuthRequestTxMessage(getTokenSize(), usingAlt())
-        : new AuthRequestTxMessage(getTokenSize(), specifiedSlot);
+                : new AuthRequestTxMessage(getTokenSize(), specifiedSlot);
         lastAuthPacket = authRequest;
         UserError.Log.i(TAG, "AuthRequestTX: " + bytesToHex(authRequest.byteSequence));
 
@@ -365,7 +369,7 @@ public class Ob1G5StateMachine {
                 // parent.reset_bond(true);
                 // parent.unBond(); // WARN
             } else {
-                UserError.Log.e(TAG, "authentication notification  throwable: (" + parent.getState() + ") " + throwable + " " + JoH.dateTimeText(tsl()));
+                UserError.Log.d(TAG, "authentication notification  throwable: (" + parent.getState() + ") " + throwable + " " + JoH.dateTimeText(tsl()));
                 parent.incrementErrors();
                 if (throwable instanceof BleCannotSetCharacteristicNotificationException
                         || throwable instanceof BleGattCharacteristicException) {
@@ -419,7 +423,7 @@ public class Ob1G5StateMachine {
                                                                 if (throwable instanceof OperationSuccess) {
                                                                     UserError.Log.d(TAG, "Stopping auth challenge listener due to success");
                                                                 } else {
-                                                                    UserError.Log.e(TAG, "Could not read reply to auth challenge: " + throwable);
+                                                                    UserError.Log.d(TAG, "Could not read reply to auth challenge: " + throwable);
                                                                     parent.incrementErrors();
                                                                     speakSlowly = true;
                                                                 }
@@ -882,7 +886,7 @@ public class Ob1G5StateMachine {
                             } else {
                                 parent.msg("Invalid Glucose");
                             }
-                        break;
+                            break;
 
 
                         case CalibrateRxMessage:
@@ -1108,15 +1112,15 @@ public class Ob1G5StateMachine {
 
             UserError.Log.d(TAG, "Requesting backfill between: " + JoH.dateTimeText(startTime) + " " + JoH.dateTimeText(endTime));
 
-           if (!shortTxId()) {
-               enqueueUniqueCommand(
-                       BackFillTxMessage.get(getTransmitterID(), startTime, endTime),
-                       "Get backfill since: " + JoH.hourMinuteString(startTime));
-           } else {
-               enqueueUniqueCommand(
-                       BackFillTxMessage2.get(getTransmitterID(), startTime, endTime),
-                       "Get backfill2 since: " + JoH.hourMinuteString(startTime));
-           }
+            if (!shortTxId()) {
+                enqueueUniqueCommand(
+                        BackFillTxMessage.get(getTransmitterID(), startTime, endTime),
+                        "Get backfill since: " + JoH.hourMinuteString(startTime));
+            } else {
+                enqueueUniqueCommand(
+                        BackFillTxMessage2.get(getTransmitterID(), startTime, endTime),
+                        "Get backfill2 since: " + JoH.hourMinuteString(startTime));
+            }
         } else {
             nextBackFillCheckSize = BACKFILL_CHECK_SMALL;
         }
@@ -1547,7 +1551,7 @@ public class Ob1G5StateMachine {
 
     private static void checkAndActivateSensor() {
         // automagically start an xDrip sensor session if  transmitter already has active sensor
-        if (!Sensor.isActive() && Ob1G5CollectionService.isG5SensorStarted() && !Sensor.stoppedRecently()) {
+        if (!Sensor.isActive() && Ob1G5CollectionService.isG5SensorStarted() && (!Sensor.stoppedRecently() || shortTxId())) {
             JoH.static_toast_long(xdrip.gs(R.string.auto_starting_sensor));
             // TODO possibly here we want to look at last sensor stop time and not backtrack before that
             Sensor.create(tsl() - HOUR_IN_MS * 3);
@@ -1561,10 +1565,14 @@ public class Ob1G5StateMachine {
         if (glucose == null) return;
         lastGlucosePacket = tsl();
         DexTimeKeeper.updateAge(getTransmitterID(), glucose.timestamp);
+        if (glucose.calibrationState().warmingUp()) {
+            checkAndActivateSensor();
+        }
         if (glucose.usable() || (glucose.insufficient() && Pref.getBoolean("ob1_g5_use_insufficiently_calibrated", true))) {
             UserError.Log.d(TAG, "Got usable glucose data from transmitter!!");
-            final long rxtimestamp = tsl();
+            final long rxtimestamp = glucose.getRealTimestamp();
             checkAndActivateSensor();
+            DexSyncKeeper.store(getTransmitterID(), rxtimestamp, parent.static_last_connected, lastGlucosePacket);
             final BgReading bgReading = BgReading.bgReadingInsertFromG5(glucose.glucose, rxtimestamp);
             if (bgReading != null) {
                 try {
@@ -1590,7 +1598,7 @@ public class Ob1G5StateMachine {
             if (glucose.getPredictedGlucose() != null) {
                 // not really supported on wear yet
                 if (!android_wear) {
-                    Prediction.create(tsl(), glucose.getPredictedGlucose(), "EGlucoseRx").save();
+                    Prediction.create(rxtimestamp, glucose.getPredictedGlucose(), "EGlucoseRx").save();
                 }
             }
 
@@ -1981,7 +1989,8 @@ public class Ob1G5StateMachine {
             @SuppressLint("GetInstance") final Cipher aesCipher = Cipher.getInstance("AES/ECB/PKCS7Padding");
             aesCipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
             return Arrays.copyOfRange(aesCipher.doFinal(plainText, 0, plainText.length), 0, 8);
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException e) {
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException |
+                 BadPaddingException | InvalidKeyException e) {
             UserError.Log.wtf(TAG, "System Encryption problem: " + e);
             return null;
         }
@@ -2106,7 +2115,7 @@ public class Ob1G5StateMachine {
 
     public static boolean usingAlt() {
         return (android_wear && !Pref.getBooleanDefaultFalse("only_ever_use_wear_collector"))
-                || WholeHouse.isLive();
+                || (immediateBonding() && !ignoreBonding()) || WholeHouse.isLive();
     }
 
     private static class OperationSuccess extends RuntimeException {

@@ -1501,7 +1501,10 @@
     <string name="summary_notification_channels_grouping">Whether notifications should be grouped together. Incompatible with \'Number Item in Notification Area\' option</string>
     <string name="title_notification_channels_grouping">Group notifications together</string>
     <string name="summary_delay_ascending_3min">For ascending volume profile, delay the start of the alert sound by 3 minutes. The vibration (if enabled) starts as soon as the alert triggers regardless of this setting.</string>
+    <string name="title_ascending_volume">Ascending Volume settings</string>
     <string name="title_delay_ascending_3min">Delay Ascending Volume</string>
+    <string name="summary_ascending_volume_to_medium">When enabled, ascending volume profile will ascend to medium volume instead of maximum</string>
+    <string name="title_ascending_volume_to_medium">Ascend to medium</string>
     <string name="summary_play_sound_for_initial_calibration">Play sound when Initial Calibration is requested</string>
     <string name="title_play_sound_for_initial_calibration">Initial Alert</string>
     <string name="category_noisy_readings">Noisy Readings</string>
@@ -1782,8 +1785,9 @@
     <string name="special_pairing_workaround">Special Pairing Workaround</string>
     <string name="save_power">Save Power</string>
     <string name="reduce_battery_and_network_overhead">Reduce battery and network overhead by using batch processing and excluding unnecessary data</string>
-    <string name="simplify_graphs_by_smoothing_out_irregularities">Simplify graphs by smoothing out irregularities</string>
+    <string name="simplify_graphs_by_smoothing_out_irregularities">Simplify graphs by smoothing out irregularities in the previous readings.  The current reading, alerts and broadcast value are not affected by this setting.  </string>
     <string name="graph_smoothing">Graph Smoothing</string>
+    <string name="enable_graph_smoothing">Enable</string>
     <string name="last_reading">Last Reading</string>
     <string name="select_file_for_alert">Select File for Alert</string>
     <string name="cannot_choose_file_without_permission">Cannot choose file without storage permission</string>
@@ -1837,6 +1841,7 @@
     <string name="cloud_backup">Cloud Backup</string>
     <string name="select_automatic_or_select_alternate">Select Automatic for xDrip to manage files in Google Drive or select an alternate specific file to use if you need to restore from elsewhere.</string>
     <string name="restoring_backup_will_erase_warning">Restoring a backup will erase your current settings and data with that from the backup.\n\nAre you absolutely sure you wish to do this?</string>
+    <string name="you_cannot_undo_delete_alert">You will not be able to undo this!\n\nAre you sure you want to delete this alert?</string>
     <string name="this_backup_looks_like_came_from_different_format_string">This backup looks like it came from a different device:\n%s\nAre you sure you wish to restore from this backup?</string>
     <string name="megabyte_format_string">%.1f MB</string>
     <string name="manual_selection_google_drive_file_warning">You have selected a file from Google Drive, but this is not automatically managed by xDrip so it can only be used for manual backups and restoring.\n\nNo automatic backing up will occur with this file.\n\nContinue?</string>
@@ -1906,4 +1911,5 @@
     <string name="audio_focus_pause_all_other_sounds">Pause all other sounds</string>
     <string name="use_camera_light">Use Camera Light</string>
     <string name="use_camera_light_summary">Flash camera light during alerts when connected to a charger</string>
+    <string name="g7_should_start_automatically">G7 should start automatically</string>
 </resources>
