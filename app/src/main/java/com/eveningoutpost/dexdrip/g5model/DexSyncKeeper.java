@@ -41,6 +41,16 @@ public class DexSyncKeeper {
         UserError.Log.d(TAG, "Sync time updated to: " + JoH.dateTimeText(when));
     }
 
+    public static void store(final String transmitterId, final long when, final long last_conection_time, final long last_glucose_processed) {
+        final long latency = (last_glucose_processed - last_conection_time);
+        UserError.Log.d(TAG, "Update time from glucose rx glucose: " + JoH.dateTimeText(when) + " latency:" + latency + " ms");
+        if (latency < 8000) { // roughly half preempt
+            store(transmitterId, when);
+        } else {
+            UserError.Log.e(TAG, "Refusing to update stored timestamp due to excessive processing latency: " + latency + "ms");
+        }
+    }
+
     public static void clear(final String transmitterId) {
         if (PersistentStore.getLong(DEX_SYNC_STORE + transmitterId) > 0) {
             UserError.Log.e(TAG, "Clearing stored timing sync information for: " + transmitterId);

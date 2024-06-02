@@ -17,11 +17,12 @@ public class AuthRequestTxMessage2 extends BaseMessage {
     private static final byte endByteAlt = 0x1;
 
     public AuthRequestTxMessage2(int token_size) {
-        this(token_size, false);
+        this(token_size, false, new byte[0]);
     }
 
-    public AuthRequestTxMessage2(int token_size, boolean alt) {
-        this(token_size, alt ? endByteAlt : endByteStd);
+    public AuthRequestTxMessage2(int token_size, boolean alt, byte[] chal) {
+        this(token_size, (alt ? endByteAlt : endByteStd)
+                + (chal.length > 2 ? chal[2] : 0));
     }
 
     public AuthRequestTxMessage2(int token_size, int slot) {

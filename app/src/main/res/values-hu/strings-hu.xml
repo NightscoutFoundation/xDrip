@@ -1420,7 +1420,10 @@
     <string name="summary_notification_channels_grouping">Nem használható egyszerre a \"Tételek száma az értesítési sávban\" funkcióval</string>
     <string name="title_notification_channels_grouping">Értesítések csoportosítása</string>
     <string name="summary_delay_ascending_3min">Növekvő hangerő esetén késlelteti a riasztási hangjelzés kezdetét 3 perccel. A rezgés (ha engedélyezve van) ettől a beállítástól függetlenül a riasztással elindul.</string>
+    <string name="title_ascending_volume">Emelkedő hangerő beállítások</string>
     <string name="title_delay_ascending_3min">Növekvő hangerő késleltetése</string>
+    <string name="summary_ascending_volume_to_medium">Ha bekapcsolja, a hangerő a maximális hangerő helyett a közepes hangerőig emelkedik</string>
+    <string name="title_ascending_volume_to_medium">Közepesig emelkedjen</string>
     <string name="summary_play_sound_for_initial_calibration">Hangjelzés figyelmeztessen az indító kalibrációra</string>
     <string name="title_play_sound_for_initial_calibration">Indító kalibráció</string>
     <string name="category_noisy_readings">Zajos értékek</string>
@@ -1679,6 +1682,7 @@
     <string name="reduce_battery_and_network_overhead">Az akkumulátor- és hálózati terhelés csökkentése batch programozással és a felesleges adatok kizárásával</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">A grafikon egyszerűsítése a kiugró értékek elsimításával</string>
     <string name="graph_smoothing">Grafikon simítása</string>
+    <string name="enable_graph_smoothing">Bekapcsol</string>
     <string name="last_reading">Utolsó leolvasás</string>
     <string name="select_file_for_alert">Válassza ki a riasztás fájlját</string>
     <string name="cannot_choose_file_without_permission">Tárhelyengedély nélkül nem nyithat meg fájlokat</string>
@@ -1729,6 +1733,7 @@
     <string name="drive_permission_blurb">Az automatikus biztonsági mentéshez az xDrip-nek engedélyre van szüksége a Google Drive használatához.\n\nAz xDrip fejlesztői nem férhetnek hozzá a fájljaihoz, és nem láthatják a személyes adatait.</string>
     <string name="cloud_backup">Biztonsági mentés felhőbe</string>
     <string name="restoring_backup_will_erase_warning">A visszaállítás lecseréli a készüléken levő beállításokat a mentettekre.\n\nBiztos, hogy ezt szeretné?</string>
+    <string name="you_cannot_undo_delete_alert">A döntés nem visszafordítható!\n\nBiztos, hogy törölni akarja a riasztást?</string>
     <string name="this_backup_looks_like_came_from_different_format_string">Ez a mentés egy másik készülékről való:\n%s\nBiztos, hogy a visszaállítását választja?</string>
     <string name="megabyte_format_string">%.1f MB</string>
     <string name="manual_selection_google_drive_file_warning">Kiválasztott egy fájlt a Google Drive-ról, de ezt nem kezeli automatikusan az xDrip, így csak manuális biztonsági mentéshez és visszaállításhoz használható.\n\nNem történik automatikus biztonsági mentés ezzel a fájllal.\n\nFolytatja?</string>
@@ -1778,4 +1783,5 @@
     <string name="carelink_credential_status_refresh_expired">Belépés lejárt! Jelentkezzen be!</string>
     <string name="data_source">Adatforrás:</string>
     <string name="reraise_alerts_before_snooze_time">Riasztás ismétlése szundi alatt</string>
+    <string name="g7_should_start_automatically">G7 automatikusan indul</string>
 </resources>

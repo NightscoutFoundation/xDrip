@@ -1605,6 +1605,7 @@
     <string name="title_multiple_insulin_types">Useita Insuliinityyppejä</string>
     <string name="use_for_calibration">Käytetäänkö %s kalibrointiin?</string>
     <string name="no_never">Ei, Ei Koskaan</string>
+    <string name="enable_graph_smoothing">Käytä</string>
     <string name="cannot_choose_file_without_permission">Tiedostoa ei voida valita ilman tallennustilan käyttöoikeutta</string>
     <string name="titleInside_yRange">Käytä</string>
     <string name="close">Sulje</string>

@@ -2252,7 +2252,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     }
 
     public void sourceWizardButtonClick(View v) {
-        SourceWizard.start(this, true);
+        SourceWizard.start(Home.this, true);
     }
 
     private long whichTimeLocked() {
@@ -2296,8 +2296,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 break;
         }
 
-        float ideal_hours_to_show = DEFAULT_CHART_HOURS + bgGraphBuilder.getPredictivehours();
-        // always show at least the ideal number of hours if locked or auto
+        // always show at least the ideal number of hours
+        float ideal_hours_to_show = DEFAULT_CHART_HOURS;
+        // ... and rescale to accommodate predictions if not locked
+        if (! homeShelf.get("time_locked_always")) {
+            ideal_hours_to_show += bgGraphBuilder.getPredictivehours();
+        }
         float hours_to_show =  exactHoursSpecified ? hours : Math.max(hours, ideal_hours_to_show);
 
         UserError.Log.d(TAG, "VIEWPORT " + source + " moveviewport in setHours: asked " + hours + " vs auto " + ideal_hours_to_show + " = " + hours_to_show + " full chart width: " + bgGraphBuilder.hoursShownOnChart());
@@ -2307,6 +2311,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         holdViewport.right = maxViewPort.right;
         holdViewport.top = maxViewPort.top;
         holdViewport.bottom = maxViewPort.bottom;
+
+        // if locked, center display on current bg values, not predictions
+        if (homeShelf.get("time_locked_always")) {
+            holdViewport.left -= hour_width * bgGraphBuilder.getPredictivehours();
+            holdViewport.right -= hour_width * bgGraphBuilder.getPredictivehours();
+        }
 
         if (d) {
             UserError.Log.d(TAG, "HOLD VIEWPORT " + holdViewport);
@@ -2647,7 +2657,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
                         final Context context = this;
                         builder.setTitle(getString(R.string.start_sensor) + "?");
-                        builder.setMessage(String.format(gs(R.string.start_sensor_confirmation), DexCollectionType.getDexCollectionType().toString()));
+                        builder.setMessage(String.format(gs(R.string.start_sensor_confirmation), DexCollectionType.getBestCollectorHardwareName()));
                         builder.setNegativeButton(gs(R.string.change_settings), (dialog, which) -> {
                             dialog.dismiss();
                             startActivity(new Intent(context, Preferences.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));

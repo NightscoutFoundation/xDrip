@@ -1038,6 +1038,7 @@
     <string name="reduce_battery_and_network_overhead">Smanjite opterećenje baterije i mreže korištenjem skupne obrade i isključivanjem nepotrebnih podataka</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Pojednostavite grafikone izglađivanjem nepravilnosti</string>
     <string name="graph_smoothing">Izglađivanje grafikona</string>
+    <string name="enable_graph_smoothing">Omogući</string>
     <string name="last_reading">Zadnje očitanje</string>
     <string name="show_unsmoothed">Prikaži neuglađeno</string>
     <string name="show_unsmoothed_summary">Prikaži i neizglađene podatke ako je omogućeno izglađivanje grafikona. Ako se koristi dodatak za kalibraciju, prikazat će neizglađene podatke umjesto podataka dodatka.</string>

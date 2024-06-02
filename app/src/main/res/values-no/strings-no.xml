@@ -865,6 +865,7 @@
     <string name="summary_clfollow_lang">CareLink language code</string>
     -->
     <string name="enable_streaming_dialog_dont_ask_again"> Ikke spør meg igjen</string>
+    <string name="enable_graph_smoothing">Aktiver</string>
     <string name="titleInside_yRange">Aktiver</string>
     <string name="reraise_alerts_before_snooze_time">Gjenoppta alarm hvis den ikke først er utsatt</string>
 </resources>

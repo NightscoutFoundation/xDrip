@@ -1726,6 +1726,7 @@
     <string name="reduce_battery_and_network_overhead">Toplu işlemeyi kullanarak ve gereksiz verileri hariç tutarak pil ve ağ yükünü azaltın</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Düzensizlikleri yumuşatarak grafikleri basitleştirin</string>
     <string name="graph_smoothing">Grafik Yumuşatma</string>
+    <string name="enable_graph_smoothing">Etkinleştir</string>
     <string name="last_reading">Son Okuma Değeri</string>
     <string name="select_file_for_alert">Uyarı için Dosya Seçin</string>
     <string name="cannot_choose_file_without_permission">Depolama izni olmadan dosya seçilemiyor</string>

@@ -1718,6 +1718,7 @@
     <string name="reduce_battery_and_network_overhead">Зменшення використання заряду батареї та мережі шляхом використання пакетної обробки та виключення непотрібних даних</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Спростити графіки, згладивши похибності</string>
     <string name="graph_smoothing">Згладження графіку</string>
+    <string name="enable_graph_smoothing">Увімкнути GPS</string>
     <string name="last_reading">Останнє зчитування</string>
     <string name="select_file_for_alert">Виберіть файл для сповіщення</string>
     <string name="cannot_choose_file_without_permission">Неможливо встановити звук без прав доступу до сховища</string>
@@ -1830,4 +1831,5 @@
     <string name="select_start_time">Час початку</string>
     <string name="select_end_time">Виберіть час закінчення</string>
     <string name="accept_glucose">Прийняти глюкозу</string>
+    <string name="g7_should_start_automatically">G7 має стартувати автоматично</string>
 </resources>
