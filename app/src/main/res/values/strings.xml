@@ -1383,6 +1383,8 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Fallback to xDrip</string>
     <string name="summary_ob1_minimize_scanning">Use heuristics to minimize Bluetooth scanning + save power</string>
     <string name="title_ob1_minimize_scanning">Minimize Scanning</string>
+    <string name="summary_ob1_allow_scan_by_mac">Allowing to use the MAC-address of Bluetooth device while scanning.</string>
+    <string name="title_ob1_allow_scan_by_mac">Allow Scanning by MAC</string>
     <string name="summary_using_g6">I am using a G6, G7, Dexcom 1 or One+ Sensor</string>
     <string name="title_using_g6">G6/G7/Dex1/One+ Support</string>
     <string name="summary_ob1_g5_allow_resetbond">OB1 collector can unbond if it thinks the encryption has failed. If you get problems with it unpairing then disable this option. If you then totally lose connection, make sure this is enabled.</string>

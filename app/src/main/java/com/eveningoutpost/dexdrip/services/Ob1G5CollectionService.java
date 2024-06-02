@@ -233,7 +233,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static volatile String wasBonded = "";
     private static volatile int skippedConnects = 0;
     private static final boolean d = false;
-    private static volatile boolean allow_scan_by_mac = false;
+    private static volatile boolean allow_scan_by_mac = false; // set by preference
     private static volatile boolean use_auto_connect = false;
     private static volatile boolean minimize_scanning = false; // set by preference
     private static volatile boolean always_scan = false;
@@ -1209,7 +1209,10 @@ public class Ob1G5CollectionService extends G5BaseService {
             }
 
             minimize_scanning = Pref.getBooleanDefaultFalse("ob1_minimize_scanning");
-           // allow_scan_by_mac = Build.VERSION.SDK_INT >= 32 && shortTxId();
+            allow_scan_by_mac = Pref.getBooleanDefaultFalse("ob1_allow_scan_by_mac");
+            // allow_scan_by_mac = Build.VERSION.SDK_INT >= 32 && shortTxId();
+            UserError.Log.d(TAG, "<allow_scan_by_mac> active: " + allow_scan_by_mac);
+
             automata(); // sequence logic
 
             UserError.Log.d(TAG, "Releasing service start");

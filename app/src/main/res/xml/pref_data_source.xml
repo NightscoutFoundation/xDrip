@@ -382,6 +382,11 @@
                     android:title="Avoid Scanning" />
                 <CheckBoxPreference
                     android:defaultValue="false"
+                    android:key="ob1_allow_scan_by_mac"
+                    android:summary="@string/summary_ob1_allow_scan_by_mac"
+                    android:title="@string/title_ob1_allow_scan_by_mac" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
                     android:key="using_g6"
                     android:summary="@string/summary_using_g6"
                     android:title="@string/title_using_g6" />
