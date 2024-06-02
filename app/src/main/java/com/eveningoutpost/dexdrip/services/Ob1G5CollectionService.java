@@ -1535,7 +1535,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                 floatingWakeLock = JoH.getWakeLock("floating-connected", 40000);
                 final long since_connecting = msSince(connecting_time);
                 if( (connecting_time > static_last_timestamp)
-                        && (since_connecting > Constants.SECOND_IN_MS * 310)
+                        && (since_connecting > Constants.SECOND_IN_MS * 430)
                         && (since_connecting < Constants.SECOND_IN_MS * 620) )
                 {
                     if (!always_scan)
