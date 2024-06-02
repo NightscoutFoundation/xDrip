@@ -1728,7 +1728,7 @@
     <string name="special_pairing_workaround">Contournement de jumelage spécial</string>
     <string name="save_power">Économiser l\'énergie</string>
     <string name="reduce_battery_and_network_overhead">Réduire la charge sur la batterie et le réseau en utilisant le traitement par lots et en excluant les données inutiles</string>
-    <string name="simplify_graphs_by_smoothing_out_irregularities">Simplifier les graphiques en lissant les irrégularités</string>
+    <string name="simplify_graphs_by_smoothing_out_irregularities">Simplifier les graphiques en lissant les irrégularités des lectures précédentes.  La lecture actuelle, les alertes et la valeur de diffusion ne sont pas affectées par ce paramètre.  </string>
     <string name="graph_smoothing">Lissage du graphique</string>
     <string name="enable_graph_smoothing">Activer</string>
     <string name="last_reading">Dernière lecture</string>

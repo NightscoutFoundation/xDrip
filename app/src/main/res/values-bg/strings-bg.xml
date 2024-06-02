@@ -1838,4 +1838,5 @@
     <string name="audio_focus_pause_all_other_sounds">Паузиране на всички останали звуци</string>
     <string name="use_camera_light">Използвай светкавицата на камерата</string>
     <string name="use_camera_light_summary">Премигване на светкавицата на камерата по време на аларми, когато е свързано зарядното устройство</string>
+    <string name="g7_should_start_automatically">G7 би трябвало да стартира автоматично</string>
 </resources>
