@@ -119,7 +119,7 @@ public class MegaStatus extends ActivityWithMenu {
     }
 
     private static final String G4_STATUS = "BT Device";
-    public static final String G5_STATUS = "G5/G6/G7 Status";
+    public static final String G5_STATUS = "G6/Dex1/G7/1+  Status";
     private static final String MEDTRUM_STATUS = "Medtrum Status";
     private static final String IP_COLLECTOR = "IP Collector";
     private static final String XDRIP_PLUS_SYNC = "Followers";
