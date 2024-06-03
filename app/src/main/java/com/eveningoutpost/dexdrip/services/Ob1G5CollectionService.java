@@ -1389,8 +1389,10 @@ public class Ob1G5CollectionService extends G5BaseService {
 
             if (reason == BleScanException.SCAN_FAILED_INTERNAL_ERROR) {
                 if (allow_scan_by_mac && isBluetoothScanDoneByMacFilter()) {
-                    allow_scan_by_mac = false;
+                    // allow_scan_by_mac = false;
                     UserError.Log.wtf(TAG, "Turning scan by by mac off");
+                    Pref.setBoolean( "ob1_allow_scan_by_mac", false );
+                                        
                     if (JoH.ratelimit("bluetooth-internal-error-register", 120)) {
                         if (Pref.getBooleanDefaultFalse("automatically_turn_bluetooth_on")) {
                             UserError.Log.wtf(TAG, "Android bluetooth appears broken with scan by mac - attempting to turn off and on");
