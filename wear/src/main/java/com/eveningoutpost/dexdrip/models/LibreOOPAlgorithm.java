@@ -303,6 +303,7 @@ public class LibreOOPAlgorithm {
                 return SensorType.LibreUS14Day;
             case 0x9d0830:
             case 0xc50930:
+            case 0xc60931:
                 return SensorType.Libre2;
             case 0x700010:
                 return SensorType.LibreProH;
