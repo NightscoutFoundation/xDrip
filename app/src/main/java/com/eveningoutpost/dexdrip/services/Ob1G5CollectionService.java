@@ -1521,7 +1521,6 @@ public class Ob1G5CollectionService extends G5BaseService {
                 changeState(SCAN);
             }
         }
-
     }
 
     public void tryGattRefresh() {
@@ -1587,33 +1586,12 @@ public class Ob1G5CollectionService extends G5BaseService {
         {
             case CONNECTING:
                 connection_state = "Connecting";
-                connecting_time = tsl();
+                handleConnectionStateConnecting();
                 break;
 
             case CONNECTED:
                 connection_state = "Connected";
-                JoH.releaseWakeLock(floatingWakeLock);
-                floatingWakeLock = JoH.getWakeLock("floating-connected", 40000);
-                final long since_connecting = msSince(connecting_time);
-                if( (connecting_time > static_last_timestamp)
-                        && (since_connecting > Constants.SECOND_IN_MS * 430)
-                        && (since_connecting < Constants.SECOND_IN_MS * 620) )
-                {
-                    if (!always_scan)
-                    {
-                        UserError.Log.e(TAG, "Connection time shows missed reading, switching to always scan, metric: " + niceTimeScalar(since_connecting));
-                        always_scan = true;
-                    }
-                    else
-                    {
-                        UserError.Log.e(TAG, "Connection time shows missed reading, despite always scan, metric: " + niceTimeScalar(since_connecting));
-                    }
-                }
-                else if( always_scan )
-                {
-                    UserError.Log.d(TAG, "Resetting always_scan to false, due to working connection.");
-                    always_scan = false;
-                }
+                handleConnectionStateConnected();
                 break;
 
             case DISCONNECTING:
@@ -1622,16 +1600,49 @@ public class Ob1G5CollectionService extends G5BaseService {
 
             case DISCONNECTED:
                 connection_state = "Disconnected";
-                JoH.releaseWakeLock(floatingWakeLock);
+                handleConnectionStateDisconnected();
                 break;
         }
+
         static_connection_state = connection_state;
         UserError.Log.d(TAG, "Bluetooth connection: " + static_connection_state);
+    }
 
-//        if( connection_state.equals("Disconnecting") )
-//        {
-//            tryGattRefresh();
-//        }
+    private void handleConnectionStateConnecting()
+    {
+        connecting_time = tsl();
+    }
+
+    private void handleConnectionStateConnected()
+    {
+        JoH.releaseWakeLock(floatingWakeLock);
+        floatingWakeLock = JoH.getWakeLock("floating-connected", 40000);
+
+        final long since_connecting = msSince(connecting_time);
+        if( (connecting_time > static_last_timestamp)
+                && (since_connecting > Constants.SECOND_IN_MS * 430)
+                && (since_connecting < Constants.SECOND_IN_MS * 620) )
+        {
+            if (!always_scan)
+            {
+                UserError.Log.e(TAG, "Connection time shows missed reading, switching to always scan, metric: " + niceTimeScalar(since_connecting));
+                always_scan = true;
+            }
+            else
+            {
+                UserError.Log.e(TAG, "Connection time shows missed reading, despite always scan, metric: " + niceTimeScalar(since_connecting));
+            }
+        }
+        else if( always_scan )
+        {
+            UserError.Log.d(TAG, "Resetting always_scan to false, due to working connection.");
+            always_scan = false;
+        }
+    }
+
+    private void handleConnectionStateDisconnected()
+    {
+        JoH.releaseWakeLock(floatingWakeLock);
     }
 
     private void releaseFloating() {
