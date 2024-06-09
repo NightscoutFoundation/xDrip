@@ -39,7 +39,6 @@ import static com.eveningoutpost.dexdrip.utilitymodels.Constants.G5_CALIBRATION_
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.G5_SENSOR_FAILED;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.G5_SENSOR_RESTARTED;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.G5_SENSOR_STARTED;
-import static com.eveningoutpost.dexdrip.utilitymodels.Constants.G7_SESSION_EXPIRED;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.SECOND_IN_MS;
@@ -48,7 +47,6 @@ import static com.eveningoutpost.dexdrip.utilitymodels.StatusItem.Highlight.CRIT
 import static com.eveningoutpost.dexdrip.utilitymodels.StatusItem.Highlight.NORMAL;
 import static com.eveningoutpost.dexdrip.utilitymodels.StatusItem.Highlight.NOTICE;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
-import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
 import static com.eveningoutpost.dexdrip.utils.bt.Subscription.addErrorHandler;
 import static com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry.isNative;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
@@ -93,7 +91,6 @@ import com.eveningoutpost.dexdrip.g5model.DexTimeKeeper;
 import com.eveningoutpost.dexdrip.g5model.FirmwareCapability;
 import com.eveningoutpost.dexdrip.g5model.Ob1DexTransmitterBattery;
 import com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine;
-import com.eveningoutpost.dexdrip.g5model.SensorDays;
 import com.eveningoutpost.dexdrip.g5model.TransmitterStatus;
 import com.eveningoutpost.dexdrip.g5model.VersionRequest1RxMessage;
 import com.eveningoutpost.dexdrip.g5model.VersionRequest2RxMessage;
@@ -1156,7 +1153,7 @@ public class Ob1G5CollectionService extends G5BaseService {
             }
 
             minimize_scanning = Pref.getBooleanDefaultFalse("ob1_minimize_scanning");
-           // allow_scan_by_mac = Build.VERSION.SDK_INT >= 32 && shortTxId();
+            // allow_scan_by_mac = Build.VERSION.SDK_INT >= 32 && shortTxId();
             automata(); // sequence logic
 
             UserError.Log.d(TAG, "Releasing service start");
@@ -1933,13 +1930,6 @@ public class Ob1G5CollectionService extends G5BaseService {
             final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_FAILED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
             JoH.showNotification(state.getText(), "Sensor FAILED", pi, G5_SENSOR_FAILED, true, true, false);
             UserError.Log.ueh(TAG, "Native Sensor is now marked FAILED: " + state.getExtendedText());
-        }
-
-        if (is_started && getBestCollectorHardwareName().equals("G7") && SensorDays.get().getRemainingSensorPeriodInMs() == 0) { // If we have an active G7 session and sensor has expired
-            Sensor.stopSensor(); // We might as well stop the xDrip session
-            final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G7_SESSION_EXPIRED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
-            JoH.showNotification(state.getText(), "Session ended", pi, G7_SESSION_EXPIRED, true, true, false); // Let's notify the user that the session has ended.
-            UserError.Log.ueh(TAG, "Native Session has now ended: " + state.getExtendedText());
         }
         // we can't easily auto-cancel a failed notice as auto-restart may mean the user is not aware of it?
 
