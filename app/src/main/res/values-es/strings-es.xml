@@ -601,7 +601,7 @@
     <string name="turn_bluetooth_on">Encender Bluetooth</string>
     <string name="reset_bluetooth">Resetear Bluetooth apagándolo y encendiéndolo si no hay comunicación en 20 minutos</string>
     <string name="bluetooth_watchdog">Vigilante Bluetooth</string>
-    <string name="reset_bluetooth_g5">Resetear Bluetooth apagándolo y encendiéndolo para intentar que G5 siga funcionando. Sin esto el colector de G5 puede fallar.</string>
+    <string name="reset_bluetooth_g5">Reinicializar Bluetooth apagándolo y encendiéndolo para intentar que G5 siga funcionando. Sin esto, el colector de G5 puede fallar.</string>
     <string name="g5_bluetooth_watchdog">Vigilante Dex Bluetooth</string>
     <string name="close_gatt">Si el vigilante del Bluetooth se activa frecuentemente puede intentar desactivar esta opción para ver si ayuda</string>
     <string name="older_bluetooth_wakelocks">Wakelocks Bluetooth más antiguos que pueden consumir más batería pero que pueden ser necesarios para la recepción Bluetooth</string>

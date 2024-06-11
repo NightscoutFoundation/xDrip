@@ -601,7 +601,7 @@
     <string name="turn_bluetooth_on">Включить Bluetooth</string>
     <string name="reset_bluetooth">Перезапускать Bluetooth при отсутствии данных более 20 минут</string>
     <string name="bluetooth_watchdog">Мониторинг состояния Bluetooth</string>
-    <string name="reset_bluetooth_g5">Требуется перезапустить Bluetooth (выключить и включить снова) в целях сохранения работоспособности источника данных G5. В противном случае, устройство сбора данных G5 может перестать работать.</string>
+    <string name="reset_bluetooth_g5">Перезагружать Bluetooth, выключая и включая его, чтобы обеспечить работу источника данных G5. Без этого коллектор G5 может перестать работать.</string>
     <string name="g5_bluetooth_watchdog">Мониторинг состояния G5 Bluetooth</string>
     <string name="close_gatt">Если Bluetooth watchdog часто активируется, вы можете попробовать отключить эту настройку, чтобы посмотреть, поможет ли это</string>
     <string name="older_bluetooth_wakelocks">Старые блокировки сна Bluetooth, которые могут тратить больше батареи, но могут быть необходимы для приема Bluetooth</string>
@@ -655,7 +655,7 @@
     <string name="show_total_insulin">Отображать суммарное количество инсулина для введённых пользователем значений</string>
     <string name="total_insulin">Суммарное количество инсулина</string>
     <string name="received_readings_percentage">Процент полученных показаний сенсора</string>
-    <string name="received_realtime_readings_percentage">Процент данных, полученных с датчика в режиме реального времени (т.е. без использования метода \'обратного заполнения\'). Используется ТОЛЬКО в нативном режиме G5</string>
+    <string name="received_realtime_readings_percentage">Процент полученных в реальном времени показаний сенсора (не восстановленных из памяти). ТОЛЬКО нативный режим G5</string>
     <string name="capture_percentage">Процент захвата пакетов</string>
     <string name="realtime_capture_percentage">Процент захвата пакетов в реальном времени</string>
     <string name="show_calibration_accuracy">Показать точность калибровки за последние 3 дня</string>
@@ -699,9 +699,9 @@
     <string name="advanced_g5_settings">Продвинутые настройки G5 для редких ситуаций</string>
     <string name="g5_debug_settings">Настройки отладки G5/G6</string>
     <string name="g5_scan_constantly">Некоторые устройства работают лучше когда постоянное сканирование включено, другие наоборот. Если опция отключена и показания с сенсора поступают стабильно, заряд батареи расходуется медленее. Рекомендуется включать эту опцию в случае проблем со стабильностью получения показаний</string>
-    <string name="scan_for_g5_constantly">Постоянный поиск G5</string>
+    <string name="scan_for_g5_constantly">Искать G5 постоянно</string>
     <string name="g5_force_ui_thread">Важный параметр для правильного подключения на некоторых Android устройствах, но может привести к пропускам считанных показаний в случае возникновения других ресурсоемких операций с пользовательским интерфейсом.</string>
-    <string name="force_g5_ui_thread">Приоритезация G5 сервиса</string>
+    <string name="force_g5_ui_thread">Принудительно G5 в поток UI</string>
     <string name="authentificate_before_reading">Аутентификация G5 перед каждым считыванием</string>
     <string name="g5_full_authentification">Приложение будет пытаться произвести полную аутентификацию перед каждым считыванием. Необходимо для новых прошивок G5.</string>
     <string name="unbond_g5_before_read">Отвязать G5 перед каждым считыванием</string>
@@ -1183,7 +1183,7 @@
     <string name="title_send_treatments_to_nightscout">Загружать пользовательские значения</string>
     <string name="summary_warn_nightscout_failures">Отобразить уведомление и подать звуковой сигнал, если загрузка данных в Nightscout не удалась.</string>
     <string name="title_warn_nightscout_failures">Оповещение о сбоях</string>
-    <string name="summary_nightscout_device_append_source_info">Для G5 - отправляет в Nightscout данные об используемой службе сбора данных (например, OB1) и статус \'обратного заполнения\' данных (для нативного режима)</string>
+    <string name="summary_nightscout_device_append_source_info">Для G5 отправляет тип коллектора (напр. OB1) и состояние заполнения показания из истории (для нативного) в Nigthscout.</string>
     <string name="title_nightscout_device_append_source_info">Добавлять информацию об источнике к имени устройства</string>
     <string name="summary_tap_to_send_historical_data">Нажмите, чтобы отправить данные истории в Nightscout</string>
     <string name="title_back_fill_data">Отправить историю</string>
@@ -1341,7 +1341,7 @@
     <string name="title_ob1_g5_allow_resetbond">Разрешить отвязку OB1</string>
     <string name="summary_ob1_initiate_bonding_flag">Служба сбора данных OB1 может инициировать подключение.</string>
     <string name="title_ob1_initiate_bonding_flag">Разрешить OB1 сопряжение </string>
-    <string name="title_old_g5_options">Настройки старой версии службы сбора данных G5</string>
+    <string name="title_old_g5_options">Настройки старого коллектора G5</string>
     <string name="title_g5g6_battery_options">Настройки батареи G5/G6</string>
     <string name="title_g5_battery_warning_level">Настройки предупреждений о состоянии батареи</string>
     <string name="title_plugins_and_features">Функции и дополнения</string>
