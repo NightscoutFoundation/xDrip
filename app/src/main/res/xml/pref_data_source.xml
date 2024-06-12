@@ -411,20 +411,6 @@
                     android:title="@string/title_dex_specified_slot" />
             </PreferenceCategory>
             <PreferenceCategory
-                android:key="old_g5_options"
-                android:title="@string/title_old_g5_options">
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="run_ble_scan_constantly"
-                    android:summary="@string/g5_scan_constantly"
-                    android:title="@string/scan_for_g5_constantly" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="run_G5_ble_tasks_on_uithread"
-                    android:summary="@string/g5_force_ui_thread"
-                    android:title="@string/force_g5_ui_thread" />
-            </PreferenceCategory>
-            <PreferenceCategory
                 android:key="dex_battery_category"
                 android:title="@string/title_g5g6_battery_options">
                 <EditTextPreference

@@ -149,6 +149,8 @@ public class IdempotentMigrations {
         Pref.setBoolean("ob1_g5_fallback_to_xdrip", false);
         Pref.setBoolean("always_unbond_G5", false);
         Pref.setBoolean("always_get_new_keys", true);
+        Pref.setBoolean("run_ble_scan_constantly", false);
+        Pref.setBoolean("run_G5_ble_tasks_on_uithread", false);
     }
     private static void legacySettingsMoveLanguageFromNoToNb() {
         // Check if the user's language preference is set to "no"
