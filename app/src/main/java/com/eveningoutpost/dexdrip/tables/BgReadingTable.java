@@ -62,10 +62,10 @@ public class BgReadingTable extends BaseListActivity implements NavigationDrawer
 
     private void getData() {
         final List<BgReading> latest = BgReading.latest(5000);
-        parseDataForStats(latest);
-        ListAdapter adapter = new BgReadingAdapter(this, latest);
-        this.setListAdapter(adapter);
         try {
+            parseDataForStats(latest);
+            ListAdapter adapter = new BgReadingAdapter(this, latest);
+            this.setListAdapter(adapter);
             if (total > 0) {
                 this.getActionBar().setSubtitle(String.format(Locale.getDefault(), "%d in 24h, bf:%d%% mis:%d", total, ((backfilled * 100) / total), missing));
             }
