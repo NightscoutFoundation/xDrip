@@ -2345,95 +2345,103 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 Sensor.InitDb(context);//ensure database has already been initialized
             }
             Sensor sensor = Sensor.currentSensor();
-            if (sensor != null) {
-                for (DataMap entry : entries) {
-                    if (entry != null) {
-                        String bgrecord = entry.getString("bgs");
-                        if (bgrecord != null) {
-                            final BgReading bgData = gson.fromJson(bgrecord, BgReading.class);
+            for (DataMap entry : entries) {
+                if (entry != null) {
+                    String bgrecord = entry.getString("bgs");
+                    if (bgrecord != null) {
+                        final BgReading bgData = gson.fromJson(bgrecord, BgReading.class);
 
-                        /*    // TODO this is a hack to use display glucose but it is incomplete regarding delta
-                            if (bgData.dg_mgdl > 0) {
-                                bgData.calculated_value = bgData.dg_mgdl;
-                                bgData.calculated_value_slope = bgData.dg_slope;
-                                // TODO delta missing???
-                            }
+                    /*    // TODO this is a hack to use display glucose but it is incomplete regarding delta
+                        if (bgData.dg_mgdl > 0) {
+                            bgData.calculated_value = bgData.dg_mgdl;
+                            bgData.calculated_value_slope = bgData.dg_slope;
+                            // TODO delta missing???
+                        }
 */
-                            BgReading exists = BgReading.getForTimestampExists(bgData.timestamp);
-                            exists = exists != null ? exists : BgReading.findByUuid(bgData.uuid);
-                            String calibrationUuid = entry.getString("calibrationUuid");
-                            if (exists != null) {
-                                Log.d(TAG, "syncBGData BG already exists for uuid=" + bgData.uuid + " timestamp=" + bgData.timestamp + " timeString=" + JoH.dateTimeText(bgData.timestamp));
-                                try {
-                                    Log.d(TAG, "syncBGData exists timeString=" + JoH.dateTimeText(exists.timestamp) + "  exists.calibration.uuid=" + exists.calibration.uuid + " exists=" + exists.toS());
-                                } catch (NullPointerException e) {
-                                    Log.d(TAG, "" + e); // usually when calibration.uuid is null because data is from g5 native
-                                }
+                        BgReading exists = BgReading.getForTimestampExists(bgData.timestamp);
+                        exists = exists != null ? exists : BgReading.findByUuid(bgData.uuid);
+                        String calibrationUuid = entry.getString("calibrationUuid");
+                        if (exists != null) {
+                            Log.d(TAG, "syncBGData BG already exists for uuid=" + bgData.uuid + " timestamp=" + bgData.timestamp + " timeString=" + JoH.dateTimeText(bgData.timestamp));
+                            try {
+                                Log.d(TAG, "syncBGData exists timeString=" + JoH.dateTimeText(exists.timestamp) + "  exists.calibration.uuid=" + exists.calibration.uuid + " exists=" + exists.toS());
+                            } catch (NullPointerException e) {
+                                Log.d(TAG, "" + e); // usually when calibration.uuid is null because data is from g5 native
+                            }
 
-                                exists.filtered_calculated_value = bgData.filtered_calculated_value;
-                                exists.calculated_value = bgData.calculated_value;
-                                exists.hide_slope = bgData.hide_slope;
+                            exists.filtered_calculated_value = bgData.filtered_calculated_value;
+                            exists.calculated_value = bgData.calculated_value;
+                            exists.hide_slope = bgData.hide_slope;
 
-                                exists.filtered_data = bgData.filtered_data;
-                                exists.raw_data = bgData.raw_data;
-                                exists.raw_calculated = bgData.raw_calculated;
-                                exists.calculated_value_slope = bgData.calculated_value_slope;
-                                exists.age_adjusted_raw_value = bgData.age_adjusted_raw_value;
-                                exists.calibration_flag = bgData.calibration_flag;
-                                exists.ignoreForStats = bgData.ignoreForStats;
-                                exists.time_since_sensor_started = bgData.time_since_sensor_started;
-                                exists.ra = bgData.ra;
-                                exists.rb = bgData.rb;
-                                exists.rc = bgData.rc;
-                                exists.a = bgData.a;
-                                exists.b = bgData.b;
-                                exists.c = bgData.c;
-                                exists.noise = bgData.noise;
-                                exists.time_since_sensor_started = bgData.time_since_sensor_started;
+                            exists.filtered_data = bgData.filtered_data;
+                            exists.raw_data = bgData.raw_data;
+                            exists.raw_calculated = bgData.raw_calculated;
+                            exists.calculated_value_slope = bgData.calculated_value_slope;
+                            exists.age_adjusted_raw_value = bgData.age_adjusted_raw_value;
+                            exists.calibration_flag = bgData.calibration_flag;
+                            exists.ignoreForStats = bgData.ignoreForStats;
+                            exists.ra = bgData.ra;
+                            exists.rb = bgData.rb;
+                            exists.rc = bgData.rc;
+                            exists.a = bgData.a;
+                            exists.b = bgData.b;
+                            exists.c = bgData.c;
+                            exists.noise = bgData.noise;
+                            exists.time_since_sensor_started = bgData.time_since_sensor_started;
 
-                                Calibration calibration = Calibration.byuuid(calibrationUuid);
-                                calibration = calibration != null ? calibration : Calibration.byuuid(exists.calibration_uuid);
-                                if (calibration != null) {
-                                    exists.calibration = calibration;
-                                    exists.calibration_uuid = calibration.uuid;
+                            Calibration calibration = Calibration.byuuid(calibrationUuid);
+                            calibration = calibration != null ? calibration : Calibration.byuuid(exists.calibration_uuid);
+                            if (calibration != null) {
+                                exists.calibration = calibration;
+                                exists.calibration_uuid = calibration.uuid;
+
+                                if (sensor != null) {
                                     exists.sensor = sensor;
                                     exists.sensor_uuid = sensor.uuid;
-                                    if (exists.calculated_value != bgData.calculated_value) {
-                                        changed = true;
-                                    }
-                                    exists.save();
                                 }
-                                else {
-                                    Log.e(TAG, "syncBGData existing BgReading calibrationUuid not found by byuuid; calibrationUuid=" + calibrationUuid + " bgData.calibration_uuid=" + bgData.calibration_uuid + " bgData.uuid=" + bgData.uuid + " timeString=" +  JoH.dateTimeText(bgData.timestamp));
+
+                                if (exists.calculated_value != bgData.calculated_value) {
+                                    changed = true;
                                 }
+                                exists.save();
+                            }
+                            else {
+                                Log.e(TAG, "syncBGData existing BgReading calibrationUuid not found by byuuid; calibrationUuid=" + calibrationUuid + " bgData.calibration_uuid=" + bgData.calibration_uuid + " bgData.uuid=" + bgData.uuid + " timeString=" +  JoH.dateTimeText(bgData.timestamp));
+                            }
+                        } else {
+                            Calibration calibration = Calibration.byuuid(calibrationUuid);
+                            calibration = calibration != null ? calibration : Calibration.byuuid(bgData.calibration_uuid);
+                            if (calibration != null) {
+                                Log.d(TAG, "syncBGData add BG; calibration does exist for uuid=" + bgData.uuid + " timestamp=" + bgData.timestamp + " timeString=" + JoH.dateTimeText(bgData.timestamp));
+                                bgData.calibration = calibration;
+                                bgData.calibration_uuid = calibration.uuid;
+
+                                if (sensor != null) {
+                                    exists.sensor = sensor;
+                                    exists.sensor_uuid = sensor.uuid;
+                                }
+                                changed = true;
+                                bgData.save();
                             } else {
-                                Calibration calibration = Calibration.byuuid(calibrationUuid);
-                                calibration = calibration != null ? calibration : Calibration.byuuid(bgData.calibration_uuid);
-                                if (calibration != null) {
-                                    Log.d(TAG, "syncBGData add BG; calibration does exist for uuid=" + bgData.uuid + " timestamp=" + bgData.timestamp + " timeString=" + JoH.dateTimeText(bgData.timestamp));
-                                    bgData.calibration = calibration;
-                                    bgData.calibration_uuid = calibration.uuid;
-                                    bgData.sensor = sensor;
-                                    bgData.sensor_uuid = sensor.uuid;
+                                if (bgData.source_info == null || bgData.source_info.contains("Native") || bgData.source_info.contains("Follow")) {
+                                    UserError.Log.d(TAG, "Saving BgData without calibration as source info is unknown, native or follow");
+
+                                    if (sensor != null) {
+                                        exists.sensor = sensor;
+                                        exists.sensor_uuid = sensor.uuid;
+                                    }
                                     changed = true;
                                     bgData.save();
                                 } else {
-                                    if (bgData.source_info != null && (bgData.source_info.contains("Native") || bgData.source_info.contains("Follow"))) {
-                                        UserError.Log.d(TAG, "Saving BgData without calibration as source info is native or follow");
-                                        bgData.sensor = sensor;
-                                        bgData.sensor_uuid = sensor.uuid;
-                                        changed = true;
-                                        bgData.save();
-                                    } else {
-                                        Log.e(TAG, "syncBGData new BgReading calibrationUuid not found by byuuid; cannot save! calibrationUuid=" + calibrationUuid + " bgData.calibration_uuid=" + bgData.calibration_uuid + " bgData.uuid=" + bgData.uuid + " timeString=" + JoH.dateTimeText(bgData.timestamp));
-                                    }
+                                    Log.e(TAG, "syncBGData new BgReading calibrationUuid not found by byuuid; cannot save! calibrationUuid=" + calibrationUuid + " bgData.calibration_uuid=" + bgData.calibration_uuid + " bgData.uuid=" + bgData.uuid + " timeString=" + JoH.dateTimeText(bgData.timestamp));
                                 }
                             }
                         }
                     }
                 }
             }
-            else {
+
+            if (sensor == null) {
                 Log.d(TAG, "syncBGData No Active Sensor!! Request WEARABLE_INITDB_PATH");
                 sendData(WEARABLE_INITDB_PATH, null);
             }
