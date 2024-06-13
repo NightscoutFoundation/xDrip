@@ -1153,7 +1153,7 @@ public class Ob1G5CollectionService extends G5BaseService {
             }
 
             minimize_scanning = Pref.getBooleanDefaultFalse("ob1_minimize_scanning");
-           // allow_scan_by_mac = Build.VERSION.SDK_INT >= 32 && shortTxId();
+            // allow_scan_by_mac = Build.VERSION.SDK_INT >= 32 && shortTxId();
             automata(); // sequence logic
 
             UserError.Log.d(TAG, "Releasing service start");
