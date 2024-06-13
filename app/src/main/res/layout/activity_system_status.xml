@@ -129,6 +129,7 @@
 
             <LinearLayout
                 android:id="@+id/layout_sensor"
+                app:showIfTrue="@{ms.bluetooth()}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
