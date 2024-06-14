@@ -1275,6 +1275,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
             final Preference shFollowUser = findPreference("shfollow_user");
             final Preference shFollowPass = findPreference("shfollow_pass");
+            final Preference shFollowServerUS = findPreference("dex_share_us_acct");
 
             if (collectionType == DexCollectionType.SHFollow) {
                 final Preference.OnPreferenceChangeListener shFollowListener = new Preference.OnPreferenceChangeListener() {
@@ -1289,6 +1290,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 try {
                     shFollowUser.setOnPreferenceChangeListener(shFollowListener);
                     shFollowPass.setOnPreferenceChangeListener(shFollowListener);
+                    shFollowServerUS.setOnPreferenceChangeListener(shFollowListener);
                 } catch (Exception e) {
                     //
                 }
@@ -1297,6 +1299,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 try {
                     collectionCategory.removePreference(shFollowUser);
                     collectionCategory.removePreference(shFollowPass);
+                    collectionCategory.removePreference(shFollowServerUS);
                 } catch (Exception e) {
                     //
                 }
