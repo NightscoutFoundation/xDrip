@@ -1183,7 +1183,7 @@
     <string name="title_send_treatments_to_nightscout">Laadi üles raviandmed</string>
     <string name="summary_warn_nightscout_failures">Kui Nightscouti üleslaadimine ebaõnnestub, anna ekraanil ja heliga märku.</string>
     <string name="title_warn_nightscout_failures">Hoiata tõrgete korral</string>
-    <string name="summary_nightscout_device_append_source_info">G5 puhul saadab Nightscouti vastuvõtu tüübi (nt OB1) ja näitude järeltäitmise oleku (algupärase režiimi jaoks).</string>
+    <string name="summary_nightscout_device_append_source_info">Dexcom puhul saadab Nightscouti vastuvõtu tüübi (nt OB1) ja näitude järeltäitmise oleku (algupärase režiimi jaoks).</string>
     <string name="title_nightscout_device_append_source_info">Lisa seadme nimele andmeallika info</string>
     <string name="summary_tap_to_send_historical_data">Puuduta vanade andmete saatmiseks Nightscouti</string>
     <string name="title_back_fill_data">Täienda ajalugu</string>
@@ -1322,7 +1322,7 @@
     <string name="summary_clfollow_download_meals">Laadi CareLink\'ist alla eined</string>
     <string name="title_clfollow_download_notifications">Teavitused</string>
     <string name="summary_clfollow_download_notifications">Laadi alla CareLink teavitused</string>
-    <string name="title_ob1_options">OB1 G5/G6/G7 vastuvõtja seaded</string>
+    <string name="title_ob1_options">OB1 Dexcom vastuvõtja seaded</string>
     <string name="summary_use_ob1_g5_collector_service">Täielik ülekirjutamine, peaks töötama op-süsteemides Android 4.4–9, toetab algupärast režiimi ja palju muud</string>
     <string name="title_use_ob1_g5_collector_service">Kasuta OB1 vastuvõtjat</string>
     <string name="summary_ob1_g5_use_transmitter_alg">Võimalusel kasuta VS väärtuste arvutamiseks saatja sisemist algoritmi.</string>
@@ -1337,8 +1337,8 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Tagasi xDrip\'pi</string>
     <string name="summary_ob1_minimize_scanning">Kasutage heuristikat, et minimeerida Bluetooth skaneerimist ja säästa energiat</string>
     <string name="title_ob1_minimize_scanning">Minimaalne skaneerimine</string>
-    <string name="summary_using_g6">Kasutan G6, G7 või Dexcom One sensorit</string>
-    <string name="title_using_g6">G6/G7/Dex1 tugi</string>
+    <string name="summary_using_g6">Kasutan G6, G7, Dexcom 1või One+ sensorit</string>
+    <string name="title_using_g6">G6/G7/Dex1/One+  tugi</string>
     <string name="summary_ob1_g5_allow_resetbond">OB1 vastuvõtja võib ühenduse katkestada kui arvab, et andmete töötlemine ebaõnnestus. Kui teil tekib ühenduse katkestamisel probleeme, keelake see valik. Kui te seejärel ühenduse täielikult kaotate, veenduge, et see oleks lubatud.</string>
     <string name="title_ob1_g5_allow_resetbond">Luba OB1 lahtiühendamine</string>
     <string name="summary_ob1_initiate_bonding_flag">OB1 vastuvõtja võib alustada ühendamist.</string>
