@@ -1347,7 +1347,7 @@ public class Ob1G5CollectionService extends G5BaseService {
             transmitterMAC = bleScanResult.getBleDevice().getMacAddress();
             transmitterIDmatchingMAC = transmitterID;
             if (search_name != null) {
-              saveTransmitterMac();
+                saveTransmitterMac();
             }
             //if (JoH.ratelimit("ob1-g5-scan-to-connect-transition", 3)) {
             if (state == SCAN) {
@@ -1389,7 +1389,6 @@ public class Ob1G5CollectionService extends G5BaseService {
 
             if (reason == BleScanException.SCAN_FAILED_INTERNAL_ERROR) {
                 if (allow_scan_by_mac && isBluetoothScanDoneByMacFilter()) {
-                    // allow_scan_by_mac = false;
                     UserError.Log.wtf(TAG, "Turning scan by by mac off");
                     Pref.setBoolean( "ob1_allow_scan_by_mac", false );
                                         
@@ -1954,7 +1953,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
     }
 
-    public static boolean  processCalibrationStateLite(final CalibrationState state) {
+    public static boolean processCalibrationStateLite(final CalibrationState state) {
         if (state == CalibrationState.Unknown) {
             UserError.Log.d(TAG, "Not processing push of unknown state as this is the unset state");
             return false;
