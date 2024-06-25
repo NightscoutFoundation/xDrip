@@ -2522,6 +2522,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
            //  removePreferenceFromCategory("ob1_g5_fallback_to_xdrip", "ob1_options");
            //  removePreferenceFromCategory("always_unbond_G5", "ob1_options");
            //  removePreferenceFromCategory("always_get_new_keys", "ob1_options");
+           // removePreferenceFromCategory("run_ble_scan_constantly", "ob1_options");
+           // removePreferenceFromCategory("run_G5_ble_tasks_on_uithread", "ob1_options");
        }
 
        private void removePreferenceFromCategory(final String preference, final String category) {
