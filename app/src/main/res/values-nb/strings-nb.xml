@@ -53,7 +53,7 @@
     <string name="pref_dialog_mongodb_device_status_collection">Skriv inn samlingsnavnet for enhetsstatus</string>
     <string name="pref_message_mongodb_device_status_collection">Dette er navnet på samlingen der batteriet og andre enhetsdata vil bli lagret</string>
     <!-- API Settings -->
-    <string name="pref_title_api">Nightscout-synkronisering (REST)</string>
+    <string name="pref_title_api">Nightscout-synkronisering</string>
     <string name="pref_title_api_enabled">Aktivert</string>
     <string name="pref_summary_api_enabled">REST API er den vanlige måten å koble til Nightscout</string>
     <string name="pref_title_api_url">Base-URL</string>
@@ -722,14 +722,14 @@
     <string name="influxdb_database_name">InfluxDB databasenavn</string>
     <string name="user">Bruker</string>
     <string name="password">Passord</string>
-    <string name="upload_to_dexcom">Aktiver denne til å laste opp til Dexcom\'s servere</string>
-    <string name="upload_to_dexcom_share">Last opp BS-verdier som Dexcom Share</string>
+    <string name="upload_to_dexcom">Aktiver dette for å laste opp blodsukkeravlesninger til Dexcom Share-servere</string>
+    <string name="upload_to_dexcom_share">Last opp BS-verdier</string>
     <string name="accounts_outside_usa">Deaktivert = Din konto og følger-app er fra utenfor USA</string>
     <string name="accounts_inside_usa">Aktivert = Din konto og følger-app er fra USA</string>
     <string name="usa_based_account">USA basert Dexcom-konto</string>
-    <string name="dexcom_login">Din innlogging til Dexcom\'s hjemmeside</string>
+    <string name="dexcom_login">Ditt brukernavn til Dexcom sin hjemmeside</string>
     <string name="dexcom_user">Dexcom-konto</string>
-    <string name="dexcom_login_password">Ditt passord for Dexcom\'s hjemmeside</string>
+    <string name="dexcom_login_password">Ditt passord for Dexcom sin hjemmeside</string>
     <string name="dexcom_password">Dexcom-konto passord</string>
     <string name="dexcom_receiver_serial">10-tegn serienummer til Dexcom-mottaker</string>
     <string name="dexcom_test_mode_serial">10-tegns serienummer for test-modus</string>
