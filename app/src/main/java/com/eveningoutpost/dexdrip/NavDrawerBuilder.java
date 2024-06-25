@@ -18,7 +18,6 @@ import com.eveningoutpost.dexdrip.tables.CalibrationDataTable;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utilitymodels.Experience;
 import com.eveningoutpost.dexdrip.stats.StatsActivity;
-import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 
@@ -103,7 +102,7 @@ public class NavDrawerBuilder {
                         }
                     }
                 }
-                if (!getBestCollectorHardwareName().equals("G7") || Pref.getBooleanDefaultFalse("engineering_mode")) { // If we are using G7, offer the stop sensor option in engineering mode only
+                if (!getBestCollectorHardwareName().equals("G7")) { // If we are using G7, there will be no stop sensor option in the menu.
                     this.nav_drawer_options.add(context.getString(R.string.stop_sensor));
                     this.nav_drawer_intents.add(new Intent(context, StopSensor.class));
                 }
