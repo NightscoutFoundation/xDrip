@@ -1275,6 +1275,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
             final Preference shFollowUser = findPreference("shfollow_user");
             final Preference shFollowPass = findPreference("shfollow_pass");
+            final Preference shFollowServerUS = findPreference("dex_share_us_acct");
 
             if (collectionType == DexCollectionType.SHFollow) {
                 final Preference.OnPreferenceChangeListener shFollowListener = new Preference.OnPreferenceChangeListener() {
@@ -1289,6 +1290,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 try {
                     shFollowUser.setOnPreferenceChangeListener(shFollowListener);
                     shFollowPass.setOnPreferenceChangeListener(shFollowListener);
+                    shFollowServerUS.setOnPreferenceChangeListener(shFollowListener);
                 } catch (Exception e) {
                     //
                 }
@@ -1297,6 +1299,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 try {
                     collectionCategory.removePreference(shFollowUser);
                     collectionCategory.removePreference(shFollowPass);
+                    collectionCategory.removePreference(shFollowServerUS);
                 } catch (Exception e) {
                     //
                 }
@@ -2522,6 +2525,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
            //  removePreferenceFromCategory("ob1_g5_fallback_to_xdrip", "ob1_options");
            //  removePreferenceFromCategory("always_unbond_G5", "ob1_options");
            //  removePreferenceFromCategory("always_get_new_keys", "ob1_options");
+           // removePreferenceFromCategory("run_ble_scan_constantly", "ob1_options");
+           // removePreferenceFromCategory("run_G5_ble_tasks_on_uithread", "ob1_options");
        }
 
        private void removePreferenceFromCategory(final String preference, final String category) {
