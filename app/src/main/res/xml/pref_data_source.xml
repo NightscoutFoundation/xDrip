@@ -232,6 +232,11 @@
             android:singleLine="true"
             android:summary="Login password for Dex Share Following"
             android:title="Share Password" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="dex_share_us_acct"
+            android:summary="Your account and follower app are from the USA"
+            android:title="US Servers" />
 
         <ListPreference
             android:defaultValue="gb"
