@@ -74,6 +74,11 @@
 # to depend on it.
 -dontwarn kotlinx.serialization.Serializable
 
+# The lib net.sf.kxml:kxml2:2.3.0 is referenced in same required libraries used for
+# Android testing. R8 is showing missing classes warnings which can be safely ignored.
+-dontwarn org.kxml2.io.KXmlParser
+-dontwarn org.kxml2.io.KXmlSerializer
+
 -dontwarn java.util.concurrent.**
 
 -keep class rx.schedulers.Schedulers {
