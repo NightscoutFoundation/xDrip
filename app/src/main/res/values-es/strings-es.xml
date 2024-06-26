@@ -593,7 +593,7 @@
     <string name="short_speak_readings_shortcut">Mostrar acceso directo en el menú ☰ para conmutar Lecturas Habladas</string>
     <string name="speak_readings_shortcut">Acceso directo Lecturas Habladas</string>
     <string name="battery_optimization_off">En Android 6+ garantiza que la optimización de la batería está apagada. Recomendado</string>
-    <string name="battery_optimization_on">No sigas preguntando por la optimización de la batería (no recomendable)</string>
+    <string name="battery_optimization_on">No insistir sobre la optimización de batería. No recomendado.</string>
     <string name="battery_optimization_prompt">Aviso de optimización de Batería</string>
     <string name="advanced_bluetooth_settings">Ajustes Bluetooth Avanzados</string>
     <string name="bluetooth_settings">Ajustes Bluetooth</string>
