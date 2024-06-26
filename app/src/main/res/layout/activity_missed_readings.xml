@@ -25,6 +25,7 @@
 
                         <CheckBox
                             android:id="@+id/missed_reading_enable_alert"
+                            android:checked="true"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/enable_missed_reading_alert"
