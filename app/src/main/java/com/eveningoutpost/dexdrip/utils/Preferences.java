@@ -1184,11 +1184,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             final Preference collectionMethod = findPreference("dex_collection_method");
             final Preference runInForeground = findPreference("run_service_in_foreground");
             final Preference g5nonraw = findPreference("g5_non_raw_method");
-            final Preference g5extendedsut = findPreference("g5_extended_sut");
-            final Preference scanConstantly = findPreference("run_ble_scan_constantly");
-            final Preference runOnMain = findPreference("run_G5_ble_tasks_on_uithread");
-            final Preference reAuth = findPreference("always_get_new_keys");
-            final Preference reBond = findPreference("always_unbond_G5");
             final Preference wifiRecievers = findPreference("wifi_recievers_addresses");
             final Preference predictiveBG = findPreference("predictive_bg");
             final Preference interpretRaw = findPreference("interpret_raw");
