@@ -236,6 +236,7 @@
     <string name="other_alerts">Other Alerts</string>
     <string name="extra_alerts_xdrip_plus">Extra Alerts (xDrip+)</string>
     <string name="persistent_high_alert">Persistent High Alert</string>
+    <string name="summary_persistent_high_alert">Notify if above threshold, and not falling, for long</string>
     <string name="forecasted_low_alert">Forecasted Low Alert</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolate data to try to predict lows</string>
     <string name="alarm_at_forecasted_low_mins">Alarm at Forecasted Low mins</string>
@@ -1501,7 +1502,6 @@
     <string name="category_noisy_readings">Noisy Readings</string>
     <string name="category_falling_rising_bg">Falling/Rising BG</string>
     <string name="category_alert_prefs">Alert Preferences (for these alerts)</string>
-    <string name="summary_persistent_high_alert">When above High level for too long and not heading downwards</string>
     <string name="note_search_button">SEARCH</string>
     <string name="all_note_button">ALL</string>
     <string name="title_full_screen_mode">Full Screen mode</string>
@@ -1786,6 +1786,8 @@
     <string name="select_tone_for_alerts">Select tone for Alerts</string>
     <string name="show_unsmoothed">Show unsmoothed</string>
     <string name="show_unsmoothed_summary">Show unsmoothed data also if Graph Smoothing is enabled. If calibration plugin is used, will show unsmoothed data instead of plugin data.</string>
+    <string name="title_persistent_high_threshold">Persistent high threshold</string>
+    <string name="summary_persistent_high_threshold">Persistent high alert threshold</string>
     <string name="you_can_use_google_drive_for_backup">You can use Google Drive for backup</string>
     <string name="select_backup_location">Select Backup Location</string>
     <string name="do_backup_now">Do Backup Now</string>
