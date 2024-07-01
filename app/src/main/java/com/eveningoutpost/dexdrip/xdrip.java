@@ -81,6 +81,7 @@ public class xdrip extends Application {
         executor = new PlusAsyncExecutor();
 
         IdempotentMigrations.migrateOOP2CalibrationPreferences(); // needs to run before preferences get defaults
+        IdempotentMigrations.startup(); // Must run before defaults are loaded
 
         PreferenceManager.setDefaultValues(this, R.xml.pref_general, true);
         PreferenceManager.setDefaultValues(this, R.xml.pref_data_sync, true);

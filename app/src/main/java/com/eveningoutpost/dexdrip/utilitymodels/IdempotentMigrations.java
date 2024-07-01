@@ -17,6 +17,7 @@ import com.eveningoutpost.dexdrip.models.LibreBlock;
 import com.eveningoutpost.dexdrip.models.LibreData;
 import com.eveningoutpost.dexdrip.models.PenData;
 import com.eveningoutpost.dexdrip.models.Prediction;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.models.UserNotification;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
@@ -129,6 +130,33 @@ public class IdempotentMigrations {
         } else {
             // instead of an empty string: delete the setting to show (but later not read) default string
             prefs.edit().remove("cloud_storage_api_base").apply();
+        }
+    }
+
+    // When adding a new setting to an existing function, this method lets us control what happens to an existing
+    // xDrip install after update.  The new added setting should offer more flexibility to the user rather than modifying
+    // the xDrip behavior without the user's knowledge.
+    public static void startup() {
+        if (!Pref.isPreferenceSet("warning_agreed_to")) { // This is the very first time xDrip is running after a fresh install
+            try { // Everything here runs only once after a fresh install
+
+                Pref.setBoolean("migrate_persistent_high_alert_threshold", false); // Never migrate; we will use the default
+
+            } catch (Exception e) {
+                UserError.Log.wtf(TAG, "Initial startup settings failed! Please report.");
+            }
+        }
+        try { // Everything here runs after startup, fresh install or not
+
+            if (Pref.getBoolean("migrate_persistent_high_alert_threshold", true)) { // Only if not migrated yet
+                final String vThreshold = Pref.getString("highValue", "170");
+                UserError.Log.e(TAG, "You can now set a persistent high alert threshold. Until you do, we set it equal to your current High Value setting: " + vThreshold);
+                Pref.setString("persistent_high_threshold", vThreshold); // Set the persistent high alert threshold equal to the high value
+                Pref.setBoolean("migrate_persistent_high_alert_threshold", false); // Done - never migrate again
+
+            }
+        } catch (Exception e) {
+            UserError.Log.wtf(TAG, "Startup settings failed! Please report");
         }
     }
 

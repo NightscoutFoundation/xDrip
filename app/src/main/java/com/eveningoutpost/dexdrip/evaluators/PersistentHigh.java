@@ -8,6 +8,14 @@ package com.eveningoutpost.dexdrip.evaluators;
  * out of sequence with two end points that are both above threshold.
  */
 
+/**
+ * Navid
+ *
+ * The same setting, highValue, has been used both for statistics high as well as persistent high alert.
+ * This imposed a limitation on user.
+ * We are changing this by adding a new setting, persistent_high_threshold, to be used only for the alert.
+ */
+
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.JoH;
@@ -40,19 +48,20 @@ public class PersistentHigh {
         final List<BgReading> last = BgReading.latest(1);
         if ((last != null) && (last.size() > 0)) {
 
-            final double highMarkMgDl = Home.convertToMgDlIfMmol(
-                    JoH.tolerantParseDouble(Pref.getString("highValue", "170"), 170d));
+            final double vThreshold = Home.convertToMgDlIfMmol(
+                    JoH.tolerantParseDouble(Pref.getString("persistent_high_threshold", "135"), 135d));
 
             final long now = JoH.tsl();
             final long since = now - last.get(0).timestamp;
             // only process if last reading <10 mins
             if (since < MINUTE_IN_MS * 10) {
-                // check if exceeding high
-                if (last.get(0).getDg_mgdl() > highMarkMgDl) {
+                // check if exceeding persistent high threshold
+                if (last.get(0).getDg_mgdl() > vThreshold) {
 
                     final double this_slope = last.get(0).getDg_slope() * MINUTE_IN_MS;
                     Log.d(TAG, "CheckForPersistentHigh: Slope: " + JoH.qs(this_slope)+ " "+JoH.dateTimeText(last.get(0).timestamp));
 
+                    // TODO What if it is dropping at an extremely low slope?  What if it is dropping at 1mg/dL per day?!
                     // if not falling
                     if (this_slope > 0 && !last.get(0).hide_slope) {
                         final long high_since = Pref.getLong(PERSISTENT_HIGH_SINCE, 0);
@@ -78,7 +87,7 @@ public class PersistentHigh {
                                     return false;
                                 }
 
-                                if (!dataQualityCheck(high_since, highMarkMgDl)) {
+                                if (!dataQualityCheck(high_since, vThreshold)) {
                                     Log.d(TAG, "Insufficient data quality to raise persistent high alert");
                                     return false;
                                 }

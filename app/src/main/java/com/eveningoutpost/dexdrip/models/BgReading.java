@@ -1834,10 +1834,10 @@ public class BgReading extends Model implements ShareUploadableBg {
             final long since = now - last.get(0).timestamp;
             // only process if last reading <10 mins
             if (since < 600000) {
-                // check if exceeding high
+                // check if exceeding persistent high threshold
                 if (last.get(0).calculated_value >
                         Home.convertToMgDlIfMmol(
-                                JoH.tolerantParseDouble(Pref.getString("highValue", "170")))) {
+                                JoH.tolerantParseDouble(Pref.getString("persistent_high_threshold", "135")))) {
 
                     final double this_slope = last.get(0).calculated_value_slope * 60000;
                     //Log.d(TAG, "CheckForPersistentHigh: Slope: " + JoH.qs(this_slope));
