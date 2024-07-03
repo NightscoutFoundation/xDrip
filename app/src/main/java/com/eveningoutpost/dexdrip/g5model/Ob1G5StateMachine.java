@@ -92,6 +92,7 @@ import static com.eveningoutpost.dexdrip.utilitymodels.Constants.DAY_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.SECOND_IN_MS;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
 import static com.eveningoutpost.dexdrip.utils.bt.Helper.getStatusName;
 
 
@@ -1062,6 +1063,12 @@ public class Ob1G5StateMachine {
     }
 
     private static void backFillIfNeeded(Ob1G5CollectionService parent, RxBleConnection connection) {
+        if (!Sensor.isActive() && Ob1G5CollectionService.isG5SensorStarted() && getBestCollectorHardwareName().equals("G7")) { // If we are using a G7 coming from a G6
+            // and continue beyond this point without an xDrip session, we can end up with a backfill overlapping the last G6 session.
+            // So, let's start a session now.
+            JoH.static_toast_long(xdrip.gs(R.string.auto_starting_sensor));
+            Sensor.create(tsl() - HOUR_IN_MS * 24);
+        }
         final Sensor sensor = Sensor.currentSensor();
         if (sensor == null) {
             UserError.Log.e(TAG, "Cannot process backfill evaluation as no active sensor");
