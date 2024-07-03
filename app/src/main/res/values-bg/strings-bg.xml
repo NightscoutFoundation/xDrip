@@ -1830,6 +1830,7 @@
     <string name="select_end_time">Изберете крайно време</string>
     <string name="accept_glucose">Приемане на глюкоза</string>
     <string name="process_glucose_data_received">Обработване на данните за лечение, получени от приложението NSClient</string>
+    <string name="use_health_connect">Звързване с Google Health</string>
     <string name="audio_focus">Аудио фокус</string>
     <string name="audio_focus_summary">Изберете какво да правите с другите приложения, докато се възпроизвеждат аларми и регулиране нивата на звука на системата</string>
     <string name="audio_focus_dont_adjust_other_app_sounds">Не коригирай звуците на други приложения</string>
