@@ -134,6 +134,7 @@ public class Ob1G5StateMachine {
     private static volatile AuthRequestTxMessage lastAuthPacket;
     private static volatile boolean backup_loaded = false;
     private static final int OLDEST_RAW = 300 * 24 * 60 * 60; // 300 days
+    private static long relAutoSessionStartTime = HOUR_IN_MS * 3;
 
     public static long maxBackfillPeriod_MS = 0;
 
@@ -1063,12 +1064,6 @@ public class Ob1G5StateMachine {
     }
 
     private static void backFillIfNeeded(Ob1G5CollectionService parent, RxBleConnection connection) {
-        if (!Sensor.isActive() && Ob1G5CollectionService.isG5SensorStarted() && getBestCollectorHardwareName().equals("G7")) { // If we are using a G7 coming from a G6
-            // and continue beyond this point without an xDrip session, we can end up with a backfill overlapping the last G6 session.
-            // So, let's start a session now.
-            JoH.static_toast_long(xdrip.gs(R.string.auto_starting_sensor));
-            Sensor.create(tsl() - HOUR_IN_MS * 24);
-        }
         final Sensor sensor = Sensor.currentSensor();
         if (sensor == null) {
             UserError.Log.e(TAG, "Cannot process backfill evaluation as no active sensor");
@@ -1557,14 +1552,19 @@ public class Ob1G5StateMachine {
     }
 
     private static void checkAndActivateSensor() {
-        // automagically start an xDrip sensor session if  transmitter already has active sensor
+        // automagically start an xDrip sensor session if transmitter already has active sensor
         if (!Sensor.isActive() && Ob1G5CollectionService.isG5SensorStarted() && (!Sensor.stoppedRecently() || shortTxId())) {
             JoH.static_toast_long(xdrip.gs(R.string.auto_starting_sensor));
-            // TODO possibly here we want to look at last sensor stop time and not backtrack before that
-            Sensor.create(tsl() - HOUR_IN_MS * 3);
-            if (shortTxId()) { // If we are using G7
-                Sensor.create(tsl() - HOUR_IN_MS * 24);
+            if (shortTxId()) relAutoSessionStartTime = HOUR_IN_MS * 24; // If we are using a G7
+            final List<BgReading> last = BgReading.latest(1); // Last reading
+            if ((last != null) && (last.size() > 0)) { // Have we had a reading?
+                final long now = JoH.tsl();
+                final long since = now - last.get(0).timestamp; // Time since last reading
+                if (since < relAutoSessionStartTime) { // If the last reading was less than 3 hours ago, or if we are using G7 and the last reading was less than 24 hours ago
+                    relAutoSessionStartTime = since; // We will start the new session starting from the last reading.
+                }
             }
+            Sensor.create(tsl() - relAutoSessionStartTime);
         }
     }
 
