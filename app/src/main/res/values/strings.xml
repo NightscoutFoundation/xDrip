@@ -621,7 +621,7 @@
     <string name="short_speak_readings_shortcut">Show a shortcut in the ☰ menu to toggle Speak Readings</string>
     <string name="speak_readings_shortcut">Speak Readings Shortcut</string>
     <string name="battery_optimization_off">On Android 6+ ensure battery optimization is switched off (recommended).</string>
-    <string name="battery_optimization_on">Don\'t keep asking about battery optimization (not recommended).</string>
+    <string name="battery_optimization_on">Will not keep asking about battery optimization when enabled (not recommended).</string>
     <string name="battery_optimization_prompt">Battery Optimization prompt</string>
     <string name="advanced_bluetooth_settings">Advanced Bluetooth Settings</string>
     <string name="bluetooth_settings">Bluetooth Settings</string>

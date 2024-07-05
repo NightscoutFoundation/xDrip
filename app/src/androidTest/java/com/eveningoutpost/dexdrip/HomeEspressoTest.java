@@ -5,14 +5,27 @@ package com.eveningoutpost.dexdrip;
  */
 
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.schibsted.spain.barista.BaristaClickActions.click;
+import static com.schibsted.spain.barista.BaristaScrollActions.scrollTo;
+import static com.schibsted.spain.barista.custom.NestedEnabledScrollToAction.scrollTo;
+import static org.hamcrest.core.AllOf.allOf;
+
 import android.app.Activity;
 import android.content.Context;
-import androidx.test.test.InstrumentationRegistry;
-import androidx.test.test.annotation.UiThreadTest;
-import androidx.test.test.espresso.ViewInteraction;
-import androidx.test.test.rule.ActivityTestRule;
-import androidx.test.test.runner.AndroidJUnit4;
 import android.view.WindowManager;
+
+import androidx.test.InstrumentationRegistry;
+import androidx.test.annotation.UiThreadTest;
+import androidx.test.espresso.ViewInteraction;
+import androidx.test.rule.ActivityTestRule;
+import androidx.test.runner.AndroidJUnit4;
 
 import com.schibsted.spain.barista.flakyespresso.AllowFlaky;
 
@@ -25,18 +38,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
 import java.io.File;
-
-import static androidx.test.test.espresso.Espresso.onView;
-import static androidx.test.test.espresso.action.ViewActions.click;
-import static androidx.test.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.test.espresso.matcher.RootMatchers.isDialog;
-import static androidx.test.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.test.espresso.matcher.ViewMatchers.withText;
-import static com.schibsted.spain.barista.BaristaClickActions.click;
-import static com.schibsted.spain.barista.BaristaScrollActions.scrollTo;
-import static com.schibsted.spain.barista.custom.NestedEnabledScrollToAction.scrollTo;
-import static org.hamcrest.core.AllOf.allOf;
 
 @RunWith(AndroidJUnit4.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
