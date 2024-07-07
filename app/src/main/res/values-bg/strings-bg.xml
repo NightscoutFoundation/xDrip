@@ -601,7 +601,7 @@
     <string name="turn_bluetooth_on">Включване на Bluetooth</string>
     <string name="reset_bluetooth">Нулиране на Bluetooth, като го се изклю и включи, ако не се получат данни след 20 минути</string>
     <string name="bluetooth_watchdog">Следи връзката между телефона Ви и носещото данните устройсво ( което е прикрепено към тялото Ви) да е стабилна и данните да се пренасят точно</string>
-    <string name="reset_bluetooth_g5">Нулирайте Bluetooth, като го изключите и включите като начин да поддържате източника на данни G5 работещ. Без това колекционерът G5 може да се провали.</string>
+    <string name="reset_bluetooth_g5">Нулирайте Bluetooth, като го изключите и включите като начин да поддържате източника на данни работещ. Без това колекционерът може да се провали.</string>
     <string name="g5_bluetooth_watchdog">Dex - става въпрос за Дексом уреда за продължително проследяване нивото на кръвната захар и връзката му с Bluetooth Watchdog</string>
     <string name="close_gatt">Ако Bluetooth watchdog се активира често, можете да опитате да премахнете отметката от тази опция, за да видите дали помага</string>
     <string name="older_bluetooth_wakelocks">По-стари Bluetooth wakelocks, които могат да изразходват допълнително батерията, но може да са необходими за Bluetooth приемане</string>
@@ -700,7 +700,7 @@
     <string name="g5_scan_constantly">Някои устройства работят по-добре при постоянно сканиране, други не. Ако четенето е надеждно, когато тази настройка не е избрана, трябва да имате подобрен живот на батерията. Обикновено е най-добре това да е деактивирано</string>
     <string name="scan_for_g5_constantly">Постоянно сканирай за G5</string>
     <string name="g5_force_ui_thread">Това е от решаващо значение за правилното свързване на някои устройства с Android, но може да причини пропуснати показания, когато се използват други интензивни дейности на потребителския интерфейс.</string>
-    <string name="force_g5_ui_thread">Принуди G5 към UI Thread</string>
+    <string name="force_g5_ui_thread">Принуди Dexcom към UI Thread</string>
     <string name="authentificate_before_reading">Аутентикирай преди всяко четене</string>
     <string name="g5_full_authentification">Това ще направи опит за пълно удостоверяване при всеки опит за четене. Необходим за по-нови версии на фърмуера на предавателя G5.</string>
     <string name="unbond_g5_before_read">Премахване на G5 преди всяко четене</string>
@@ -1335,7 +1335,7 @@
     <string name="title_ob1_g5_allow_resetbond">Разрешаване на OB1 развързване</string>
     <string name="summary_ob1_initiate_bonding_flag">Колекционерът OB1 може да инициира свързване.</string>
     <string name="title_ob1_initiate_bonding_flag">Позволете на OB1 да започне свързване</string>
-    <string name="title_old_g5_options">Стари настройки на G5 колекционера</string>
+    <string name="title_old_g5_options">Стари настройки на колекционера</string>
     <string name="title_g5g6_battery_options">G6 опции за батерията</string>
     <string name="title_g5_battery_warning_level">Регулирайте нивото на батерията за предупреждение</string>
     <string name="title_plugins_and_features">Плъгини и функции</string>
