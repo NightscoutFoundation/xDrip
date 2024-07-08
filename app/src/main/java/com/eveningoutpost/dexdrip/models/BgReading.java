@@ -1837,7 +1837,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                 // check if exceeding persistent high threshold
                 if (last.get(0).calculated_value >
                         Home.convertToMgDlIfMmol(
-                                JoH.tolerantParseDouble(Pref.getString("persistent_high_threshold", "135")))) {
+                                JoH.tolerantParseDouble(Pref.getString("persistent_high_threshold", "170")))) {
 
                     final double this_slope = last.get(0).calculated_value_slope * 60000;
                     //Log.d(TAG, "CheckForPersistentHigh: Slope: " + JoH.qs(this_slope));

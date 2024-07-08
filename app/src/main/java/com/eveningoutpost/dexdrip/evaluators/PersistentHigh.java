@@ -49,7 +49,7 @@ public class PersistentHigh {
         if ((last != null) && (last.size() > 0)) {
 
             final double vThreshold = Home.convertToMgDlIfMmol(
-                    JoH.tolerantParseDouble(Pref.getString("persistent_high_threshold", "135"), 135d));
+                    JoH.tolerantParseDouble(Pref.getString("persistent_high_threshold", "170"), 170d));
 
             final long now = JoH.tsl();
             final long since = now - last.get(0).timestamp;

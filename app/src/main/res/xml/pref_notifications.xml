@@ -302,7 +302,7 @@
                         android:summary="@string/summary_persistent_high_alert"
                         android:title="@string/persistent_high_alert" />
                     <EditTextPreference
-                        android:defaultValue="135"
+                        android:defaultValue="170"
                         android:dependency="persistent_high_alert_enabled"
                         android:inputType="numberDecimal"
                         android:key="persistent_high_threshold"
