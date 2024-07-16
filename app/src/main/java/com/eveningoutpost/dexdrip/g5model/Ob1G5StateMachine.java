@@ -1732,6 +1732,12 @@ public class Ob1G5StateMachine {
                     UserError.Log.uel(TAG, "Dex Native mode enabled.  For your device, non-native mode is either not possible or not recommended.");
                     JoH.showNotification("Enabled Native", "Native mode enabled", null, Constants.G6_DEFAULTS_MESSAGE, false, true, false);
                 }
+                if (FirmwareCapability.isTransmitterRawIncapable(getTransmitterID())) { // If we are using a G7 or G6 Firefly (mod or not)
+                    if (Pref.getBooleanDefaultFalse("ob1_g5_restart_sensor") && !Home.get_engineering_mode()) { // If restart is enabled, not in engineering mode
+                        Pref.setBoolean("ob1_g5_restart_sensor", false); // Disable restart
+                        UserError.Log.uel(TAG, "Restart sensor disabled.  You cannot simply restart sensor with your device.");
+                    }
+                }
             }
         }
     }
