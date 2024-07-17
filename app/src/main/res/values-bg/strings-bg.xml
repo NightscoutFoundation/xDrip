@@ -601,7 +601,7 @@
     <string name="turn_bluetooth_on">Включване на Bluetooth</string>
     <string name="reset_bluetooth">Нулиране на Bluetooth, като го се изклю и включи, ако не се получат данни след 20 минути</string>
     <string name="bluetooth_watchdog">Следи връзката между телефона Ви и носещото данните устройсво ( което е прикрепено към тялото Ви) да е стабилна и данните да се пренасят точно</string>
-    <string name="reset_bluetooth_g5">Нулирайте Bluetooth, като го изключите и включите като начин да поддържате източника на данни G5 работещ. Без това колекционерът G5 може да се провали.</string>
+    <string name="reset_bluetooth_g5">Нулирайте Bluetooth, като го изключите и включите като начин да поддържате източника на данни работещ. Без това колекционерът може да се провали.</string>
     <string name="g5_bluetooth_watchdog">Dex - става въпрос за Дексом уреда за продължително проследяване нивото на кръвната захар и връзката му с Bluetooth Watchdog</string>
     <string name="close_gatt">Ако Bluetooth watchdog се активира често, можете да опитате да премахнете отметката от тази опция, за да видите дали помага</string>
     <string name="older_bluetooth_wakelocks">По-стари Bluetooth wakelocks, които могат да изразходват допълнително батерията, но може да са необходими за Bluetooth приемане</string>
@@ -695,12 +695,12 @@
     <string name="use_any_tag">Използвайте метод за четене, оптимизиран за произволен етикет</string>
     <string name="low_level_value">Ниско ниво на диагностична/прототипна стойност</string>
     <string name="transmitter_id">ID на вашия предавател Dexcom, напр. 12AB3</string>
-    <string name="advanced_g5_settings">Разширени настройки на G5 за редки ситуации</string>
-    <string name="g5_debug_settings">G5/G6/Dex1 Debug Настройки</string>
+    <string name="advanced_g5_settings">Разширени настройки на Dexcom за редки ситуации</string>
+    <string name="g5_debug_settings">G6/Dex1 Debug Настройки</string>
     <string name="g5_scan_constantly">Някои устройства работят по-добре при постоянно сканиране, други не. Ако четенето е надеждно, когато тази настройка не е избрана, трябва да имате подобрен живот на батерията. Обикновено е най-добре това да е деактивирано</string>
     <string name="scan_for_g5_constantly">Постоянно сканирай за G5</string>
     <string name="g5_force_ui_thread">Това е от решаващо значение за правилното свързване на някои устройства с Android, но може да причини пропуснати показания, когато се използват други интензивни дейности на потребителския интерфейс.</string>
-    <string name="force_g5_ui_thread">Принуди G5 към UI Thread</string>
+    <string name="force_g5_ui_thread">Принуди Dexcom към UI Thread</string>
     <string name="authentificate_before_reading">Аутентикирай преди всяко четене</string>
     <string name="g5_full_authentification">Това ще направи опит за пълно удостоверяване при всеки опит за четене. Необходим за по-нови версии на фърмуера на предавателя G5.</string>
     <string name="unbond_g5_before_read">Премахване на G5 преди всяко четене</string>
@@ -1171,7 +1171,7 @@
     <string name="summary_send_bridge_battery_to_nightscout">Изпратете нивото на bridge батерията на Nightscout. Премахнете отметката, ако сензорът на батерията ви е повреден.</string>
     <string name="title_send_bridge_battery_to_nightscout">Качване на bridge батерия</string>
     <string name="summary_send_dexcom_transmitter_battery_to_nightscout">Изпратете статистика за батерията на предавателя Dexcom до Nightscout. Включва всички данни, показани на екрана за състояние на колекционера.</string>
-    <string name="title_send_dexcom_transmitter_battery_to_nightscout">Качване на OB1G5/G6 батерия на предавателя</string>
+    <string name="title_send_dexcom_transmitter_battery_to_nightscout">Качване на Dexcom батерия на предавателя</string>
     <string name="summary_send_treatments_to_nightscout">Изпратете данни за лечението на Nightscout. Премахнете отметката, ако вашият портал за грижи е повреден.</string>
     <string name="title_send_treatments_to_nightscout">Качване на лечения</string>
     <string name="summary_warn_nightscout_failures">Визуално и звуково известие, ако качването на Nightscout е неуспешно.</string>
@@ -1314,7 +1314,7 @@
     <string name="summary_clfollow_download_meals">Изтеглете хранения от CareLink</string>
     <string name="title_clfollow_download_notifications">Известия</string>
     <string name="summary_clfollow_download_notifications">Изтегли известия от CareLink</string>
-    <string name="title_ob1_options">OB1 G5/G6/G7 Настройки на колекционера</string>
+    <string name="title_ob1_options">OB1 G6/G7 Настройки на колекционера</string>
     <string name="summary_use_ob1_g5_collector_service">Пълно презаписване, трябва да работи на Android 4.4 - 9, поддържа естествен режим и др</string>
     <string name="title_use_ob1_g5_collector_service">Използвайте колекционера OB1</string>
     <string name="summary_ob1_g5_use_transmitter_alg">Използвайте вътрешния алгоритъм на трансмитера, за да изчислите стойностите на глюкозата, когато е възможно.</string>
@@ -1335,8 +1335,8 @@
     <string name="title_ob1_g5_allow_resetbond">Разрешаване на OB1 развързване</string>
     <string name="summary_ob1_initiate_bonding_flag">Колекционерът OB1 може да инициира свързване.</string>
     <string name="title_ob1_initiate_bonding_flag">Позволете на OB1 да започне свързване</string>
-    <string name="title_old_g5_options">Стари настройки на G5 колекционера</string>
-    <string name="title_g5g6_battery_options">G5/G6 опции за батерията</string>
+    <string name="title_old_g5_options">Стари настройки на колекционера</string>
+    <string name="title_g5g6_battery_options">G6 опции за батерията</string>
     <string name="title_g5_battery_warning_level">Регулирайте нивото на батерията за предупреждение</string>
     <string name="title_plugins_and_features">Плъгини и функции</string>
     <string name="title_color_heart_rate1">Сензор за сърдечен ритъм</string>
@@ -1830,6 +1830,7 @@
     <string name="select_end_time">Изберете крайно време</string>
     <string name="accept_glucose">Приемане на глюкоза</string>
     <string name="process_glucose_data_received">Обработване на данните за лечение, получени от приложението NSClient</string>
+    <string name="use_health_connect">Звързване с Google Health</string>
     <string name="audio_focus">Аудио фокус</string>
     <string name="audio_focus_summary">Изберете какво да правите с другите приложения, докато се възпроизвеждат аларми и регулиране нивата на звука на системата</string>
     <string name="audio_focus_dont_adjust_other_app_sounds">Не коригирай звуците на други приложения</string>
