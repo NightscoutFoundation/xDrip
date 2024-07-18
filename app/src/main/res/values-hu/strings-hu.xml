@@ -294,7 +294,7 @@
     <string name="alert_volume_profile">Riasztáshang beállítása</string>
     <string name="smart_alerting">Okos riasztás</string>
     <string name="dont_alarm_during_phone_calls">Nincs riasztás telefonálás közben</string>
-    <string name="start_snoozed">Szundizva indítás</string>
+    <string name="start_snoozed">Késleltetés</string>
     <string name="adjust_all_by_a_factor">Általános tényezővel beállítás</string>
     <string name="reset">Visszaállítás</string>
     <string name="pebble_and_android_wear_options">Beállítások okosórákhoz</string>
