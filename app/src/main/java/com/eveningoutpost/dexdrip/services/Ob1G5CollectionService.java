@@ -1785,7 +1785,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
 
     private boolean getInitiateBondingFlag() {
-        return Pref.getBoolean("ob1_initiate_bonding_flag", true);
+        return true; // There is no reason not to initiate bonding
     }
 
 

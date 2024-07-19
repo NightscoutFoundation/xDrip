@@ -400,12 +400,6 @@
                     android:key="ob1_special_pairing_workaround"
                     android:summary="Some Samsung devices can have an error where they lose the pairing information. This attempts to work around the issue."
                     android:title="@string/special_pairing_workaround" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="ob1_initiate_bonding_flag"
-                    android:summary="@string/summary_ob1_initiate_bonding_flag"
-                    android:title="@string/title_ob1_initiate_bonding_flag"
-                    />
                 <EditTextPreference
                     android:defaultValue=""
                     android:inputType="number"
