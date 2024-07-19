@@ -20,26 +20,29 @@
                 android:layout_gravity="left"
                 android:orientation="horizontal"
                 android:padding="5dp">
-
                 <TextView
-                    android:id="@+id/textView4"
+                    android:id="@+id/textView7"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
-                    android:text="@string/range_in_high_low"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
-
+                    android:text="@string/stat_readings_count"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
                 <TextView
-                    android:id="@+id/textView_ranges_percent"
+                    android:id="@+id/textView_ntotal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
-                    android:text="--%/--%/--%"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:text="---"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="26dp" >
             </LinearLayout>
 
             <LinearLayout
@@ -50,24 +53,24 @@
                 android:padding="5dp">
 
                 <TextView
-                    android:id="@+id/textView20"
+                    android:id="@+id/textView8"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:paddingStart="5dp"
-                    android:paddingEnd="0dp"
-                    android:text="@string/stats_range_settings"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:paddingEnd="5dp"
+                    android:text="@string/stat_veryhigh"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <TextView
-                    android:id="@+id/textView_stats_range_set"
+                    android:id="@+id/textView_veryhigh"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
-                    android:text=": ---"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:text="---"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
             </LinearLayout>
 
             <LinearLayout
@@ -78,23 +81,52 @@
                 android:padding="5dp">
 
                 <TextView
+                    android:id="@+id/textView9"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
-                    android:text="@string/absolute_s"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:text="@string/stat_high"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <TextView
-                    android:id="@+id/textView_ranges_absolute"
+                    android:id="@+id/textView_high"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
-                    android:text="--/--/--"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:text="---"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:orientation="horizontal"
+                android:padding="5dp">
+
+                <TextView
+                    android:id="@+id/textView10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:text="@string/stat_inrange"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:id="@+id/textView_inrange"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:text="---"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
             </LinearLayout>
 
             <LinearLayout
@@ -111,18 +143,51 @@
                     android:layout_weight="1"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
-                    android:text="@string/median_bg"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:text="@string/stat_low"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <TextView
-                    android:id="@+id/textView_median"
+                    android:id="@+id/textView_low"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     android:text="---"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:orientation="horizontal"
+                android:padding="5dp">
+
+                <TextView
+                    android:id="@+id/textView12"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:text="@string/stat_verylow"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:id="@+id/textView_verylow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:text="---"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="26dp" >
             </LinearLayout>
 
             <LinearLayout
@@ -139,18 +204,18 @@
                     android:layout_weight="1"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
-                    android:text="@string/mean_bg"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:text="@string/median_bg"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <TextView
-                    android:id="@+id/textView_mean"
+                    android:id="@+id/textView_median"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     android:text="---"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
             </LinearLayout>
 
             <LinearLayout
@@ -167,8 +232,36 @@
                     android:layout_weight="1"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
+                    android:text="@string/mean_bg"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:id="@+id/textView_mean"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:text="---"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:orientation="horizontal"
+                android:padding="5dp">
+
+                <TextView
+                    android:id="@+id/textView15"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
                     android:text="@string/hba1c_est"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <TextView
                     android:id="@+id/textView_a1c"
@@ -178,7 +271,7 @@
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     android:text="-- mmol/mol\n--%"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
             </LinearLayout>
 
             <LinearLayout
@@ -196,7 +289,7 @@
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     android:text="@string/stddev"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <TextView
                     android:id="@+id/textView_stdev"
@@ -206,7 +299,7 @@
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     android:text="---"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
             </LinearLayout>
 
             <LinearLayout
@@ -224,7 +317,7 @@
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     android:text="@string/relative_sd_cv"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <TextView
                     android:id="@+id/textView_coefficient_of_variation"
@@ -234,7 +327,7 @@
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     android:text="--%"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
             </LinearLayout>
 
             <LinearLayout
@@ -252,7 +345,7 @@
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     android:text="GVI:"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <TextView
                     android:id="@+id/textView_gvi"
@@ -262,7 +355,7 @@
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     android:text="--"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
