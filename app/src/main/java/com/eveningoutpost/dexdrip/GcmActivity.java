@@ -16,6 +16,7 @@ import android.preference.PreferenceManager;
 
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.cloud.jamcm.JamCm;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.BloodTest;
 import com.eveningoutpost.dexdrip.models.Calibration;
@@ -216,7 +217,8 @@ public class GcmActivity extends FauxActivity {
                         try {
                             Log.i(TAG, "Resending unacknowledged queue item: " + datum.bundle.getString("action") + datum.bundle.getString("payload"));
                             datum.resent++;
-                            GoogleCloudMessaging.getInstance(context).send(senderid + "@gcm.googleapis.com", Integer.toString(msgId.incrementAndGet()), datum.bundle);
+                           // GoogleCloudMessaging.getInstance(context).send(senderid + "@gcm.googleapis.com", Integer.toString(msgId.incrementAndGet()), datum.bundle);
+                            JamCm.sendMessage(datum.bundle);
                         } catch (Exception e) {
                             Log.e(TAG, "Got exception during resend: " + e.toString());
                         }
@@ -650,7 +652,7 @@ public class GcmActivity extends FauxActivity {
         }
     }
 
-    static String myIdentity() {
+    public static String myIdentity() {
         // TODO prefs override possible
         return GoogleDriveInterface.getDriveIdentityString();
     }
@@ -762,19 +764,20 @@ public class GcmActivity extends FauxActivity {
                 Log.e(TAG, "Queue size exceeded");
                 Home.toaststaticnext("Maximum Sync Queue size Exceeded!");
             }
-            final GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(xdrip.getAppContext());
+          //  final GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(xdrip.getAppContext());
             if (token == null) {
                 Log.e(TAG, "GCM token is null - cannot sendMessage");
                 return "";
             }
             String messageid = Integer.toString(msgId.incrementAndGet());
-            gcm.send(senderid + "@gcm.googleapis.com", messageid, data);
+         //   gcm.send(senderid + "@gcm.googleapis.com", messageid, data);
             if (last_ack == -1) last_ack = JoH.tsl();
             last_send_previous = last_send;
             last_send = JoH.tsl();
+            JamCm.sendMessage(data);
             msg = "Sent message OK " + messageid;
             DesertSync.fromGCM(data);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             msg = "Error :" + ex.getMessage();
         }
         Log.d(TAG, "Return msg in SendMessage: " + msg);
