@@ -4,7 +4,7 @@ package com.eveningoutpost.dexdrip.watch.miband;
 
 import android.os.Bundle;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.utils.bt.BtCallBack2;
 import com.eveningoutpost.dexdrip.utils.bt.ScanMeister;
 

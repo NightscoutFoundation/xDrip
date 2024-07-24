@@ -1,16 +1,19 @@
 package com.eveningoutpost.dexdrip.tidepool;
 
+import static com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper.enableTls12OnPreLollipop;
+
 import android.os.PowerManager;
 
 import com.eveningoutpost.dexdrip.BuildConfig;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.store.FastStore;
 
 import java.util.List;
 
+import lombok.Getter;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
@@ -27,8 +30,6 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
-
-import static com.eveningoutpost.dexdrip.UtilityModels.OkHttpWrapper.enableTls12OnPreLollipop;
 
 /** jamorham
  *
@@ -47,6 +48,7 @@ public class TidepoolUploader {
     private static Retrofit retrofit;
     private static final String INTEGRATION_BASE_URL = "https://int-api.tidepool.org";
     private static final String PRODUCTION_BASE_URL = "https://api.tidepool.org";
+    @Getter
     private static final String SESSION_TOKEN_HEADER = "x-tidepool-session-token";
 
     private static PowerManager.WakeLock wl;
@@ -112,6 +114,7 @@ public class TidepoolUploader {
 
     public static void resetInstance() {
         retrofit = null;
+        AuthFlowOut.clearAllSavedData();
         UserError.Log.d(TAG, "Instance reset");
     }
 
@@ -130,21 +133,26 @@ public class TidepoolUploader {
         // TODO failure backoff
         if (JoH.ratelimit("tidepool-login", 10)) {
             extendWakeLock(30000);
-            final Session session = new Session(MAuthRequest.getAuthRequestHeader(), SESSION_TOKEN_HEADER);
-            if (session.authHeader != null) {
-                final Call<MAuthReply> call = session.service.getLogin(session.authHeader);
-                status("Connecting");
-                if (fromUi) {
-                    JoH.static_toast_long("Connecting to Tidepool");
-                }
-
-                call.enqueue(new TidepoolCallback<MAuthReply>(session, "Login", () -> startSession(session, fromUi))
-                        .setOnFailure(() -> loginFailed(fromUi)));
+            if (Pref.getBooleanDefaultFalse("tidepool_new_auth")) {
+                UserError.Log.d(TAG, "Using new auth method");
+                AuthFlowIn.handleTokenLoginAndStartSession();
             } else {
-                UserError.Log.e(TAG, "Cannot do login as user credentials have not been set correctly");
-                status("Invalid credentials");
-                if (fromUi) {
-                    JoH.static_toast_long("Cannot login as Tidepool credentials have not been set correctly");
+                UserError.Log.d(TAG, "Using old auth method");
+                final Session session = new Session(MAuthRequest.getAuthRequestHeader(), SESSION_TOKEN_HEADER);
+                if (session.authHeader != null) {
+                    final Call<MAuthReply> call = session.service.getLogin(session.authHeader);
+                    status("Connecting");
+                    if (fromUi) {
+                        JoH.static_toast_long("Connecting to Tidepool");
+                    }
+                    call.enqueue(new TidepoolCallback<MAuthReply>(session, "Login", () -> startSession(session, fromUi))
+                            .setOnFailure(() -> loginFailed(fromUi)));
+                } else {
+                    UserError.Log.e(TAG, "Cannot do login as user credentials have not been set correctly");
+                    status("Invalid credentials");
+                    if (fromUi) {
+                        JoH.static_toast_long("Cannot login as Tidepool credentials have not been set correctly");
+                    }
                 }
                 releaseWakeLock();
             }
@@ -195,7 +203,7 @@ public class TidepoolUploader {
     }*/
 
 
-    private static void startSession(final Session session, boolean fromUi) {
+    public static void startSession(final Session session, boolean fromUi) {
         if (JoH.ratelimit("tidepool-start-session", 60)) {
             extendWakeLock(30000);
             if (session.authReply.userid != null) {
@@ -207,7 +215,7 @@ public class TidepoolUploader {
                     if (session.datasetReply == null) {
                         status("New data set");
                         if (fromUi) {
-                            JoH.static_toast_long("Creating new data set");
+                            JoH.static_toast_long("Creating new data set - all good");
                         }
                         Call<MDatasetReply> call = session.service.openDataSet(session.token, session.authReply.userid, new MOpenDatasetRequest().getBody());
                         call.enqueue(new TidepoolCallback<MDatasetReply>(session, "Open New Dataset", () -> doUpload(session))
@@ -218,7 +226,7 @@ public class TidepoolUploader {
                         // ie, do the openDataSet conditionally, and then do `doUpload` either way.
                         status("Appending");
                         if (fromUi) {
-                            JoH.static_toast_long("Found existing remote data set");
+                            JoH.static_toast_long("Found existing remote data set - all good");
                         }
                         doUpload(session);
                     }

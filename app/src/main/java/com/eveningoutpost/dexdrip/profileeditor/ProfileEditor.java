@@ -9,10 +9,7 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -20,16 +17,20 @@ import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.Profile;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.importedlibraries.dexcom.Dex_Constants;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.Profile;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
+import com.eveningoutpost.dexdrip.utilitymodels.JamorhamShowcaseDrawer;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.ShotStateStore;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
@@ -85,6 +86,7 @@ public class ProfileEditor extends BaseAppCompatActivity {
         adjustallSeekBar = (SeekBar) findViewById(R.id.profileAdjustAllseekBar);
         adjustPercentage = (TextView) findViewById(R.id.profileAdjustAllPercentage);
 
+        profileItemList.clear();
         profileItemList.addAll(loadData(true));
 
         //Toolbar toolbar = (Toolbar) findViewById(R.id.profile_toolbar);
@@ -260,6 +262,14 @@ public class ProfileEditor extends BaseAppCompatActivity {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        profileItemList.clear();
+        profileItemList.addAll(loadData(true));
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
 
@@ -316,9 +326,7 @@ public class ProfileEditor extends BaseAppCompatActivity {
         String data = gson.toJson(profileItemListTmp);
         if (for_real) {
             saveBtn.setVisibility(View.INVISIBLE);
-            Pref.setString("saved_profile_list_json", data);
-            Pref.setString("saved_profile_list_json_working", "");
-            Log.d(TAG, "Saved final data");
+            saveProfileJson(data);
             UserError.Log.uel(TAG, "Saved Treatment Profile data, timeblocks:" + profileItemListTmp.size());
             updateAdjustmentFactor(1.0); // reset it
             dataChanged = true;
@@ -330,6 +338,12 @@ public class ProfileEditor extends BaseAppCompatActivity {
             undoBtn.setVisibility(View.VISIBLE);
             Log.d(TAG, "Saved working data");
         }
+    }
+
+    public static void saveProfileJson(final String data) {
+        Pref.setString("saved_profile_list_json", data);
+        Pref.setString("saved_profile_list_json_working", "");
+        Log.d(TAG, "Saved final data");
     }
 
     private void clearWorkingData() {

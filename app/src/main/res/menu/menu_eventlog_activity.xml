@@ -5,15 +5,8 @@
         android:id="@+id/eventlog_search"
         android:title="@string/search"
         android:icon="@android:drawable/ic_menu_search"
-        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="always|collapseActionView"/>
-    <item android:id="@+id/userEvents"
-        android:title="@string/view_old_error_log"
-        android:checkable="false"
-        android:orderInCategory="2"
-        android:onClick="viewErrorLog"
-        android:visible="true"
-        android:showAsAction="never"/>
     <item android:id="@+id/returnHome"
         android:title="@string/return_to_home_screen"
         android:checkable="false"

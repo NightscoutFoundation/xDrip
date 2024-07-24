@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.watch.thinjam.messages;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;

@@ -3,9 +3,9 @@ package com.eveningoutpost.dexdrip;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
-import android.databinding.BindingAdapter;
+import androidx.databinding.BindingAdapter;
 import android.graphics.Typeface;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -13,9 +13,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.FINAL_VISIBILITY_ID;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.FINAL_VISIBILITY_ID;
 
 
 /**
@@ -34,8 +34,20 @@ public class BindingAdapterUtils {
 
     @BindingAdapter(value = {"showIfTrueAnimated"}, requireAll = true)
     public static void setShowIfTrueAnimatedBoolean(@NonNull View view, Boolean isVisible) {
-       setShowIfTrueAnimated(view, isVisible != null ? isVisible : false);
+        setShowIfTrueAnimated(view, isVisible != null ? isVisible : false);
     }
+
+
+    @BindingAdapter(value = {"showIfTrueAnimatedFastOff"}, requireAll = true)
+    public static void setShowIfTrueAnimatedFastOff(@NonNull View view, boolean isVisible) {
+        setVisibility(view, isVisible ? View.VISIBLE : View.GONE, 50, 600);
+    }
+
+    @BindingAdapter(value = {"showIfTrueAnimatedFastOff"}, requireAll = true)
+    public static void setShowIfTrueAnimatedBooleanFastOff(@NonNull View view, Boolean isVisible) {
+        setVisibility(view, isVisible ? View.VISIBLE : View.GONE, 50, 600);
+    }
+
 
     @BindingAdapter(value = {"showIfTrue"}, requireAll = true)
     public static void setShowIfTrue(@NonNull View view, boolean isVisible) {
@@ -96,6 +108,12 @@ public class BindingAdapterUtils {
     @BindingAdapter(value = {"animatedVisibility"})
     public static synchronized void setVisibility(@NonNull final View view,
                                                   final int visibility) {
+        setVisibility(view, visibility, 600, 600);
+    }
+
+    public static synchronized void setVisibility(@NonNull final View view,
+                                                  final int visibility, int offSpeed, int onSpeed) {
+
         // Were we animating before? If so, what was the visibility?
         Integer endAnimVisibility = (Integer) view.getTag(FINAL_VISIBILITY_ID);
         int oldVisibility = endAnimVisibility == null
@@ -122,8 +140,8 @@ public class BindingAdapterUtils {
         // Create the animator
         final ObjectAnimator alpha = ObjectAnimator.ofFloat(view, View.ALPHA, startAlpha, endAlpha);
 
-        final long duration = 600;
-        final long stagger = 150;
+        final long duration = willBeVisible ? onSpeed : offSpeed;
+        final long stagger = duration / 4;
         alpha.setDuration(duration);
 
         // Stagger animations keyed at the same moment
@@ -160,6 +178,5 @@ public class BindingAdapterUtils {
         });
         alpha.start();
     }
-
 }
 

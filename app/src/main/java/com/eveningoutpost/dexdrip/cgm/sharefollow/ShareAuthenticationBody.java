@@ -4,7 +4,7 @@ import com.google.gson.annotations.Expose;
 
 /**
  * jamorham
- *
+ * <p>
  * Class to model the parameters required in the authentication json
  */
 
@@ -19,9 +19,9 @@ public class ShareAuthenticationBody {
     @Expose
     public String password;
 
-    ShareAuthenticationBody(final String password, final String username) {
+    ShareAuthenticationBody(final String password, final String accountName) {
         this.applicationId = ShareConstants.APPLICATION_ID;
-        this.accountName = username;
+        this.accountName = accountName;
         this.password = password;
     }
 }

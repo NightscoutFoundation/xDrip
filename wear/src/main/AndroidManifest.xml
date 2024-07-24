@@ -58,7 +58,7 @@
             android:value="41" />
         <meta-data
             android:name="AA_MODELS"
-            android:value="com.eveningoutpost.dexdrip.Models.ActiveBgAlert,com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice,com.eveningoutpost.dexdrip.Models.AlertType,com.eveningoutpost.dexdrip.Models.BgReading,com.eveningoutpost.dexdrip.Models.Calibration,com.eveningoutpost.dexdrip.Models.CalibrationRequest,com.eveningoutpost.dexdrip.Models.PebbleMovement,com.eveningoutpost.dexdrip.Models.HeartRate,com.eveningoutpost.dexdrip.Models.BloodTest,com.eveningoutpost.dexdrip.Models.Sensor,com.eveningoutpost.dexdrip.Models.TransmitterData,com.eveningoutpost.dexdrip.Models.Treatments,com.eveningoutpost.dexdrip.Models.UserError,com.eveningoutpost.dexdrip.Models.UserNotification,com.eveningoutpost.dexdrip.ShareModels.Models,com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue,com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue,com.eveningoutpost.dexdrip.UtilityModels.SensorSendQueue,com.eveningoutpost.dexdrip.Models.LibreData,com.eveningoutpost.dexdrip.Models.LibreBlock" />
+            android:value="com.eveningoutpost.dexdrip.models.ActiveBgAlert,com.eveningoutpost.dexdrip.models.ActiveBluetoothDevice,com.eveningoutpost.dexdrip.models.AlertType,com.eveningoutpost.dexdrip.models.BgReading,com.eveningoutpost.dexdrip.models.Calibration,com.eveningoutpost.dexdrip.models.CalibrationRequest,com.eveningoutpost.dexdrip.models.PebbleMovement,com.eveningoutpost.dexdrip.models.HeartRate,com.eveningoutpost.dexdrip.models.BloodTest,com.eveningoutpost.dexdrip.models.Sensor,com.eveningoutpost.dexdrip.models.TransmitterData,com.eveningoutpost.dexdrip.models.Treatments,com.eveningoutpost.dexdrip.models.UserError,com.eveningoutpost.dexdrip.models.UserNotification,com.eveningoutpost.dexdrip.sharemodels.models,com.eveningoutpost.dexdrip.utilitymodels.BgSendQueue,com.eveningoutpost.dexdrip.utilitymodels.CalibrationSendQueue,com.eveningoutpost.dexdrip.utilitymodels.SensorSendQueue,com.eveningoutpost.dexdrip.models.LibreData,com.eveningoutpost.dexdrip.models.LibreBlock" />
 
         <meta-data
             tools:replace="android:value"
@@ -175,32 +175,32 @@
             </intent-filter>
         </service>
         <service
-            android:name=".Services.G5CollectionService"
+            android:name=".services.G5CollectionService"
             android:enabled="true"
             android:exported="true"></service>
         <service
-            android:name=".Services.Ob1G5CollectionService"
+            android:name=".services.Ob1G5CollectionService"
             android:enabled="true" />
         <service
-            android:name=".Services.DexCollectionService"
+            android:name=".services.DexCollectionService"
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".Services.DexShareCollectionService"
+            android:name=".services.DexShareCollectionService"
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".UtilityModels.Notifications"
+            android:name=".utilitymodels.Notifications"
             android:exported="false" />
         <service
-            android:name=".Services.SnoozeOnNotificationDismissService"
+            android:name=".services.SnoozeOnNotificationDismissService"
             android:exported="false" />
         <service
-            android:name=".Services.MissedReadingService"
+            android:name=".services.MissedReadingService"
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".Services.CustomComplicationProviderService"
+            android:name=".services.CustomComplicationProviderService"
             android:icon="@drawable/ic_watch_white"
             android:label="xDrip Complication Provider"
             android:permission="com.google.android.wearable.permission.BIND_COMPLICATION_PROVIDER">
@@ -215,9 +215,9 @@
                 android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
                 android:value="60" />
         </service>
-        <service android:name=".Services.HeartRateService" />
+        <service android:name=".services.HeartRateService" />
         <service
-            android:name=".Services.HeartRateJobService"
+            android:name=".services.HeartRateJobService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
         <service
             android:name=".ProcessAPKChannelDownload"
@@ -226,9 +226,10 @@
         <receiver android:name=".NSEmulatorReceiver">
             <intent-filter>
                 <action android:name="com.eveningoutpost.dexdrip.NS_EMULATOR" />
+                <action android:name="com.eveningoutpost.dexdrip.OOP2_DECODE_FARM_RESULT" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".Services.ComplicationTapBroadcastReceiver" />
+        <receiver android:name=".services.ComplicationTapBroadcastReceiver" />
         <receiver android:name=".utils.DisconnectReceiver">
             <intent-filter>
                 <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
@@ -295,7 +296,7 @@
         </activity>
         <activity
             android:name=".LocationPermissionActivity"
-            android:label="title_activity_location_permission"
+            android:label="@string/title_activity_location_permission"
             android:launchMode="singleTop">
 
         </activity>
@@ -311,23 +312,23 @@
             android:name=".UpdateActivity"
             />
         <activity
-            android:name=".Tables.CalibrationDataTable"
+            android:name=".tables.CalibrationDataTable"
             android:configChanges="orientation|screenSize"
             android:label="@string/calibration_data_table" />
         <activity
-            android:name=".Tables.BgReadingTable"
+            android:name=".tables.BgReadingTable"
             android:configChanges="orientation|screenSize"
             android:label="@string/bg_readings_table" />
         <activity
-            android:name=".Tables.SensorDataTable"
+            android:name=".tables.SensorDataTable"
             android:configChanges="orientation|screenSize"
             android:label="@string/sensor_table" />
         <activity
-            android:name=".Tables.BloodTestTable"
+            android:name=".tables.BloodTestTable"
             android:configChanges="orientation|screenSize"
             android:label="@string/bg_readings_table" />
         <activity
-            android:name=".Tables.TreatmentsTable"
+            android:name=".tables.TreatmentsTable"
             android:configChanges="orientation|screenSize"
             android:label="@string/bg_readings_table" />
         <activity android:name=".SensorPermissionActivity" />

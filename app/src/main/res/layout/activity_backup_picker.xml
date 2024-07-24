@@ -1,0 +1,131 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.eveningoutpost.dexdrip.cloud.backup.BackupActivity.ViewModel" />
+
+        <import type="androidx.databinding.ObservableMap" />
+
+        <variable
+            name="map"
+            type="ObservableMap&lt;String, String&gt;" />
+
+        <variable
+            name="prefs"
+            type="com.eveningoutpost.dexdrip.utilitymodels.PrefsViewImpl" />
+
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:text="@string/you_can_use_google_drive_for_backup"
+                android:textColor="#fff9c4"
+                android:textSize="17sp" />
+
+            <include
+                layout="@layout/bound_status_item"
+                app:name="@{map.selectedLocationString}"
+                app:value="@{map.selectedLocation}" />
+
+            <include
+                layout="@layout/bound_status_item"
+                app:name="@{map.stextString}"
+                app:value="@{map.stext}" />
+
+            <include
+                layout="@layout/bound_status_item"
+                app:name="@{map.lastBackupTimeString}"
+                app:value="@{map.lastBackupTime}" />
+
+            <include
+                layout="@layout/bound_status_item"
+                app:name="@{map.lastAgoTimeString}"
+                app:value="@{map.lastAgoTime}" />
+
+            <include
+                layout="@layout/bound_status_item"
+                app:name="@{map.lastDeviceString}"
+                app:value="@{map.lastDevice}" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:gravity="center"
+                android:text="@{vm.status, default=`Status`}"
+                android:textColor="#fff9c4"
+                android:textSize="17sp" />
+
+            <ProgressBar
+                style="?android:attr/progressBarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:invisibleIfFalse="@{!vm.idle}" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginBottom="15dp"
+                android:enabled="@{vm.idle}"
+                android:onClick="@{() -> vm.selectFile()}"
+                android:text="@string/select_backup_location"
+                android:textAllCaps="false"/>
+
+            <Button
+                android:id="@+id/button30"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginBottom="15dp"
+                android:enabled="@{vm.idle}"
+                android:onClick="@{() -> vm.backupNow()}"
+                android:text="@string/do_backup_now"
+                android:textAllCaps="false"/>
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/automatic_daily_backup"
+                app:checked="@={prefs[`backup-automatic-enabled`]}"
+                app:showIfTrueAnimatedFastOff="@{vm.showAuto}" />
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:dependency="backup-automatic-enabled"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_marginBottom="20dp"
+                android:text="@string/daily_backup_even_mobile"
+                app:checked="@={prefs[`backup-automatic-mobile:true`]}"
+                app:showIfTrueAnimatedFastOff="@{vm.showAuto}" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:enabled="@{vm.idle}"
+                android:onClick="@{() -> vm.restoreNow()}"
+                android:text="@string/restore_from_backup"
+                android:textAllCaps="false"/>
+        </LinearLayout>
+    </ScrollView>
+</layout>

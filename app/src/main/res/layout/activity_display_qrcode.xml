@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <variable
             name="prefs"
-            type="com.eveningoutpost.dexdrip.UtilityModels.PrefsView" />
+            type="com.eveningoutpost.dexdrip.utilitymodels.PrefsView" />
+        <variable name="viewmodel" type="com.eveningoutpost.dexdrip.utils.DisplayQRCode.ViewModel"/>
     </data>
 
 <RelativeLayout
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
@@ -21,12 +22,42 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+
         <LinearLayout
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
             <LinearLayout
+                app:showIfTrue="@{viewmodel.showQr}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="0dp"
+                android:padding="0dp"
+                android:orientation="vertical" >
+
+                <ImageView
+                    android:id="@+id/qrcodeimage1"
+                    android:layout_margin="0dp"
+                    android:padding="0dp"
+                    android:adjustViewBounds="true"
+                    android:gravity="center_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@{viewmodel.qrbitmap}"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                     android:text="@{viewmodel.narrative, default=`Hello World`}"
+                     android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                app:showIfTrue="@{!viewmodel.showQr}"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerHorizontal="true"
@@ -58,6 +89,16 @@
                     android:layout_weight="1"
                     android:onClick="desertSyncSettings"
                     android:text="@string/set_up_desert_sync_follower" />
+
+                <Button
+                    app:showIfTrue="@{viewmodel.showGkey}"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="28dp"
+                    android:layout_weight="1"
+                    android:onClick="showGKey"
+                    android:text="Export KEKS key to another phone" />
+
 
                 <Button
                     android:id="@+id/button"

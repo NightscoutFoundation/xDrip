@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.watch.thinjam.firmware;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

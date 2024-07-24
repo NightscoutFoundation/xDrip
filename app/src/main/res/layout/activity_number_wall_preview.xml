@@ -11,22 +11,22 @@
 
         <variable
             name="prefs"
-            type="com.eveningoutpost.dexdrip.UtilityModels.PrefsViewImpl" />
+            type="com.eveningoutpost.dexdrip.utilitymodels.PrefsViewImpl" />
 
         <variable
             name="sprefs"
-            type="com.eveningoutpost.dexdrip.UtilityModels.PrefsViewString" />
+            type="com.eveningoutpost.dexdrip.utilitymodels.PrefsViewString" />
 
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
 
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:background="@{vm.background}"
         tools:context=".ui.activities.NumberWallPreview">
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
@@ -145,8 +145,8 @@
                 </LinearLayout>
 
             </LinearLayout>
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

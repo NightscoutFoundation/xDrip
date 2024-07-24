@@ -9,7 +9,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Paint;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -18,9 +17,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import android.text.InputType;
 import android.text.format.DateFormat;
 import android.text.method.DigitsKeyListener;
@@ -38,13 +37,14 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.eveningoutpost.dexdrip.Models.AlertType;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
-import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.models.AlertType;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
+import com.eveningoutpost.dexdrip.ui.dialog.GenericConfirmDialog;
+import com.eveningoutpost.dexdrip.utilitymodels.AlertPlayer;
+import com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
@@ -58,6 +58,8 @@ import java.util.List;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
+
+import lombok.val;
 
 public class EditAlertActivity extends ActivityWithMenu {
     //public static String menu_name = "Edit Alert";
@@ -271,7 +273,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             audioPath = getExtra(savedInstanceState, "audioPath" ,alertType.mp3_file);
             alertMp3File.setText(shortPath(audioPath));
 
-            status = "editing " + (above ? "high" : "low") + " alert";
+            status = getString(R.string.editing)+" " + (above ? getString(R.string.high) : getString(R.string.low)) + " "+getString(R.string.alert);
             startHour = AlertType.time2Hours(alertType.start_time_minutes);
             startMinute = AlertType.time2Minutes(alertType.start_time_minutes);
             endHour = AlertType.time2Hours(alertType.end_time_minutes);
@@ -564,19 +566,20 @@ public class EditAlertActivity extends ActivityWithMenu {
 
         buttonRemove.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
-
-                if (uuid == null) {
-                    Log.wtf(TAG, "Error remove pressed, while we were adding an alert");
-                }  else {
-                    AlertType.remove_alert(uuid);
-                    startWatchUpdaterService(mContext, WatchUpdaterService.ACTION_SYNC_ALERTTYPE, TAG);
-                }
-                Intent returnIntent = new Intent();
-                setResult(RESULT_OK,returnIntent);
-                finish();
+                GenericConfirmDialog.show(EditAlertActivity.this, gs(R.string.are_you_sure), gs(R.string.you_cannot_undo_delete_alert),
+                        () -> { // This, which deletes the alert, will only be executed after confirmation
+                            if (uuid == null) {
+                                Log.wtf(TAG, "Error remove pressed, while we were adding an alert");
+                            } else {
+                                AlertType.remove_alert(uuid);
+                                startWatchUpdaterService(mContext, WatchUpdaterService.ACTION_SYNC_ALERTTYPE, TAG);
+                            }
+                            Intent returnIntent = new Intent();
+                            setResult(RESULT_OK, returnIntent);
+                            finish();
+                        }
+                );
             }
-
         });
 
         buttonTest.setOnClickListener(new View.OnClickListener() {
@@ -594,7 +597,7 @@ public class EditAlertActivity extends ActivityWithMenu {
                             public void onClick(DialogInterface dialog, int which) {
                                 if (which == 0) {
                                     Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
-                                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Select tone for Alerts:");
+                                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, getString(R.string.select_tone_for_alerts));
                                     intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true);
                                     intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
                                     intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALL);
@@ -651,7 +654,7 @@ public class EditAlertActivity extends ActivityWithMenu {
                         setTimeRanges();
                     }
                 }, startHour, startMinute, DateFormat.is24HourFormat(mContext));
-                mTimePicker.setTitle("Select Time");
+                mTimePicker.setTitle(getString(R.string.select_time));
                 mTimePicker.show();
 
             }
@@ -669,7 +672,7 @@ public class EditAlertActivity extends ActivityWithMenu {
                         setTimeRanges();
                     }
                 }, endHour, endMinute, DateFormat.is24HourFormat(mContext));
-                mTimePicker.setTitle("Select Time");
+                mTimePicker.setTitle(getString(R.string.select_time));
                 mTimePicker.show();
 
             }
@@ -685,9 +688,9 @@ public class EditAlertActivity extends ActivityWithMenu {
     private void chooseFile()
     {
         final Intent fileIntent = new Intent();
-        fileIntent.setType("audio/mpeg3");
-        fileIntent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(fileIntent, "Select File for Alert"), REQUEST_CODE_CHOOSE_FILE);
+        fileIntent.setType("audio/*");
+        fileIntent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+        startActivityForResult(Intent.createChooser(fileIntent, getString(R.string.select_file_for_alert)), REQUEST_CODE_CHOOSE_FILE);
     }
 
     @Override
@@ -698,7 +701,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 chooseFile(); // must be the only functionality which calls for permission
             } else {
-                JoH.static_toast_long(this, "Cannot choose file without storage permission");
+                JoH.static_toast_long(this, getString(R.string.cannot_choose_file_without_permission));
             }
         }
     }
@@ -708,48 +711,42 @@ public class EditAlertActivity extends ActivityWithMenu {
             Uri uri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
             if (uri != null) {
                 audioPath = uri.toString();
+                Log.d(TAG, "Selected ringtone audio path: " + audioPath);
                 alertMp3File.setText(shortPath(audioPath));
             } else {
                 if (requestCode == REQUEST_CODE_CHOOSE_FILE) {
-                    Uri selectedImageUri = data.getData();
+                    try {
+                        val selectedAudioUri = data.getData();
+                        getContentResolver().takePersistableUriPermission(selectedAudioUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-                    // Todo this code is very flacky. Probably need a much better understanding of how the different programs
-                    // select the file names. We might also have to
-                    // - See more at: http://blog.kerul.net/2011/12/pick-file-using-intentactiongetcontent.html#sthash.c8xtIr1Y.cx7s9nxH.dpuf
+                        // Todo this code is very flacky. Probably need a much better understanding of how the different programs
+                        // select the file names. We might also have to
+                        // - See more at: http://blog.kerul.net/2011/12/pick-file-using-intentactiongetcontent.html#sthash.c8xtIr1Y.cx7s9nxH.dpuf
 
-                    //MEDIA GALLERY
-                    String selectedAudioPath = getPath(selectedImageUri);
-                    if (selectedAudioPath == null) {
-                        //OI FILE Manager
-                        selectedAudioPath = selectedImageUri.getPath();
+                        String selectedAudioPath = getDisplayNameFromURI(selectedAudioUri);
+                        if (selectedAudioPath == null) {
+                            //OI FILE Manager
+                            selectedAudioPath = selectedAudioUri.getPath();
+                        }
+                        Log.d(TAG, "Selected audio path: " + selectedAudioPath + " " + selectedAudioUri);
+                        audioPath = selectedAudioUri.toString();
+                        alertMp3File.setText(shortPath(selectedAudioPath));
+                    } catch (Exception e) {
+                        JoH.static_toast_long(getString(R.string.problem_with_sound) + " " + e.getMessage());
                     }
-                    audioPath = selectedAudioPath;
-                    alertMp3File.setText(shortPath(audioPath));
                 }
             }
         }
     }
 
-    public String getPath(Uri uri) {
-        String[] projection = { MediaStore.Images.Media.DATA };
-        Cursor cursor = managedQuery(uri, projection, null, null, null);
-        if(cursor!=null)
-        {
-            //HERE YOU WILL GET A NULLPOINTER IF CURSOR IS NULL
-            //THIS CAN BE, IF YOU USED OI FILE MANAGER FOR PICKING THE MEDIA
-            int column_index;
-            try {
-                column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            } catch ( IllegalArgumentException e) {
-                Log.e(TAG, "cursor.getColumnIndexOrThrow failed", e);
-                return null;
-            }
-            cursor.moveToFirst();
-            return cursor.getString(column_index);
-        }   else {
-            return null;
+    private static String getDisplayNameFromURI(final Uri contentUri) {
+        val title = JoH.getFieldFromURI(MediaStore.Audio.Media.TITLE, contentUri);
+        if (title == null || contentUri.toString().endsWith(title)) {
+            return JoH.getFieldFromURI(MediaStore.Audio.Media.DISPLAY_NAME, contentUri);
         }
+        return title;
     }
+
 
     static public String timeFormatString(Context context, int hour, int minute) {
         SimpleDateFormat timeFormat24 = new SimpleDateFormat("HH:mm");
@@ -781,24 +778,33 @@ public class EditAlertActivity extends ActivityWithMenu {
         return ringtone != null;
     }
 
-    public String shortPath(String path) {
-        if(isPathRingtone(mContext, path)) {
-            Ringtone ringtone = RingtoneManager.getRingtone(mContext, Uri.parse(path));
-            // Just verified that the ringtone exists... not checking for null
-            return ringtone.getTitle(mContext);
-        }
-        if(path == null) {
+    static String shortPath(final String path) {
+        if (path == null) {
             return "";
         }
-        if(path.length() == 0) {
+        if (path.length() == 0) {
             return "xDrip Default";
         }
+        if (path.startsWith("content:")) {
+            val result = getDisplayNameFromURI(Uri.parse(path));
+            if (result != null) return result;
+        }
+        // This may not actually be used anymore
+        if (isPathRingtone(xdrip.getAppContext(), path)) {
+            val ringtone = RingtoneManager.getRingtone(xdrip.getAppContext(), Uri.parse(path));
+            // Just verified that the ringtone exists... not checking for null
+            val result = ringtone.getTitle(xdrip.getAppContext());
+            Log.d(TAG,"Ringtone title: "+result);
+            return result;
+        }
+
         String[] segments = path.split("/");
         if (segments.length > 1) {
             return segments[segments.length - 1];
         }
         return path;
     }
+
     public void setDefaultSnoozeSpinner(int defaultSnooze) {
         editSnooze.setText(String.valueOf(defaultSnooze));
         editSnooze.setOnTouchListener(new View.OnTouchListener() {
@@ -937,8 +943,8 @@ public class EditAlertActivity extends ActivityWithMenu {
 
             if (Pref.getBooleanDefaultFalse("start_snoozed"))  {
                 JoH.static_toast_long("Start Snoozed setting means alert would normally start silent");
-            } else if (Pref.getStringDefaultBlank("bg_alert_profile").equals("ascending")) {
-                JoH.static_toast_long("Ascending Volume Profile means it will start silent");
+            } else if (Pref.getStringDefaultBlank("bg_alert_profile").equals("ascending") && Pref.getBoolean("delay_ascending_3min", true)) {
+                JoH.static_toast_long("Ascending Volume Profile + delayed ascending means it will start silent");
             } else if (Pref.getStringDefaultBlank("bg_alert_profile").equals("Silent")) {
                 JoH.static_toast_long("Volume Profile is set to silent!");
             }

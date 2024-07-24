@@ -4,11 +4,11 @@
 
         <variable
             name="prefs"
-            type="com.eveningoutpost.dexdrip.UtilityModels.PrefsView" />
+            type="com.eveningoutpost.dexdrip.utilitymodels.PrefsView" />
         <import type="android.view.View"/>
     </data>
 
-    <android.support.v4.widget.DrawerLayout
+    <androidx.drawerlayout.widget.DrawerLayout
 
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
@@ -81,5 +81,5 @@
             android:layout_gravity="start"
             tools:layout="@layout/fragment_navigation_drawer" />
 
-    </android.support.v4.widget.DrawerLayout>
+    </androidx.drawerlayout.widget.DrawerLayout>
 </layout>

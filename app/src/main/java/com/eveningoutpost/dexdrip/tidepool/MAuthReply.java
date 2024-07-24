@@ -2,7 +2,7 @@ package com.eveningoutpost.dexdrip.tidepool;
 
 // jamorham
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -28,6 +28,10 @@ public class MAuthReply {
     @Expose
     @SerializedName("username")
     String username;
+
+    public MAuthReply(final String userid) {
+        this.userid = userid;
+    }
 
     public String toS() {
         return JoH.defaultGsonInstance().toJson(this);

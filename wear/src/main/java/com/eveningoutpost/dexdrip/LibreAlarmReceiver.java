@@ -9,32 +9,36 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
-import com.eveningoutpost.dexdrip.Models.SensorSanity;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.Forecast;
-import com.eveningoutpost.dexdrip.Models.GlucoseData;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.LibreBlock;
-import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm;
-import com.eveningoutpost.dexdrip.Models.ReadingData;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Intents;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.models.SensorSanity;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
+import com.eveningoutpost.dexdrip.importedlibraries.usbserial.util.HexDump;
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.Forecast;
+import com.eveningoutpost.dexdrip.models.GlucoseData;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.LibreBlock;
+import com.eveningoutpost.dexdrip.models.ReadingData;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Intents;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.utils.LibreTrendUtil;
 import com.google.gson.Gson;
 
 import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
 import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
 
+import com.eveningoutpost.dexdrip.utils.LibreTrendPoint;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.LIBRE_MULTIPLIER;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.LIBRE_MULTIPLIER;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
+
+import lombok.val;
 
 /**
  * Created by jamorham on 04/09/2016.
@@ -45,8 +49,6 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
     private static final String TAG = "jamorham librereceiver";
     private static final boolean debug = false;
     private static final boolean d = true;
-    private static final boolean use_raw_ = true;
-    private static final long segmentation_timeslice = (long)(Constants.MINUTE_IN_MS * 4.5);
     private static SharedPreferences prefs;
     private static long oldest = -1;
     private static long newest = -1;
@@ -65,17 +67,35 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
         return (lib_raw_value * LIBRE_MULTIPLIER); // to match (raw/8.5)*1000
     }
 
+    private static boolean useGlucoseAsRaw() {
+        return Pref.getString("calibrate_external_libre_2_algorithm_type","calibrate_raw").equals("calibrate_glucose");
+    }
+
     private static void createBGfromGD(GlucoseData gd, boolean use_smoothed_data, boolean quick) {
         final double converted;
+        if (useGlucoseAsRaw()) {
+            // if treating converted value as raw
+            if (gd.glucoseLevel > 0) {
+                if (use_smoothed_data && gd.glucoseLevelSmoothed > 0) {
+                    converted  = gd.glucoseLevelSmoothed * 1000;
+                    Log.e(TAG, "Using smoothed value as raw " + converted + " instead of " + gd.glucoseLevel);
+                } else {
+                    converted = gd.glucoseLevel * 1000;
+                }
+            } else {
+                converted = 12; // RF error message - might be something else like unconstrained spline
+            }
+        } else {
         if (gd.glucoseLevelRaw > 0) {
-            if(use_smoothed_data) {
+                if (use_smoothed_data && gd.glucoseLevelRawSmoothed > 0) {
                 converted = convert_for_dex(gd.glucoseLevelRawSmoothed);
-                Log.e(TAG,"Using smoothed value " + converted + " instead of " + convert_for_dex(gd.glucoseLevelRaw) );
+                    Log.d(TAG, "Using smoothed value " + converted + " instead of " + convert_for_dex(gd.glucoseLevelRaw) + gd);
             } else {
                 converted = convert_for_dex(gd.glucoseLevelRaw);
             }
         } else {
             converted = 12; // RF error message - might be something else like unconstrained spline
+        }
         }
         if (gd.realDate > 0) {
             //   Log.d(TAG, "Raw debug: " + JoH.dateTimeText(gd.realDate) + " raw: " + gd.glucoseLevelRaw + " converted: " + converted);
@@ -84,7 +104,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                 if ((gd.realDate < oldest) || (oldest == -1)) oldest = gd.realDate;
                 if ((gd.realDate > newest) || (newest == -1)) newest = gd.realDate;
 
-                if (BgReading.getForPreciseTimestamp(gd.realDate, segmentation_timeslice, false) == null) {
+                if (BgReading.getForPreciseTimestamp(gd.realDate, DexCollectionType.getCurrentDeduplicationPeriod(), false) == null) {
                     Log.d(TAG, "Creating bgreading at: " + JoH.dateTimeText(gd.realDate));
                     BgReading.create(converted, converted, xdrip.getAppContext(), gd.realDate, quick); // quick lite insert
                 } else {
@@ -144,10 +164,6 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
 
                                 Log.d(TAG, "Receiving LIBRE_ALARM broadcast");
 
-                                oldest_cmp = oldest;
-                                newest_cmp = newest;
-                                Log.d(TAG, "At Start: Oldest : " + JoH.dateTimeText(oldest_cmp) + " Newest : " + JoH.dateTimeText(newest_cmp));
-
                                 final String data = bundle.getString("data");
                                 final int bridge_battery = bundle.getInt("bridge_battery");
                                 if (bridge_battery > 0) {
@@ -155,11 +171,15 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                                     CheckBridgeBattery.checkBridgeBattery();
                                 }
                                 try {
+
                                     final ReadingData.TransferObject object =
                                             new Gson().fromJson(data, ReadingData.TransferObject.class);
-                                    object.data.CalculateSmothedData();
-                                    processReadingDataTransferObject(object, JoH.tsl(), "LibreAlarm", false, null, null);
-                                    Log.d(TAG, "At End: Oldest : " + JoH.dateTimeText(oldest_cmp) + " Newest : " + JoH.dateTimeText(newest_cmp));
+                                    if (object.data.raw_data == null) {
+                                        Log.e(TAG, "Please update LibreAlarm to use OOP algorithm");
+                                        JoH.static_toast_long(gs(R.string.please_update_librealarm_to_use_oop_algorithm));
+                                        break;
+                                    }
+                                    NFCReaderX.HandleGoodReading("LibreAlarm", object.data.raw_data, JoH.tsl(), false, null, null);
                                 } catch (Exception e) {
                                     Log.wtf(TAG, "Could not process data structure from LibreAlarm: " + e.toString());
                                     JoH.static_toast_long(gs(R.string.librealarm_data_format_appears_incompatible_protocol_changed_or_no_data));
@@ -179,27 +199,36 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
         }.start();
     }
 
-    public static void processReadingDataTransferObject(ReadingData.TransferObject object, long CaptureDateTime, String tagid, boolean allowUpload, byte []patchUid,  byte []patchInfo) {
-    	Log.i(TAG, "Data that was recieved from librealarm is " + HexDump.dumpHexString(object.data.raw_data));
+    public static void processReadingDataTransferObject(ReadingData readingData, long CaptureDateTime, String tagid, boolean allowUpload, byte[] patchUid, byte[] patchInfo, boolean bg_val_exists) {
+        Log.d(TAG, "Data that was recieved from librealarm is " + HexDump.dumpHexString(readingData.raw_data));
     	// Save raw block record (we start from block 0)
-        LibreBlock.createAndSave(tagid, CaptureDateTime, object.data.raw_data, 0, allowUpload, patchUid,  patchInfo);
+        LibreBlock libreBlock = LibreBlock.createAndSave(tagid, CaptureDateTime, readingData.raw_data, 0, allowUpload, patchUid, patchInfo);
 
-        if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
-            if(object.data.raw_data == null) {
-                Log.e(TAG, "Please update LibreAlarm to use OOP algorithm");
-                JoH.static_toast_long(gs(R.string.please_update_librealarm_to_use_oop_algorithm));
-                return;
+        LibreTrendUtil libreTrendUtil = LibreTrendUtil.getInstance();
+        // Get the data for the last 24 hours, as this affects the cache.
+        List<LibreTrendPoint> libreTrendPoints = libreTrendUtil.getData(JoH.tsl() - Constants.DAY_IN_MS, JoH.tsl(), true);
+
+        readingData.ClearErrors(libreTrendPoints);
+        // This is not a perfect solution, but it should work well in almost all casses except restart.
+        // (after restart we will only have data of one reading).
+        readingData.copyBgVals(libreTrendPoints);
+
+        boolean use_smoothed_data = Pref.getBooleanDefaultFalse("libre_use_smoothed_data");
+        if (use_smoothed_data) {
+            readingData.calculateSmoothDataImproved(libreTrendPoints, bg_val_exists);
             }
-            LibreOOPAlgorithm.SendData(object.data.raw_data, CaptureDateTime);
-            return;
+        if (Pref.getBooleanDefaultFalse("external_blukon_algorithm") != false) {
+            Log.wtf(TAG, "Error external_blukon_algorithm should be false here");
         }
-        CalculateFromDataTransferObject(object, use_raw_);
+        boolean use_raw = !Pref.getString("calibrate_external_libre_2_algorithm_type", "calibrate_raw").equals("no_calibration");
+        CalculateFromDataTransferObject(readingData, use_smoothed_data, use_raw);
     }
         
-    public static void CalculateFromDataTransferObject(ReadingData.TransferObject object, boolean use_raw) {
-    	boolean use_smoothed_data = Pref.getBooleanDefaultFalse("libre_use_smoothed_data");
+    public static void CalculateFromDataTransferObject(ReadingData readingData, boolean use_smoothed_data, boolean use_raw) {
+        Log.i(TAG, "CalculateFromDataTransferObject called");
         // insert any recent data we can
-        final List<GlucoseData> mTrend = object.data.trend;
+        val segmentation_timeslice = DexCollectionType.getCurrentDeduplicationPeriod();
+        final List<GlucoseData> mTrend = readingData.trend;
         if (mTrend != null && mTrend.size() > 0) {
             Collections.sort(mTrend);
             final long thisSensorAge = mTrend.get(mTrend.size() - 1).sensorTime;
@@ -210,9 +239,15 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                 Pref.setBoolean("nfc_age_problem", false);
                 Log.d(TAG, "Sensor age advanced to: " + thisSensorAge);
             } else if (thisSensorAge == sensorAge) {
+                // This is only a problem if we don't have a recent reading. It could happen that we have a recent
+                // reading, and then BT disconnects and connects after a few seconds, and we have a new reading (where 
+                // sensor did not advance). This does not mean that a sensor is not advancing. Only if this is happening
+                // for a few minutes, this is a problem.
+                if (BgReading.getTimeSinceLastReading() > 11 * 60 * 1000) {
                 Log.wtf(TAG, "Sensor age has not advanced: " + sensorAge);
                 JoH.static_toast_long(gs(R.string.sensor_clock_has_not_advanced));
                 Pref.setBoolean("nfc_age_problem", true);
+                }
                 return; // do not try to insert again
             } else {
                 Log.wtf(TAG, "Sensor age has gone backwards!!! " + sensorAge);
@@ -223,24 +258,22 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
             }
             if (d)
                 Log.d(TAG, "Oldest cmp: " + JoH.dateTimeText(oldest_cmp) + " Newest cmp: " + JoH.dateTimeText(newest_cmp));
-            long shiftx = 0;
             if (mTrend.size() > 0) {
 
-                shiftx = getTimeShift(mTrend);
-                if (shiftx != 0) Log.d(TAG, "Lag Timeshift: " + shiftx);
-                //applyTimeShift(mTrend, shiftx);
+                // This function changes timeShiftNearest which is the latest value we have, so we are far enough from it.
+                getTimeShift(mTrend);
 
                 for (GlucoseData gd : mTrend) {
                     if (d) Log.d(TAG, "DEBUG: sensor time: " + gd.sensorTime);
                     if ((timeShiftNearest > 0) && ((timeShiftNearest - gd.realDate) < segmentation_timeslice) && (timeShiftNearest - gd.realDate != 0)) {
                         if (d)
-                            Log.d(TAG, "Skipping record due to closeness: " + JoH.dateTimeText(gd.realDate));
+                            Log.d(TAG, "Skipping record due to closeness to the most recent value: " + JoH.dateTimeText(gd.realDate));
                         continue;
                     }
                     if (use_raw) {
                         createBGfromGD(gd, use_smoothed_data, false); // not quick for recent
                     } else {
-                        BgReading.bgReadingInsertFromInt(gd.glucoseLevel, gd.realDate, true);
+                        BgReading.bgReadingInsertFromInt(use_smoothed_data ? gd.glucoseLevelSmoothed : gd.glucoseLevel, gd.realDate, segmentation_timeslice, true);
                     }
                 }
             } else {
@@ -248,7 +281,15 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
             }
 
             // munge and insert the history data if any is missing
-            final List<GlucoseData> mHistory = object.data.history;
+            insertFromHistory(readingData.history, use_raw);
+        } else {
+            Log.d(TAG, "Trend data is null!");
+        }
+    }
+
+
+    public static void insertFromHistory(final List<GlucoseData> mHistory, final boolean use_raw) {
+        val timeslice = DexCollectionType.getCurrentDeduplicationPeriod();
             if ((mHistory != null) && (mHistory.size() > 1)) {
                 Collections.sort(mHistory);
                 //applyTimeShift(mTrend, shiftx);
@@ -265,9 +306,11 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                     } else {
                         polyyList.add((double) gd.glucoseLevel);
                         // add in the actual value
-                        BgReading.bgReadingInsertFromInt(gd.glucoseLevel, gd.realDate, false);
+                    BgReading.bgReadingInsertFromInt(gd.glucoseLevel, gd.realDate, timeslice, false);
                     }
                 }
+
+            val period = DexCollectionType.getCurrentSamplePeriod();
 
                 //ConstrainedSplineInterpolator splineInterp = new ConstrainedSplineInterpolator();
                 final SplineInterpolator splineInterp = new SplineInterpolator();
@@ -282,26 +325,22 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                         final long startTime = mHistory.get(0).realDate;
                         final long endTime = mHistory.get(mHistory.size() - 1).realDate;
     
-                        for (long ptime = startTime; ptime <= endTime; ptime += 300000) {
+                    for (long ptime = startTime; ptime <= endTime; ptime += period) {
                             if (d)
                                 Log.d(TAG, "Spline: " + JoH.dateTimeText((long) ptime) + " value: " + (int) polySplineF.value(ptime));
                             if (use_raw) {
                                 // Here we do not use smoothed data, since data is already smoothed for the history
                                 createBGfromGD(new GlucoseData((int) polySplineF.value(ptime), ptime), false, true);
                             } else {
-                                BgReading.bgReadingInsertFromInt((int) polySplineF.value(ptime), ptime, false);
+                            BgReading.bgReadingInsertFromInt((int) polySplineF.value(ptime), ptime, timeslice, false);
                             }
                         }
                     } catch (org.apache.commons.math3.exception.NonMonotonicSequenceException e) {
                         Log.e(TAG, "NonMonotonicSequenceException: " + e);
                     }
                 }
-
-            } else {
-                Log.e(TAG, "no librealarm history data");
-            }
         } else {
-            Log.d(TAG, "Trend data is null!");
+            Log.e(TAG, "no  history data");
         }
     }
 
@@ -318,13 +357,6 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
             }
         }
         return 0;
-    }
-
-    private static void applyTimeShift(List<GlucoseData> gds, long timeshift) {
-        if (timeshift == 0) return;
-        for (GlucoseData gd : gds) {
-            gd.realDate = gd.realDate + timeshift;
-        }
     }
 }
 

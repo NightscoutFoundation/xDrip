@@ -1,11 +1,10 @@
 # Reporting Issues with xDrip
 
-Before opening an issue, please communicate with us by posting in the support channels:  
-https://www.facebook.com/groups/xDripG5  
-https://gitter.im/jamorham/xDrip-plus  
+Before opening an issue, please communicate with us by posting in "Discussions":  
+https://github.com/NightscoutFoundation/xDrip/discussions
 We will encourage you to open an issue if it is not already known and there is no work-around.  
 
-### Please try to provide as much information as possible when raising an issue:
+### Please provide as much information as possible when communicating your concerns with us:
 
 * If it is a bug, please try to explain how to reproduce it, roughly which settings you are using, what you are seeing or not seeing. Screenshots welcomed.
 * If it relates to a new feature, please explain the rationale for the feature, use cases and detail your suggestion.  
@@ -16,7 +15,13 @@ We will encourage you to open an issue if it is not already known and there is n
 
 Patches are welcomed! To ensure the best all round results they need be a good fit with the project roadmap, the ecosystem of users and respect overall project stability and good practice.
 
-The best way to get patches accepted is to discuss your ideas with project maintainers prior to implementation and discuss how to structure things so that they can fit well within the project and also the rationale for the change.
+The best way to get patches accepted is to discuss your ideas with project maintainers using [Discussions](https://github.com/NightscoutFoundation/xDrip/discussions) prior to implementation and discuss how to structure things so that they can fit well within the project and also the rationale for the change.
+
+#### Copyright of submitted contributions
+
+Any submitted patches and pull requests must either be the original work of the submitter or be available under a suitable open source license which is compatible with inclusion in a GPL licensed project.
+
+This also applies to graphics, sounds or other binary file content. Ideally these should be either the original work of the submitter or be in the public domain. They should not contain trademarks.
 
 #### Project reviewers are likely to use criteria similar to that outlined below:
 

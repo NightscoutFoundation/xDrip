@@ -1,11 +1,11 @@
 apply plugin: 'com.android.library'
 android {
-    compileSdkVersion 29
+    compileSdkVersion 34
 
     defaultConfig {
-        minSdkVersion 18
-        targetSdkVersion 18
-        multiDexEnabled true
+        minSdkVersion 21
+        targetSdkVersion 23
+        multiDexEnabled false
     }
 
 

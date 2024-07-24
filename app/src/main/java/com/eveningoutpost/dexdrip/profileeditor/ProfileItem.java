@@ -10,7 +10,7 @@ import java.util.Locale;
 /**
  * Created by jamorham on 21/06/2016.
  */
-public class ProfileItem {
+public class ProfileItem implements Comparable<ProfileItem>{
 
     final private static SimpleDateFormat hourMinConvert = new SimpleDateFormat("HHmm", Locale.ENGLISH);
 
@@ -29,18 +29,16 @@ public class ProfileItem {
         this.sensitivity = sensitivity;
     }
 
-    public String getTimePeriod()
-    {
-        return String.format("%02d:%02d",start_min / 60,start_min %60)+" -> "+String.format("%02d:%02d",end_min/60, end_min %60);
+    public String getTimePeriod() {
+        return String.format(Locale.ENGLISH, "%02d:%02d", start_min / 60, start_min % 60) + " -> " + String.format(Locale.ENGLISH, "%02d:%02d", end_min / 60, end_min % 60);
     }
 
-    public String getTimeStart()
-    {
-        return String.format("%02d:%02d",start_min / 60,start_min %60);
+    public String getTimeStart() {
+        return String.format(Locale.ENGLISH, "%02d:%02d", start_min / 60, start_min % 60);
     }
-    public String getTimeEnd()
-    {
-        return String.format("%02d:%02d",end_min / 60,end_min %60);
+
+    public String getTimeEnd() {
+        return String.format(Locale.ENGLISH, "%02d:%02d", end_min / 60, end_min % 60);
     }
 
     public String getTitle() {
@@ -58,10 +56,14 @@ public class ProfileItem {
         return Integer.parseInt(result.substring(0,2))*60+Integer.parseInt(result.substring(2,4));
     }
 
+    public static int timeStampToMin(long when) {
+        final String result = hourMinConvert.format(when);
+        return Integer.parseInt(result.substring(0, 2)) * 60 + Integer.parseInt(result.substring(2, 4));
+    }
+
     public ProfileItem clone()
     {
-        ProfileItem nu = new ProfileItem(this.start_min,this.end_min,this.carb_ratio,this.sensitivity);
-        return nu;
+        return new ProfileItem(this.start_min, this.end_min, this.carb_ratio, this.sensitivity);
     }
 
     public String toJson() {
@@ -73,4 +75,26 @@ public class ProfileItem {
         return gson.toJson(this);
     }
 
+    @Override
+    public int compareTo(ProfileItem o) {
+            final Integer myStartMin = start_min;
+            final Integer oStartMin = o.end_min;
+            return myStartMin.compareTo(oStartMin);
+        }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof ProfileItem)) {
+            return false;
+        }
+        final ProfileItem pi = (ProfileItem) o;
+
+        // Note: is only testing equality of values
+        return carb_ratio == pi.carb_ratio
+                && sensitivity == pi.sensitivity
+                && absorption_rate == pi.absorption_rate;
+    }
 }

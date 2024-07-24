@@ -19,16 +19,16 @@
 
         <variable
             name="nano"
-            type="com.eveningoutpost.dexdrip.UtilityModels.NanoStatus" />
+            type="com.eveningoutpost.dexdrip.utilitymodels.NanoStatus" />
 
         <variable
             name="expiry"
-            type="com.eveningoutpost.dexdrip.UtilityModels.NanoStatus" />
+            type="com.eveningoutpost.dexdrip.utilitymodels.NanoStatus" />
 
         <import type="android.view.View" />
     </data>
 
-    <android.support.v4.widget.DrawerLayout
+    <androidx.drawerlayout.widget.DrawerLayout
 
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
@@ -45,13 +45,11 @@
             android:orientation="vertical"
             android:padding="0dp">
 
-            <android.support.v7.widget.Toolbar
+            <androidx.appcompat.widget.Toolbar
                 android:id="@+id/my_toolbar"
                 android:layout_width="match_parent"
-
                 android:layout_height="wrap_content"
-                android:minHeight="?attr/actionBarSize"
-                app:theme="@style/Toolbar" />
+                android:minHeight="?attr/actionBarSize" />
 
             <RelativeLayout
                 android:id="@+id/home_layout_holder"
@@ -542,21 +540,19 @@
 
                 <TextView
                     android:id="@+id/nanoStatusText"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_marginTop="2dp"
                     android:layout_marginStart="5dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:text="@{nano.color_watch, default=`Nano Status`}"
                     app:showIfTrue="@{nano.color_watch.length() > 0}"/>
 
                 <TextView
                     android:id="@+id/ExpiryStatusText"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_marginTop="2dp"
                     android:layout_marginStart="5dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:text="@{expiry.color_watch, default=`Expiry Status`}"
                     app:showIfTrue="@{(safeUnbox(vs.included[`sensor_expiry`])) &amp;&amp; (expiry.color_watch.length() > 0)}"/>
 
@@ -661,6 +657,6 @@
             android:layout_gravity="start"
             android:layout_marginTop="?attr/actionBarSize"
             tools:layout="@layout/fragment_navigation_drawer" />
-    </android.support.v4.widget.DrawerLayout>
+    </androidx.drawerlayout.widget.DrawerLayout>
 
 </layout>

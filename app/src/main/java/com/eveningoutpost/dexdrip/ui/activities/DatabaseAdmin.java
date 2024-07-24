@@ -2,14 +2,14 @@ package com.eveningoutpost.dexdrip.ui.activities;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.databinding.ObservableField;
+import androidx.databinding.ObservableField;
 import android.os.Bundle;
 
 import com.activeandroid.Cache;
 import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
 import com.eveningoutpost.dexdrip.databinding.ActivityDatabaseAdminBinding;
 
 import java.io.File;
@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
-import static com.eveningoutpost.dexdrip.Models.JoH.mapSortedByValue;
+import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
+import static com.eveningoutpost.dexdrip.models.JoH.mapSortedByValue;
 
 /**
  * jamorham

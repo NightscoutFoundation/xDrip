@@ -6,13 +6,13 @@
     <data>
         <variable
             name="nano"
-            type="com.eveningoutpost.dexdrip.UtilityModels.NanoStatus" />
+            type="com.eveningoutpost.dexdrip.utilitymodels.NanoStatus" />
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".UtilityModels.MtpConfigureActivity">
+        tools:context=".utilitymodels.MtpConfigureActivity">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -67,5 +67,5 @@
         </LinearLayout>
 
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

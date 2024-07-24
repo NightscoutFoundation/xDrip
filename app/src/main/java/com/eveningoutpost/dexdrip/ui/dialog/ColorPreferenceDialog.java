@@ -6,8 +6,8 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.UtilityModels.ColorCache;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.ColorCache;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.rarepebble.colorpicker.ColorPickerView;
 
 /**

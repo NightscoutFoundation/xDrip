@@ -10,15 +10,15 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.util.Base64;
 
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm;
-import com.eveningoutpost.dexdrip.Models.Sensor;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.UtilityModels.Intents;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.PumpStatus;
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.LibreOOPAlgorithm;
+import com.eveningoutpost.dexdrip.models.Sensor;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
+import com.eveningoutpost.dexdrip.utilitymodels.Intents;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.PumpStatus;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import org.json.JSONArray;
@@ -28,7 +28,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import static com.eveningoutpost.dexdrip.Models.BgReading.bgReadingInsertFromJson;
+import static com.eveningoutpost.dexdrip.models.BgReading.bgReadingInsertFromJson;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 /**
  * Created by jamorham on 14/11/2016.
@@ -108,15 +109,15 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
                                                     int process_id = -1;
                                                     try {
                                                         process_id = json_object.getInt("ROW_ID");
-                                                    }   catch (JSONException e) {
+                                                    } catch (JSONException e) {
                                                         // Intentionly ignoring ecxeption.
                                                     }
-                                                    if(process_id == -1 || process_id == android.os.Process.myPid()) {
-                                                        LibreOOPAlgorithm.handleData(json_array.getString(1));    
+                                                    if (process_id == -1 || process_id == android.os.Process.myPid()) {
+                                                        LibreOOPAlgorithm.handleData(json_array.getString(1));
                                                     } else {
                                                         Log.d(TAG, "Ignoring OOP result since process id is wrong " + process_id);
                                                     }
-                                                    
+
                                                 } else {
                                                     final JSONObject json_object = json_array.getJSONObject(0);
                                                     final String type = json_object.getString("type");
@@ -200,12 +201,12 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
                                 Log.i(TAG, "recieved message XDRIP_DECODE_FARM_RESULT");
                                 handleOop2DecodeFramResult(bundle);
                                 break;
-                                
+
                             case Intents.XDRIP_DECODE_BLE_RESULT:
                                 Log.i(TAG, "recieved message XDRIP_DECODE_BLE_RESULT");
                                 handleOop2DecodeBleResult(bundle);
                                 break;
-                                
+
                             case Intents.XDRIP_BLUETOOTH_ENABLE_RESULT:
                                 Log.i(TAG, "recieved message XDRIP_BLUETOOTH_ENABLE_RESULT");
                                 handleOop2BluetoothEnableResult(bundle);
@@ -215,7 +216,10 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
                                 Log.e(TAG, "Unknown action! " + action);
                                 break;
                         }
-                    } finally {
+
+                    } catch (Exception e) {
+                        Log.e(TAG, "Caught Exception handling intent", e );
+                    }finally {
                         JoH.benchmark("NSEmulator process");
                         JoH.releaseWakeLock(wl);
                     }
@@ -223,11 +227,26 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
             }
         }.start();
     }
+    private double getOOP2Version(final Bundle bundle) {
+        final Double version = bundle.getDouble(Intents.OOP2_VERSION_NAME, 0);
+        return version;
+    }
+
     private JSONObject extractParams(final Bundle bundle) {
         if (bundle == null) {
             Log.e(TAG, "Null bundle passed to extract params");
             return null;
         }
+        double version = getOOP2Version(bundle);
+        boolean calibrate_raw = Pref.getString("calibrate_external_libre_2_algorithm_type", "calibrate_raw").equals("calibrate_raw");
+        Log.d(TAG, "oop2 version = " + version + " calibarate_raw " + calibrate_raw);
+        if(version < 1.2 && !calibrate_raw) {
+            // Versions before 1.2 had a bug or missed features which allows them only to work on raw mode.
+            JoH.static_toast_long(gs(R.string.please_update_OOP2_or_move_to_calibrate_based_on_raw_mode));
+            Log.ueh(TAG, "OOP2 is too old to use with no calibration mode. Please update OOP2 or move to 'calibrate based on raw' mode.");
+            return null;
+        }
+
         final String json = bundle.getString("json");
         if (json == null) {
             Log.e(TAG, "json == null returning");
@@ -237,7 +256,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
         try {
             json_object = new JSONObject(json);
             int process_id = json_object.getInt("ROW_ID");
-            if(process_id != android.os.Process.myPid()) {
+            if (process_id != android.os.Process.myPid()) {
                 Log.d(TAG, "Ignoring OOP result since process id is wrong " + process_id);
                 return null;
             }
@@ -247,16 +266,16 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
             return null;
         }
         return json_object;
-        
+
     }
-    
+
     private void handleOop2DecodeFramResult(Bundle bundle) {
-        if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+        if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             Log.e(TAG, "External OOP algorithm is on, ignoring decoded data.");
             return;
         }
         JSONObject json_object = extractParams(bundle);
-        if(json_object == null) {
+        if (json_object == null) {
             return;
         }
         String decoded_buffer;
@@ -264,66 +283,101 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
         String patchInfoString;
         String tagId;
         long CaptureDateTime;
+        int[] trend_bg_vals = null;
+        int[] history_bg_vals = null;
+
         try {
             decoded_buffer = json_object.getString(Intents.DECODED_BUFFER);
             patchUidString = json_object.getString(Intents.PATCH_UID);
             patchInfoString = json_object.getString(Intents.PATCH_INFO);
             tagId = json_object.getString(Intents.TAG_ID);
             CaptureDateTime = json_object.getLong(Intents.LIBRE_DATA_TIMESTAMP);
+            if (json_object.has(Intents.TREND_BG) && json_object.has(Intents.HISTORIC_BG)) {
+                JSONArray computed_bg = json_object.getJSONArray(Intents.TREND_BG);
+                trend_bg_vals = new int[computed_bg.length()];
+                for (int i = 0; i < computed_bg.length(); i++) {
+                    trend_bg_vals[i] = computed_bg.getInt(i);
+                }
+                computed_bg = json_object.getJSONArray(Intents.HISTORIC_BG);
+                history_bg_vals = new int[computed_bg.length()];
+                for (int i = 0; i < computed_bg.length(); i++) {
+                    history_bg_vals[i] = computed_bg.getInt(i);
+                }
+            }
         } catch (JSONException e) {
             Log.e(TAG, "Error JSONException ", e);
             return;
         }
-        if(decoded_buffer == null) {
+        if (decoded_buffer == null) {
             Log.e(TAG, "Error could not get decoded_buffer");
             return;
         }
-        
+
         // Does this throws exception???
         byte[] fram_data = Base64.decode(decoded_buffer, Base64.NO_WRAP);
-        byte []patchUid = Base64.decode(patchUidString, Base64.NO_WRAP);
-        byte []patchInfo = Base64.decode(patchInfoString, Base64.NO_WRAP);
-        LibreOOPAlgorithm.handleOop2DecodeFramResult(tagId, CaptureDateTime, fram_data, patchUid, patchInfo);
+        byte[] patchUid = Base64.decode(patchUidString, Base64.NO_WRAP);
+        byte[] patchInfo = Base64.decode(patchInfoString, Base64.NO_WRAP);
+        LibreOOPAlgorithm.handleOop2DecodeFramResult(tagId, CaptureDateTime, fram_data, patchUid, patchInfo, trend_bg_vals, history_bg_vals);
     }
-    
+
     private void handleOop2DecodeBleResult(Bundle bundle) {
-        if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+        if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             Log.e(TAG, "External OOP algorithm is on, ignoring ble decrypted data.");
             return;
         }
         JSONObject json_object = extractParams(bundle);
-        if(json_object == null) {
+        if (json_object == null) {
             return;
         }
         String decoded_buffer;
         String patchUidString;
+        JSONArray computed_bg;
         long CaptureDateTime;
+
+        int[] trend_bg_vals = null;
+        int[] history_bg_vals = null;
+
         try {
             decoded_buffer = json_object.getString(Intents.DECODED_BUFFER);
             patchUidString = json_object.getString(Intents.PATCH_UID);
             CaptureDateTime = json_object.getLong(Intents.LIBRE_DATA_TIMESTAMP);
+            if (json_object.has(Intents.TREND_BG) && json_object.has(Intents.HISTORIC_BG)) {
+                computed_bg = json_object.getJSONArray(Intents.TREND_BG);
+                trend_bg_vals = new int[computed_bg.length()];
+                for (int i = 0; i < computed_bg.length(); i++) {
+                    trend_bg_vals[i] = computed_bg.getInt(i);
+                }
+                computed_bg = json_object.getJSONArray(Intents.HISTORIC_BG);
+                history_bg_vals = new int[computed_bg.length()];
+                for (int i = 0; i < computed_bg.length(); i++) {
+                    history_bg_vals[i] = computed_bg.getInt(i);
+                }
+            }
+
         } catch (JSONException e) {
             Log.e(TAG, "Error JSONException ", e);
             return;
         }
-        if(decoded_buffer == null) {
+        if (decoded_buffer == null) {
             Log.e(TAG, "Error could not get decoded_buffer");
             return;
         }
-        
+
+        Sensor.createDefaultIfMissing();
+
         // Does this throws exception???
         byte[] ble_data = Base64.decode(decoded_buffer, Base64.NO_WRAP);
-        byte []patchUid = Base64.decode(patchUidString, Base64.NO_WRAP);
-        LibreOOPAlgorithm.handleDecodedBleResult(CaptureDateTime, ble_data, patchUid);
+        byte[] patchUid = Base64.decode(patchUidString, Base64.NO_WRAP);
+        LibreOOPAlgorithm.handleDecodedBleResult(CaptureDateTime, ble_data, patchUid, trend_bg_vals, history_bg_vals);
     }
-    
+
     private void handleOop2BluetoothEnableResult(Bundle bundle) {
-        if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+        if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             Log.e(TAG, "External OOP algorithm is on, ignoring data.");
             return;
         }
         JSONObject json_object = extractParams(bundle);
-        if(json_object == null) {
+        if (json_object == null) {
             return;
         }
         String btUnlockBufferString;
@@ -333,16 +387,16 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
         String deviceName;
         JSONArray btUnlockBufferArray;
         int unlockCount = -1;
-        ArrayList<byte []> unlockBufferArray = new ArrayList<byte []>();
+        ArrayList<byte[]> unlockBufferArray = new ArrayList<byte[]>();
 
-        
+
         try {
             btUnlockBufferString = json_object.getString(Intents.BT_UNLOCK_BUFFER);
             nfcUnlockBufferString = json_object.getString(Intents.NFC_UNLOCK_BUFFER);
             patchUidString = json_object.getString(Intents.PATCH_UID);
             patchInfoString = json_object.getString(Intents.PATCH_INFO);
             deviceName = json_object.getString(Intents.DEVICE_NAME);
-            if(json_object.has(Intents.CONNECTION_INDEX)) {
+            if (json_object.has(Intents.CONNECTION_INDEX)) {
                 unlockCount = json_object.getInt(Intents.CONNECTION_INDEX);
                 btUnlockBufferArray = json_object.getJSONArray(Intents.BT_UNLOCK_BUFFER_ARRAY);
                 for (int i = 0; i < btUnlockBufferArray.length(); i++) {
@@ -357,8 +411,8 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
 
         byte[] bt_unlock_buffer = Base64.decode(btUnlockBufferString, Base64.NO_WRAP);
         byte[] nfc_unlock_buffer = Base64.decode(nfcUnlockBufferString, Base64.NO_WRAP);
-        byte []patchUid = Base64.decode(patchUidString, Base64.NO_WRAP);
-        byte []patchInfo = Base64.decode(patchInfoString, Base64.NO_WRAP);
+        byte[] patchUid = Base64.decode(patchUidString, Base64.NO_WRAP);
+        byte[] patchInfo = Base64.decode(patchInfoString, Base64.NO_WRAP);
 
         LibreOOPAlgorithm.handleOop2BluetoothEnableResult(bt_unlock_buffer, nfc_unlock_buffer, patchUid, patchInfo, deviceName, unlockBufferArray, unlockCount);
     }
@@ -387,6 +441,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
         }
 
         Log.d(TAG, "Received NSEmulator SGV: " + faux_bgr);
+        Sensor.createDefaultIfMissing();
         return bgReadingInsertFromJson(faux_bgr.toString(), do_notification, true); // notify and force sensor
     }
 }

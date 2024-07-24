@@ -7,29 +7,32 @@ import android.content.ContextWrapper;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.support.annotation.StringRes;
-import android.support.multidex.MultiDexApplication;
+import androidx.annotation.StringRes;
 import android.util.Log;
 
-import com.eveningoutpost.dexdrip.Models.AlertType;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.Reminder;
-import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
-import com.eveningoutpost.dexdrip.Services.BluetoothGlucoseMeter;
-import com.eveningoutpost.dexdrip.Services.MissedReadingService;
-import com.eveningoutpost.dexdrip.Services.PlusSyncService;
-import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
-import com.eveningoutpost.dexdrip.UtilityModels.IdempotentMigrations;
-import com.eveningoutpost.dexdrip.UtilityModels.PlusAsyncExecutor;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.VersionTracker;
+import com.eveningoutpost.dexdrip.models.AlertType;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.Reminder;
+import com.eveningoutpost.dexdrip.alert.Poller;
+import com.eveningoutpost.dexdrip.services.ActivityRecognizedService;
+import com.eveningoutpost.dexdrip.services.BluetoothGlucoseMeter;
+import com.eveningoutpost.dexdrip.services.MissedReadingService;
+import com.eveningoutpost.dexdrip.services.PlusSyncService;
+import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.utilitymodels.ColorCache;
+import com.eveningoutpost.dexdrip.utilitymodels.IdempotentMigrations;
+import com.eveningoutpost.dexdrip.utilitymodels.PlusAsyncExecutor;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.VersionTracker;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
+import com.eveningoutpost.dexdrip.utils.AppCenterCrashReporting;
 import com.eveningoutpost.dexdrip.utils.NewRelicCrashReporting;
 import com.eveningoutpost.dexdrip.utils.jobs.DailyJob;
 import com.eveningoutpost.dexdrip.utils.jobs.XDripJobCreator;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
 import com.eveningoutpost.dexdrip.watch.miband.MiBandEntry;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
+import com.eveningoutpost.dexdrip.services.broadcastservice.BroadcastEntry;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.evernote.android.job.JobManager;
 
@@ -43,11 +46,11 @@ import java.util.Locale;
  * Created by Emma Black on 3/21/15.
  */
 
-public class xdrip extends MultiDexApplication {
+public class xdrip extends Application {
 
     private static final String TAG = "xdrip.java";
     @SuppressLint("StaticFieldLeak")
-    private static Context context;
+    private static volatile Context context;
     private static boolean fabricInited = false;
     private static boolean bfInited = false;
     private static Locale LOCALE;
@@ -55,6 +58,12 @@ public class xdrip extends MultiDexApplication {
     public static boolean useBF = false;
     private static Boolean isRunningTestCache;
 
+    public static void setContext(final Context context) {
+        if (context == null) return;
+        if (xdrip.context == null) {
+            xdrip.context = context.getApplicationContext();
+        }
+    }
 
     @Override
     public void onCreate() {
@@ -63,12 +72,16 @@ public class xdrip extends MultiDexApplication {
         JodaTimeAndroid.init(this);
         try {
             if (PreferenceManager.getDefaultSharedPreferences(xdrip.context).getBoolean("enable_crashlytics", true)) {
-                NewRelicCrashReporting.start();
+                //NewRelicCrashReporting.start();
+                AppCenterCrashReporting.start(this);
             }
         } catch (Exception e) {
             Log.e(TAG, e.toString());
         }
         executor = new PlusAsyncExecutor();
+
+        IdempotentMigrations.migrateOOP2CalibrationPreferences(); // needs to run before preferences get defaults
+
         PreferenceManager.setDefaultValues(this, R.xml.pref_general, true);
         PreferenceManager.setDefaultValues(this, R.xml.pref_data_sync, true);
         PreferenceManager.setDefaultValues(this, R.xml.pref_advanced_settings, true);
@@ -76,6 +89,7 @@ public class xdrip extends MultiDexApplication {
         PreferenceManager.setDefaultValues(this, R.xml.pref_data_source, true);
         PreferenceManager.setDefaultValues(this, R.xml.xdrip_plus_defaults, true);
         PreferenceManager.setDefaultValues(this, R.xml.xdrip_plus_prefs, true);
+        ColorCache.setDefaultsLoaded();
 
         checkForcedEnglish(xdrip.context);
 
@@ -100,6 +114,7 @@ public class xdrip extends MultiDexApplication {
             BluetoothGlucoseMeter.startIfEnabled();
             LeFunEntry.initialStartIfEnabled();
             MiBandEntry.initialStartIfEnabled();
+            BroadcastEntry.initialStartIfEnabled();
             BlueJayEntry.initialStartIfEnabled();
             XdripWebService.immortality();
             VersionTracker.updateDevice();
@@ -109,6 +124,7 @@ public class xdrip extends MultiDexApplication {
         }
         Reminder.firstInit(xdrip.getAppContext());
         PluggableCalibration.invalidateCache();
+        Poller.init();
     }
 
 

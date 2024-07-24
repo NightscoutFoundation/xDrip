@@ -13,28 +13,34 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
-import android.support.v4.content.LocalBroadcastManager;
+
 import android.widget.Toast;
 
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.BloodTest;
-import com.eveningoutpost.dexdrip.Models.Calibration;
-import com.eveningoutpost.dexdrip.Models.DesertSync;
-import com.eveningoutpost.dexdrip.Models.JoH;
+// -- JPBOU -----------------------------------------------
+// Import added to synchronize Libre 2 Raw values.
 import com.eveningoutpost.dexdrip.Models.Libre2RawValue;
-import com.eveningoutpost.dexdrip.Models.RollCall;
-import com.eveningoutpost.dexdrip.Models.Sensor;
-import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.Services.PlusSyncService;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.InstalledApps;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+// -- \JPBOU ----------------------------------------------
+
+import com.eveningoutpost.dexdrip.cloud.jamcm.JamCm;
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.BloodTest;
+import com.eveningoutpost.dexdrip.models.Calibration;
+import com.eveningoutpost.dexdrip.models.DesertSync;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.RollCall;
+import com.eveningoutpost.dexdrip.models.Sensor;
+import com.eveningoutpost.dexdrip.models.Treatments;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
+import com.eveningoutpost.dexdrip.services.PlusSyncService;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.InstalledApps;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.DisplayQRCode;
 import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
+import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -53,7 +59,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.eveningoutpost.dexdrip.models.JoH.isOldVersion;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 /**
  * Created by jamorham on 11/01/16.
@@ -203,6 +212,7 @@ public class GcmActivity extends FauxActivity {
                 if (datum != null) {
                     if (overHeated()) break;
                     if ((timenow - datum.timestamp) > MAX_QUEUE_AGE
+                            || !isOldVersion(context)
                             || datum.resent > MAX_RESENT) {
                         queuechanged = true;
                         Log.i(TAG, "Removing old unacknowledged queue item: resent: " + datum.resent);
@@ -212,7 +222,8 @@ public class GcmActivity extends FauxActivity {
                         try {
                             Log.i(TAG, "Resending unacknowledged queue item: " + datum.bundle.getString("action") + datum.bundle.getString("payload"));
                             datum.resent++;
-                            GoogleCloudMessaging.getInstance(context).send(senderid + "@gcm.googleapis.com", Integer.toString(msgId.incrementAndGet()), datum.bundle);
+                           // GoogleCloudMessaging.getInstance(context).send(senderid + "@gcm.googleapis.com", Integer.toString(msgId.incrementAndGet()), datum.bundle);
+                            JamCm.sendMessage(datum.bundle);
                         } catch (Exception e) {
                             Log.e(TAG, "Got exception during resend: " + e.toString());
                         }
@@ -290,16 +301,22 @@ public class GcmActivity extends FauxActivity {
         }
     }
 
-    // Synchronization of Libre2 patched app received raw values,
-    // called from LibreReceiver only if option Libre2_showRawGraph is activated.
-    public synchronized static void syncLibre2RawReading(Libre2RawValue rawValue) {
+		// -- JPBOU -------------------------------------------
+    // Synchronization of Libre2 patched app received raw 
+		// values, called from LibreReceiver only if option 
+		// Libre2_showRawGraph is activated.
+    public synchronized static 
+		void syncLibre2RawReading(Libre2RawValue rawValue) {
         if (rawValue == null) {
-            UserError.Log.wtf(TAG, "Cannot sync null libre2rawvalue - should never occur");
+            UserError.Log.wtf(TAG, 
+							"Cannot sync null libre2rawvalue" 
+							+ " - should never occur");
             return;
         }
         Log.d(TAG, "syncLibre2RawReading called");
         GcmActivity.sendMessage("l2rs", rawValue.toJSON());
     }
+		// -- \JPBOU ------------------------------------------
 
     // called only from interactive or evaluated new data
     public synchronized static void syncBloodTests() {
@@ -657,7 +674,7 @@ public class GcmActivity extends FauxActivity {
         }
     }
 
-    static String myIdentity() {
+    public static String myIdentity() {
         // TODO prefs override possible
         return GoogleDriveInterface.getDriveIdentityString();
     }
@@ -710,8 +727,11 @@ public class GcmActivity extends FauxActivity {
             Log.e(TAG, "Rate limited start libre-allhouse");
             return;
         }
-
-        GcmActivity.sendMessage(myIdentity(), "libreBlock", libreBlock);
+        if (!Pref.getBooleanDefaultFalse("plus_follower_save_power")) {
+            GcmActivity.sendMessage(myIdentity(), "libreBlock", libreBlock);
+        } else {
+            UserError.Log.d(TAG, "Saving power and network by not sending libreBlock");
+        }
     }
 
     public static void clearLastCalibration(String uuid) {
@@ -766,19 +786,20 @@ public class GcmActivity extends FauxActivity {
                 Log.e(TAG, "Queue size exceeded");
                 Home.toaststaticnext("Maximum Sync Queue size Exceeded!");
             }
-            final GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(xdrip.getAppContext());
+          //  final GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(xdrip.getAppContext());
             if (token == null) {
                 Log.e(TAG, "GCM token is null - cannot sendMessage");
                 return "";
             }
             String messageid = Integer.toString(msgId.incrementAndGet());
-            gcm.send(senderid + "@gcm.googleapis.com", messageid, data);
+         //   gcm.send(senderid + "@gcm.googleapis.com", messageid, data);
             if (last_ack == -1) last_ack = JoH.tsl();
             last_send_previous = last_send;
             last_send = JoH.tsl();
+            JamCm.sendMessage(data);
             msg = "Sent message OK " + messageid;
             DesertSync.fromGCM(data);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             msg = "Error :" + ex.getMessage();
         }
         Log.d(TAG, "Return msg in SendMessage: " + msg);
@@ -869,9 +890,11 @@ public class GcmActivity extends FauxActivity {
             xdrip.getAppContext().startService(intent);
         } else {
             cease_all_activity = true;
-            final String msg = "ERROR: Connecting to Google Services - check google login or reboot?";
-            JoH.static_toast_long(msg);
-            Home.toaststaticnext(msg);
+            if (!BlueJayEntry.isNative()) {
+                final String msg = "ERROR: Connecting to Google Services - check google login or reboot?";
+                JoH.static_toast_long(msg);
+                Home.toaststaticnext(msg);
+            }
         }
     }
 
@@ -933,7 +956,7 @@ public class GcmActivity extends FauxActivity {
             if (GcmActivity.last_send_previous > GcmActivity.last_ack) {
                 if (Pref.getLong("sync_warning_never", 0) == 0) {
 
-                    if (PreferencesNames.SYNC_VERSION.equals("1") && JoH.isOldVersion(context)) {
+                    if (PreferencesNames.SYNC_VERSION.equals("1") && isOldVersion(context)) {
                         final long since_send = JoH.tsl() - GcmActivity.last_send_previous;
                         if (since_send > 60000) {
                             if (!DesertSync.isEnabled()) {
@@ -1003,6 +1026,7 @@ public class GcmActivity extends FauxActivity {
         if (resultCode != ConnectionResult.SUCCESS) {
             try {
                 if (apiAvailability.isUserResolvableError(resultCode)) {
+                    if (resultCode == 3 && BlueJayEntry.isNative()) return false;
                     if (activity != null) {
                         apiAvailability.getErrorDialog(activity, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
                                 .show();

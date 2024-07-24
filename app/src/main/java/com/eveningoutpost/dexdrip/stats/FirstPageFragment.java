@@ -1,19 +1,23 @@
 package com.eveningoutpost.dexdrip.stats;
 
+import static android.app.PendingIntent.getActivity;
+
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.eveningoutpost.dexdrip.models.UserError.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants;
+import com.eveningoutpost.dexdrip.importedlibraries.dexcom.Dex_Constants;
 import com.eveningoutpost.dexdrip.R;
 
 import java.text.DecimalFormat;
@@ -85,9 +89,21 @@ public class FirstPageFragment extends Fragment {
             int inPercent = 100 - abovePercent - belowPercent;
 
             TextView rangespercent = (TextView) localView.findViewById(R.id.textView_ranges_percent);
-            TextView rangesabsolute = (TextView) localView.findViewById(R.id.textView_ranges_absolute);
-
             updateText(localView, rangespercent, inPercent + "%/" + abovePercent + "%/" + belowPercent + "%");
+
+            // Let's put the range settings on screen so that this becomes a self-contained page.
+            // Navid200
+            double stats_high = Double.parseDouble(settings.getString("highValue", "170"));
+            double stats_low = Double.parseDouble(settings.getString("lowValue", "70"));
+            TextView rangeView = (TextView) localView.findViewById(R.id.textView_stats_range_set);
+            //update stats_high/low
+            if (!mgdl) {
+                updateText(localView, rangeView, (Math.round(stats_low * 10) / 10d) + " - " + (Math.round(stats_high * 10) / 10d) + " mmol/l");
+            } else {
+                updateText(localView, rangeView, Math.round(stats_low) + " - " + (Math.round(stats_high)) + " mg/dl");
+            }
+
+            TextView rangesabsolute = (TextView) localView.findViewById(R.id.textView_ranges_absolute);
             updateText(localView, rangesabsolute, inRange + "/" + aboveRange + "/" + belowRange);
 
             List<BgReadingStats> bgList = DBSearchUtil.getReadings(true);

@@ -1,4 +1,4 @@
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:id="@+id/drawer_layout"
     android:layout_width="match_parent" android:layout_height="match_parent">
     <LinearLayout
@@ -20,8 +20,7 @@
                 android:showDividers="middle">
                 <LinearLayout
                     android:layout_width="fill_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight=".2"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center_horizontal">
                     <Button
@@ -34,8 +33,7 @@
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="fill_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight=".25"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center_horizontal">
 
@@ -48,8 +46,7 @@
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="fill_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight=".25"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center_horizontal"
                     android:paddingTop="10dp">
@@ -115,4 +112,4 @@
     android:name="com.eveningoutpost.dexdrip.NavigationDrawerFragment"
     tools:layout="@layout/fragment_navigation_drawer" />
 
-</android.support.v4.widget.DrawerLayout>
+</androidx.drawerlayout.widget.DrawerLayout>

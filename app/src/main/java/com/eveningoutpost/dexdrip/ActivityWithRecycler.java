@@ -4,15 +4,16 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.LinearSmoothScroller;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
+
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSmoothScroller;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by jamorham on 01/02/2017.

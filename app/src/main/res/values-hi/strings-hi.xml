@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_activity_bluetooth_scan">ब्लूटूथ स्कैन</string>
+    <string name="connected">जुड़ गया</string>
+    <string name="menu_scan">स्कैन करें</string>
+    <string name="menu_stop">रोको</string>
+    <string name="title_activity_start_new_sensor">नया सेंसर प्रारंभ करें</string>
+    <string name="title_activity_new_sensor_location">नया सेंसर स्थान बताएं</string>
+    <string name="title_activity_stop_sensor">सेंसर बंद करें</string>
+    <string name="title_activity_nav_drawer">नेविगेशन ड्रॉवर</string>
+    <string name="navigation_drawer_open">नेविगेशन ड्रॉवर खोलें</string>
+    <string name="navigation_drawer_close">नेविगेशन ड्रावर बंद करें</string>
+    <string name="ok">ठीक है</string>
+    <string name="no">नहीं</string>
+    <string name="pref_sensor_location_dont_ask_again">फिर से मत पूछना</string>
+    <string name="prefs_auto_config_summary">बारकोड द्वारा कॉन्फ़िगर करें</string>
+    <!-- MongoDB Settings -->
+    <!-- API Settings -->
+    <!-- wifi Settings -->
+    <!-- Location Settings -->
+    <!-- broadcast settings -->
+    <!-- pebble settings -->
+    <!-- Amazfit Settings -->
+    <string name="stop_sensor">सेंसर बंद करें</string>
+    <string name="bluetooth_scan">ब्लूटूथ स्कैन</string>
+    <!-- trend arrow for speak -->
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
+    <string name="enable_streaming_dialog_dont_ask_again">फिर से मत पूछना</string>
+</resources>

@@ -56,11 +56,28 @@
 -keep class org.slf4j.** { *; }
 -keep class rx.internal.util.** { *; }
 -keep class sun.misc.Unsafe { *; }
--keep class com.eveningoutpost.dexdrip.Models.** { *; }
--keep class com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.** { *; }
+-keep class com.eveningoutpost.dexdrip.models.** { *; }
+-keep class com.eveningoutpost.dexdrip.models.** { *; }
+-keep class com.eveningoutpost.dexdrip.importedlibraries.usbserial.** { *; }
+-keep class com.eveningoutpost.dexdrip.importedlibraries.usbserial.** { *; }
 -keep class ar.com.hjg.pngj.** { *; }
 -keep class android.support.v7.widget.SearchView { *; }
+-keep class kotlinx.serialization.Serializable { *; }
 
+# As long as we only deserialize (from a JSON string into an `NSDeviceStatus`
+# object in the class `AAPSStatusHandler`) we can simply ignore warnings related
+# to kotlinx serialization.
+# These rule should not cause problems: if a project actually relies on
+# serialization, then much more than just this class will be required,
+# so telling Proguard not to worry if this is missing will not prevent it
+# from emitting errors for code that does use serialization but somehow forgot
+# to depend on it.
+-dontwarn kotlinx.serialization.Serializable
+
+# The lib net.sf.kxml:kxml2:2.3.0 is referenced in same required libraries used for
+# Android testing. R8 is showing missing classes warnings which can be safely ignored.
+-dontwarn org.kxml2.io.KXmlParser
+-dontwarn org.kxml2.io.KXmlSerializer
 
 -dontwarn java.util.concurrent.**
 
@@ -78,6 +95,9 @@
 }
 
 -keep public class * implements **.BitmapCacheProvider
+-keep class ** implements **.Exposed { *; }
+-keep class com.eveningoutpost.dexdrip.**.*$*Builder { *; }
+
 
 -keepclassmembers class rx.internal.util.unsafe.*ArrayQueue*Field* {
     long producerIndex;

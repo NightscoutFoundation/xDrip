@@ -6,9 +6,16 @@ package com.eveningoutpost.dexdrip;
  * Multi-page plugin style status entry lists
  */
 
+import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.Medtrum;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.NSFollow;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.SHFollow;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.WebFollow;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.CLFollow;
+
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
+
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -16,9 +23,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v13.app.FragmentStatePagerAdapter;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.ViewPager;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.viewpager.widget.ViewPager;
+
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,24 +42,26 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.eveningoutpost.dexdrip.Models.DesertSync;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.RollCall;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Services.DexCollectionService;
-import com.eveningoutpost.dexdrip.Services.DoNothingService;
-import com.eveningoutpost.dexdrip.Services.G5CollectionService;
-import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
-import com.eveningoutpost.dexdrip.Services.WifiCollectionService;
-import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
-import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
-import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
+import com.eveningoutpost.dexdrip.models.DesertSync;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.RollCall;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.services.DexCollectionService;
+import com.eveningoutpost.dexdrip.services.DoNothingService;
+import com.eveningoutpost.dexdrip.services.G5CollectionService;
+import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
+import com.eveningoutpost.dexdrip.services.WifiCollectionService;
+import com.eveningoutpost.dexdrip.utilitymodels.JamorhamShowcaseDrawer;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.ShotStateStore;
+import com.eveningoutpost.dexdrip.utilitymodels.StatusItem;
+import com.eveningoutpost.dexdrip.utilitymodels.UploaderQueue;
 import com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollowService;
 import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
+import com.eveningoutpost.dexdrip.cgm.webfollow.WebFollowService;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.CareLinkFollowService;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenService;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
@@ -68,12 +81,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
-import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
-import static com.eveningoutpost.dexdrip.utils.DexCollectionType.Medtrum;
-import static com.eveningoutpost.dexdrip.utils.DexCollectionType.NSFollow;
-import static com.eveningoutpost.dexdrip.utils.DexCollectionType.SHFollow;
-
 public class MegaStatus extends ActivityWithMenu {
 
 
@@ -92,7 +99,7 @@ public class MegaStatus extends ActivityWithMenu {
 
     private static final ArrayList<String> sectionList = new ArrayList<>();
     private static final ArrayList<String> sectionTitles = new ArrayList<>();
-    private static final HashSet<String> sectionAlwaysOn = new HashSet<>();
+    private static final HashSet<String> sectionAlwaysOn = new HashSet<>(); //While viewing these pages, the screen won't time out.
 
     public static View runnableView;
 
@@ -112,7 +119,7 @@ public class MegaStatus extends ActivityWithMenu {
     }
 
     private static final String G4_STATUS = "BT Device";
-    public static final String G5_STATUS = "G5/G6 Status";
+    public static final String G5_STATUS = "Dex Status";
     private static final String MEDTRUM_STATUS = "Medtrum Status";
     private static final String IP_COLLECTOR = "IP Collector";
     private static final String XDRIP_PLUS_SYNC = "Followers";
@@ -123,6 +130,8 @@ public class MegaStatus extends ActivityWithMenu {
     private static final String INPEN_STATUS = "InPen";
     private static final String NIGHTSCOUT_FOLLOW = "Nightscout Follow";
     private static final String SHARE_FOLLOW = "Dex Share Follow";
+    private static final String WEB_FOLLOW = "Web Follower";
+    private static final String CARELINK_FOLLOW = "CareLink Follow";
     private static final String XDRIP_LIBRE2 = "Libre2";
 
     static {
@@ -159,7 +168,7 @@ public class MegaStatus extends ActivityWithMenu {
             }
             if (dexCollectionType.equals(DexcomG5)) {
                 if (Pref.getBooleanDefaultFalse(Ob1G5CollectionService.OB1G5_PREFS)) {
-                    addAsection(G5_STATUS, "OB1 G5/G6 Collector and Transmitter Status");
+                    addAsection(G5_STATUS, "G6/Dex1/G7/1+ Collector/Transmitter Status");
                 } else {
                     addAsection(G5_STATUS, "G5 Collector and Transmitter Status");
                 }
@@ -170,7 +179,7 @@ public class MegaStatus extends ActivityWithMenu {
                 addAsection(BLUEJAY_STATUS, "BlueJay Watch Status");
             }
             if (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreReceiver) {
-                addAsection(XDRIP_LIBRE2, "Libre 2 Patched App Status");
+                addAsection(XDRIP_LIBRE2, "Libre Patched App Status");
             }
             if (DexCollectionType.hasWifi()) {
                 addAsection(IP_COLLECTOR, dexCollectionType == DexCollectionType.Mock ? "FAKE / MOCK DATA SOURCE" : "Wifi Wixel / Parakeet Status");
@@ -198,6 +207,12 @@ public class MegaStatus extends ActivityWithMenu {
             }
             if(dexCollectionType.equals(SHFollow)) {
                 addAsection(SHARE_FOLLOW, "Dex Share Follow Status");
+            }
+            if(dexCollectionType.equals(WebFollow)) {
+                addAsection(WEB_FOLLOW, "Web Follower Status");
+            }
+            if(dexCollectionType.equals(CLFollow)) {
+                addAsection(CARELINK_FOLLOW, "CareLink Follow Status");
             }
 
             //addAsection("Misc", "Currently Empty");
@@ -259,6 +274,12 @@ public class MegaStatus extends ActivityWithMenu {
             case SHARE_FOLLOW:
                 la.addRows(ShareFollowService.megaStatus());
                 break;
+            case WEB_FOLLOW:
+                la.addRows(WebFollowService.megaStatus());
+                break;
+            case CARELINK_FOLLOW:
+                la.addRows(CareLinkFollowService.megaStatus());
+                break;
             case XDRIP_LIBRE2:
                 la.addRows(LibreReceiver.megaStatus());
                 break;
@@ -283,7 +304,7 @@ public class MegaStatus extends ActivityWithMenu {
         sectionTitles.clear();
         populateSectionList();
 
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -354,6 +375,35 @@ public class MegaStatus extends ActivityWithMenu {
                 }
             }
         };
+
+        try {
+            getSupportActionBar().setSubtitle(BuildConfig.VERSION_NAME);
+            fixElipsusAndSize(null);
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Got exception trying to set subtitle: ", e);
+        }
+    }
+
+    private void fixElipsusAndSize(ViewGroup root) {
+        if (root == null)
+            root = (ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content).getRootView();
+        final int children = root.getChildCount();
+        for (int i = 0; i < children; i++) {
+            final View view = root.getChildAt(i);
+            if (view instanceof TextView) {
+                final String txt = ((TextView) view).getText().toString();
+                if (txt.contains(BuildConfig.VERSION_NAME)) {
+                    ((TextView) view).setEllipsize(null);
+                    final float tsize = ((TextView) view).getTextSize();
+                    if (tsize > 10f) {
+                        ((TextView) view).setTextSize(Math.max(10f, tsize / 4));
+                    }
+                    return;
+                }
+            } else if (view instanceof ViewGroup) {
+                fixElipsusAndSize((ViewGroup) view);
+            }
+        }
     }
 
     private void requestWearCollectorStatus() {

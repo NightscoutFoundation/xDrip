@@ -3,7 +3,6 @@ package com.eveningoutpost.dexdrip;
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -16,8 +15,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import com.eveningoutpost.dexdrip.Models.AlertType;
-import com.eveningoutpost.dexdrip.Services.MissedReadingService;
+import com.eveningoutpost.dexdrip.models.AlertType;
+import com.eveningoutpost.dexdrip.services.MissedReadingService;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
 
@@ -197,7 +196,7 @@ public class MissedReadingActivity extends ActivityWithMenu {
                         setTimeRanges();
                     }
                 }, startHour, startMinute, DateFormat.is24HourFormat(mContext));
-                mTimePicker.setTitle("Select start time");
+                mTimePicker.setTitle(getString(R.string.select_start_time));
                 mTimePicker.show();
 
             }
@@ -215,7 +214,7 @@ public class MissedReadingActivity extends ActivityWithMenu {
                         setTimeRanges();
                     }
                 }, endHour, endMinute, DateFormat.is24HourFormat(mContext));
-                mTimePicker.setTitle("Select end time");
+                mTimePicker.setTitle(getString(R.string.select_end_time));
                 mTimePicker.show();
 
             }

@@ -2,11 +2,11 @@ package com.eveningoutpost.dexdrip.cgm.sharefollow;
 
 import android.os.PowerManager;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
 import com.eveningoutpost.dexdrip.evaluators.MissedReadingsEstimator;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -16,7 +16,7 @@ import java.util.Map;
 
 import lombok.Getter;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
+import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
 import static com.eveningoutpost.dexdrip.cgm.sharefollow.ShareConstants.MAX_RECORDS_TO_ASK_FOR;
 
 /**
@@ -77,8 +77,8 @@ public class ShareFollowDownload extends RetrofitBase {
         if (!session.sessionIdValid()) {
             if (JoH.tsl() > loginBlockedTill) {
                 extendWakeLock(30_000);
-                getService().getSessionId(new ShareAuthenticationBody(password, login))
-                        .enqueue(new ShareFollowCallback<String>("Login", session, this::getData)
+                getService().authenticate(new ShareAuthenticationBody(password, login))
+                        .enqueue(new ShareFollowCallback<String>("Auth", session, this::authenticate)
                                 .setOnFailure(this::handleLoginFailure));
             } else {
                 UserError.Log.e(TAG, "Not trying to login due to backoff timer for login failures until: " + JoH.dateTimeText(loginBlockedTill));
@@ -100,6 +100,25 @@ public class ShareFollowDownload extends RetrofitBase {
             loginBlockedTill = JoH.tsl() + loginBackoff;
         }
         releaseWakeLock();
+    }
+
+    private boolean authenticate() {
+        try {
+            if (session.accountIdValid()) {
+                extendWakeLock(30_000);
+                getService().getSessionId(new ShareLoginBody(password, session.accountId))
+                        .enqueue(new ShareFollowCallback<String>("Login", session, this::getData)
+                                .setOnFailure(this::handleLoginFailure));
+            } else {
+                UserError.Log.d(TAG, "Cannot login as accountID is invalid");
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Got exception in getData() " + e);
+            releaseWakeLock();
+            return false;
+        }
     }
 
     // Get data from service

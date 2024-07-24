@@ -51,12 +51,15 @@
     <string name="pref_message_mongodb_collection">این نام مجموعه ای است که داده های CGM در آن ذخیره می شود</string>
     <string name="pref_title_mongodb_device_status_collection">نام مجموعه وضعیت دستگاه</string>
     <!-- API Settings -->
+    <string name="pref_title_api">همگام سازی با نایت اسکات(REST-API)</string>
     <string name="pref_title_api_enabled">فعال</string>
     <string name="pref_title_api_url">آدرس پایه</string>
+    <string name="pref_dialog_api_url">آدرس پایه API را وارد کنید</string>
     <!-- wifi Settings -->
     <!-- Location Settings -->
     <string name="location_yes">فعال سازی</string>
     <!-- broadcast settings -->
+    <string name="pref_title_broadcast_enabled">انتشار محلی</string>
     <!-- pebble settings -->
     <!-- Amazfit Settings -->
     <string name="pref_amazfit_enable">فعال سازی</string>
@@ -65,9 +68,14 @@
     <string name="pref_amazfit_watchface_graph_enable">فعال سازی</string>
     <string name="pref_amazfit_widget_graph_enable">فعال سازی</string>
     <string name="add_widget">اضافه کردن ابزارک</string>
+    <string name="title_activity_alert_list">فهرست آژیرها</string>
     <string name="add_note">افزودن یادداشت</string>
     <string name="space_mins">" دقیقه"</string>
     <string name="expires_at">در {0} تمام می شود</string>
+    <string name="home_screen">صفحه اصلی</string>
+    <string name="glucose_units">واحد قند خون</string>
+    <string name="high_value">حد بالا</string>
+    <string name="low_value">حد پایین</string>
     <string name="view_google_licenses">مجوز گوگل</string>
     <string name="system_status">وضعیت سیستم</string>
     <string name="history">تاریخچه</string>
@@ -82,5 +90,18 @@
     <string name="initial_calibration">کالیبره سازی ابتدایی</string>
     <string name="bluetooth_scan">جستجوی بلوتوث</string>
     <!-- trend arrow for speak -->
+    <string name="glucose_units_mmol_or_mgdl">واحد قند mmol/L یا mg/dL</string>
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_user">CareLink Username</string>
+    <string name="summary_clfollow_user">CareLink login username</string>
+    <string name="title_clfollow_pass">CareLink Password</string>
+    <string name="summary_clfollow_pass">CareLink login password</string>
+    !-->
+    <!-- Maybe we can use them later?
+    <string name="title_clfollow_lang">CareLink Language</string>
+    <string name="summary_clfollow_lang">CareLink language code</string>
+    -->
     <string name="enable_streaming_dialog_dont_ask_again">دیگه از من نپرس</string>
+    <string name="enable_graph_smoothing">فعال سازی</string>
+    <string name="titleInside_yRange">فعال سازی</string>
 </resources>

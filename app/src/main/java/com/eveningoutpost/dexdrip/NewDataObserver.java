@@ -1,17 +1,20 @@
 package com.eveningoutpost.dexdrip;
 
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.LibreBlock;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.ShareModels.BgUploader;
-import com.eveningoutpost.dexdrip.ShareModels.Models.ShareUploadPayload;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.VehicleMode;
-import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
-import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.LibreBlock;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.receiver.InfoContentProvider;
+import com.eveningoutpost.dexdrip.sharemodels.BgUploader;
+import com.eveningoutpost.dexdrip.sharemodels.models.ShareUploadPayload;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
+import com.eveningoutpost.dexdrip.utilitymodels.Notifications;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.VehicleMode;
+import com.eveningoutpost.dexdrip.utilitymodels.pebble.PebbleUtil;
+import com.eveningoutpost.dexdrip.utilitymodels.pebble.PebbleWatchSync;
+import com.eveningoutpost.dexdrip.healthconnect.HealthGamut;
+import com.eveningoutpost.dexdrip.healthconnect.HealthConnectEntry;
 import com.eveningoutpost.dexdrip.tidepool.TidepoolEntry;
 import com.eveningoutpost.dexdrip.ui.LockScreenWallPaper;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
@@ -24,9 +27,12 @@ import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayRemote;
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService;
+import com.eveningoutpost.dexdrip.services.broadcastservice.BroadcastEntry;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
+
+import android.os.Build;
 
 /**
  * Created by jamorham on 01/01/2018.
@@ -49,13 +55,16 @@ public class NewDataObserver {
         sendToAmazfit();
         sendToLeFun();
         sendToMiBand();
+        sendToBroadcastService();
         sendToBlueJay();
         sendToRemoteBlueJay();
         Notifications.start();
+        InfoContentProvider.ping("bg");
         uploadToShare(bgReading, is_follower);
         textToSpeech(bgReading, null);
         LibreBlock.UpdateBgVal(bgReading.timestamp, bgReading.calculated_value);
         LockScreenWallPaper.setIfEnabled();
+        sendToHealthConnect(bgReading);
         TidepoolEntry.newData();
 
     }
@@ -80,6 +89,7 @@ public class NewDataObserver {
                 GcmActivity.push_external_status_update(JoH.tsl(), statusLine);
 
             }
+            InfoContentProvider.ping("status");
         }
 
     }
@@ -110,6 +120,10 @@ public class NewDataObserver {
         }
     }
 
+    private static void sendToBroadcastService() {
+        BroadcastEntry.sendLatestBG();
+    }
+
     private static void sendToBlueJay() {
         if (BlueJayEntry.isEnabled()) {
             Inevitable.task("poll-bluejay-for-bg", DexCollectionType.hasBluetooth() ? 2000 : 500, BlueJay::showLatestBG); // delay enough for BT to finish on collector
@@ -125,6 +139,14 @@ public class NewDataObserver {
     private static void sendToRemoteBlueJay() {
         if (BlueJayEntry.isRemoteEnabled()) {
             Inevitable.task("poll-bluejay-remote-for-bg", DexCollectionType.hasBluetooth() ? 2000 : 500, BlueJayRemote::sendLatestBG); // delay enough for BT to finish on collector
+        }
+    }
+
+    private static void sendToHealthConnect(final BgReading bgReading) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+           if (HealthConnectEntry.sendEnabled()) {
+               HealthGamut.sendGlucoseStatic(bgReading);
+           }
         }
     }
 

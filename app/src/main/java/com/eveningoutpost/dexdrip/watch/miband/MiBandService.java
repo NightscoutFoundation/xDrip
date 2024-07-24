@@ -5,21 +5,20 @@ import android.app.PendingIntent;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.PowerManager;
 import android.util.Pair;
 
-import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.HeartRate;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.ActiveBgAlert;
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.HeartRate;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer;
-import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
+import com.eveningoutpost.dexdrip.services.JamBaseBluetoothSequencer;
+import com.eveningoutpost.dexdrip.utilitymodels.AlertPlayer;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
+import com.eveningoutpost.dexdrip.utilitymodels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.bt.Subscription;
 import com.eveningoutpost.dexdrip.utils.framework.PoorMansConcurrentLinkedDeque;
 import com.eveningoutpost.dexdrip.utils.framework.WakeLockTrampoline;
@@ -54,15 +53,15 @@ import java.util.concurrent.TimeoutException;
 import io.reactivex.schedulers.Schedulers;
 import lombok.Getter;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.bytesToHex;
-import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
-import static com.eveningoutpost.dexdrip.Models.JoH.getResourceURI;
-import static com.eveningoutpost.dexdrip.Models.JoH.msTill;
-import static com.eveningoutpost.dexdrip.Models.JoH.niceTimeScalar;
-import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.CLOSE;
-import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.CLOSED;
-import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.INIT;
-import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.SLEEP;
+import static com.eveningoutpost.dexdrip.models.JoH.bytesToHex;
+import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
+import static com.eveningoutpost.dexdrip.models.JoH.getResourceURI;
+import static com.eveningoutpost.dexdrip.models.JoH.msTill;
+import static com.eveningoutpost.dexdrip.models.JoH.niceTimeScalar;
+import static com.eveningoutpost.dexdrip.services.JamBaseBluetoothSequencer.BaseState.CLOSE;
+import static com.eveningoutpost.dexdrip.services.JamBaseBluetoothSequencer.BaseState.CLOSED;
+import static com.eveningoutpost.dexdrip.services.JamBaseBluetoothSequencer.BaseState.INIT;
+import static com.eveningoutpost.dexdrip.services.JamBaseBluetoothSequencer.BaseState.SLEEP;
 import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NOTIFY_TYPE_ALARM;
 import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NOTIFY_TYPE_CALL;
 import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NOTIFY_TYPE_CANCEL;
@@ -116,7 +115,6 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     static BatteryInfo batteryInfo = new BatteryInfo();
     private FirmwareOperations firmware;
     private Subscription watchfaceSubscription;
-    private MediaPlayer player;
 
     private PendingIntent bgServiceIntent;
     static private long bgWakeupTime;
@@ -450,13 +448,13 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             case DeviceEvent.FIND_PHONE_START:
                 UserError.Log.d(TAG, "find phone started");
                 if ((JoH.ratelimit("band_find phone_sound", 3))) {
-                    player = JoH.playSoundUri(getResourceURI(R.raw.default_alert));
+                    JoH.playSoundUri(getResourceURI(R.raw.default_alert));
                 }
                 acknowledgeFindPhone();
                 break;
             case DeviceEvent.FIND_PHONE_STOP:
                 UserError.Log.d(TAG, "find phone stopped");
-                if (player != null && player.isPlaying()) player.stop();
+                JoH.stopSoundUri();
                 break;
             case DeviceEvent.MUSIC_CONTROL:
                 UserError.Log.d(TAG, "got music control");
@@ -562,10 +560,14 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     private void getModelName() {
         I.connection.readCharacteristic(Const.UUID_CHAR_DEVICE_NAME).subscribe(
                 readValue -> {
-                    String name = new String(readValue);
-                    if (d)
-                        UserError.Log.d(TAG, "Got device name: " + name);
-                    MiBand.setModel(name, MiBand.getPersistentAuthMac());
+                    if (readValue != null) {
+                        String name = new String(readValue);
+                        if (d)
+                            UserError.Log.d(TAG, "Got device name: " + name);
+                        MiBand.setModel(name, MiBand.getPersistentAuthMac());
+                    } else {
+                        UserError.Log.e(TAG, "Got null device name");
+                    }
                     changeNextState();
                 }, throwable -> {
                     if (d)

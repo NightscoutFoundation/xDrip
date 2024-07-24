@@ -16,7 +16,6 @@ import android.graphics.Shader;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.wearable.watchface.WatchFaceStyle;
 import android.util.Log;
 import android.util.TypedValue;
@@ -29,8 +28,10 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.utilitymodels.BgSendQueue;
 import com.google.android.gms.wearable.DataMap;
 import com.ustwo.clockwise.wearable.WatchFace;
 import com.ustwo.clockwise.common.WatchFaceTime;
@@ -40,8 +41,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.TreeSet;
 
 
 public class CircleWatchface extends WatchFace implements SharedPreferences.OnSharedPreferenceChangeListener {

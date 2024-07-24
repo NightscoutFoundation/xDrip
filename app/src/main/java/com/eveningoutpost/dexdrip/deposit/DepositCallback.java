@@ -2,10 +2,10 @@ package com.eveningoutpost.dexdrip.deposit;
 
 
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError;
 
 import lombok.RequiredArgsConstructor;
 import lombok.var;
@@ -43,7 +43,7 @@ class DepositCallback<T> implements Callback<T> {
     @Override
     public void onResponse(@NonNull Call<T> call, Response<T> response) {
         if (response.isSuccessful() && response.body() != null) {
-            var msg = "Error";
+            String msg = "Error";
             if (response.body() instanceof DepositReply1) {
                 msg = ((DepositReply1) response.body()).result;
             }
