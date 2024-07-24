@@ -99,7 +99,6 @@
         <item>5</item>
     </string-array>
 
-
     <string-array name="PebbleTrendPeriods">
         <item>1hr</item>
         <item>2hr</item>
@@ -120,9 +119,9 @@
     </string-array>
 
     <string-array name="UpdateChannelDetail">
-        <item>Stable - tried and tested versions</item>
-        <item>Beta - new features but not fully tested </item>
-        <item>Alpha - versions for early testing</item>
+        <item>@string/update_channel_stable</item>
+        <item>@string/update_channel_beta</item>
+        <item>@string/update_channel_alpha</item>
     </string-array>
 
     <string-array name="UpdateChannelE">
@@ -133,10 +132,10 @@
     </string-array>
 
     <string-array name="UpdateChannelDetailE">
-        <item>Stable - tried and tested versions</item>
-        <item>Beta - new features but not fully tested </item>
-        <item>Alpha - versions for early testing</item>
-        <item>Nightly - untested raw code - experts only!</item>
+        <item>@string/update_channel_stable</item>
+        <item>@string/update_channel_beta</item>
+        <item>@string/update_channel_alpha</item>
+        <item>@string/update_channel_nightly</item>
     </string-array>
 
     <string-array name="TreatmentCalibrationChoice">
@@ -153,7 +152,6 @@
         <item>Always use them</item>
     </string-array>
 
-
     <string-array name="bgUnitEntries">
         <item>mg/dL</item>
         <item>mmol/L</item>
@@ -166,11 +164,11 @@
 
     <!--     make sure to keep this values in sync with AlertPlayer.getAlertProfile -->
     <string-array name="BgAlertProfileEntries">
-        <item>High</item>
-        <item>Medium</item>
-        <item>Ascending volume</item>
-        <item>Vibrate only</item>
-        <item>Silent</item>
+        <item>@string/alert_volume_profile_high</item>
+        <item>@string/alert_volume_profile_medium</item>
+        <item>@string/alert_volume_profile_ascending_volume</item>
+        <item>@string/alert_volume_vibrate_only</item>
+        <item>@string/alert_volume_silent</item>
     </string-array>
 
     <string-array name="BgAlertProfileValues">
@@ -194,23 +192,23 @@
     </string-array>
 
     <string-array name="alertType">
-        <item>System Sound/Alarm</item>
-        <item>Custom Sound/Alarm</item>
-        <item>Default xDrip sound</item>
+        <item>@string/system_sound_alarm</item>
+        <item>@string/custom_sound_alarm</item>
+        <item>@string/default_xdrip_sound</item>
     </string-array>
 
     <string-array name="reminderAlertType">
-        <item>Android Ringtone/Alarm</item>
-        <item>Custom Audio file</item>
-        <item>Default xDrip+ reminder sound</item>
+        <item>@string/android_ringtone_alarm</item>
+        <item>@string/custom_audio_file</item>
+        <item>@string/default_xdrip_reminder_sound</item>
     </string-array>
 
 <!--    TODO abstract noise values to single source -->
     <string-array name="NoiseLevelBlock">
-        <item>Send even Extremely noisy signals</item>
-        <item>Only block noise level Extreme</item>
-        <item>Block Very High noise and worse</item>
-        <item>Block High noise and worse</item>
+        <item>@string/send_even_extremely_noisy_signals</item>
+        <item>@string/only_block_noise_level_extreme</item>
+        <item>@string/block_very_high_noise_and_worse</item>
+        <item>@string/block_high_noise_and_worse</item>
     </string-array>
     <string-array name="NoiseLevelBlockValues">
         <item>100000</item>
@@ -219,12 +217,11 @@
         <item>10</item>
     </string-array>
 
-
     <string-array name="TrendArrows">
-        <item>Jam Expressive Arrow 1</item>
-        <item>Jam Simple White Arrow 1</item>
-        <item>Jam Simple Color Arrow 1</item>
-        <item>Candy Cane</item>
+        <item>@string/jam_expressive_arrow_1</item>
+        <item>@string/jam_simple_white_arrow_1</item>
+        <item>@string/jam_simple_color_arrow_1</item>
+        <item>@string/candy_cane</item>
     </string-array>
     <string-array name="TrendArrowValues">
         <item>JamTrendArrowImpl</item>

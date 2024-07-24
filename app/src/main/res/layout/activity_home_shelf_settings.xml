@@ -87,7 +87,7 @@
                 android:checked="@{safeUnbox(vs.included[`graphic_trend_arrow`])}"
                 android:onCheckedChanged="@{(v, result) -> home.showArrowConfigurator(v, false, true)}"
                 android:onClick="@{() -> vs.ptoggle(`graphic_trend_arrow`)}"
-                android:text="Show Graphical Trend Arrow" />
+                android:text="@string/show_graphical_trend_arrow" />
 
 
 
