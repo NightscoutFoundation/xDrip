@@ -593,7 +593,7 @@
     <string name="short_speak_readings_shortcut">Vis snarvei til ☰ meny for å skru av/på talte avlesninger</string>
     <string name="speak_readings_shortcut">Taleavlesning-snarvei</string>
     <string name="battery_optimization_off">Sørg for at batterioptimalisering er skrudd av for Android 6+ (anbefalt).</string>
-    <string name="battery_optimization_on">Ikke fortsett å spørre om batterioptimalisering (ikke anbefalt).</string>
+    <string name="battery_optimization_on">Vil ikke fortsette å spørre om batterioptimalisering når dette er aktivert (ikke anbefalt).</string>
     <string name="battery_optimization_prompt">Batterioptimaliserings forespørsel</string>
     <string name="advanced_bluetooth_settings">Avanserte innstillinger for Bluetooth</string>
     <string name="bluetooth_settings">Bluetooth-innstillinger</string>
