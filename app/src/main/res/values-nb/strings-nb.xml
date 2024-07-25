@@ -640,7 +640,7 @@
     <string name="engineering_mode">Engineeringmodus</string>
     <string name="allow_unsafe_settings">Tillat ending av usikre innstillinger som kan ødelegge alt!</string>
     <string name="daily_save_db">Lagre databasen daglig</string>
-    <string name="allow_daily_db_save">Tillager den daglige intensjonstjenesten å lagre databasen før den tømmer</string>
+    <string name="allow_daily_db_save">Lar den daglige intensjonstjenesten lagre databasen før tømming</string>
     <string name="options_for_extra_line">Alternativ for ekstra statuslinje</string>
     <string name="todays_average_value">Dagens gjennomsnittlige verdi.</string>
     <string name="ac1_estimation_dcct">A1c-estimat i DCCT format (%)</string>
