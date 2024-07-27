@@ -751,27 +751,31 @@ public class JoH {
         return niceTimeScalar(-msSince(t));
     }
 
-    // temporary
     public static String niceTimeScalar(long t) {
-        String unit = xdrip.getAppContext().getString(R.string.unit_second);
+        return niceTimeScalar(t, false); // Calling the method with forceEn set to false so that the chosen language is used.
+    }
+
+    // temporary
+    public static String niceTimeScalar(long t, boolean forceEn) { // English will be used regardless if forceEn is true
+        String unit = forceEn? "second" : xdrip.getAppContext().getString(R.string.unit_second);
         t = t / 1000;
-        if (t != 1) unit = xdrip.getAppContext().getString(R.string.unit_seconds);
+        if (t != 1) unit = forceEn? "seconds" : xdrip.getAppContext().getString(R.string.unit_seconds);
         if (t > 59) {
-            unit = xdrip.getAppContext().getString(R.string.unit_minute);
+            unit = forceEn? "minute" : xdrip.getAppContext().getString(R.string.unit_minute);
             t = t / 60;
-            if (t != 1) unit = xdrip.getAppContext().getString(R.string.unit_minutes);
+            if (t != 1) unit = forceEn? "minutes" : xdrip.getAppContext().getString(R.string.unit_minutes);
             if (t > 59) {
-                unit = xdrip.getAppContext().getString(R.string.unit_hour);
+                unit = forceEn? "hour" : xdrip.getAppContext().getString(R.string.unit_hour);
                 t = t / 60;
-                if (t != 1) unit = xdrip.getAppContext().getString(R.string.unit_hours);
+                if (t != 1) unit = forceEn? "hours" : xdrip.getAppContext().getString(R.string.unit_hours);
                 if (t > 24) {
-                    unit = xdrip.getAppContext().getString(R.string.unit_day);
+                    unit = forceEn? "day" : xdrip.getAppContext().getString(R.string.unit_day);
                     t = t / 24;
-                    if (t != 1) unit = xdrip.getAppContext().getString(R.string.unit_days);
+                    if (t != 1) unit = forceEn? "days" : xdrip.getAppContext().getString(R.string.unit_days);
                     if (t > 28) {
-                        unit = xdrip.getAppContext().getString(R.string.unit_week);
+                        unit = forceEn? "week" :  xdrip.getAppContext().getString(R.string.unit_week);
                         t = t / 7;
-                        if (t != 1) unit = xdrip.getAppContext().getString(R.string.unit_weeks);
+                        if (t != 1) unit = forceEn? "weeks" : xdrip.getAppContext().getString(R.string.unit_weeks);
                     }
                 }
             }
