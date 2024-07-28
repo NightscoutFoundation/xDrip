@@ -196,7 +196,7 @@
             android:key="nsfollow_download_treatments_screen"
             android:title="@string/title_nsfollow_download_treatments">
             <CheckBoxPreference
-                android:defaultValue="false"
+                android:defaultValue="true"
                 android:key="nsfollow_download_treatments"
                 android:summary="@string/summary_nsfollow_download_treatments"
                 android:title="@string/title_nsfollow_download_treatments" />
@@ -206,6 +206,11 @@
                 android:key="cloud_storage_api_skip_download_from_xdrip"
                 android:summary="@string/summary_cloud_storage_api_download_from_xdrip"
                 android:title="@string/title_cloud_storage_api_download_from_xdrip" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="nsfollow_download_profile"
+                android:summary="@string/summary_nsfollow_download_profile"
+                android:title="@string/title_nsfollow_download_profile" />
         </PreferenceScreen>
         <ListPreference
             android:defaultValue="0"

@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.cgm.nsfollow;
 
 import com.eveningoutpost.dexdrip.cgm.nsfollow.messages.Entry;
+import com.eveningoutpost.dexdrip.cgm.nsfollow.messages.Profile;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.utils.NightscoutUrl;
 
 import java.util.List;
@@ -20,12 +21,14 @@ public class Session {
     public NightscoutUrl url;
     public BaseCallback<List<Entry>> entriesCallback;
     public BaseCallback<ResponseBody> treatmentsCallback;
+    public BaseCallback<List<Profile>> profilesCallback;
 
 
     // most recent set of entries
     public List<Entry> entries;
     // most recent treatments raw json
     public ResponseBody treatments;
+    public Profile currentProfile;
 
 
     // populate session data from a response object which could be any supported type
@@ -35,6 +38,11 @@ public class Session {
 
             if (!someList.isEmpty() && someList.get(0) instanceof Entry) {
                 entries = (List<Entry>)object;
+            }
+            if (!someList.isEmpty() && someList.get(0) instanceof Profile) {
+                List<Profile> list = (List<Profile>)object;
+                list.sort(Profile::compare);
+                currentProfile = list.get(0);
             }
 
         } else if (object instanceof ResponseBody) {

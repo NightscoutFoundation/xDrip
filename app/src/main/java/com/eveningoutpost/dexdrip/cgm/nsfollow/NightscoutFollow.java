@@ -1,8 +1,10 @@
 package com.eveningoutpost.dexdrip.cgm.nsfollow;
 
 import com.eveningoutpost.dexdrip.BuildConfig;
+import com.eveningoutpost.dexdrip.cgm.nsfollow.messages.Profile;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.profileeditor.BasalProfile;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.NightscoutTreatments;
@@ -36,6 +38,7 @@ import retrofit2.http.Headers;
 import retrofit2.http.Query;
 
 import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
+import static com.eveningoutpost.dexdrip.profileeditor.BasalProfile.consolidate;
 import static com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder.DEXCOM_PERIOD;
 import static com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper.enableTls12OnPreLollipop;
 import static com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollowService.msg;
@@ -66,6 +69,9 @@ public class NightscoutFollow {
 
         @GET("/api/v1/treatments")
         Call<ResponseBody> getTreatments(@Header("api-secret") String secret);
+
+        @GET("/api/v1/profile")
+        Call<List<Profile>> getProfiles(@Header("api-secret") String secret);
     }
 
     private static Nightscout getService() {
@@ -109,6 +115,17 @@ public class NightscoutFollow {
         })
                 .setOnFailure(() -> msg(session.treatmentsCallback.getStatus()));
 
+        // set up processing callback for profiles
+        session.profilesCallback = new NightscoutCallback<List<Profile>>("NS profiles download", session, () -> {
+            // process data
+            try {
+                BasalProfile.save(BasalProfile.getActiveRateName(), session.currentProfile.getDefaultBasalProfile());
+            } catch (Exception e) {
+                msg("Profile: " + e);
+            }
+        })
+                .setOnFailure(() -> msg(session.profilesCallback.getStatus()));
+
         if (!emptyString(urlString)) {
             try {
                 int count = Math.min(MissedReadingsEstimator.estimate() + 1, (int) (Constants.DAY_IN_MS / DEXCOM_PERIOD));
@@ -119,6 +136,18 @@ public class NightscoutFollow {
                 UserError.Log.e(TAG, "Exception in entries work() " + e);
                 msg("Nightscout follow entries error: " + e);
             }
+
+            if (profileDownloadEnabled()) {
+                if (JoH.ratelimit("nsfollow-profile-download", 60)) {
+                    try {
+                        getService().getProfiles(session.url.getHashedSecret()).enqueue(session.profilesCallback);
+                    } catch (Exception e) {
+                        UserError.Log.e(TAG, "Exception in profiles work() " + e);
+                        msg("Nightscout follow profiles error: " + e);
+                    }
+                }
+            }
+
             if (treatmentDownloadEnabled()) {
                 if (JoH.ratelimit("nsfollow-treatment-download", 60)) {
                     try {
@@ -140,6 +169,10 @@ public class NightscoutFollow {
 
     static boolean treatmentDownloadEnabled() {
         return Pref.getBooleanDefaultFalse("nsfollow_download_treatments");
+    }
+
+    static boolean profileDownloadEnabled() {
+        return Pref.getBoolean("nsfollow_download_profile", true);
     }
 
     public static final TypeAdapter<Number> UNRELIABLE_INTEGER = new TypeAdapter<Number>() {

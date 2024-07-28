@@ -144,23 +144,16 @@ public class NightscoutTreatments {
                     if (d)
                         UserError.Log.d(TAG, "Treatment: Carbs: " + carbs + " Insulin: " + insulin + " Temp basal: " + absolute + " timestamp: " + timestamp);
 
-                    if (absolute != null) {
-                        UserError.Log.ueh(TAG, "New Treatment from Nightscout: Temp Basal: " + absolute + " Event type: " + etype + " timestamp: " + JoH.dateTimeText(timestamp) + ((notes != null) ? " Note: " + notes : ""));
-
-                        if (etype.equals("Temp Basal")) {
-                            statusEntries.add(new APStatusEntry(absolute, timestamp));
-                            new_data = true;
-                        } else {
-                            UserError.Log.e(TAG, "Event type is not for Temp Basal: " + etype);
-                        }
-                    } else if (etype.equals("Temp Basal")) {
-                        UserError.Log.e(TAG, "Could not parse rate: " + tr.getDouble("rate"));
-                    }
-
                     Treatments existing = Treatments.byuuid(nightscout_id);
                     if (existing == null)
                         existing = Treatments.byuuid(uuid);
-                    if ((existing == null) && !(from_xdrip && skip_from_xdrip)) {
+
+                    if (absolute != null && etype.equals("Temp Basal")) {
+                        UserError.Log.ueh(TAG, "New Treatment from Nightscout: Temp Basal: " + absolute + " Event type: " + etype + " timestamp: " + JoH.dateTimeText(timestamp) + ((notes != null) ? " Note: " + notes : ""));
+
+                        statusEntries.add(new APStatusEntry(absolute, timestamp));
+                        new_data = true;
+                    } else if ((existing == null) && !(from_xdrip && skip_from_xdrip)) {
                         // check for close timestamp duplicates perhaps
                         existing = Treatments.byTimestamp(timestamp, 60000);
                         if (!((existing != null) && (JoH.roundDouble(existing.insulin, 2) == JoH.roundDouble(insulin, 2))
@@ -236,8 +229,7 @@ public class NightscoutTreatments {
         statusEntries.sort(APStatusEntry::compare);
 
         statusEntries.forEach(entry -> {
-            int temporaryPercentWithoutProfile = (int) (entry.absolute * 100 / 0.15);
-            APStatus.createEfficientRecord(entry.timestamp, temporaryPercentWithoutProfile, entry.absolute);
+            APStatus.createEfficientRecord(entry.timestamp, entry.absolute);
             NewDataObserver.newExternalStatus(false);
         });
 

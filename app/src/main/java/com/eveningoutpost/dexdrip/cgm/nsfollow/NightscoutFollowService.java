@@ -44,7 +44,7 @@ import static com.eveningoutpost.dexdrip.xdrip.gs;
 public class NightscoutFollowService extends ForegroundService {
 
     private static final String TAG = "NightscoutFollow";
-    private static final long SAMPLE_PERIOD = DEXCOM_PERIOD;
+    private static final long SAMPLE_PERIOD = 60_000;
 
     protected static volatile String lastState = "";
 
