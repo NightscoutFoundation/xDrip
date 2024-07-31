@@ -33,6 +33,7 @@ import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
 import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.SaveLogs;
 import com.eveningoutpost.dexdrip.utilitymodels.SendFeedBack;
 import com.eveningoutpost.dexdrip.databinding.ActivityEventLogBinding;
 import com.eveningoutpost.dexdrip.ui.helpers.BitmapUtil;
@@ -50,6 +51,7 @@ import me.tatarka.bindingcollectionadapter2.ItemBinding;
 import me.tatarka.bindingcollectionadapter2.collections.MergeObservableList;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
 
 /*
  * New style event log viewer
@@ -65,6 +67,7 @@ public class EventLogActivity extends BaseAppCompatActivity {
     private static final String TAG = EventLogActivity.class.getSimpleName();
     private static final String PREF_SEVERITY_SELECTION = "event-log-severity-enabled-";
     private static final String PREF_LAST_SEARCH = "event-log-last-search-";
+    private static int MAX_LOG_PACKAGE_SIZE = 200000;
 
     static {
         severitiesList.add(1);
@@ -291,20 +294,32 @@ public class EventLogActivity extends BaseAppCompatActivity {
         }
     }
 
-    // prepare current visible logs for upload
-    public synchronized void uploadEventLogs(View v) {
+    public synchronized void uploadEventLogs(View v) { // Send events log to JamOrHam
+        startActivity(new Intent(getApplicationContext(), SendFeedBack.class).putExtra("generic_text", packLogs()));
+    }
+
+    public synchronized void saveEventLog(View v) { // Save events log in mobile storage
+        startActivity(new Intent(getApplicationContext(), SaveLogs.class).putExtra("generic_text", packLogs()));
+    }
+
+    private String packLogs() { // Prepare current visible logs for upload or local save
         final StringBuilder builder = new StringBuilder(50000);
-        builder.append("The following logs will be sent to the developers: \n\nPlease also include your email address or we will not know who they are from!\n\nFilter: "
+        builder.append("\n"
                 + (model.allSeveritiesEnabled() ? "ALL" : model.whichSeveritiesEnabled()) + (model.getCurrentFilter() != "" ? " Search: " + model.getCurrentFilter() : "") + "\n\n");
         for (UserError item : model.visible) {
             builder.append(item.toString());
             builder.append("\n");
-            if (builder.length() > 200000) {
+            if (builder.length() > MAX_LOG_PACKAGE_SIZE) {
                 JoH.static_toast_long(this, "Could not package up all logs, using most recent");
+                builder.append("\n\nOnly the most recent logs have been included to limit the file size.\n");
                 break;
             }
         }
-        startActivity(new Intent(getApplicationContext(), SendFeedBack.class).putExtra("generic_text", builder.toString()));
+
+        builder.insert(0, JoH.getDeviceDetails() + "\n" + JoH.getVersionDetails() + "\n" + getBestCollectorHardwareName() + "\n===\n" + "\nLog data:\n"); // Adds device, version and collector details before the log.
+        builder.append("\n\nCaptured: " + JoH.dateTimeText(JoH.tsl())); // Adds date and time of capture after the log.
+
+        return builder.toString();
     }
 
     // View model container - accessible binding methods must be declared public
@@ -635,6 +650,4 @@ public class EventLogActivity extends BaseAppCompatActivity {
 
     }
 }
-
-
 
