@@ -39,6 +39,10 @@
     <string name="pref_header_cloud_storage">Cloud Storage</string>
     <string name="auto_configure_title">Auto configure</string>
     <string name="prefs_auto_config_summary">Auto configure using a barcode.</string>
+    <string name="auto_config_cam_title">Camera</string>
+    <string name="auto_config_cam_summary">Scan a QR code with your mobile (recommended)</string>
+    <string name="auto_config_image_title">Image file</string>
+    <string name="auto_config_image_summary">You can save a QR code as an image file (such as .png or .jpeg) on your mobile. Then, use this option to scan the QR code from the saved file.</string>
     <string name="scan_share2_barcode">Scan Share Barcode</string>
     <string name="pref_share2_scan_barcode_summary">Or scan the barcode on the share receiver</string>
 
