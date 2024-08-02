@@ -58,6 +58,8 @@ public class Constants {
 
     static final int NIGHTSCOUT_ERROR_NOTIFICATION_ID = 2001;
     public static final int HEALTH_CONNECT_RESPONSE_ID = 2002;
+    public static final int ZXING_CAM_REQ_CODE = 49374;
+    public static final int ZXING_FILE_REQ_CODE = 49375; // This is created by just incrementing the existing camera scan code from the zxing package
     public static final int SENSORY_EXPIRY_NOTIFICATION_ID = 2003;
 
 

@@ -39,6 +39,10 @@
     <string name="pref_header_cloud_storage">Cloud Storage</string>
     <string name="auto_configure_title">Auto configure</string>
     <string name="prefs_auto_config_summary">Auto configure using a barcode.</string>
+    <string name="auto_config_cam_title">Camera</string>
+    <string name="auto_config_cam_summary">Scan a QR code with your mobile (recommended)</string>
+    <string name="auto_config_image_title">Image file</string>
+    <string name="auto_config_image_summary">You can save a QR code as an image file (such as .png or .jpeg) on your mobile. Then, use this option to scan the QR code from the saved file.</string>
     <string name="scan_share2_barcode">Scan Share Barcode</string>
     <string name="pref_share2_scan_barcode_summary">Or scan the barcode on the share receiver</string>
 
@@ -130,6 +134,7 @@
     <string name="title_activity_update">xDrip+ Update Available</string>
     <string name="title_activity_display_qrcode">Share Settings via QR code</string>
     <string name="title_activity_send_feed_back">Send Feedback to Jamorham</string>
+    <string name="title_activity_save_logs">Save Logs</string>
     <string name="title_activity_maps">Parakeet Map</string>
     <string name="title_activity_display_preferences">Display Preferences</string>
 
@@ -414,7 +419,9 @@
     <string name="please_enter_your_question_or_comments_here">Please enter your question or comments here.\n\nIf you supply an email address you may get a response.\n\n</string>
     <string name="optional_contact_info_here_eg_email">Optional contact info here, e.g. email</string>
     <string name="send_message">Send Message</string>
+    <string name="save_logs">Save Logs</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Please indicate what you think of the app generally</string>
+    <string name="log_confidential_note">Warning!\nThe logs may contain confidential information such as passwords or user IDs.</string>
     <string name="preferences_saved_in_sdcard_downloads">Preferences saved in Internal storage/Download</string>
     <string name="could_not_write_to_sdcard_check_perms">Couldn\'t write to SD card - check permissions?</string>
     <string name="loaded_preferences_restarting">Loaded Preferences! - Restarting</string>
