@@ -15,12 +15,6 @@
                 android:key="auto_configure"
                 android:summary="@string/auto_config_cam_summary"
                 android:title="@string/auto_config_cam_title" />
-            <Preference
-                android:enabled="false"
-                android:title="" />
-            <Preference
-                android:enabled="false"
-                android:title="" />
             <PreferenceScreen
                 android:key="qr_code_from_file"
                 android:summary="@string/auto_config_image_summary"
