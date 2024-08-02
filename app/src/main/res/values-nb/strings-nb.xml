@@ -593,7 +593,7 @@
     <string name="short_speak_readings_shortcut">Vis snarvei til ☰ meny for å skru av/på talte avlesninger</string>
     <string name="speak_readings_shortcut">Taleavlesning-snarvei</string>
     <string name="battery_optimization_off">Sørg for at batterioptimalisering er skrudd av for Android 6+ (anbefalt).</string>
-    <string name="battery_optimization_on">Ikke fortsett å spørre om batterioptimalisering (ikke anbefalt).</string>
+    <string name="battery_optimization_on">Vil ikke fortsette å spørre om batterioptimalisering når dette er aktivert (ikke anbefalt).</string>
     <string name="battery_optimization_prompt">Batterioptimaliserings forespørsel</string>
     <string name="advanced_bluetooth_settings">Avanserte innstillinger for Bluetooth</string>
     <string name="bluetooth_settings">Bluetooth-innstillinger</string>
@@ -640,7 +640,7 @@
     <string name="engineering_mode">Engineeringmodus</string>
     <string name="allow_unsafe_settings">Tillat ending av usikre innstillinger som kan ødelegge alt!</string>
     <string name="daily_save_db">Lagre databasen daglig</string>
-    <string name="allow_daily_db_save">Tillager den daglige intensjonstjenesten å lagre databasen før den tømmer</string>
+    <string name="allow_daily_db_save">Lar den daglige intensjonstjenesten lagre databasen før tømming</string>
     <string name="options_for_extra_line">Alternativ for ekstra statuslinje</string>
     <string name="todays_average_value">Dagens gjennomsnittlige verdi.</string>
     <string name="ac1_estimation_dcct">A1c-estimat i DCCT format (%)</string>
