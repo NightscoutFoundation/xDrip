@@ -139,6 +139,17 @@
                 android:layout_weight="1"
                 android:onClick="uploadEventLogs"
                 android:text="@string/upload_logs"
+                android:textAllCaps="false"
+                android:textAlignment="center" />
+
+            <Button
+                android:id="@+id/event_save_logs_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="saveEventLog"
+                android:text="Save Logs"
+                android:textAllCaps="false"
                 android:textAlignment="center" />
 
             <Button
@@ -148,6 +159,7 @@
                 android:layout_weight="1"
                 android:onClick="@{(v) -> viewModel.scrollToTop()}"
                 android:text="@string/top"
+                android:textAllCaps="false"
                 app:invisibleIfFalse="@{viewModel.showScrollToTop}" />
 
         </LinearLayout>
