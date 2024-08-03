@@ -37,6 +37,10 @@
     <string name="pref_header_cloud_storage">Memorizza nel Cloud</string>
     <string name="auto_configure_title">Configurazione automatica</string>
     <string name="prefs_auto_config_summary">Configurazione automatica utilizzando un codice QR.</string>
+    <string name="auto_config_cam_title">Camera</string>
+    <string name="auto_config_cam_summary">Scansiona un codice QR con il tuo cellulare (consigliato)</string>
+    <string name="auto_config_image_title">File immagine</string>
+    <string name="auto_config_image_summary">Puoi salvare un codice QR come un file immagine (come .png o .jpeg) sul tuo cellulare. Quindi, utilizzare questa opzione per scansionare il codice QR dal file salvato.</string>
     <string name="scan_share2_barcode">Scan Condividi Barcode</string>
     <string name="pref_share2_scan_barcode_summary">Oppure scansiona il codice sul ricevitore</string>
     <!-- MongoDB Settings -->
@@ -115,6 +119,7 @@
     <string name="title_activity_update">xDrip+ Aggiornamento disponibile</string>
     <string name="title_activity_display_qrcode">Condividi impostazioni tramite il codice QR</string>
     <string name="title_activity_send_feed_back">Invia Feedback a Jamorham</string>
+    <string name="title_activity_save_logs">Salva Log</string>
     <string name="title_activity_maps">Mappa Parakeet</string>
     <string name="title_activity_display_preferences">Mostra Preferenze</string>
     <string name="export_submenu">Funzioni di importazione / esportazione</string>
@@ -394,7 +399,9 @@
     <string name="please_enter_your_question_or_comments_here">Inserisci la tua domanda o commenti qui.\n\nSe si fornisce un indirizzo email si può ottenere una risposta.\n\n</string>
     <string name="optional_contact_info_here_eg_email">Aggiungi tuoi contatti qui qui, ad esempio, e-mail</string>
     <string name="send_message">Invia messaggio</string>
+    <string name="save_logs">Salva Log</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Si prega di indicare quello che pensi dell\'app in generale</string>
+    <string name="log_confidential_note">Attenzione!\nI log possono contenere informazioni riservate come password o ID utente.</string>
     <string name="preferences_saved_in_sdcard_downloads">Preferenze salvate in Download sdcard</string>
     <string name="could_not_write_to_sdcard_check_perms">Impossibile scrivere sul sdcard - i permessi di controllo?</string>
     <string name="loaded_preferences_restarting">Preferenze caricate! - Riavvio</string>
