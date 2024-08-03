@@ -37,6 +37,10 @@
     <string name="pref_header_cloud_storage">Stockage Cloud</string>
     <string name="auto_configure_title">Configuration automatique</string>
     <string name="prefs_auto_config_summary">Configuration automatique en utilisant un code-barres.</string>
+    <string name="auto_config_cam_title">Caméra</string>
+    <string name="auto_config_cam_summary">Scannez un QR code avec votre mobile (recommandé)</string>
+    <string name="auto_config_image_title">Fichier image</string>
+    <string name="auto_config_image_summary">Vous pouvez enregistrer un code QR en tant que fichier image (comme .png ou .jpeg) sur votre mobile. Ensuite, utilisez cette option pour scanner le code QR du fichier enregistré.</string>
     <string name="scan_share2_barcode">Numériser le code-barres Share</string>
     <string name="pref_share2_scan_barcode_summary">Ou scanner le code-barres sur le récepteur Share</string>
     <!-- MongoDB Settings -->
@@ -115,6 +119,7 @@
     <string name="title_activity_update">Mise à jour xDrip+ disponible</string>
     <string name="title_activity_display_qrcode">Partager les paramètres via le code QR</string>
     <string name="title_activity_send_feed_back">Envoyer des commentaires à Jamorham</string>
+    <string name="title_activity_save_logs">Sauvegarder le journal</string>
     <string name="title_activity_maps">Carte Parakeet</string>
     <string name="title_activity_display_preferences">Préférences d\'affichage</string>
     <string name="export_submenu">Fonctionnalités Import / Export</string>
@@ -394,7 +399,9 @@
     <string name="please_enter_your_question_or_comments_here">S\'il vous plaît entrez votre question ou commentaire.\n\nSi vous fournissez une adresse e-mail, vous pouvez obtenir une réponse. </string>
     <string name="optional_contact_info_here_eg_email">Information de contact facultative, par exemple email</string>
     <string name="send_message">Envoyer le message</string>
+    <string name="save_logs">Sauvegarder le journal</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">S\'il vous plaît indiquez ce que vous pensez de l\'application en général</string>
+    <string name="log_confidential_note">Attention !\nLes journaux peuvent contenir des informations confidentielles telles que des mots de passe ou des identifiants d\'utilisateur.</string>
     <string name="preferences_saved_in_sdcard_downloads">Préférences enregistrées dans dossier Downloads sur stockage interne</string>
     <string name="could_not_write_to_sdcard_check_perms">Impossible d\'écrire sur la carte SD - Vérifier les autorisations ?</string>
     <string name="loaded_preferences_restarting">Préférences chargées! - Redémarrage</string>
