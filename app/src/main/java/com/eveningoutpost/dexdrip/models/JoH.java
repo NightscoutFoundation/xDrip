@@ -809,7 +809,7 @@ public class JoH {
     }
 
 
-    public static String niceTimeScalarNatural(long t) {
+    public static String niceTimeScalarNatural(long t) { // Shows the integer part only
         if (t > 3000000) t = t + 10000; // round up by 10 seconds if nearly an hour
         if ((t > Constants.DAY_IN_MS) && (t < Constants.WEEK_IN_MS * 2)) {
             final SimpleDateFormat df = new SimpleDateFormat("EEEE", Locale.getDefault());
@@ -817,6 +817,17 @@ public class JoH {
             return ((t > Constants.WEEK_IN_MS) ? "next " : "") + day;
         } else {
             return niceTimeScalar(t);
+        }
+    }
+
+    public static String niceTimeScalarNaturalp1(long t) { // Rounds down to 1 decimal point.
+        if (t > 3000000) t = t + 10000; // round up by 10 seconds if nearly an hour
+        if ((t > Constants.DAY_IN_MS) && (t < Constants.WEEK_IN_MS * 2)) {
+            final SimpleDateFormat df = new SimpleDateFormat("EEEE", Locale.getDefault());
+            final String day = df.format(new Date(JoH.tsl() + t));
+            return ((t > Constants.WEEK_IN_MS) ? "next " : "") + day;
+        } else {
+            return niceTimeScalar(t, 1);
         }
     }
 

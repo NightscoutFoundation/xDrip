@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.alert;
 import static com.eveningoutpost.dexdrip.models.JoH.cancelNotification;
 import static com.eveningoutpost.dexdrip.models.JoH.niceTimeScalar;
 import static com.eveningoutpost.dexdrip.models.JoH.niceTimeScalarNatural;
+import static com.eveningoutpost.dexdrip.models.JoH.niceTimeScalarNaturalp1;
 import static com.eveningoutpost.dexdrip.models.JoH.showNotification;
 import static com.eveningoutpost.dexdrip.models.JoH.tsl;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.SENSORY_EXPIRY_NOTIFICATION_ID;
@@ -41,7 +42,7 @@ public class SensorExpiry extends BaseAlert {
 
     @Override
     public boolean activate() {
-        val expiry = niceTimeScalarNatural(SensorDays.get().getRemainingSensorPeriodInMs());
+        val expiry = niceTimeScalarNaturalp1(SensorDays.get().getRemainingSensorPeriodInMs());
         val notificationId = SENSORY_EXPIRY_NOTIFICATION_ID;
         cancelNotification(notificationId);
         val expireMsg = String.format("Sensor will expire in %s", expiry); // TODO i18n and format string
