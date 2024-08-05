@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class NightscoutBasalRate {
-    private static final boolean d = true;
+    private static final boolean d = false;
     private static final String TAG = "NightscoutBasalRate";
     private static final int requiredSegments = 24;
     private static final int minimumProfileBRDuration = 10000;
