@@ -125,8 +125,6 @@ public class NightscoutFollow {
             try {
                 List<Double> profile = session.currentProfile.getDefaultBasalProfile();
 
-                UserError.Log.uel(TAG, "Profile: " + profile.toString());
-
                 BasalProfile.save(BasalProfile.getActiveRateName(), profile);
                 NightscoutBasalRate.setProfile(profile);
             } catch (Exception e) {
