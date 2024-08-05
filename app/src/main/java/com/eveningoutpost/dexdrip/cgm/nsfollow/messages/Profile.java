@@ -24,7 +24,7 @@ public class Profile extends BaseMessage {
     }
 
     public List<Double> getDefaultBasalProfile() {
-        SingleProfile singleProfile = store.get("defaultProfile");
+        SingleProfile singleProfile = store.get(defaultProfile);
 
         if (singleProfile == null) {
             return new ArrayList<>();
@@ -33,8 +33,6 @@ public class Profile extends BaseMessage {
         ArrayList<BasalProfileEntry> profileFromNS = singleProfile.basal;
 
         int oneHourAsSeconds = 3600;
-
-        int size = profileFromNS.size();
 
         for (int i = 0; profileFromNS.size() >= i + 1; i++) {
             int nextIndex = i + 1;

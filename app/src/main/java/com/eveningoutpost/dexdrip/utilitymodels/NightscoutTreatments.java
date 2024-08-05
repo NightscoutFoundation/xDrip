@@ -1,22 +1,18 @@
 package com.eveningoutpost.dexdrip.utilitymodels;
 
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.NewDataObserver;
 import com.eveningoutpost.dexdrip.models.BloodTest;
 import com.eveningoutpost.dexdrip.models.DateUtil;
 import com.eveningoutpost.dexdrip.models.InsulinInjection;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.Treatments;
 import com.eveningoutpost.dexdrip.models.UserError;
-import com.eveningoutpost.dexdrip.models.APStatus;
 
-import org.checkerframework.checker.units.qual.A;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.UUID;
 
@@ -26,7 +22,7 @@ import static com.eveningoutpost.dexdrip.models.Treatments.pushTreatmentSyncToWa
 
 public class NightscoutTreatments {
 
-    private static final boolean d = true;
+    private static final boolean d = false;
     private static final String TAG = "NightscoutTreatments";
 
     private static final HashSet<String> bad_uuids = new HashSet<>();
@@ -36,7 +32,6 @@ public class NightscoutTreatments {
         boolean new_data = false;
 
         final JSONArray jsonArray = new JSONArray(response);
-        ArrayList<APStatusEntry> statusEntries = new ArrayList<APStatusEntry>();
         for (int i = 0; i < jsonArray.length(); i++) {
             final JSONObject tr = (JSONObject) jsonArray.get(i);
 
@@ -49,7 +44,7 @@ public class NightscoutTreatments {
                 continue;
             }
             if (d)
-                UserError.Log.d(TAG, "event: " + etype + " _id: " + nightscout_id + " uuid: " + uuid);
+                UserError.Log.d(TAG, "event: " + etype + "_id: " + nightscout_id + " uuid:" + uuid);
 
             boolean from_xdrip = false;
             try {
@@ -104,7 +99,6 @@ public class NightscoutTreatments {
             // extract treatment data if present
             double carbs = 0;
             double insulin = 0;
-            Double absolute = null;
             String injections = null;
             String notes = null;
             try {
@@ -116,11 +110,6 @@ public class NightscoutTreatments {
                 insulin = tr.getDouble("insulin");
             } catch (JSONException e) {
                 // Log.d(TAG, "json processing: " + e);
-            }
-            try {
-                absolute = tr.has("absolute") ? tr.getDouble("absolute") : null;
-            } catch (JSONException e) {
-                UserError.Log.e(TAG, "Could not parse absolute: " + tr.get("absolute"));
             }
             try {
                 injections = tr.getString("insulinInjections");
@@ -136,24 +125,15 @@ public class NightscoutTreatments {
             if ((notes != null) && ((notes.startsWith("AndroidAPS started") || notes.equals("null") || (notes.equals("Bolus Std")))))
                 notes = null;
 
-            if ((carbs > 0) || (insulin > 0) || (notes != null) || (absolute != null && etype.equals("Temp Basal"))) {
-
+            if ((carbs > 0) || (insulin > 0) || (notes != null)) {
                 final long timestamp = DateUtil.tolerantFromISODateString(tr.getString("created_at")).getTime();
-
                 if (timestamp > 0) {
                     if (d)
-                        UserError.Log.d(TAG, "Treatment: Carbs: " + carbs + " Insulin: " + insulin + " Temp basal: " + absolute + " timestamp: " + timestamp);
-
+                        UserError.Log.d(TAG, "Treatment: Carbs: " + carbs + " Insulin: " + insulin + " timestamp: " + timestamp);
                     Treatments existing = Treatments.byuuid(nightscout_id);
                     if (existing == null)
                         existing = Treatments.byuuid(uuid);
-
-                    if (absolute != null && etype.equals("Temp Basal")) {
-                        UserError.Log.ueh(TAG, "New Treatment from Nightscout: Temp Basal: " + absolute + " Event type: " + etype + " timestamp: " + JoH.dateTimeText(timestamp) + ((notes != null) ? " Note: " + notes : ""));
-
-                        statusEntries.add(new APStatusEntry(absolute, timestamp));
-                        new_data = true;
-                    } else if ((existing == null) && !(from_xdrip && skip_from_xdrip)) {
+                    if ((existing == null) && !(from_xdrip && skip_from_xdrip)) {
                         // check for close timestamp duplicates perhaps
                         existing = Treatments.byTimestamp(timestamp, 60000);
                         if (!((existing != null) && (JoH.roundDouble(existing.insulin, 2) == JoH.roundDouble(insulin, 2))
@@ -225,28 +205,6 @@ public class NightscoutTreatments {
                 }
             }
         }
-
-        statusEntries.sort(APStatusEntry::compare);
-
-        statusEntries.forEach(entry -> {
-            APStatus.createEfficientRecord(entry.timestamp, entry.absolute);
-            NewDataObserver.newExternalStatus(false);
-        });
-
         return new_data;
-    }
-}
-
-class APStatusEntry {
-    double absolute;
-    long timestamp;
-
-    public APStatusEntry(double absolute, long timestamp) {
-        this.absolute = absolute;
-        this.timestamp = timestamp;
-    }
-
-    public static int compare(APStatusEntry a, APStatusEntry b) {
-        return (int) (a.timestamp - b.timestamp);
     }
 }

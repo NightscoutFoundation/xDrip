@@ -5,10 +5,7 @@ import com.eveningoutpost.dexdrip.cgm.nsfollow.messages.Profile;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.profileeditor.BasalProfile;
-import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
-import com.eveningoutpost.dexdrip.utilitymodels.Constants;
-import com.eveningoutpost.dexdrip.utilitymodels.NightscoutTreatments;
-import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.*;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.messages.Entry;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.utils.NightscoutUrl;
 import com.eveningoutpost.dexdrip.evaluators.MissedReadingsEstimator;
@@ -38,7 +35,6 @@ import retrofit2.http.Headers;
 import retrofit2.http.Query;
 
 import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
-import static com.eveningoutpost.dexdrip.profileeditor.BasalProfile.consolidate;
 import static com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder.DEXCOM_PERIOD;
 import static com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper.enableTls12OnPreLollipop;
 import static com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollowService.msg;
@@ -107,8 +103,14 @@ public class NightscoutFollow {
         session.treatmentsCallback = new NightscoutCallback<ResponseBody>("NS treatments download", session, () -> {
             // process data
             try {
-                NightscoutTreatments.processTreatmentResponse(session.treatments.string());
-                NightscoutFollowService.updateTreatmentDownloaded();
+                final String response = session.treatments.string();
+
+                if (treatmentDownloadEnabled()) {
+                    NightscoutTreatments.processTreatmentResponse(response);
+                    NightscoutFollowService.updateTreatmentDownloaded();
+                }
+
+                NightscoutBasalRate.setTreatments(response);
             } catch (Exception e) {
                 msg("Treatments: " + e);
             }
@@ -119,7 +121,12 @@ public class NightscoutFollow {
         session.profilesCallback = new NightscoutCallback<List<Profile>>("NS profiles download", session, () -> {
             // process data
             try {
-                BasalProfile.save(BasalProfile.getActiveRateName(), session.currentProfile.getDefaultBasalProfile());
+                List<Double> profile = session.currentProfile.getDefaultBasalProfile();
+
+                UserError.Log.uel(TAG, "Profile: " + profile.toString());
+
+                BasalProfile.save(BasalProfile.getActiveRateName(), profile);
+                NightscoutBasalRate.setProfile(profile);
             } catch (Exception e) {
                 msg("Profile: " + e);
             }
@@ -148,7 +155,7 @@ public class NightscoutFollow {
                 }
             }
 
-            if (treatmentDownloadEnabled()) {
+            if (treatmentDownloadEnabled() || profileDownloadEnabled()) {
                 if (JoH.ratelimit("nsfollow-treatment-download", 60)) {
                     try {
                         getService().getTreatments(session.url.getHashedSecret()).enqueue(session.treatmentsCallback);
