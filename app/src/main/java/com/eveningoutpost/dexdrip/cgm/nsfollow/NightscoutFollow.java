@@ -110,7 +110,9 @@ public class NightscoutFollow {
                     NightscoutFollowService.updateTreatmentDownloaded();
                 }
 
-                NightscoutBasalRate.setTreatments(response);
+                if (basalRateDownloadEnabled()) {
+                    NightscoutBasalRate.setTreatments(response);
+                }
             } catch (Exception e) {
                 msg("Treatments: " + e);
             }
@@ -144,7 +146,7 @@ public class NightscoutFollow {
                 msg("Nightscout follow entries error: " + e);
             }
 
-            if (profileDownloadEnabled()) {
+            if (basalRateDownloadEnabled()) {
                 if (JoH.ratelimit("nsfollow-profile-download", 60)) {
                     try {
                         getService().getProfiles(session.url.getHashedSecret()).enqueue(session.profilesCallback);
@@ -155,7 +157,7 @@ public class NightscoutFollow {
                 }
             }
 
-            if (treatmentDownloadEnabled() || profileDownloadEnabled()) {
+            if (treatmentDownloadEnabled() || basalRateDownloadEnabled()) {
                 if (JoH.ratelimit("nsfollow-treatment-download", 60)) {
                     try {
                         getService().getTreatments(session.url.getHashedSecret()).enqueue(session.treatmentsCallback);
@@ -178,8 +180,8 @@ public class NightscoutFollow {
         return Pref.getBooleanDefaultFalse("nsfollow_download_treatments");
     }
 
-    static boolean profileDownloadEnabled() {
-        return Pref.getBoolean("nsfollow_download_profile", true);
+    static boolean basalRateDownloadEnabled() {
+        return Pref.getBoolean("nsfollow_download_basalrate", true);
     }
 
     public static final TypeAdapter<Number> UNRELIABLE_INTEGER = new TypeAdapter<Number>() {

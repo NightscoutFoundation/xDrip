@@ -51,8 +51,18 @@ public class NightscoutBasalRate {
             if (absolute != null && durationInMilliseconds != null) {
                 final long timestamp = DateUtil.tolerantFromISODateString(tr.getString("created_at")).getTime();
 
+                APStatus lastAPStatus = APStatus.last();
+
+                if (lastAPStatus != null && timestamp < lastAPStatus.timestamp) {
+                    if (d) {
+
+                        UserError.Log.ueh(TAG, "APStatus exists: - value: " + lastAPStatus.basal_absolute + " - timestamp: " + JoH.dateTimeText(lastAPStatus.timestamp) + " Omitting: - value: " + absolute + " - timestamp: " + JoH.dateTimeText(timestamp));
+                    }
+                    continue;
+                }
+
                 if (d) {
-                    UserError.Log.ueh(TAG, "New Treatment from Nightscout: Temp Basal: " + absolute + " Event type: " + etype + " timestamp: " + JoH.dateTimeText(timestamp));
+                    UserError.Log.ueh(TAG, "New Temp Basal from Nightscout: - value: " + absolute + " - timestamp: " + JoH.dateTimeText(timestamp));
                 }
 
                 statusEntries.add(new APStatusEntry(absolute, timestamp, durationInMilliseconds, false));
@@ -112,9 +122,6 @@ public class NightscoutBasalRate {
                 statusEntries.add(nextIndex, nextSegment);
             }
         }
-
-        // TODO: Should not be needed
-        statusEntries.sort(APStatusEntry::compare);
 
         statusEntries.forEach(entry -> {
             APStatus.createEfficientRecord(entry.timestamp, entry.absolute);
