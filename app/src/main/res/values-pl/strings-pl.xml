@@ -37,6 +37,10 @@
     <string name="pref_header_cloud_storage">Przechowywanie w chmurze</string>
     <string name="auto_configure_title">Automatyczna konfiguracja</string>
     <string name="prefs_auto_config_summary">Automatyczna konfiguracja za pomocą kodu kreskowego.</string>
+    <string name="auto_config_cam_title">Aparat</string>
+    <string name="auto_config_cam_summary">Zeskanuj kod QR za pomocą telefonu komórkowego (zalecane)</string>
+    <string name="auto_config_image_title">Plik obrazu</string>
+    <string name="auto_config_image_summary">Możesz zapisać kod QR jako plik obrazu (np. .png lub .jpeg) na telefonie. Następnie użyj tej opcji, aby skanować kod QR z zapisanego pliku.</string>
     <string name="scan_share2_barcode">Skanowanie kodów kreskowych Share</string>
     <string name="pref_share2_scan_barcode_summary">Lub zeskanować kod kreskowy na odbiorniku share</string>
     <!-- MongoDB Settings -->

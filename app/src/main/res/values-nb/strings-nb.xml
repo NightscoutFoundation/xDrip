@@ -37,6 +37,10 @@
     <string name="pref_header_cloud_storage">Nettskylagring</string>
     <string name="auto_configure_title">Autokonfigurer</string>
     <string name="prefs_auto_config_summary">Autokonfigurer med strekkode.</string>
+    <string name="auto_config_cam_title">Kamera</string>
+    <string name="auto_config_cam_summary">Skann en QR-kode med din mobil (anbefalt)</string>
+    <string name="auto_config_image_title">Bildefil</string>
+    <string name="auto_config_image_summary">Du kan lagre QR-koden som en bildefil (f.eks. .png eller .jpeg) på mobilen din. Bruk deretter dette alternativet til å skanne QR-koden fra den lagrede filen.</string>
     <string name="scan_share2_barcode">Skan delingsstrekkode</string>
     <string name="pref_share2_scan_barcode_summary">Eller skanne strekkoden på mottakeren</string>
     <!-- MongoDB Settings -->
@@ -115,6 +119,7 @@
     <string name="title_activity_update">xDrip+ oppdatering tilgjengelig</string>
     <string name="title_activity_display_qrcode">Del innstillinger med QR-kode</string>
     <string name="title_activity_send_feed_back">Send tilbakemelding til Jamorham</string>
+    <string name="title_activity_save_logs">Lagre logger</string>
     <string name="title_activity_maps">Parakeet Kart</string>
     <string name="title_activity_display_preferences">Vis innstillinger</string>
     <string name="export_submenu">Import / Eksport funksjoner</string>
@@ -394,7 +399,9 @@
     <string name="please_enter_your_question_or_comments_here">Skriv inn ditt spørsmål eller kommentarer her.\n\nHvis du oppgir en e-postadresse kan det være at du få svar.\n\n</string>
     <string name="optional_contact_info_here_eg_email">Valgfri kontaktinfo, for eksempel e-post</string>
     <string name="send_message">Send melding</string>
+    <string name="save_logs">Lagre logger</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Vennligst oppgi hva du synes om programmet generelt</string>
+    <string name="log_confidential_note">Advarsel!\nLoggene kan inneholde konfidensiell informasjon som passord eller bruker-ID\'er.</string>
     <string name="preferences_saved_in_sdcard_downloads">Innstillinger lagret i intern lagring (Download/xDrip-export)</string>
     <string name="could_not_write_to_sdcard_check_perms">Klarte ikke skrive til SD-kort - sjekk tillatelser?</string>
     <string name="loaded_preferences_restarting">Innstillinger lastet! - Omstart</string>
