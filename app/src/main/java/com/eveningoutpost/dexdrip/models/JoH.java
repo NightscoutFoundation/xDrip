@@ -809,14 +809,18 @@ public class JoH {
     }
 
 
-    public static String niceTimeScalarNatural(long t) {
+    public static String niceTimeScalarNatural(long t) { // Shows the integer part only when less than 1 day.
+        return niceTimeScalarNatural(t, 0);
+    }
+
+    public static String niceTimeScalarNatural(long t, int h_digits) { // Rounds down to the defined number of decimal points when less than 1 day.
         if (t > 3000000) t = t + 10000; // round up by 10 seconds if nearly an hour
         if ((t > Constants.DAY_IN_MS) && (t < Constants.WEEK_IN_MS * 2)) {
             final SimpleDateFormat df = new SimpleDateFormat("EEEE", Locale.getDefault());
             final String day = df.format(new Date(JoH.tsl() + t));
             return ((t > Constants.WEEK_IN_MS) ? "next " : "") + day;
         } else {
-            return niceTimeScalar(t);
+            return niceTimeScalar(t, h_digits);
         }
     }
 
