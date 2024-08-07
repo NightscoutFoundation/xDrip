@@ -2172,7 +2172,9 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
 
         if (static_last_connected > 0) {
-            l.add(new StatusItem("Last Connected", niceTimeScalar(msSince(static_last_connected)) + " ago"));
+            l.add(new StatusItem("Last Connected", niceTimeScalar(msSince(static_last_connected), true) + " ago")); // English is forced to avoid translating
+            // This parameter is extremely important when troubleshooting connectivity.  Let's keep it in English so that those helping won't have to
+            // translate back, which could possible cause errors.
         }
 
         if ((!lastState.startsWith("Service Stopped")) && (!lastState.startsWith("Not running")))
