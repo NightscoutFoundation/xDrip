@@ -376,6 +376,7 @@ dependencies {
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-idling-resource:3.1.0'
+    androidTestImplementation 'androidx.test:rules:1.5.0'
     // add this for intent mocking support
     //androidTestImplementation 'com.android.support.test.espresso:espresso-intents:3.0.1'
     // add this for webview testing support
