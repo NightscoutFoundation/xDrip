@@ -592,7 +592,7 @@ public class EditAlertActivity extends ActivityWithMenu {
         buttonalertMp3.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                builder.setTitle("What type of Alert?")
+                builder.setTitle(getString(R.string.what_type_of_alert))
                         .setItems(R.array.alertType, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 if (which == 0) {
@@ -783,7 +783,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             return "";
         }
         if (path.length() == 0) {
-            return "xDrip Default";
+            return gs(R.string.xdrip_default);
         }
         if (path.startsWith("content:")) {
             val result = getDisplayNameFromURI(Uri.parse(path));

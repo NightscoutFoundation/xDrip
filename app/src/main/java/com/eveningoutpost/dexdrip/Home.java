@@ -2465,7 +2465,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             updateCurrentBgInfoCommon(collector, notificationText);
         }
         if (collector.equals(DexCollectionType.Disabled)) {
-            notificationText.append("\n DATA SOURCE DISABLED");
+            notificationText.append(getString(R.string.__data_source_disabled));
             if (!Experience.gotData()) {
                 // TODO should this move to Experience::processSteps ?
                 final Activity activity = this;
