@@ -45,6 +45,7 @@ public class NightscoutFollowService extends ForegroundService {
 
     private static final String TAG = "NightscoutFollow";
     private static final long SAMPLE_PERIOD = DEXCOM_PERIOD;
+    private static final long FREQUENT_PERIOD = 60_000;
 
     protected static volatile String lastState = "";
 
@@ -65,6 +66,10 @@ public class NightscoutFollowService extends ForegroundService {
         }
         buggySamsung.evaluate(wakeup_time);
         wakeup_time = 0;
+    }
+
+    static long connectPeriod() {
+        return Pref.getBoolean("nsfollow_download_per_minute", false) ? FREQUENT_PERIOD : SAMPLE_PERIOD;
     }
 
     @Override
@@ -88,7 +93,7 @@ public class NightscoutFollowService extends ForegroundService {
             if (lastBg != null) {
                 lastBgTime = lastBg.timestamp;
             }
-            if (lastBg == null || JoH.msSince(lastBg.timestamp) > SAMPLE_PERIOD) {
+            if (lastBg == null || JoH.msSince(lastBg.timestamp) > connectPeriod()) {
                 if (JoH.ratelimit("last-ns-follow-poll", 5)) {
                     Inevitable.task("NS-Follow-Work", 200, () -> {
                         NightscoutFollow.work(true);
@@ -130,7 +135,7 @@ public class NightscoutFollowService extends ForegroundService {
         final long last = lastBg != null ? lastBg.timestamp : 0;
 
         final long grace = Constants.SECOND_IN_MS * 10;
-        final long next = Anticipate.next(JoH.tsl(), last, SAMPLE_PERIOD, grace) + grace;
+        final long next = Anticipate.next(JoH.tsl(), last, connectPeriod(), grace) + grace;
         wakeup_time = next;
         UserError.Log.d(TAG, "Anticipate next: " + JoH.dateTimeText(next) + "  last: " + JoH.dateTimeText(last));
 
@@ -161,10 +166,10 @@ public class NightscoutFollowService extends ForegroundService {
         Highlight ageOfLastBgPollHighlight = Highlight.NORMAL;
         if (bgReceiveDelay > 0) {
             ageOfBgLastPoll = JoH.niceTimeScalar(bgReceiveDelay);
-            if (bgReceiveDelay - lag > SAMPLE_PERIOD / 2) {
+            if (bgReceiveDelay - lag > connectPeriod() / 2) {
                 ageOfLastBgPollHighlight = Highlight.BAD;
             }
-            if (bgReceiveDelay - lag > SAMPLE_PERIOD * 2) {
+            if (bgReceiveDelay - lag > connectPeriod() * 2) {
                 ageOfLastBgPollHighlight = Highlight.CRITICAL;
             }
         }
@@ -175,7 +180,7 @@ public class NightscoutFollowService extends ForegroundService {
         if (lastBg != null) {
             long age = JoH.msSince(lastBg.timestamp);
             ageLastBg = JoH.niceTimeScalar(age);
-            if (age > SAMPLE_PERIOD + hightlightGrace + lag) {
+            if (age > connectPeriod() + hightlightGrace + lag) {
                 bgAgeHighlight = Highlight.BAD;
             }
         }
