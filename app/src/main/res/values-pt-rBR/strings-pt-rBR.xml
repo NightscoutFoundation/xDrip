@@ -37,6 +37,10 @@
     <string name="pref_header_cloud_storage">Armazenamento na nuvem</string>
     <string name="auto_configure_title">Configurar automaticamente</string>
     <string name="prefs_auto_config_summary">Configurar automaticamente usando um código de barras.</string>
+    <string name="auto_config_cam_title">Câmera</string>
+    <string name="auto_config_cam_summary">Digitalizar um código QR com o seu celular (recomendado)</string>
+    <string name="auto_config_image_title">Arquivo de imagem</string>
+    <string name="auto_config_image_summary">Você pode salvar um código QR como um arquivo de imagem (como .png ou .jpeg) em seu celular. Em seguida, use essa opção para ler o código QR a partir do arquivo salvo.</string>
     <string name="scan_share2_barcode">Escanear códigos de barras</string>
     <string name="pref_share2_scan_barcode_summary">Ou escanear o código de barras no receptor de compartilhamento</string>
     <!-- MongoDB Settings -->
@@ -115,6 +119,7 @@
     <string name="title_activity_update">Atualização do xDrip+ disponível</string>
     <string name="title_activity_display_qrcode">Partilhar definições via QR code</string>
     <string name="title_activity_send_feed_back">Enviar feedback para Jamorham</string>
+    <string name="title_activity_save_logs">Salvar logs</string>
     <string name="title_activity_maps">Mapa Parakeet</string>
     <string name="title_activity_display_preferences">Preferências de visualização</string>
     <string name="export_submenu">Importar / Exportar</string>
@@ -182,7 +187,7 @@
     <string name="home_screen">Tela inicial</string>
     <string name="event_logs">Registro de Eventos</string>
     <string name="calibration_graph">Gráfico de Calibração</string>
-    <string name="glucose_units">Unidade de Glicémia</string>
+    <string name="glucose_units">Unidade de Glicemia</string>
     <string name="mmol_or_mgdl_high_and_low">mmol/l ou mg/dl hiper e hipo</string>
     <string name="general_settings">Configuração geral</string>
     <string name="high_value">Valor de Hiper</string>
@@ -210,8 +215,8 @@
     <string name="load_save_settings_to_sdcard">Carregar / Salvar configurações</string>
     <string name="alarms_and_alerts">Alertas e alarmes</string>
     <string name="alerts_and_notifications">Alertas e notificações</string>
-    <string name="glucose_level_alerts_list">Lista de Níveis Glicémios de Alerta</string>
-    <string name="glucose_alerts_settings">Definições de Alertas de Glicémia</string>
+    <string name="glucose_level_alerts_list">Lista de Níveis Glicêmicos</string>
+    <string name="glucose_alerts_settings">Configurações de Alertas de Glicemia</string>
     <string name="smart_snoozing">Snooze inteligente</string>
     <string name="calibration_alerts">Alertas de Calibração</string>
     <string name="missed_reading_alert">Alerta de falha de leitura</string>
@@ -234,7 +239,7 @@
     <string name="system_status">Estado do Sistema</string>
     <string name="settings">Configurações</string>
     <string name="calibration_data_table">Tabela de Calibração</string>
-    <string name="bg_data_table">Tabela de Glicémia</string>
+    <string name="bg_data_table">Tabela de Glicemia</string>
     <string name="cannot_calibrate_right_now">Impossível Calibrar agora</string>
     <string name="hardware_data_source">Hardware Fonte de Dados</string>
     <string name="enter_ten_character_dexcom_receiver_serial">Introduza 10 caracteres do número de serie do Dexcom Receiver</string>
@@ -292,7 +297,7 @@
     <string name="manage_followers">Gerenciar seguidores</string>
     <string name="manage_existing_followers">Gira os seus seguidores e convide novos.</string>
     <string name="invite_follower">Convidar um seguidor</string>
-    <string name="glucose_calibration_and_other_alerts">Glicémia, Calibração e Outros alertas</string>
+    <string name="glucose_calibration_and_other_alerts">Glicemia, calibração e outros alertas</string>
     <string name="alert_volume_profile">Perfil de volume de alerta</string>
     <string name="smart_alerting">Alertas inteligentes</string>
     <string name="dont_alarm_during_phone_calls">Não alertar durante chamadas</string>
@@ -304,7 +309,7 @@
     <string name="xdrip_plus_color_settings">Configurações de Cor</string>
     <string name="glucose_values_and_lines">Valor de Glicémia e Linhas</string>
     <string name="high_glucose_values">Valores Glicémia Hiper</string>
-    <string name="in_range_glucose_values">Valores Glicémia no algo</string>
+    <string name="in_range_glucose_values">Valores de glicemia no intervalo</string>
     <string name="default_color_selected">Cor pré-definida Selecionado</string>
     <string name="color_bg_values">Cores das Leituras de Glicemia e da Seta de Tendência</string>
     <string name="xdrip_plus_extra_settings">Configurações Extras xDrip+</string>
@@ -362,8 +367,8 @@
     <string name="copy_all_settings">Copiar todas as Configurações</string>
     <string name="sensor_is_ready_please_enter_double_calibration">Sensor pronto, por favor insira dupla calibração</string>
     <string name="in_order_to_get_started_please_perform_two_finger">Para começar, faça um ou dois testes de picada no dedo e insira os valores aqui!</string>
-    <string name="enter_first_bg_value">Primeiro valor de glicémia</string>
-    <string name="enter_second_bg_value">Segundo valor de glicémia</string>
+    <string name="enter_first_bg_value">Primeiro valor de glicemia</string>
+    <string name="enter_second_bg_value">Segundo valor de glicemia</string>
     <string name="language_editor">Editor de idioma</string>
     <string name="configure_missed_readings">Configurar Leituras Perdidas</string>
     <string name="install_pebble_snooze_control_app">Instalar App Pebble Snooze Control</string>
@@ -394,7 +399,9 @@
     <string name="please_enter_your_question_or_comments_here">Por favor, insira sua pergunta ou comentários aqui.\n\nSe você fornecer um endereço de e-mail, você pode receber uma resposta.\n\n</string>
     <string name="optional_contact_info_here_eg_email">Informações de contacto opcionais, exemplo: email</string>
     <string name="send_message">Enviar mensagem</string>
+    <string name="save_logs">Salvar logs</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Por favor diga o que pensa do app em geral</string>
+    <string name="log_confidential_note">Aviso!\nOs logs podem conter informações confidenciais, tais como senhas ou IDs de usuário.</string>
     <string name="preferences_saved_in_sdcard_downloads">Preferencias guardadas em Downloads no SDcard</string>
     <string name="could_not_write_to_sdcard_check_perms">Impossível escrever no SDcard - verifique permissões?</string>
     <string name="loaded_preferences_restarting">Preferencias carregadas! - A reiniciar</string>
@@ -470,7 +477,7 @@
     <string name="start_sensor">Iniciar Sensor</string>
     <string name="debug_and_other_misc_options">Debug e outras opções</string>
     <string name="low_glucose_values">Valores Hipo</string>
-    <string name="bad_glucose_values">Valores de Glicémia Inválidos</string>
+    <string name="bad_glucose_values">Valores de glicemia Inválidos</string>
     <string name="revert_to_default">Restaurar padrões</string>
     <string name="filtered_values">Valores filtrados</string>
     <string name="treatment_color">Insulina ativa</string>
@@ -480,7 +487,7 @@
     <string name="average_and_target_lines">Média e linhas alvo</string>
     <string name="eight_hour_average_line">Linha média de 8 horas</string>
     <string name="twenty_four_hour_average_line">Linha média de 24 horas</string>
-    <string name="glucose_target_line">Linha de Glicémia alvo</string>
+    <string name="glucose_target_line">Linha de glicemia alvo</string>
     <string name="annotations_and_dots">Anotações e Pontos</string>
     <string name="blood_test_background">Teste de sangue cor de fundo</string>
     <string name="blood_test_foreground">Teste de sangue cor</string>
