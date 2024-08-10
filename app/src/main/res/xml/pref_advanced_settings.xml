@@ -1494,8 +1494,7 @@
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="requested_ignore_battery_optimizations_new"
-                    android:summaryOff="@string/battery_optimization_off"
-                    android:summaryOn="@string/battery_optimization_on"
+                    android:summary="@string/battery_optimization_on"
                     android:title="@string/battery_optimization_prompt" />
                 <CheckBoxPreference
                     android:defaultValue="true"

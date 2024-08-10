@@ -703,6 +703,12 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".utilitymodels.SaveLogs"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/title_activity_save_logs"
+            android:noHistory="true">
+        </activity>
         <activity android:name=".deposit.DepositActivity" />
         <activity android:name=".utils.AndroidBarcode" />
         <activity

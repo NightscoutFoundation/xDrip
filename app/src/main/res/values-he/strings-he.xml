@@ -37,6 +37,10 @@
     <string name="pref_header_cloud_storage">אחסון בענן</string>
     <string name="auto_configure_title">הגדרה אוטומטית</string>
     <string name="prefs_auto_config_summary">הגדרה אוטומטית באמצעות ברקוד.</string>
+    <string name="auto_config_cam_title">מצלמה</string>
+    <string name="auto_config_cam_summary">סרוק את קוה הQR עם המכשיר הסלולרי (מומלץ)</string>
+    <string name="auto_config_image_title">קובץ תמונה</string>
+    <string name="auto_config_image_summary">ניתן לשמור את קוד ה ER כקובץ תמונה (כדוגמת .png או .jpeg) על המכשיר הסלולרי . לאחר מכן השתמש באופציה זו כדי לסרוק את קוד הQR מהקובץ השמור.</string>
     <string name="scan_share2_barcode">סרוק ברקוד עבור Share</string>
     <string name="pref_share2_scan_barcode_summary">או סרוק את הברקוד שעל מקלט ה-Share</string>
     <!-- MongoDB Settings -->
@@ -115,6 +119,7 @@
     <string name="title_activity_update">קיים עדכון גרסא ל-xDrip+</string>
     <string name="title_activity_display_qrcode">שיתוף הגדרות באמצעות קוד QR</string>
     <string name="title_activity_send_feed_back">שלח פידבק ל-Jamorham</string>
+    <string name="title_activity_save_logs">שמור קובץ לוג</string>
     <string name="title_activity_maps">מפת Parakeet</string>
     <string name="title_activity_display_preferences">הגדרות תצוגה</string>
     <string name="export_submenu">ייבוא ויצוא של הגדרות ונתונים</string>
@@ -393,7 +398,10 @@
     <string name="please_enter_your_question_or_comments_here">אנא רשום את השאלות או הערות שלך כאן. \n\n אם תספק דואר אלקטרוני יכול להיות שתקבל תשובה \n\n</string>
     <string name="optional_contact_info_here_eg_email">אופציונלי - פרטים ליצירת קשר כגון דוא\"ל</string>
     <string name="send_message">שלח הודעה</string>
+    <string name="save_logs">שמור קובץ לוג</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">אנא ציינו מה אתם חושבים על האפליקציה באופן כללי</string>
+    <string name="log_confidential_note">אזהרה!
+קובץ הלוג יכול להכיל מידע סודי ורגיש כמו סיסמאות או שמות משתמש.</string>
     <string name="preferences_saved_in_sdcard_downloads">ההגדרות נשמרו על כרטיס הזיכרון בתיקיית Downloads</string>
     <string name="could_not_write_to_sdcard_check_perms">כתיבה לכרטיס הזיכרון נכשלה - לבדוק את ההרשאות?</string>
     <string name="loaded_preferences_restarting">ההעדפות נטענו! - מאתחל</string>

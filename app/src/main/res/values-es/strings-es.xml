@@ -593,7 +593,7 @@
     <string name="short_speak_readings_shortcut">Mostrar acceso directo en el menú ☰ para conmutar Lecturas Habladas</string>
     <string name="speak_readings_shortcut">Acceso directo Lecturas Habladas</string>
     <string name="battery_optimization_off">En Android 6+ garantiza que la optimización de la batería está apagada. Recomendado</string>
-    <string name="battery_optimization_on">No sigas preguntando por la optimización de la batería (no recomendable)</string>
+    <string name="battery_optimization_on">No insistir sobre la optimización de batería. No recomendado.</string>
     <string name="battery_optimization_prompt">Aviso de optimización de Batería</string>
     <string name="advanced_bluetooth_settings">Ajustes Bluetooth Avanzados</string>
     <string name="bluetooth_settings">Ajustes Bluetooth</string>
@@ -601,7 +601,7 @@
     <string name="turn_bluetooth_on">Encender Bluetooth</string>
     <string name="reset_bluetooth">Resetear Bluetooth apagándolo y encendiéndolo si no hay comunicación en 20 minutos</string>
     <string name="bluetooth_watchdog">Vigilante Bluetooth</string>
-    <string name="reset_bluetooth_g5">Resetear Bluetooth apagándolo y encendiéndolo para intentar que G5 siga funcionando. Sin esto el colector de G5 puede fallar.</string>
+    <string name="reset_bluetooth_g5">Reinicializar Bluetooth apagándolo y encendiéndolo para intentar que G5 siga funcionando. Sin esto, el colector de G5 puede fallar.</string>
     <string name="g5_bluetooth_watchdog">Vigilante Dex Bluetooth</string>
     <string name="close_gatt">Si el vigilante del Bluetooth se activa frecuentemente puede intentar desactivar esta opción para ver si ayuda</string>
     <string name="older_bluetooth_wakelocks">Wakelocks Bluetooth más antiguos que pueden consumir más batería pero que pueden ser necesarios para la recepción Bluetooth</string>

@@ -37,6 +37,10 @@
     <string name="pref_header_cloud_storage">Pilvesalvestus</string>
     <string name="auto_configure_title">Automaatne seadistamine</string>
     <string name="prefs_auto_config_summary">Automaatne seadistamine kasutades triipkoodi.</string>
+    <string name="auto_config_cam_title">Kaamera</string>
+    <string name="auto_config_cam_summary">Skaneeri telefoniga QR-kood (soovitatud)</string>
+    <string name="auto_config_image_title">Pildifail</string>
+    <string name="auto_config_image_summary">Saad salvestada QR-koodi pildifailina (nagu .png või .jpeg) oma telefoni. Siis kasuta seda valikut, et salvestatud failist QR-kood skaneerida.</string>
     <string name="scan_share2_barcode">Skaneeri jagatud triipkoodi</string>
     <string name="pref_share2_scan_barcode_summary">Või skaneeri triipkoodi jagajalt</string>
     <!-- MongoDB Settings -->
@@ -115,6 +119,7 @@
     <string name="title_activity_update">xDrip+ uuendus saadaval</string>
     <string name="title_activity_display_qrcode">Jaga seadeid QR koodiga</string>
     <string name="title_activity_send_feed_back">Saada tagasisidet</string>
+    <string name="title_activity_save_logs">Salvesta logid</string>
     <string name="title_activity_maps">Parakeet kaart</string>
     <string name="title_activity_display_preferences">Ekraani seaded</string>
     <string name="export_submenu">Impordi / ekspordi valikud</string>
@@ -394,7 +399,9 @@
     <string name="please_enter_your_question_or_comments_here">Palun sisesta oma küsimused või kommentaarid siia.\n\nKui lisad meiliaadressi, võid isegi saada vastuse.\n\n</string>
     <string name="optional_contact_info_here_eg_email">Valikuline kontaktinfo siia, nt. e-mail</string>
     <string name="send_message">Saada sõnum</string>
+    <string name="save_logs">Salvesta logid</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Palun anna teada, mis sa äpist üldiselt arvad</string>
+    <string name="log_confidential_note">Hoiatus!\nLogid võivad sisaldada konfidentsiaalset informatsiooni, näiteks paroole või kasutajatunnuseid.</string>
     <string name="preferences_saved_in_sdcard_downloads">Eelistused on salvestatud sisemisse salvestusruumi/allalaadimiste kausta</string>
     <string name="could_not_write_to_sdcard_check_perms">SD kaardile ei saa kirjutada, kontrolli õigusi?</string>
     <string name="loaded_preferences_restarting">Seaded laaditud! - Taaskäivitus</string>
@@ -593,7 +600,7 @@
     <string name="short_speak_readings_shortcut">Näita menüüs ☰ otseteed, et lülitada andmete ettelugemine sisse</string>
     <string name="speak_readings_shortcut">Andmete ütlemise otsetee</string>
     <string name="battery_optimization_off">Alates Android 6 veenduge, et aku optimeerimine oleks välja lülitatud (soovitatav).</string>
-    <string name="battery_optimization_on">Ära enam küsi aku säästerežiimi kohta (pole soovitatav).</string>
+    <string name="battery_optimization_on">Ära küsi pidevalt aku optimeerimise kohta kui see on lubatud (pole soovitatav).</string>
     <string name="battery_optimization_prompt">Aku optimeerimise otsetee</string>
     <string name="advanced_bluetooth_settings">Bluetoothi täpsemad sätted</string>
     <string name="bluetooth_settings">Bluetoothi seaded</string>
@@ -601,7 +608,7 @@
     <string name="turn_bluetooth_on">Lülitage Bluetooth sisse</string>
     <string name="reset_bluetooth">Taaskäivita Bluetooth sisse-välja lülitades, kui 20 min jooksul andmeid ei saa</string>
     <string name="bluetooth_watchdog">Bluetoothi jälgija</string>
-    <string name="reset_bluetooth_g5">Lähtesta Bluetooth sisse-välja lülitades, et hoida G5 andmeallikas töös. Ilma selleta võib G5 vastuvõtja üles öelda.</string>
+    <string name="reset_bluetooth_g5">Lähtesta Bluetooth, lülitades seda välja ja sisse, et andmeallikat töös hoida. Ilma selleta võib vastuvõtja töö seiskuda.</string>
     <string name="g5_bluetooth_watchdog">Dex Bluetooth jälgija</string>
     <string name="close_gatt">Kui bluetoothi jälgija aktiveerub tihti, võite proovida selle valiku tühistada, et näha kas see aitab</string>
     <string name="older_bluetooth_wakelocks">Vanemad Bluetooth wakelockid, mis võivad akut rohkem kulutada, aga võivad olla vajalikud bluetooth-vastuvõtuks</string>
@@ -655,7 +662,7 @@
     <string name="show_total_insulin">Näita insuliini kogust kokku</string>
     <string name="total_insulin">Insuliini kokku</string>
     <string name="received_readings_percentage">Sensorilt vastu võetud näitude protsent</string>
-    <string name="received_realtime_readings_percentage">Reaalajas saadud sensori näitude protsent (tagasi täitmata). AINULT G5 algne režiim</string>
+    <string name="received_realtime_readings_percentage">Reaalajas saadud sensori näitude protsent (tagasi täitmata). AINULT algse režiimi korral</string>
     <string name="capture_percentage">Andmepakettide vastuvõtuprotsent</string>
     <string name="realtime_capture_percentage">Andmepakettide vastuvõtuprotsent reaalajas</string>
     <string name="show_calibration_accuracy">Kuva viimase 3 päeva kalibreerimistäpsuse hinnang</string>
@@ -697,11 +704,11 @@
     <string name="low_level_value">Madala taseme diagnostiline/prototüüp-väärtus</string>
     <string name="transmitter_id">Teie Dexcomi saatja ID, nt. 12AB3</string>
     <string name="advanced_g5_settings">Täiendavad Dexcom seaded harvaesinevateks olukordadeks</string>
-    <string name="g5_debug_settings">G5/G6/G7/Dex1 silumisseaded</string>
+    <string name="g5_debug_settings">Dexcom silumisseaded</string>
     <string name="g5_scan_constantly">Mõned seadmed töötavad paremini pidevalt skaneerides, teised mitte. Kui see säte pole valitud ja andmed on usaldusväärsed, siis peaks aku tööiga olema pikem. Tavaliselt on parem see mitte valida</string>
-    <string name="scan_for_g5_constantly">Skaneeri G5-saatjat pidevalt</string>
+    <string name="scan_for_g5_constantly">Skaneeri saatjat pidevalt</string>
     <string name="g5_force_ui_thread">See on oluline mõnede Android seadmete ühenduvuse jaoks, kuid andmed võivad jääda lugemata muude UI intensiivste tegevuste kasutamisel.</string>
-    <string name="force_g5_ui_thread">Sunni G5 kasutajaliidese lõimele</string>
+    <string name="force_g5_ui_thread">Sunni kasutajaliidese lõimele</string>
     <string name="authentificate_before_reading">Autentida enne igat lugemist</string>
     <string name="g5_full_authentification">See proovib täielikku autentimist igal lugemiskatsel. Vajalik uuemate G5 saatja versioonide jaoks.</string>
     <string name="unbond_g5_before_read">Enne iga vastuvõttu katkesta ühendus G5-ga</string>
@@ -1178,12 +1185,12 @@
     <string name="summary_send_bridge_battery_to_nightscout">Saada oma vastuvõtja aku tase Nightscouti. Tühjendage märkeruut kui akuandur ei tööta.</string>
     <string name="title_send_bridge_battery_to_nightscout">Laadi üles vastuvõtja aku seis</string>
     <string name="summary_send_dexcom_transmitter_battery_to_nightscout">Saada Nightscouti Dexcomi saatja aku statistika. Sealhulgas kõik vastuvõtja oleku ekraanil kuvatavad andmed.</string>
-    <string name="title_send_dexcom_transmitter_battery_to_nightscout">Laadi üles OB1G5/G6/G7/1 saatja akuandmed</string>
+    <string name="title_send_dexcom_transmitter_battery_to_nightscout">Laadi üles Dexcom saatja akuandmed</string>
     <string name="summary_send_treatments_to_nightscout">Saada raviandmed Nightscouti. Tühjendage märkeruut kui hooldusportaal ei toimi.</string>
     <string name="title_send_treatments_to_nightscout">Laadi üles raviandmed</string>
     <string name="summary_warn_nightscout_failures">Kui Nightscouti üleslaadimine ebaõnnestub, anna ekraanil ja heliga märku.</string>
     <string name="title_warn_nightscout_failures">Hoiata tõrgete korral</string>
-    <string name="summary_nightscout_device_append_source_info">G5 puhul saadab Nightscouti vastuvõtu tüübi (nt OB1) ja näitude järeltäitmise oleku (algupärase režiimi jaoks).</string>
+    <string name="summary_nightscout_device_append_source_info">Dexcom puhul saadab Nightscouti vastuvõtu tüübi (nt OB1) ja näitude järeltäitmise oleku (algupärase režiimi jaoks).</string>
     <string name="title_nightscout_device_append_source_info">Lisa seadme nimele andmeallika info</string>
     <string name="summary_tap_to_send_historical_data">Puuduta vanade andmete saatmiseks Nightscouti</string>
     <string name="title_back_fill_data">Täienda ajalugu</string>
@@ -1322,7 +1329,7 @@
     <string name="summary_clfollow_download_meals">Laadi CareLink\'ist alla eined</string>
     <string name="title_clfollow_download_notifications">Teavitused</string>
     <string name="summary_clfollow_download_notifications">Laadi alla CareLink teavitused</string>
-    <string name="title_ob1_options">OB1 G5/G6/G7 vastuvõtja seaded</string>
+    <string name="title_ob1_options">OB1 Dexcom vastuvõtja seaded</string>
     <string name="summary_use_ob1_g5_collector_service">Täielik ülekirjutamine, peaks töötama op-süsteemides Android 4.4–9, toetab algupärast režiimi ja palju muud</string>
     <string name="title_use_ob1_g5_collector_service">Kasuta OB1 vastuvõtjat</string>
     <string name="summary_ob1_g5_use_transmitter_alg">Võimalusel kasuta VS väärtuste arvutamiseks saatja sisemist algoritmi.</string>
@@ -1337,14 +1344,14 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Tagasi xDrip\'pi</string>
     <string name="summary_ob1_minimize_scanning">Kasutage heuristikat, et minimeerida Bluetooth skaneerimist ja säästa energiat</string>
     <string name="title_ob1_minimize_scanning">Minimaalne skaneerimine</string>
-    <string name="summary_using_g6">Kasutan G6, G7 või Dexcom One sensorit</string>
-    <string name="title_using_g6">G6/G7/Dex1 tugi</string>
+    <string name="summary_using_g6">Kasutan G6, G7, Dexcom 1või One+ sensorit</string>
+    <string name="title_using_g6">G6/G7/Dex1/One+  tugi</string>
     <string name="summary_ob1_g5_allow_resetbond">OB1 vastuvõtja võib ühenduse katkestada kui arvab, et andmete töötlemine ebaõnnestus. Kui teil tekib ühenduse katkestamisel probleeme, keelake see valik. Kui te seejärel ühenduse täielikult kaotate, veenduge, et see oleks lubatud.</string>
     <string name="title_ob1_g5_allow_resetbond">Luba OB1 lahtiühendamine</string>
     <string name="summary_ob1_initiate_bonding_flag">OB1 vastuvõtja võib alustada ühendamist.</string>
     <string name="title_ob1_initiate_bonding_flag">Luba OB1 siduda</string>
-    <string name="title_old_g5_options">Vana G5 vastuvõtja seaded</string>
-    <string name="title_g5g6_battery_options">G5/G6/Dex1 aku valikud</string>
+    <string name="title_old_g5_options">Vanad Dexcom vastuvõtja seaded</string>
+    <string name="title_g5g6_battery_options">G6/Dex1 aku valikud</string>
     <string name="title_g5_battery_warning_level">Reguleeri aku hoiatuse taset</string>
     <string name="title_plugins_and_features">Liidesed ja funktsioonid</string>
     <string name="title_color_heart_rate1">Pulsimõõtja</string>

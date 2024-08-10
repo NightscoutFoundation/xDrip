@@ -16,6 +16,7 @@ import android.os.Handler;
 import android.os.PowerManager;
 import android.util.Base64;
 
+import com.eveningoutpost.dexdrip.cloud.jamcm.JamCm;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.BloodTest;
 import com.eveningoutpost.dexdrip.models.Calibration;
@@ -167,8 +168,7 @@ public class GcmListenerSvc extends JamListenerSvc {
                 String xfrom = data.getString("xfrom");
                 String payload = data.getString("datum", data.getString("payload"));
                 String action = data.getString("action");
-
-                if ((xfrom != null) && (xfrom.equals(GcmActivity.token))) {
+                if ((xfrom != null) && (xfrom.equals(GcmActivity.token) || xfrom.equals(JamCm.getId()))) {
                     GcmActivity.queueAction(action + payload);
                     return;
                 }

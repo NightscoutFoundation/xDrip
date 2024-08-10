@@ -8,9 +8,18 @@
         android:title="@string/data_sync">
         <PreferenceScreen
             android:icon="@drawable/ic_qrscan"
-            android:key="auto_configure"
+            android:key="auto_config_top"
             android:summary="@string/prefs_auto_config_summary"
-            android:title="@string/auto_configure_title" />
+            android:title="@string/auto_configure_title">
+            <PreferenceScreen
+                android:key="auto_configure"
+                android:summary="@string/auto_config_cam_summary"
+                android:title="@string/auto_config_cam_title" />
+            <PreferenceScreen
+                android:key="qr_code_from_file"
+                android:summary="@string/auto_config_image_summary"
+                android:title="@string/auto_config_image_title" />
+        </PreferenceScreen>
         <PreferenceScreen
             android:icon="@drawable/ic_cloud_upload_grey600_48dp"
             android:key="cloud_data_sync"

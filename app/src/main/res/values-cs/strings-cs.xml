@@ -37,6 +37,10 @@
     <string name="pref_header_cloud_storage">Cloudové úložiště</string>
     <string name="auto_configure_title">Automatická konfigurace</string>
     <string name="prefs_auto_config_summary">Automatická konfigurace pomocí čárového kódu.</string>
+    <string name="auto_config_cam_title">Fotoaparát</string>
+    <string name="auto_config_cam_summary">Naskenovat QR kód pomocí telefonu (doporučeno)</string>
+    <string name="auto_config_image_title">Obrazový soubor</string>
+    <string name="auto_config_image_summary">Můžete uložit QR kód jako obrázkový soubor (například .png nebo .jpeg soubor) do vašeho telefonu. Poté můžete použít tuto volbu k naskenování QR kódu z tohoto uloženého souboru.</string>
     <string name="scan_share2_barcode">Skenovat čárový kód na přijímači</string>
     <string name="pref_share2_scan_barcode_summary">Nebo naskenovat čárový kód na přijímači</string>
     <!-- MongoDB Settings -->
@@ -115,6 +119,7 @@
     <string name="title_activity_update">xDrip+ K dispozici je aktualizace</string>
     <string name="title_activity_display_qrcode">Sdílet nastavení pomocí QR kódu</string>
     <string name="title_activity_send_feed_back">Poslat zpětnou vazbu Jamorhamovi (autor)</string>
+    <string name="title_activity_save_logs">Uložit záznamy událostí</string>
     <string name="title_activity_maps">Mapa Parakeetů</string>
     <string name="title_activity_display_preferences">Zobrazit možnosti</string>
     <string name="export_submenu">Možnosti importu/exportu</string>
@@ -394,7 +399,9 @@
     <string name="please_enter_your_question_or_comments_here">Prosím zde vložte Vaší otázku nebo komentář.\n\nPokud zadáte i emailovou adresu, můžete obdržet odpověď.\n\n</string>
     <string name="optional_contact_info_here_eg_email">Volitelné kontaktní informace jako email atd.</string>
     <string name="send_message">Odeslat zprávu</string>
+    <string name="save_logs">Uložit záznamy událostí</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Prosím napište, co si myslíte o aplikaci obecně</string>
+    <string name="log_confidential_note">Varování!\nZáznamy událostí mohou obsahovat důvěrné informace - jako jsou hesla nebo identifikaci uživatele.</string>
     <string name="preferences_saved_in_sdcard_downloads">Nastavení uložena do SD karty do složky Stažené dokumenty</string>
     <string name="could_not_write_to_sdcard_check_perms">Nelze zapsat na SD kartu - zkontrolujte oprávnění?</string>
     <string name="loaded_preferences_restarting">Nastavení načtena! Restartuji</string>

@@ -518,10 +518,10 @@
     <string name="select_time_for_alert_colon">Selecione a hora do alerta:</string>
     <string name="all_day">o dia todo</string>
     <string name="tap_to_change">(toque para mudar)</string>
-    <string name="override_phone_silent_mode_colon">Ignorar modo de silêncio do telemóvel:</string>
+    <string name="override_phone_silent_mode_colon">Ignorar o modo silencioso:</string>
     <string name="vibrate_on_alert">Vibrar nos alertas</string>
     <string name="test_alert">Testar alerta</string>
-    <string name="disable_alert">desativar alerta</string>
+    <string name="disable_alert">Desativar alerta</string>
     <string name="save_alert">Salvar alerta</string>
     <string name="remove_alert">Remover alerta</string>
     <string name="snooze_alert_before_it_fires">fazer snooze ao alerta antes de ser iniciado</string>
@@ -1028,9 +1028,12 @@
     <string name="summary_Allow_initial_calibration_no_good_enough_data">Permite calibração inicial mesmo que não existam dados bons e suficientes. Atenção que isso pode resultar numa calibração incorreta!</string>
     <string name="title_Bypass_quality_check">Ignorar Controle de Qualidade</string>
     <string name="summary_Scan_before_connecting_on_xBridge_and_Libre_bluetooth">Escaneie antes de conectar no xBridge e Bluetooth do Libre</string>
+    <string name="title_Use_scanning">Usar escaneamento</string>
     <string name="summary_Use_and_trust_Android_bluetooth_auto_connect_feature">Usar e confiar no recurso de conexão automática Bluetooth do Android</string>
+    <string name="title_Trust_Auto_Connect">Confiar na auto-conexão</string>
     <string name="summary_Experimental_support_for_xBridge_polling_feature">Suporte experimental para o recurso de pesquisa do xBridge+</string>
     <string name="title_xBridge_Polling_Mode">Modo de sondagem xBridge+</string>
+    <string name="summary_Probe_Bluetooth_services_on_every_connect">Sondar serviços Bluetooth em cada conexão</string>
     <string name="title_Always_discover_services">Sempre descobrir serviços</string>
     <string name="summary_Only_suitable_for_phones_which_support_automatic_pairing">Apenas adequado para telefones que suportam o pareamento automático</string>
     <string name="title_Allow_blucon_unbonding">Permitir desvinculação de BluCon</string>
@@ -1049,6 +1052,8 @@
     <string name="title_reminder_snooze_undo">Lembrete de Adiar- Desfazer</string>
     <string name="message_snooze_explanaition_undo">O botão Desfazer restaura o lembrete de como estava antes de ser deslizado.</string>
     <string name="title_snooze_trash">Lembrete Adiar- Lixeira</string>
+    <string name="message_snooze_trash">O botão de lixeira exclui permanentemente o lembrete apagado!</string>
+    <string name="title_snooze_hide">Painel de Silenciar Lembrete - Ocultar</string>
     <string name="message_snooze_hide">O botão Ocultar oculta o painel de soneca</string>
     <string name="title_which_day">Em que dia?</string>
     <string name="title_what_time_day">A que hora do dia?</string>
@@ -1092,6 +1097,7 @@
     <string name="alternating">Alternando</string>
     <string name="weekdays">Dias Úteis</string>
     <string name="weekends">Fins de semana</string>
+    <string name="mega_priority">Mega-prioridade</string>
     <string name="xdrip_reminders">Lembretes</string>
     <string name="button_15_min">15 Min</string>
     <string name="button_2_hour">2 Horas</string>
@@ -1112,6 +1118,7 @@
     <string name="unit_hours">horas</string>
     <string name="unit_days">dias\"</string>
     <string name="unit_weeks">semanas\"</string>
+    <string name="quiet_at_night">Silêncio à Noite</string>
     <string name="alerts_disabled">Alertas desativados</string>
     <string name="restart_in_the_morning">Reiniciar pela Manhã</string>
     <string name="advanced_mode">Modo Avançado</string>
@@ -1157,6 +1164,8 @@
     <string name="summary_bluetooth_meter_for_calibrations_auto">Calibrar utilizando novas leituras de glicose se as condições parecerem corretas para fazer isso sem pedir confirmação (experimental)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Calibragem Automática</string>
     <string name="title_rest_api_extra_options">Opções adicionais</string>
+    <string name="summary_send_bridge_battery_to_nightscout">Envie o nível da bateria para o Nightscout. Desmarque se o sensor de bateria estiver defeituoso.</string>
+    <string name="title_send_bridge_battery_to_nightscout">Enviar dados de bateria</string>
     <string name="summary_send_dexcom_transmitter_battery_to_nightscout">Envia estatísticas da bateria do transmissor Dexcom para o Nightscout. Inclui todos os dados mostrados na tela de Status do Coletor.</string>
     <string name="title_send_dexcom_transmitter_battery_to_nightscout">Enviar bateria do OB1G5/G6/G7/1</string>
     <string name="summary_send_treatments_to_nightscout">Envia dados de tratamento para o Nightscout. Desmarque se seu portal de cuidados estiver fora de serviço.</string>
@@ -1372,7 +1381,10 @@
     <string name="summary_ongoing_notification_channel">Pode disparar notificações de exibição ambiente em alguns dispositivos. Precisa de testes!</string>
     <string name="title_notification_channels_grouping">Agrupar notificações</string>
     <string name="summary_delay_ascending_3min">Para o perfil de volume crescente, atrasa o início do som do alerta em 3 minutos. A vibração (se ativada) começa assim que o alerta dispara, independentemente da configuração.</string>
+    <string name="title_ascending_volume">Configurações de Volume Crescente</string>
     <string name="title_delay_ascending_3min">Atrasar Volume Crescente</string>
+    <string name="summary_ascending_volume_to_medium">Quando ativado, o perfil de volume crescente vai até o volume médio ao invés do máximo</string>
+    <string name="title_ascending_volume_to_medium">Usar volume médio</string>
     <string name="summary_play_sound_for_initial_calibration">Reproduzir som quando a calibração inicial for necessária</string>
     <string name="title_play_sound_for_initial_calibration">Alerta Inicial</string>
     <string name="category_falling_rising_bg">Queda / Aumento da Glicose</string>
@@ -1689,4 +1701,8 @@
     <string name="carelink_credential_status_refresh_expired">Login expirado! Por favor, faça o login!</string>
     <string name="data_source">Fonte de dados:</string>
     <string name="reraise_alerts_before_snooze_time">Alertar novamente</string>
+    <string name="audio_focus_dont_adjust_other_app_sounds">Não ajustar sons de outros aplicativos</string>
+    <string name="audio_focus_lower_volume_of_other_apps">Diminuir o volume de outros aplicativos</string>
+    <string name="audio_focus_pause_other_apps_playing_audio">Silenciar outros aplicativos quando estiver tocando</string>
+    <string name="audio_focus_pause_all_other_sounds">Silenciar todos os outros sons</string>
 </resources>

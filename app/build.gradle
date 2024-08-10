@@ -370,9 +370,12 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0', {
         exclude group: 'com.android.support', module: 'support-annotations'
     }
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1', {
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5', {
         exclude group: 'com.android.support', module: 'support-annotations'
     }
+    androidTestImplementation 'androidx.test:rules:1.2.0'
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-idling-resource:3.1.0'
     // add this for intent mocking support
     //androidTestImplementation 'com.android.support.test.espresso:espresso-intents:3.0.1'
