@@ -389,7 +389,7 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
                 SQLiteDatabase db = SQLiteDatabase.openDatabase(dbFile.getAbsolutePath(), null, SQLiteDatabase.OPEN_READONLY);
                 int version = db.getVersion();
                 db.close();
-                if (getDBVersion() != version) {
+                if (getDBVersion() < version) { // changed 24/8/11 gruoner: it should be possible to import an older DB-version
                     statusDialog.dismiss();
                     return "Wrong Database version.\n(" + version + " instead of " + getDBVersion() + ")";
                 }
