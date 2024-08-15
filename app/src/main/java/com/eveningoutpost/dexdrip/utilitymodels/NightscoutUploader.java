@@ -78,6 +78,7 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
+import static com.eveningoutpost.dexdrip.models.JoH.cancelNotification;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.DISABLED_NS_UPLOAD_NOTIFICATION_ID;
 import static com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper.enableTls12OnPreLollipop;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
@@ -512,6 +513,7 @@ public class NightscoutUploader {
                         val killMsg = String.format("Disabled Nightscout upload as it was uploading to the data source.");
                         val notificationId = DISABLED_NS_UPLOAD_NOTIFICATION_ID;
                         // Create a notification as this is important.  This cannot happen during sleep; the user must have done something right now to have caused this.
+                        cancelNotification(notificationId);
                         showNotification("Disabled NS Upload", killMsg, null, notificationId, null, true, true, null, null, null, true);
                     }
                 }
