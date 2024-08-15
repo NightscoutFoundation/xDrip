@@ -78,6 +78,7 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 import static com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper.enableTls12OnPreLollipop;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
 
 /**
  * THIS CLASS WAS BUILT BY THE NIGHTSCOUT GROUP FOR THEIR NIGHTSCOUT ANDROID UPLOADER
@@ -501,6 +502,15 @@ public class NightscoutUploader {
                     last_success_time = JoH.tsl();
                     last_exception_count = 0;
                     last_exception_log_count = 0;
+                    if (getBestCollectorHardwareName() == "Nightscout") { // If data source is Nightscout
+                        URI uri_follow = new URI(Pref.getString("nsfollow_url", "")); // The data source URL
+                        String url_follow = uri_follow.getHost(); // Data source host name
+                        String url_upload = uri.getHost(); // Upload host name
+                        if (url_upload.equals(url_follow)) { // If xDrip is uploading to the data source
+                            Pref.setBoolean("cloud_storage_api_enable", false); // Disable Nightscout upload
+                            UserError.Log.wtf(TAG, "Disabled Nightscout upload.  Uploading back to the data source will waste battery and bandwidth."); // Log the change
+                        }
+                    }
                 } catch (Exception e) {
                     String msg = "Unable to do REST API Upload: " + e.getMessage() + " marking record: " + (any_successes ? "succeeded" : "failed");
                     handleRestFailure(msg);
