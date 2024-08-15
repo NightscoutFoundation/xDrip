@@ -61,6 +61,7 @@ public class Constants {
     public static final int ZXING_CAM_REQ_CODE = 49374;
     public static final int ZXING_FILE_REQ_CODE = 49375; // This is created by just incrementing the existing camera scan code from the zxing package
     public static final int SENSORY_EXPIRY_NOTIFICATION_ID = 2003;
+    public static final int DISABLED_NS_UPLOAD_NOTIFICATION_ID = 2004;
 
 
     // increments from this start number
