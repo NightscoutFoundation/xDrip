@@ -17,7 +17,7 @@ public class NightscoutBasalRate {
     private static final boolean d = false;
     private static final String TAG = "NightscoutBasalRate";
     private static final int requiredSegments = 24;
-    private static final int minimumProfileBRDuration = 10000;
+    private static final int minimumProfileBRDuration = 1000;
 
     private static ArrayList<APStatusEntry> statusEntries = new ArrayList<>();
     private static List<Double> profile = new ArrayList<>();
@@ -35,6 +35,7 @@ public class NightscoutBasalRate {
 
             Double absolute = null;
             Long durationInMilliseconds = null;
+            Long timestamp = null;
 
             try {
                 absolute = tr.has("absolute") ? tr.getDouble("absolute") : null;
@@ -48,9 +49,13 @@ public class NightscoutBasalRate {
                 UserError.Log.e(TAG, "Could not parse durationInMilliseconds: " + tr.get("durationInMilliseconds"));
             }
 
-            if (absolute != null && durationInMilliseconds != null) {
-                final long timestamp = DateUtil.tolerantFromISODateString(tr.getString("created_at")).getTime();
+            try {
+                timestamp = tr.has("date") ? tr.getLong("date") : null;
+            } catch (JSONException e) {
+                UserError.Log.e(TAG, "Could not parse date: " + tr.get("date"));
+            }
 
+            if (absolute != null && durationInMilliseconds != null && timestamp != null) {
                 APStatus lastAPStatus = APStatus.last();
 
                 if (lastAPStatus != null && timestamp < lastAPStatus.timestamp) {
@@ -125,8 +130,9 @@ public class NightscoutBasalRate {
 
         statusEntries.forEach(entry -> {
             APStatus.createEfficientRecord(entry.timestamp, entry.absolute);
-            NewDataObserver.newExternalStatus(false);
         });
+
+        NewDataObserver.newExternalStatus(false);
 
         statusEntries = new ArrayList<>();
         profile = new ArrayList<>();
@@ -169,6 +175,7 @@ class APStatusEntry {
     long timestamp;
     // For debugging
     long durationInMilliseconds;
+    double durationInMinutes;
     String timestampText;
     String timestampEndText;
     boolean isProfile;
@@ -178,8 +185,11 @@ class APStatusEntry {
         this.absolute = absolute;
         this.timestamp = timestamp;
         this.durationInMilliseconds = durationInMilliseconds;
+        this.durationInMinutes = (double) Math.round((double) durationInMilliseconds / 1000) / 60;
 
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+
+        df.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         this.timestampText = df.format(new Date(timestamp));
         this.timestampEndText = df.format(new Date(timestamp + durationInMilliseconds));
