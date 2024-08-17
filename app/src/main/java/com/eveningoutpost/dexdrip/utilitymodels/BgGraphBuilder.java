@@ -342,7 +342,7 @@ public class BgGraphBuilder {
             final float yscale = doMgdl ? (float) Constants.MMOLL_TO_MGDL : 1f;
 
             final List<APStatus> aplist = APStatus.latestForGraph(2000, loaded_start, loaded_end);
-            final List<BasalProfileEntryTimed> profile = BasalProfile.loadForTime(BasalProfile.getActiveRateName(), loaded_start, loaded_end);
+            final List<BasalProfileEntryTimed> profile = BasalProfile.loadForTimeSpan(BasalProfile.getActiveRateName(), loaded_start, loaded_end);
 
             if (aplist.size() > 0) {
 
@@ -381,7 +381,7 @@ public class BgGraphBuilder {
                 }
 
                 if (last_ypos != -1) {
-                    divider_points.add(new HPointValue((double) (profile.get(profile.size() - 1).timestamp + 60 * 60 + 1000) / FUZZER, last_ypos));
+                    divider_points.add(new HPointValue((double) Calendar.getInstance().getTimeInMillis() / FUZZER, last_ypos));
                 }
 
                 dividerLine.setPointRadius(0);
@@ -392,6 +392,7 @@ public class BgGraphBuilder {
                 final List<PointValue> points = new ArrayList<>(aplist.size());
 
                 double last_basal_absolute = -1;
+                double last_basal_ypos = -1;
                 count = aplist.size();
 
                 for (APStatus item : aplist) {
@@ -400,7 +401,12 @@ public class BgGraphBuilder {
                         points.add(new HPointValue((double) item.timestamp / FUZZER, this_ypos));
 
                         last_basal_absolute = item.basal_absolute;
+                        last_basal_ypos = this_ypos;
                     }
+                }
+
+                if (last_basal_ypos != -1) {
+                    points.add(new HPointValue((double) Calendar.getInstance().getTimeInMillis() / FUZZER, last_basal_ypos));
                 }
 
                 final Line line = new Line(points);

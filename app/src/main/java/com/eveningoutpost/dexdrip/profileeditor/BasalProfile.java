@@ -56,28 +56,28 @@ public class BasalProfile {
         return calendarB.get(Calendar.DAY_OF_YEAR) - calendarA.get(Calendar.DAY_OF_YEAR) + 1;
     }
 
-    public static List<BasalProfileEntryTimed> loadForTime(final String ref, long startTime, long endTime) {
+    public static List<BasalProfileEntryTimed> loadForTimeSpan(final String ref, long startTime, long endTime) {
         final List<Float> profile = load(ref);
-
-        int startHour = getHourOfTheDay(startTime);
-        int endHour = getHourOfTheDay(endTime);
 
         int fullDays = getDifferenceInFullDays(startTime, endTime);
 
         List<Float> profileForAllDays = new ArrayList<>();
+
+        for (int i = 0; i < fullDays; i++) {
+            profileForAllDays.addAll(profile);
+        }
+
+        int startHour = getHourOfTheDay(startTime);
+        int endHour = getHourOfTheDay(endTime);
+
+        List<Float> sublist = profileForAllDays.subList(startHour, profileForAllDays.size() - 24 + endHour);
+        List<BasalProfileEntryTimed> timed = new ArrayList<>();
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(startTime);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
-
-        for (int i = 0; i < fullDays; i++) {
-            profileForAllDays.addAll(profile);
-        }
-
-        List<Float> sublist = profileForAllDays.subList(startHour, profileForAllDays.size() - 24 + endHour + 1);
-        List<BasalProfileEntryTimed> timed = new ArrayList<>();
 
         sublist.forEach(entry -> {
             timed.add(new BasalProfileEntryTimed(entry, calendar.getTimeInMillis()));
