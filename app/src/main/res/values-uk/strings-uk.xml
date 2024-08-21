@@ -37,6 +37,10 @@
     <string name="pref_header_cloud_storage">Хмарне сховище</string>
     <string name="auto_configure_title">Автоналаштування</string>
     <string name="prefs_auto_config_summary">Автоналаштування за допомогою QR-коду.</string>
+    <string name="auto_config_cam_title">Камера</string>
+    <string name="auto_config_cam_summary">Сканувати QR-код телефоном (рекомендується)</string>
+    <string name="auto_config_image_title">Файл зображення</string>
+    <string name="auto_config_image_summary">Ви можете зберегти QR-код як файл зображення (.png чи .jpeg) на вашому телефоні, щоб надалі використовувати його для сканування QR-коду.</string>
     <string name="scan_share2_barcode">Сканувати QR-код</string>
     <string name="pref_share2_scan_barcode_summary">Або відскануйте QR-код на ресивері</string>
     <!-- MongoDB Settings -->
@@ -115,6 +119,7 @@
     <string name="title_activity_update">Доступне оновлення для xDrip+</string>
     <string name="title_activity_display_qrcode">Поділитися налаштуваннями через QR-код</string>
     <string name="title_activity_send_feed_back">Надіслати відгук</string>
+    <string name="title_activity_save_logs">Зберегти список подій</string>
     <string name="title_activity_maps">Мапа Parakeet</string>
     <string name="title_activity_display_preferences">Налаштування відображення</string>
     <string name="export_submenu">Імпорт/Експорт даних</string>
@@ -394,7 +399,9 @@
     <string name="please_enter_your_question_or_comments_here">Будь ласка, введіть тут ваше запитання або коментар.\n\nЯкщо Ви вкажете свій email, то зможете отримати відповідь.\n\n</string>
     <string name="optional_contact_info_here_eg_email">Введіть Ваші контактні дані, наприклад email</string>
     <string name="send_message">Надіслати повідомлення</string>
+    <string name="save_logs">Зберегти список подій</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Будь ласка, напишіть, що Ви думаєте про додаток у цілому</string>
+    <string name="log_confidential_note">Увага!\nдана інформація може містити конфіденційну інформацію, таку як паролі або ідентифікатори особи.</string>
     <string name="preferences_saved_in_sdcard_downloads">Налаштування збережені на SD-карті - Завантаження</string>
     <string name="could_not_write_to_sdcard_check_perms">Невдала спроба запису на SD-карту. Перевірити дозвіл?</string>
     <string name="loaded_preferences_restarting">Налаштування завантажені! Перезапуск!</string>
