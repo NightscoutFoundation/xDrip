@@ -214,7 +214,7 @@ public class DoNothingService extends Service {
             }
 
             if (nextWakeUpTime != -1) {
-                l.add(new StatusItem("Next Wake up: ", JoH.niceTimeTill(nextWakeUpTime)));
+                l.add(new StatusItem("Next Wake up", JoH.niceTimeTill(nextWakeUpTime)));
 
             }
         }
