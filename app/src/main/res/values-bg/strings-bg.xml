@@ -40,7 +40,7 @@
     <string name="auto_config_cam_title">Камера</string>
     <string name="auto_config_cam_summary">Сканиране на QR код с телефон (препоръчително)</string>
     <string name="auto_config_image_title">Изображение</string>
-    <string name="auto_config_image_summary">Може да запаметите QR код на файл като картина (пр. .png или .jpeg) на вашия телефон. По- късно може да се използва обция за сканиране на QR код от запаметени файлове.</string>
+    <string name="auto_config_image_summary">Може да запаметите QR код на файл като картина (пр. .png или .jpeg) на вашия телефон. По-късно може да се използва опция за сканиране на QR код от запаметени файлове.</string>
     <string name="scan_share2_barcode">Сканирай сподели баркод</string>
     <string name="pref_share2_scan_barcode_summary">Или сканирай баркода от споделения приемник</string>
     <!-- MongoDB Settings -->
