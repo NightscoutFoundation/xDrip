@@ -41,6 +41,7 @@ import java.util.UUID;
 
 import static com.eveningoutpost.dexdrip.models.BgReading.isDataSuitableForDoubleCalibration;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.newFingerStickData;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getDexCollectionType;
 
 
 class DexParameters extends SlopeParameters {
@@ -639,7 +640,7 @@ public class Calibration extends Model {
                     } else {
                         Log.d(TAG, "Follower mode or note so not processing calibration deeply");
                     }
-                } else {
+                } else if (SensorSanity.isRawCapable(getDexCollectionType())) { // Only if the sensor can provide raw values
                     final String msg = "Sensor data fails sanity test - Cannot Calibrate! raw:" + bgReading.raw_data;
                     UserError.Log.e(TAG, msg);
                     JoH.static_toast_long(msg);

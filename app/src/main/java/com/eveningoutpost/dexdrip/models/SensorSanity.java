@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.models;
 
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getDexCollectionType;
+
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
@@ -25,12 +27,16 @@ public class SensorSanity {
 
     private static final String TAG = "SensorSanity";
 
+    public static boolean isRawCapable(DexCollectionType type) { // This is true only if the sensor can provide raw values
+        return (DexCollectionType.hasDexcomRaw(type) || DexCollectionType.hasLibre(type) || type == DexCollectionType.Medtrum);
+    }
+
     public static boolean isRawValueSane(double raw_value) {
-        return isRawValueSane(raw_value, DexCollectionType.getDexCollectionType(), false);
+        return isRawValueSane(raw_value, getDexCollectionType(), false);
     }
 
     public static boolean isRawValueSane(double raw_value, boolean hard) {
-        return isRawValueSane(raw_value, DexCollectionType.getDexCollectionType(), hard);
+        return isRawValueSane(raw_value, getDexCollectionType(), hard);
     }
 
     public static boolean isRawValueSane(double raw_value, DexCollectionType type) {
@@ -71,7 +77,7 @@ public class SensorSanity {
             else if (raw_value > DEXCOM_MAX_RAW) state = false;
         }
 
-        if (!state) {
+        if (!state && isRawCapable(type)) {
             if (JoH.ratelimit("sanity-failure", 20)) {
                 final String msg = "Sensor Raw Data Sanity Failure: " + raw_value;
                 UserError.Log.e(TAG, msg);
