@@ -51,6 +51,9 @@ public class NanoStatus {
     public final ObservableField<String> watch = new ObservableField<>();
     public final ObservableField<SpannableString> color_watch = new ObservableField<>();
 
+    public static String debugStringStatic = null;
+    public String debugString = null;
+
     private static String lastException = "";
 
     public NanoStatus(final String parameter, final int freqMs) {
@@ -60,6 +63,9 @@ public class NanoStatus {
         if (freqMs > 0) {
             running = true;
             startRefresh();
+        }
+        if (debugStringStatic != null) {
+            debugString = debugStringStatic + " " + parameter;
         }
     }
 
@@ -141,6 +147,9 @@ public class NanoStatus {
 
     static SpannableString collectorNano(final Class<?> service) {
         if (service != null) {
+            if (debugStringStatic != null) {
+                return new SpannableString(debugStringStatic + " " + service.getSimpleName());
+            }
             try {
                 try {
                     return (SpannableString) cache.get(service).invoke(null);
@@ -203,6 +212,10 @@ public class NanoStatus {
     }
 
     public static SpannableString getRemote(final String prefix) {
+        if (debugStringStatic != null) {
+            return new SpannableString(debugStringStatic + " " + prefix);
+        }
+
         // TODO apply timeout?
         try {
             val result = PersistentStore.getString(REMOTE_COLLECTOR_STATUS_STORE + prefix);
