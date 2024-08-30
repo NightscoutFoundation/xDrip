@@ -12,6 +12,7 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.BloodSugarUpdateReceiver;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.models.BgReading;
@@ -165,6 +166,10 @@ public class BgSendQueue extends Model {
                 JoH.startService(SyncService.class);
             }
 
+            android.util.Log.d("newBgReading","update bg from line 169: "+bgReading.displayValue(null)+bgReading.displaySlopeArrow());
+            Intent intent = new Intent(BloodSugarUpdateReceiver.ACTION_UPDATE_BLOOD_SUGAR);
+            intent.putExtra("blood_sugar_value", bgReading.displayValue(null)+bgReading.displaySlopeArrow());
+            context.sendBroadcast(intent);
 
         } finally {
             JoH.releaseWakeLock(wakeLock);

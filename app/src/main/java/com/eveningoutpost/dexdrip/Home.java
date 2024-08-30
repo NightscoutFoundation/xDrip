@@ -36,6 +36,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -594,7 +596,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         statusReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-
+                Log.d("statusReceiver:","newnewnewnewnewnewnewnewn");
                 final String bwp = intent.getStringExtra("bwp");
                 if (bwp != null) {
                     statusBWP = bwp;
@@ -623,6 +625,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
         currentBgValueText.setText(""); // clear any design prototyping default
+
+        // 启动悬浮窗服务
+        startService(new Intent(this, FloatingWidgetService.class));
+
     }
 
     private boolean firstRunDialogs(final boolean checkedeula) {
@@ -3036,6 +3042,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             dexbridgeBattery.setPaintFlags(dexbridgeBattery.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             hide_slope = true;
+
+            //Floating
+            FloatingWidgetService.updateBloodSugarValue(bgGraphBuilder.unitized_string(estimate));
+
         } else {
             // not stale
             if (notificationText.getText().length() == 0) {
@@ -3077,15 +3087,21 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     slope_arrow = "";
                 }
                 currentBgValueText.setText(stringEstimate + (itr == null ? " " + slope_arrow : ""));
+                //Floating
+                FloatingWidgetService.updateBloodSugarValue(stringEstimate + (itr == null ? " " + slope_arrow : ""));
             } else {
                 // old depreciated prediction
                 estimate = BgReading.activePrediction();
                 String stringEstimate = bgGraphBuilder.unitized_string(estimate);
                 currentBgValueText.setText(stringEstimate + (itr == null ? " " + BgReading.activeSlopeArrow() : ""));
+
+                //Floating
+                FloatingWidgetService.updateBloodSugarValue(stringEstimate + (itr == null ? " " + BgReading.activeSlopeArrow() : ""));
             }
             if (extrastring.length() > 0)
                 currentBgValueText.setText(extrastring + currentBgValueText.getText());
         }
+
         int minutes = (int) (System.currentTimeMillis() - lastBgReading.timestamp) / (60 * 1000);
 
         if ((!small_width) || (notificationText.length() > 0)) notificationText.append("\n");
