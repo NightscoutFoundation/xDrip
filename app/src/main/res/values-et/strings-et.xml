@@ -38,9 +38,9 @@
     <string name="auto_configure_title">Automaatne seadistamine</string>
     <string name="prefs_auto_config_summary">Automaatne seadistamine kasutades triipkoodi.</string>
     <string name="auto_config_cam_title">Kaamera</string>
-    <string name="auto_config_cam_summary">Skaneeri telefoniga QR-kood (soovitatud)</string>
+    <string name="auto_config_cam_summary">Skaneeri oma telefoniga QR-kood (soovitatav)</string>
     <string name="auto_config_image_title">Pildifail</string>
-    <string name="auto_config_image_summary">Saad salvestada QR-koodi pildifailina (nagu .png või .jpeg) oma telefoni. Siis kasuta seda valikut, et salvestatud failist QR-kood skaneerida.</string>
+    <string name="auto_config_image_summary">Saad salvestada QR-koodi pildifailina (nt .png või .jpeg) oma telefoni. Siis kasuta seda valikut, et salvestatud failist QR-kood skaneerida.</string>
     <string name="scan_share2_barcode">Skaneeri jagatud triipkoodi</string>
     <string name="pref_share2_scan_barcode_summary">Või skaneeri triipkoodi jagajalt</string>
     <!-- MongoDB Settings -->
@@ -401,7 +401,7 @@
     <string name="send_message">Saada sõnum</string>
     <string name="save_logs">Salvesta logid</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Palun anna teada, mis sa äpist üldiselt arvad</string>
-    <string name="log_confidential_note">Hoiatus!\nLogid võivad sisaldada konfidentsiaalset informatsiooni, näiteks paroole või kasutajatunnuseid.</string>
+    <string name="log_confidential_note">Hoiatus!\nLogid võivad sisaldada konfidentsiaalset teavet, näiteks paroole või kasutajatunnuseid.</string>
     <string name="preferences_saved_in_sdcard_downloads">Eelistused on salvestatud sisemisse salvestusruumi/allalaadimiste kausta</string>
     <string name="could_not_write_to_sdcard_check_perms">SD kaardile ei saa kirjutada, kontrolli õigusi?</string>
     <string name="loaded_preferences_restarting">Seaded laaditud! - Taaskäivitus</string>
