@@ -393,7 +393,7 @@ public class SdcardImportExport extends BaseAppCompatActivity {
         return false;
     }
 
-    private static boolean directCopyFile(File source_filename, File dest_filename) {
+    public static boolean directCopyFile(File source_filename, File dest_filename) {
         Log.i(TAG, "Attempt to copy: " + source_filename.toString() + " to " + dest_filename.toString());
         try {
             final InputStream in = new FileInputStream(source_filename);
