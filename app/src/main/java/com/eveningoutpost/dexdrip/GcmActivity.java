@@ -77,6 +77,7 @@ public class GcmActivity extends FauxActivity {
     private static long cool_down_till = 0;
     public static AtomicInteger msgId = new AtomicInteger(1);
     public static volatile String token = null;
+    public static String senderid = null;
     public static final List<GCM_data> gcm_queue = new ArrayList<>();
     private static final Object queue_lock = new Object();
     private BroadcastReceiver mRegistrationBroadcastReceiver;
