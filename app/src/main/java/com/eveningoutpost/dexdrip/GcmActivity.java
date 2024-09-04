@@ -38,7 +38,6 @@ import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.common.primitives.Bytes;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
@@ -77,8 +76,7 @@ public class GcmActivity extends FauxActivity {
     private static long last_rlcl_request = 0;
     private static long cool_down_till = 0;
     public static AtomicInteger msgId = new AtomicInteger(1);
-    public static String token = null;
-    public static String senderid = null;
+    public static volatile String token = null;
     public static final List<GCM_data> gcm_queue = new ArrayList<>();
     private static final Object queue_lock = new Object();
     private BroadcastReceiver mRegistrationBroadcastReceiver;
@@ -611,9 +609,9 @@ public class GcmActivity extends FauxActivity {
     }
 
     public static void requestSensorCalibrationsUpdate() {
-        if (Home.get_follower() && JoH.pratelimit("SensorCalibrationsUpdateRequest", 300)) {
+        if (Home.get_follower() && JoH.pratelimit("SensorCalibrationsUpdateRequest", 1200)) {
             Log.d(TAG, "Requesting Sensor and calibrations Update");
-            GcmActivity.sendMessage("sensor_calibrations_update", "");
+            GcmActivity.sendMessage("sencalup", "");
         }
     }
 
@@ -737,6 +735,11 @@ public class GcmActivity extends FauxActivity {
                 return "";
             }
 
+            if (action.length() > 15) {
+                UserError.Log.e(TAG, "Cannot send invalid action: " + action);
+                return "";
+            }
+
             final Bundle data = new Bundle();
             data.putString("action", action);
             data.putString("identity", identity);
@@ -797,6 +800,7 @@ public class GcmActivity extends FauxActivity {
             case "nscu":
             case "nscusensor-expiry":
             case "esup":
+            case "sencalup":
                 synchronized (queue_lock) {
                     for (GCM_data qdata : gcm_queue) {
                         try {
@@ -816,7 +820,7 @@ public class GcmActivity extends FauxActivity {
         }
     }
 
-    private static void fmSend(Bundle data) {
+  /*  private static void fmSend(Bundle data) {
         final FirebaseMessaging fm = FirebaseMessaging.getInstance();
         if (senderid != null) {
             fm.send(new RemoteMessage.Builder(senderid + "@gcm.googleapis.com")
@@ -826,7 +830,7 @@ public class GcmActivity extends FauxActivity {
         } else {
             Log.wtf(TAG, "senderid is null");
         }
-    }
+    }*/
 
     private void tryGCMcreate() {
         Log.d(TAG, "try GCMcreate");
