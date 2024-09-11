@@ -259,16 +259,6 @@
                     android:key="share_test_key"
                     android:shouldDisableView="true"
                     android:title="@string/dexcom_test_mode_serial" />
-                <Preference
-                    android:dependency="share_upload"
-                    android:summary="@string/manage_existing_followers"
-                    android:key="manage_dexcom_share_followers"
-                    android:title="@string/manage_followers">
-                    <intent
-                        android:action="android.intent.action.MAIN"
-                        android:targetClass="com.eveningoutpost.dexdrip.FollowerManagementActivity"
-                        android:targetPackage="@string/local_target_package" />
-                </Preference>
             </PreferenceScreen>
             <PreferenceScreen
                 android:key="tidepool_upload_screen"

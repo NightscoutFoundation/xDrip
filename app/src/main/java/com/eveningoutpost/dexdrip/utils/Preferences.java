@@ -1912,13 +1912,13 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 }
             }
 
-
-            if (!engineering_mode) {
-                try {
-                    ((PreferenceScreen) findPreference("dexcom_server_upload_screen")).removePreference(findPreference("share_test_key"));
-                } catch (Exception e) {
-                    //
-                }
+            // Hide receiver serial number settings
+            // Hiding a setting without deleting it makes it invisible to the user while it can still define the setting value.
+            try {
+                ((PreferenceScreen) findPreference("dexcom_server_upload_screen")).removePreference(findPreference("share_test_key"));
+                ((PreferenceScreen) findPreference("dexcom_server_upload_screen")).removePreference(findPreference("share_key"));
+            } catch (Exception e) {
+                //
             }
 
             //if (engineering_mode) {
