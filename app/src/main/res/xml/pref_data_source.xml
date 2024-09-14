@@ -237,6 +237,14 @@
             android:key="dex_share_us_acct"
             android:summary="Your account and follower app are from the USA"
             android:title="US Servers" />
+        <ListPreference
+            android:defaultValue="0"
+            android:key="dex_share_follow_lag"
+            android:summary=""
+            android:title="@string/title_dexsharefollow_lag"
+            android:entries="@array/dexsharefollowlag_entries"
+            android:entryValues="@array/dexsharefollowlag_values"
+            />
 
         <ListPreference
             android:defaultValue="gb"

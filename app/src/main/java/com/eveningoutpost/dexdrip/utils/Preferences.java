@@ -1335,6 +1335,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             final Preference shFollowUser = findPreference("shfollow_user");
             final Preference shFollowPass = findPreference("shfollow_pass");
             final Preference shFollowServerUS = findPreference("dex_share_us_acct");
+            final Preference dexShareFollowLag = findPreference("dex_share_follow_lag"); // Show the Dex share follow wake delay setting only when Dex share follow is the data source
+            bindPreferenceSummaryToValue(findPreference("dex_share_follow_lag")); // Show the selected value as summary
 
             if (collectionType == DexCollectionType.SHFollow) {
                 final Preference.OnPreferenceChangeListener shFollowListener = new Preference.OnPreferenceChangeListener() {
@@ -1350,6 +1352,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     shFollowUser.setOnPreferenceChangeListener(shFollowListener);
                     shFollowPass.setOnPreferenceChangeListener(shFollowListener);
                     shFollowServerUS.setOnPreferenceChangeListener(shFollowListener);
+                    dexShareFollowLag.setOnPreferenceChangeListener(shFollowListener);
                 } catch (Exception e) {
                     //
                 }
@@ -1359,6 +1362,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     collectionCategory.removePreference(shFollowUser);
                     collectionCategory.removePreference(shFollowPass);
                     collectionCategory.removePreference(shFollowServerUS);
+                    collectionCategory.removePreference(dexShareFollowLag);
                 } catch (Exception e) {
                     //
                 }

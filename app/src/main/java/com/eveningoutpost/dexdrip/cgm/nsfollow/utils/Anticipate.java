@@ -1,15 +1,12 @@
 package com.eveningoutpost.dexdrip.cgm.nsfollow.utils;
 
-import com.eveningoutpost.dexdrip.utilitymodels.Constants;
-import com.eveningoutpost.dexdrip.utilitymodels.Pref;
-
 /**
  * Choose optimum anticipation times for re-attempting data collection to minimize
- * number of requests to nightscout but at the same time reduce latency from new
- * value is available till it is shown in xdrip.
+ * number of requests from the source but at the same time reduce latency for new
+ * value shown in xdrip.
  *
- * We're trying to give the user the lowest latency on the data we can, but avoiding constantly
- * polling for data to conserve battery life and mobile data costs.
+ * We're trying to provide the lowest latency we can, but avoid constantly
+ * polling the source to conserve battery life and mobile data costs.
  *
  * @author Original author jamorham
  */
@@ -20,9 +17,11 @@ public class Anticipate {
      * If last + period and a bit >= now, ask again after last + period and grace
      */
 
-    public static long next(long now, final long lastTimeStamp, final long period, final long grace) {
-        final long lag = Constants.SECOND_IN_MS * Pref.getStringToInt("nsfollow_lag", 0); // User can choose a wake delay with a 0 default.
-        final long last = lastTimeStamp + lag; // We delay the source timestamp and use it as the time we received the reading to account for any source delay.
+    public static long next(long now, final long lastTimeStamp, final long period, final long grace) { // Calling the anticipate method without a lag parameter will use a default lag of 0
+        return next(now, lastTimeStamp, period, grace, 0);
+    }
+    public static long next(long now, final long lastTimeStamp, final long period, final long grace, final long lag) {
+        final long last = lastTimeStamp + lag; // The calling method can include a non-zero lag parameter to delay the anticipation time to account for source delay.
 
         final long since = now - last;
         if (since <= (grace * 2)) {
