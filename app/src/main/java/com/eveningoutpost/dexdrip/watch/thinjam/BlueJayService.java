@@ -271,7 +271,10 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
         setSettings(Pref.getString("dex_txid", "").trim().toUpperCase());
     }
 
-    public void setSettings(final String txid) {
+    public void setSettings(String txid) {
+        if (txid.length() == 4) {
+            txid = "0B" + txid;
+        }
         if (txid.length() == 6) {
             queueGenericCommand(new SetTxIdTx(txid, "00:00:00:00:00:00").getBytes(), "Set TxId: " + txid, null);
         } else {
