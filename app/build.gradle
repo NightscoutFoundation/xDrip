@@ -285,9 +285,9 @@ dependencies {
    // implementation 'com.google.android.gms:play-services-maps:15.0.0'
     implementation 'com.google.android.gms:play-services-wearable:15.0.0'
     implementation 'com.google.android.gms:play-services-location:15.0.0'
-    implementation "com.google.android.gms:play-services-gcm:15.0.0"
+    implementation "androidx.work:work-runtime:2.9.1"
     implementation "com.google.android.gms:play-services-oss-licenses:15.0.0"
-
+    implementation "com.google.protobuf:protobuf-java:4.27.2"
     implementation 'com.squareup.wire:wire-runtime:2.2.0'
     implementation 'com.squareup.okhttp:okhttp:2.7.5'
     implementation 'com.squareup.okhttp3:okhttp:3.12.13'

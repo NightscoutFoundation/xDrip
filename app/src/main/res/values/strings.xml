@@ -1460,6 +1460,7 @@
     <string name="summary_plus_accept_follower_actions">Treatments, Calibrations and other actions from followers will be accepted</string>
     <string name="title_plus_accept_follower_actions">Accept follower actions</string>
     <string name="summary_plus_whole_house">Participate in a Whole House Network</string>
+    <string name="summary_plus_xdrip_cloud">Use the new xDrip+ cloud servers. Master and followers must all have this setting set the same.</string>
     <string name="title_plus_whole_house">Whole House</string>
     <string name="summary_libre_whole_house_collector">This phone will be a collector in a whole house network</string>
     <string name="title_libre_whole_house_collector">Libre Whole House</string>
@@ -1782,6 +1783,7 @@
     <string name="proceed">Proceed</string>
     <string name="special_pairing_workaround">Special Pairing Workaround</string>
     <string name="save_power">Save Power</string>
+    <string name="use_xdrip_cloud">Use xDrip Cloud</string>
     <string name="reduce_battery_and_network_overhead">Reduce battery and network overhead by using batch processing and excluding unnecessary data</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Simplify graphs by smoothing out irregularities in the previous readings.  The current reading, alerts and broadcast value are not affected by this setting.  </string>
     <string name="graph_smoothing">Graph Smoothing</string>
@@ -1910,4 +1912,5 @@
     <string name="use_camera_light">Use Camera Light</string>
     <string name="use_camera_light_summary">Flash camera light during alerts when connected to a charger</string>
     <string name="g7_should_start_automatically">G7 should start automatically</string>
+    <string name="screenshot">Screenshot</string>
 </resources>

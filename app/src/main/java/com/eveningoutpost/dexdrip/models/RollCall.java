@@ -7,6 +7,7 @@ import android.os.Build;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.cloud.jamcm.Pusher;
 import com.eveningoutpost.dexdrip.utilitymodels.BridgeBattery;
 import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 import com.eveningoutpost.dexdrip.utilitymodels.StatusItem;
@@ -65,6 +66,9 @@ public class RollCall {
     @Expose
     Long last_seen;
 
+    @Expose
+    int cloud;
+
     final long created = JoH.tsl();
 
     public RollCall() {
@@ -103,6 +107,7 @@ public class RollCall {
     public RollCall populate() {
         this.battery = getBatteryLevel();
         this.bridge_battery = BridgeBattery.getBestBridgeBattery();
+        this.cloud = Pusher.enabled() ? 1 : 0;
         return this;
     }
 

@@ -51,7 +51,19 @@ public class JamCm {
     /**
      * @noinspection DataFlowIssue
      */
-    public static void sendMessage(Bundle input) {
+    public static void sendMessage(final Bundle input) {
+            if (Pusher.enabled()) {
+                Pusher.sendMessage(input);
+            } else {
+                sendMessagePrevious(input);
+            }
+    }
+
+    public static void sendMessageBackground(final Bundle input) {
+        new Thread(() -> sendMessage(input)).start();
+    }
+
+    public static void sendMessagePrevious(Bundle input) {
 
         val ids = getId();
         if (ids == null) {

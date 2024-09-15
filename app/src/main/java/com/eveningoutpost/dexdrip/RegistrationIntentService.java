@@ -4,6 +4,8 @@ package com.eveningoutpost.dexdrip;
  * Created by jamorham on 11/01/16.
  */
 
+import static com.eveningoutpost.dexdrip.GcmActivity.TASK_TAG_UNMETERED;
+
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,22 +15,29 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.work.Constraints;
+import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+import androidx.work.WorkRequest;
 
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.services.PlusSyncService;
-import com.google.android.gms.gcm.GcmNetworkManager;
-import com.google.android.gms.gcm.PeriodicTask;
-import com.google.android.gms.gcm.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.json.JSONObject;
 
+import lombok.val;
+
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public class RegistrationIntentService extends IntentService {
     private static final String TAG = "jamorham regService";
     private static final String[] PREDEF = {"global"};
+    private static final String[] PREDEF2 = {"global2"};
 
     public RegistrationIntentService() {
         super(TAG);
@@ -39,7 +48,7 @@ public class RegistrationIntentService extends IntentService {
         final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         final PowerManager.WakeLock wl = JoH.getWakeLock("registration-intent", 120000);
         try {
-            GcmActivity.senderid = getString(R.string.gcm_defaultSenderId);
+           // GcmActivity.senderid = getString(R.string.gcm_defaultSenderId);
             String token = FirebaseInstanceId.getInstance().getToken();
             try {
                 final JSONObject json = new JSONObject(token);
@@ -64,18 +73,28 @@ public class RegistrationIntentService extends IntentService {
         }
     }
 
-    private void sendRegistrationToServer(String token) {
+    private synchronized void sendRegistrationToServer(String token) {
         try {
             Log.d(TAG, "Scheduling tasks");
-            PeriodicTask task = new PeriodicTask.Builder()
-                    .setService(TaskService.class)
-                    .setTag(GcmActivity.TASK_TAG_UNMETERED)
-                    .setRequiredNetwork(Task.NETWORK_STATE_UNMETERED)
-                    .setPeriod(7200L)
+
+            val constraints = new Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.UNMETERED)
+                    //.setRequiresCharging(true)
                     .build();
 
-            GcmNetworkManager.getInstance(this).cancelAllTasks(TaskService.class);
-            GcmNetworkManager.getInstance(this).schedule(task);
+            val uploadWorkRequest =
+                    new PeriodicWorkRequest.Builder(TaskService.class,12, TimeUnit.HOURS)
+                            .addTag(TASK_TAG_UNMETERED)
+                            .setConstraints(constraints)
+                            .build();
+            val uploadWorkRequest2 =
+                    new OneTimeWorkRequest.Builder(TaskService.class)
+                            .addTag(TASK_TAG_UNMETERED)
+                            .build();
+            WorkManager.getInstance(getApplicationContext()).cancelAllWorkByTag(TASK_TAG_UNMETERED);
+            WorkManager.getInstance(getApplicationContext()).enqueue(uploadWorkRequest2);
+            WorkManager.getInstance(getApplicationContext()).enqueue(uploadWorkRequest);
+
             PlusSyncService.startSyncService(getApplicationContext(), "RegistrationToServer");
             GcmActivity.queueCheckOld(getApplicationContext());
         } catch (Exception e) {
@@ -83,9 +102,12 @@ public class RegistrationIntentService extends IntentService {
         }
     }
 
-    private void subscribeTpcs(String token) throws IOException {
+    private void subscribeTpcs(String token) {
         FirebaseMessaging.getInstance().subscribeToTopic(GcmActivity.myIdentity());
         for (String tpc : PREDEF) {
+            FirebaseMessaging.getInstance().unsubscribeFromTopic(tpc);
+        }
+        for (String tpc : PREDEF2) {
             FirebaseMessaging.getInstance().subscribeToTopic(tpc);
         }
     }
