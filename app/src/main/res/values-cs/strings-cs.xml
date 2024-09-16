@@ -1415,6 +1415,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="summary_plus_accept_follower_actions">Ošetření, kalibrace a další jiné akce zadané sledujícími budou přijaty i na tomto zařízení</string>
     <string name="title_plus_accept_follower_actions">Přijímat akce sledujícího</string>
     <string name="summary_plus_whole_house">Účast v Whole House síti</string>
+    <string name="summary_plus_xdrip_cloud">Používat nové cloudové servery xDrip+. Sledované (master) a sledující (follower) zařízení musí mít toto nastavení stejné.</string>
     <string name="title_plus_whole_house">Whole House</string>
     <string name="summary_libre_whole_house_collector">Toto zařízení bude kolektorem pro Whole House síť</string>
     <string name="title_libre_whole_house_collector">Libre Whole House</string>
@@ -1727,6 +1728,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="proceed">Pokračovat</string>
     <string name="special_pairing_workaround">Speciální způsob párování pro telefony Samsung</string>
     <string name="save_power">Úsporný režim</string>
+    <string name="use_xdrip_cloud">Použít xDrip+ cloud</string>
     <string name="reduce_battery_and_network_overhead">Snížit spotřebu baterie a objem přenesených dat pomocí dávkového zpracování a vyloučení nepotřebných dat</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Zjednodušit grafy vyhlazením (odstraněním) odchylných hodnot glykémií. Toto nastavení neovlivní aktuální hodnotu glykémie, výstrahy a odesílanou hodnotu glykémie.  </string>
     <string name="graph_smoothing">Vyhlazování grafu</string>
@@ -1855,4 +1857,5 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="use_camera_light">Používat světlo fotoaparátu</string>
     <string name="use_camera_light_summary">Blikat světlem fotoaparátu během trvání výstrahy, pokud je telefon připojen k nabíječce</string>
     <string name="g7_should_start_automatically">Senzor G7 by se měl spustit automaticky</string>
+    <string name="screenshot">Snímek obrazovky</string>
 </resources>
