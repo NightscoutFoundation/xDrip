@@ -1414,6 +1414,7 @@
     <string name="summary_plus_accept_follower_actions">Behandlinger, kalibreringer og andre handlinger fra følgere vil bli akseptert</string>
     <string name="title_plus_accept_follower_actions">Godta følgerhandlinger</string>
     <string name="summary_plus_whole_house">Delta i et Helt Hus Nettverk</string>
+    <string name="summary_plus_xdrip_cloud">Bruk de nye xDrip+ Cloud-serverne. Master og følgere må alle ha denne innstillingen stilt inn likt.</string>
     <string name="title_plus_whole_house">Helt Hus</string>
     <string name="summary_libre_whole_house_collector">Denne telefonen vil være en innsamler i et Helt Hus Nettverk</string>
     <string name="title_libre_whole_house_collector">Libre Helt Hus</string>
@@ -1734,6 +1735,7 @@
     <string name="proceed">Fortsett</string>
     <string name="special_pairing_workaround">Spesiell løsning for sammenkobling</string>
     <string name="save_power">Spar strøm</string>
+    <string name="use_xdrip_cloud">Bruk xDrip Cloud</string>
     <string name="reduce_battery_and_network_overhead">Reduser batteri- og nettverksbruk ved å bruke batchbehandling og ekskludere unødvendige data</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Forenkle grafer ved å utjevne uregelmessigheter i tidligere avlesninger. Siste avlesning, varsler og kringkastet verdi er ikke påvirket av denne innstillingen.  </string>
     <string name="graph_smoothing">Grafutjevning</string>
@@ -1862,4 +1864,5 @@
     <string name="use_camera_light">Bruk kameralys</string>
     <string name="use_camera_light_summary">Blink kameralys under varsler når tilkoblet en lader</string>
     <string name="g7_should_start_automatically">G7 skal starte automatisk</string>
+    <string name="screenshot">Skjermdump</string>
 </resources>
