@@ -1395,6 +1395,7 @@
     <string name="summary_plus_accept_follower_actions">Se aceptarán tratamientos, calibraciones y otras acciones de los seguidores</string>
     <string name="title_plus_accept_follower_actions">Aceptar acciones de los seguidores</string>
     <string name="summary_plus_whole_house">Participar en una Red Casera</string>
+    <string name="summary_plus_xdrip_cloud">Utilice los nuevos servidores de nube xDrip+. Maestro y seguidores deben tener este ajuste igual.</string>
     <string name="title_plus_whole_house">Red Casera</string>
     <string name="summary_libre_whole_house_collector">Este teléfono será colector en una red casera</string>
     <string name="title_libre_whole_house_collector">Red Casera Libre</string>
@@ -1715,6 +1716,7 @@
     <string name="proceed">Continuar</string>
     <string name="special_pairing_workaround">Método alternativo especial de emparejamiento</string>
     <string name="save_power">Ahorro de energía</string>
+    <string name="use_xdrip_cloud">Usar xDrip Cloud</string>
     <string name="reduce_battery_and_network_overhead">Reducir la sobrecarga de la batería y red mediante el procesamiento por lotes y la exclusión de datos innecesarios</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Simplificar los gráficos suavizando las irregularidades</string>
     <string name="graph_smoothing">Suavizar gráficos</string>
@@ -1843,4 +1845,5 @@
     <string name="use_camera_light">Usar luz de cámara</string>
     <string name="use_camera_light_summary">Flashear luz de la cámara durante alertas al conectar a un cargador</string>
     <string name="g7_should_start_automatically">G7 debe iniciarse automáticamente</string>
+    <string name="screenshot">Captura de pantalla</string>
 </resources>
