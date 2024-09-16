@@ -51,6 +51,7 @@ import com.eveningoutpost.dexdrip.services.DoNothingService;
 import com.eveningoutpost.dexdrip.services.G5CollectionService;
 import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.services.WifiCollectionService;
+import com.eveningoutpost.dexdrip.ui.helpers.FloatingLocaleActivityWithScreenshot;
 import com.eveningoutpost.dexdrip.utilitymodels.JamorhamShowcaseDrawer;
 import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
@@ -64,7 +65,6 @@ import com.eveningoutpost.dexdrip.cgm.webfollow.WebFollowService;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.CareLinkFollowService;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenService;
-import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunService;
@@ -81,7 +81,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-public class MegaStatus extends ActivityWithMenu {
+import lombok.val;
+
+public class MegaStatus extends FloatingLocaleActivityWithScreenshot {
 
 
     private static Activity mActivity;
@@ -451,7 +453,10 @@ public class MegaStatus extends ActivityWithMenu {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        //getMenuInflater().inflate(R.menu.menu_mega_status, menu);
+        if (FloatingLocaleActivityWithScreenshot.localeString == null) {
+            // only if we are not forced to a locale
+            getMenuInflater().inflate(R.menu.menu_mega_status, menu);
+        }
         return true;
     }
 
@@ -463,7 +468,13 @@ public class MegaStatus extends ActivityWithMenu {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_screenshot) {
+            val lang = "en"; // force in this language
+            val intent = JoH.getStartActivityIntent(MegaStatus.class);
+            intent.putExtra(FORCE_ACTIVITY_LANGUAGE,lang);
+            intent.putExtra(SCREENSHOT_AND_EXIT, true);
+            FloatingLocaleActivityWithScreenshot.localeString = lang;
+            xdrip.getAppContext().startActivity(intent);
             return true;
         }
 
