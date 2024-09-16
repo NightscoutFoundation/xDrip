@@ -7,6 +7,8 @@ import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.xdrip;
 
+import lombok.val;
+
 /**
  * Created by jamorham on 01/01/2018.
  * <p>
@@ -98,6 +100,39 @@ public class Pref {
         String str = getString(pref, def);
         if (str != null) str = str.trim();
         return str;
+    }
+
+    public static Object getValue(String key) {
+        initializePrefs();
+        if (!prefs.contains(key)) {
+            return null;
+        }
+
+        try {
+            return prefs.getBoolean(key, false);
+        } catch (ClassCastException e) {
+            //
+        }
+
+        try {
+            return prefs.getString(key, null);
+        } catch (ClassCastException e) {
+            //
+        }
+
+        return null;
+    }
+
+    public static String getAsString(final String pref, String def) {
+        initializePrefs();
+        val v = getValue(pref);
+        if (v instanceof Boolean) {
+            return Boolean.toString((Boolean) v);
+        } else if (v instanceof  String) {
+            return (String)v;
+        } else {
+            return def;
+        }
     }
 
     public static boolean setString(final String pref, final String str) {
