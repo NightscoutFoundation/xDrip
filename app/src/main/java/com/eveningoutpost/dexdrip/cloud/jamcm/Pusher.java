@@ -63,6 +63,7 @@ public class Pusher {
     private static final PowerManager.WakeLock wakeLock = getWakeLock("pusher-wake", 1000);
 
     private static volatile boolean running;
+    private static volatile boolean reconnect;
 
     private static volatile Pusher instance;
 
@@ -88,6 +89,7 @@ public class Pusher {
             running = true;
             final Pusher client = new Pusher();
             instance = client;
+            reconnect = false; // already new
             final Thread t = new Thread(() -> {
                 client.start();
                 running = false;
@@ -111,6 +113,11 @@ public class Pusher {
         } else {
             return client;
         }
+    }
+
+    public static synchronized void requestReconnect() {
+            reconnect = true;
+            log("Reconnect requested");
     }
 
     public static boolean enabled() {
@@ -273,6 +280,11 @@ public class Pusher {
                     } else {
                         reconnectTimer = Math.max(0, reconnectTimer - 1000); // For each success reduce the reconnect timer by 1 second
                         receivedStatistics.onMessage();
+                        if (reconnect) {
+                            reconnect = false;
+                            log("Initiating reconnection");
+                            closeConnection();
+                        }
                     }
                 }
             } catch (SocketTimeoutException te) {

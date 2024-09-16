@@ -68,6 +68,7 @@ import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
 import com.eveningoutpost.dexdrip.cgm.webfollow.Cpref;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.auth.CareLinkAuthenticator;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.auth.CareLinkCredentialStore;
+import com.eveningoutpost.dexdrip.cloud.jamcm.Pusher;
 import com.eveningoutpost.dexdrip.g5model.DexSyncKeeper;
 import com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.healthconnect.HealthConnectEntry;
@@ -572,6 +573,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
     private final SharedPreferences.OnSharedPreferenceChangeListener xDripCloudListener = (sharedPreferences, key) -> {
         if (key!= null && key.equals("use_xdrip_cloud_sync")) {
+            Pusher.requestReconnect();
             CollectionServiceStarter.restartCollectionServiceBackground();
         }
     };

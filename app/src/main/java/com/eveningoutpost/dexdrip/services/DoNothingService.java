@@ -241,8 +241,10 @@ public class DoNothingService extends Service {
                     val due = Pusher.getInstance().getNextReconnectionDue();
                     l.add(new StatusItem("Next reconnection", due != -1 ? niceTimeScalar(Math.max(msTill(due), 0)) : "Unknown"));
                 }
-                l.add(new StatusItem("Sent hour / total", Pusher.sentLastHour() + "   (" + Pusher.sentTotal() + ")"));
-                l.add(new StatusItem("Recv hour / total", Pusher.receivedLastHour() + "   (" + Pusher.receivedTotal() + ")"));
+                if (Home.get_engineering_mode()) {
+                    l.add(new StatusItem("Sent hour / total", Pusher.sentLastHour() + "   (" + Pusher.sentTotal() + ")"));
+                    l.add(new StatusItem("Recv hour / total", Pusher.receivedLastHour() + "   (" + Pusher.receivedTotal() + ")"));
+                }
 
 
             } catch (Exception e) {

@@ -12,6 +12,7 @@ import android.util.Log;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.GoogleDriveInterface;
+import com.eveningoutpost.dexdrip.cloud.jamcm.Pusher;
 import com.eveningoutpost.dexdrip.utilitymodels.UpdateActivity;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -35,6 +36,7 @@ public class PlusSyncService extends Service {
         GoogleDriveInterface.invalidate();
         GcmActivity.token = null; // invalidate
         speedup();
+        Pusher.requestReconnect();
         startSyncService(context, "clearAndRestart");
     }
 
