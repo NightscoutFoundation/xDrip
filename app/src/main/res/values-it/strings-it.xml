@@ -1396,6 +1396,7 @@
     <string name="summary_plus_accept_follower_actions">Trattamenti e calibrazioni mandati dei follower saranno accettati </string>
     <string name="title_plus_accept_follower_actions">Accetta le azioni dei follower</string>
     <string name="summary_plus_whole_house">Partecipa a una rete di casa intera (LibreAllHouse)</string>
+    <string name="summary_plus_xdrip_cloud">Usa i nuovi server cloud xDrip+. Master e follower devono avere entrambi questa impostazione selezionata.</string>
     <string name="title_plus_whole_house">Whole House</string>
     <string name="summary_libre_whole_house_collector">Questo telefono sarà un collector in una rete di copertura casa completa</string>
     <string name="title_libre_whole_house_collector">Libre copertura Casa Intera</string>
@@ -1716,6 +1717,7 @@
     <string name="proceed">Continua</string>
     <string name="special_pairing_workaround">Abbinamento Speciale</string>
     <string name="save_power">Risparmia energia</string>
+    <string name="use_xdrip_cloud">Usa xDrip Cloud</string>
     <string name="reduce_battery_and_network_overhead">Riduce l\'utilizzo della batteria dei dati di rete con l\'elaborazione in batch escludendo dati inutili</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Semplifica i grafici lisciando le irregolarità</string>
     <string name="graph_smoothing">Lisciamento del Grafico</string>
@@ -1836,4 +1838,5 @@
     <string name="use_camera_light">Usa Torcia</string>
     <string name="use_camera_light_summary">Lampeggia la torcia durante gli avvisi quando collegato a un caricabatterie</string>
     <string name="g7_should_start_automatically">G7 dovrebbe avviarsi automaticamente</string>
+    <string name="screenshot">Schermata</string>
 </resources>
