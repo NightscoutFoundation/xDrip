@@ -1414,6 +1414,7 @@
     <string name="summary_plus_accept_follower_actions">Raviandmed, kalibreerimised ja muud jälgijate toimingud aktsepteeritakse</string>
     <string name="title_plus_accept_follower_actions">Nõustuge jälgijate toimingutega</string>
     <string name="summary_plus_whole_house">Osale kogu maja võrgustikus</string>
+    <string name="summary_plus_xdrip_cloud">Kasuta uusi xDrip+ pilveservereid. Põhiseadmes ja jälgijatel peab see setting olema sama.</string>
     <string name="title_plus_whole_house">Kogu maja</string>
     <string name="summary_libre_whole_house_collector">See telefon on kogu maja võrgus vastuvõtjaks</string>
     <string name="title_libre_whole_house_collector">Libre kogu maja</string>
@@ -1734,6 +1735,7 @@
     <string name="proceed">Jätka</string>
     <string name="special_pairing_workaround">Spetsiaalne sidumise lahendus</string>
     <string name="save_power">Säästa energiat</string>
+    <string name="use_xdrip_cloud">Kasuta xDrip pilveteenust</string>
     <string name="reduce_battery_and_network_overhead">Vähenda aku ja võrgu koormust, kasutades pakett-töötlust ja välistades mittevajalikke andmeid</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Lihtsusta graafikuid, siludes ebakorrapärasusi varasemates näitudes.  See ei mõjuta hetkenäitu, alarme ja edastatud väärtust.  </string>
     <string name="graph_smoothing">Graafiku silumine</string>
@@ -1862,4 +1864,5 @@
     <string name="use_camera_light">Kasuta kaamera välku</string>
     <string name="use_camera_light_summary">Vilguta alarmide ajal kaamera välku kui laadija on ühendatud</string>
     <string name="g7_should_start_automatically">G7 peaks automaatselt käivituma</string>
+    <string name="screenshot">Ekraanipilt</string>
 </resources>

@@ -1414,6 +1414,7 @@
     <string name="summary_plus_accept_follower_actions">Les traitements et étalonnages des abonnés seront acceptés</string>
     <string name="title_plus_accept_follower_actions">Accepter les actions des abonnés</string>
     <string name="summary_plus_whole_house">Participer au réseau de la maison</string>
+    <string name="summary_plus_xdrip_cloud">Utilisez les nouveaux serveurs cloud de xDrip+. Les maîtres et les abonnés doivent tous avoir ce paramètre défini à l\'identique.</string>
     <string name="title_plus_whole_house">Maison entière</string>
     <string name="summary_libre_whole_house_collector">Ce téléphone sera un collecteur dans tout le réseau domestique</string>
     <string name="title_libre_whole_house_collector">Mode Libre dans toute la maison</string>
@@ -1734,6 +1735,7 @@
     <string name="proceed">Procéder</string>
     <string name="special_pairing_workaround">Contournement de jumelage spécial</string>
     <string name="save_power">Économiser l\'énergie</string>
+    <string name="use_xdrip_cloud">Utiliser xDrip Cloud</string>
     <string name="reduce_battery_and_network_overhead">Réduire la charge sur la batterie et le réseau en utilisant le traitement par lots et en excluant les données inutiles</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Simplifier les graphiques en lissant les irrégularités des lectures précédentes.  La lecture actuelle, les alertes et la valeur de diffusion ne sont pas affectées par ce paramètre.  </string>
     <string name="graph_smoothing">Lissage du graphique</string>
@@ -1862,4 +1864,5 @@
     <string name="use_camera_light">Utiliser la lumière de la caméra</string>
     <string name="use_camera_light_summary">Allumer la lumière de la caméra lors des alertes si connecté à un chargeur</string>
     <string name="g7_should_start_automatically">Le G7 devrait démarrer automatiquement</string>
+    <string name="screenshot">Capture d\'écran</string>
 </resources>
