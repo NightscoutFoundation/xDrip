@@ -1396,6 +1396,7 @@
     <string name="summary_plus_accept_follower_actions">קבל טיפולים וכיולים מהעוקבים</string>
     <string name="title_plus_accept_follower_actions">קבל את פעולות העוקבים</string>
     <string name="summary_plus_whole_house">השתתף ברשת כלל ביתית</string>
+    <string name="summary_plus_xdrip_cloud">השתמש בשרתי הענן החדשים של xDrip. הגדרה זו חייבת להיות זהה אצל הראשי ואצל העוקבים.</string>
     <string name="title_plus_whole_house">רשת כלל ביתית</string>
     <string name="summary_libre_whole_house_collector">טלפון זה ישמש כאוסף ברשת כלל ביתית</string>
     <string name="title_libre_whole_house_collector">רשת ליברה כלל ביתית</string>
@@ -1616,6 +1617,7 @@
     <string name="alert_buttons">כפתורי פעולות</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">אנא המתינו %d שניות לפני שתנסו להפעיל חיישן</string>
     <string name="save_power">חסוך בסוללה</string>
+    <string name="use_xdrip_cloud">השתמש בענן xDrip</string>
     <string name="reduce_battery_and_network_overhead">חסוך בסוללה ובשימוש בנתונים בעזרת ניתוח נתונים במכה, וכן הפחתה של מידע לא נחוץ</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">פשט את הגרפים בעזרת החלקה של נתונים יוצאי דופן</string>
     <string name="graph_smoothing">החלקת הגרף</string>
@@ -1647,4 +1649,5 @@
     <string name="carelink_credential_status_refresh_expired">פג תוקף כניסתך, אנא התחבר/י מחדש!</string>
     <string name="reraise_alerts_before_snooze_time">השמע את ההתראה שוב לפני זמן ההשתקה</string>
     <string name="g7_should_start_automatically">חיישן ה-G7 יתחיל אוטומטית</string>
+    <string name="screenshot">צילום מסך</string>
 </resources>
