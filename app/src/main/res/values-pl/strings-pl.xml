@@ -1692,6 +1692,7 @@
     <string name="proceed">Kontynuuj</string>
     <string name="special_pairing_workaround">Obejście trybu parowania</string>
     <string name="save_power">Oszczędzaj energię</string>
+    <string name="use_xdrip_cloud">Użyj chmury xDrip</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Uproszczenie wykresów poprzez usunięcie nieprawidłowości</string>
     <string name="graph_smoothing">Wygładzanie wykresu</string>
     <string name="enable_graph_smoothing">Włącz</string>
@@ -1797,4 +1798,5 @@
     <string name="use_camera_light">Użyj latarki aparatu</string>
     <string name="use_camera_light_summary">Mrugaj latarką aparatu podczas alarmów przy podłączeniu do ładowarki</string>
     <string name="g7_should_start_automatically">G7 powinien uruchomić się automatycznie</string>
+    <string name="screenshot">Zrzut ekranu</string>
 </resources>
