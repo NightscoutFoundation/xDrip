@@ -148,3 +148,5 @@
 -keep class com.newrelic.** { *; }
 -dontwarn com.newrelic.**
 -keepattributes Exceptions, Signature, InnerClasses, LineNumberTable
+
+-keep class com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.*
