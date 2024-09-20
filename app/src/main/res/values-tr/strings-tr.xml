@@ -1799,7 +1799,6 @@
     <string name="summary_ymax">Daha büyük okumalar olmadığında yMax\'i seçin.</string>
     <string name="wait_to_connect">Ayarları doğrulayın ve bağlantının kurulmasını bekleyin.</string>
     <string name="summary_sens_expiry_notify">Sensör ömrü bitimine yakın bildirimleri artırın.</string>
-    <string name="title_sens_expiry_notify">Sensörün geçerlilik süresi</string>
     <string name="close">Kapat</string>
     <string name="title_advanced_settings_4_Lib2">Libre 2 için gelişmiş ayarlar</string>
     <string name="title_Lib2_show_raw_values">Ham değerleri grafikte göster</string>

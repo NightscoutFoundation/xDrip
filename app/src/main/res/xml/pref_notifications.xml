@@ -355,6 +355,41 @@
                         android:summary="@string/choose_sound_used_for_predicted_low_alarm"
                         android:title="@string/predicted_low_sound" />
                 </PreferenceCategory>
+                <PreferenceCategory
+                    android:summary="@string/summary_sens_expiry_notify"
+                    android:title="@string/sensor_expiry_alert">
+                    <SwitchPreference
+                        android:defaultValue="false"
+                        android:key="alert_raise_for_sensor_expiry"
+                        android:summary="@string/summary_sens_expiry_notify"
+                        android:title="@string/sensor_expiry_alert" />
+                    <EditTextPreference
+                        android:defaultValue=""
+                        android:dependency="alert_raise_for_sensor_expiry"
+                        android:digits="0123456789"
+                        android:inputType="number"
+                        android:key="alert_raise_for_sensor_expiry_mins"
+                        android:summary="@string/sensor_expiry_mins_summary"
+                        android:title="@string/alarm_at_sensor_expiry_mins" />
+                    <ListPreference
+                        android:defaultValue="Silent"
+                        android:entries="@array/SensorExpiryAlertProfile"
+                        android:entryValues="@array/SensorExpiryAlertProfile"
+                        android:key="sensor_expiry_alert_profile"
+                        android:title="@string/alert_volume_profile" />
+                    <RingtonePreference
+                        android:defaultValue="content://settings/system/alarm_alert"
+                        android:key="sensor_expiry_alert_sound"
+                        android:ringtoneType="all"
+                        android:showSilent="true"
+                        android:summary="@string/set_sound_for_sensor_expiry_alarm"
+                        android:title="@string/alert_sound" />
+                    <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:dependency="sensor_expiry_alert_profile"
+                        android:key="sensor_expiry_alert_override_silent"
+                        android:title="@string/override_silent_mode" />
+                </PreferenceCategory>
                 <PreferenceCategory android:title="@string/other_xdrip_plus_alerts">
                     <SwitchPreference
                         android:defaultValue="true"
@@ -369,13 +404,6 @@
                         android:key="bridge_battery_alert_level"
                         android:summary=""
                         android:title="@string/low_battery_percentage" />
-                    <SwitchPreference
-                        android:defaultValue="false"
-                        android:switchTextOff="@string/short_off_text_for_switches"
-                        android:switchTextOn="@string/short_on_text_for_switches"
-                        android:key="alert_raise_for_sensor_expiry"
-                        android:summary="@string/summary_sens_expiry_notify"
-                        android:title="@string/title_sens_expiry_notify" />
                     <SwitchPreference
                         android:defaultValue="true"
                         android:dependency="engineering_mode"

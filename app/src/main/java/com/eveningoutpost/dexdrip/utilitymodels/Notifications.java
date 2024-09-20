@@ -1,5 +1,10 @@
 package com.eveningoutpost.dexdrip.utilitymodels;
 
+import static com.eveningoutpost.dexdrip.utilitymodels.AlertPlayer.ALERT_PROFILE_HIGH;
+import static com.eveningoutpost.dexdrip.utilitymodels.AlertPlayer.ALERT_PROFILE_VIBRATE_ONLY;
+import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.X;
+import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.getCol;
+
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -20,16 +25,19 @@ import android.os.Looper;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import android.text.SpannableString;
 import android.widget.RemoteViews;
+
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.eveningoutpost.dexdrip.AddCalibration;
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.DoubleCalibrationActivity;
 import com.eveningoutpost.dexdrip.EditAlertActivity;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.evaluators.PersistentHigh;
 import com.eveningoutpost.dexdrip.models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.models.AlertType;
 import com.eveningoutpost.dexdrip.models.BgReading;
@@ -39,23 +47,18 @@ import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.Sensor;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.eveningoutpost.dexdrip.models.UserNotification;
-import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.services.MissedReadingService;
 import com.eveningoutpost.dexdrip.services.SnoozeOnNotificationDismissService;
-import com.eveningoutpost.dexdrip.evaluators.PersistentHigh;
+import com.eveningoutpost.dexdrip.services.broadcastservice.BroadcastEntry;
 import com.eveningoutpost.dexdrip.ui.NumberGraphic;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
-import com.eveningoutpost.dexdrip.services.broadcastservice.BroadcastEntry;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.Date;
 import java.util.List;
-
-import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.X;
-import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.getCol;
 
 /**
  * Created by Emma Black on 11/28/14.
@@ -894,6 +897,79 @@ public class Notifications extends IntentService {
             Intent intent = new Intent(mContext, AddCalibration.class);
             calibrationNotificationCreate(title, content, intent, extraCalibrationNotificationId);
         }
+    }
+
+    public static void sensorExpiryAlert(final Context context, final long threshold) {
+        UserNotification userNotification = UserNotification.sensorExpiryAlert();
+        if (userNotification == null || userNotification.timestamp <= new Date().getTime()) {
+            if (userNotification != null) {
+                try {
+                    userNotification.delete();
+                } catch (NullPointerException e) {
+                    // ignore null pointer exception during delete as we emulate database records
+                }
+
+                Log.d(TAG, "Delete");
+            }
+
+            userNotification = UserNotification.create(
+                    "Sensor expiring in " + convertMillisecondsToTimeString(threshold),
+                    UserNotification.SENSOR_EXPIRY_ALERT_NAME,
+                    new Date().getTime());
+            final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+            final NotificationCompat.Builder mBuilder =
+                    new NotificationCompat.Builder(context, "" + Constants.SENSOR_EXPIRY_NOTIFICATION_ID)
+                            .setVisibility(Pref.getBooleanDefaultFalse("public_notifications") ? Notification.VISIBILITY_PUBLIC : Notification.VISIBILITY_PRIVATE)
+                            .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
+                            .setContentTitle("Sensor Expiry Alert")
+                            .setContentText(userNotification.message)
+                            .setStyle(new NotificationCompat.BigTextStyle().bigText(userNotification.message))
+                            .setContentIntent(PendingIntent.getActivity(context, 0, new Intent(context, Home.class), PendingIntent.FLAG_UPDATE_CURRENT))
+                            .setLights(0xff00ff00, 300, 1000);
+            final int alertProfile = AlertPlayer.getAlertProfile(context, "sensor_expiry_alert_profile");
+            switch (alertProfile)
+            {
+                case ALERT_PROFILE_HIGH:
+                    if (AlertPlayer.notSilencedDueToCall()) {
+                        final Uri sensorExpiryAlertSound = Uri.parse(sharedPreferences.getString("sensor_expiry_alert_sound", "content://settings/system/notification_sound"));
+                        if (sharedPreferences.getBoolean("sensor_expiry_alert_override_silent", false)
+                                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            mBuilder.setCategory(NotificationCompat.CATEGORY_ALARM);
+                            mBuilder.setSound(sensorExpiryAlertSound, AudioAttributes.USAGE_ALARM);
+                        } else {
+                            mBuilder.setSound(sensorExpiryAlertSound);
+                        }
+                    }
+
+                    break;
+                case ALERT_PROFILE_VIBRATE_ONLY:
+                    mBuilder.setVibrate(vibratePattern);
+                    break;
+                default:
+                    throw new IllegalStateException("Alert profile '" + alertProfile + "' is unsupported.");
+            }
+
+            Log.ueh("Sensor Expiry Alert", userNotification.message);
+            final NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(Constants.SENSOR_EXPIRY_NOTIFICATION_ID, XdripNotificationCompat.build(mBuilder));
+            BroadcastEntry.sendAlert(UserNotification.SENSOR_EXPIRY_ALERT_NAME, userNotification.message);
+        }
+    }
+
+    private static String convertMillisecondsToTimeString(final long milliseconds) {
+        final long hours = milliseconds / (1000 * 60 * 60);
+        final long minutes = (milliseconds / (1000 * 60)) % 60;
+        if (hours == 1 && minutes == 1) {
+            return "1 hour and 1 minute";
+        } else if (hours == 1) {
+            return "1 hour and " + minutes + " minutes";
+        } else if (minutes == 1) {
+            return hours + " hours and 1 minute";
+        } else if (minutes == 0) {
+            return hours + " hours";
+        }
+
+        return hours + " hours and " + minutes + " minutes";
     }
 
     public static void bgUnclearAlert(Context context) {

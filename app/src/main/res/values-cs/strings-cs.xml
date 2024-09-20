@@ -1806,7 +1806,6 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="summary_ymax">Zvolit maximum osy y, pokud se nebudou vyskytovat výšší hodnoty glykémie.</string>
     <string name="wait_to_connect">Ověřte nastavení a počkejte na připojení.</string>
     <string name="summary_sens_expiry_notify">Upozornit, když se blíží konec senzoru.</string>
-    <string name="title_sens_expiry_notify">Senzor bude končit</string>
     <string name="close">Zavřít</string>
     <string name="title_advanced_settings_4_Lib2">Pokročilá nastavení pro Libre 2</string>
     <string name="title_Lib2_show_raw_values">Zobrazit neupravené hodnoty na grafu</string>

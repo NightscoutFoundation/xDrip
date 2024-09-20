@@ -181,6 +181,12 @@
         <item>Silent</item>
     </string-array>
 
+    <string-array name="SensorExpiryAlertProfile">
+        <item>High</item>
+        <item>Vibrate only</item>
+        <item>Silent</item>
+    </string-array>
+
     <string-array name="risingEntries">
         <item>1 mg/dl/min (0.06 mmol/l/min)</item>
         <item>2 mg/dl/min (0.11 mmol/l/min)</item>
