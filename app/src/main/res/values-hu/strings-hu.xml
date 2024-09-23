@@ -37,7 +37,10 @@
     <string name="pref_header_cloud_storage">Felhőalapú tárhely</string>
     <string name="auto_configure_title">Beállítások átvétele</string>
     <string name="prefs_auto_config_summary">Automatikus beállítás QR-kóddal.</string>
-    <string name="auto_config_cam_title">Kamera</string>
+    <string name="auto_config_cam_title">Kamerával</string>
+    <string name="auto_config_cam_summary">Szkennelje be a QR kódot (ajánlott!!)</string>
+    <string name="auto_config_image_title">Kép fájllal</string>
+    <string name="auto_config_image_summary">A QR kód képfájlban (pl. png vagy jpg) mentett változatát is olvassa be.</string>
     <string name="scan_share2_barcode">QR-kód beolvasása</string>
     <string name="pref_share2_scan_barcode_summary">Vagy szkennelje be a QR-kódot a vevőn</string>
     <!-- MongoDB Settings -->
@@ -116,6 +119,7 @@
     <string name="title_activity_update">Új xDrip verzió érhető el</string>
     <string name="title_activity_display_qrcode">Beállítások megosztása QR kóddal</string>
     <string name="title_activity_send_feed_back">Üzenet a fejlesztőnek (Jamorham)</string>
+    <string name="title_activity_save_logs">Napló mentése</string>
     <string name="title_activity_maps">Parakeet térkép</string>
     <string name="title_activity_display_preferences">Beállítások mutatása</string>
     <string name="export_submenu">Import/Export funkciók</string>
@@ -393,7 +397,9 @@
     <string name="please_enter_your_question_or_comments_here">Itt írja meg a kérdését, észrevételét.\n\nAdja meg az e-mail címét, hogy válaszolhassunk.\n\n</string>
     <string name="optional_contact_info_here_eg_email">Adja meg az elérhetőségét, pl. e-mail címét</string>
     <string name="send_message">Üzenet küldése</string>
+    <string name="save_logs">Napló mentése</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Kérem értékelje az alkalmazást</string>
+    <string name="log_confidential_note">Figyelem!\nA naplófájl személyes adatokat (pl. felhasználónév és jelszó) tartalmazhat.</string>
     <string name="preferences_saved_in_sdcard_downloads">Beállítások mentve: sdcard Download könyvtárba</string>
     <string name="could_not_write_to_sdcard_check_perms">Hiba az SD-kártya írásakor - ellenőrizze az engedélyeket</string>
     <string name="loaded_preferences_restarting">Beállítások betöltve! - Újraindítás</string>
@@ -1770,7 +1776,7 @@
     <string name="send_data_to_health_connect">Adatok küldése Health Connect-hez</string>
     <string name="get_data_from_health_connect">Adatok letöltése Health Connect-ből</string>
     <string name="requires_android_8_and_google_companion_application_or_android_14">Legalább Android 8+ és Google companion app vagy Android 14+ szükséges</string>
-    <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Adatk küldése és letöltése a Google Health Connect és Google Fit alkalmazásokból</string>
+    <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Adatok küldése és letöltése a Google Health Connect és Google Fit alkalmazásokból</string>
     <string name="google_health_connect">Google Health Connect</string>
     <string name="google_health_connect_needs_perms">HIBA: A Health engedélyeket kér! - próbálja meg a beállítokban megint</string>
     <string name="carelink_auth_country_required">Ország kötelező!</string>
@@ -1785,7 +1791,16 @@
     <string name="carelink_credential_status_access_expired">Hozzáférés lejárt! Meg fogja újítani!</string>
     <string name="carelink_credential_status_refresh_expired">Belépés lejárt! Jelentkezzen be!</string>
     <string name="data_source">Adatforrás:</string>
+    <string name="insulin_pens">Inzulinadagoló tollak</string>
     <string name="reraise_alerts_before_snooze_time">Riasztás ismétlése szundi alatt</string>
+    <string name="audio_focus">Riasztás hangjának előtérbe helyezése</string>
+    <string name="audio_focus_summary">Állítsa be, mi történjen a többi hanggal (app-ok és android) riasztás közben</string>
+    <string name="audio_focus_dont_adjust_other_app_sounds">Hangok változatlanul szólnak</string>
+    <string name="audio_focus_lower_volume_of_other_apps">Hangerő csökkentése</string>
+    <string name="audio_focus_pause_other_apps_playing_audio">Hanglejátszás megállítása app-okon</string>
+    <string name="audio_focus_pause_all_other_sounds">Minden hanglejátszás szüneteltetése</string>
+    <string name="use_camera_light">Kamera vakujának használata</string>
+    <string name="use_camera_light_summary">Ha a készülék töltőn van, a kamera vakuja világít riasztáskor</string>
     <string name="g7_should_start_automatically">G7 automatikusan indul</string>
     <string name="screenshot">Képernyőmentés</string>
 </resources>
