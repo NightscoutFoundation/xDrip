@@ -37,6 +37,9 @@
     <string name="pref_header_cloud_storage">Almacenar en la nube</string>
     <string name="auto_configure_title">Autoconfigurar</string>
     <string name="prefs_auto_config_summary">Autoconfigurar usando código de barras.</string>
+    <string name="auto_config_cam_title">Cámara</string>
+    <string name="auto_config_cam_summary">Escanea un código QR con tu móvil (recomendado)</string>
+    <string name="auto_config_image_title">Archivo de imagen</string>
     <string name="scan_share2_barcode">Escanear el código de barras compartido</string>
     <string name="pref_share2_scan_barcode_summary">O escanear el código de barras en el receptor compartido</string>
     <!-- MongoDB Settings -->
@@ -115,6 +118,7 @@
     <string name="title_activity_update">Actualización de xDrip+ disponible</string>
     <string name="title_activity_display_qrcode">Compartir ajustes mediante código QR</string>
     <string name="title_activity_send_feed_back">Enviar comentarios a Jamorham</string>
+    <string name="title_activity_save_logs">Guardar registros</string>
     <string name="title_activity_maps">Mapa Parakeet</string>
     <string name="title_activity_display_preferences">Preferencias de visualización</string>
     <string name="export_submenu">Funciones de importación/exportación</string>
@@ -394,6 +398,7 @@
     <string name="please_enter_your_question_or_comments_here">Introduzca su pregunta o comentario aquí.\n\nSi proporciona una dirección de correo electrónico es posible obtener una respuesta.\n\n</string>
     <string name="optional_contact_info_here_eg_email">Datos de contacto opcional aquí, p. ej., correo electrónico</string>
     <string name="send_message">Enviar mensaje</string>
+    <string name="save_logs">Guardar registros</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Indique lo que piensa de la aplicación en general</string>
     <string name="preferences_saved_in_sdcard_downloads">Preferencias guardadas en las descargas de SDcard</string>
     <string name="could_not_write_to_sdcard_check_perms">No se pudo escribir en la tarjeta SD - ¿comprobar permisos?</string>
