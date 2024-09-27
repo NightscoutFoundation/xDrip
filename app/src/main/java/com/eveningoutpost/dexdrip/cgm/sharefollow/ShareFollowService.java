@@ -57,6 +57,7 @@ public class ShareFollowService extends ForegroundService {
     private static volatile long lastBgTime;
 
     private static ShareFollowDownload downloader;
+    private static long lag = Constants.SECOND_IN_MS * Pref.getStringToInt("dex_share_follow_lag", 0); // User can choose a wake delay with a 0 default.
 
     @Override
     public void onCreate() {
@@ -120,7 +121,7 @@ public class ShareFollowService extends ForegroundService {
         final long last = lastBg != null ? lastBg.timestamp : 0;
 
         final long grace = Constants.SECOND_IN_MS * 10;
-        final long next = Anticipate.next(JoH.tsl(), last, SAMPLE_PERIOD, grace) + grace;
+        final long next = Anticipate.next(JoH.tsl(), last, SAMPLE_PERIOD, grace, lag) + grace;
         wakeup_time = next;
         UserError.Log.d(TAG, "Anticipate next: " + JoH.dateTimeText(next) + "  last: " + JoH.dateTimeText(last));
 
@@ -173,7 +174,7 @@ public class ShareFollowService extends ForegroundService {
     }
 
     /**
-     * MegaStatus for Nightscout Follower
+     * MegaStatus for Dex Share Follower
      */
     public static List<StatusItem> megaStatus() {
         final BgReading lastBg = BgReading.lastNoSenssor();
@@ -185,10 +186,10 @@ public class ShareFollowService extends ForegroundService {
         StatusItem.Highlight ageOfLastBgPollHighlight = StatusItem.Highlight.NORMAL;
         if (bgReceiveDelay > 0) {
             ageOfBgLastPoll = JoH.niceTimeScalar(bgReceiveDelay);
-            if (bgReceiveDelay > SAMPLE_PERIOD / 2) {
+            if (bgReceiveDelay - lag > SAMPLE_PERIOD / 2) {
                 ageOfLastBgPollHighlight = StatusItem.Highlight.BAD;
             }
-            if (bgReceiveDelay > SAMPLE_PERIOD * 2) {
+            if (bgReceiveDelay - lag > SAMPLE_PERIOD * 2) {
                 ageOfLastBgPollHighlight = StatusItem.Highlight.CRITICAL;
             }
         }
@@ -199,7 +200,7 @@ public class ShareFollowService extends ForegroundService {
         if (lastBg != null) {
             long age = JoH.msSince(lastBg.timestamp);
             ageLastBg = JoH.niceTimeScalar(age);
-            if (age > SAMPLE_PERIOD + hightlightGrace) {
+            if (age > SAMPLE_PERIOD + hightlightGrace + lag) {
                 bgAgeHighlight = StatusItem.Highlight.BAD;
             }
         }
