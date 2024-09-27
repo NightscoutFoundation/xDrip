@@ -34,6 +34,8 @@ import com.eveningoutpost.dexdrip.models.StepCounter;
 import com.eveningoutpost.dexdrip.models.Treatments;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.profileeditor.BasalProfile;
+import com.eveningoutpost.dexdrip.profileeditor.BasalProfileEntryTimed;
 import com.eveningoutpost.dexdrip.services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
@@ -340,13 +342,14 @@ public class BgGraphBuilder {
             final float yscale = doMgdl ? (float) Constants.MMOLL_TO_MGDL : 1f;
 
             final List<APStatus> aplist = APStatus.latestForGraph(2000, loaded_start, loaded_end);
+            final List<BasalProfileEntryTimed> profile = BasalProfile.loadForTimeSpan(BasalProfile.getActiveRateName(), loaded_start, loaded_end);
 
             if (aplist.size() > 0) {
 
                 // divider line
 
                 final Line dividerLine = new Line();
-                dividerLine.setTag("tbr"); // not quite true
+                dividerLine.setTag("basal rate");
                 dividerLine.setHasPoints(false);
                 dividerLine.setHasLines(true);
                 dividerLine.setStrokeWidth(1);
@@ -356,25 +359,54 @@ public class BgGraphBuilder {
                 dividerLine.setHasPoints(false);
 
                 final float one_hundred_percent = (100 * yscale) / 100f;
-                final List<PointValue> divider_points = new ArrayList<>(2);
-                divider_points.add(new HPointValue(loaded_start / FUZZER, one_hundred_percent));
+                final float one_hundred_percent_as_absolute = profile.stream().map(x -> x.absolute).max(Float::compareTo).orElse(one_hundred_percent);
+                final List<PointValue> divider_points = new ArrayList<>(profile.size());
+
+                float last_absolute = -1;
+                float last_ypos = -1;
+                int count = profile.size();
+
+                for (BasalProfileEntryTimed item : profile) {
+                    if (--count == 0 || (item.absolute != last_absolute)) {
+                        if (last_ypos != -1) {
+                            divider_points.add(new HPointValue((double) item.timestamp / FUZZER, last_ypos));
+                        }
+
+                        final float this_ypos = (Math.min(item.absolute, 5 * one_hundred_percent_as_absolute) * yscale) / one_hundred_percent_as_absolute; // capped at 500%
+                        divider_points.add(new HPointValue((double) item.timestamp / FUZZER, this_ypos));
+
+                        last_absolute = item.absolute;
+                        last_ypos = this_ypos;
+                    }
+                }
+
+                if (last_ypos != -1) {
+                    divider_points.add(new HPointValue((double) Calendar.getInstance().getTimeInMillis() / FUZZER, last_ypos));
+                }
+
                 dividerLine.setPointRadius(0);
-                divider_points.add(new HPointValue(loaded_end / FUZZER, one_hundred_percent));
                 dividerLine.setValues(divider_points);
+
                 basalLines.add(dividerLine);
 
                 final List<PointValue> points = new ArrayList<>(aplist.size());
 
-                int last_percent = -1;
+                double last_basal_absolute = -1;
+                double last_basal_ypos = -1;
+                count = aplist.size();
 
-                int count = aplist.size();
                 for (APStatus item : aplist) {
-                    if (--count == 0 || (item.basal_percent != last_percent)) {
-                        final float this_ypos = (Math.min(item.basal_percent, 500) * yscale) / 100f; // capped at 500%
+                    if (--count == 0 || (item.basal_absolute != last_basal_absolute)) {
+                        final double this_ypos = (Math.min(item.basal_absolute, 5 * one_hundred_percent_as_absolute) * yscale) / one_hundred_percent_as_absolute; // capped at 500%
                         points.add(new HPointValue((double) item.timestamp / FUZZER, this_ypos));
 
-                        last_percent = item.basal_percent;
+                        last_basal_absolute = item.basal_absolute;
+                        last_basal_ypos = this_ypos;
                     }
+                }
+
+                if (last_basal_ypos != -1) {
+                    points.add(new HPointValue((double) Calendar.getInstance().getTimeInMillis() / FUZZER, last_basal_ypos));
                 }
 
                 final Line line = new Line(points);
