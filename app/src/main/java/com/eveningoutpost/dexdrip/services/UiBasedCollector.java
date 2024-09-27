@@ -175,6 +175,7 @@ public class UiBasedCollector extends NotificationListenerService {
 
         texts.clear();
     }
+
     Double parseIoB(final String value) {
         for (Pattern pattern : companionAppIoBRegexes) {
             Matcher matcher = pattern.matcher(value);
@@ -215,24 +216,36 @@ public class UiBasedCollector extends NotificationListenerService {
             }
             processRemote(notification.contentView);
         } else {
-            UserError.Log.e(TAG, "Content is empty");
+            int mgdl;
+            String t;
+            if (notification.extras != null
+                    && (isValidString(t = notification.extras.getString(Notification.EXTRA_TITLE)))
+                    && (mgdl = tryExtractString(t)) > 0) {
+                handleNewValue(mgdl);
+            } else {
+                UserError.Log.e(TAG, "Content is empty");
+            }
         }
+    }
+
+    private boolean isValidString(String str) {
+        return str != null && !str.trim().isEmpty();
     }
 
     String filterString(final String value) {
         if (lastPackage == null) return value;
         switch (lastPackage) {
             default:
-                    return (basicFilterString(arrowFilterString(value)))
+                return (basicFilterString(arrowFilterString(value)))
                         .trim();
         }
     }
 
     String basicFilterString(final String value) {
         return value
-                .replace("\u00a0"," ")
-                .replace("\u2060","")
-                .replace("\\","/")
+                .replace("\u00a0", " ")
+                .replace("\u2060", "")
+                .replace("\\", "/")
                 .replace("mmol/L", "")
                 .replace("mmol/l", "")
                 .replace("mg/dL", "")
@@ -263,8 +276,8 @@ public class UiBasedCollector extends NotificationListenerService {
     }
 
     @SuppressWarnings("UnnecessaryLocalVariable")
-    private void processRemote(final RemoteViews cview) {
-        if (cview == null) return;
+    private boolean processRemote(final RemoteViews cview) {
+        if (cview == null) return false;
         val applied = cview.apply(this, null);
         val root = (ViewGroup) applied.getRootView();
         val texts = new ArrayList<TextView>();
@@ -278,36 +291,50 @@ public class UiBasedCollector extends NotificationListenerService {
                 val text = tv.getText() != null ? tv.getText().toString() : "";
                 val desc = tv.getContentDescription() != null ? tv.getContentDescription().toString() : "";
                 UserError.Log.d(TAG, "Examining: >" + text + "< : >" + desc + "<");
-                val ftext = filterString(text);
-                if (Unitized.usingMgDl()) {
-                    mgdl = Integer.parseInt(ftext);
-                    if (mgdl > 0) {
-                        matches++;
-                    }
-                } else {
-                    if (isValidMmol(ftext)) {
-                        val result = JoH.tolerantParseDouble(ftext, -1);
-                        if (result != -1) {
-                            mgdl = (int) Math.round(Unitized.mgdlConvert(result));
-                            if (mgdl > 0) {
-                                matches++;
-                            }
-                        }
-                    }
+                val lmgdl = tryExtractString(text);
+                if (lmgdl > 0) {
+                    mgdl = lmgdl;
+                    matches++;
                 }
             } catch (Exception e) {
                 //
             }
         }
+        texts.clear();
         if (matches == 0) {
-            UserError.Log.e(TAG, "Did not find any matches");
+            UserError.Log.d(TAG, "Did not find any matches");
         } else if (matches > 1) {
             UserError.Log.e(TAG, "Found too many matches: " + matches);
         } else {
-            val timestamp = JoH.tsl();
-            handleNewValue(timestamp, mgdl);
+            handleNewValue(mgdl);
+            return true;
         }
-        texts.clear();
+        return false;
+    }
+
+    int tryExtractString(final String text) {
+        int mgdl = -1;
+        try {
+            val ftext = filterString(text);
+            if (Unitized.usingMgDl()) {
+                mgdl = Integer.parseInt(ftext);
+            } else {
+                if (isValidMmol(ftext)) {
+                    val result = JoH.tolerantParseDouble(ftext, -1);
+                    if (result != -1) {
+                        mgdl = (int) Math.round(Unitized.mgdlConvert(result));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            UserError.Log.d(TAG, "Got exception in tryExtractString: " + e);
+        }
+        return mgdl;
+    }
+
+    boolean handleNewValue(final int mgdl) {
+        val timestamp = JoH.tsl();
+        return handleNewValue(timestamp, mgdl);
     }
 
     boolean handleNewValue(final long timestamp, final int mgdl) {
@@ -337,7 +364,7 @@ public class UiBasedCollector extends NotificationListenerService {
                     }
                 }
             } else {
-                UserError.Log.d(TAG, "Duplicate value: "+existing.timeStamp());
+                UserError.Log.d(TAG, "Duplicate value: " + existing.timeStamp());
             }
         } else {
             UserError.Log.wtf(TAG, "Glucose value outside acceptable range: " + mgdl);
@@ -352,10 +379,11 @@ public class UiBasedCollector extends NotificationListenerService {
     private boolean shouldAllowTimeOffsetChange(final int mgdl) {
         return isDifferentToLast(mgdl); // TODO do we need to rate limit this or not?
     }
+
     // note this method only checks existing stored data
     private boolean isDifferentToLast(final int mgdl) {
-            val previousValue = PersistentStore.getLong(UI_BASED_STORE_LAST_VALUE);
-            return previousValue != mgdl;
+        val previousValue = PersistentStore.getLong(UI_BASED_STORE_LAST_VALUE);
+        return previousValue != mgdl;
     }
 
     // note this method actually updates the stored value
