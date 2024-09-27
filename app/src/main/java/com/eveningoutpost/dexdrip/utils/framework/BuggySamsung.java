@@ -71,7 +71,8 @@ public class BuggySamsung {
                 || Build.MANUFACTURER.toLowerCase().contains("xiaomi")
                 || Build.MANUFACTURER.toLowerCase().contains("oneplus")    // experimental test
                 || Build.MANUFACTURER.toLowerCase().contains("oppo")      // experimental test
-                || Build.MANUFACTURER.toLowerCase().contains("huawei");      // experimental test
+                || Build.MANUFACTURER.toLowerCase().contains("huawei")      // experimental test
+                || Build.MANUFACTURER.toLowerCase().contains("cubot");
     }
 
 }
