@@ -471,10 +471,15 @@ public class AlertPlayer {
         return PendingIntent.getService(ctx, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    static private int getAlertProfile(Context ctx){
+    static int getAlertProfile(Context context)
+    {
+        return getAlertProfile(context, "bg_alert_profile");
+    }
+
+    static int getAlertProfile(Context ctx, String preference) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
-        String profile = prefs.getString("bg_alert_profile", "ascending");
-        if(profile.equals("High")) {
+        String profile = prefs.getString(preference, "ascending");
+        if (profile.compareToIgnoreCase("High") == 0) {
             Log.i(TAG, "getAlertProfile returning ALERT_PROFILE_HIGH");
             return ALERT_PROFILE_HIGH;
         }
@@ -486,11 +491,11 @@ public class AlertPlayer {
             Log.i(TAG, "getAlertProfile returning ALERT_PROFILE_MEDIUM");
             return ALERT_PROFILE_MEDIUM;
         }
-        if(profile.equals("vibrate only")) {
+        if (profile.compareToIgnoreCase("vibrate only") == 0) {
             Log.i(TAG, "getAlertProfile returning ALERT_PROFILE_VIBRATE_ONLY");
             return ALERT_PROFILE_VIBRATE_ONLY;
         }
-        if(profile.equals("Silent")) {
+        if (profile.compareToIgnoreCase("Silent") == 0) {
             Log.i(TAG, "getAlertProfile returning ALERT_PROFILE_SILENT");
             return ALERT_PROFILE_SILENT;
         }

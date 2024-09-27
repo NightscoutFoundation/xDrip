@@ -20,6 +20,7 @@ import java.util.Locale;
 
 @Table(name = "Notifications", id = BaseColumns._ID)
 public class UserNotification extends PlusModel {
+    public static final String SENSOR_EXPIRY_ALERT_NAME = "sensor_expiry_alert";
 
     // For 'other alerts' this will be the time that the alert should be raised again.
     // For calibration alerts this is the time that the alert was played.
@@ -52,6 +53,9 @@ public class UserNotification extends PlusModel {
 
     @Column(name = "bg_fall_alert")
     public boolean bg_fall_alert;
+
+    @Column(name = SENSOR_EXPIRY_ALERT_NAME)
+    public boolean sensor_expiry_alert;
 
     private final static List<String> legacy_types = Arrays.asList(
             "bg_alert", "calibration_alert", "double_calibration_alert",
@@ -86,6 +90,14 @@ public class UserNotification extends PlusModel {
         return new Select()
                 .from(UserNotification.class)
                 .where("extra_calibration_alert = ?", true)
+                .orderBy("_ID desc")
+                .executeSingle();
+    }
+
+    public static UserNotification sensorExpiryAlert() {
+        return new Select()
+                .from(UserNotification.class)
+                .where("sensor_expiry_alert = ?", true)
                 .orderBy("_ID desc")
                 .executeSingle();
     }
@@ -168,6 +180,9 @@ public class UserNotification extends PlusModel {
                 break;
             case "bg_fall_alert":
                 userNotification.bg_fall_alert = true;
+                break;
+            case SENSOR_EXPIRY_ALERT_NAME:
+                userNotification.sensor_expiry_alert = true;
                 break;
             default:
                 Log.d(TAG, "Saving workaround for: " + type + " " + message);

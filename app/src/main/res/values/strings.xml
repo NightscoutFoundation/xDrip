@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <string name="title_activity_bluetooth_scan">Bluetooth Scan</string>
@@ -244,6 +244,7 @@
     <string name="forecasted_low_alert">Forecasted Low Alert</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolate data to try to predict lows</string>
     <string name="alarm_at_forecasted_low_mins">Alarm at Forecasted Low mins</string>
+    <string name="alarm_at_sensor_expiry_mins">Minutes before sensor expiry</string>
     <string name="other_xdrip_plus_alerts">Other xDrip+ alerts</string>
     <string name="xdrip_plus_display_settings">xDrip+ Display Settings</string>
     <string name="display_customisations">Display customizations</string>
@@ -443,6 +444,7 @@
     <string name="forecast_lows">Forecast Lows</string>
     <string name="raise_alarm_on_forecast_low">Raise alarm on Forecast Low</string>
     <string name="notify_when_predicted_low_time_reaches_threshold">Notify when predicted low time reaches threshold</string>
+    <string name="sensor_expiry_mins_summary">If unspecified, alert 24, 12, 6, and 2 hours before sensor expiry.</string>
     <string name="predicted_low_sound">Predicted Low Sound</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Choose sound used for predicted low alarm.</string>
     <string name="notify_when_parakeet_device_stops_checking_in">Notify when Parakeet device stops checking in</string>
@@ -812,6 +814,7 @@
     <string name="falling_threshold">falling rate threshold</string>
     <string name="rising_threshold">rising rate threshold</string>
     <string name="set_sound_for_bg_alerts">Set sound used for BG Alerts.</string>
+    <string name="set_sound_for_sensor_expiry_alarm">Set sound used for sensor expiry alarm.</string>
     <string name="alert_sound">Alert Sound</string>
     <string name="override_silent_mode_these">Override Silent mode on these alerts</string>
     <string name="persistent_repeat_max">Repeating max every (minutes)</string>
@@ -1861,7 +1864,7 @@
     <string name="summary_ymax">Choose yMax for when there are no greater readings.</string>
     <string name="wait_to_connect">Verify settings and wait for connectivity.</string>
     <string name="summary_sens_expiry_notify">Raise notifications when the sensor gets close to expiry.</string>
-    <string name="title_sens_expiry_notify">Sensor expiry</string>
+    <string name="sensor_expiry_alert">Sensor expiry alert</string>
     <string name="close">Close</string>
     <string name="title_advanced_settings_4_Lib2">Advanced settings for Libre 2</string>
     <string name="title_Lib2_show_raw_values">Show raw values in graph</string>

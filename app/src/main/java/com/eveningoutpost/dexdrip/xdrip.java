@@ -2,37 +2,43 @@ package com.eveningoutpost.dexdrip;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import androidx.annotation.StringRes;
 import android.util.Log;
 
+import androidx.annotation.StringRes;
+
+import com.eveningoutpost.dexdrip.alert.Persist;
+import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
+import com.eveningoutpost.dexdrip.g5model.SensorDays;
 import com.eveningoutpost.dexdrip.models.AlertType;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.Reminder;
-import com.eveningoutpost.dexdrip.alert.Poller;
 import com.eveningoutpost.dexdrip.services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.services.BluetoothGlucoseMeter;
 import com.eveningoutpost.dexdrip.services.MissedReadingService;
 import com.eveningoutpost.dexdrip.services.PlusSyncService;
+import com.eveningoutpost.dexdrip.services.broadcastservice.BroadcastEntry;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utilitymodels.ColorCache;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.IdempotentMigrations;
+import com.eveningoutpost.dexdrip.utilitymodels.Notifications;
 import com.eveningoutpost.dexdrip.utilitymodels.PlusAsyncExecutor;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utilitymodels.VersionTracker;
-import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.utils.AppCenterCrashReporting;
-import com.eveningoutpost.dexdrip.utils.NewRelicCrashReporting;
 import com.eveningoutpost.dexdrip.utils.jobs.DailyJob;
 import com.eveningoutpost.dexdrip.utils.jobs.XDripJobCreator;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
 import com.eveningoutpost.dexdrip.watch.miband.MiBandEntry;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
-import com.eveningoutpost.dexdrip.services.broadcastservice.BroadcastEntry;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.evernote.android.job.JobManager;
 
@@ -49,6 +55,7 @@ import java.util.Locale;
 public class xdrip extends Application {
 
     private static final String TAG = "xdrip.java";
+    private static final Persist.Long ALERTED = new Persist.Long("PREF_SENSOR_EXPIRE_ALERTED");
     @SuppressLint("StaticFieldLeak")
     private static volatile Context context;
     private static boolean fabricInited = false;
@@ -132,9 +139,67 @@ public class xdrip extends Application {
         }
         Reminder.firstInit(xdrip.getAppContext());
         PluggableCalibration.invalidateCache();
-        Poller.init();
+        setupSensorExpiryAlert();
     }
 
+    private static void setupSensorExpiryAlert()
+    {
+        BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(final Context context, final Intent intent) {
+                final String action = intent.getAction();
+                if (action == null) {
+                    return;
+                }
+
+                switch (action) {
+                    case Intent.ACTION_TIME_TICK:
+                        if (!SensorDays.get().isValid() || !Pref.getBooleanDefaultFalse("alert_raise_for_sensor_expiry"))
+                        {
+                            return;
+                        }
+
+                        final String customSensoryExpiryMinThreshold = "alert_raise_for_sensor_expiry_mins";
+                        final String customThreshold = Pref.getStringDefaultBlank(customSensoryExpiryMinThreshold);
+                        long lastAlerted = ALERTED.get();
+                        long remainingSensorPeriodInMs = SensorDays.get().getRemainingSensorPeriodInMs();
+                        if (remainingSensorPeriodInMs > lastAlerted)
+                        {
+                            lastAlerted = Long.MAX_VALUE;
+                        }
+
+                        if (customThreshold.length() > 0)
+                        {
+                            long customThresholdMs = Constants.MINUTE_IN_MS * Long.parseLong(customThreshold);
+                            if (lastAlerted > customThresholdMs && customThresholdMs >= remainingSensorPeriodInMs)
+                            {
+                                ALERTED.set(customThresholdMs);
+                                Notifications.sensorExpiryAlert(context, customThresholdMs);
+                            }
+                        }
+                        else
+                        {
+                            final long[] thresholds = {
+                                    // need to be in ascending order so first hit is first applicable to avoid multiple triggers
+                                    Constants.HOUR_IN_MS * 2,
+                                    Constants.HOUR_IN_MS * 6,
+                                    Constants.HOUR_IN_MS * 12,
+                                    Constants.HOUR_IN_MS * 24,
+                            };
+                            for (final long threshold : thresholds)
+                            {
+                                if (lastAlerted > threshold && threshold >= remainingSensorPeriodInMs)
+                                {
+                                    ALERTED.set(threshold);
+                                    Notifications.sensorExpiryAlert(context, threshold);
+                                }
+                            }
+                        }
+
+                        break;
+                }}};
+        xdrip.getAppContext().registerReceiver(broadcastReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
+    }
 
     public static synchronized boolean isRunningTest() {
         if (null == isRunningTestCache) {
