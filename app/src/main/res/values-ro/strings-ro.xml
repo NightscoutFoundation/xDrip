@@ -722,7 +722,7 @@
     <string name="usa_based_account">Cont pe Dexcom SUA</string>
     <string name="dexcom_login">Autentificarea ta pentru site-ul Dexcom</string>
     <string name="dexcom_user">Autentificare în contul Dexcom</string>
-    <string name="dexcom_login_password">Parola dvs. pentru site-ul Dexcom</string>
+    <string name="dexcom_login_password">Parola pentru site-ul Dexcom</string>
     <string name="dexcom_password">Parola contului Dexcom</string>
     <string name="dexcom_receiver_serial">Introdu numărul de serie al receptorului Dexcom, format din 10 caractere</string>
     <string name="dexcom_test_mode_serial">Mod de testare cu un număr de serie din 10 caractere</string>
