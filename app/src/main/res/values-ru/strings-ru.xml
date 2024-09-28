@@ -287,8 +287,8 @@
     <string name="use_excessive_wakelocks">Избыточные блокировки сна</string>
     <string name="speak_readings">Произносить значения</string>
     <string name="extra_status_line">Дополнительная строка состояния</string>
-    <string name="dexcom_share_server_upload">Загрузка на сервер Dexcom Share</string>
-    <string name="upload_data_to_dex_servers">Загружать данные на серверы Dexcom, чтобы вы имели возможность использовать данные в приложениях Dexcom</string>
+    <string name="dexcom_share_server_upload">Отправка на сервер Dexcom Share</string>
+    <string name="upload_data_to_dex_servers">Загрузка данных на серверы Dexcom, так что вы можете использовать ваши данные с приложениями Dexcom</string>
     <string name="manage_followers">Управление фолловерами</string>
     <string name="manage_existing_followers">Управление существующими фолловерами и приглашение новых.</string>
     <string name="invite_follower">Добавить фолловера</string>
@@ -722,15 +722,15 @@
     <string name="influxdb_database_name">Имя базы данных InfluxDB</string>
     <string name="user">Имя пользователя</string>
     <string name="password">Пароль</string>
-    <string name="upload_to_dexcom">Включите данную опцию, чтобы загружать данные на серверы Dexcom</string>
-    <string name="upload_to_dexcom_share">Загружать данные гликемии как Dexcom Share</string>
+    <string name="upload_to_dexcom">Включите это для загрузки на серверы Dexcom</string>
+    <string name="upload_to_dexcom_share">Загружать данные ГК как Dexcom Share</string>
     <string name="accounts_outside_usa">Отключено = Ваш аккаунт и приложения последователей за пределами территории США</string>
     <string name="accounts_inside_usa">Включено = Ваш аккаунт и приложения последователей на территории США</string>
-    <string name="usa_based_account">Dexcom аккаунт зарегистрирован в США</string>
+    <string name="usa_based_account">Аккаунт Dexcom в США</string>
     <string name="dexcom_login">Ваш логин для сайта Dexcom</string>
-    <string name="dexcom_user">Имя пользователя Dexcom</string>
+    <string name="dexcom_user">Логин аккаунта Dexcom</string>
     <string name="dexcom_login_password">Ваш пароль для сайта Dexcom</string>
-    <string name="dexcom_password">Пароль Dexcom</string>
+    <string name="dexcom_password">Пароль аккаунта Dexcom</string>
     <string name="dexcom_receiver_serial">10-значный серийный номер ресивера Dexcom</string>
     <string name="dexcom_test_mode_serial">10-значный серийный номер тестового режима</string>
     <string name="glucose_meters">Глюкометры</string>
