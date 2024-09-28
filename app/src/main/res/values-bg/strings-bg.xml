@@ -1404,6 +1404,7 @@
     <string name="summary_plus_accept_follower_actions">Ще се приемат лечения, калибриране и други действия от последователи</string>
     <string name="title_plus_accept_follower_actions">Приемане на действия на последователи</string>
     <string name="summary_plus_whole_house">Участвайте в мрежа за цял дом</string>
+    <string name="summary_plus_xdrip_cloud">При използване на новите xDrip+ облачни сървъри, мастера и последователите трябва да са направили настройката по еднакъв начин.</string>
     <string name="title_plus_whole_house">Цял Дом</string>
     <string name="summary_libre_whole_house_collector">Този телефон ще бъде колекционер в цялата домашна мрежа</string>
     <string name="title_libre_whole_house_collector">Libre цяла къща</string>
@@ -1719,6 +1720,7 @@
     <string name="proceed">Продължи</string>
     <string name="special_pairing_workaround">Специално решение за сдвояване</string>
     <string name="save_power">Съхранение на енергия</string>
+    <string name="use_xdrip_cloud">Използване на xDrip облак</string>
     <string name="reduce_battery_and_network_overhead">Намаляване консумация на батерия и мрежа използвайки бач процесване на данните</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Опрости графики като изглажда нередни данни</string>
     <string name="graph_smoothing">Изглаждане на графика</string>
@@ -1847,4 +1849,5 @@
     <string name="use_camera_light">Използвай светкавицата на камерата</string>
     <string name="use_camera_light_summary">Премигване на светкавицата на камерата по време на аларми, когато е свързано зарядното устройство</string>
     <string name="g7_should_start_automatically">G7 би трябвало да стартира автоматично</string>
+    <string name="screenshot">Екранна снимка</string>
 </resources>
