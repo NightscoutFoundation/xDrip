@@ -85,7 +85,7 @@ public class PlusAsyncExecutor implements Executor {
         // if we are not busy then run the queue
         if (currentTask.get(queueId) == null) {
             next(queueId);
-        } else if (qsize > 2) {
+        } else if (qsize > 10) {
             // report deadlock if queue is stacking up
             final String err = JoH.hourMinuteString() + " Task deadlock on: " + queueId + "! @" + qsize;
             Log.e(TAG, err);

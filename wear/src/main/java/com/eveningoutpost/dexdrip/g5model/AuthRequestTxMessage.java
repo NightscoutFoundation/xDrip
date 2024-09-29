@@ -29,7 +29,8 @@ public class AuthRequestTxMessage extends BaseMessage {
         bb.put(randomBytes, 0, token_size);
         singleUseToken = bb.array();
         data.put(singleUseToken);
-        data.put(alt ? endByteAlt : endByteStd);
+        //data.put(alt ? endByteAlt : endByteStd);
+        data.put(endByteStd);
         byteSequence = data.array();
         UserError.Log.d(TAG, "New AuthRequestTxMessage: " + JoH.bytesToHex(byteSequence));
     }
