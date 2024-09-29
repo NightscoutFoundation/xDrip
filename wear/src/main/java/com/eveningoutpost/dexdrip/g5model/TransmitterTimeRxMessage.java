@@ -37,7 +37,7 @@ public class TransmitterTimeRxMessage extends BaseMessage {
     }
 
     public long getRealSessionStartTime(long now) {
-        return now - ((currentTime - sessionStartTime) * 1000);
+        return now - ((currentTime - sessionStartTime) * 1000L);
     }
 
     public long getRealSessionStartTime() {

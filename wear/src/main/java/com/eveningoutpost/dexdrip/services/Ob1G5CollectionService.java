@@ -1,5 +1,40 @@
 package com.eveningoutpost.dexdrip.services;
 
+import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.getUUIDName;
+import static com.eveningoutpost.dexdrip.g5model.CalibrationState.Ok;
+import static com.eveningoutpost.dexdrip.g5model.CalibrationState.Unknown;
+import static com.eveningoutpost.dexdrip.g5model.G6CalibrationParameters.getCurrentSensorCode;
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.CLOSED_OK_TEXT;
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.evaluateG6Settings;
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.pendingCalibration;
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.pendingStart;
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.pendingStop;
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.usingAlt;
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.BOND;
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.CLOSE;
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.CLOSED;
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.CONNECT;
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.CONNECT_NOW;
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.DISCOVER;
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.GET_DATA;
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.INIT;
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.PREBOND;
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.SCAN;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.DAY_IN_MS;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.G5_CALIBRATION_REQUEST;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.G5_SENSOR_FAILED;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.G5_SENSOR_RESTARTED;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.G5_SENSOR_STARTED;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HOUR_IN_MS;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.SECOND_IN_MS;
+import static com.eveningoutpost.dexdrip.utilitymodels.StatusItem.Highlight.BAD;
+import static com.eveningoutpost.dexdrip.utilitymodels.StatusItem.Highlight.CRITICAL;
+import static com.eveningoutpost.dexdrip.utilitymodels.StatusItem.Highlight.NORMAL;
+import static com.eveningoutpost.dexdrip.utilitymodels.StatusItem.Highlight.NOTICE;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
+import static com.eveningoutpost.dexdrip.utils.bt.Subscription.addErrorHandler;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
@@ -72,76 +107,26 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
+import lombok.Getter;
 import lombok.Setter;
-
-import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.getUUIDName;
-import static com.eveningoutpost.dexdrip.g5model.CalibrationState.Ok;
-import static com.eveningoutpost.dexdrip.g5model.CalibrationState.Unknown;
-import static com.eveningoutpost.dexdrip.g5model.G6CalibrationParameters.getCurrentSensorCode;
-import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.CLOSED_OK_TEXT;
-import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.evaluateG6Settings;
-import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.pendingCalibration;
-import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.pendingStart;
-import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.pendingStop;
-import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.usingAlt;
-import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.BOND;
-import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.CLOSE;
-import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.CLOSED;
-import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.CONNECT;
-import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.CONNECT_NOW;
-import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.DISCOVER;
-import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.GET_DATA;
-import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.INIT;
-import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.PREBOND;
-import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.SCAN;
-import static com.eveningoutpost.dexdrip.utilitymodels.Constants.G5_CALIBRATION_REQUEST;
-import static com.eveningoutpost.dexdrip.utilitymodels.Constants.G5_SENSOR_FAILED;
-import static com.eveningoutpost.dexdrip.utilitymodels.Constants.G5_SENSOR_RESTARTED;
-import static com.eveningoutpost.dexdrip.utilitymodels.Constants.G5_SENSOR_STARTED;
-import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HOUR_IN_MS;
-import static com.eveningoutpost.dexdrip.utilitymodels.Constants.SECOND_IN_MS;
-import static com.eveningoutpost.dexdrip.utilitymodels.StatusItem.Highlight.BAD;
-import static com.eveningoutpost.dexdrip.utilitymodels.StatusItem.Highlight.CRITICAL;
-import static com.eveningoutpost.dexdrip.utilitymodels.StatusItem.Highlight.NORMAL;
-import static com.eveningoutpost.dexdrip.utilitymodels.StatusItem.Highlight.NOTICE;
-import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
-import static com.eveningoutpost.dexdrip.utils.bt.Subscription.addErrorHandler;
-import static com.eveningoutpost.dexdrip.xdrip.gs;
-
-/*import com.polidea.rxandroidble.RxBleClient;
-import com.polidea.rxandroidble.RxBleConnection;
-import com.polidea.rxandroidble.RxBleCustomOperation;
-import com.polidea.rxandroidble.RxBleDevice;
-import com.polidea.rxandroidble.RxBleDeviceServices;
-import com.polidea.rxandroidble.exceptions.BleGattCallbackTimeoutException;
-import com.polidea.rxandroidble.exceptions.BleScanException;
-import com.polidea.rxandroidble.internal.RxBleLog;
-import com.polidea.rxandroidble.internal.connection.RxBleGattCallback;
-import com.polidea.rxandroidble.scan.ScanFilter;
-import com.polidea.rxandroidble.scan.ScanResult;
-import com.polidea.rxandroidble.scan.ScanSettings;
-*/
-//import rx.Observable;
-//import rx.Scheduler;
-//import rx.Subscription;
-//import rx.schedulers.Schedulers;
-
+import lombok.val;
 
 
 /**
  * OB1 G5/G6 collector
  * Created by jamorham on 16/09/2017.
- *
+ * <p>
  * App version is master, best to avoid editing wear version directly
- *
  */
 
 
@@ -161,18 +146,20 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static RxBleClient rxBleClient;
     private static volatile PendingIntent pendingIntent;
 
-    private static String transmitterID;
+    private static volatile String transmitterID;
     private static volatile String transmitterMAC;
     private static volatile String historicalTransmitterMAC;
     private static String transmitterIDmatchingMAC;
 
-    private static String lastScanError = null;
-    public static String lastSensorStatus = null;
-    public static CalibrationState lastSensorState = null;
+    private static volatile String lastScanError = null;
+    private static volatile int lastScanException = -1;
+    public static volatile String lastSensorStatus = null;
+    public static volatile CalibrationState lastSensorState = null;
     public static volatile long lastUsableGlucosePacketTime = 0;
     private static volatile String static_connection_state = null;
-    private static long static_last_connected = 0;
+    public static volatile long static_last_connected = 0;
     @Setter
+    @Getter
     private static long last_transmitter_timestamp = 0;
     private static long lastStateUpdated = 0;
     private static long wakeup_time = 0;
@@ -186,8 +173,8 @@ public class Ob1G5CollectionService extends G5BaseService {
     public static boolean android_wear = false;
     public static boolean wear_broadcast = false;
 
-    private Subscription scanSubscription;
-    private Subscription connectionSubscription;
+    private static volatile Subscription scanSubscription;
+    private static volatile Subscription connectionSubscription;
     private static volatile Subscription stateSubscription;
     private Subscription discoverSubscription;
     private RxBleDevice bleDevice;
@@ -199,26 +186,30 @@ public class Ob1G5CollectionService extends G5BaseService {
     private PowerManager.WakeLock fullWakeLock;
 
     private volatile boolean background_launch_waiting = false;
-    private static long last_scan_started = -1;
+    private static volatile long last_scan_started = -1;
     private static volatile long last_connect_started = -1;
-    private static int error_count = 0;
-    private static int connectNowFailures = 0;
-    private static int connectFailures = 0;
-    private static int scanTimeouts = 0;
-    private static boolean lastConnectFailed = false;
-    private static boolean preScanFailureMarker = false;
+    private static volatile long last_mega_status_read = -1;
+    private static volatile int error_count = 0;
+    private static volatile int retry_count = 0;
+    private static volatile int connectNowFailures = 0;
+    private static volatile int connectFailures = 0;
+    private static volatile int scanTimeouts = 0;
+    private static volatile boolean lastConnectFailed = false;
+    private static volatile boolean preScanFailureMarker = false;
     private static boolean auth_succeeded = false;
     private int error_backoff_ms = 1000;
     private static final int max_error_backoff_ms = 10000;
     private static final long TOLERABLE_JITTER = 10000;
-
+    private static volatile String wasBonded = "";
+    private static volatile int skippedConnects = 0;
     private static final boolean d = false;
 
-    private static boolean use_auto_connect = false;
+    private static volatile boolean allow_scan_by_mac = false;
+    private static volatile boolean use_auto_connect = false;
     private static volatile boolean minimize_scanning = false; // set by preference
     private static volatile boolean always_scan = false;
     private static volatile boolean scan_next_run = true;
-    private static boolean always_discover = false;
+    private static final boolean always_discover = true;
     private static boolean always_connect = false;
     private static boolean do_discovery = true;
     private static final boolean do_auth = true;
@@ -228,6 +219,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static final List<String> alwaysScanModelFamilies = Arrays.asList("SM-N910");
     private static final Set<String> alwaysConnectModels = Sets.newHashSet("G Watch");
     private static final Set<String> alwaysBuggyWakeupModels = Sets.newHashSet("Jelly-Pro", "SmartWatch 3");
+    private static final HashMap<String, Long> failureTally = new HashMap<>();
 
     // Internal process state tracking
     public enum STATE {
@@ -239,6 +231,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         CHECK_AUTH("Checking Auth"),
         PREBOND("Bond Prepare"),
         BOND("Bonding"),
+        UNBOND("UnBonding"),
         RESET("Reseting"),
         GET_DATA("Getting Data"),
         CLOSE("Sleeping"),
@@ -362,6 +355,11 @@ public class Ob1G5CollectionService extends G5BaseService {
                         }
                         create_bond();
                         break;
+                    case UNBOND:
+                        UserError.Log.d(TAG, "Unbond state");
+                        Ob1G5StateMachine.doUnBond(this, connection);
+                        Inevitable.task("unbond close", 10000, () -> changeState(CLOSE));
+                        break;
                     case RESET:
                         UserError.Log.d(TAG, "Entering hard reset state");
                         Ob1G5StateMachine.doReset(this, connection);
@@ -411,7 +409,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
     }
 
-    private void resetState() {
+    private void resetState() 
         UserError.Log.e(TAG, "Resetting sequence state to INIT");
         changeState(INIT);
     }
@@ -462,6 +460,7 @@ public class Ob1G5CollectionService extends G5BaseService {
             msg(gs(R.string.scanning));
             stopScan();
             tryLoadingSavedMAC(); // did we already find it?
+            expireFailures(false);
             if (always_scan || scan_next_run || (transmitterMAC == null) || (!transmitterID.equals(transmitterIDmatchingMAC)) || (static_last_timestamp < 1)) {
                 scan_next_run = false; // reset if set
                 transmitterMAC = null; // reset if set
@@ -554,12 +553,14 @@ public class Ob1G5CollectionService extends G5BaseService {
                     stateSubscription = new Subscription(bleDevice.observeConnectionStateChanges()
                             // .observeOn(AndroidSchedulers.mainThread())
                             .subscribeOn(Schedulers.io())
+                            .doFinally(this::releaseFloating)
                             .subscribe(this::onConnectionStateChange, throwable -> {
                                 UserError.Log.wtf(TAG, "Got Error from state subscription: " + throwable);
                             }));
 
                     last_connect_started = JoH.tsl();
                     // Attempt to establish a connection // TODO does this need different connection timeout for auto vs normal?
+                    UserError.Log.d(TAG, "Connecting with auto: " + auto);
                     connectionSubscription = new Subscription(bleDevice.establishConnection(auto)
                             .timeout(7, TimeUnit.MINUTES)
                             // .flatMap(RxBleConnection::discoverServices)
@@ -635,8 +636,10 @@ public class Ob1G5CollectionService extends G5BaseService {
 
         if (isDeviceLocallyBonded && getInitiateBondingFlag()) {
             UserError.Log.d(TAG, "Device is marked as bonded but we are being asked to bond so attempting to unbond first");
-            unbondIfAllowed();
-            changeState(CLOSE);
+            UserError.Log.d(TAG, "experimentally try to get data");
+            changeState(GET_DATA);
+            // unbondIfAllowed();
+            // changeState(CLOSE);
         } else {
 
             try {
@@ -717,7 +720,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     }
 
-    private static synchronized boolean isDeviceLocallyBonded() {
+    public static synchronized boolean isDeviceLocallyBonded() {
         if (transmitterMAC == null) return false;
         final Set<RxBleDevice> pairedDevices = rxBleClient.getBondedDevices();
         if ((pairedDevices != null) && (pairedDevices.size() > 0)) {
@@ -846,8 +849,17 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
     }
 
+    public int incrementRetry() {
+        retry_count++;
+        return retry_count;
+    }
+
     public void clearErrors() {
         error_count = 0;
+    }
+
+    public void clearRetries() {
+        retry_count = 0;
     }
 
     private void checkAlwaysScanModels() {
@@ -1293,6 +1305,15 @@ public class Ob1G5CollectionService extends G5BaseService {
         UserError.Log.d(TAG, "Bluetooth connection: " + static_connection_state);
         if (connection_state.equals("Disconnecting")) {
             //tryGattRefresh();
+        }
+    }
+
+    private void releaseFloating() {
+        val wl = floatingWakeLock;
+        if (wl != null) {
+            if (wl.isHeld()) {
+                JoH.releaseWakeLock(wl);
+            }
         }
     }
 
@@ -1934,6 +1955,36 @@ public class Ob1G5CollectionService extends G5BaseService {
         scan_next_run = true;
     }
 
+    public synchronized void logFailure() {
+        String localMac = transmitterMAC;
+        if (localMac == null) {
+            UserError.Log.d(TAG, "Could not log failure as mac is null");
+            return;
+        }
+        long tsl = JoH.tsl();
+        failureTally.put(localMac, tsl);
+        UserError.Log.d(TAG, "Adding " + localMac + " to failure tally " + JoH.dateTimeText(tsl));
+        resetSomeInternalState();
+    }
+
+    private static void expireFailures(final boolean all) {
+        ArrayList<String> remove = new ArrayList<String>();
+
+        for (Map.Entry<String, Long>entry : failureTally.entrySet()) {
+            if (all || JoH.msSince(entry.getValue()) > (MINUTE_IN_MS * 30)) {
+                remove.add(entry.getKey());
+            }
+        }
+        for (String entry : remove) {
+            UserError.Log.d(TAG, "Removing " + entry + " from failure tally");
+            failureTally.remove(entry);
+        }
+    }
+
+    private static boolean inFailureTally(final String mac) {
+        if (mac == null) return false;
+        return (failureTally.containsKey(mac));
+    }
 
     public void listenForChangeInSettings(boolean listen) {
         try {
