@@ -106,6 +106,28 @@ public class FirstPageFragment extends Fragment {
             TextView rangesabsolute = (TextView) localView.findViewById(R.id.textView_ranges_absolute);
             updateText(localView, rangesabsolute, inRange + "/" + aboveRange + "/" + belowRange);
 
+            int SelectedDays = 1;
+            switch (StatsActivity.state) {
+                case StatsActivity.TODAY:
+                case StatsActivity.YESTERDAY:
+                    SelectedDays = 1;
+                    break;
+                case StatsActivity.D7:
+                    SelectedDays = 7;
+                    break;
+                case StatsActivity.D30:
+                    SelectedDays = 30;
+                    break;
+                case StatsActivity.D90:
+                    SelectedDays = 90;
+                    break;
+            }
+            int possibleCaptures = SelectedDays*(24*12);
+            int CgmUsagePercent = Math.round((((float)total)/((float)possibleCaptures))*100);
+
+            TextView cgmUsage = (TextView) localView.findViewById(R.id.textView_cgm_usage_percents);
+            updateText(localView, cgmUsage, CgmUsagePercent + "%");
+
             List<BgReadingStats> bgList = DBSearchUtil.getReadings(true);
             if (bgList.size() > 0) {
                 double median = bgList.get(bgList.size() / 2).calculated_value;
