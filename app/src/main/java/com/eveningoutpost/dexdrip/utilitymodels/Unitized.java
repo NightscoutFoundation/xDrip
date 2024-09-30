@@ -73,29 +73,8 @@ public class Unitized {
                 df.setMinimumFractionDigits(1);
                 return df.format(mmolConvert(value));
             }
-        } else if (value > 12) {
-            return "LOW";
         } else {
-            switch ((int) value) {
-                case 0:
-                    return "??0";
-                case 1:
-                    return "?SN";
-                case 2:
-                    return "??2";
-                case 3:
-                    return "?NA";
-                case 5:
-                    return "?NC";
-                case 6:
-                    return "?CD";
-                case 9:
-                    return "?AD";
-                case 12:
-                    return "?RF";
-                default:
-                    return "???";
-            }
+            return "LOW";
         }
     }
 
