@@ -409,7 +409,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
     }
 
-    private void resetState() 
+    private void resetState() {
         UserError.Log.e(TAG, "Resetting sequence state to INIT");
         changeState(INIT);
     }
@@ -419,7 +419,12 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     public void changeState(STATE new_state) {
-        changeState(new_state, DEFAULT_AUTOMATA_DELAY);
+        if (shouldServiceRun()) {
+            changeState(new_state, DEFAULT_AUTOMATA_DELAY);
+        } else {
+            UserError.Log.d(TAG, "Stopping service due to having being disabled in preferences");
+            stopSelf();
+        }
     }
 
     public void changeState(STATE new_state, int timeout) {
@@ -452,8 +457,17 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     private static void init_tx_id() {
-        transmitterID = Pref.getString("dex_txid", "NULL");
+        val TXID_PREF = "dex_txid";
+        val txid = Pref.getString(TXID_PREF, "NULL");
+        val txid_filtered = txid.trim();
+        transmitterID = txid_filtered;
+        if (!txid.equals(txid_filtered)) {
+            Pref.setString(TXID_PREF, txid_filtered);
+            UserError.Log.wtf(TAG, "Had to fix invalid txid: :" + txid + ": -> :" + txid_filtered + ":");
+        }
     }
+
+    private volatile boolean lastWasScanByMac = false;
 
     private synchronized void scan_for_device() {
         if (state == SCAN) {
@@ -697,12 +711,12 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     // should this service be running? Used to decide when to shut down
     private static boolean shouldServiceRun() {
-        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return false;
         if (!Pref.getBooleanDefaultFalse(OB1G5_PREFS)) return false;
         if (!(DexCollectionType.getDexCollectionType() == DexcomG5)) return false;
 
-        if (!android_wear) {
-            if (Home.get_forced_wear()) {
+		// Only enable if wear is forced
+        if (android_wear) {
+            if (!Home.get_forced_wear()) {
                 if (JoH.quietratelimit("forced-wear-notice", 3))
                     UserError.Log.d(TAG, "Not running due to forced wear");
                 return false;
@@ -1067,8 +1081,12 @@ public class Ob1G5CollectionService extends G5BaseService {
         return result;
     }
 
+    public static void clearScanError() {
+        lastScanError = null;
+    }
+
     // Successful result from our bluetooth scan
-    private synchronized void onScanResult(ScanResult bleScanResult) {
+    private synchronized void onScanResult(final ScanResult bleScanResult) {
         // TODO MIN RSSI
         final int this_rssi = bleScanResult.getRssi();
         final String this_name = bleScanResult.getBleDevice().getName();
@@ -1356,6 +1374,10 @@ public class Ob1G5CollectionService extends G5BaseService {
         return Pref.getBoolean("g5_bluetooth_watchdog", true);
     }
 
+    private boolean genericBluetoothWatchdog() {
+        return Pref.getBoolean("bluetooth_watchdog", true);
+    }
+
     public static void updateLast(long timestamp) {
         if ((static_last_timestamp == 0) && (transmitterID != null)) {
             final String ref = "last-ob1-data-" + transmitterID;
@@ -1609,16 +1631,21 @@ public class Ob1G5CollectionService extends G5BaseService {
 
 
         if (!is_started && was_started) {
-            if (Pref.getBooleanDefaultFalse("ob1_g5_restart_sensor") && (Sensor.isActive())) {
-                if (state.ended()) {
-                    UserError.Log.uel(TAG, "Requesting time-travel restart");
-                    Ob1G5StateMachine.restartSensorWithTimeTravel();
+            if (Sensor.isActive()) {
+                if (Pref.getBooleanDefaultFalse("ob1_g5_restart_sensor")) {
+                    if (state.ended()) {
+                        UserError.Log.uel(TAG, "Requesting time-travel restart");
+                        Ob1G5StateMachine.restartSensorWithTimeTravel();
+                    } else {
+                        UserError.Log.uel(TAG, "Attempting to auto-start sensor");
+                        Ob1G5StateMachine.startSensor(JoH.tsl());
+                    }
+                    final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_RESTARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
+                    JoH.showNotification("Auto Start", "Sensor Requesting Restart", pi, G5_SENSOR_RESTARTED, true, true, false);
                 } else {
-                    UserError.Log.uel(TAG, "Attempting to auto-start sensor");
-                    Ob1G5StateMachine.startSensor(JoH.tsl());
+                    UserError.Log.uel(TAG, "Marking sensor session as stopped");
+                    Sensor.stopSensor();
                 }
-                final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_RESTARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
-                JoH.showNotification("Auto Start", "Sensor Requesting Restart", pi, G5_SENSOR_RESTARTED, true, true, false);
             }
             final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_STARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
             JoH.showNotification(state.getText(), "Sensor Stopped", pi, G5_SENSOR_STARTED, true, true, false);
@@ -1630,7 +1657,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
         if (is_failed && !was_failed) {
             final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_FAILED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
-            JoH.showNotification(state.getText(), "G5 Sensor FAILED", pi, G5_SENSOR_FAILED, true, true, false);
+            JoH.showNotification(state.getText(), "Sensor FAILED", pi, G5_SENSOR_FAILED, true, true, false);
             UserError.Log.ueh(TAG, "Native Sensor is now marked FAILED: " + state.getExtendedText());
         }
         // we can't easily auto-cancel a failed notice as auto-restart may mean the user is not aware of it?

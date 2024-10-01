@@ -315,45 +315,44 @@ public class UserError extends PlusModel {
             if (tags.length == 0) {
                 return;
             }
-            
+
             // go over all tags and parse them
-            for(String tag : tags) {
+            for (String tag : tags) {
                 if (tag.length() > 0) parseTag(tag);
             }
         }
-        
+
         static void parseTag(String tag) {
             // Format is tag:level for example  Alerts:i
             String[] tagAndLevel = tag.trim().split(":");
-            if(tagAndLevel.length != 2) {
+            if (tagAndLevel.length != 2) {
                 Log.e(TAG, "Failed to parse " + tag);
                 return;
             }
-            String level =  tagAndLevel[1];
-            String tagName = tagAndLevel[0].toLowerCase();
+            String level = tagAndLevel[1];
+            String tagName = tagAndLevel[0].toLowerCase(); // TODO I would like to make this case sensitive for performance reasons
             if (level.compareTo("d") == 0) {
                 extraTags.put(tagName, android.util.Log.DEBUG);
-                UserErrorLow(TAG, "Adding tag with DEBUG " + tagAndLevel[0] );
+                UserErrorLow(TAG, "Adding tag with DEBUG " + tagAndLevel[0]);
                 return;
             }
             if (level.compareTo("v") == 0) {
                 extraTags.put(tagName, android.util.Log.VERBOSE);
-                UserErrorLow(TAG,"Adding tag with VERBOSE " + tagAndLevel[0] );
+                UserErrorLow(TAG, "Adding tag with VERBOSE " + tagAndLevel[0]);
                 return;
             }
             if (level.compareTo("i") == 0) {
                 extraTags.put(tagName, android.util.Log.INFO);
-                UserErrorLow(TAG, "Adding tag with info " + tagAndLevel[0] );
+                UserErrorLow(TAG, "Adding tag with info " + tagAndLevel[0]);
                 return;
             }
             Log.e(TAG, "Unknown level for tag " + tag + " please use d v or i");
-
         }
-        
-        static boolean shouldLogTag(String tag, int level) {
-            Integer levelForTag = extraTags.get(tag.toLowerCase());
+
+        public static boolean shouldLogTag(final String tag, final int level) {
+            final Integer levelForTag = extraTags.get(tag != null ? tag.toLowerCase() : ""); // TODO I would like to make this case sensitive for performance reasons
             return levelForTag != null && level >= levelForTag;
         }
-        
+
     }
 }

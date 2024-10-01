@@ -91,17 +91,6 @@ import static android.bluetooth.BluetoothDevice.PAIRING_VARIANT_PIN;
 import static android.content.Context.ALARM_SERVICE;
 import static android.content.Context.VIBRATOR_SERVICE;
 
-//KS import android.content.DialogInterface;
-//KS import android.graphics.Canvas;
-//KS import android.graphics.Color;
-//KS import android.graphics.Paint;
-//KS import android.support.v7.app.AlertDialog;
-//KS import android.support.v4.app.NotificationCompat;
-//KS import androidx.appcompat.app.AppCompatActivity;
-//KS import android.support.v7.view.ContextThemeWrapper;
-//KS import com.eveningoutpost.dexdrip.utils.CipherUtils;
-//KS import static com.eveningoutpost.dexdrip.stats.StatsActivity.SHOW_STATISTICS_PRINT_COLOR;
-
 /**
  * Created by jamorham on 06/01/16.
  * <p>
@@ -110,8 +99,8 @@ import static android.content.Context.VIBRATOR_SERVICE;
 public class JoH {
     private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
     private final static String TAG = "jamorham JoH";
-    private final static boolean debug_wakelocks = false;
     private final static int PAIRING_VARIANT_PASSKEY = 1; // hidden in api
+    private final static boolean debug_wakelocks = false;
 
     private static double benchmark_time = 0;
     private static Map<String, Double> benchmarks = new HashMap<String, Double>();
@@ -151,7 +140,7 @@ public class JoH {
 
     // TODO can we optimize this with System.currentTimeMillis ?
     public static long tsl() {
-        return new Date().getTime();
+        return System.currentTimeMillis();
     }
 
     public static long msSince(long when) {
@@ -172,9 +161,9 @@ public class JoH {
 
     public static String bytesToHex(byte[] bytes) {
         if (bytes == null) return "<empty>";
-        char[] hexChars = new char[bytes.length * 2];
+        final char[] hexChars = new char[bytes.length * 2];
         for (int j = 0; j < bytes.length; j++) {
-            int v = bytes[j] & 0xFF;
+            final int v = bytes[j] & 0xFF;
             hexChars[j * 2] = hexArray[v >>> 4];
             hexChars[j * 2 + 1] = hexArray[v & 0x0F];
         }
@@ -743,6 +732,11 @@ public class JoH {
         wl.acquire(millis);
         if (debug_wakelocks) Log.d(TAG, "getWakeLock: " + name + " " + wl.toString());
         return wl;
+    }
+
+    public static String getRFC822String(long timestamp) {
+        final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
+        return dateFormat.format(new Date(timestamp));
     }
 
     public static PowerManager.WakeLock getWakeLock(final int type, final String name, int millis) {//KS
