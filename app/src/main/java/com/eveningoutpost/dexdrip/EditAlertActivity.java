@@ -50,6 +50,7 @@ import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -215,9 +216,8 @@ public class EditAlertActivity extends ActivityWithMenu {
         doMgdl = (prefs.getString("units", "mgdl").compareTo("mgdl") == 0);
 
         if(!doMgdl) {
-            alertThreshold.setInputType(InputType.TYPE_CLASS_NUMBER);
-            alertThreshold.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
-            alertThreshold.setKeyListener(DigitsKeyListener.getInstance(false,true));
+            char decimalValueSeparator = DecimalFormatSymbols.getInstance().getDecimalSeparator();
+            alertThreshold.setKeyListener(DigitsKeyListener.getInstance("0123456789" + decimalValueSeparator));
         }
 
         uuid = getExtra(savedInstanceState, "uuid", null);
