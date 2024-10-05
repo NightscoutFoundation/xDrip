@@ -76,38 +76,67 @@ public class FirstPageFragment extends Fragment {
             }
 
             //Ranges
+            long aboveVHRange = DBSearchUtil.noReadingsAboveVHRange(context);
             long aboveRange = DBSearchUtil.noReadingsAboveRange(context);
             long belowRange = DBSearchUtil.noReadingsBelowRange(context);
+            long belowVLRange = DBSearchUtil.noReadingsBelowVLRange(context);
             long inRange = DBSearchUtil.noReadingsInRange(context);
             long total = aboveRange + belowRange + inRange;
 
             if (total == 0) {
                 total = Long.MAX_VALUE;
             }
+            int aboveVHPercent = (int) (aboveVHRange * 100.0 / total + 0.5);
             int abovePercent = (int) (aboveRange * 100.0 / total + 0.5);
             int belowPercent = (int) (belowRange * 100.0 / total + 0.5);
+            int belowVLPercent = (int) (belowVLRange * 100.0 / total + 0.5);
             int inPercent = 100 - abovePercent - belowPercent;
-
-            TextView rangespercent = (TextView) localView.findViewById(R.id.textView_ranges_percent);
-            updateText(localView, rangespercent, inPercent + "%/" + abovePercent + "%/" + belowPercent + "%");
-
-            // Let's put the range settings on screen so that this becomes a self-contained page.
-            // Navid200
-            double stats_high = Double.parseDouble(settings.getString("highValue", "170"));
-            double stats_low = Double.parseDouble(settings.getString("lowValue", "70"));
-            TextView rangeView = (TextView) localView.findViewById(R.id.textView_stats_range_set);
-            //update stats_high/low
-            if (!mgdl) {
-                updateText(localView, rangeView, (Math.round(stats_low * 10) / 10d) + " - " + (Math.round(stats_high * 10) / 10d) + " mmol/l");
-            } else {
-                updateText(localView, rangeView, Math.round(stats_low) + " - " + (Math.round(stats_high)) + " mg/dl");
-            }
-
-            TextView rangesabsolute = (TextView) localView.findViewById(R.id.textView_ranges_absolute);
-            updateText(localView, rangesabsolute, inRange + "/" + aboveRange + "/" + belowRange);
 
             List<BgReadingStats> bgList = DBSearchUtil.getReadings(true);
             if (bgList.size() > 0) {
+                int ntotal = (int) (total);
+                TextView ntotalview = (TextView) localView.findViewById(R.id.textView_ntotal);
+                updateText(localView, ntotalview, "" + ntotal);
+
+                double stats_veryhigh = Double.parseDouble(settings.getString("veryhighValue", "250"));
+                TextView veryhighview = (TextView) localView.findViewById(R.id.textView_veryhigh);
+                if (!mgdl) {
+                    updateText(localView, veryhighview, " > " + (Math.round(stats_veryhigh * 10) / 10d) + " mmol/l :  " + aboveVHPercent + "%");
+                } else {
+                    updateText(localView, veryhighview, " > " + Math.round(stats_veryhigh) + " mg/dl :  " + aboveVHPercent + "%");
+                }
+
+                double stats_high = Double.parseDouble(settings.getString("highValue", "180"));
+                TextView highview = (TextView) localView.findViewById(R.id.textView_high);
+                if (!mgdl) {
+                    updateText(localView, highview, " > " + (Math.round(stats_high * 10) / 10d) + " mmol/l :  " + abovePercent + "%");
+                } else {
+                    updateText(localView, highview, " > " + Math.round(stats_high) + " mg/dl :  " + abovePercent + "%");
+                }
+
+                double stats_low = Double.parseDouble(settings.getString("lowValue", "70"));
+                TextView inrangeview = (TextView) localView.findViewById(R.id.textView_inrange);
+                if (!mgdl) {
+                    updateText(localView, inrangeview, "  " + (Math.round(stats_low * 10) / 10d) + " - " + (Math.round(stats_high * 10) / 10d) + " mmol/l :  " + inPercent + "%");
+                } else {
+                    updateText(localView, inrangeview, "  " + Math.round(stats_low) + " - " + (Math.round(stats_high)) + " mg/dl :  " + inPercent + "%");
+                }
+
+                TextView lowview = (TextView) localView.findViewById(R.id.textView_low);
+                if (!mgdl) {
+                    updateText(localView, lowview, " < " + (Math.round(stats_low * 10) / 10d) + " mmol/l :  " + belowPercent + "%");
+                } else {
+                    updateText(localView, lowview, " < " + Math.round(stats_low) + " mg/dl :  " + belowPercent + "%");
+                }
+
+                double stats_verylow = Double.parseDouble(settings.getString("verylowValue", "54"));
+                TextView verylowview = (TextView) localView.findViewById(R.id.textView_verylow);
+                if (!mgdl) {
+                    updateText(localView, verylowview, " < " + (Math.round(stats_verylow * 10) / 10d) + " mmol/l :  " + belowVLPercent + "%");
+                } else {
+                    updateText(localView, verylowview, " < " + Math.round(stats_verylow) + " mg/dl :  " + belowVLPercent + "%");
+                }
+
                 double median = bgList.get(bgList.size() / 2).calculated_value;
                 TextView medianView = (TextView) localView.findViewById(R.id.textView_median);
 
