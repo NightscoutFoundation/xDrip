@@ -293,14 +293,26 @@
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:key="smart_alerts_screen"
                 android:title="@string/extra_alerts_xdrip_plus">
-                <PreferenceCategory
-                    android:summary="@string/summary_persistent_high_alert"
+                <PreferenceScreen
+                    android:key="persistent_high_alert_page"
                     android:title="@string/persistent_high_alert">
                     <SwitchPreference
                         android:defaultValue="false"
                         android:key="persistent_high_alert_enabled"
                         android:summary="@string/alarm_if_above_high_value"
-                        android:title="@string/persistent_high_alert" />
+                        android:title="@string/persistent_high_alert_enable" />
+                    <SwitchPreference
+                        android:defaultValue="true"
+                        android:disableDependentsState="true"
+                        android:key="high_value_is_persistent_high_threshold"
+                        android:summary="@string/summary_persistent_high_threshold_link"
+                        android:title="@string/title_persistent_high_threshold_link" />
+                    <EditTextPreference
+                        android:defaultValue="170"
+                        android:dependency="high_value_is_persistent_high_threshold"
+                        android:inputType="numberDecimal"
+                        android:key="persistent_high_threshold"
+                        android:title="@string/title_persistent_high_threshold" />
                     <EditTextPreference
                         android:defaultValue="60"
                         android:dependency="persistent_high_alert_enabled"
@@ -323,9 +335,9 @@
                         android:showSilent="true"
                         android:summary="@string/choose_sound_used_for_persistent_high_alarm"
                         android:title="@string/persistent_high_sound" />
-                </PreferenceCategory>
-                <PreferenceCategory
-                    android:summary="@string/momentum_indicates_low"
+                </PreferenceScreen>
+                <PreferenceScreen
+                    android:key="@string/forecasted_low_alert"
                     android:title="@string/forecasted_low_alert">
                     <SwitchPreference
                         android:defaultValue="true"
@@ -354,8 +366,21 @@
                         android:showSilent="true"
                         android:summary="@string/choose_sound_used_for_predicted_low_alarm"
                         android:title="@string/predicted_low_sound" />
-                </PreferenceCategory>
-                <PreferenceCategory android:title="@string/other_xdrip_plus_alerts">
+                </PreferenceScreen>
+                <PreferenceScreen
+                    android:key="@string/title_sens_expiry"
+                    android:title="@string/title_sens_expiry">
+                    <SwitchPreference
+                        android:defaultValue="false"
+                        android:key="alert_raise_for_sensor_expiry"
+                        android:summary="@string/summary_sens_expiry_notify"
+                        android:switchTextOff="@string/short_off_text_for_switches"
+                        android:switchTextOn="@string/short_on_text_for_switches"
+                        android:title="@string/title_sens_expiry_notify" />
+                </PreferenceScreen>
+                <PreferenceScreen
+                    android:key="@string/other_xdrip_plus_alerts"
+                    android:title="@string/other_xdrip_plus_alerts">
                     <SwitchPreference
                         android:defaultValue="true"
                         android:key="bridge_battery_alerts"
@@ -369,13 +394,6 @@
                         android:key="bridge_battery_alert_level"
                         android:summary=""
                         android:title="@string/low_battery_percentage" />
-                    <SwitchPreference
-                        android:defaultValue="false"
-                        android:switchTextOff="@string/short_off_text_for_switches"
-                        android:switchTextOn="@string/short_on_text_for_switches"
-                        android:key="alert_raise_for_sensor_expiry"
-                        android:summary="@string/summary_sens_expiry_notify"
-                        android:title="@string/title_sens_expiry_notify" />
                     <SwitchPreference
                         android:defaultValue="true"
                         android:dependency="engineering_mode"
@@ -393,7 +411,7 @@
                         android:key="follower_chime"
                         android:summary="@string/notify_data_arrives_master"
                         android:title="@string/follower_chime_new" />
-                </PreferenceCategory>
+                </PreferenceScreen>
             </PreferenceScreen>
         </PreferenceCategory>
     </PreferenceScreen>
