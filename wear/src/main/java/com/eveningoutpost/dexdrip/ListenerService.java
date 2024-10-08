@@ -1792,6 +1792,12 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             prefs.putBoolean("old_school_calibration_mode", dataMap.getBoolean("old_school_calibration_mode", false));
 
             prefs.putBoolean("show_wear_treatments", dataMap.getBoolean("show_wear_treatments", false));
+
+            //Nightscout settings
+            prefs.putBoolean("cloud_storage_api_enable", dataMap.getBoolean("cloud_storage_api_enable", false));
+            prefs.putString("cloud_storage_api_base", dataMap.getString("cloud_storage_api_base", ""));
+            prefs.putBoolean("cloud_storage_api_use_mobile", dataMap.getBoolean("cloud_storage_api_use_mobile", false));
+
             overrideLocale(dataMap);
 
 

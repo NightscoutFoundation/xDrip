@@ -157,6 +157,29 @@ public class UserError extends PlusModel {
                 .executeSingle();
     }
 
+    public static List<UserError> newerThanID(long id, int limit) {
+        return new Select()
+                .from(UserError.class)
+                .where("_ID > ?", id)
+                .orderBy("timestamp desc")
+                .limit(limit)
+                .execute();
+    }
+
+    public static List<UserError> latestDesc(int number, long startTime) {
+        return latestDesc(number, startTime, Long.MAX_VALUE);
+    }
+
+    public static List<UserError> latestDesc(int number, long startTime, long endTime) {
+        return new Select()
+                .from(UserError.class)
+                .where("timestamp >= " + Math.max(startTime, 0))
+                .where("timestamp <= " + endTime)
+                .orderBy("timestamp desc")
+                .limit(number)
+                .execute();
+    }
+
     public static List<UserError> latestAsc(int number, long startTime) {
         return latestAsc(number, startTime, Long.MAX_VALUE);
     }
@@ -330,7 +353,7 @@ public class UserError extends PlusModel {
                 return;
             }
             String level = tagAndLevel[1];
-            String tagName = tagAndLevel[0].toLowerCase(); // TODO I would like to make this case sensitive for performance reasons
+            String tagName = tagAndLevel[0];
             if (level.compareTo("d") == 0) {
                 extraTags.put(tagName, android.util.Log.DEBUG);
                 UserErrorLow(TAG, "Adding tag with DEBUG " + tagAndLevel[0]);
@@ -350,7 +373,7 @@ public class UserError extends PlusModel {
         }
 
         public static boolean shouldLogTag(final String tag, final int level) {
-            final Integer levelForTag = extraTags.get(tag != null ? tag.toLowerCase() : ""); // TODO I would like to make this case sensitive for performance reasons
+            final Integer levelForTag = extraTags.get(tag != null ? tag : "");
             return levelForTag != null && level >= levelForTag;
         }
 

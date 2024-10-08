@@ -53,7 +53,7 @@ public class xdrip extends Application {
         executor = new PlusAsyncExecutor();
         VersionTracker.updateDevice();
         disableUpdates();
-
+        JoH.forceCellularOrWifiUsage();
     }
 
 

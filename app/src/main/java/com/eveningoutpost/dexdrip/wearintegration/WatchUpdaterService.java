@@ -164,7 +164,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     private volatile String mWearNodeId = null;
     static final int GET_CAPABILITIES_TIMEOUT_MS = 5000;
 
-    private static final String TAG = "jamorham watchupdater";
+    private static final String TAG = WatchUpdaterService.class.getSimpleName();
     private static final String LAST_WATCH_RECEIVED_TEXT = "watch-last-received-text";
     private static GoogleApiClient googleApiClient;
     private static long lastRequest = 0;//KS
@@ -1833,6 +1833,11 @@ public class WatchUpdaterService extends WearableListenerService implements
             if (dex_time_keeper != null) {
                 dataMap.putString("dex-timekeeping", dex_time_keeper);
             }
+
+            //Nightscout settings
+            dataMap.putBoolean("cloud_storage_api_enable", mPrefs.getBoolean("cloud_storage_api_enable", false));
+            dataMap.putString("cloud_storage_api_base", mPrefs.getString("cloud_storage_api_base", ""));
+            dataMap.putBoolean("cloud_storage_api_use_mobile", mPrefs.getBoolean("cloud_storage_api_use_mobile", false));
 
         }
         //Step Counter

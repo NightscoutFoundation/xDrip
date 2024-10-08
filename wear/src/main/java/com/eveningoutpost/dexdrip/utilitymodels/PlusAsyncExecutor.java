@@ -37,7 +37,15 @@ public class PlusAsyncExecutor implements Executor {
 
     public synchronized void execute(@NonNull final Runnable r) {
 
-        final String queueId = JoH.backTraceShort(0); // TODO probably a better way to get a queue name
+        String pqueueId = JoH.backTraceShort(0);
+        if (pqueueId.equals("executeOnExecutor")) {
+            pqueueId = JoH.backTrace(1);
+            if (pqueueId.contains(":")) {
+                pqueueId = pqueueId.split(":")[0];
+            }
+        }
+        final String queueId = pqueueId;
+
 
         // Create the queue if it doesn't exist yet
         if (!taskQueues.containsKey(queueId)) {

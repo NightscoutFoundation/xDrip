@@ -1,7 +1,5 @@
 package com.eveningoutpost.dexdrip.utilitymodels;
 
-import static com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper.enableTls12OnPreLollipop;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.PowerManager;
@@ -23,7 +21,6 @@ import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
-import com.eveningoutpost.dexdrip.utils.Mdns;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
@@ -105,7 +102,7 @@ public class NightscoutUploader {
         public static final int FAIL_NOTIFICATION_PERIOD = 24 * 60 * 60; // Failed upload notification will be shown if there is no upload for 24 hours.
         public static final int FAIl_COUNT_NOTIFICATION = FAIL_NOTIFICATION_PERIOD / 60 / 5 -1; // Number of 5-minute read cycles corresponding to notification period
         public static final int FAIL_LOG_PERIOD = 6 * 60 * 60; // FAILED upload/download log will be shown if there is no upload/download for 6 hours.
-        public static final int FAIL_COUNT_LOG = FAIL_LOG_PERIOD / 60 / 5 -1; // Number of 5-minute read cycles corresponding to log period
+        public static final int FAIL_COUNT_LOG = 5; //FAIL_LOG_PERIOD / 60 / 5 -1; // Number of 5-minute read cycles corresponding to log period
 
         private Context mContext;
         private Boolean enableRESTUpload;
@@ -161,7 +158,7 @@ public class NightscoutUploader {
         public NightscoutUploader(Context context) {
             mContext = context;
             prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-            final OkHttpClient.Builder okHttp3Builder = enableTls12OnPreLollipop(new OkHttpClient.Builder());
+            final OkHttpClient.Builder okHttp3Builder = new OkHttpClient.Builder();
             if (UserError.ExtraLogTags.shouldLogTag(TAG, android.util.Log.VERBOSE)) {
                 okHttp3Builder.addInterceptor(new SSLHandshakeInterceptor());
             }
@@ -169,6 +166,7 @@ public class NightscoutUploader {
             okHttp3Builder.connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
             okHttp3Builder.writeTimeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS);
             okHttp3Builder.readTimeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS);
+            //okHttp3Builder.socketFactory()
             client = okHttp3Builder.build();
             enableRESTUpload = prefs.getBoolean("cloud_storage_api_enable", false);
         }
@@ -239,44 +237,6 @@ public class NightscoutUploader {
         return apiStatus;
     }
 
-    private String TryResolveName(String baseURI) {
-        Log.d(TAG,  "Resolveing name" );
-        URI uri;
-        try {
-            uri = new URI(baseURI);
-        } catch (URISyntaxException e) {
-            Log.e(TAG, "Error URISyntaxException for the base URL", e);
-            return baseURI;
-        }
-        String host = uri.getHost();
-        Log.d(TAG, "host = " + host);
-        // Host has either to end with .local, or be one word (with no dots) for us to try and resolve it.
-        if (host == null ||  (host.contains(".") && (!host.endsWith(".local")))) {
-            return baseURI;
-        }
-        // So, we need to resolve this name
-        String fullHost = host;
-        try {
-            if(!fullHost.endsWith(".local")) {
-                fullHost += ".local";
-            }
-            String ip = Mdns.genericResolver(fullHost);
-            if(ip == null) {
-                Log.d(TAG, "Recieved null resolving " + fullHost);
-                return baseURI;
-            }
-            // Resolve succeeded, replace host, with the resovled address.
-            String newUri = baseURI.replace(host, ip);
-            Log.d(TAG, "Returning new uri " + newUri);
-            return newUri;
-            
-            
-        } catch (UnknownHostException e) {
-            Log.w(TAG, "UnknownHostException error nanme not resovled" + fullHost);
-            return baseURI;
-        }
-    }
-
     private boolean doRESTUpload(SharedPreferences prefs, List<BgReading> glucoseDataSets, List<BloodTest> meterRecords, List<Calibration> calRecords) {
             String baseURLSettings = prefs.getString("cloud_storage_api_base", "");
             ArrayList<String> baseURIs = new ArrayList<String>();
@@ -294,12 +254,11 @@ public class NightscoutUploader {
             boolean any_successes = false;
             for (String baseURI : baseURIs) {
                 try {
-                    baseURI = TryResolveName(baseURI);
                     int apiVersion = 0;
                     URI uri = new URI(baseURI);
                     if ((uri.getHost().startsWith("192.168.")) && prefs.getBoolean("skip_lan_uploads_when_no_lan", true) && (!JoH.isLANConnected()))
                     {
-                        Log.d(TAG,"Skipping Nighscout upload to: "+uri.getHost()+" due to no LAN connection");
+                        Log.d(TAG,"Skipping Nightscout upload to: "+uri.getHost()+" due to no LAN connection");
                         continue;
                     }
                     if (uri.getPath().endsWith("/v1/")) apiVersion = 1;
@@ -330,6 +289,7 @@ public class NightscoutUploader {
                     last_exception_count = 0;
                     last_exception_log_count = 0;
                 } catch (Exception e) {
+                    Log.e(TAG, "Nightscout upload FAILED: " + e.getMessage());
                     String msg = "Unable to do REST API Upload: " + e.getMessage() + " marking record: " + (any_successes ? "succeeded" : "failed");
                     handleRestFailure(msg);
                 }

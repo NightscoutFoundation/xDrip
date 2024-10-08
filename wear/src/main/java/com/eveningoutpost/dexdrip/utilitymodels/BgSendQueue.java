@@ -136,10 +136,9 @@ public class BgSendQueue extends Model {
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
             // process the uploader queue in 'only-wear' mode
-            if (prefs.getBoolean("only_ever_use_wear_collector", false)) {
-                if (JoH.ratelimit("start-sync-service", 30)) {
-                    JoH.startService(SyncService.class);
-                }
+            Log.e("BgSendQueue", "start SyncService on wear device");
+            if (JoH.ratelimit("start-sync-service", 30)) {
+                JoH.startService(SyncService.class);
             }
 
             // if executing on watch; send to watchface

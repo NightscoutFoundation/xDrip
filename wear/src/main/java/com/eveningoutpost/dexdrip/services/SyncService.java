@@ -14,7 +14,7 @@ import com.eveningoutpost.dexdrip.xdrip;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.SYNC_QUEUE_RETRY_ID;
 
 public class SyncService extends IntentService {
-    private static final String TAG = "SyncService";
+    private static final String TAG = SyncService.class.getSimpleName();
 
     public SyncService() {
         super("SyncService");
@@ -37,12 +37,20 @@ public class SyncService extends IntentService {
     }
 
     private void synctoCloudDatabases() {
+        // If no network is connected then enforce cellular/wifi usage
+        if (!JoH.isAnyNetworkConnected()) {
+            Log.e(TAG, "No network is active");
+            JoH.forceCellularOrWifiUsage();
+            // Sleep 5 sec to wait for network activation
+            JoH.threadSleep(5000);
+        }
+        Log.e(TAG, "Is mobile active? - " + JoH.isMobileDataOrEthernetConnected());
         final UploaderTask task = new UploaderTask();
         task.executeOnExecutor(xdrip.executor);
     }
 
     public static void startSyncService(long delay) {
-        Log.d("SyncService", "static starting Sync service delay: " + delay);
+        Log.d(TAG, "static starting Sync service delay: " + delay);
         if (delay == 0) {
             xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), SyncService.class));
         } else {
