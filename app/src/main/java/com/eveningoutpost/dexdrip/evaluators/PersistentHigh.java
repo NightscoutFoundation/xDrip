@@ -30,8 +30,13 @@ public class PersistentHigh {
 
     private static final String TAG = PersistentHigh.class.getSimpleName();
     private static final String PERSISTENT_HIGH_SINCE = "persistent_high_since";
+    public static double persistentHighThreshold = Home.convertToMgDlIfMmol(JoH.tolerantParseDouble(Pref.getString("highValue", "170"))); // By default, the persistent High threshold is equal to the High Value
 
     public static boolean checkForPersistentHigh() {
+
+        if (!Pref.getBoolean("high_value_is_persistent_high_threshold", true)) { // If the user has chosen not to use the High Value as the threshold
+            persistentHighThreshold = Home.convertToMgDlIfMmol(JoH.tolerantParseDouble(Pref.getString("persistent_high_threshold", "170"))); // Set the threshold to the value chosen by the user
+        }
 
         // skip if not enabled
         if (!Pref.getBooleanDefaultFalse("persistent_high_alert_enabled")) return false;
@@ -40,18 +45,15 @@ public class PersistentHigh {
         final List<BgReading> last = BgReading.latest(1);
         if ((last != null) && (last.size() > 0)) {
 
-            final double highMarkMgDl = Home.convertToMgDlIfMmol(
-                    JoH.tolerantParseDouble(Pref.getString("highValue", "170"), 170d));
-
             final long now = JoH.tsl();
             final long since = now - last.get(0).timestamp;
             // only process if last reading <10 mins
             if (since < MINUTE_IN_MS * 10) {
-                // check if exceeding high
-                if (last.get(0).getDg_mgdl() > highMarkMgDl) {
+                // check if exceeding persistent high threshold
+                if (last.get(0).getDg_mgdl() > persistentHighThreshold) {
 
                     final double this_slope = last.get(0).getDg_slope() * MINUTE_IN_MS;
-                    Log.d(TAG, "CheckForPersistentHigh: Slope: " + JoH.qs(this_slope)+ " "+JoH.dateTimeText(last.get(0).timestamp));
+                    Log.d(TAG, "CheckForPersistentHigh: Slope: " + JoH.qs(this_slope) + " " + JoH.dateTimeText(last.get(0).timestamp));
 
                     // if not falling
                     if (this_slope > 0 && !last.get(0).hide_slope) {
@@ -78,7 +80,7 @@ public class PersistentHigh {
                                     return false;
                                 }
 
-                                if (!dataQualityCheck(high_since, highMarkMgDl)) {
+                                if (!dataQualityCheck(high_since, persistentHighThreshold)) {
                                     Log.d(TAG, "Insufficient data quality to raise persistent high alert");
                                     return false;
                                 }
