@@ -438,7 +438,7 @@
     <string name="new_version_date_colon">"New Version date: "</string>
     <string name="old_version_date_colon">"Old Version date: "</string>
     <string name="speak_your_note_text">Speak your note text</string>
-    <string name="alarm_if_above_high_value">Notify if above threshold and not falling for long</string>
+    <string name="alarm_if_above_high_value">Notify if above threshold for longer than the time specified below</string>
     <string name="for_longer_than_minutes">for longer than (minutes)</string>
     <string name="choose_sound_used_for_persistent_high_alarm">Choose the sound used for the alarm.</string>
     <string name="persistent_high_sound">Alert Sound</string>
