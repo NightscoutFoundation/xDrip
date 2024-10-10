@@ -343,7 +343,7 @@ public class StatsActivity extends ActivityWithMenu {
         updateMenuChecked();
     }
 
-    public void toggleStatisticsShowMedianBG(MenuItem m) // Toggle visibility of absolute numbers
+    public void toggleStatisticsShowMedianBG(MenuItem m) // Toggle visibility of median
     {
         Pref.toggleBoolean(SHOW_STATISTICS_Median_BG);
         evaluateColors(true);
@@ -357,14 +357,14 @@ public class StatsActivity extends ActivityWithMenu {
         updateMenuChecked();
     }
 
-    public void toggleStatisticsShowRelSD(MenuItem m) // Toggle visibility of estimated A1C
+    public void toggleStatisticsShowRelSD(MenuItem m) // Toggle visibility of relative standard deviation
     {
         Pref.toggleBoolean(SHOW_STATISTICS_Rel_SD);
         evaluateColors(true);
         updateMenuChecked();
     }
 
-    public void toggleStatisticsShowGVI(MenuItem m) // Toggle visibility of PGS
+    public void toggleStatisticsShowGVI(MenuItem m) // Toggle visibility of GVI
     {
         Pref.toggleBoolean(SHOW_STATISTICS_GVI);
         evaluateColors(true);
