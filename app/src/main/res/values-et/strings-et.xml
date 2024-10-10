@@ -735,9 +735,9 @@
     <string name="accounts_inside_usa">Lubatud = Teie konto ja jälgimise rakendused on pärit USA-st</string>
     <string name="usa_based_account">Dex USA-põhine konto</string>
     <string name="dexcom_login">Sisselogimine Dex Share\'i</string>
-    <string name="dexcom_user">Dexcomi konto kasutajanimi</string>
-    <string name="dexcom_login_password">Teie Dexcomi veebisaidi parool</string>
-    <string name="dexcom_password">Dexcomi konto parool</string>
+    <string name="dexcom_user">Dex konto sisselogimine</string>
+    <string name="dexcom_login_password">Sinu Dex Share parool</string>
+    <string name="dexcom_password">Dex konto parool</string>
     <string name="dexcom_receiver_serial">10-kohaline Dexcomi vastuvõtja seerianumber</string>
     <string name="dexcom_test_mode_serial">10-kohaline testrežiimi seerianumber</string>
     <string name="glucose_meters">Glükomeetrid</string>
