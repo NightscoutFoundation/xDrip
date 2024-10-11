@@ -75,7 +75,16 @@ public class UiBasedCollector extends NotificationListenerService {
     static {
         coOptedPackages.add("com.dexcom.g6");
         coOptedPackages.add("com.dexcom.g6.region1.mmol");
+        coOptedPackages.add("com.dexcom.g6.region2.mgdl");
         coOptedPackages.add("com.dexcom.g6.region3.mgdl");
+        coOptedPackages.add("com.dexcom.g6.region4.mmol");
+        coOptedPackages.add("com.dexcom.g6.region5.mmol");
+        coOptedPackages.add("com.dexcom.g6.region6.mgdl");
+        coOptedPackages.add("com.dexcom.g6.region7.mmol");
+        coOptedPackages.add("com.dexcom.g6.region8.mmol");
+        coOptedPackages.add("com.dexcom.g6.region9.mgdl");
+        coOptedPackages.add("com.dexcom.g6.region10.mgdl");
+        coOptedPackages.add("com.dexcom.g6.region11.mmol");
         coOptedPackages.add("com.dexcom.dexcomone");
         coOptedPackages.add("com.dexcom.stelo");
         coOptedPackages.add("com.dexcom.g7");
