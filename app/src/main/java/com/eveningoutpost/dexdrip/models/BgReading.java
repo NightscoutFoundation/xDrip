@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.models;
 
+import static com.eveningoutpost.dexdrip.evaluators.PersistentHigh.persistentHighThreshold;
 import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.shortTxId;
 import static com.eveningoutpost.dexdrip.importedlibraries.dexcom.Dex_Constants.TREND_ARROW_VALUES.NOT_COMPUTABLE;
 import static com.eveningoutpost.dexdrip.importedlibraries.dexcom.Dex_Constants.TREND_ARROW_VALUES.getTrend;
@@ -1834,10 +1835,8 @@ public class BgReading extends Model implements ShareUploadableBg {
             final long since = now - last.get(0).timestamp;
             // only process if last reading <10 mins
             if (since < 600000) {
-                // check if exceeding high
-                if (last.get(0).calculated_value >
-                        Home.convertToMgDlIfMmol(
-                                JoH.tolerantParseDouble(Pref.getString("highValue", "170")))) {
+                // check if exceeding persistent high threshold
+                if (last.get(0).calculated_value > persistentHighThreshold) {
 
                     final double this_slope = last.get(0).calculated_value_slope * 60000;
                     //Log.d(TAG, "CheckForPersistentHigh: Slope: " + JoH.qs(this_slope));

@@ -748,6 +748,19 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             return false;
         }
     };
+
+    private static Preference.OnPreferenceChangeListener sBindNumericUnitizedPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() { // This listener adds glucose unit in addition to the value to the summary
+        @Override
+        public boolean onPreferenceChange(Preference preference, Object value) {
+            String stringValue = value.toString();
+            if (isNumeric(stringValue)) {
+                final boolean domgdl = Pref.getString("units", "mgdl").equals("mgdl"); // Identify which unit is chosen
+                preference.setSummary(stringValue + "  " + (domgdl ? "mg/dl" : "mmol/l")); // Set the summary to show the value followed by the chosen unit
+                return true;
+            }
+            return false;
+        }
+    };
     private static Preference.OnPreferenceChangeListener sBindPreferenceTitleAppendToValueListenerUpdateChannel = new Preference.OnPreferenceChangeListener() {
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
@@ -996,6 +1009,13 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                         .getString(preference.getKey(), ""));
     }
 
+    private static void bindPreferenceSummaryToUnitizedValueAndEnsureNumeric(Preference preference) { // Use this to show the value as well as the corresponding glucose unit as the summary
+        preference.setOnPreferenceChangeListener(sBindNumericUnitizedPreferenceSummaryToValueListener);
+        sBindNumericUnitizedPreferenceSummaryToValueListener.onPreferenceChange(preference,
+                PreferenceManager
+                        .getDefaultSharedPreferences(preference.getContext())
+                        .getString(preference.getKey(), ""));
+    }
 
     @RequiredArgsConstructor
     public static class AllPrefsFragment extends PreferenceFragment {
@@ -1074,6 +1094,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             bindPreferenceSummaryToValue(findPreference("rising_bg_val"));
             bindPreferenceSummaryToValue(findPreference("other_alerts_sound"));
             bindPreferenceSummaryToValue(findPreference("bridge_battery_alert_level"));
+            bindPreferenceSummaryToUnitizedValueAndEnsureNumeric(findPreference("persistent_high_threshold"));
 
             addPreferencesFromResource(R.xml.pref_data_source);
 
@@ -3057,6 +3078,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             final Double lowVal = Double.parseDouble(preferences.getString("lowValue", "0"));
             final Double default_insulin_sensitivity = Double.parseDouble(preferences.getString("profile_insulin_sensitivity_default", "54"));
             final Double default_target_glucose = Double.parseDouble(preferences.getString("plus_target_range", "100"));
+            final Double persistent_high_Val = Double.parseDouble(preferences.getString("persistent_high_threshold", "0"));
 
 
             static_units = newValue.toString();
@@ -3066,6 +3088,11 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     preferences.edit().putString("highValue", Long.toString(Math.round(highVal * Constants.MMOLL_TO_MGDL))).apply();
                     preferences.edit().putString("profile_insulin_sensitivity_default", Long.toString(Math.round(default_insulin_sensitivity * Constants.MMOLL_TO_MGDL))).apply();
                     preferences.edit().putString("plus_target_range", Long.toString(Math.round(default_target_glucose * Constants.MMOLL_TO_MGDL))).apply();
+                    Profile.invalidateProfile();
+                }
+                if (persistent_high_Val < 36) {
+                    ProfileEditor.convertData(Constants.MMOLL_TO_MGDL);
+                    preferences.edit().putString("persistent_high_threshold", Long.toString(Math.round(persistent_high_Val * Constants.MMOLL_TO_MGDL))).apply();
                     Profile.invalidateProfile();
                 }
                 if (lowVal < 36) {
@@ -3084,6 +3111,11 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     preferences.edit().putString("plus_target_range", JoH.qs(default_target_glucose * Constants.MGDL_TO_MMOLL,1)).apply();
                     Profile.invalidateProfile();
                 }
+                if (persistent_high_Val > 35) {
+                    ProfileEditor.convertData(Constants.MGDL_TO_MMOLL);
+                    preferences.edit().putString("persistent_high_threshold", JoH.qs(persistent_high_Val * Constants.MGDL_TO_MMOLL, 1)).apply();
+                    Profile.invalidateProfile();
+                }
                 if (lowVal > 35) {
                     ProfileEditor.convertData(Constants.MGDL_TO_MMOLL);
                     preferences.edit().putString("lowValue", JoH.qs(lowVal * Constants.MGDL_TO_MMOLL, 1)).apply();
@@ -3096,6 +3128,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             if (allPrefsFragment != null) {
                 allPrefsFragment.setSummary("highValue");
                 allPrefsFragment.setSummary("lowValue");
+                allPrefsFragment.setSummary("persistent_high_threshold");
             }
             if (profile_insulin_sensitivity_default != null) {
                 Log.d(TAG, "refreshing profile insulin sensitivity default display");
