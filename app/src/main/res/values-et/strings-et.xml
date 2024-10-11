@@ -292,8 +292,8 @@
     <string name="use_excessive_wakelocks">Kasuta ülemääraseid wakelocke</string>
     <string name="speak_readings">Loe väärtused valjult ette</string>
     <string name="extra_status_line">Täiendav olekurida</string>
-    <string name="dexcom_share_server_upload">Dexcom Share serveri üleslaadimine</string>
-    <string name="upload_data_to_dex_servers">Lae andmed Dexcomi serveritesse, et saaksite kasutada oma andmeid Dexcomi rakendustega</string>
+    <string name="dexcom_share_server_upload">Dex Share</string>
+    <string name="upload_data_to_dex_servers">Lae andmed Dex Share serveritesse</string>
     <string name="manage_followers">Halda jälgijaid</string>
     <string name="manage_existing_followers">Halda olemasolevaid jälgijaid ja kutsu uusi.</string>
     <string name="invite_follower">Kutsu uus jälgija</string>
@@ -729,15 +729,15 @@
     <string name="influxdb_database_name">InfluxDB andmebaasi nimi</string>
     <string name="user">Kasutaja</string>
     <string name="password">Parool</string>
-    <string name="upload_to_dexcom">Luba üleslaadimine Dexcomi serveritesse</string>
-    <string name="upload_to_dexcom_share">Laadi VS väärtused üles \"Dexcom Share\" formaadis</string>
+    <string name="upload_to_dexcom">Luba see, et laadida üles Dex Share serveritesse</string>
+    <string name="upload_to_dexcom_share">Laadi VS väärtused Dex Share\'i üles</string>
     <string name="accounts_outside_usa">Keelatud = Teie konto ja jälgimise rakendused on pärit väljastpoolt USA-d</string>
     <string name="accounts_inside_usa">Lubatud = Teie konto ja jälgimise rakendused on pärit USA-st</string>
-    <string name="usa_based_account">Dexcom USA konto</string>
-    <string name="dexcom_login">Teie sisselogimine Dexcomi veebisaidil</string>
-    <string name="dexcom_user">Dexcomi konto kasutajanimi</string>
-    <string name="dexcom_login_password">Teie Dexcomi veebisaidi parool</string>
-    <string name="dexcom_password">Dexcomi konto parool</string>
+    <string name="usa_based_account">Dex USA-põhine konto</string>
+    <string name="dexcom_login">Sisselogimine Dex Share\'i</string>
+    <string name="dexcom_user">Dex konto sisselogimine</string>
+    <string name="dexcom_login_password">Sinu Dex Share parool</string>
+    <string name="dexcom_password">Dex konto parool</string>
     <string name="dexcom_receiver_serial">10-kohaline Dexcomi vastuvõtja seerianumber</string>
     <string name="dexcom_test_mode_serial">10-kohaline testrežiimi seerianumber</string>
     <string name="glucose_meters">Glükomeetrid</string>
