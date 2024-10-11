@@ -734,7 +734,7 @@
     <string name="usa_based_account">Cuenta basada en Dexcom EE.UU.</string>
     <string name="dexcom_login">Sus credenciales para el sitio web de Dexcom</string>
     <string name="dexcom_user">Inicio de sesión de cuenta Dexcom</string>
-    <string name="dexcom_login_password">Tu contraseña para el sitio web de Dexcom</string>
+    <string name="dexcom_login_password">Su contraseña para el sitio web de Dexcom</string>
     <string name="dexcom_password">Contraseña de la cuenta Dexcom</string>
     <string name="dexcom_receiver_serial">Número de serie de 10 caracteres del receptor Dexcom</string>
     <string name="dexcom_test_mode_serial">Número de serie de 10 caracteres del modo de prueba</string>
