@@ -221,6 +221,8 @@
     <string name="other_alerts">További riasztások</string>
     <string name="extra_alerts_xdrip_plus">További riasztások (xDrip+)</string>
     <string name="persistent_high_alert">Folyamatos magas érték</string>
+    <string name="persistent_high_alert_enable">Bekapcsol</string>
+    <string name="title_persistent_high_threshold">Határérték</string>
     <string name="forecasted_low_alert">Riasztás várható hypora</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Megpróbálja kiszámolni az esetleges hypot</string>
     <string name="alarm_at_forecasted_low_mins">Riasztás várható hypo előtt X perccel</string>
@@ -1438,6 +1440,8 @@
     <string name="category_falling_rising_bg">VC-érték esés/emelkedés</string>
     <string name="category_alert_prefs">Beállítások fenti riasztásokra</string>
     <string name="summary_persistent_high_alert">Ha magas érték felett van sokáig és nem tart lefelé</string>
+    <string name="summary_persistent_high_threshold_link">Bekapcsolva a Magas érték a hatérték..\nKikapcsolva, a határérték az alábbi.</string>
+    <string name="title_persistent_high_threshold_link">Határérték: Magas érték</string>
     <string name="note_search_button">KERESÉS</string>
     <string name="all_note_button">MIND</string>
     <string name="title_full_screen_mode">Teljes képernyős mód</string>
@@ -1762,6 +1766,7 @@
     <string name="summary_ymax">Állítsa be yMax értékét, amelynél nagyobbat nem mutat a grafikon.</string>
     <string name="wait_to_connect">Beállítások megerősítése és várakozás a kapcsolatfelvételre.</string>
     <string name="summary_sens_expiry_notify">Értesítés szenzor lejárata előtt.</string>
+    <string name="title_sens_expiry">Értesítő szenzor lejáratáról</string>
     <string name="title_sens_expiry_notify">Szenzor lejár</string>
     <string name="close">Bezárás</string>
     <string name="title_advanced_settings_4_Lib2">Libre 2 szenzor további beállításai</string>
