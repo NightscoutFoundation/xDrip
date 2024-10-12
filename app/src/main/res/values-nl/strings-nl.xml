@@ -217,6 +217,7 @@
     <string name="other_alerts">Andere waarschuwingen</string>
     <string name="extra_alerts_xdrip_plus">Extra Alerts (xDrip+)</string>
     <string name="persistent_high_alert">Aanhoudende Hoge Waarschuwing</string>
+    <string name="persistent_high_alert_enable">Inschakelen</string>
     <string name="forecasted_low_alert">Voorspelde lage alarm</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapoleer gegevens om te proberen dieptepunten te voorspellen</string>
     <string name="alarm_at_forecasted_low_mins">Alarm bij Voorspelde Low mins</string>
@@ -408,14 +409,14 @@
     <string name="new_version_date_colon">"Nieuwe Versie datum: "</string>
     <string name="old_version_date_colon">"Oude Versie datum: "</string>
     <string name="speak_your_note_text">Spreek uw notitie tekst</string>
-    <string name="alarm_if_above_high_value">Alarm bij temperaturen boven hoge waarde</string>
+    <string name="alarm_if_above_high_value">Alarm bij aanhoudende hoge bloedglucosewaarde</string>
     <string name="for_longer_than_minutes">langer dan (minuten)</string>
-    <string name="choose_sound_used_for_persistent_high_alarm">Kies geluid gebruikt voor aanhoudend hoge alarm.</string>
+    <string name="choose_sound_used_for_persistent_high_alarm">Kies geluid gebruikt voor aanhoudend hoog-alarm.</string>
     <string name="persistent_high_sound">Aanhoudend hoog geluid</string>
     <string name="forecast_lows">Voorspelde dieptepunten</string>
     <string name="raise_alarm_on_forecast_low">Raise alarm aan Forecast Low</string>
     <string name="notify_when_predicted_low_time_reaches_threshold">Houd bij het voorspelde lage tijd drempel bereikt</string>
-    <string name="predicted_low_sound">Voorspelde Low Sound</string>
+    <string name="predicted_low_sound">Voorspelde lage waarde-geluid</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Kies geluid gebruikt voor voorspelde laag alarm.</string>
     <string name="notify_when_parakeet_device_stops_checking_in">Melden wanneer parakeet apparaat stopt met inchecken</string>
     <string name="parakeet_related_alerts">Parkiet gerelateerde meldingen</string>
@@ -1674,6 +1675,7 @@
     <string name="show_unsmoothed">Toon niet-afgevlakte waarden</string>
     <string name="show_unsmoothed_summary">Toon niet-afgevlakte waarden ook als grafiekafvlakking is ingeschakeld. Als de kalibratieplugin aanstaat, dan worden niet-afgevlakte waarden getoond in plaats van plugin data.</string>
     <string name="titleInside_yRange">Inschakelen</string>
+    <string name="title_sens_expiry_notify">Inschakelen</string>
     <string name="title_advanced_settings_4_Lib2">Geavanceerde instellingen voor Libre 2</string>
     <string name="title_Lib2_show_raw_values">Toon ruwe waarden in de grafiek</string>
     <string name="summary_Lib2_show_raw_values">Inschakelen om ruwe waarden in grafiek weer te geven.</string>
