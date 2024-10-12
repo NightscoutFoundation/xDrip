@@ -222,6 +222,7 @@
     <string name="other_alerts">Inne Alarmy</string>
     <string name="extra_alerts_xdrip_plus">Dodatkowe ostrzeżenia (xDrip+)</string>
     <string name="persistent_high_alert">Utrzymujące się wysokie alerty</string>
+    <string name="persistent_high_alert_enable">Włącz</string>
     <string name="forecasted_low_alert">Prognozowany Low Alert</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Ekstrapolacji danych, aby spróbować przewidzieć upadki</string>
     <string name="alarm_at_forecasted_low_mins">Alarm przy prognozowanych niskich w minutach</string>
