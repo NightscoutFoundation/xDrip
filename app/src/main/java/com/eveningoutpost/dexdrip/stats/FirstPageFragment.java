@@ -1,16 +1,15 @@
 package com.eveningoutpost.dexdrip.stats;
 
-import static android.app.PendingIntent.getActivity;
-
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 
+import com.eveningoutpost.dexdrip.databinding.StatsGeneralBinding;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +18,7 @@ import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.importedlibraries.dexcom.Dex_Constants;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -36,8 +36,9 @@ public class FirstPageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.d("DrawStats", "FirstPageFragment onCreateView");
 
-        myView = inflater.inflate(
-                R.layout.stats_general, container, false);
+        StatsGeneralBinding binding = DataBindingUtil.inflate(inflater, R.layout.stats_general, container, false);
+        myView = binding.getRoot();
+        binding.setStatsview(new ViewStats());
 
         myView.setTag(0);
 
@@ -50,6 +51,28 @@ public class FirstPageFragment extends Fragment {
     @Override
     public View getView() {
         return myView;
+    }
+
+    public class ViewStats { // Linking to stats_general layout
+        public boolean viewAbsolutes() { // Show absolute numbers
+            return Pref.getBoolean("show_statistics_absolutes", true);
+        }
+
+        public boolean viewMedianBG() { // Show BG median
+            return Pref.getBoolean("show_statistics_median", true);
+        }
+
+        public boolean viewA1C() { // Show estimated A1C
+            return Pref.getBoolean("show_statistics_a1cestimate", true);
+        }
+
+        public boolean viewRelSD() { // Show relative standard deviation
+            return Pref.getBoolean("show_statistics_relsd", true);
+        }
+
+        public boolean viewGviLine() { // Show the GVI line, including GVI and PGS
+            return Pref.getBoolean("show_statistics_gvi", true) || Pref.getBoolean("show_statistics_pgs", true);
+        }
     }
 
     private class CalculationThread extends Thread {
@@ -75,7 +98,7 @@ public class FirstPageFragment extends Fragment {
                 return;
             }
 
-            //Ranges
+            // Ranges
             long aboveRange = DBSearchUtil.noReadingsAboveRange(context);
             long belowRange = DBSearchUtil.noReadingsBelowRange(context);
             long inRange = DBSearchUtil.noReadingsInRange(context);
@@ -96,7 +119,7 @@ public class FirstPageFragment extends Fragment {
             double stats_high = Double.parseDouble(settings.getString("highValue", "170"));
             double stats_low = Double.parseDouble(settings.getString("lowValue", "70"));
             TextView rangeView = (TextView) localView.findViewById(R.id.textView_stats_range_set);
-            //update stats_high/low
+            // update stats_high/low
             if (!mgdl) {
                 updateText(localView, rangeView, (Math.round(stats_low * 10) / 10d) + " - " + (Math.round(stats_high * 10) / 10d) + " mmol/l");
             } else {
@@ -127,14 +150,14 @@ public class FirstPageFragment extends Fragment {
                 }
 
                 TextView meanView = (TextView) localView.findViewById(R.id.textView_mean);
-                //update mean
+                // update mean
                 if (mgdl) {
                     updateText(localView, meanView, (Math.round(mean * 10) / 10d) + " mg/dl");
                 } else {
                     updateText(localView, meanView, (Math.round(mean * Dex_Constants.MG_DL_TO_MMOL_L * 100) / 100d) + " mmol/l");
 
                 }
-                //update A1c
+                // update A1c
                 TextView a1cView = (TextView) localView.findViewById(R.id.textView_a1c);
                 int a1c_ifcc = (int) Math.round(((mean + 46.7) / 28.7 - 2.15) * 10.929);
                 double a1c_dcct = Math.round(10 * (mean + 46.7) / 28.7) / 10d;
@@ -156,7 +179,7 @@ public class FirstPageFragment extends Fragment {
                 updateText(localView, coefficientOfVariation, Math.round(1000d*stdev/mean)/10d + "%");
 
 
-                //calculate BGI / PGS
+                // calculate GVI / PGS
                 // https://github.com/nightscout/cgm-remote-monitor/blob/master/lib/report_plugins/glucosedistribution.js#L150
                 List<BgReadingStats> bgListByTime = DBSearchUtil.getFilteredReadingsWithFallback(false);
 
@@ -193,7 +216,13 @@ public class FirstPageFragment extends Fragment {
                 Log.d("DrawStats", "NormalReadingspct=" + normalReadingspct + " glucoseMean=" + glucoseMean + " tirMultiplier=" + tirMultiplier + " PGS=" + PGS);
                 TextView gviView = (TextView) localView.findViewById(R.id.textView_gvi);
                 DecimalFormat df = new DecimalFormat("#.00");
-                updateText(localView, gviView,  df.format(gvi) + "  PGS:  " + df.format(PGS));
+                if (Pref.getBoolean("show_statistics_pgs", true) && Pref.getBoolean("show_statistics_gvi", true)) { // Show both GVI and PGS
+                    updateText(localView, gviView, "GVI:  " +  df.format(gvi) + "    PGS:  " + df.format(PGS));
+                } else if (Pref.getBoolean("show_statistics_gvi", true)) { // Show only GVI
+                    updateText(localView, gviView, "GVI:  " + df.format(gvi));
+                } else if (Pref.getBoolean("show_statistics_pgs", true)) { // Show only PGS
+                    updateText(localView, gviView, "PGS:  " + df.format(PGS));
+                }
 
             }
         }

@@ -19,5 +19,48 @@
         android:checkable="false"
         android:orderInCategory="1"
         android:visible="true"/>
+    <item android:id="@+id/statistics_settings"
+        android:title="Include"
+        android:orderInCategory="1"
+        android:visible="true" >
+        <menu>
+            <item
+                android:id="@+id/action_show_absolutes"
+                android:title="Absolutes #s"
+                android:onClick="toggleStatisticsShowAbsolutes"
+                android:checkable="true"
+                android:visible="true" />
+            <item
+                android:id="@+id/action_show_median"
+                android:title="Median BG"
+                android:onClick="toggleStatisticsShowMedianBG"
+                android:checkable="true"
+                android:visible="true" />
+            <item
+                android:id="@+id/action_show_a1cestimate"
+                android:title="Estimated A1C"
+                android:onClick="toggleStatisticsShowA1C"
+                android:checkable="true"
+                android:visible="true" />
+            <item
+                android:id="@+id/action_show_relsd"
+                android:title="Relative SD"
+                android:onClick="toggleStatisticsShowRelSD"
+                android:checkable="true"
+                android:visible="true" />
+            <item
+                android:id="@+id/action_show_gvi"
+                android:title="GVI"
+                android:onClick="toggleStatisticsShowGVI"
+                android:checkable="true"
+                android:visible="true" />
+            <item
+                android:id="@+id/action_show_pgs"
+                android:title="PGS"
+                android:onClick="toggleStatisticsShowPGS"
+                android:checkable="true"
+                android:visible="true" />
+        </menu>
+    </item>
 
 </menu>
