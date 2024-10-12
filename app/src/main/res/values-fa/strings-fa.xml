@@ -77,6 +77,7 @@
     <string name="high_value">حد بالا</string>
     <string name="low_value">حد پایین</string>
     <string name="view_google_licenses">مجوز گوگل</string>
+    <string name="persistent_high_alert_enable">فعال سازی</string>
     <string name="system_status">وضعیت سیستم</string>
     <string name="history">تاریخچه</string>
     <string name="customize_colours">تنظیم رنگ ها</string>
@@ -104,4 +105,5 @@
     <string name="enable_streaming_dialog_dont_ask_again">دیگه از من نپرس</string>
     <string name="enable_graph_smoothing">فعال سازی</string>
     <string name="titleInside_yRange">فعال سازی</string>
+    <string name="title_sens_expiry_notify">فعال سازی</string>
 </resources>
