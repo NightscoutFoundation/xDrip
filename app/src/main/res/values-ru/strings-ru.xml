@@ -218,6 +218,7 @@
     <string name="other_alerts">Прочие оповещения</string>
     <string name="extra_alerts_xdrip_plus">Дополнительные оповещения (xDrip+)</string>
     <string name="persistent_high_alert">Оповещение о длительной гипергликемии</string>
+    <string name="persistent_high_alert_enable">Включить</string>
     <string name="forecasted_low_alert">Оповещение о прогнозируемой гипогликемии</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Экстраполировать данные для возможности прогнозирования гипогликемии</string>
     <string name="alarm_at_forecasted_low_mins">Оповещать за (в минутах)</string>
@@ -409,15 +410,15 @@
     <string name="new_version_date_colon">"Дата новой версии: "</string>
     <string name="old_version_date_colon">"Дата старой версии: "</string>
     <string name="speak_your_note_text">Произнесите вслух текст заметки</string>
-    <string name="alarm_if_above_high_value">Оповещать, если выше установленного уровня</string>
+    <string name="alarm_if_above_high_value">Тревога, если сахар выше нормы</string>
     <string name="for_longer_than_minutes">более (минут)</string>
-    <string name="choose_sound_used_for_persistent_high_alarm">Выбрать звук оповещения о длительной гипергликемии.</string>
-    <string name="persistent_high_sound">Звук длительной гипергликемии</string>
+    <string name="choose_sound_used_for_persistent_high_alarm">Выберите звук для тревоги об устойчиво высоком.</string>
+    <string name="persistent_high_sound">Звук устойчиво высокого</string>
     <string name="forecast_lows">Прогнозировать гипогликемию</string>
     <string name="raise_alarm_on_forecast_low">Оповещать заранее о возможной гипогликемии</string>
     <string name="notify_when_predicted_low_time_reaches_threshold">Оповещать, если достигнуто пороговое значение прогнозируемого времени до гипогликемии</string>
-    <string name="predicted_low_sound">Звук прогнозируемой гипогликемии</string>
-    <string name="choose_sound_used_for_predicted_low_alarm">Выбрать звук оповещения о прогнозируемой гипогликемии.</string>
+    <string name="predicted_low_sound">Звук предсказанного низкого</string>
+    <string name="choose_sound_used_for_predicted_low_alarm">Выберите звук для тревоги о предсказанном низком.</string>
     <string name="notify_when_parakeet_device_stops_checking_in">Уведомлять, когда связь с устройством Parakeet потеряна</string>
     <string name="parakeet_related_alerts">Оповещения Parakeet</string>
     <string name="raise_parakeet_notification_silently_when_charging">Включать уведомление Parakeet без звука при зарядке</string>
@@ -1450,7 +1451,7 @@
     <string name="category_noisy_readings">Шумные данные</string>
     <string name="category_falling_rising_bg">Снижение/Повышение глюкозы</string>
     <string name="category_alert_prefs">Настройки оповещений (для этих оповещений)</string>
-    <string name="summary_persistent_high_alert">При сохраняющемся длительное время высоком уровне глюкозы и отсутствии тренда снижения</string>
+    <string name="summary_persistent_high_alert">Когда слишком долго выше порога высокого и не идет вниз</string>
     <string name="note_search_button">ПОИСК</string>
     <string name="all_note_button">ВСЕ</string>
     <string name="title_full_screen_mode">Полноэкранный режим</string>
