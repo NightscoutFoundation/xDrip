@@ -218,6 +218,7 @@
     <string name="other_alerts">Muut hälytykset</string>
     <string name="extra_alerts_xdrip_plus">Lisähälytykset (xDrip+)</string>
     <string name="persistent_high_alert">Pitkäaikainen korkea hälytys</string>
+    <string name="persistent_high_alert_enable">Käytä</string>
     <string name="forecasted_low_alert">Ennustetun matalan hälytys</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Matalat ennustetaan tiedoista päättelemällä</string>
     <string name="alarm_at_forecasted_low_mins">Hälytä, kun matala ennustettu minuuteissa</string>
@@ -1608,6 +1609,7 @@
     <string name="enable_graph_smoothing">Käytä</string>
     <string name="cannot_choose_file_without_permission">Tiedostoa ei voida valita ilman tallennustilan käyttöoikeutta</string>
     <string name="titleInside_yRange">Käytä</string>
+    <string name="title_sens_expiry_notify">Käytä</string>
     <string name="close">Sulje</string>
     <string name="data_source">Tietolähde:</string>
     <string name="reraise_alerts_before_snooze_time">Toista hälytykset ennen torkkuaikaa</string>
