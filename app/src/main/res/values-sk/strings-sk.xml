@@ -217,6 +217,7 @@
     <string name="other_alerts">Iné výstrahy</string>
     <string name="extra_alerts_xdrip_plus">Ďalšie výstrahy (xDrip+)</string>
     <string name="persistent_high_alert">Výstraha trvale vysokej glykémie</string>
+    <string name="persistent_high_alert_enable">Povoliť</string>
     <string name="forecasted_low_alert">Výstraha predpovede nízkej glykémie</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolovať dáta pre predpoveď nízkej glykémie</string>
     <string name="alarm_at_forecasted_low_mins">Výstraha pri prognóze nízkej glykémie</string>
@@ -1291,4 +1292,5 @@ Je nutné zakázať v prípade, že chcete používať xdrip cifreník. (Požado
     <string name="use_background_scans">Vyhľadávanie na pozadí</string>
     <string name="android_8_background_scanning">Využije sa funkcia vyhľadávania na pozadí Android 8+</string>
     <string name="titleInside_yRange">Povoliť</string>
+    <string name="title_sens_expiry_notify">Povoliť</string>
 </resources>
