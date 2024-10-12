@@ -217,6 +217,7 @@
     <string name="other_alerts">Ostala upozorenja</string>
     <string name="extra_alerts_xdrip_plus">Dodatna upozorenja (xDrip+)</string>
     <string name="persistent_high_alert">Upozorenje za dugotrajno Visoko</string>
+    <string name="persistent_high_alert_enable">Omogući</string>
     <string name="forecasted_low_alert">Upozorenje za prognozirano Nisko</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Ekstrapoliraj podatke u cilju prognoziranja Niskih</string>
     <string name="alarm_at_forecasted_low_mins">Alarm za prognozirano Nisko u min</string>
@@ -1102,5 +1103,6 @@ CONTEXTREQUEST?</string>
     <string name="title_ymax">Podesite y os na maximum</string>
     <string name="summary_ymin">Odaberite yMin kada nema manjih očitanja.</string>
     <string name="summary_ymax">Odaberite yMax kada nema većih očitanja.</string>
+    <string name="title_sens_expiry_notify">Omogući</string>
     <string name="reraise_alerts_before_snooze_time">Ponovno upozorenje prije roka odgađanja</string>
 </resources>
