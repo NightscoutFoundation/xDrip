@@ -223,6 +223,8 @@
     <string name="other_alerts">Autres alertes</string>
     <string name="extra_alerts_xdrip_plus">Alertes supplémentaires (xDrip+)</string>
     <string name="persistent_high_alert">Alerte Hyper persistante</string>
+    <string name="persistent_high_alert_enable">Activer</string>
+    <string name="title_persistent_high_threshold">Seuil</string>
     <string name="forecasted_low_alert">Alerte de previsions d\'hypoglycémie</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapoler les données pour essayer de prévoir les hypoglycémies</string>
     <string name="alarm_at_forecasted_low_mins">Délai de prévisions d\'hypoglycémies en minutes</string>
@@ -1464,6 +1466,8 @@
     <string name="category_falling_rising_bg">Chute/Hausse de la Glycémie</string>
     <string name="category_alert_prefs">Préférences d\'alerte (pour ces alertes)</string>
     <string name="summary_persistent_high_alert">Quand supérieur au niveau Haut pour une longue période, et ne se dirige pas vers le bas</string>
+    <string name="summary_persistent_high_threshold_link">Lorsque cette option est activée, la valeur haute est le seuil.\nLorsqu\'elle est désactivée, le seuil est la valeur spécifiée ci-dessous.</string>
+    <string name="title_persistent_high_threshold_link">Seuil : Valeur haute</string>
     <string name="note_search_button">RECHERCHE</string>
     <string name="all_note_button">TOUT</string>
     <string name="title_full_screen_mode">Mode plein écran</string>
@@ -1813,6 +1817,7 @@
     <string name="summary_ymax">Choisir yMax lorsqu\'il n\'y a pas de mesures plus grandes.</string>
     <string name="wait_to_connect">Vérifier les paramètres et attendre la connexion.</string>
     <string name="summary_sens_expiry_notify">Notifier lorsque le capteur est proche de l\'expiration.</string>
+    <string name="title_sens_expiry">Notifications d\'expiration des capteurs</string>
     <string name="title_sens_expiry_notify">Expiration du capteur</string>
     <string name="close">Fermer</string>
     <string name="title_advanced_settings_4_Lib2">Paramètres avancés pour Libre 2</string>
