@@ -223,6 +223,7 @@
     <string name="other_alerts">Altri Allarmi</string>
     <string name="extra_alerts_xdrip_plus">Allarmi Extra (xDrip+)</string>
     <string name="persistent_high_alert">Allarme per VALORI ALTI Persistenti</string>
+    <string name="persistent_high_alert_enable">Consentire</string>
     <string name="forecasted_low_alert">Allarme di previsione VALORE BASSO</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Estrapolare i dati per cercare di prevedere raggiungimento VALORE BASSO</string>
     <string name="alarm_at_forecasted_low_mins">Allarme previsione VALORE BASSO (minuti)</string>
