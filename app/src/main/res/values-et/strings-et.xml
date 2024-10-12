@@ -223,6 +223,8 @@
     <string name="other_alerts">Muud alarmid</string>
     <string name="extra_alerts_xdrip_plus">Lisaalarmid (xDrip+)</string>
     <string name="persistent_high_alert">Püsiva kõrge alarm</string>
+    <string name="persistent_high_alert_enable">Luba</string>
+    <string name="title_persistent_high_threshold">Piirmäär</string>
     <string name="forecasted_low_alert">Prognoositav madal alarm</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Ekstrapoleeri andmeid, et ennustada madalate suhkrute tekkimist</string>
     <string name="alarm_at_forecasted_low_mins">Alarm prognoositud madalal mins</string>
@@ -1464,6 +1466,8 @@
     <string name="category_falling_rising_bg">Langev/tõusev VS</string>
     <string name="category_alert_prefs">Hoiatuste seaded (nendele hoiatustele)</string>
     <string name="summary_persistent_high_alert">Kui VS on üle kõrge taseme liiga kaua ja ei liigu allapoole</string>
+    <string name="summary_persistent_high_threshold_link">Kui lubatud, on piirmääraks kõrge väärtus.\nKui keelatud, on piirmääraks allpool seadistatud väärtus.</string>
+    <string name="title_persistent_high_threshold_link">Piirmäär: kõrge väärtus</string>
     <string name="note_search_button">OTSI</string>
     <string name="all_note_button">KÕIK</string>
     <string name="title_full_screen_mode">Täisekraani režiim</string>
@@ -1813,6 +1817,7 @@
     <string name="summary_ymax">Vali yMax, kui sellest suuremaid näitusid ei ole.</string>
     <string name="wait_to_connect">Kontrolli seadeid ja oota ühendust.</string>
     <string name="summary_sens_expiry_notify">Käivita teavitused kui sensori kehtivusaeg hakkab lõppema.</string>
+    <string name="title_sens_expiry">Sensori aegumise teavitused</string>
     <string name="title_sens_expiry_notify">Sensori kehtivusaeg</string>
     <string name="close">Sulge</string>
     <string name="title_advanced_settings_4_Lib2">Libre 2 täpsemad sätted</string>
