@@ -215,6 +215,7 @@
     <string name="other_alerts">Άλλες Ειδοποιήσεις</string>
     <string name="extra_alerts_xdrip_plus">Επιπλέον Ειδοποιήσεις (xDrip+)</string>
     <string name="persistent_high_alert">Προειδοποίηση Επίμονου Υψηλού</string>
+    <string name="persistent_high_alert_enable">Ενεργό</string>
     <string name="forecasted_low_alert">Προβλεπόμενη Χαμηλή Ειδοποίηση</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Προέκταση δεδομένων για την προσπάθεια πρόβλεψης χαμηλών τιμών</string>
     <string name="alarm_at_forecasted_low_mins">Συναγερμός σε προβλέψιμες χαμηλές τιμές</string>
@@ -508,4 +509,5 @@
     <string name="alert_buttons">Κουμπιά συναγερμού</string>
     <string name="enable_graph_smoothing">Ενεργό</string>
     <string name="titleInside_yRange">Ενεργό</string>
+    <string name="title_sens_expiry_notify">Ενεργό</string>
 </resources>
