@@ -26,7 +26,10 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
+import android.net.NetworkRequest;
 import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -91,17 +94,6 @@ import static android.bluetooth.BluetoothDevice.PAIRING_VARIANT_PIN;
 import static android.content.Context.ALARM_SERVICE;
 import static android.content.Context.VIBRATOR_SERVICE;
 
-//KS import android.content.DialogInterface;
-//KS import android.graphics.Canvas;
-//KS import android.graphics.Color;
-//KS import android.graphics.Paint;
-//KS import android.support.v7.app.AlertDialog;
-//KS import android.support.v4.app.NotificationCompat;
-//KS import androidx.appcompat.app.AppCompatActivity;
-//KS import android.support.v7.view.ContextThemeWrapper;
-//KS import com.eveningoutpost.dexdrip.utils.CipherUtils;
-//KS import static com.eveningoutpost.dexdrip.stats.StatsActivity.SHOW_STATISTICS_PRINT_COLOR;
-
 /**
  * Created by jamorham on 06/01/16.
  * <p>
@@ -110,8 +102,8 @@ import static android.content.Context.VIBRATOR_SERVICE;
 public class JoH {
     private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
     private final static String TAG = "jamorham JoH";
-    private final static boolean debug_wakelocks = false;
     private final static int PAIRING_VARIANT_PASSKEY = 1; // hidden in api
+    private final static boolean debug_wakelocks = false;
 
     private static double benchmark_time = 0;
     private static Map<String, Double> benchmarks = new HashMap<String, Double>();
@@ -149,9 +141,8 @@ public class JoH {
         return new Date().getTime();
     }
 
-    // TODO can we optimize this with System.currentTimeMillis ?
     public static long tsl() {
-        return new Date().getTime();
+        return System.currentTimeMillis();
     }
 
     public static long msSince(long when) {
@@ -172,9 +163,9 @@ public class JoH {
 
     public static String bytesToHex(byte[] bytes) {
         if (bytes == null) return "<empty>";
-        char[] hexChars = new char[bytes.length * 2];
+        final char[] hexChars = new char[bytes.length * 2];
         for (int j = 0; j < bytes.length; j++) {
-            int v = bytes[j] & 0xFF;
+            final int v = bytes[j] & 0xFF;
             hexChars[j * 2] = hexArray[v >>> 4];
             hexChars[j * 2 + 1] = hexArray[v & 0x0F];
         }
@@ -511,7 +502,7 @@ public class JoH {
     // return true if below rate limit
     public static synchronized boolean ratelimit(String name, int seconds) {
         // check if over limit
-        if ((rateLimits.containsKey(name)) && (JoH.tsl() - rateLimits.get(name) < (seconds * 1000))) {
+        if ((rateLimits.containsKey(name)) && (JoH.tsl() - rateLimits.get(name) < (seconds * 1000L))) {
             Log.d(TAG, name + " rate limited: " + seconds + " seconds");
             return false;
         }
@@ -745,6 +736,11 @@ public class JoH {
         return wl;
     }
 
+    public static String getRFC822String(long timestamp) {
+        final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
+        return dateFormat.format(new Date(timestamp));
+    }
+
     public static PowerManager.WakeLock getWakeLock(final int type, final String name, int millis) {//KS
         final PowerManager pm = (PowerManager) xdrip.getAppContext().getSystemService(Context.POWER_SERVICE);//KS
         PowerManager.WakeLock wl = pm.newWakeLock(type, name);//PowerManager.SCREEN_BRIGHT_WAKE_LOCK
@@ -860,6 +856,42 @@ public class JoH {
         }
         //Log.d(TAG, "l:" + local + " r:" + remote + " slen:" + slen + " llen:" + llen + " matched:" + matched + "  q:" + JoH.qs(quota, 2) + "  dm:" + dmatch + " RESULT: " + result);
         return result;
+    }
+
+    public static void forceCellularOrWifiUsage() {
+        final ConnectivityManager cm =
+                (ConnectivityManager) xdrip.getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        final NetworkRequest.Builder networkBuilder =  new NetworkRequest.Builder()
+                .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+                .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+                .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+
+        final ConnectivityManager.NetworkCallback callback = new ConnectivityManager.NetworkCallback() {
+            @Override
+            public void onAvailable(Network network) {
+                UserError.Log.e(TAG, "Bind process to use cellular or wifi network by default. " + network);
+                cm.bindProcessToNetwork(network);
+            }
+
+            @Override
+            public void onLost(Network network) {
+                UserError.Log.e(TAG, "Network lost :/ " + network);
+                cm.bindProcessToNetwork(null);
+            }
+
+            @Override
+            public void onUnavailable() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    super.onUnavailable();
+                }
+                UserError.Log.e(TAG, "Network not available ");
+            }
+        };
+
+        UserError.Log.e(TAG, "Request cellular or wifi network.");
+        cm.requestNetwork(networkBuilder.build(), callback
+        );
     }
 
     public static boolean runOnUiThread(Runnable theRunnable) {
@@ -1027,58 +1059,6 @@ public class JoH {
         }
     }
 
-
-/*//KS    public static Bitmap screenShot(View view, String annotation) {
-
-        if (view == null) {
-            static_toast_long("View is null in screenshot!");
-            return null;
-        }
-        final int width = view.getWidth();
-        final int height = view.getHeight();
-        Log.d(TAG, "Screenshot called: " + width + "," + height);
-        final Bitmap bitmap = Bitmap.createBitmap(width,
-                height, Bitmap.Config.ARGB_8888);
-
-        final Canvas canvas = new Canvas(bitmap);
-        if (Pref.getBooleanDefaultFalse(SHOW_STATISTICS_PRINT_COLOR)) {
-            Paint paint = new Paint();
-            paint.setColor(Color.WHITE);
-            paint.setStyle(Paint.Style.FILL);
-            canvas.drawRect(0, 0, width, height, paint);
-        }
-
-
-        view.destroyDrawingCache();
-        view.layout(0, 0, width, height);
-        view.draw(canvas);
-
-        if (annotation != null) {
-            final int offset = (annotation != null) ? 40 : 0;
-            final Bitmap bitmapf = Bitmap.createBitmap(width,
-                    height + offset, Bitmap.Config.ARGB_8888);
-            final Canvas canvasf = new Canvas(bitmapf);
-
-            Paint paint = new Paint();
-            if (Pref.getBooleanDefaultFalse(SHOW_STATISTICS_PRINT_COLOR)) {
-                paint.setColor(Color.WHITE);
-                paint.setStyle(Paint.Style.FILL);
-                canvasf.drawRect(0, 0, width, offset, paint);
-                paint.setColor(Color.BLACK);
-            } else {
-                paint.setColor(Color.GRAY);
-            }
-            paint.setTextSize(20);
-            // paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OUT));
-            canvasf.drawBitmap(bitmap, 0, offset, paint);
-            canvasf.drawText(annotation, 50, (offset / 2) + 5, paint);
-            bitmap.recycle();
-            return bitmapf;
-        }
-
-        return bitmap;
-    }*/
-
     public static Bitmap screenShot2(View view) {
         Log.d(TAG, "Screenshot2 called: " + view.getWidth() + "," + view.getHeight());
         view.setDrawingCacheEnabled(true);
@@ -1086,7 +1066,6 @@ public class JoH {
         final Bitmap bitmap = view.getDrawingCache(true);
         return bitmap;
     }
-
 
     public static void bitmapToFile(Bitmap bitmap, String path, String fileName) {
 

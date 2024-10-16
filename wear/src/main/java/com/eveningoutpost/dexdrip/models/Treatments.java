@@ -63,6 +63,9 @@ public class Treatments extends Model {
     @Column(name = "insulin")
     public double insulin;
     @Expose
+    @Column(name = "insulinJSON")
+    public String insulinJSON;
+    @Expose
     @Column(name = "created_at")
     public String created_at;
 
