@@ -339,6 +339,10 @@
             android:configChanges="orientation|screenSize"
             android:label="@string/bg_readings_table" />
         <activity
+            android:name=".tables.UserErrorTable"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/bg_readings_table" />
+        <activity
             android:name=".tables.TreatmentsTable"
             android:configChanges="orientation|screenSize"
             android:label="@string/bg_readings_table" />

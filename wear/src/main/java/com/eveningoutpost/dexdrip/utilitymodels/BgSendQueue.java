@@ -136,8 +136,8 @@ public class BgSendQueue extends Model {
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
             // process the uploader queue in 'only-wear' mode
-            Log.e("BgSendQueue", "start SyncService on wear device");
-            if (JoH.ratelimit("start-sync-service", 30)) {
+            Log.d("BgSendQueue", "start SyncService on wear device");
+            if (JoH.ratelimit("start-sync-service", 60)) {
                 JoH.startService(SyncService.class);
             }
 
@@ -147,8 +147,10 @@ public class BgSendQueue extends Model {
                 public void run() {
                     if (prefs.getBoolean("enable_wearG5", false)) {//KS
                         Log.d("BgSendQueue", "handleNewBgReading Broadcast BG data to watch");
-                        resendData(context);
-                        if (prefs.getBoolean("force_wearG5", false)) {
+                        // Update data on watchface via local broadcast
+                        updateWatchfaceData(context);
+                        // Only send data to mobile if only_ever_use_wear is not enabled
+                        if (prefs.getBoolean("force_wearG5", false) && !prefs.getBoolean("only_ever_use_wear_collector", false)) {
                             //ListenerService.requestData(context);//Gets called by watchface in missedReadingAlert so not needed here
                             ListenerService.SendData(context, ListenerService.SYNC_ALL_DATA, null);//Do not need to request data from phone using requestData which performs a resend
                         }
@@ -164,20 +166,20 @@ public class BgSendQueue extends Model {
     public static void sendToPhone(Context context) {//KS
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        if (prefs.getBoolean("enable_wearG5", false) && prefs.getBoolean("force_wearG5", false)) {
+        if (prefs.getBoolean("enable_wearG5", false) && prefs.getBoolean("force_wearG5", false) && !prefs.getBoolean("only_ever_use_wear_collector", false)) {
             //ListenerService.requestData(context);
             ListenerService.SendData(context, ListenerService.SYNC_ALL_DATA, null);
         }
     }
 
-    public static void resendData(Context context) {
+    public static void updateWatchfaceData(Context context) {
         final int battery = BgSendQueue.getBatteryLevel(context.getApplicationContext());
-        resendData(context, battery);
+        updateWatchfaceData(context, battery);
     }
 
     //KS start from WatchUpdaterService - updates watchface data
-    public static void resendData(Context context, int battery) {//KS
-        Log.d("BgSendQueue", "resendData enter battery=" + battery);
+    public static void updateWatchfaceData(Context context, int battery) {//KS
+        Log.d("BgSendQueue", "updateWatchfaceData enter battery=" + battery);
         long startTime = new Date().getTime() - (60000 * 60 * 24);
         Intent messageIntent = new Intent();
         messageIntent.setAction(Intent.ACTION_SEND);
@@ -185,13 +187,13 @@ public class BgSendQueue extends Model {
 
         BgReading last_bg = BgReading.last();
         if (last_bg != null) {
-            Log.d("BgSendQueue", "resendData last_bg.timestamp:" +  JoH.dateTimeText(last_bg.timestamp));
+            Log.d("BgSendQueue", "updateWatchfaceData last_bg.timestamp:" +  JoH.dateTimeText(last_bg.timestamp));
         }
 
         List<BgReading> graph_bgs = BgReading.latestForGraph(60, startTime);
         BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(context.getApplicationContext());
         if (!graph_bgs.isEmpty()) {
-            Log.d("BgSendQueue", "resendData graph_bgs size=" + graph_bgs.size());
+            Log.d("BgSendQueue", "updateWatchfaceData graph_bgs size=" + graph_bgs.size());
             final ArrayList<DataMap> dataMaps = new ArrayList<>(graph_bgs.size());
             SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
             DataMap entries = dataMap(last_bg, sharedPrefs, bgGraphBuilder, context, battery);
@@ -203,7 +205,7 @@ public class BgSendQueue extends Model {
                 //messageIntent.putExtra("extra_status_line", extraStatusLine(sharedPrefs));
                 entries.putString("extra_status_line", extraStatusLine(sharedPrefs));
             }
-            Log.d("BgSendQueue", "resendData entries=" + entries);
+            Log.d("BgSendQueue", "updateWatchfaceData entries=" + entries);
             messageIntent.putExtra("data", entries.toBundle());
 
             DataMap stepsDataMap = getSensorSteps(sharedPrefs);
