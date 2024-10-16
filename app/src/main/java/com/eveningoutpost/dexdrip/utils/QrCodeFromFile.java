@@ -34,7 +34,6 @@ public class QrCodeFromFile {
     }
 
     public final void initiateFileScan() {
-        UserError.Log.e(TAG, "Navid_ initiate scan");
 
         // TODO Replace startActivityForResult with Androidx Activity Result APIs
         this.activity.startActivityForResult(this.createFileScanIntent(), Constants.ZXING_FILE_REQ_CODE);
@@ -53,12 +52,10 @@ public class QrCodeFromFile {
     }
 
     public void scanFile() { // Copied (and slightly modified) from AndroidBarcode.scan()
-        UserError.Log.e(TAG, "Navid_ scanFile ");
         actuallyStartScanFile();
     }
 
     private void actuallyStartScanFile() {
-        UserError.Log.e(TAG, "Navid_ actuallyScan ");
         new QrCodeFromFile(activity)
                 .setDesiredBarcodeFormats(list("QR_CODE", "CODE_128"))
                 .initiateFileScan();
