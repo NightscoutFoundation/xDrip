@@ -1,12 +1,11 @@
 package com.eveningoutpost.dexdrip.cgm.nsfollow;
 
 import com.eveningoutpost.dexdrip.BuildConfig;
+import com.eveningoutpost.dexdrip.cgm.nsfollow.messages.Profile;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
-import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
-import com.eveningoutpost.dexdrip.utilitymodels.Constants;
-import com.eveningoutpost.dexdrip.utilitymodels.NightscoutTreatments;
-import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.profileeditor.BasalProfile;
+import com.eveningoutpost.dexdrip.utilitymodels.*;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.messages.Entry;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.utils.NightscoutUrl;
 import com.eveningoutpost.dexdrip.evaluators.MissedReadingsEstimator;
@@ -66,6 +65,9 @@ public class NightscoutFollow {
 
         @GET("/api/v1/treatments")
         Call<ResponseBody> getTreatments(@Header("api-secret") String secret);
+
+        @GET("/api/v1/profile")
+        Call<List<Profile>> getProfiles(@Header("api-secret") String secret);
     }
 
     private static Nightscout getService() {
@@ -101,13 +103,35 @@ public class NightscoutFollow {
         session.treatmentsCallback = new NightscoutCallback<ResponseBody>("NS treatments download", session, () -> {
             // process data
             try {
-                NightscoutTreatments.processTreatmentResponse(session.treatments.string());
-                NightscoutFollowService.updateTreatmentDownloaded();
+                final String response = session.treatments.string();
+
+                if (treatmentDownloadEnabled()) {
+                    NightscoutTreatments.processTreatmentResponse(response);
+                    NightscoutFollowService.updateTreatmentDownloaded();
+                }
+
+                if (basalRateDownloadEnabled()) {
+                    NightscoutBasalRate.setTreatments(response);
+                }
             } catch (Exception e) {
                 msg("Treatments: " + e);
             }
         })
                 .setOnFailure(() -> msg(session.treatmentsCallback.getStatus()));
+
+        // set up processing callback for profiles
+        session.profilesCallback = new NightscoutCallback<List<Profile>>("NS profiles download", session, () -> {
+            // process data
+            try {
+                List<Double> profile = session.currentProfile.getDefaultBasalProfile();
+
+                BasalProfile.save(BasalProfile.getActiveRateName(), profile);
+                NightscoutBasalRate.setProfile(profile);
+            } catch (Exception e) {
+                msg("Profile: " + e);
+            }
+        })
+                .setOnFailure(() -> msg(session.profilesCallback.getStatus()));
 
         if (!emptyString(urlString)) {
             try {
@@ -119,7 +143,19 @@ public class NightscoutFollow {
                 UserError.Log.e(TAG, "Exception in entries work() " + e);
                 msg("Nightscout follow entries error: " + e);
             }
-            if (treatmentDownloadEnabled()) {
+
+            if (basalRateDownloadEnabled()) {
+                if (JoH.ratelimit("nsfollow-profile-download", 60)) {
+                    try {
+                        getService().getProfiles(session.url.getHashedSecret()).enqueue(session.profilesCallback);
+                    } catch (Exception e) {
+                        UserError.Log.e(TAG, "Exception in profiles work() " + e);
+                        msg("Nightscout follow profiles error: " + e);
+                    }
+                }
+            }
+
+            if (treatmentDownloadEnabled() || basalRateDownloadEnabled()) {
                 if (JoH.ratelimit("nsfollow-treatment-download", 60)) {
                     try {
                         getService().getTreatments(session.url.getHashedSecret()).enqueue(session.treatmentsCallback);
@@ -140,6 +176,10 @@ public class NightscoutFollow {
 
     static boolean treatmentDownloadEnabled() {
         return Pref.getBooleanDefaultFalse("nsfollow_download_treatments");
+    }
+
+    static boolean basalRateDownloadEnabled() {
+        return Pref.getBoolean("nsfollow_download_basalrate", true);
     }
 
     public static final TypeAdapter<Number> UNRELIABLE_INTEGER = new TypeAdapter<Number>() {

@@ -206,6 +206,16 @@
                 android:key="cloud_storage_api_skip_download_from_xdrip"
                 android:summary="@string/summary_cloud_storage_api_download_from_xdrip"
                 android:title="@string/title_cloud_storage_api_download_from_xdrip" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="nsfollow_download_basalrate"
+                android:summary="@string/summary_nsfollow_download_basalrate"
+                android:title="@string/title_nsfollow_download_basalrate" />
+            <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="nsfollow_download_per_minute"
+                    android:summary="@string/summary_nsfollow_download_per_minute"
+                    android:title="@string/title_nsfollow_download_per_minute" />
         </PreferenceScreen>
         <ListPreference
             android:defaultValue="0"
