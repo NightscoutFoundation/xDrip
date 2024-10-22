@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.utils;
 
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
+import static com.eveningoutpost.dexdrip.utils.RangeVerification.verifyRange;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 import android.Manifest;
@@ -750,12 +751,14 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
     };
 
     private static Preference.OnPreferenceChangeListener sBindNumericUnitizedPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() { // This listener adds glucose unit in addition to the value to the summary
+        // It also verifies the value entered and reject it if outside the expected range.
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
             String stringValue = value.toString();
             if (isNumeric(stringValue)) {
                 final boolean domgdl = Pref.getString("units", "mgdl").equals("mgdl"); // Identify which unit is chosen
                 preference.setSummary(stringValue + "  " + (domgdl ? "mg/dl" : "mmol/l")); // Set the summary to show the value followed by the chosen unit
+                verifyRange(preference.getKey()); // Reject the entered value if out of range
                 return true;
             }
             return false;
@@ -1942,6 +1945,13 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 //
             }
 
+            // Other hidden settings
+            try {
+                ((PreferenceScreen) findPreference("persistent_high_alert_page")).removePreference(findPreference("persistent_high_threshold_verified"));
+            } catch (Exception e) {
+                //
+            }
+
             //if (engineering_mode) {
                 // populate the list
                 PluggableCalibration.setListPreferenceData(currentCalibrationPlugin);
@@ -3079,6 +3089,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             final Double default_insulin_sensitivity = Double.parseDouble(preferences.getString("profile_insulin_sensitivity_default", "54"));
             final Double default_target_glucose = Double.parseDouble(preferences.getString("plus_target_range", "100"));
             final Double persistent_high_Val = Double.parseDouble(preferences.getString("persistent_high_threshold", "0"));
+            final Double persistent_high_verified_Val = Double.parseDouble(preferences.getString("persistent_high_threshold_verified", "0"));
 
 
             static_units = newValue.toString();
@@ -3093,6 +3104,11 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 if (persistent_high_Val < 36) {
                     ProfileEditor.convertData(Constants.MMOLL_TO_MGDL);
                     preferences.edit().putString("persistent_high_threshold", Long.toString(Math.round(persistent_high_Val * Constants.MMOLL_TO_MGDL))).apply();
+                    Profile.invalidateProfile();
+                }
+                if (persistent_high_verified_Val < 36) {
+                    ProfileEditor.convertData(Constants.MMOLL_TO_MGDL);
+                    preferences.edit().putString("persistent_high_threshold_verified", Long.toString(Math.round(persistent_high_verified_Val * Constants.MMOLL_TO_MGDL))).apply();
                     Profile.invalidateProfile();
                 }
                 if (lowVal < 36) {
@@ -3114,6 +3130,11 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 if (persistent_high_Val > 35) {
                     ProfileEditor.convertData(Constants.MGDL_TO_MMOLL);
                     preferences.edit().putString("persistent_high_threshold", JoH.qs(persistent_high_Val * Constants.MGDL_TO_MMOLL, 1)).apply();
+                    Profile.invalidateProfile();
+                }
+                if (persistent_high_verified_Val > 35) {
+                    ProfileEditor.convertData(Constants.MGDL_TO_MMOLL);
+                    preferences.edit().putString("persistent_high_threshold_verified", JoH.qs(persistent_high_verified_Val * Constants.MGDL_TO_MMOLL, 1)).apply();
                     Profile.invalidateProfile();
                 }
                 if (lowVal > 35) {

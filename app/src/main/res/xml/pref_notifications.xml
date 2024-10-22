@@ -313,6 +313,13 @@
                         android:inputType="numberDecimal"
                         android:key="persistent_high_threshold"
                         android:title="@string/title_persistent_high_threshold" />
+                    <!-- The following item must be set to be invisible.
+                      It is used as a memory containing the verified version of the threshold.
+                      Its key must be identical to that of the setting it shadows with the suffix _verified
+                      Its default value must be set to match that of the main variable it shadows.  -->
+                    <EditTextPreference
+                        android:defaultValue="170"
+                        android:key="persistent_high_threshold_verified" />
                     <EditTextPreference
                         android:defaultValue="60"
                         android:dependency="persistent_high_alert_enabled"
