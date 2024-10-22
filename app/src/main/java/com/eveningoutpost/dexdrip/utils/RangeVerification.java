@@ -3,10 +3,7 @@ package com.eveningoutpost.dexdrip.utils;
 import static com.eveningoutpost.dexdrip.EditAlertActivity.unitsConvert2Disp;
 import static com.eveningoutpost.dexdrip.models.JoH.showNotification;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.OUT_OF_RANGE_GLUCOSE_ENTRY_ID;
-import static com.eveningoutpost.dexdrip.utilitymodels.Constants.SENSORY_EXPIRY_NOTIFICATION_ID;
 import static java.lang.Math.abs;
-
-import android.preference.PreferenceScreen;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.models.JoH;

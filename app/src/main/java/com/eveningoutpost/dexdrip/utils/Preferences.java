@@ -751,7 +751,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
     };
 
     private static Preference.OnPreferenceChangeListener sBindNumericUnitizedPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() { // This listener adds glucose unit in addition to the value to the summary
-        // It also verifies the value entered and reject it if outside the expected range.
+        // It also verifies the value entered and rejects it if outside the expected range.
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
             String stringValue = value.toString();
