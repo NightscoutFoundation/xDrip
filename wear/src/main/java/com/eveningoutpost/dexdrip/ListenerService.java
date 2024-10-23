@@ -472,9 +472,9 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 forceGoogleApiConnect();
                 if (localNodeId == null) setLocalNodeName();
                 DataMap dataMap = new DataMap();
-                dataMap.putString("msg", "IM A GENIE IN A BOTTLE!!" + JoH.tsl());
+                dataMap.putString("msg", "WakeupNeo-Selfping-" + JoH.tsl());
                 dataMap.putInt("length", 0);
-                sendMessagePayload(localNodeId, "WEARABLE_UPLOAD_NIGHTSCOUT", WEARABLE_UPLOAD_NIGHTSCOUT, dataMap.toByteArray());
+                // sendMessagePayload(localNodeId, "WEARABLE_UPLOAD_NIGHTSCOUT", WEARABLE_UPLOAD_NIGHTSCOUT, dataMap.toByteArray());
                 PutDataMapRequest putDMR = PutDataMapRequest.create(WEARABLE_UPLOAD_NIGHTSCOUT);
                 putDMR.getDataMap().putAll(dataMap);
                 putDMR.setUrgent();
@@ -1081,17 +1081,17 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         PersistentStore.setLong(pref_last_send_previous_treatments, 0);
     }
 
-    @Override
-    public void onMessageReceived(MessageEvent messageEvent) {
-        String msg = new String(messageEvent.getData());
-        String path = messageEvent.getPath();
+    // @Override
+    // public void onMessageReceived(MessageEvent messageEvent) {
+    //     String msg = new String(messageEvent.getData());
+    //     String path = messageEvent.getPath();
 
-        if (messageEvent.getPath().equals(WEARABLE_UPLOAD_NIGHTSCOUT)) {
-            Log.e(TAG, "onMessageReceived path=" + path + " Msg=" + msg);
-            sendLocalToast("Upload to nightscout via msg", 0);
-            executeService(0);
-        }
-    }
+    //     if (messageEvent.getPath().equals(WEARABLE_UPLOAD_NIGHTSCOUT)) {
+    //         Log.e(TAG, "onMessageReceived path=" + path + " Msg=" + msg);
+    //         sendLocalToast("Upload to nightscout via msg", 0);
+    //         executeService(0);
+    //     }
+    // }
 
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
@@ -1123,8 +1123,8 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     JoH.startActivity(NWPreferences.class);
 
                 } else if (path.equals(WEARABLE_UPLOAD_NIGHTSCOUT)) {
-                    Log.e(TAG, "onDataChanged WEARABLE_UPLOAD_NIGHTSCOUT");
-                    sendLocalToast("Upload to nightscout via data", 0);
+                    Log.d(TAG, "onDataChanged WEARABLE_UPLOAD_NIGHTSCOUT");
+                    //sendLocalToast("Upload to nightscout via data", 0);
                     executeService(0);
                     break;
                 } else if (path.equals(NEW_STATUS_PATH)) {
