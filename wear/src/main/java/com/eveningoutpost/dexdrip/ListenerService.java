@@ -493,7 +493,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     if (!sendMessageResult.getStatus().isSuccess()) {
                         Log.e(TAG, "sendMessagePayload ERROR: failed to send request " + path + " Status=" + sendMessageResult.getStatus().getStatusMessage());
                     } else {
-                        Log.e(TAG, "sendMessagePayload Sent request " + node.getDisplayName() + " " + path + " Status=: " + sendMessageResult.getStatus().getStatusMessage());
+                        Log.d(TAG, "sendMessagePayload Sent request " + node.getDisplayName() + " " + path + " Status=: " + sendMessageResult.getStatus().getStatusMessage());
                     }
                 }
             });
