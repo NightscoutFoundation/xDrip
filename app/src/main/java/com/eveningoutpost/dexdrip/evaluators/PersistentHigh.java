@@ -25,6 +25,7 @@ import java.util.List;
 import static com.eveningoutpost.dexdrip.models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.models.JoH.niceTimeScalar;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
+import static com.eveningoutpost.dexdrip.utils.RangeVerification.defaultCorrection;
 import static com.eveningoutpost.dexdrip.utils.RangeVerification.verifyRange;
 
 public class PersistentHigh {
@@ -35,8 +36,9 @@ public class PersistentHigh {
 
     public static boolean checkForPersistentHigh() {
 
-        final double verifiedThreshold = Home.convertToMgDlIfMmol(JoH.tolerantParseDouble(Pref.getString("persistent_high_threshold_verified", "170"))); // Fetch the secondary threshold setting from preferences
+        defaultCorrection("persistent_high_threshold"); // Correct the defaults if needed.
         verifyRange("persistent_high_threshold"); // Verify the custom threshold and update the secondary setting when needed
+        final double verifiedThreshold = Home.convertToMgDlIfMmol(JoH.tolerantParseDouble(Pref.getString("persistent_high_threshold_verified", "170"))); // Fetch the secondary threshold setting from preferences
 
         if (!Pref.getBoolean("high_value_is_persistent_high_threshold", true)) { // If the user has chosen not to use the High Value as the threshold
             persistentHighThreshold = verifiedThreshold; // Set the threshold to the verified value of what the user has entered.

@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.utils;
 
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
+import static com.eveningoutpost.dexdrip.utils.RangeVerification.defaultCorrection;
 import static com.eveningoutpost.dexdrip.utils.RangeVerification.verifyRange;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
@@ -758,6 +759,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             if (isNumeric(stringValue)) {
                 final boolean domgdl = Pref.getString("units", "mgdl").equals("mgdl"); // Identify which unit is chosen
                 preference.setSummary(stringValue + "  " + (domgdl ? "mg/dl" : "mmol/l")); // Set the summary to show the value followed by the chosen unit
+                defaultCorrection(preference.getKey()); // Correct defaults if needed
                 verifyRange(preference.getKey()); // Reject the entered value if out of range
                 return true;
             }
