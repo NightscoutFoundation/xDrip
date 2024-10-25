@@ -61,7 +61,7 @@ public class SaveLogs extends BaseAppCompatActivity {
 
     public void saveLogs(View myview) {
         if (saveLogsToStorage(log_data)) {
-            UserError.Log.e(TAG, "Saved log file to /Downloads/xDrip-export/xDrip-log.txt");
+            UserError.Log.e(TAG, "Saved log file to /Download/xDrip-export/xDrip-log.txt");
         } else {
             UserError.Log.e(TAG, "Could not write log file");
         }
