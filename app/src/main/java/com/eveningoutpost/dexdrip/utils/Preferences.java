@@ -189,6 +189,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
     private volatile String scanFormat = null; // The format of the scan
     private volatile String scanContents = null; // Text content of the scan coming either from camera or file
     private volatile byte[] scanRawBytes = null; // Raw bytes of the scan
+    private static final double MIN_GLUCOSE_INPUT = 40; // The smallest input glucose value xDrip accepts
+    private static final double MAX_GLUCOSE_INPUT = 400; // The largest input glucose value xDrip accepts
 
     private void refreshFragments() {
         refreshFragments(null);
@@ -757,8 +759,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             if (isNumeric(stringValue)) {
                 final boolean domgdl = Pref.getString("units", "mgdl").equals("mgdl"); // Identify which unit is chosen
                 double submissionMgdl = domgdl ? Double.parseDouble(stringValue) : Double.parseDouble(stringValue) * Constants.MMOLL_TO_MGDL;
-                if (submissionMgdl > 400 || submissionMgdl < 40) {
-                    JoH.static_toast_long("The value must be between " + unitsConvert2Disp(domgdl, 40) + " and " + unitsConvert2Disp(domgdl, 400));
+                if (submissionMgdl > MAX_GLUCOSE_INPUT || submissionMgdl < MIN_GLUCOSE_INPUT) {
+                    JoH.static_toast_long("The value must be between " + unitsConvert2Disp(domgdl, MIN_GLUCOSE_INPUT) + " and " + unitsConvert2Disp(domgdl, MAX_GLUCOSE_INPUT));
                     return false;
                 }
                 preference.setSummary(stringValue + "  " + (domgdl ? "mg/dl" : "mmol/l")); // Set the summary to show the value followed by the chosen unit

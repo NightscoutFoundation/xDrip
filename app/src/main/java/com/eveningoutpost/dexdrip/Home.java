@@ -6,13 +6,13 @@ import static com.eveningoutpost.dexdrip.models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.models.JoH.quietratelimit;
 import static com.eveningoutpost.dexdrip.models.JoH.tsl;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.getTransmitterID;
-import static com.eveningoutpost.dexdrip.ui.FlipUnits.triggerUnitsChange;
 import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.X;
 import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.getCol;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.DAY_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.SECOND_IN_MS;
+import static com.eveningoutpost.dexdrip.utils.Preferences.handleUnitsChange;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 import android.Manifest;
@@ -386,7 +386,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
         checkedeula = checkEula();
-        triggerUnitsChange(); // Correct defaults that are in mg/dL if we are using mmol/L
+        if (!Pref.getString("units", "mgdl").equals("mgdl")) { // Only if the selected unit is mmol/L
+            handleUnitsChange(null, "mmol", null); // Trigger the correction of values if needed based on the selected unit
+            staticRefreshBGCharts(); // Refresh home screen
+        }
 
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         binding.setVs(homeShelf);
