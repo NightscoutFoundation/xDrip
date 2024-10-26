@@ -6,6 +6,7 @@ import static com.eveningoutpost.dexdrip.models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.models.JoH.quietratelimit;
 import static com.eveningoutpost.dexdrip.models.JoH.tsl;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.getTransmitterID;
+import static com.eveningoutpost.dexdrip.ui.FlipUnits.triggerUnitsChange;
 import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.X;
 import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.getCol;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.DAY_IN_MS;
@@ -385,6 +386,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
         checkedeula = checkEula();
+        triggerUnitsChange(); // Correct defaults that are in mg/dL if we are using mmol/L
 
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         binding.setVs(homeShelf);

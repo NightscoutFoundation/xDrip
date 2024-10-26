@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.utils;
 
+import static com.eveningoutpost.dexdrip.EditAlertActivity.unitsConvert2Disp;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
@@ -755,6 +756,11 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             String stringValue = value.toString();
             if (isNumeric(stringValue)) {
                 final boolean domgdl = Pref.getString("units", "mgdl").equals("mgdl"); // Identify which unit is chosen
+                double submissionMgdl = domgdl ? Double.parseDouble(stringValue) : Double.parseDouble(stringValue) * Constants.MMOLL_TO_MGDL;
+                if (submissionMgdl > 400 || submissionMgdl < 40) {
+                    JoH.static_toast_long("The value must be between " + unitsConvert2Disp(domgdl, 40) + " and " + unitsConvert2Disp(domgdl, 400));
+                    return false;
+                }
                 preference.setSummary(stringValue + "  " + (domgdl ? "mg/dl" : "mmol/l")); // Set the summary to show the value followed by the chosen unit
                 return true;
             }
@@ -1009,7 +1015,11 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                         .getString(preference.getKey(), ""));
     }
 
-    private static void bindPreferenceSummaryToUnitizedValueAndEnsureNumeric(Preference preference) { // Use this to show the value as well as the corresponding glucose unit as the summary
+    private static void bindPreferenceSummaryToUnitizedValueAndEnsureNumeric(Preference preference) { // Use this to:
+        // 1- show the value as summary;
+        // 2- amend the value in summary with the corresponding glucose unit;
+        // 3- reject inputs outside the 40-400 mg/dL range.
+
         preference.setOnPreferenceChangeListener(sBindNumericUnitizedPreferenceSummaryToValueListener);
         sBindNumericUnitizedPreferenceSummaryToValueListener.onPreferenceChange(preference,
                 PreferenceManager
