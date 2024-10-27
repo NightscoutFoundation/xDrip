@@ -387,8 +387,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         checkedeula = checkEula();
         if (!Pref.getString("units", "mgdl").equals("mgdl")) { // Only if the selected unit is mmol/L
-            handleUnitsChange(null, "mmol", null); // Trigger the correction of values if needed based on the selected unit
-            staticRefreshBGCharts(); // Refresh home screen
+            handleUnitsChange(null, "mmol", null); // Trigger the correction of values (defaults) if needed based on the selected unit
         }
 
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
