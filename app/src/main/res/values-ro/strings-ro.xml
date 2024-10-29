@@ -216,6 +216,7 @@
     <string name="other_alerts">Alte  alerte</string>
     <string name="extra_alerts_xdrip_plus">Alerte suplimentare (xDrip+)</string>
     <string name="persistent_high_alert">Alertă de valori constant ridicate</string>
+    <string name="persistent_high_alert_enable">Permite</string>
     <string name="forecasted_low_alert">Alertă de hipoglicemie anticipată</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolează datele pentru a încerca prezicerea hipoglicemiilor</string>
     <string name="alarm_at_forecasted_low_mins">Alarma la min scăzut prognozate</string>
@@ -1571,5 +1572,6 @@
     <string name="enable_graph_smoothing">Permite</string>
     <string name="cannot_choose_file_without_permission">Nu se poate alege fișierul fără permisiuni de stocare</string>
     <string name="titleInside_yRange">Permite</string>
+    <string name="title_sens_expiry_notify">Permite</string>
     <string name="reraise_alerts_before_snooze_time">Reactivează alarmele înainte de amânare</string>
 </resources>

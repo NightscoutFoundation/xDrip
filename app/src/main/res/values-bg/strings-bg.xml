@@ -223,6 +223,8 @@
     <string name="other_alerts">Други Известия</string>
     <string name="extra_alerts_xdrip_plus">Допълнителни Известия (xDrip+)</string>
     <string name="persistent_high_alert">Известие за продължително висока КЗ</string>
+    <string name="persistent_high_alert_enable">Включи</string>
+    <string name="title_persistent_high_threshold">Праг</string>
     <string name="forecasted_low_alert">Известие за предвиждана Ниска КЗ</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Екстраполиране на данните в опит да се предвиди ниска КЗ</string>
     <string name="alarm_at_forecasted_low_mins">Аларма при предвиждане на Ниски стойности(Кз)</string>
@@ -1454,6 +1456,8 @@
     <string name="category_falling_rising_bg">Падане/Покачване на КЗ</string>
     <string name="category_alert_prefs">Предпочитания за известия (за тези известия)</string>
     <string name="summary_persistent_high_alert">Когато е над високо ниво за твърде дълго време и не се насочва надолу</string>
+    <string name="summary_persistent_high_threshold_link">Когато активирано, Висока Стойност ще бъде прага.\n Когато деактивирано, прагат ще бъде стойността, която е посоченa по-долу.</string>
+    <string name="title_persistent_high_threshold_link">Праг: Висока стойност</string>
     <string name="note_search_button">ТЪРСИ</string>
     <string name="all_note_button">ВСИЧКИ</string>
     <string name="title_full_screen_mode">Режим на цял екран</string>
@@ -1798,6 +1802,7 @@
     <string name="summary_ymax">Избрете yМакс в случай, когато няма по-Големи стойности.</string>
     <string name="wait_to_connect">Проверете настройките и изчакайте за свързване.</string>
     <string name="summary_sens_expiry_notify">Повиши честотата на известията, когато наближи да изтече срокът на ползване на сензора.</string>
+    <string name="title_sens_expiry">Известия за изтичане на срока на действие на сензора</string>
     <string name="title_sens_expiry_notify">Възраст на сензора</string>
     <string name="close">Затвори</string>
     <string name="title_advanced_settings_4_Lib2">Разширени настройки за Libre 2</string>

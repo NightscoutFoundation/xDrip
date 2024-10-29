@@ -222,6 +222,8 @@
     <string name="other_alerts">Inne Alarmy</string>
     <string name="extra_alerts_xdrip_plus">Dodatkowe ostrzeżenia (xDrip+)</string>
     <string name="persistent_high_alert">Utrzymujące się wysokie alerty</string>
+    <string name="persistent_high_alert_enable">Włącz</string>
+    <string name="title_persistent_high_threshold">Próg</string>
     <string name="forecasted_low_alert">Prognozowany Low Alert</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Ekstrapolacji danych, aby spróbować przewidzieć upadki</string>
     <string name="alarm_at_forecasted_low_mins">Alarm przy prognozowanych niskich w minutach</string>
@@ -1765,6 +1767,7 @@
     <string name="summary_ymax">Wybierz yMax, dla sytuacji, gdy nie ma wyższych odczytów.</string>
     <string name="wait_to_connect">Sprawdź ustawienia i poczekaj na połączenie.</string>
     <string name="summary_sens_expiry_notify">Wyświetl powiadomienia, gdy czujnik zbliża się do wygaśnięcia.</string>
+    <string name="title_sens_expiry">Powiadomienia o wygaśnięciu czujnika</string>
     <string name="title_sens_expiry_notify">Czas wygaśnięcia czujnika</string>
     <string name="close">Zamknij</string>
     <string name="title_advanced_settings_4_Lib2">Zaawansowane ustawienia dla Libre 2</string>

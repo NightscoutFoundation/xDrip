@@ -223,6 +223,7 @@
     <string name="other_alerts">Інші сповіщення</string>
     <string name="extra_alerts_xdrip_plus">Додаткові сповіщення</string>
     <string name="persistent_high_alert">Сповіщення про тривалу гіперглікемію</string>
+    <string name="persistent_high_alert_enable">Увімкнути GPS</string>
     <string name="forecasted_low_alert">Сповіщення про прогнозовану гіпоглікемію</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Екстраполювати дані для можливості прогнозування гіпоглікемії</string>
     <string name="alarm_at_forecasted_low_mins">Сповіщати за (в хвилинах)</string>

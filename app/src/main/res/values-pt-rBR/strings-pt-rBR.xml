@@ -223,6 +223,7 @@
     <string name="other_alerts">Outros Alertas</string>
     <string name="extra_alerts_xdrip_plus">Alertas Extras (xDrip+)</string>
     <string name="persistent_high_alert">Alerta de Hiper persistente</string>
+    <string name="persistent_high_alert_enable">Ligar</string>
     <string name="forecasted_low_alert">Alerta de previsão de Hipo</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolar dados para tentar prever Hipos</string>
     <string name="alarm_at_forecasted_low_mins">Alarme para Previsões de Baixa em mins</string>

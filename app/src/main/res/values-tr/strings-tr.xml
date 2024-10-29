@@ -218,6 +218,7 @@
     <string name="other_alerts">Diğer uyarılar</string>
     <string name="extra_alerts_xdrip_plus">Ekstra uyarılar (xDrip+)</string>
     <string name="persistent_high_alert">Sürekli Yüksek Uyarısı</string>
+    <string name="persistent_high_alert_enable">Etkinleştir</string>
     <string name="forecasted_low_alert">Öngörülen Düşük Alarm</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Düşük değerleri öngörmek için tahmin et</string>
     <string name="alarm_at_forecasted_low_mins">Öngörülen Düşük Alarmı (dk)</string>
