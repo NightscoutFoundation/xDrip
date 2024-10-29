@@ -10,6 +10,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 
 import com.eveningoutpost.dexdrip.databinding.StatsGeneralBinding;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +29,7 @@ import java.util.List;
  * Created by adrian on 30/06/15.
  */
 public class FirstPageFragment extends Fragment {
+    private final static String TAG = FirstPageFragment.class.getSimpleName();
 
     private View myView;
 
@@ -55,23 +57,46 @@ public class FirstPageFragment extends Fragment {
 
     public class ViewStats { // Linking to stats_general layout
         public boolean viewAbsolutes() { // Show absolute numbers
-            return Pref.getBoolean("show_statistics_absolutes", true);
+            return Pref.getBoolean("show_statistics_absolutes", false);
         }
 
         public boolean viewMedianBG() { // Show BG median
-            return Pref.getBoolean("show_statistics_median", true);
+            return Pref.getBoolean("show_statistics_median", false);
         }
 
         public boolean viewA1C() { // Show estimated A1C
-            return Pref.getBoolean("show_statistics_a1cestimate", true);
+            return Pref.getBoolean("show_statistics_a1cestimate", false);
         }
 
         public boolean viewRelSD() { // Show relative standard deviation
-            return Pref.getBoolean("show_statistics_relsd", true);
+            return Pref.getBoolean("show_statistics_relsd", false);
         }
 
         public boolean viewGviLine() { // Show the GVI line, including GVI and PGS
-            return Pref.getBoolean("show_statistics_gvi", true) || Pref.getBoolean("show_statistics_pgs", true);
+            return Pref.getBoolean("show_statistics_gvi", false) || Pref.getBoolean("show_statistics_pgs", false);
+        }
+    }
+
+    public static void defineDefaults () { // This is where the defaults are defined.
+        defineDefault("show_statistics_absolutes", true); // Show absolute values
+        defineDefault("show_statistics_median", true); // Show median by default
+        defineDefault("show_statistics_a1cestimate", true); // Show estimated A1C
+        defineDefault("show_statistics_relsd", true); // Show relative standard deviation
+        defineDefault("show_statistics_pgs", true); // Show PGS
+        defineDefault("show_statistics_gvi", true); // Show GVI
+    }
+
+    public static void defineDefault (String pref, Boolean def) {
+        if (!Pref.isPreferenceSet(pref)) { // If the value (of pref) has never been changed
+            try {
+                if (!def) { // If the default is false
+                    // There is no need to take any action if the default is false
+                } else if (def) { // If the default is true
+                    Pref.setBoolean(pref, true); // Enable the setting
+                }
+            } catch (Exception e) {
+                UserError.Log.wtf(TAG, "incorrect arguments");
+            }
         }
     }
 
@@ -216,11 +241,11 @@ public class FirstPageFragment extends Fragment {
                 Log.d("DrawStats", "NormalReadingspct=" + normalReadingspct + " glucoseMean=" + glucoseMean + " tirMultiplier=" + tirMultiplier + " PGS=" + PGS);
                 TextView gviView = (TextView) localView.findViewById(R.id.textView_gvi);
                 DecimalFormat df = new DecimalFormat("#.00");
-                if (Pref.getBoolean("show_statistics_pgs", true) && Pref.getBoolean("show_statistics_gvi", true)) { // Show both GVI and PGS
+                if (Pref.getBoolean("show_statistics_pgs", false) && Pref.getBoolean("show_statistics_gvi", true)) { // Show both GVI and PGS
                     updateText(localView, gviView, "GVI:  " +  df.format(gvi) + "    PGS:  " + df.format(PGS));
                 } else if (Pref.getBoolean("show_statistics_gvi", true)) { // Show only GVI
                     updateText(localView, gviView, "GVI:  " + df.format(gvi));
-                } else if (Pref.getBoolean("show_statistics_pgs", true)) { // Show only PGS
+                } else if (Pref.getBoolean("show_statistics_pgs", false)) { // Show only PGS
                     updateText(localView, gviView, "PGS:  " + df.format(PGS));
                 }
 

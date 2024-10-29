@@ -300,12 +300,12 @@ public class StatsActivity extends ActivityWithMenu {
     private void updateMenuChecked() {
         menuItem.setChecked(Pref.getBoolean(SHOW_STATISTICS_FULL_SCREEN, false));
         menuItem2.setChecked(Pref.getBoolean(SHOW_STATISTICS_PRINT_COLOR, false));
-        menuItem3.setChecked(Pref.getBoolean(SHOW_STATISTICS_Absolutes, true));
-        menuItem4.setChecked(Pref.getBoolean(SHOW_STATISTICS_Median_BG, true));
-        menuItem5.setChecked(Pref.getBoolean(SHOW_STATISTICS_A1C, true));
-        menuItem6.setChecked(Pref.getBoolean(SHOW_STATISTICS_Rel_SD, true));
-        menuItem7.setChecked(Pref.getBoolean(SHOW_STATISTICS_GVI, true));
-        menuItem8.setChecked(Pref.getBoolean(SHOW_STATISTICS_PGS, true));
+        menuItem3.setChecked(Pref.getBoolean(SHOW_STATISTICS_Absolutes, false));
+        menuItem4.setChecked(Pref.getBoolean(SHOW_STATISTICS_Median_BG, false));
+        menuItem5.setChecked(Pref.getBoolean(SHOW_STATISTICS_A1C, false));
+        menuItem6.setChecked(Pref.getBoolean(SHOW_STATISTICS_Rel_SD, false));
+        menuItem7.setChecked(Pref.getBoolean(SHOW_STATISTICS_GVI, false));
+        menuItem8.setChecked(Pref.getBoolean(SHOW_STATISTICS_PGS, false));
     }
 
     private void evaluateColors(boolean recreate) {

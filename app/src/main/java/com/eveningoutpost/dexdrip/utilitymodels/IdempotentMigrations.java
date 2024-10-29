@@ -20,6 +20,7 @@ import com.eveningoutpost.dexdrip.models.Prediction;
 import com.eveningoutpost.dexdrip.models.UserNotification;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
+import com.eveningoutpost.dexdrip.stats.FirstPageFragment;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -60,6 +61,7 @@ public class IdempotentMigrations {
         IncompatibleApps.notifyAboutIncompatibleApps();
         CompatibleApps.notifyAboutCompatibleApps();
         legacySettingsMoveLanguageFromNoToNb();
+        FirstPageFragment.defineDefaults(); // Define the statistics page visibility defaults.
 
     }
 
