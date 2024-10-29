@@ -218,6 +218,7 @@
     <string name="other_alerts">Andra varningar</string>
     <string name="extra_alerts_xdrip_plus">Ytterligare varningar (xDrip+)</string>
     <string name="persistent_high_alert">Larm vid beständigt högt</string>
+    <string name="persistent_high_alert_enable">Aktivera</string>
     <string name="forecasted_low_alert">Larm vid beständigt lågt</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolera data för att försöka förutspå känningar</string>
     <string name="alarm_at_forecasted_low_mins">Larm vid förutspådd känning</string>

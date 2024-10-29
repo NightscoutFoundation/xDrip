@@ -218,6 +218,7 @@
     <string name="other_alerts">Weitere Benachrichtigungen</string>
     <string name="extra_alerts_xdrip_plus">Weitere Warnungen (xDrip+)</string>
     <string name="persistent_high_alert">Dauerhafter Hoch-Alarm</string>
+    <string name="persistent_high_alert_enable">Aktivieren</string>
     <string name="forecasted_low_alert">Vorhergesagter Niedrig-Alarm</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolation, um niedrige Werte vorherzusagen</string>
     <string name="alarm_at_forecasted_low_mins">Alarm bei vorhergesagten Niedrig-Werten (in Minuten)</string>

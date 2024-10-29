@@ -223,6 +223,8 @@
     <string name="other_alerts">Jiné výstrahy</string>
     <string name="extra_alerts_xdrip_plus">Další výstrahy (xDrip+)</string>
     <string name="persistent_high_alert">Trvalá výstraha vysoké glykémie</string>
+    <string name="persistent_high_alert_enable">Povolit</string>
+    <string name="title_persistent_high_threshold">Limit</string>
     <string name="forecasted_low_alert">Výstrahy při předpovídání nízkých hodnot</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolovat data pro predikci nízké glykémie</string>
     <string name="alarm_at_forecasted_low_mins">Alarm při prognóze nízkých hodnot (min)</string>
@@ -1465,6 +1467,8 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="category_falling_rising_bg">Pokles/nárůst glykemie</string>
     <string name="category_alert_prefs">Nastavení výstrah (pro tyto výstrahy)</string>
     <string name="summary_persistent_high_alert">Pokud trvá vysoká glykémie příliš dlouho a neklesá</string>
+    <string name="summary_persistent_high_threshold_link">Pokud je povoleno, vysoká hodnota je hodnota limitu.\nJe-li vypnuto, hodnota limitu je hodnota uvedená níže.</string>
+    <string name="title_persistent_high_threshold_link">Limit: Vysoká hodnota</string>
     <string name="note_search_button">HLEDAT</string>
     <string name="all_note_button">VŠE</string>
     <string name="title_full_screen_mode">Režim celé obrazovky</string>
@@ -1806,6 +1810,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="summary_ymax">Zvolit maximum osy y, pokud se nebudou vyskytovat výšší hodnoty glykémie.</string>
     <string name="wait_to_connect">Ověřte nastavení a počkejte na připojení.</string>
     <string name="summary_sens_expiry_notify">Upozornit, když se blíží konec senzoru.</string>
+    <string name="title_sens_expiry">Oznámení konce senzoru</string>
     <string name="title_sens_expiry_notify">Senzor bude končit</string>
     <string name="close">Zavřít</string>
     <string name="title_advanced_settings_4_Lib2">Pokročilá nastavení pro Libre 2</string>

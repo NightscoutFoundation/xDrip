@@ -223,6 +223,8 @@
     <string name="other_alerts">Altri Allarmi</string>
     <string name="extra_alerts_xdrip_plus">Allarmi Extra (xDrip+)</string>
     <string name="persistent_high_alert">Allarme per VALORI ALTI Persistenti</string>
+    <string name="persistent_high_alert_enable">Abilita</string>
+    <string name="title_persistent_high_threshold">Soglia</string>
     <string name="forecasted_low_alert">Allarme di previsione VALORE BASSO</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Estrapolare i dati per cercare di prevedere raggiungimento VALORE BASSO</string>
     <string name="alarm_at_forecasted_low_mins">Allarme previsione VALORE BASSO (minuti)</string>
@@ -1215,6 +1217,10 @@
     <string name="return_to_home_screen">Torna alla schermata iniziale</string>
     <string name="title_broadcast_service_api">Servizio di Trasmissione API</string>
     <string name="summary_broadcast_service_api">Abilita la comunicazione tra xDrip e applicazioni terze parti utilizzando la nuova API</string>
+    <string name="title_enable_iob_in_api_endpoint">Abilita il trasferimento dell\'IoB nelle API</string>
+    <string name="summary_enable_iob_in_api_endpoint">Abilita la segnalazione dei valori IoB nell\'endpoint Web Service API utilizzato da alcuni smartwatch</string>
+    <string name="title_fetch_iob_from_companion_app">Recupera IoB dall\'app compagno</string>
+    <string name="summary_fetch_iob_from_companion_app">Recupera il valore IoB dall\'app compagno in esecuzione sullo stesso dispositivo, come l\'app Omnipod 5</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Sincronizza i dati con fitness band MiBand</string>
     <string name="title_miband_enable">Usa MiBand</string>
@@ -1296,6 +1302,7 @@
     <string name="title_nsfollow_url">URL Nightscout Follow</string>
     <string name="summary_nsfollow_download_treatments">Scarica anche i trattamenti da Nightscout come follower</string>
     <string name="title_nsfollow_download_treatments">Scarica trattamenti</string>
+    <string name="title_nsfollow_lag">Ritardo Nightscout Follower</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
     <string name="summary_clfollow_user">CareLink login username</string>
@@ -1310,6 +1317,8 @@
     <string name="title_clfollow_lang">CareLink Language</string>
     <string name="summary_clfollow_lang">CareLink language code</string>
     -->
+    <string name="title_clfollow_login">Login</string>
+    <string name="summary_clfollow_login">Accedi con il browser</string>
     <string name="title_clfollow_grace_period">Periodo di grazia</string>
     <string name="summary_clfollow_grace_period">Periodo di tolleranza per la richiesta di dati in secondi</string>
     <string name="title_clfollow_missed_poll_interval">Intervallo richiesta dati mancanti</string>
@@ -1390,6 +1399,17 @@
     <string name="title_use_number_icon_large">Usa icone grande per i numeri</string>
     <string name="summary_number_icon_large_arrow">Mostra la freccia del trend nell\'icona grande</string>
     <string name="title_number_icon_large_arrow">Mostra freccia in Icona Grande</string>
+    <string name="title_xdrip_plus_accessibility">Impostazioni Sempre Visibile</string>
+    <string name="summary_aod_use_top">Usa il primo quinto di schermo per il widget sempre visibile</string>
+    <string name="title_aod_use_top">Usa la parte superiore</string>
+    <string name="summary_aod_use_top_center">Usa il secondo quinto di schermo per il widget sempre visibile</string>
+    <string name="title_aod_use_top_center">Usa il centro superiore</string>
+    <string name="summary_aod_use_center">Usa il terzo quinto di schermo per il widget sempre visibile</string>
+    <string name="title_aod_use_center">Usa il centro</string>
+    <string name="summary_aod_use_center_bottom">Usa il quarto quinto di schermo per il widget sempre visibile</string>
+    <string name="title_aod_use_center_bottom">Usa il fondo centrale</string>
+    <string name="summary_aod_use_bottom">Usa l\'ultimo quinto di schermo per il widget sempre visibile</string>
+    <string name="title_aod_use_bottom">Usa il fondo</string>
     <string name="summary_show_home_on_boot">Apri automaticamente lo schermo xDrip dopo l\'avviamento del telefonino</string>
     <string name="title_show_home_on_boot">Mostra xDrip all\'avvio</string>
     <string name="eula">EULA</string>
@@ -1446,6 +1466,8 @@
     <string name="category_falling_rising_bg">Glicemia in salita/discesa</string>
     <string name="category_alert_prefs">Impostazioni allarmi per questi avvisi</string>
     <string name="summary_persistent_high_alert">Quando la glicemia è sopra il livello alto per troppo tempo e non scende</string>
+    <string name="summary_persistent_high_threshold_link">Se abilitato, la soglia è il valore di glicemia alta.\nQuando disabilitato, la soglia è il valore specificato sotto.</string>
+    <string name="title_persistent_high_threshold_link">Soglia: Valore Alto</string>
     <string name="note_search_button">CERCA</string>
     <string name="all_note_button">TUTTO</string>
     <string name="title_full_screen_mode">Modalità schermo intero</string>
@@ -1795,6 +1817,7 @@
     <string name="summary_ymax">Scegli yMax per quando non ci sono letture più alte.</string>
     <string name="wait_to_connect">Verifica le impostazioni e aspetta il collegamento.</string>
     <string name="summary_sens_expiry_notify">Genera delle notifiche quando il sensore si avvicina alla scadenza.</string>
+    <string name="title_sens_expiry">Notifiche Scadenza Sensore</string>
     <string name="title_sens_expiry_notify">Scadenza sensore</string>
     <string name="close">Chiudi</string>
     <string name="title_advanced_settings_4_Lib2">Impostazioni avanzate per Libre 2</string>
@@ -1804,6 +1827,14 @@
     <string name="summary_Lib2_show_sense_on_status">Attiva per mostrare ulteriori informazioni nello stato, per il sensore Libre 2.</string>
     <string name="import_qr_code_warning">Importa solo le impostazioni da fonti affidabili!\n\nConferma di volere importare le impostazioni seguenti:\n\n</string>
     <string name="scan_to_load_xdrip_settings">Scansiona per caricare le impostazioni xDrip</string>
+    <string name="manage_permissions">Gestione permessi</string>
+    <string name="open_health_connect_settings_to_manually_manage_permissions">Apri le impostazioni di Health Connect per gestire manualmente i permessi</string>
+    <string name="send_data_to_health_connect">Invia dati a Health Connect</string>
+    <string name="get_data_from_health_connect">Ottieni dati da Health Connect</string>
+    <string name="requires_android_8_and_google_companion_application_or_android_14">Richiede Android 8+ e Google app compagno oppure Android 14+</string>
+    <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Invia e ricevi dati da Google Health Connect e Google Fit</string>
+    <string name="google_health_connect">Google Health Connect</string>
+    <string name="google_health_connect_needs_perms">ERRORE: Health connect necessita dei permessi! - riprova dal menu impostazioni</string>
     <string name="carelink_auth_country_required">Il campo paese è obbligatorio!</string>
     <string name="carelink_auth_status_authenticated">Stato: autenticato!</string>
     <string name="carelink_auth_status_not_authenticated">Stato: non autenticato!</string>

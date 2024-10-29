@@ -222,6 +222,8 @@
     <string name="other_alerts">Otras alertas</string>
     <string name="extra_alerts_xdrip_plus">Alertas adicionales (xDrip+)</string>
     <string name="persistent_high_alert">Alerta alta persistente</string>
+    <string name="persistent_high_alert_enable">Activar</string>
+    <string name="title_persistent_high_threshold">Límite</string>
     <string name="forecasted_low_alert">Alerta de baja predicha</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolar datos para tratar de predecir bajadas</string>
     <string name="alarm_at_forecasted_low_mins">Alarma en minutos bajas predichas</string>
@@ -414,10 +416,10 @@
     <string name="new_version_date_colon">"Fecha de la versión nueva: "</string>
     <string name="old_version_date_colon">"Fecha de la versión antigua: "</string>
     <string name="speak_your_note_text">Di tu texto de la nota</string>
-    <string name="alarm_if_above_high_value">Alarma si por encima de alto valor</string>
+    <string name="alarm_if_above_high_value">Alarma si el valor está sobre el alto definido</string>
     <string name="for_longer_than_minutes">durante más de (minutos)</string>
-    <string name="choose_sound_used_for_persistent_high_alarm">Elija sonido de alarma alta persistente.</string>
-    <string name="persistent_high_sound">Sonido de alta Persistente</string>
+    <string name="choose_sound_used_for_persistent_high_alarm">Elija el sonido de la alarma para el valor alto persistente.</string>
+    <string name="persistent_high_sound">Sonido de valor Alto Persistente</string>
     <string name="forecast_lows">Bajas Previsión</string>
     <string name="raise_alarm_on_forecast_low">Dar la alarma en el pronóstico de baja</string>
     <string name="notify_when_predicted_low_time_reaches_threshold">Notificar cuando predijo el tiempo de baja alcanza el umbral</string>
@@ -1451,6 +1453,8 @@
     <string name="category_falling_rising_bg">Glucemia Subiendo/Bajando</string>
     <string name="category_alert_prefs">Preferencias de alerta (para estas alertas)</string>
     <string name="summary_persistent_high_alert">Cuando está por encima del nivel alto durante mucho tiempo y no baja</string>
+    <string name="summary_persistent_high_threshold_link">Cuando se activa, el valor alto es el límite.\nCuando se desactiva, el límite es el valor especificado a continuación.</string>
+    <string name="title_persistent_high_threshold_link">Límite: Valor alto</string>
     <string name="note_search_button">BUSCAR</string>
     <string name="all_note_button">TODO</string>
     <string name="title_full_screen_mode">Modo de pantalla completa</string>
@@ -1800,6 +1804,7 @@
     <string name="summary_ymax">Escoge yMin para cuando no hay lecturas superiores.</string>
     <string name="wait_to_connect">Verificar ajustes y esperar a la conectividad</string>
     <string name="summary_sens_expiry_notify">Aumentar las notificaciones cuando el sensor se acerca a la caducidad.</string>
+    <string name="title_sens_expiry">Notificaciones de caducidad del sensor</string>
     <string name="title_sens_expiry_notify">Caducidad sensor</string>
     <string name="close">Cerrar</string>
     <string name="title_advanced_settings_4_Lib2">Ajustes avanzados para Libre 2</string>

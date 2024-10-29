@@ -219,6 +219,8 @@
     <string name="other_alerts">他の通知</string>
     <string name="extra_alerts_xdrip_plus">余分の通知(xDrip+)</string>
     <string name="persistent_high_alert">高血糖の永続的通知</string>
+    <string name="persistent_high_alert_enable">有効にする</string>
+    <string name="title_persistent_high_threshold">しきい値</string>
     <string name="forecasted_low_alert">低血糖の予測通知</string>
     <string name="extrapolate_data_to_try_to_predict_lows">データから外挿法によって低血糖を推定する</string>
     <string name="alarm_at_forecasted_low_mins">予測低血糖のあらアラームを鳴らす</string>
@@ -947,6 +949,7 @@
     <string name="titleInside_yRange">有効にする</string>
     <string name="wait_to_connect">設定を確認し、接続を待ちます。</string>
     <string name="summary_sens_expiry_notify">センサーの有効期限が近づいたら通知します。</string>
+    <string name="title_sens_expiry">センサーの期限切れ通知</string>
     <string name="title_sens_expiry_notify">センサーの有効期限</string>
     <string name="close">閉じる</string>
     <string name="title_advanced_settings_4_Lib2">リブレ2の高度な設定</string>
