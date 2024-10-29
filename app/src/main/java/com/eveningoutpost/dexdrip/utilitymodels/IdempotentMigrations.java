@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.utilitymodels;
 
+import static com.eveningoutpost.dexdrip.utils.Preferences.handleUnitsChange;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -60,6 +62,9 @@ public class IdempotentMigrations {
         IncompatibleApps.notifyAboutIncompatibleApps();
         CompatibleApps.notifyAboutCompatibleApps();
         legacySettingsMoveLanguageFromNoToNb();
+        if (!Pref.getString("units", "mgdl").equals("mgdl")) { // Only if the selected unit is mmol/L
+            handleUnitsChange(null, "mmol", null); // Trigger the correction of values (defaults) if needed
+        }
 
     }
 

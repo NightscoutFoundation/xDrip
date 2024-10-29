@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.utils;
 
 import static com.eveningoutpost.dexdrip.EditAlertActivity.unitsConvert2Disp;
+import static com.eveningoutpost.dexdrip.models.JoH.tolerantParseDouble;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
@@ -758,7 +759,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             String stringValue = value.toString();
             if (isNumeric(stringValue)) {
                 final boolean domgdl = Pref.getString("units", "mgdl").equals("mgdl"); // Identify which unit is chosen
-                double submissionMgdl = domgdl ? Double.parseDouble(stringValue) : Double.parseDouble(stringValue) * Constants.MMOLL_TO_MGDL;
+                double submissionMgdl = domgdl ? tolerantParseDouble(stringValue) : tolerantParseDouble(stringValue) * Constants.MMOLL_TO_MGDL;
                 if (submissionMgdl > MAX_GLUCOSE_INPUT || submissionMgdl < MIN_GLUCOSE_INPUT) {
                     JoH.static_toast_long("The value must be between " + unitsConvert2Disp(domgdl, MIN_GLUCOSE_INPUT) + " and " + unitsConvert2Disp(domgdl, MAX_GLUCOSE_INPUT));
                     return false;
