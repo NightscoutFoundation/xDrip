@@ -58,7 +58,7 @@ public class NightscoutFollowService extends ForegroundService {
     private static volatile Treatments lastTreatment;
     private static volatile long lastTreatmentTime = 0;
     private static volatile long treatmentReceivedDelay = 0;
-    private static long lag = Constants.SECOND_IN_MS * Pref.getStringToInt("nsfollow_lag", 0); // User can choose a wake delay with a 0 default.
+    private long lag = Constants.SECOND_IN_MS * Pref.getStringToInt("nsfollow_lag", 0); // User can choose a wake delay with a 0 default.
 
     private void buggySamsungCheck() {
         if (buggySamsung == null) {
@@ -127,11 +127,12 @@ public class NightscoutFollowService extends ForegroundService {
     }
 
     static void scheduleWakeUp() {
+        NightscoutFollowService nightscoutFollowService = new NightscoutFollowService();
         final BgReading lastBg = BgReading.lastNoSenssor();
         final long last = lastBg != null ? lastBg.timestamp : 0;
 
         final long grace = Constants.SECOND_IN_MS * 10;
-        final long next = Anticipate.next(JoH.tsl(), last, SAMPLE_PERIOD, grace, lag) + grace;
+        final long next = Anticipate.next(JoH.tsl(), last, SAMPLE_PERIOD, grace, nightscoutFollowService.lag) + grace;
         wakeup_time = next;
         UserError.Log.d(TAG, "Anticipate next: " + JoH.dateTimeText(next) + "  last: " + JoH.dateTimeText(last));
 
