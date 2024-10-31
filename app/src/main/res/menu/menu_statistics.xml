@@ -25,7 +25,7 @@
     <item
         android:id="@+id/statistics_settings"
         android:orderInCategory="1"
-        android:title="Visibility"
+        android:title="Parameters"
         android:visible="true">
         <menu>
             <group
@@ -44,6 +44,10 @@
                     android:id="@+id/action_show_a1cestimate"
                     android:onClick="toggleStatisticsShowA1C"
                     android:title="Estimated A1C" />
+                <item
+                    android:id="@+id/action_show_sd"
+                    android:onClick="toggleStatisticsShowSD"
+                    android:title="Standard Deviation" />
                 <item
                     android:id="@+id/action_show_relsd"
                     android:onClick="toggleStatisticsShowRelSD"

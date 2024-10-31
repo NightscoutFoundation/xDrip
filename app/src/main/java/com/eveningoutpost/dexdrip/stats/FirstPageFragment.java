@@ -68,6 +68,10 @@ public class FirstPageFragment extends Fragment {
             return Pref.getBoolean("show_statistics_a1cestimate", false);
         }
 
+        public boolean viewSD() { // Show standard deviation
+            return Pref.getBoolean("show_statistics_sd", false);
+        }
+
         public boolean viewRelSD() { // Show relative standard deviation
             return Pref.getBoolean("show_statistics_relsd", false);
         }
@@ -81,6 +85,7 @@ public class FirstPageFragment extends Fragment {
         defineDefault("show_statistics_absolutes", true); // Show absolute values
         defineDefault("show_statistics_median", true); // Show median by default
         defineDefault("show_statistics_a1cestimate", true); // Show estimated A1C
+        defineDefault("show_statistics_sd", true); // Show standard deviation
         defineDefault("show_statistics_relsd", true); // Show relative standard deviation
         defineDefault("show_statistics_pgs", true); // Show PGS
         defineDefault("show_statistics_gvi", true); // Show GVI

@@ -68,6 +68,7 @@ public class StatsActivity extends ActivityWithMenu {
     MenuItem menuItem6;
     MenuItem menuItem7;
     MenuItem menuItem8;
+    MenuItem menuItem9;
     private View decorView;
     private String stateString;
     private final static int MY_PERMISSIONS_REQUEST_STORAGE_SCREENSHOT = 106;
@@ -76,6 +77,7 @@ public class StatsActivity extends ActivityWithMenu {
     public static final String SHOW_STATISTICS_Absolutes = "show_statistics_absolutes";
     public static final String SHOW_STATISTICS_Median_BG = "show_statistics_median";
     public static final String SHOW_STATISTICS_A1C = "show_statistics_a1cestimate";
+    public static final String SHOW_STATISTICS_SD = "show_statistics_sd";
     public static final String SHOW_STATISTICS_Rel_SD = "show_statistics_relsd";
     public static final String SHOW_STATISTICS_GVI = "show_statistics_gvi";
     public static final String SHOW_STATISTICS_PGS = "show_statistics_pgs";
@@ -280,9 +282,10 @@ public class StatsActivity extends ActivityWithMenu {
         menuItem3 = menu.findItem(R.id.action_show_absolutes);
         menuItem4 = menu.findItem(R.id.action_show_median);
         menuItem5 = menu.findItem(R.id.action_show_a1cestimate);
-        menuItem6 = menu.findItem(R.id.action_show_relsd);
-        menuItem7 = menu.findItem(R.id.action_show_gvi);
-        menuItem8 = menu.findItem(R.id.action_show_pgs);
+        menuItem6 = menu.findItem(R.id.action_show_sd);
+        menuItem7 = menu.findItem(R.id.action_show_relsd);
+        menuItem8 = menu.findItem(R.id.action_show_gvi);
+        menuItem9 = menu.findItem(R.id.action_show_pgs);
 
         updateMenuChecked();
 
@@ -303,9 +306,10 @@ public class StatsActivity extends ActivityWithMenu {
         menuItem3.setChecked(Pref.getBoolean(SHOW_STATISTICS_Absolutes, false));
         menuItem4.setChecked(Pref.getBoolean(SHOW_STATISTICS_Median_BG, false));
         menuItem5.setChecked(Pref.getBoolean(SHOW_STATISTICS_A1C, false));
-        menuItem6.setChecked(Pref.getBoolean(SHOW_STATISTICS_Rel_SD, false));
-        menuItem7.setChecked(Pref.getBoolean(SHOW_STATISTICS_GVI, false));
-        menuItem8.setChecked(Pref.getBoolean(SHOW_STATISTICS_PGS, false));
+        menuItem6.setChecked(Pref.getBoolean(SHOW_STATISTICS_SD, false));
+        menuItem7.setChecked(Pref.getBoolean(SHOW_STATISTICS_Rel_SD, false));
+        menuItem8.setChecked(Pref.getBoolean(SHOW_STATISTICS_GVI, false));
+        menuItem9.setChecked(Pref.getBoolean(SHOW_STATISTICS_PGS, false));
     }
 
     private void evaluateColors(boolean recreate) {
@@ -353,6 +357,13 @@ public class StatsActivity extends ActivityWithMenu {
     public void toggleStatisticsShowA1C(MenuItem m) // Toggle visibility of estimated A1C
     {
         Pref.toggleBoolean(SHOW_STATISTICS_A1C);
+        evaluateColors(true);
+        updateMenuChecked();
+    }
+
+    public void toggleStatisticsShowSD(MenuItem m) // Toggle visibility of standard deviation
+    {
+        Pref.toggleBoolean(SHOW_STATISTICS_SD);
         evaluateColors(true);
         updateMenuChecked();
     }
