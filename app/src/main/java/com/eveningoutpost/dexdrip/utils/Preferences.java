@@ -1767,7 +1767,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             if (this.prefs.getString("custom_sync_key", "").equals("")) {
                 this.prefs.edit().putString("custom_sync_key", CipherUtils.getRandomHexKey()).apply();
             }
-            bindPreferenceSummaryToValue(findPreference("custom_sync_key")); // still needed?
 
             bindPreferenceSummaryToValue(findPreference("xplus_insulin_dia"));
             bindPreferenceSummaryToValue(findPreference("xplus_liver_sensitivity"));
