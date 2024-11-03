@@ -53,7 +53,7 @@ public class UploadChunk implements NamedSliderProcessor {
 
     public static String get(final long start, final long end) {
 
-        UserError.Log.uel(TAG, "Syncing data between: " + dateTimeText(start) + " -> " + dateTimeText(end));
+        UserError.Log.d(TAG, "Syncing data between: " + dateTimeText(start) + " -> " + dateTimeText(end));
         if (end <= start) {
             UserError.Log.e(TAG, "End is <= start: " + dateTimeText(start) + " " + dateTimeText(end));
             return null;
