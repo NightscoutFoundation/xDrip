@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.utils;
 
+import static com.eveningoutpost.dexdrip.EditAlertActivity.unitsConvert2Disp;
+import static com.eveningoutpost.dexdrip.models.JoH.tolerantParseDouble;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
@@ -188,6 +190,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
     private volatile String scanFormat = null; // The format of the scan
     private volatile String scanContents = null; // Text content of the scan coming either from camera or file
     private volatile byte[] scanRawBytes = null; // Raw bytes of the scan
+    private static final double MIN_GLUCOSE_INPUT = 40; // The smallest input glucose value xDrip accepts
+    private static final double MAX_GLUCOSE_INPUT = 400; // The largest input glucose value xDrip accepts
 
     private void refreshFragments() {
         refreshFragments(null);
@@ -755,10 +759,15 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             String stringValue = value.toString();
             if (isNumeric(stringValue)) {
                 final boolean domgdl = Pref.getString("units", "mgdl").equals("mgdl"); // Identify which unit is chosen
+                double submissionMgdl = domgdl ? tolerantParseDouble(stringValue) : tolerantParseDouble(stringValue) * Constants.MMOLL_TO_MGDL;
+                if (submissionMgdl > MAX_GLUCOSE_INPUT || submissionMgdl < MIN_GLUCOSE_INPUT) {
+                    JoH.static_toast_long(xdrip.gs(R.string.the_value_must_be_between_min_and_max,unitsConvert2Disp(domgdl, MIN_GLUCOSE_INPUT), unitsConvert2Disp(domgdl, MAX_GLUCOSE_INPUT)));
+                    return false; // Reject input if out of range
+                }
                 preference.setSummary(stringValue + "  " + (domgdl ? "mg/dl" : "mmol/l")); // Set the summary to show the value followed by the chosen unit
                 return true;
             }
-            return false;
+            return false; // Reject input if not numeric
         }
     };
     private static Preference.OnPreferenceChangeListener sBindPreferenceTitleAppendToValueListenerUpdateChannel = new Preference.OnPreferenceChangeListener() {
@@ -1009,7 +1018,10 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                         .getString(preference.getKey(), ""));
     }
 
-    private static void bindPreferenceSummaryToUnitizedValueAndEnsureNumeric(Preference preference) { // Use this to show the value as well as the corresponding glucose unit as the summary
+    private static void bindPreferenceSummaryToUnitizedValueAndEnsureNumeric(Preference preference) { // Use this to:
+        // 1- show the value as summary;
+        // 2- amend the value in summary with the corresponding glucose unit;
+        // 3- reject inputs outside the 40-400 mg/dL range.
         preference.setOnPreferenceChangeListener(sBindNumericUnitizedPreferenceSummaryToValueListener);
         sBindNumericUnitizedPreferenceSummaryToValueListener.onPreferenceChange(preference,
                 PreferenceManager
