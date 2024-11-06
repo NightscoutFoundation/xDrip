@@ -1548,7 +1548,7 @@
     <string name="progress">progress</string>
     <string name="bluetooth_device">Bluetooth Device:   </string>
     <string name="transmitter_battery_status">Transmitter Battery:  </string>
-    <string name="database_size">Database size:  </string>
+    <string name="database_size">Database Size:  </string>
     <string name="top">Top</string>
     <string name="connect_device_usb_otg">Please connect your device via USB OTG cable.</string>
     <string name="connection_status">Connection Status:</string>
