@@ -43,6 +43,7 @@ import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.eveningoutpost.dexdrip.services.DexCollectionService;
 import com.eveningoutpost.dexdrip.services.G5CollectionService;
+import com.eveningoutpost.dexdrip.ui.activities.DatabaseAdmin;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utilitymodels.SensorStatus;
 import com.eveningoutpost.dexdrip.databinding.ActivitySystemStatusBinding;
@@ -80,6 +81,7 @@ public class SystemStatusFragment extends Fragment {
     private ActiveBluetoothDevice activeBluetoothDevice;
     private static final String TAG = "SystemStatus";
     private BroadcastReceiver serviceDataReceiver;
+    private TextView db_size_view;
 
     //@Inject
     MicroStatus microStatus;
@@ -177,6 +179,7 @@ public class SystemStatusFragment extends Fragment {
         sensor_status_view = (TextView) v.findViewById(R.id.sensor_status);
         transmitter_status_view = (TextView) v.findViewById(R.id.transmitter_status);
         current_device = (TextView) v.findViewById(R.id.remembered_device);
+        db_size_view = (TextView) v.findViewById(R.id.db_size);
 
         notes = (TextView) v.findViewById(R.id.other_notes);
 
@@ -238,6 +241,7 @@ public class SystemStatusFragment extends Fragment {
         setTransmitterStatus();
         setNotes();
         futureDataCheck();
+        setDbSize();
 
        /* if (notes.getText().length()==0) {
             notes.setText("Swipe for more status pages!");
@@ -274,6 +278,11 @@ public class SystemStatusFragment extends Fragment {
 
     }
 
+    private void setDbSize() {
+        DatabaseAdmin dataBaseAdmin = new DatabaseAdmin();
+        Float dbSize = dataBaseAdmin.getDbSizeFloat();
+        db_size_view.setText(dbSize + "M");
+    }
 
     private void setSensorStatus() {
         sensor_status_view.setText(SensorStatus.status());
@@ -285,7 +294,7 @@ public class SystemStatusFragment extends Fragment {
         try {
             versionName = safeGetContext().getPackageManager().getPackageInfo(safeGetContext().getPackageName(), PackageManager.GET_META_DATA).versionName;
             int versionNumber = safeGetContext().getPackageManager().getPackageInfo(safeGetContext().getPackageName(), PackageManager.GET_META_DATA).versionCode;
-            versionName += "\nCode: " + BuildConfig.buildVersion + "\nDowngradable to: " + versionNumber;
+            versionName += "\nCode: " + BuildConfig.buildVersion;
             version_name_view.setText(versionName);
         } catch (PackageManager.NameNotFoundException e) {
             //e.printStackTrace();

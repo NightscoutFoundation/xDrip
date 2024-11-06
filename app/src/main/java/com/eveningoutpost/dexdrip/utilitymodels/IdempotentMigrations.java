@@ -20,6 +20,7 @@ import com.eveningoutpost.dexdrip.models.Prediction;
 import com.eveningoutpost.dexdrip.models.UserNotification;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
+import com.eveningoutpost.dexdrip.ui.activities.DatabaseAdmin;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -60,6 +61,7 @@ public class IdempotentMigrations {
         IncompatibleApps.notifyAboutIncompatibleApps();
         CompatibleApps.notifyAboutCompatibleApps();
         legacySettingsMoveLanguageFromNoToNb();
+        initiateGetDbSizeFloat();
 
     }
 
@@ -159,5 +161,10 @@ public class IdempotentMigrations {
         // Update the language preference to "nb"
         Pref.setString("forced_language", "nb");
         }
+    }
+
+    private static void initiateGetDbSizeFloat() { // Get database size once so that it will return a non-zero value next
+        DatabaseAdmin databaseAdmin = new DatabaseAdmin();
+        databaseAdmin.getDbSizeFloat();
     }
 }
