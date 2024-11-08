@@ -39,7 +39,6 @@ public class DatabaseAdmin extends BaseAppCompatActivity {
     // view model
     public final ObservableField<String> console = new ObservableField<>();
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
