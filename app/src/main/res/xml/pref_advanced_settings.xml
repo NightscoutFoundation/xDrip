@@ -1004,16 +1004,22 @@
                 android:defaultValue="false"
                 android:key="broadcast_service_enabled"
                 android:summary="@string/summary_broadcast_service_api"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/title_broadcast_service_api" />
             <SwitchPreference
                 android:defaultValue="true"
                 android:key="enable_iob_in_api_endpoint"
                 android:summary="@string/summary_enable_iob_in_api_endpoint"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/title_enable_iob_in_api_endpoint" />
             <SwitchPreference
                 android:defaultValue="false"
                 android:key="fetch_iob_from_companion_app"
                 android:summary="@string/summary_fetch_iob_from_companion_app"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/title_fetch_iob_from_companion_app" />
             <PreferenceScreen
                 android:title="@string/google_health_connect"
