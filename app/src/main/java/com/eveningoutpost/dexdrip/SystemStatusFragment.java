@@ -280,14 +280,14 @@ public class SystemStatusFragment extends Fragment {
 
     private void setDbSize() {
         long dbSizeLengthLong = getDataBaseSizeInBytes();
-        float dbSize = 0;
+        String dbSizeString = "0";
         if (dbSizeLengthLong > 0) { // If there is a database
-            if (dbSizeLengthLong < 31457280) { // Smaller than 30M
-                dbSize = JoH.roundFloat((float) dbSizeLengthLong / (1024 * 1024), 1);
-            } else { // Greater than or equal to 30M
-                dbSize = JoH.roundFloat((float) dbSizeLengthLong / (1024 * 1024), 0);
+            if (dbSizeLengthLong < 31457280) { // When smaller than 30M, round and show one decimal point
+                dbSizeString = JoH.roundFloat((float) dbSizeLengthLong / (1024 * 1024), 1) + "";
+            } else { // When greater than 30M, round and just show integer
+                dbSizeString = (int) (JoH.roundFloat((float) dbSizeLengthLong / (1024 * 1024), 0)) + "";  //   (int) dbSizeLengthLong / (1024 * 1024)+"";
             }
-            db_size_view.setText(dbSize + "M");
+            db_size_view.setText(dbSizeString + "M");
         }
     }
 
