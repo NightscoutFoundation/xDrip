@@ -38,7 +38,7 @@ public class DatabaseAdmin extends BaseAppCompatActivity {
     private final DbAdminProcessor databaseSize = new DatabaseSize();
     // view model
     public final ObservableField<String> console = new ObservableField<>();
-    public static float dbSizeResult; // Database size
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,11 +56,6 @@ public class DatabaseAdmin extends BaseAppCompatActivity {
 
     public void getDbSize() {
         dbTask(databaseSize, "pragma database_list");
-    }
-
-    public float getDbSizeFloat() {
-        getDbSize();
-        return dbSizeResult;
     }
 
     public void quickCheck() {
@@ -163,7 +158,6 @@ public class DatabaseAdmin extends BaseAppCompatActivity {
 
         @Override
         public void process(List<String> results) {
-            dbSizeResult = 0;
             if (results.size() == 0) {
                 console.set("Cannot locate database!!");
             } else {
@@ -177,8 +171,7 @@ public class DatabaseAdmin extends BaseAppCompatActivity {
                     }
                     final File dbFile = new File(filename);
                     if (dbFile.exists()) {
-                        dbSizeResult = JoH.roundFloat(((float) dbFile.length()) / (1024 * 1024), 2);
-                        consoleAppend("Database " + insert + " size: " + dbSizeResult + "M " + (dbFile.canWrite() ? "" : " CANNOT WRITE") + (dbFile.canRead() ? "" : " CANNOT READ") + "\n");
+                        consoleAppend("Database " + insert + " size: " + JoH.roundFloat(((float) dbFile.length()) / (1024 * 1024), 2) + "M " + (dbFile.canWrite() ? "" : " CANNOT WRITE") + (dbFile.canRead() ? "" : " CANNOT READ") + "\n");
                     } else {
                         console.set("Cannot find database file! " + filename);
                     }

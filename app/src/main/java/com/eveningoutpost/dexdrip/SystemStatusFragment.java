@@ -43,7 +43,6 @@ import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.eveningoutpost.dexdrip.services.DexCollectionService;
 import com.eveningoutpost.dexdrip.services.G5CollectionService;
-import com.eveningoutpost.dexdrip.ui.activities.DatabaseAdmin;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utilitymodels.SensorStatus;
 import com.eveningoutpost.dexdrip.databinding.ActivitySystemStatusBinding;
@@ -58,6 +57,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
+import static com.eveningoutpost.dexdrip.utils.DatabaseUtil.getDataBaseSizeInBytes;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
@@ -279,9 +279,16 @@ public class SystemStatusFragment extends Fragment {
     }
 
     private void setDbSize() {
-        DatabaseAdmin dataBaseAdmin = new DatabaseAdmin();
-        Float dbSize = dataBaseAdmin.getDbSizeFloat();
-        db_size_view.setText(dbSize + "M");
+        long dbSizeLengthLong = getDataBaseSizeInBytes();
+        float dbSize = 0;
+        if (dbSizeLengthLong > 0) { // If there is a database
+            if (dbSizeLengthLong < 31457280) { // Smaller than 30M
+                dbSize = JoH.roundFloat((float) dbSizeLengthLong / (1024 * 1024), 1);
+            } else { // Greater than or equal to 30M
+                dbSize = JoH.roundFloat((float) dbSizeLengthLong / (1024 * 1024), 0);
+            }
+            db_size_view.setText(dbSize + "M");
+        }
     }
 
     private void setSensorStatus() {
