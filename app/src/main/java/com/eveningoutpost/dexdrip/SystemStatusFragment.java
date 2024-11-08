@@ -285,7 +285,7 @@ public class SystemStatusFragment extends Fragment {
             if (dbSizeLengthLong < 31457280) { // When smaller than 30M, round and show one decimal point
                 dbSizeString = JoH.roundFloat((float) dbSizeLengthLong / (1024 * 1024), 1) + "";
             } else { // When greater than 30M, round and just show integer
-                dbSizeString = (int) (JoH.roundFloat((float) dbSizeLengthLong / (1024 * 1024), 0)) + "";  //   (int) dbSizeLengthLong / (1024 * 1024)+"";
+                dbSizeString = (int) (JoH.roundFloat((float) dbSizeLengthLong / (1024 * 1024), 0)) + "";
             }
             db_size_view.setText(dbSizeString + "M");
         }
