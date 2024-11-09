@@ -35,6 +35,8 @@
                     android:disableDependentsState="false"
                     android:key="cloud_storage_api_enable"
                     android:summary="@string/pref_summary_api_enabled"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
                     android:title="@string/pref_title_api_enabled" />
                 <CheckBoxPreference
                     android:defaultValue="true"
@@ -46,6 +48,8 @@
                     android:dependency="cloud_storage_api_enable"
                     android:key="cloud_storage_api_use_best_glucose"
                     android:summary="@string/use_plugins_for_brodcast"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
                     android:title="@string/send_display_glucose" />
                 <EditTextPreference
                     android:defaultValue="@string/pref_default_api_url"
@@ -65,12 +69,16 @@
                         android:dependency="cloud_storage_api_enable"
                         android:key="cloud_storage_api_download_enable"
                         android:summary="@string/summary_cloud_storage_api_download_enable"
+                        android:switchTextOff="@string/short_off_text_for_switches"
+                        android:switchTextOn="@string/short_on_text_for_switches"
                         android:title="@string/title_cloud_storage_api_download_enable" />
                     <SwitchPreference
                         android:defaultValue="true"
                         android:dependency="cloud_storage_api_download_enable"
                         android:key="cloud_storage_api_skip_download_from_xdrip"
                         android:summary="@string/summary_cloud_storage_api_download_from_xdrip"
+                        android:switchTextOff="@string/short_off_text_for_switches"
+                        android:switchTextOn="@string/short_on_text_for_switches"
                         android:title="@string/title_cloud_storage_api_download_from_xdrip" />
                 </PreferenceScreen>
                 <CheckBoxPreference
@@ -132,6 +140,8 @@
                     <SwitchPreference
                         android:defaultValue="false"
                         android:key="cloud_storage_mongodb_enable"
+                        android:switchTextOff="@string/short_off_text_for_switches"
+                        android:switchTextOn="@string/short_on_text_for_switches"
                         android:title="@string/enable_mongo_sync" />
                     <EditTextPreference
                         android:defaultValue="@string/pref_default_mongodb_uri"
@@ -178,6 +188,8 @@
                 <SwitchPreference
                     android:defaultValue="false"
                     android:key="cloud_storage_influxdb_enable"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
                     android:title="@string/influxdb_sync" />
                 <EditTextPreference
                     android:defaultValue="@string/pref_default_influxdb_uri"
