@@ -1,5 +1,8 @@
 package com.eveningoutpost.dexdrip.utils;
 
+import static com.eveningoutpost.dexdrip.models.JoH.showNotification;
+import static com.eveningoutpost.dexdrip.models.JoH.tolerantParseDouble;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.OUT_OF_RANGE_GLUCOSE_ENTRY_ID;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
@@ -192,6 +195,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
     private void refreshFragments() {
         refreshFragments(null);
     }
+    public static final double MIN_GLUCOSE_INPUT = 40; // The smallest acceptable input glucose value in mg/dL
+    public static final double MAX_GLUCOSE_INPUT = 400; // The largest acceptable input glucose value in mg/dL
 
     private void refreshFragments(final String jumpTo) {
         this.preferenceFragment = new AllPrefsFragment(jumpTo);
@@ -1015,6 +1020,33 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 PreferenceManager
                         .getDefaultSharedPreferences(preference.getContext())
                         .getString(preference.getKey(), ""));
+    }
+
+    public static void applyPrefSettingRange(String pref_key, String def, Double min, Double max) { // Correct a preference glucose setting if the value is out of range
+        val notificationId = OUT_OF_RANGE_GLUCOSE_ENTRY_ID;
+        String mySettingString = Pref.getString(pref_key, def);
+        final boolean doMgdl = (Pref.getString("units", "mgdl").equals("mgdl"));
+        double mySettingMgdl = doMgdl ? tolerantParseDouble(mySettingString) : tolerantParseDouble(mySettingString) * Constants.MMOLL_TO_MGDL; // The preference value in mg/dL
+        if (mySettingMgdl > max) { // If the preference value is greater than max
+            if (!doMgdl && mySettingString.equals(def)) { // If the setting value in mmol/L is the same as the default, which is in mg/dL, we correct the value next.
+                // This will only happen if user has chosen mmol/L and updates to a version that has a new preference setting with default in mg/dL
+                UserError.Log.d(TAG, "Setting  " + pref_key + "  to default converted to mmol/L");
+                Pref.setString(pref_key, JoH.qs(tolerantParseDouble(def) * Constants.MGDL_TO_MMOLL, 1)); // Set the preference to the default value converted to mmol/L
+            } else { // The preference has been set to a value greater than the max allowed.  Let's fix it and notify.
+                // This will only happen if user has entered a preference setting value out of range before the listener range limit update has been merged.
+                mySettingString = doMgdl ? max + "" : JoH.qs(max * Constants.MGDL_TO_MMOLL, 1) + "";
+                Pref.setString(pref_key, mySettingString); // Set the preference to max
+                UserError.Log.uel(TAG, xdrip.gs(R.string.pref_was_greater_than_max, pref_key)); // Inform the user that xDrip is changing the setting value
+                showNotification(pref_key, xdrip.gs(R.string.setting_pref_to_max), null, notificationId, null, false, false, null, null, null, true);
+            }
+        } else if (mySettingMgdl < min) { // If the preference value is less than min, correct it and notify.
+            // This will only happen if user has entered a preference setting value out of range before the listener range limit update has been merged.
+            mySettingString = doMgdl ? min + "" : JoH.qs(min * Constants.MGDL_TO_MMOLL, 1) + "";
+            Pref.setString(pref_key, mySettingString); // Set the preference to min
+            UserError.Log.uel(TAG, xdrip.gs(R.string.pref_was_less_than_min, pref_key)); // Inform the user that xDrip is changing the setting value
+            showNotification(pref_key, xdrip.gs(R.string.setting_pref_to_min), null, notificationId, null, false, false, null, null, null, true);
+
+        }
     }
 
     @RequiredArgsConstructor
