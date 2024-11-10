@@ -194,8 +194,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
     private void refreshFragments() {
         refreshFragments(null);
     }
-    private static final double MIN_GLUCOSE_INPUT = 40; // The smallest acceptable input glucose value in mg/dL
-    private static final double MAX_GLUCOSE_INPUT = 400; // The largest acceptable input glucose value in mg/dL
+    public static final double MIN_GLUCOSE_INPUT = 40; // The smallest acceptable input glucose value in mg/dL
+    public static final double MAX_GLUCOSE_INPUT = 400; // The largest acceptable input glucose value in mg/dL
 
     private void refreshFragments(final String jumpTo) {
         this.preferenceFragment = new AllPrefsFragment(jumpTo);
