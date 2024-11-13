@@ -394,9 +394,7 @@ public class DiaconnP8Service extends JamBaseBluetoothService {
                 stateSubscription = new Subscription(bleDevice.observeConnectionStateChanges()
                         // .observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(Schedulers.io())
-                        .subscribe(this::onConnectionStateChange, throwable -> {
-                            UserError.Log.wtf(TAG, "Got Error from state subscription: " + throwable);
-                        }));
+                        .subscribe(this::onConnectionStateChange, throwable -> UserError.Log.wtf(TAG, "Got Error from state subscription: " + throwable)));
 
                 // Attempt to establish a connection
                 connectionSubscription = new Subscription(bleDevice.establishConnection(auto)
