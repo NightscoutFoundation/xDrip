@@ -309,7 +309,6 @@ public class DiaconnP8Service extends JamBaseBluetoothService {
         if (stateSubscription != null) {
             stateSubscription.unsubscribe();
             stateSubscription = null;
-            JoH.static_toast_short(xdrip.gs(R.string.title_diaconnp8_disconnected));
         }
 
         if(state == CLOSE) {
@@ -426,7 +425,6 @@ public class DiaconnP8Service extends JamBaseBluetoothService {
                 break;
             case CONNECTED:
                 connection_state = "Connected";
-                JoH.static_toast_short(xdrip.gs(R.string.title_diaconnp8_connected));
                 break;
             case DISCONNECTING:
                 connection_state = "Disconnecting";
@@ -561,7 +559,7 @@ public class DiaconnP8Service extends JamBaseBluetoothService {
                         int lastinjectDttm = DiaconnP8Packet.getIntToInt(byteBuffer);
                         double lastInject = DiaconnP8Packet.getShortToInt(byteBuffer) / 100.0;
                         int usbConnectStatus = DiaconnP8Packet.getByteToInt(byteBuffer);
-                        UserError.Log.d(TAG, "P8 STATUS  \nresult ==: " + result + ", insulin : " + insulin + ", battery : " + battery + ", insulinkind: " + insulinkind + " , cartridgeMaker : " + cartridgeMaker + " , lastinjectDttm: " + lastinjectDttm + " , lastInject:" + lastInject + ", usbConnectStatus : " + usbConnectStatus);
+//                        UserError.Log.d(TAG, "P8 STATUS  \nresult ==: " + result + ", insulin : " + insulin + ", battery : " + battery + ", insulinkind: " + insulinkind + " , cartridgeMaker : " + cartridgeMaker + " , lastinjectDttm: " + lastinjectDttm + " , lastInject:" + lastInject + ", usbConnectStatus : " + usbConnectStatus);
                     }
                 }
 
