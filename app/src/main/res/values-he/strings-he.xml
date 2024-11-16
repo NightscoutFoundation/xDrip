@@ -1476,6 +1476,7 @@
     <string name="progress">התקדמות</string>
     <string name="bluetooth_device">מכשיר בלוטות\':   </string>
     <string name="transmitter_battery_status">סוללת משדר:  </string>
+    <string name="database_size">גודל מסד הנתונים:  </string>
     <string name="connect_device_usb_otg">בבקשה חברו את ההתקן שלכם דרך כבל USB OTG.</string>
     <string name="connection_status">מצב החיבור:</string>
     <string name="range_in_high_low">תחום: (בתוך, גבוה, נמוך)</string>
