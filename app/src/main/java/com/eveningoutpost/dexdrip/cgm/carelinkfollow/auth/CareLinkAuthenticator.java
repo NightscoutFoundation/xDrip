@@ -73,7 +73,7 @@ public class CareLinkAuthenticator {
 
     private static final String TAG = "CareLinkAuthenticator";
 
-    protected static final String CAREPARTNER_APP_DISCO_URL = "https://clcloud.minimed.com/connect/carepartner/v6/discover/android/3.1";
+    protected static final String CAREPARTNER_APP_DISCO_URL = "https://clcloud.minimed.eu/connect/carepartner/v11/discover/android/3.2";
     protected static final String CARELINK_CONNECT_SERVER_EU = "carelink.minimed.eu";
     protected static final String CARELINK_CONNECT_SERVER_US = "carelink.minimed.com";
     protected static final String CARELINK_LANGUAGE_EN = "en";
