@@ -1502,6 +1502,7 @@
     <string name="progress">edenemine</string>
     <string name="bluetooth_device">Bluetooth seade:   </string>
     <string name="transmitter_battery_status">Saatja aku:  </string>
+    <string name="database_size">Andmebaasi maht:  </string>
     <string name="top">Üles</string>
     <string name="connect_device_usb_otg">Ühenda seade USB OTG-kaabli abil.</string>
     <string name="connection_status">Ühenduse olek:</string>
