@@ -652,7 +652,7 @@
     <string name="allow_daily_db_save">Позволява на услугата Daily Intent Service да запазва базата данни преди изтриване</string>
     <string name="options_for_extra_line">Опции за допълнителната линия</string>
     <string name="todays_average_value">Днешна средна стойност.</string>
-    <string name="ac1_estimation_dcct">Гликиран хеемоглобин в %</string>
+    <string name="ac1_estimation_dcct">Гликиран хемоглобин в (%)</string>
     <string name="ac1_estimation_ifcc">Гликиран Хемоглобин измерен в милимол/мол</string>
     <string name="percentage_in_range">Процент на стойностите в диапазона.</string>
     <string name="percentage_below_range">Процент на стойностите под диапазона.</string>
