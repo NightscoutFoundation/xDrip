@@ -1494,6 +1494,7 @@
     <string name="progress">прогрес</string>
     <string name="bluetooth_device">Bluetooth-пристрій: </string>
     <string name="transmitter_battery_status">Заряд передавача: </string>
+    <string name="database_size">Розмір бази даних:  </string>
     <string name="top">Верх</string>
     <string name="connect_device_usb_otg">Будь ласка, підключіть Ваш пристрій кабелем USB-OTG</string>
     <string name="connection_status">Стан підключення: </string>
