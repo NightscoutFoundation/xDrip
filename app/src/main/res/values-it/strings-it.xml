@@ -1502,6 +1502,7 @@
     <string name="progress">in corso</string>
     <string name="bluetooth_device">Dispositivo Bluetooth:   </string>
     <string name="transmitter_battery_status">Batteria trasmettitore:  </string>
+    <string name="database_size">Dimensione Database:  </string>
     <string name="top">Alto</string>
     <string name="connect_device_usb_otg">Collegare il dispositivo tramite cavo USB OTG.</string>
     <string name="connection_status">Stato della connessione:</string>

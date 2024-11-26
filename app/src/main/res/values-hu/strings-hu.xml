@@ -1473,6 +1473,7 @@
     <string name="plug_in_your_dexcom_reciever">Csatlakoztassa a Dexcom olvasót, nyomja meg a gombot és imádkozzon! :)</string>
     <string name="bluetooth_device">Bluetooth eszköz:   </string>
     <string name="transmitter_battery_status">Távadó töltöttsége:  </string>
+    <string name="database_size">Adatbázis mérete:  </string>
     <string name="connect_device_usb_otg">Kérjük, csatlakoztassa készülékét USB OTG kábellel.</string>
     <string name="connection_status">Kapcsolat állapota:</string>
     <string name="range_in_high_low">Tartományban: (OK/Ma/Ala)</string>

@@ -1503,6 +1503,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="progress">pokrok</string>
     <string name="bluetooth_device">Bluetooth zařízení:   </string>
     <string name="transmitter_battery_status">Baterie vysílače:  </string>
+    <string name="database_size">Velikost databáze:  </string>
     <string name="top">Nahoru</string>
     <string name="connect_device_usb_otg">Prosím připojte Vaše zařízení pomocí USB OTG kabelu.</string>
     <string name="connection_status">Stav připojení:</string>
