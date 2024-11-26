@@ -332,7 +332,11 @@ public class UiBasedCollector extends NotificationListenerService {
         try {
             val ftext = filterString(text);
             if (Unitized.usingMgDl()) {
-                mgdl = Integer.parseInt(ftext);
+                if(isValidMmol(ftext)){
+                    mgdl = (int) (Double.parseDouble(String.valueOf(ftext)) * 18);
+                }else{
+                    mgdl = Integer.parseInt(String.valueOf(ftext));
+                }
             } else {
                 if (isValidMmol(ftext)) {
                     val result = JoH.tolerantParseDouble(ftext, -1);
