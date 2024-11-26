@@ -245,6 +245,10 @@
     <string name="title_persistent_high_threshold">Threshold</string>
     <string name="the_value_must_be_between_min_and_max">The value must be between %1$s and %2$s</string>
     <string name="forecasted_low_alert">Forecasted Low Alert</string>
+    <string name="setting_pref_to_max">Set to max</string>
+    <string name="pref_was_greater_than_max">%1$s was set to a value greater than maximum allowed.  It has been changed to maximum.</string>
+    <string name="setting_pref_to_min">Set to min</string>
+    <string name="pref_was_less_than_min">%1$s was set to a value less than minimum allowed.  It has been changed to minimum.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolate data to try to predict lows</string>
     <string name="alarm_at_forecasted_low_mins">Alarm at Forecasted Low mins</string>
     <string name="other_xdrip_plus_alerts">Other xDrip+ alerts</string>
