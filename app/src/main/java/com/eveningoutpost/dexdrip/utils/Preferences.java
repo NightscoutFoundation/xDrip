@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.utils;
 
+
 import static com.eveningoutpost.dexdrip.models.JoH.showNotification;
 import static com.eveningoutpost.dexdrip.models.JoH.tolerantParseDouble;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.OUT_OF_RANGE_GLUCOSE_ENTRY_ID;
@@ -754,16 +755,21 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         }
     };
 
-    private static Preference.OnPreferenceChangeListener sBindNumericUnitizedPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() { // This listener adds glucose unit in addition to the value to the summary
+    private static Preference.OnPreferenceChangeListener sBindNumericUnitizedPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() { // This listener adds glucose unit in addition to the value to the summary and rejects out-of-range inputs
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
             String stringValue = value.toString();
             if (isNumeric(stringValue)) {
                 final boolean domgdl = Pref.getString("units", "mgdl").equals("mgdl"); // Identify which unit is chosen
+                double submissionMgdl = domgdl ? tolerantParseDouble(stringValue) : tolerantParseDouble(stringValue) * Constants.MMOLL_TO_MGDL;
+                if (submissionMgdl > MAX_GLUCOSE_INPUT || submissionMgdl < MIN_GLUCOSE_INPUT) {
+                    JoH.static_toast_long(xdrip.gs(R.string.the_value_must_be_between_min_and_max, unitsConvert2Disp(domgdl, MIN_GLUCOSE_INPUT), unitsConvert2Disp(domgdl, MAX_GLUCOSE_INPUT)));
+                    return false; // Reject input if out of range
+                }
                 preference.setSummary(stringValue + "  " + (domgdl ? "mg/dl" : "mmol/l")); // Set the summary to show the value followed by the chosen unit
-                return true;
+                return true; // Accept input as it is numeric and in range
             }
-            return false;
+            return false; // Reject input if not numeric
         }
     };
     private static Preference.OnPreferenceChangeListener sBindPreferenceTitleAppendToValueListenerUpdateChannel = new Preference.OnPreferenceChangeListener() {
@@ -1014,7 +1020,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                         .getString(preference.getKey(), ""));
     }
 
-    private static void bindPreferenceSummaryToUnitizedValueAndEnsureNumeric(Preference preference) { // Use this to show the value as well as the corresponding glucose unit as the summary
+    private static void bindPreferenceSummaryToUnitizedValueAndEnsureNumeric(Preference preference) { // Use this to show the value as well as the corresponding glucose unit as the summary, and reject out-of-range inputs
         preference.setOnPreferenceChangeListener(sBindNumericUnitizedPreferenceSummaryToValueListener);
         sBindNumericUnitizedPreferenceSummaryToValueListener.onPreferenceChange(preference,
                 PreferenceManager

@@ -243,6 +243,7 @@
     <string name="persistent_high_alert">Persistent High Alert</string>
     <string name="persistent_high_alert_enable">Enable</string>
     <string name="title_persistent_high_threshold">Threshold</string>
+    <string name="the_value_must_be_between_min_and_max">The value must be between %1$s and %2$s</string>
     <string name="forecasted_low_alert">Forecasted Low Alert</string>
     <string name="setting_pref_to_max">Set to max</string>
     <string name="pref_was_greater_than_max">%1$s was set to a value greater than maximum allowed.  It has been changed to maximum.</string>
@@ -1552,6 +1553,7 @@
     <string name="progress">progress</string>
     <string name="bluetooth_device">Bluetooth Device:   </string>
     <string name="transmitter_battery_status">Transmitter Battery:  </string>
+    <string name="database_size">Database Size:  </string>
     <string name="top">Top</string>
     <string name="connect_device_usb_otg">Please connect your device via USB OTG cable.</string>
     <string name="connection_status">Connection Status:</string>
