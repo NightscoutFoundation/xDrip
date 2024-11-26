@@ -1,5 +1,8 @@
 package com.eveningoutpost.dexdrip.utilitymodels;
 
+import static com.eveningoutpost.dexdrip.utils.Preferences.MAX_GLUCOSE_INPUT;
+import static com.eveningoutpost.dexdrip.utils.Preferences.MIN_GLUCOSE_INPUT;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -20,6 +23,7 @@ import com.eveningoutpost.dexdrip.models.Prediction;
 import com.eveningoutpost.dexdrip.models.UserNotification;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
+import com.eveningoutpost.dexdrip.utils.Preferences;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -60,6 +64,7 @@ public class IdempotentMigrations {
         IncompatibleApps.notifyAboutIncompatibleApps();
         CompatibleApps.notifyAboutCompatibleApps();
         legacySettingsMoveLanguageFromNoToNb();
+        prefSettingRangeVerification();
 
     }
 
@@ -160,4 +165,11 @@ public class IdempotentMigrations {
         Pref.setString("forced_language", "nb");
         }
     }
+
+    // Correct preference setting values if the values are out of range.
+    // Include new preference settings here that represent glucose values.
+    private static void prefSettingRangeVerification() {
+        Preferences.applyPrefSettingRange("persistent_high_threshold", "170", MIN_GLUCOSE_INPUT, MAX_GLUCOSE_INPUT);
+    }
+
 }
