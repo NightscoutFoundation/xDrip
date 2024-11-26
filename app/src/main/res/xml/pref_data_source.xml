@@ -387,8 +387,8 @@
                     android:dependency="ob1_minimize_scanning"
                     android:enabled="true"
                     android:key="ob1_avoid_scanning"
-                    android:summary="Avoid scanning as much as possible (reduces battery usage further)"
-                    android:title="Avoid Scanning" />
+                    android:summary="@string/summary_ob1_avoid_scanning"
+                    android:title="@string/title_ob1_avoid_scanning" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="using_g6"
