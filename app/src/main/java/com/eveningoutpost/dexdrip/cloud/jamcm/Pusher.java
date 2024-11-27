@@ -121,7 +121,7 @@ public class Pusher {
     }
 
     public static boolean enabled() {
-        return Pref.getBoolean("use_xdrip_cloud_sync", false);
+        return Pref.getBoolean("use_xdrip_cloud_sync", true);
     }
 
     public static boolean connected() {
