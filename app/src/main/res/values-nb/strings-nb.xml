@@ -225,7 +225,12 @@
     <string name="persistent_high_alert">Vedvarende høy varsel</string>
     <string name="persistent_high_alert_enable">Aktiver</string>
     <string name="title_persistent_high_threshold">Terskel</string>
+    <string name="the_value_must_be_between_min_and_max">Verdien må være mellom %1$s og %2$s</string>
     <string name="forecasted_low_alert">Beregnet lav varsel</string>
+    <string name="setting_pref_to_max">Sett til maksimum</string>
+    <string name="pref_was_greater_than_max">%1$s ble satt til en verdi større enn maksimalt tillatt. Den har blitt endret til maksimum.</string>
+    <string name="setting_pref_to_min">Sett til minimum</string>
+    <string name="pref_was_less_than_min">%1$s ble satt til en verdi mindre enn minste tillatt. Den har blitt endret til minimum.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Ekstrapoler data for å prøve og beregne lave verdier</string>
     <string name="alarm_at_forecasted_low_mins">Grense i antall minutter før varsel går av</string>
     <string name="other_xdrip_plus_alerts">Andre xDrip+ varsler</string>
