@@ -37,6 +37,10 @@
     <string name="pref_header_cloud_storage">Felhőalapú tárhely</string>
     <string name="auto_configure_title">Beállítások átvétele</string>
     <string name="prefs_auto_config_summary">Automatikus beállítás QR-kóddal.</string>
+    <string name="auto_config_cam_title">Kamerával</string>
+    <string name="auto_config_cam_summary">Szkennelje be a QR kódot (ajánlott!!)</string>
+    <string name="auto_config_image_title">Kép fájllal</string>
+    <string name="auto_config_image_summary">A QR kód képfájlban (pl. png vagy jpg) mentett változatát is olvassa be.</string>
     <string name="scan_share2_barcode">QR-kód beolvasása</string>
     <string name="pref_share2_scan_barcode_summary">Vagy szkennelje be a QR-kódot a vevőn</string>
     <!-- MongoDB Settings -->
@@ -56,8 +60,8 @@
     <string name="pref_title_api">Nightscout Sync (REST-API)</string>
     <string name="pref_title_api_enabled">Bekapcsolva</string>
     <string name="pref_summary_api_enabled">A REST-API standard kapcsolódási mód a Nightscout-hoz</string>
-    <string name="pref_title_api_url">Alap URL</string>
-    <string name="pref_dialog_api_url">Adja meg az alap API URL-t</string>
+    <string name="pref_title_api_url">Nightscout oldal címe és jelszava</string>
+    <string name="pref_dialog_api_url">Adja meg a címet és jelszavát</string>
     <string name="pref_message_api_url">Ez csak az alap URL, a feltöltő automatikusan hozzáilleszti a a POST bejegyzéseit. A szerveren levő API_SECRET értéke meg kell egyezzen a yourpassphrase-zel.</string>
     <string name="pref_default_api_url">https://yourpassphrase@{YOUR-SITE}.azurewebsites.net/api/v1/</string>
     <!-- wifi Settings -->
@@ -115,6 +119,7 @@
     <string name="title_activity_update">Új xDrip verzió érhető el</string>
     <string name="title_activity_display_qrcode">Beállítások megosztása QR kóddal</string>
     <string name="title_activity_send_feed_back">Üzenet a fejlesztőnek (Jamorham)</string>
+    <string name="title_activity_save_logs">Napló mentése</string>
     <string name="title_activity_maps">Parakeet térkép</string>
     <string name="title_activity_display_preferences">Beállítások mutatása</string>
     <string name="export_submenu">Import/Export funkciók</string>
@@ -216,6 +221,8 @@
     <string name="other_alerts">További riasztások</string>
     <string name="extra_alerts_xdrip_plus">További riasztások (xDrip+)</string>
     <string name="persistent_high_alert">Folyamatos magas érték</string>
+    <string name="persistent_high_alert_enable">Bekapcsol</string>
+    <string name="title_persistent_high_threshold">Határérték</string>
     <string name="forecasted_low_alert">Riasztás várható hypora</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Megpróbálja kiszámolni az esetleges hypot</string>
     <string name="alarm_at_forecasted_low_mins">Riasztás várható hypo előtt X perccel</string>
@@ -294,7 +301,7 @@
     <string name="alert_volume_profile">Riasztáshang beállítása</string>
     <string name="smart_alerting">Okos riasztás</string>
     <string name="dont_alarm_during_phone_calls">Nincs riasztás telefonálás közben</string>
-    <string name="start_snoozed">Szundizva indítás</string>
+    <string name="start_snoozed">Késleltetés</string>
     <string name="adjust_all_by_a_factor">Általános tényezővel beállítás</string>
     <string name="reset">Visszaállítás</string>
     <string name="pebble_and_android_wear_options">Beállítások okosórákhoz</string>
@@ -382,8 +389,8 @@
     <string name="choose_stable_beta_or_alpha_releases">Stabli, béta vagy alfa verziók választása</string>
     <string name="web_feedback_form_for_sending_messages">Üzenet és app értékelés küldése az xDrip fejlesztőjének</string>
     <string name="be_master_for_followers">Master-ként beállítás</string>
-    <string name="this_device_will_send_data_to_followers">Ez a készülék fog adatot küldeni a követőknek</string>
-    <string name="send_parakeet_map_location_to_followers">Parakeet helyadatok küldése követőknek</string>
+    <string name="this_device_will_send_data_to_followers">Ez a készülék fog adatot küldeni a Követőknek</string>
+    <string name="send_parakeet_map_location_to_followers">Parakeet helyadatok küldése Követőknek</string>
     <string name="sync_parakeet_geolocation">Parakeet helyadatok megosztása</string>
     <string name="disable_all_sync_features">Minden szinkronizáció szüneteltetése</string>
     <string name="temporary_work_around_disable_all_sync_detail">Ideiglenes intézkedésként minden szinkronizáció leállítása. A visszaállítás után a telefon újraindítása szükséges lehet. Figyelmesen használja!</string>
@@ -392,7 +399,9 @@
     <string name="please_enter_your_question_or_comments_here">Itt írja meg a kérdését, észrevételét.\n\nAdja meg az e-mail címét, hogy válaszolhassunk.\n\n</string>
     <string name="optional_contact_info_here_eg_email">Adja meg az elérhetőségét, pl. e-mail címét</string>
     <string name="send_message">Üzenet küldése</string>
+    <string name="save_logs">Napló mentése</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Kérem értékelje az alkalmazást</string>
+    <string name="log_confidential_note">Figyelem!\nA naplófájl személyes adatokat (pl. felhasználónév és jelszó) tartalmazhat.</string>
     <string name="preferences_saved_in_sdcard_downloads">Beállítások mentve: sdcard Download könyvtárba</string>
     <string name="could_not_write_to_sdcard_check_perms">Hiba az SD-kártya írásakor - ellenőrizze az engedélyeket</string>
     <string name="loaded_preferences_restarting">Beállítások betöltve! - Újraindítás</string>
@@ -721,8 +730,8 @@
     <string name="password">Jelszó</string>
     <string name="upload_to_dexcom">Engedélyezze a Dexcom szerverekre feltöltéshez</string>
     <string name="upload_to_dexcom_share">VC-értékek feltöltése</string>
-    <string name="accounts_outside_usa">Leállítva = a felhasználói profilja és a követő app-ok az USA-n kívüliek</string>
-    <string name="accounts_inside_usa">Engedélyezve = a felhasználói profilja és a követő app-ok az USA-n belüliek</string>
+    <string name="accounts_outside_usa">Leállítva = a felhasználói profilja és a Követő app-ok az USA-n kívüliek</string>
+    <string name="accounts_inside_usa">Engedélyezve = a felhasználói profilja és a Követő app-ok az USA-n belüliek</string>
     <string name="usa_based_account">Dexcom USA felhasználó</string>
     <string name="dexcom_login">Az Ön felhasználóneve a Dexcom oldalán</string>
     <string name="dexcom_user">Dexcom felhasználói fiók neve</string>
@@ -780,7 +789,7 @@
     <string name="collector_battery_alerts">Kollektor akku riasztás</string>
     <string name="low_battery_percentage">Alacsony akku töltöttségi szint (%)</string>
     <string name="notify_data_arrives_master"><![CDATA[Jelzés, ha legalább 20 p kihagyás után adat érkezik a Master-ről.]]></string>
-    <string name="follower_chime_new">Új adat a követőn jelzés</string>
+    <string name="follower_chime_new">Új adatról jelzés a Követőn</string>
     <string name="carb_ratio">Szénhidrát arány</string>
     <string name="enable_dedicated_insulin_profiles">Inzulin profilok</string>
     <string name="desc_enable_dedicated_insulin_profiles">Itt tudja kiválasztani vagy beállítani az inzulin profilokat</string>
@@ -833,8 +842,8 @@
     <string name="log_and_plot_motion">Mozgások követése és mutatása</string>
     <string name="use_remote_motion_data">A mozgásadatok a követett eszköz és nem mobil saját adatai alapján</string>
     <string name="use_remote_motion">Távoli mozgáskövetés</string>
-    <string name="be_motion_master">Legyen a mozgásadatok Master-eként beállítva, még ha a készülék követő is. Csak egyetlen készülékre állítható ez be!</string>
-    <string name="act_as_motion_master">Masterként mozgáskövetésben</string>
+    <string name="be_motion_master">Legyen a mozgásadatok Master-eként beállítva, még ha a készülék Követő is. Csak egyetlen készülékre állítható ez be!</string>
+    <string name="act_as_motion_master">Master-ként mozgáskövetésben</string>
     <string name="vehicle_motion_extras">Aktiválja az extra funkciókat, jármű észlelése esetén</string>
     <string name="enable_vehicle_mode">Jármű mód bekapcsolása</string>
     <string name="increase_low_alarms_vehicle_mode">Már magasabb érték esetén bekapcsolja az alacsonyérték riasztást jármű módban</string>
@@ -1266,9 +1275,9 @@
     <string name="title_medtrum_use_native">Medtrum natív</string>
     <string name="summary_medtrum_a_hex">Hex-diagnosztikai teszt értéke</string>
     <string name="title_medtrum_a_hex">Medtrum hibakeresés</string>
-    <string name="summary_nsfollow_url">Követő web címe</string>
-    <string name="title_nsfollow_url">Nightscout követő URL</string>
-    <string name="summary_nsfollow_download_treatments">A kezeléseket is töltse le Nightscout követőként</string>
+    <string name="summary_nsfollow_url">Követendő Nighscout web címe</string>
+    <string name="title_nsfollow_url">Nightscout URL</string>
+    <string name="summary_nsfollow_download_treatments">A Követő a kezeléseket is töltse le Nightscout-ból</string>
     <string name="title_nsfollow_download_treatments">Kezelések letöltése</string>
     <string name="title_nsfollow_lag">Nightscout követő késleltetés</string>
     <!-- Maybe we can use them later?
@@ -1381,6 +1390,7 @@
     <string name="summary_plus_accept_follower_actions">Kezelések és kalibrációk engedélyezése a követőktől</string>
     <string name="title_plus_accept_follower_actions">Követőről vezérlés engedélyezése</string>
     <string name="summary_plus_whole_house"> A telefon Whole-House-ban résztvevő</string>
+    <string name="summary_plus_xdrip_cloud">xDrip felhő használata. A Master-nél és a Követőnél ugyanennek a beállításnak kell lennie.</string>
     <string name="title_plus_whole_house">Whole-House (RPi rendszer)</string>
     <string name="summary_libre_whole_house_collector">A telefon Whole-House-ban kollektor</string>
     <string name="title_libre_whole_house_collector">Libre Whole House</string>
@@ -1389,7 +1399,7 @@
     <string name="summary_desert_sync_enabled">Szinkronizáció hotspot-on keresztül</string>
     <string name="title_desert_sync_enabled">Száraz szinkronizáció</string>
     <string name="title_desert_sync_master_ip">Master készülék IP címe</string>
-    <string name="summary_send_sync_show_qr">QR-kód a követők automatikus beállításához</string>
+    <string name="summary_send_sync_show_qr">QR-kód a Követők automatikus beállításához</string>
     <string name="title_send_sync_show_qr">QR kód mutatása</string>
     <string name="summary_desert_use_https">Magasabb szintű biztonság használata (pl. nyilvános WIFI esetén)</string>
     <string name="title_desert_use_https">HTTPS használata</string>
@@ -1420,13 +1430,18 @@
     <string name="summary_notification_channels_grouping">Nem használható egyszerre a \"Tételek száma az értesítési sávban\" funkcióval</string>
     <string name="title_notification_channels_grouping">Értesítések csoportosítása</string>
     <string name="summary_delay_ascending_3min">Növekvő hangerő esetén késlelteti a riasztási hangjelzés kezdetét 3 perccel. A rezgés (ha engedélyezve van) ettől a beállítástól függetlenül a riasztással elindul.</string>
+    <string name="title_ascending_volume">Emelkedő hangerő beállítások</string>
     <string name="title_delay_ascending_3min">Növekvő hangerő késleltetése</string>
+    <string name="summary_ascending_volume_to_medium">Ha bekapcsolja, a hangerő a maximális hangerő helyett a közepes hangerőig emelkedik</string>
+    <string name="title_ascending_volume_to_medium">Közepesig emelkedjen</string>
     <string name="summary_play_sound_for_initial_calibration">Hangjelzés figyelmeztessen az indító kalibrációra</string>
     <string name="title_play_sound_for_initial_calibration">Indító kalibráció</string>
     <string name="category_noisy_readings">Zajos értékek</string>
     <string name="category_falling_rising_bg">VC-érték esés/emelkedés</string>
     <string name="category_alert_prefs">Beállítások fenti riasztásokra</string>
     <string name="summary_persistent_high_alert">Ha magas érték felett van sokáig és nem tart lefelé</string>
+    <string name="summary_persistent_high_threshold_link">Bekapcsolva a Magas érték a hatérték..\nKikapcsolva, a határérték az alábbi.</string>
+    <string name="title_persistent_high_threshold_link">Határérték: Magas érték</string>
     <string name="note_search_button">KERESÉS</string>
     <string name="all_note_button">MIND</string>
     <string name="title_full_screen_mode">Teljes képernyős mód</string>
@@ -1458,6 +1473,7 @@
     <string name="plug_in_your_dexcom_reciever">Csatlakoztassa a Dexcom olvasót, nyomja meg a gombot és imádkozzon! :)</string>
     <string name="bluetooth_device">Bluetooth eszköz:   </string>
     <string name="transmitter_battery_status">Távadó töltöttsége:  </string>
+    <string name="database_size">Adatbázis mérete:  </string>
     <string name="connect_device_usb_otg">Kérjük, csatlakoztassa készülékét USB OTG kábellel.</string>
     <string name="connection_status">Kapcsolat állapota:</string>
     <string name="range_in_high_low">Tartományban: (OK/Ma/Ala)</string>
@@ -1516,7 +1532,7 @@
     <string name="confirm_delete">Törlés megerősítése</string>
     <string name="are_you_sure_you_want_to_delete_this_treatment">Biztosan törölni akarja ezt a kezelési jegyzetet?</string>
     <string name="no_data_received_from_master_yet">Még nem érkezett adat a Master-től</string>
-    <string name="last_from_master_">Utolsó a mastertől: </string>
+    <string name="last_from_master_">Utolsó a Mastertől: </string>
     <string name="prepare_to_test">Felkészülni a tesztre!</string>
     <string name="after_you_click_ok_look_for_a_number_icon_in_the_notification_area_if_you_see_123_then_the_test_has_succeeded__on_some_phones_this_test_will_crash_the_phone__after_30_seconds_we_will_shut_off_the_notification_if_your_phone_does_not_recover_after_this_then_hold_the_power_button_to_reboot_it">Az OK-ra nyomás után ellenőrizze az értesítési mezőt.\nSikeres a teszt, ha látja az 123-at.\n\nEgyes készülékeken rendszerösszeomlást okozhat.\n\n30 másodperc után az értesítés kikapcsol. Ha a készülék lefagy, a ki-be kapcsoló gomb folyamatos nyomva tartásával indítsa újra.</string>
     <string name="running_test_with_number_123">Tesztelés ezzel a számmal: 123</string>
@@ -1676,9 +1692,11 @@
     <string name="proceed">Folytatás</string>
     <string name="special_pairing_workaround">Eljárás speciális párosításhoz</string>
     <string name="save_power">Akkukímélés</string>
+    <string name="use_xdrip_cloud">xDrip felhő használata</string>
     <string name="reduce_battery_and_network_overhead">Az akkumulátor- és hálózati terhelés csökkentése batch programozással és a felesleges adatok kizárásával</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">A grafikon egyszerűsítése a kiugró értékek elsimításával</string>
     <string name="graph_smoothing">Grafikon simítása</string>
+    <string name="enable_graph_smoothing">Bekapcsol</string>
     <string name="last_reading">Utolsó leolvasás</string>
     <string name="select_file_for_alert">Válassza ki a riasztás fájlját</string>
     <string name="cannot_choose_file_without_permission">Tárhelyengedély nélkül nem nyithat meg fájlokat</string>
@@ -1729,6 +1747,7 @@
     <string name="drive_permission_blurb">Az automatikus biztonsági mentéshez az xDrip-nek engedélyre van szüksége a Google Drive használatához.\n\nAz xDrip fejlesztői nem férhetnek hozzá a fájljaihoz, és nem láthatják a személyes adatait.</string>
     <string name="cloud_backup">Biztonsági mentés felhőbe</string>
     <string name="restoring_backup_will_erase_warning">A visszaállítás lecseréli a készüléken levő beállításokat a mentettekre.\n\nBiztos, hogy ezt szeretné?</string>
+    <string name="you_cannot_undo_delete_alert">A döntés nem visszafordítható!\n\nBiztos, hogy törölni akarja a riasztást?</string>
     <string name="this_backup_looks_like_came_from_different_format_string">Ez a mentés egy másik készülékről való:\n%s\nBiztos, hogy a visszaállítását választja?</string>
     <string name="megabyte_format_string">%.1f MB</string>
     <string name="manual_selection_google_drive_file_warning">Kiválasztott egy fájlt a Google Drive-ról, de ezt nem kezeli automatikusan az xDrip, így csak manuális biztonsági mentéshez és visszaállításhoz használható.\n\nNem történik automatikus biztonsági mentés ezzel a fájllal.\n\nFolytatja?</string>
@@ -1748,6 +1767,7 @@
     <string name="summary_ymax">Állítsa be yMax értékét, amelynél nagyobbat nem mutat a grafikon.</string>
     <string name="wait_to_connect">Beállítások megerősítése és várakozás a kapcsolatfelvételre.</string>
     <string name="summary_sens_expiry_notify">Értesítés szenzor lejárata előtt.</string>
+    <string name="title_sens_expiry">Értesítő szenzor lejáratáról</string>
     <string name="title_sens_expiry_notify">Szenzor lejár</string>
     <string name="close">Bezárás</string>
     <string name="title_advanced_settings_4_Lib2">Libre 2 szenzor további beállításai</string>
@@ -1762,7 +1782,7 @@
     <string name="send_data_to_health_connect">Adatok küldése Health Connect-hez</string>
     <string name="get_data_from_health_connect">Adatok letöltése Health Connect-ből</string>
     <string name="requires_android_8_and_google_companion_application_or_android_14">Legalább Android 8+ és Google companion app vagy Android 14+ szükséges</string>
-    <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Adatk küldése és letöltése a Google Health Connect és Google Fit alkalmazásokból</string>
+    <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Adatok küldése és letöltése a Google Health Connect és Google Fit alkalmazásokból</string>
     <string name="google_health_connect">Google Health Connect</string>
     <string name="google_health_connect_needs_perms">HIBA: A Health engedélyeket kér! - próbálja meg a beállítokban megint</string>
     <string name="carelink_auth_country_required">Ország kötelező!</string>
@@ -1777,5 +1797,16 @@
     <string name="carelink_credential_status_access_expired">Hozzáférés lejárt! Meg fogja újítani!</string>
     <string name="carelink_credential_status_refresh_expired">Belépés lejárt! Jelentkezzen be!</string>
     <string name="data_source">Adatforrás:</string>
+    <string name="insulin_pens">Inzulinadagoló tollak</string>
     <string name="reraise_alerts_before_snooze_time">Riasztás ismétlése szundi alatt</string>
+    <string name="audio_focus">Riasztás hangjának előtérbe helyezése</string>
+    <string name="audio_focus_summary">Állítsa be, mi történjen a többi hanggal (app-ok és android) riasztás közben</string>
+    <string name="audio_focus_dont_adjust_other_app_sounds">Hangok változatlanul szólnak</string>
+    <string name="audio_focus_lower_volume_of_other_apps">Hangerő csökkentése</string>
+    <string name="audio_focus_pause_other_apps_playing_audio">Hanglejátszás megállítása app-okon</string>
+    <string name="audio_focus_pause_all_other_sounds">Minden hanglejátszás szüneteltetése</string>
+    <string name="use_camera_light">Kamera vakujának használata</string>
+    <string name="use_camera_light_summary">Ha a készülék töltőn van, a kamera vakuja világít riasztáskor</string>
+    <string name="g7_should_start_automatically">G7 automatikusan indul</string>
+    <string name="screenshot">Képernyőmentés</string>
 </resources>

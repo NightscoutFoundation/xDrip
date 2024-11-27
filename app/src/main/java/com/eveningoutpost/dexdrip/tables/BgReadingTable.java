@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
+
 import androidx.drawerlayout.widget.DrawerLayout;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,13 +21,18 @@ import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.NavigationDrawerFragment;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import static com.eveningoutpost.dexdrip.xdrip.gs;
+
+import lombok.val;
 
 
 public class BgReadingTable extends BaseListActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -55,9 +62,39 @@ public class BgReadingTable extends BaseListActivity implements NavigationDrawer
 
     private void getData() {
         final List<BgReading> latest = BgReading.latest(5000);
-        ListAdapter adapter = new BgReadingAdapter(this, latest);
+        try {
+            parseDataForStats(latest);
+            ListAdapter adapter = new BgReadingAdapter(this, latest);
+            this.setListAdapter(adapter);
+            if (total > 0) {
+                this.getActionBar().setSubtitle(String.format(Locale.getDefault(), "%d in 24h, bf:%d%% mis:%d", total, ((backfilled * 100) / total), missing));
+            }
+        } catch (NullPointerException e) {
+            //
+        }
+    }
 
-        this.setListAdapter(adapter);
+    private int missing;
+    private int backfilled;
+    private int total;
+
+    private void parseDataForStats(List<BgReading> list) {
+        long cutoff = JoH.tsl() - Constants.DAY_IN_MS;
+        long oldest = 0;
+        for (val item : list) {
+            if (item.timestamp < cutoff) break;
+            oldest = item.timestamp;
+            total++;
+            if (item.source_info != null && item.source_info.contains("Backfill")) {
+                backfilled++;
+            }
+        }
+
+        if (total > 0) {
+            val expectedReadings = (JoH.tsl() - oldest) / DexCollectionType.getCurrentSamplePeriod();
+            missing = (int) (expectedReadings - total);
+        }
+
     }
 
     public static class BgReadingCursorAdapterViewHolder {
@@ -75,12 +112,12 @@ public class BgReadingTable extends BaseListActivity implements NavigationDrawer
     }
 
     public static class BgReadingAdapter extends BaseAdapter {
-        private final Context         context;
+        private final Context context;
         private final List<BgReading> readings;
 
         public BgReadingAdapter(Context context, List<BgReading> readings) {
             this.context = context;
-            if(readings == null)
+            if (readings == null)
                 readings = new ArrayList<>();
 
             this.readings = readings;
@@ -119,19 +156,21 @@ public class BgReadingTable extends BaseListActivity implements NavigationDrawer
                     DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            switch (which){
+                            switch (which) {
                                 case DialogInterface.BUTTON_POSITIVE:
                                     bgReading.ignoreForStats = true;
                                     bgReading.save();
                                     notifyDataSetChanged();
-                                    if (Pref.getBooleanDefaultFalse("wear_sync")) BgReading.pushBgReadingSyncToWatch(bgReading, false);
+                                    if (Pref.getBooleanDefaultFalse("wear_sync"))
+                                        BgReading.pushBgReadingSyncToWatch(bgReading, false);
                                     break;
 
                                 case DialogInterface.BUTTON_NEGATIVE:
                                     bgReading.ignoreForStats = false;
                                     bgReading.save();
                                     notifyDataSetChanged();
-                                    if (Pref.getBooleanDefaultFalse("wear_sync")) BgReading.pushBgReadingSyncToWatch(bgReading, false);
+                                    if (Pref.getBooleanDefaultFalse("wear_sync"))
+                                        BgReading.pushBgReadingSyncToWatch(bgReading, false);
                                     break;
                             }
                         }

@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.MediaType;
@@ -33,6 +34,7 @@ import okio.GzipSink;
 import okio.Okio;
 
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
+import static com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry.isNative;
 
 import androidx.appcompat.app.AlertDialog;
 
@@ -54,7 +56,7 @@ public class SendFeedBack extends BaseAppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_feed_back);
-        send_url = getString(R.string.wserviceurl) + "/joh-feedback";
+        send_url = getString(isNative() ? R.string.qserviceurl : R.string.wserviceurl) + "/joh-feedback";
 
         myrating = (RatingBar) findViewById(R.id.ratingBar);
         ratingtext = (TextView) findViewById(R.id.ratingtext);
@@ -76,7 +78,7 @@ public class SendFeedBack extends BaseAppCompatActivity {
                 final String str2 = bundle.getString("generic_text");
                 if (str2 != null) {
                     log_data = str2;
-                    ((EditText) findViewById(R.id.yourText)).setText(log_data.length() > 300 ? "\n\nPlease describe what you think these logs may show? Explain the problem if there is one.\n\nAttached " + log_data.length() + " characters of log data. (hidden)\n\n" : log_data);
+                    ((EditText) findViewById(R.id.yourText)).setText(log_data.length() > 300 ? "\n\nPlease describe what you think these logs may show. Explain the problem if there is one.\n\nAttached " + log_data.length() + " characters of log data. (hidden)\n\n" : log_data);
                     type_of_message = "Log Push";
                     myrating.setVisibility(View.GONE);
                     ratingtext.setVisibility(View.GONE);
@@ -175,7 +177,7 @@ public class SendFeedBack extends BaseAppCompatActivity {
         try {
             final RequestBody formBody = new FormEncodingBuilder()
                     .add("contact", contact.getText().toString())
-                    .add("body", JoH.getDeviceDetails() + "\n" + JoH.getVersionDetails() + "\n" + getBestCollectorHardwareName() + "\n===\n\n" + yourtext.getText().toString() + " \n\n===\nType: " + type_of_message + "\nLog data:\n\n" + log_data + "\n\n\nSent: " + JoH.dateTimeText(JoH.tsl()))
+                    .add("body",yourtext.getText().toString() + " \n\n===\nType: " + type_of_message + "\nLog data:\n\n" + log_data)  // Adding "Your text" and type to the log
                     .add("rating", String.valueOf(myrating.getRating()))
                     .add("type", type_of_message)
                     .build();

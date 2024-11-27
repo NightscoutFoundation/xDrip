@@ -218,6 +218,7 @@
     <string name="other_alerts">Weitere Benachrichtigungen</string>
     <string name="extra_alerts_xdrip_plus">Weitere Warnungen (xDrip+)</string>
     <string name="persistent_high_alert">Dauerhafter Hoch-Alarm</string>
+    <string name="persistent_high_alert_enable">Aktivieren</string>
     <string name="forecasted_low_alert">Vorhergesagter Niedrig-Alarm</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolation, um niedrige Werte vorherzusagen</string>
     <string name="alarm_at_forecasted_low_mins">Alarm bei vorhergesagten Niedrig-Werten (in Minuten)</string>
@@ -1727,6 +1728,7 @@
     <string name="reduce_battery_and_network_overhead">Reduziere den Akkuverbrauch und die Netzwerkbelastung durch Stapelverarbeitung und den Ausschluss unnötiger Daten</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Vereinfache die grafische Darstellung durch das Glätten von Unregelmäßigkeiten</string>
     <string name="graph_smoothing">Glättung der grafischen Darstellung</string>
+    <string name="enable_graph_smoothing">Aktivieren</string>
     <string name="last_reading">Letzte Werte</string>
     <string name="select_file_for_alert">Datei für Alarm wählen</string>
     <string name="cannot_choose_file_without_permission">Kann Datei nicht auswählen ohne Speichermedium-Berechtigungen</string>

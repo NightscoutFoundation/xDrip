@@ -37,6 +37,10 @@
     <string name="pref_header_cloud_storage">Pilvesalvestus</string>
     <string name="auto_configure_title">Automaatne seadistamine</string>
     <string name="prefs_auto_config_summary">Automaatne seadistamine kasutades triipkoodi.</string>
+    <string name="auto_config_cam_title">Kaamera</string>
+    <string name="auto_config_cam_summary">Skaneeri oma telefoniga QR-kood (soovitatav)</string>
+    <string name="auto_config_image_title">Pildifail</string>
+    <string name="auto_config_image_summary">Saad salvestada QR-koodi pildifailina (nt .png või .jpeg) oma telefoni. Siis kasuta seda valikut, et salvestatud failist QR-kood skaneerida.</string>
     <string name="scan_share2_barcode">Skaneeri jagatud triipkoodi</string>
     <string name="pref_share2_scan_barcode_summary">Või skaneeri triipkoodi jagajalt</string>
     <!-- MongoDB Settings -->
@@ -115,6 +119,7 @@
     <string name="title_activity_update">xDrip+ uuendus saadaval</string>
     <string name="title_activity_display_qrcode">Jaga seadeid QR koodiga</string>
     <string name="title_activity_send_feed_back">Saada tagasisidet</string>
+    <string name="title_activity_save_logs">Salvesta logid</string>
     <string name="title_activity_maps">Parakeet kaart</string>
     <string name="title_activity_display_preferences">Ekraani seaded</string>
     <string name="export_submenu">Impordi / ekspordi valikud</string>
@@ -218,6 +223,8 @@
     <string name="other_alerts">Muud alarmid</string>
     <string name="extra_alerts_xdrip_plus">Lisaalarmid (xDrip+)</string>
     <string name="persistent_high_alert">Püsiva kõrge alarm</string>
+    <string name="persistent_high_alert_enable">Luba</string>
+    <string name="title_persistent_high_threshold">Piirmäär</string>
     <string name="forecasted_low_alert">Prognoositav madal alarm</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Ekstrapoleeri andmeid, et ennustada madalate suhkrute tekkimist</string>
     <string name="alarm_at_forecasted_low_mins">Alarm prognoositud madalal mins</string>
@@ -287,8 +294,8 @@
     <string name="use_excessive_wakelocks">Kasuta ülemääraseid wakelocke</string>
     <string name="speak_readings">Loe väärtused valjult ette</string>
     <string name="extra_status_line">Täiendav olekurida</string>
-    <string name="dexcom_share_server_upload">Dexcom Share serveri üleslaadimine</string>
-    <string name="upload_data_to_dex_servers">Lae andmed Dexcomi serveritesse, et saaksite kasutada oma andmeid Dexcomi rakendustega</string>
+    <string name="dexcom_share_server_upload">Dex Share</string>
+    <string name="upload_data_to_dex_servers">Lae andmed Dex Share serveritesse</string>
     <string name="manage_followers">Halda jälgijaid</string>
     <string name="manage_existing_followers">Halda olemasolevaid jälgijaid ja kutsu uusi.</string>
     <string name="invite_follower">Kutsu uus jälgija</string>
@@ -394,7 +401,9 @@
     <string name="please_enter_your_question_or_comments_here">Palun sisesta oma küsimused või kommentaarid siia.\n\nKui lisad meiliaadressi, võid isegi saada vastuse.\n\n</string>
     <string name="optional_contact_info_here_eg_email">Valikuline kontaktinfo siia, nt. e-mail</string>
     <string name="send_message">Saada sõnum</string>
+    <string name="save_logs">Salvesta logid</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Palun anna teada, mis sa äpist üldiselt arvad</string>
+    <string name="log_confidential_note">Hoiatus!\nLogid võivad sisaldada konfidentsiaalset teavet, näiteks paroole või kasutajatunnuseid.</string>
     <string name="preferences_saved_in_sdcard_downloads">Eelistused on salvestatud sisemisse salvestusruumi/allalaadimiste kausta</string>
     <string name="could_not_write_to_sdcard_check_perms">SD kaardile ei saa kirjutada, kontrolli õigusi?</string>
     <string name="loaded_preferences_restarting">Seaded laaditud! - Taaskäivitus</string>
@@ -593,7 +602,7 @@
     <string name="short_speak_readings_shortcut">Näita menüüs ☰ otseteed, et lülitada andmete ettelugemine sisse</string>
     <string name="speak_readings_shortcut">Andmete ütlemise otsetee</string>
     <string name="battery_optimization_off">Alates Android 6 veenduge, et aku optimeerimine oleks välja lülitatud (soovitatav).</string>
-    <string name="battery_optimization_on">Ära enam küsi aku säästerežiimi kohta (pole soovitatav).</string>
+    <string name="battery_optimization_on">Ära küsi pidevalt aku optimeerimise kohta kui see on lubatud (pole soovitatav).</string>
     <string name="battery_optimization_prompt">Aku optimeerimise otsetee</string>
     <string name="advanced_bluetooth_settings">Bluetoothi täpsemad sätted</string>
     <string name="bluetooth_settings">Bluetoothi seaded</string>
@@ -601,7 +610,7 @@
     <string name="turn_bluetooth_on">Lülitage Bluetooth sisse</string>
     <string name="reset_bluetooth">Taaskäivita Bluetooth sisse-välja lülitades, kui 20 min jooksul andmeid ei saa</string>
     <string name="bluetooth_watchdog">Bluetoothi jälgija</string>
-    <string name="reset_bluetooth_g5">Lähtesta Bluetooth sisse-välja lülitades, et hoida G5 andmeallikas töös. Ilma selleta võib G5 vastuvõtja üles öelda.</string>
+    <string name="reset_bluetooth_g5">Lähtesta Bluetooth, lülitades seda välja ja sisse, et andmeallikat töös hoida. Ilma selleta võib vastuvõtja töö seiskuda.</string>
     <string name="g5_bluetooth_watchdog">Dex Bluetooth jälgija</string>
     <string name="close_gatt">Kui bluetoothi jälgija aktiveerub tihti, võite proovida selle valiku tühistada, et näha kas see aitab</string>
     <string name="older_bluetooth_wakelocks">Vanemad Bluetooth wakelockid, mis võivad akut rohkem kulutada, aga võivad olla vajalikud bluetooth-vastuvõtuks</string>
@@ -655,7 +664,7 @@
     <string name="show_total_insulin">Näita insuliini kogust kokku</string>
     <string name="total_insulin">Insuliini kokku</string>
     <string name="received_readings_percentage">Sensorilt vastu võetud näitude protsent</string>
-    <string name="received_realtime_readings_percentage">Reaalajas saadud sensori näitude protsent (tagasi täitmata). AINULT G5 algne režiim</string>
+    <string name="received_realtime_readings_percentage">Reaalajas saadud sensori näitude protsent (tagasi täitmata). AINULT algse režiimi korral</string>
     <string name="capture_percentage">Andmepakettide vastuvõtuprotsent</string>
     <string name="realtime_capture_percentage">Andmepakettide vastuvõtuprotsent reaalajas</string>
     <string name="show_calibration_accuracy">Kuva viimase 3 päeva kalibreerimistäpsuse hinnang</string>
@@ -697,11 +706,11 @@
     <string name="low_level_value">Madala taseme diagnostiline/prototüüp-väärtus</string>
     <string name="transmitter_id">Teie Dexcomi saatja ID, nt. 12AB3</string>
     <string name="advanced_g5_settings">Täiendavad Dexcom seaded harvaesinevateks olukordadeks</string>
-    <string name="g5_debug_settings">G5/G6/G7/Dex1 silumisseaded</string>
+    <string name="g5_debug_settings">Dexcom silumisseaded</string>
     <string name="g5_scan_constantly">Mõned seadmed töötavad paremini pidevalt skaneerides, teised mitte. Kui see säte pole valitud ja andmed on usaldusväärsed, siis peaks aku tööiga olema pikem. Tavaliselt on parem see mitte valida</string>
-    <string name="scan_for_g5_constantly">Skaneeri G5-saatjat pidevalt</string>
+    <string name="scan_for_g5_constantly">Skaneeri saatjat pidevalt</string>
     <string name="g5_force_ui_thread">See on oluline mõnede Android seadmete ühenduvuse jaoks, kuid andmed võivad jääda lugemata muude UI intensiivste tegevuste kasutamisel.</string>
-    <string name="force_g5_ui_thread">Sunni G5 kasutajaliidese lõimele</string>
+    <string name="force_g5_ui_thread">Sunni kasutajaliidese lõimele</string>
     <string name="authentificate_before_reading">Autentida enne igat lugemist</string>
     <string name="g5_full_authentification">See proovib täielikku autentimist igal lugemiskatsel. Vajalik uuemate G5 saatja versioonide jaoks.</string>
     <string name="unbond_g5_before_read">Enne iga vastuvõttu katkesta ühendus G5-ga</string>
@@ -722,15 +731,15 @@
     <string name="influxdb_database_name">InfluxDB andmebaasi nimi</string>
     <string name="user">Kasutaja</string>
     <string name="password">Parool</string>
-    <string name="upload_to_dexcom">Luba üleslaadimine Dexcomi serveritesse</string>
-    <string name="upload_to_dexcom_share">Laadi VS väärtused üles \"Dexcom Share\" formaadis</string>
+    <string name="upload_to_dexcom">Luba see, et laadida üles Dex Share serveritesse</string>
+    <string name="upload_to_dexcom_share">Laadi VS väärtused Dex Share\'i üles</string>
     <string name="accounts_outside_usa">Keelatud = Teie konto ja jälgimise rakendused on pärit väljastpoolt USA-d</string>
     <string name="accounts_inside_usa">Lubatud = Teie konto ja jälgimise rakendused on pärit USA-st</string>
-    <string name="usa_based_account">Dexcom USA konto</string>
-    <string name="dexcom_login">Teie sisselogimine Dexcomi veebisaidil</string>
-    <string name="dexcom_user">Dexcomi konto kasutajanimi</string>
-    <string name="dexcom_login_password">Teie Dexcomi veebisaidi parool</string>
-    <string name="dexcom_password">Dexcomi konto parool</string>
+    <string name="usa_based_account">Dex USA-põhine konto</string>
+    <string name="dexcom_login">Sisselogimine Dex Share\'i</string>
+    <string name="dexcom_user">Dex konto sisselogimine</string>
+    <string name="dexcom_login_password">Sinu Dex Share parool</string>
+    <string name="dexcom_password">Dex konto parool</string>
     <string name="dexcom_receiver_serial">10-kohaline Dexcomi vastuvõtja seerianumber</string>
     <string name="dexcom_test_mode_serial">10-kohaline testrežiimi seerianumber</string>
     <string name="glucose_meters">Glükomeetrid</string>
@@ -1178,12 +1187,12 @@
     <string name="summary_send_bridge_battery_to_nightscout">Saada oma vastuvõtja aku tase Nightscouti. Tühjendage märkeruut kui akuandur ei tööta.</string>
     <string name="title_send_bridge_battery_to_nightscout">Laadi üles vastuvõtja aku seis</string>
     <string name="summary_send_dexcom_transmitter_battery_to_nightscout">Saada Nightscouti Dexcomi saatja aku statistika. Sealhulgas kõik vastuvõtja oleku ekraanil kuvatavad andmed.</string>
-    <string name="title_send_dexcom_transmitter_battery_to_nightscout">Laadi üles OB1G5/G6/G7/1 saatja akuandmed</string>
+    <string name="title_send_dexcom_transmitter_battery_to_nightscout">Laadi üles Dexcom saatja akuandmed</string>
     <string name="summary_send_treatments_to_nightscout">Saada raviandmed Nightscouti. Tühjendage märkeruut kui hooldusportaal ei toimi.</string>
     <string name="title_send_treatments_to_nightscout">Laadi üles raviandmed</string>
     <string name="summary_warn_nightscout_failures">Kui Nightscouti üleslaadimine ebaõnnestub, anna ekraanil ja heliga märku.</string>
     <string name="title_warn_nightscout_failures">Hoiata tõrgete korral</string>
-    <string name="summary_nightscout_device_append_source_info">G5 puhul saadab Nightscouti vastuvõtu tüübi (nt OB1) ja näitude järeltäitmise oleku (algupärase režiimi jaoks).</string>
+    <string name="summary_nightscout_device_append_source_info">Dexcom puhul saadab Nightscouti vastuvõtu tüübi (nt OB1) ja näitude järeltäitmise oleku (algupärase režiimi jaoks).</string>
     <string name="title_nightscout_device_append_source_info">Lisa seadme nimele andmeallika info</string>
     <string name="summary_tap_to_send_historical_data">Puuduta vanade andmete saatmiseks Nightscouti</string>
     <string name="title_back_fill_data">Täienda ajalugu</string>
@@ -1322,7 +1331,7 @@
     <string name="summary_clfollow_download_meals">Laadi CareLink\'ist alla eined</string>
     <string name="title_clfollow_download_notifications">Teavitused</string>
     <string name="summary_clfollow_download_notifications">Laadi alla CareLink teavitused</string>
-    <string name="title_ob1_options">OB1 G5/G6/G7 vastuvõtja seaded</string>
+    <string name="title_ob1_options">OB1 Dexcom vastuvõtja seaded</string>
     <string name="summary_use_ob1_g5_collector_service">Täielik ülekirjutamine, peaks töötama op-süsteemides Android 4.4–9, toetab algupärast režiimi ja palju muud</string>
     <string name="title_use_ob1_g5_collector_service">Kasuta OB1 vastuvõtjat</string>
     <string name="summary_ob1_g5_use_transmitter_alg">Võimalusel kasuta VS väärtuste arvutamiseks saatja sisemist algoritmi.</string>
@@ -1337,14 +1346,14 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Tagasi xDrip\'pi</string>
     <string name="summary_ob1_minimize_scanning">Kasutage heuristikat, et minimeerida Bluetooth skaneerimist ja säästa energiat</string>
     <string name="title_ob1_minimize_scanning">Minimaalne skaneerimine</string>
-    <string name="summary_using_g6">Kasutan G6, G7 või Dexcom One sensorit</string>
-    <string name="title_using_g6">G6/G7/Dex1 tugi</string>
+    <string name="summary_using_g6">Kasutan G6, G7, Dexcom 1või One+ sensorit</string>
+    <string name="title_using_g6">G6/G7/Dex1/One+  tugi</string>
     <string name="summary_ob1_g5_allow_resetbond">OB1 vastuvõtja võib ühenduse katkestada kui arvab, et andmete töötlemine ebaõnnestus. Kui teil tekib ühenduse katkestamisel probleeme, keelake see valik. Kui te seejärel ühenduse täielikult kaotate, veenduge, et see oleks lubatud.</string>
     <string name="title_ob1_g5_allow_resetbond">Luba OB1 lahtiühendamine</string>
     <string name="summary_ob1_initiate_bonding_flag">OB1 vastuvõtja võib alustada ühendamist.</string>
     <string name="title_ob1_initiate_bonding_flag">Luba OB1 siduda</string>
-    <string name="title_old_g5_options">Vana G5 vastuvõtja seaded</string>
-    <string name="title_g5g6_battery_options">G5/G6/Dex1 aku valikud</string>
+    <string name="title_old_g5_options">Vanad Dexcom vastuvõtja seaded</string>
+    <string name="title_g5g6_battery_options">G6/Dex1 aku valikud</string>
     <string name="title_g5_battery_warning_level">Reguleeri aku hoiatuse taset</string>
     <string name="title_plugins_and_features">Liidesed ja funktsioonid</string>
     <string name="title_color_heart_rate1">Pulsimõõtja</string>
@@ -1407,6 +1416,7 @@
     <string name="summary_plus_accept_follower_actions">Raviandmed, kalibreerimised ja muud jälgijate toimingud aktsepteeritakse</string>
     <string name="title_plus_accept_follower_actions">Nõustuge jälgijate toimingutega</string>
     <string name="summary_plus_whole_house">Osale kogu maja võrgustikus</string>
+    <string name="summary_plus_xdrip_cloud">Kasuta uusi xDrip+ pilveservereid. Põhiseadmes ja jälgijatel peab see setting olema sama.</string>
     <string name="title_plus_whole_house">Kogu maja</string>
     <string name="summary_libre_whole_house_collector">See telefon on kogu maja võrgus vastuvõtjaks</string>
     <string name="title_libre_whole_house_collector">Libre kogu maja</string>
@@ -1446,13 +1456,18 @@
     <string name="summary_notification_channels_grouping">Teatised tuleks rühmitada. Ei ühildu valikuga „Numbriikoon teavitusalal”.</string>
     <string name="title_notification_channels_grouping">Rühmita teavitused kokku</string>
     <string name="summary_delay_ascending_3min">Kasvava helitugevuse profiili jaoks lükka hoiatusheli algust 3 minutit edasi. Vibratsioon (kui lubatud) algab kohe, kui hoiatus käivitub, olenemata sellest sättest.</string>
+    <string name="title_ascending_volume">Kasvava helitugevuse seaded</string>
     <string name="title_delay_ascending_3min">Helitugevuse kasvu viivitus</string>
+    <string name="summary_ascending_volume_to_medium">Kui aktiveeritud, kasvab helitugevus keskmisele tasemele, mitte maksimumi</string>
+    <string name="title_ascending_volume_to_medium">Kasva keskmisele tasemele</string>
     <string name="summary_play_sound_for_initial_calibration">Esita helimärguanne kui taotletakse esialgset kalibreerimist</string>
     <string name="title_play_sound_for_initial_calibration">Alustamise teavitus</string>
     <string name="category_noisy_readings">Vigased andmed</string>
     <string name="category_falling_rising_bg">Langev/tõusev VS</string>
     <string name="category_alert_prefs">Hoiatuste seaded (nendele hoiatustele)</string>
     <string name="summary_persistent_high_alert">Kui VS on üle kõrge taseme liiga kaua ja ei liigu allapoole</string>
+    <string name="summary_persistent_high_threshold_link">Kui lubatud, on piirmääraks kõrge väärtus.\nKui keelatud, on piirmääraks allpool seadistatud väärtus.</string>
+    <string name="title_persistent_high_threshold_link">Piirmäär: kõrge väärtus</string>
     <string name="note_search_button">OTSI</string>
     <string name="all_note_button">KÕIK</string>
     <string name="title_full_screen_mode">Täisekraani režiim</string>
@@ -1487,6 +1502,7 @@
     <string name="progress">edenemine</string>
     <string name="bluetooth_device">Bluetooth seade:   </string>
     <string name="transmitter_battery_status">Saatja aku:  </string>
+    <string name="database_size">Andmebaasi maht:  </string>
     <string name="top">Üles</string>
     <string name="connect_device_usb_otg">Ühenda seade USB OTG-kaabli abil.</string>
     <string name="connection_status">Ühenduse olek:</string>
@@ -1724,9 +1740,11 @@
     <string name="proceed">Jätka</string>
     <string name="special_pairing_workaround">Spetsiaalne sidumise lahendus</string>
     <string name="save_power">Säästa energiat</string>
+    <string name="use_xdrip_cloud">Kasuta xDrip pilveteenust</string>
     <string name="reduce_battery_and_network_overhead">Vähenda aku ja võrgu koormust, kasutades pakett-töötlust ja välistades mittevajalikke andmeid</string>
-    <string name="simplify_graphs_by_smoothing_out_irregularities">Lihtsusta graafikuid, siludes ebakorrapärasusi</string>
+    <string name="simplify_graphs_by_smoothing_out_irregularities">Lihtsusta graafikuid, siludes ebakorrapärasusi varasemates näitudes.  See ei mõjuta hetkenäitu, alarme ja edastatud väärtust.  </string>
     <string name="graph_smoothing">Graafiku silumine</string>
+    <string name="enable_graph_smoothing">Luba</string>
     <string name="last_reading">Viimane näit</string>
     <string name="select_file_for_alert">Vali fail hoiatuste jaoks</string>
     <string name="cannot_choose_file_without_permission">Ilma salvestamise loata ei saa faili valida</string>
@@ -1780,6 +1798,7 @@
     <string name="cloud_backup">Varundamine pilve</string>
     <string name="select_automatic_or_select_alternate">Vali xDrip\'i jaoks automaatne viis, et hallata faile Google Drive\'is, või valige alternatiivne konkreetne fail, mida kasutada, kui peate mujalt taastama.</string>
     <string name="restoring_backup_will_erase_warning">Varukoopiast taastamine kustutab teie praegused seaded ja andmed.\n\nKas oled täiesti kindel, et soovid seda teha?</string>
+    <string name="you_cannot_undo_delete_alert">Seda tegevust ei saa tagasi võtta!\n\nKas oled kindel, et soovid selle alarmi kustutada?</string>
     <string name="this_backup_looks_like_came_from_different_format_string">See varukoopia näib olevat pärit teisest seadmest:\n%s\nKas soovid kindlasti sellest varukoopiast taastada?</string>
     <string name="megabyte_format_string">%.1f MB</string>
     <string name="manual_selection_google_drive_file_warning">Valisid Google Drive\'ist faili, kuid seda ei halda xDrip automaatselt, nii et seda saab kasutada ainult käsitsi varundamiseks ja taastamiseks.\n\nSelle failiga ei tehta automaatset varundust.\n\nKas jätkata?</string>
@@ -1799,6 +1818,7 @@
     <string name="summary_ymax">Vali yMax, kui sellest suuremaid näitusid ei ole.</string>
     <string name="wait_to_connect">Kontrolli seadeid ja oota ühendust.</string>
     <string name="summary_sens_expiry_notify">Käivita teavitused kui sensori kehtivusaeg hakkab lõppema.</string>
+    <string name="title_sens_expiry">Sensori aegumise teavitused</string>
     <string name="title_sens_expiry_notify">Sensori kehtivusaeg</string>
     <string name="close">Sulge</string>
     <string name="title_advanced_settings_4_Lib2">Libre 2 täpsemad sätted</string>
@@ -1849,4 +1869,6 @@
     <string name="audio_focus_pause_all_other_sounds">Peata kõik teised helid</string>
     <string name="use_camera_light">Kasuta kaamera välku</string>
     <string name="use_camera_light_summary">Vilguta alarmide ajal kaamera välku kui laadija on ühendatud</string>
+    <string name="g7_should_start_automatically">G7 peaks automaatselt käivituma</string>
+    <string name="screenshot">Ekraanipilt</string>
 </resources>

@@ -27,6 +27,7 @@
     <string name="app_name" translatable="false">xDrip+</string>
     <string name="app_name_launcher" translatable="false">xDrip+</string>
     <string name="wserviceurl" translatable="false">https://xdrip-plus-updates.appspot.com</string>
+    <string name="qserviceurl" translatable="false">https://xdrip-plus-updates.cflare-509.workers.dev</string>
     <string name="all_settings_wizard">all_settings_wizard</string>
     <string name="wizard_uuid" translatable="false">wizard_uuid</string>
     <string name="wizard_key" translatable="false">wizard_key</string>

@@ -217,6 +217,7 @@
     <string name="other_alerts">Kiti perspėjimai</string>
     <string name="extra_alerts_xdrip_plus">Papildomi perspėjimai (xDrip+)</string>
     <string name="persistent_high_alert">Užsitęsusios hiperglikemijos perspėjimas</string>
+    <string name="persistent_high_alert_enable">Įjungti</string>
     <string name="forecasted_low_alert">Progn. hipoglikemijos perspėjimas</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Ekstrapoliuoti duomenis hipoglikemijos numatymui</string>
     <string name="alarm_at_forecasted_low_mins">Progn. hipoglikemijos aliarmo minutės</string>
@@ -1707,6 +1708,7 @@
     <string name="reduce_battery_and_network_overhead">Sumažinkite akumuliatoriaus ir tinklo sąnaudas naudodami paketinį apdorojimą ir neįtraukdami nereikalingų duomenų</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Supaprastinti grafikus glodinant nelygumus</string>
     <string name="graph_smoothing">Grafiko glodinimas</string>
+    <string name="enable_graph_smoothing">Įjungti</string>
     <string name="last_reading">Paskutinis rodmuo</string>
     <string name="select_file_for_alert">Pasirinkite aliarmo toną</string>
     <string name="cannot_choose_file_without_permission">Negalima pasirinkti failo, nes nėra saugyklos leidimo</string>
@@ -1778,6 +1780,7 @@
     <string name="summary_ymin">Pasirinkite yMin, kai nėra mažesnių rodmenų.</string>
     <string name="summary_ymax">Pasirinkite yMaks, kai nėra didesnių rodmenų.</string>
     <string name="wait_to_connect">Patikrinkite nustatymus ir laukite sujungimo</string>
+    <string name="title_sens_expiry_notify">Įjungti</string>
     <string name="close">Uždaryti</string>
     <string name="title_advanced_settings_4_Lib2">Pažangūs Libre 2 nustatymai</string>
     <string name="title_Lib2_show_raw_values">Rodyti neapdorotus duomenis</string>

@@ -218,6 +218,7 @@
     <string name="other_alerts">Andra varningar</string>
     <string name="extra_alerts_xdrip_plus">Ytterligare varningar (xDrip+)</string>
     <string name="persistent_high_alert">Larm vid beständigt högt</string>
+    <string name="persistent_high_alert_enable">Aktivera</string>
     <string name="forecasted_low_alert">Larm vid beständigt lågt</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolera data för att försöka förutspå känningar</string>
     <string name="alarm_at_forecasted_low_mins">Larm vid förutspådd känning</string>
@@ -1611,6 +1612,7 @@
     <string name="reduce_battery_and_network_overhead">Minska batteri- och nätverksanvändning genom batch-behandling och exkludera ickenödvändiga data</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Förenkla grafer genom att jämna ut avvikelser</string>
     <string name="graph_smoothing">Grafutjämning</string>
+    <string name="enable_graph_smoothing">Aktivera</string>
     <string name="last_reading">Senaste avläsning</string>
     <string name="select_file_for_alert">Välj fil för larm</string>
     <string name="cannot_choose_file_without_permission">Kan inte välja fil utan behörigheter för lagringsutrymme</string>

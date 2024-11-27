@@ -91,6 +91,11 @@ public class EGlucoseRxMessage2 extends BaseGlucoseRxMessage {
         return null;
     }
 
+    @Override
+    public long getRealTimestamp() {
+        return JoH.tsl() - (age * Constants.SECOND_IN_MS);
+    }
+
     public String getRealSessionStartTimeString() {
         val t = getRealSessionStartTime();
         if (t != null) {

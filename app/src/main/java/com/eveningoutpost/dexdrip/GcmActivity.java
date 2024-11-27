@@ -16,6 +16,7 @@ import android.preference.PreferenceManager;
 
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.cloud.jamcm.JamCm;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.BloodTest;
 import com.eveningoutpost.dexdrip.models.Calibration;
@@ -34,9 +35,9 @@ import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.DisplayQRCode;
 import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
+import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.common.primitives.Bytes;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
@@ -75,7 +76,7 @@ public class GcmActivity extends FauxActivity {
     private static long last_rlcl_request = 0;
     private static long cool_down_till = 0;
     public static AtomicInteger msgId = new AtomicInteger(1);
-    public static String token = null;
+    public static volatile String token = null;
     public static String senderid = null;
     public static final List<GCM_data> gcm_queue = new ArrayList<>();
     private static final Object queue_lock = new Object();
@@ -215,7 +216,9 @@ public class GcmActivity extends FauxActivity {
                         try {
                             Log.i(TAG, "Resending unacknowledged queue item: " + datum.bundle.getString("action") + datum.bundle.getString("payload"));
                             datum.resent++;
-                            GoogleCloudMessaging.getInstance(context).send(senderid + "@gcm.googleapis.com", Integer.toString(msgId.incrementAndGet()), datum.bundle);
+                           // GoogleCloudMessaging.getInstance(context).send(senderid + "@gcm.googleapis.com", Integer.toString(msgId.incrementAndGet()), datum.bundle);
+                            datum.bundle.putBoolean("resend-from-queue", true);
+                            JamCm.sendMessageBackground(datum.bundle);
                         } catch (Exception e) {
                             Log.e(TAG, "Got exception during resend: " + e.toString());
                         }
@@ -608,9 +611,9 @@ public class GcmActivity extends FauxActivity {
     }
 
     public static void requestSensorCalibrationsUpdate() {
-        if (Home.get_follower() && JoH.pratelimit("SensorCalibrationsUpdateRequest", 300)) {
+        if (Home.get_follower() && JoH.pratelimit("SensorCalibrationsUpdateRequest", 1200)) {
             Log.d(TAG, "Requesting Sensor and calibrations Update");
-            GcmActivity.sendMessage("sensor_calibrations_update", "");
+            GcmActivity.sendMessage("sencalup", "");
         }
     }
 
@@ -649,7 +652,7 @@ public class GcmActivity extends FauxActivity {
         }
     }
 
-    static String myIdentity() {
+    public static String myIdentity() {
         // TODO prefs override possible
         return GoogleDriveInterface.getDriveIdentityString();
     }
@@ -734,6 +737,11 @@ public class GcmActivity extends FauxActivity {
                 return "";
             }
 
+            if (action.length() > 15) {
+                UserError.Log.e(TAG, "Cannot send invalid action: " + action);
+                return "";
+            }
+
             final Bundle data = new Bundle();
             data.putString("action", action);
             data.putString("identity", identity);
@@ -761,19 +769,20 @@ public class GcmActivity extends FauxActivity {
                 Log.e(TAG, "Queue size exceeded");
                 Home.toaststaticnext("Maximum Sync Queue size Exceeded!");
             }
-            final GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(xdrip.getAppContext());
+          //  final GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(xdrip.getAppContext());
             if (token == null) {
                 Log.e(TAG, "GCM token is null - cannot sendMessage");
                 return "";
             }
             String messageid = Integer.toString(msgId.incrementAndGet());
-            gcm.send(senderid + "@gcm.googleapis.com", messageid, data);
+         //   gcm.send(senderid + "@gcm.googleapis.com", messageid, data);
             if (last_ack == -1) last_ack = JoH.tsl();
             last_send_previous = last_send;
             last_send = JoH.tsl();
+            JamCm.sendMessageBackground(data);
             msg = "Sent message OK " + messageid;
             DesertSync.fromGCM(data);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             msg = "Error :" + ex.getMessage();
         }
         Log.d(TAG, "Return msg in SendMessage: " + msg);
@@ -792,7 +801,9 @@ public class GcmActivity extends FauxActivity {
             case "bfr":
             case "nscu":
             case "nscusensor-expiry":
+            case "nscus-expiry":
             case "esup":
+            case "sencalup":
                 synchronized (queue_lock) {
                     for (GCM_data qdata : gcm_queue) {
                         try {
@@ -812,7 +823,7 @@ public class GcmActivity extends FauxActivity {
         }
     }
 
-    private static void fmSend(Bundle data) {
+  /*  private static void fmSend(Bundle data) {
         final FirebaseMessaging fm = FirebaseMessaging.getInstance();
         if (senderid != null) {
             fm.send(new RemoteMessage.Builder(senderid + "@gcm.googleapis.com")
@@ -822,7 +833,7 @@ public class GcmActivity extends FauxActivity {
         } else {
             Log.wtf(TAG, "senderid is null");
         }
-    }
+    }*/
 
     private void tryGCMcreate() {
         Log.d(TAG, "try GCMcreate");
@@ -864,9 +875,11 @@ public class GcmActivity extends FauxActivity {
             xdrip.getAppContext().startService(intent);
         } else {
             cease_all_activity = true;
-            final String msg = "ERROR: Connecting to Google Services - check google login or reboot?";
-            JoH.static_toast_long(msg);
-            Home.toaststaticnext(msg);
+            if (!BlueJayEntry.isNative()) {
+                final String msg = "ERROR: Connecting to Google Services - check google login or reboot?";
+                JoH.static_toast_long(msg);
+                Home.toaststaticnext(msg);
+            }
         }
     }
 
@@ -998,6 +1011,7 @@ public class GcmActivity extends FauxActivity {
         if (resultCode != ConnectionResult.SUCCESS) {
             try {
                 if (apiAvailability.isUserResolvableError(resultCode)) {
+                    if (resultCode == 3 && BlueJayEntry.isNative()) return false;
                     if (activity != null) {
                         apiAvailability.getErrorDialog(activity, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
                                 .show();

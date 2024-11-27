@@ -37,6 +37,10 @@
     <string name="pref_header_cloud_storage">Nettskylagring</string>
     <string name="auto_configure_title">Autokonfigurer</string>
     <string name="prefs_auto_config_summary">Autokonfigurer med strekkode.</string>
+    <string name="auto_config_cam_title">Kamera</string>
+    <string name="auto_config_cam_summary">Skann en QR-kode med din mobil (anbefalt)</string>
+    <string name="auto_config_image_title">Bildefil</string>
+    <string name="auto_config_image_summary">Du kan lagre QR-koden som en bildefil (f.eks. .png eller .jpeg) på mobilen din. Bruk deretter dette alternativet til å skanne QR-koden fra den lagrede filen.</string>
     <string name="scan_share2_barcode">Skan delingsstrekkode</string>
     <string name="pref_share2_scan_barcode_summary">Eller skanne strekkoden på mottakeren</string>
     <!-- MongoDB Settings -->
@@ -53,7 +57,7 @@
     <string name="pref_dialog_mongodb_device_status_collection">Skriv inn samlingsnavnet for enhetsstatus</string>
     <string name="pref_message_mongodb_device_status_collection">Dette er navnet på samlingen der batteriet og andre enhetsdata vil bli lagret</string>
     <!-- API Settings -->
-    <string name="pref_title_api">Nightscout-synkronisering (REST)</string>
+    <string name="pref_title_api">Nightscout-synkronisering</string>
     <string name="pref_title_api_enabled">Aktivert</string>
     <string name="pref_summary_api_enabled">REST API er den vanlige måten å koble til Nightscout</string>
     <string name="pref_title_api_url">Base-URL</string>
@@ -115,6 +119,7 @@
     <string name="title_activity_update">xDrip+ oppdatering tilgjengelig</string>
     <string name="title_activity_display_qrcode">Del innstillinger med QR-kode</string>
     <string name="title_activity_send_feed_back">Send tilbakemelding til Jamorham</string>
+    <string name="title_activity_save_logs">Lagre logger</string>
     <string name="title_activity_maps">Parakeet Kart</string>
     <string name="title_activity_display_preferences">Vis innstillinger</string>
     <string name="export_submenu">Import / Eksport funksjoner</string>
@@ -218,6 +223,8 @@
     <string name="other_alerts">Andre varsler</string>
     <string name="extra_alerts_xdrip_plus">Ekstra varsler (xDrip+)</string>
     <string name="persistent_high_alert">Vedvarende høy varsel</string>
+    <string name="persistent_high_alert_enable">Aktiver</string>
+    <string name="title_persistent_high_threshold">Terskel</string>
     <string name="forecasted_low_alert">Beregnet lav varsel</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Ekstrapoler data for å prøve og beregne lave verdier</string>
     <string name="alarm_at_forecasted_low_mins">Grense i antall minutter før varsel går av</string>
@@ -286,7 +293,7 @@
     <string name="older_gratuitous_wakelocks">Eldre unødvendige wakelocks som kan tappe batteriet ekstra, men kan være nødvendig for Nightwatch eller Android Wear</string>
     <string name="use_excessive_wakelocks">Bruk Overdreven Wakelocks</string>
     <string name="speak_readings">Taleavlesninger</string>
-    <string name="extra_status_line">Ekstra Statuslinje</string>
+    <string name="extra_status_line">Ekstra statuslinje</string>
     <string name="dexcom_share_server_upload">Opplasting til Dexcom Share-server</string>
     <string name="upload_data_to_dex_servers">Laste opp data til Dexcoms servere slik at du kan bruke dine data med Dexcom sine apper</string>
     <string name="manage_followers">Administrer følgere</string>
@@ -394,7 +401,9 @@
     <string name="please_enter_your_question_or_comments_here">Skriv inn ditt spørsmål eller kommentarer her.\n\nHvis du oppgir en e-postadresse kan det være at du få svar.\n\n</string>
     <string name="optional_contact_info_here_eg_email">Valgfri kontaktinfo, for eksempel e-post</string>
     <string name="send_message">Send melding</string>
+    <string name="save_logs">Lagre logger</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Vennligst oppgi hva du synes om programmet generelt</string>
+    <string name="log_confidential_note">Advarsel!\nLoggene kan inneholde konfidensiell informasjon som passord eller bruker-ID\'er.</string>
     <string name="preferences_saved_in_sdcard_downloads">Innstillinger lagret i intern lagring (Download/xDrip-export)</string>
     <string name="could_not_write_to_sdcard_check_perms">Klarte ikke skrive til SD-kort - sjekk tillatelser?</string>
     <string name="loaded_preferences_restarting">Innstillinger lastet! - Omstart</string>
@@ -593,7 +602,7 @@
     <string name="short_speak_readings_shortcut">Vis snarvei til ☰ meny for å skru av/på talte avlesninger</string>
     <string name="speak_readings_shortcut">Taleavlesning-snarvei</string>
     <string name="battery_optimization_off">Sørg for at batterioptimalisering er skrudd av for Android 6+ (anbefalt).</string>
-    <string name="battery_optimization_on">Ikke fortsett å spørre om batterioptimalisering (ikke anbefalt).</string>
+    <string name="battery_optimization_on">Vil ikke fortsette å spørre om batterioptimalisering når dette er aktivert (ikke anbefalt).</string>
     <string name="battery_optimization_prompt">Batterioptimaliserings forespørsel</string>
     <string name="advanced_bluetooth_settings">Avanserte innstillinger for Bluetooth</string>
     <string name="bluetooth_settings">Bluetooth-innstillinger</string>
@@ -601,7 +610,7 @@
     <string name="turn_bluetooth_on">Skru på Bluetooth</string>
     <string name="reset_bluetooth">Tilbakestill Bluetooth ved å slå den av og på hvis vi ikke får noe innen 20 minutter</string>
     <string name="bluetooth_watchdog">Bluetooth Watchdog</string>
-    <string name="reset_bluetooth_g5">Tilbakestill bluetooth ved å skru det av og på er en måte å sørge for at G5 datakilde fungerer. Uten dette kan G5 innsamlingstjenesten feile.</string>
+    <string name="reset_bluetooth_g5">Tilbakestill bluetooth ved å skru det av og på er en måte å sørge for at datakilden fungerer. Uten dette kan innsamlingstjenesten feile.</string>
     <string name="g5_bluetooth_watchdog">Dex Bluetooth vakthund</string>
     <string name="close_gatt">Hvis Bluetooth vakthund ofte blir aktivert kan du prøve å huke bort dette valget for å se om det hjelper</string>
     <string name="older_bluetooth_wakelocks">Eldre bluetoothvekkere kan tømme batteriet raskere, men kan være nødvendig for at Bluetooth skal virke</string>
@@ -640,8 +649,8 @@
     <string name="engineering_mode">Engineeringmodus</string>
     <string name="allow_unsafe_settings">Tillat ending av usikre innstillinger som kan ødelegge alt!</string>
     <string name="daily_save_db">Lagre databasen daglig</string>
-    <string name="allow_daily_db_save">Tillager den daglige intensjonstjenesten å lagre databasen før den tømmer</string>
-    <string name="options_for_extra_line">Alternativ for ekstra linje</string>
+    <string name="allow_daily_db_save">Lar den daglige intensjonstjenesten lagre databasen før tømming</string>
+    <string name="options_for_extra_line">Alternativ for ekstra statuslinje</string>
     <string name="todays_average_value">Dagens gjennomsnittlige verdi.</string>
     <string name="ac1_estimation_dcct">A1c-estimat i DCCT format (%)</string>
     <string name="ac1_estimation_ifcc">A1c estimat i IFCC format (mmol/mol)</string>
@@ -655,12 +664,12 @@
     <string name="show_total_insulin">Vis totalt behandlingsinsulin</string>
     <string name="total_insulin">Totalt insulin</string>
     <string name="received_readings_percentage">Prosentandel av sensoravlesninger mottatt</string>
-    <string name="received_realtime_readings_percentage">Prosentdel av sensoravlesninger mottatt i sanntid (ikke tilbakefylt). KUN G6 Native mode</string>
+    <string name="received_realtime_readings_percentage">Prosentdel av sensoravlesninger mottatt i sanntid (ikke tilbakefylt). KUN Native mode</string>
     <string name="capture_percentage">Pakkefangstprosent</string>
     <string name="realtime_capture_percentage">Pakkefangstprosent i sanntid</string>
     <string name="show_calibration_accuracy">Vis evaluering av kalibreringsnøyaktighet for siste 3 dager</string>
     <string name="accuracy_evaluation">Evaluering av kalibreringsnøyaktighet</string>
-    <string name="show_extra_status_on_widget">Vis også ekstra statuslinje i modul</string>
+    <string name="show_extra_status_on_widget">Vis også ekstra statuslinje i widget</string>
     <string name="show_long_calibration_data">Vis kurve og skjæringspunkt i langt format.</string>
     <string name="show_short_calibration_data">Vis kurve og skjæringspunkt i kort form.</string>
     <string name="show_plugin_data">Vis kurve- og glukosedata fra den aktive plugin-modulen</string>
@@ -697,11 +706,11 @@
     <string name="low_level_value">Lavnivå diagnose/prototype verdi</string>
     <string name="transmitter_id">ID for din Dexcom-sender, f.eks. 123ABC</string>
     <string name="advanced_g5_settings">Avanserte innstillinger for Dexcom</string>
-    <string name="g5_debug_settings">G5/G6/G7/Dex1 feilsøkingsinnstillinger</string>
+    <string name="g5_debug_settings">Dexcom feilsøkingsinnstillinger</string>
     <string name="g5_scan_constantly">Noen enheter virker bedre når de blir skannet hele tiden, andre ikke. Hvis avlesningene er stabile når denne innstillingen ikke er valgt, bør du oppleve forbedret batteribruk. Normalt er det best å beholde denne deaktivert</string>
-    <string name="scan_for_g5_constantly">Skan kontinuerling for G5</string>
+    <string name="scan_for_g5_constantly">Skan kontinuerling</string>
     <string name="g5_force_ui_thread">Dette er viktig for noen Androidenheter for å koble til skikkelig, men kan føre til manglende avlesninger når andre UI intense aktiviteter er i bruk.</string>
-    <string name="force_g5_ui_thread">Tving G5 til UI-tråd</string>
+    <string name="force_g5_ui_thread">Tving Dexcom til UI-tråd</string>
     <string name="authentificate_before_reading">Autentiser før hver avlesning</string>
     <string name="g5_full_authentification">Dette vil forsøke en full autentisering før hvert leseforsøk. Trengs for nyere G5 fastvare versioner.</string>
     <string name="unbond_g5_before_read">Frigjør G5 før hver avlesning</string>
@@ -722,14 +731,14 @@
     <string name="influxdb_database_name">InfluxDB databasenavn</string>
     <string name="user">Bruker</string>
     <string name="password">Passord</string>
-    <string name="upload_to_dexcom">Aktiver denne til å laste opp til Dexcom\'s servere</string>
-    <string name="upload_to_dexcom_share">Last opp BS-verdier som Dexcom Share</string>
+    <string name="upload_to_dexcom">Aktiver dette for å laste opp blodsukkeravlesninger til Dexcom Share-servere</string>
+    <string name="upload_to_dexcom_share">Last opp BS-verdier</string>
     <string name="accounts_outside_usa">Deaktivert = Din konto og følger-app er fra utenfor USA</string>
     <string name="accounts_inside_usa">Aktivert = Din konto og følger-app er fra USA</string>
     <string name="usa_based_account">USA basert Dexcom-konto</string>
-    <string name="dexcom_login">Din innlogging til Dexcom\'s hjemmeside</string>
+    <string name="dexcom_login">Ditt brukernavn til Dexcom sin hjemmeside</string>
     <string name="dexcom_user">Dexcom-konto</string>
-    <string name="dexcom_login_password">Ditt passord for Dexcom\'s hjemmeside</string>
+    <string name="dexcom_login_password">Ditt passord for Dexcom sin hjemmeside</string>
     <string name="dexcom_password">Dexcom-konto passord</string>
     <string name="dexcom_receiver_serial">10-tegn serienummer til Dexcom-mottaker</string>
     <string name="dexcom_test_mode_serial">10-tegns serienummer for test-modus</string>
@@ -766,6 +775,7 @@
     <string name="alert_noisy_values">Varsel etter x minutter hvis data har støy</string>
     <string name="alert_snooze">Slumre varsel</string>
     <string name="alert_minutes_reraise">Antall minutter før samme varsel utløses etter slumring.</string>
+    <string name="reraise_before_snooze">Gjenoppta varsel hvis den ikke slumres</string>
     <string name="reraise_not_snoozed_sooner">Gjenopprett varselet hvis det ikke slumres tidligere</string>
     <string name="alert_reraise_time">Tid for å gjenoppta varsel</string>
     <string name="alert_seconds_reraise">Antall SEKUNDER å vente før et varsel blir gjenopptatt.</string>
@@ -1033,7 +1043,7 @@
     <string name="summary_Scan_before_connecting_on_xBridge_and_Libre_bluetooth">Skann før du kobler til xBridge og Libre Bluetooth</string>
     <string name="title_Use_scanning">Bruk skanning</string>
     <string name="summary_Use_and_trust_Android_bluetooth_auto_connect_feature">Bruk og stol på Android Bluetooth sin funksjon for automatisk tilkobling</string>
-    <string name="title_Trust_Auto_Connect">Stol på Auto-Tilkobling</string>
+    <string name="title_Trust_Auto_Connect">Stol på auto-tilkobling</string>
     <string name="summary_Experimental_support_for_xBridge_polling_feature">Eksperimentell støtte for xBridge+ polling-funksjon</string>
     <string name="title_xBridge_Polling_Mode">xBridge+ polling-modus</string>
     <string name="summary_Probe_Bluetooth_services_on_every_connect">Undersøk Bluetooth-tjenester på hver tilkobling</string>
@@ -1045,7 +1055,7 @@
     <string name="summary_write_Battery_Information_for_additional_analytic">Skriv batteriinformasjonen for ytterligere analyse i en fil. Vennligst bruk dette bare hvis du blir spurt av en utvikler!</string>
     <string name="title_Batterylog">Batterilogg</string>
     <string name="summary_Choose_to_display_the_bridge_battery_level">Velg å vise brobatterinivået</string>
-    <string name="title_Glucose_Retention">Glukostilbakeholdelse</string>
+    <string name="title_Glucose_Retention">Glukoseretensjon</string>
     <string name="summary_Erase_data_older_than_this_many_days">Slett data som er eldre enn så mange dager. 0 = ikke slett noe</string>
     <string name="title_Other_misc_options">Andre diverse alternativer</string>
     <string name="summary_allow_testing_with_dead_sensor">tillatt testing med død sensor</string>
@@ -1177,12 +1187,12 @@
     <string name="summary_send_bridge_battery_to_nightscout">Send brobatterinivået ditt til Nightscout. Fjern avhukning hvis batterisensoren er ødelagt.</string>
     <string name="title_send_bridge_battery_to_nightscout">Last opp brobatteri</string>
     <string name="summary_send_dexcom_transmitter_battery_to_nightscout">Send Dexcom-sender batteristatistikk til Nightscout. Dette inkluderer alle data som vises i statusskjerm for datakilde.</string>
-    <string name="title_send_dexcom_transmitter_battery_to_nightscout">Last opp OB1G5/G6/G7/1 sender-batteri</string>
+    <string name="title_send_dexcom_transmitter_battery_to_nightscout">Last opp Dexcom sender-batteri</string>
     <string name="summary_send_treatments_to_nightscout">Send behandlingsdata til Nightscout. Fjern avhukning hvis helseportalen din er ødelagt.</string>
     <string name="title_send_treatments_to_nightscout">Last opp behandlinger</string>
     <string name="summary_warn_nightscout_failures">Vis og avgi et varsel hvis Nightscout-opplastingen mislykkes.</string>
     <string name="title_warn_nightscout_failures">Varsling om feil</string>
-    <string name="summary_nightscout_device_append_source_info">For G5, sender innsamlertype (f.eks. OB1) og lesing av tilbakefyllingsstatus (for native) til Nightscout.</string>
+    <string name="summary_nightscout_device_append_source_info">For Dexcom, sender innsamlertype (f.eks. OB1) og avlesning sin tilbakefyllingsstatus (for native) til Nightscout.</string>
     <string name="title_nightscout_device_append_source_info">Legg til kildeinformasjon til enhetsnavnet</string>
     <string name="summary_tap_to_send_historical_data">Trykk for å sende historiske data til Nightscout</string>
     <string name="title_back_fill_data">Tilbakefyll data</string>
@@ -1283,7 +1293,7 @@
     <string name="title_lefun_screen_find_phone">Vis finn telefon / slumre</string>
     <string name="title_lefun_screen_mac_address">Vis MAC-adresse</string>
     <string name="summary_allow_samsung_workaround">Bruk løsninger for å unngå ikke-standard Android-adferd for enkelte telefoner. Uten dette klarer innsamlere vanligvis ikke å få data.</string>
-    <string name="title_allow_samsung_workaround">Alternative løsninger for vekking</string>
+    <string name="title_allow_samsung_workaround">Alternativ løsning for vekking</string>
     <string name="summary_medtrum_use_native">Bruk senderkalibrering i stedet for xDrip som primær</string>
     <string name="title_medtrum_use_native">Medtrum Native</string>
     <string name="summary_medtrum_a_hex">Hex diagnostisk testverdi</string>
@@ -1321,7 +1331,7 @@
     <string name="summary_clfollow_download_meals">Last ned måltider fra CareLink</string>
     <string name="title_clfollow_download_notifications">Notifikasjoner</string>
     <string name="summary_clfollow_download_notifications">Last ned notifikasjoner fra CareLink</string>
-    <string name="title_ob1_options">OB1 G5/G6/G7 innsamlerinnstillinger</string>
+    <string name="title_ob1_options">OB1 Dexcom innsamlerinnstillinger</string>
     <string name="summary_use_ob1_g5_collector_service">Fullstendig omskriving, skal fungere på Android 4.4 - 9, støtter native-modus og mer</string>
     <string name="title_use_ob1_g5_collector_service">Bruk OB1-innsamler</string>
     <string name="summary_ob1_g5_use_transmitter_alg">Bruk senderens interne algoritme for å beregne glukoseverdier når det er mulig.</string>
@@ -1336,14 +1346,14 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Falle tilbake til xDrip</string>
     <string name="summary_ob1_minimize_scanning">Bruk heuristikk for å minimere Bluetooth-skanning + spare strøm</string>
     <string name="title_ob1_minimize_scanning">Minimer skanning</string>
-    <string name="summary_using_g6">Jeg bruker en G6, G7 eller Dexcom 1 sensor</string>
-    <string name="title_using_g6">G6/G7/Dex1-støtte</string>
+    <string name="summary_using_g6">Jeg bruker en G6, G7 Dexcom 1 eller One+ sensor</string>
+    <string name="title_using_g6">G6/G7/Dex1/One+-støtte</string>
     <string name="summary_ob1_g5_allow_resetbond">OB1-innsamleren kan frigjøre seg hvis den tror krypteringen har mislyktes. Hvis du får problemer med å oppheve sammenkoblingen, deaktiver dette alternativet. Hvis du da mister forbindelsen helt, sørg for at dette er aktivert.</string>
     <string name="title_ob1_g5_allow_resetbond">Tillat OB1-frakobling</string>
     <string name="summary_ob1_initiate_bonding_flag">OB1-innsamler kan starte binding.</string>
     <string name="title_ob1_initiate_bonding_flag">Tillat OB1 å starte binding</string>
-    <string name="title_old_g5_options">Gammel G5-innsamler innstillinger</string>
-    <string name="title_g5g6_battery_options">G5/G6/G7/1 batterialternativer</string>
+    <string name="title_old_g5_options">Gamle Dexcom-innsamler innstillinger</string>
+    <string name="title_g5g6_battery_options">G6/Dex1 batterialternativer</string>
     <string name="title_g5_battery_warning_level">Juster batterivarselnivået</string>
     <string name="title_plugins_and_features">Plugins og funksjoner</string>
     <string name="title_color_heart_rate1">Pulsmåler</string>
@@ -1406,6 +1416,7 @@
     <string name="summary_plus_accept_follower_actions">Behandlinger, kalibreringer og andre handlinger fra følgere vil bli akseptert</string>
     <string name="title_plus_accept_follower_actions">Godta følgerhandlinger</string>
     <string name="summary_plus_whole_house">Delta i et Helt Hus Nettverk</string>
+    <string name="summary_plus_xdrip_cloud">Bruk de nye xDrip+ Cloud-serverne. Master og følgere må alle ha denne innstillingen stilt inn likt.</string>
     <string name="title_plus_whole_house">Helt Hus</string>
     <string name="summary_libre_whole_house_collector">Denne telefonen vil være en innsamler i et Helt Hus Nettverk</string>
     <string name="title_libre_whole_house_collector">Libre Helt Hus</string>
@@ -1445,13 +1456,18 @@
     <string name="summary_notification_channels_grouping">Om notifikasjoner skal grupperes sammen. Inkompatibel med alternativet \"Nummerikon i notifikasjonsfeltet\"</string>
     <string name="title_notification_channels_grouping">Grupper notifikasjoner sammen</string>
     <string name="summary_delay_ascending_3min">For stigende volumprofil, utsett starten av varsellyden med 3 minutter. Vibrasjonen (hvis aktivert) starter så snart varselet utløses uavhengig av denne innstillingen.</string>
+    <string name="title_ascending_volume">Stigende voluminnstillinger</string>
     <string name="title_delay_ascending_3min">Utsett stigende volum</string>
+    <string name="summary_ascending_volume_to_medium">Når aktivert, vil stigende volumprofil gå opp til middels volum i stedet for maksimum</string>
+    <string name="title_ascending_volume_to_medium">Stig til middels</string>
     <string name="summary_play_sound_for_initial_calibration">Spill av lyd når innledende kalibrering er forespurt</string>
     <string name="title_play_sound_for_initial_calibration">Innledende varsel</string>
     <string name="category_noisy_readings">Støyende avlesninger</string>
     <string name="category_falling_rising_bg">Fallende/stigende BS</string>
     <string name="category_alert_prefs">Varslingspreferanser (for disse varslene)</string>
     <string name="summary_persistent_high_alert">Når du er over høyt nivå for lenge og ikke er på vei nedover</string>
+    <string name="summary_persistent_high_threshold_link">Når aktivert, er Høy Verdi terskelen.\nNår deaktivert, er terskelverdien angitt nedenfor.</string>
+    <string name="title_persistent_high_threshold_link">Terskel: Høy verdi</string>
     <string name="note_search_button">SØK</string>
     <string name="all_note_button">ALLE</string>
     <string name="title_full_screen_mode">Fullskjerm-modus</string>
@@ -1631,8 +1647,8 @@
     <string name="enable_streaming_dialog_text">Vil du koble xDrip med denne sensoren? Dette vil stoppe Libre-leseren og LibreLink fra å motta varsler. Trykk ja og skann igjen for å koble til (velg ikke koble til hvis du vil kjøre xDrip med den patchede appen)</string>
     <string name="enable_streaming_dialog_title">Kobler Libre-sensor til Bluetooth</string>
     <string name="without_camera_permission_cannot_scan_barcode">Uten kameratillatelse kan vi ikke skanne en strekkode</string>
-    <string name="summary_create_missing_filtered">Lag filtrert data ved behov</string>
-    <string name="title_create_missing_filtered">Lag manglende filtrert</string>
+    <string name="summary_create_missing_filtered">Lager en ekstra grafkurve som viser filtrert eller utjevnet plott</string>
+    <string name="title_create_missing_filtered">Lag manglende filtrert plott</string>
     <string name="summary_widget_hide_graph">Skjul grafen på widgets (vises ved neste avlesing)</string>
     <string name="title_widget_hide_graph">Skjul widgetgraf</string>
     <string name="summary_illustrate_remote_data">Vis data mottatt eksternt (kun diagnostikk)</string>
@@ -1723,9 +1739,11 @@
     <string name="proceed">Fortsett</string>
     <string name="special_pairing_workaround">Spesiell løsning for sammenkobling</string>
     <string name="save_power">Spar strøm</string>
+    <string name="use_xdrip_cloud">Bruk xDrip Cloud</string>
     <string name="reduce_battery_and_network_overhead">Reduser batteri- og nettverksbruk ved å bruke batchbehandling og ekskludere unødvendige data</string>
-    <string name="simplify_graphs_by_smoothing_out_irregularities">Forenkle grafer ved å utjevne uregelmessigheter</string>
+    <string name="simplify_graphs_by_smoothing_out_irregularities">Forenkle grafer ved å utjevne uregelmessigheter i tidligere avlesninger. Siste avlesning, varsler og kringkastet verdi er ikke påvirket av denne innstillingen.  </string>
     <string name="graph_smoothing">Grafutjevning</string>
+    <string name="enable_graph_smoothing">Aktiver</string>
     <string name="last_reading">Siste avlesning</string>
     <string name="select_file_for_alert">Velg fil for varsel</string>
     <string name="cannot_choose_file_without_permission">Kan ikke velge fil uten lagringstillatelse</string>
@@ -1779,6 +1797,7 @@
     <string name="cloud_backup">Sikkerhetskopi i nettskyen</string>
     <string name="select_automatic_or_select_alternate">Velg Automatisk for xDrip til å administrere filer i Google Disk eller velg en alternativ spesifikk fil du vil bruke hvis du trenger å gjenopprette fra et annet sted.</string>
     <string name="restoring_backup_will_erase_warning">Gjenoppretting av en sikkerhetskopi vil slette gjeldende innstillinger og data med det fra sikkerhetskopien.\n\nEr du helt sikker på at du vil gjøre dette?</string>
+    <string name="you_cannot_undo_delete_alert">Du vil ikke kunne angre dette!\n\nEr du sikker på at du vil slette denne varselen?</string>
     <string name="this_backup_looks_like_came_from_different_format_string">Denne sikkerhetskopien ser ut som den kom fra en annen enhet:\n%s\nEr du sikker på at du vil gjenopprette fra denne sikkerhetskopien?</string>
     <string name="megabyte_format_string">%.1f MB</string>
     <string name="manual_selection_google_drive_file_warning">Du har valgt en fil fra Google Disk, men denne administreres ikke automatisk av xDrip, så den kan bare brukes til manuell sikkerhetskopiering og gjenoppretting.\n\nIngen automatisk sikkerhetskopiering vil skje med denne filen.\n\nVil du fortsette?</string>
@@ -1798,6 +1817,7 @@
     <string name="summary_ymax">Velg yMax for når det ikke er større avlesninger.</string>
     <string name="wait_to_connect">Bekreft innstillingene og vent på tilkobling.</string>
     <string name="summary_sens_expiry_notify">Lag varsel når sensoren nærmer seg utløp.</string>
+    <string name="title_sens_expiry">Sensorutløp varsler</string>
     <string name="title_sens_expiry_notify">Sensor-utløp</string>
     <string name="close">Lukk</string>
     <string name="title_advanced_settings_4_Lib2">Avanserte innstillinger for Libre 2</string>
@@ -1848,4 +1868,6 @@
     <string name="audio_focus_pause_all_other_sounds">Sett alle andre lyder på pause</string>
     <string name="use_camera_light">Bruk kameralys</string>
     <string name="use_camera_light_summary">Blink kameralys under varsler når tilkoblet en lader</string>
+    <string name="g7_should_start_automatically">G7 skal starte automatisk</string>
+    <string name="screenshot">Skjermdump</string>
 </resources>

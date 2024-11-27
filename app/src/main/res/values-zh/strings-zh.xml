@@ -217,6 +217,7 @@
     <string name="other_alerts">其他警报</string>
     <string name="extra_alerts_xdrip_plus">额外警报 (xDrip+)</string>
     <string name="persistent_high_alert">血糖持续高警报</string>
+    <string name="persistent_high_alert_enable">启用</string>
     <string name="forecasted_low_alert">预测低血糖警报</string>
     <string name="extrapolate_data_to_try_to_predict_lows">推断数据以尝试预测低点</string>
     <string name="alarm_at_forecasted_low_mins">预测血糖低了多少分钟报警</string>
@@ -1540,7 +1541,9 @@
     <string name="reschedule_with_new_timing">重新安排新的时间？</string>
     <string name="select_new_sound_source">选择新的声音源</string>
     <string name="snooze_done">← 静默 / 完成 →</string>
+    <string name="enable_graph_smoothing">启用</string>
     <string name="cannot_choose_file_without_permission">如果没有存储权限, 则无法选择文件</string>
     <string name="titleInside_yRange">启用</string>
+    <string name="title_sens_expiry_notify">启用</string>
     <string name="reraise_alerts_before_snooze_time">尽管延迟时间没到，重新发起警报</string>
 </resources>

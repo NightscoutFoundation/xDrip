@@ -61,17 +61,22 @@ public class StartNewSensor extends ActivityWithMenu {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (!Sensor.isActive()) {
-            JoH.fixActionBar(this);
-            setContentView(R.layout.activity_start_new_sensor);
-            button = (Button) findViewById(R.id.startNewSensor);
-            //dp = (DatePicker)findViewById(R.id.datePicker);
-            //tp = (TimePicker)findViewById(R.id.timePicker);
-            addListenerOnButton();
-        } else {
-            Intent intent = new Intent(this, StopSensor.class);
-            startActivity(intent);
+        if (DexCollectionType.getBestCollectorHardwareName().equals("G7")) {
+            JoH.static_toast_long(getString(R.string.g7_should_start_automatically));
             finish();
+        } else {
+            if (!Sensor.isActive()) {
+                JoH.fixActionBar(this);
+                setContentView(R.layout.activity_start_new_sensor);
+                button = (Button) findViewById(R.id.startNewSensor);
+                //dp = (DatePicker)findViewById(R.id.datePicker);
+                //tp = (TimePicker)findViewById(R.id.timePicker);
+                addListenerOnButton();
+            } else {
+                Intent intent = new Intent(this, StopSensor.class);
+                startActivity(intent);
+                finish();
+            }
         }
     }
 

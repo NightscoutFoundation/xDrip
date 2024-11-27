@@ -197,6 +197,8 @@ public class VoiceCommands {
             case "database administration":
                 JoH.startActivity(DatabaseAdmin.class);
                 break;
+            case "simulate crash":
+                throw new RuntimeException("Test crash");
         }
 
     }

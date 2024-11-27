@@ -249,13 +249,14 @@ public class Treatments extends Model {
     }
 
     public static synchronized Treatments create(final double carbs, final double insulinSum, final List<InsulinInjection> insulin, long timestamp, String suggested_uuid) {
-        // if treatment more than 1 minutes in the future
         final long future_seconds = (timestamp - JoH.tsl()) / 1000;
+        // if treatment more than 1 hour in the future
         if (future_seconds > (60 * 60)) {
             JoH.static_toast_long("Refusing to create a treatement more than 1 hours in the future!");
             return null;
         }
-        if ((future_seconds > 60) && (future_seconds < 86400) && ((carbs > 0) || (insulinSum > 0))) {
+        // if treatment more than 3 minutes in the future
+        if ((future_seconds > (3 * 60)) && (future_seconds < 86400) && ((carbs > 0) || (insulinSum > 0))) {
             final Context context = xdrip.getAppContext();
             JoH.scheduleNotification(context, "Treatment Reminder", "@" + JoH.hourMinuteString(timestamp) + " : "
                     + carbs + " g " + context.getString(R.string.carbs) + " / "

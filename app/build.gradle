@@ -89,10 +89,10 @@ android {
 
     defaultConfig {
         applicationId "com.eveningoutpost.dexdrip"
-        minSdkVersion 23
+        minSdkVersion 24
         // increasing target SDK version can cause compatibility issues with Android 7+
         //noinspection ExpiredTargetSdkVersion
-        targetSdkVersion 23
+        targetSdkVersion 24
         // change versionCode only when downgrade should be prevented
         // eg, when data structures are incompatible
         versionCode 1603091400
@@ -216,7 +216,7 @@ android {
             // set minSdkVersion to 21 or higher. When using Android Studio 2.3 or higher,
             // the build automatically avoids legacy multidex when deploying to a device running
             // API level 21 or higher—regardless of what you set as your minSdkVersion.
-            minSdkVersion 23
+            minSdkVersion 24
             versionNameSuffix "-dev"
             buildConfigField "int", "buildVersion", "2021010100"
             buildConfigField "String", "buildUUID", "\"0f79a60a-5616-99be-8eb1-a430edcfd9fd\""
@@ -285,9 +285,9 @@ dependencies {
    // implementation 'com.google.android.gms:play-services-maps:15.0.0'
     implementation 'com.google.android.gms:play-services-wearable:15.0.0'
     implementation 'com.google.android.gms:play-services-location:15.0.0'
-    implementation "com.google.android.gms:play-services-gcm:15.0.0"
+    implementation "androidx.work:work-runtime:2.9.1"
     implementation "com.google.android.gms:play-services-oss-licenses:15.0.0"
-
+    implementation "com.google.protobuf:protobuf-java:4.27.2"
     implementation 'com.squareup.wire:wire-runtime:2.2.0'
     implementation 'com.squareup.okhttp:okhttp:2.7.5'
     implementation 'com.squareup.okhttp3:okhttp:3.12.13'
@@ -369,9 +369,12 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0', {
         exclude group: 'com.android.support', module: 'support-annotations'
     }
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1', {
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5', {
         exclude group: 'com.android.support', module: 'support-annotations'
     }
+    androidTestImplementation 'androidx.test:rules:1.2.0'
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-idling-resource:3.1.0'
     // add this for intent mocking support
     //androidTestImplementation 'com.android.support.test.espresso:espresso-intents:3.0.1'

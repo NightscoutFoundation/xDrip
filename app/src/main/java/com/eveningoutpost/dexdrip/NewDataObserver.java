@@ -4,6 +4,7 @@ import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.LibreBlock;
 import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.receiver.InfoContentProvider;
 import com.eveningoutpost.dexdrip.sharemodels.BgUploader;
 import com.eveningoutpost.dexdrip.sharemodels.models.ShareUploadPayload;
 import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
@@ -58,6 +59,7 @@ public class NewDataObserver {
         sendToBlueJay();
         sendToRemoteBlueJay();
         Notifications.start();
+        InfoContentProvider.ping("bg");
         uploadToShare(bgReading, is_follower);
         textToSpeech(bgReading, null);
         LibreBlock.UpdateBgVal(bgReading.timestamp, bgReading.calculated_value);
@@ -87,6 +89,7 @@ public class NewDataObserver {
                 GcmActivity.push_external_status_update(JoH.tsl(), statusLine);
 
             }
+            InfoContentProvider.ping("status");
         }
 
     }

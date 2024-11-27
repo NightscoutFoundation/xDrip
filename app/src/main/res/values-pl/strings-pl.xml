@@ -37,6 +37,10 @@
     <string name="pref_header_cloud_storage">Przechowywanie w chmurze</string>
     <string name="auto_configure_title">Automatyczna konfiguracja</string>
     <string name="prefs_auto_config_summary">Automatyczna konfiguracja za pomocą kodu kreskowego.</string>
+    <string name="auto_config_cam_title">Aparat</string>
+    <string name="auto_config_cam_summary">Zeskanuj kod QR za pomocą telefonu komórkowego (zalecane)</string>
+    <string name="auto_config_image_title">Plik obrazu</string>
+    <string name="auto_config_image_summary">Możesz zapisać kod QR jako plik obrazu (np. .png lub .jpeg) na telefonie. Następnie użyj tej opcji, aby skanować kod QR z zapisanego pliku.</string>
     <string name="scan_share2_barcode">Skanowanie kodów kreskowych Share</string>
     <string name="pref_share2_scan_barcode_summary">Lub zeskanować kod kreskowy na odbiorniku share</string>
     <!-- MongoDB Settings -->
@@ -218,6 +222,8 @@
     <string name="other_alerts">Inne Alarmy</string>
     <string name="extra_alerts_xdrip_plus">Dodatkowe ostrzeżenia (xDrip+)</string>
     <string name="persistent_high_alert">Utrzymujące się wysokie alerty</string>
+    <string name="persistent_high_alert_enable">Włącz</string>
+    <string name="title_persistent_high_threshold">Próg</string>
     <string name="forecasted_low_alert">Prognozowany Low Alert</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Ekstrapolacji danych, aby spróbować przewidzieć upadki</string>
     <string name="alarm_at_forecasted_low_mins">Alarm przy prognozowanych niskich w minutach</string>
@@ -1322,6 +1328,7 @@
     <string name="title_clfollow_download_notifications">Powiadomienia</string>
     <string name="summary_clfollow_download_notifications">Pobierz powiadomienia z CareLink</string>
     <string name="title_ob1_options">Ustawienia Kolektora OB1 G5/G6</string>
+    <string name="summary_use_ob1_g5_collector_service"></string>
     <string name="title_use_ob1_g5_collector_service">Użyj kolektora OB1</string>
     <string name="summary_ob1_g5_use_transmitter_alg">Użyj wbudowanego algorytmu transmitera do obliczeń wartości poziomu glukozy kiedy to możliwe.</string>
     <string name="title_ob1_g5_use_transmitter_alg">Algorytm natywny</string>
@@ -1434,7 +1441,10 @@
     <string name="title_ongoing_notification_channel">Użyj bieżącego kanału powiadomień</string>
     <string name="title_notification_channels_grouping">Grupuj powiadomienia</string>
     <string name="summary_delay_ascending_3min">W przypadku rosnącego profilu głośności, opóźnij rozpoczęcie dźwięku alertu o 3 minuty. Wibracja (jeśli jest włączona) rozpoczyna się natychmiast po wyzwoleniu alertu, niezależnie od tego ustawienia.</string>
+    <string name="title_ascending_volume">Ustawienia rosnącej głośności</string>
     <string name="title_delay_ascending_3min">Opóźnij rosnącą głośność</string>
+    <string name="summary_ascending_volume_to_medium">Jeżeli zostanie włączone, głośność będzie rosnąć do średniej głośności zamiast maksymalnej</string>
+    <string name="title_ascending_volume_to_medium">Rośnij do połowy</string>
     <string name="summary_play_sound_for_initial_calibration">Odtwórz dźwięk, gdy żądana jest początkowa kalibracja</string>
     <string name="title_play_sound_for_initial_calibration">Alarm początkowy</string>
     <string name="category_noisy_readings">Zaszumione odczyty</string>
@@ -1684,8 +1694,10 @@
     <string name="proceed">Kontynuuj</string>
     <string name="special_pairing_workaround">Obejście trybu parowania</string>
     <string name="save_power">Oszczędzaj energię</string>
+    <string name="use_xdrip_cloud">Użyj chmury xDrip</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Uproszczenie wykresów poprzez usunięcie nieprawidłowości</string>
     <string name="graph_smoothing">Wygładzanie wykresu</string>
+    <string name="enable_graph_smoothing">Włącz</string>
     <string name="last_reading">Ostatni odczyt</string>
     <string name="select_file_for_alert">Wybierz plik dla alarmu</string>
     <string name="cannot_choose_file_without_permission">Nie można wybrać pliku bez uprawnień do przechowywania</string>
@@ -1738,6 +1750,7 @@
     <string name="drive_permission_blurb">Aby automatycznie utworzyć kopię zapasową, xDrip potrzebuje uprawnień do korzystania z twojego Dysku Google.\n\nDeweloperzy xDrip nie mogą uzyskać dostępu do żadnych plików ani zobaczyć Twoich danych osobowych.</string>
     <string name="cloud_backup">Kopia zapasowa w chmurze</string>
     <string name="restoring_backup_will_erase_warning">Przywracanie kopii zapasowej usunie Twoje bieżące ustawienia i nadpisze je danymi z kopii zapasowej.\n\nCzy na pewno chcesz to zrobić?</string>
+    <string name="you_cannot_undo_delete_alert">Nie będziesz mógł tego cofnąć!\n\nCzy na pewno chcesz usunąć ten alarm?</string>
     <string name="this_backup_looks_like_came_from_different_format_string">Ta kopia zapasowa wygląda jakby pochodziła z innego urządzenia:\n%s\nCzy na pewno chcesz przywrócić z tej kopii zapasowej?</string>
     <string name="megabyte_format_string">%.1f MB</string>
     <string name="invalid_time">Nieprawidłowy czas</string>
@@ -1754,6 +1767,7 @@
     <string name="summary_ymax">Wybierz yMax, dla sytuacji, gdy nie ma wyższych odczytów.</string>
     <string name="wait_to_connect">Sprawdź ustawienia i poczekaj na połączenie.</string>
     <string name="summary_sens_expiry_notify">Wyświetl powiadomienia, gdy czujnik zbliża się do wygaśnięcia.</string>
+    <string name="title_sens_expiry">Powiadomienia o wygaśnięciu czujnika</string>
     <string name="title_sens_expiry_notify">Czas wygaśnięcia czujnika</string>
     <string name="close">Zamknij</string>
     <string name="title_advanced_settings_4_Lib2">Zaawansowane ustawienia dla Libre 2</string>
@@ -1786,4 +1800,6 @@
     <string name="audio_focus_pause_all_other_sounds">Wstrzymaj wszystkie inne dźwięki</string>
     <string name="use_camera_light">Użyj latarki aparatu</string>
     <string name="use_camera_light_summary">Mrugaj latarką aparatu podczas alarmów przy podłączeniu do ładowarki</string>
+    <string name="g7_should_start_automatically">G7 powinien uruchomić się automatycznie</string>
+    <string name="screenshot">Zrzut ekranu</string>
 </resources>

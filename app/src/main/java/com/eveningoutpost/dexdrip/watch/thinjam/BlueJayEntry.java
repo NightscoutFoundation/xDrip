@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.watch.thinjam;
 
 import android.content.SharedPreferences;
+import android.os.Build;
 
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
@@ -122,6 +123,10 @@ public class BlueJayEntry {
         if (isEnabled()) {
             Inevitable.task("bluejay-send-png-external", 200, () -> JoH.startService(BlueJayService.class, bytes, "function", "png", "params", parameters, "type", type));
         }
+    }
+
+    public static boolean isNative() {
+        return Build.MODEL.startsWith("BlueJay U");
     }
 
     static void startWithRefresh() {

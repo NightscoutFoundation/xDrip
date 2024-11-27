@@ -49,6 +49,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.FileProvider;
 import androidx.loader.content.CursorLoader;
 
 import android.text.InputType;
@@ -62,6 +63,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.activeandroid.ActiveAndroid;
+import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
@@ -809,14 +811,18 @@ public class JoH {
     }
 
 
-    public static String niceTimeScalarNatural(long t) {
+    public static String niceTimeScalarNatural(long t) { // Shows the integer part only when less than 1 day.
+        return niceTimeScalarNatural(t, 0);
+    }
+
+    public static String niceTimeScalarNatural(long t, int h_digits) { // Rounds down to the defined number of decimal points when less than 1 day.
         if (t > 3000000) t = t + 10000; // round up by 10 seconds if nearly an hour
         if ((t > Constants.DAY_IN_MS) && (t < Constants.WEEK_IN_MS * 2)) {
             final SimpleDateFormat df = new SimpleDateFormat("EEEE", Locale.getDefault());
             final String day = df.format(new Date(JoH.tsl() + t));
             return ((t > Constants.WEEK_IN_MS) ? "next " : "") + day;
         } else {
-            return niceTimeScalar(t);
+            return niceTimeScalar(t, h_digits);
         }
     }
 
@@ -1422,14 +1428,15 @@ public class JoH {
         }
     }
 
-    public static void shareImage(Context context, File file) {
-        Uri uri = Uri.fromFile(file);
+    public static void shareImage(final Context context, final File file) {
+        final Uri uri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", file);
         final Intent intent = new Intent();
         intent.setAction(Intent.ACTION_SEND);
         intent.setType("image/*");
         intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "");
         intent.putExtra(android.content.Intent.EXTRA_TEXT, "");
         intent.putExtra(Intent.EXTRA_STREAM, uri);
+        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         try {
             context.startActivity(Intent.createChooser(intent, "Share"));
         } catch (ActivityNotFoundException e) {
@@ -1879,6 +1886,17 @@ public class JoH {
         final byte[] newBytes = new byte[length];
         System.arraycopy(source, start, newBytes, 0, length);
         return newBytes;
+    }
+
+    public static byte[] joinBytes(final byte[] first, final byte[] second) {
+        if (first == null || second == null) {
+            throw new IllegalArgumentException("Input arrays cannot be null");
+        }
+        final int totalLength = first.length + second.length;
+        final byte[] result = new byte[totalLength];
+        System.arraycopy(first, 0, result, 0, first.length);
+        System.arraycopy(second, 0, result, first.length, second.length);
+        return result;
     }
 
 

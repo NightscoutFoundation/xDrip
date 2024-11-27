@@ -31,6 +31,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.eveningoutpost.dexdrip.receiver.InfoContentProvider.ping;
 import static com.eveningoutpost.dexdrip.utils.FileUtils.getExternalDir;
 
 
@@ -162,6 +163,7 @@ public class SdcardImportExport extends BaseAppCompatActivity {
 
     public static void storePreferencesFromBytes(byte[] bytes, Context context) {
         if (dataFromBytes(bytes, PREFERENCES_FILE, context)) {
+            ping("pref");
             Log.i(TAG, "Restarting as new preferences loaded from bytes");
             hardReset();
         } else {
@@ -291,6 +293,7 @@ public class SdcardImportExport extends BaseAppCompatActivity {
             JoH.static_toast_long("Restoring Settings");
             if (copyPreferencesFileBack(activity, results.get(0))) {
                 Log.e(TAG, "Restoring preferences succeeded from first match: " + results.get(0));
+                ping("pref");
                 hardReset();
             } else {
                 JoH.static_toast_long("Couldn't restore preferences from: " + results.get(0));

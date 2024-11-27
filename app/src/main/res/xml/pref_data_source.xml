@@ -89,6 +89,8 @@
                 android:defaultValue="false"
                 android:key="use_nfc_scan"
                 android:summary="@string/allow_sensor_scanning"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/use_nfc_feature" />
             <ListPreference
 	            android:defaultValue="enable_streaming_ask"
@@ -205,6 +207,8 @@
                 android:dependency="nsfollow_download_treatments"
                 android:key="cloud_storage_api_skip_download_from_xdrip"
                 android:summary="@string/summary_cloud_storage_api_download_from_xdrip"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/title_cloud_storage_api_download_from_xdrip" />
         </PreferenceScreen>
         <ListPreference
@@ -232,6 +236,11 @@
             android:singleLine="true"
             android:summary="Login password for Dex Share Following"
             android:title="Share Password" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="dex_share_us_acct"
+            android:summary="Your account and follower app are from the USA"
+            android:title="US Servers" />
 
         <ListPreference
             android:defaultValue="gb"
@@ -395,12 +404,6 @@
                     android:key="ob1_special_pairing_workaround"
                     android:summary="Some Samsung devices can have an error where they lose the pairing information. This attempts to work around the issue."
                     android:title="@string/special_pairing_workaround" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="ob1_initiate_bonding_flag"
-                    android:summary="@string/summary_ob1_initiate_bonding_flag"
-                    android:title="@string/title_ob1_initiate_bonding_flag"
-                    />
                 <EditTextPreference
                     android:defaultValue=""
                     android:inputType="number"
@@ -409,20 +412,6 @@
                     android:key="dex_specified_slot"
                     android:summary="@string/summary_dex_specified_slot"
                     android:title="@string/title_dex_specified_slot" />
-            </PreferenceCategory>
-            <PreferenceCategory
-                android:key="old_g5_options"
-                android:title="@string/title_old_g5_options">
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="run_ble_scan_constantly"
-                    android:summary="@string/g5_scan_constantly"
-                    android:title="@string/scan_for_g5_constantly" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="run_G5_ble_tasks_on_uithread"
-                    android:summary="@string/g5_force_ui_thread"
-                    android:title="@string/force_g5_ui_thread" />
             </PreferenceCategory>
             <PreferenceCategory
                 android:key="dex_battery_category"

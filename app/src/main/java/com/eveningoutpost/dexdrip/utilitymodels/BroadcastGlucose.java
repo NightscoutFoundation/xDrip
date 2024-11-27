@@ -2,14 +2,18 @@ package com.eveningoutpost.dexdrip.utilitymodels;
 
 import static com.eveningoutpost.dexdrip.models.JoH.dateTimeText;
 import static com.eveningoutpost.dexdrip.models.JoH.msSince;
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.getTransmitterID;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Unitized.usingMgDl;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
 
 import android.content.Intent;
 import android.os.Bundle;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.BuildConfig;
+import com.eveningoutpost.dexdrip.g5model.DexSessionKeeper;
+import com.eveningoutpost.dexdrip.g5model.FirmwareCapability;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.Calibration;
 import com.eveningoutpost.dexdrip.models.JoH;
@@ -26,6 +30,10 @@ public class BroadcastGlucose {
 
     private static final String TAG = "BroadcastGlucose";
     private static long lastTimestamp = 0;
+    private static long dexStartedAt = 0;
+    private static boolean connectedToG7 = false;
+    private static boolean connectedToG6 = false;
+    private static boolean usingG6OrG7 = false;
 
     public static void sendLocalBroadcast(final BgReading bgReading) {
         if (SendXdripBroadcast.enabled()) {
@@ -63,7 +71,7 @@ public class BroadcastGlucose {
 
                 UserError.Log.i("SENSOR QUEUE:", "Broadcast data");
 
-                String collectorName = DexCollectionType.getBestCollectorHardwareName();
+                String collectorName = getBestCollectorHardwareName();
                 if (collectorName.equals("G6 Native") || collectorName.equals("G7")) {
                     if (collectorName.equals("G7")) {
                         collectorName = "G6 Native"; // compatibility for older AAPS
@@ -147,7 +155,25 @@ public class BroadcastGlucose {
                 }
 
                 bundle.putInt(Intents.EXTRA_SENSOR_BATTERY, BridgeBattery.getBestBridgeBattery());
-                bundle.putLong(Intents.EXTRA_SENSOR_STARTED_AT, sensor.started_at);
+                if (getBestCollectorHardwareName().equals("G7") || getBestCollectorHardwareName().equals("Native G6")) { // If we are using G7 or One+, or G6 in native mode
+                    usingG6OrG7 = true;
+                }
+                if (getBestCollectorHardwareName().equals("G7") && FirmwareCapability.isDeviceAltOrAlt2(getTransmitterID())) { // If we are using G7 or One+ and there is connectivity
+                    connectedToG7 = true;
+                }
+                if (getBestCollectorHardwareName().equals("G6 Native") && FirmwareCapability.isTransmitterG6(getTransmitterID())) { // If we are using a G6 in native mode and there is connectivity
+                    connectedToG6 = true;
+                }
+                if (usingG6OrG7) { // If we are using G7 or G6 in native mode
+                    if (connectedToG6 || connectedToG7) { // Only if there is connectivity
+                        dexStartedAt = DexSessionKeeper.getStart(); // Session start time reported by the Dexcom transmitter
+                        if (dexStartedAt > 0) { // Only if dexStartedAt is valid
+                            bundle.putLong(Intents.EXTRA_SENSOR_STARTED_AT, dexStartedAt);
+                        }
+                    }
+                } else { // If we are not using G7, One+ or G6 in native mode
+                    bundle.putLong(Intents.EXTRA_SENSOR_STARTED_AT, sensor.started_at);
+                }
                 bundle.putLong(Intents.EXTRA_TIMESTAMP, bgReading.timestamp);
 
                 addDisplayInformation(bundle);

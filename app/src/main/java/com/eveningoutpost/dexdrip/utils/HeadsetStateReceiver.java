@@ -44,18 +44,16 @@ public class HeadsetStateReceiver extends BroadcastReceiver {
                 final int state = intent.getIntExtra(BluetoothHeadset.EXTRA_STATE, -1);
                 final int previousState = intent.getIntExtra(BluetoothHeadset.EXTRA_PREVIOUS_STATE, -1);
                 final String deviceInfo = device.getName() + "\n" + device.getAddress() + " " + (device.getBluetoothClass() != null ? device.getBluetoothClass() : "<unknown class>");
-                //UserError.Log.uel(TAG, "Bluetooth audio connection state change: " + state + " was " + previousState + " " + device.getAddress() + " " + device.getName());
+                // UserError.Log.uel(TAG, "Bluetooth audio connection state change: from " + previousState + " to " + state + " " + device.getAddress() + " " + device.getName());
                 if (state == BluetoothProfile.STATE_CONNECTED && previousState != BluetoothProfile.STATE_CONNECTED) {
                     PersistentStore.setString(PREF_LAST_CONNECTED_MAC, device.getAddress());
                     PersistentStore.setString(PREF_LAST_CONNECTED_NAME, device.getName());
                     UserError.Log.uel(TAG, "Bluetooth Audio connected: " + deviceInfo);
                     processDevice(device.getAddress(), true);
-
-                } else if (state == BluetoothProfile.STATE_DISCONNECTED && previousState == BluetoothProfile.STATE_CONNECTED) {
+                } else if (state == BluetoothProfile.STATE_DISCONNECTED && previousState != BluetoothProfile.STATE_DISCONNECTED) {
                     UserError.Log.uel(TAG, "Bluetooth Audio disconnected: " + deviceInfo);
                     processDevice(device.getAddress(), false);
                 }
-
             } else {
                 UserError.Log.d(TAG, "Device was null in intent!");
             }

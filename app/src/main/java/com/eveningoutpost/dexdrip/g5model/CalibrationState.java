@@ -40,7 +40,7 @@ public enum CalibrationState {
     SensorFailedStart(0x16, "Sensor Failed Start"),
     SensorFailedStart2(0x17, "Sensor Failed Start 2"),
     SensorExpired(0x18, "Sensor Expired"),
-    SensorFailed7(0x19, "Sensor Failed 7"),
+    SensorFailed7(0x19, "Sensor Failed 7"), // apparently not a failure state
     SensorStopped2(0x1A, "Sensor Stopped 2"),
     SensorFailed8(0x1B, "Sensor Failed 8"),
     SensorFailed9(0x1C, "Sensor Failed 9"),
@@ -58,7 +58,7 @@ public enum CalibrationState {
 
     private static final SparseArray<CalibrationState> lookup = new SparseArray<>();
     private static final ImmutableSet<CalibrationState> failed = ImmutableSet.of(SensorFailed, SensorFailed2, SensorFailed3, SensorFailed4, SensorFailed5, SensorFailed6, SensorFailedStart);
-    private static final ImmutableSet<CalibrationState> stopped = ImmutableSet.of(Stopped, Ended, SensorFailed, SensorFailed2, SensorFailed3, SensorFailed4, SensorFailed5, SensorFailed6, SensorFailedStart, SensorStopped);
+    private static final ImmutableSet<CalibrationState> stopped = ImmutableSet.of(Stopped, Ended, SensorExpired, SensorFailed, SensorFailed2, SensorFailed3, SensorFailed4, SensorFailed5, SensorFailed6, SensorFailedStart, SensorStopped);
     private static final ImmutableSet<CalibrationState> transitional = ImmutableSet.of(WarmingUp, SensorStarted, SensorStopped, CalibrationSent);
 
 
@@ -85,7 +85,8 @@ public enum CalibrationState {
 
     public boolean usableGlucose() {
         return this == Ok
-                || this == NeedsCalibration;
+                || this == NeedsCalibration
+                || this == SensorFailed7;
     }
 
     public boolean insufficientCalibration() {

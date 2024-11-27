@@ -37,6 +37,10 @@
     <string name="pref_header_cloud_storage">Cloudové úložiště</string>
     <string name="auto_configure_title">Automatická konfigurace</string>
     <string name="prefs_auto_config_summary">Automatická konfigurace pomocí čárového kódu.</string>
+    <string name="auto_config_cam_title">Fotoaparát</string>
+    <string name="auto_config_cam_summary">Naskenovat QR kód pomocí telefonu (doporučeno)</string>
+    <string name="auto_config_image_title">Obrazový soubor</string>
+    <string name="auto_config_image_summary">Můžete uložit QR kód jako obrázkový soubor (například .png nebo .jpeg soubor) do vašeho telefonu. Poté můžete použít tuto volbu k naskenování QR kódu z tohoto uloženého souboru.</string>
     <string name="scan_share2_barcode">Skenovat čárový kód na přijímači</string>
     <string name="pref_share2_scan_barcode_summary">Nebo naskenovat čárový kód na přijímači</string>
     <!-- MongoDB Settings -->
@@ -115,6 +119,7 @@
     <string name="title_activity_update">xDrip+ K dispozici je aktualizace</string>
     <string name="title_activity_display_qrcode">Sdílet nastavení pomocí QR kódu</string>
     <string name="title_activity_send_feed_back">Poslat zpětnou vazbu Jamorhamovi (autor)</string>
+    <string name="title_activity_save_logs">Uložit záznamy událostí</string>
     <string name="title_activity_maps">Mapa Parakeetů</string>
     <string name="title_activity_display_preferences">Zobrazit možnosti</string>
     <string name="export_submenu">Možnosti importu/exportu</string>
@@ -218,6 +223,8 @@
     <string name="other_alerts">Jiné výstrahy</string>
     <string name="extra_alerts_xdrip_plus">Další výstrahy (xDrip+)</string>
     <string name="persistent_high_alert">Trvalá výstraha vysoké glykémie</string>
+    <string name="persistent_high_alert_enable">Povolit</string>
+    <string name="title_persistent_high_threshold">Limit</string>
     <string name="forecasted_low_alert">Výstrahy při předpovídání nízkých hodnot</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolovat data pro predikci nízké glykémie</string>
     <string name="alarm_at_forecasted_low_mins">Alarm při prognóze nízkých hodnot (min)</string>
@@ -394,7 +401,9 @@
     <string name="please_enter_your_question_or_comments_here">Prosím zde vložte Vaší otázku nebo komentář.\n\nPokud zadáte i emailovou adresu, můžete obdržet odpověď.\n\n</string>
     <string name="optional_contact_info_here_eg_email">Volitelné kontaktní informace jako email atd.</string>
     <string name="send_message">Odeslat zprávu</string>
+    <string name="save_logs">Uložit záznamy událostí</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Prosím napište, co si myslíte o aplikaci obecně</string>
+    <string name="log_confidential_note">Varování!\nZáznamy událostí mohou obsahovat důvěrné informace - jako jsou hesla nebo identifikaci uživatele.</string>
     <string name="preferences_saved_in_sdcard_downloads">Nastavení uložena do SD karty do složky Stažené dokumenty</string>
     <string name="could_not_write_to_sdcard_check_perms">Nelze zapsat na SD kartu - zkontrolujte oprávnění?</string>
     <string name="loaded_preferences_restarting">Nastavení načtena! Restartuji</string>
@@ -1408,6 +1417,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="summary_plus_accept_follower_actions">Ošetření, kalibrace a další jiné akce zadané sledujícími budou přijaty i na tomto zařízení</string>
     <string name="title_plus_accept_follower_actions">Přijímat akce sledujícího</string>
     <string name="summary_plus_whole_house">Účast v Whole House síti</string>
+    <string name="summary_plus_xdrip_cloud">Používat nové cloudové servery xDrip+. Sledované (master) a sledující (follower) zařízení musí mít toto nastavení stejné.</string>
     <string name="title_plus_whole_house">Whole House</string>
     <string name="summary_libre_whole_house_collector">Toto zařízení bude kolektorem pro Whole House síť</string>
     <string name="title_libre_whole_house_collector">Libre Whole House</string>
@@ -1447,13 +1457,18 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="summary_notification_channels_grouping">Seskupit všechna oznámení v notifikační liště do jednoho oznámení. Není možné použít spolu s možností Hodnota glykémie jako číselná ikona v notifikační liště</string>
     <string name="title_notification_channels_grouping">Seskupit oznámení do jednoho</string>
     <string name="summary_delay_ascending_3min">Posunout začátek zvukové výstrahy o 3 minuty pro zvukový profil vzestupné hlasitosti. Vibrace (pokud jsou povoleny) začnou ihned po spuštění výstrahy bez ohledu na toto nastavení.</string>
+    <string name="title_ascending_volume">Nastavení vzestupné hlasitosti</string>
     <string name="title_delay_ascending_3min">Zpozdit vzestupnou hlasitost</string>
+    <string name="summary_ascending_volume_to_medium">Pokud je povoleno, zvukový profil vzestupné hlasitosti bude místo maximální hlasitosti stoupat na střední hlasitost</string>
+    <string name="title_ascending_volume_to_medium">Vzestup na střední hlasitost</string>
     <string name="summary_play_sound_for_initial_calibration">Přehrát zvuk při požadavku na výchozí kalibraci</string>
     <string name="title_play_sound_for_initial_calibration">Výchozí výstraha</string>
     <string name="category_noisy_readings">Šum v hodnotách glykémie</string>
     <string name="category_falling_rising_bg">Pokles/nárůst glykemie</string>
     <string name="category_alert_prefs">Nastavení výstrah (pro tyto výstrahy)</string>
     <string name="summary_persistent_high_alert">Pokud trvá vysoká glykémie příliš dlouho a neklesá</string>
+    <string name="summary_persistent_high_threshold_link">Pokud je povoleno, vysoká hodnota je hodnota limitu.\nJe-li vypnuto, hodnota limitu je hodnota uvedená níže.</string>
+    <string name="title_persistent_high_threshold_link">Limit: Vysoká hodnota</string>
     <string name="note_search_button">HLEDAT</string>
     <string name="all_note_button">VŠE</string>
     <string name="title_full_screen_mode">Režim celé obrazovky</string>
@@ -1488,6 +1503,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="progress">pokrok</string>
     <string name="bluetooth_device">Bluetooth zařízení:   </string>
     <string name="transmitter_battery_status">Baterie vysílače:  </string>
+    <string name="database_size">Velikost databáze:  </string>
     <string name="top">Nahoru</string>
     <string name="connect_device_usb_otg">Prosím připojte Vaše zařízení pomocí USB OTG kabelu.</string>
     <string name="connection_status">Stav připojení:</string>
@@ -1717,9 +1733,11 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="proceed">Pokračovat</string>
     <string name="special_pairing_workaround">Speciální způsob párování pro telefony Samsung</string>
     <string name="save_power">Úsporný režim</string>
+    <string name="use_xdrip_cloud">Použít xDrip+ cloud</string>
     <string name="reduce_battery_and_network_overhead">Snížit spotřebu baterie a objem přenesených dat pomocí dávkového zpracování a vyloučení nepotřebných dat</string>
-    <string name="simplify_graphs_by_smoothing_out_irregularities">Zjednodušit grafy vyhlazením (odstraněním) odchylých dat</string>
+    <string name="simplify_graphs_by_smoothing_out_irregularities">Zjednodušit grafy vyhlazením (odstraněním) odchylných hodnot glykémií. Toto nastavení neovlivní aktuální hodnotu glykémie, výstrahy a odesílanou hodnotu glykémie.  </string>
     <string name="graph_smoothing">Vyhlazování grafu</string>
+    <string name="enable_graph_smoothing">Povolit</string>
     <string name="last_reading">Poslední hodnota</string>
     <string name="select_file_for_alert">Vybrat soubor pro výstrahu</string>
     <string name="cannot_choose_file_without_permission">Pro vybrání souboru je zapotřebí udělit oprávnění k úložišti zařízení</string>
@@ -1773,6 +1791,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="cloud_backup">Záloha v cloudu</string>
     <string name="select_automatic_or_select_alternate">Vyberte automatickou správu souborů aplikací xDrip+ na Google Drive nebo vyberte jiný specifický soubor, který chcete použít v případě obnovy z jiného místa.</string>
     <string name="restoring_backup_will_erase_warning">Obnovení zálohy vymaže Vaše aktuální nastavení a data ze zálohy.\n\nJste si naprosto jisti, že to chcete udělat?</string>
+    <string name="you_cannot_undo_delete_alert">Odstraněnou výstrahu nelze vrátit zpět!\n\nOpravdu chcete odstranit tuto výstrahu?</string>
     <string name="this_backup_looks_like_came_from_different_format_string">Zdá se, že tato záloha pochází z jiného zařízení:\n%s\nJste si jisti, že chcete provést obnovu z této zálohy?</string>
     <string name="megabyte_format_string">%.1f MB</string>
     <string name="manual_selection_google_drive_file_warning">Vybrali jste soubor z Google Drive, který není automaticky spravován aplikací xDrip+. Tento soubor lze použít pouze pro manuální zálohu a obnovení.\n\nNedojde k žádnému automatickému zálohování do tohoto souboru.\n\nChcete pokračovat?</string>
@@ -1792,6 +1811,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="summary_ymax">Zvolit maximum osy y, pokud se nebudou vyskytovat výšší hodnoty glykémie.</string>
     <string name="wait_to_connect">Ověřte nastavení a počkejte na připojení.</string>
     <string name="summary_sens_expiry_notify">Upozornit, když se blíží konec senzoru.</string>
+    <string name="title_sens_expiry">Oznámení konce senzoru</string>
     <string name="title_sens_expiry_notify">Senzor bude končit</string>
     <string name="close">Zavřít</string>
     <string name="title_advanced_settings_4_Lib2">Pokročilá nastavení pro Libre 2</string>
@@ -1835,11 +1855,13 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="process_glucose_data_received">Zpracovávat hodnoty glykémie přijatých z NSClient</string>
     <string name="use_health_connect">Používat Health Connect</string>
     <string name="audio_focus">Zvukové preference</string>
-    <string name="audio_focus_summary">Zvolte, co udělat se zvuky ostatních aplikací během přehrávání výstrah</string>
+    <string name="audio_focus_summary">Vyberte, co udělat se zvuky ostatních aplikací během přehrávání výstrah</string>
     <string name="audio_focus_dont_adjust_other_app_sounds">Neupravovat zvuky ostatních aplikací</string>
     <string name="audio_focus_lower_volume_of_other_apps">Snížit hlasitost zvuků ostatních aplikací</string>
     <string name="audio_focus_pause_other_apps_playing_audio">Pozastavit ostatní aplikace přehrávající zvuky</string>
     <string name="audio_focus_pause_all_other_sounds">Pozastavit všechny ostatní zvuky</string>
     <string name="use_camera_light">Používat světlo fotoaparátu</string>
     <string name="use_camera_light_summary">Blikat světlem fotoaparátu během trvání výstrahy, pokud je telefon připojen k nabíječce</string>
+    <string name="g7_should_start_automatically">Senzor G7 by se měl spustit automaticky</string>
+    <string name="screenshot">Snímek obrazovky</string>
 </resources>

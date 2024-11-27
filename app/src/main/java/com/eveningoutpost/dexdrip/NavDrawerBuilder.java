@@ -18,7 +18,6 @@ import com.eveningoutpost.dexdrip.tables.CalibrationDataTable;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utilitymodels.Experience;
 import com.eveningoutpost.dexdrip.stats.StatsActivity;
-import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 
@@ -92,7 +91,7 @@ public class NavDrawerBuilder {
                             }
                         } else { //If there haven't been two initial calibrations
                             if (BgReading.isDataSuitableForDoubleCalibration() || Ob1G5CollectionService.isG5WantingInitialCalibration()) {
-                                if ((FirmwareCapability.isTransmitterRawIncapable(getTransmitterID()) && last_two_bgReadings.size() > 1) || FirmwareCapability.isDeviceG7(getTransmitterID()) ) { //A Firefly G6 after third reading or a G7
+                                if ((FirmwareCapability.isTransmitterRawIncapable(getTransmitterID()) && last_two_bgReadings.size() > 1) || FirmwareCapability.isDeviceAltOrAlt2(getTransmitterID()) ) { //A Firefly G6 after third reading or a G7
                                     this.nav_drawer_options.add(context.getString(R.string.add_calibration));
                                     this.nav_drawer_intents.add(new Intent(context, AddCalibration.class));
                                 } else { //G5 or non-Firefly G6 or Firefly G6 in no-code mode, after warm-up before initial calibration
@@ -103,7 +102,7 @@ public class NavDrawerBuilder {
                         }
                     }
                 }
-                if (!getBestCollectorHardwareName().equals("G7") || Pref.getBooleanDefaultFalse("engineering_mode")) { // If we are using G7, offer the stop sensor option in engineering mode only
+                if (!getBestCollectorHardwareName().equals("G7")) { // If we are using G7, there will be no stop sensor option in the menu.
                     this.nav_drawer_options.add(context.getString(R.string.stop_sensor));
                     this.nav_drawer_intents.add(new Intent(context, StopSensor.class));
                 }

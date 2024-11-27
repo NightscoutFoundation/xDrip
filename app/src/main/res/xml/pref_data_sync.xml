@@ -8,9 +8,18 @@
         android:title="@string/data_sync">
         <PreferenceScreen
             android:icon="@drawable/ic_qrscan"
-            android:key="auto_configure"
+            android:key="auto_config_top"
             android:summary="@string/prefs_auto_config_summary"
-            android:title="@string/auto_configure_title" />
+            android:title="@string/auto_configure_title">
+            <PreferenceScreen
+                android:key="auto_configure"
+                android:summary="@string/auto_config_cam_summary"
+                android:title="@string/auto_config_cam_title" />
+            <PreferenceScreen
+                android:key="qr_code_from_file"
+                android:summary="@string/auto_config_image_summary"
+                android:title="@string/auto_config_image_title" />
+        </PreferenceScreen>
         <PreferenceScreen
             android:icon="@drawable/ic_cloud_upload_grey600_48dp"
             android:key="cloud_data_sync"
@@ -26,6 +35,8 @@
                     android:disableDependentsState="false"
                     android:key="cloud_storage_api_enable"
                     android:summary="@string/pref_summary_api_enabled"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
                     android:title="@string/pref_title_api_enabled" />
                 <CheckBoxPreference
                     android:defaultValue="true"
@@ -37,6 +48,8 @@
                     android:dependency="cloud_storage_api_enable"
                     android:key="cloud_storage_api_use_best_glucose"
                     android:summary="@string/use_plugins_for_brodcast"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
                     android:title="@string/send_display_glucose" />
                 <EditTextPreference
                     android:defaultValue="@string/pref_default_api_url"
@@ -56,12 +69,16 @@
                         android:dependency="cloud_storage_api_enable"
                         android:key="cloud_storage_api_download_enable"
                         android:summary="@string/summary_cloud_storage_api_download_enable"
+                        android:switchTextOff="@string/short_off_text_for_switches"
+                        android:switchTextOn="@string/short_on_text_for_switches"
                         android:title="@string/title_cloud_storage_api_download_enable" />
                     <SwitchPreference
                         android:defaultValue="true"
                         android:dependency="cloud_storage_api_download_enable"
                         android:key="cloud_storage_api_skip_download_from_xdrip"
                         android:summary="@string/summary_cloud_storage_api_download_from_xdrip"
+                        android:switchTextOff="@string/short_off_text_for_switches"
+                        android:switchTextOn="@string/short_on_text_for_switches"
                         android:title="@string/title_cloud_storage_api_download_from_xdrip" />
                 </PreferenceScreen>
                 <CheckBoxPreference
@@ -123,6 +140,8 @@
                     <SwitchPreference
                         android:defaultValue="false"
                         android:key="cloud_storage_mongodb_enable"
+                        android:switchTextOff="@string/short_off_text_for_switches"
+                        android:switchTextOn="@string/short_on_text_for_switches"
                         android:title="@string/enable_mongo_sync" />
                     <EditTextPreference
                         android:defaultValue="@string/pref_default_mongodb_uri"
@@ -169,6 +188,8 @@
                 <SwitchPreference
                     android:defaultValue="false"
                     android:key="cloud_storage_influxdb_enable"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
                     android:title="@string/influxdb_sync" />
                 <EditTextPreference
                     android:defaultValue="@string/pref_default_influxdb_uri"
@@ -250,16 +271,6 @@
                     android:key="share_test_key"
                     android:shouldDisableView="true"
                     android:title="@string/dexcom_test_mode_serial" />
-                <Preference
-                    android:dependency="share_upload"
-                    android:summary="@string/manage_existing_followers"
-                    android:key="manage_dexcom_share_followers"
-                    android:title="@string/manage_followers">
-                    <intent
-                        android:action="android.intent.action.MAIN"
-                        android:targetClass="com.eveningoutpost.dexdrip.FollowerManagementActivity"
-                        android:targetPackage="@string/local_target_package" />
-                </Preference>
             </PreferenceScreen>
             <PreferenceScreen
                 android:key="tidepool_upload_screen"

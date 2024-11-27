@@ -93,44 +93,59 @@
                     android:summary="@string/create_shortcut"
                     android:title="@string/shortcut_to_bg_alerts" />
 
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="disable_alerts_stale_data"
-                    android:summary="@string/suppress_alerts_missed_readings"
-                    android:title="@string/suppress_alerts_if_missed_readings" />
-                <EditTextPreference
-                    android:defaultValue="15"
-                    android:dependency="disable_alerts_stale_data"
-                    android:inputType="number"
-                    android:key="disable_alerts_stale_data_minutes"
-                    android:summary="@string/suppress_alerts_after"
-                    android:title="@string/suppress_alerts_after" />
+                <PreferenceScreen
+                    android:key="suppress_alerts_screen"
+                    android:title="@string/suppress_alerts_if_missed_readings">
+                    <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:key="disable_alerts_stale_data"
+                        android:summary="@string/suppress_alerts_missed_readings"
+                        android:title="@string/suppress_alerts_if_missed_readings" />
+                    <EditTextPreference
+                        android:defaultValue="15"
+                        android:dependency="disable_alerts_stale_data"
+                        android:inputType="number"
+                        android:key="disable_alerts_stale_data_minutes"
+                        android:summary="@string/suppress_alerts_after"
+                        android:title="@string/suppress_alerts_after" />
+                </PreferenceScreen>
 
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="use_notification_channels"
-                    android:summary="@string/summary_use_notification_channels"
-                    android:title="@string/title_use_notification_channels" />
+                <PreferenceScreen
+                    android:key="Notification_Channels_screen"
+                    android:title="@string/title_use_notification_channels">
+                    <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:key="use_notification_channels"
+                        android:summary="@string/summary_use_notification_channels"
+                        android:title="@string/title_use_notification_channels" />
+                    <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:dependency="use_notification_channels"
+                        android:key="ongoing_notification_channel"
+                        android:summary="@string/summary_ongoing_notification_channel"
+                        android:title="@string/title_ongoing_notification_channel" />
+                    <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:dependency="use_notification_channels"
+                        android:key="notification_channels_grouping"
+                        android:summary="@string/summary_notification_channels_grouping"
+                        android:title="@string/title_notification_channels_grouping" />
+                </PreferenceScreen>
 
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:dependency="use_notification_channels"
-                    android:key="ongoing_notification_channel"
-                    android:summary="@string/summary_ongoing_notification_channel"
-                    android:title="@string/title_ongoing_notification_channel" />
-
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:dependency="use_notification_channels"
-                    android:key="notification_channels_grouping"
-                    android:summary="@string/summary_notification_channels_grouping"
-                    android:title="@string/title_notification_channels_grouping" />
-
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="delay_ascending_3min"
-                    android:summary="@string/summary_delay_ascending_3min"
-                    android:title="@string/title_delay_ascending_3min" />
+                <PreferenceScreen
+                    android:key="ascending_volume_settings"
+                    android:title="@string/title_ascending_volume">
+                    <CheckBoxPreference
+                        android:defaultValue="true"
+                        android:key="delay_ascending_3min"
+                        android:summary="@string/summary_delay_ascending_3min"
+                        android:title="@string/title_delay_ascending_3min" />
+                    <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:key="ascending_volume_to_medium"
+                        android:summary="@string/summary_ascending_volume_to_medium"
+                        android:title="@string/title_ascending_volume_to_medium" />
+                </PreferenceScreen>
 
             </PreferenceScreen>
 
@@ -142,6 +157,8 @@
                     android:defaultValue="false"
                     android:key="calibration_notifications"
                     android:summary="@string/alert_calibration_request"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
                     android:title="@string/calibration_alerts" />
                 <EditTextPreference
                     android:defaultValue="24"
@@ -186,6 +203,8 @@
                     android:defaultValue="true"
                     android:key="play_sound_for_initial_calibration"
                     android:summary="@string/summary_play_sound_for_initial_calibration"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
                     android:title="@string/title_play_sound_for_initial_calibration" />
             </PreferenceScreen>
 
@@ -278,14 +297,30 @@
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:key="smart_alerts_screen"
                 android:title="@string/extra_alerts_xdrip_plus">
-                <PreferenceCategory
-                    android:summary="@string/summary_persistent_high_alert"
+                <PreferenceScreen
+                    android:key="persistent_high_alert_page"
                     android:title="@string/persistent_high_alert">
                     <SwitchPreference
                         android:defaultValue="false"
                         android:key="persistent_high_alert_enabled"
                         android:summary="@string/alarm_if_above_high_value"
-                        android:title="@string/persistent_high_alert" />
+                        android:switchTextOff="@string/short_off_text_for_switches"
+                        android:switchTextOn="@string/short_on_text_for_switches"
+                        android:title="@string/persistent_high_alert_enable" />
+                    <SwitchPreference
+                        android:defaultValue="true"
+                        android:disableDependentsState="true"
+                        android:key="high_value_is_persistent_high_threshold"
+                        android:summary="@string/summary_persistent_high_threshold_link"
+                        android:switchTextOff="@string/short_off_text_for_switches"
+                        android:switchTextOn="@string/short_on_text_for_switches"
+                        android:title="@string/title_persistent_high_threshold_link" />
+                    <EditTextPreference
+                        android:defaultValue="170"
+                        android:dependency="high_value_is_persistent_high_threshold"
+                        android:inputType="numberDecimal"
+                        android:key="persistent_high_threshold"
+                        android:title="@string/title_persistent_high_threshold" />
                     <EditTextPreference
                         android:defaultValue="60"
                         android:dependency="persistent_high_alert_enabled"
@@ -308,14 +343,16 @@
                         android:showSilent="true"
                         android:summary="@string/choose_sound_used_for_persistent_high_alarm"
                         android:title="@string/persistent_high_sound" />
-                </PreferenceCategory>
-                <PreferenceCategory
-                    android:summary="@string/momentum_indicates_low"
+                </PreferenceScreen>
+                <PreferenceScreen
+                    android:key="@string/forecasted_low_alert"
                     android:title="@string/forecasted_low_alert">
                     <SwitchPreference
                         android:defaultValue="true"
                         android:key="predict_lows"
                         android:summary="@string/extrapolate_data_to_try_to_predict_lows"
+                        android:switchTextOff="@string/short_off_text_for_switches"
+                        android:switchTextOn="@string/short_on_text_for_switches"
                         android:title="@string/forecast_lows" />
                     <CheckBoxPreference
                         android:defaultValue="false"
@@ -339,12 +376,27 @@
                         android:showSilent="true"
                         android:summary="@string/choose_sound_used_for_predicted_low_alarm"
                         android:title="@string/predicted_low_sound" />
-                </PreferenceCategory>
-                <PreferenceCategory android:title="@string/other_xdrip_plus_alerts">
+                </PreferenceScreen>
+                <PreferenceScreen
+                    android:key="@string/title_sens_expiry"
+                    android:title="@string/title_sens_expiry">
+                    <SwitchPreference
+                        android:defaultValue="false"
+                        android:key="alert_raise_for_sensor_expiry"
+                        android:summary="@string/summary_sens_expiry_notify"
+                        android:switchTextOff="@string/short_off_text_for_switches"
+                        android:switchTextOn="@string/short_on_text_for_switches"
+                        android:title="@string/title_sens_expiry_notify" />
+                </PreferenceScreen>
+                <PreferenceScreen
+                    android:key="@string/other_xdrip_plus_alerts"
+                    android:title="@string/other_xdrip_plus_alerts">
                     <SwitchPreference
                         android:defaultValue="true"
                         android:key="bridge_battery_alerts"
                         android:summary="@string/notify_on_low_battery_level"
+                        android:switchTextOff="@string/short_off_text_for_switches"
+                        android:switchTextOn="@string/short_on_text_for_switches"
                         android:title="@string/collector_battery_alerts" />
                     <EditTextPreference
                         android:defaultValue="30"
@@ -355,17 +407,12 @@
                         android:summary=""
                         android:title="@string/low_battery_percentage" />
                     <SwitchPreference
-                        android:defaultValue="false"
-                        android:switchTextOff="@string/short_off_text_for_switches"
-                        android:switchTextOn="@string/short_on_text_for_switches"
-                        android:key="alert_raise_for_sensor_expiry"
-                        android:summary="@string/summary_sens_expiry_notify"
-                        android:title="@string/title_sens_expiry_notify" />
-                    <SwitchPreference
                         android:defaultValue="true"
                         android:dependency="engineering_mode"
                         android:key="parakeet_status_alerts"
                         android:summary="@string/notify_when_parakeet_device_stops_checking_in"
+                        android:switchTextOff="@string/short_off_text_for_switches"
+                        android:switchTextOn="@string/short_on_text_for_switches"
                         android:title="@string/parakeet_related_alerts" />
                     <CheckBoxPreference
                         android:defaultValue="false"
@@ -377,8 +424,10 @@
                         android:defaultValue="false"
                         android:key="follower_chime"
                         android:summary="@string/notify_data_arrives_master"
+                        android:switchTextOff="@string/short_off_text_for_switches"
+                        android:switchTextOn="@string/short_on_text_for_switches"
                         android:title="@string/follower_chime_new" />
-                </PreferenceCategory>
+                </PreferenceScreen>
             </PreferenceScreen>
         </PreferenceCategory>
     </PreferenceScreen>

@@ -12,6 +12,7 @@ import android.text.SpannableString;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.GcmListenerSvc;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.cloud.jamcm.Pusher;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
@@ -31,7 +32,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.eveningoutpost.dexdrip.GcmListenerSvc.lastMessageReceived;
+import static com.eveningoutpost.dexdrip.models.JoH.msSince;
+import static com.eveningoutpost.dexdrip.models.JoH.msTill;
+import static com.eveningoutpost.dexdrip.models.JoH.niceTimeScalar;
 import static com.eveningoutpost.dexdrip.utilitymodels.StatusItem.Highlight.BAD;
+import static com.eveningoutpost.dexdrip.utilitymodels.StatusItem.Highlight.CRITICAL;
+import static com.eveningoutpost.dexdrip.utilitymodels.StatusItem.Highlight.GOOD;
 import static com.eveningoutpost.dexdrip.utilitymodels.StatusItem.Highlight.NOTICE;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
@@ -144,6 +150,11 @@ public class DoNothingService extends Service {
                 setFailOverTimer();
                 JoH.releaseWakeLock(wl);
             }).start();
+
+            // xDrip Cloud handling
+            if (Pusher.enabled()) {
+                Pusher.immortality();
+            }
         } else {
             stopSelf();
             JoH.releaseWakeLock(wl);
@@ -210,14 +221,37 @@ public class DoNothingService extends Service {
             }
 
             if (JoH.buggy_samsung) {
-                l.add(new StatusItem("Buggy handset", "Using workaround", max_wake_time_difference < TOLERABLE_JITTER ? StatusItem.Highlight.GOOD : BAD));
+                l.add(new StatusItem("Buggy handset", "Using workaround", max_wake_time_difference < TOLERABLE_JITTER ? GOOD : BAD));
             }
 
             if (nextWakeUpTime != -1) {
-                l.add(new StatusItem("Next Wake up: ", JoH.niceTimeTill(nextWakeUpTime)));
+                l.add(new StatusItem("Next Wake up", JoH.niceTimeTill(nextWakeUpTime)));
 
             }
         }
+
+        if (Pusher.enabled()) {
+            try {
+                val connected = Pusher.connected();
+                val connectedTime = Pusher.connectedTime();
+                val ecString = Home.get_engineering_mode() ? " (" + niceTimeScalar(connectedTime) + ")" : "";
+                l.add(new StatusItem("xDrip Cloud", connected ? "Connected" + ecString : "Not connected", connected ? GOOD : NOTICE));
+                l.add(new StatusItem("Status", Pusher.getInstance().getStatusString()));
+                if (!connected) {
+                    val due = Pusher.getInstance().getNextReconnectionDue();
+                    l.add(new StatusItem("Next reconnection", due != -1 ? niceTimeScalar(Math.max(msTill(due), 0)) : "Unknown"));
+                }
+                if (Home.get_engineering_mode()) {
+                    l.add(new StatusItem("Sent hour / total", Pusher.sentLastHour() + "   (" + Pusher.sentTotal() + ")"));
+                    l.add(new StatusItem("Recv hour / total", Pusher.receivedLastHour() + "   (" + Pusher.receivedTotal() + ")"));
+                }
+
+
+            } catch (Exception e) {
+                l.add(new StatusItem("Error", e.toString(), CRITICAL));
+            }
+        }
+
         return l;
     }
 
@@ -230,7 +264,7 @@ public class DoNothingService extends Service {
     public static SpannableString nanoStatus() {
         SpannableString pingStatus = null;
         if (lastMessageReceived > 0) {
-            long pingSince = JoH.msSince(lastMessageReceived);
+            long pingSince = msSince(lastMessageReceived);
             if (pingSince > Constants.MINUTE_IN_MS * 30) {
                 pingStatus = Span.colorSpan("No follower sync for: " + JoH.niceTimeScalar(pingSince), BAD.color());
             }
@@ -239,7 +273,7 @@ public class DoNothingService extends Service {
             updateLastBg();
             final SpannableString remoteStatus = NanoStatus.getRemote();
             if (last_bg != null) {
-                if (JoH.msSince(last_bg.timestamp) > Constants.MINUTE_IN_MS * 15) {
+                if (msSince(last_bg.timestamp) > Constants.MINUTE_IN_MS * 15) {
                     final SpannableString lastBgStatus = Span.colorSpan("Last from master: " + JoH.niceTimeSince(last_bg.timestamp) + " ago", NOTICE.color());
                     return Span.join(true, remoteStatus, pingStatus, lastBgStatus);
                 }

@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.g5model;
 
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.services.G5CollectionService;
 
 import lombok.NoArgsConstructor;
@@ -49,5 +50,10 @@ public abstract class BaseGlucoseRxMessage extends BaseMessage {
     public Integer getPredictedGlucose() {
         return null; // stub
     }
+
+    public long getRealTimestamp() {
+        return JoH.tsl(); // default behavior is received now
+    }
+
 
 }

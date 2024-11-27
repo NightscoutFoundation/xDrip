@@ -64,7 +64,7 @@ public class WakeLockTrampoline extends BroadcastReceiver {
         ComponentName startResult;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                && BuildConfig.targetSDK >= Build.VERSION_CODES.N
+            //    && BuildConfig.targetSDK >= Build.VERSION_CODES.N
                 && ForegroundServiceStarter.shouldRunCollectorInForeground()) {
             try {
                 UserError.Log.d(TAG, String.format("Starting oreo foreground service: %s", serviceIntent.getComponent().getClassName()));

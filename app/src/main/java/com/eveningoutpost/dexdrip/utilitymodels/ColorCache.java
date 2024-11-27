@@ -1,9 +1,12 @@
 package com.eveningoutpost.dexdrip.utilitymodels;
 
 import android.graphics.Color;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.EnumMap;
 
@@ -25,8 +28,24 @@ public class ColorCache {
         if (debug) Log.i(TAG, "Cache cleared");
     }
 
+    public static void setDefaultsLoaded() {
+        defaultsLoaded = true;
+    }
+
+    private static volatile boolean defaultsLoaded = false;
+
     public static int getCol(final X color) {
+        if (color == null) return 0xABCDEF;
         if (!the_cache.containsKey(color)) {
+            if (!defaultsLoaded) {
+                try {
+                    the_cache.clear();
+                    PreferenceManager.setDefaultValues(xdrip.getAppContext(), R.xml.xdrip_plus_prefs, false);
+                    setDefaultsLoaded();
+                } catch (Exception e) {
+                    //
+                }
+            }
             try {
                 the_cache.put(color, Pref.getInt(color.internalName, 0xABCDEF));
             } catch (ClassCastException e) {
@@ -36,8 +55,13 @@ public class ColorCache {
             if (debug)
                 UserError.Log.d(TAG, "Setting cache for color: " + color.internalName + " / " + Pref.getInt(color.internalName, 1234));
         }
-        return the_cache.get(color);
+        try {
+            return the_cache.get(color);
+        } catch (NullPointerException e) {
+            return 0xABCDEF;
+        }
     }
+
 
     public enum X {
 

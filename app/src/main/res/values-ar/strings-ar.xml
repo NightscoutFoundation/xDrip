@@ -96,9 +96,11 @@
     <string name="pref_amazfit_watchface_graph_enable_summary">يظهر الرسم البياني في خلفية واجهات الساعة</string>
     <string name="pref_amazfit_watchface_graph_hours_title">رسم بياني لواجهة الساعة</string>
     <string name="pref_amazfit_watchface_graph_hours_summary">تغيير عدد الساعات في الرسم البياني</string>
+    <string name="pref_amazfit_widget_graph_hours_title"></string>
     <string name="pref_amazfit_widget_graph_hours_summary">تغيير عدد الساعات في الرسم البياني</string>
     <string name="pref_amazfit_widget_graph_dots_summary">عرض نقاط صغيرة جداً بدلاً من صغيرة</string>
     <string name="pref_amazfit_widget_graph_enable">تفعيل</string>
+    <string name="pref_amazfit_widget_graph_title"></string>
     <string name="toast_crash">حدث خطأ ما :( تم إرسال تقرير للمساعدة في حل المشكلة.</string>
     <string name="taskerConfiguration">Tasker Configuration</string>
     <string name="add_widget">اضافة تطبيق مصغر</string>
@@ -181,6 +183,7 @@
     <string name="other_alerts">تنبيهات أخرى</string>
     <string name="extra_alerts_xdrip_plus">تنبيهات اضافية (xDrip+)</string>
     <string name="persistent_high_alert">ارتفاع مستمر لـ</string>
+    <string name="persistent_high_alert_enable">تفعيل</string>
     <string name="forecasted_low_alert">تنبيه انخفاض متوقع</string>
     <string name="extrapolate_data_to_try_to_predict_lows">استخراج البيانات لمحاولة التنبؤ بانخفاض</string>
     <string name="other_xdrip_plus_alerts">تنبيهات xDrip+ الأخرى</string>
@@ -314,5 +317,7 @@
     <string name="treatment_processed">سيرت المعالجة</string>
     <string name="enable_streaming_dialog_dont_ask_again"> لا تسألني ذلك مرة أخرى</string>
     <string name="type_treatment_eg">نوع المعالجة\nمثال: وحدات x.x</string>
+    <string name="enable_graph_smoothing">تفعيل</string>
     <string name="titleInside_yRange">تفعيل</string>
+    <string name="title_sens_expiry_notify">تفعيل</string>
 </resources>

@@ -41,7 +41,7 @@ public class SensorExpiry extends BaseAlert {
 
     @Override
     public boolean activate() {
-        val expiry = niceTimeScalarNatural(SensorDays.get().getRemainingSensorPeriodInMs());
+        val expiry = niceTimeScalarNatural(SensorDays.get().getRemainingSensorPeriodInMs(), 1);
         val notificationId = SENSORY_EXPIRY_NOTIFICATION_ID;
         cancelNotification(notificationId);
         val expireMsg = String.format("Sensor will expire in %s", expiry); // TODO i18n and format string
