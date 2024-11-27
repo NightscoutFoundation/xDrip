@@ -224,7 +224,12 @@
     <string name="persistent_high_alert">Alerta alta persistente</string>
     <string name="persistent_high_alert_enable">Activar</string>
     <string name="title_persistent_high_threshold">Límite</string>
+    <string name="the_value_must_be_between_min_and_max">El valor debe estar entre %1$s y %2$s</string>
     <string name="forecasted_low_alert">Alerta de baja predicha</string>
+    <string name="setting_pref_to_max">Ajustar al máximo</string>
+    <string name="pref_was_greater_than_max">%1$s se estableció a un valor mayor que el máximo permitido. Se ha cambiado al máximo.</string>
+    <string name="setting_pref_to_min">Ajustar al mínimo</string>
+    <string name="pref_was_less_than_min">%1$s se estableció a un valor menor que el mínimo permitido. Se ha cambiado al mínimo.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolar datos para tratar de predecir bajadas</string>
     <string name="alarm_at_forecasted_low_mins">Alarma en minutos bajas predichas</string>
     <string name="other_xdrip_plus_alerts">Otras alertas xDrip+</string>
