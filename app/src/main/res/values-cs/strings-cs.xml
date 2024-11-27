@@ -225,7 +225,12 @@
     <string name="persistent_high_alert">Trvalá výstraha vysoké glykémie</string>
     <string name="persistent_high_alert_enable">Povolit</string>
     <string name="title_persistent_high_threshold">Limit</string>
+    <string name="the_value_must_be_between_min_and_max">Hodnota musí být mezi %1$s a %2$s</string>
     <string name="forecasted_low_alert">Výstrahy při předpovídání nízkých hodnot</string>
+    <string name="setting_pref_to_max">Nastavit na maximum</string>
+    <string name="pref_was_greater_than_max">Hodnota %1$s byla nastavena vyšší, než je povolené maximum. Byla tak změněna na maximum.</string>
+    <string name="setting_pref_to_min">Nastavit na minimum</string>
+    <string name="pref_was_less_than_min">Hodnota %1$s byla nastavena nižší, než je povolené minimum. Byla tak změněna na minimum.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolovat data pro predikci nízké glykémie</string>
     <string name="alarm_at_forecasted_low_mins">Alarm při prognóze nízkých hodnot (min)</string>
     <string name="other_xdrip_plus_alerts">Ostatní xDrip+ výstrahy</string>
