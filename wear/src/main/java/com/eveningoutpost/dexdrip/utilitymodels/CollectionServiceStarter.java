@@ -248,6 +248,7 @@ public class CollectionServiceStarter {
     }
 
     public static void restartCollectionServiceBackground() {
+        Log.e(TAG, "restartCollectionServiceBackground Restart no args");
         Inevitable.task("restart-collection-service",500,() -> restartCollectionService(xdrip.getAppContext()));
     }
 
