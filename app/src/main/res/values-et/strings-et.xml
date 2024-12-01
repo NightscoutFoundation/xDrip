@@ -227,6 +227,7 @@
     <string name="title_persistent_high_threshold">Piirmäär</string>
     <string name="the_value_must_be_between_min_and_max">Väärtus peab olema %1$s ja %2$s vahel</string>
     <string name="forecasted_low_alert">Prognoositav madal alarm</string>
+    <string name="pref_was_less_than_min">%1$s määrati väärtusele, mis on väiksem kui lubatud miinimum. See on muudetud miinimumiks.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Ekstrapoleeri andmeid, et ennustada madalate suhkrute tekkimist</string>
     <string name="alarm_at_forecasted_low_mins">Alarm prognoositud madalal mins</string>
     <string name="other_xdrip_plus_alerts">Teised xDrip+ alarmid</string>
