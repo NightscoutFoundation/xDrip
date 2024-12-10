@@ -224,7 +224,12 @@
     <string name="persistent_high_alert">Utrzymujące się wysokie alerty</string>
     <string name="persistent_high_alert_enable">Włącz</string>
     <string name="title_persistent_high_threshold">Próg</string>
+    <string name="the_value_must_be_between_min_and_max">Wartość musi być pomiędzy %1$s i %2$s</string>
     <string name="forecasted_low_alert">Prognozowany Low Alert</string>
+    <string name="setting_pref_to_max">Ustaw na maksimum</string>
+    <string name="pref_was_greater_than_max">Wartość %1$s przekroczyła maksymalną dozwoloną wartość. Ustawiono w zamian wartość maksymalną.</string>
+    <string name="setting_pref_to_min">Ustaw na minimum</string>
+    <string name="pref_was_less_than_min">Wartość %1$s przekroczyła minimalną dozwoloną wartość. Ustawiono w zamian wartość minimalną.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Ekstrapolacji danych, aby spróbować przewidzieć upadki</string>
     <string name="alarm_at_forecasted_low_mins">Alarm przy prognozowanych niskich w minutach</string>
     <string name="other_xdrip_plus_alerts">Inne alarmy xDrip+</string>
@@ -1485,6 +1490,7 @@
     <string name="progress">postęp</string>
     <string name="bluetooth_device">Urządzenie Bluetooth:   </string>
     <string name="transmitter_battery_status">Bateria nadajnika:  </string>
+    <string name="database_size">Rozmiar bazy danych:  </string>
     <string name="top">Góra</string>
     <string name="connect_device_usb_otg">Podłącz swoje urządzenie kablem USB OTG.</string>
     <string name="connection_status">Status połączenia:</string>
