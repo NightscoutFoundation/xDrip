@@ -1470,6 +1470,8 @@
     <string name="category_falling_rising_bg">Зниження/Підвищення глюкози</string>
     <string name="category_alert_prefs">Налаштування сповіщень (для вказаних)</string>
     <string name="summary_persistent_high_alert">При збережені тривалий час високого рівня глюкози і відсутності тренда до зниження</string>
+    <string name="summary_persistent_high_threshold_link">Якщо ввімкнено, порогом є високе значення.\nЯкщо вимкнено, порогом є значення, указане нижче.</string>
+    <string name="title_persistent_high_threshold_link">Поріг: Високе значення</string>
     <string name="note_search_button">ПОШУК</string>
     <string name="all_note_button">УСЕ</string>
     <string name="title_full_screen_mode">Повноекранний режим</string>
@@ -1856,6 +1858,7 @@
     <string name="process_glucose_data_received">Обробляти дані глюкози, отримані з програми NSClient</string>
     <string name="use_health_connect">Використовувати Health Connect</string>
     <string name="audio_focus">Аудіо фокус</string>
+    <string name="audio_focus_summary">Виберіть, що робити з іншими програмами під час відтворення сповіщень і регулювання рівня гучності системи</string>
     <string name="audio_focus_dont_adjust_other_app_sounds">Не налаштовувати звуки інших програм</string>
     <string name="audio_focus_lower_volume_of_other_apps">Зменшення гучності інших додатків</string>
     <string name="audio_focus_pause_other_apps_playing_audio">Призупинити інші застосунки, що відтворюють аудіо</string>
