@@ -754,26 +754,29 @@ public class JoH {
     }
 
     // temporary
-    public static String niceTimeScalar(long t) {
+    public static String niceTimeScalar(long t) { // If forceSym is not entered as a parameter, a value of false will be assumed for it.
+        return niceTimeScalar(t, false); // The method will use translations, instead of symbols, if forceSym is set to false.
+    }
+        public static String niceTimeScalar(long t, boolean forceSym) { // Symbols will be used if forceSym is true, regardless of the chosen language
         String unit = xdrip.getAppContext().getString(R.string.unit_second);
         t = t / 1000;
-        if (t != 1) unit = xdrip.getAppContext().getString(R.string.unit_seconds);
+        if (t != 1) unit = forceSym? "s" : xdrip.getAppContext().getString(R.string.unit_seconds);
         if (t > 59) {
-            unit = xdrip.getAppContext().getString(R.string.unit_minute);
+            unit = forceSym? "min" : xdrip.getAppContext().getString(R.string.unit_minute);
             t = t / 60;
-            if (t != 1) unit = xdrip.getAppContext().getString(R.string.unit_minutes);
+            if (t != 1) unit = forceSym? "min" : xdrip.getAppContext().getString(R.string.unit_minutes);
             if (t > 59) {
-                unit = xdrip.getAppContext().getString(R.string.unit_hour);
+                unit = forceSym? "h" : xdrip.getAppContext().getString(R.string.unit_hour);
                 t = t / 60;
-                if (t != 1) unit = xdrip.getAppContext().getString(R.string.unit_hours);
+                if (t != 1) unit = forceSym? "h" : xdrip.getAppContext().getString(R.string.unit_hours);
                 if (t > 24) {
-                    unit = xdrip.getAppContext().getString(R.string.unit_day);
+                    unit = forceSym? "d" : xdrip.getAppContext().getString(R.string.unit_day);
                     t = t / 24;
-                    if (t != 1) unit = xdrip.getAppContext().getString(R.string.unit_days);
+                    if (t != 1) unit = forceSym? "d" : xdrip.getAppContext().getString(R.string.unit_days);
                     if (t > 28) {
-                        unit = xdrip.getAppContext().getString(R.string.unit_week);
+                        unit = forceSym? "wk" : xdrip.getAppContext().getString(R.string.unit_week);
                         t = t / 7;
-                        if (t != 1) unit = xdrip.getAppContext().getString(R.string.unit_weeks);
+                        if (t != 1) unit = forceSym? "wk" : xdrip.getAppContext().getString(R.string.unit_weeks);
                     }
                 }
             }
