@@ -1284,6 +1284,7 @@
     <string name="summary_lefun_send_alarms">Invia le notifiche per gli allarmi di glicemia alla Band</string>
     <string name="title_lefun_send_alarms">Invia Allarmi</string>
     <string name="title_lefun_option_shake_snoozes">Scuoti per sospendere allarmi</string>
+    <string name="title_lefun_send_calls">Invia Chiamate</string>
     <string name="title_lefun_screens_features">Schermate LeFun / Funzioni</string>
     <string name="title_features">Funzionalità</string>
     <string name="title_lefun_feature_lift_to_wak">Solleva per riattivare</string>
