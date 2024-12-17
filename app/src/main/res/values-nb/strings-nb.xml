@@ -1284,6 +1284,7 @@
     <string name="summary_lefun_send_alarms">Send notifikasjoner til armbåndet for glukosevarsler</string>
     <string name="title_lefun_send_alarms">Send varsler</string>
     <string name="title_lefun_option_shake_snoozes">Rist for å slumre</string>
+    <string name="title_lefun_send_calls">Send samtaler</string>
     <string name="title_lefun_screens_features">Lefun-skjermer / funksjoner</string>
     <string name="title_features">Funksjoner</string>
     <string name="title_lefun_feature_lift_to_wak">Løft for å vekke</string>
