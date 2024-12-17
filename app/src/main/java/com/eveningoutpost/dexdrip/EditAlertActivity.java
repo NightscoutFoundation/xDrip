@@ -499,7 +499,7 @@ public class EditAlertActivity extends ActivityWithMenu {
         buttonSave.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Check that values are ok.
-                double threshold = parseDouble(alertThreshold.getText().toString());
+                double threshold = JoH.tolerantParseDouble(alertThreshold.getText().toString());
                 if(Double.isNaN(threshold))
                     return;
 
