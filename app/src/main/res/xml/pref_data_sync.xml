@@ -58,7 +58,8 @@
                     android:dialogTitle="@string/pref_dialog_api_url"
                     android:inputType="textUri"
                     android:key="cloud_storage_api_base"
-                    android:title="@string/pref_title_api_url" />
+                    android:title="@string/pref_title_api_url"
+                    android:summary="@string/pref_summary_api_url"/>
 
                 <PreferenceScreen
                     android:key="download_treatments_screen"
