@@ -781,6 +781,8 @@
     <string name="glucose_meters">Glucose Meters</string>
     <string name="glucose_meter_options">Options for wireless glucose meters</string>
     <string name="auto_connect_to_meter">Automatically connect and retrieve data from a standard\'s compliant glucose meter like the Contour Next One</string>
+    <string name="summary_use_nfc_meter">Download glucose records from NFC meter when xDrip is open</string>
+    <string name="title_use_nfc_meter">Use NFC Meter</string>
     <string name="use_bluetooth_meter">Use Bluetooth Meter</string>
     <string name="scan_for_bluetooth_meter">Scan for Bluetooth Meter</string>
     <string name="meter_connect_sound">Enable this to play sound effects when the meter connects, disconnects or syncs data</string>
@@ -1249,6 +1251,12 @@
     <string name="title_tidepool_window_latency">Data Age Mins</string>
     <string name="summary_tidepool_dev_servers">If enabled, uploads will go to https://int-app.tidepool.org instead of the regular https://app.tidepool.org/</string>
     <string name="title_tidepool_dev_servers">Use Integration (test) servers</string>
+    <string name="summary_tidepool_upload_when_chargeonly">Upload data only when charging</string>
+    <string name="title_tidepool_upload_when_chargeonly">Only when charging</string>
+    <string name="summary_tidepool_upload_only_wifi">Upload data only when connected to an unmetered network like Wifi</string>
+    <string name="title_tidepool_upload_only_wifi">Only on Wifi</string>
+    <string name="summary_tidepool_upload_no_treatment">Upload only CGM data to avoid duplicates with manual pump upload</string>
+    <string name="title_tidepool_upload_no_treatment">Don\'t upload treatments</string>
     <string name="title_tidepool">Tidepool</string>
     <string name="show_help">Show Help</string>
     <string name="load_save_settings_on_sdcard">Load / Save Settings</string>
@@ -1331,6 +1339,8 @@
     <string name="summary_lefun_send_alarms">Send notifications to the band for glucose alarms</string>
     <string name="title_lefun_send_alarms">Send Alarms</string>
     <string name="title_lefun_option_shake_snoozes">Shake to Snooze</string>
+    <string name="summary_lefun_send_calls">Send call notifications to the band</string>
+    <string name="title_lefun_send_calls">Send Calls</string>
     <string name="title_lefun_screens_features">Lefun Screens / Features</string>
     <string name="title_features">Features</string>
     <string name="title_lefun_feature_lift_to_wak">Lift to Wake</string>
@@ -1398,6 +1408,8 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Fallback to xDrip</string>
     <string name="summary_ob1_minimize_scanning">Use heuristics to minimize Bluetooth scanning + save power</string>
     <string name="title_ob1_minimize_scanning">Minimize Scanning</string>
+    <string name="summary_ob1_avoid_scanning">Avoid scanning as much as possible (reduces battery usage further)</string>
+    <string name="title_ob1_avoid_scanning">Avoid Scanning</string>
     <string name="summary_using_g6">I am using a G6, G7, Dexcom 1 or One+ Sensor</string>
     <string name="title_using_g6">G6/G7/Dex1/One+ Support</string>
     <string name="summary_ob1_g5_allow_resetbond">OB1 collector can unbond if it thinks the encryption has failed. If you get problems with it unpairing then disable this option. If you then totally lose connection, make sure this is enabled.</string>
@@ -1921,6 +1933,8 @@
     <string name="audio_focus_lower_volume_of_other_apps">Lower volume of other apps</string>
     <string name="audio_focus_pause_other_apps_playing_audio">Pause other apps playing audio</string>
     <string name="audio_focus_pause_all_other_sounds">Pause all other sounds</string>
+    <string name="wake_up_screen">Wake Screen</string>
+    <string name="wake_up_screen_summary">Wake up screen during alerts. Might unlock devices that don\'t have screen lock enabled.</string>
     <string name="use_camera_light">Use Camera Light</string>
     <string name="use_camera_light_summary">Flash camera light during alerts when connected to a charger</string>
     <string name="g7_should_start_automatically">G7 should start automatically</string>
