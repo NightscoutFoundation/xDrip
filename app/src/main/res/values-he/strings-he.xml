@@ -1275,6 +1275,7 @@
     <string name="summary_lefun_send_alarms">שולח התראות סוכר לצמיד</string>
     <string name="title_lefun_send_alarms">שלח התראות</string>
     <string name="title_lefun_option_shake_snoozes">נערו כדי להשתיק</string>
+    <string name="title_lefun_send_calls">בצע שיחות</string>
     <string name="title_lefun_screens_features">תכונות ומסכי Lefun</string>
     <string name="title_features">תכונות</string>
     <string name="title_lefun_feature_lift_to_wak">הרימו כדי להוציא ממצב שינה</string>
