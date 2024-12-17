@@ -225,7 +225,12 @@
     <string name="persistent_high_alert">Allarme per VALORI ALTI Persistenti</string>
     <string name="persistent_high_alert_enable">Abilita</string>
     <string name="title_persistent_high_threshold">Soglia</string>
+    <string name="the_value_must_be_between_min_and_max">Il valore deve essere compreso tra %1$s e %2$s</string>
     <string name="forecasted_low_alert">Allarme di previsione VALORE BASSO</string>
+    <string name="setting_pref_to_max">Imposta al massimo</string>
+    <string name="pref_was_greater_than_max">%1$s è stato impostato su un valore maggiore del massimo consentito. È stato modificato al massimo.</string>
+    <string name="setting_pref_to_min">Imposta al minimo</string>
+    <string name="pref_was_less_than_min">%1$s è stato impostato su un valore minore del minimo consentito. È stato modificato al minimo.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Estrapolare i dati per cercare di prevedere raggiungimento VALORE BASSO</string>
     <string name="alarm_at_forecasted_low_mins">Allarme previsione VALORE BASSO (minuti)</string>
     <string name="other_xdrip_plus_alerts">Altro xDrip+ avvisi</string>

@@ -223,7 +223,12 @@
     <string name="persistent_high_alert">Folyamatos magas érték</string>
     <string name="persistent_high_alert_enable">Bekapcsol</string>
     <string name="title_persistent_high_threshold">Határérték</string>
+    <string name="the_value_must_be_between_min_and_max">Az értéknek %1$s és %2$s között kell lennie</string>
     <string name="forecasted_low_alert">Riasztás várható hypora</string>
+    <string name="setting_pref_to_max">Beállítás maximumra</string>
+    <string name="pref_was_greater_than_max">%1$s a megengedett maximális értéknél nagyobb értéket kapott.  A maximális értékre lett csökkentve.</string>
+    <string name="setting_pref_to_min">Beállítás minimumra</string>
+    <string name="pref_was_less_than_min">%1$s a minimálisan megengedettnél kisebb értékre lett beállítva.  A minimális értékre lett növelve.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Megpróbálja kiszámolni az esetleges hypot</string>
     <string name="alarm_at_forecasted_low_mins">Riasztás várható hypo előtt X perccel</string>
     <string name="other_xdrip_plus_alerts">További xDrip+ riasztások</string>
@@ -298,7 +303,7 @@
     <string name="manage_existing_followers">Követők kezelése és újak meghívása.</string>
     <string name="invite_follower">Követő meghívása</string>
     <string name="glucose_calibration_and_other_alerts">VC-érték, kalibráció és egyéb riasztások</string>
-    <string name="alert_volume_profile">Riasztáshang beállítása</string>
+    <string name="alert_volume_profile">Riasztáshang ereje</string>
     <string name="smart_alerting">Okos riasztás</string>
     <string name="dont_alarm_during_phone_calls">Nincs riasztás telefonálás közben</string>
     <string name="start_snoozed">Késleltetés</string>
@@ -1440,7 +1445,7 @@
     <string name="category_falling_rising_bg">VC-érték esés/emelkedés</string>
     <string name="category_alert_prefs">Beállítások fenti riasztásokra</string>
     <string name="summary_persistent_high_alert">Ha magas érték felett van sokáig és nem tart lefelé</string>
-    <string name="summary_persistent_high_threshold_link">Bekapcsolva a Magas érték a hatérték..\nKikapcsolva, a határérték az alábbi.</string>
+    <string name="summary_persistent_high_threshold_link">Bekapcsolva a Magas érték a hatérték.\nKikapcsolva, a határérték az alábbi:</string>
     <string name="title_persistent_high_threshold_link">Határérték: Magas érték</string>
     <string name="note_search_button">KERESÉS</string>
     <string name="all_note_button">MIND</string>

@@ -225,7 +225,12 @@
     <string name="persistent_high_alert">Alerte Hyper persistante</string>
     <string name="persistent_high_alert_enable">Activer</string>
     <string name="title_persistent_high_threshold">Seuil</string>
+    <string name="the_value_must_be_between_min_and_max">La valeur doit être comprise entre %1$s et %2$s</string>
     <string name="forecasted_low_alert">Alerte de previsions d\'hypoglycémie</string>
+    <string name="setting_pref_to_max">Définir au maximum</string>
+    <string name="pref_was_greater_than_max">%1$s a été défini à une valeur supérieure à la valeur maximale autorisée. Elle a été changée au maximum.</string>
+    <string name="setting_pref_to_min">Définir au minimum</string>
+    <string name="pref_was_less_than_min">%1$s a été défini à une valeur inférieure au minimum autorisé. Il a été changé en minimum.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapoler les données pour essayer de prévoir les hypoglycémies</string>
     <string name="alarm_at_forecasted_low_mins">Délai de prévisions d\'hypoglycémies en minutes</string>
     <string name="other_xdrip_plus_alerts">Autres alertes xDrip+</string>

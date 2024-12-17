@@ -224,7 +224,13 @@
     <string name="extra_alerts_xdrip_plus">Додаткові сповіщення</string>
     <string name="persistent_high_alert">Сповіщення про тривалу гіперглікемію</string>
     <string name="persistent_high_alert_enable">Увімкнути GPS</string>
+    <string name="title_persistent_high_threshold">Граничний поріг</string>
+    <string name="the_value_must_be_between_min_and_max">Значення має бути між %1$s та %2$s</string>
     <string name="forecasted_low_alert">Сповіщення про прогнозовану гіпоглікемію</string>
+    <string name="setting_pref_to_max">Встановити максимум</string>
+    <string name="pref_was_greater_than_max">%1$s встановлено значення більше, ніж максимально допустимо. Його було змінено на максимум.</string>
+    <string name="setting_pref_to_min">Встановити мінімум</string>
+    <string name="pref_was_less_than_min">%1$s встановлено значення менше мінімального дозволеного. Його було змінено на мінімальне значення.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Екстраполювати дані для можливості прогнозування гіпоглікемії</string>
     <string name="alarm_at_forecasted_low_mins">Сповіщати за (в хвилинах)</string>
     <string name="other_xdrip_plus_alerts">Інші сповіщення</string>
@@ -1414,6 +1420,7 @@
     <string name="summary_plus_accept_follower_actions">Дозволити додавання значень і калібрувань фоловерами</string>
     <string name="title_plus_accept_follower_actions">Приймати зміни від фоловерів</string>
     <string name="summary_plus_whole_house">Приймати участь у мережі всього будинку</string>
+    <string name="summary_plus_xdrip_cloud">Використовувати нові сервери xDrip+ cloud. Майстер і послідовники повинні мати один і той же параметр.</string>
     <string name="title_plus_whole_house">По всьому будинку</string>
     <string name="summary_libre_whole_house_collector">Цей пристрій буде колектором у мережі всього будинку</string>
     <string name="title_libre_whole_house_collector">Libre по всьому будинку</string>
@@ -1453,13 +1460,18 @@
     <string name="summary_notification_channels_grouping">Групувати сповіщення разом. Не сумісно з функцією Значення глюкози в рядку сповіщень</string>
     <string name="title_notification_channels_grouping">Групувати сповіщення</string>
     <string name="summary_delay_ascending_3min">Для профілю з підвищеною гучністю звуку, початок звукового сигналу затримано на 3 хвилини. Вібрація (якщо ввімкнена) спрацьовуватиме як тільки буде надходити сповіщення, незалежно від цього налаштування.</string>
+    <string name="title_ascending_volume">Налаштування підсилення гучності</string>
     <string name="title_delay_ascending_3min">Затримка зростання гучності</string>
+    <string name="summary_ascending_volume_to_medium">Якщо увімкнено, тоді гучність зростання збільшиться на середній рівень, а не на максимальний</string>
+    <string name="title_ascending_volume_to_medium">Піднесено до середнього</string>
     <string name="summary_play_sound_for_initial_calibration">Повідомляти звуком коли потрібне початкове калібрування</string>
     <string name="title_play_sound_for_initial_calibration">Звукове сповіщення</string>
     <string name="category_noisy_readings">Шумні дані</string>
     <string name="category_falling_rising_bg">Зниження/Підвищення глюкози</string>
     <string name="category_alert_prefs">Налаштування сповіщень (для вказаних)</string>
     <string name="summary_persistent_high_alert">При збережені тривалий час високого рівня глюкози і відсутності тренда до зниження</string>
+    <string name="summary_persistent_high_threshold_link">Якщо ввімкнено, порогом є високе значення.\nЯкщо вимкнено, порогом є значення, указане нижче.</string>
+    <string name="title_persistent_high_threshold_link">Поріг: Високе значення</string>
     <string name="note_search_button">ПОШУК</string>
     <string name="all_note_button">УСЕ</string>
     <string name="title_full_screen_mode">Повноекранний режим</string>
@@ -1724,6 +1736,7 @@
     <string name="proceed">Продовжити</string>
     <string name="special_pairing_workaround">Обхід специфічного під\'єднання</string>
     <string name="save_power">Заощадити енергію</string>
+    <string name="use_xdrip_cloud">Використовувати xDrip Cloud</string>
     <string name="reduce_battery_and_network_overhead">Зменшення використання заряду батареї та мережі шляхом використання пакетної обробки та виключення непотрібних даних</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Спростити графіки, згладивши похибності</string>
     <string name="graph_smoothing">Згладження графіку</string>
@@ -1781,6 +1794,7 @@
     <string name="cloud_backup">Резервне копіювання у хмару</string>
     <string name="select_automatic_or_select_alternate">Виберіть Автоматично щоб xDrip керував файлами на Google Drive або виберіть інший файл, якщо Вам потрібно відновити дані з іншого місця.</string>
     <string name="restoring_backup_will_erase_warning">Відновлення резервної копії замінить ваші поточні налаштування та дані даними з резервної копії.\n\nВи впевнені, що хочете це зробити?</string>
+    <string name="you_cannot_undo_delete_alert">Ви не зможете відмінити це!\n\nВи впевнені, що хочете видалити це сповіщення?</string>
     <string name="this_backup_looks_like_came_from_different_format_string">Схоже, що резервна копія надійшла з іншого пристрою:\n%s\nВи впевнені, що хочете відновити з цієї резервної копії?</string>
     <string name="megabyte_format_string">%.1f МБ</string>
     <string name="manual_selection_google_drive_file_warning">Ви вибрали файл з Google Drive, але автоматичне резервне копіювання не відбуватиметься з цим файлом. Його можливо використовувати тільки для резервного копіювання та відновлення в ручному режимі.\n\n\n\nПродовжити?</string>
@@ -1800,6 +1814,7 @@
     <string name="summary_ymax">Виберіть максимальне значення для осі y, коли немає більших зчитувань.</string>
     <string name="wait_to_connect">Перевірте налаштування і чекайте підключення.</string>
     <string name="summary_sens_expiry_notify">Увімкнути сповіщення, коли закінчується термін дії сенсору.</string>
+    <string name="title_sens_expiry">Сповіщення про закінчення терміну дії датчика</string>
     <string name="title_sens_expiry_notify">Термін сенсору закінчується</string>
     <string name="close">Закрити</string>
     <string name="title_advanced_settings_4_Lib2">Розширені налаштування для Libre 2</string>
@@ -1840,5 +1855,16 @@
     <string name="select_start_time">Час початку</string>
     <string name="select_end_time">Виберіть час закінчення</string>
     <string name="accept_glucose">Прийняти глюкозу</string>
+    <string name="process_glucose_data_received">Обробляти дані глюкози, отримані з програми NSClient</string>
+    <string name="use_health_connect">Використовувати Health Connect</string>
+    <string name="audio_focus">Аудіо фокус</string>
+    <string name="audio_focus_summary">Виберіть, що робити з іншими програмами під час відтворення сповіщень і регулювання рівня гучності системи</string>
+    <string name="audio_focus_dont_adjust_other_app_sounds">Не налаштовувати звуки інших програм</string>
+    <string name="audio_focus_lower_volume_of_other_apps">Зменшення гучності інших додатків</string>
+    <string name="audio_focus_pause_other_apps_playing_audio">Призупинити інші застосунки, що відтворюють аудіо</string>
+    <string name="audio_focus_pause_all_other_sounds">Призупинити всі інші звуки</string>
+    <string name="use_camera_light">Використовувати спалах камери</string>
+    <string name="use_camera_light_summary">Спалах під час сповіщень при підключенні до зарядного пристрою</string>
     <string name="g7_should_start_automatically">G7 має стартувати автоматично</string>
+    <string name="screenshot">Знімок екрану</string>
 </resources>
