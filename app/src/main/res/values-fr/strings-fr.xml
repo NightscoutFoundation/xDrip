@@ -1284,6 +1284,7 @@
     <string name="summary_lefun_send_alarms">Envoyer les notifications au bracelet pour les alarmes glycémiques</string>
     <string name="title_lefun_send_alarms">Envoyer les alarmes</string>
     <string name="title_lefun_option_shake_snoozes">Secouer pour Mettre en veille</string>
+    <string name="title_lefun_send_calls">Envoyer les appels</string>
     <string name="title_lefun_screens_features">LeFun Écrans / Fonctionnalités</string>
     <string name="title_features">Fonctionnalités </string>
     <string name="title_lefun_feature_lift_to_wak">Soulever pour Activer</string>
