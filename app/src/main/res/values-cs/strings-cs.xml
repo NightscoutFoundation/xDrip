@@ -1283,6 +1283,7 @@
     <string name="summary_lefun_send_alarms">Zobrazit oznámení výstrah glykémie</string>
     <string name="title_lefun_send_alarms">Zobrazit výstrahy</string>
     <string name="title_lefun_option_shake_snoozes">Zatřesením potvrdit</string>
+    <string name="title_lefun_send_calls">Zobrazit příchozí hovory</string>
     <string name="title_lefun_screens_features">Lefun displej / funkce</string>
     <string name="title_features">Funkce</string>
     <string name="title_lefun_feature_lift_to_wak">Zvednutím probudit</string>
