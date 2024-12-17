@@ -1271,6 +1271,7 @@
     <string name="summary_lefun_send_alarms">Sende Benachrichtigungen an das Band für Glukosealarme</string>
     <string name="title_lefun_send_alarms">Alarme senden</string>
     <string name="title_lefun_option_shake_snoozes">Zum Schlummern schütteln</string>
+    <string name="title_lefun_send_calls">Sende Anrufe</string>
     <string name="title_lefun_screens_features">Lefun Bildschirme / Funktionen</string>
     <string name="title_features">Funktionen</string>
     <string name="title_lefun_feature_lift_to_wak">Zum Aktivieren anheben</string>
