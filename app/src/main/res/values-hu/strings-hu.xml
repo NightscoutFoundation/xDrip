@@ -1262,6 +1262,7 @@
     <string name="summary_lefun_send_alarms">Értesítés küldése a MiBand-re a VC-érték riasztásokról</string>
     <string name="title_lefun_send_alarms">Riasztások küldése</string>
     <string name="title_lefun_option_shake_snoozes">Rázásra szundi</string>
+    <string name="title_lefun_send_calls">Hívások átküldése</string>
     <string name="title_lefun_screens_features">LeFun Band képernyő beállítások</string>
     <string name="title_features">Funkciók</string>
     <string name="title_lefun_feature_lift_to_wak">Csuklóemelésre aktiválódik</string>
