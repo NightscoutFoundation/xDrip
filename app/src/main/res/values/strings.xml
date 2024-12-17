@@ -66,6 +66,7 @@
     <string name="pref_title_api_enabled">Enabled</string>
     <string name="pref_summary_api_enabled">The REST API is the standard way to connect to Nightscout</string>
     <string name="pref_title_api_url">Base URL</string>
+    <string name="pref_summary_api_url">Format: https://password@hostname/api/v1/</string>
     <string name="pref_dialog_api_url">Enter Base API URL</string>
     <string name="pref_message_api_url">This only the base URL, the uploader will automatically append /entries for the POST.  API_SECRET on the server should match yourpassphrase in this setting.</string>
     <string name="pref_default_api_url">https://yourpassphrase@{YOUR-SITE}.azurewebsites.net/api/v1/</string>
