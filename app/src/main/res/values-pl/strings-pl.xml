@@ -1281,6 +1281,7 @@
     <string name="summary_lefun_send_alarms">Wysyłaj powiadomienia do opaski z alarmami glikemii</string>
     <string name="title_lefun_send_alarms">Wyślij Alarmy</string>
     <string name="title_lefun_option_shake_snoozes">Wstrząśnij aby uśpić</string>
+    <string name="title_lefun_send_calls">Wysyłaj połączenia</string>
     <string name="title_lefun_screens_features">Ekrany i funkcje Lefun</string>
     <string name="title_features">Funkcje</string>
     <string name="title_lefun_feature_lift_to_wak">Podnieś, by wybudzić</string>
