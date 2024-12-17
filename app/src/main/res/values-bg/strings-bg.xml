@@ -1272,6 +1272,7 @@
     <string name="summary_lefun_send_alarms">Изпращайте известия до групата за аларми за глюкоза</string>
     <string name="title_lefun_send_alarms">Изпращане на аларми</string>
     <string name="title_lefun_option_shake_snoozes">Разклатете за отлагане</string>
+    <string name="title_lefun_send_calls">Изпращане на обаждания</string>
     <string name="title_lefun_screens_features">Lefun Екрани / Характеристики</string>
     <string name="title_features">Характеристики</string>
     <string name="title_lefun_feature_lift_to_wak">Вдигане за събуждане</string>
