@@ -523,8 +523,8 @@
                 android:defaultValue="false"
                 android:dependency="lefun_enabled"
                 android:key="lefun_option_call_notifications"
-                android:summary="Send call notifications to the band (Android 6+)"
-                android:title="Send Calls" />
+                android:summary="@string/summary_lefun_send_calls"
+                android:title="@string/title_lefun_send_calls" />
 
             <PreferenceScreen android:title="@string/title_lefun_screens_features"
                 android:key="lefun_features">
