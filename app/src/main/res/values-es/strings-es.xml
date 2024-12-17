@@ -1279,6 +1279,7 @@
     <string name="summary_lefun_send_alarms">Envía notificaciones de alarmas de glucosa a la pulsera</string>
     <string name="title_lefun_send_alarms">Enviar alarmas</string>
     <string name="title_lefun_option_shake_snoozes">Agitar para diferir</string>
+    <string name="title_lefun_send_calls">Enviar Llamadas</string>
     <string name="title_lefun_screens_features">Pantallas/características Lefun</string>
     <string name="title_features">Características</string>
     <string name="title_lefun_feature_lift_to_wak">Levantar para despertar</string>
