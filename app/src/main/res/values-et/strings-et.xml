@@ -1284,6 +1284,7 @@
     <string name="summary_lefun_send_alarms">Saada kellale teateid veresuhkru hoiatustest</string>
     <string name="title_lefun_send_alarms">Saada hoiatused</string>
     <string name="title_lefun_option_shake_snoozes">Vaigistamiseks raputage</string>
+    <string name="title_lefun_send_calls">Edasta kõned</string>
     <string name="title_lefun_screens_features">Lefun ekraanid / funktsioonid</string>
     <string name="title_features">Funktsioonid</string>
     <string name="title_lefun_feature_lift_to_wak">Tõstke aktiveerimiseks</string>
