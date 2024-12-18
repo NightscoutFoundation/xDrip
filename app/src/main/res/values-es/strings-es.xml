@@ -60,6 +60,7 @@
     <string name="pref_title_api_enabled">Activado</string>
     <string name="pref_summary_api_enabled">La API REST es la forma estándar de conectarse a Nightscout</string>
     <string name="pref_title_api_url">URL base</string>
+    <string name="pref_summary_api_url">Formato: https://password@hostname/api/v1/</string>
     <string name="pref_dialog_api_url">Introduzca URL base de la API</string>
     <string name="pref_message_api_url">Esto es sólo la URL base, el cargador añadirá automáticamente / entradas para el POST. El API_SECRET del servidor debe coincidir con yourpassphrase en este entorno.</string>
     <string name="pref_default_api_url">https://yourpassphrase@{YOUR-SITE}.azurewebsites.net/api/v1/</string>
@@ -748,6 +749,8 @@
     <string name="glucose_meters">Glucometros</string>
     <string name="glucose_meter_options">Opciones para glucometros inalambricos</string>
     <string name="auto_connect_to_meter">Conectar y recuperar automáticamente los datos de un medidor de glucosa conforme a la norma, como el Contour Next One</string>
+    <string name="summary_use_nfc_meter">Descargar registros de glucosa del medidor NFC cuando xDrip está abierto</string>
+    <string name="title_use_nfc_meter">Usar función NFC</string>
     <string name="use_bluetooth_meter">Usar glucometro Bluetooth</string>
     <string name="scan_for_bluetooth_meter">Escanea para buscar glucometro Bluetooth</string>
     <string name="meter_connect_sound">Habilitar esto reproduce efectos de sonido cuando el medidor se conecta, desconecta o sincroniza datos</string>
@@ -1209,6 +1212,12 @@
     <string name="title_tidepool_window_latency">Minutos de antiguedad de datos</string>
     <string name="summary_tidepool_dev_servers">Si habilita, los datos subidos irán a https://int-app.tidepool.org en lugar de a https://app.tidepool.org/</string>
     <string name="title_tidepool_dev_servers">Usar servidores de Integración (prueba)</string>
+    <string name="summary_tidepool_upload_when_chargeonly">Sibir datos sólo al cargar</string>
+    <string name="title_tidepool_upload_when_chargeonly">Solo al estar cargando</string>
+    <string name="summary_tidepool_upload_only_wifi">Subir datos sólo cuando se conecta a una red ilimitada como Wifi</string>
+    <string name="title_tidepool_upload_only_wifi">Solo con WiFi</string>
+    <string name="summary_tidepool_upload_no_treatment">Subir sólo datos CGM para evitar duplicados con la subida manual de la bomba</string>
+    <string name="title_tidepool_upload_no_treatment">No subir tratamientos</string>
     <string name="title_tidepool">Tidepool</string>
     <string name="show_help">Mostrar Ayuda</string>
     <string name="load_save_settings_on_sdcard">Cargar / Guardar Ajustes</string>
@@ -1279,6 +1288,7 @@
     <string name="summary_lefun_send_alarms">Envía notificaciones de alarmas de glucosa a la pulsera</string>
     <string name="title_lefun_send_alarms">Enviar alarmas</string>
     <string name="title_lefun_option_shake_snoozes">Agitar para diferir</string>
+    <string name="summary_lefun_send_calls">Enviar notificaciones de llamada a la pulsera</string>
     <string name="title_lefun_send_calls">Enviar Llamadas</string>
     <string name="title_lefun_screens_features">Pantallas/características Lefun</string>
     <string name="title_features">Características</string>
@@ -1346,6 +1356,8 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Volver a xDrip</string>
     <string name="summary_ob1_minimize_scanning">Utiliza la heurística para minimizar el escaneo de Bluetooth y ahorrar energía</string>
     <string name="title_ob1_minimize_scanning">Minimizar búsqueda</string>
+    <string name="summary_ob1_avoid_scanning">Evita escanear tanto como sea posible (reduce aún más el uso de la batería)</string>
+    <string name="title_ob1_avoid_scanning">Evitar escaneo</string>
     <string name="summary_using_g6">Estoy usando un sensor Dexcom G6, G7, One o One+</string>
     <string name="title_using_g6">Soporte G6/G7/One/One+</string>
     <string name="summary_ob1_g5_allow_resetbond">El recopilador OB1 puede desvincularse si detecta que el cifrado ha fallado. Si tiene problemas para desvincularlo, desactive esta opción. Si pierde totalmente la conexión, asegúrese de que esté habilitado.</string>
@@ -1860,6 +1872,8 @@
     <string name="audio_focus_lower_volume_of_other_apps">Bajar volumen de otras aplicaciones</string>
     <string name="audio_focus_pause_other_apps_playing_audio">Pausar otras aplicaciones reproduciendo audio</string>
     <string name="audio_focus_pause_all_other_sounds">Pausar todos los demás sonidos</string>
+    <string name="wake_up_screen">Activar pantalla</string>
+    <string name="wake_up_screen_summary">Despertar la pantalla durante las alertas. Puede desbloquear dispositivos que no tienen bloqueo de pantalla habilitado.</string>
     <string name="use_camera_light">Usar luz de cámara</string>
     <string name="use_camera_light_summary">Flashear luz de la cámara durante alertas al conectar a un cargador</string>
     <string name="g7_should_start_automatically">G7 debe iniciarse automáticamente</string>
