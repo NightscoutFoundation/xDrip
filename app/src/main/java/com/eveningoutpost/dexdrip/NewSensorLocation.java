@@ -116,7 +116,7 @@ public class NewSensorLocation extends ActivityWithMenu {
 
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
-                prefs.edit().putBoolean("store_sensor_location", !DontAskAgain.isChecked()).apply();
+            //    prefs.edit().putBoolean("store_sensor_location", !DontAskAgain.isChecked()).apply();
 
                 Intent intent = new Intent(getApplicationContext(), Home.class);
                 startActivity(intent);
@@ -129,7 +129,7 @@ public class NewSensorLocation extends ActivityWithMenu {
 
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
-                prefs.edit().putBoolean("store_sensor_location", !DontAskAgain.isChecked()).apply();
+            //    prefs.edit().putBoolean("store_sensor_location", !DontAskAgain.isChecked()).apply();
 
                 Intent intent = new Intent(getApplicationContext(), Home.class);
                 startActivity(intent);
