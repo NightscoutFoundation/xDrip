@@ -61,6 +61,7 @@
     <string name="pref_title_api_enabled">Увімкнути</string>
     <string name="pref_summary_api_enabled">REST API - це стандартний спосіб підключення до Nightscout</string>
     <string name="pref_title_api_url">Основний URL</string>
+    <string name="pref_summary_api_url">Формат: https://password@hostname/api/v1/</string>
     <string name="pref_dialog_api_url">Введіть основний API URL</string>
     <string name="pref_message_api_url">Майте на увазі, це лише основний URL і завантажувач буде автоматично додавати записи для POST-запитів. Значення API-SECRET на сервері повинно співпадати з Вашим паролем в налаштуваннях.</string>
     <string name="pref_default_api_url">https://{пароль}@{сайт}.azurewebsites.net/API/v1/</string>
@@ -750,6 +751,8 @@
     <string name="glucose_meters">Глюкометри</string>
     <string name="glucose_meter_options">Налаштування бездротових глюкометрів</string>
     <string name="auto_connect_to_meter">Автоматично підключатися і отримувати дані зі стандартизованих глюкометрів таких як Contour Next One</string>
+    <string name="summary_use_nfc_meter">Завантажувати NFC заміри глюкози, коли xDrip відкрито</string>
+    <string name="title_use_nfc_meter">Використовувати вимірювач NFC</string>
     <string name="use_bluetooth_meter">Bluetooth-глюкометр</string>
     <string name="scan_for_bluetooth_meter">Пошук Bluetooth-глюкометрів</string>
     <string name="meter_connect_sound">Увімкніть, щоб відтворювати звукові сповіщення при підключенні, відключенні або синхронізації даних</string>
@@ -1211,6 +1214,11 @@
     <string name="title_tidepool_window_latency">Термін даних (хв.)</string>
     <string name="summary_tidepool_dev_servers">Якщо увімкнено, дані будуть завантажені на https://int-app.tidepool.org замість звичайного https://app.tidepool.org/</string>
     <string name="title_tidepool_dev_servers">Використовувати тестові сервера</string>
+    <string name="summary_tidepool_upload_when_chargeonly">Завантажувати дані лише під час зарядки</string>
+    <string name="title_tidepool_upload_when_chargeonly">Лише під час зарядки</string>
+    <string name="summary_tidepool_upload_only_wifi">Вивантажувати дані лише при з’єднанні з Wifi мережею</string>
+    <string name="title_tidepool_upload_only_wifi">Лише через WiFi</string>
+    <string name="summary_tidepool_upload_no_treatment">Вивантажити дані лише через CGM, аби уникнути дублікатів при завантаженні вручну</string>
     <string name="title_tidepool">Tidepool</string>
     <string name="show_help">Показати довідку</string>
     <string name="load_save_settings_on_sdcard">Завантаження/Збереження Налаштувань</string>
