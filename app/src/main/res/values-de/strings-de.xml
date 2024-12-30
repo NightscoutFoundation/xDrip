@@ -288,7 +288,7 @@
     <string name="use_excessive_wakelocks">Übermäßige Wakelocks nutzen</string>
     <string name="speak_readings">Werte vorlesen</string>
     <string name="extra_status_line">Zusätzliche Statuszeile</string>
-    <string name="dexcom_share_server_upload">Dexcom Share Server Upload</string>
+    <string name="dexcom_share_server_upload">Dex Share</string>
     <string name="upload_data_to_dex_servers">Daten zum Dexcom-Server hochladen, damit Du Deine Daten mit den offiziellen Dexcom-Apps nutzen kannst</string>
     <string name="manage_followers">Follower verwalten</string>
     <string name="manage_existing_followers">Follower verwalten und neue hinzufügen.</string>
