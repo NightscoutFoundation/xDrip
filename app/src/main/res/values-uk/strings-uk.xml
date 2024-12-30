@@ -1219,6 +1219,7 @@
     <string name="summary_tidepool_upload_only_wifi">Вивантажувати дані лише при з’єднанні з Wifi мережею</string>
     <string name="title_tidepool_upload_only_wifi">Лише через WiFi</string>
     <string name="summary_tidepool_upload_no_treatment">Вивантажити дані лише через CGM, аби уникнути дублікатів при завантаженні вручну</string>
+    <string name="title_tidepool_upload_no_treatment">Не завантажувати дози</string>
     <string name="title_tidepool">Tidepool</string>
     <string name="show_help">Показати довідку</string>
     <string name="load_save_settings_on_sdcard">Завантаження/Збереження Налаштувань</string>
@@ -1291,6 +1292,7 @@
     <string name="summary_lefun_send_alarms">Надсилати повідомлення про глюкозу на браслет</string>
     <string name="title_lefun_send_alarms">Надсилати сповіщення</string>
     <string name="title_lefun_option_shake_snoozes">Потрясти, щоб відкласти</string>
+    <string name="summary_lefun_send_calls">Надсилати сповіщення про дзвінки на браслет</string>
     <string name="title_lefun_send_calls">Сповіщення про дзвінки</string>
     <string name="title_lefun_screens_features">Екрани/Функції LeFun</string>
     <string name="title_features">Функції</string>
@@ -1359,6 +1361,8 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Відкат до xDrip+</string>
     <string name="summary_ob1_minimize_scanning">Використовувати евристику для зменшення кількості зчитувань даних по Bluetooth і економії заряду</string>
     <string name="title_ob1_minimize_scanning">Мінімізувати сканування</string>
+    <string name="summary_ob1_avoid_scanning">Уникати сканування якомога довше (для економії акумулятора)</string>
+    <string name="title_ob1_avoid_scanning">Уникати сканування</string>
     <string name="summary_using_g6">Я використовую сенсор G6</string>
     <string name="title_using_g6">Підтримка G6</string>
     <string name="summary_ob1_g5_allow_resetbond">Служба збору даних OB1 може розривати з\'єднання в разі виявлення проблем з шифруванням. Якщо Ви відчуваєте труднощі з розривом з\'єднання, вимкніть цю опцію. У разі, якщо після цього Ви зіткнулися з повною втратою з\'єднання, знову активуйте цю опцію</string>
@@ -1872,6 +1876,8 @@
     <string name="audio_focus_lower_volume_of_other_apps">Зменшення гучності інших додатків</string>
     <string name="audio_focus_pause_other_apps_playing_audio">Призупинити інші застосунки, що відтворюють аудіо</string>
     <string name="audio_focus_pause_all_other_sounds">Призупинити всі інші звуки</string>
+    <string name="wake_up_screen">Пробудити екран</string>
+    <string name="wake_up_screen_summary">Пробудження екрану при оповіщенні. Розблокування пристроїв, у яких не увімкнено блокування.</string>
     <string name="use_camera_light">Використовувати спалах камери</string>
     <string name="use_camera_light_summary">Спалах під час сповіщень при підключенні до зарядного пристрою</string>
     <string name="g7_should_start_automatically">G7 має стартувати автоматично</string>
