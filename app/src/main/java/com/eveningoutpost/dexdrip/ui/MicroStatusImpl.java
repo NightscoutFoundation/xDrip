@@ -35,6 +35,11 @@ public class MicroStatusImpl extends BaseObservable implements MicroStatus {
     }
 
     @Override
+    public boolean sessionStartTime() { // This is false only if we are using G7
+        return !getBestCollectorHardwareName().equals("G7");
+    }
+
+    @Override
     public boolean xmitterBattery() {
         return DexCollectionType.usesClassicTransmitterBattery();
     }
