@@ -157,6 +157,7 @@ public class IdempotentMigrations {
         Pref.setBoolean("run_ble_scan_constantly", false);
         Pref.setBoolean("run_G5_ble_tasks_on_uithread", false);
         Pref.setBoolean("ob1_initiate_bonding_flag", true);
+        Pref.setBoolean("store_sensor_location", false);
     }
     private static void legacySettingsMoveLanguageFromNoToNb() {
         // Check if the user's language preference is set to "no"
