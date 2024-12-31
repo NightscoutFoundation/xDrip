@@ -92,6 +92,7 @@ import static com.eveningoutpost.dexdrip.utilitymodels.Constants.DAY_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.SECOND_IN_MS;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
 import static com.eveningoutpost.dexdrip.utils.bt.Helper.getStatusName;
 
 
@@ -133,6 +134,7 @@ public class Ob1G5StateMachine {
     private static volatile AuthRequestTxMessage lastAuthPacket;
     private static volatile boolean backup_loaded = false;
     private static final int OLDEST_RAW = 300 * 24 * 60 * 60; // 300 days
+    private static long relAutoSessionStartTime = HOUR_IN_MS * 3;
 
     public static long maxBackfillPeriod_MS = 0;
 
@@ -1550,14 +1552,19 @@ public class Ob1G5StateMachine {
     }
 
     private static void checkAndActivateSensor() {
-        // automagically start an xDrip sensor session if  transmitter already has active sensor
+        // automagically start an xDrip sensor session if transmitter already has active sensor
         if (!Sensor.isActive() && Ob1G5CollectionService.isG5SensorStarted() && (!Sensor.stoppedRecently() || shortTxId())) {
             JoH.static_toast_long(xdrip.gs(R.string.auto_starting_sensor));
-            // TODO possibly here we want to look at last sensor stop time and not backtrack before that
-            Sensor.create(tsl() - HOUR_IN_MS * 3);
-            if (shortTxId()) { // If we are using G7
-                Sensor.create(tsl() - HOUR_IN_MS * 24);
+            if (shortTxId()) relAutoSessionStartTime = HOUR_IN_MS * 24; // If we are using a G7
+            final List<BgReading> last = BgReading.latest(1); // Last reading
+            if ((last != null) && (last.size() > 0)) { // Have we had a reading?
+                final long now = JoH.tsl();
+                final long since = now - last.get(0).timestamp; // Time since last reading
+                if (since < relAutoSessionStartTime) { // If the last reading was less than 3 hours ago, or if we are using G7 and the last reading was less than 24 hours ago
+                    relAutoSessionStartTime = since; // We will start the new session starting from the last reading.
+                }
             }
+            Sensor.create(tsl() - relAutoSessionStartTime);
         }
     }
 
@@ -1722,8 +1729,14 @@ public class Ob1G5StateMachine {
                 } else if (!onlyUsingNativeMode() && !Home.get_engineering_mode()) {
                     // TODO revisit this now that there is scaling
                     setG6Defaults();
-                    UserError.Log.uel(TAG, "Dex Native mode enabled.  For your device, non-native mode is either not possible or not recommended.");
+                    UserError.Log.wtf(TAG, "Dex Native mode enabled.  For your device, non-native mode is either not possible or not recommended.");
                     JoH.showNotification("Enabled Native", "Native mode enabled", null, Constants.G6_DEFAULTS_MESSAGE, false, true, false);
+                }
+                if (FirmwareCapability.isTransmitterRawIncapable(getTransmitterID())) { // If we are using a G7 or G6 Firefly (mod or not)
+                    if (Pref.getBooleanDefaultFalse("ob1_g5_restart_sensor") && !Home.get_engineering_mode()) { // If restart is enabled, not in engineering mode
+                        Pref.setBoolean("ob1_g5_restart_sensor", false); // Disable restart
+                        UserError.Log.wtf(TAG, "Restart sensor disabled.  You cannot simply restart sensor with your device.");
+                    }
                 }
             }
         }

@@ -37,6 +37,10 @@
     <string name="pref_header_cloud_storage">Przechowywanie w chmurze</string>
     <string name="auto_configure_title">Automatyczna konfiguracja</string>
     <string name="prefs_auto_config_summary">Automatyczna konfiguracja za pomocą kodu kreskowego.</string>
+    <string name="auto_config_cam_title">Aparat</string>
+    <string name="auto_config_cam_summary">Zeskanuj kod QR za pomocą telefonu komórkowego (zalecane)</string>
+    <string name="auto_config_image_title">Plik obrazu</string>
+    <string name="auto_config_image_summary">Możesz zapisać kod QR jako plik obrazu (np. .png lub .jpeg) na telefonie. Następnie użyj tej opcji, aby skanować kod QR z zapisanego pliku.</string>
     <string name="scan_share2_barcode">Skanowanie kodów kreskowych Share</string>
     <string name="pref_share2_scan_barcode_summary">Lub zeskanować kod kreskowy na odbiorniku share</string>
     <!-- MongoDB Settings -->
@@ -57,6 +61,7 @@
     <string name="pref_title_api_enabled">Włączone</string>
     <string name="pref_summary_api_enabled">REST API jest standardowym sposobem łączenia się z Nightscout</string>
     <string name="pref_title_api_url">Głowny Adres URL</string>
+    <string name="pref_summary_api_url">Szablon: https://hasło@nazwastrony/api/v1/</string>
     <string name="pref_dialog_api_url">Wprowadź główny adres URL API</string>
     <string name="pref_message_api_url">Wpisz główny adres URL. Zostanie on potem automatycznie rozszerzony przed wysyłaniem danych. API_SECRET powinno być identyczne z twoim hasłem podanym przy tworzeniu serwera nightscout.</string>
     <string name="pref_default_api_url">https://twojehaslo@{YOUR-SITE}.azurewebsites.net/api/v1/</string>
@@ -218,7 +223,14 @@
     <string name="other_alerts">Inne Alarmy</string>
     <string name="extra_alerts_xdrip_plus">Dodatkowe ostrzeżenia (xDrip+)</string>
     <string name="persistent_high_alert">Utrzymujące się wysokie alerty</string>
+    <string name="persistent_high_alert_enable">Włącz</string>
+    <string name="title_persistent_high_threshold">Próg</string>
+    <string name="the_value_must_be_between_min_and_max">Wartość musi być pomiędzy %1$s i %2$s</string>
     <string name="forecasted_low_alert">Prognozowany Low Alert</string>
+    <string name="setting_pref_to_max">Ustaw na maksimum</string>
+    <string name="pref_was_greater_than_max">Wartość %1$s przekroczyła maksymalną dozwoloną wartość. Ustawiono w zamian wartość maksymalną.</string>
+    <string name="setting_pref_to_min">Ustaw na minimum</string>
+    <string name="pref_was_less_than_min">Wartość %1$s przekroczyła minimalną dozwoloną wartość. Ustawiono w zamian wartość minimalną.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Ekstrapolacji danych, aby spróbować przewidzieć upadki</string>
     <string name="alarm_at_forecasted_low_mins">Alarm przy prognozowanych niskich w minutach</string>
     <string name="other_xdrip_plus_alerts">Inne alarmy xDrip+</string>
@@ -736,6 +748,8 @@
     <string name="glucose_meters">Glukometry</string>
     <string name="glucose_meter_options">Opcje dla bezprzewodowych glukometrów</string>
     <string name="auto_connect_to_meter">Automatycznie podłącz i pobieraj dane z kompatybilnego glukometru</string>
+    <string name="summary_use_nfc_meter">Pobierz pomiary glukozy z urządzenia NFC, kiedy xDrip jest otwarty</string>
+    <string name="title_use_nfc_meter">Użyj urządzenia NFC</string>
     <string name="use_bluetooth_meter">Używaj glukometru z Bluetooth</string>
     <string name="scan_for_bluetooth_meter">Skanuj w poszukiwaniu glukometru z Bluetooth</string>
     <string name="meter_connect_sound">Włącz to, aby odtwarzać dźwięki po połączeniu, rozłączeniu i synchronizacji danych</string>
@@ -1197,6 +1211,12 @@
     <string name="title_tidepool_window_latency">Wiek w minutach</string>
     <string name="summary_tidepool_dev_servers">Po włączeniu, zacznie wysyłać do https://int-app.tidepool.org zamiast zwykłego https://app.tidepool.org/</string>
     <string name="title_tidepool_dev_servers">Użyj serwerów integracyjnych (testowych)</string>
+    <string name="summary_tidepool_upload_when_chargeonly">Przesyłaj dane tylko podczas ładowania</string>
+    <string name="title_tidepool_upload_when_chargeonly">Tylko podczas ładowania</string>
+    <string name="summary_tidepool_upload_only_wifi">Przesyłaj dane tylko po podłączeniu do nieograniczonej sieci, np. WiFi</string>
+    <string name="title_tidepool_upload_only_wifi">Tylko przez WiFi</string>
+    <string name="summary_tidepool_upload_no_treatment">Przesyłaj tylko dane z CGM, aby uniknąć duplikatów przesłanych z pompy</string>
+    <string name="title_tidepool_upload_no_treatment">Nie wysyłaj zabiegów</string>
     <string name="title_tidepool">Tidepool</string>
     <string name="show_help">Pokaż pomoc</string>
     <string name="load_save_settings_on_sdcard">Załaduj / Zapisz ustawienia na karcie Sd</string>
@@ -1270,6 +1290,8 @@
     <string name="summary_lefun_send_alarms">Wysyłaj powiadomienia do opaski z alarmami glikemii</string>
     <string name="title_lefun_send_alarms">Wyślij Alarmy</string>
     <string name="title_lefun_option_shake_snoozes">Wstrząśnij aby uśpić</string>
+    <string name="summary_lefun_send_calls">Wysyłaj powiadomienia o połączeniach do opaski</string>
+    <string name="title_lefun_send_calls">Wysyłaj połączenia</string>
     <string name="title_lefun_screens_features">Ekrany i funkcje Lefun</string>
     <string name="title_features">Funkcje</string>
     <string name="title_lefun_feature_lift_to_wak">Podnieś, by wybudzić</string>
@@ -1336,6 +1358,8 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Awaryjny powrót do algorytmu xDrip</string>
     <string name="summary_ob1_minimize_scanning">Użyj heurystyki, aby zminimalizować skanowanie Bluetooth i oszczędzać energię</string>
     <string name="title_ob1_minimize_scanning">Minimalizuj skanowanie</string>
+    <string name="summary_ob1_avoid_scanning">Unikaj skanowania jak tylko to możliwe (jeszcze bardziej zmniejsza zużycie baterii)</string>
+    <string name="title_ob1_avoid_scanning">Unikaj skanowania</string>
     <string name="summary_using_g6">Używam czujnika G6</string>
     <string name="title_using_g6">Obsługa G6/Dex1</string>
     <string name="summary_ob1_g5_allow_resetbond">Kolektor OB1 może odłączyć, jeśli uzna, że szyfrowanie się nie powiodło. Jeśli wystąpią problemy z odparowaniem, wyłącz tę opcję. Jeśli wtedy całkowicie utracisz połączenie, upewnij się, że jest to włączone.</string>
@@ -1479,6 +1503,7 @@
     <string name="progress">postęp</string>
     <string name="bluetooth_device">Urządzenie Bluetooth:   </string>
     <string name="transmitter_battery_status">Bateria nadajnika:  </string>
+    <string name="database_size">Rozmiar bazy danych:  </string>
     <string name="top">Góra</string>
     <string name="connect_device_usb_otg">Podłącz swoje urządzenie kablem USB OTG.</string>
     <string name="connection_status">Status połączenia:</string>
@@ -1688,6 +1713,7 @@
     <string name="proceed">Kontynuuj</string>
     <string name="special_pairing_workaround">Obejście trybu parowania</string>
     <string name="save_power">Oszczędzaj energię</string>
+    <string name="use_xdrip_cloud">Użyj chmury xDrip</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Uproszczenie wykresów poprzez usunięcie nieprawidłowości</string>
     <string name="graph_smoothing">Wygładzanie wykresu</string>
     <string name="enable_graph_smoothing">Włącz</string>
@@ -1760,6 +1786,7 @@
     <string name="summary_ymax">Wybierz yMax, dla sytuacji, gdy nie ma wyższych odczytów.</string>
     <string name="wait_to_connect">Sprawdź ustawienia i poczekaj na połączenie.</string>
     <string name="summary_sens_expiry_notify">Wyświetl powiadomienia, gdy czujnik zbliża się do wygaśnięcia.</string>
+    <string name="title_sens_expiry">Powiadomienia o wygaśnięciu czujnika</string>
     <string name="title_sens_expiry_notify">Czas wygaśnięcia czujnika</string>
     <string name="close">Zamknij</string>
     <string name="title_advanced_settings_4_Lib2">Zaawansowane ustawienia dla Libre 2</string>
@@ -1790,7 +1817,10 @@
     <string name="audio_focus_lower_volume_of_other_apps">Zmniejsz głośność innych aplikacji</string>
     <string name="audio_focus_pause_other_apps_playing_audio">Wstrzymaj odtwarzanie dźwięku innych aplikacji</string>
     <string name="audio_focus_pause_all_other_sounds">Wstrzymaj wszystkie inne dźwięki</string>
+    <string name="wake_up_screen">Wybudzanie ekranu</string>
+    <string name="wake_up_screen_summary">Wybudzaj ekran podczas powiadomień. To może powodować odblokowanie urządzenia, które nie ma włączonej blokady ekranu.</string>
     <string name="use_camera_light">Użyj latarki aparatu</string>
     <string name="use_camera_light_summary">Mrugaj latarką aparatu podczas alarmów przy podłączeniu do ładowarki</string>
     <string name="g7_should_start_automatically">G7 powinien uruchomić się automatycznie</string>
+    <string name="screenshot">Zrzut ekranu</string>
 </resources>

@@ -1292,15 +1292,15 @@ public class Ob1G5CollectionService extends G5BaseService {
                                 ,final String historical_address
                                 ,final String this_name
                                 ,final String search_name ) // G7 => null!
-    {
-        if( (search_name == null)
-                && ( this_address.equalsIgnoreCase(historical_address)
-//                    || this_name == null
-                    || ( emptyString(historical_address)
-                        && this_name.startsWith("DXCM") )
-                    || ( emptyString(historical_address)
-                        && this_name.startsWith("DX02") ) ) )
-        {
+	{
+		if( (search_name == null)
+			&& ( this_address.equalsIgnoreCase(historical_address) 
+			//      || this_name == null
+					|| ( emptyString(historical_address) && this_name.startsWith("DXCM") )
+					|| ( emptyString(historical_address) && this_name.startsWith("DX01") ) 
+					|| ( emptyString(historical_address) && this_name.startsWith("DX02") ) 
+			   ) )
+		{
             return !inFailureTally(this_address);
         }
 
@@ -1897,7 +1897,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
 
     private boolean getInitiateBondingFlag() {
-        return Pref.getBoolean("ob1_initiate_bonding_flag", true);
+        return true; // There is no reason not to initiate bonding
     }
 
 
@@ -2359,7 +2359,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
         try {
             if (vr2 != null) {
-                if (vr2.typicalSensorDays != 10 && vr2.typicalSensorDays != 7) {
+                if (vr2.typicalSensorDays != 10 && vr2.typicalSensorDays != 7 && vr2.typicalSensorDays != 15) {
                     l.add(new StatusItem("Sensor Period", niceTimeScalar(vr2.typicalSensorDays * DAY_IN_MS), Highlight.NOTICE));
                 }
 

@@ -37,6 +37,10 @@
     <string name="pref_header_cloud_storage">Nettskylagring</string>
     <string name="auto_configure_title">Autokonfigurer</string>
     <string name="prefs_auto_config_summary">Autokonfigurer med strekkode.</string>
+    <string name="auto_config_cam_title">Kamera</string>
+    <string name="auto_config_cam_summary">Skann en QR-kode med din mobil (anbefalt)</string>
+    <string name="auto_config_image_title">Bildefil</string>
+    <string name="auto_config_image_summary">Du kan lagre QR-koden som en bildefil (f.eks. .png eller .jpeg) på mobilen din. Bruk deretter dette alternativet til å skanne QR-koden fra den lagrede filen.</string>
     <string name="scan_share2_barcode">Skan delingsstrekkode</string>
     <string name="pref_share2_scan_barcode_summary">Eller skanne strekkoden på mottakeren</string>
     <!-- MongoDB Settings -->
@@ -57,6 +61,7 @@
     <string name="pref_title_api_enabled">Aktivert</string>
     <string name="pref_summary_api_enabled">REST API er den vanlige måten å koble til Nightscout</string>
     <string name="pref_title_api_url">Base-URL</string>
+    <string name="pref_summary_api_url">Format: https://passord@dinserver.dom/api/v1/</string>
     <string name="pref_dialog_api_url">Skriv inn Base-URL for API</string>
     <string name="pref_message_api_url">Dette er bare Base-URL, opplaster vil automatisk legge til /oppføringer for POST. API_SECRET på serveren skal samsvare med yourpassphrase i denne innstillingen.</string>
     <string name="pref_default_api_url">https://dittpassord@{YOUR-SITE}.azurewebsites.net/api/v1/</string>
@@ -115,6 +120,7 @@
     <string name="title_activity_update">xDrip+ oppdatering tilgjengelig</string>
     <string name="title_activity_display_qrcode">Del innstillinger med QR-kode</string>
     <string name="title_activity_send_feed_back">Send tilbakemelding til Jamorham</string>
+    <string name="title_activity_save_logs">Lagre logger</string>
     <string name="title_activity_maps">Parakeet Kart</string>
     <string name="title_activity_display_preferences">Vis innstillinger</string>
     <string name="export_submenu">Import / Eksport funksjoner</string>
@@ -218,7 +224,14 @@
     <string name="other_alerts">Andre varsler</string>
     <string name="extra_alerts_xdrip_plus">Ekstra varsler (xDrip+)</string>
     <string name="persistent_high_alert">Vedvarende høy varsel</string>
+    <string name="persistent_high_alert_enable">Aktiver</string>
+    <string name="title_persistent_high_threshold">Terskel</string>
+    <string name="the_value_must_be_between_min_and_max">Verdien må være mellom %1$s og %2$s</string>
     <string name="forecasted_low_alert">Beregnet lav varsel</string>
+    <string name="setting_pref_to_max">Sett til maksimum</string>
+    <string name="pref_was_greater_than_max">%1$s ble satt til en verdi større enn maksimalt tillatt. Den har blitt endret til maksimum.</string>
+    <string name="setting_pref_to_min">Sett til minimum</string>
+    <string name="pref_was_less_than_min">%1$s ble satt til en verdi mindre enn minste tillatt. Den har blitt endret til minimum.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Ekstrapoler data for å prøve og beregne lave verdier</string>
     <string name="alarm_at_forecasted_low_mins">Grense i antall minutter før varsel går av</string>
     <string name="other_xdrip_plus_alerts">Andre xDrip+ varsler</string>
@@ -394,7 +407,9 @@
     <string name="please_enter_your_question_or_comments_here">Skriv inn ditt spørsmål eller kommentarer her.\n\nHvis du oppgir en e-postadresse kan det være at du få svar.\n\n</string>
     <string name="optional_contact_info_here_eg_email">Valgfri kontaktinfo, for eksempel e-post</string>
     <string name="send_message">Send melding</string>
+    <string name="save_logs">Lagre logger</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Vennligst oppgi hva du synes om programmet generelt</string>
+    <string name="log_confidential_note">Advarsel!\nLoggene kan inneholde konfidensiell informasjon som passord eller bruker-ID\'er.</string>
     <string name="preferences_saved_in_sdcard_downloads">Innstillinger lagret i intern lagring (Download/xDrip-export)</string>
     <string name="could_not_write_to_sdcard_check_perms">Klarte ikke skrive til SD-kort - sjekk tillatelser?</string>
     <string name="loaded_preferences_restarting">Innstillinger lastet! - Omstart</string>
@@ -593,7 +608,7 @@
     <string name="short_speak_readings_shortcut">Vis snarvei til ☰ meny for å skru av/på talte avlesninger</string>
     <string name="speak_readings_shortcut">Taleavlesning-snarvei</string>
     <string name="battery_optimization_off">Sørg for at batterioptimalisering er skrudd av for Android 6+ (anbefalt).</string>
-    <string name="battery_optimization_on">Ikke fortsett å spørre om batterioptimalisering (ikke anbefalt).</string>
+    <string name="battery_optimization_on">Vil ikke fortsette å spørre om batterioptimalisering når dette er aktivert (ikke anbefalt).</string>
     <string name="battery_optimization_prompt">Batterioptimaliserings forespørsel</string>
     <string name="advanced_bluetooth_settings">Avanserte innstillinger for Bluetooth</string>
     <string name="bluetooth_settings">Bluetooth-innstillinger</string>
@@ -640,7 +655,7 @@
     <string name="engineering_mode">Engineeringmodus</string>
     <string name="allow_unsafe_settings">Tillat ending av usikre innstillinger som kan ødelegge alt!</string>
     <string name="daily_save_db">Lagre databasen daglig</string>
-    <string name="allow_daily_db_save">Tillager den daglige intensjonstjenesten å lagre databasen før den tømmer</string>
+    <string name="allow_daily_db_save">Lar den daglige intensjonstjenesten lagre databasen før tømming</string>
     <string name="options_for_extra_line">Alternativ for ekstra statuslinje</string>
     <string name="todays_average_value">Dagens gjennomsnittlige verdi.</string>
     <string name="ac1_estimation_dcct">A1c-estimat i DCCT format (%)</string>
@@ -736,6 +751,8 @@
     <string name="glucose_meters">Glukosemålere</string>
     <string name="glucose_meter_options">Alternativ for trådløse glukosemålere</string>
     <string name="auto_connect_to_meter">Automatisk koble til og motta data fra standard kompatible blodsukkermålere som Contour Next One</string>
+    <string name="summary_use_nfc_meter">Last ned glukoseoppføringer fra NFC-meter når xDrip er åpen</string>
+    <string name="title_use_nfc_meter">Bruk NFC-måler</string>
     <string name="use_bluetooth_meter">Bruk Bluetooth-måler</string>
     <string name="scan_for_bluetooth_meter">Søk etter Bluetooth-måler</string>
     <string name="meter_connect_sound">Aktiver avspilling av lyd når måleren kobler til, kobler fra eller synkroniserer data</string>
@@ -1197,6 +1214,12 @@
     <string name="title_tidepool_window_latency">Dataalder minutter</string>
     <string name="summary_tidepool_dev_servers">Hvis aktivert, vil opplastinger gå til https://int-app.tidepool.org i stedet for den vanlige https://app.tidepool.org/</string>
     <string name="title_tidepool_dev_servers">Bruk integrasjon-(test)-servere</string>
+    <string name="summary_tidepool_upload_when_chargeonly">Last opp data kun under lading</string>
+    <string name="title_tidepool_upload_when_chargeonly">Bare under lading</string>
+    <string name="summary_tidepool_upload_only_wifi">Last opp data kun når du er koblet til et ikke-forbruksmålt nettverk som Wifi</string>
+    <string name="title_tidepool_upload_only_wifi">Bare på WiFi</string>
+    <string name="summary_tidepool_upload_no_treatment">Last opp bare CGM-data for å unngå duplikater ved manuell opplasting av pumpedata</string>
+    <string name="title_tidepool_upload_no_treatment">Ikke last opp behandlinger</string>
     <string name="title_tidepool">Tidepool</string>
     <string name="show_help">Vis hjelp</string>
     <string name="load_save_settings_on_sdcard">Last inn / Lagre innstillinger</string>
@@ -1270,6 +1293,8 @@
     <string name="summary_lefun_send_alarms">Send notifikasjoner til armbåndet for glukosevarsler</string>
     <string name="title_lefun_send_alarms">Send varsler</string>
     <string name="title_lefun_option_shake_snoozes">Rist for å slumre</string>
+    <string name="summary_lefun_send_calls">Send samtalevarsler til bandet</string>
+    <string name="title_lefun_send_calls">Send samtaler</string>
     <string name="title_lefun_screens_features">Lefun-skjermer / funksjoner</string>
     <string name="title_features">Funksjoner</string>
     <string name="title_lefun_feature_lift_to_wak">Løft for å vekke</string>
@@ -1337,6 +1362,8 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Falle tilbake til xDrip</string>
     <string name="summary_ob1_minimize_scanning">Bruk heuristikk for å minimere Bluetooth-skanning + spare strøm</string>
     <string name="title_ob1_minimize_scanning">Minimer skanning</string>
+    <string name="summary_ob1_avoid_scanning">Unngå å skanne så mye som mulig (reduserer batteribruken ytterliger)</string>
+    <string name="title_ob1_avoid_scanning">Unngå skanning</string>
     <string name="summary_using_g6">Jeg bruker en G6, G7 Dexcom 1 eller One+ sensor</string>
     <string name="title_using_g6">G6/G7/Dex1/One+-støtte</string>
     <string name="summary_ob1_g5_allow_resetbond">OB1-innsamleren kan frigjøre seg hvis den tror krypteringen har mislyktes. Hvis du får problemer med å oppheve sammenkoblingen, deaktiver dette alternativet. Hvis du da mister forbindelsen helt, sørg for at dette er aktivert.</string>
@@ -1407,6 +1434,7 @@
     <string name="summary_plus_accept_follower_actions">Behandlinger, kalibreringer og andre handlinger fra følgere vil bli akseptert</string>
     <string name="title_plus_accept_follower_actions">Godta følgerhandlinger</string>
     <string name="summary_plus_whole_house">Delta i et Helt Hus Nettverk</string>
+    <string name="summary_plus_xdrip_cloud">Bruk de nye xDrip+ Cloud-serverne. Master og følgere må alle ha denne innstillingen stilt inn likt.</string>
     <string name="title_plus_whole_house">Helt Hus</string>
     <string name="summary_libre_whole_house_collector">Denne telefonen vil være en innsamler i et Helt Hus Nettverk</string>
     <string name="title_libre_whole_house_collector">Libre Helt Hus</string>
@@ -1456,6 +1484,8 @@
     <string name="category_falling_rising_bg">Fallende/stigende BS</string>
     <string name="category_alert_prefs">Varslingspreferanser (for disse varslene)</string>
     <string name="summary_persistent_high_alert">Når du er over høyt nivå for lenge og ikke er på vei nedover</string>
+    <string name="summary_persistent_high_threshold_link">Når aktivert, er Høy Verdi terskelen.\nNår deaktivert, er terskelverdien angitt nedenfor.</string>
+    <string name="title_persistent_high_threshold_link">Terskel: Høy verdi</string>
     <string name="note_search_button">SØK</string>
     <string name="all_note_button">ALLE</string>
     <string name="title_full_screen_mode">Fullskjerm-modus</string>
@@ -1727,6 +1757,7 @@
     <string name="proceed">Fortsett</string>
     <string name="special_pairing_workaround">Spesiell løsning for sammenkobling</string>
     <string name="save_power">Spar strøm</string>
+    <string name="use_xdrip_cloud">Bruk xDrip Cloud</string>
     <string name="reduce_battery_and_network_overhead">Reduser batteri- og nettverksbruk ved å bruke batchbehandling og ekskludere unødvendige data</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Forenkle grafer ved å utjevne uregelmessigheter i tidligere avlesninger. Siste avlesning, varsler og kringkastet verdi er ikke påvirket av denne innstillingen.  </string>
     <string name="graph_smoothing">Grafutjevning</string>
@@ -1804,6 +1835,7 @@
     <string name="summary_ymax">Velg yMax for når det ikke er større avlesninger.</string>
     <string name="wait_to_connect">Bekreft innstillingene og vent på tilkobling.</string>
     <string name="summary_sens_expiry_notify">Lag varsel når sensoren nærmer seg utløp.</string>
+    <string name="title_sens_expiry">Sensorutløp varsler</string>
     <string name="title_sens_expiry_notify">Sensor-utløp</string>
     <string name="close">Lukk</string>
     <string name="title_advanced_settings_4_Lib2">Avanserte innstillinger for Libre 2</string>
@@ -1852,7 +1884,10 @@
     <string name="audio_focus_lower_volume_of_other_apps">Lavere volum av andre apper</string>
     <string name="audio_focus_pause_other_apps_playing_audio">Pause andre apper som lager lyd</string>
     <string name="audio_focus_pause_all_other_sounds">Sett alle andre lyder på pause</string>
+    <string name="wake_up_screen">Slå på skjermen</string>
+    <string name="wake_up_screen_summary">Slå på skjermen under varsler. Kan låse opp enheter som ikke har skjermlås aktivert.</string>
     <string name="use_camera_light">Bruk kameralys</string>
     <string name="use_camera_light_summary">Blink kameralys under varsler når tilkoblet en lader</string>
     <string name="g7_should_start_automatically">G7 skal starte automatisk</string>
+    <string name="screenshot">Skjermdump</string>
 </resources>

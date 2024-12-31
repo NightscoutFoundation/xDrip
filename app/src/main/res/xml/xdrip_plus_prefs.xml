@@ -859,6 +859,13 @@
                 android:key="plus_accept_follower_actions"
                 android:summary="@string/summary_plus_accept_follower_actions"
                 android:title="@string/title_plus_accept_follower_actions" />
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="use_xdrip_cloud_sync"
+                android:summary="@string/summary_plus_xdrip_cloud"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="@string/use_xdrip_cloud" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="plus_follower_save_power"

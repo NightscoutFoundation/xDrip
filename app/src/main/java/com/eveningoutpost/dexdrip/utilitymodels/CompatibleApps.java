@@ -173,7 +173,7 @@ public class CompatibleApps extends BroadcastReceiver {
 
     public static void showNotification(String title, String content, PendingIntent yesIntent, PendingIntent noIntent, PendingIntent contentIntent, int notificationId) {
 
-        final NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(xdrip.getAppContext(), null)
+        final NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(xdrip.getAppContext(), (String)null)
                 .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
                 .setContentTitle(title)
                 .setContentText(content)

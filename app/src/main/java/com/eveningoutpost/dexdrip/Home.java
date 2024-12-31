@@ -70,6 +70,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.g5model.DexSyncKeeper;
 import com.eveningoutpost.dexdrip.g5model.DexTimeKeeper;
 import com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.g5model.SensorDays;
@@ -378,7 +379,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
         nanoStatus = new NanoStatus("collector", 1000);
-        expiryStatus = new NanoStatus("sensor-expiry", 15000);
+        expiryStatus = new NanoStatus("s-expiry", 15000);
 
         set_is_follower();
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -645,7 +646,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 Log.d(TAG, "Requesting ignore battery optimization");
 
                 if (((dialog == null) || (!dialog.isShowing()))
-                        && (PersistentStore.incrementLong("asked_battery_optimization") < 40)) {
+                        && (PersistentStore.incrementLong("asked_battery_optimization") < 40000)) {
                     JoH.show_ok_dialog(this, gs(R.string.please_allow_permission), gs(R.string.xdrip_needs_whitelisting_for_proper_performance), new Runnable() {
 
                         @RequiresApi(api = Build.VERSION_CODES.M)
@@ -1912,7 +1913,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         NFControl.initNFC(this, false);
 
         if (get_follower() || get_master()) {
-            GcmActivity.checkSync(this);
+           // GcmActivity.checkSync(this);
         }
 
         checkWifiSleepPolicy();
@@ -2630,11 +2631,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
         if (!isSensorActive) {
-            // Define a variable (notConnectedToG6Yet) that is only true if Native G6 is chosen, but, transmitter days is unknown.
-            boolean notConnectedToG6Yet = DexCollectionType.getDexCollectionType() == DexcomG5 && Pref.getBooleanDefaultFalse("ob1_g5_use_transmitter_alg") && Pref.getBooleanDefaultFalse("using_g6") && DexTimeKeeper.getTransmitterAgeInDays(getTransmitterID()) == -1;
-            if (notConnectedToG6Yet || shortTxId()) { // Only if G6 has been selected and transmitter days is unknown, or if G7 has been selected.
+            // Define a variable (notConnectedToG6Yet) that is only true if Native G6 is chosen, but, transmitter days is unknown or not synced yet.
+            boolean notConnectedToG6Yet = DexCollectionType.getDexCollectionType() == DexcomG5 && Pref.getBooleanDefaultFalse("ob1_g5_use_transmitter_alg") && Pref.getBooleanDefaultFalse("using_g6") && (DexTimeKeeper.getTransmitterAgeInDays(getTransmitterID()) == -1 || !DexSyncKeeper.isReady(getTransmitterID()));
+            if (notConnectedToG6Yet || shortTxId()) { // Only if G6 has been selected and transmitter is not synced yet, or if G7 has been selected.
                 notificationText.setText(R.string.wait_to_connect);
-            } else { // Only if G6 is not selected or G6 transmitter days is known.
+            } else { // Only if G6 is not selected or G6 transmitter is synced.
                 notificationText.setText(R.string.now_start_your_sensor);
             }
 
@@ -2653,7 +2654,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     dialog.show();
                 } else {
                     if (!Experience.gotData() && !QuickSettingsDialogs.isDialogShowing() && !notConnectedToG6Yet && JoH.ratelimit("start-sensor_prompt", 20)) {
-                        // Show the dialog only if there is no data, and there is no dialog, and G6 is not selected or G6 is connected, and the rate limit is satisfied.
+                        // Show the start sensor prompt only if G6 is not selected or the G6 transmitter is synchronized.
                         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
                         final Context context = this;
                         builder.setTitle(getString(R.string.start_sensor) + "?");

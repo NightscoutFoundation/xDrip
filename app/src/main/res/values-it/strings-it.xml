@@ -8,7 +8,7 @@
     <string name="menu_refresh">Aggiorna</string>
     <string name="menu_export_database">Esporta Database</string>
     <string name="menu_export_csv_sidiary">Esporta CSV (formato SiDiary)</string>
-    <string name="menu_import_db">Importa database</string>
+    <string name="menu_import_db">Ripristina database</string>
     <string name="error_bluetooth_not_supported">Errore: Bluetooth non supportato da questo dispositivo</string>
     <string name="unknown_device">Dispositivo non riconosciuto</string>
     <string name="connecting_to_device">In collegamento al dispositivo ...</string>
@@ -37,6 +37,10 @@
     <string name="pref_header_cloud_storage">Memorizza nel Cloud</string>
     <string name="auto_configure_title">Configurazione automatica</string>
     <string name="prefs_auto_config_summary">Configurazione automatica utilizzando un codice QR.</string>
+    <string name="auto_config_cam_title">Camera</string>
+    <string name="auto_config_cam_summary">Scansiona un codice QR con il tuo cellulare (consigliato)</string>
+    <string name="auto_config_image_title">File immagine</string>
+    <string name="auto_config_image_summary">Puoi salvare un codice QR come un file immagine (come .png o .jpeg) sul tuo cellulare. Quindi, utilizzare questa opzione per scansionare il codice QR dal file salvato.</string>
     <string name="scan_share2_barcode">Scan Condividi Barcode</string>
     <string name="pref_share2_scan_barcode_summary">Oppure scansiona il codice sul ricevitore</string>
     <!-- MongoDB Settings -->
@@ -57,6 +61,7 @@
     <string name="pref_title_api_enabled">Abilitato</string>
     <string name="pref_summary_api_enabled">REST API è il modo standard per connettersi a Nightscout</string>
     <string name="pref_title_api_url">URL di base</string>
+    <string name="pref_summary_api_url">Formato: https://password@hostname/api/v1/</string>
     <string name="pref_dialog_api_url">Inserisci l\'API URL</string>
     <string name="pref_message_api_url">Questo solo l\'URL di base, l\'uploader aggiungerà automaticamente i valori del POST. API_SECRET sul server. La tua  passphrase deve corrispondere.</string>
     <string name="pref_default_api_url">https://tuapassword@{tuosito}.azurewebsites.net/api/v1/</string>
@@ -115,6 +120,7 @@
     <string name="title_activity_update">xDrip+ Aggiornamento disponibile</string>
     <string name="title_activity_display_qrcode">Condividi impostazioni tramite il codice QR</string>
     <string name="title_activity_send_feed_back">Invia Feedback a Jamorham</string>
+    <string name="title_activity_save_logs">Salva Log</string>
     <string name="title_activity_maps">Mappa Parakeet</string>
     <string name="title_activity_display_preferences">Mostra Preferenze</string>
     <string name="export_submenu">Funzioni di importazione / esportazione</string>
@@ -218,7 +224,14 @@
     <string name="other_alerts">Altri Allarmi</string>
     <string name="extra_alerts_xdrip_plus">Allarmi Extra (xDrip+)</string>
     <string name="persistent_high_alert">Allarme per VALORI ALTI Persistenti</string>
+    <string name="persistent_high_alert_enable">Abilita</string>
+    <string name="title_persistent_high_threshold">Soglia</string>
+    <string name="the_value_must_be_between_min_and_max">Il valore deve essere compreso tra %1$s e %2$s</string>
     <string name="forecasted_low_alert">Allarme di previsione VALORE BASSO</string>
+    <string name="setting_pref_to_max">Imposta al massimo</string>
+    <string name="pref_was_greater_than_max">%1$s è stato impostato su un valore maggiore del massimo consentito. È stato modificato al massimo.</string>
+    <string name="setting_pref_to_min">Imposta al minimo</string>
+    <string name="pref_was_less_than_min">%1$s è stato impostato su un valore minore del minimo consentito. È stato modificato al minimo.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Estrapolare i dati per cercare di prevedere raggiungimento VALORE BASSO</string>
     <string name="alarm_at_forecasted_low_mins">Allarme previsione VALORE BASSO (minuti)</string>
     <string name="other_xdrip_plus_alerts">Altro xDrip+ avvisi</string>
@@ -394,7 +407,9 @@
     <string name="please_enter_your_question_or_comments_here">Inserisci la tua domanda o commenti qui.\n\nSe si fornisce un indirizzo email si può ottenere una risposta.\n\n</string>
     <string name="optional_contact_info_here_eg_email">Aggiungi tuoi contatti qui qui, ad esempio, e-mail</string>
     <string name="send_message">Invia messaggio</string>
+    <string name="save_logs">Salva Log</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Si prega di indicare quello che pensi dell\'app in generale</string>
+    <string name="log_confidential_note">Attenzione!\nI log possono contenere informazioni riservate come password o ID utente.</string>
     <string name="preferences_saved_in_sdcard_downloads">Preferenze salvate in Download sdcard</string>
     <string name="could_not_write_to_sdcard_check_perms">Impossibile scrivere sul sdcard - i permessi di controllo?</string>
     <string name="loaded_preferences_restarting">Preferenze caricate! - Riavvio</string>
@@ -736,6 +751,8 @@
     <string name="glucose_meters">Glucometri</string>
     <string name="glucose_meter_options">Opzioni per glucometri wireless</string>
     <string name="auto_connect_to_meter">Connettersi e caricare automaticamente i dati da un glucometro compatibile come il Contour Next One</string>
+    <string name="summary_use_nfc_meter">Scarica le letture dal glucometro NFC quando xDrip è aperto</string>
+    <string name="title_use_nfc_meter">Usa Glucometro NFC</string>
     <string name="use_bluetooth_meter">Usa un glucometro Bluetooth</string>
     <string name="scan_for_bluetooth_meter">Scansiona il glucometro Bluetooth</string>
     <string name="meter_connect_sound">Abilita questa opzione per avere avvisi sonori quando il glucometro si connette, disconnette o sincronizza i dati</string>
@@ -1197,6 +1214,12 @@
     <string name="title_tidepool_window_latency">Età dei dati min</string>
     <string name="summary_tidepool_dev_servers">Se abilitato, gli upload andranno su https://int-app.tidepool.org invece del normale https://app.tidepool.org/</string>
     <string name="title_tidepool_dev_servers">Usa server di integrazione (test) - non utilizzare</string>
+    <string name="summary_tidepool_upload_when_chargeonly">Carica i dati solo durante la ricarica</string>
+    <string name="title_tidepool_upload_when_chargeonly">Solo durante la carica</string>
+    <string name="summary_tidepool_upload_only_wifi">Carica i dati solo quando connesso a una rete non contabilizzata, come Wifi</string>
+    <string name="title_tidepool_upload_only_wifi">Solo su WiFi</string>
+    <string name="summary_tidepool_upload_no_treatment">Carica solo i dati CGM per evitare duplicati con il caricamento manuale dal micro</string>
+    <string name="title_tidepool_upload_no_treatment">Non caricare i trattamenti</string>
     <string name="title_tidepool">Tidepool</string>
     <string name="show_help">Visualizza la guida</string>
     <string name="load_save_settings_on_sdcard">Carica / Salva impostazioni su memoria SD</string>
@@ -1208,6 +1231,10 @@
     <string name="return_to_home_screen">Torna alla schermata iniziale</string>
     <string name="title_broadcast_service_api">Servizio di Trasmissione API</string>
     <string name="summary_broadcast_service_api">Abilita la comunicazione tra xDrip e applicazioni terze parti utilizzando la nuova API</string>
+    <string name="title_enable_iob_in_api_endpoint">Abilita il trasferimento dell\'IoB nelle API</string>
+    <string name="summary_enable_iob_in_api_endpoint">Abilita la segnalazione dei valori IoB nell\'endpoint Web Service API utilizzato da alcuni smartwatch</string>
+    <string name="title_fetch_iob_from_companion_app">Recupera IoB dall\'app compagno</string>
+    <string name="summary_fetch_iob_from_companion_app">Recupera il valore IoB dall\'app compagno in esecuzione sullo stesso dispositivo, come l\'app Omnipod 5</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Sincronizza i dati con fitness band MiBand</string>
     <string name="title_miband_enable">Usa MiBand</string>
@@ -1266,6 +1293,8 @@
     <string name="summary_lefun_send_alarms">Invia le notifiche per gli allarmi di glicemia alla Band</string>
     <string name="title_lefun_send_alarms">Invia Allarmi</string>
     <string name="title_lefun_option_shake_snoozes">Scuoti per sospendere allarmi</string>
+    <string name="summary_lefun_send_calls">Invia notifiche di chiamata allo smartwatch</string>
+    <string name="title_lefun_send_calls">Invia Chiamate</string>
     <string name="title_lefun_screens_features">Schermate LeFun / Funzioni</string>
     <string name="title_features">Funzionalità</string>
     <string name="title_lefun_feature_lift_to_wak">Solleva per riattivare</string>
@@ -1289,6 +1318,7 @@
     <string name="title_nsfollow_url">URL Nightscout Follow</string>
     <string name="summary_nsfollow_download_treatments">Scarica anche i trattamenti da Nightscout come follower</string>
     <string name="title_nsfollow_download_treatments">Scarica trattamenti</string>
+    <string name="title_nsfollow_lag">Ritardo Nightscout Follower</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
     <string name="summary_clfollow_user">CareLink login username</string>
@@ -1303,6 +1333,8 @@
     <string name="title_clfollow_lang">CareLink Language</string>
     <string name="summary_clfollow_lang">CareLink language code</string>
     -->
+    <string name="title_clfollow_login">Login</string>
+    <string name="summary_clfollow_login">Accedi con il browser</string>
     <string name="title_clfollow_grace_period">Periodo di grazia</string>
     <string name="summary_clfollow_grace_period">Periodo di tolleranza per la richiesta di dati in secondi</string>
     <string name="title_clfollow_missed_poll_interval">Intervallo richiesta dati mancanti</string>
@@ -1330,6 +1362,8 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Torna da OB1 a xDrip</string>
     <string name="summary_ob1_minimize_scanning">Usa euristica per minimizzare le scansione bluetooth e risparmiare energia</string>
     <string name="title_ob1_minimize_scanning">Minimizza scansioni</string>
+    <string name="summary_ob1_avoid_scanning">Evitare la scansione il più possibile (riduce ulteriormente il consumo della batteria)</string>
+    <string name="title_ob1_avoid_scanning">Evita Scansione</string>
     <string name="summary_using_g6">Uso un sensore G6</string>
     <string name="title_using_g6">Supporto G6</string>
     <string name="summary_ob1_g5_allow_resetbond">Il collector OB1 può scollegarsi se ritiene che la crittografia sia fallita. Se avete problemi con queste disconnessioni, disabilitate l\'opzione. Se invece perdete completamente la connessione, assicuratevi che sia abilitata.</string>
@@ -1383,12 +1417,24 @@
     <string name="title_use_number_icon_large">Usa icone grande per i numeri</string>
     <string name="summary_number_icon_large_arrow">Mostra la freccia del trend nell\'icona grande</string>
     <string name="title_number_icon_large_arrow">Mostra freccia in Icona Grande</string>
+    <string name="title_xdrip_plus_accessibility">Impostazioni Sempre Visibile</string>
+    <string name="summary_aod_use_top">Usa il primo quinto di schermo per il widget sempre visibile</string>
+    <string name="title_aod_use_top">Usa la parte superiore</string>
+    <string name="summary_aod_use_top_center">Usa il secondo quinto di schermo per il widget sempre visibile</string>
+    <string name="title_aod_use_top_center">Usa il centro superiore</string>
+    <string name="summary_aod_use_center">Usa il terzo quinto di schermo per il widget sempre visibile</string>
+    <string name="title_aod_use_center">Usa il centro</string>
+    <string name="summary_aod_use_center_bottom">Usa il quarto quinto di schermo per il widget sempre visibile</string>
+    <string name="title_aod_use_center_bottom">Usa il fondo centrale</string>
+    <string name="summary_aod_use_bottom">Usa l\'ultimo quinto di schermo per il widget sempre visibile</string>
+    <string name="title_aod_use_bottom">Usa il fondo</string>
     <string name="summary_show_home_on_boot">Apri automaticamente lo schermo xDrip dopo l\'avviamento del telefonino</string>
     <string name="title_show_home_on_boot">Mostra xDrip all\'avvio</string>
     <string name="eula">EULA</string>
     <string name="summary_plus_accept_follower_actions">Trattamenti e calibrazioni mandati dei follower saranno accettati </string>
     <string name="title_plus_accept_follower_actions">Accetta le azioni dei follower</string>
     <string name="summary_plus_whole_house">Partecipa a una rete di casa intera (LibreAllHouse)</string>
+    <string name="summary_plus_xdrip_cloud">Usa i nuovi server cloud xDrip+. Master e follower devono avere entrambi questa impostazione selezionata.</string>
     <string name="title_plus_whole_house">Whole House</string>
     <string name="summary_libre_whole_house_collector">Questo telefono sarà un collector in una rete di copertura casa completa</string>
     <string name="title_libre_whole_house_collector">Libre copertura Casa Intera</string>
@@ -1438,6 +1484,8 @@
     <string name="category_falling_rising_bg">Glicemia in salita/discesa</string>
     <string name="category_alert_prefs">Impostazioni allarmi per questi avvisi</string>
     <string name="summary_persistent_high_alert">Quando la glicemia è sopra il livello alto per troppo tempo e non scende</string>
+    <string name="summary_persistent_high_threshold_link">Se abilitato, la soglia è il valore di glicemia alta.\nQuando disabilitato, la soglia è il valore specificato sotto.</string>
+    <string name="title_persistent_high_threshold_link">Soglia: Valore Alto</string>
     <string name="note_search_button">CERCA</string>
     <string name="all_note_button">TUTTO</string>
     <string name="title_full_screen_mode">Modalità schermo intero</string>
@@ -1472,6 +1520,7 @@
     <string name="progress">in corso</string>
     <string name="bluetooth_device">Dispositivo Bluetooth:   </string>
     <string name="transmitter_battery_status">Batteria trasmettitore:  </string>
+    <string name="database_size">Dimensione Database:  </string>
     <string name="top">Alto</string>
     <string name="connect_device_usb_otg">Collegare il dispositivo tramite cavo USB OTG.</string>
     <string name="connection_status">Stato della connessione:</string>
@@ -1709,6 +1758,7 @@
     <string name="proceed">Continua</string>
     <string name="special_pairing_workaround">Abbinamento Speciale</string>
     <string name="save_power">Risparmia energia</string>
+    <string name="use_xdrip_cloud">Usa xDrip Cloud</string>
     <string name="reduce_battery_and_network_overhead">Riduce l\'utilizzo della batteria dei dati di rete con l\'elaborazione in batch escludendo dati inutili</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Semplifica i grafici lisciando le irregolarità</string>
     <string name="graph_smoothing">Lisciamento del Grafico</string>
@@ -1786,6 +1836,7 @@
     <string name="summary_ymax">Scegli yMax per quando non ci sono letture più alte.</string>
     <string name="wait_to_connect">Verifica le impostazioni e aspetta il collegamento.</string>
     <string name="summary_sens_expiry_notify">Genera delle notifiche quando il sensore si avvicina alla scadenza.</string>
+    <string name="title_sens_expiry">Notifiche Scadenza Sensore</string>
     <string name="title_sens_expiry_notify">Scadenza sensore</string>
     <string name="close">Chiudi</string>
     <string name="title_advanced_settings_4_Lib2">Impostazioni avanzate per Libre 2</string>
@@ -1795,6 +1846,14 @@
     <string name="summary_Lib2_show_sense_on_status">Attiva per mostrare ulteriori informazioni nello stato, per il sensore Libre 2.</string>
     <string name="import_qr_code_warning">Importa solo le impostazioni da fonti affidabili!\n\nConferma di volere importare le impostazioni seguenti:\n\n</string>
     <string name="scan_to_load_xdrip_settings">Scansiona per caricare le impostazioni xDrip</string>
+    <string name="manage_permissions">Gestione permessi</string>
+    <string name="open_health_connect_settings_to_manually_manage_permissions">Apri le impostazioni di Health Connect per gestire manualmente i permessi</string>
+    <string name="send_data_to_health_connect">Invia dati a Health Connect</string>
+    <string name="get_data_from_health_connect">Ottieni dati da Health Connect</string>
+    <string name="requires_android_8_and_google_companion_application_or_android_14">Richiede Android 8+ e Google app compagno oppure Android 14+</string>
+    <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Invia e ricevi dati da Google Health Connect e Google Fit</string>
+    <string name="google_health_connect">Google Health Connect</string>
+    <string name="google_health_connect_needs_perms">ERRORE: Health connect necessita dei permessi! - riprova dal menu impostazioni</string>
     <string name="carelink_auth_country_required">Il campo paese è obbligatorio!</string>
     <string name="carelink_auth_status_authenticated">Stato: autenticato!</string>
     <string name="carelink_auth_status_not_authenticated">Stato: non autenticato!</string>
@@ -1826,7 +1885,10 @@
     <string name="audio_focus_lower_volume_of_other_apps">Abbassa il volume delle altre app</string>
     <string name="audio_focus_pause_other_apps_playing_audio">Pausa le altre applicazioni in riproduzione audio</string>
     <string name="audio_focus_pause_all_other_sounds">Sospendi tutti gli altri suoni</string>
+    <string name="wake_up_screen">Attivazione schermo</string>
+    <string name="wake_up_screen_summary">Attiva lo schermo durante gli avvisi. Potrebbe sbloccare i dispositivi che non hanno il blocco dello schermo abilitato.</string>
     <string name="use_camera_light">Usa Torcia</string>
     <string name="use_camera_light_summary">Lampeggia la torcia durante gli avvisi quando collegato a un caricabatterie</string>
     <string name="g7_should_start_automatically">G7 dovrebbe avviarsi automaticamente</string>
+    <string name="screenshot">Schermata</string>
 </resources>

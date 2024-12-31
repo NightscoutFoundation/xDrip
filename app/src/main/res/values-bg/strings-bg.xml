@@ -37,6 +37,10 @@
     <string name="pref_header_cloud_storage">Cloud хранилище</string>
     <string name="auto_configure_title">Автоматично конфигуриране</string>
     <string name="prefs_auto_config_summary">Автоматично конфигуриране с баркод.</string>
+    <string name="auto_config_cam_title">Камера</string>
+    <string name="auto_config_cam_summary">Сканиране на QR код с телефон (препоръчително)</string>
+    <string name="auto_config_image_title">Изображение</string>
+    <string name="auto_config_image_summary">Може да запаметите QR код на файл като картина (пр. .png или .jpeg) на вашия телефон. По-късно може да се използва опция за сканиране на QR код от запаметени файлове.</string>
     <string name="scan_share2_barcode">Сканирай сподели баркод</string>
     <string name="pref_share2_scan_barcode_summary">Или сканирай баркода от споделения приемник</string>
     <!-- MongoDB Settings -->
@@ -57,6 +61,7 @@
     <string name="pref_title_api_enabled">Включен</string>
     <string name="pref_summary_api_enabled">REST API е стандартният начин за връзка с Nightscout</string>
     <string name="pref_title_api_url">Базов URL адрес</string>
+    <string name="pref_summary_api_url">Формат: https://password@hostname/api/v1/</string>
     <string name="pref_dialog_api_url">Въведете базовия API URL адрес</string>
     <string name="pref_message_api_url">Това е само базовия URL, ъплоудера автоматично, ще прикачи /entries за POST.  API_SECRET-а трябва да съвпадне с yourpassphrase в настройките.</string>
     <string name="pref_default_api_url">https://yourpassphrase@{ИМЕ-САЙТ}.azurewebsites.net/api/v1/</string>
@@ -115,6 +120,7 @@
     <string name="title_activity_update">xDrip+ има налична актуализация</string>
     <string name="title_activity_display_qrcode">Сподели настройки чрез QR код</string>
     <string name="title_activity_send_feed_back">Изпрати обратна връзка на Jamorham</string>
+    <string name="title_activity_save_logs">Запазване на логовете</string>
     <string name="title_activity_maps">Parakeet Map/Карта</string>
     <string name="title_activity_display_preferences">Предпочитания за показване</string>
     <string name="export_submenu">Импортирай / Експортирай характеристика</string>
@@ -218,7 +224,14 @@
     <string name="other_alerts">Други Известия</string>
     <string name="extra_alerts_xdrip_plus">Допълнителни Известия (xDrip+)</string>
     <string name="persistent_high_alert">Известие за продължително висока КЗ</string>
+    <string name="persistent_high_alert_enable">Включи</string>
+    <string name="title_persistent_high_threshold">Праг</string>
+    <string name="the_value_must_be_between_min_and_max">Стойността трябва да е между %1$s и %2$s</string>
     <string name="forecasted_low_alert">Известие за предвиждана Ниска КЗ</string>
+    <string name="setting_pref_to_max">Сложи на макс.</string>
+    <string name="pref_was_greater_than_max">%1$s е сложена на стойност по-голяма от максималално разрешената. Трябва да бъде променена на максималната.</string>
+    <string name="setting_pref_to_min">Сложи на мин.</string>
+    <string name="pref_was_less_than_min">%1$s е сложена на стойност по-малка от минимално разрешената. Трябва да бъде променена на минималната.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Екстраполиране на данните в опит да се предвиди ниска КЗ</string>
     <string name="alarm_at_forecasted_low_mins">Аларма при предвиждане на Ниски стойности(Кз)</string>
     <string name="other_xdrip_plus_alerts">Други xDrip+ известия</string>
@@ -394,7 +407,9 @@
     <string name="please_enter_your_question_or_comments_here">Моля, въведете своя въпрос или коментар тук.\n\nАко предоставите имейл адрес, може да получите отговор.\n\n</string>
     <string name="optional_contact_info_here_eg_email">Допълнителена информация за контакт. например: email адрес</string>
     <string name="send_message">Изпрати Съобщение</string>
+    <string name="save_logs">Запазване на логовете</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Моля, оценете приложението</string>
+    <string name="log_confidential_note">Внимание!\nЛоговрте може да съдържат конфиденциална информация като пароли или потребителски ID.</string>
     <string name="preferences_saved_in_sdcard_downloads">Предпочитанията са запазени във вътрешна памет/изтегляне</string>
     <string name="could_not_write_to_sdcard_check_perms">Проблем при писането в SD карта - проверете разрешенията?</string>
     <string name="loaded_preferences_restarting">Заредени предпочитания! - Рестартиране</string>
@@ -601,7 +616,7 @@
     <string name="turn_bluetooth_on">Включване на Bluetooth</string>
     <string name="reset_bluetooth">Нулиране на Bluetooth, като го се изклю и включи, ако не се получат данни след 20 минути</string>
     <string name="bluetooth_watchdog">Следи връзката между телефона Ви и носещото данните устройсво ( което е прикрепено към тялото Ви) да е стабилна и данните да се пренасят точно</string>
-    <string name="reset_bluetooth_g5">Нулирайте Bluetooth, като го изключите и включите като начин да поддържате източника на данни G5 работещ. Без това колекционерът G5 може да се провали.</string>
+    <string name="reset_bluetooth_g5">Нулирайте Bluetooth, като го изключите и включите като начин да поддържате източника на данни работещ. Без това колекционерът може да се провали.</string>
     <string name="g5_bluetooth_watchdog">Dex - става въпрос за Дексом уреда за продължително проследяване нивото на кръвната захар и връзката му с Bluetooth Watchdog</string>
     <string name="close_gatt">Ако Bluetooth watchdog се активира често, можете да опитате да премахнете отметката от тази опция, за да видите дали помага</string>
     <string name="older_bluetooth_wakelocks">По-стари Bluetooth wakelocks, които могат да изразходват допълнително батерията, но може да са необходими за Bluetooth приемане</string>
@@ -643,7 +658,7 @@
     <string name="allow_daily_db_save">Позволява на услугата Daily Intent Service да запазва базата данни преди изтриване</string>
     <string name="options_for_extra_line">Опции за допълнителната линия</string>
     <string name="todays_average_value">Днешна средна стойност.</string>
-    <string name="ac1_estimation_dcct">Гликиран хеемоглобин в %</string>
+    <string name="ac1_estimation_dcct">Гликиран хемоглобин в (%)</string>
     <string name="ac1_estimation_ifcc">Гликиран Хемоглобин измерен в милимол/мол</string>
     <string name="percentage_in_range">Процент на стойностите в диапазона.</string>
     <string name="percentage_below_range">Процент на стойностите под диапазона.</string>
@@ -695,12 +710,12 @@
     <string name="use_any_tag">Използвайте метод за четене, оптимизиран за произволен етикет</string>
     <string name="low_level_value">Ниско ниво на диагностична/прототипна стойност</string>
     <string name="transmitter_id">ID на вашия предавател Dexcom, напр. 12AB3</string>
-    <string name="advanced_g5_settings">Разширени настройки на G5 за редки ситуации</string>
-    <string name="g5_debug_settings">G5/G6/Dex1 Debug Настройки</string>
+    <string name="advanced_g5_settings">Разширени настройки на Dexcom за редки ситуации</string>
+    <string name="g5_debug_settings">G6/Dex1 Debug Настройки</string>
     <string name="g5_scan_constantly">Някои устройства работят по-добре при постоянно сканиране, други не. Ако четенето е надеждно, когато тази настройка не е избрана, трябва да имате подобрен живот на батерията. Обикновено е най-добре това да е деактивирано</string>
     <string name="scan_for_g5_constantly">Постоянно сканирай за G5</string>
     <string name="g5_force_ui_thread">Това е от решаващо значение за правилното свързване на някои устройства с Android, но може да причини пропуснати показания, когато се използват други интензивни дейности на потребителския интерфейс.</string>
-    <string name="force_g5_ui_thread">Принуди G5 към UI Thread</string>
+    <string name="force_g5_ui_thread">Принуди Dexcom към UI Thread</string>
     <string name="authentificate_before_reading">Аутентикирай преди всяко четене</string>
     <string name="g5_full_authentification">Това ще направи опит за пълно удостоверяване при всеки опит за четене. Необходим за по-нови версии на фърмуера на предавателя G5.</string>
     <string name="unbond_g5_before_read">Премахване на G5 преди всяко четене</string>
@@ -733,6 +748,8 @@
     <string name="glucose_meters">Глюкомери</string>
     <string name="glucose_meter_options">Опции за безжични глюкомери</string>
     <string name="auto_connect_to_meter">Автоматично свързване и извличане на данни от съвместим със стандарта глюкомер като Contour Next One</string>
+    <string name="summary_use_nfc_meter">Сваляне на записи за глюкозата от NFC глюкомера, когато xDrip е отворен</string>
+    <string name="title_use_nfc_meter">Използване на NFC глюкомер</string>
     <string name="use_bluetooth_meter">Да използвам ли режим Bluetooth</string>
     <string name="scan_for_bluetooth_meter">Сканиране за Bluetooth измервател</string>
     <string name="meter_connect_sound">Активирайте това, за възпроизвеждане на звукови ефекти, когато глюкомерът се свързва, прекъсва връзката или синхронизира данни</string>
@@ -1171,7 +1188,7 @@
     <string name="summary_send_bridge_battery_to_nightscout">Изпратете нивото на bridge батерията на Nightscout. Премахнете отметката, ако сензорът на батерията ви е повреден.</string>
     <string name="title_send_bridge_battery_to_nightscout">Качване на bridge батерия</string>
     <string name="summary_send_dexcom_transmitter_battery_to_nightscout">Изпратете статистика за батерията на предавателя Dexcom до Nightscout. Включва всички данни, показани на екрана за състояние на колекционера.</string>
-    <string name="title_send_dexcom_transmitter_battery_to_nightscout">Качване на OB1G5/G6 батерия на предавателя</string>
+    <string name="title_send_dexcom_transmitter_battery_to_nightscout">Качване на Dexcom батерия на предавателя</string>
     <string name="summary_send_treatments_to_nightscout">Изпратете данни за лечението на Nightscout. Премахнете отметката, ако вашият портал за грижи е повреден.</string>
     <string name="title_send_treatments_to_nightscout">Качване на лечения</string>
     <string name="summary_warn_nightscout_failures">Визуално и звуково известие, ако качването на Nightscout е неуспешно.</string>
@@ -1190,6 +1207,12 @@
     <string name="title_tidepool_window_latency">Минимална възраст на данните</string>
     <string name="summary_tidepool_dev_servers">Ако е разрешено, качванията ще отиват на https://int-app.tidepool.org вместо на обичайния https://app.tidepool.org/</string>
     <string name="title_tidepool_dev_servers">Използвай тестовите сървъри</string>
+    <string name="summary_tidepool_upload_when_chargeonly">Качване на данни само при зареждане</string>
+    <string name="title_tidepool_upload_when_chargeonly">Само при зареждане</string>
+    <string name="summary_tidepool_upload_only_wifi">Качване на данни, само когато е свързан към мрежа без измерване като Wifi</string>
+    <string name="title_tidepool_upload_only_wifi">Само на Wifi</string>
+    <string name="summary_tidepool_upload_no_treatment">Качване само на CGM данни, за да се избегне на дублиране с ръчно качване от помпа</string>
+    <string name="title_tidepool_upload_no_treatment">Няма да се качват лечения</string>
     <string name="title_tidepool">Сървър Tidepool</string>
     <string name="show_help">Покажи помощно меню</string>
     <string name="load_save_settings_on_sdcard">Зареждане / запазване на настройките</string>
@@ -1263,6 +1286,8 @@
     <string name="summary_lefun_send_alarms">Изпращайте известия до групата за аларми за глюкоза</string>
     <string name="title_lefun_send_alarms">Изпращане на аларми</string>
     <string name="title_lefun_option_shake_snoozes">Разклатете за отлагане</string>
+    <string name="summary_lefun_send_calls">Изпращане на известия до групата</string>
+    <string name="title_lefun_send_calls">Изпращане на обаждания</string>
     <string name="title_lefun_screens_features">Lefun Екрани / Характеристики</string>
     <string name="title_features">Характеристики</string>
     <string name="title_lefun_feature_lift_to_wak">Вдигане за събуждане</string>
@@ -1286,6 +1311,7 @@
     <string name="title_nsfollow_url">Nightscout URL за следване</string>
     <string name="summary_nsfollow_download_treatments">Също така изтеглете лечения от Nightscout като последовател</string>
     <string name="title_nsfollow_download_treatments">Изтегляне на лечения</string>
+    <string name="title_nsfollow_lag">Nightscout забавяне на следването</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
     <string name="summary_clfollow_user">CareLink login username</string>
@@ -1314,7 +1340,7 @@
     <string name="summary_clfollow_download_meals">Изтеглете хранения от CareLink</string>
     <string name="title_clfollow_download_notifications">Известия</string>
     <string name="summary_clfollow_download_notifications">Изтегли известия от CareLink</string>
-    <string name="title_ob1_options">OB1 G5/G6/G7 Настройки на колекционера</string>
+    <string name="title_ob1_options">OB1 G6/G7 Настройки на колекционера</string>
     <string name="summary_use_ob1_g5_collector_service">Пълно презаписване, трябва да работи на Android 4.4 - 9, поддържа естествен режим и др</string>
     <string name="title_use_ob1_g5_collector_service">Използвайте колекционера OB1</string>
     <string name="summary_ob1_g5_use_transmitter_alg">Използвайте вътрешния алгоритъм на трансмитера, за да изчислите стойностите на глюкозата, когато е възможно.</string>
@@ -1329,14 +1355,16 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Обратно към xDrip</string>
     <string name="summary_ob1_minimize_scanning">Използвайте евристика, за да минимизирате Bluetooth сканирането + да пестите енергия</string>
     <string name="title_ob1_minimize_scanning">Минимизиране на сканирането</string>
+    <string name="summary_ob1_avoid_scanning">Избягване на сканирането, доколкото е възможно (намалява използването на батерията)</string>
+    <string name="title_ob1_avoid_scanning">Избягване на сканирането</string>
     <string name="summary_using_g6">Използвам сензор G6 или Dexcom 1</string>
     <string name="title_using_g6">Поддръжка на G6/Dex1</string>
     <string name="summary_ob1_g5_allow_resetbond">Колекционерът на OB1 може да прекрати връзката, ако смята, че криптирането е неуспешно. Ако имате проблеми с раздвояването, деактивирайте тази опция. Ако след това напълно загубите връзка, уверете се, че това е активирано.</string>
     <string name="title_ob1_g5_allow_resetbond">Разрешаване на OB1 развързване</string>
     <string name="summary_ob1_initiate_bonding_flag">Колекционерът OB1 може да инициира свързване.</string>
     <string name="title_ob1_initiate_bonding_flag">Позволете на OB1 да започне свързване</string>
-    <string name="title_old_g5_options">Стари настройки на G5 колекционера</string>
-    <string name="title_g5g6_battery_options">G5/G6 опции за батерията</string>
+    <string name="title_old_g5_options">Стари настройки на колекционера</string>
+    <string name="title_g5g6_battery_options">G6 опции за батерията</string>
     <string name="title_g5_battery_warning_level">Регулирайте нивото на батерията за предупреждение</string>
     <string name="title_plugins_and_features">Плъгини и функции</string>
     <string name="title_color_heart_rate1">Сензор за сърдечен ритъм</string>
@@ -1397,6 +1425,7 @@
     <string name="summary_plus_accept_follower_actions">Ще се приемат лечения, калибриране и други действия от последователи</string>
     <string name="title_plus_accept_follower_actions">Приемане на действия на последователи</string>
     <string name="summary_plus_whole_house">Участвайте в мрежа за цял дом</string>
+    <string name="summary_plus_xdrip_cloud">При използване на новите xDrip+ облачни сървъри, мастера и последователите трябва да са направили настройката по еднакъв начин.</string>
     <string name="title_plus_whole_house">Цял Дом</string>
     <string name="summary_libre_whole_house_collector">Този телефон ще бъде колекционер в цялата домашна мрежа</string>
     <string name="title_libre_whole_house_collector">Libre цяла къща</string>
@@ -1446,6 +1475,8 @@
     <string name="category_falling_rising_bg">Падане/Покачване на КЗ</string>
     <string name="category_alert_prefs">Предпочитания за известия (за тези известия)</string>
     <string name="summary_persistent_high_alert">Когато е над високо ниво за твърде дълго време и не се насочва надолу</string>
+    <string name="summary_persistent_high_threshold_link">Когато активирано, Висока Стойност ще бъде прага.\n Когато деактивирано, прагат ще бъде стойността, която е посоченa по-долу.</string>
+    <string name="title_persistent_high_threshold_link">Праг: Висока стойност</string>
     <string name="note_search_button">ТЪРСИ</string>
     <string name="all_note_button">ВСИЧКИ</string>
     <string name="title_full_screen_mode">Режим на цял екран</string>
@@ -1479,6 +1510,7 @@
     <string name="progress">прогрес</string>
     <string name="bluetooth_device">Bluetooth Устройство:</string>
     <string name="transmitter_battery_status">Батерия трансмитер:  </string>
+    <string name="database_size">Размер на база данни:  </string>
     <string name="top">Най-горен</string>
     <string name="connect_device_usb_otg">Моля, свържете вашето устройство чрез USB OTG кабел.</string>
     <string name="connection_status">Състояние на връзката:</string>
@@ -1712,6 +1744,7 @@
     <string name="proceed">Продължи</string>
     <string name="special_pairing_workaround">Специално решение за сдвояване</string>
     <string name="save_power">Съхранение на енергия</string>
+    <string name="use_xdrip_cloud">Използване на xDrip облак</string>
     <string name="reduce_battery_and_network_overhead">Намаляване консумация на батерия и мрежа използвайки бач процесване на данните</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Опрости графики като изглажда нередни данни</string>
     <string name="graph_smoothing">Изглаждане на графика</string>
@@ -1789,6 +1822,7 @@
     <string name="summary_ymax">Избрете yМакс в случай, когато няма по-Големи стойности.</string>
     <string name="wait_to_connect">Проверете настройките и изчакайте за свързване.</string>
     <string name="summary_sens_expiry_notify">Повиши честотата на известията, когато наближи да изтече срокът на ползване на сензора.</string>
+    <string name="title_sens_expiry">Известия за изтичане на срока на действие на сензора</string>
     <string name="title_sens_expiry_notify">Възраст на сензора</string>
     <string name="close">Затвори</string>
     <string name="title_advanced_settings_4_Lib2">Разширени настройки за Libre 2</string>
@@ -1830,13 +1864,17 @@
     <string name="select_end_time">Изберете крайно време</string>
     <string name="accept_glucose">Приемане на глюкоза</string>
     <string name="process_glucose_data_received">Обработване на данните за лечение, получени от приложението NSClient</string>
+    <string name="use_health_connect">Звързване с Google Health</string>
     <string name="audio_focus">Аудио фокус</string>
     <string name="audio_focus_summary">Изберете какво да правите с другите приложения, докато се възпроизвеждат аларми и регулиране нивата на звука на системата</string>
     <string name="audio_focus_dont_adjust_other_app_sounds">Не коригирай звуците на други приложения</string>
     <string name="audio_focus_lower_volume_of_other_apps">Намали силата на звука на другите приложения</string>
     <string name="audio_focus_pause_other_apps_playing_audio">Паузирай другите приложения, които възпроизвеждат аудио</string>
     <string name="audio_focus_pause_all_other_sounds">Паузиране на всички останали звуци</string>
+    <string name="wake_up_screen">Събуждане на екрана</string>
+    <string name="wake_up_screen_summary">Събуждане на екрана по време на предупреждения. Може да отключи утройства, на които функцията заключване на екрана не е активирана.</string>
     <string name="use_camera_light">Използвай светкавицата на камерата</string>
     <string name="use_camera_light_summary">Премигване на светкавицата на камерата по време на аларми, когато е свързано зарядното устройство</string>
     <string name="g7_should_start_automatically">G7 би трябвало да стартира автоматично</string>
+    <string name="screenshot">Екранна снимка</string>
 </resources>

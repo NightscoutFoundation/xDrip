@@ -651,6 +651,8 @@ public class Notifications extends IntentService {
         if (lastReading != null) {
 
             b.setWhen(lastReading.timestamp);
+            b.setShowWhen(true);
+
             final SpannableString deltaString = new SpannableString("Delta: " + ((dg != null) ? (dg.spannableString(dg.unitized_delta + (dg.from_plugin ? " "+context.getString(R.string.p_in_circle) : "")))
                     : bgGraphBuilder.unitizedDeltaString(true, true)));
 

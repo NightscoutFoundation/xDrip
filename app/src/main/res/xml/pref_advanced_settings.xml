@@ -40,6 +40,8 @@
                     android:dependency="force_wearG5"
                     android:key="disable_wearG5_on_missedreadings"
                     android:summary="@string/pref_summary_disable_wearG5_on_missedreadings"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
                     android:title="@string/pref_disable_wearG5_on_missedreadings" />
                 <EditTextPreference
                     android:defaultValue="30"
@@ -330,6 +332,8 @@
                 android:dependency="bluejay_enabled"
                 android:key="bluejay_send_alarms"
                 android:summary="Send xDrip generated alarms to the watch"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="Send Alarms" />
             <CheckBoxPreference
                 android:defaultValue="false"
@@ -366,6 +370,8 @@
                 android:dependency="bluejay_enabled"
                 android:key="bluejay_use_motion_wake"
                 android:summary="Use a shake of the wrist to wake BlueJay. Adjust sensitivity below."
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="Wake with motion" />
 
             <SeekBarPreference
@@ -505,6 +511,8 @@
                 android:dependency="lefun_enabled"
                 android:key="lefun_send_alarms"
                 android:summary="@string/summary_lefun_send_alarms"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/title_lefun_send_alarms" />
             <CheckBoxPreference
                 android:defaultValue="true"
@@ -515,8 +523,8 @@
                 android:defaultValue="false"
                 android:dependency="lefun_enabled"
                 android:key="lefun_option_call_notifications"
-                android:summary="Send call notifications to the band (Android 6+)"
-                android:title="Send Calls" />
+                android:summary="@string/summary_lefun_send_calls"
+                android:title="@string/title_lefun_send_calls" />
 
             <PreferenceScreen android:title="@string/title_lefun_screens_features"
                 android:key="lefun_features">
@@ -568,6 +576,8 @@
                 android:defaultValue="false"
                 android:key="miband_enabled"
                 android:summary="@string/summary_miband_enable"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/title_miband_enable" />
             <EditTextPreference
                 android:key="miband_data_mac"
@@ -584,23 +594,31 @@
                 android:dependency="miband_enabled"
                 android:key="miband_send_readings"
                 android:summary="@string/summary_lefun_send_readings"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/title_lefun_send_readings" />
             <SwitchPreference
                 android:defaultValue="true"
                 android:dependency="miband_send_readings"
                 android:key="miband_send_readings_as_notification"
                 android:summary="@string/summary_miband_send_readings_as_notification"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/title_miband_send_readings_as_notification" />
             <SwitchPreference
                 android:defaultValue="true"
                 android:dependency="miband_send_readings"
                 android:key="miband_vibrate_on_readings"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/title_miband_vibrate_on_readings" />
             <SwitchPreference
                 android:defaultValue="true"
                 android:dependency="miband_enabled"
                 android:key="miband_send_alarms"
                 android:summary="@string/summary_lefun_send_alarms"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/title_lefun_send_alarms" />
             <CheckBoxPreference
                 android:defaultValue="false"
@@ -645,10 +663,14 @@
                         <SwitchPreference
                             android:defaultValue="true"
                             android:key="miband_feature_lift_to_wake"
+                            android:switchTextOff="@string/short_off_text_for_switches"
+                            android:switchTextOn="@string/short_on_text_for_switches"
                             android:title="@string/title_lefun_feature_lift_to_wak" />
                         <SwitchPreference
                             android:defaultValue="true"
                             android:key="miband_feature_switch_display_on_wrist"
+                            android:switchTextOff="@string/short_off_text_for_switches"
+                            android:switchTextOn="@string/short_on_text_for_switches"
                             android:title="@string/title_miband_switch_display_on_wrist" />
                         <SwitchPreference
                             android:defaultValue="true"
@@ -661,23 +683,33 @@
                             android:defaultValue="true"
                             android:key="miband_feature_goal_notification"
                             android:summary="@string/summary_miband_goal_notification"
+                            android:switchTextOff="@string/short_off_text_for_switches"
+                            android:switchTextOn="@string/short_on_text_for_switches"
                             android:title="@string/title_miband_goal_notification" />
                         <SwitchPreference
                             android:key="miband_feature_anti_lost"
+                            android:switchTextOff="@string/short_off_text_for_switches"
+                            android:switchTextOn="@string/short_on_text_for_switches"
                             android:title="@string/title_lefun_feature_anti_lost" />
                         <SwitchPreference
                             android:defaultValue="true"
                             android:key="miband_feature_locale_24_hour"
                             android:summary="@string/summary_miband_locale_24_hour"
+                            android:switchTextOff="@string/short_off_text_for_switches"
+                            android:switchTextOn="@string/short_on_text_for_switches"
                             android:title="@string/title_miband_locale_24_hour" />
                         <SwitchPreference
                             android:defaultValue="true"
                             android:key="miband_feature_show_date"
+                            android:switchTextOff="@string/short_off_text_for_switches"
+                            android:switchTextOn="@string/short_on_text_for_switches"
                             android:title="@string/title_miband_show_date" />
                         <SwitchPreference
                             android:defaultValue="true"
                             android:key="miband_feature_visibility"
                             android:summary="@string/summary_miband_visibility"
+                            android:switchTextOff="@string/short_off_text_for_switches"
+                            android:switchTextOn="@string/short_on_text_for_switches"
                             android:title="@string/title_miband_visibility" />
                     </PreferenceCategory>
                     <PreferenceCategory
@@ -687,6 +719,8 @@
                             android:defaultValue="false"
                             android:key="miband_nightmode_enabled"
                             android:summary="@string/summary_miband_nightmode_enabled"
+                            android:switchTextOff="@string/short_off_text_for_switches"
+                            android:switchTextOn="@string/short_on_text_for_switches"
                             android:title="@string/title_miband_nightmode_enabled" />
                         <com.eveningoutpost.dexdrip.utils.TimePreference
                             android:key="miband_nightmode_start"
@@ -1004,16 +1038,22 @@
                 android:defaultValue="false"
                 android:key="broadcast_service_enabled"
                 android:summary="@string/summary_broadcast_service_api"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/title_broadcast_service_api" />
             <SwitchPreference
                 android:defaultValue="true"
                 android:key="enable_iob_in_api_endpoint"
                 android:summary="@string/summary_enable_iob_in_api_endpoint"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/title_enable_iob_in_api_endpoint" />
             <SwitchPreference
                 android:defaultValue="false"
                 android:key="fetch_iob_from_companion_app"
                 android:summary="@string/summary_fetch_iob_from_companion_app"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/title_fetch_iob_from_companion_app" />
             <PreferenceScreen
                 android:title="@string/google_health_connect"
@@ -1024,16 +1064,22 @@
                     android:key="health_connect_enable"
                     android:title="@string/use_health_connect"
                     android:summary="@string/requires_android_8_and_google_companion_application_or_android_14"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
                     />
                 <SwitchPreference
                     android:key="health_connect_receive"
                     android:defaultValue="true"
                     android:summary="@string/get_data_from_health_connect"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
                     android:dependency="health_connect_enable"
                     />
                 <SwitchPreference
                     android:key="health_connect_send"
                     android:summary="@string/send_data_to_health_connect"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
                     android:dependency="health_connect_enable"
                     />
                 <Preference
@@ -1373,6 +1419,8 @@
                     android:defaultValue="false"
                     android:key="blueReader_turn_off"
                     android:summary="@string/bluereader_turnoff_sum"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
                     android:title="@string/bluereader_turnoff" />
                 <SeekBarPreference
                     android:defaultValue="5"
@@ -1386,11 +1434,15 @@
                     android:defaultValue="false"
                     android:key="blueReader_suppressuglystatemsg"
                     android:summary="@string/summary_Suppress_the_ugly_state_message_if_Problem_appears"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
                     android:title="@string/title_supress_ugly_state_message" />
                 <SwitchPreference
                     android:defaultValue="false"
                     android:key="blueReader_writebatterylog"
                     android:summary="@string/summary_write_Battery_Information_for_additional_analytic"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
                     android:title="@string/title_Batterylog" />
             </PreferenceScreen>
 
@@ -1401,11 +1453,15 @@
                     android:defaultValue="false"
                     android:key="Libre2_showRawGraph"
                     android:summary="@string/summary_Lib2_show_raw_values"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
                     android:title="@string/title_Lib2_show_raw_values" />
                 <SwitchPreference
                     android:defaultValue="false"
                     android:key="Libre2_showSensors"
                     android:summary="@string/summary_Lib2_show_sense_on_status"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
                     android:title="@string/title_Lib2_show_sense_on_status" />
             </PreferenceScreen>
 
@@ -1562,15 +1618,6 @@
                     android:title="@string/title_NOT_FOR_PRODUCTION_USE" />
 
             </PreferenceScreen>
-            <PreferenceCategory
-                android:key="community_help_category"
-                android:title="@string/help_the_community">
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="store_sensor_location"
-                    android:summary="@string/help_the_developers_improve_the_algorithm"
-                    android:title="@string/store_sensor_location_to_help" />
-            </PreferenceCategory>
         </PreferenceScreen>
 
     </PreferenceCategory>

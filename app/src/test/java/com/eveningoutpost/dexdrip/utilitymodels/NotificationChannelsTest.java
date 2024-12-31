@@ -18,7 +18,7 @@ public class NotificationChannelsTest extends RobolectricTestWithConfig {
 
     @Test
     public void getNotificationFromInsideBuilderTest() {
-        val builder = new NotificationCompat.Builder(RuntimeEnvironment.getApplication().getApplicationContext(), null);
+        val builder = new NotificationCompat.Builder(RuntimeEnvironment.getApplication().getApplicationContext(), (String)null);
         builder.setVibrate(pattern);
         val mNotification = NotificationChannels.getNotificationFromInsideBuilder(builder);
         assertWithMessage("got builder by reflection 1").that(mNotification).isNotNull();

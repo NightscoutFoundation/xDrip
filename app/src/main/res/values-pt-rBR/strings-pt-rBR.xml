@@ -37,6 +37,10 @@
     <string name="pref_header_cloud_storage">Armazenamento na nuvem</string>
     <string name="auto_configure_title">Configurar automaticamente</string>
     <string name="prefs_auto_config_summary">Configurar automaticamente usando um código de barras.</string>
+    <string name="auto_config_cam_title">Câmera</string>
+    <string name="auto_config_cam_summary">Digitalizar um código QR com o seu celular (recomendado)</string>
+    <string name="auto_config_image_title">Arquivo de imagem</string>
+    <string name="auto_config_image_summary">Você pode salvar um código QR como um arquivo de imagem (como .png ou .jpeg) em seu celular. Em seguida, use essa opção para ler o código QR a partir do arquivo salvo.</string>
     <string name="scan_share2_barcode">Escanear códigos de barras</string>
     <string name="pref_share2_scan_barcode_summary">Ou escanear o código de barras no receptor de compartilhamento</string>
     <!-- MongoDB Settings -->
@@ -115,6 +119,7 @@
     <string name="title_activity_update">Atualização do xDrip+ disponível</string>
     <string name="title_activity_display_qrcode">Partilhar definições via QR code</string>
     <string name="title_activity_send_feed_back">Enviar feedback para Jamorham</string>
+    <string name="title_activity_save_logs">Salvar logs</string>
     <string name="title_activity_maps">Mapa Parakeet</string>
     <string name="title_activity_display_preferences">Preferências de visualização</string>
     <string name="export_submenu">Importar / Exportar</string>
@@ -182,7 +187,7 @@
     <string name="home_screen">Tela inicial</string>
     <string name="event_logs">Registro de Eventos</string>
     <string name="calibration_graph">Gráfico de Calibração</string>
-    <string name="glucose_units">Unidade de Glicémia</string>
+    <string name="glucose_units">Unidade de Glicemia</string>
     <string name="mmol_or_mgdl_high_and_low">mmol/l ou mg/dl hiper e hipo</string>
     <string name="general_settings">Configuração geral</string>
     <string name="high_value">Valor de Hiper</string>
@@ -210,14 +215,15 @@
     <string name="load_save_settings_to_sdcard">Carregar / Salvar configurações</string>
     <string name="alarms_and_alerts">Alertas e alarmes</string>
     <string name="alerts_and_notifications">Alertas e notificações</string>
-    <string name="glucose_level_alerts_list">Lista de Níveis Glicémios de Alerta</string>
-    <string name="glucose_alerts_settings">Definições de Alertas de Glicémia</string>
+    <string name="glucose_level_alerts_list">Lista de Níveis Glicêmicos</string>
+    <string name="glucose_alerts_settings">Configurações de Alertas de Glicemia</string>
     <string name="smart_snoozing">Snooze inteligente</string>
     <string name="calibration_alerts">Alertas de Calibração</string>
     <string name="missed_reading_alert">Alerta de falha de leitura</string>
     <string name="other_alerts">Outros Alertas</string>
     <string name="extra_alerts_xdrip_plus">Alertas Extras (xDrip+)</string>
     <string name="persistent_high_alert">Alerta de Hiper persistente</string>
+    <string name="persistent_high_alert_enable">Ligar</string>
     <string name="forecasted_low_alert">Alerta de previsão de Hipo</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolar dados para tentar prever Hipos</string>
     <string name="alarm_at_forecasted_low_mins">Alarme para Previsões de Baixa em mins</string>
@@ -234,7 +240,7 @@
     <string name="system_status">Estado do Sistema</string>
     <string name="settings">Configurações</string>
     <string name="calibration_data_table">Tabela de Calibração</string>
-    <string name="bg_data_table">Tabela de Glicémia</string>
+    <string name="bg_data_table">Tabela de Glicemia</string>
     <string name="cannot_calibrate_right_now">Impossível Calibrar agora</string>
     <string name="hardware_data_source">Hardware Fonte de Dados</string>
     <string name="enter_ten_character_dexcom_receiver_serial">Introduza 10 caracteres do número de serie do Dexcom Receiver</string>
@@ -292,7 +298,7 @@
     <string name="manage_followers">Gerenciar seguidores</string>
     <string name="manage_existing_followers">Gira os seus seguidores e convide novos.</string>
     <string name="invite_follower">Convidar um seguidor</string>
-    <string name="glucose_calibration_and_other_alerts">Glicémia, Calibração e Outros alertas</string>
+    <string name="glucose_calibration_and_other_alerts">Glicemia, calibração e outros alertas</string>
     <string name="alert_volume_profile">Perfil de volume de alerta</string>
     <string name="smart_alerting">Alertas inteligentes</string>
     <string name="dont_alarm_during_phone_calls">Não alertar durante chamadas</string>
@@ -304,7 +310,7 @@
     <string name="xdrip_plus_color_settings">Configurações de Cor</string>
     <string name="glucose_values_and_lines">Valor de Glicémia e Linhas</string>
     <string name="high_glucose_values">Valores Glicémia Hiper</string>
-    <string name="in_range_glucose_values">Valores Glicémia no algo</string>
+    <string name="in_range_glucose_values">Valores de glicemia no intervalo</string>
     <string name="default_color_selected">Cor pré-definida Selecionado</string>
     <string name="color_bg_values">Cores das Leituras de Glicemia e da Seta de Tendência</string>
     <string name="xdrip_plus_extra_settings">Configurações Extras xDrip+</string>
@@ -362,8 +368,8 @@
     <string name="copy_all_settings">Copiar todas as Configurações</string>
     <string name="sensor_is_ready_please_enter_double_calibration">Sensor pronto, por favor insira dupla calibração</string>
     <string name="in_order_to_get_started_please_perform_two_finger">Para começar, faça um ou dois testes de picada no dedo e insira os valores aqui!</string>
-    <string name="enter_first_bg_value">Primeiro valor de glicémia</string>
-    <string name="enter_second_bg_value">Segundo valor de glicémia</string>
+    <string name="enter_first_bg_value">Primeiro valor de glicemia</string>
+    <string name="enter_second_bg_value">Segundo valor de glicemia</string>
     <string name="language_editor">Editor de idioma</string>
     <string name="configure_missed_readings">Configurar Leituras Perdidas</string>
     <string name="install_pebble_snooze_control_app">Instalar App Pebble Snooze Control</string>
@@ -394,7 +400,9 @@
     <string name="please_enter_your_question_or_comments_here">Por favor, insira sua pergunta ou comentários aqui.\n\nSe você fornecer um endereço de e-mail, você pode receber uma resposta.\n\n</string>
     <string name="optional_contact_info_here_eg_email">Informações de contacto opcionais, exemplo: email</string>
     <string name="send_message">Enviar mensagem</string>
+    <string name="save_logs">Salvar logs</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Por favor diga o que pensa do app em geral</string>
+    <string name="log_confidential_note">Aviso!\nOs logs podem conter informações confidenciais, tais como senhas ou IDs de usuário.</string>
     <string name="preferences_saved_in_sdcard_downloads">Preferencias guardadas em Downloads no SDcard</string>
     <string name="could_not_write_to_sdcard_check_perms">Impossível escrever no SDcard - verifique permissões?</string>
     <string name="loaded_preferences_restarting">Preferencias carregadas! - A reiniciar</string>
@@ -470,7 +478,7 @@
     <string name="start_sensor">Iniciar Sensor</string>
     <string name="debug_and_other_misc_options">Debug e outras opções</string>
     <string name="low_glucose_values">Valores Hipo</string>
-    <string name="bad_glucose_values">Valores de Glicémia Inválidos</string>
+    <string name="bad_glucose_values">Valores de glicemia Inválidos</string>
     <string name="revert_to_default">Restaurar padrões</string>
     <string name="filtered_values">Valores filtrados</string>
     <string name="treatment_color">Insulina ativa</string>
@@ -480,7 +488,7 @@
     <string name="average_and_target_lines">Média e linhas alvo</string>
     <string name="eight_hour_average_line">Linha média de 8 horas</string>
     <string name="twenty_four_hour_average_line">Linha média de 24 horas</string>
-    <string name="glucose_target_line">Linha de Glicémia alvo</string>
+    <string name="glucose_target_line">Linha de glicemia alvo</string>
     <string name="annotations_and_dots">Anotações e Pontos</string>
     <string name="blood_test_background">Teste de sangue cor de fundo</string>
     <string name="blood_test_foreground">Teste de sangue cor</string>
@@ -518,10 +526,10 @@
     <string name="select_time_for_alert_colon">Selecione a hora do alerta:</string>
     <string name="all_day">o dia todo</string>
     <string name="tap_to_change">(toque para mudar)</string>
-    <string name="override_phone_silent_mode_colon">Ignorar modo de silêncio do telemóvel:</string>
+    <string name="override_phone_silent_mode_colon">Ignorar o modo silencioso:</string>
     <string name="vibrate_on_alert">Vibrar nos alertas</string>
     <string name="test_alert">Testar alerta</string>
-    <string name="disable_alert">desativar alerta</string>
+    <string name="disable_alert">Desativar alerta</string>
     <string name="save_alert">Salvar alerta</string>
     <string name="remove_alert">Remover alerta</string>
     <string name="snooze_alert_before_it_fires">fazer snooze ao alerta antes de ser iniciado</string>
@@ -1028,9 +1036,12 @@
     <string name="summary_Allow_initial_calibration_no_good_enough_data">Permite calibração inicial mesmo que não existam dados bons e suficientes. Atenção que isso pode resultar numa calibração incorreta!</string>
     <string name="title_Bypass_quality_check">Ignorar Controle de Qualidade</string>
     <string name="summary_Scan_before_connecting_on_xBridge_and_Libre_bluetooth">Escaneie antes de conectar no xBridge e Bluetooth do Libre</string>
+    <string name="title_Use_scanning">Usar escaneamento</string>
     <string name="summary_Use_and_trust_Android_bluetooth_auto_connect_feature">Usar e confiar no recurso de conexão automática Bluetooth do Android</string>
+    <string name="title_Trust_Auto_Connect">Confiar na auto-conexão</string>
     <string name="summary_Experimental_support_for_xBridge_polling_feature">Suporte experimental para o recurso de pesquisa do xBridge+</string>
     <string name="title_xBridge_Polling_Mode">Modo de sondagem xBridge+</string>
+    <string name="summary_Probe_Bluetooth_services_on_every_connect">Sondar serviços Bluetooth em cada conexão</string>
     <string name="title_Always_discover_services">Sempre descobrir serviços</string>
     <string name="summary_Only_suitable_for_phones_which_support_automatic_pairing">Apenas adequado para telefones que suportam o pareamento automático</string>
     <string name="title_Allow_blucon_unbonding">Permitir desvinculação de BluCon</string>
@@ -1049,6 +1060,8 @@
     <string name="title_reminder_snooze_undo">Lembrete de Adiar- Desfazer</string>
     <string name="message_snooze_explanaition_undo">O botão Desfazer restaura o lembrete de como estava antes de ser deslizado.</string>
     <string name="title_snooze_trash">Lembrete Adiar- Lixeira</string>
+    <string name="message_snooze_trash">O botão de lixeira exclui permanentemente o lembrete apagado!</string>
+    <string name="title_snooze_hide">Painel de Silenciar Lembrete - Ocultar</string>
     <string name="message_snooze_hide">O botão Ocultar oculta o painel de soneca</string>
     <string name="title_which_day">Em que dia?</string>
     <string name="title_what_time_day">A que hora do dia?</string>
@@ -1092,6 +1105,7 @@
     <string name="alternating">Alternando</string>
     <string name="weekdays">Dias Úteis</string>
     <string name="weekends">Fins de semana</string>
+    <string name="mega_priority">Mega-prioridade</string>
     <string name="xdrip_reminders">Lembretes</string>
     <string name="button_15_min">15 Min</string>
     <string name="button_2_hour">2 Horas</string>
@@ -1112,6 +1126,7 @@
     <string name="unit_hours">horas</string>
     <string name="unit_days">dias\"</string>
     <string name="unit_weeks">semanas\"</string>
+    <string name="quiet_at_night">Silêncio à Noite</string>
     <string name="alerts_disabled">Alertas desativados</string>
     <string name="restart_in_the_morning">Reiniciar pela Manhã</string>
     <string name="advanced_mode">Modo Avançado</string>
@@ -1157,6 +1172,8 @@
     <string name="summary_bluetooth_meter_for_calibrations_auto">Calibrar utilizando novas leituras de glicose se as condições parecerem corretas para fazer isso sem pedir confirmação (experimental)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Calibragem Automática</string>
     <string name="title_rest_api_extra_options">Opções adicionais</string>
+    <string name="summary_send_bridge_battery_to_nightscout">Envie o nível da bateria para o Nightscout. Desmarque se o sensor de bateria estiver defeituoso.</string>
+    <string name="title_send_bridge_battery_to_nightscout">Enviar dados de bateria</string>
     <string name="summary_send_dexcom_transmitter_battery_to_nightscout">Envia estatísticas da bateria do transmissor Dexcom para o Nightscout. Inclui todos os dados mostrados na tela de Status do Coletor.</string>
     <string name="title_send_dexcom_transmitter_battery_to_nightscout">Enviar bateria do OB1G5/G6/G7/1</string>
     <string name="summary_send_treatments_to_nightscout">Envia dados de tratamento para o Nightscout. Desmarque se seu portal de cuidados estiver fora de serviço.</string>
@@ -1237,6 +1254,7 @@
     <string name="summary_lefun_send_alarms">Enviar notificações de alarmes de glicose para a pulseira</string>
     <string name="title_lefun_send_alarms">Enviar Alarmes</string>
     <string name="title_lefun_option_shake_snoozes">Agitar para Silenciar</string>
+    <string name="title_lefun_send_calls">Enviar Chamadas</string>
     <string name="title_features">Funcionalidades</string>
     <string name="title_lefun_feature_lift_to_wak">Levantar para ativar</string>
     <string name="title_lefun_feature_anti_lost">Alerta de Desconexão</string>
@@ -1372,7 +1390,10 @@
     <string name="summary_ongoing_notification_channel">Pode disparar notificações de exibição ambiente em alguns dispositivos. Precisa de testes!</string>
     <string name="title_notification_channels_grouping">Agrupar notificações</string>
     <string name="summary_delay_ascending_3min">Para o perfil de volume crescente, atrasa o início do som do alerta em 3 minutos. A vibração (se ativada) começa assim que o alerta dispara, independentemente da configuração.</string>
+    <string name="title_ascending_volume">Configurações de Volume Crescente</string>
     <string name="title_delay_ascending_3min">Atrasar Volume Crescente</string>
+    <string name="summary_ascending_volume_to_medium">Quando ativado, o perfil de volume crescente vai até o volume médio ao invés do máximo</string>
+    <string name="title_ascending_volume_to_medium">Usar volume médio</string>
     <string name="summary_play_sound_for_initial_calibration">Reproduzir som quando a calibração inicial for necessária</string>
     <string name="title_play_sound_for_initial_calibration">Alerta Inicial</string>
     <string name="category_falling_rising_bg">Queda / Aumento da Glicose</string>
@@ -1689,4 +1710,8 @@
     <string name="carelink_credential_status_refresh_expired">Login expirado! Por favor, faça o login!</string>
     <string name="data_source">Fonte de dados:</string>
     <string name="reraise_alerts_before_snooze_time">Alertar novamente</string>
+    <string name="audio_focus_dont_adjust_other_app_sounds">Não ajustar sons de outros aplicativos</string>
+    <string name="audio_focus_lower_volume_of_other_apps">Diminuir o volume de outros aplicativos</string>
+    <string name="audio_focus_pause_other_apps_playing_audio">Silenciar outros aplicativos quando estiver tocando</string>
+    <string name="audio_focus_pause_all_other_sounds">Silenciar todos os outros sons</string>
 </resources>

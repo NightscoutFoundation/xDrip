@@ -40,7 +40,7 @@ public enum CalibrationState {
     SensorFailedStart(0x16, "Sensor Failed Start"),
     SensorFailedStart2(0x17, "Sensor Failed Start 2"),
     SensorExpired(0x18, "Sensor Expired"),
-    SensorFailed7(0x19, "Sensor Failed 7"),
+    SensorFailed7(0x19, "Sensor Failed 7"), // apparently not a failure state
     SensorStopped2(0x1A, "Sensor Stopped 2"),
     SensorFailed8(0x1B, "Sensor Failed 8"),
     SensorFailed9(0x1C, "Sensor Failed 9"),
@@ -85,7 +85,8 @@ public enum CalibrationState {
 
     public boolean usableGlucose() {
         return this == Ok
-                || this == NeedsCalibration;
+                || this == NeedsCalibration
+                || this == SensorFailed7;
     }
 
     public boolean insufficientCalibration() {
