@@ -248,6 +248,8 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static boolean do_discovery = true;
     private static final boolean do_auth = true;
     //private static boolean initiate_bonding = false;
+    public static boolean rapid_reconnect = false;
+    public static int rapid_reconnect_count = 0;
 
     private static final Set<String> alwaysScanModels = Sets.newHashSet("SM-N910V", "G Watch");
     private static final List<String> alwaysScanModelFamilies = Arrays.asList("SM-N910");
@@ -947,6 +949,10 @@ public class Ob1G5CollectionService extends G5BaseService {
             if (connectFailures > 0 || (!use_auto_connect && connectNowFailures > 0)) {
                 always_scan = true;
                 UserError.Log.e(TAG, "Switching to scan always mode due to connect failures metric: " + connectFailures);
+                changeState(SCAN);
+            } else if (rapid_reconnect) {
+                always_scan = true;
+                UserError.Log.e(TAG, "Scan always mode to help with Rapid Reconnect ");
                 changeState(SCAN);
             } else if (use_auto_connect && (connectNowFailures > 1) && (connectFailures < 0)) {
                 UserError.Log.d(TAG, "Avoiding power connect due to failure metric: " + connectNowFailures + " " + connectFailures);
@@ -1734,6 +1740,13 @@ public class Ob1G5CollectionService extends G5BaseService {
                 UserError.Log.e(TAG, "onReceive UPDATE Name " + parcel_device.getName() + " Value " + parcel_device.getAddress()
                         + " Bond state " + parcel_device.getBondState() + bondState(parcel_device.getBondState()) + " "
                         + "bs: " + bondState(bond_state_extra) + " was " + bondState(previous_bond_state_extra));
+                if (DexCollectionType.getBestCollectorHardwareName().equals("G7") && parcel_device.getBondState() == BluetoothDevice.BOND_BONDED) { // G7 just paired
+                    rapid_reconnect = true; // There is only 20% chance we are on the correct time grid.  Let's wake once a minute to find the right grid.
+                    rapid_reconnect_count = 0;
+                    always_scan = true;
+                    UserError.Log.e(TAG, "Scan always mode and wake every minute to gracefully exit Rapid Reconnect ");
+                    changeState(SCAN);
+                }
                 try {
                     if (parcel_device.getAddress().equals(transmitterMAC)) {
                         msg(bondState(bond_state_extra).replace(" ", ""));

@@ -4,10 +4,12 @@ package com.eveningoutpost.dexdrip.g5model;
 
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 
 import static com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder.DEXCOM_PERIOD;
+import static com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder.DEX_RAPID_RECONNECT_PERIOD;
 
 public class DexSyncKeeper {
 
@@ -67,12 +69,19 @@ public class DexSyncKeeper {
     // -1 means we don't know anything
     static long anticipate(final String transmitterId, final long now) {
         final long last = PersistentStore.getLong(DEX_SYNC_STORE + transmitterId);
-        if (last < OLDEST_POSSIBLE) {
-            return -1;
-        }
         if (last > now) {
             UserError.Log.e(TAG, "Anticipation time in the future! cannot use: " + JoH.dateTimeText(last));
             return -1; // can't be in the future
+        }
+
+        if (Ob1G5CollectionService.rapid_reconnect) { // Once a minute
+            final long modulo = (now - last) % DEX_RAPID_RECONNECT_PERIOD;
+            if ((modulo < GRACE_TIME) && ((now - last) > GRACE_TIME)) return now;
+            final long next = now + (DEX_RAPID_RECONNECT_PERIOD - modulo);
+            return next;
+        }
+        if (last < OLDEST_POSSIBLE) {
+            return -1;
         }
 
         if (now - last > VALIDITY_PERIOD) {

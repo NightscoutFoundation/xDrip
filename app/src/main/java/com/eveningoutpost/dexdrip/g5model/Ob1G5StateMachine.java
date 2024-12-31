@@ -888,6 +888,15 @@ public class Ob1G5StateMachine {
                             } else {
                                 parent.msg("Invalid Glucose");
                             }
+                            UserError.Log.d(TAG, "Rapid Reconnect is active: " + Ob1G5CollectionService.rapid_reconnect);
+                            if (Ob1G5CollectionService.rapid_reconnect) { // Manage wake frequency after pairing for G7
+                                Ob1G5CollectionService.rapid_reconnect_count++;
+                                UserError.Log.e(TAG, "# of Rapid Reconnect handshakes: " + Ob1G5CollectionService.rapid_reconnect_count);
+                                if (Ob1G5CollectionService.rapid_reconnect_count > 2) {
+                                    UserError.Log.e(TAG, "Back to waking once every 5 minutes ");
+                                    Ob1G5CollectionService.rapid_reconnect = false;
+                                }
+                            }
                             break;
 
 
