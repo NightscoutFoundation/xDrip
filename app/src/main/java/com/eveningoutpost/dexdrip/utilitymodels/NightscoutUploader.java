@@ -121,6 +121,7 @@ public class NightscoutUploader {
     private Boolean enableMongoUpload;
     private SharedPreferences prefs;
     private OkHttpClient client;
+    public static boolean lastSite2Upload2 = false; // This flag is raised when we start uploading to the last site
 
     public interface NightscoutService {
         @POST("entries")
@@ -464,7 +465,13 @@ public class NightscoutUploader {
             return false;
         }
         boolean any_successes = false;
+        lastSite2Upload2 = false;
+        int size = baseURIs.size(); // Number of Nightscout sites to upload to
+        int count = 0;
         for (String baseURI : baseURIs) {
+            if (++count >= size) {
+                lastSite2Upload2 = true; // We are starting the last run
+            }
             try {
                 baseURI = TryResolveName(baseURI);
                 int apiVersion = 0;
@@ -806,12 +813,14 @@ public class NightscoutUploader {
                                     if (!r.isSuccessful()) {
                                         throw new UploaderException(r.message(), r.code());
                                     } else {
-                                        up.completed(THIS_QUEUE);
+                                        if (lastSite2Upload2)
+                                            up.completed(THIS_QUEUE); // Approve only if we have completed the last site
                                         Log.d(TAG, "Success for RESTAPI treatment delete: " + up.reference_uuid + " _id: " + this_id);
                                     }
                                 } else {
                                     Log.wtf(TAG, "Couldn't find a reference _id for uuid: " + up.reference_uuid + " got: " + this_id);
-                                    up.completed(THIS_QUEUE); // don't retry
+                                    if (lastSite2Upload2)
+                                        up.completed(THIS_QUEUE); // don't retry // Approve only if we have completed the last site
                                 }
                             }
                         } else {
@@ -820,7 +829,8 @@ public class NightscoutUploader {
                     }
                 } else {
                     Log.wtf(TAG, "Unsupported operation type for treatment: " + up.action);
-                    up.completed(THIS_QUEUE); // don't retry it
+                    if (lastSite2Upload2)
+                        up.completed(THIS_QUEUE); // don't retry it // Approve only if we have completed the last site
                 }
             }
             // handle insert types
@@ -835,7 +845,8 @@ public class NightscoutUploader {
                         Log.d(TAG, "Success for RESTAPI treatment insert upload");
                         for (UploaderQueue up : tups) {
                             if (up.action.equals("insert")) {
-                                up.completed(THIS_QUEUE); // approve all types for this queue
+                                if (lastSite2Upload2)
+                                    up.completed(THIS_QUEUE); // approve all types for this queue // Approve only if we have completed the last site
                             }
                         }
                         checkGzipSupport(r);
@@ -865,7 +876,8 @@ public class NightscoutUploader {
                                 if ((up.action.equals("update") || (up.action.equals("insert")))
                                         && (up.reference_uuid.equals(match_uuid) || (uuid_to_id(up.reference_uuid).equals(match_uuid)))) {
                                     if (d) Log.d(TAG, "upsert: matched");
-                                    up.completed(THIS_QUEUE); // approve all types for this queue
+                                    if (lastSite2Upload2)
+                                        up.completed(THIS_QUEUE); // approve all types for this queue // Approve only if we have completed the last site
                                     break;
                                 }
                             }
@@ -879,7 +891,8 @@ public class NightscoutUploader {
                 // if we got this far without exception then mark everything as completed to fix harmless erroneous queue entries
                 for (UploaderQueue up : tups) {
                     if (d) Log.d(TAG, "Marking all items completed");
-                    up.completed(THIS_QUEUE);
+                    if (lastSite2Upload2)
+                        up.completed(THIS_QUEUE); // Approve only if we have completed the last site
                 }
             }
         }
