@@ -1270,6 +1270,7 @@
     <string name="summary_lefun_send_alarms">KŞ alarmını bilekliğe bildirim olarak gönder</string>
     <string name="title_lefun_send_alarms">Alarmları Gönder</string>
     <string name="title_lefun_option_shake_snoozes">Ertelemek için bilekliği salla</string>
+    <string name="title_lefun_send_calls">Çağrıları Gönder</string>
     <string name="title_lefun_screens_features">Lefun Ekranı / Özellikler</string>
     <string name="title_features">Özellikler</string>
     <string name="title_lefun_feature_lift_to_wak">Uyandırmak için kolunu kaldır</string>

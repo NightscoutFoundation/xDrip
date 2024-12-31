@@ -119,6 +119,7 @@
     <string name="title_activity_update">xDrip+の最新版あり</string>
     <string name="title_activity_display_qrcode">QRコードで設定を共有</string>
     <string name="title_activity_send_feed_back">Jamorham にフィードバックを送信する。</string>
+    <string name="title_activity_save_logs">ログを保存</string>
     <string name="title_activity_maps">Parakeetマップ</string>
     <string name="title_activity_display_preferences">表示の設定</string>
     <string name="export_submenu">インポート/エクスポート機能</string>
@@ -222,6 +223,8 @@
     <string name="persistent_high_alert_enable">有効にする</string>
     <string name="title_persistent_high_threshold">しきい値</string>
     <string name="forecasted_low_alert">低血糖の予測通知</string>
+    <string name="setting_pref_to_max">最大値に設定</string>
+    <string name="setting_pref_to_min">最小値に設定</string>
     <string name="extrapolate_data_to_try_to_predict_lows">データから外挿法によって低血糖を推定する</string>
     <string name="alarm_at_forecasted_low_mins">予測低血糖のあらアラームを鳴らす</string>
     <string name="other_xdrip_plus_alerts">他のxDrip+の通知</string>
@@ -292,7 +295,9 @@
     <string name="units">単位</string>
     <string name="carbs">カーボ</string>
     <string name="when">いつ</string>
+    <string name="exported_to">"エクスポート先： "</string>
     <string name="done">完了</string>
+    <string name="update_channel_colon_space">"チャンネルを更新: "</string>
     <string name="a_new_version_is_available">最新版あり</string>
     <string name="version_details">バージョンの詳細</string>
     <string name="download_now">今すぐダウンロード</string>
@@ -307,6 +312,7 @@
     <string name="install_pebble_classic_trend_watchface">Pebble Classic Trend Watchfaceをインストール</string>
     <string name="glucose_history">血糖値の履歴</string>
     <string name="import_database">データベースを復元</string>
+    <string name="sensor_table">センサーテーブル</string>
     <string name="long_press_to_split_or_delete">長押しで分割または削除</string>
     <string name="search">検索</string>
     <string name="reset_all_language_data">すべての言語データを初期化</string>
@@ -336,6 +342,10 @@
     <string name="warning_settings_from_xdrip_and_plus_exist">xDripとxDrip+の警告設定が存在します - xDrip+を読み込みます</string>
     <string name="new_version_date_colon">"新しいバージョンの日付: "</string>
     <string name="old_version_date_colon">"古いバージョンの日付: "</string>
+    <string name="choose_sound_used_for_persistent_high_alarm">アラームに使用されるサウンドを選択します。</string>
+    <string name="persistent_high_sound">アラーム音</string>
+    <string name="predicted_low_sound">アラーム音</string>
+    <string name="choose_sound_used_for_predicted_low_alarm">アラームに使用されるサウンドを選択します。</string>
     <string name="silent_alert_when_charging">充電時にアラートをサイレント</string>
     <string name="average">平均</string>
     <string name="time">時間</string>
@@ -412,6 +422,7 @@
     <string name="automatic_calibration">自動キャリブレーション</string>
     <string name="override_silent_mode">サイレントモードを上書き</string>
     <string name="even_when_charging">充電時でも</string>
+    <string name="alert_sound">アラーム音</string>
     <string name="use_flair_colors">タイトル/ナビバーの調整</string>
     <string name="upper_title_bar_flair">上部のタイトルバー</string>
     <string name="lower_button_bar_falir">下部のナビバー</string>

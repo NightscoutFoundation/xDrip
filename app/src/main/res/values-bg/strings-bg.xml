@@ -61,6 +61,7 @@
     <string name="pref_title_api_enabled">Включен</string>
     <string name="pref_summary_api_enabled">REST API е стандартният начин за връзка с Nightscout</string>
     <string name="pref_title_api_url">Базов URL адрес</string>
+    <string name="pref_summary_api_url">Формат: https://password@hostname/api/v1/</string>
     <string name="pref_dialog_api_url">Въведете базовия API URL адрес</string>
     <string name="pref_message_api_url">Това е само базовия URL, ъплоудера автоматично, ще прикачи /entries за POST.  API_SECRET-а трябва да съвпадне с yourpassphrase в настройките.</string>
     <string name="pref_default_api_url">https://yourpassphrase@{ИМЕ-САЙТ}.azurewebsites.net/api/v1/</string>
@@ -225,7 +226,12 @@
     <string name="persistent_high_alert">Известие за продължително висока КЗ</string>
     <string name="persistent_high_alert_enable">Включи</string>
     <string name="title_persistent_high_threshold">Праг</string>
+    <string name="the_value_must_be_between_min_and_max">Стойността трябва да е между %1$s и %2$s</string>
     <string name="forecasted_low_alert">Известие за предвиждана Ниска КЗ</string>
+    <string name="setting_pref_to_max">Сложи на макс.</string>
+    <string name="pref_was_greater_than_max">%1$s е сложена на стойност по-голяма от максималално разрешената. Трябва да бъде променена на максималната.</string>
+    <string name="setting_pref_to_min">Сложи на мин.</string>
+    <string name="pref_was_less_than_min">%1$s е сложена на стойност по-малка от минимално разрешената. Трябва да бъде променена на минималната.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Екстраполиране на данните в опит да се предвиди ниска КЗ</string>
     <string name="alarm_at_forecasted_low_mins">Аларма при предвиждане на Ниски стойности(Кз)</string>
     <string name="other_xdrip_plus_alerts">Други xDrip+ известия</string>
@@ -742,6 +748,8 @@
     <string name="glucose_meters">Глюкомери</string>
     <string name="glucose_meter_options">Опции за безжични глюкомери</string>
     <string name="auto_connect_to_meter">Автоматично свързване и извличане на данни от съвместим със стандарта глюкомер като Contour Next One</string>
+    <string name="summary_use_nfc_meter">Сваляне на записи за глюкозата от NFC глюкомера, когато xDrip е отворен</string>
+    <string name="title_use_nfc_meter">Използване на NFC глюкомер</string>
     <string name="use_bluetooth_meter">Да използвам ли режим Bluetooth</string>
     <string name="scan_for_bluetooth_meter">Сканиране за Bluetooth измервател</string>
     <string name="meter_connect_sound">Активирайте това, за възпроизвеждане на звукови ефекти, когато глюкомерът се свързва, прекъсва връзката или синхронизира данни</string>
@@ -1199,6 +1207,12 @@
     <string name="title_tidepool_window_latency">Минимална възраст на данните</string>
     <string name="summary_tidepool_dev_servers">Ако е разрешено, качванията ще отиват на https://int-app.tidepool.org вместо на обичайния https://app.tidepool.org/</string>
     <string name="title_tidepool_dev_servers">Използвай тестовите сървъри</string>
+    <string name="summary_tidepool_upload_when_chargeonly">Качване на данни само при зареждане</string>
+    <string name="title_tidepool_upload_when_chargeonly">Само при зареждане</string>
+    <string name="summary_tidepool_upload_only_wifi">Качване на данни, само когато е свързан към мрежа без измерване като Wifi</string>
+    <string name="title_tidepool_upload_only_wifi">Само на Wifi</string>
+    <string name="summary_tidepool_upload_no_treatment">Качване само на CGM данни, за да се избегне на дублиране с ръчно качване от помпа</string>
+    <string name="title_tidepool_upload_no_treatment">Няма да се качват лечения</string>
     <string name="title_tidepool">Сървър Tidepool</string>
     <string name="show_help">Покажи помощно меню</string>
     <string name="load_save_settings_on_sdcard">Зареждане / запазване на настройките</string>
@@ -1272,6 +1286,8 @@
     <string name="summary_lefun_send_alarms">Изпращайте известия до групата за аларми за глюкоза</string>
     <string name="title_lefun_send_alarms">Изпращане на аларми</string>
     <string name="title_lefun_option_shake_snoozes">Разклатете за отлагане</string>
+    <string name="summary_lefun_send_calls">Изпращане на известия до групата</string>
+    <string name="title_lefun_send_calls">Изпращане на обаждания</string>
     <string name="title_lefun_screens_features">Lefun Екрани / Характеристики</string>
     <string name="title_features">Характеристики</string>
     <string name="title_lefun_feature_lift_to_wak">Вдигане за събуждане</string>
@@ -1295,6 +1311,7 @@
     <string name="title_nsfollow_url">Nightscout URL за следване</string>
     <string name="summary_nsfollow_download_treatments">Също така изтеглете лечения от Nightscout като последовател</string>
     <string name="title_nsfollow_download_treatments">Изтегляне на лечения</string>
+    <string name="title_nsfollow_lag">Nightscout забавяне на следването</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
     <string name="summary_clfollow_user">CareLink login username</string>
@@ -1338,6 +1355,8 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Обратно към xDrip</string>
     <string name="summary_ob1_minimize_scanning">Използвайте евристика, за да минимизирате Bluetooth сканирането + да пестите енергия</string>
     <string name="title_ob1_minimize_scanning">Минимизиране на сканирането</string>
+    <string name="summary_ob1_avoid_scanning">Избягване на сканирането, доколкото е възможно (намалява използването на батерията)</string>
+    <string name="title_ob1_avoid_scanning">Избягване на сканирането</string>
     <string name="summary_using_g6">Използвам сензор G6 или Dexcom 1</string>
     <string name="title_using_g6">Поддръжка на G6/Dex1</string>
     <string name="summary_ob1_g5_allow_resetbond">Колекционерът на OB1 може да прекрати връзката, ако смята, че криптирането е неуспешно. Ако имате проблеми с раздвояването, деактивирайте тази опция. Ако след това напълно загубите връзка, уверете се, че това е активирано.</string>
@@ -1491,6 +1510,7 @@
     <string name="progress">прогрес</string>
     <string name="bluetooth_device">Bluetooth Устройство:</string>
     <string name="transmitter_battery_status">Батерия трансмитер:  </string>
+    <string name="database_size">Размер на база данни:  </string>
     <string name="top">Най-горен</string>
     <string name="connect_device_usb_otg">Моля, свържете вашето устройство чрез USB OTG кабел.</string>
     <string name="connection_status">Състояние на връзката:</string>
@@ -1851,6 +1871,8 @@
     <string name="audio_focus_lower_volume_of_other_apps">Намали силата на звука на другите приложения</string>
     <string name="audio_focus_pause_other_apps_playing_audio">Паузирай другите приложения, които възпроизвеждат аудио</string>
     <string name="audio_focus_pause_all_other_sounds">Паузиране на всички останали звуци</string>
+    <string name="wake_up_screen">Събуждане на екрана</string>
+    <string name="wake_up_screen_summary">Събуждане на екрана по време на предупреждения. Може да отключи утройства, на които функцията заключване на екрана не е активирана.</string>
     <string name="use_camera_light">Използвай светкавицата на камерата</string>
     <string name="use_camera_light_summary">Премигване на светкавицата на камерата по време на аларми, когато е свързано зарядното устройство</string>
     <string name="g7_should_start_automatically">G7 би трябвало да стартира автоматично</string>

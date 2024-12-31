@@ -1269,6 +1269,7 @@
     <string name="summary_lefun_send_alarms">Отправлять уведомления о глюкозе на браслет</string>
     <string name="title_lefun_send_alarms">Отправлять уведомления</string>
     <string name="title_lefun_option_shake_snoozes">Потрясти, чтобы отложить</string>
+    <string name="title_lefun_send_calls">Оповещения о звонках</string>
     <string name="title_lefun_screens_features">Экраны / Функции Lefun</string>
     <string name="title_features">Функции</string>
     <string name="title_lefun_feature_lift_to_wak">Пробуждать поворотом</string>

@@ -1260,6 +1260,7 @@
     <string name="summary_lefun_send_alarms">Stuur meldingen naar de band voor glucosealarmen</string>
     <string name="title_lefun_send_alarms">Stuur alarmen</string>
     <string name="title_lefun_option_shake_snoozes">Schud om te sluimeren</string>
+    <string name="title_lefun_send_calls">Stuur oproepen</string>
     <string name="title_lefun_screens_features">Lefun Schermen / Functies</string>
     <string name="title_features">Functies</string>
     <string name="title_lefun_feature_lift_to_wak">Optillen om te ontwaken</string>

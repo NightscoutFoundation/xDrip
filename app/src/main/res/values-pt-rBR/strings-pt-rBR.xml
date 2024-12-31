@@ -1254,6 +1254,7 @@
     <string name="summary_lefun_send_alarms">Enviar notificações de alarmes de glicose para a pulseira</string>
     <string name="title_lefun_send_alarms">Enviar Alarmes</string>
     <string name="title_lefun_option_shake_snoozes">Agitar para Silenciar</string>
+    <string name="title_lefun_send_calls">Enviar Chamadas</string>
     <string name="title_features">Funcionalidades</string>
     <string name="title_lefun_feature_lift_to_wak">Levantar para ativar</string>
     <string name="title_lefun_feature_anti_lost">Alerta de Desconexão</string>

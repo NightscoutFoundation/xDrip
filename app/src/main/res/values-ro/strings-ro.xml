@@ -1249,6 +1249,7 @@
     <string name="summary_lefun_send_alarms">Trimite notificări către brățară pentru alarmele de glicemie</string>
     <string name="title_lefun_send_alarms">Trimite Alarme</string>
     <string name="title_lefun_option_shake_snoozes">Scutură pentru Amânare</string>
+    <string name="title_lefun_send_calls">Trimite apeluri</string>
     <string name="title_lefun_screens_features">Lefun ecrane/caracteristici</string>
     <string name="title_features">Caracteristici</string>
     <string name="title_lefun_feature_lift_to_wak">Ridicați pentru Reactivare</string>
