@@ -1618,15 +1618,6 @@
                     android:title="@string/title_NOT_FOR_PRODUCTION_USE" />
 
             </PreferenceScreen>
-            <PreferenceCategory
-                android:key="community_help_category"
-                android:title="@string/help_the_community">
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="store_sensor_location"
-                    android:summary="@string/help_the_developers_improve_the_algorithm"
-                    android:title="@string/store_sensor_location_to_help" />
-            </PreferenceCategory>
         </PreferenceScreen>
 
     </PreferenceCategory>
