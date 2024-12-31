@@ -135,7 +135,7 @@
     <string name="showcase_redo">Бутон Повтори може да преминава напред към неизпълнени манипулационни симулации, калибрации и белeжки\n\nСлед 30 минути, ще се скрие отново</string>
     <string name="undo_button">Бутон Отмени</string>
     <string name="showcase_undo">Бутон Отмени може да връща НАЗАД през манипулационни симулации, калибрации и бележки\n\nСлед 30 минути, ще се скрие отново</string>
-    <string name="add_note">Добави бележка</string>
+    <string name="add_note">Нова бележка</string>
     <string name="blood_test">Кръвен тест</string>
     <string name="share">Сподели</string>
     <string name="title_activity_profile_editor">Промяна манипулационния профил</string>
@@ -752,7 +752,7 @@
     <string name="title_use_nfc_meter">Използване на NFC глюкомер</string>
     <string name="use_bluetooth_meter">Да използвам ли режим Bluetooth</string>
     <string name="scan_for_bluetooth_meter">Сканиране за Bluetooth измервател</string>
-    <string name="meter_connect_sound">Активирайте това, за възпроизвеждане на звукови ефекти, когато глюкомерът се свързва, прекъсва връзката или синхронизира данни</string>
+    <string name="meter_connect_sound">Активирайте това за възпроизвеждане на звукови ефекти, когато глюкомерът се свързва, прекъсва връзката или синхронизира данни</string>
     <string name="meter_connect_sound_effect">Индикатори за звуков ефект</string>
     <string name="ask_for_calibration">Когато се получи нов резултат за кръвна захар, питай дали трябва да се използва за калибриране</string>
     <string name="use_meter_for_calibrations">Използвайте измервателен уред за калибриране</string>
@@ -1211,7 +1211,7 @@
     <string name="title_tidepool_upload_when_chargeonly">Само при зареждане</string>
     <string name="summary_tidepool_upload_only_wifi">Качване на данни, само когато е свързан към мрежа без измерване като Wifi</string>
     <string name="title_tidepool_upload_only_wifi">Само на Wifi</string>
-    <string name="summary_tidepool_upload_no_treatment">Качване само на CGM данни, за да се избегне на дублиране с ръчно качване от помпа</string>
+    <string name="summary_tidepool_upload_no_treatment">Качване само на CGM данни, за да се избегне дублиране с ръчно качване от помпа</string>
     <string name="title_tidepool_upload_no_treatment">Няма да се качват лечения</string>
     <string name="title_tidepool">Сървър Tidepool</string>
     <string name="show_help">Покажи помощно меню</string>
