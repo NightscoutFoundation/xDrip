@@ -98,13 +98,13 @@
     <string name="pref_amazfit_watchface_graph_dots_summary">Показвай по-малки точки</string>
     <string name="pref_amazfit_watchface_graph_enable">Включи</string>
     <string name="pref_amazfit_watchface_graph_title">Графика на циферблата</string>
-    <string name="pref_amazfit_watchface_graph_enable_summary">Показвай Графика взаден план на циферблата</string>
+    <string name="pref_amazfit_watchface_graph_enable_summary">Показвай Графика в заден план на циферблата</string>
     <string name="pref_amazfit_watchface_graph_hours_title">Графика на циферблата</string>
     <string name="pref_amazfit_watchface_graph_hours_summary">настройте колко часа да са видими в графиката</string>
     <string name="pref_amazfit_widget_graph_hours_title">Widget графика</string>
     <string name="pref_amazfit_widget_graph_hours_summary">настройте колко часа да са видими в графиката</string>
     <string name="pref_amazfit_widget_graph_dots_title">Widget точки по графика</string>
-    <string name="pref_amazfit_widget_graph_dots_summary">Показва малки точки вместо малко</string>
+    <string name="pref_amazfit_widget_graph_dots_summary">Показване на още по- малки точки от малките</string>
     <string name="pref_amazfit_widget_graph_enable">Активирай</string>
     <string name="pref_amazfit_widget_graph_title">Widget графика</string>
     <string name="pref_amazfit_widget_graph_enable_summary">Покажи графика в widget-а</string>
@@ -177,7 +177,7 @@
     <string name="space_minute_ago">" Преди минута"</string>
     <string name="show_parakeet_map">Покажи Parakeet карта</string>
     <string name="switch_parakeet_to_setup_mode">Преминаване на Parakeet към Режим за настройване</string>
-    <string name="view_events_log">Покажи лог събитя</string>
+    <string name="view_events_log">Покажи лог събития</string>
     <string name="show_libre_trend">Покажи Libre тенденция</string>
     <string name="libre_15_minutes_graph">Libre 15 минутна графа</string>
     <string name="libre_last_x_minutes_graph">Libre графа последните за последните %d мин</string>
@@ -275,7 +275,7 @@
     <string name="pref_node_wearG5">Уред използващ базата данни</string>
     <string name="pref_summary_node_wearG5">Накарай телефона да използва събраната база от данни</string>
     <string name="pref_sync_wear_logs">Синхронизиране на регистрационните файлове</string>
-    <string name="pref_summary_sync_wear_logs">Изпратите данните от носещото устройство към програмат за преглед на събитията</string>
+    <string name="pref_summary_sync_wear_logs">Изпратете данните от носещото устройство към програмата за преглед на събитията</string>
     <string name="pref_wear_logs_prefix">Wear представка за събитията</string>
     <string name="pref_summary_wear_logs_prefix">Представка използвана за Wear събитията</string>
     <string name="pref_show_treatments">Показване на лечения</string>
@@ -369,7 +369,7 @@
     <string name="save_all_settings_to_sdcard">Запази всички настройки в файл</string>
     <string name="load_all_settings_from_sdcard">Зареди всички настройки от файл</string>
     <string name="delete_any_settings_on_sdcard">Изтрии папката с настройки (Download/xDrip-export)</string>
-    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Използвая QR код за трансфер на настройки използвайки Настройки->Функция за автоматично конфигуриране]]></string>
+    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Използвай QR код за трансфер на настройки чрез Настройки ->Функция за автоматично конфигуриране]]></string>
     <string name="xdrip_plus_security_key_settings_only">xDrip + ключ за настройки</string>
     <string name="show_general_and_collection_settings">Покажи генерални настройки и настройки на събирането</string>
     <string name="copy_all_settings">Копиране на Настройките</string>
@@ -409,7 +409,7 @@
     <string name="send_message">Изпрати Съобщение</string>
     <string name="save_logs">Запазване на логовете</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Моля, оценете приложението</string>
-    <string name="log_confidential_note">Внимание!\nЛоговрте може да съдържат конфиденциална информация като пароли или потребителски ID.</string>
+    <string name="log_confidential_note">Внимание!\nЛоговете може да съдържат конфиденциална информация като пароли или потребителски ID.</string>
     <string name="preferences_saved_in_sdcard_downloads">Предпочитанията са запазени във вътрешна памет/изтегляне</string>
     <string name="could_not_write_to_sdcard_check_perms">Проблем при писането в SD карта - проверете разрешенията?</string>
     <string name="loaded_preferences_restarting">Заредени предпочитания! - Рестартиране</string>
@@ -458,7 +458,7 @@
     <string name="display_slope_arrows">Покажи на стрелки за наклон</string>
     <string name="vibrate_watch_to_alert_no_data">Вибриране на часовника за предупреждение, когато не получаваме данни за глюкоза</string>
     <string name="vibrate_when_missed_signal">Вибриране при пропуснат сигнал</string>
-    <string name="vibrate_watch_to_alert_no_bluetooth">Вибриране на часовника, за предупреждение, когато Bluetooth връзката прекъсне</string>
+    <string name="vibrate_watch_to_alert_no_bluetooth">Вибриране на часовника за предупреждение, когато Bluetooth връзката прекъсне</string>
     <string name="vibrate_when_no_bluetooth">Вибриране, когато няма Bluetooth</string>
     <string name="special_glucose_value_to_display_message">Специална стойност на глюкозата за да покаже съобщението по-долу</string>
     <string name="bluetooth_wakelocks">Bluetooth Wakelocks</string>
@@ -1010,7 +1010,7 @@
     <string name="summary_If_you_plan_to_only_use_a_Wear_collector_and_never_your_phone">Ако планирате да използвате само Wear колекционер и никога телефона си.</string>
     <string name="title_Only_use_Wear">Използвай само Wear</string>
     <string name="summary_Also_show_the_filtered_data_on_the_trend">Показване на филтрираните данни за тенденцията</string>
-    <string name="summary_Show_Bolus_Wizard_Preview_Insulin_value_on_watch_when_appropriate">Показване на стойността от помощника за бързодействащя инсулин на часовник, когато е уместно</string>
+    <string name="summary_Show_Bolus_Wizard_Preview_Insulin_value_on_watch_when_appropriate">Показване на стойността от помощника за бързодействащия инсулин на часовника, когато е уместно</string>
     <string name="title_Display_BWP_Insulin">Показване стойността от помощника за болус</string>
     <string name="title_Smartwatch_Sensors">Сензори на умен часовник</string>
     <string name="summary_Collect_and_display_Step_counter_and_Heart_rate_when_available">Съберете и покажете брояч на стъпки и сърдечен ритъм, когато са налични</string>
@@ -1155,7 +1155,7 @@
     <string name="without_location_scan_doesnt_work">Без разрешение за местоположение Android Bluetooth сканирането не работи</string>
     <string name="android_10_need_background_location">Android 10 и по-нови се нуждаят от местоположение във фонов режим, за да работи Bluetooth</string>
     <string name="without_location_permission_emergency_cannot_get_location">Без разрешение за местоположение спешните съобщения не могат да използват GPS данни</string>
-    <string name="force_speaker_colon">Принодително използване на високоговорителя</string>
+    <string name="force_speaker_colon">Принудително използване на високоговорителя</string>
     <string name="choose_data_source">Изберете Източник на данни</string>
     <string name="which_system_do_you_use">Коя система използвате?</string>
     <string name="please_allow_permission">Моля, позволете разрешение</string>
@@ -1281,7 +1281,7 @@
     <string name="summary_lefun_enable">Синхронизиране на данни с фитнес гривни Lefun</string>
     <string name="title_lefun_enable">Използвай Lefun гривни</string>
     <string name="title_lefun_mac">МАС адрес</string>
-    <string name="summary_lefun_send_readings">Настройте датата на часовника, за да представите стойностите на КЗ. По-добре с ммол/Л - вижте документацията</string>
+    <string name="summary_lefun_send_readings">Настройте датата на часовника, за да представите стойностите на Кз. По-добре с mmol/l - вижте документацията</string>
     <string name="title_lefun_send_readings">Изпратете показания</string>
     <string name="summary_lefun_send_alarms">Изпращайте известия до групата за аларми за глюкоза</string>
     <string name="title_lefun_send_alarms">Изпращане на аларми</string>
@@ -1390,7 +1390,7 @@
     <string name="summary_do_number_wall_configuration">Коригирайте и прегледайте оформлението на стената</string>
     <string name="title_do_number_wall_configuration">Конфигурирайте стената с номера</string>
     <string name="summary_number_wall_on_lockscreen">Показване на заключен екран. Само Android 7 и по-нова версия!</string>
-    <string name="title_number_wall_on_lockscreen">Използвай на заключен екран</string>
+    <string name="title_number_wall_on_lockscreen">Използване на заключен екран</string>
     <string name="title_color_number_wall">Цвят на текста на стената</string>
     <string name="title_color_number_wall_shadow">Цвят на сенки на стените</string>
     <string name="summary_pick_numberwall_start">Изберете време за начало на показването</string>
@@ -1872,7 +1872,7 @@
     <string name="audio_focus_pause_other_apps_playing_audio">Паузирай другите приложения, които възпроизвеждат аудио</string>
     <string name="audio_focus_pause_all_other_sounds">Паузиране на всички останали звуци</string>
     <string name="wake_up_screen">Събуждане на екрана</string>
-    <string name="wake_up_screen_summary">Събуждане на екрана по време на предупреждения. Може да отключи утройства, на които функцията заключване на екрана не е активирана.</string>
+    <string name="wake_up_screen_summary">Събуждане на екрана по време на предупреждения. Може да отключи устройства, на които функцията заключване на екрана не е активирана.</string>
     <string name="use_camera_light">Използвай светкавицата на камерата</string>
     <string name="use_camera_light_summary">Премигване на светкавицата на камерата по време на аларми, когато е свързано зарядното устройство</string>
     <string name="g7_should_start_automatically">G7 би трябвало да стартира автоматично</string>
