@@ -860,7 +860,7 @@
                 android:summary="@string/summary_plus_accept_follower_actions"
                 android:title="@string/title_plus_accept_follower_actions" />
             <SwitchPreference
-                android:defaultValue="false"
+                android:defaultValue="true"
                 android:key="use_xdrip_cloud_sync"
                 android:summary="@string/summary_plus_xdrip_cloud"
                 android:switchTextOff="@string/short_off_text_for_switches"
