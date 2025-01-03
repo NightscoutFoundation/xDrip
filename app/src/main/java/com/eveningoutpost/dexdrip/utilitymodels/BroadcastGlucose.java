@@ -155,7 +155,7 @@ public class BroadcastGlucose {
                 }
 
                 bundle.putInt(Intents.EXTRA_SENSOR_BATTERY, BridgeBattery.getBestBridgeBattery());
-                if (getBestCollectorHardwareName().equals("G7") || getBestCollectorHardwareName().equals("Native G6")) { // If we are using G7 or One+, or G6 in native mode
+                if (getBestCollectorHardwareName().equals("G7") || getBestCollectorHardwareName().equals("G6 Native")) { // If we are using G7 or One+, or G6 in native mode
                     usingG6OrG7 = true;
                 }
                 if (getBestCollectorHardwareName().equals("G7") && FirmwareCapability.isDeviceAltOrAlt2(getTransmitterID())) { // If we are using G7 or One+ and there is connectivity
