@@ -199,7 +199,7 @@
     <string name="view_important_warning">Преглед на важни известия</string>
     <string name="view_google_licenses">Google лиценз</string>
     <string name="not_for_medical_use">Не е за медицинско предназначение - инструмент само за проучване</string>
-    <string name="deel_settings_for_algs">По-подрбони настройки за алгоритмите</string>
+    <string name="deel_settings_for_algs">По-подробни настройки за алгоритмите</string>
     <string name="low_level_prediction_values">Стойности на предсказание за ниска КЗ</string>
     <string name="glucose_drop_for_one_unit">Глюкозен спад за 1 единица</string>
     <string name="xdrip_plus_prediction_settings">xDrip+ Настройки на симулация за предвиждане</string>
@@ -210,7 +210,7 @@
     <string name="update_channel">Канал за обновления</string>
     <string name="send_crash_errors_to_developer">Изпращане на грешки на разработчика</string>
     <string name="automatic_crash_reporting">Автоматично съобщение след срив</string>
-    <string name="send_feedback_message">Избрати обратна връзка</string>
+    <string name="send_feedback_message">Изпращане на обратна връзка</string>
     <string name="copying_settings">Копиране на настройките</string>
     <string name="show_settings_qr_codes">Покажи QR код за настройките</string>
     <string name="load_save_settings_to_sdcard">Зареди / Запази настройки на SD карта</string>
@@ -242,7 +242,7 @@
     <string name="linear_model_carbs_absorbed_per_hour">Линеен модел въглих. абсорбирани на час</string>
     <string name="carb_absorption_rate">Коефициент на усвояване на въглехидрати</string>
     <string name="calculate_including_glucose_trend">Изчисли отчитайки тренда на глюкозата</string>
-    <string name="use_trend_momentum">Използвайте настоящата тенденцията</string>
+    <string name="use_trend_momentum">Използвайте настоящата тенденция</string>
     <string name="add_calibration">Добавяне калибрация</string>
     <string name="system_status">Системен статус</string>
     <string name="settings">Настройки</string>
@@ -365,7 +365,7 @@
     <string name="version_details">Подробности за версия</string>
     <string name="download_now">Свали сега</string>
     <string name="automatically_check_for_updates">Автоматична проверка за обновяване</string>
-    <string name="here_you_can_save_the_settings_to_the_external_storage_sdcard">Тук, можете да запазите настройки в вътрешната памет(Download/xDrip-export/com.eveningoutpost.dexdrip_preferences.xml).\n\nКогато се запишат във файл, важно е да се знае, че всяко приложение може да прочете този файл, които може да съдържа чувствителна информация.\n\nПрепоръчително е да изтриете данните след като ги импортирате, ако ви притеснява този факт.</string>
+    <string name="here_you_can_save_the_settings_to_the_external_storage_sdcard">Тук можете да запазите настройки в вътрешната памет(Download/xDrip-export/com.eveningoutpost.dexdrip_preferences.xml).\n\nКогато се запишат във файл, важно е да се знае, че всяко приложение може да прочете този файл, в които може да се съдържа чувствителна информация.\n\nПрепоръчително е да изтриете данните след като ги импортирате, ако ви притеснява този факт.</string>
     <string name="save_all_settings_to_sdcard">Запази всички настройки в файл</string>
     <string name="load_all_settings_from_sdcard">Зареди всички настройки от файл</string>
     <string name="delete_any_settings_on_sdcard">Изтрии папката с настройки (Download/xDrip-export)</string>
@@ -518,11 +518,11 @@
     <string name="show_momentum_working_curve">Показване на работната крива на импулса</string>
     <string name="show_noise_workings">Показване на записките на шума</string>
     <string name="parakeet_and_extra_features">Parakeet и допълнителни тестови функции</string>
-    <string name="insulin_duration_hours">Продължителност на действието на инсулина, в часове</string>
+    <string name="insulin_duration_hours">Продължителност на действието на инсулина в часове</string>
     <string name="default_liver_sensitivity_ratio">Коефициент по подразбиране на чернодробна чувствителност</string>
     <string name="key_is_used_instead_of_google_account">Ключът се използва вместо акаунт в Google</string>
     <string name="sync_using_custom_security_key">Синхронизиране чрез персонализиран ключ за сигурност</string>
-    <string name="handset_group_security_key">Ключ за синхронизиране на сигурността на групата на слушалката</string>
+    <string name="handset_group_security_key">Синхронизиращ ключ за сигурноста на групата на слушалката</string>
     <string name="handset_sync_grouping_key">Ключ за групиране на синхронизиране на слушалка</string>
     <string name="alert_name_colon">Име на предупреждението:</string>
     <string name="threshold_colon">Праг:</string>
@@ -615,10 +615,10 @@
     <string name="auto_turn_on_bluetooth">Автоматично активиране на Bluetooth, ако е изключен, когато се опитаме да се свържем с Bluetooth устройство</string>
     <string name="turn_bluetooth_on">Включване на Bluetooth</string>
     <string name="reset_bluetooth">Нулиране Bluetooth, чрез изключване и включване, ако не получим нищо след 20 минути</string>
-    <string name="bluetooth_watchdog">Следи връзката между телефона Ви и носещото данните устройсво ( което е прикрепено към тялото Ви) да е стабилна и данните да се пренасят точно</string>
+    <string name="bluetooth_watchdog">Следене на връзката между телефона и носещото на данни устройство</string>
     <string name="reset_bluetooth_g5">Нулиране Bluetooth, чрез изключване и включване, за да запазите източника на данни работещ. Без това колекционерът може да спре да работи.</string>
-    <string name="g5_bluetooth_watchdog">Dex - става въпрос за Дексом уреда за продължително проследяване нивото на кръвната захар и връзката му с Bluetooth Watchdog</string>
-    <string name="close_gatt">Ако Bluetooth watchdog се активира често, можете да опитате да премахнете отметката от тази опция, за да видите дали помага</string>
+    <string name="g5_bluetooth_watchdog">Dex Bluetooth следене на връзката</string>
+    <string name="close_gatt">Ако Bluetooth следене на връзката се активира често, можете да опитате да премахнете отметката от тази опция, за да видите дали помага</string>
     <string name="older_bluetooth_wakelocks">По-стари Bluetooth wakelocks, които могат да изразходват допълнително батерията, но може да са необходими за Bluetooth приемане</string>
     <string name="reset_bluetooth_on_off">Нулиране на Bluetooth чрез изключване и включване на няколко минути! Изберете това само при тестване. Това може да развали всичко други, което използва Bluetooth.</string>
     <string name="constantly_reset_bluetooth">Постоянно нулиране на Bluetooth</string>
@@ -777,7 +777,7 @@
     <string name="repeat_alerts">Повторете предупреждения</string>
     <string name="calibration_minutes_reraise">Броят минути, които трябва да изминат, преди да се подаде същата заявка за калибриране.</string>
     <string name="alert_repeat_minutes">Интервал на повтаряне на уведомления в минути</string>
-    <string name="alert_noisy_values">Предупреждение след x минути на неточни стойности</string>
+    <string name="alert_noisy_values">Предупреждение след x минути за неточни стойности</string>
     <string name="alert_snooze">Отлагане на аларма</string>
     <string name="alert_minutes_reraise">Брой минути преди вдигане на същото уведомление след отлагане.</string>
     <string name="reraise_before_snooze">Повторно вдигане на сигнали преди времето за отлагане</string>
@@ -848,7 +848,7 @@
     <string name="detect_motion_types">Използвайте сензори за откриване на видове движение</string>
     <string name="enable_motion_tracking">Активирайте проследяването на движението</string>
     <string name="display_motion_types">Съхранявайте скорошни типове движения и ги нанасяйте върху основната графика</string>
-    <string name="log_and_plot_motion">Движение на дневник и график</string>
+    <string name="log_and_plot_motion">Дневник и график на движението</string>
     <string name="use_remote_motion_data">Данни за движение, взети от отдалечен, а не от локален източник на слушалка</string>
     <string name="use_remote_motion">Използвайте дистанционно движение</string>
     <string name="be_motion_master">Бъдете управител на данните за движение, дори ако ние сме последователи. Задайте това само на една слушалка!</string>
@@ -1002,7 +1002,7 @@
     <string name="detect_car_audio">Откриване на автомобилна аудиосистема</string>
     <string name="automatically_enable_when_connected_to_car_bluetooth">Автоматично активиране на режим превозно средство, когато е свързан с Bluetooth на автомобила</string>
     <string name="enable_speak_readings_when_in_vehicle">Активирайте функцията за говорене на данни, когато сте в режим превозно средство</string>
-    <string name="bluetooth_watchdog_timers">Стойност на таймера за Bluetooth watchdog</string>
+    <string name="bluetooth_watchdog_timers">Стойност на таймера за Bluetooth следене на връзката</string>
     <string name="bluetooth_watchdog_timer_sums">Въведете стойност в минути</string>
     <string name="basal_editor">Редактор на Бавнодействащ инсулин - Изберете часове за коригиране</string>
     <string name="sensor_is_still_warming_up_please_wait">Сензорът все още загрява, моля, изчакайте</string>
@@ -1011,7 +1011,7 @@
     <string name="title_Only_use_Wear">Използвай само Wear</string>
     <string name="summary_Also_show_the_filtered_data_on_the_trend">Показване на филтрираните данни за тенденцията</string>
     <string name="summary_Show_Bolus_Wizard_Preview_Insulin_value_on_watch_when_appropriate">Показване на стойността от помощника за бързодействащия инсулин на часовника, когато е уместно</string>
-    <string name="title_Display_BWP_Insulin">Показване стойността от помощника за болус</string>
+    <string name="title_Display_BWP_Insulin">Показване стойността от помощника за бързодействащя инсулин</string>
     <string name="title_Smartwatch_Sensors">Сензори на умен часовник</string>
     <string name="summary_Collect_and_display_Step_counter_and_Heart_rate_when_available">Съберете и покажете брояч на стъпки и сърдечен ритъм, когато са налични</string>
     <string name="title_Use_Health_Data">Използвайте данни за здравето</string>
@@ -1040,7 +1040,7 @@
     <string name="summary_Enable_to_allow_variable_slopes_with_Libre_collection_methods">Активирайте, за да позволите променливи наклони с методите за събиране на Libre</string>
     <string name="title_Non_fixed_Libre_slopes">Нефиксирани наклони Libre</string>
     <string name="summary_Allow_initial_calibration_no_good_enough_data">Позволете първоначално калибриране, дори ако нямаме достатъчно добри данни. Внимавайте, това може да доведе до неточно калибриране!</string>
-    <string name="title_Bypass_quality_check">Байпас на проверка на качеството</string>
+    <string name="title_Bypass_quality_check">Избягване за проверка на качеството</string>
     <string name="summary_Scan_before_connecting_on_xBridge_and_Libre_bluetooth">Сканиране преди да се свържете с xBridge и Libre Bluetooth</string>
     <string name="title_Use_scanning">Използвай сканиране</string>
     <string name="summary_Use_and_trust_Android_bluetooth_auto_connect_feature">Използвай и се довери на функцията за автоматично свързване с Bluetooth на Android</string>
@@ -1425,7 +1425,7 @@
     <string name="summary_plus_accept_follower_actions">Ще се приемат лечения, калибриране и други действия от последователи</string>
     <string name="title_plus_accept_follower_actions">Приемане на действия на последователи</string>
     <string name="summary_plus_whole_house">Участвайте в мрежа за цял дом</string>
-    <string name="summary_plus_xdrip_cloud">При използване на новите xDrip+ облачни сървъри, мастера и последователите трябва да са направили настройката по еднакъв начин.</string>
+    <string name="summary_plus_xdrip_cloud">Когато използвате новите xDrip+ облачни сървъри, тази настройка трябва да е една и съща и за мастъра и за последователите.</string>
     <string name="title_plus_whole_house">Цял Дом</string>
     <string name="summary_libre_whole_house_collector">Този телефон ще бъде колекционер в цялата домашна мрежа</string>
     <string name="title_libre_whole_house_collector">Libre цяла къща</string>
@@ -1442,13 +1442,13 @@
     <string name="summary_inpen_screen">Изтегляне на дози</string>
     <string name="title_inpen_screen">InPen Инсулинова писалка</string>
     <string name="title_inpen_enabled">InPen Поддръжка</string>
-    <string name="summary_inpen_detect_priming">Открийте и изключете първичните дози</string>
-    <string name="title_inpen_detect_priming">Изчистване на иглата и въздуха</string>
+    <string name="summary_inpen_detect_priming">Открийте и игнорирайте почистващите дози</string>
+    <string name="title_inpen_detect_priming">Почистване на иглата и въздуха</string>
     <string name="title_inpen_prime_units">Единици за почистване на иглата</string>
     <string name="title_inpen_prime_minutes">Времеви прозорец за почистване на иглата</string>
-    <string name="summary_inpen_orphan_primes_ignored">Почистване на иглата без следваща доза се игнорират, ако са отметнати. Премахнете отметката, за да третирате като дози</string>
+    <string name="summary_inpen_orphan_primes_ignored">Почистване на иглата без да се третира като доза, ако е отметнато. Премахнете отметката, за да третирате като дози</string>
     <string name="title_inpen_orphan_primes_ignored">Игнориране на дози за почистване на иглата</string>
-    <string name="summary_inpen_sounds">Използвайте звуци, за да посочите прехвърлянето на данни с писалката</string>
+    <string name="summary_inpen_sounds">Използвайте звуци при прехвърлянето на данни от писалката</string>
     <string name="title_inpen_sounds">Възпроизвеждане на звук</string>
     <string name="summary_inpen_reset">Нулиране и търсене на нова писалка в режим на сдвояване</string>
     <string name="title_inpen_reset">Намери нова писалка</string>
@@ -1638,7 +1638,7 @@
     <string name="summary_ob1_g5_preemptive_restart_alert">Известявай при превантивно рестартиране на сесията</string>
     <string name="blood_glucose_graph">Графика на кръвната захар</string>
     <string name="pref_enable_insulinprofiles">Активирайте поне един, максимум три профила</string>
-    <string name="pref_select_basal_insulinprofiles">Изберете профил на бавнодействащия инсулин.</string>
+    <string name="pref_select_basal_insulinprofiles">Изберете профил на бавнодействащ инсулин.</string>
     <string name="pref_select_bolus_insulinprofiles">Изберете профил на бързодействащ инсулин. Използва се и за помпа, и писалка...</string>
     <string name="enable_streaming_summary">Свържете се със сензор Libre2, след като го сканирате. Това ще спре четеца на Libre и LibreLink да получават предупреждения</string>
     <string name="enable_streaming_title">Стартирай Bluetooth връзка с Libre2 сензори</string>
@@ -1667,7 +1667,7 @@
     <string name="title_multiple_insulin_types_settings">Няколко вида инсулин</string>
     <string name="summary_multiple_insulin_types_settings">Опции за работа с различните видове инсулин</string>
     <string name="title_multiple_insulin_types">Няколко вида инсулин</string>
-    <string name="summary_multiple_insulin_use_basal_activity">Показване на активността на бавнодействащия инсулин върху графиката и включване в прогнозения модел</string>
+    <string name="summary_multiple_insulin_use_basal_activity">Показване на активността на бавнодействащия инсулин върху графиката и включване в прогнозния модел</string>
     <string name="title_multiple_insulin_use_basal_activity">Използване на активността на бавнодействащия инсулин</string>
     <string name="title_xdrip_plus_snooze_broadcast">Локално излъчване(broadcast)</string>
     <string name="summary_broadcast_snooze">Изпращайте отлагания до други приложения на този телефон</string>
@@ -1722,7 +1722,7 @@
     <string name="set_pen_to_format">Настрой Писалка %s до %s</string>
     <string name="pen_contains_which_insulin_type">Писалка %s кой тип инсулин ползва?</string>
     <string name="allow_do_not_disturb_text">За да имате възможност за известия, дори когато андроид е в режим не ме безпокой, моля разрешете на xDrip достъп до системата на следваща страница</string>
-    <string name="graphical_editor_for_pump_basal">Графкчен редактор за помпа базални профили</string>
+    <string name="graphical_editor_for_pump_basal">Графичен редактор за помпа базални профили</string>
     <string name="basal_profile_editor">Редактор на профили за бавнодействащ инсулин</string>
     <string name="import_sounds">Вмъкване на звуци</string>
     <string name="play_sounds_when_importing">Възпроизвеждане на звуци при вмъкване на важни данни като профили</string>
