@@ -61,6 +61,7 @@
     <string name="pref_title_api_enabled">מופעל</string>
     <string name="pref_summary_api_enabled">REST-API הוא הדרך הסטנדרטית להתחבר לנייטסקאוט</string>
     <string name="pref_title_api_url">כתובת URL בסיסית</string>
+    <string name="pref_summary_api_url">פורמט: https://password@hostname/api/v1/</string>
     <string name="pref_dialog_api_url">הזינו כתובת URL בסיסית</string>
     <string name="pref_message_api_url">זוהי רק הכתובת הבסיסית, המעלה יוסיף רישומים אוטומטית ל-POST. סיסמת ה-API_SECRET שבשרת צריכה להיות זהה לזו שתירשם בהגדרה זו.</string>
     <string name="pref_default_api_url">https://yourpassphrase@{YOUR-SITE}.azurewebsites.net/api/v1/</string>
@@ -746,6 +747,8 @@
     <string name="glucose_meters">מדי סוכר</string>
     <string name="glucose_meter_options">אפשרויות מדי סוכר אלחוטיים</string>
     <string name="auto_connect_to_meter">מתחבר אוטומטית ולטעון נתונים ממדי סוכר כמו לדוגמה Contour Next One</string>
+    <string name="summary_use_nfc_meter">הורד קריאות גוקוז ממכשיר NFC כאשר xDrip פתוח</string>
+    <string name="title_use_nfc_meter">השתמש בקורא NFC</string>
     <string name="use_bluetooth_meter">השתמש במד סוכר עם בלוטות\'</string>
     <string name="scan_for_bluetooth_meter">סריקת מדי סוכר עם בלוטות\'</string>
     <string name="meter_connect_sound">אפשרו כדי להשמיע צלילים כשמד הסוכר מתחבר, מתנתק או מסנכרן נתונים</string>
@@ -1208,6 +1211,12 @@
     <string name="title_tidepool_window_latency">גיל הנתונים (דק\')</string>
     <string name="summary_tidepool_dev_servers">אם האפשרות מופעלת, נתונים יועלו לכתובת https://int-app.tidepool.org במקום https://app.tidepool.org/</string>
     <string name="title_tidepool_dev_servers">השתמש בשרתי אינטגרציה (בדיקה)</string>
+    <string name="summary_tidepool_upload_when_chargeonly">העלה מידע רק כאשר נטען</string>
+    <string name="title_tidepool_upload_when_chargeonly">במצב טעינה בלבד</string>
+    <string name="summary_tidepool_upload_only_wifi">העלה מידע רק כאשר מחובר לחיבור לא מבוקר, כדוגמת Wifi</string>
+    <string name="title_tidepool_upload_only_wifi">רק עם WiFi</string>
+    <string name="summary_tidepool_upload_no_treatment">העלה רק מידע מ CGM כדי להימנע מיצירת כפילות עם מידע שהועלה ידנית מהמשאבה</string>
+    <string name="title_tidepool_upload_no_treatment">אל תעלה נתוני טיפול</string>
     <string name="title_tidepool">Tidepool</string>
     <string name="show_help">הצג עזרה</string>
     <string name="load_save_settings_on_sdcard">שמור \\ טען הגדרות לכרטיס זכרון (SDcard)</string>
@@ -1275,6 +1284,8 @@
     <string name="summary_lefun_send_alarms">שולח התראות סוכר לצמיד</string>
     <string name="title_lefun_send_alarms">שלח התראות</string>
     <string name="title_lefun_option_shake_snoozes">נערו כדי להשתיק</string>
+    <string name="summary_lefun_send_calls">שלח התראות שיחה לצמיד</string>
+    <string name="title_lefun_send_calls">בצע שיחות</string>
     <string name="title_lefun_screens_features">תכונות ומסכי Lefun</string>
     <string name="title_features">תכונות</string>
     <string name="title_lefun_feature_lift_to_wak">הרימו כדי להוציא ממצב שינה</string>
@@ -1338,6 +1349,8 @@
     <string name="title_ob1_g5_fallback_to_xdrip">חזור ל-xDrip</string>
     <string name="summary_ob1_minimize_scanning">השתמש בהיוריסטיקה כדי לצמצם סריקות בלוטות\' ולחסוך בחשמל</string>
     <string name="title_ob1_minimize_scanning">צמצם סריקה</string>
+    <string name="summary_ob1_avoid_scanning">הימנע מסריקה כמה שיותר (מוריד יותר את השימוש בסוללה)</string>
+    <string name="title_ob1_avoid_scanning">הימנע מסריקה</string>
     <string name="summary_using_g6">אני משתמש\\ת בחיישן G6</string>
     <string name="title_using_g6">תמיכה ב-G6</string>
     <string name="summary_ob1_g5_allow_resetbond">OB1 יכול להיפרד אם הוא חושב שההצפנה נכשלה. אם אתם חווים בעיות עם הפרדה אז כבו אפשרות זו. אם אתם מאבדים חיבור לחלוטין, השאירו את אפשרו זו מופעלת.</string>
@@ -1655,6 +1668,8 @@
     <string name="carelink_credential_status_access_expired">פג תוקף הדף, הדף יתרענן אוטומטית!</string>
     <string name="carelink_credential_status_refresh_expired">פג תוקף כניסתך, אנא התחבר/י מחדש!</string>
     <string name="reraise_alerts_before_snooze_time">השמע את ההתראה שוב לפני זמן ההשתקה</string>
+    <string name="wake_up_screen">הער את המסך</string>
+    <string name="wake_up_screen_summary">הער את המסך בזמו התראות. יתכן שהמכשיר יפתח אם נעילת מכשיר אינה מאופשרת.</string>
     <string name="g7_should_start_automatically">חיישן ה-G7 יתחיל אוטומטית</string>
     <string name="screenshot">צילום מסך</string>
 </resources>

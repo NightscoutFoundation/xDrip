@@ -1264,6 +1264,7 @@
     <string name="summary_lefun_send_alarms">Siųsti glikemijos aliarmus apyrankei</string>
     <string name="title_lefun_send_alarms">Siųsti aliarmus</string>
     <string name="title_lefun_option_shake_snoozes">Pakratyti nutildymui</string>
+    <string name="title_lefun_send_calls">Siųsti skambučius</string>
     <string name="title_lefun_screens_features">Lefun ekranai / funkcijos</string>
     <string name="title_features">Funkcijos</string>
     <string name="title_lefun_feature_lift_to_wak">Pakelti pažadinimui</string>
