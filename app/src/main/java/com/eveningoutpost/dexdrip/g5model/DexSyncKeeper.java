@@ -18,7 +18,7 @@ public class DexSyncKeeper {
     private static final long OLDEST_POSSIBLE = 1533839836123L;
     private static final long GRACE_TIME = 5000;
     private static final long VALIDITY_PERIOD = Constants.DAY_IN_MS;
-
+    private static long dexPeriod;
 
     // store sync time as now
     public static void store(final String transmitterId) {
@@ -68,30 +68,28 @@ public class DexSyncKeeper {
     // anticipate next wake up from time
     // -1 means we don't know anything
     static long anticipate(final String transmitterId, final long now) {
+        if (Ob1G5CollectionService.rapid_reconnect_transition) {
+            dexPeriod = DEX_RAPID_RECONNECT_PERIOD; // Set the period to 1 minute after pairing with a G7.
+        } else {
+            dexPeriod = DEXCOM_PERIOD; // Set the period to the default 5-minute cycle otherwise.
+        }
         final long last = PersistentStore.getLong(DEX_SYNC_STORE + transmitterId);
+        if (last < OLDEST_POSSIBLE && !Ob1G5CollectionService.rapid_reconnect_transition) {
+            return -1;
+        }
         if (last > now) {
             UserError.Log.e(TAG, "Anticipation time in the future! cannot use: " + JoH.dateTimeText(last));
             return -1; // can't be in the future
         }
 
-        if (Ob1G5CollectionService.rapid_reconnect) { // Once a minute
-            final long modulo = (now - last) % DEX_RAPID_RECONNECT_PERIOD;
-            if ((modulo < GRACE_TIME) && ((now - last) > GRACE_TIME)) return now;
-            final long next = now + (DEX_RAPID_RECONNECT_PERIOD - modulo);
-            return next;
-        }
-        if (last < OLDEST_POSSIBLE) {
-            return -1;
-        }
-
-        if (now - last > VALIDITY_PERIOD) {
+        if (now - last > VALIDITY_PERIOD && !Ob1G5CollectionService.rapid_reconnect_transition) {
             UserError.Log.e(TAG, "Anticipation time too old to use: " + JoH.dateTimeText(last));
             return -1;
         }
 
-        final long modulo = (now - last) % DEXCOM_PERIOD;
+        final long modulo = (now - last) % dexPeriod;
         if ((modulo < GRACE_TIME) && ((now - last) > GRACE_TIME)) return now;
-        final long next = now + (DEXCOM_PERIOD - modulo);
+        final long next = now + (dexPeriod - modulo);
         return next;
     }
 

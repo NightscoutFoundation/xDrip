@@ -248,8 +248,8 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static boolean do_discovery = true;
     private static final boolean do_auth = true;
     //private static boolean initiate_bonding = false;
-    public static boolean rapid_reconnect = false;
-    public static int rapid_reconnect_count = 0;
+    public static boolean rapid_reconnect_transition = false;
+    public static int rapid_reconnect_transition_count = 0;
 
     private static final Set<String> alwaysScanModels = Sets.newHashSet("SM-N910V", "G Watch");
     private static final List<String> alwaysScanModelFamilies = Arrays.asList("SM-N910");
@@ -946,13 +946,14 @@ public class Ob1G5CollectionService extends G5BaseService {
             UserError.Log.d(TAG, "Always scan mode");
             changeState(SCAN);
         } else {
-            if (connectFailures > 0 || (!use_auto_connect && connectNowFailures > 0)) {
+            if ((connectFailures > 0 || (!use_auto_connect && connectNowFailures > 0)) && !rapid_reconnect_transition) { // Only go to scan always mode due to count if we have not just paired with a G7.
+                // After we pair with a G7, we wake once a minute.  Therefore, the connect failure will trigger early and should not be used.
                 always_scan = true;
                 UserError.Log.e(TAG, "Switching to scan always mode due to connect failures metric: " + connectFailures);
                 changeState(SCAN);
-            } else if (rapid_reconnect) {
+            } else if (rapid_reconnect_transition_count > 1) { // We switch to scan always mode for the third handshake of a G7 pairing to ensure it is captured.
                 always_scan = true;
-                UserError.Log.e(TAG, "Scan always mode to help with Rapid Reconnect ");
+                UserError.Log.e(TAG, "Switching to scan always mode ");
                 changeState(SCAN);
             } else if (use_auto_connect && (connectNowFailures > 1) && (connectFailures < 0)) {
                 UserError.Log.d(TAG, "Avoiding power connect due to failure metric: " + connectNowFailures + " " + connectFailures);
@@ -1741,11 +1742,9 @@ public class Ob1G5CollectionService extends G5BaseService {
                         + " Bond state " + parcel_device.getBondState() + bondState(parcel_device.getBondState()) + " "
                         + "bs: " + bondState(bond_state_extra) + " was " + bondState(previous_bond_state_extra));
                 if (DexCollectionType.getBestCollectorHardwareName().equals("G7") && parcel_device.getBondState() == BluetoothDevice.BOND_BONDED) { // G7 just paired
-                    rapid_reconnect = true; // There is only 20% chance we are on the correct time grid.  Let's wake once a minute to find the right grid.
-                    rapid_reconnect_count = 0;
-                    always_scan = true;
-                    UserError.Log.e(TAG, "Scan always mode and wake every minute to gracefully exit Rapid Reconnect ");
-                    changeState(SCAN);
+                    rapid_reconnect_transition = true; // There is only 20% chance we are on the correct time grid.  Let's wake once a minute to find the right grid.
+                    rapid_reconnect_transition_count = 0; // Let's count the number of handshakes so that we can control the procedure.
+                    UserError.Log.e(TAG, "Wake every minute to capture the correct time stamp ");
                 }
                 try {
                     if (parcel_device.getAddress().equals(transmitterMAC)) {
