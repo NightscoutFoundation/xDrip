@@ -248,8 +248,9 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static boolean do_discovery = true;
     private static final boolean do_auth = true;
     //private static boolean initiate_bonding = false;
-    public static boolean rapid_reconnect_transition = false;
-    public static int rapid_reconnect_transition_count = 0;
+    public static boolean rapid_reconnect_transition = false; // True when waking once a minute after pairing with a G7
+    public static int rapid_reconnect_transition_handshake = 0; // Number of successful initial handshakes after pairing with a G7
+    public static long rapid_reconnect_transition_bond_time; // A record of the time we bond with a G7
 
     private static final Set<String> alwaysScanModels = Sets.newHashSet("SM-N910V", "G Watch");
     private static final List<String> alwaysScanModelFamilies = Arrays.asList("SM-N910");
@@ -946,14 +947,13 @@ public class Ob1G5CollectionService extends G5BaseService {
             UserError.Log.d(TAG, "Always scan mode");
             changeState(SCAN);
         } else {
-            if ((connectFailures > 0 || (!use_auto_connect && connectNowFailures > 0)) && !rapid_reconnect_transition) { // Only go to scan always mode due to count if we have not just paired with a G7.
-                // After we pair with a G7, we wake once a minute.  Therefore, the connect failure will trigger early and should not be used.
+            if ((connectFailures > 0 || (!use_auto_connect && connectNowFailures > 0)) && !rapid_reconnect_transition) {
                 always_scan = true;
                 UserError.Log.e(TAG, "Switching to scan always mode due to connect failures metric: " + connectFailures);
                 changeState(SCAN);
-            } else if (rapid_reconnect_transition_count > 1) { // We switch to scan always mode for the third handshake of a G7 pairing to ensure it is captured.
+            } else if (rapid_reconnect_transition && rapid_reconnect_transition_handshake > 1) { // We switch to scan always mode for the third handshake of a G7 pairing to ensure it is captured.
                 always_scan = true;
-                UserError.Log.e(TAG, "Switching to scan always mode ");
+                UserError.Log.e(TAG, "Switching to scan always mode for perfect time stamp capture ");
                 changeState(SCAN);
             } else if (use_auto_connect && (connectNowFailures > 1) && (connectFailures < 0)) {
                 UserError.Log.d(TAG, "Avoiding power connect due to failure metric: " + connectNowFailures + " " + connectFailures);
@@ -1742,9 +1742,10 @@ public class Ob1G5CollectionService extends G5BaseService {
                         + " Bond state " + parcel_device.getBondState() + bondState(parcel_device.getBondState()) + " "
                         + "bs: " + bondState(bond_state_extra) + " was " + bondState(previous_bond_state_extra));
                 if (DexCollectionType.getBestCollectorHardwareName().equals("G7") && parcel_device.getBondState() == BluetoothDevice.BOND_BONDED) { // G7 just paired
-                    rapid_reconnect_transition = true; // There is only 20% chance we are on the correct time grid.  Let's wake once a minute to find the right grid.
-                    rapid_reconnect_transition_count = 0; // Let's count the number of handshakes so that we can control the procedure.
-                    UserError.Log.e(TAG, "Wake every minute to capture the correct time stamp ");
+                    rapid_reconnect_transition = true; // There is only 20% chance now is the correct time grid.  Let's wake once a minute to find the right grid.
+                    rapid_reconnect_transition_handshake = 0; // Let's count the number of successful handshakes so that we can control the required sequence.
+                    rapid_reconnect_transition_bond_time = tsl(); // Remember this time so that we can terminate in case of failure.
+                    UserError.Log.e(TAG, "Attempt to wake every minute to capture the correct time stamp ");
                 }
                 try {
                     if (parcel_device.getAddress().equals(transmitterMAC)) {
@@ -2154,7 +2155,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
         final List<StatusItem> l = new ArrayList<>();
 
-        if (!DexSyncKeeper.isReady(transmitterID)) {
+        if (!DexSyncKeeper.isReady(transmitterID) || (rapid_reconnect_transition && rapid_reconnect_transition_handshake < 2)) {
             l.add(new StatusItem("Hunting Transmitter", "Stay on this page", CRITICAL));
         }
 
@@ -2191,7 +2192,11 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
 
         if ((!lastState.startsWith("Service Stopped")) && (!lastState.startsWith("Not running")))
-            l.add(new StatusItem("Brain State", state.getString() + (error_count > 1 ? " Errors: " + error_count : ""), error_count > 1 ? NOTICE : error_count > 4 ? BAD : NORMAL));
+            if (rapid_reconnect_transition) {
+                l.add(new StatusItem("Brain State", state.getString()+ ""));
+            } else {
+                l.add(new StatusItem("Brain State", state.getString() + (error_count > 1 ? " Errors: " + error_count : ""), error_count > 1 ? NOTICE : error_count > 4 ? BAD : NORMAL));
+            }
 
         if (lastUsableGlucosePacketTime != 0) {
             if (msSince(lastUsableGlucosePacketTime) < MINUTE_IN_MS * 15) {

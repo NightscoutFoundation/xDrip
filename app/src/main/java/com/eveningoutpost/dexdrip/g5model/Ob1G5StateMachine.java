@@ -92,7 +92,6 @@ import static com.eveningoutpost.dexdrip.utilitymodels.Constants.DAY_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.SECOND_IN_MS;
-import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
 import static com.eveningoutpost.dexdrip.utils.bt.Helper.getStatusName;
 
 
@@ -889,13 +888,11 @@ public class Ob1G5StateMachine {
                                 parent.msg("Invalid Glucose");
                             }
                             if (Ob1G5CollectionService.rapid_reconnect_transition) { // Manage wake frequency after pairing with G7
-                                Ob1G5CollectionService.rapid_reconnect_transition_count++; // We have had a handshake.  Therefore, we increment the count.
-                                UserError.Log.e(TAG, "# of Rapid Reconnect handshakes: " + Ob1G5CollectionService.rapid_reconnect_transition_count);
-                                if (Ob1G5CollectionService.rapid_reconnect_transition_count == 2) {
+                                Ob1G5CollectionService.rapid_reconnect_transition_handshake++; // We have had a handshake.  Therefore, we increment the count.
+                                UserError.Log.e(TAG, "# of Rapid Reconnect transition handshakes: " + Ob1G5CollectionService.rapid_reconnect_transition_handshake);
+                                if (Ob1G5CollectionService.rapid_reconnect_transition_handshake > 2) {
+                                    Ob1G5CollectionService.rapid_reconnect_transition = false; // Disabling the Rapid Reconnect transition sequence as we have already had 3 handshakes.
                                     UserError.Log.e(TAG, "Back to waking once every 5 minutes ");
-                                }
-                                if (Ob1G5CollectionService.rapid_reconnect_transition_count > 2) {
-                                    Ob1G5CollectionService.rapid_reconnect_transition = false;
                                 }
                             }
                             break;

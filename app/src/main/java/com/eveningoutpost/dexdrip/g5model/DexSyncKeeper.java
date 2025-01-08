@@ -8,8 +8,10 @@ import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 
+import static com.eveningoutpost.dexdrip.models.JoH.tsl;
 import static com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder.DEXCOM_PERIOD;
 import static com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder.DEX_RAPID_RECONNECT_PERIOD;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
 
 public class DexSyncKeeper {
 
@@ -18,7 +20,7 @@ public class DexSyncKeeper {
     private static final long OLDEST_POSSIBLE = 1533839836123L;
     private static final long GRACE_TIME = 5000;
     private static final long VALIDITY_PERIOD = Constants.DAY_IN_MS;
-    private static long dexPeriod;
+    private static long dexPeriod; // Local representation of the Dex period allowing us to temporarily reduce it to 1 minute.
 
     // store sync time as now
     public static void store(final String transmitterId) {
@@ -68,7 +70,12 @@ public class DexSyncKeeper {
     // anticipate next wake up from time
     // -1 means we don't know anything
     static long anticipate(final String transmitterId, final long now) {
-        if (Ob1G5CollectionService.rapid_reconnect_transition) {
+        if (Ob1G5CollectionService.rapid_reconnect_transition) { // If we have just paired with a G7
+            if (tsl() - Ob1G5CollectionService.rapid_reconnect_transition_bond_time > MINUTE_IN_MS * 10) { // If it has been more than 10 minutes since pairing
+                Ob1G5CollectionService.rapid_reconnect_transition = false; // Terminate the Rapid Reconnect transition sequence as it seems that it has failed.
+                // This could happen if the user walks away from the phone less than 10 minutes after pairing.
+                UserError.Log.e(TAG, "Back to waking once every 5 minutes ");
+            }
             dexPeriod = DEX_RAPID_RECONNECT_PERIOD; // Set the period to 1 minute after pairing with a G7.
         } else {
             dexPeriod = DEXCOM_PERIOD; // Set the period to the default 5-minute cycle otherwise.
@@ -78,7 +85,7 @@ public class DexSyncKeeper {
             return -1;
         }
         if (last > now) {
-            UserError.Log.e(TAG, "Anticipation time in the future! cannot use: " + JoH.dateTimeText(last));
+            UserError.Log.e(TAG, "Last time in the future! cannot use: " + JoH.dateTimeText(last));
             return -1; // can't be in the future
         }
 
