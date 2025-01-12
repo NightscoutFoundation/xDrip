@@ -109,6 +109,10 @@ public enum CalibrationState {
         return !stopped.contains(this);
     }
 
+    public boolean sensorStopped() {
+        return stopped.contains(this);
+    }
+
     public boolean sensorFailed() {
         return failed.contains(this);
     }

@@ -1018,6 +1018,7 @@ public class Ob1G5StateMachine {
         }
 
         // TODO check firmware version
+        stopExpiredSession(); // Stop the internal session if the sensor has expired.
         if (glucose.calibrationState().readyForBackfill() && !parent.getBatteryStatusNow) {
             backFillIfNeeded(parent, connection);
         }
@@ -1628,6 +1629,13 @@ public class Ob1G5StateMachine {
         }
     }
 
+    private static void stopExpiredSession() { // This stops the internal sensor if G7 has expired
+        if (Sensor.isActive()) { // If there is an active internal session
+            if (CalibrationState.Stopped.sensorStopped()) { // If the calibration state is "Stopped".
+                Sensor.stopSensor(); // Stop the internal session.
+            }
+        }
+    }
 
     private static void processSensorRxMessage(SensorRxMessage sensorRx) {
         if (sensorRx == null) return;
