@@ -303,33 +303,20 @@ public class TextMap {
 
     public static String getAlarmMessage(String deviceFamily, Alarm alarm) {
 
-        return getErrorMessage(deviceFamily, alarm.kind, alarm.code);
+        return getErrorMessage(deviceFamily, alarm.faultId);
 
     }
 
-    public static String getNotificationMessage(String deviceFamily, ClearedNotification notification) {
-        return getErrorMessage(deviceFamily, notification.messageId, notification.faultId);
+    public static String getNotificationMessage(String deviceFamily, String faultId) {
+        return getErrorMessage(deviceFamily, faultId);
     }
 
-    public static String getNotificationMessage(String deviceFamily, String messageId, int faultId) {
-        return getErrorMessage(deviceFamily, messageId, faultId);
-    }
-
-    public static String getErrorMessage(String deviceFamily, String guardianErrorCode, int ngpErrorCode) {
+    public static String getErrorMessage(String deviceFamily, String ngpErrorCode) {
         String errorTextId;
         String internalEC;
 
-        if (deviceFamily.equals(RecentData.DEVICE_FAMILY_GUARDIAN)) {
-            if (guardianErrorCode != null)
-                errorTextId = ERROR_TEXT_PREFIX_GUARDIAN + guardianErrorCode;
-            else
-                errorTextId = null;
-        } else if (deviceFamily.equals(RecentData.DEVICE_FAMILY_NGP)) {
-            String formattedEC = String.format("%03d", ngpErrorCode);
-            if (errorCodeMap.containsKey(formattedEC))
-                internalEC = errorCodeMap.get(formattedEC);
-            else
-                internalEC = formattedEC;
+        if (deviceFamily.equals(RecentData.DEVICE_FAMILY_NGP)) {
+            internalEC = errorCodeMap.getOrDefault(ngpErrorCode, ngpErrorCode);
             errorTextId = ERROR_TEXT_PREFIX_NGP + internalEC;
         } else {
             errorTextId = null;

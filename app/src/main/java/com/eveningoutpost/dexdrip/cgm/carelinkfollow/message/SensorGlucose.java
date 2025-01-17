@@ -11,7 +11,7 @@ public class SensorGlucose {
     public int version;
     public Integer sg;
     public String sensorState;
-    public Object timestamp = -1;  // Changed from long to String
+    public String timestamp = "-1";  // Changed from long to String
 
     public String datetime;
     public Date datetimeAsDate;
@@ -21,10 +21,10 @@ public class SensorGlucose {
 
     public String toS() {
         String dt;
-        if (datetime == null) {
+        if (timestamp == null) {
             dt = "";
         } else {
-            dt = datetime;
+            dt = timestamp;
         }
         return dt + " " + sg;
     }

@@ -5,9 +5,10 @@ import java.util.Date;
 public class ActiveNotification {
 
     public String GUID;
-    public Date dateTime;
+    public String dateTime;
+    public Date datetime;
     public String type;
-    public int faultId;
+    public String faultId;
     public int instanceId;
     public String messageId;
     public String pumpDeliverySuspendState;

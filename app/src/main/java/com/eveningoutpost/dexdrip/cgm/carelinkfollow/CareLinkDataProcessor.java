@@ -55,23 +55,28 @@ public class CareLinkDataProcessor {
             return;
         }
 
-        if (recentData.sgs == null) UserError.Log.d(TAG, "SGs is null!");
+        if (recentData.patientData == null) {
+            UserError.Log.e(TAG, "Patient data is null, processing stopped!");
+            return;
+        }
+
+        //if (recentData.patientData.sgs == null) UserError.Log.d(TAG, "SGs is null!");
 
         //SKIP DATA processing if NO PUMP CONNECTION (time shift seems to be different in this case, needs further analysis)
-        if (recentData.isNGP() && !recentData.pumpCommunicationState) {
+        if (recentData.isNGP() && !recentData.patientData.pumpCommunicationState) {
             UserError.Log.d(TAG, "Not connected to pump => time can be wrong, leave processing!");
             return;
         }
 
         //SENSOR GLUCOSE (if available)
-        if (recentData.sgs != null) {
+        if (recentData.patientData.sgs != null) {
 
             final BgReading lastBg = BgReading.lastNoSenssor();
             final long lastBgTimestamp = lastBg != null ? lastBg.timestamp : 0;
 
             //create filtered sortable SG list
             filteredSgList = new ArrayList<>();
-            for (SensorGlucose sg : recentData.sgs) {
+            for (SensorGlucose sg : recentData.patientData.sgs) {
                 //SG DateTime is null (sensor expired?)
                 if (sg != null && sg.datetimeAsDate != null) {
                     filteredSgList.add(sg);
@@ -144,11 +149,11 @@ public class CareLinkDataProcessor {
 
 
         //MARKERS (if available)
-        if (recentData.markers != null) {
+        if (recentData.patientData.markers != null) {
 
             //Filter markers
             filteredMarkerList = new ArrayList<>();
-            for (Marker marker : recentData.markers) {
+            for (Marker marker : recentData.patientData.markers) {
                 if (marker != null && marker.type != null && marker.dateTime != null) {
                     filteredMarkerList.add(marker);
                 }
@@ -164,10 +169,10 @@ public class CareLinkDataProcessor {
                     //FINGER BG
                     if (marker.isBloodGlucose() && Pref.getBooleanDefaultFalse("clfollow_download_finger_bgs")) {
                         //check required values
-                        if (marker.value != null && !marker.value.equals(0)) {
+                        if (marker.data.dataValues.unitValue != null && !marker.data.dataValues.unitValue.equals("0")) {
                             //new blood test
                             if (BloodTest.getForPreciseTimestamp(marker.dateTime.getTime(), 10000) == null) {
-                                BloodTest.create(marker.dateTime.getTime(), marker.value, SOURCE_CARELINK_FOLLOW);
+                                BloodTest.create(marker.dateTime.getTime(), Double.parseDouble(marker.data.dataValues.unitValue.replace(',','.')), SOURCE_CARELINK_FOLLOW);
                             }
                         }
 
@@ -186,15 +191,15 @@ public class CareLinkDataProcessor {
                             //Insulin
                             if (marker.type.equals(Marker.MARKER_TYPE_INSULIN)) {
                                 carbs = 0;
-                                if (marker.deliveredExtendedAmount != null && marker.deliveredFastAmount != null) {
-                                    insulin = marker.deliveredExtendedAmount + marker.deliveredFastAmount;
+                                if (marker.data.dataValues.deliveredExtendedAmount != null && marker.data.dataValues.deliveredFastAmount != null) {
+                                    insulin = Float.parseFloat(marker.data.dataValues.deliveredExtendedAmount.replace(',', '.')) + Float.parseFloat(marker.data.dataValues.deliveredFastAmount.replace(',', '.'));
                                 }
                                 //SKIP if insulin = 0
                                 if (insulin == 0) continue;
                                 //Carbs
                             } else if (marker.type.equals(Marker.MARKER_TYPE_MEAL)) {
-                                if (marker.amount != null) {
-                                    carbs = marker.amount;
+                                if (marker.data.dataValues.amount != 0) {
+                                    carbs = marker.data.dataValues.amount;
                                 }
                                 insulin = 0;
                                 //SKIP if carbs = 0
@@ -221,10 +226,10 @@ public class CareLinkDataProcessor {
 
         //PUMP INFO (Pump Status)
         if (recentData.isNGP()) {
-            PumpStatus.setReservoir(recentData.reservoirRemainingUnits);
-            PumpStatus.setBattery(recentData.medicalDeviceBatteryLevelPercent);
-            if (recentData.activeInsulin != null)
-                PumpStatus.setBolusIoB(recentData.activeInsulin.amount);
+            PumpStatus.setReservoir(recentData.patientData.reservoirRemainingUnits);
+            PumpStatus.setBattery(recentData.patientData.medicalDeviceBatteryLevelPercent);
+            if (recentData.patientData.activeInsulin != null)
+                PumpStatus.setBolusIoB(recentData.patientData.activeInsulin.amount);
             PumpStatus.syncUpdate();
         }
 		
@@ -242,17 +247,17 @@ public class CareLinkDataProcessor {
 
         //NOTIFICATIONS -> NOTE
         if (Pref.getBooleanDefaultFalse("clfollow_download_notifications")) {
-            if (recentData.notificationHistory != null) {
+            if (recentData.patientData.notificationHistory != null) {
                 //Active Notifications
-                if (recentData.notificationHistory.activeNotifications != null) {
-                    for (ActiveNotification activeNotification : recentData.notificationHistory.activeNotifications) {
-                        addNotification(activeNotification.dateTime, recentData.getDeviceFamily(), activeNotification.messageId, activeNotification.faultId);
+                if (recentData.patientData.notificationHistory.activeNotifications != null) {
+                    for (ActiveNotification activeNotification : recentData.patientData.notificationHistory.activeNotifications) {
+                        addNotification(activeNotification.datetime, recentData.getDeviceFamily(), activeNotification.faultId);
                     }
                 }
                 //Cleared Notifications
-                if (recentData.notificationHistory.clearedNotifications != null) {
-                    for (ClearedNotification clearedNotification : recentData.notificationHistory.clearedNotifications) {
-                        addNotification(clearedNotification.triggeredDateTime, recentData.getDeviceFamily(), clearedNotification.messageId, clearedNotification.faultId);
+                if (recentData.patientData.notificationHistory.clearedNotifications != null) {
+                    for (ClearedNotification clearedNotification : recentData.patientData.notificationHistory.clearedNotifications) {
+                        addNotification(clearedNotification.triggeredDatetime, recentData.getDeviceFamily(), clearedNotification.faultId);
                     }
                 }
             }
@@ -277,10 +282,10 @@ public class CareLinkDataProcessor {
 
 
     //Create notification from CareLink messageId
-    protected static boolean addNotification(Date date, String deviceFamily, String messageId, int faultId) {
+    protected static boolean addNotification(Date date, String deviceFamily, String faultId) {
 
-        if (deviceFamily != null && messageId != null)
-            return addNotification(date, TextMap.getNotificationMessage(deviceFamily, messageId, faultId));
+        if (deviceFamily != null)
+            return addNotification(date, TextMap.getNotificationMessage(deviceFamily, faultId));
         else
             return false;
 

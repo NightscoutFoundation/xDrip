@@ -7,9 +7,14 @@ public class MarkerDataValues {
     public String insulinType;
     public String programmedFastAmount;
     public String deliveredFastAmount;
+    public String programmedExtendedAmount;
+    public String deliveredExtendedAmount;
     public String activationType;
     public Boolean completed;
     public String bolusType;
     public int amount;
+    public String unitValue;
+    public String bgUnits;
+    public Boolean calibrationSuccess;
 
 }

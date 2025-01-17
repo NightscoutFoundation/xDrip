@@ -12,14 +12,14 @@ public class Alarm {
     }
 
     public String faultId;
-    public Object version;  // changed from int to String
+    public String version;  // changed from int to String
     public String GUID;
     public String dateTime;
     public String type;
     public AdditionalInfo additionalInfo;
 
     public int code;
-    public String datetime;
+    public Date datetime;
     public Date datetimeAsDate;
 
     public boolean flash;

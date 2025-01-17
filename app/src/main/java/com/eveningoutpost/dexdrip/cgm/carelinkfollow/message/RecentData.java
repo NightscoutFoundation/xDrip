@@ -44,7 +44,12 @@ public class RecentData {
 
 
     public String getDeviceFamily() {
-        return medicalDeviceFamily;
+        if (patientData != null) {
+            return patientData.medicalDeviceFamily;
+        }
+        else {
+            return medicalDeviceFamily;
+        }
     }
 
     public boolean isGM() {
@@ -55,6 +60,8 @@ public class RecentData {
         return getDeviceFamily().equals(DEVICE_FAMILY_NGP);
     }
 
+    public PatientData patientData;
+    public Metadata metadata;
     public long lastSensorTS;
     public String medicalDeviceTimeAsString;
     public Date medicalDeviceTimeAsDate;
