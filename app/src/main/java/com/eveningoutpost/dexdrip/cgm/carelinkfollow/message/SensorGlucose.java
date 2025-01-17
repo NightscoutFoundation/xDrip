@@ -7,16 +7,16 @@ import java.util.Date;
  */
 public class SensorGlucose {
 
+    public String kind;
+    public int version;
     public Integer sg;
+    public String sensorState;
+    public Object timestamp = -1;  // Changed from long to String
+
     public String datetime;
     public Date datetimeAsDate;
     public boolean timeChange;
-    public String kind;
-    public int version;
-    public String sensorState;
     public int relativeOffset;
-
-    public long timestamp = -1;
     public Date date = null;
 
     public String toS() {

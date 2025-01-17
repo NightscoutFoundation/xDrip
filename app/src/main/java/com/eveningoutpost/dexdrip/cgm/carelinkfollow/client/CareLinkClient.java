@@ -216,7 +216,7 @@ public class CareLinkClient {
         // 7xxG
         if (this.isBleDevice(patientUsername))
             return this.getConnectDisplayMessage(this.sessionProfile.username, this.sessionUser.getUserRole(), patientUsername,
-                    sessionCountrySettings.blePereodicDataEndpoint);
+                    sessionCountrySettings.blePereodicDataEndpoint.replace("v6", "v11"));
             // Guardian + multi
         else if (this.sessionM2MEnabled)
             return this.getM2MPatientData(patientUsername);

@@ -23,6 +23,9 @@ public class Marker {
     }
 
     public String type;
+    public String timestamp;    // new
+    public String displayTime;  // new
+    public MarkerData data;     // new
     public int index;
     public Double value;
     public String kind;
