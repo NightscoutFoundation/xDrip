@@ -1,5 +1,8 @@
 package com.eveningoutpost.dexdrip.cgm.carelinkfollow.message;
 
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.util.CareLinkJsonAdapter;
+import com.google.gson.annotations.JsonAdapter;
+
 import java.util.Date;
 
 /**
@@ -16,15 +19,23 @@ public class SensorGlucose {
     public String sensorState;
     public int relativeOffset;
 
-    public long timestamp = -1;
+    @JsonAdapter(CareLinkJsonAdapter.class)
+    public Date timestamp = null;
     public Date date = null;
+
+    public Date getDate(){
+        if(this.datetimeAsDate != null)
+            return datetimeAsDate;
+        else
+            return timestamp;
+    }
 
     public String toS() {
         String dt;
-        if (datetime == null) {
+        if (getDate() == null) {
             dt = "";
         } else {
-            dt = datetime;
+            dt = getDate().toString();
         }
         return dt + " " + sg;
     }
