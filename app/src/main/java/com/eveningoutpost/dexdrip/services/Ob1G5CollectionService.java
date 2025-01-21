@@ -1745,7 +1745,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                     rapid_reconnect_transition = true; // There is only 20% chance now is the correct time grid.  Let's wake once a minute to find the right grid.
                     rapid_reconnect_transition_handshake = 0; // Let's count the number of successful handshakes so that we can control the required sequence.
                     rapid_reconnect_transition_bond_time = tsl(); // Remember this time so that we can terminate in case of failure.
-                    UserError.Log.e(TAG, "Attempt to wake every minute to capture the correct time stamp ");
+                    UserError.Log.e(TAG, "Wake once a minute for two read cycles ");
                 }
                 try {
                     if (parcel_device.getAddress().equals(transmitterMAC)) {
@@ -2192,7 +2192,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
 
         if ((!lastState.startsWith("Service Stopped")) && (!lastState.startsWith("Not running")))
-            if (rapid_reconnect_transition) {
+            if (rapid_reconnect_transition) { // Avoid showing errors during transition from Rapid Reconnect
                 l.add(new StatusItem("Brain State", state.getString()+ ""));
             } else {
                 l.add(new StatusItem("Brain State", state.getString() + (error_count > 1 ? " Errors: " + error_count : ""), error_count > 1 ? NOTICE : error_count > 4 ? BAD : NORMAL));
