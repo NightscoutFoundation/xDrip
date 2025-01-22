@@ -960,6 +960,10 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     private synchronized void prepareToWakeup() {
         if (JoH.ratelimit("g5-wakeup-timer", 5)) {
+            if (Sensor.isActive() && CalibrationState.Stopped.sensorStopped()) { // If the calibration state is "Stopped" while there is an active internal session.
+                UserError.Log.e(TAG, "Stopping internal session because there is no active session on the device ");
+                Sensor.stopSensor(); // Stop the internal session.
+            }
             final long when = DexSyncKeeper.anticipate(transmitterID);
             if (when > 0) {
                 final long when_offset = when - tsl();
