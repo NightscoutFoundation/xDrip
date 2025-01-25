@@ -711,7 +711,7 @@
     <string name="low_level_value">Ниско ниво на диагностична/прототипна стойност</string>
     <string name="transmitter_id">ID на вашия предавател Dexcom, напр. 12AB3</string>
     <string name="advanced_g5_settings">Разширени настройки на Dexcom за редки ситуации</string>
-    <string name="g5_debug_settings">G6/Dex1 Debug Настройки</string>
+    <string name="g5_debug_settings">Dexcom Debug Настройки</string>
     <string name="g5_scan_constantly">Някои устройства работят по-добре при постоянно сканиране, други не. Ако четенето е надеждно, когато тази настройка не е избрана, трябва да имате подобрен живот на батерията. Обикновено е най-добре това да е деактивирано</string>
     <string name="scan_for_g5_constantly">Постоянно сканирай за G5</string>
     <string name="g5_force_ui_thread">Това е от решаващо значение за правилното свързване на някои устройства с Android, но може да причини пропуснати показания, когато се използват други интензивни дейности на потребителския интерфейс.</string>
@@ -1358,13 +1358,13 @@
     <string name="summary_ob1_avoid_scanning">Избягване на сканирането, доколкото е възможно (намалява използването на батерията)</string>
     <string name="title_ob1_avoid_scanning">Избягване на сканирането</string>
     <string name="summary_using_g6">Използвам сензор G6 или Dexcom 1</string>
-    <string name="title_using_g6">Поддръжка на G6/Dex1</string>
+    <string name="title_using_g6">Поддръжка на G6/G7/1/1+</string>
     <string name="summary_ob1_g5_allow_resetbond">Колекционерът на OB1 може да прекрати връзката, ако смята, че криптирането е неуспешно. Ако имате проблеми с раздвояването, деактивирайте тази опция. Ако след това напълно загубите връзка, уверете се, че това е активирано.</string>
     <string name="title_ob1_g5_allow_resetbond">Разрешаване на OB1 развързване</string>
     <string name="summary_ob1_initiate_bonding_flag">Колекционерът OB1 може да инициира свързване.</string>
     <string name="title_ob1_initiate_bonding_flag">Позволете на OB1 да започне свързване</string>
     <string name="title_old_g5_options">Стари настройки на колекционера</string>
-    <string name="title_g5g6_battery_options">G6 опции за батерията</string>
+    <string name="title_g5g6_battery_options">G6/Dex1 опции за батерията</string>
     <string name="title_g5_battery_warning_level">Регулирайте нивото на батерията за предупреждение</string>
     <string name="title_plugins_and_features">Плъгини и функции</string>
     <string name="title_color_heart_rate1">Сензор за сърдечен ритъм</string>
@@ -1374,8 +1374,8 @@
     <string name="title_xdrip_plus_graph_display_settings">Настройки на графиката</string>
     <string name="summary_show_basal_line">Показване на временна оценка за бавнодействащ инсулин от външен статус</string>
     <string name="title_show_basal_line">Показване на временната стойност на бавнодействащия инсулин(TBR)</string>
-    <string name="summary_show_g_prediction">Показване на G6 предсказуеми глюкозни точки</string>
-    <string name="title_show_g_prediction">G6 Предикация</string>
+    <string name="summary_show_g_prediction">Показване на G6/G7 предсказуеми глюкозни точки</string>
+    <string name="title_show_g_prediction">G6/G7 Предикация</string>
     <string name="summary_show_smb_icons">Графика за разреждане на иконите за лечение за малки дози бързодействащ инсулин</string>
     <string name="title_show_smb_icons">Показване на микро икони за бързодействащ инсулин</string>
     <string name="summary_show_medtrum_secondary">Показване на алтернативни глюкозни точки</string>
