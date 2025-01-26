@@ -2624,9 +2624,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         boolean isSensorActive = Sensor.isActive();
 
         // automagically start an xDrip sensor session if G5 transmitter already has active sensor
-        if (!isSensorActive && Ob1G5CollectionService.isG5SensorStarted() && !Sensor.stoppedRecently()) {
+        if (!isSensorActive && Ob1G5CollectionService.isG5SensorStarted() && (!Sensor.stoppedRecently() || shortTxId())) {
             JoH.static_toast_long(getString(R.string.auto_starting_sensor));
-            Sensor.create(tsl() - HOUR_IN_MS * 3);
+            Sensor.create(tsl() - Ob1G5StateMachine.getLatestReadingsTime()); // Create an internal session after last existing readings
+            UserError.Log.ueh(TAG, "Started internal session (native session in progress H)");
+            Treatments.sensorStartIfNeeded();
             isSensorActive = Sensor.isActive();
         }
 
