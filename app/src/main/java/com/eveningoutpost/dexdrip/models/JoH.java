@@ -194,6 +194,17 @@ public class JoH {
         return System.currentTimeMillis();
     }
 
+    public static long round2MinutesTimestamp(long timestamp) { // Rounds the timestamp to minutes
+        if (timestamp > 0) {
+            long result = (timestamp / 60_000) * 60_000;
+            if (timestamp - result >= 30_000) {
+                result = result + 60_000;
+            }
+            return result;
+        }
+        return timestamp;
+    }
+
     public static long uptime() {
         return SystemClock.elapsedRealtime();
     }

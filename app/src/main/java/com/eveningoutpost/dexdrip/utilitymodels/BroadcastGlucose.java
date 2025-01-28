@@ -166,7 +166,7 @@ public class BroadcastGlucose {
                 }
                 if (usingG6OrG7) { // If we are using G7 or G6 in native mode
                     if (connectedToG6 || connectedToG7) { // Only if there is connectivity
-                        dexStartedAt = DexSessionKeeper.getStart(); // Session start time reported by the Dexcom transmitter
+                        dexStartedAt = JoH.round2MinutesTimestamp(DexSessionKeeper.getStart()); // Session start time reported by the Dexcom transmitter rounded to the minute
                         if (dexStartedAt > 0) { // Only if dexStartedAt is valid
                             bundle.putLong(Intents.EXTRA_SENSOR_STARTED_AT, dexStartedAt);
                         }
