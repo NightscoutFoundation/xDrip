@@ -8,6 +8,7 @@ import android.util.Base64;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.MegaStatus;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.BloodTest;
 import com.eveningoutpost.dexdrip.models.Calibration;
@@ -115,6 +116,8 @@ public class NightscoutUploader {
     public static final int FAIl_COUNT_NOTIFICATION = FAIL_NOTIFICATION_PERIOD / 60 / 5 - 1; // Number of 5-minute read cycles corresponding to notification period
     public static final int FAIL_LOG_PERIOD = 6 * 60 * 60; // FAILED upload/download log will be shown if there is no upload/download for 6 hours.
     public static final int FAIL_COUNT_LOG = FAIL_LOG_PERIOD / 60 / 5 - 1; // Number of 5-minute read cycles corresponding to log period
+    public static boolean inconsistentMultiSteUpload = false; // False if all site uploads fail or all succeed.  True only if there is inconsistent upload success.
+    public static long firstInconsistentMultiSiteUploadTime;
 
     private Context mContext;
     private Boolean enableRESTUpload;
@@ -500,12 +503,29 @@ public class NightscoutUploader {
                 last_success_time = JoH.tsl();
                 last_exception_count = 0;
                 last_exception_log_count = 0;
-            } catch (Exception e) {
+            } catch (Exception e) { // There has been a failure.
                 String msg = "Unable to do REST API Upload: " + e.getMessage() + " marking record: " + (any_successes ? "succeeded" : "failed");
                 handleRestFailure(msg);
+                if (any_successes) { // If there has been a success
+                    if (!inconsistentMultiSteUpload) {
+                        firstInconsistentMultiSiteUploadTime = JoH.tsl();
+                    }
+                    inconsistentMultiSteUpload = true; // There has been success as well as failure.
+                }
             }
         }
         return any_successes;
+    }
+
+    public static void notifyInconsistentMultiSiteUpload() {
+        if (inconsistentMultiSteUpload) { // We need to inform the user that even though there has been a failure to upload, the queue has been cleared.
+            // Therefore, the only way to complete the intended upload is to backfill manually.
+            if (Pref.getBooleanDefaultFalse("warn_nightscout_multi_site_upload_failure")) { // Issue notification only if enabled
+                JoH.showNotification(xdrip.gs(R.string.title_nightscout_upload_failure_backfill_required), null, null, Constants.NIGHTSCOUT_ERROR_NOTIFICATION_ID, null, false, false, null, null, xdrip.gs(R.string.nightscout_upload_failure_backfill_required, JoH.dateTimeText(firstInconsistentMultiSiteUploadTime)), true);
+            }
+            UserError.Log.uel(TAG, "Inconsistent Multi-site Nightscout upload - Backfill recommended - First failure: " + JoH.dateTimeText(firstInconsistentMultiSiteUploadTime));
+            inconsistentMultiSteUpload = false; // We have notified.  Clearing the flag
+        }
     }
 
     private void doLegacyRESTUploadTo(NightscoutService nightscoutService, List<BgReading> glucoseDataSets) throws Exception {
