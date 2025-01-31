@@ -1331,8 +1331,12 @@ public class BgReading extends Model implements ShareUploadableBg {
         return bgr;
     }
 
-    // TODO this method shares some code with above.. merge
     public static void bgReadingInsertFromInt(int value, long timestamp, long margin, boolean do_notification) {
+        bgReadingInsertFromInt(value, timestamp, margin, do_notification, "");
+    }
+
+    // TODO this method shares some code with above.. merge
+    public static void bgReadingInsertFromInt(int value, long timestamp, long margin, boolean do_notification, String source_info) {
         // TODO sanity check data!
 
         if ((value <= 0) || (timestamp <= 0)) {
@@ -1354,6 +1358,8 @@ public class BgReading extends Model implements ShareUploadableBg {
             bgr.raw_data = value;
             bgr.age_adjusted_raw_value = value;
             bgr.filtered_data = value;
+
+            bgr.source_info = source_info;
 
             final Sensor forced_sensor = Sensor.currentSensor();
             if (forced_sensor != null) {
