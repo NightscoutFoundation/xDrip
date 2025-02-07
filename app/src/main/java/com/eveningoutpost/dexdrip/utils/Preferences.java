@@ -1134,6 +1134,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             bindPreferenceSummaryToValue(findPreference("other_alerts_sound"));
             bindPreferenceSummaryToValue(findPreference("bridge_battery_alert_level"));
             bindPreferenceSummaryToUnitizedValueAndEnsureNumeric(findPreference("persistent_high_threshold"));
+            bindPreferenceSummaryToUnitizedValueAndEnsureNumeric(findPreference("forecast_low_threshold"));
 
             addPreferencesFromResource(R.xml.pref_data_source);
 
@@ -3116,6 +3117,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             final Double default_insulin_sensitivity = Double.parseDouble(preferences.getString("profile_insulin_sensitivity_default", "54"));
             final Double default_target_glucose = Double.parseDouble(preferences.getString("plus_target_range", "100"));
             final Double persistent_high_Val = Double.parseDouble(preferences.getString("persistent_high_threshold", "0"));
+            final Double forecast_low_Val = Double.parseDouble(preferences.getString("forecast_low_threshold", "0"));
 
 
             static_units = newValue.toString();
@@ -3130,6 +3132,11 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 if (persistent_high_Val < 36) {
                     ProfileEditor.convertData(Constants.MMOLL_TO_MGDL);
                     preferences.edit().putString("persistent_high_threshold", Long.toString(Math.round(persistent_high_Val * Constants.MMOLL_TO_MGDL))).apply();
+                    Profile.invalidateProfile();
+                }
+                if (forecast_low_Val < 36) {
+                    ProfileEditor.convertData(Constants.MMOLL_TO_MGDL);
+                    preferences.edit().putString("forecast_low_threshold", Long.toString(Math.round(forecast_low_Val * Constants.MMOLL_TO_MGDL))).apply();
                     Profile.invalidateProfile();
                 }
                 if (lowVal < 36) {
@@ -3153,6 +3160,11 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     preferences.edit().putString("persistent_high_threshold", JoH.qs(persistent_high_Val * Constants.MGDL_TO_MMOLL, 1)).apply();
                     Profile.invalidateProfile();
                 }
+                if (forecast_low_Val > 35) {
+                    ProfileEditor.convertData(Constants.MGDL_TO_MMOLL);
+                    preferences.edit().putString("forecast_low_threshold", JoH.qs(forecast_low_Val * Constants.MGDL_TO_MMOLL, 1)).apply();
+                    Profile.invalidateProfile();
+                }
                 if (lowVal > 35) {
                     ProfileEditor.convertData(Constants.MGDL_TO_MMOLL);
                     preferences.edit().putString("lowValue", JoH.qs(lowVal * Constants.MGDL_TO_MMOLL, 1)).apply();
@@ -3166,6 +3178,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 allPrefsFragment.setSummary("highValue");
                 allPrefsFragment.setSummary("lowValue");
                 allPrefsFragment.setSummary("persistent_high_threshold");
+                allPrefsFragment.setSummary("forecast_low_threshold");
             }
             if (profile_insulin_sensitivity_default != null) {
                 Log.d(TAG, "refreshing profile insulin sensitivity default display");

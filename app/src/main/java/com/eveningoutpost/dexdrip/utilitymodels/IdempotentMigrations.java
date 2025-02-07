@@ -171,6 +171,7 @@ public class IdempotentMigrations {
     // Include new preference settings here that represent glucose values.
     private static void prefSettingRangeVerification() {
         Preferences.applyPrefSettingRange("persistent_high_threshold", "170", MIN_GLUCOSE_INPUT, MAX_GLUCOSE_INPUT);
+        Preferences.applyPrefSettingRange("forecast_low_threshold", "70", MIN_GLUCOSE_INPUT, MAX_GLUCOSE_INPUT);
     }
 
 }
