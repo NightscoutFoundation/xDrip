@@ -22,7 +22,7 @@ import lombok.val;
 public class MContext implements Exposed {
 
     private static final String TAG = "WebFollow";
-    private static final String PREF_MCONTEXT = "PREF_MCONTEXT-";
+    private static final String PREF_MCONTEXT = "PREF_MCONTEXT2-";
 
     public volatile String domain;
     public volatile String aUrl;
@@ -39,6 +39,7 @@ public class MContext implements Exposed {
     public volatile String agent;
     public volatile String token;
     public volatile String country;
+    public volatile String userid;
     public volatile Double lvalue;
     public volatile long ltime;
     public volatile String[] cmd;
@@ -66,7 +67,7 @@ public class MContext implements Exposed {
     }
 
     public void setByName(final String ref, final Object value) throws NoSuchFieldException, IllegalAccessException {
-        this.getClass().getDeclaredField(ref).set(this, value);
+        this.getClass().getDeclaredField(ref.replaceAll("!$","")).set(this, value);
     }
 
     public void save(final String id) {
@@ -125,6 +126,10 @@ public class MContext implements Exposed {
             if (BgReading.getForPreciseTimestamp(ltime, DexCollectionType.getCurrentDeduplicationPeriod(), false) == null) {
                 log("Inserting new value: " + lvalue + " " + JoH.dateTimeText(ltime));
                 BgReading.bgReadingInsertFromG5(lvalue, ltime);
+            }
+        } else {
+            if (lvalue != null) {
+                loge("Value outside of range: " + lvalue + " @ " + JoH.dateTimeText(ltime));
             }
         }
     }
