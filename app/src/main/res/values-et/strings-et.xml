@@ -61,6 +61,7 @@
     <string name="pref_title_api_enabled">Lubatud</string>
     <string name="pref_summary_api_enabled">REST API on tavaline viis ühenduda Nightscout\'iga</string>
     <string name="pref_title_api_url">Baas URL (veebiaadress)</string>
+    <string name="pref_summary_api_url">Formaat: https://password@hostname/api/v1/</string>
     <string name="pref_dialog_api_url">Sisesta baas API URL (veebiaadress)</string>
     <string name="pref_message_api_url">See on põhi URL (veebi aadress), kuhu üleslaadija (info saatja) automaatselt andmed lisab POST jaoks. API_SECRET parool serveris peab olema sama ka siin seades.</string>
     <string name="pref_default_api_url">https://yourpassphrase@{YOUR-SITE}.azurewebsites.net/api/v1/</string>
@@ -225,7 +226,12 @@
     <string name="persistent_high_alert">Püsiva kõrge alarm</string>
     <string name="persistent_high_alert_enable">Luba</string>
     <string name="title_persistent_high_threshold">Piirmäär</string>
+    <string name="the_value_must_be_between_min_and_max">Väärtus peab olema %1$s ja %2$s vahel</string>
     <string name="forecasted_low_alert">Prognoositav madal alarm</string>
+    <string name="setting_pref_to_max">Määra max</string>
+    <string name="pref_was_greater_than_max">%1$s määrati maksimaalsest lubatud väärtusest suuremale väärtusele. See on muudetud maksimumiks.</string>
+    <string name="setting_pref_to_min">Määra min</string>
+    <string name="pref_was_less_than_min">%1$s määrati väärtusele, mis on väiksem kui lubatud miinimum. See on muudetud miinimumiks.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Ekstrapoleeri andmeid, et ennustada madalate suhkrute tekkimist</string>
     <string name="alarm_at_forecasted_low_mins">Alarm prognoositud madalal mins</string>
     <string name="other_xdrip_plus_alerts">Teised xDrip+ alarmid</string>
@@ -745,6 +751,8 @@
     <string name="glucose_meters">Glükomeetrid</string>
     <string name="glucose_meter_options">Valikud juhtmeta glükomeetritele</string>
     <string name="auto_connect_to_meter">Ühenda automaatselt ja võta andmed standardiga ühilduvast glükomeetrist, nt Contour Next One</string>
+    <string name="summary_use_nfc_meter">Laadi veresuhkru näidud NFC glükomeetrist kui xDrip on avatud</string>
+    <string name="title_use_nfc_meter">Kasuta NFC glükomeetrit</string>
     <string name="use_bluetooth_meter">Kasuta Bluetoothiga glükomeetrit</string>
     <string name="scan_for_bluetooth_meter">Otsi bluetooth glükomeetrit</string>
     <string name="meter_connect_sound">Luba heliefektid kui glükomeeter ühendub, katkestab või sünkroonib andmeid</string>
@@ -1206,6 +1214,12 @@
     <string name="title_tidepool_window_latency">Andmete vanus minutites</string>
     <string name="summary_tidepool_dev_servers">Kui see lubatud, suunatakse üleslaadimine tavalise https://app.tidepool.org/ asemel aadressile https://int-app.tidepool.org</string>
     <string name="title_tidepool_dev_servers">Kasuta integratsiooni (test) servereid</string>
+    <string name="summary_tidepool_upload_when_chargeonly">Laadi andmed üles ainult siis kui aku laeb</string>
+    <string name="title_tidepool_upload_when_chargeonly">Ainult aku laadimise ajal</string>
+    <string name="summary_tidepool_upload_only_wifi">Laadi andmed üles ainult piiranguteta võrgus, nagu WiFi</string>
+    <string name="title_tidepool_upload_only_wifi">Ainult WiFi-s</string>
+    <string name="summary_tidepool_upload_no_treatment">Laadi üles ainult CGM-i andmed, et vältida konflikte käsitsi üleslaaditud pumba andmetega</string>
+    <string name="title_tidepool_upload_no_treatment">Ära laadi raviandmeid üles</string>
     <string name="title_tidepool">Tidepool</string>
     <string name="show_help">Näita juhendit</string>
     <string name="load_save_settings_on_sdcard">Lae/salvesta seaded</string>
@@ -1279,6 +1293,8 @@
     <string name="summary_lefun_send_alarms">Saada kellale teateid veresuhkru hoiatustest</string>
     <string name="title_lefun_send_alarms">Saada hoiatused</string>
     <string name="title_lefun_option_shake_snoozes">Vaigistamiseks raputage</string>
+    <string name="summary_lefun_send_calls">Saada kõnemärguanded kellale</string>
+    <string name="title_lefun_send_calls">Edasta kõned</string>
     <string name="title_lefun_screens_features">Lefun ekraanid / funktsioonid</string>
     <string name="title_features">Funktsioonid</string>
     <string name="title_lefun_feature_lift_to_wak">Tõstke aktiveerimiseks</string>
@@ -1346,6 +1362,8 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Tagasi xDrip\'pi</string>
     <string name="summary_ob1_minimize_scanning">Kasutage heuristikat, et minimeerida Bluetooth skaneerimist ja säästa energiat</string>
     <string name="title_ob1_minimize_scanning">Minimaalne skaneerimine</string>
+    <string name="summary_ob1_avoid_scanning">Väldi skaneerimist nii palju kui võimalik (vähendab veel akukasutust)</string>
+    <string name="title_ob1_avoid_scanning">Väldi skaneerimist</string>
     <string name="summary_using_g6">Kasutan G6, G7, Dexcom 1või One+ sensorit</string>
     <string name="title_using_g6">G6/G7/Dex1/One+  tugi</string>
     <string name="summary_ob1_g5_allow_resetbond">OB1 vastuvõtja võib ühenduse katkestada kui arvab, et andmete töötlemine ebaõnnestus. Kui teil tekib ühenduse katkestamisel probleeme, keelake see valik. Kui te seejärel ühenduse täielikult kaotate, veenduge, et see oleks lubatud.</string>
@@ -1867,6 +1885,8 @@
     <string name="audio_focus_lower_volume_of_other_apps">Vähenda teiste rakenduste helitugevust</string>
     <string name="audio_focus_pause_other_apps_playing_audio">Peata heli teistes rakendustes</string>
     <string name="audio_focus_pause_all_other_sounds">Peata kõik teised helid</string>
+    <string name="wake_up_screen">Ärata ekraan</string>
+    <string name="wake_up_screen_summary">Ärata ekraan märguannete ajal. Võib lukust lahti teha seadmed, millel pole ekraanilukk sisse lülitatud.</string>
     <string name="use_camera_light">Kasuta kaamera välku</string>
     <string name="use_camera_light_summary">Vilguta alarmide ajal kaamera välku kui laadija on ühendatud</string>
     <string name="g7_should_start_automatically">G7 peaks automaatselt käivituma</string>

@@ -288,7 +288,7 @@
     <string name="use_excessive_wakelocks">Übermäßige Wakelocks nutzen</string>
     <string name="speak_readings">Werte vorlesen</string>
     <string name="extra_status_line">Zusätzliche Statuszeile</string>
-    <string name="dexcom_share_server_upload">Dexcom Share Server Upload</string>
+    <string name="dexcom_share_server_upload">Dex Share</string>
     <string name="upload_data_to_dex_servers">Daten zum Dexcom-Server hochladen, damit Du Deine Daten mit den offiziellen Dexcom-Apps nutzen kannst</string>
     <string name="manage_followers">Follower verwalten</string>
     <string name="manage_existing_followers">Follower verwalten und neue hinzufügen.</string>
@@ -1271,6 +1271,7 @@
     <string name="summary_lefun_send_alarms">Sende Benachrichtigungen an das Band für Glukosealarme</string>
     <string name="title_lefun_send_alarms">Alarme senden</string>
     <string name="title_lefun_option_shake_snoozes">Zum Schlummern schütteln</string>
+    <string name="title_lefun_send_calls">Sende Anrufe</string>
     <string name="title_lefun_screens_features">Lefun Bildschirme / Funktionen</string>
     <string name="title_features">Funktionen</string>
     <string name="title_lefun_feature_lift_to_wak">Zum Aktivieren anheben</string>

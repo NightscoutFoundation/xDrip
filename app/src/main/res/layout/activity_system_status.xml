@@ -150,7 +150,7 @@
 
             <LinearLayout
                 android:id="@+id/layout_sensor"
-                app:showIfTrue="@{ms.bluetooth()}"
+                app:showIfTrue="@{ms.sessionStartTime()}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"

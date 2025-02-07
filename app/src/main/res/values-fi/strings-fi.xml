@@ -1261,6 +1261,7 @@
     <string name="summary_lefun_send_alarms">Lähetä rannekkeeseen ilmoituksia VS-hälytyksistä</string>
     <string name="title_lefun_send_alarms">Lähetä hälytykset</string>
     <string name="title_lefun_option_shake_snoozes">Torkuta ravistamalla</string>
+    <string name="title_lefun_send_calls">Lähetä puhelut</string>
     <string name="title_lefun_screens_features">Lefun näytöt / ominaisuudet</string>
     <string name="title_features">Ominaisuudet</string>
     <string name="title_lefun_feature_lift_to_wak">Herätä nostamalla</string>

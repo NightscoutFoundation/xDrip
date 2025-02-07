@@ -61,6 +61,7 @@
     <string name="pref_title_api_enabled">Aktivert</string>
     <string name="pref_summary_api_enabled">REST API er den vanlige måten å koble til Nightscout</string>
     <string name="pref_title_api_url">Base-URL</string>
+    <string name="pref_summary_api_url">Format: https://passord@dinserver.dom/api/v1/</string>
     <string name="pref_dialog_api_url">Skriv inn Base-URL for API</string>
     <string name="pref_message_api_url">Dette er bare Base-URL, opplaster vil automatisk legge til /oppføringer for POST. API_SECRET på serveren skal samsvare med yourpassphrase i denne innstillingen.</string>
     <string name="pref_default_api_url">https://dittpassord@{YOUR-SITE}.azurewebsites.net/api/v1/</string>
@@ -225,7 +226,12 @@
     <string name="persistent_high_alert">Vedvarende høy varsel</string>
     <string name="persistent_high_alert_enable">Aktiver</string>
     <string name="title_persistent_high_threshold">Terskel</string>
+    <string name="the_value_must_be_between_min_and_max">Verdien må være mellom %1$s og %2$s</string>
     <string name="forecasted_low_alert">Beregnet lav varsel</string>
+    <string name="setting_pref_to_max">Sett til maksimum</string>
+    <string name="pref_was_greater_than_max">%1$s ble satt til en verdi større enn maksimalt tillatt. Den har blitt endret til maksimum.</string>
+    <string name="setting_pref_to_min">Sett til minimum</string>
+    <string name="pref_was_less_than_min">%1$s ble satt til en verdi mindre enn minste tillatt. Den har blitt endret til minimum.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Ekstrapoler data for å prøve og beregne lave verdier</string>
     <string name="alarm_at_forecasted_low_mins">Grense i antall minutter før varsel går av</string>
     <string name="other_xdrip_plus_alerts">Andre xDrip+ varsler</string>
@@ -745,6 +751,8 @@
     <string name="glucose_meters">Glukosemålere</string>
     <string name="glucose_meter_options">Alternativ for trådløse glukosemålere</string>
     <string name="auto_connect_to_meter">Automatisk koble til og motta data fra standard kompatible blodsukkermålere som Contour Next One</string>
+    <string name="summary_use_nfc_meter">Last ned glukoseoppføringer fra NFC-meter når xDrip er åpen</string>
+    <string name="title_use_nfc_meter">Bruk NFC-måler</string>
     <string name="use_bluetooth_meter">Bruk Bluetooth-måler</string>
     <string name="scan_for_bluetooth_meter">Søk etter Bluetooth-måler</string>
     <string name="meter_connect_sound">Aktiver avspilling av lyd når måleren kobler til, kobler fra eller synkroniserer data</string>
@@ -1206,6 +1214,12 @@
     <string name="title_tidepool_window_latency">Dataalder minutter</string>
     <string name="summary_tidepool_dev_servers">Hvis aktivert, vil opplastinger gå til https://int-app.tidepool.org i stedet for den vanlige https://app.tidepool.org/</string>
     <string name="title_tidepool_dev_servers">Bruk integrasjon-(test)-servere</string>
+    <string name="summary_tidepool_upload_when_chargeonly">Last opp data kun under lading</string>
+    <string name="title_tidepool_upload_when_chargeonly">Bare under lading</string>
+    <string name="summary_tidepool_upload_only_wifi">Last opp data kun når du er koblet til et ikke-forbruksmålt nettverk som Wifi</string>
+    <string name="title_tidepool_upload_only_wifi">Bare på WiFi</string>
+    <string name="summary_tidepool_upload_no_treatment">Last opp bare CGM-data for å unngå duplikater ved manuell opplasting av pumpedata</string>
+    <string name="title_tidepool_upload_no_treatment">Ikke last opp behandlinger</string>
     <string name="title_tidepool">Tidepool</string>
     <string name="show_help">Vis hjelp</string>
     <string name="load_save_settings_on_sdcard">Last inn / Lagre innstillinger</string>
@@ -1279,6 +1293,8 @@
     <string name="summary_lefun_send_alarms">Send notifikasjoner til armbåndet for glukosevarsler</string>
     <string name="title_lefun_send_alarms">Send varsler</string>
     <string name="title_lefun_option_shake_snoozes">Rist for å slumre</string>
+    <string name="summary_lefun_send_calls">Send samtalevarsler til bandet</string>
+    <string name="title_lefun_send_calls">Send samtaler</string>
     <string name="title_lefun_screens_features">Lefun-skjermer / funksjoner</string>
     <string name="title_features">Funksjoner</string>
     <string name="title_lefun_feature_lift_to_wak">Løft for å vekke</string>
@@ -1346,6 +1362,8 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Falle tilbake til xDrip</string>
     <string name="summary_ob1_minimize_scanning">Bruk heuristikk for å minimere Bluetooth-skanning + spare strøm</string>
     <string name="title_ob1_minimize_scanning">Minimer skanning</string>
+    <string name="summary_ob1_avoid_scanning">Unngå å skanne så mye som mulig (reduserer batteribruken ytterliger)</string>
+    <string name="title_ob1_avoid_scanning">Unngå skanning</string>
     <string name="summary_using_g6">Jeg bruker en G6, G7 Dexcom 1 eller One+ sensor</string>
     <string name="title_using_g6">G6/G7/Dex1/One+-støtte</string>
     <string name="summary_ob1_g5_allow_resetbond">OB1-innsamleren kan frigjøre seg hvis den tror krypteringen har mislyktes. Hvis du får problemer med å oppheve sammenkoblingen, deaktiver dette alternativet. Hvis du da mister forbindelsen helt, sørg for at dette er aktivert.</string>
@@ -1866,6 +1884,8 @@
     <string name="audio_focus_lower_volume_of_other_apps">Lavere volum av andre apper</string>
     <string name="audio_focus_pause_other_apps_playing_audio">Pause andre apper som lager lyd</string>
     <string name="audio_focus_pause_all_other_sounds">Sett alle andre lyder på pause</string>
+    <string name="wake_up_screen">Slå på skjermen</string>
+    <string name="wake_up_screen_summary">Slå på skjermen under varsler. Kan låse opp enheter som ikke har skjermlås aktivert.</string>
     <string name="use_camera_light">Bruk kameralys</string>
     <string name="use_camera_light_summary">Blink kameralys under varsler når tilkoblet en lader</string>
     <string name="g7_should_start_automatically">G7 skal starte automatisk</string>

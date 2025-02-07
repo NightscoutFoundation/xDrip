@@ -8,7 +8,7 @@
     <string name="menu_refresh">Aggiorna</string>
     <string name="menu_export_database">Esporta Database</string>
     <string name="menu_export_csv_sidiary">Esporta CSV (formato SiDiary)</string>
-    <string name="menu_import_db">Importa database</string>
+    <string name="menu_import_db">Ripristina database</string>
     <string name="error_bluetooth_not_supported">Errore: Bluetooth non supportato da questo dispositivo</string>
     <string name="unknown_device">Dispositivo non riconosciuto</string>
     <string name="connecting_to_device">In collegamento al dispositivo ...</string>
@@ -61,6 +61,7 @@
     <string name="pref_title_api_enabled">Abilitato</string>
     <string name="pref_summary_api_enabled">REST API è il modo standard per connettersi a Nightscout</string>
     <string name="pref_title_api_url">URL di base</string>
+    <string name="pref_summary_api_url">Formato: https://password@hostname/api/v1/</string>
     <string name="pref_dialog_api_url">Inserisci l\'API URL</string>
     <string name="pref_message_api_url">Questo solo l\'URL di base, l\'uploader aggiungerà automaticamente i valori del POST. API_SECRET sul server. La tua  passphrase deve corrispondere.</string>
     <string name="pref_default_api_url">https://tuapassword@{tuosito}.azurewebsites.net/api/v1/</string>
@@ -225,7 +226,12 @@
     <string name="persistent_high_alert">Allarme per VALORI ALTI Persistenti</string>
     <string name="persistent_high_alert_enable">Abilita</string>
     <string name="title_persistent_high_threshold">Soglia</string>
+    <string name="the_value_must_be_between_min_and_max">Il valore deve essere compreso tra %1$s e %2$s</string>
     <string name="forecasted_low_alert">Allarme di previsione VALORE BASSO</string>
+    <string name="setting_pref_to_max">Imposta al massimo</string>
+    <string name="pref_was_greater_than_max">%1$s è stato impostato su un valore maggiore del massimo consentito. È stato modificato al massimo.</string>
+    <string name="setting_pref_to_min">Imposta al minimo</string>
+    <string name="pref_was_less_than_min">%1$s è stato impostato su un valore minore del minimo consentito. È stato modificato al minimo.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Estrapolare i dati per cercare di prevedere raggiungimento VALORE BASSO</string>
     <string name="alarm_at_forecasted_low_mins">Allarme previsione VALORE BASSO (minuti)</string>
     <string name="other_xdrip_plus_alerts">Altro xDrip+ avvisi</string>
@@ -745,6 +751,8 @@
     <string name="glucose_meters">Glucometri</string>
     <string name="glucose_meter_options">Opzioni per glucometri wireless</string>
     <string name="auto_connect_to_meter">Connettersi e caricare automaticamente i dati da un glucometro compatibile come il Contour Next One</string>
+    <string name="summary_use_nfc_meter">Scarica le letture dal glucometro NFC quando xDrip è aperto</string>
+    <string name="title_use_nfc_meter">Usa Glucometro NFC</string>
     <string name="use_bluetooth_meter">Usa un glucometro Bluetooth</string>
     <string name="scan_for_bluetooth_meter">Scansiona il glucometro Bluetooth</string>
     <string name="meter_connect_sound">Abilita questa opzione per avere avvisi sonori quando il glucometro si connette, disconnette o sincronizza i dati</string>
@@ -1206,6 +1214,12 @@
     <string name="title_tidepool_window_latency">Età dei dati min</string>
     <string name="summary_tidepool_dev_servers">Se abilitato, gli upload andranno su https://int-app.tidepool.org invece del normale https://app.tidepool.org/</string>
     <string name="title_tidepool_dev_servers">Usa server di integrazione (test) - non utilizzare</string>
+    <string name="summary_tidepool_upload_when_chargeonly">Carica i dati solo durante la ricarica</string>
+    <string name="title_tidepool_upload_when_chargeonly">Solo durante la carica</string>
+    <string name="summary_tidepool_upload_only_wifi">Carica i dati solo quando connesso a una rete non contabilizzata, come Wifi</string>
+    <string name="title_tidepool_upload_only_wifi">Solo su WiFi</string>
+    <string name="summary_tidepool_upload_no_treatment">Carica solo i dati CGM per evitare duplicati con il caricamento manuale dal micro</string>
+    <string name="title_tidepool_upload_no_treatment">Non caricare i trattamenti</string>
     <string name="title_tidepool">Tidepool</string>
     <string name="show_help">Visualizza la guida</string>
     <string name="load_save_settings_on_sdcard">Carica / Salva impostazioni su memoria SD</string>
@@ -1279,6 +1293,8 @@
     <string name="summary_lefun_send_alarms">Invia le notifiche per gli allarmi di glicemia alla Band</string>
     <string name="title_lefun_send_alarms">Invia Allarmi</string>
     <string name="title_lefun_option_shake_snoozes">Scuoti per sospendere allarmi</string>
+    <string name="summary_lefun_send_calls">Invia notifiche di chiamata allo smartwatch</string>
+    <string name="title_lefun_send_calls">Invia Chiamate</string>
     <string name="title_lefun_screens_features">Schermate LeFun / Funzioni</string>
     <string name="title_features">Funzionalità</string>
     <string name="title_lefun_feature_lift_to_wak">Solleva per riattivare</string>
@@ -1346,6 +1362,8 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Torna da OB1 a xDrip</string>
     <string name="summary_ob1_minimize_scanning">Usa euristica per minimizzare le scansione bluetooth e risparmiare energia</string>
     <string name="title_ob1_minimize_scanning">Minimizza scansioni</string>
+    <string name="summary_ob1_avoid_scanning">Evitare la scansione il più possibile (riduce ulteriormente il consumo della batteria)</string>
+    <string name="title_ob1_avoid_scanning">Evita Scansione</string>
     <string name="summary_using_g6">Uso un sensore G6</string>
     <string name="title_using_g6">Supporto G6</string>
     <string name="summary_ob1_g5_allow_resetbond">Il collector OB1 può scollegarsi se ritiene che la crittografia sia fallita. Se avete problemi con queste disconnessioni, disabilitate l\'opzione. Se invece perdete completamente la connessione, assicuratevi che sia abilitata.</string>
@@ -1867,6 +1885,8 @@
     <string name="audio_focus_lower_volume_of_other_apps">Abbassa il volume delle altre app</string>
     <string name="audio_focus_pause_other_apps_playing_audio">Pausa le altre applicazioni in riproduzione audio</string>
     <string name="audio_focus_pause_all_other_sounds">Sospendi tutti gli altri suoni</string>
+    <string name="wake_up_screen">Attivazione schermo</string>
+    <string name="wake_up_screen_summary">Attiva lo schermo durante gli avvisi. Potrebbe sbloccare i dispositivi che non hanno il blocco dello schermo abilitato.</string>
     <string name="use_camera_light">Usa Torcia</string>
     <string name="use_camera_light_summary">Lampeggia la torcia durante gli avvisi quando collegato a un caricabatterie</string>
     <string name="g7_should_start_automatically">G7 dovrebbe avviarsi automaticamente</string>

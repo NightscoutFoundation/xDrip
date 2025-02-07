@@ -61,6 +61,7 @@
     <string name="pref_title_api_enabled">Activée</string>
     <string name="pref_summary_api_enabled">L\'API REST est le moyen standard de se connecter à Nightscout</string>
     <string name="pref_title_api_url">URL de base</string>
+    <string name="pref_summary_api_url">Format: https://password@hostname/api/v1/</string>
     <string name="pref_dialog_api_url">Entrer l\'URL de base API</string>
     <string name="pref_message_api_url">Cela ne que l\'URL de base, le téléchargeur ajoutera automatiquement / entrées pour le POST. API_SECRET sur le serveur doit correspondre à yourpassphrase dans ce cadre.</string>
     <string name="pref_default_api_url">https://yourpassphrase@{VOTRE-SITE}.azurewebsites.net/api/v1/</string>
@@ -225,7 +226,12 @@
     <string name="persistent_high_alert">Alerte Hyper persistante</string>
     <string name="persistent_high_alert_enable">Activer</string>
     <string name="title_persistent_high_threshold">Seuil</string>
+    <string name="the_value_must_be_between_min_and_max">La valeur doit être comprise entre %1$s et %2$s</string>
     <string name="forecasted_low_alert">Alerte de previsions d\'hypoglycémie</string>
+    <string name="setting_pref_to_max">Définir au maximum</string>
+    <string name="pref_was_greater_than_max">%1$s a été défini à une valeur supérieure à la valeur maximale autorisée. Elle a été changée au maximum.</string>
+    <string name="setting_pref_to_min">Définir au minimum</string>
+    <string name="pref_was_less_than_min">%1$s a été défini à une valeur inférieure au minimum autorisé. Il a été changé en minimum.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapoler les données pour essayer de prévoir les hypoglycémies</string>
     <string name="alarm_at_forecasted_low_mins">Délai de prévisions d\'hypoglycémies en minutes</string>
     <string name="other_xdrip_plus_alerts">Autres alertes xDrip+</string>
@@ -745,6 +751,8 @@
     <string name="glucose_meters">Lecteurs de Glycémie</string>
     <string name="glucose_meter_options">Options pour les lecteurs de glycémie sans fil</string>
     <string name="auto_connect_to_meter">Automatiquement connecter et extraire des données d\'un lecteur de glycémie compatible standard comme le Contour Next One</string>
+    <string name="summary_use_nfc_meter">Télécharger les enregistrements de glucose à partir du lecteur NFC lorsque xDrip est ouvert</string>
+    <string name="title_use_nfc_meter">Utiliser le lecteur NFC</string>
     <string name="use_bluetooth_meter">Utiliser un lecteur Bluetooth</string>
     <string name="scan_for_bluetooth_meter">Scanner pour trouver un lecteur Bluetooth</string>
     <string name="meter_connect_sound">Cocher pour jouer des effets sonores lorsque le compteur se connecte, se déconnecte ou synchronise les données</string>
@@ -1206,6 +1214,12 @@
     <string name="title_tidepool_window_latency">Age des données</string>
     <string name="summary_tidepool_dev_servers">Si activé, les envois iront vers https://int-app.tidepool.org au lieu de https://app.tidepool.org/</string>
     <string name="title_tidepool_dev_servers">Utiliser les serveurs d\'Intégration (test)</string>
+    <string name="summary_tidepool_upload_when_chargeonly">Télécharger des données uniquement pendant la charge</string>
+    <string name="title_tidepool_upload_when_chargeonly">Uniquement lors de la charge</string>
+    <string name="summary_tidepool_upload_only_wifi">Télécharger des données uniquement lorsque vous êtes connecté à un réseau illimité comme le Wifi</string>
+    <string name="title_tidepool_upload_only_wifi">Seulement en Wi-Fi</string>
+    <string name="summary_tidepool_upload_no_treatment">Télécharger uniquement les données MGC pour éviter les doublons avec l\'envoi manuel de la pompe</string>
+    <string name="title_tidepool_upload_no_treatment">Ne pas télécharger les traitements</string>
     <string name="title_tidepool">Tidepool</string>
     <string name="show_help">Afficher l\'aide</string>
     <string name="load_save_settings_on_sdcard">Charger / Enregistrer les paramètres</string>
@@ -1279,6 +1293,8 @@
     <string name="summary_lefun_send_alarms">Envoyer les notifications au bracelet pour les alarmes glycémiques</string>
     <string name="title_lefun_send_alarms">Envoyer les alarmes</string>
     <string name="title_lefun_option_shake_snoozes">Secouer pour Mettre en veille</string>
+    <string name="summary_lefun_send_calls">Envoyer des notifications d\'appel à la bande</string>
+    <string name="title_lefun_send_calls">Envoyer les appels</string>
     <string name="title_lefun_screens_features">LeFun Écrans / Fonctionnalités</string>
     <string name="title_features">Fonctionnalités </string>
     <string name="title_lefun_feature_lift_to_wak">Soulever pour Activer</string>
@@ -1346,6 +1362,8 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Revenir à xDrip</string>
     <string name="summary_ob1_minimize_scanning">Utiliser des heuristiques pour minimiser le scan Bluetooth + économie d\'énergie</string>
     <string name="title_ob1_minimize_scanning">Réduire le scan</string>
+    <string name="summary_ob1_avoid_scanning">Évitez de scanner autant que possible (réduit la consommation de la batterie)</string>
+    <string name="title_ob1_avoid_scanning">Éviter le scan</string>
     <string name="summary_using_g6">J\'utilise un capteur G6, G7, Dexcom 1 ou capteur One+</string>
     <string name="title_using_g6">Support G6/G7/Dex1/One+</string>
     <string name="summary_ob1_g5_allow_resetbond">Le collecteur OB1 peut démorcer si il pense que le chiffrement a échoué. Si vous avez des problèmes avec l\'association, désactivez cette option. Si vous perdez alors totalement la connexion, assurez-vous qu\'elle est activée.</string>
@@ -1867,6 +1885,8 @@
     <string name="audio_focus_lower_volume_of_other_apps">Réduire le volume des autres applications</string>
     <string name="audio_focus_pause_other_apps_playing_audio">Mettre en pause les autres applications en cours de lecture audio</string>
     <string name="audio_focus_pause_all_other_sounds">Mettre en pause tous les autres sons</string>
+    <string name="wake_up_screen">Écran de réveil</string>
+    <string name="wake_up_screen_summary">Réveiller l\'écran pendant les alertes. Peut déverrouiller les appareils qui n\'ont pas de verrouillage d\'écran activé.</string>
     <string name="use_camera_light">Utiliser la lumière de la caméra</string>
     <string name="use_camera_light_summary">Allumer la lumière de la caméra lors des alertes si connecté à un chargeur</string>
     <string name="g7_should_start_automatically">Le G7 devrait démarrer automatiquement</string>

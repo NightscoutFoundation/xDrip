@@ -523,8 +523,8 @@
                 android:defaultValue="false"
                 android:dependency="lefun_enabled"
                 android:key="lefun_option_call_notifications"
-                android:summary="Send call notifications to the band (Android 6+)"
-                android:title="Send Calls" />
+                android:summary="@string/summary_lefun_send_calls"
+                android:title="@string/title_lefun_send_calls" />
 
             <PreferenceScreen android:title="@string/title_lefun_screens_features"
                 android:key="lefun_features">
@@ -1618,15 +1618,6 @@
                     android:title="@string/title_NOT_FOR_PRODUCTION_USE" />
 
             </PreferenceScreen>
-            <PreferenceCategory
-                android:key="community_help_category"
-                android:title="@string/help_the_community">
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="store_sensor_location"
-                    android:summary="@string/help_the_developers_improve_the_algorithm"
-                    android:title="@string/store_sensor_location_to_help" />
-            </PreferenceCategory>
         </PreferenceScreen>
 
     </PreferenceCategory>

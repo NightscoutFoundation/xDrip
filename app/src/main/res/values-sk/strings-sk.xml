@@ -57,6 +57,7 @@
     <string name="pref_title_api_enabled">Povolené</string>
     <string name="pref_summary_api_enabled">REST API je odporúčaný spôsob ako sa prepojiť s Nightscout</string>
     <string name="pref_title_api_url">URL cesta</string>
+    <string name="pref_summary_api_url">Formát: https://password@hostname/api/v1/</string>
     <string name="pref_dialog_api_url">Zadajte základnú URL servera</string>
     <string name="pref_message_api_url">Toto je základná adresa Nightscout servera. xDrip pridá na koniec /entries.  API_SECRET na servery musí byť rovnaký ako hodnota v tomto nastavení.</string>
     <string name="pref_default_api_url">https://{APIsecert}@{nazov}.azurewebsites.net/api/v1 alebo https://{APIsecert}@{nazov}.herokuapp.com/api/v1</string>
@@ -733,6 +734,8 @@
     <string name="glucose_meters">Glukomery</string>
     <string name="glucose_meter_options">Nastavenia pre bezdrôtové glukomery</string>
     <string name="auto_connect_to_meter">Automaticky sťahovať dáta zo štandardizovaných glukomerov ako je Contour Next One</string>
+    <string name="summary_use_nfc_meter">Stiahnuť záznamy glykémie z NFC glukomera, keď je aplikácia xDrip+ otvorená</string>
+    <string name="title_use_nfc_meter">Používať NFC glukomer</string>
     <string name="use_bluetooth_meter">Používať BT glukomery</string>
     <string name="scan_for_bluetooth_meter">Vyhľadať BT glukomer</string>
     <string name="meter_connect_sound">Zvukovo oznámiť pripojenie, odpojenie a synchronizáciu dát</string>
@@ -1038,6 +1041,12 @@
     <string name="title_tidepool_window_latency">Min. vek dát</string>
     <string name="summary_tidepool_dev_servers">Pokiaľ bude aktivované, dáta sa budú nahrávať na https://int-app.tidepool.org namiesto https://app.tidepool.org/</string>
     <string name="title_tidepool_dev_servers">Používať integračné (testovacie) servre</string>
+    <string name="summary_tidepool_upload_when_chargeonly">Nahrávať dáta iba pri nabíjaní</string>
+    <string name="title_tidepool_upload_when_chargeonly">Iba pri nabíjaní</string>
+    <string name="summary_tidepool_upload_only_wifi">Nahrávať dáta iba pri pripojení na neobmedzenú dátovú sieť/WiFi</string>
+    <string name="title_tidepool_upload_only_wifi">Iba pri pripojení na WiFi</string>
+    <string name="summary_tidepool_upload_no_treatment">Nahrať iba dáta z CGM, aby sa zabránilo duplicitám s manuálnym nahrávaním z pumpy</string>
+    <string name="title_tidepool_upload_no_treatment">Nenahrávať ošetrenia</string>
     <string name="title_tidepool">Tidepool</string>
     <string name="show_help">Zobraziť nápovedu</string>
     <string name="load_save_settings_on_sdcard">Načítať / uložiť nastavenia na SD kartu</string>
@@ -1079,6 +1088,8 @@ Je nutné zakázať v prípade, že chcete používať xdrip cifreník. (Požado
     <string name="miband_watchface_istall_success">Ciferník MiBand bol úspešne nahraný!</string>
     <string name="miband_watchface_istall_error">Vyskytla sa chyba počas nahrávania ciferníku MiBand</string>
     <string name="miband_bg_dialog_title">Aktualizovať hodnoty glykémie teraz?</string>
+    <string name="summary_lefun_send_calls">Posielať oznámenie o prichádzajúcom hovore na náramok</string>
+    <string name="title_lefun_send_calls">Posielať hovory</string>
     <string name="title_lefun_locale_12_hour">Zobrazovať čas v 12-hodinovom formáte</string>
     <string name="title_screens">Obrazovky</string>
     <string name="summary_nsfollow_url">Web adresa, ktorú chceš sledovať</string>
@@ -1109,6 +1120,8 @@ Je nutné zakázať v prípade, že chcete používať xdrip cifreník. (Požado
     <string name="title_ob1_g5_fallback_to_xdrip">Prepnúť na xDrip</string>
     <string name="summary_ob1_minimize_scanning">Šetrí batériu použitím heuristiky na minimalizovanie Bluetooth vyhľadávania.</string>
     <string name="title_ob1_minimize_scanning">Minimalizuj BT vyhľadávanie</string>
+    <string name="summary_ob1_avoid_scanning">Vyhnúť sa čo možno najviac skenovaniu (znižuje spotrebu batérie)</string>
+    <string name="title_ob1_avoid_scanning">Vyhnúť sa skenovaniu</string>
     <string name="summary_using_g6">Používam G6 vysielač a senzor.</string>
     <string name="title_using_g6">G6 mód</string>
     <string name="summary_ob1_g5_allow_resetbond">OB1 sa môže odpojiť od vysielača ak si myslí, že zabespečené spojenie zlyhalo. Ak sa vám často odpája vysielač, zakážte túto možnosť. Ak sa vám vysielač odpojí potom, povoľte túto možnosť.</string>
@@ -1293,4 +1306,6 @@ Je nutné zakázať v prípade, že chcete používať xdrip cifreník. (Požado
     <string name="android_8_background_scanning">Využije sa funkcia vyhľadávania na pozadí Android 8+</string>
     <string name="titleInside_yRange">Povoliť</string>
     <string name="title_sens_expiry_notify">Povoliť</string>
+    <string name="wake_up_screen">Prebudenie obrazovky</string>
+    <string name="wake_up_screen_summary">Prebúdzať obrazovku pri upozorneniach. Môže to odomknúť zariadenia, ktoré nemajú aktivované uzamykanie obrazovky.</string>
 </resources>

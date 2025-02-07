@@ -1261,6 +1261,7 @@
     <string name="summary_lefun_send_alarms">Enviar notificações para a banda para alarmes de glicose</string>
     <string name="title_lefun_send_alarms">Enviar Alarmes</string>
     <string name="title_lefun_option_shake_snoozes">Agitar para Silenciar</string>
+    <string name="title_lefun_send_calls">Enviar Chamadas</string>
     <string name="title_lefun_screens_features">Lefun Ecrãs / Funções</string>
     <string name="title_features">Funções</string>
     <string name="title_lefun_feature_lift_to_wak">Levantar para Activar</string>

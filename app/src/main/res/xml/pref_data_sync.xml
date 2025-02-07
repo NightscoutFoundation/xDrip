@@ -58,7 +58,8 @@
                     android:dialogTitle="@string/pref_dialog_api_url"
                     android:inputType="textUri"
                     android:key="cloud_storage_api_base"
-                    android:title="@string/pref_title_api_url" />
+                    android:title="@string/pref_title_api_url"
+                    android:summary="@string/pref_summary_api_url"/>
 
                 <PreferenceScreen
                     android:key="download_treatments_screen"
@@ -310,18 +311,18 @@
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="tidepool_only_while_charging"
-                    android:summary="Upload data only when charging"
-                    android:title="Only when charging" />
+                    android:summary="@string/summary_tidepool_upload_when_chargeonly"
+                    android:title="@string/title_tidepool_upload_when_chargeonly" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="tidepool_only_while_unmetered"
-                    android:summary="Upload data only when connected to an unmetered network like Wifi"
-                    android:title="Only on Wifi" />
+                    android:summary="@string/summary_tidepool_upload_only_wifi"
+                    android:title="@string/title_tidepool_upload_only_wifi" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="tidepool_no_treatments"
-                    android:summary="Upload only CGM data to avoid duplicates with manual pump upload"
-                    android:title="Don't upload treatments" />
+                    android:summary="@string/summary_tidepool_upload_no_treatment"
+                    android:title="@string/title_tidepool_upload_no_treatment" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="tidepool_new_auth"
@@ -374,10 +375,10 @@
             <SwitchPreference
                 android:defaultValue="false"
                 android:key="nfc_meter_enabled"
-                android:summary="Download glucose records from NFC meter when xDrip is open"
+                android:summary="@string/summary_use_nfc_meter"
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
-                android:title="Use NFC Meter" />
+                android:title="@string/title_use_nfc_meter" />
             <SwitchPreference
                 android:defaultValue="false"
                 android:key="bluetooth_meter_enabled"

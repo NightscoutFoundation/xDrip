@@ -37,7 +37,8 @@ public class DailyJob extends Job {
             new JobRequest.Builder(TAG)
                     .setPeriodic(Constants.DAY_IN_MS, Constants.HOUR_IN_MS * 12)
                     .setRequiresDeviceIdle(true)
-                    .setRequiresCharging(true)
+//                    .setRequiresCharging(true) // If the battery level is not low, we should run even if it is not being charged.
+                    .setRequiresBatteryNotLow(true)
                     .setRequiredNetworkType(JobRequest.NetworkType.UNMETERED)
                     .setUpdateCurrent(true)
                     .build()
