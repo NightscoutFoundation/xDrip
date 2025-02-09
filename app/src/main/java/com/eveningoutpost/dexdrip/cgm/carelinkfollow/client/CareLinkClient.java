@@ -649,8 +649,8 @@ public class CareLinkClient {
 
         requestBody = RequestBody.create(MediaType.get("application/json; charset=utf-8"), gson.toJson(userJson));
 
-        //use new v11 endpoint outside US
-        useNewEndpoint = !this.carelinkCountry.equals("us") ? true : false;
+        //use new v11 endpoint in every region
+        useNewEndpoint = true;
 
         //new endpoint url
         newEndpointUrl = new HttpUrl.Builder()
