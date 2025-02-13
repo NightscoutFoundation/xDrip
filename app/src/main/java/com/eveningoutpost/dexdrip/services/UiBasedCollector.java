@@ -73,6 +73,8 @@ public class UiBasedCollector extends NotificationListenerService {
     String lastPackage;
 
     static {
+        coOptedPackages.add("com.kakaohealthcare.pasta"); // for pasta (kakaohealthcare)
+        
         coOptedPackages.add("com.dexcom.g6");
         coOptedPackages.add("com.dexcom.g6.region1.mmol");
         coOptedPackages.add("com.dexcom.g6.region2.mgdl");
@@ -107,7 +109,9 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackages.add("com.ottai.tag"); // //for ottai china version
         coOptedPackages.add("com.senseonics.eversense365.us"); // Experiment
 
-        coOptedPackagesAll.add("com.dexcom.dexcomone");
+        coOptedPackagesAll.add("com.kakaohealthcare.pasta"); // for pasta (kakaohealthcare)
+        
+        coOptedPackagesAll.add("com.dexcom.dexcomone"); 
         coOptedPackagesAll.add("com.dexcom.d1plus");
         coOptedPackagesAll.add("com.dexcom.stelo");
         coOptedPackagesAll.add("com.medtronic.diabetes.guardian");
