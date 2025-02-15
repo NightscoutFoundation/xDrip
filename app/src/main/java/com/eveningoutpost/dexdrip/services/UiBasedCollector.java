@@ -105,7 +105,8 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackages.add("com.ottai.seas");
         coOptedPackages.add("com.microtech.aidexx"); //for microtech china version
         coOptedPackages.add("com.ottai.tag"); // //for ottai china version
-        coOptedPackages.add("com.senseonics.eversense365.us"); // Experiment
+        coOptedPackages.add("com.senseonics.eversense365.us");
+        coOptedPackages.add("com.kakaohealthcare.pasta"); // A Health app for sensors that we already collect from
 
         coOptedPackagesAll.add("com.dexcom.dexcomone");
         coOptedPackagesAll.add("com.dexcom.d1plus");
@@ -118,7 +119,8 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackagesAll.add("com.ottai.seas");
         coOptedPackagesAll.add("com.microtech.aidexx"); //for microtech china version
         coOptedPackagesAll.add("com.ottai.tag"); // //for ottai china version
-        coOptedPackagesAll.add("com.senseonics.eversense365.us"); // Experiment
+        coOptedPackagesAll.add("com.senseonics.eversense365.us");
+        coOptedPackagesAll.add("com.kakaohealthcare.pasta"); // Experiment
 
         companionAppIoBPackages.add("com.insulet.myblue.pdm");
 
