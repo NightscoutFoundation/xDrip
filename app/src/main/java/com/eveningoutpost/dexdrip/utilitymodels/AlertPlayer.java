@@ -526,7 +526,7 @@ public class AlertPlayer {
         }
         final String highlow = (alert.above ? context.getString(R.string.high) : context.getString(R.string.low)).toUpperCase();
         String title = bgValue + " " + alert.name;
-        String content = "BG " + highlow + " ALERT: " + bgValue + "  (@" + JoH.hourMinuteString() + ")";
+        String content = context.getString(R.string.bg_alert, highlow, bgValue, JoH.hourMinuteString());
         final Intent intent = new Intent(context, SnoozeActivity.class);
 
         boolean localOnly = (Home.get_forced_wear() && PersistentStore.getBoolean("bg_notifications_watch"));
