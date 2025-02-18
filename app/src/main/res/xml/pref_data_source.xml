@@ -391,11 +391,6 @@
                     android:title="@string/title_ob1_avoid_scanning" />
                 <CheckBoxPreference
                     android:defaultValue="false"
-                    android:key="using_g6"
-                    android:summary="@string/summary_using_g6"
-                    android:title="@string/title_using_g6" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
                     android:key="ob1_g5_allow_resetbond"
                     android:summary="@string/summary_ob1_g5_allow_resetbond"
                     android:title="@string/title_ob1_g5_allow_resetbond" />
