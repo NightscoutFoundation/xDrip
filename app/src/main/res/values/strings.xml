@@ -252,6 +252,7 @@
     <string name="pref_was_less_than_min">%1$s was set to a value less than minimum allowed.  It has been changed to minimum.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolate data to try to predict lows</string>
     <string name="alarm_at_forecasted_low_mins">Alarm at Forecasted Low mins</string>
+    <string name="title_forecast_low_threshold">Threshold</string>
     <string name="other_xdrip_plus_alerts">Other xDrip+ alerts</string>
     <string name="xdrip_plus_display_settings">xDrip+ Display Settings</string>
     <string name="display_customisations">Display customizations</string>
@@ -1532,6 +1533,8 @@
     <string name="summary_persistent_high_alert">When above threshold and not falling for long</string>
     <string name="summary_persistent_high_threshold_link">When enabled, High Value is the threshold.\nWhen disabled, the threshold is the value specified below.</string>
     <string name="title_persistent_high_threshold_link">Threshold: High Value</string>
+    <string name="summary_forecast_low_threshold_link">When enabled, Low Value is the threshold.\nWhen disabled, the threshold is the value specified below.</string>
+    <string name="title_forecast_low_threshold_link">Threshold: Low Value</string>
     <string name="note_search_button">SEARCH</string>
     <string name="all_note_button">ALL</string>
     <string name="title_full_screen_mode">Full Screen mode</string>
