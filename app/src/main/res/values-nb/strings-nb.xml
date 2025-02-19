@@ -300,7 +300,7 @@
     <string name="use_excessive_wakelocks">Bruk Overdreven Wakelocks</string>
     <string name="speak_readings">Taleavlesninger</string>
     <string name="extra_status_line">Ekstra statuslinje</string>
-    <string name="dexcom_share_server_upload">Opplasting til Dexcom Share-server</string>
+    <string name="dexcom_share_server_upload">Dexcom Share</string>
     <string name="upload_data_to_dex_servers">Last opp data til Dexcom Share-servere</string>
     <string name="manage_followers">Administrer følgere</string>
     <string name="manage_existing_followers">Administrer dine eksisterende følgere og inviter nye.</string>
@@ -1891,4 +1891,7 @@
     <string name="use_camera_light_summary">Blink kameralys under varsler når tilkoblet en lader</string>
     <string name="g7_should_start_automatically">G7 skal starte automatisk</string>
     <string name="screenshot">Skjermdump</string>
+    <string name="bg_alert">BS-VARSEL: %1$s %2$s (@%3$s)</string>
+    <string name="show_graphical_trend_arrow">Vis grafisk trendpil</string>
+    <string name="no_alert_in_silent_mode">Ingen varsel i stillemodus</string>
 </resources>
