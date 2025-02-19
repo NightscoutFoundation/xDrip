@@ -1392,7 +1392,7 @@
     <string name="summary_use_number_icon_large">Nagyobb számok mutatása az értesítési mezpben, amelyek csak a megnyitáskor látszódnak</string>
     <string name="title_use_number_icon_large">Nagyméretű szám mutatása</string>
     <string name="summary_number_icon_large_arrow">Trend nyíl mutatása nagyméret esetén</string>
-    <string name="title_number_icon_large_arrow">Trend nyíl mutatása</string>
+    <string name="title_number_icon_large_arrow">Trendnyíl mutatása</string>
     <string name="title_xdrip_plus_accessibility">Always On Display beállítások</string>
     <string name="summary_aod_use_top">AOD Widget-et a képernyő első ötödén mutassa</string>
     <string name="title_aod_use_top">Felül legyen</string>
@@ -1837,4 +1837,6 @@
     <string name="use_camera_light_summary">Ha a készülék töltőn van, a kamera vakuja világít riasztáskor</string>
     <string name="g7_should_start_automatically">G7 automatikusan indul</string>
     <string name="screenshot">Képernyőmentés</string>
+    <string name="show_graphical_trend_arrow">Grafikus trendnyíl mutatása</string>
+    <string name="no_alert_in_silent_mode">Nincs riasztás Néma üzemmódban</string>
 </resources>
