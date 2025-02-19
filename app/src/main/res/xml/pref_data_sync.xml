@@ -122,6 +122,11 @@
                         android:key="nightscout_device_append_source_info"
                         android:summary="@string/summary_nightscout_device_append_source_info"
                         android:title="@string/title_nightscout_device_append_source_info" />
+                    <CheckBoxPreference
+                        android:defaultValue="true"
+                        android:key="warn_nightscout_multi_site_upload_failure"
+                        android:summary="@string/summary_warn_nightscout_multi_site_upload_failure"
+                        android:title="@string/title_warn_nightscout_multi_site_upload_failure" />
                     <Preference
                         android:key="back_fill_data_activity_intent_key"
                         android:summary="@string/summary_tap_to_send_historical_data"
