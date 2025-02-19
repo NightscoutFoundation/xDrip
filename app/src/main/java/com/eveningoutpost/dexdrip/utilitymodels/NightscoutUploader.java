@@ -512,10 +512,10 @@ public class NightscoutUploader {
             }
         }
         if (any_successes && any_failures) { // If there has been success as well as failure (inconsistent upload)
-            if (!inconsistentMultiSteUpload) { // If there has been no inconsistent upload yet
+            if (!inconsistentMultiSteUpload) { // If there had been no inconsistent uploads yet, which makes this the first
                 firstInconsistentMultiSiteUploadTime = JoH.tsl(); // Record this time as the time of the first inconsistent upload
             }
-            inconsistentMultiSteUpload = true; // There has been success as well as failure.
+            inconsistentMultiSteUpload = true; // There has been inconsistent upload and we have recorded the time.
         }
         return any_successes;
     }
