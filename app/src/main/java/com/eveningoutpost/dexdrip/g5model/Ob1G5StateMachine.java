@@ -134,7 +134,8 @@ public class Ob1G5StateMachine {
     private static volatile AuthRequestTxMessage lastAuthPacket;
     private static volatile boolean backup_loaded = false;
     private static final int OLDEST_RAW = 300 * 24 * 60 * 60; // 300 days
-    private static long relAutoSessionStartTime = HOUR_IN_MS * 3;
+    private static long noOverlapBackfillRelTime = HOUR_IN_MS * 3;
+    private static boolean IGNORE_SENSOR = true;
 
     public static long maxBackfillPeriod_MS = 0;
 
@@ -1555,17 +1556,23 @@ public class Ob1G5StateMachine {
         // automagically start an xDrip sensor session if transmitter already has active sensor
         if (!Sensor.isActive() && Ob1G5CollectionService.isG5SensorStarted() && (!Sensor.stoppedRecently() || shortTxId())) {
             JoH.static_toast_long(xdrip.gs(R.string.auto_starting_sensor));
-            if (shortTxId()) relAutoSessionStartTime = HOUR_IN_MS * 24; // If we are using a G7
-            final List<BgReading> last = BgReading.latest(1); // Last reading
-            if ((last != null) && (last.size() > 0)) { // Have we had a reading?
-                final long now = JoH.tsl();
-                final long since = now - last.get(0).timestamp; // Time since last reading
-                if (since < relAutoSessionStartTime) { // If the last reading was less than 3 hours ago, or if we are using G7 and the last reading was less than 24 hours ago
-                    relAutoSessionStartTime = since; // We will start the new session starting from the last reading.
-                }
-            }
-            Sensor.create(tsl() - relAutoSessionStartTime);
+            Sensor.create(tsl() - getLatestReadingsTime()); // Create an internal session after last existing readings
+            UserError.Log.ueh(TAG, "Started internal session (native session in progress OB)");
+            Treatments.sensorStartIfNeeded();
         }
+    }
+
+    public static long getLatestReadingsTime() { // This is the backfill period, or how long ago we have had our latest readings if more recent than the backfill period.
+        if (shortTxId()) noOverlapBackfillRelTime = HOUR_IN_MS * 24; // If we are using a G7
+        final List<BgReading> last = BgReading.latest(1, IGNORE_SENSOR); // Last reading
+        if ((last != null) && (last.size() > 0)) { // If we have had a reading
+            final long now = JoH.tsl();
+            final long since = now - last.get(0).timestamp; // Time since last reading
+            if (since < noOverlapBackfillRelTime) { // If the last reading was less than 3 hours ago, or if we are using G7 and the last reading was less than 24 hours ago
+                noOverlapBackfillRelTime = since; // We will start the new session starting from the last reading.
+            }
+        }
+        return noOverlapBackfillRelTime;
     }
 
     private static void processGlucoseRxMessage(Ob1G5CollectionService parent, final BaseGlucoseRxMessage glucose) {
