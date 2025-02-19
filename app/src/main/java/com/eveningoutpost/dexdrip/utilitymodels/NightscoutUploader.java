@@ -466,7 +466,9 @@ public class NightscoutUploader {
             Log.e(TAG, "Unable to process API Base URL: " + e);
             return false;
         }
+        // Starting a loop run; resetting local failure and success flags
         boolean any_successes = false;
+        boolean any_failures = false;
         for (String baseURI : baseURIs) {
             try {
                 baseURI = TryResolveName(baseURI);
@@ -499,20 +501,21 @@ public class NightscoutUploader {
                 } else {
                     doLegacyRESTUploadTo(nightscoutService, glucoseDataSets);
                 }
-                any_successes = true;
+                any_successes = true; // There has been a success
                 last_success_time = JoH.tsl();
                 last_exception_count = 0;
                 last_exception_log_count = 0;
-            } catch (Exception e) { // There has been a failure.
+            } catch (Exception e) {
                 String msg = "Unable to do REST API Upload: " + e.getMessage() + " marking record: " + (any_successes ? "succeeded" : "failed");
+                any_failures = true; // There has been a failure
                 handleRestFailure(msg);
-                if (any_successes) { // If there has been a success
-                    if (!inconsistentMultiSteUpload) {
-                        firstInconsistentMultiSiteUploadTime = JoH.tsl();
-                    }
-                    inconsistentMultiSteUpload = true; // There has been success as well as failure.
-                }
             }
+        }
+        if (any_successes && any_failures) { // If there has been success as well as failure (inconsistent upload)
+            if (!inconsistentMultiSteUpload) { // If there has been no inconsistent upload yet
+                firstInconsistentMultiSiteUploadTime = JoH.tsl(); // Record this time as the time of the first inconsistent upload
+            }
+            inconsistentMultiSteUpload = true; // There has been success as well as failure.
         }
         return any_successes;
     }
