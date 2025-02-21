@@ -1877,4 +1877,6 @@
     <string name="use_camera_light_summary">Премигване на светкавицата на камерата по време на аларми, когато е свързано зарядното устройство</string>
     <string name="g7_should_start_automatically">G7 би трябвало да стартира автоматично</string>
     <string name="screenshot">Екранна снимка</string>
+    <string name="show_graphical_trend_arrow">Показване на срелка за графичен тренд</string>
+    <string name="no_alert_in_silent_mode">Без аларма в тих режим</string>
 </resources>
