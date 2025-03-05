@@ -66,6 +66,7 @@
     <string name="pref_title_api_enabled">Enabled</string>
     <string name="pref_summary_api_enabled">The REST API is the standard way to connect to Nightscout</string>
     <string name="pref_title_api_url">Base URL</string>
+    <string name="pref_summary_api_url">Format: https://password@hostname/api/v1/</string>
     <string name="pref_dialog_api_url">Enter Base API URL</string>
     <string name="pref_message_api_url">This only the base URL, the uploader will automatically append /entries for the POST.  API_SECRET on the server should match yourpassphrase in this setting.</string>
     <string name="pref_default_api_url">https://yourpassphrase@{YOUR-SITE}.azurewebsites.net/api/v1/</string>
@@ -241,7 +242,14 @@
     <string name="other_alerts">Other Alerts</string>
     <string name="extra_alerts_xdrip_plus">Extra Alerts (xDrip+)</string>
     <string name="persistent_high_alert">Persistent High Alert</string>
+    <string name="persistent_high_alert_enable">Enable</string>
+    <string name="title_persistent_high_threshold">Threshold</string>
+    <string name="the_value_must_be_between_min_and_max">The value must be between %1$s and %2$s</string>
     <string name="forecasted_low_alert">Forecasted Low Alert</string>
+    <string name="setting_pref_to_max">Set to max</string>
+    <string name="pref_was_greater_than_max">%1$s was set to a value greater than maximum allowed.  It has been changed to maximum.</string>
+    <string name="setting_pref_to_min">Set to min</string>
+    <string name="pref_was_less_than_min">%1$s was set to a value less than minimum allowed.  It has been changed to minimum.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolate data to try to predict lows</string>
     <string name="alarm_at_forecasted_low_mins">Alarm at Forecasted Low mins</string>
     <string name="other_xdrip_plus_alerts">Other xDrip+ alerts</string>
@@ -436,15 +444,15 @@
     <string name="new_version_date_colon">"New Version date: "</string>
     <string name="old_version_date_colon">"Old Version date: "</string>
     <string name="speak_your_note_text">Speak your note text</string>
-    <string name="alarm_if_above_high_value">Alarm if above high value</string>
+    <string name="alarm_if_above_high_value">Notify if above threshold for longer than the time specified below</string>
     <string name="for_longer_than_minutes">for longer than (minutes)</string>
-    <string name="choose_sound_used_for_persistent_high_alarm">Choose sound used for persistent high alarm.</string>
-    <string name="persistent_high_sound">Persistent High Sound</string>
+    <string name="choose_sound_used_for_persistent_high_alarm">Choose the sound used for the alarm.</string>
+    <string name="persistent_high_sound">Alert Sound</string>
     <string name="forecast_lows">Forecast Lows</string>
     <string name="raise_alarm_on_forecast_low">Raise alarm on Forecast Low</string>
     <string name="notify_when_predicted_low_time_reaches_threshold">Notify when predicted low time reaches threshold</string>
-    <string name="predicted_low_sound">Predicted Low Sound</string>
-    <string name="choose_sound_used_for_predicted_low_alarm">Choose sound used for predicted low alarm.</string>
+    <string name="predicted_low_sound">Alert Sound</string>
+    <string name="choose_sound_used_for_predicted_low_alarm">Choose the sound used for the alarm.</string>
     <string name="notify_when_parakeet_device_stops_checking_in">Notify when Parakeet device stops checking in</string>
     <string name="parakeet_related_alerts">Parakeet related alerts</string>
     <string name="raise_parakeet_notification_silently_when_charging">Raise Parakeet notification silently when charging</string>
@@ -773,6 +781,8 @@
     <string name="glucose_meters">Glucose Meters</string>
     <string name="glucose_meter_options">Options for wireless glucose meters</string>
     <string name="auto_connect_to_meter">Automatically connect and retrieve data from a standard\'s compliant glucose meter like the Contour Next One</string>
+    <string name="summary_use_nfc_meter">Download glucose records from NFC meter when xDrip is open</string>
+    <string name="title_use_nfc_meter">Use NFC Meter</string>
     <string name="use_bluetooth_meter">Use Bluetooth Meter</string>
     <string name="scan_for_bluetooth_meter">Scan for Bluetooth Meter</string>
     <string name="meter_connect_sound">Enable this to play sound effects when the meter connects, disconnects or syncs data</string>
@@ -1241,6 +1251,12 @@
     <string name="title_tidepool_window_latency">Data Age Mins</string>
     <string name="summary_tidepool_dev_servers">If enabled, uploads will go to https://int-app.tidepool.org instead of the regular https://app.tidepool.org/</string>
     <string name="title_tidepool_dev_servers">Use Integration (test) servers</string>
+    <string name="summary_tidepool_upload_when_chargeonly">Upload data only when charging</string>
+    <string name="title_tidepool_upload_when_chargeonly">Only when charging</string>
+    <string name="summary_tidepool_upload_only_wifi">Upload data only when connected to an unmetered network like Wifi</string>
+    <string name="title_tidepool_upload_only_wifi">Only on Wifi</string>
+    <string name="summary_tidepool_upload_no_treatment">Upload only CGM data to avoid duplicates with manual pump upload</string>
+    <string name="title_tidepool_upload_no_treatment">Don\'t upload treatments</string>
     <string name="title_tidepool">Tidepool</string>
     <string name="show_help">Show Help</string>
     <string name="load_save_settings_on_sdcard">Load / Save Settings</string>
@@ -1323,6 +1339,8 @@
     <string name="summary_lefun_send_alarms">Send notifications to the band for glucose alarms</string>
     <string name="title_lefun_send_alarms">Send Alarms</string>
     <string name="title_lefun_option_shake_snoozes">Shake to Snooze</string>
+    <string name="summary_lefun_send_calls">Send call notifications to the band</string>
+    <string name="title_lefun_send_calls">Send Calls</string>
     <string name="title_lefun_screens_features">Lefun Screens / Features</string>
     <string name="title_features">Features</string>
     <string name="title_lefun_feature_lift_to_wak">Lift to Wake</string>
@@ -1390,6 +1408,8 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Fallback to xDrip</string>
     <string name="summary_ob1_minimize_scanning">Use heuristics to minimize Bluetooth scanning + save power</string>
     <string name="title_ob1_minimize_scanning">Minimize Scanning</string>
+    <string name="summary_ob1_avoid_scanning">Avoid scanning as much as possible (reduces battery usage further)</string>
+    <string name="title_ob1_avoid_scanning">Avoid Scanning</string>
     <string name="summary_using_g6">I am using a G6, G7, Dexcom 1 or One+ Sensor</string>
     <string name="title_using_g6">G6/G7/Dex1/One+ Support</string>
     <string name="summary_ob1_g5_allow_resetbond">OB1 collector can unbond if it thinks the encryption has failed. If you get problems with it unpairing then disable this option. If you then totally lose connection, make sure this is enabled.</string>
@@ -1509,7 +1529,9 @@
     <string name="category_noisy_readings">Noisy Readings</string>
     <string name="category_falling_rising_bg">Falling/Rising BG</string>
     <string name="category_alert_prefs">Alert Preferences (for these alerts)</string>
-    <string name="summary_persistent_high_alert">When above High level for too long and not heading downwards</string>
+    <string name="summary_persistent_high_alert">When above threshold and not falling for long</string>
+    <string name="summary_persistent_high_threshold_link">When enabled, High Value is the threshold.\nWhen disabled, the threshold is the value specified below.</string>
+    <string name="title_persistent_high_threshold_link">Threshold: High Value</string>
     <string name="note_search_button">SEARCH</string>
     <string name="all_note_button">ALL</string>
     <string name="title_full_screen_mode">Full Screen mode</string>
@@ -1544,6 +1566,7 @@
     <string name="progress">progress</string>
     <string name="bluetooth_device">Bluetooth Device:   </string>
     <string name="transmitter_battery_status">Transmitter Battery:  </string>
+    <string name="database_size">Database Size:  </string>
     <string name="top">Top</string>
     <string name="connect_device_usb_otg">Please connect your device via USB OTG cable.</string>
     <string name="connection_status">Connection Status:</string>
@@ -1861,7 +1884,8 @@
     <string name="summary_ymax">Choose yMax for when there are no greater readings.</string>
     <string name="wait_to_connect">Verify settings and wait for connectivity.</string>
     <string name="summary_sens_expiry_notify">Raise notifications when the sensor gets close to expiry.</string>
-    <string name="title_sens_expiry_notify">Sensor expiry</string>
+    <string name="title_sens_expiry">Sensor Expiry Notifications</string>
+    <string name="title_sens_expiry_notify">Enable</string>
     <string name="close">Close</string>
     <string name="title_advanced_settings_4_Lib2">Advanced settings for Libre 2</string>
     <string name="title_Lib2_show_raw_values">Show raw values in graph</string>
@@ -1909,8 +1933,13 @@
     <string name="audio_focus_lower_volume_of_other_apps">Lower volume of other apps</string>
     <string name="audio_focus_pause_other_apps_playing_audio">Pause other apps playing audio</string>
     <string name="audio_focus_pause_all_other_sounds">Pause all other sounds</string>
+    <string name="wake_up_screen">Wake Screen</string>
+    <string name="wake_up_screen_summary">Wake up screen during alerts. Might unlock devices that don\'t have screen lock enabled.</string>
     <string name="use_camera_light">Use Camera Light</string>
     <string name="use_camera_light_summary">Flash camera light during alerts when connected to a charger</string>
     <string name="g7_should_start_automatically">G7 should start automatically</string>
     <string name="screenshot">Screenshot</string>
+    <string name="bg_alert">BG %1$s ALERT: %2$s (@%3$s)</string>
+    <string name="show_graphical_trend_arrow">Show Graphical Trend Arrow</string>
+    <string name="no_alert_in_silent_mode">No Alert in Silent mode</string>
 </resources>

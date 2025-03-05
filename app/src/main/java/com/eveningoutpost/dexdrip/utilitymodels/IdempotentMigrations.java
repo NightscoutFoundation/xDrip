@@ -1,5 +1,8 @@
 package com.eveningoutpost.dexdrip.utilitymodels;
 
+import static com.eveningoutpost.dexdrip.utils.Preferences.MAX_GLUCOSE_INPUT;
+import static com.eveningoutpost.dexdrip.utils.Preferences.MIN_GLUCOSE_INPUT;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -21,6 +24,7 @@ import com.eveningoutpost.dexdrip.models.UserNotification;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
 import com.eveningoutpost.dexdrip.stats.FirstPageFragment;
+import com.eveningoutpost.dexdrip.utils.Preferences;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -62,6 +66,7 @@ public class IdempotentMigrations {
         CompatibleApps.notifyAboutCompatibleApps();
         legacySettingsMoveLanguageFromNoToNb();
         FirstPageFragment.defineDefaults(); // Define the statistics page visibility defaults.
+        prefSettingRangeVerification();
 
     }
 
@@ -154,6 +159,7 @@ public class IdempotentMigrations {
         Pref.setBoolean("run_ble_scan_constantly", false);
         Pref.setBoolean("run_G5_ble_tasks_on_uithread", false);
         Pref.setBoolean("ob1_initiate_bonding_flag", true);
+        Pref.setBoolean("store_sensor_location", false);
     }
     private static void legacySettingsMoveLanguageFromNoToNb() {
         // Check if the user's language preference is set to "no"
@@ -162,4 +168,11 @@ public class IdempotentMigrations {
         Pref.setString("forced_language", "nb");
         }
     }
+
+    // Correct preference setting values if the values are out of range.
+    // Include new preference settings here that represent glucose values.
+    private static void prefSettingRangeVerification() {
+        Preferences.applyPrefSettingRange("persistent_high_threshold", "170", MIN_GLUCOSE_INPUT, MAX_GLUCOSE_INPUT);
+    }
+
 }

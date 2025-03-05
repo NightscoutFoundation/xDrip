@@ -8,6 +8,7 @@ import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ActiveNotification;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.ClearedNotification;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.CountrySettings;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.DataUpload;
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.DisplayMessage;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.Marker;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.MonitorData;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.Profile;
@@ -53,6 +54,9 @@ public class CareLinkClient {
     protected String carelinkCountry;
     protected static final String CARELINK_CONNECT_SERVER_EU = "carelink.minimed.eu";
     protected static final String CARELINK_CONNECT_SERVER_US = "carelink.minimed.com";
+    protected static final String CARELINK_CLOUD_SERVER_EU = "clcloud.minimed.eu";
+    protected static final String CARELINK_CLOUD_SERVER_US = "clcloud.minimed.com";
+    protected static final String API_PATH_DISPLAY_MESSAGE = "connect/carepartner/v11/display/message";
     protected static final String CARELINK_LANGUAGE_EN = "en";
     protected static final String CARELINK_AUTH_TOKEN_COOKIE_NAME = "auth_tmp_token";
     protected static final String CARELINK_TOKEN_VALIDTO_COOKIE_NAME = "c_token_valid_to";
@@ -197,6 +201,12 @@ public class CareLinkClient {
             return CARELINK_CONNECT_SERVER_EU;
     }
 
+    protected String cloudServer() {
+        if (this.carelinkCountry.equals("us"))
+            return CARELINK_CLOUD_SERVER_US;
+        else
+            return CARELINK_CLOUD_SERVER_EU;
+    }
 
     //Wrapper for common request of recent data (last 24 hours)
     public RecentData getRecentData() {
@@ -619,10 +629,14 @@ public class CareLinkClient {
     // Periodic data from CareLink Cloud
     public RecentData getConnectDisplayMessage(String username, String role, String patientUsername, String endpointUrl) {
 
-        RequestBody requestBody = null;
-        Gson gson = null;
-        JsonObject userJson = null;
+        RequestBody requestBody;
+        Gson gson;
+        JsonObject userJson;
         RecentData recentData = null;
+        DisplayMessage displayMessage;
+        boolean useNewEndpoint;
+        HttpUrl newEndpointUrl;
+
 
         // Build user json for request
         userJson = new JsonObject();
@@ -635,10 +649,33 @@ public class CareLinkClient {
 
         requestBody = RequestBody.create(MediaType.get("application/json; charset=utf-8"), gson.toJson(userJson));
 
+        //use new v11 endpoint in every region
+        useNewEndpoint = true;
+
+        //new endpoint url
+        newEndpointUrl = new HttpUrl.Builder()
+                .scheme("https")
+                .host(this.cloudServer())
+                .addPathSegments(API_PATH_DISPLAY_MESSAGE)
+                .build();
+
+        //get data and correct time
         try {
-            recentData = this.getData(HttpUrl.parse(endpointUrl), requestBody, RecentData.class);
-            if (recentData != null)
-                correctTimeInRecentData(recentData);
+            //Use old data format for old endpoint
+            if (!useNewEndpoint) {
+                recentData = this.getData(HttpUrl.parse(endpointUrl), requestBody, RecentData.class);
+                if (recentData != null) {
+                    correctTimeInRecentData(recentData);
+                }
+            }
+            //Use new data format outside US
+            else {
+                displayMessage = this.getData(newEndpointUrl, requestBody, DisplayMessage.class);
+                if (displayMessage != null && displayMessage.patientData != null) {
+                    correctTimeInDisplayMessage(displayMessage);
+                    recentData = displayMessage.patientData;
+                }
+            }
         } catch (Exception e) {
             lastErrorMessage = e.getClass().getSimpleName() + ":" + e.getMessage();
         }
@@ -668,6 +705,11 @@ public class CareLinkClient {
     }
 
     // General data request for API calls
+
+    protected <T> T getData(String host, String path, RequestBody requestBody, Class<T> dataClass) {
+           return  this.getData(new HttpUrl.Builder().scheme("https").host(host).addPathSegments(path).build(), requestBody, dataClass);
+    }
+
     protected <T> T getData(HttpUrl url, RequestBody requestBody, Class<T> dataClass) {
 
         Request.Builder requestBuilder = null;
@@ -771,6 +813,65 @@ public class CareLinkClient {
                 requestBuilder.addHeader("Content-Type", "application/x-www-form-urlencoded");
                 break;
         }
+
+    }
+
+    protected void correctTimeInDisplayMessage(DisplayMessage displayMessage) {
+
+        boolean timezoneMissing = false;
+        String offsetString = null;
+        RecentData recentData = null;
+
+        recentData = displayMessage.patientData;
+
+        //time data is available to check and correct time if needed
+        if (recentData.lastConduitDateTime != null && recentData.lastConduitDateTime.getTime() > 1
+                && recentData.lastConduitUpdateServerDateTime  > 1) {
+
+            //Correct times if server <> device > 26 mins => possibly different time zones
+            int diffInHour = (int) Math.round(((recentData.lastConduitUpdateServerDateTime - recentData.lastConduitDateTime.getTime()) / 3600000D));
+            if (diffInHour != 0 && diffInHour < 26) {
+
+                recentData.lastConduitDateTime = shiftDateByHours(recentData.lastConduitDateTime, diffInHour);
+
+                //Sensor glucose
+                if (recentData.sgs != null) {
+                    for (SensorGlucose sg : recentData.sgs) {
+                        if(sg.timestamp != null)
+                            sg.timestamp = shiftDateByHours(sg.timestamp, diffInHour);
+                    }
+                }
+
+                //Markers
+                if (recentData.markers != null) {
+                    for (Marker marker : recentData.markers) {
+                        if(marker.timestamp != null)
+                            marker.timestamp = shiftDateByHours(marker.timestamp, diffInHour);
+                    }
+                }
+                //Notifications
+                if (recentData.notificationHistory != null) {
+                    if (recentData.notificationHistory.clearedNotifications != null) {
+                        for (ClearedNotification notification : recentData.notificationHistory.clearedNotifications) {
+                            if(notification.dateTime != null) {
+                                notification.dateTime = shiftDateByHours(notification.dateTime, diffInHour);
+                                notification.triggeredDateTime = shiftDateByHours(notification.triggeredDateTime, diffInHour);
+                            }
+                        }
+                    }
+                    if (recentData.notificationHistory.activeNotifications != null) {
+                        for (ActiveNotification notification : recentData.notificationHistory.activeNotifications) {
+                            if(notification.dateTime != null)
+                                notification.dateTime = shiftDateByHours(notification.dateTime, diffInHour);
+                        }
+                    }
+                }
+
+            }
+
+        }
+
+        displayMessage.patientData = recentData;
 
     }
 
