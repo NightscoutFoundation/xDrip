@@ -116,8 +116,6 @@ public class NightscoutUploader {
     public static final int FAIl_COUNT_NOTIFICATION = FAIL_NOTIFICATION_PERIOD / 60 / 5 - 1; // Number of 5-minute read cycles corresponding to notification period
     public static final int FAIL_LOG_PERIOD = 6 * 60 * 60; // FAILED upload/download log will be shown if there is no upload/download for 6 hours.
     public static final int FAIL_COUNT_LOG = FAIL_LOG_PERIOD / 60 / 5 - 1; // Number of 5-minute read cycles corresponding to log period
-    public static boolean inconsistentMultiSteUpload = false; // False if all site uploads fail or all succeed.  True only if there is inconsistent upload success.
-    public static long firstInconsistentMultiSiteUploadTime;
 
     private Context mContext;
     private Boolean enableRESTUpload;
@@ -511,23 +509,23 @@ public class NightscoutUploader {
                 handleRestFailure(msg);
             }
         }
-        if (any_successes && any_failures) { // If there has been success as well as failure (inconsistent upload)
-            if (!inconsistentMultiSteUpload) { // If there had been no inconsistent uploads yet, which makes this the first
-                firstInconsistentMultiSiteUploadTime = JoH.tsl(); // Record this time as the time of the first inconsistent upload
+        if (any_successes && any_failures) { // Only if there has been success as well as failure (inconsistent upload)
+            if (!PersistentStore.getBoolean(TAG + "inconsistentMultiSteUpload")) { // If there had been no inconsistent uploads yet, which makes this the first
+                PersistentStore.setLong(TAG + "firstInconsistentMultiSiteUploadTime", JoH.tsl()); // Record this time as the time of the first inconsistent upload
             }
-            inconsistentMultiSteUpload = true; // There has been inconsistent upload and we have recorded the time.
+            PersistentStore.setBoolean(TAG + "inconsistentMultiSteUpload", true); // There has been inconsistent upload and we have recorded the time.  Let's set the flag.
         }
         return any_successes;
     }
 
     public static void notifyInconsistentMultiSiteUpload() {
-        if (inconsistentMultiSteUpload) { // We need to inform the user that even though there has been a failure to upload, the queue has been cleared.
-            // Therefore, the only way to complete the intended upload is to backfill manually.
+        long firstInconsistentMultiSiteUploadTime = PersistentStore.getLong(TAG + "firstInconsistentMultiSiteUploadTime"); // Updating the local representation of the last inconsistent upload time
+        if (PersistentStore.getBoolean(TAG + "inconsistentMultiSteUpload")) { // If there has been a failure to upload and the queue has been cleared
             if (Pref.getBooleanDefaultFalse("warn_nightscout_multi_site_upload_failure")) { // Issue notification only if enabled
                 JoH.showNotification(xdrip.gs(R.string.title_nightscout_upload_failure_backfill_required), null, null, Constants.NIGHTSCOUT_ERROR_NOTIFICATION_ID, null, false, false, null, null, xdrip.gs(R.string.nightscout_upload_failure_backfill_required, JoH.dateTimeText(firstInconsistentMultiSiteUploadTime)), true);
             }
             UserError.Log.uel(TAG, "Inconsistent Multi-site Nightscout upload - Backfill recommended - First failure: " + JoH.dateTimeText(firstInconsistentMultiSiteUploadTime));
-            inconsistentMultiSteUpload = false; // We have notified.  Clearing the flag
+            PersistentStore.setBoolean(TAG + "inconsistentMultiSteUpload", false); // We have notified.  Clearing the flag
         }
     }
 
