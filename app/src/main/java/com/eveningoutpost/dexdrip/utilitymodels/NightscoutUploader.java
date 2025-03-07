@@ -510,22 +510,22 @@ public class NightscoutUploader {
             }
         }
         if (any_successes && any_failures) { // Only if there has been success as well as failure (inconsistent upload)
-            if (!PersistentStore.getBoolean(TAG + "inconsistentMultiSteUpload")) { // If there had been no inconsistent uploads yet, which makes this the first
-                PersistentStore.setLong(TAG + "firstInconsistentMultiSiteUploadTime", JoH.tsl()); // Record this time as the time of the first inconsistent upload
+            if (!PersistentStore.getBoolean(TAG + "_inconsistentMultiSteUpload")) { // If there had been no inconsistent uploads yet, which makes this the first
+                PersistentStore.setLong(TAG + "_firstInconsistentMultiSiteUploadTime", JoH.tsl()); // Record this time as the time of the first inconsistent upload
             }
-            PersistentStore.setBoolean(TAG + "inconsistentMultiSteUpload", true); // There has been inconsistent upload and we have recorded the time.  Let's set the flag.
+            PersistentStore.setBoolean(TAG + "_inconsistentMultiSteUpload", true); // There has been inconsistent upload and we have recorded the time.  Let's set the flag.
         }
         return any_successes;
     }
 
     public static void notifyInconsistentMultiSiteUpload() {
-        long firstInconsistentMultiSiteUploadTime = PersistentStore.getLong(TAG + "firstInconsistentMultiSiteUploadTime"); // Updating the local representation of the last inconsistent upload time
-        if (PersistentStore.getBoolean(TAG + "inconsistentMultiSteUpload")) { // If there has been a failure to upload and the queue has been cleared
+        long firstInconsistentMultiSiteUploadTime = PersistentStore.getLong(TAG + "_firstInconsistentMultiSiteUploadTime"); // Updating the local representation of the last inconsistent upload time
+        if (PersistentStore.getBoolean(TAG + "_inconsistentMultiSteUpload")) { // If there has been a failure to upload and the queue has been cleared
             if (Pref.getBooleanDefaultFalse("warn_nightscout_multi_site_upload_failure")) { // Issue notification only if enabled
                 JoH.showNotification(xdrip.gs(R.string.title_nightscout_upload_failure_backfill_required), null, null, Constants.NIGHTSCOUT_ERROR_NOTIFICATION_ID, null, false, false, null, null, xdrip.gs(R.string.nightscout_upload_failure_backfill_required, JoH.dateTimeText(firstInconsistentMultiSiteUploadTime)), true);
             }
             UserError.Log.uel(TAG, "Inconsistent Multi-site Nightscout upload - Backfill recommended - First failure: " + JoH.dateTimeText(firstInconsistentMultiSiteUploadTime));
-            PersistentStore.setBoolean(TAG + "inconsistentMultiSteUpload", false); // We have notified.  Clearing the flag
+            PersistentStore.setBoolean(TAG + "_inconsistentMultiSteUpload", false); // We have notified.  Clearing the flag
         }
     }
 
