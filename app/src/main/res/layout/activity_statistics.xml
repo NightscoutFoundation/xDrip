@@ -36,7 +36,7 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="YTD"
+                android:text="YD"
                 android:id="@+id/button_stats_yesterday"
                 android:layout_marginTop="1dp"
                 android:layout_marginBottom="1dp"
