@@ -1823,4 +1823,7 @@
     <string name="use_camera_light_summary">Mrugaj latarką aparatu podczas alarmów przy podłączeniu do ładowarki</string>
     <string name="g7_should_start_automatically">G7 powinien uruchomić się automatycznie</string>
     <string name="screenshot">Zrzut ekranu</string>
+    <string name="bg_alert">CUKIER %1$s ALARM: %2$s (@%3$s)</string>
+    <string name="show_graphical_trend_arrow">Pokaż graficzną strzałkę trendu</string>
+    <string name="no_alert_in_silent_mode">Brak alarmów w trybie cichym</string>
 </resources>

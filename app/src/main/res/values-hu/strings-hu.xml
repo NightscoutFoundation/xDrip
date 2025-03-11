@@ -397,7 +397,7 @@
     <string name="be_master_for_followers">Master-ként beállítás</string>
     <string name="this_device_will_send_data_to_followers">Ez a készülék fog adatot küldeni a Követőknek</string>
     <string name="send_parakeet_map_location_to_followers">Parakeet helyadatok küldése Követőknek</string>
-    <string name="sync_parakeet_geolocation">Parakeet helyadatok megosztása</string>
+    <string name="sync_parakeet_geolocation">Parakeet helyadatok</string>
     <string name="disable_all_sync_features">Minden szinkronizáció szüneteltetése</string>
     <string name="temporary_work_around_disable_all_sync_detail">Ideiglenes intézkedésként minden szinkronizáció leállítása. A visszaállítás után a telefon újraindítása szükséges lehet. Figyelmesen használja!</string>
     <string name="automatic_updates_crash_reports_and_feedback">Automatikus frissítés, valamint hibajelzés és üzenet a fejlesztőnek</string>
@@ -749,8 +749,8 @@
     <string name="glucose_meter_options">Beállítások vércukormérőkhöz</string>
     <string name="auto_connect_to_meter">Automatikus csatlakozás a standardnak megfelelő vércukormérőkhöz (mint a Contour Next One), és adatok letöltése</string>
     <string name="summary_use_nfc_meter">VC-értékek letöltése xDrip-pel NFC-s mérőből</string>
-    <string name="title_use_nfc_meter">NFC-s mérő használata</string>
-    <string name="use_bluetooth_meter">Bluetooth-os VC-mérő használata</string>
+    <string name="title_use_nfc_meter">NFC-s mérő</string>
+    <string name="use_bluetooth_meter">Bluetooth-os VC-mérő</string>
     <string name="scan_for_bluetooth_meter">Bluetooth-os VC-mérő keresése</string>
     <string name="meter_connect_sound">Engedélyezze, ha szeretne hangjelzést a VC-mérő csatlakozáskor, leváláskor vagy adattovábbitáskor</string>
     <string name="meter_connect_sound_effect">Hangjelzések</string>
@@ -765,7 +765,7 @@
     <string name="create_shortcut">Külön menüpontként a  ☰-menübe</string>
     <string name="shortcut_to_bg_alerts">VC-érték riasztás menüpont</string>
     <string name="suppress_alerts_missed_readings">Aktív és szundizott riasztások elvetése, ha meghatározott ideig nincsen VC adat</string>
-    <string name="suppress_alerts_after">Aktív és szundizott riasztások elvetése ennyi perc után (min 10 p)</string>
+    <string name="suppress_alerts_after">Elvetése ennyi perc után (min 10 p)</string>
     <string name="alert_calibration_request">Emlékeztető kalibráció szükségességekor</string>
     <string name="calibrations_request_time_time_difference">Hány óra teljen el két kalibráció között</string>
     <string name="hours_between_calibrations">Kalibráció periódusa</string>
@@ -1170,15 +1170,17 @@
     <string name="upload_even_when_using_mobile_data">Feltöltés mobil adatforgalmon át is</string>
     <string name="daily_backup_even_mobile">Napi mentés mobil hálózaton át is</string>
     <string name="use_mobile_data">Mobil adatforgalom használata</string>
-    <string name="summary_cloud_storage_api_download_enable">Próbálja meg letölteni is az adatokat a Nightscout-ból</string>
-    <string name="title_cloud_storage_api_download_enable">Adatok letöltése</string>
+    <string name="summary_cloud_storage_api_download_enable">Próbálja meg a kezelési az adatokat letölteni a Nightscout-ból</string>
+    <string name="title_cloud_storage_api_download_enable">Kezelések letöltése</string>
+    <string name="title_cloud_storage_api_download_from_xdrip">xDrip adatok kihagyása</string>
+    <string name="summary_cloud_storage_api_download_from_xdrip">Xdrip által feltöltött adatokat nem tölti le</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Új VC-érték alapján kalibráljon kérdezés nélkül, ha a körülmények megfelelőek (kísérleti funkció)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatikus kalibráció</string>
     <string name="title_rest_api_extra_options">További beállítások</string>
     <string name="summary_send_bridge_battery_to_nightscout">A transzmitter töltöttségének feltöltése a Nightscoutba. Ne engedélyezze, ha az akku érzékelője hibás.</string>
     <string name="title_send_bridge_battery_to_nightscout">Transzmitter töltöttség</string>
     <string name="summary_send_dexcom_transmitter_battery_to_nightscout">OB1G5/G6 távadó akku adatok feltöltése Nightscout-ba. Ez a Kollektor állapot képernyő összes adatát jelenti.</string>
-    <string name="title_send_dexcom_transmitter_battery_to_nightscout">OB1G5/G6/G7 távadó adatok feltöltése</string>
+    <string name="title_send_dexcom_transmitter_battery_to_nightscout">Dexcom távadó adatok</string>
     <string name="summary_send_treatments_to_nightscout">Kezelési adatok küldése Nightscout-ba. Ne használja, ha a Careportal-ja nem működik.</string>
     <string name="title_send_treatments_to_nightscout">Kezelések</string>
     <string name="summary_warn_nightscout_failures">Értesítés és hangjelzés, ha a Nightscout feltöltés sikertelen.</string>
@@ -1390,7 +1392,7 @@
     <string name="summary_use_number_icon_large">Nagyobb számok mutatása az értesítési mezpben, amelyek csak a megnyitáskor látszódnak</string>
     <string name="title_use_number_icon_large">Nagyméretű szám mutatása</string>
     <string name="summary_number_icon_large_arrow">Trend nyíl mutatása nagyméret esetén</string>
-    <string name="title_number_icon_large_arrow">Trend nyíl mutatása</string>
+    <string name="title_number_icon_large_arrow">Trendnyíl mutatása</string>
     <string name="title_xdrip_plus_accessibility">Always On Display beállítások</string>
     <string name="summary_aod_use_top">AOD Widget-et a képernyő első ötödén mutassa</string>
     <string name="title_aod_use_top">Felül legyen</string>
@@ -1790,7 +1792,7 @@
     <string name="close">Bezárás</string>
     <string name="title_advanced_settings_4_Lib2">Libre 2 szenzor további beállításai</string>
     <string name="title_Lib2_show_raw_values">Nyers adatok</string>
-    <string name="summary_Lib2_show_raw_values">Nyers adatok mutatása a grafikonon bekapcsolása.</string>
+    <string name="summary_Lib2_show_raw_values">Nyers VC-adatok mutatása a grafikonon bekapcsolása.</string>
     <string name="title_Lib2_show_sense_on_status">Szenzoradatok</string>
     <string name="summary_Lib2_show_sense_on_status">Libre 2 szenzor adatainak mutatása az Állapot lapon.</string>
     <string name="import_qr_code_warning">Csak megbízható forrásokból importáljon beállításokat!\n\nKérjük, erősítse meg a következő beállítások importálását:\n\n</string>
@@ -1835,4 +1837,6 @@
     <string name="use_camera_light_summary">Ha a készülék töltőn van, a kamera vakuja világít riasztáskor</string>
     <string name="g7_should_start_automatically">G7 automatikusan indul</string>
     <string name="screenshot">Képernyőmentés</string>
+    <string name="show_graphical_trend_arrow">Grafikus trendnyíl mutatása</string>
+    <string name="no_alert_in_silent_mode">Nincs riasztás Néma üzemmódban</string>
 </resources>

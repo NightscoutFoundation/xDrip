@@ -689,6 +689,7 @@
     <string name="plugin_plot_on_graph">График на плъгин върху графика</string>
     <string name="use_plugin_glucose">Използвайте плъгин за глюкоза</string>
     <string name="main_glucose_plugin">Основният номер на дисплея на глюкозата идва от плъгина!</string>
+    <string name="plugin_override_all">Плъгинът Презаписва ВСИЧКО</string>
     <string name="all_new_glucose_data_plugin">ВСИЧКИ нови данни за глюкозата ще бъдат изчислени и запазени от избрания плъгин, а не от стандартния алгоритъм xDrip. Това не е тествано и може да е неточно и с грешки. Използвайте с изключително внимание.</string>
     <string name="old_school_calibrations">Оригинален по-тесен диапазон от разрешени наклони в рамките на xDrip класически алгоритъм за калибриране (преди 2017 г.). По подразбиране склонове по-вероятно! (само инженерен режим)</string>
     <string name="old_school_calibration_mode">Режим на калибриране - старата школа</string>
@@ -726,11 +727,13 @@
     <string name="options_for_upload">Опции за качване в Nightscout, MongoDB или Dexcom Share</string>
     <string name="cloud_upload">Качване в облак</string>
     <string name="enable_mongo_sync">Позволяване на Nightscout MongoDB синхронизация</string>
+    <string name="mongo_db_uri">MongoDB URI</string>
     <string name="skip_local_lan">За локални сървъри с адреси 192.168.x.x, пропускайте качванията, когато няма връзка с локална мрежа.</string>
     <string name="skip_lan_uploads">Пропусни LAN качвания/upload</string>
     <string name="mongo_load_transmitter_data_title">Качете данни от Libre предавателите</string>
     <string name="mongo_load_transmitter_data_summary">Позволете на повече от един xDrip да се свързва с Bluetooth устройства и да съхранява данните, които получават в облака. Това трябва да позволи покритие на цялата къща за Libre с MiaoMiao или 2 родители, използващи едно и също Bluetooth устройство прозрачно.</string>
     <string name="influxdb_sync">Активирайте синхронизирането на InfluxDB</string>
+    <string name="influxdb_uri">InfluxDB URI</string>
     <string name="influxdb_database_name">Име на база данни InfluxDB</string>
     <string name="user">Потребител</string>
     <string name="password">Парола</string>
@@ -940,6 +943,8 @@
     <string name="set_data_source_to">Задайте източник на данни: %s ?</string>
     <string name="are_you_sure">Сигурени ли сте?</string>
     <string name="g4_share_receiver">G4 Споделяне на приемник</string>
+    <string name="bluetooth_wixel">Bluetooth Wixel</string>
+    <string name="parakeet_wifi">Parakeet / WiFi</string>
     <string name="other">Други</string>
     <string name="which_software_is_the_wixel_running">С кой софтуер работи Wixel?</string>
     <string name="start_source_setup_wizard">Стартирай съветника за настройка на източника</string>
@@ -955,6 +960,7 @@
     <string name="use_librealarm">Използвай LibreAlarm приложението за източник на данни?</string>
     <string name="noise_blocking">Блокиране на шум в измерванията</string>
     <string name="level_at_which_noisy_data_should_not_be_broadcast">Ниво, при което шумните данни не трябва да се предават, тъй като това може да обърка приемащите приложения</string>
+    <string name="low_parakeet_battery">Ниска батерия на устройството Parakeet</string>
     <string name="glucose_units_mmol_or_mgdl">КЗ единици mmol/L или mg/dL</string>
     <string name="is_your_typical_glucose_value">Коя е Вашата типична стойност на КЗ: 5,5 (mmol/L) или 100 (mg/dL)? Изберете по-долу</string>
     <string name="settings_updated_to_mmol">Настройките са актуализирани до mmol/L</string>
@@ -967,6 +973,7 @@
     <string name="please_enter_printed_calibration_code">Моля, въведете отпечатания номер на кода за калибриране, 4 цифри, напр. 5678</string>
     <string name="enable_update_checks">Активиране на проверките за актуализация?</string>
     <string name="you_can_easily_roll_back_dialog_msg">С xDrip можете лесно да се върнете към предишни версии, просто като стартирате отново инсталатора на APK за старата версия в папката си за изтегляния, ако новата версия не ви харесва\n\nИскате ли да активирате проверките за актуализация?</string>
+    <string name="hey_fam">Hey Fam...</string>
     <string name="you_have_update_checks_off">Проверките за актуализации са изключени!\n\nОпитваме се да оправяме проблеми и да добавяме нови функционалности в xDrip+ с течение на времето.\n\nНа всеки 60 дни това напомняне ще се показва, за да ви помоли да включите проверката за актуализации.</string>
     <string name="update_checking_enabled">Проверката на актуализацията е активирана!</string>
     <string name="cancel_alarm">Отмени Аларма?</string>
@@ -1370,6 +1377,8 @@
     <string name="title_color_heart_rate1">Сензор за сърдечен ритъм</string>
     <string name="title_insulin_colors">Инсулин Цветове</string>
     <string name="title_color_basal_tbr">Временна стойност на бавнодействащия инсулин(TBR)</string>
+    <string name="title_color_smb_icon">Икона на бързодействащ инсулин</string>
+    <string name="title_color_smb_line">Линия на бързодействащ инсулин</string>
     <string name="summary_xdrip_plus_graph_display_settings">Коригирай елементите на диаграмата</string>
     <string name="title_xdrip_plus_graph_display_settings">Настройки на графиката</string>
     <string name="summary_show_basal_line">Показване на временна оценка за бавнодействащ инсулин от външен статус</string>
@@ -1490,6 +1499,7 @@
     <string name="nothing_found">нищо не е намерено</string>
     <string name="do_not_hit_start_long">Не натискайте сензора за стартиране, освен ако сензорът вече не е вграден и предавателят е свързан.</string>
     <string name="calibration_graph_no_calibration">графика за калибриране (без калибриране)</string>
+    <string name="calibration_plugin_header">име на приставката за калибриране</string>
     <string name="usb_device_was_not_recognized">USB устройството не беше разпознато</string>
     <string name="followers_name">Име на последователи:</string>
     <string name="your_display_name">Вашето екранно име:</string>
@@ -1877,4 +1887,7 @@
     <string name="use_camera_light_summary">Премигване на светкавицата на камерата по време на аларми, когато е свързано зарядното устройство</string>
     <string name="g7_should_start_automatically">G7 би трябвало да стартира автоматично</string>
     <string name="screenshot">Екранна снимка</string>
+    <string name="bg_alert">КЗ %1$s АЛАРМА: %2$s (@%3$s)</string>
+    <string name="show_graphical_trend_arrow">Показване на срелка за графичен тренд</string>
+    <string name="no_alert_in_silent_mode">Без аларма в тих режим</string>
 </resources>
