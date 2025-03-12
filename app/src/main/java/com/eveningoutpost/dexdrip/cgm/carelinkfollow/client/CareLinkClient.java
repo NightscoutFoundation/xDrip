@@ -608,14 +608,26 @@ public class CareLinkClient {
 
         Map<String, String> queryParams = null;
         RecentData recentData = null;
+        boolean useCloudServer = false;
 
         queryParams = new HashMap<String, String>();
         queryParams.put("cpSerialNumber", "NONE");
         queryParams.put("msgType", "last24hours");
         queryParams.put("requestTime", String.valueOf(System.currentTimeMillis()));
 
+        //use cloud server in every region
+        useCloudServer = true;
+
         try {
-            recentData = this.getData(this.careLinkServer(), "patient/connect/data", queryParams, null, RecentData.class);
+            //Get data
+            //carelink cloud server and no query params
+            if(useCloudServer)
+                recentData = this.getData(this.cloudServer(), "patient/connect/data", null, null, RecentData.class);
+            //old carelink minimed server + query params
+            else
+                recentData = this.getData(this.careLinkServer(), "patient/connect/data", queryParams, null, RecentData.class);
+
+            //Correct time
             if (recentData != null)
                 correctTimeInRecentData(recentData);
         } catch (Exception e) {
@@ -668,7 +680,7 @@ public class CareLinkClient {
                     correctTimeInRecentData(recentData);
                 }
             }
-            //Use new data format outside US
+            //Use new data format for new endpoint
             else {
                 displayMessage = this.getData(newEndpointUrl, requestBody, DisplayMessage.class);
                 if (displayMessage != null && displayMessage.patientData != null) {
@@ -686,6 +698,8 @@ public class CareLinkClient {
     // New M2M last24hours webapp data
     public RecentData getM2MPatientData(String patientUsername) {
 
+        RecentData recentData = null;
+        boolean useCloudServer = false;
         Map<String, String> queryParams = null;
 
         //Patient username is mandantory!
@@ -697,9 +711,21 @@ public class CareLinkClient {
         queryParams.put("msgType", "last24hours");
         queryParams.put("requestTime", String.valueOf(System.currentTimeMillis()));
 
-        RecentData recentData = this.getData(this.careLinkServer(), "/patient/m2m/connect/data/gc/patients/" + patientUsername, queryParams, null, RecentData.class);
+        //use cloud server in every region
+        useCloudServer = true;
+
+        //Get data
+        //carelink cloud server and no query params
+        if(useCloudServer)
+            recentData = this.getData(this.cloudServer(), "patient/m2m/connect/data/gc/patients/" + patientUsername, null, null, RecentData.class);
+        //old carelink minimed server + query params
+        else
+            recentData = this.getData(this.careLinkServer(), "patient/m2m/connect/data/gc/patients/" + patientUsername, queryParams, null, RecentData.class);
+
+        //Correct time
         if (recentData != null)
             correctTimeInRecentData(recentData);
+
         return recentData;
 
     }
