@@ -41,7 +41,7 @@ public class SourceWizard {
     private Tree<Item> root = new Tree<>(new Item(gs(R.string.choose_data_source), gs(R.string.which_system_do_you_use)));
 
     {
-        root.addChild(new Item("Dexcom", DexCollectionType.DexcomG6, R.drawable.menu_bg));
+        root.addChild(new Item("Dex", DexCollectionType.DexcomG6, R.drawable.dex_icon));
 
         Tree<Item> libre = root.addChild(new Item(gs(R.string.libre), gs(R.string.what_type_of_libre_bridge_device_do_you_use), R.drawable.libre_icon_image));
         {
