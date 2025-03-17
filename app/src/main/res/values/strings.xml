@@ -1974,4 +1974,7 @@
     <string name="summary_use_diaconnp8_background_sync">pen log uploaded periodically in the background, so p8 battery runs out fast.</string>
     <string name="g7_should_start_automatically">G7 should start automatically</string>
     <string name="screenshot">Screenshot</string>
+    <string name="bg_alert">BG %1$s ALERT: %2$s (@%3$s)</string>
+    <string name="show_graphical_trend_arrow">Show Graphical Trend Arrow</string>
+    <string name="no_alert_in_silent_mode">No Alert in Silent mode</string>
 </resources>

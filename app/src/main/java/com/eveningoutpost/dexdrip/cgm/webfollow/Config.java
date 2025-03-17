@@ -15,6 +15,8 @@ public class Config implements Exposed {
     public String version;
     public String product;
     public String authorization;
+    public String hname;
+    public String hvalue;
     public String query;
     public String contentType;
     public RequestBody body;

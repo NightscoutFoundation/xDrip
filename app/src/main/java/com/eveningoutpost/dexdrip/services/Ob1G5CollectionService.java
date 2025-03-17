@@ -995,12 +995,15 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     public static void clearPersistStore() {
-        PersistentStore.removeItem(KEKS_ONE + transmitterMAC);
+        PersistentStore.cleanupOld(KEKS_ONE);
+        PersistentStore.cleanupOld(OB1G5_MACSTORE);
     }
 
     public static void clearPersist() {
         clearPersistStore();
         expireFailures(true);
+        transmitterID = null;
+        transmitterMAC = null;
     }
 
     private void scheduleWakeUp(long future, final String info) {
