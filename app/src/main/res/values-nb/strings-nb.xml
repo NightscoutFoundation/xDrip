@@ -626,7 +626,7 @@
     <string name="transmitter_pl_support">Senderstøtte (PL)</string>
     <string name="experimental_rdfuino_support">Eksperimentell støtte for RFduino fra Tomasz Stachowicz</string>
     <string name="rfduino_support">RFduino støtte</string>
-    <string name="repeatedly_restart_collection_service">Gjentatt tilbakestill innsamlingstjenesten ved misstanke om tapt data. Aktiver kun hvis data mangler.</string>
+    <string name="repeatedly_restart_collection_service">Start innsamlingstjenesten på nytt ved ethvert hint om manglende data. Aktiver bare hvis du mister data.</string>
     <string name="aggressive_service_restarts">Aggressiv omstart av tjeneste</string>
     <string name="predictive_readings_old">Gammel metode - ikke anbefalt! Forsøker å forutse avlesninger hvert minutt basert på de forrige verdiene.</string>
     <string name="use_external_blukon_algorithm_summary">Bruk en \"out of process\" (OOP) Libre algoritme. (BluCon/NFC/LibreAlarm)</string>
@@ -640,7 +640,7 @@
     <string name="libre_use_smoothed_data_title">Utjevn Libre-data</string>
     <string name="retrieve_blukon_history_title">Hent Libre-historikk</string>
     <string name="retrieve_blukon_history_summary">Hente manglende historie fra BluCon-enhet når du kobler til sensoren på nytt.</string>
-    <string name="interpret_share_raw">xDrip vil vise verdiene når de normalt er skjult på mottakeren vhis du bruker Share.</string>
+    <string name="interpret_share_raw">xDrip vil vise verdiene når de normalt er skjult på mottakeren dersom du bruker Share.</string>
     <string name="interpret_raw">Tolk rådata</string>
     <string name="use_infrequent_calibrations">Bruk eldre kalibreringer hvis nødvendig, for eksempel hvis kalibrering ikke blir lagt inn regelmessig.</string>
     <string name="infrequent_calibrations">Ikke regelmessig kalibrering</string>
