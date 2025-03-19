@@ -23,6 +23,7 @@ public class SensorTest extends RobolectricTestWithConfig {
 
     private void cleanEverything() {
         BgReading.deleteALL();
+        Calibration.deleteAll();
         Sensor.deleteAll();
     }
 
