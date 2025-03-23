@@ -1,11 +1,14 @@
 package com.eveningoutpost.dexdrip.evaluators;
 
 import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.Calibration;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.Sensor;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.robolectric.shadows.ShadowLog;
 
@@ -22,6 +25,22 @@ public class PersistentHighTest extends RobolectricTestWithConfig {
     private static long START_TIME = JoH.tsl() - Constants.HOUR_IN_MS * 4;
     private static final double HIGH_MARK = 170;
 
+    @Before
+    public void setUp() {
+        cleanEverything();
+    }
+
+    @After
+    public void tearDown() {
+        cleanEverything();
+    }
+
+    private void cleanEverything() {
+        BgReading.deleteALL();
+        Calibration.deleteAll();
+        Sensor.deleteAll();
+    }
+
     @Test
     public void dataQualityCheckTest() {
 
@@ -32,8 +51,9 @@ public class PersistentHighTest extends RobolectricTestWithConfig {
         assertWithMessage("Predating sensor should fail").that(PersistentHigh.dataQualityCheck(1000, HIGH_MARK)).isFalse();
         assertWithMessage("Post sensor start no data should fail").that(PersistentHigh.dataQualityCheck(JoH.tsl(), HIGH_MARK)).isFalse();
 
-        BgReading.deleteALL();
-        Sensor.create(START_TIME);
+        cleanEverything();
+        Sensor created = Sensor.create(START_TIME);
+        assertWithMessage("Sensor started when we wanted").that(created.started_at).isEqualTo(START_TIME);
         // various all high time slices
         for (int i = 0; i < (12 * 4); i++) {
             final long timestamp = START_TIME + Constants.MINUTE_IN_MS * 5 * i;
@@ -44,8 +64,9 @@ public class PersistentHighTest extends RobolectricTestWithConfig {
         }
 
         START_TIME++;
-        BgReading.deleteALL();
-        Sensor.create(START_TIME);
+        cleanEverything();
+        created = Sensor.create(START_TIME);
+        assertWithMessage("Sensor started when we wanted b").that(created.started_at).isEqualTo(START_TIME);
         // single dipped point in sequence after a point we might have succeeded
         for (int i = 0; i < (12 * 4); i++) {
             final long timestamp = START_TIME + Constants.MINUTE_IN_MS * 5 * i;
@@ -56,8 +77,9 @@ public class PersistentHighTest extends RobolectricTestWithConfig {
         }
 
         START_TIME++;
-        BgReading.deleteALL();
-        Sensor.create(START_TIME);
+        cleanEverything();
+        created = Sensor.create(START_TIME);
+        assertWithMessage("Sensor started when we wanted c").that(created.started_at).isEqualTo(START_TIME);
         // single dipped point in sequence before we would succeed
         for (int i = 0; i < (12 * 4); i++) {
             final long timestamp = START_TIME + Constants.MINUTE_IN_MS * 5 * i;
