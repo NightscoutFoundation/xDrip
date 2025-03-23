@@ -120,6 +120,7 @@
     <string name="title_activity_update">Doatępna jest nowa aktualizacja xDrip+</string>
     <string name="title_activity_display_qrcode">Udostepnij ustawienia poprzez kod QR</string>
     <string name="title_activity_send_feed_back">Wyślij odpowiedź do Jamorham</string>
+    <string name="title_activity_save_logs"></string>
     <string name="title_activity_maps">Mapa Parakeet</string>
     <string name="title_activity_display_preferences">Pokaż Preferencje</string>
     <string name="export_submenu">Funkcje importu / eksportu</string>
@@ -406,6 +407,7 @@
     <string name="please_enter_your_question_or_comments_here">Proszę wpisz swoje pytanie lub komentarze.\n\nJeśli podasz adres e-mail możliwe, że uzyskasz odpowiedź.\n\n</string>
     <string name="optional_contact_info_here_eg_email">Opcjonalnie Informacje kontaktowe np. email</string>
     <string name="send_message">Wyślij wiadomość</string>
+    <string name="save_logs"></string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Proszę napisz, co myślisz o tej aplikacji.</string>
     <string name="preferences_saved_in_sdcard_downloads">Ustawienia zapisane na karcie SD w Download</string>
     <string name="could_not_write_to_sdcard_check_perms">Nie można zapisać na karte - sprawdź uprawnienia?</string>
@@ -1809,6 +1811,7 @@
     <string name="carelink_credential_status_access_expired">Dostęp wygasł! Nastąpi odświeżenie!</string>
     <string name="carelink_credential_status_refresh_expired">Sesja logowania wygasła! Zaloguj się!</string>
     <string name="data_source">Źródło danych:</string>
+    <string name="disable_collection"></string>
     <string name="reraise_alerts_before_snooze_time">Odnów alarm przed czasem drzemki</string>
     <string name="select_start_time">Wybierz czas rozpoczęcia</string>
     <string name="select_end_time">Wybierz czas zakończenia</string>
