@@ -1188,6 +1188,8 @@
     <string name="summary_cloud_storage_api_download_enable">Prova anche a scaricare i dati da Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Scarica dati</string>
     <string name="title_cloud_storage_api_download_from_xdrip">Ignora gli elementi provenienti da xDrip</string>
+    <string name="nightscout_upload_failure_backfill_required">Caricamento non riuscito per tutti i siti. Recupero dati consigliato. Primo fallimento: %1$s</string>
+    <string name="title_nightscout_upload_failure_backfill_required">Upload Nightscout Multi-Siti Inconsistente</string>
     <string name="summary_cloud_storage_api_download_from_xdrip">Non scaricare gli elementi caricati da xDrip</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Calibra automaticamente utilizzando le letture di glicemia se le condizioni sembrano giuste, senza chiedere conferma (sperimentale)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Calibrazione automatica</string>
@@ -1200,6 +1202,8 @@
     <string name="title_send_treatments_to_nightscout">Carica trattamenti</string>
     <string name="summary_warn_nightscout_failures">Notifica e suona se il caricamento a Nightscout fallisce.</string>
     <string name="title_warn_nightscout_failures">Allarmi in caso di errori</string>
+    <string name="summary_warn_nightscout_multi_site_upload_failure">xDrip cancella la coda di caricamento dati anche se solo un sito ha caricato con successo, lasciando gli altri incompleti. Con questo sei avvisato, e puoi eseguire il recupero se necessario.</string>
+    <string name="title_warn_nightscout_multi_site_upload_failure">Avviso di fallimento caricamento multi-siti</string>
     <string name="summary_nightscout_device_append_source_info">Per G5, invia il tipo di collector (es. OB1) e leggi lo stato di ricupero dati storici (per nativo) a Nightscout.</string>
     <string name="title_nightscout_device_append_source_info">Aggiungi informazioni sulla sorgente dati al nome del dispositivo</string>
     <string name="summary_tap_to_send_historical_data">Tocca per inviare dati storici a Nightscout</string>
@@ -1891,4 +1895,7 @@
     <string name="use_camera_light_summary">Lampeggia la torcia durante gli avvisi quando collegato a un caricabatterie</string>
     <string name="g7_should_start_automatically">G7 dovrebbe avviarsi automaticamente</string>
     <string name="screenshot">Schermata</string>
+    <string name="bg_alert">GLIC %1$s ALLARME: %2$s (@%3$s)</string>
+    <string name="show_graphical_trend_arrow">Mostra Freccia Di Tendenza Grafica</string>
+    <string name="no_alert_in_silent_mode">Nessun avviso in modalità silenziosa</string>
 </resources>
