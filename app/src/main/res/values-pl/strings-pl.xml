@@ -118,7 +118,7 @@
     <string name="title_activity_alert_list">Lista alarmów</string>
     <string name="speaktreatment">Wymawiaj zabieg</string>
     <string name="title_activity_update">Doatępna jest nowa aktualizacja xDrip+</string>
-    <string name="title_activity_display_qrcode">Udostepnij ustawienia poprzez kod QR</string>
+    <string name="title_activity_display_qrcode">Udostępnij ustawienia poprzez kod QR</string>
     <string name="title_activity_send_feed_back">Wyślij odpowiedź do Jamorham</string>
     <string name="title_activity_save_logs"></string>
     <string name="title_activity_maps">Mapa Parakeet</string>
@@ -216,11 +216,11 @@
     <string name="load_save_settings_to_sdcard">Otw. / Zap. ustaw. na karcie SD</string>
     <string name="alarms_and_alerts">Alarmy i alerty</string>
     <string name="alerts_and_notifications">Alerty i powiadomienia</string>
-    <string name="glucose_level_alerts_list">Glukozy poziomu listy alertów</string>
-    <string name="glucose_alerts_settings">Glukoza Alarmy Ustawienia</string>
+    <string name="glucose_level_alerts_list">Lista alarmów poziomu glukozy</string>
+    <string name="glucose_alerts_settings">Ustawienia alarmów glikemii</string>
     <string name="smart_snoozing">Inteligentne Drzemka</string>
     <string name="calibration_alerts">Alarmy kalibracji</string>
-    <string name="missed_reading_alert">Utracony odczyt Alarm</string>
+    <string name="missed_reading_alert">Alarmy brakujących odczytów</string>
     <string name="other_alerts">Inne Alarmy</string>
     <string name="extra_alerts_xdrip_plus">Dodatkowe ostrzeżenia (xDrip+)</string>
     <string name="persistent_high_alert">Utrzymujące się wysokie alerty</string>
@@ -298,7 +298,7 @@
     <string name="other_settings">Inne ustawienia</string>
     <string name="older_gratuitous_wakelocks">Starsze wakelocks które mogą rozładowywać baterię, ale mogą być potrzebne do NightWatch lub Android Wear</string>
     <string name="use_excessive_wakelocks">Użyj nadmiernej Wakelocks</string>
-    <string name="speak_readings">Głosowe odczytywanie wartosci BG</string>
+    <string name="speak_readings">Głosowe odczytywanie wartości glukozy</string>
     <string name="extra_status_line">Dodatkowa linia statusu</string>
     <string name="dexcom_share_server_upload">Dexcom Share Server Prześlij dane</string>
     <string name="upload_data_to_dex_servers">Prześlij dane do serwerów Dexcom, dzięki czemu można korzystać z aplikacji Dexcom</string>
@@ -369,9 +369,9 @@
     <string name="save_all_settings_to_sdcard">Zapisz wszystkie ustawienia na karcie SD</string>
     <string name="load_all_settings_from_sdcard">Załąduj wszystkie ustawienia z pliku z ustawieniami</string>
     <string name="delete_any_settings_on_sdcard">Usuń wszystkie ustawienia z karty SD</string>
-    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Za pomocą kodów QR przenieść ustawienia. Ustawienia-&gt; funkcja Auto Konfiguracji]]></string>
-    <string name="xdrip_plus_security_key_settings_only">tylko xDrip Plus Ustawienia zabezpieczeń klucza</string>
-    <string name="show_general_and_collection_settings">Wyswietl ustawienia ogólne i collection</string>
+    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Przenieś ustawienia za pomocą kodu QR. Ustawienia->Automatyczna konfiguracja]]></string>
+    <string name="xdrip_plus_security_key_settings_only">Tylko ustawienia klucza zabezpieczeń xDrip Plus</string>
+    <string name="show_general_and_collection_settings">Wyświetl ustawienia ogólne i zbierania danych</string>
     <string name="copy_all_settings">Kopiowanie wszystkich ustawień</string>
     <string name="sensor_is_ready_please_enter_double_calibration">Czujnik jest gotowy, wprowadź podwójną kalibracje</string>
     <string name="in_order_to_get_started_please_perform_two_finger">Aby rozpocząć, należy wykonać dwa pomiary stężenia glukozy (dwa kłucia) i wprowadzić wartości tutaj!</string>
@@ -1187,6 +1187,8 @@
     <string name="summary_cloud_storage_api_download_enable">Spróbuj również pobrać zabiegi z Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Pobierz zabiegi</string>
     <string name="title_cloud_storage_api_download_from_xdrip">Pomiń elementy z xDrip</string>
+    <string name="nightscout_upload_failure_backfill_required">Przesyłanie nie powiodło się dla części witryn. Zalecane jest uzupełnienie luk. Pierwszy błąd: %1$s</string>
+    <string name="title_nightscout_upload_failure_backfill_required">Przesłanie do wielu stron Nightscout było niespójne</string>
     <string name="summary_cloud_storage_api_download_from_xdrip">Unikaj pobierania elementów przesłanych przez xDrip</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Kalibruj bez pytania używając wyniku z glukometru jeżeli warunki są korzystne (funkcja eksperymentalna)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatyczna kalibracja</string>
@@ -1199,6 +1201,8 @@
     <string name="title_send_treatments_to_nightscout">Prześlij zabiegi</string>
     <string name="summary_warn_nightscout_failures">Wyświetl i wydaj dźwięk powiadomienia, jeśli wysyłanie Nightscout nie powiodło się.</string>
     <string name="title_warn_nightscout_failures">Alarmuj przy awariach</string>
+    <string name="summary_warn_nightscout_multi_site_upload_failure">xDrip czyści kolejkę wysyłania, nawet jeśli przesył danych powiódł się tylko dla jednej strony, pozostawiając inne strony nieuzupełnione. Dostaniesz powiadomienie, żeby wypełnić luki w razie potrzeby.</string>
+    <string name="title_warn_nightscout_multi_site_upload_failure">Alarm dla nieudanej wysyłki do wielu stron</string>
     <string name="summary_nightscout_device_append_source_info">W przypadku G5 wysyła typ kolektora (np. OB1) i status uzupełnienia danych (dla natywnego) do Nightscout.</string>
     <string name="title_nightscout_device_append_source_info">Dołącz informacje źródłowe do nazwy urządzenia</string>
     <string name="summary_tap_to_send_historical_data">Dotknij, aby wysłać dane historyczne do Nightscout</string>
@@ -1812,7 +1816,10 @@
     <string name="carelink_credential_status_refresh_expired">Sesja logowania wygasła! Zaloguj się!</string>
     <string name="data_source">Źródło danych:</string>
     <string name="disable_collection"></string>
+    <string name="alert_if_no_data_received_in_colon">Zgłoś alarm, jeżeli nie otrzymano danych przez:</string>
+    <string name="wait_before_raising_the_same_alert_after_snooze_colon">Czekaj przed zgłoszeniem tego samego ostrzeżenia po jego uśpieniu:</string>
     <string name="reraise_alerts_before_snooze_time">Odnów alarm przed czasem drzemki</string>
+    <string name="alert_reraise_time_colon">Interwał wznowienia alarmu:</string>
     <string name="select_start_time">Wybierz czas rozpoczęcia</string>
     <string name="select_end_time">Wybierz czas zakończenia</string>
     <string name="audio_focus_summary">Wybierz co zrobić z innymi aplikacjami podczas odtwarzania alarmów i dostosowywania poziomów głośności systemu</string>
