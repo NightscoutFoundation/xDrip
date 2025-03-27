@@ -1225,6 +1225,8 @@
     <string name="summary_cloud_storage_api_download_enable">Also try to download treatments from Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Download treatments</string>
     <string name="title_cloud_storage_api_download_from_xdrip">Skip items from xDrip</string>
+    <string name="nightscout_upload_failure_backfill_required">Uploads have not succeeded for all sites.  Backfill is recommended.  First failure: %1$s</string>
+    <string name="title_nightscout_upload_failure_backfill_required">Inconsistent Multi-Site Nightscout Upload</string>
     <string name="summary_cloud_storage_api_download_from_xdrip">Avoid downloading items uploaded by xDrip</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Calibrate using new blood glucose readings if the conditions appear right to do so without asking confirmation (experimental)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatic Calibration</string>
@@ -1237,6 +1239,8 @@
     <string name="title_send_treatments_to_nightscout">Upload treatments</string>
     <string name="summary_warn_nightscout_failures">Display and sound a notification if Nightscout upload is failing.</string>
     <string name="title_warn_nightscout_failures">Alert on failures</string>
+    <string name="summary_warn_nightscout_multi_site_upload_failure">xDrip clears the upload queue even if only one site has a successful upload, leaving others incomplete. This notifies you, allowing you to backfill as needed.</string>
+    <string name="title_warn_nightscout_multi_site_upload_failure">Alert on multi-site upload failure</string>
     <string name="summary_nightscout_device_append_source_info">For Dex, sends collector type (e.g. OB1) and reading backfill status (for native) to Nightscout.</string>
     <string name="title_nightscout_device_append_source_info">Append source info to device name</string>
     <string name="summary_tap_to_send_historical_data">Tap to send historical data to Nightscout</string>
@@ -1939,4 +1943,7 @@
     <string name="use_camera_light_summary">Flash camera light during alerts when connected to a charger</string>
     <string name="g7_should_start_automatically">G7 should start automatically</string>
     <string name="screenshot">Screenshot</string>
+    <string name="bg_alert">BG %1$s ALERT: %2$s (@%3$s)</string>
+    <string name="show_graphical_trend_arrow">Show Graphical Trend Arrow</string>
+    <string name="no_alert_in_silent_mode">No Alert in Silent mode</string>
 </resources>

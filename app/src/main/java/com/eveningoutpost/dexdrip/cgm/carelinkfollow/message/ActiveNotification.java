@@ -1,18 +1,15 @@
 package com.eveningoutpost.dexdrip.cgm.carelinkfollow.message;
 
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.util.CareLinkJsonAdapter;
+import com.google.gson.annotations.JsonAdapter;
+
 import java.util.Date;
 
-public class ActiveNotification {
+public class ActiveNotification extends Notification {
 
     public String GUID;
-    public Date dateTime;
-    public String type;
-    public int faultId;
-    public int instanceId;
-    public String messageId;
-    public String pumpDeliverySuspendState;
-    public String pnpId;
-    public int relativeOffset;
+
     public Boolean alertSilenced;
+
 
 }

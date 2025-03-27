@@ -8,6 +8,7 @@ import android.util.Base64;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.MegaStatus;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.BloodTest;
 import com.eveningoutpost.dexdrip.models.Calibration;
@@ -121,7 +122,6 @@ public class NightscoutUploader {
     private Boolean enableMongoUpload;
     private SharedPreferences prefs;
     private OkHttpClient client;
-    public static boolean lastSite2Upload2 = false; // This flag is raised when we start uploading to the last site
 
     public interface NightscoutService {
         @POST("entries")
@@ -464,14 +464,10 @@ public class NightscoutUploader {
             Log.e(TAG, "Unable to process API Base URL: " + e);
             return false;
         }
+        // Starting a loop run; resetting local failure and success flags
         boolean any_successes = false;
-        lastSite2Upload2 = false;
-        int size = baseURIs.size(); // Number of Nightscout sites to upload to
-        int count = 0;
+        boolean any_failures = false;
         for (String baseURI : baseURIs) {
-            if (++count >= size) {
-                lastSite2Upload2 = true; // We are starting the last run
-            }
             try {
                 baseURI = TryResolveName(baseURI);
                 int apiVersion = 0;
@@ -503,16 +499,34 @@ public class NightscoutUploader {
                 } else {
                     doLegacyRESTUploadTo(nightscoutService, glucoseDataSets);
                 }
-                any_successes = true;
+                any_successes = true; // There has been a success
                 last_success_time = JoH.tsl();
                 last_exception_count = 0;
                 last_exception_log_count = 0;
             } catch (Exception e) {
                 String msg = "Unable to do REST API Upload: " + e.getMessage() + " marking record: " + (any_successes ? "succeeded" : "failed");
+                any_failures = true; // There has been a failure
                 handleRestFailure(msg);
             }
         }
+        if (any_successes && any_failures) { // Only if there has been success as well as failure (inconsistent upload)
+            if (!PersistentStore.getBoolean(TAG + "_inconsistentMultiSteUpload")) { // If there had been no inconsistent uploads yet, which makes this the first
+                PersistentStore.setLong(TAG + "_firstInconsistentMultiSiteUploadTime", JoH.tsl()); // Record this time as the time of the first inconsistent upload
+            }
+            PersistentStore.setBoolean(TAG + "_inconsistentMultiSteUpload", true); // There has been inconsistent upload and we have recorded the time.  Let's set the flag.
+        }
         return any_successes;
+    }
+
+    public static void notifyInconsistentMultiSiteUpload() {
+        long firstInconsistentMultiSiteUploadTime = PersistentStore.getLong(TAG + "_firstInconsistentMultiSiteUploadTime"); // Updating the local representation of the last inconsistent upload time
+        if (PersistentStore.getBoolean(TAG + "_inconsistentMultiSteUpload")) { // If there has been a failure to upload and the queue has been cleared
+            if (Pref.getBooleanDefaultFalse("warn_nightscout_multi_site_upload_failure")) { // Issue notification only if enabled
+                JoH.showNotification(xdrip.gs(R.string.title_nightscout_upload_failure_backfill_required), null, null, Constants.NIGHTSCOUT_ERROR_NOTIFICATION_ID, null, false, false, null, null, xdrip.gs(R.string.nightscout_upload_failure_backfill_required, JoH.dateTimeText(firstInconsistentMultiSiteUploadTime)), true);
+            }
+            UserError.Log.uel(TAG, "Inconsistent Multi-site Nightscout upload - Backfill recommended - First failure: " + JoH.dateTimeText(firstInconsistentMultiSiteUploadTime));
+            PersistentStore.setBoolean(TAG + "_inconsistentMultiSteUpload", false); // We have notified.  Clearing the flag
+        }
     }
 
     private void doLegacyRESTUploadTo(NightscoutService nightscoutService, List<BgReading> glucoseDataSets) throws Exception {
@@ -813,14 +827,12 @@ public class NightscoutUploader {
                                     if (!r.isSuccessful()) {
                                         throw new UploaderException(r.message(), r.code());
                                     } else {
-                                        if (lastSite2Upload2)
-                                            up.completed(THIS_QUEUE); // Approve only if we have completed the last site
+                                        up.completed(THIS_QUEUE);
                                         Log.d(TAG, "Success for RESTAPI treatment delete: " + up.reference_uuid + " _id: " + this_id);
                                     }
                                 } else {
                                     Log.wtf(TAG, "Couldn't find a reference _id for uuid: " + up.reference_uuid + " got: " + this_id);
-                                    if (lastSite2Upload2)
-                                        up.completed(THIS_QUEUE); // don't retry // Approve only if we have completed the last site
+                                    up.completed(THIS_QUEUE); // don't retry
                                 }
                             }
                         } else {
@@ -829,8 +841,7 @@ public class NightscoutUploader {
                     }
                 } else {
                     Log.wtf(TAG, "Unsupported operation type for treatment: " + up.action);
-                    if (lastSite2Upload2)
-                        up.completed(THIS_QUEUE); // don't retry it // Approve only if we have completed the last site
+                    up.completed(THIS_QUEUE); // don't retry it
                 }
             }
             // handle insert types
@@ -845,8 +856,7 @@ public class NightscoutUploader {
                         Log.d(TAG, "Success for RESTAPI treatment insert upload");
                         for (UploaderQueue up : tups) {
                             if (up.action.equals("insert")) {
-                                if (lastSite2Upload2)
-                                    up.completed(THIS_QUEUE); // approve all types for this queue // Approve only if we have completed the last site
+                                up.completed(THIS_QUEUE); // approve all types for this queue
                             }
                         }
                         checkGzipSupport(r);
@@ -876,8 +886,7 @@ public class NightscoutUploader {
                                 if ((up.action.equals("update") || (up.action.equals("insert")))
                                         && (up.reference_uuid.equals(match_uuid) || (uuid_to_id(up.reference_uuid).equals(match_uuid)))) {
                                     if (d) Log.d(TAG, "upsert: matched");
-                                    if (lastSite2Upload2)
-                                        up.completed(THIS_QUEUE); // approve all types for this queue // Approve only if we have completed the last site
+                                    up.completed(THIS_QUEUE); // approve all types for this queue
                                     break;
                                 }
                             }
@@ -891,8 +900,7 @@ public class NightscoutUploader {
                 // if we got this far without exception then mark everything as completed to fix harmless erroneous queue entries
                 for (UploaderQueue up : tups) {
                     if (d) Log.d(TAG, "Marking all items completed");
-                    if (lastSite2Upload2)
-                        up.completed(THIS_QUEUE); // Approve only if we have completed the last site
+                    up.completed(THIS_QUEUE);
                 }
             }
         }

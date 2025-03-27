@@ -1,18 +1,15 @@
 package com.eveningoutpost.dexdrip.cgm.carelinkfollow.message;
 
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.util.CareLinkJsonAdapter;
+import com.google.gson.annotations.JsonAdapter;
+
 import java.util.Date;
 
-public class ClearedNotification {
+public class ClearedNotification extends Notification {
 
     public String referenceGUID;
-    public Date dateTime;
-    public String type;
-    public int faultId;
-    public int instanceId;
-    public String messageId;
-    public String pumpDeliverySuspendState;
-    public String pnpId;
-    public int relativeOffset;
+
+    @JsonAdapter(CareLinkJsonAdapter.class)
     public Date triggeredDateTime;
 
 }

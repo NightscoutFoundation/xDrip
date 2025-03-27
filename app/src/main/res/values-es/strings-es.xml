@@ -1878,4 +1878,7 @@
     <string name="use_camera_light_summary">Flashear luz de la cámara durante alertas al conectar a un cargador</string>
     <string name="g7_should_start_automatically">G7 debe iniciarse automáticamente</string>
     <string name="screenshot">Captura de pantalla</string>
+    <string name="bg_alert">BG %1$s ALERTA: %2$s (@%3$s)</string>
+    <string name="show_graphical_trend_arrow">Mostrar flecha de tendencia gráfica</string>
+    <string name="no_alert_in_silent_mode">No hay alerta en modo silencioso</string>
 </resources>
