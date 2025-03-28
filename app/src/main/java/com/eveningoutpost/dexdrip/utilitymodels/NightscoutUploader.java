@@ -467,6 +467,8 @@ public class NightscoutUploader {
         // Starting a loop run; resetting local failure and success flags
         boolean any_successes = false;
         boolean any_failures = false;
+        final long THIS_QUEUE = UploaderQueue.NIGHTSCOUT_RESTAPI;
+        final List<UploaderQueue> tups = UploaderQueue.getPendingbyType(Treatments.class.getSimpleName(), THIS_QUEUE);
         for (String baseURI : baseURIs) {
             try {
                 baseURI = TryResolveName(baseURI);
@@ -495,7 +497,7 @@ public class NightscoutUploader {
                 if (apiVersion == 1) {
                     String hashedSecret = Hashing.sha1().hashBytes(secret.getBytes(Charsets.UTF_8)).toString();
                     doStatusUpdate(nightscoutService, retrofit.baseUrl().url().toString(), hashedSecret); // update status if needed
-                    doRESTUploadTo(nightscoutService, hashedSecret, glucoseDataSets, meterRecords, calRecords);
+                    doRESTUploadTo(nightscoutService, hashedSecret, glucoseDataSets, meterRecords, calRecords, tups, THIS_QUEUE);
                 } else {
                     doLegacyRESTUploadTo(nightscoutService, glucoseDataSets);
                 }
@@ -542,7 +544,7 @@ public class NightscoutUploader {
         }
     }
 
-    private void doRESTUploadTo(NightscoutService nightscoutService, String secret, List<BgReading> glucoseDataSets, List<BloodTest> meterRecords, List<Calibration> calRecords) throws Exception {
+    private void doRESTUploadTo(NightscoutService nightscoutService, String secret, List<BgReading> glucoseDataSets, List<BloodTest> meterRecords, List<Calibration> calRecords, List<UploaderQueue> tups, long THIS_QUEUE) throws Exception {
         final JSONArray array = new JSONArray();
 
         for (BgReading record : glucoseDataSets) {
@@ -575,7 +577,7 @@ public class NightscoutUploader {
 
         try {
             if (Pref.getBooleanDefaultFalse("send_treatments_to_nightscout")) {
-                postTreatments(nightscoutService, secret);
+                postTreatments(nightscoutService, secret, tups, THIS_QUEUE);
             } else {
                 Log.d(TAG, "Skipping treatment upload due to preference disabled");
             }
@@ -779,10 +781,8 @@ public class NightscoutUploader {
         array.put(record);
     }
 
-    private void postTreatments(NightscoutService nightscoutService, String apiSecret) throws Exception {
+    private void postTreatments(NightscoutService nightscoutService, String apiSecret, List<UploaderQueue> tups, long THIS_QUEUE) throws Exception {
         Log.d(TAG, "Processing treatments for RESTAPI");
-        final long THIS_QUEUE = UploaderQueue.NIGHTSCOUT_RESTAPI;
-        final List<UploaderQueue> tups = UploaderQueue.getPendingbyType(Treatments.class.getSimpleName(), THIS_QUEUE);
         if (tups != null) {
             JSONArray insert_array = new JSONArray();
             JSONArray upsert_array = new JSONArray();
