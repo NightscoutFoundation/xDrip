@@ -1188,6 +1188,8 @@
     <string name="summary_cloud_storage_api_download_enable">Prøv også å laste ned behandlinger fra Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Last ned behandlinger</string>
     <string name="title_cloud_storage_api_download_from_xdrip">Hopp over elementer fra xDrip</string>
+    <string name="nightscout_upload_failure_backfill_required">Opplastinger har ikke lyktes for alle nettsteder.  Tilbakefylling anbefales.  Første feil: %1$s</string>
+    <string name="title_nightscout_upload_failure_backfill_required">Inkonsekvent Multi-Nettsted Nightscout-opplasting</string>
     <string name="summary_cloud_storage_api_download_from_xdrip">Unngå å laste ned elementer lastet opp av xDrip</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Kalibrer med nye blodsukkermålinger hvis tilstanden synes riktig uten å be om samtykke (eksperimentell)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatisk kalibrering</string>
@@ -1200,6 +1202,8 @@
     <string name="title_send_treatments_to_nightscout">Last opp behandlinger</string>
     <string name="summary_warn_nightscout_failures">Vis og avgi et varsel hvis Nightscout-opplastingen mislykkes.</string>
     <string name="title_warn_nightscout_failures">Varsling om feil</string>
+    <string name="summary_warn_nightscout_multi_site_upload_failure">xDrip tømmer opplastingskøen selv om bare ett nettsted har en vellykket opplasting, og etterlater andre ufullstendige. Dette varsler deg, slik at du kan tilbakefylle etter behov.</string>
+    <string name="title_warn_nightscout_multi_site_upload_failure">Varsel om opplastingsfeil på Multi-Nettsted</string>
     <string name="summary_nightscout_device_append_source_info">For Dexcom, sender innsamlertype (f.eks. OB1) og avlesning sin tilbakefyllingsstatus (for native) til Nightscout.</string>
     <string name="title_nightscout_device_append_source_info">Legg til kildeinformasjon til enhetsnavnet</string>
     <string name="summary_tap_to_send_historical_data">Trykk for å sende historiske data til Nightscout</string>
