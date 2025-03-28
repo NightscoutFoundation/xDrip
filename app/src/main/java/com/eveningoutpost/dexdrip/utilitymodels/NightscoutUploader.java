@@ -48,6 +48,7 @@ import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -468,7 +469,10 @@ public class NightscoutUploader {
         boolean any_successes = false;
         boolean any_failures = false;
         final long THIS_QUEUE = UploaderQueue.NIGHTSCOUT_RESTAPI;
-        final List<UploaderQueue> tups = UploaderQueue.getPendingbyType(Treatments.class.getSimpleName(), THIS_QUEUE);
+        List<UploaderQueue> tups = Collections.emptyList();
+        if (Pref.getBooleanDefaultFalse("send_treatments_to_nightscout")) {
+            tups = UploaderQueue.getPendingbyType(Treatments.class.getSimpleName(), THIS_QUEUE);
+        }
         for (String baseURI : baseURIs) {
             try {
                 baseURI = TryResolveName(baseURI);
@@ -576,7 +580,7 @@ public class NightscoutUploader {
         }
 
         try {
-            if (Pref.getBooleanDefaultFalse("send_treatments_to_nightscout")) {
+            if (!tups.isEmpty()) {
                 postTreatments(nightscoutService, secret, tups, THIS_QUEUE);
             } else {
                 Log.d(TAG, "Skipping treatment upload due to preference disabled");
