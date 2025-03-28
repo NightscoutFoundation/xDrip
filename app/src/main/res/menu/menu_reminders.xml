@@ -48,7 +48,7 @@
 
     <item
         android:id="@+id/reminders_home_network"
-        android:title="Set Home Network"
+        android:title="@string/set_home_network"
         android:visible="true"
         android:onClick="onRemindersHomeNetworkClick"
         />

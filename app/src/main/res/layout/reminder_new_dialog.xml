@@ -16,7 +16,7 @@
             android:id="@+id/reminder_edit_alt_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Reminder alternate title"
+            android:hint="@string/reminder_alternate_title"
             android:inputType="text|textCapWords"
             android:lines="4"
             android:linksClickable="false"
@@ -192,7 +192,7 @@
             android:layout_below="@+id/weekEndsCheckbox"
             android:layout_alignParentStart="true"
             android:checked="false"
-            android:text="Graph Note"/>
+            android:text="@string/graph_note"/>
 
         <CheckBox
             android:id="@+id/speakCheckbox"
@@ -202,7 +202,7 @@
             android:layout_marginLeft="10dp"
             android:layout_toRightOf="@+id/GraphIconCheckbox"
             android:checked="false"
-            android:text="Speak" />
+            android:text="@string/speak" />
 
         <CheckBox
             android:id="@+id/homeOnlyCheckbox"
@@ -212,7 +212,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginTop="3dp"
             android:checked="false"
-            android:text="At Home Only" />
+            android:text="@string/at_home_only" />
 
         <CheckBox
             android:id="@+id/highPriorityCheckbox"

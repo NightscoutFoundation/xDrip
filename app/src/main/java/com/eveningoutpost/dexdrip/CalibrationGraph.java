@@ -88,7 +88,7 @@ public class CalibrationGraph extends ActivityWithMenu {
             DecimalFormat df = new DecimalFormat("#");
             df.setMaximumFractionDigits(2);
             df.setMinimumFractionDigits(2);
-            String Header = "slope = " + df.format(calibration.slope) + " intercept = " + df.format(calibration.intercept);
+            String Header = getString(R.string.calibration_slope_intercept, df.format(calibration.slope), df.format(calibration.intercept));
             GraphHeader.setText(Header);
 
             //red line
@@ -133,8 +133,8 @@ public class CalibrationGraph extends ActivityWithMenu {
         }
         Axis axisX = new Axis();
         Axis axisY = new Axis().setHasLines(true);
-        axisX.setName("Raw Value");
-        axisY.setName("Glucose " + (doMgdl ? "mg/dl" : "mmol/l"));
+        axisX.setName(getString(R.string.axis_x_raw_value));
+        axisY.setName(getString(R.string.axis_y_glucose_mgdl_mmol, (doMgdl ? "mg/dl" : "mmol/l")));
 
 
         data = new LineChartData(lines);
