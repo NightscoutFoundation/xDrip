@@ -259,7 +259,7 @@
     <string name="extra_tags_dialog_message">Wpisane tutaj tagi będą wpisywane do dziennika xDrip. Format to tag:poziom. Poziom może być v,d,i. Na przykład bgreading:i,DexCollectionService:v. Te tagi będą logowane z niskim priorytetem do listy błędów i zdarzeń.</string>
     <string name="extra_tags_dialog_title">Wprowadź więcej tagów do zalogowania</string>
     <string name="data_source_settings">Ustawienia źródła danych</string>
-    <string name="smart_watch_features">Inteligentne funkcje zegarka</string>
+    <string name="smart_watch_features">Funkcje inteligentnych zegarków</string>
     <string name="wear_integration">Integracja z Android Wear</string>
     <string name="send_data_to_android_wear_watch">Wysyłanie danych do Android Wear Watchface.</string>
     <string name="android_wear_integration">Integracja z Android Wear</string>
@@ -353,9 +353,9 @@
     <string name="default_snooze">Domyślnie uśpij</string>
     <string name="until_you_reenable">Do momentu ponownego włączenia</string>
     <string name="set">Ustaw</string>
-    <string name="disable_low_alerts">Wyłącz Niskie powiadomienia</string>
+    <string name="disable_low_alerts">Wyłącz alarmy o niskim poziomie</string>
     <string name="re_enable_low_alerts">Wznów alarmy o niskim poziomie glikemii</string>
-    <string name="disable_high_alerts">Wyłącz powiadomienia o wysokim poziomie</string>
+    <string name="disable_high_alerts">Wyłącz alarmy o wysokim poziomie</string>
     <string name="re_enable_high_alerts">Ponowne włączenie Wysokich Alarmów</string>
     <string name="disable_all_alerts">Wyłącz wszystkie alarmy</string>
     <string name="re_enable_all_alerts">Ponownie włącz wszystkie alerty</string>
@@ -461,7 +461,7 @@
     <string name="vibrate_when_no_bluetooth">Wibruj gdy nie ma bluetooth</string>
     <string name="special_glucose_value_to_display_message">Specjalna wartość glukozy, przy którym wyświetli się poniższy komunikat</string>
     <string name="bluetooth_wakelocks">Wakelocks Bluetooth</string>
-    <string name="compatible_broadcast">Kompatybilny Broadcast</string>
+    <string name="compatible_broadcast">Kompatybilna transmisja</string>
     <string name="show_datatables">Pokaż tabele danych</string>
     <string name="display_bridge_battery">Wyświetlanie stanu baterii mostka</string>
     <string name="close_gatt_on_ble_disconnect">Blisko GATT na BLE rozłączeniem</string>
@@ -599,7 +599,7 @@
     <string name="use_plugins_for_brodcast">Użyj wygładzania odczytów i wtyczek itp. (jeśli są włączone) dla nadawanej wartości</string>
     <string name="send_display_glucose">Wysyłaj wyświetlany poziom glukozy</string>
     <string name="send_broadcasts_old_permission_model">Wyślij transmisje bez blokowania do starszego modelu uprawnień</string>
-    <string name="process_nsclient_treatments">Przetwórz dane zabiegu otrzymane z aplikacji NSClient</string>
+    <string name="process_nsclient_treatments">Przetwarzaj dane zabiegów otrzymane z aplikacji NSClient</string>
     <string name="accept_treatments">Akceptuj zabiegi</string>
     <string name="process_broadcasted_calibrations">Przetwarzaj kalibracje otrzymane z innych aplikacji</string>
     <string name="spoken_readings_locale">Własna wersja językowa dla odczytów pomiarów, np. de lub en_IN</string>
@@ -1687,6 +1687,7 @@
     <string name="message_variant">Warianty xDrip+ pozwalają na zainstalowanie wielu aplikacji jednocześnie. Do zastosowań zaawansowanych lub żeby umożliwić jednoczesną instalacje xDrip-Experimental i xDrip+.\n\nZ wariantami, niektóre rzeczy mogą nie działać poprawnie, ponieważ jedna lub druga aplikacja posiada wyłączny dostęp, na przykład do parowania bluetooth. Opinie i raporty o błędach dotyczące wariantów są mile widziane!</string>
     <string name="expires_unknown">Wygasa: ???</string>
     <string name="sensor_expired">WYGASŁ!</string>
+    <string name="external_status_strings_eg_tbr">Zewnętrzne statusy np. TBR z AAPS</string>
     <string name="accept_external_status">Akceptuj status zewnętrzny</string>
     <string name="cancel_by_default">Anuluj domyślnie</string>
     <string name="old">Stary</string>
@@ -1702,7 +1703,7 @@
     <string name="pen_contains_which_insulin_type">PEN %s zawiera jaki rodzaj insuliny?</string>
     <string name="graphical_editor_for_pump_basal">Edytor graficzny dla profili bazowych pompy</string>
     <string name="basal_profile_editor">Edytor profilu bazy</string>
-    <string name="import_sounds">Importuj dźwięki</string>
+    <string name="import_sounds">Dźwięki importu</string>
     <string name="play_sounds_when_importing">Odtwarzaj dźwięki podczas importowania istotnych danych, takich jak profile</string>
     <string name="show_action_buttons_within_alerts">Pokaż przyciski akcji (takie jak drzemka) w powiadomieniach alarmowych</string>
     <string name="alert_buttons">Przyciski alarmowe</string>
@@ -1803,6 +1804,12 @@
     <string name="import_qr_code_warning">Importuj ustawienia tylko z zaufanych źródeł!\n\nPotwierdź zaimportowanie następujących ustawień:\n\n</string>
     <string name="scan_to_load_xdrip_settings">Zeskanuj, aby załadować ustawienia xDrip</string>
     <string name="manage_permissions">Zarządzaj uprawnieniami</string>
+    <string name="open_health_connect_settings_to_manually_manage_permissions">Otwórz ustawienia Health Connect, aby ręcznie zarządzać uprawnieniami</string>
+    <string name="send_data_to_health_connect">Wysyłaj dane do Health Connect</string>
+    <string name="get_data_from_health_connect">Pobieraj dane z Health Connect</string>
+    <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Wysyłaj i pobieraj dane z Google Health Connect i Google Fit</string>
+    <string name="google_health_connect">Google Health Connect</string>
+    <string name="google_health_connect_needs_perms">BŁĄD: Health Connect wymaga uprawnień! - Spróbuj ponownie w menu ustawień</string>
     <string name="carelink_auth_country_required">Kraj jest wymagany!</string>
     <string name="carelink_auth_status_authenticated">Status uwierzytelniony!</string>
     <string name="carelink_auth_status_not_authenticated">Brak uwierzytelnionego statusu!</string>
@@ -1816,12 +1823,16 @@
     <string name="carelink_credential_status_refresh_expired">Sesja logowania wygasła! Zaloguj się!</string>
     <string name="data_source">Źródło danych:</string>
     <string name="disable_collection"></string>
+    <string name="insulin_pens">Wstrzykiwacze insuliny</string>
     <string name="alert_if_no_data_received_in_colon">Zgłoś alarm, jeżeli nie otrzymano danych przez:</string>
     <string name="wait_before_raising_the_same_alert_after_snooze_colon">Czekaj przed zgłoszeniem tego samego ostrzeżenia po jego uśpieniu:</string>
     <string name="reraise_alerts_before_snooze_time">Odnów alarm przed czasem drzemki</string>
     <string name="alert_reraise_time_colon">Interwał wznowienia alarmu:</string>
     <string name="select_start_time">Wybierz czas rozpoczęcia</string>
     <string name="select_end_time">Wybierz czas zakończenia</string>
+    <string name="accept_glucose">Akceptuj glukozę</string>
+    <string name="process_glucose_data_received">Przetwarzaj dane glukozy otrzymane z aplikacji NSClient</string>
+    <string name="use_health_connect">Używaj Health Connect</string>
     <string name="audio_focus_summary">Wybierz co zrobić z innymi aplikacjami podczas odtwarzania alarmów i dostosowywania poziomów głośności systemu</string>
     <string name="audio_focus_dont_adjust_other_app_sounds">Nie dostosowuj dźwięków innych aplikacji</string>
     <string name="audio_focus_lower_volume_of_other_apps">Zmniejsz głośność innych aplikacji</string>
