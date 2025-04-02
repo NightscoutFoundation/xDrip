@@ -1946,4 +1946,18 @@
     <string name="bg_alert">BG %1$s ALERT: %2$s (@%3$s)</string>
     <string name="show_graphical_trend_arrow">Show Graphical Trend Arrow</string>
     <string name="no_alert_in_silent_mode">No Alert in Silent mode</string>
+    <string name="calibration_slope_intercept">slope = %1$s intercept = %2$s</string>
+    <string name="axis_x_raw_value">Raw Value</string>
+    <string name="axis_y_glucose_mgdl_mmol">Glucose + %s</string>
+    <string name="set_home_network">Set Home Network</string>
+    <string name="my_home_network_is">My Home WiFi Network name is:\n\n%s</string>
+    <string name="set_home_network_to">Set home network to: %s</string>
+    <string name="not_connected_to_wifi">Not connected to WiFi</string>
+    <string name="at_home_only">At Home Only</string>
+    <string name="speak">Speak</string>
+    <string name="graph_note">Graph Note</string>
+    <string name="reminder_alternate_title">Reminder alternate title</string>
+    <string name="default_xdrip_reminder_sound">Default xDrip+ reminder sound</string>
+    <string name="custom_audio_file">Custom Audio file</string>
+    <string name="android_ringtone_alarm">Android Ringtone/Alarm</string>
 </resources>
