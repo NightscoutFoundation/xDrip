@@ -1847,4 +1847,18 @@
     <string name="bg_alert">CUKIER %1$s ALARM: %2$s (@%3$s)</string>
     <string name="show_graphical_trend_arrow">Pokaż graficzną strzałkę trendu</string>
     <string name="no_alert_in_silent_mode">Brak alarmów w trybie cichym</string>
+    <string name="calibration_slope_intercept">nachylenie = %1$s punkt przecięcia z osią = %2$s</string>
+    <string name="axis_x_raw_value">Wartość surowa</string>
+    <string name="axis_y_glucose_mgdl_mmol">Glukoza + %s</string>
+    <string name="set_home_network">Ustaw sieć domową</string>
+    <string name="my_home_network_is">Moja nazwa sieci domowej WiFi to:\n\n%s</string>
+    <string name="set_home_network_to">Ustaw sieć domową na: %s</string>
+    <string name="not_connected_to_wifi">Brak połączenia z WiFi</string>
+    <string name="at_home_only">Tylko w domu</string>
+    <string name="speak">Wymawiaj</string>
+    <string name="graph_note">Notatka na wykresie</string>
+    <string name="reminder_alternate_title">Alternatywny tytuł przypomnienia</string>
+    <string name="default_xdrip_reminder_sound">Domyślny dźwięk przypomnienia xDrip+</string>
+    <string name="custom_audio_file">Własny plik audio</string>
+    <string name="android_ringtone_alarm">Dzwonek/Alarm systemu Android</string>
 </resources>
