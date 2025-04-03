@@ -1891,4 +1891,16 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="bg_alert">Výstraha %1$s glykémie: %2$s (@%3$s)</string>
     <string name="show_graphical_trend_arrow">Zobrazit grafickou šipku trendu</string>
     <string name="no_alert_in_silent_mode">Žádná výstraha v tichém režimu</string>
+    <string name="calibration_slope_intercept">sklon = %1$s průsečík = %2$s</string>
+    <string name="axis_x_raw_value">Neupravená hodnota</string>
+    <string name="axis_y_glucose_mgdl_mmol">Glykémie + %s</string>
+    <string name="set_home_network">Nastavení domácí sítě</string>
+    <string name="my_home_network_is">Název domácí WiFi sítě je:\n\n%s</string>
+    <string name="set_home_network_to">Nastavit domácí síť na: %s</string>
+    <string name="not_connected_to_wifi">Nepřipojeno k WiFi</string>
+    <string name="at_home_only">Pouze v domácí síti</string>
+    <string name="reminder_alternate_title">Alternativní název připomenutí</string>
+    <string name="default_xdrip_reminder_sound">Výchozí xDrip+ zvuk připomenutí</string>
+    <string name="custom_audio_file">Vlastní zvukový soubor</string>
+    <string name="android_ringtone_alarm">Vyzvánění/alarm systému Android</string>
 </resources>
