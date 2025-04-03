@@ -1898,4 +1898,18 @@
     <string name="bg_alert">BS-VARSEL: %1$s %2$s (@%3$s)</string>
     <string name="show_graphical_trend_arrow">Vis grafisk trendpil</string>
     <string name="no_alert_in_silent_mode">Ingen varsel i stillemodus</string>
+    <string name="calibration_slope_intercept">helning = %1$s avskjæring = %2$s</string>
+    <string name="axis_x_raw_value">Råverdi</string>
+    <string name="axis_y_glucose_mgdl_mmol">Glukose + %s</string>
+    <string name="set_home_network">Sett hjemmenettverk</string>
+    <string name="my_home_network_is">Navnet på WiFi-hjemmenettverket mitt er:\n\n%s</string>
+    <string name="set_home_network_to">Sett hjemmenettverket til: %s</string>
+    <string name="not_connected_to_wifi">Ikke koblet til WiFi</string>
+    <string name="at_home_only">Kun hjemme</string>
+    <string name="speak">Tale</string>
+    <string name="graph_note">Grafnotat</string>
+    <string name="reminder_alternate_title">Alternativ påminnelsestittel</string>
+    <string name="default_xdrip_reminder_sound">Standard xDrip+ påminnelseslyd</string>
+    <string name="custom_audio_file">Egendefinert lydfil</string>
+    <string name="android_ringtone_alarm">Android ringetone/alarm</string>
 </resources>
