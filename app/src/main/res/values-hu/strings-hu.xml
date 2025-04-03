@@ -1843,4 +1843,5 @@
     <string name="screenshot">Képernyőmentés</string>
     <string name="show_graphical_trend_arrow">Grafikus trendnyíl mutatása</string>
     <string name="no_alert_in_silent_mode">Nincs riasztás Néma üzemmódban</string>
+    <string name="axis_x_raw_value">Nyers adat</string>
 </resources>
