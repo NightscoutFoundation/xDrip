@@ -1898,4 +1898,18 @@
     <string name="bg_alert">VS %1$s ALARM: %2$s (@%3$s)</string>
     <string name="show_graphical_trend_arrow">Näita graafilist trendinoolt</string>
     <string name="no_alert_in_silent_mode">Vaikses režiimis alarmi pole</string>
+    <string name="calibration_slope_intercept">kalle = %1$s lõikepunkt = %2$s</string>
+    <string name="axis_x_raw_value">Töötlemata väärtus</string>
+    <string name="axis_y_glucose_mgdl_mmol">Veresuhkur + %s</string>
+    <string name="set_home_network">Määra koduvõrk</string>
+    <string name="my_home_network_is">Minu koduse WiFi võrgu nimi on:\n\n%s</string>
+    <string name="set_home_network_to">Määra koduvõrguks: %s</string>
+    <string name="not_connected_to_wifi">WiFi ühendus puudub</string>
+    <string name="at_home_only">Ainult kodus</string>
+    <string name="speak">Räägi</string>
+    <string name="graph_note">Graafiku märkus</string>
+    <string name="reminder_alternate_title">Meeldetuletuse alternatiivne pealkiri</string>
+    <string name="default_xdrip_reminder_sound">Vaikimisi xDrip+ meeldetuletuse heli</string>
+    <string name="custom_audio_file">Kohandatud helifail</string>
+    <string name="android_ringtone_alarm">Androidi helinatoon</string>
 </resources>
