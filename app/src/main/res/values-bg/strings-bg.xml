@@ -1894,4 +1894,10 @@
     <string name="bg_alert">КЗ %1$s АЛАРМА: %2$s (@%3$s)</string>
     <string name="show_graphical_trend_arrow">Показване на срелка за графичен тренд</string>
     <string name="no_alert_in_silent_mode">Без аларма в тих режим</string>
+    <string name="my_home_network_is">Името на моята домашна WiFi мрежа е:\n\n%s</string>
+    <string name="set_home_network_to">Задаване домашната мрежа на: %s</string>
+    <string name="not_connected_to_wifi">Няма връзка с WiFi</string>
+    <string name="at_home_only">Само у дома</string>
+    <string name="reminder_alternate_title">Алтернативно заглавие на напомняне</string>
+    <string name="default_xdrip_reminder_sound">Звук за напомняне xDrip+ по подразбиране</string>
 </resources>
