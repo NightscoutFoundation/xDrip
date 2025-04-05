@@ -1898,4 +1898,18 @@
     <string name="bg_alert">GLIC %1$s ALLARME: %2$s (@%3$s)</string>
     <string name="show_graphical_trend_arrow">Mostra Freccia Di Tendenza Grafica</string>
     <string name="no_alert_in_silent_mode">Nessun avviso in modalità silenziosa</string>
+    <string name="calibration_slope_intercept">pendenza = %1$s intercetta = %2$s</string>
+    <string name="axis_x_raw_value">Valore Grezzo</string>
+    <string name="axis_y_glucose_mgdl_mmol">Glicemia + %s</string>
+    <string name="set_home_network">Imposta Rete Domestica</string>
+    <string name="my_home_network_is">Il mio nome di rete WiFi Domestica è:\n\n%s</string>
+    <string name="set_home_network_to">Imposta la rete domestica: %s</string>
+    <string name="not_connected_to_wifi">Non connesso al WiFi</string>
+    <string name="at_home_only">Solo A Casa</string>
+    <string name="speak">Leggi</string>
+    <string name="graph_note">Nota Del Grafico</string>
+    <string name="reminder_alternate_title">Titolo alternativo promemoria</string>
+    <string name="default_xdrip_reminder_sound">Suono predefinito promemoria xDrip+</string>
+    <string name="custom_audio_file">File audio personalizzato</string>
+    <string name="android_ringtone_alarm">Suoneria/Allarme Android</string>
 </resources>
