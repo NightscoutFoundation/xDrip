@@ -1174,7 +1174,7 @@
     <string name="what_time_was_it_inserted">В колко часа е поставен?</string>
     <string name="new_sensor_started">СТАРТИРА НОВ СЕНЗОР</string>
     <string name="error_sensor_start_time_in_future">ГРЕШКА: НАЧАЛНИЯ ЧАС НА СЕНЗОРА В БЪДЕЩЕТО</string>
-    <string name="not_today">Не днес</string>
+    <string name="not_today">Не, днес</string>
     <string name="need_permission_to_access_audio_files">Необходимо е разрешение за достъп до аудио файлове</string>
     <string name="need_contacts_permission_to_select_message_recipients">Необходимо е разрешение за контакти, за да изберете получатели на съобщения</string>
     <string name="need_storage_permission_to_access_all_ringtones">Необходимо е разрешение за достъп до всички мелодии</string>
