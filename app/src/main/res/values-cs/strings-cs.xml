@@ -1899,6 +1899,8 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="set_home_network_to">Nastavit domácí síť na: %s</string>
     <string name="not_connected_to_wifi">Nepřipojeno k WiFi</string>
     <string name="at_home_only">Pouze v domácí síti</string>
+    <string name="speak">Hlas.záznam</string>
+    <string name="graph_note">Poznámka ke grafu</string>
     <string name="reminder_alternate_title">Alternativní název připomenutí</string>
     <string name="default_xdrip_reminder_sound">Výchozí xDrip+ zvuk připomenutí</string>
     <string name="custom_audio_file">Vlastní zvukový soubor</string>
