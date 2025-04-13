@@ -1884,4 +1884,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="use_camera_light_summary">Blikat světlem fotoaparátu během trvání výstrahy, pokud je telefon připojen k nabíječce</string>
     <string name="g7_should_start_automatically">Senzor G7 by se měl spustit automaticky</string>
     <string name="screenshot">Snímek obrazovky</string>
+    <string name="bg_alert">Výstraha %1$s glykémie: %2$s (@%3$s)</string>
+    <string name="show_graphical_trend_arrow">Zobrazit grafickou šipku trendu</string>
+    <string name="no_alert_in_silent_mode">Žádná výstraha v tichém režimu</string>
 </resources>

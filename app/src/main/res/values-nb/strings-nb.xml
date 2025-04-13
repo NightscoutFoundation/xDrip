@@ -300,8 +300,8 @@
     <string name="use_excessive_wakelocks">Bruk Overdreven Wakelocks</string>
     <string name="speak_readings">Taleavlesninger</string>
     <string name="extra_status_line">Ekstra statuslinje</string>
-    <string name="dexcom_share_server_upload">Opplasting til Dexcom Share-server</string>
-    <string name="upload_data_to_dex_servers">Laste opp data til Dexcoms servere slik at du kan bruke dine data med Dexcom sine apper</string>
+    <string name="dexcom_share_server_upload">Dexcom Share</string>
+    <string name="upload_data_to_dex_servers">Last opp data til Dexcom Share-servere</string>
     <string name="manage_followers">Administrer følgere</string>
     <string name="manage_existing_followers">Administrer dine eksisterende følgere og inviter nye.</string>
     <string name="invite_follower">Inviter en følger</string>
@@ -424,10 +424,10 @@
     <string name="new_version_date_colon">"Ny versjonsdato: "</string>
     <string name="old_version_date_colon">"Gammel versjonsdato: "</string>
     <string name="speak_your_note_text">Snakk inn notatteksten</string>
-    <string name="alarm_if_above_high_value">Varsel hvis over høy verdi</string>
+    <string name="alarm_if_above_high_value">Varsle hvis over terskelen i lengre tid enn tiden som er spesifisert nedenfor</string>
     <string name="for_longer_than_minutes">i lengre enn (minutter)</string>
     <string name="choose_sound_used_for_persistent_high_alarm">Velg lyd som brukes for vedvarende høy varsel.</string>
-    <string name="persistent_high_sound">Vedvarende høy lyd</string>
+    <string name="persistent_high_sound">Lyd ved vedvarende høy</string>
     <string name="forecast_lows">Beregnet lav</string>
     <string name="raise_alarm_on_forecast_low">Varsel ved beregnet lave verdier</string>
     <string name="notify_when_predicted_low_time_reaches_threshold">Varsle når tid innen beregnet lav når terskelen</string>
@@ -626,7 +626,7 @@
     <string name="transmitter_pl_support">Senderstøtte (PL)</string>
     <string name="experimental_rdfuino_support">Eksperimentell støtte for RFduino fra Tomasz Stachowicz</string>
     <string name="rfduino_support">RFduino støtte</string>
-    <string name="repeatedly_restart_collection_service">Gjentatt tilbakestill innsamlingstjenesten ved misstanke om tapt data. Aktiver kun hvis data mangler.</string>
+    <string name="repeatedly_restart_collection_service">Start innsamlingstjenesten på nytt ved ethvert hint om manglende data. Aktiver bare hvis du mister data.</string>
     <string name="aggressive_service_restarts">Aggressiv omstart av tjeneste</string>
     <string name="predictive_readings_old">Gammel metode - ikke anbefalt! Forsøker å forutse avlesninger hvert minutt basert på de forrige verdiene.</string>
     <string name="use_external_blukon_algorithm_summary">Bruk en \"out of process\" (OOP) Libre algoritme. (BluCon/NFC/LibreAlarm)</string>
@@ -640,7 +640,7 @@
     <string name="libre_use_smoothed_data_title">Utjevn Libre-data</string>
     <string name="retrieve_blukon_history_title">Hent Libre-historikk</string>
     <string name="retrieve_blukon_history_summary">Hente manglende historie fra BluCon-enhet når du kobler til sensoren på nytt.</string>
-    <string name="interpret_share_raw">xDrip vil vise verdiene når de normalt er skjult på mottakeren vhis du bruker Share.</string>
+    <string name="interpret_share_raw">xDrip vil vise verdiene når de normalt er skjult på mottakeren dersom du bruker Share.</string>
     <string name="interpret_raw">Tolk rådata</string>
     <string name="use_infrequent_calibrations">Bruk eldre kalibreringer hvis nødvendig, for eksempel hvis kalibrering ikke blir lagt inn regelmessig.</string>
     <string name="infrequent_calibrations">Ikke regelmessig kalibrering</string>
@@ -738,13 +738,13 @@
     <string name="user">Bruker</string>
     <string name="password">Passord</string>
     <string name="upload_to_dexcom">Aktiver dette for å laste opp blodsukkeravlesninger til Dexcom Share-servere</string>
-    <string name="upload_to_dexcom_share">Last opp BS-verdier</string>
+    <string name="upload_to_dexcom_share">Last opp BS-verdier til Dexcom Share</string>
     <string name="accounts_outside_usa">Deaktivert = Din konto og følger-app er fra utenfor USA</string>
     <string name="accounts_inside_usa">Aktivert = Din konto og følger-app er fra USA</string>
     <string name="usa_based_account">USA basert Dexcom-konto</string>
-    <string name="dexcom_login">Ditt brukernavn til Dexcom sin hjemmeside</string>
+    <string name="dexcom_login">Ditt brukernavn til Dexcom Share</string>
     <string name="dexcom_user">Dexcom-konto</string>
-    <string name="dexcom_login_password">Ditt passord for Dexcom sin hjemmeside</string>
+    <string name="dexcom_login_password">Ditt passord for Dexcom Share</string>
     <string name="dexcom_password">Dexcom-konto passord</string>
     <string name="dexcom_receiver_serial">10-tegn serienummer til Dexcom-mottaker</string>
     <string name="dexcom_test_mode_serial">10-tegns serienummer for test-modus</string>
@@ -1520,6 +1520,7 @@
     <string name="progress">framgang</string>
     <string name="bluetooth_device">Bluetooth enhet:   </string>
     <string name="transmitter_battery_status">Senderbatteri:  </string>
+    <string name="database_size">Databasestørrelse:  </string>
     <string name="top">Topp</string>
     <string name="connect_device_usb_otg">Vennligst koble til enheten din via USB OTG-kabel.</string>
     <string name="connection_status">Tilkoblingsstatus:</string>
@@ -1836,7 +1837,7 @@
     <string name="wait_to_connect">Bekreft innstillingene og vent på tilkobling.</string>
     <string name="summary_sens_expiry_notify">Lag varsel når sensoren nærmer seg utløp.</string>
     <string name="title_sens_expiry">Sensorutløp varsler</string>
-    <string name="title_sens_expiry_notify">Sensor-utløp</string>
+    <string name="title_sens_expiry_notify">Aktiver</string>
     <string name="close">Lukk</string>
     <string name="title_advanced_settings_4_Lib2">Avanserte innstillinger for Libre 2</string>
     <string name="title_Lib2_show_raw_values">Vis råverdier i grafen</string>
@@ -1890,4 +1891,7 @@
     <string name="use_camera_light_summary">Blink kameralys under varsler når tilkoblet en lader</string>
     <string name="g7_should_start_automatically">G7 skal starte automatisk</string>
     <string name="screenshot">Skjermdump</string>
+    <string name="bg_alert">BS-VARSEL: %1$s %2$s (@%3$s)</string>
+    <string name="show_graphical_trend_arrow">Vis grafisk trendpil</string>
+    <string name="no_alert_in_silent_mode">Ingen varsel i stillemodus</string>
 </resources>

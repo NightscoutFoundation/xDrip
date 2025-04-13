@@ -381,7 +381,7 @@ public class Ob1G5StateMachine {
             }
             if ((throwable instanceof BleDisconnectedException) || (throwable instanceof TimeoutException)) {
                 if ((parent.getState() == Ob1G5CollectionService.STATE.BOND) || (parent.getState() == Ob1G5CollectionService.STATE.CHECK_AUTH)) {
-
+                    parent.savePersist();
                     if (parent.getState() == Ob1G5CollectionService.STATE.BOND) {
                         UserError.Log.d(TAG, "SLEEPING BEFORE RECONNECT");
                         threadSleep(15000);

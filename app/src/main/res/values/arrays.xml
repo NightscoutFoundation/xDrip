@@ -200,9 +200,9 @@
     </string-array>
 
     <string-array name="reminderAlertType">
-        <item>Android Ringtone/Alarm</item>
-        <item>Custom Audio file</item>
-        <item>Default xDrip+ reminder sound</item>
+        <item>@string/android_ringtone_alarm</item>
+        <item>@string/custom_audio_file</item>
+        <item>@string/default_xdrip_reminder_sound</item>
     </string-array>
 
 <!--    TODO abstract noise values to single source -->

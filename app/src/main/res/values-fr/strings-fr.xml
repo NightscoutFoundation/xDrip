@@ -1891,4 +1891,7 @@
     <string name="use_camera_light_summary">Allumer la lumière de la caméra lors des alertes si connecté à un chargeur</string>
     <string name="g7_should_start_automatically">Le G7 devrait démarrer automatiquement</string>
     <string name="screenshot">Capture d\'écran</string>
+    <string name="bg_alert">ALERTE Glycémie %1$s : %2$s (@%3$s)</string>
+    <string name="show_graphical_trend_arrow">Afficher la flèche de tendance graphique</string>
+    <string name="no_alert_in_silent_mode">Aucune alerte en mode silencieux</string>
 </resources>
