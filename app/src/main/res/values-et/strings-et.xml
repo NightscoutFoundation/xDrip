@@ -1911,5 +1911,5 @@
     <string name="reminder_alternate_title">Meeldetuletuse alternatiivne pealkiri</string>
     <string name="default_xdrip_reminder_sound">Vaikimisi xDrip+ meeldetuletuse heli</string>
     <string name="custom_audio_file">Kohandatud helifail</string>
-    <string name="android_ringtone_alarm">Androidi helinatoon</string>
+    <string name="android_ringtone_alarm">Androidi helin/alarm</string>
 </resources>
