@@ -1173,6 +1173,8 @@
     <string name="summary_cloud_storage_api_download_enable">Próbálja meg a kezelési az adatokat letölteni a Nightscout-ból</string>
     <string name="title_cloud_storage_api_download_enable">Kezelések letöltése</string>
     <string name="title_cloud_storage_api_download_from_xdrip">xDrip adatok kihagyása</string>
+    <string name="nightscout_upload_failure_backfill_required">Nem minden NS oldalra sikerült a feltöltés. Ajánlott a korábbi adatok feltöltése. Első hiba: %1$s</string>
+    <string name="title_nightscout_upload_failure_backfill_required">Következetlen feltöltés a Nightscout szerverekre</string>
     <string name="summary_cloud_storage_api_download_from_xdrip">Xdrip által feltöltött adatokat nem tölti le</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Új VC-érték alapján kalibráljon kérdezés nélkül, ha a körülmények megfelelőek (kísérleti funkció)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatikus kalibráció</string>
@@ -1185,6 +1187,8 @@
     <string name="title_send_treatments_to_nightscout">Kezelések</string>
     <string name="summary_warn_nightscout_failures">Értesítés és hangjelzés, ha a Nightscout feltöltés sikertelen.</string>
     <string name="title_warn_nightscout_failures">Hibajelzés</string>
+    <string name="summary_warn_nightscout_multi_site_upload_failure">Az xDrip akkor is törli a feltöltési listát, ha csak az egyik oldal feltöltése sikeres, a többit pedig befejezetlenül hagyja. Ez azt jelenti, szükség van a korábbi adatok feltöltésére.</string>
+    <string name="title_warn_nightscout_multi_site_upload_failure">Riasztás több NS oldalra történő feltöltési hiba esetén</string>
     <string name="summary_nightscout_device_append_source_info">G5 esetén küldi a kollektor típusát (pl. OB1) és a visszatöltés állapotát Nightscout-ba</string>
     <string name="title_nightscout_device_append_source_info">Adatforrás jellemzői</string>
     <string name="summary_tap_to_send_historical_data">Korábbi adatok küldése Nightscout-ba</string>
@@ -1839,4 +1843,5 @@
     <string name="screenshot">Képernyőmentés</string>
     <string name="show_graphical_trend_arrow">Grafikus trendnyíl mutatása</string>
     <string name="no_alert_in_silent_mode">Nincs riasztás Néma üzemmódban</string>
+    <string name="axis_x_raw_value">Nyers adat</string>
 </resources>
