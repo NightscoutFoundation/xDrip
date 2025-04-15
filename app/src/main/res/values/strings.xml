@@ -1414,8 +1414,8 @@
     <string name="title_ob1_minimize_scanning">Minimize Scanning</string>
     <string name="summary_ob1_avoid_scanning">Avoid scanning as much as possible (reduces battery usage further)</string>
     <string name="title_ob1_avoid_scanning">Avoid Scanning</string>
-    <string name="summary_using_g6">I am using a G6, G7, Dexcom 1 or One+ Sensor</string>
-    <string name="title_using_g6">G6/G7/Dex1/One+ Support</string>
+    <string name="summary_using_g6">I am using a Dex Sensor</string>
+    <string name="title_using_g6">Dex Support</string>
     <string name="summary_ob1_g5_allow_resetbond">OB1 collector can unbond if it thinks the encryption has failed. If you get problems with it unpairing then disable this option. If you then totally lose connection, make sure this is enabled.</string>
     <string name="title_ob1_g5_allow_resetbond">Allow OB1 unbonding</string>
     <string name="summary_ob1_initiate_bonding_flag">OB1 collector can initiate bonding.</string>
@@ -1433,8 +1433,8 @@
     <string name="title_xdrip_plus_graph_display_settings">Graph Settings</string>
     <string name="summary_show_basal_line">Show TBR information from external status</string>
     <string name="title_show_basal_line">Show Basal TBR</string>
-    <string name="summary_show_g_prediction">Show G6/G7 predictive glucose dots</string>
-    <string name="title_show_g_prediction">G6/G7 Prediction</string>
+    <string name="summary_show_g_prediction">Show Dex predictive glucose dots</string>
+    <string name="title_show_g_prediction">Dex Prediction</string>
     <string name="summary_show_smb_icons">Declutter graph with treatment icons for small boluses</string>
     <string name="title_show_smb_icons">Show micro bolus icons</string>
     <string name="summary_show_medtrum_secondary">Show alternate glucose dots</string>

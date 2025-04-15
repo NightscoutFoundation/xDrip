@@ -158,6 +158,8 @@ public class IdempotentMigrations {
         Pref.setBoolean("run_G5_ble_tasks_on_uithread", false);
         Pref.setBoolean("ob1_initiate_bonding_flag", true);
         Pref.setBoolean("store_sensor_location", false);
+        Pref.setBoolean("using_g6", true);
+        // TODO Simplify the code everywhere resolving conditionals based on "using_g6" now that it is always true.
     }
     private static void legacySettingsMoveLanguageFromNoToNb() {
         // Check if the user's language preference is set to "no"
