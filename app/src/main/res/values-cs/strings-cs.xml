@@ -1188,6 +1188,8 @@
     <string name="summary_cloud_storage_api_download_enable">Pokusit se také stáhnout ošetření z Nightscoutu</string>
     <string name="title_cloud_storage_api_download_enable">Stáhnout údaje o ošetření</string>
     <string name="title_cloud_storage_api_download_from_xdrip">Přeskočit položky z xDripu</string>
+    <string name="nightscout_upload_failure_backfill_required">Nahrávání nebylo uspěšné pro všechny stránky. Doporučujeme provést doplnění záznamů. První selhání: %1$s</string>
+    <string name="title_nightscout_upload_failure_backfill_required">Nekonzistentní nahrávání na více stránek Nightscout</string>
     <string name="summary_cloud_storage_api_download_from_xdrip">Nestahovat položky nahrané aplikací xDrip+</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Kalibrovat bez ptaní, pokud jsou příhodné podmínky (experimentální)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatická kalibrace</string>
@@ -1200,6 +1202,8 @@
     <string name="title_send_treatments_to_nightscout">Nahrát ošetření</string>
     <string name="summary_warn_nightscout_failures">Zvukové a obrazové upozornění na selhání nahrávání dat do Nightscount.</string>
     <string name="title_warn_nightscout_failures">Upozornění na poruchy při nahrávání</string>
+    <string name="summary_warn_nightscout_multi_site_upload_failure">xDrip vymaže nahrávací frontu i v případě, že pouze jedna stránka měla úspěšné nahrání, ostatní stránky zůstanou neúplné. Upozornění umožní podle potřeby doplňovat záznamy.</string>
+    <string name="title_warn_nightscout_multi_site_upload_failure">Upozornění na selhání při vícestránkovém nahrávání</string>
     <string name="summary_nightscout_device_append_source_info">Pro G5 odeslat typ kolektoru (např. OB1) a stav zpětného vyplňování hodnot (pro nativní/interní režim) do Nightscoutu.</string>
     <string name="title_nightscout_device_append_source_info">Připojit ke jménu zařízení informace o zdroji</string>
     <string name="summary_tap_to_send_historical_data">Klepnutím odešlete historická data do Nightscoutu</string>
@@ -1887,4 +1891,18 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="bg_alert">Výstraha %1$s glykémie: %2$s (@%3$s)</string>
     <string name="show_graphical_trend_arrow">Zobrazit grafickou šipku trendu</string>
     <string name="no_alert_in_silent_mode">Žádná výstraha v tichém režimu</string>
+    <string name="calibration_slope_intercept">sklon = %1$s průsečík = %2$s</string>
+    <string name="axis_x_raw_value">Neupravená hodnota</string>
+    <string name="axis_y_glucose_mgdl_mmol">Glykémie + %s</string>
+    <string name="set_home_network">Nastavení domácí sítě</string>
+    <string name="my_home_network_is">Název domácí WiFi sítě je:\n\n%s</string>
+    <string name="set_home_network_to">Nastavit domácí síť na: %s</string>
+    <string name="not_connected_to_wifi">Nepřipojeno k WiFi</string>
+    <string name="at_home_only">Pouze v domácí síti</string>
+    <string name="speak">Hlas.záznam</string>
+    <string name="graph_note">Poznámka ke grafu</string>
+    <string name="reminder_alternate_title">Alternativní název připomenutí</string>
+    <string name="default_xdrip_reminder_sound">Výchozí xDrip+ zvuk připomenutí</string>
+    <string name="custom_audio_file">Vlastní zvukový soubor</string>
+    <string name="android_ringtone_alarm">Vyzvánění/alarm systému Android</string>
 </resources>

@@ -1174,7 +1174,7 @@
     <string name="what_time_was_it_inserted">В колко часа е поставен?</string>
     <string name="new_sensor_started">СТАРТИРА НОВ СЕНЗОР</string>
     <string name="error_sensor_start_time_in_future">ГРЕШКА: НАЧАЛНИЯ ЧАС НА СЕНЗОРА В БЪДЕЩЕТО</string>
-    <string name="not_today">Не днес</string>
+    <string name="not_today">Не, днес</string>
     <string name="need_permission_to_access_audio_files">Необходимо е разрешение за достъп до аудио файлове</string>
     <string name="need_contacts_permission_to_select_message_recipients">Необходимо е разрешение за контакти, за да изберете получатели на съобщения</string>
     <string name="need_storage_permission_to_access_all_ringtones">Необходимо е разрешение за достъп до всички мелодии</string>
@@ -1188,6 +1188,8 @@
     <string name="summary_cloud_storage_api_download_enable">Опитайте също да изтеглите лечения от Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Изтегляне на лечения</string>
     <string name="title_cloud_storage_api_download_from_xdrip">Пропускане елементи от xDrip</string>
+    <string name="nightscout_upload_failure_backfill_required">Качванията не са успешни за всички сайтове. Препоръчва се повторно качване. Първи провал: %1$s</string>
+    <string name="title_nightscout_upload_failure_backfill_required">Неконсистентно качване на Nightscout на няколко сайта</string>
     <string name="summary_cloud_storage_api_download_from_xdrip">Избягвайте да изтегляте елементи, качени от xDrip</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Калибрирайте, като използвате нови показания на кръвната захар, ако условията изглеждат правилни, за да го направите, без да искате потвърждение (експериментално)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Автоматично калибриране</string>
@@ -1200,6 +1202,8 @@
     <string name="title_send_treatments_to_nightscout">Качване на лечения</string>
     <string name="summary_warn_nightscout_failures">Визуално и звуково известие, ако качването на Nightscout е неуспешно.</string>
     <string name="title_warn_nightscout_failures">Известие за повреди</string>
+    <string name="summary_warn_nightscout_multi_site_upload_failure">xDrip изчиства опашката за качване, дори ако само един сайт има успешно качване, оставяйки другите незавършени. Това ви уведомява и ви позволява да качвате отново ако е необходимо.</string>
+    <string name="title_warn_nightscout_multi_site_upload_failure">Аларма за неуспешно качване на няколко сайта</string>
     <string name="summary_nightscout_device_append_source_info">За G5, изпраща колекционер тип (напр. OB1) и четене чрез резервни варианти (за собствен) към Nightscout.</string>
     <string name="title_nightscout_device_append_source_info">Добавете информация за източника към името на устройството</string>
     <string name="summary_tap_to_send_historical_data">Докоснете, за да изпратите исторически данни на Nightscout</string>
@@ -1890,4 +1894,18 @@
     <string name="bg_alert">КЗ %1$s АЛАРМА: %2$s (@%3$s)</string>
     <string name="show_graphical_trend_arrow">Показване на срелка за графичен тренд</string>
     <string name="no_alert_in_silent_mode">Без аларма в тих режим</string>
+    <string name="calibration_slope_intercept">наклон = %1$s отсечка = %2$s</string>
+    <string name="axis_x_raw_value">Сурова стойност</string>
+    <string name="axis_y_glucose_mgdl_mmol">Глюкоза + %s</string>
+    <string name="set_home_network">Задаване на домашна мрежа</string>
+    <string name="my_home_network_is">Името на моята домашна WiFi мрежа е:\n\n%s</string>
+    <string name="set_home_network_to">Задаване домашната мрежа на: %s</string>
+    <string name="not_connected_to_wifi">Няма връзка с WiFi</string>
+    <string name="at_home_only">Само у дома</string>
+    <string name="speak">Говори</string>
+    <string name="graph_note">Графична Бележка</string>
+    <string name="reminder_alternate_title">Алтернативно заглавие на напомняне</string>
+    <string name="default_xdrip_reminder_sound">Звук за напомняне по подразбиране в xDrip+</string>
+    <string name="custom_audio_file">Персонализиран аудио файл</string>
+    <string name="android_ringtone_alarm">Мелодия/аларма за Android</string>
 </resources>
