@@ -999,4 +999,7 @@
     <string name="audio_focus_pause_all_other_sounds">他のすべての音声を一時停止する</string>
     <string name="use_camera_light">カメラのライトを使用</string>
     <string name="g7_should_start_automatically">G7は自動的に開始する必要があります</string>
+    <string name="bg_alert">BG %1$s アラート: %2$s (@%3$s)</string>
+    <string name="show_graphical_trend_arrow">グラフィカルなトレンド矢印を表示</string>
+    <string name="no_alert_in_silent_mode">サイレントモードでのアラートはありません</string>
 </resources>

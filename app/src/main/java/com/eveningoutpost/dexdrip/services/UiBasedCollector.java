@@ -93,6 +93,7 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackages.add("com.camdiab.fx_alert.mgdl");
         coOptedPackages.add("com.camdiab.fx_alert.hx.mmoll");
         coOptedPackages.add("com.camdiab.fx_alert.hx.mgdl");
+        coOptedPackages.add("com.camdiab.fx_alert.mmoll.ca");
         coOptedPackages.add("com.medtronic.diabetes.guardian");
         coOptedPackages.add("com.medtronic.diabetes.guardianconnect");
         coOptedPackages.add("com.medtronic.diabetes.guardianconnect.us");
@@ -107,6 +108,8 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackages.add("com.ottai.tag"); // //for ottai china version
         coOptedPackages.add("com.senseonics.eversense365.us");
         coOptedPackages.add("com.kakaohealthcare.pasta"); // A Health app for sensors that we already collect from
+        coOptedPackages.add("com.sinocare.cgm.ce");
+        coOptedPackages.add("com.sinocare.ican.health.ce");
 
         coOptedPackagesAll.add("com.dexcom.dexcomone");
         coOptedPackagesAll.add("com.dexcom.d1plus");
@@ -121,6 +124,8 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackagesAll.add("com.ottai.tag"); // //for ottai china version
         coOptedPackagesAll.add("com.senseonics.eversense365.us");
         coOptedPackagesAll.add("com.kakaohealthcare.pasta"); // Experiment
+        coOptedPackagesAll.add("com.sinocare.cgm.ce");
+        coOptedPackagesAll.add("com.sinocare.ican.health.ce");
 
         companionAppIoBPackages.add("com.insulet.myblue.pdm");
 

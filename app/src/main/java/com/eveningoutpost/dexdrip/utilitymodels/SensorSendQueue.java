@@ -5,6 +5,7 @@ import android.provider.BaseColumns;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
@@ -56,5 +57,11 @@ public class SensorSendQueue extends Model {
         if(Home.get_master()) {
             GcmActivity.syncSensor(sensor, true);
         }
+    }
+
+    public static void deleteAll() {
+        new Delete()
+                .from(SensorSendQueue.class)
+                .execute();
     }
 }

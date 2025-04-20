@@ -902,8 +902,9 @@ public class Notifications extends IntentService {
     }
 
     public static void bgMissedAlert(Context context) {
-        long otherAlertReraiseSec = MissedReadingService.getOtherAlertReraiseSec(context, "bg_missed_alerts");
-        OtherAlert(context, "bg_missed_alerts", context.getString(R.string.bg_reading_missed) + "  (@" + JoH.hourMinuteString() + ")", missedAlertNotificationId, NotificationChannels.BG_MISSED_ALERT_CHANNEL, true, otherAlertReraiseSec);
+        final String type = "bg_missed_alerts";
+        long otherAlertReraiseSec = MissedReadingService.getOtherAlertReraiseSec(context, type);
+        OtherAlert(context, type, context.getString(R.string.bg_reading_missed) + "  (@" + JoH.hourMinuteString() + ")", missedAlertNotificationId, NotificationChannels.BG_MISSED_ALERT_CHANNEL, true, otherAlertReraiseSec);
     }
 
     public static void ob1SessionRestartRequested() {
