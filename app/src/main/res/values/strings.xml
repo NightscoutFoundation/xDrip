@@ -1369,6 +1369,10 @@
     <string name="summary_nsfollow_download_treatments">Also download treatments from Nightscout as follower</string>
     <string name="title_nsfollow_download_treatments">Download Treatments</string>
     <string name="title_nsfollow_lag">Nightscout Follow delay</string>
+    <string name="summary_nsfollow_download_basalrate">Download profile and TBR from Nightscout as follower (use with "Show Basal TBR" to see graph)</string>
+    <string name="title_nsfollow_download_basalrate">Download Basal Profile</string>
+    <string name="summary_nsfollow_download_per_minute">Download data from Nightscout every minute. Otherwise loads every 5 minutes.</string>
+    <string name="title_nsfollow_download_per_minute">Connect more frequently</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
     <string name="summary_clfollow_user">CareLink login username</string>
