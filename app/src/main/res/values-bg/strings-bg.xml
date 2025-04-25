@@ -157,7 +157,7 @@
     <string name="space_mins">" минути"</string>
     <string name="till">до</string>
     <string name="low_predicted">Предвижда се ниска КЗ</string>
-    <string name="in">в</string>
+    <string name="in">след</string>
     <string name="yes_enter_setup_mode">Да, влез в режим за настройка</string>
     <string name="nokeep_parakeet_as_it_is">Не, запази Parakeet както си е</string>
     <string name="are_you_sure_you_want_switch_parakeet_to_setup">Сигурни ли сте, че искате да промените Parakeet в режим на настройка?\n\nОбикновенно това се използва само, когато изпраща допълнително съобщения към Parakeet при реконфигурация на трансмитер който слуша и т. н.</string>
