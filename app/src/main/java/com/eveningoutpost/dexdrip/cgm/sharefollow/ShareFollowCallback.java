@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.cgm.sharefollow;
 
-import com.eveningoutpost.dexdrip.cgm.nsfollow.BaseCallback;
+import com.eveningoutpost.dexdrip.utils.framework.RetrofitService.BaseCallback;
 
 import retrofit2.Call;
 import retrofit2.Response;
