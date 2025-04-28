@@ -306,11 +306,11 @@
 
                 <com.eveningoutpost.dexdrip.ui.graphic.CircularProgressBar
                     android:id="@+id/pb_glucoseLastVal"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
                     android:layout_alignTop="@id/bloodTestButton"
                     android:layout_marginStart="4dp"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="16dp"
                     android:layout_toEndOf="@+id/bloodTestButton"
                     android:visibility="gone"
                     app:backgroundColor="@android:color/darker_gray"
@@ -329,7 +329,7 @@
                     android:gravity="center"
                     android:text="00:00"
                     android:textColor="@android:color/holo_green_light"
-                    android:textSize="10sp"
+                    android:textSize="9sp"
                     android:visibility="gone"
                     tools:visibility="visible" />
 

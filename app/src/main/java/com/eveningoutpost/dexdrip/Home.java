@@ -441,13 +441,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         reset.setOnClickListener(v -> {
             startGlucoseTimer();
         });
-        //увидеть работу таймера без подключения к устройству
-        if (isDev()) {
-            reset.setVisibility(View.VISIBLE);
-            pbGlucoseTimer.setVisibility(View.VISIBLE);
-            tvGlucoseTimer.setVisibility(View.VISIBLE);
-        }
-
 
         if (BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
             this.currentBgValueText.setTextSize(100);
@@ -487,6 +480,15 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         this.btnUndo = (ImageButton) findViewById(R.id.btnUndo);
         this.btnRedo = (ImageButton) findViewById(R.id.btnRedo);
         this.btnVehicleMode = (ImageButton) findViewById(R.id.vehicleModeButton);
+
+        //увидеть работу таймера без подключения к устройству
+        if (isDev()) {
+            reset.setVisibility(View.VISIBLE);
+            textBloodGlucose.setVisibility(View.VISIBLE);
+            btnBloodGlucose.setVisibility(View.VISIBLE);
+            pbGlucoseTimer.setVisibility(View.VISIBLE);
+            tvGlucoseTimer.setVisibility(View.VISIBLE);
+        }
 
         hideAllTreatmentButtons();
 
@@ -648,6 +650,18 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         currentBgValueText.setText(""); // clear any design prototyping default
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        resumeGlucoseTimer();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        removeGlucoseTimer();
+    }
+
     private static boolean isDev() {
         return BuildConfig.BUILD_TYPE.equals("dev");
     }
@@ -703,6 +717,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         startGlucoseTime = (int) currentTimeSeconds();
         pbGlucoseTimer.setProgress(lastGlucoseTime);
         tvGlucoseTimer.setText(formatTimeMMSS(lastGlucoseTime));
+        JoH.runOnUiThread(progressRunnable);
+    }
+
+    private void resumeGlucoseTimer(){
         JoH.runOnUiThread(progressRunnable);
     }
 
@@ -1265,11 +1283,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     }
 
     private void hideAllTreatmentButtons() {
-        textBloodGlucose.setVisibility(View.INVISIBLE);
         textCarbohydrates.setVisibility(View.INVISIBLE);
         if(!isDev()) {
             pbGlucoseTimer.setVisibility(View.INVISIBLE);
             tvGlucoseTimer.setVisibility(View.INVISIBLE);
+            btnBloodGlucose.setVisibility(View.INVISIBLE);
+            textBloodGlucose.setVisibility(View.INVISIBLE);
         }
         btnApprove.setVisibility(View.INVISIBLE);
         btnCancel.setVisibility(View.INVISIBLE);
@@ -1280,7 +1299,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             btnInsulinDose[i].setVisibility(View.INVISIBLE);
         }
         buttonInsulinSingleDose.setVisibility(View.INVISIBLE);
-        btnBloodGlucose.setVisibility(View.INVISIBLE);
         voiceRecognitionText.setVisibility(View.INVISIBLE);
         textTime.setVisibility(View.INVISIBLE);
         btnTime.setVisibility(View.INVISIBLE);
