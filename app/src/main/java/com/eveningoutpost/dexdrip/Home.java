@@ -12,6 +12,7 @@ import static com.eveningoutpost.dexdrip.utilitymodels.Constants.DAY_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.SECOND_IN_MS;
+import static com.eveningoutpost.dexdrip.xdrip.getAppContext;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 import android.Manifest;
@@ -94,6 +95,7 @@ import com.eveningoutpost.dexdrip.services.DexCollectionService;
 import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.services.PlusSyncService;
 import com.eveningoutpost.dexdrip.services.WixelReader;
+import com.eveningoutpost.dexdrip.ui.graphic.CircularProgressBar;
 import com.eveningoutpost.dexdrip.utilitymodels.AlertPlayer;
 import com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
@@ -320,6 +322,13 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private static boolean has_libreblock = false;
     private static boolean has_libreblock_set = false;
 
+    private CircularProgressBar pbGlucoseTimer;
+
+    private TextView tvGlucoseTimer;
+
+    private Button reset;
+
+
     @Inject
     BaseShelf homeShelf;
     //@Inject
@@ -420,11 +429,25 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         this.currentBgValueText = (TextView) findViewById(R.id.currentBgValueRealTime);
         this.bpmButton = (Button) findViewById(R.id.bpmButton);
         this.stepsButton = (Button) findViewById(R.id.walkButton);
+        this.pbGlucoseTimer = findViewById(R.id.pb_glucoseLastVal);
+        this.tvGlucoseTimer = findViewById(R.id.tvGlucoseLastTime);
+        this.reset = findViewById(R.id.btnResetGlucoseTimer);
 
         extraStatusLineText.setText("");
         dexbridgeBattery.setText("");
         parakeetBattery.setText("");
         sensorAge.setText("");
+        startGlucoseTimer();
+        reset.setOnClickListener(v -> {
+            startGlucoseTimer();
+        });
+        //увидеть работу таймера без подключения к устройству
+        if (isDev()) {
+            reset.setVisibility(View.VISIBLE);
+            pbGlucoseTimer.setVisibility(View.VISIBLE);
+            tvGlucoseTimer.setVisibility(View.VISIBLE);
+        }
+
 
         if (BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
             this.currentBgValueText.setTextSize(100);
@@ -623,6 +646,74 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
         currentBgValueText.setText(""); // clear any design prototyping default
+    }
+
+    private static boolean isDev() {
+        return BuildConfig.BUILD_TYPE.equals("dev");
+    }
+
+    private int lastGlucoseTime = 0;
+    private int lastGlucoseMaxTime;
+
+    private final int glucoseTimerInterval = 100;
+
+    private int startGlucoseTime;
+
+    private final Runnable progressRunnable = new Runnable() {
+
+        private int currentColor;
+        private int newColor;
+
+        @Override
+        public void run() {
+
+            lastGlucoseTime = (int) currentTimeSeconds() - startGlucoseTime;
+
+            if (lastGlucoseTime >= lastGlucoseMaxTime) {
+                newColor = ContextCompat.getColor(getAppContext(), R.color.red);
+                ;
+            } else if (lastGlucoseTime >= lastGlucoseMaxTime / 2) {
+                newColor = Color.YELLOW;
+            } else {
+                newColor = ContextCompat.getColor(getAppContext(), android.R.color.holo_green_light);
+            }
+
+            if (currentColor != newColor) {
+                currentColor = newColor;
+                pbGlucoseTimer.setProgressColor(currentColor);
+                tvGlucoseTimer.setTextColor(currentColor);
+            }
+
+            if (lastGlucoseTime <= lastGlucoseMaxTime) {
+                pbGlucoseTimer.setProgress(lastGlucoseTime);
+            }
+            tvGlucoseTimer.setText(formatTimeMMSS(lastGlucoseTime));
+
+            JoH.runOnUiThreadDelayed(this, glucoseTimerInterval);
+        }
+    };
+
+    private static long currentTimeSeconds() {
+        return System.currentTimeMillis() / 1000;
+    }
+
+    private void startGlucoseTimer() {
+        removeGlucoseTimer(); // если уже шёл
+        lastGlucoseMaxTime = pbGlucoseTimer.getMax();
+        startGlucoseTime = (int) currentTimeSeconds();
+        pbGlucoseTimer.setProgress(lastGlucoseTime);
+        tvGlucoseTimer.setText(formatTimeMMSS(lastGlucoseTime));
+        JoH.runOnUiThread(progressRunnable);
+    }
+
+    // Остановка прогресса
+    private void removeGlucoseTimer() {
+        JoH.removeUiThreadRunnable(progressRunnable);
+    }
+
+    @SuppressLint("DefaultLocale")
+    public static String formatTimeMMSS(int totalSeconds) {
+        return String.format("%02d:%02d", totalSeconds / 60, totalSeconds % 60);
     }
 
     private boolean firstRunDialogs(final boolean checkedeula) {
@@ -855,9 +946,13 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         // TODO Offer Choice? Reject calibrations under various circumstances
         // This should be wrapped up in a generic method
         processCalibrationNoUI(thisglucosenumber, thistimeoffset);
+        removeGlucoseTimer();
 
         textBloodGlucose.setVisibility(View.INVISIBLE);
         btnBloodGlucose.setVisibility(View.INVISIBLE);
+        pbGlucoseTimer.setVisibility(View.INVISIBLE);
+        tvGlucoseTimer.setVisibility(View.INVISIBLE);
+
         if (hideTreatmentButtonsIfAllDone()) {
             updateCurrentBgInfo("bg button");
         }
@@ -1172,6 +1267,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private void hideAllTreatmentButtons() {
         textBloodGlucose.setVisibility(View.INVISIBLE);
         textCarbohydrates.setVisibility(View.INVISIBLE);
+        if(!isDev()) {
+            pbGlucoseTimer.setVisibility(View.INVISIBLE);
+            tvGlucoseTimer.setVisibility(View.INVISIBLE);
+        }
         btnApprove.setVisibility(View.INVISIBLE);
         btnCancel.setVisibility(View.INVISIBLE);
         btnCarbohydrates.setVisibility(View.INVISIBLE);
@@ -1515,6 +1614,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             case "blood":
                 if (!glucoseset && (thisnumber > 0)) {
                     thisglucosenumber = thisnumber;
+                    startGlucoseTimer();
                     if (Pref.getString("units", "mgdl").equals("mgdl")) {
                         if (textBloodGlucose != null)
                             textBloodGlucose.setText(thisnumber + " mg/dl");
@@ -1528,6 +1628,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     if (textBloodGlucose != null) {
                         btnBloodGlucose.setVisibility(View.VISIBLE);
                         textBloodGlucose.setVisibility(View.VISIBLE);
+                        pbGlucoseTimer.setVisibility(View.VISIBLE);
+                        tvGlucoseTimer.setVisibility(View.VISIBLE);
                     }
 
                 } else {
@@ -1913,7 +2015,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         NFControl.initNFC(this, false);
 
         if (get_follower() || get_master()) {
-           // GcmActivity.checkSync(this);
+            // GcmActivity.checkSync(this);
         }
 
         checkWifiSleepPolicy();
@@ -3652,8 +3754,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         Snackbar.make(
 
-                activity.findViewById(android.R.id.content),
-                message, Snackbar.LENGTH_LONG)
+                        activity.findViewById(android.R.id.content),
+                        message, Snackbar.LENGTH_LONG)
                 .setAction(buttonString, mOnClickListener)
                 //.setActionTextColor(Color.RED)
                 .show();
@@ -3837,4 +3939,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
     }*/
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        removeGlucoseTimer();
+    }
 }
