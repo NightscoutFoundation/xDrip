@@ -437,7 +437,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         dexbridgeBattery.setText("");
         parakeetBattery.setText("");
         sensorAge.setText("");
-        startGlucoseTimer();
         reset.setOnClickListener(v -> {
             startGlucoseTimer();
         });
@@ -480,15 +479,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         this.btnUndo = (ImageButton) findViewById(R.id.btnUndo);
         this.btnRedo = (ImageButton) findViewById(R.id.btnRedo);
         this.btnVehicleMode = (ImageButton) findViewById(R.id.vehicleModeButton);
-
-        //увидеть работу таймера без подключения к устройству
-        if (isDev()) {
-            reset.setVisibility(View.VISIBLE);
-            textBloodGlucose.setVisibility(View.VISIBLE);
-            btnBloodGlucose.setVisibility(View.VISIBLE);
-            pbGlucoseTimer.setVisibility(View.VISIBLE);
-            tvGlucoseTimer.setVisibility(View.VISIBLE);
-        }
 
         hideAllTreatmentButtons();
 
@@ -653,17 +643,17 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     @Override
     protected void onStart() {
         super.onStart();
-        resumeGlucoseTimer();
+        if(isGlucoseTimerWasLaunched){
+            Log.d("TIMER_TEST","timer was resumed");
+            resumeGlucoseTimer();
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        removeGlucoseTimer();
-    }
-
-    private static boolean isDev() {
-        return BuildConfig.BUILD_TYPE.equals("dev");
+        Log.d("TIMER_TEST","timer was stopped");
+        stopGlucoseTimer();
     }
 
     private int lastGlucoseTime = 0;
@@ -672,6 +662,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private final int glucoseTimerInterval = 100;
 
     private int startGlucoseTime;
+
+    private boolean isGlucoseTimerWasLaunched = false;
 
     private final Runnable progressRunnable = new Runnable() {
 
@@ -712,11 +704,15 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     }
 
     private void startGlucoseTimer() {
-        removeGlucoseTimer(); // если уже шёл
+        stopGlucoseTimer(); // если уже шёл
+
+        isGlucoseTimerWasLaunched = true;
         lastGlucoseMaxTime = pbGlucoseTimer.getMax();
         startGlucoseTime = (int) currentTimeSeconds();
+
         pbGlucoseTimer.setProgress(lastGlucoseTime);
         tvGlucoseTimer.setText(formatTimeMMSS(lastGlucoseTime));
+
         JoH.runOnUiThread(progressRunnable);
     }
 
@@ -725,7 +721,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     }
 
     // Остановка прогресса
-    private void removeGlucoseTimer() {
+    private void stopGlucoseTimer() {
+        JoH.removeUiThreadRunnable(progressRunnable);
+    }
+
+    private void removeGlucoseTimer(){
+        isGlucoseTimerWasLaunched = false;
         JoH.removeUiThreadRunnable(progressRunnable);
     }
 
@@ -970,6 +971,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         btnBloodGlucose.setVisibility(View.INVISIBLE);
         pbGlucoseTimer.setVisibility(View.INVISIBLE);
         tvGlucoseTimer.setVisibility(View.INVISIBLE);
+        reset.setVisibility(View.INVISIBLE);
 
         if (hideTreatmentButtonsIfAllDone()) {
             updateCurrentBgInfo("bg button");
@@ -1284,12 +1286,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     private void hideAllTreatmentButtons() {
         textCarbohydrates.setVisibility(View.INVISIBLE);
-        if(!isDev()) {
-            pbGlucoseTimer.setVisibility(View.INVISIBLE);
-            tvGlucoseTimer.setVisibility(View.INVISIBLE);
-            btnBloodGlucose.setVisibility(View.INVISIBLE);
-            textBloodGlucose.setVisibility(View.INVISIBLE);
-        }
+        pbGlucoseTimer.setVisibility(View.INVISIBLE);
+        reset.setVisibility(View.INVISIBLE);
+        tvGlucoseTimer.setVisibility(View.INVISIBLE);
+        btnBloodGlucose.setVisibility(View.INVISIBLE);
+        textBloodGlucose.setVisibility(View.INVISIBLE);
         btnApprove.setVisibility(View.INVISIBLE);
         btnCancel.setVisibility(View.INVISIBLE);
         btnCarbohydrates.setVisibility(View.INVISIBLE);
@@ -1648,6 +1649,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                         textBloodGlucose.setVisibility(View.VISIBLE);
                         pbGlucoseTimer.setVisibility(View.VISIBLE);
                         tvGlucoseTimer.setVisibility(View.VISIBLE);
+                        reset.setVisibility(View.VISIBLE);
                     }
 
                 } else {
