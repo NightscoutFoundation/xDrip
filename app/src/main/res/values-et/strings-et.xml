@@ -1368,8 +1368,8 @@
     <string name="title_ob1_minimize_scanning">Minimaalne skaneerimine</string>
     <string name="summary_ob1_avoid_scanning">Väldi skaneerimist nii palju kui võimalik (vähendab veel akukasutust)</string>
     <string name="title_ob1_avoid_scanning">Väldi skaneerimist</string>
-    <string name="summary_using_g6">Kasutan G6, G7, Dexcom 1või One+ sensorit</string>
-    <string name="title_using_g6">G6/G7/Dex1/One+  tugi</string>
+    <string name="summary_using_g6">Kasutan Dexcom sensorit</string>
+    <string name="title_using_g6">Dexcom tugi</string>
     <string name="summary_ob1_g5_allow_resetbond">OB1 vastuvõtja võib ühenduse katkestada kui arvab, et andmete töötlemine ebaõnnestus. Kui teil tekib ühenduse katkestamisel probleeme, keelake see valik. Kui te seejärel ühenduse täielikult kaotate, veenduge, et see oleks lubatud.</string>
     <string name="title_ob1_g5_allow_resetbond">Luba OB1 lahtiühendamine</string>
     <string name="summary_ob1_initiate_bonding_flag">OB1 vastuvõtja võib alustada ühendamist.</string>
@@ -1387,8 +1387,8 @@
     <string name="title_xdrip_plus_graph_display_settings">Graafiku seaded</string>
     <string name="summary_show_basal_line">Näita välist TBR-teavet</string>
     <string name="title_show_basal_line">Näita basaali TBR</string>
-    <string name="summary_show_g_prediction">Kuva G6/G7 ennustatavad VS-punktid</string>
-    <string name="title_show_g_prediction">G6/G7 ennustus</string>
+    <string name="summary_show_g_prediction">Kuva Dexcom ennustatavad VS-punktid</string>
+    <string name="title_show_g_prediction">Dexcom ennustus</string>
     <string name="summary_show_smb_icons">Kustuta graafikult vähetähtsate väikeste booluste ikoonid</string>
     <string name="title_show_smb_icons">Näita mikrobooluse ikoone</string>
     <string name="summary_show_medtrum_secondary">Kuva alternatiivsed VS punktid</string>
