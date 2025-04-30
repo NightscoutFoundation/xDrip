@@ -95,6 +95,13 @@
                     android:id="@+id/layoutCurrentBgValueRealTime"
                     android:orientation="horizontal">
 
+                    <com.eveningoutpost.dexdrip.ui.CircularProgressBar
+                        android:id="@+id/circularProgressBar"
+                        android:layout_gravity="bottom"
+                        android:layout_marginRight="10dp"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"/>
+
                     <TextView
                         android:id="@+id/currentBgValueRealTime"
                         android:layout_width="wrap_content"

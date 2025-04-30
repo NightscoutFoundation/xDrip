@@ -94,6 +94,7 @@ import com.eveningoutpost.dexdrip.services.DexCollectionService;
 import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.services.PlusSyncService;
 import com.eveningoutpost.dexdrip.services.WixelReader;
+import com.eveningoutpost.dexdrip.ui.CircularProgressBar;
 import com.eveningoutpost.dexdrip.utilitymodels.AlertPlayer;
 import com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
@@ -254,6 +255,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private TextView textInsulinSumDose;
     private TextView[] textInsulinDose = new TextView[MAX_INSULIN_PROFILES];
     private TextView textTime;
+    private CircularProgressBar progressBar;
     private static final int REQ_CODE_SPEECH_INPUT = 1994;
     private static final int REQ_CODE_SPEECH_NOTE_INPUT = 1995;
     private static final int REQ_CODE_BATTERY_OPTIMIZATION = 1996;
@@ -420,6 +422,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         this.currentBgValueText = (TextView) findViewById(R.id.currentBgValueRealTime);
         this.bpmButton = (Button) findViewById(R.id.bpmButton);
         this.stepsButton = (Button) findViewById(R.id.walkButton);
+        this.progressBar = (CircularProgressBar) findViewById(R.id.circularProgressBar);
 
         extraStatusLineText.setText("");
         dexbridgeBattery.setText("");
@@ -1185,6 +1188,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         voiceRecognitionText.setVisibility(View.INVISIBLE);
         textTime.setVisibility(View.INVISIBLE);
         btnTime.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.INVISIBLE);
+        progressBar.stopTimer();
 
         // zeroing code could be functionalized
         thiscarbsnumber = 0;
@@ -1913,7 +1918,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         NFControl.initNFC(this, false);
 
         if (get_follower() || get_master()) {
-           // GcmActivity.checkSync(this);
+            // GcmActivity.checkSync(this);
         }
 
         checkWifiSleepPolicy();
@@ -2631,6 +2636,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
         if (!isSensorActive) {
+            progressBar.stopTimer();
+            progressBar.setVisibility(View.INVISIBLE);
             // Define a variable (notConnectedToG6Yet) that is only true if Native G6 is chosen, but, transmitter days is unknown or not synced yet.
             boolean notConnectedToG6Yet = DexCollectionType.getDexCollectionType() == DexcomG5 && Pref.getBooleanDefaultFalse("ob1_g5_use_transmitter_alg") && Pref.getBooleanDefaultFalse("using_g6") && (DexTimeKeeper.getTransmitterAgeInDays(getTransmitterID()) == -1 || !DexSyncKeeper.isReady(getTransmitterID()));
             if (notConnectedToG6Yet || shortTxId()) { // Only if G6 has been selected and transmitter is not synced yet, or if G7 has been selected.
@@ -2687,6 +2694,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 double waitTime = (startedAt + warmUpMs - now) / (double)MINUTE_IN_MS;
                 // TODO better resource format string
                 notificationText.setText(getString(R.string.please_wait_while_sensor_warms_up) + JoH.qs(waitTime, 0) + getString(R.string.minutes_with_bracket));
+                progressBar.setVisibility(View.INVISIBLE);
+                progressBar.stopTimer();
                 showUncalibratedSlope();
                 return;
             }
@@ -2863,6 +2872,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
         if (!Sensor.isActive()) {
+            progressBar.setVisibility(View.INVISIBLE);
+            progressBar.stopTimer();
             notificationText.setText(R.string.now_choose_start_sensor_in_settings);
             return;
         }
@@ -3132,6 +3143,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         } else {
             currentBgValueText.setTextColor(getCol(ColorCache.X.color_inrange_bg_values));
         }
+
+        long timeSinceLastUpdMs = System.currentTimeMillis() - lastBgReading.timestamp;
+        progressBar.setVisibility(View.VISIBLE);
+        progressBar.updateProgress(timeSinceLastUpdMs);
 
         // TODO this should be made more efficient probably
         if (Pref.getBooleanDefaultFalse("display_glucose_from_plugin") && (PluggableCalibration.getCalibrationPluginFromPreferences() != null)) {
@@ -3652,8 +3667,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         Snackbar.make(
 
-                activity.findViewById(android.R.id.content),
-                message, Snackbar.LENGTH_LONG)
+                        activity.findViewById(android.R.id.content),
+                        message, Snackbar.LENGTH_LONG)
                 .setAction(buttonString, mOnClickListener)
                 //.setActionTextColor(Color.RED)
                 .show();
