@@ -379,7 +379,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
         nanoStatus = new NanoStatus("collector", 1000);
-        expiryStatus = new NanoStatus("sensor-expiry", 15000);
+        expiryStatus = new NanoStatus("s-expiry", 15000);
 
         set_is_follower();
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -2465,7 +2465,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             updateCurrentBgInfoCommon(collector, notificationText);
         }
         if (collector.equals(DexCollectionType.Disabled)) {
-            notificationText.append("\n DATA SOURCE DISABLED");
+            notificationText.append(getString(R.string.__data_source_disabled));
             if (!Experience.gotData()) {
                 // TODO should this move to Experience::processSteps ?
                 final Activity activity = this;

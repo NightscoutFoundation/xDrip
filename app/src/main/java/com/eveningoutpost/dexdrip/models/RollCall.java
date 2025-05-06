@@ -7,6 +7,7 @@ import android.os.Build;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.cloud.jamcm.Pusher;
 import com.eveningoutpost.dexdrip.utilitymodels.BridgeBattery;
 import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 import com.eveningoutpost.dexdrip.utilitymodels.StatusItem;
@@ -65,6 +66,9 @@ public class RollCall {
     @Expose
     Long last_seen;
 
+    @Expose
+    int cloud;
+
     final long created = JoH.tsl();
 
     public RollCall() {
@@ -103,6 +107,7 @@ public class RollCall {
     public RollCall populate() {
         this.battery = getBatteryLevel();
         this.bridge_battery = BridgeBattery.getBestBridgeBattery();
+        this.cloud = Pusher.enabled() ? 1 : 0;
         return this;
     }
 
@@ -291,7 +296,7 @@ public class RollCall {
         for (Map.Entry entry : indexed.entrySet()) {
             final RollCall rc = (RollCall) entry.getValue();
             // TODO refactor with stringbuilder
-            lf.add(new StatusItem(rc.role + (desert_sync ? rc.getRemoteWifiIndicate(our_wifi_ssid) : "") + (engineering ? ("\n" + JoH.niceTimeSince(rc.last_seen) + " ago") : ""), rc.bestName() + (desert_sync ? rc.getRemoteIpStatus() : "") + (engineering && rc.batteryValid() ? ("\n" + rc.battery + "%") : "") + (engineering && rc.bridgeBatteryValid() ? (" " + rc.bridge_battery+"%") : "")));
+            lf.add(new StatusItem(rc.role + (desert_sync ? rc.getRemoteWifiIndicate(our_wifi_ssid) : "") + (engineering ? ("\n" + JoH.niceTimeSince(rc.last_seen) + " ago") : ""), rc.bestName() + (desert_sync ? rc.getRemoteIpStatus() : "") + (rc.batteryValid() ? ("\n" + rc.battery + "%") : "") + (engineering && rc.bridgeBatteryValid() ? (" " + rc.bridge_battery+"%") : "")));
         }
 
         Collections.sort(lf, new Comparator<StatusItem>() {

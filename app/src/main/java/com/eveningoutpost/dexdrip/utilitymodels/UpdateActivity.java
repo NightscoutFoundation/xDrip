@@ -53,6 +53,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper.enableTls12OnPreLollipop;
+import static com.eveningoutpost.dexdrip.utilitymodels.PersistentStore.incrementLong;
 
 public class UpdateActivity extends BaseAppCompatActivity {
 
@@ -60,6 +61,7 @@ public class UpdateActivity extends BaseAppCompatActivity {
     private static final String useInternalDownloaderPrefsName = "use_internal_downloader";
     private static final String last_update_check_time = "last_update_check_time";
     private static final String TAG = "jamorham update";
+    private static final String UP_LOAD_BALANCER = "UP_LOAD_BALANCER";
     private static OkHttpClient httpClient = null;
     public static long last_check_time = 0;
     private static SharedPreferences prefs;
@@ -101,7 +103,7 @@ public class UpdateActivity extends BaseAppCompatActivity {
                 Log.d(TAG, "Using subversion: " + subversion);
             }
 
-            final String CHECK_URL = context.getString(R.string.wserviceurl) + "/update-check/" + channel + subversion;
+            final String CHECK_URL = context.getString((incrementLong(UP_LOAD_BALANCER) % 2 == 1) ? R.string.qserviceurl : R.string.wserviceurl) + "/update-check/" + channel + subversion;
             DOWNLOAD_URL = "";
             newversion = 0;
 

@@ -24,7 +24,7 @@ public class Template {
     private static final String TAG = "WebFollow" + Template.class.getSimpleName();
     private static final String SCHEME = "https://";
     private static final String PREFIX = "community-script";
-    private static final String SUFFIX = "net";
+    private static final String SUFFIX = "net/v2";
     private static final String DOT = ".";
 
     private static byte[] getData() {

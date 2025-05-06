@@ -61,6 +61,7 @@
     <string name="pref_title_api_enabled">Povoleno</string>
     <string name="pref_summary_api_enabled">REST API je standardní způsob, jak se připojit k Nightscoutu</string>
     <string name="pref_title_api_url">Základní URL</string>
+    <string name="pref_summary_api_url">Formát: https://password@hostname/api/v1/</string>
     <string name="pref_dialog_api_url">Základní URL serveru</string>
     <string name="pref_message_api_url">Toto je pouze základní adresa. Uploader automaticky přidá na konec / pro nahrání dat. API_SECRET a na serveru musí odpovídat vasapisecret nastavení.</string>
     <string name="pref_default_api_url">https://{vasapisecert}@{vaseadresa}.azurewebsites.net/api/v1/</string>
@@ -223,7 +224,14 @@
     <string name="other_alerts">Jiné výstrahy</string>
     <string name="extra_alerts_xdrip_plus">Další výstrahy (xDrip+)</string>
     <string name="persistent_high_alert">Trvalá výstraha vysoké glykémie</string>
+    <string name="persistent_high_alert_enable">Povolit</string>
+    <string name="title_persistent_high_threshold">Limit</string>
+    <string name="the_value_must_be_between_min_and_max">Hodnota musí být mezi %1$s a %2$s</string>
     <string name="forecasted_low_alert">Výstrahy při předpovídání nízkých hodnot</string>
+    <string name="setting_pref_to_max">Nastavit na maximum</string>
+    <string name="pref_was_greater_than_max">Hodnota %1$s byla nastavena vyšší, než je povolené maximum. Byla tak změněna na maximum.</string>
+    <string name="setting_pref_to_min">Nastavit na minimum</string>
+    <string name="pref_was_less_than_min">Hodnota %1$s byla nastavena nižší, než je povolené minimum. Byla tak změněna na minimum.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolovat data pro predikci nízké glykémie</string>
     <string name="alarm_at_forecasted_low_mins">Alarm při prognóze nízkých hodnot (min)</string>
     <string name="other_xdrip_plus_alerts">Ostatní xDrip+ výstrahy</string>
@@ -743,6 +751,8 @@
     <string name="glucose_meters">Glukometry</string>
     <string name="glucose_meter_options">Volby pro bezdrátové glukometry</string>
     <string name="auto_connect_to_meter">Automaticky připojovat a načítat data z glukometru jako je Contour Next One</string>
+    <string name="summary_use_nfc_meter">Stáhnout záznamy glykémie z NFC glukometru, pokud je aplikace xDrip+ otevřena</string>
+    <string name="title_use_nfc_meter">Používat NFC glukometr</string>
     <string name="use_bluetooth_meter">Používat Bluetooth glukometry</string>
     <string name="scan_for_bluetooth_meter">Vyhledat Bluetooth glukometr</string>
     <string name="meter_connect_sound">Povolit tento zvuk při připojení, odpojení a sychronizaci dat</string>
@@ -1178,6 +1188,8 @@
     <string name="summary_cloud_storage_api_download_enable">Pokusit se také stáhnout ošetření z Nightscoutu</string>
     <string name="title_cloud_storage_api_download_enable">Stáhnout údaje o ošetření</string>
     <string name="title_cloud_storage_api_download_from_xdrip">Přeskočit položky z xDripu</string>
+    <string name="nightscout_upload_failure_backfill_required">Nahrávání nebylo uspěšné pro všechny stránky. Doporučujeme provést doplnění záznamů. První selhání: %1$s</string>
+    <string name="title_nightscout_upload_failure_backfill_required">Nekonzistentní nahrávání na více stránek Nightscout</string>
     <string name="summary_cloud_storage_api_download_from_xdrip">Nestahovat položky nahrané aplikací xDrip+</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Kalibrovat bez ptaní, pokud jsou příhodné podmínky (experimentální)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatická kalibrace</string>
@@ -1190,6 +1202,8 @@
     <string name="title_send_treatments_to_nightscout">Nahrát ošetření</string>
     <string name="summary_warn_nightscout_failures">Zvukové a obrazové upozornění na selhání nahrávání dat do Nightscount.</string>
     <string name="title_warn_nightscout_failures">Upozornění na poruchy při nahrávání</string>
+    <string name="summary_warn_nightscout_multi_site_upload_failure">xDrip vymaže nahrávací frontu i v případě, že pouze jedna stránka měla úspěšné nahrání, ostatní stránky zůstanou neúplné. Upozornění umožní podle potřeby doplňovat záznamy.</string>
+    <string name="title_warn_nightscout_multi_site_upload_failure">Upozornění na selhání při vícestránkovém nahrávání</string>
     <string name="summary_nightscout_device_append_source_info">Pro G5 odeslat typ kolektoru (např. OB1) a stav zpětného vyplňování hodnot (pro nativní/interní režim) do Nightscoutu.</string>
     <string name="title_nightscout_device_append_source_info">Připojit ke jménu zařízení informace o zdroji</string>
     <string name="summary_tap_to_send_historical_data">Klepnutím odešlete historická data do Nightscoutu</string>
@@ -1204,6 +1218,12 @@
     <string name="title_tidepool_window_latency">Nahrávat data po (minutách)</string>
     <string name="summary_tidepool_dev_servers">Pokud povoleno, data budou nahrávána na https://int-app.tidepool.org místo na https://app.tidepool.org/ (nedoporučeno)</string>
     <string name="title_tidepool_dev_servers">Používat integrační (testovací) servery</string>
+    <string name="summary_tidepool_upload_when_chargeonly">Nahrát data pouze při nabíjení</string>
+    <string name="title_tidepool_upload_when_chargeonly">Pouze při nabíjení</string>
+    <string name="summary_tidepool_upload_only_wifi">Nahrát data pouze při připojení k neomezené datové síti/Wifi</string>
+    <string name="title_tidepool_upload_only_wifi">Pouze při připojení k Wifi</string>
+    <string name="summary_tidepool_upload_no_treatment">Nahrát pouze data z telefonu (CGM), aby se zabránilo duplicitám s manuálním nahrávání z pumpy</string>
+    <string name="title_tidepool_upload_no_treatment">Nenahrávat ošetření</string>
     <string name="title_tidepool">Tidepool</string>
     <string name="show_help">Zobrazit nápovědu</string>
     <string name="load_save_settings_on_sdcard">Načíst / uložit nastavení</string>
@@ -1276,6 +1296,8 @@
     <string name="summary_lefun_send_alarms">Zobrazit oznámení výstrah glykémie</string>
     <string name="title_lefun_send_alarms">Zobrazit výstrahy</string>
     <string name="title_lefun_option_shake_snoozes">Zatřesením potvrdit</string>
+    <string name="summary_lefun_send_calls">Zobrazit oznámení o příchozím hovoru na náramku</string>
+    <string name="title_lefun_send_calls">Zobrazit příchozí hovory</string>
     <string name="title_lefun_screens_features">Lefun displej / funkce</string>
     <string name="title_features">Funkce</string>
     <string name="title_lefun_feature_lift_to_wak">Zvednutím probudit</string>
@@ -1343,6 +1365,8 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Návrat k algoritmu xDrip+</string>
     <string name="summary_ob1_minimize_scanning">Použít heuristiku pro minimalizaci Bluetooth vyhledávání a úspory baterie</string>
     <string name="title_ob1_minimize_scanning">Minimalizovat vyhledávání</string>
+    <string name="summary_ob1_avoid_scanning">Vyhnout se skenování v maximální možné míře (pro snížení spotřeby baterie)</string>
+    <string name="title_ob1_avoid_scanning">Vyhnout se skenování</string>
     <string name="summary_using_g6">Používám G6 nebo Dexcom One senzor</string>
     <string name="title_using_g6">Podpora G6/Dexcom One</string>
     <string name="summary_ob1_g5_allow_resetbond">OB1 kolektor se může odpojit, pokud zjistí, že šifrování selhalo. Vypněte tuto možnost, pokud máte problémy s odpojováním. Při úplném odpojení povolte tuto možnost.</string>
@@ -1415,6 +1439,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="summary_plus_accept_follower_actions">Ošetření, kalibrace a další jiné akce zadané sledujícími budou přijaty i na tomto zařízení</string>
     <string name="title_plus_accept_follower_actions">Přijímat akce sledujícího</string>
     <string name="summary_plus_whole_house">Účast v Whole House síti</string>
+    <string name="summary_plus_xdrip_cloud">Používat nové cloudové servery xDrip+. Sledované (master) a sledující (follower) zařízení musí mít toto nastavení stejné.</string>
     <string name="title_plus_whole_house">Whole House</string>
     <string name="summary_libre_whole_house_collector">Toto zařízení bude kolektorem pro Whole House síť</string>
     <string name="title_libre_whole_house_collector">Libre Whole House</string>
@@ -1464,6 +1489,8 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="category_falling_rising_bg">Pokles/nárůst glykemie</string>
     <string name="category_alert_prefs">Nastavení výstrah (pro tyto výstrahy)</string>
     <string name="summary_persistent_high_alert">Pokud trvá vysoká glykémie příliš dlouho a neklesá</string>
+    <string name="summary_persistent_high_threshold_link">Pokud je povoleno, vysoká hodnota je hodnota limitu.\nJe-li vypnuto, hodnota limitu je hodnota uvedená níže.</string>
+    <string name="title_persistent_high_threshold_link">Limit: Vysoká hodnota</string>
     <string name="note_search_button">HLEDAT</string>
     <string name="all_note_button">VŠE</string>
     <string name="title_full_screen_mode">Režim celé obrazovky</string>
@@ -1498,6 +1525,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="progress">pokrok</string>
     <string name="bluetooth_device">Bluetooth zařízení:   </string>
     <string name="transmitter_battery_status">Baterie vysílače:  </string>
+    <string name="database_size">Velikost databáze:  </string>
     <string name="top">Nahoru</string>
     <string name="connect_device_usb_otg">Prosím připojte Vaše zařízení pomocí USB OTG kabelu.</string>
     <string name="connection_status">Stav připojení:</string>
@@ -1727,6 +1755,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="proceed">Pokračovat</string>
     <string name="special_pairing_workaround">Speciální způsob párování pro telefony Samsung</string>
     <string name="save_power">Úsporný režim</string>
+    <string name="use_xdrip_cloud">Použít xDrip+ cloud</string>
     <string name="reduce_battery_and_network_overhead">Snížit spotřebu baterie a objem přenesených dat pomocí dávkového zpracování a vyloučení nepotřebných dat</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Zjednodušit grafy vyhlazením (odstraněním) odchylných hodnot glykémií. Toto nastavení neovlivní aktuální hodnotu glykémie, výstrahy a odesílanou hodnotu glykémie.  </string>
     <string name="graph_smoothing">Vyhlazování grafu</string>
@@ -1804,6 +1833,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="summary_ymax">Zvolit maximum osy y, pokud se nebudou vyskytovat výšší hodnoty glykémie.</string>
     <string name="wait_to_connect">Ověřte nastavení a počkejte na připojení.</string>
     <string name="summary_sens_expiry_notify">Upozornit, když se blíží konec senzoru.</string>
+    <string name="title_sens_expiry">Oznámení konce senzoru</string>
     <string name="title_sens_expiry_notify">Senzor bude končit</string>
     <string name="close">Zavřít</string>
     <string name="title_advanced_settings_4_Lib2">Pokročilá nastavení pro Libre 2</string>
@@ -1852,7 +1882,27 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="audio_focus_lower_volume_of_other_apps">Snížit hlasitost zvuků ostatních aplikací</string>
     <string name="audio_focus_pause_other_apps_playing_audio">Pozastavit ostatní aplikace přehrávající zvuky</string>
     <string name="audio_focus_pause_all_other_sounds">Pozastavit všechny ostatní zvuky</string>
+    <string name="wake_up_screen">Probuzení obrazovky</string>
+    <string name="wake_up_screen_summary">Probudit obrazovku během výstrahy. Toto může odemknout zařízení, která nemají zapnutý zámek obrazovky.</string>
     <string name="use_camera_light">Používat světlo fotoaparátu</string>
     <string name="use_camera_light_summary">Blikat světlem fotoaparátu během trvání výstrahy, pokud je telefon připojen k nabíječce</string>
     <string name="g7_should_start_automatically">Senzor G7 by se měl spustit automaticky</string>
+    <string name="screenshot">Snímek obrazovky</string>
+    <string name="bg_alert">Výstraha %1$s glykémie: %2$s (@%3$s)</string>
+    <string name="show_graphical_trend_arrow">Zobrazit grafickou šipku trendu</string>
+    <string name="no_alert_in_silent_mode">Žádná výstraha v tichém režimu</string>
+    <string name="calibration_slope_intercept">sklon = %1$s průsečík = %2$s</string>
+    <string name="axis_x_raw_value">Neupravená hodnota</string>
+    <string name="axis_y_glucose_mgdl_mmol">Glykémie + %s</string>
+    <string name="set_home_network">Nastavení domácí sítě</string>
+    <string name="my_home_network_is">Název domácí WiFi sítě je:\n\n%s</string>
+    <string name="set_home_network_to">Nastavit domácí síť na: %s</string>
+    <string name="not_connected_to_wifi">Nepřipojeno k WiFi</string>
+    <string name="at_home_only">Pouze v domácí síti</string>
+    <string name="speak">Hlas.záznam</string>
+    <string name="graph_note">Poznámka ke grafu</string>
+    <string name="reminder_alternate_title">Alternativní název připomenutí</string>
+    <string name="default_xdrip_reminder_sound">Výchozí xDrip+ zvuk připomenutí</string>
+    <string name="custom_audio_file">Vlastní zvukový soubor</string>
+    <string name="android_ringtone_alarm">Vyzvánění/alarm systému Android</string>
 </resources>

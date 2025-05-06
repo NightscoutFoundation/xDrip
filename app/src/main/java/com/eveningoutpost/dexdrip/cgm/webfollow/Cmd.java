@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.cgm.webfollow;
 
 import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
 import static com.eveningoutpost.dexdrip.cgm.webfollow.Agent.get;
+import static com.eveningoutpost.dexdrip.utils.CipherUtils.getSHA256;
 
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.JoH;
@@ -10,6 +11,7 @@ import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import org.json.JSONObject;
 
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -32,6 +34,8 @@ import okhttp3.RequestBody;
 @RequiredArgsConstructor
 public class Cmd {
     private static final String PUSH_METHOD = "push";
+    private static final String FPUSH_METHOD = "fpush";
+    private static final String CPUSH_METHOD = "cpush";
     private static final String JSON_METHOD = "jput";
     private static final String JSON_TYPE = "application/json";
     private static final MediaType JSON = MediaType.parse(JSON_TYPE);
@@ -103,6 +107,18 @@ public class Cmd {
                     }
                     return true;
 
+                case "vSet":
+                    if (!JoH.emptyString(m.getByName(pc[2]))) {
+                        m.doAction(pc[1]);
+                    }
+                    return true;
+
+                case "vuSet":
+                    if (JoH.emptyString(m.getByName(pc[2]))) {
+                        m.doAction(pc[1]);
+                    }
+                    return true;
+
                 case "evaluate":
                     evaluate(parts.length > 1 ? parts[1].split(";") : null);
                     return true;
@@ -125,17 +141,28 @@ public class Cmd {
 
             switch (p1s[0]) {
 
+                case FPUSH_METHOD:
+                case CPUSH_METHOD:
                 case PUSH_METHOD:
                     for (val as : asn) {
-                        val ass = as.split("-");
+                        m.log("PUSH: as: " + as);
+                        val ass = as.split("-", 2);
                         val tok = ass[1].split(";");
-                        val tick = m.getByName(tok[1]);
+                        val tick = (tok[1].charAt(0) == '\'') ? tok[1].substring(1) : m.getByName(tok[1]); // handle string literal
                         if (tick == null) {
                             m.loge(tok[1] + " is null in " + as);
                             return false;
                         }
-                        m.log("Setting: :" + ass[0] + ": to :" + String.format(tok[0], tick));
-                        cb.getClass().getMethod(ass[0], String.class).invoke(cb, String.format(tok[0], m.getByName(tok[1])));
+                        val mtick = mutate(tick, tok);
+                        m.log("Setting: :" + ass[0] + ": to :" + String.format(tok[0], mtick));
+                        if (p1s[0].equals(CPUSH_METHOD)) {
+                            m.setByName(ass[0], String.format(tok[0], mtick));
+                        } else {
+                            cb.getClass().getMethod(ass[0], String.class).invoke(cb, String.format(tok[0], mtick));
+                        }
+                    }
+                    if (!p1s[0].equals(PUSH_METHOD)) {
+                        return true;
                     }
                     break;
 
@@ -177,6 +204,7 @@ public class Cmd {
                 return presult;
             } catch (Exception e) {
                 m.log("Pprocess exception: " + e);
+                e.printStackTrace();
                 return false;
             }
         } catch (com.google.gson.JsonSyntaxException e) {
@@ -193,11 +221,23 @@ public class Cmd {
                         Cpref.startWithRefresh(true);
                     }
                 }
+                e.printStackTrace();
             } else {
                 e.printStackTrace();
             }
         }
         return false;
+    }
+
+    private String mutate(String tick, final String[] t) throws NoSuchFieldException, IllegalAccessException {
+        if (tick != null) {
+            val a1 = "%sha256";
+            if (t[0].contains(a1)) {
+                t[0] = t[0].replace(a1, "%s");
+                tick = getSHA256(tick.getBytes(StandardCharsets.UTF_8));
+            }
+        }
+        return tick;
     }
 
     private boolean pprocess(final String[] p3s, final Mapifier map) {
@@ -209,6 +249,7 @@ public class Cmd {
                     case "AZ":
                         val psd = map.pluckDouble(pss[0]);
                         val ret = psd == 0d;
+                        m.log("AZ ret: " + ret);
                         if (!ret) {
                             if (psd > 0d) {
                                 m.token = null;
@@ -220,6 +261,7 @@ public class Cmd {
                 }
             } catch (Exception e) {
                 m.loge("pprocess exception: " + e);
+                e.printStackTrace();
             }
         }
         return false;
@@ -228,7 +270,7 @@ public class Cmd {
     private boolean extract(final String[] p2s, final Mapifier map) throws NoSuchFieldException, IllegalAccessException, ParseException {
         for (val psa : p2s) {
             val pss = psa.split("-");
-            val type = pss[0].replaceAll("[a-z]", "");
+            val type = pss[0].replaceAll("[a-z!]", "");
             val var = pss[0].replaceAll("[A-Z]", "");
 
             switch (type) {
@@ -243,13 +285,21 @@ public class Cmd {
                     m.log("Setting Any: " + var + " to " + map.pluckAny(pss[1]) + " <- " + var);
                     break;
                 case "":
-                    val mvalue = map.pluckString(pss[1]);
-                    if (mvalue.length() < 2) {
-                        m.log("Bad value: " + mvalue);
-                        return false;
+                    try {
+                        val mvalue = map.pluckString(pss[1]);
+                        if (mvalue == null || mvalue.length() < 2) {
+                            m.log("Bad value: " + mvalue + " for " + pss[1]);
+                            return var.endsWith("!");
+                        }
+                        m.setByName(var, mvalue);
+                        m.log("Setting String: " + var + " to " + mvalue + " <- " + pss[1]);
+                    } catch (RuntimeException e) {
+                        val es = "" + e;
+                        if (es.contains("Invalid")) {
+                            m.loge(es);
+                        }
+                        throw e;
                     }
-                    m.setByName(var, mvalue);
-                    m.log("Setting String: " + var + " to " + mvalue + " <- " + pss[1]);
                     break;
                 default:
                     throw new RuntimeException("Invalid type :" + type + ": <- " + var);

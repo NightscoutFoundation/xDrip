@@ -995,12 +995,15 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     public static void clearPersistStore() {
-        PersistentStore.removeItem(KEKS_ONE + transmitterMAC);
+        PersistentStore.cleanupOld(KEKS_ONE);
+        PersistentStore.cleanupOld(OB1G5_MACSTORE);
     }
 
     public static void clearPersist() {
         clearPersistStore();
         expireFailures(true);
+        transmitterID = null;
+        transmitterMAC = null;
     }
 
     private void scheduleWakeUp(long future, final String info) {
@@ -1230,7 +1233,10 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     private boolean isScanMatch(final String this_address, final String historical_address, final String this_name, final String search_name) {
-        if (search_name == null && (this_address.equalsIgnoreCase(historical_address) || this_name == null || (emptyString(historical_address) && this_name.startsWith("DXCM")) || (emptyString(historical_address) && this_name.startsWith("DX02")))) {
+        if (search_name == null && (this_address.equalsIgnoreCase(historical_address) || this_name == null ||
+                (emptyString(historical_address) && this_name.startsWith("DXCM")) ||
+                (emptyString(historical_address) && this_name.startsWith("DX02")) ||
+                (emptyString(historical_address) && this_name.startsWith("DX01")))) {
             return !inFailureTally(this_address);
         }
 
@@ -2247,7 +2253,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
         try {
             if (vr2 != null) {
-                if (vr2.typicalSensorDays != 10 && vr2.typicalSensorDays != 7) {
+                if (vr2.typicalSensorDays != 10 && vr2.typicalSensorDays != 7 && vr2.typicalSensorDays != 15) {
                     l.add(new StatusItem("Sensor Period", niceTimeScalar(vr2.typicalSensorDays * DAY_IN_MS), Highlight.NOTICE));
                 }
 
