@@ -87,6 +87,7 @@
     <uses-permission android:name="android.permission.health.READ_WHEELCHAIR_PUSHES"/>
 
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 
     <application
         android:name=".xdrip"
@@ -186,7 +187,7 @@
             android:name=".BluetoothScan"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_bluetooth_scan" />
-
+        <service android:name=".FloatingWidgetService" />
         <service
             android:name=".services.DexCollectionService"
             android:enabled="true"

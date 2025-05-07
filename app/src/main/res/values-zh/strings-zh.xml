@@ -1546,4 +1546,6 @@
     <string name="titleInside_yRange">启用</string>
     <string name="title_sens_expiry_notify">启用</string>
     <string name="reraise_alerts_before_snooze_time">尽管延迟时间没到，重新发起警报</string>
+    <string name="please_allow_overlay_permission">需要悬浮窗权限以显示血糖值</string>
+    <string name="overlay_permission_needed">需要悬浮窗权限才能显示血糖悬浮窗</string>
 </resources>

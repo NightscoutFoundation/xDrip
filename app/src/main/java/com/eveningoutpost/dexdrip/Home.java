@@ -36,6 +36,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -594,7 +596,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         statusReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-
+                Log.d("statusReceiver:","newnewnewnewnewnewnewnewn");
                 final String bwp = intent.getStringExtra("bwp");
                 if (bwp != null) {
                     statusBWP = bwp;
@@ -623,6 +625,27 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
         currentBgValueText.setText(""); // clear any design prototyping default
+
+        checkOverlayPermission();
+
+    }
+
+    private void checkOverlayPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(this)) {
+                // 没有权限，显示对话框请用户授权
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, 1234);
+                toast(getString(R.string.please_allow_overlay_permission));
+            } else {
+                // 已有权限，启动悬浮窗服务
+                startService(new Intent(this, FloatingWidgetService.class));
+            }
+        } else {
+            // Android 6.0以下直接启动服务
+            startService(new Intent(this, FloatingWidgetService.class));
+        }
     }
 
     private boolean firstRunDialogs(final boolean checkedeula) {
@@ -3023,6 +3046,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         String slope_arrow = dg.delta_arrow;
         String extrastring = "";
         boolean hide_slope = false;
+        String bgTime = " " + new java.text.SimpleDateFormat("HH:mm").format(new java.util.Date(lastBgReading.timestamp));
         // when stale
         if ((new Date().getTime()) - stale_data_millis() - lastBgReading.timestamp > 0) {
             notificationText.setText(R.string.signal_missed);
@@ -3036,6 +3060,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             dexbridgeBattery.setPaintFlags(dexbridgeBattery.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             hide_slope = true;
+
+
+            //Floating
+            FloatingWidgetService.updateBloodSugarValue(bgGraphBuilder.unitized_string(estimate)+ bgTime);
+
         } else {
             // not stale
             if (notificationText.getText().length() == 0) {
@@ -3077,15 +3106,21 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     slope_arrow = "";
                 }
                 currentBgValueText.setText(stringEstimate + (itr == null ? " " + slope_arrow : ""));
+                //Floating
+                FloatingWidgetService.updateBloodSugarValue(stringEstimate + (itr == null ? " " + slope_arrow : "")+ bgTime);
             } else {
                 // old depreciated prediction
                 estimate = BgReading.activePrediction();
                 String stringEstimate = bgGraphBuilder.unitized_string(estimate);
                 currentBgValueText.setText(stringEstimate + (itr == null ? " " + BgReading.activeSlopeArrow() : ""));
+
+                //Floating
+                FloatingWidgetService.updateBloodSugarValue(stringEstimate + (itr == null ? " " + BgReading.activeSlopeArrow() : "")+ bgTime);
             }
             if (extrastring.length() > 0)
                 currentBgValueText.setText(extrastring + currentBgValueText.getText());
         }
+
         int minutes = (int) (System.currentTimeMillis() - lastBgReading.timestamp) / (60 * 1000);
 
         if ((!small_width) || (notificationText.length() > 0)) notificationText.append("\n");
