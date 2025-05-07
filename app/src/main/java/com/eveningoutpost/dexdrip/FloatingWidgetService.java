@@ -104,15 +104,13 @@ public class FloatingWidgetService extends Service implements BloodSugarUpdateRe
     }
 
     public static void updateBloodSugarValue(BgReading bgReading) {
-        public static void updateBloodSugarValue(BgReading bgReading) {
-            if (mTextViewBloodSugar != null) {
-                // 获取血糖测量时间并格式化
-                String bgTime = " " + new java.text.SimpleDateFormat("HH:mm").format(new java.util.Date(bgReading.timestamp));
+        if (mTextViewBloodSugar != null) {
+            // 获取血糖测量时间并格式化
+            String bgTime = " " + new java.text.SimpleDateFormat("HH:mm").format(new java.util.Date(bgReading.timestamp));
 
-                // 修改显示格式，添加时间信息
-                String tempBgValue = bgReading.displayValue(null) + bgReading.displaySlopeArrow() + bgTime;
-                mTextViewBloodSugar.setText(tempBgValue);
-            }
+            // 修改显示格式，添加时间信息
+            String tempBgValue = bgReading.displayValue(null) + bgReading.displaySlopeArrow() + bgTime;
+            mTextViewBloodSugar.setText(tempBgValue);
         }
     }
 
