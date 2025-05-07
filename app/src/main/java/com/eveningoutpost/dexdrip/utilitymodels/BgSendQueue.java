@@ -166,9 +166,11 @@ public class BgSendQueue extends Model {
                 JoH.startService(SyncService.class);
             }
 
-            android.util.Log.d("newBgReading","update bg from line 169: "+bgReading.displayValue(null)+bgReading.displaySlopeArrow());
+            String bgTime = " " + new java.text.SimpleDateFormat("HH:mm").format(new java.util.Date(bgReading.timestamp));
+
+            android.util.Log.d("newBgReading","update bg from line 169: "+bgReading.displayValue(null)+bgReading.displaySlopeArrow()+bgTime);
             Intent intent = new Intent(BloodSugarUpdateReceiver.ACTION_UPDATE_BLOOD_SUGAR);
-            intent.putExtra("blood_sugar_value", bgReading.displayValue(null)+bgReading.displaySlopeArrow());
+            intent.putExtra("blood_sugar_value", bgReading.displayValue(null)+bgReading.displaySlopeArrow()+bgTime);
             context.sendBroadcast(intent);
 
         } finally {

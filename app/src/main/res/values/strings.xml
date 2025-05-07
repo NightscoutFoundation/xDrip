@@ -1960,4 +1960,6 @@
     <string name="default_xdrip_reminder_sound">Default xDrip+ reminder sound</string>
     <string name="custom_audio_file">Custom Audio file</string>
     <string name="android_ringtone_alarm">Android Ringtone/Alarm</string>
+    <string name="please_allow_overlay_permission">需要悬浮窗权限以显示血糖值</string>
+    <string name="overlay_permission_needed">需要悬浮窗权限才能显示血糖悬浮窗</string>
 </resources>
