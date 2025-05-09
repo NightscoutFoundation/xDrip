@@ -1960,4 +1960,10 @@
     <string name="default_xdrip_reminder_sound">Default xDrip+ reminder sound</string>
     <string name="custom_audio_file">Custom Audio file</string>
     <string name="android_ringtone_alarm">Android Ringtone/Alarm</string>
+    <string name="first_successful_connection_to_transmitter">"First successful connection to transmitter %1$s"</string>
+    <string name="first_successful_connection_to_transmitter_em">"First successful connection to transmitter %1$s with mac %2$s"</string>
+    <string name="sensor_expiring">Sensor expiring</string>
+    <string name="sensor_will_expire_in">Sensor will expire in %1$s</string>
+    <string name="xdrip_update">xDrip+ Update</string>
+    <string name="a_new_version_on_channel_1_s_is_available">A new version on channel %1$s is available</string>
 </resources>
