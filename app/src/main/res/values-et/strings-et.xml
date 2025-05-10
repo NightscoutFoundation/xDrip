@@ -1912,4 +1912,10 @@
     <string name="default_xdrip_reminder_sound">Vaikimisi xDrip+ meeldetuletuse heli</string>
     <string name="custom_audio_file">Kohandatud helifail</string>
     <string name="android_ringtone_alarm">Androidi helin/alarm</string>
+    <string name="first_successful_connection_to_transmitter">"Esimene edukas ühendus saatjaga %1$s"</string>
+    <string name="first_successful_connection_to_transmitter_em">"Esimene edukas ühendus saatjaga %1$s MAC-aadressiga %2$s"</string>
+    <string name="sensor_expiring">Sensor aegumas</string>
+    <string name="sensor_will_expire_in">Sensor aegub %1$s pärast</string>
+    <string name="xdrip_update">xDrip+ uuendus</string>
+    <string name="a_new_version_on_channel_1_s_is_available">Uus versioon on saadaval kanalis %1$s</string>
 </resources>
