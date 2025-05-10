@@ -1844,4 +1844,10 @@
     <string name="show_graphical_trend_arrow">Grafikus trendnyíl mutatása</string>
     <string name="no_alert_in_silent_mode">Nincs riasztás Néma üzemmódban</string>
     <string name="axis_x_raw_value">Nyers adat</string>
+    <string name="first_successful_connection_to_transmitter">"Első sikeres kapcsolódás a %1$s transzmitterhez"</string>
+    <string name="first_successful_connection_to_transmitter_em">"Elso sikeres kapcsolódás a %1$s transzmitterhez a %2$s MAC-címen"</string>
+    <string name="sensor_expiring">Szenzor lejárat</string>
+    <string name="sensor_will_expire_in">Szenzor lejár: %1$s múlva</string>
+    <string name="xdrip_update">xDrip+ frissítés</string>
+    <string name="a_new_version_on_channel_1_s_is_available">A %1$s csatornán új verzió érhető el</string>
 </resources>
