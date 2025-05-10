@@ -1368,8 +1368,8 @@
     <string name="title_ob1_minimize_scanning">Minimer skanning</string>
     <string name="summary_ob1_avoid_scanning">Unngå å skanne så mye som mulig (reduserer batteribruken ytterliger)</string>
     <string name="title_ob1_avoid_scanning">Unngå skanning</string>
-    <string name="summary_using_g6">Jeg bruker en G6, G7 Dexcom 1 eller One+ sensor</string>
-    <string name="title_using_g6">G6/G7/Dex1/One+-støtte</string>
+    <string name="summary_using_g6">Jeg bruker en Dex-sensor</string>
+    <string name="title_using_g6">Dex-støtte</string>
     <string name="summary_ob1_g5_allow_resetbond">OB1-innsamleren kan frigjøre seg hvis den tror krypteringen har mislyktes. Hvis du får problemer med å oppheve sammenkoblingen, deaktiver dette alternativet. Hvis du da mister forbindelsen helt, sørg for at dette er aktivert.</string>
     <string name="title_ob1_g5_allow_resetbond">Tillat OB1-frakobling</string>
     <string name="summary_ob1_initiate_bonding_flag">OB1-innsamler kan starte binding.</string>
@@ -1387,8 +1387,8 @@
     <string name="title_xdrip_plus_graph_display_settings">Grafinnstillinger</string>
     <string name="summary_show_basal_line">Vis TBR-informasjon fra ekstern status</string>
     <string name="title_show_basal_line">Vis midlertidig basal</string>
-    <string name="summary_show_g_prediction">Vis G6/G7 prediktive glukosepunkter</string>
-    <string name="title_show_g_prediction">G6/G7-prediksjon</string>
+    <string name="summary_show_g_prediction">Vis Dex-prediktive glukosepunkter</string>
+    <string name="title_show_g_prediction">Dex-prediksjon</string>
     <string name="summary_show_smb_icons">Declutter-graf med behandlingsikoner for små boluser</string>
     <string name="title_show_smb_icons">Vis mikrobolus-ikoner</string>
     <string name="summary_show_medtrum_secondary">Vis alternative glukosepunkter</string>
@@ -1912,4 +1912,10 @@
     <string name="default_xdrip_reminder_sound">Standard xDrip+ påminnelseslyd</string>
     <string name="custom_audio_file">Egendefinert lydfil</string>
     <string name="android_ringtone_alarm">Android ringetone/alarm</string>
+    <string name="first_successful_connection_to_transmitter">"Første vellykkede tilkobling til sender %1$s"</string>
+    <string name="first_successful_connection_to_transmitter_em">"Første vellykkede tilkobling til sender %1$s med mac %2$s"</string>
+    <string name="sensor_expiring">Sensor utløper</string>
+    <string name="sensor_will_expire_in">Sensor vil utløpe om %1$s</string>
+    <string name="xdrip_update">xDrip+-oppdatering</string>
+    <string name="a_new_version_on_channel_1_s_is_available">En ny versjon på kanalen %1$s er tilgjengelig</string>
 </resources>
