@@ -157,7 +157,7 @@
     <string name="space_mins">" Min"</string>
     <string name="till">do</string>
     <string name="low_predicted">Niski poziom cukru przewidziany</string>
-    <string name="in">w</string>
+    <string name="in">za</string>
     <string name="yes_enter_setup_mode">Tak, wejdź w tryb konfiguracji</string>
     <string name="nokeep_parakeet_as_it_is">Nie zmieniaj stanu Parakeet</string>
     <string name="are_you_sure_you_want_switch_parakeet_to_setup">Czy na pewno chcesz, aby przełączyć do trybu serwisowego?\n\nNormalnie ta opcja służy do konfiguracji nadajnika poprzez wysyłanie kolejnych wiadomości tekstowych do Parakeet itp.</string>
@@ -1861,4 +1861,10 @@
     <string name="default_xdrip_reminder_sound">Domyślny dźwięk przypomnienia xDrip+</string>
     <string name="custom_audio_file">Własny plik audio</string>
     <string name="android_ringtone_alarm">Dzwonek/Alarm systemu Android</string>
+    <string name="first_successful_connection_to_transmitter">"Pierwsze udane połączenie z nadajnikiem %1$s"</string>
+    <string name="first_successful_connection_to_transmitter_em">"Pierwsze udane połączenie z nadajnikiem %1$s z adresem mac %2$s"</string>
+    <string name="sensor_expiring">Czujnik wygasa</string>
+    <string name="sensor_will_expire_in">Czujnik wygaśnie za %1$s</string>
+    <string name="xdrip_update">Aktualizacja xDrip+</string>
+    <string name="a_new_version_on_channel_1_s_is_available">Dostępna jest nowa wersja na kanale %1$s</string>
 </resources>
