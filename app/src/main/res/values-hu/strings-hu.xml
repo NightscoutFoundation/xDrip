@@ -797,7 +797,7 @@
     <string name="collector_battery_alerts">Kollektor akku riasztás</string>
     <string name="low_battery_percentage">Alacsony akku töltöttségi szint (%)</string>
     <string name="notify_data_arrives_master"><![CDATA[Jelzés, ha legalább 20 p kihagyás után adat érkezik a Master-ről.]]></string>
-    <string name="follower_chime_new">Új adatról jelzés a Követőn</string>
+    <string name="follower_chime_new">Új adat a Követőn</string>
     <string name="carb_ratio">Szénhidrát arány</string>
     <string name="enable_dedicated_insulin_profiles">Inzulin profilok</string>
     <string name="desc_enable_dedicated_insulin_profiles">Itt tudja kiválasztani vagy beállítani az inzulin profilokat</string>
