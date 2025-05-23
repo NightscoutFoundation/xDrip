@@ -234,6 +234,7 @@
     <string name="pref_was_less_than_min">%1$s ble satt til en verdi mindre enn minste tillatt. Den har blitt endret til minimum.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Ekstrapoler data for å prøve og beregne lave verdier</string>
     <string name="alarm_at_forecasted_low_mins">Grense i antall minutter før varsel går av</string>
+    <string name="title_forecast_low_threshold">Terskel</string>
     <string name="other_xdrip_plus_alerts">Andre xDrip+ varsler</string>
     <string name="xdrip_plus_display_settings">xDrip+ Skjerminnstillinger</string>
     <string name="display_customisations">Skjermtilpasninger</string>
