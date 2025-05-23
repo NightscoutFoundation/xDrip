@@ -1905,4 +1905,10 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="default_xdrip_reminder_sound">Výchozí xDrip+ zvuk připomenutí</string>
     <string name="custom_audio_file">Vlastní zvukový soubor</string>
     <string name="android_ringtone_alarm">Vyzvánění/alarm systému Android</string>
+    <string name="first_successful_connection_to_transmitter">"První úspěšné připojení k vysílači %1$s"</string>
+    <string name="first_successful_connection_to_transmitter_em">"První úspěšné připojení k vysílači %1$s s MAC adresou %2$s"</string>
+    <string name="sensor_expiring">Konec senzoru</string>
+    <string name="sensor_will_expire_in">Senzor skončí za %1$s</string>
+    <string name="xdrip_update">Aktualizace xDrip+</string>
+    <string name="a_new_version_on_channel_1_s_is_available">Je dostupná nová verze na kanálu %1$s</string>
 </resources>

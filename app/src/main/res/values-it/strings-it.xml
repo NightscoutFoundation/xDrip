@@ -1912,4 +1912,10 @@
     <string name="default_xdrip_reminder_sound">Suono predefinito promemoria xDrip+</string>
     <string name="custom_audio_file">File audio personalizzato</string>
     <string name="android_ringtone_alarm">Suoneria/Allarme Android</string>
+    <string name="first_successful_connection_to_transmitter">"Prima connessione con successo al trasmettitore %1$s"</string>
+    <string name="first_successful_connection_to_transmitter_em">"Prima connessione con successo al trasmettitore %1$s con mac %2$s"</string>
+    <string name="sensor_expiring">Sensore in scadenza</string>
+    <string name="sensor_will_expire_in">Il sensore scadrà in %1$s</string>
+    <string name="xdrip_update">Aggiornamento xDrip+</string>
+    <string name="a_new_version_on_channel_1_s_is_available">È disponibile una nuova versione nel canale %1$s</string>
 </resources>
