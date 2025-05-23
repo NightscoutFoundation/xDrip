@@ -234,6 +234,7 @@
     <string name="pref_was_less_than_min">Wartość %1$s przekroczyła minimalną dozwoloną wartość. Ustawiono w zamian wartość minimalną.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Ekstrapolacji danych, aby spróbować przewidzieć upadki</string>
     <string name="alarm_at_forecasted_low_mins">Alarm przy prognozowanych niskich w minutach</string>
+    <string name="title_forecast_low_threshold">Próg</string>
     <string name="other_xdrip_plus_alerts">Inne alarmy xDrip+</string>
     <string name="xdrip_plus_display_settings">xDrip+ Ustawienia ekranu</string>
     <string name="display_customisations">Dostosowania wyświetlania</string>
