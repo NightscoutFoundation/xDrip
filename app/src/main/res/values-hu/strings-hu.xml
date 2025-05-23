@@ -232,6 +232,7 @@
     <string name="pref_was_less_than_min">%1$s a minimálisan megengedettnél kisebb értékre lett beállítva.  A minimális értékre lett növelve.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Megpróbálja kiszámolni az esetleges hypot</string>
     <string name="alarm_at_forecasted_low_mins">Riasztás várható hypo előtt X perccel</string>
+    <string name="title_forecast_low_threshold">Határérték</string>
     <string name="other_xdrip_plus_alerts">További xDrip+ riasztások</string>
     <string name="xdrip_plus_display_settings">xDrip+ kijelző</string>
     <string name="display_customisations">Képernyő testreszabása</string>
