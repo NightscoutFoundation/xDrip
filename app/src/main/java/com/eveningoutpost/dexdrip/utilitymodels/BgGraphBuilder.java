@@ -2375,7 +2375,7 @@ public class BgGraphBuilder {
                     final View.OnClickListener mOnClickListener = new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Home.startHomeWithExtra(xdrip.getAppContext(), Home.CREATE_TREATMENT_NOTE, time.toString(), Double.toString(ypos));
+                            Home.startHomeWithExtra(xdrip.getAppContext(), Home.CREATE_TREATMENT_NOTE, time.toString(), "-1"); // Let's not enter a y position to avoid having to worry about the BG units
                         }
                     };
                     Home.snackBar(R.string.add_note, message, mOnClickListener, callerActivity);
