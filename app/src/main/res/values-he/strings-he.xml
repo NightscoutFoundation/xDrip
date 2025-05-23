@@ -228,6 +228,7 @@
     <string name="forecasted_low_alert">התראת סוכר נמוך חזויה</string>
     <string name="extrapolate_data_to_try_to_predict_lows">בצע אקסטרפולציה לחזות נמוכים</string>
     <string name="alarm_at_forecasted_low_mins">התריע על ירידה צפויה (דקות מראש)</string>
+    <string name="title_forecast_low_threshold">ערך סף</string>
     <string name="other_xdrip_plus_alerts">התראות xDrip אחרות</string>
     <string name="xdrip_plus_display_settings">xDrip+ הגדרות תצוגה</string>
     <string name="display_customisations">הצג התאמות אישיות</string>
