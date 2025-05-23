@@ -234,6 +234,7 @@
     <string name="pref_was_less_than_min">%1$s е сложена на стойност по-малка от минимално разрешената. Трябва да бъде променена на минималната.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Екстраполиране на данните в опит да се предвиди ниска КЗ</string>
     <string name="alarm_at_forecasted_low_mins">Аларма при предвиждане на Ниски стойности(Кз)</string>
+    <string name="title_forecast_low_threshold">Праг</string>
     <string name="other_xdrip_plus_alerts">Други xDrip+ известия</string>
     <string name="xdrip_plus_display_settings">xDrip+ Персонализиране</string>
     <string name="display_customisations">Покажи персонализация</string>
