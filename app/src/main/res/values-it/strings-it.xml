@@ -234,6 +234,7 @@
     <string name="pref_was_less_than_min">%1$s è stato impostato su un valore minore del minimo consentito. È stato modificato al minimo.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Estrapolare i dati per cercare di prevedere raggiungimento VALORE BASSO</string>
     <string name="alarm_at_forecasted_low_mins">Allarme previsione VALORE BASSO (minuti)</string>
+    <string name="title_forecast_low_threshold">Soglia</string>
     <string name="other_xdrip_plus_alerts">Altro xDrip+ avvisi</string>
     <string name="xdrip_plus_display_settings">xDrip+ impostazioni di visualizzazione</string>
     <string name="display_customisations">Personalizzazioni di visualizzazione</string>
