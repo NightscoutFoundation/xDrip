@@ -234,6 +234,7 @@
     <string name="pref_was_less_than_min">Hodnota %1$s byla nastavena nižší, než je povolené minimum. Byla tak změněna na minimum.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolovat data pro predikci nízké glykémie</string>
     <string name="alarm_at_forecasted_low_mins">Alarm při prognóze nízkých hodnot (min)</string>
+    <string name="title_forecast_low_threshold">Limit</string>
     <string name="other_xdrip_plus_alerts">Ostatní xDrip+ výstrahy</string>
     <string name="xdrip_plus_display_settings">xDrip+ Nastavení zobrazení</string>
     <string name="display_customisations">Přizpůsobení obrazovky</string>
