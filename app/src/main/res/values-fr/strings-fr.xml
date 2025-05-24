@@ -1487,6 +1487,8 @@
     <string name="summary_persistent_high_alert">Quand supérieur au seuil pour une longue période, et ne redescend pas</string>
     <string name="summary_persistent_high_threshold_link">Lorsque cette option est activée, la valeur haute est le seuil.\nLorsqu\'elle est désactivée, le seuil est la valeur spécifiée ci-dessous.</string>
     <string name="title_persistent_high_threshold_link">Seuil : Valeur haute</string>
+    <string name="summary_forecast_low_threshold_link">Lorsque cette option est activée, la valeur basse est le seuil.\nLorsqu\'elle est désactivée, le seuil est la valeur spécifiée ci-dessous.</string>
+    <string name="title_forecast_low_threshold_link">Seuil : Valeur basse</string>
     <string name="note_search_button">RECHERCHE</string>
     <string name="all_note_button">TOUT</string>
     <string name="title_full_screen_mode">Mode plein écran</string>
