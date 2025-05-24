@@ -1467,6 +1467,8 @@
     <string name="summary_persistent_high_alert">Ha magas érték felett van sokáig és nem tart lefelé</string>
     <string name="summary_persistent_high_threshold_link">Bekapcsolva a Magas érték a hatérték.\nKikapcsolva, a határérték az alábbi:</string>
     <string name="title_persistent_high_threshold_link">Határérték: Magas érték</string>
+    <string name="summary_forecast_low_threshold_link">Bekapcsolva az Alacsony érték a hatérték.\nKikapcsolva, a határérték az alábbi:</string>
+    <string name="title_forecast_low_threshold_link">Határérték: Alacsony érték</string>
     <string name="note_search_button">KERESÉS</string>
     <string name="all_note_button">MIND</string>
     <string name="title_full_screen_mode">Teljes képernyős mód</string>
