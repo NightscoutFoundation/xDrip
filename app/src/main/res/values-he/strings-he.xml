@@ -1457,6 +1457,8 @@
     <string name="summary_persistent_high_alert">כאשר מעל לרמה גבוהה למשך זמן ממושך ושאינו מתחיל לרדת</string>
     <string name="summary_persistent_high_threshold_link">כאשר מופעל, הערך הגבוה ישמש כסף.\n כאשר כבוי, הסף יהיה הערך הרשום מטה.</string>
     <string name="title_persistent_high_threshold_link">ערך סף: ערך גבוה</string>
+    <string name="summary_forecast_low_threshold_link">כאשר מופעל, הערך הנמוך ישמש כסף.\n כאשר כבוי, הסף יהיה הערך הרשום מטה.</string>
+    <string name="title_forecast_low_threshold_link">ערך סף: ערך תחתון</string>
     <string name="note_search_button">חיפוש</string>
     <string name="all_note_button">הכל</string>
     <string name="title_full_screen_mode">מצב מסך מלא</string>
