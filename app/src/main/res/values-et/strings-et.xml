@@ -1491,6 +1491,8 @@
     <string name="summary_persistent_high_alert">Kui VS on üle kõrge taseme liiga kaua ja ei liigu allapoole</string>
     <string name="summary_persistent_high_threshold_link">Kui lubatud, on piirmääraks kõrge väärtus.\nKui keelatud, on piirmääraks allpool seadistatud väärtus.</string>
     <string name="title_persistent_high_threshold_link">Piirmäär: kõrge väärtus</string>
+    <string name="summary_forecast_low_threshold_link">Kui lubatud, on piirmääraks madal väärtus.\nKui keelatud, on piirmääraks allpool seadistatud väärtus.</string>
+    <string name="title_forecast_low_threshold_link">Piirmäär: madal väärtus</string>
     <string name="note_search_button">OTSI</string>
     <string name="all_note_button">KÕIK</string>
     <string name="title_full_screen_mode">Täisekraani režiim</string>
