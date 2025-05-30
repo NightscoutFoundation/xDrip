@@ -190,7 +190,7 @@ public class ProfileEditor extends BaseAppCompatActivity {
                             final int screen_height = dm.heightPixels;
                             boolean small_screen = false;
                             // smaller screens or lower version don't seem to play well with long dialog button names
-                            if ((screen_width < 720) || (screen_height < 720) || ((Build.VERSION.SDK_INT < Build.VERSION_CODES.M)))
+                            if ((screen_width < 720) || (screen_height < 720))
                                 small_screen = true;
 
                             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);

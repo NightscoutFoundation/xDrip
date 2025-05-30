@@ -212,13 +212,8 @@ public class DexShareCollectionService extends Service {
             if (pendingIntent != null)
                 alarm.cancel(pendingIntent);
             long wakeTime = calendar.getTimeInMillis() + retry_in;
-            pendingIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()),  PendingIntent.FLAG_UPDATE_CURRENT);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
-            } else
-                alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+            pendingIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), PendingIntent.FLAG_UPDATE_CURRENT);
+            alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
         }
     }
 
@@ -232,12 +227,7 @@ public class DexShareCollectionService extends Service {
                 alarm.cancel(pendingIntent);
             long wakeTime = calendar.getTimeInMillis() + retry_in;
             pendingIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
-            } else
-                alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+            alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
         } else {
             stopSelf();
         }
@@ -300,13 +290,13 @@ public class DexShareCollectionService extends Service {
     }
 
     public void requestHighPriority() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mBluetoothGatt != null) {
+        if (mBluetoothGatt != null) {
             mBluetoothGatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
         }
     }
 
     public void requestLowPriority() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mBluetoothGatt != null) {
+        if (mBluetoothGatt != null) {
             mBluetoothGatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_LOW_POWER);
         }
     }

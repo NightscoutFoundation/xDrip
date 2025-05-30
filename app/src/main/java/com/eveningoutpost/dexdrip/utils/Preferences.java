@@ -590,7 +590,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
     {
         super.onResume();
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(ActivityRecognizedService.prefListener);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && DexCollectionType.hasBluetooth() && !WholeHouse.isRpi()) {
+        if (DexCollectionType.hasBluetooth() && !WholeHouse.isRpi()) {
             LocationHelper.requestLocationForBluetooth(this); // double check!
         }
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(LeFunEntry.prefListener);
@@ -1239,7 +1239,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
                 findPreference(MiBandEntry.PREF_MIBAND_ENABLED).setOnPreferenceChangeListener((preference, newValue) -> {
                     if ((Boolean) newValue) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && (boolean) newValue) {
+                        if ((boolean) newValue) {
                             LocationHelper.requestLocationForBluetooth((Activity) preference.getContext());
                         }
                         checkReadPermission(this.getActivity());
@@ -1544,7 +1544,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             final Preference inpen_enabled = findPreference("inpen_enabled");
             try {
                 inpen_enabled.setOnPreferenceChangeListener((preference, newValue) -> {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && (boolean) newValue) {
+                    if ( (boolean) newValue) {
                         LocationHelper.requestLocationForBluetooth((Activity) preference.getContext()); // double check!
                     }
                     InPenEntry.startWithRefresh();
@@ -2055,19 +2055,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                         // collectionCategory.removePreference(closeGatt);
                     } catch (NullPointerException e) {
                         Log.wtf(TAG, "Nullpointer removing txid ", e);
-                    }
-                }
-
-                if (Build.VERSION.SDK_INT < 21) {
-                    try {
-                        colorScreen.removePreference(flairCategory);
-                    } catch (Exception e) { //
-                    }
-                }
-                if (Build.VERSION.SDK_INT < 23) {
-                    try {
-                        ((PreferenceGroup)findPreference("xdrip_plus_display_category")).removePreference(findPreference("xdrip_plus_number_icon"));
-                    } catch (Exception e) { //
                     }
                 }
 
@@ -2670,17 +2657,15 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
        public static void checkReadPermission(final Activity activity) {
 
-            // TODO call log permission - especially for Android 9+
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (xdrip.getAppContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
+           // TODO call log permission - especially for Android 9+
+           if (xdrip.getAppContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                   != PackageManager.PERMISSION_GRANTED) {
 
-                    ActivityCompat.requestPermissions(activity,
-                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                            Constants.GET_PHONE_READ_PERMISSION);
-                }
-            }
-        }
+               ActivityCompat.requestPermissions(activity,
+                       new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                       Constants.GET_PHONE_READ_PERMISSION);
+           }
+       }
 
         private void showSearchFragment() {
             // lazy instantiation

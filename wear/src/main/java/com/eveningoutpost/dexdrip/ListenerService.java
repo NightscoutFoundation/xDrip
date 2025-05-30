@@ -441,13 +441,8 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 }
                 //mAsyncBenchmarkTester = null;
             } else {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                    Log.d(TAG, "Benchmark: runAsyncBenchmarkTester SDK < M call execute lastRequest:" + JoH.dateTimeText(lastRequest));
-                    mAsyncBenchmarkTester = (AsyncBenchmarkTester) new AsyncBenchmarkTester(Home.getAppContext(), node, pathdesc, path, payload, bDuplicateTest).execute();
-                } else {
-                    Log.d(TAG, "Benchmark: runAsyncBenchmarkTester SDK >= M call executeOnExecutor lastRequest:" + JoH.dateTimeText(lastRequest));
-                    mAsyncBenchmarkTester = (AsyncBenchmarkTester) new AsyncBenchmarkTester(Home.getAppContext(), node, pathdesc, path, payload, bDuplicateTest).executeOnExecutor(xdrip.executor);
-                }
+                Log.d(TAG, "Benchmark: runAsyncBenchmarkTester SDK >= M call executeOnExecutor lastRequest:" + JoH.dateTimeText(lastRequest));
+                mAsyncBenchmarkTester = (AsyncBenchmarkTester) new AsyncBenchmarkTester(Home.getAppContext(), node, pathdesc, path, payload, bDuplicateTest).executeOnExecutor(xdrip.executor);
             }
             return false;
         }
@@ -885,14 +880,9 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             }
             //mDataRequester = null;
         }
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            Log.d(TAG, "sendData SDK < M call execute lastRequest:" + JoH.dateTimeText(lastRequest));
-            mDataRequester = (DataRequester) new DataRequester(this, path, payload).execute();
-        } else {
-            Log.d(TAG, "sendData SDK >= M call executeOnExecutor lastRequest:" + JoH.dateTimeText(lastRequest));
-            // TODO xdrip executor
-            mDataRequester = (DataRequester) new DataRequester(this, path, payload).executeOnExecutor(xdrip.executor);
-        }
+        Log.d(TAG, "sendData SDK >= M call executeOnExecutor lastRequest:" + JoH.dateTimeText(lastRequest));
+        // TODO xdrip executor
+        mDataRequester = (DataRequester) new DataRequester(this, path, payload).executeOnExecutor(xdrip.executor);
     }
 
     private void googleApiConnect() {
@@ -2491,7 +2481,6 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     }
 
     private boolean checkLocationPermissions() {//KS
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return true;
         Context myContext = getApplicationContext();
         mLocationPermissionApproved =
                 ActivityCompat.checkSelfPermission(

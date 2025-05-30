@@ -163,10 +163,6 @@ public class MtpTools {
     }
 
     public static int createFile(final String fileName, final byte[] outputBytes, final MtpDevice mtpDevice, final int storage_id, final int parent_id) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            Log.e(TAG, "createFile cannot work below Android 7");
-            return -1;
-        }
 
         if (outputBytes != null) {
             ParcelFileDescriptor[] pipe = null;
@@ -223,10 +219,6 @@ public class MtpTools {
     }
 
     public static int createFolder(final String fileName, final MtpDevice mtpDevice, final int storage_id) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            Log.e(TAG, "createFolder cannot work below Android 7");
-            return -1;
-        }
 
         ParcelFileDescriptor[] pipe = null;
         try {

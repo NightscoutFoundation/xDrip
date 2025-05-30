@@ -207,55 +207,29 @@ public class StatsActivity extends ActivityWithMenu {
                 break;
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            ColorStateList csl = new ColorStateList(new int[][]{new int[0]}, new int[]{0xFF606060});
-            buttonTD.setBackgroundTintList(csl);
-            buttonYTD.setBackgroundTintList(csl);
-            button7d.setBackgroundTintList(csl);
-            button30d.setBackgroundTintList(csl);
-            button90d.setBackgroundTintList(csl);
-            csl = new ColorStateList(new int[][]{new int[0]}, new int[]{0xFFAA0000});
-            switch (state) {
-                case TODAY:
-                    buttonTD.setBackgroundTintList(csl);
-                    break;
-                case YESTERDAY:
-                    buttonYTD.setBackgroundTintList(csl);
-                    break;
-                case D7:
-                    button7d.setBackgroundTintList(csl);
-                    break;
-                case D30:
-                    button30d.setBackgroundTintList(csl);
-                    break;
-                case D90:
-                    button90d.setBackgroundTintList(csl);
-                    break;
-            }
-        } else {
-
-            buttonTD.setAlpha(0.5f);
-            buttonYTD.setAlpha(0.5f);
-            button7d.setAlpha(0.5f);
-            button30d.setAlpha(0.5f);
-            button90d.setAlpha(0.5f);
-            switch (state) {
-                case TODAY:
-                    buttonTD.setAlpha(1f);
-                    break;
-                case YESTERDAY:
-                    buttonYTD.setAlpha(1f);
-                    break;
-                case D7:
-                    button7d.setAlpha(1f);
-                    break;
-                case D30:
-                    button30d.setAlpha(1f);
-                    break;
-                case D90:
-                    button90d.setAlpha(1f);
-                    break;
-            }
+        ColorStateList csl = new ColorStateList(new int[][]{new int[0]}, new int[]{0xFF606060});
+        buttonTD.setBackgroundTintList(csl);
+        buttonYTD.setBackgroundTintList(csl);
+        button7d.setBackgroundTintList(csl);
+        button30d.setBackgroundTintList(csl);
+        button90d.setBackgroundTintList(csl);
+        csl = new ColorStateList(new int[][]{new int[0]}, new int[]{0xFFAA0000});
+        switch (state) {
+            case TODAY:
+                buttonTD.setBackgroundTintList(csl);
+                break;
+            case YESTERDAY:
+                buttonYTD.setBackgroundTintList(csl);
+                break;
+            case D7:
+                button7d.setBackgroundTintList(csl);
+                break;
+            case D30:
+                button30d.setBackgroundTintList(csl);
+                break;
+            case D90:
+                button90d.setBackgroundTintList(csl);
+                break;
         }
     }
 
@@ -345,16 +319,14 @@ public class StatsActivity extends ActivityWithMenu {
     }
 
     private boolean checkPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(getApplicationContext(),
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
 
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        MY_PERMISSIONS_REQUEST_STORAGE_SCREENSHOT);
-                return false;
-            }
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    MY_PERMISSIONS_REQUEST_STORAGE_SCREENSHOT);
+            return false;
         }
         return true;
     }

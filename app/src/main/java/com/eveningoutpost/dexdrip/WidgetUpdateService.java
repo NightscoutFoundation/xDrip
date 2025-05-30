@@ -58,8 +58,7 @@ public class WidgetUpdateService extends Service {
         super.onCreate();
         PowerManager pm = (PowerManager) getSystemService(Service.POWER_SERVICE);
         Log.d(TAG, "onCreate");
-        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && pm.isInteractive()) ||
-                (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP && pm.isScreenOn()))
+        if (pm.isInteractive())
             enableClockTicks();
         else
             disableClockTicks();

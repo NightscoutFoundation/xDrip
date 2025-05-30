@@ -26,11 +26,9 @@ public class TrendArrowFactory {
         final String arrow_type = Pref.getString(PREF_TREND_ARROW_TYPE, "");
 
         // yucky workaround for broken LG lack of gradient fill.
-        if (Build.VERSION.SDK_INT == 23 && Build.MANUFACTURER.startsWith("LG")) {
-            if (arrow_type.equals("JamTrendArrowImpl")) {
-                JoH.static_toast_long("LG Phones have problems with some arrows, choose another");
-                return create("JamTrendArrow2Impl", imageView);
-            }
+        if (arrow_type.equals("JamTrendArrowImpl")) {
+            JoH.static_toast_long("LG Phones have problems with some arrows, choose another");
+            return create("JamTrendArrow2Impl", imageView);
         }
         return create(arrow_type, imageView);
     }

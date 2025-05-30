@@ -531,12 +531,10 @@ public class ThinJamActivity extends AppCompatActivity implements BtCallBack2, A
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            for (int i = 0; i < permissions.length; i++) {
-                if (permissions[i].equals(android.Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                        refreshFromStoredMac();
-                    }
+        for (int i = 0; i < permissions.length; i++) {
+            if (permissions[i].equals(android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+                if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                    refreshFromStoredMac();
                 }
             }
         }

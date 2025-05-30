@@ -118,16 +118,14 @@ public class NumberWallPreview extends AppCompatActivity {
 
         public void folderImageButtonClick() {
             if (Pref.getString(PREF_numberwall_background, null) == null) {
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                    if (SdcardImportExport.checkPermissions(activity, true, ASK_FILE_PERMISSION)) {
-                        final Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                        intent.addCategory(Intent.CATEGORY_OPENABLE);
-                        intent.setType("image/*");
-                        startActivityForResult(intent, LOAD_IMAGE_RESULTS);
-                    } else {
-                        if (JoH.ratelimit("need-file-permission", 10)) {
-                            //JoH.static_toast_short("Need file permission");
-                        }
+                if (SdcardImportExport.checkPermissions(activity, true, ASK_FILE_PERMISSION)) {
+                    final Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType("image/*");
+                    startActivityForResult(intent, LOAD_IMAGE_RESULTS);
+                } else {
+                    if (JoH.ratelimit("need-file-permission", 10)) {
+                        //JoH.static_toast_short("Need file permission");
                     }
                 }
             } else {

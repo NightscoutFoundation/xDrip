@@ -47,15 +47,7 @@ public abstract class AbstractPluginActivity extends Activity
     {
         super.onCreate(savedInstanceState);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-        {
-            setupTitleApi11();
-        }
-        else
-        {
-            setTitle(BreadCrumber.generateBreadcrumb(getApplicationContext(), getIntent(),
-                                                     getString(R.string.plugin_name)));
-        }
+        setupTitleApi11();
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -88,15 +80,9 @@ public abstract class AbstractPluginActivity extends Activity
 
         getMenuInflater().inflate(R.menu.twofortyfouram_locale_help_save_dontsave, menu);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-        {
-            setupActionBarApi11();
-        }
+        setupActionBarApi11();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-        {
-            setupActionBarApi14();
-        }
+        setupActionBarApi14();
 
         return true;
     }

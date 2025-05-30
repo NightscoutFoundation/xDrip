@@ -118,95 +118,89 @@ public class LocationHelper {
             return true;
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
-            if (ContextCompat.checkSelfPermission(activity,
-                    Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(activity,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
 
-                JoH.show_ok_dialog(activity, activity.getString(R.string.please_allow_permission), activity.getString(R.string.without_location_scan_doesnt_work), new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            ActivityCompat.requestPermissions(activity,
-                                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                                    0);
-                            // below is not ideal as we should really trap the activity result but it can come from different activities and there is no parent...
-                            Inevitable.task("location-perm-restart", 6000, CollectionServiceStarter::restartCollectionServiceBackground);
-                        } catch (Exception e) {
-                            JoH.static_toast_long("Got Exception with Location Permission: " + e);
-                        }
-                    }
-                });
-                return false;
-            } else {
-                // Android 10 check additional permissions
-                if (Build.VERSION.SDK_INT >= 29) {
-                    if (ContextCompat.checkSelfPermission(activity,
-                            ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-                        JoH.show_ok_dialog(activity, activity.getString(R.string.please_allow_permission), activity.getString(R.string.android_10_need_background_location), new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    ActivityCompat.requestPermissions(activity,
-                                            new String[]{ACCESS_BACKGROUND_LOCATION},
-                                            0);
-                                } catch (Exception e) {
-                                    JoH.static_toast_long("Got Exception with Android 10 Location Permission: " + e);
-                                }
-                            }
-                        });
-                        return false;
+            JoH.show_ok_dialog(activity, activity.getString(R.string.please_allow_permission), activity.getString(R.string.without_location_scan_doesnt_work), new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        ActivityCompat.requestPermissions(activity,
+                                new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                                0);
+                        // below is not ideal as we should really trap the activity result but it can come from different activities and there is no parent...
+                        Inevitable.task("location-perm-restart", 6000, CollectionServiceStarter::restartCollectionServiceBackground);
+                    } catch (Exception e) {
+                        JoH.static_toast_long("Got Exception with Location Permission: " + e);
                     }
                 }
-            }
+            });
+            return false;
+        } else {
+            // Android 10 check additional permissions
+            if (Build.VERSION.SDK_INT >= 29) {
+                if (ContextCompat.checkSelfPermission(activity,
+                        ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-            LocationHelper.requestLocation(activity);
+                    JoH.show_ok_dialog(activity, activity.getString(R.string.please_allow_permission), activity.getString(R.string.android_10_need_background_location), new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                ActivityCompat.requestPermissions(activity,
+                                        new String[]{ACCESS_BACKGROUND_LOCATION},
+                                        0);
+                            } catch (Exception e) {
+                                JoH.static_toast_long("Got Exception with Android 10 Location Permission: " + e);
+                            }
+                        }
+                    });
+                    return false;
+                }
+            }
         }
+
+        LocationHelper.requestLocation(activity);
         return true;
     }
 
     public static void requestLocationForEmergencyMessage(final Activity activity) {
         // Location needs to be enabled for Bluetooth discovery on Marshmallow.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
-            if (ContextCompat.checkSelfPermission(activity,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(activity,
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
 
-                JoH.show_ok_dialog(activity, activity.getString(R.string.please_allow_permission), activity.getString(R.string.without_location_permission_emergency_cannot_get_location), new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            ActivityCompat.requestPermissions(activity,
-                                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                                    0);
-                        } catch (Exception e) {
-                            JoH.static_toast_long("Got Exception with Location Permission: " + e);
-                        }
+            JoH.show_ok_dialog(activity, activity.getString(R.string.please_allow_permission), activity.getString(R.string.without_location_permission_emergency_cannot_get_location), new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        ActivityCompat.requestPermissions(activity,
+                                new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                                0);
+                    } catch (Exception e) {
+                        JoH.static_toast_long("Got Exception with Location Permission: " + e);
                     }
-                });
-            }
-
-            LocationHelper.requestLocation(activity);
+                }
+            });
         }
+
+        LocationHelper.requestLocation(activity);
     }
 
     // TODO probably can use application context here
     public static boolean isLocationPermissionOk(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (ContextCompat.checkSelfPermission(context,
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            return false;
+        }
+        if (Build.VERSION.SDK_INT >= 29) {
             if (ContextCompat.checkSelfPermission(context,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION)
+                    ACCESS_BACKGROUND_LOCATION)
                     != PackageManager.PERMISSION_GRANTED) {
                 return false;
-            }
-            if (Build.VERSION.SDK_INT >= 29) {
-                if (ContextCompat.checkSelfPermission(context,
-                        ACCESS_BACKGROUND_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    return false;
-                }
             }
         }
         return true;

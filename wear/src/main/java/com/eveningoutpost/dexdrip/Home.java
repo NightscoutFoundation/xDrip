@@ -383,40 +383,38 @@ public class Home extends BaseWatchFace {
     }
 
     private void checkBatteryOptimization() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            final String packageName = getPackageName();
-            //Log.d(TAG, "Maybe ignoring battery optimization");
-            final PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-            if (!pm.isIgnoringBatteryOptimizations(packageName)) {
-                // &&
-                //            !prefs.getBoolean("requested_ignore_battery_optimizations_new", false)) {
-                Log.d(TAG, "Requesting ignore battery optimization");
+        final String packageName = getPackageName();
+        //Log.d(TAG, "Maybe ignoring battery optimization");
+        final PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+            // &&
+            //            !prefs.getBoolean("requested_ignore_battery_optimizations_new", false)) {
+            Log.d(TAG, "Requesting ignore battery optimization");
 
-                // if (PersistentStore.incrementLong("asked_battery_optimization") < 40) {
-                // JoH.show_ok_dialog(this, gs(R.string.please_allow_permission), gs(R.string.xdrip_needs_whitelisting_for_proper_performance), new Runnable() {
+            // if (PersistentStore.incrementLong("asked_battery_optimization") < 40) {
+            // JoH.show_ok_dialog(this, gs(R.string.please_allow_permission), gs(R.string.xdrip_needs_whitelisting_for_proper_performance), new Runnable() {
 
-                //     @Override
-                //    public void run() {
-                try {
-                    final Intent intent = new Intent();
+            //     @Override
+            //    public void run() {
+            try {
+                final Intent intent = new Intent();
 
-                    // ignoring battery optimizations required for constant connection
-                    // to peripheral device - eg CGM transmitter.
-                    intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.setData(Uri.parse("package:" + packageName));
-                    startActivity(intent);
+                // ignoring battery optimizations required for constant connection
+                // to peripheral device - eg CGM transmitter.
+                intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setData(Uri.parse("package:" + packageName));
+                startActivity(intent);
 
-                } catch (ActivityNotFoundException e) {
-                    final String msg = "Device does not appear to support battery optimization whitelisting!";
-                    JoH.static_toast_short(msg);
-                    UserError.Log.wtf(TAG, msg);
-                }
-                //      }
-                //     });
-            } else {
-                JoH.static_toast_long("This app needs battery optimization whitelisting or it will not work well. Please reset app preferences");
+            } catch (ActivityNotFoundException e) {
+                final String msg = "Device does not appear to support battery optimization whitelisting!";
+                JoH.static_toast_short(msg);
+                UserError.Log.wtf(TAG, msg);
             }
+            //      }
+            //     });
+        } else {
+            JoH.static_toast_long("This app needs battery optimization whitelisting or it will not work well. Please reset app preferences");
         }
     }
     // just for code compatibility

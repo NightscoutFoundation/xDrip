@@ -91,7 +91,7 @@ public class StartNewSensor extends ActivityWithMenu {
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && DexCollectionType.hasBluetooth()) {
+                if (DexCollectionType.hasBluetooth()) {
                     if (!LocationHelper.locationPermission(StartNewSensor.this)) {
                         LocationHelper.requestLocationForBluetooth(StartNewSensor.this);
                     } else {
@@ -260,13 +260,11 @@ public class StartNewSensor extends ActivityWithMenu {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            for (int i = 0; i < permissions.length; i++) {
-                if (permissions[i].equals(android.Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                        Ob1G5CollectionService.clearScanError();
-                        sensorButtonClick();
-                    }
+        for (int i = 0; i < permissions.length; i++) {
+            if (permissions[i].equals(android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+                if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                    Ob1G5CollectionService.clearScanError();
+                    sensorButtonClick();
                 }
             }
         }

@@ -97,20 +97,18 @@ public class EmergencyAssistActivity extends BaseAppCompatActivity {
     }
 
     private boolean checkContactsPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(getApplicationContext(),
-                    Manifest.permission.READ_CONTACTS)
-                    != PackageManager.PERMISSION_GRANTED) {
-                final Activity activity = this;
-                JoH.show_ok_dialog(activity, gs(R.string.please_allow_permission), gs(R.string.need_contacts_permission_to_select_message_recipients), new Runnable() {
-                    @Override
-                    public void run() {
-                        ActivityCompat.requestPermissions(activity,
-                                new String[]{Manifest.permission.READ_CONTACTS}, MY_PERMISSIONS_REQUEST_CONTACTS);
-                    }
-                });
-                return false;
-            }
+        if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.READ_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED) {
+            final Activity activity = this;
+            JoH.show_ok_dialog(activity, gs(R.string.please_allow_permission), gs(R.string.need_contacts_permission_to_select_message_recipients), new Runnable() {
+                @Override
+                public void run() {
+                    ActivityCompat.requestPermissions(activity,
+                            new String[]{Manifest.permission.READ_CONTACTS}, MY_PERMISSIONS_REQUEST_CONTACTS);
+                }
+            });
+            return false;
         }
         return true;
     }
@@ -121,20 +119,14 @@ public class EmergencyAssistActivity extends BaseAppCompatActivity {
     }
 
     private synchronized boolean checkSMSPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!isSMSPermissionGranted()) {
-                if (JoH.ratelimit("check-sms-permission", 2)) {
-                    final Activity activity = this;
-                    JoH.show_ok_dialog(activity, gs(R.string.please_allow_permission), "Need SMS permission to send text messages to your emergency contacts."
-                            + "\n\n"
-                            + "Warning this can cost money at normal telecoms rates!", () -> ActivityCompat.requestPermissions(activity,
-                            new String[]{Manifest.permission.SEND_SMS}, MY_PERMISSIONS_REQUEST_SMS));
-                }
-                return false;
+        if (!isSMSPermissionGranted()) {
+            if (JoH.ratelimit("check-sms-permission", 2)) {
+                final Activity activity = this;
+                JoH.show_ok_dialog(activity, gs(R.string.please_allow_permission), "Need SMS permission to send text messages to your emergency contacts."
+                        + "\n\n"
+                        + "Warning this can cost money at normal telecoms rates!", () -> ActivityCompat.requestPermissions(activity,
+                        new String[]{Manifest.permission.SEND_SMS}, MY_PERMISSIONS_REQUEST_SMS));
             }
-        } else {
-            JoH.show_ok_dialog(this, "Needs Android 6+", "This feature is not designed for Android versions < 6\nIf you want this on an older phone please create an issue on the xDrip issue tracker and request it.", null);
-
             return false;
         }
         return true;

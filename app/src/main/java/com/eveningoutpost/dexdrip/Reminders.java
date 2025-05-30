@@ -619,20 +619,18 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
     }
 
     private boolean checkPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(getApplicationContext(),
-                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                final Activity activity = this;
-                JoH.show_ok_dialog(activity, xdrip.getAppContext().getString(R.string.Please_Allow_Permission), xdrip.getAppContext().getString(R.string.need_storage_permission), new Runnable() {
-                    @Override
-                    public void run() {
-                        ActivityCompat.requestPermissions(activity,
-                                new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_STORAGE);
-                    }
-                });
-                return false;
-            }
+        if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            final Activity activity = this;
+            JoH.show_ok_dialog(activity, xdrip.getAppContext().getString(R.string.Please_Allow_Permission), xdrip.getAppContext().getString(R.string.need_storage_permission), new Runnable() {
+                @Override
+                public void run() {
+                    ActivityCompat.requestPermissions(activity,
+                            new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_STORAGE);
+                }
+            });
+            return false;
         }
         return true;
     }

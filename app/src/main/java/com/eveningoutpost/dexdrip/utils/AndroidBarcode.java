@@ -88,19 +88,15 @@ public class AndroidBarcode extends AppCompatActivity
     }
 
     public void scan() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(activity.getApplicationContext(),
-                    Manifest.permission.CAMERA)
-                    != PackageManager.PERMISSION_GRANTED) {
-                try {
-                    // are we in an actual activity?
-                    requestPermission();
-                } catch (NullPointerException e) {
-                    returnTo = activity; // save return context
-                    JoH.startActivity(AndroidBarcode.class);
-                }
-            } else {
-                actuallyStartScan();
+        if (ContextCompat.checkSelfPermission(activity.getApplicationContext(),
+                Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            try {
+                // are we in an actual activity?
+                requestPermission();
+            } catch (NullPointerException e) {
+                returnTo = activity; // save return context
+                JoH.startActivity(AndroidBarcode.class);
             }
         } else {
             actuallyStartScan();

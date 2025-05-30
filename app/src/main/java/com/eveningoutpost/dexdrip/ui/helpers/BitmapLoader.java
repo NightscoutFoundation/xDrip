@@ -116,9 +116,6 @@ public class BitmapLoader implements BitmapCacheProvider {
 
     private static Bitmap getBitmapFromVectorDrawable(int drawableId) {
         Drawable drawable = AppCompatResources.getDrawable(xdrip.getAppContext(), drawableId);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            drawable = (DrawableCompat.wrap(drawable)).mutate();
-        }
         final Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
                 drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
         final Canvas canvas = new Canvas(bitmap);

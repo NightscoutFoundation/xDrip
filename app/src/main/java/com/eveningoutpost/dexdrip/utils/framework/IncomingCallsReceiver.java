@@ -43,18 +43,16 @@ public class IncomingCallsReceiver extends BroadcastReceiver {
     public static void checkPermission(final Activity activity) {
 
         // TODO call log permission - especially for Android 9+
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if ((xdrip.getAppContext().checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
-                    != PackageManager.PERMISSION_GRANTED)
-                    || xdrip.getAppContext().checkSelfPermission(Manifest.permission.READ_CONTACTS)
-                    != PackageManager.PERMISSION_GRANTED
-                    || ((Build.VERSION.SDK_INT > Build.VERSION_CODES.O && xdrip.getAppContext().checkSelfPermission(Manifest.permission.READ_CALL_LOG)
-                    != PackageManager.PERMISSION_GRANTED))) {
+        if ((xdrip.getAppContext().checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
+                != PackageManager.PERMISSION_GRANTED)
+                || xdrip.getAppContext().checkSelfPermission(Manifest.permission.READ_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED
+                || ((Build.VERSION.SDK_INT > Build.VERSION_CODES.O && xdrip.getAppContext().checkSelfPermission(Manifest.permission.READ_CALL_LOG)
+                != PackageManager.PERMISSION_GRANTED))) {
 
-                ActivityCompat.requestPermissions(activity,
-                        new String[]{Manifest.permission.READ_PHONE_STATE, Manifest.permission.READ_CALL_LOG, Manifest.permission.READ_CONTACTS},
-                        Constants.GET_PHONE_READ_PERMISSION);
-            }
+            ActivityCompat.requestPermissions(activity,
+                    new String[]{Manifest.permission.READ_PHONE_STATE, Manifest.permission.READ_CALL_LOG, Manifest.permission.READ_CONTACTS},
+                    Constants.GET_PHONE_READ_PERMISSION);
         }
     }
 

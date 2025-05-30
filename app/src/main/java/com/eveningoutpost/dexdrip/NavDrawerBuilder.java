@@ -112,12 +112,10 @@ public class NavDrawerBuilder {
             }
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            if (DexCollectionType.hasBluetooth() && (DexCollectionType.getDexCollectionType() != DexCollectionType.DexcomG5)) {
+        if (DexCollectionType.hasBluetooth() && (DexCollectionType.getDexCollectionType() != DexCollectionType.DexcomG5)) {
 
-                this.nav_drawer_options.add(context.getString(R.string.bluetooth_scan));
-                this.nav_drawer_intents.add(new Intent(context, BluetoothScan.class));
-            }
+            this.nav_drawer_options.add(context.getString(R.string.bluetooth_scan));
+            this.nav_drawer_intents.add(new Intent(context, BluetoothScan.class));
         }
 
         //if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {

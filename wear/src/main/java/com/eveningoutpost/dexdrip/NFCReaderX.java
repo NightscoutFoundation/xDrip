@@ -131,7 +131,7 @@ public class NFCReaderX {
     public static void disableNFC(final Activity context) {
         if (nfc_enabled) {
             try {
-                if ((Build.VERSION.SDK_INT >= 19) && (useReaderMode)) {
+                if (useReaderMode) {
                     Log.d(TAG, "Shutting down NFC reader mode");
                     mNfcAdapter.disableReaderMode(context);
                     nfc_enabled = false;
@@ -187,7 +187,7 @@ public class NFCReaderX {
             }
 
 
-            if ((Build.VERSION.SDK_INT >= 19) && (useReaderMode)) {
+            if (useReaderMode) {
                 try {
                     mNfcAdapter.disableReaderMode(context);
                     final Bundle options = new Bundle();
@@ -1001,22 +1001,13 @@ if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
 
     public static void windowFocusChange(final Activity context, boolean hasFocus, View decorView) {
         if (hasFocus) {
-            if (Build.VERSION.SDK_INT >= 19) {
-                decorView.setSystemUiVisibility(
-                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-            } else {
-                decorView.setSystemUiVisibility(
-                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                                | View.SYSTEM_UI_FLAG_FULLSCREEN);
-            }
+            decorView.setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         } else {
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {

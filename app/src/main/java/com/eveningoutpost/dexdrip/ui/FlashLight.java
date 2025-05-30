@@ -40,58 +40,54 @@ public class FlashLight {
     }
 
     private static synchronized void torchPulseReal(final int seconds, final boolean stopIfNoAlert) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
-            if (running.get()) {
-                Log.e(TAG, "Already flashing flashlight - skipping");
-                return;
+        if (running.get()) {
+            Log.e(TAG, "Already flashing flashlight - skipping");
+            return;
+        }
+        val manager = (CameraManager) xdrip.getAppContext().getSystemService(Context.CAMERA_SERVICE);
+        if (manager == null) {
+            Log.e(TAG, "Cannot get camera manager");
+            return;
+        }
+
+        val flashes = new ArrayList<String>();
+        val rnd = new SecureRandom();
+
+        try {
+            running.set(true);
+
+            val cameraIds = manager.getCameraIdList();
+            // reduce list to cameras which say they have flash
+            for (val camera : cameraIds) {
+                val characteristics = manager.getCameraCharacteristics(camera);
+                val flashy = characteristics.get(FLASH_INFO_AVAILABLE);
+                if (flashy == null || flashy) {
+                    flashes.add(camera);
+                }
             }
-            val manager = (CameraManager) xdrip.getAppContext().getSystemService(Context.CAMERA_SERVICE);
-            if (manager == null) {
-                Log.e(TAG, "Cannot get camera manager");
-                return;
-            }
 
-            val flashes = new ArrayList<String>();
-            val rnd = new SecureRandom();
+            val timeEnd = tsl() + Constants.SECOND_IN_MS * seconds;
 
-            try {
-                running.set(true);
-
-                val cameraIds = manager.getCameraIdList();
-                // reduce list to cameras which say they have flash
-                for (val camera : cameraIds) {
-                    val characteristics = manager.getCameraCharacteristics(camera);
-                    val flashy = characteristics.get(FLASH_INFO_AVAILABLE);
-                    if (flashy == null || flashy) {
-                        flashes.add(camera);
+            // Flash light randomly until time period is elapsed
+            int i = 0;
+            while (tsl() < timeEnd) {
+                setCameraList(manager, flashes, i % 2 == 0);
+                JoH.threadSleep(100 + Math.abs(rnd.nextInt() % (Math.abs(400 - i))));
+                i++;
+                if (stopIfNoAlert && JoH.quietratelimit("check-bgalert", 1)) {
+                    if (!ActiveBgAlert.currentlyAlerting()) {
+                        Log.d(TAG, "Exiting flash sequence as no active alert");
+                        break;
                     }
                 }
-
-                val timeEnd = tsl() + Constants.SECOND_IN_MS * seconds;
-
-                // Flash light randomly until time period is elapsed
-                int i = 0;
-                while (tsl() < timeEnd) {
-                    setCameraList(manager, flashes, i % 2 == 0);
-                    JoH.threadSleep(100 + Math.abs(rnd.nextInt() % (Math.abs(400 - i))));
-                    i++;
-                    if (stopIfNoAlert && JoH.quietratelimit("check-bgalert", 1)) {
-                        if (!ActiveBgAlert.currentlyAlerting()) {
-                            Log.d(TAG, "Exiting flash sequence as no active alert");
-                            break;
-                        }
-                    }
-                }
-
-            } catch (Exception e) {
-                Log.e(TAG, "Cannot access flashlight: " + e);
-            } finally {
-                setCameraList(manager, flashes, false); // turn off at end
-                running.set(false);
             }
-        } else {
-            Log.e(TAG, "Flashlight torch access requires at least Android 6");
+
+        } catch (Exception e) {
+            Log.e(TAG, "Cannot access flashlight: " + e);
+        } finally {
+            setCameraList(manager, flashes, false); // turn off at end
+            running.set(false);
         }
     }
 
