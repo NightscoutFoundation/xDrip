@@ -1823,7 +1823,7 @@ public class Ob1G5StateMachine {
                 if (JoH.pratelimit("g5-low-battery-warning", 40000)) {
                     final boolean loud = !PowerStateReceiver.is_power_connected();
                     JoH.showNotification("Battery Low", "Transmitter battery has dropped to: " + batteryInfoRxMessage.voltagea + " it may fail soon",
-                            null, 770, NotificationChannels.LOW_TRANSMITTER_BATTERY_CHANNEL, loud, loud, null, null, null);
+                            null, 770, NotificationChannels.LOW_TRANSMITTER_BATTERY_CHANNEL, false, false, null, null, null);
                 }
             }
             PersistentStore.cleanupOld(G5_BATTERY_LEVEL_MARKER);
