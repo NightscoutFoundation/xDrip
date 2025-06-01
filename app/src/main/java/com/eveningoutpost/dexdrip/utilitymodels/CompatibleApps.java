@@ -20,6 +20,7 @@ import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.services.G5BaseService;
+import com.eveningoutpost.dexdrip.services.G5CollectionService;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -34,6 +35,8 @@ import static com.eveningoutpost.dexdrip.utilitymodels.Constants.COMPATIBLE_BASE
  */
 
 public class CompatibleApps extends BroadcastReceiver {
+
+    public final static String TAG = G5CollectionService.class.getSimpleName();
 
     public static final String EXTERNAL_ALG_PACKAGES = "EXTERNAL_ALG_PACKAGES";
 
@@ -168,6 +171,7 @@ public class CompatibleApps extends BroadcastReceiver {
                 createActionIntent(id, id + 2, Feature.CANCEL),
                 createChoiceIntent(id, id + 3, action, title, msg),
                 id);
+        UserError.Log.e(TAG, msg);
         return id + 4;
     }
 

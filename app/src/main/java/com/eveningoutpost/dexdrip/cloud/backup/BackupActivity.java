@@ -321,6 +321,7 @@ public class BackupActivity extends BackupBaseActivity implements BackupStatus {
     static void notifySecurityError() {
         if (JoH.pratelimit("backup-security-notification-n", 60 * 60 * 12)) {
             showNotification(xdrip.gs(R.string.please_reselect_backup_file), xdrip.gs(R.string.backup_file_security_error_advice), getStartIntent(), BACKUP_ACTIVITY_ID, true, true, true);
+            UserError.Log.e(TAG, xdrip.gs(R.string.backup_file_security_error_advice));
         }
     }
 }
