@@ -47,7 +47,7 @@ public class UpdateAvailable extends BaseAlert {
 
         val channel = Pref.getString("update_channel", "beta"); // get the current update channel
         showNotification(xdrip.gs(R.string.xdrip_update), xdrip.gs(R.string.a_new_version_on_channel_1_s_is_available, channel), pendingIntent, notificationId, null, true, true, null, null, null, false);
-        UserError.Log.e(TAG, xdrip.gs(R.string.a_new_version_on_channel_1_s_is_available, channel));
+        UserError.Log.e(TAG, "A new version is available");
         return true;
     }
 

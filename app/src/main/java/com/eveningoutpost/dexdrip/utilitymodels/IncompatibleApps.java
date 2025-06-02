@@ -5,7 +5,6 @@ import android.content.Context;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.models.UserError;
-import com.eveningoutpost.dexdrip.services.G5CollectionService;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.ArrayList;
@@ -21,7 +20,7 @@ import lombok.val;
 
 public class IncompatibleApps {
 
-    public final static String TAG = G5CollectionService.class.getSimpleName();
+    public final static String TAG = IncompatibleApps.class.getSimpleName();
 
     private static final String NOTIFY_MARKER = "-NOTIFY";
     private static final int RENOTIFY_TIME = 86400 * 30;
@@ -79,7 +78,7 @@ public class IncompatibleApps {
 
     private static int notify2(String short_name, String package_string, String msg, int id) {
         JoH.showNotification(short_name, msg, null, id, true, true, null, null, ((msg.length() > 0) ? msg + "\n\n" : "") + "The Package identifier is: " + package_string);
-        UserError.Log.e(TAG, msg);
+        UserError.Log.e(TAG, "Remove xDrip from duraspeed");
         return id + 1;
     }
 
