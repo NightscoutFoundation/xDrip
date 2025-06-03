@@ -2462,4 +2462,19 @@ public class Ob1G5CollectionService extends G5BaseService {
         final AudioManager am = (AudioManager) xdrip.getAppContext().getSystemService(Context.AUDIO_SERVICE);
         return (am.getRingerMode() != AudioManager.RINGER_MODE_NORMAL);
     }
+
+    public static void clearDataWhenTransmitterIdEntered(final String txid) {
+        try {
+            UserError.Log.e(TAG, "Clearing data when new transmitter is entered: " + txid);
+            Ob1G5StateMachine.emptyQueue();
+            try {
+                DexSyncKeeper.clear(txid);
+            } catch (Exception e) {
+                //
+            }
+            Ob1G5CollectionService.clearPersist();
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Got error when clearing data: " + e);
+        }
+    }
 }

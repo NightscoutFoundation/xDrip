@@ -4,6 +4,7 @@ package com.eveningoutpost.dexdrip.utils;
 import static com.eveningoutpost.dexdrip.EditAlertActivity.unitsConvert2Disp;
 import static com.eveningoutpost.dexdrip.models.JoH.showNotification;
 import static com.eveningoutpost.dexdrip.models.JoH.tolerantParseDouble;
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.clearDataWhenTransmitterIdEntered;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.OUT_OF_RANGE_GLUCOSE_ENTRY_ID;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
@@ -2463,6 +2464,14 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
             bindPreferenceSummaryToValue(transmitterId); // duplicated below but this sets initial value
             transmitterId.getEditText().setFilters(new InputFilter[]{new InputFilter.AllCaps()}); // TODO filter O ?
+            transmitterId.getEditText().post(() -> {
+                try {
+                    // position to end of input text
+                    transmitterId.getEditText().setSelection(transmitterId.getEditText().getText().length());
+                } catch (Exception e) {
+                    UserError.Log.d(TAG, "Could not set selection for transmitter id: " + e);
+                }
+            });
             transmitterId.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -2477,13 +2486,9 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                                 //
                             }
                             Log.d(TAG, "Trying to restart collector due to tx id change");
-                            Ob1G5StateMachine.emptyQueue();
-                            try {
-                                DexSyncKeeper.clear((String) newValue);
-                            } catch (Exception e) {
-                                //
-                            }
-                            Ob1G5CollectionService.clearPersist();
+
+                            clearDataWhenTransmitterIdEntered((String)newValue);
+
                             CollectionServiceStarter.restartCollectionService(xdrip.getAppContext());
                         }
                     }).start();
