@@ -100,7 +100,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="right"
-                        android:layout_marginBottom="1dp"
+                        android:layout_marginBottom="4dp"
                         android:layout_marginTop="-10dp"
                         android:layout_toStartOf="@+id/trendArrow"
                         android:layout_weight="1"
