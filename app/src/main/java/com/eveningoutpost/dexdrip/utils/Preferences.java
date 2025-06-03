@@ -1356,11 +1356,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
             final Preference tidepoolTestLogin = findPreference("tidepool_test_login");
             tidepoolTestLogin.setOnPreferenceClickListener(preference -> {
-                if (Pref.getBooleanDefaultFalse("tidepool_new_auth")) {
-                    Inevitable.task("tidepool-upload", 200, AuthFlowOut::doTidePoolInitialLogin);
-                } else {
-                    Inevitable.task("tidepool-upload", 200, TidepoolUploader::doLoginFromUi);
-                }
+                Inevitable.task("tidepool-upload", 200, AuthFlowOut::doTidePoolInitialLogin);
                 return false;
             });
 
