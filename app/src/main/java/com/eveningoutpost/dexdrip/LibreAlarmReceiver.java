@@ -57,6 +57,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
     private static final Object lock = new Object();
     private static long sensorAge = 0;
     private static long timeShiftNearest = -1;
+    public static final String LIBRE_SOURCE_INFO = "Libre2";
 
     public static void clearSensorStats() {
         Pref.setInt("nfc_sensor_age", 0); // reset for nfc sensors
@@ -273,7 +274,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                     if (use_raw) {
                         createBGfromGD(gd, use_smoothed_data, false); // not quick for recent
                     } else {
-                        BgReading.bgReadingInsertFromInt(use_smoothed_data ? gd.glucoseLevelSmoothed : gd.glucoseLevel, gd.realDate, segmentation_timeslice, true);
+                        BgReading.bgReadingInsertFromInt(use_smoothed_data ? gd.glucoseLevelSmoothed : gd.glucoseLevel, gd.realDate, segmentation_timeslice, true, LIBRE_SOURCE_INFO);
                     }
                 }
             } else {
@@ -306,7 +307,9 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                 } else {
                     polyyList.add((double) gd.glucoseLevel);
                     // add in the actual value
-                    BgReading.bgReadingInsertFromInt(gd.glucoseLevel, gd.realDate, timeslice, false);
+                    if (gd.glucoseLevel > 0) {
+                        BgReading.bgReadingInsertFromInt(gd.glucoseLevel, gd.realDate, timeslice, false, LIBRE_SOURCE_INFO);
+                    }
                 }
             }
 
@@ -332,7 +335,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                             // Here we do not use smoothed data, since data is already smoothed for the history
                             createBGfromGD(new GlucoseData((int) polySplineF.value(ptime), ptime), false, true);
                         } else {
-                            BgReading.bgReadingInsertFromInt((int) polySplineF.value(ptime), ptime, timeslice, false);
+                            BgReading.bgReadingInsertFromInt((int) polySplineF.value(ptime), ptime, timeslice, false, LIBRE_SOURCE_INFO);
                         }
                     }
                 } catch (org.apache.commons.math3.exception.NonMonotonicSequenceException e) {

@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.cgm.nsfollow;
 
+import static com.eveningoutpost.dexdrip.utils.framework.RetrofitService.UNRELIABLE_INTEGER_FACTORY;
+
 import com.eveningoutpost.dexdrip.cgm.nsfollow.messages.Entry;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -7,7 +9,6 @@ import com.google.gson.GsonBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollow.UNRELIABLE_INTEGER_FACTORY;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 

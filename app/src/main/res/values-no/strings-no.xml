@@ -202,6 +202,7 @@
     <string name="other_alerts">Andre varsler</string>
     <string name="extra_alerts_xdrip_plus">Ekstra varsler (xDrip+)</string>
     <string name="persistent_high_alert">Vedvarende Høy Alarm</string>
+    <string name="persistent_high_alert_enable">Aktiver</string>
     <string name="forecasted_low_alert">Antatt Lave Verdier Alarm</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Ekstrapolerte data for å prøve å forutsi lave verdier</string>
     <string name="alarm_at_forecasted_low_mins">Alarm ved beregnet lave verdier minutter</string>
@@ -867,5 +868,6 @@
     <string name="enable_streaming_dialog_dont_ask_again"> Ikke spør meg igjen</string>
     <string name="enable_graph_smoothing">Aktiver</string>
     <string name="titleInside_yRange">Aktiver</string>
+    <string name="title_sens_expiry_notify">Aktiver</string>
     <string name="reraise_alerts_before_snooze_time">Gjenoppta alarm hvis den ikke først er utsatt</string>
 </resources>

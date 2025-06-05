@@ -554,6 +554,8 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
     }
 
+    private volatile boolean lastWasScanByMac = false;
+
     private synchronized void scan_for_device() {
         if (state == SCAN) {
             msg(gs(R.string.scanning));
@@ -590,6 +592,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                     lastScanError = null;
                 }
 
+                lastWasScanByMac = macFilter;
                 scanSubscription = new Subscription(rxBleClient.scanBleDevices(
                                 new ScanSettings.Builder()
                                         //.setScanMode(static_last_timestamp < 1 ? ScanSettings.SCAN_MODE_LOW_LATENCY : ScanSettings.SCAN_MODE_BALANCED)
@@ -992,12 +995,15 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     public static void clearPersistStore() {
-        PersistentStore.removeItem(KEKS_ONE + transmitterMAC);
+        PersistentStore.cleanupOld(KEKS_ONE);
+        PersistentStore.cleanupOld(OB1G5_MACSTORE);
     }
 
     public static void clearPersist() {
         clearPersistStore();
         expireFailures(true);
+        transmitterID = null;
+        transmitterMAC = null;
     }
 
     private void scheduleWakeUp(long future, final String info) {
@@ -1150,7 +1156,7 @@ public class Ob1G5CollectionService extends G5BaseService {
             }
 
             minimize_scanning = Pref.getBooleanDefaultFalse("ob1_minimize_scanning");
-            allow_scan_by_mac = Build.VERSION.SDK_INT >= 32 && shortTxId();
+            // allow_scan_by_mac = Build.VERSION.SDK_INT >= 32 && shortTxId();
             automata(); // sequence logic
 
             UserError.Log.d(TAG, "Releasing service start");
@@ -1227,7 +1233,10 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     private boolean isScanMatch(final String this_address, final String historical_address, final String this_name, final String search_name) {
-        if (search_name == null && (this_address.equalsIgnoreCase(historical_address) || this_name == null || (emptyString(historical_address) && this_name.startsWith("DXCM")) || (emptyString(historical_address) && this_name.startsWith("DX02")))) {
+        if (search_name == null && (this_address.equalsIgnoreCase(historical_address) || this_name == null ||
+                (emptyString(historical_address) && this_name.startsWith("DXCM")) ||
+                (emptyString(historical_address) && this_name.startsWith("DX02")) ||
+                (emptyString(historical_address) && this_name.startsWith("DX01")))) {
             return !inFailureTally(this_address);
         }
 
@@ -1300,7 +1309,24 @@ public class Ob1G5CollectionService extends G5BaseService {
             lastScanError = info;
             UserError.Log.d(TAG, info);
 
-            if (((BleScanException) throwable).getReason() == BleScanException.SCAN_FAILED_APPLICATION_REGISTRATION_FAILED) {
+            final int reason = ((BleScanException) throwable).getReason();
+
+            if (reason == BleScanException.SCAN_FAILED_INTERNAL_ERROR) {
+                if (allow_scan_by_mac && lastWasScanByMac) {
+                    allow_scan_by_mac = false;
+                    UserError.Log.wtf(TAG, "Turning scan by by mac off");
+                    if (JoH.ratelimit("bluetooth-internal-error-register", 120)) {
+                        if (Pref.getBooleanDefaultFalse("automatically_turn_bluetooth_on")) {
+                            UserError.Log.wtf(TAG, "Android bluetooth appears broken with scan by mac - attempting to turn off and on");
+                            JoH.niceRestartBluetooth(xdrip.getAppContext());
+                        } else {
+                            UserError.Log.e(TAG, "Cannot reset bluetooth due to preference being disabled");
+                        }
+                    }
+                }
+            }
+
+            if (reason == BleScanException.SCAN_FAILED_APPLICATION_REGISTRATION_FAILED) {
                 if (JoH.ratelimit("bluetooth-cannot-register", 120)) {
                     if (Pref.getBooleanDefaultFalse("automatically_turn_bluetooth_on")) {
                         UserError.Log.wtf(TAG, "Android bluetooth appears broken - attempting to turn off and on");
@@ -1311,7 +1337,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                 }
             }
 
-            if (((BleScanException) throwable).getReason() == BleScanException.BLUETOOTH_DISABLED) {
+            if (reason == BleScanException.BLUETOOTH_DISABLED) {
                 // Attempt to turn bluetooth on
                 if (JoH.ratelimit("bluetooth_toggle_on", 30)) {
                     UserError.Log.d(TAG, "Pause before Turn Bluetooth on");
@@ -1765,7 +1791,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
 
     private boolean getInitiateBondingFlag() {
-        return Pref.getBoolean("ob1_initiate_bonding_flag", true);
+        return true; // There is no reason not to initiate bonding
     }
 
 
@@ -2227,7 +2253,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
         try {
             if (vr2 != null) {
-                if (vr2.typicalSensorDays != 10 && vr2.typicalSensorDays != 7) {
+                if (vr2.typicalSensorDays != 10 && vr2.typicalSensorDays != 7 && vr2.typicalSensorDays != 15) {
                     l.add(new StatusItem("Sensor Period", niceTimeScalar(vr2.typicalSensorDays * DAY_IN_MS), Highlight.NOTICE));
                 }
 
@@ -2435,5 +2461,20 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static boolean isVolumeSilent() {
         final AudioManager am = (AudioManager) xdrip.getAppContext().getSystemService(Context.AUDIO_SERVICE);
         return (am.getRingerMode() != AudioManager.RINGER_MODE_NORMAL);
+    }
+
+    public static void clearDataWhenTransmitterIdEntered(final String txid) {
+        try {
+            UserError.Log.e(TAG, "Clearing data when new transmitter is entered: " + txid);
+            Ob1G5StateMachine.emptyQueue();
+            try {
+                DexSyncKeeper.clear(txid);
+            } catch (Exception e) {
+                //
+            }
+            Ob1G5CollectionService.clearPersist();
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Got error when clearing data: " + e);
+        }
     }
 }

@@ -51,6 +51,9 @@ public class NanoStatus {
     public final ObservableField<String> watch = new ObservableField<>();
     public final ObservableField<SpannableString> color_watch = new ObservableField<>();
 
+    public static String debugStringStatic = null;
+    public String debugString = null;
+
     private static String lastException = "";
 
     public NanoStatus(final String parameter, final int freqMs) {
@@ -60,6 +63,9 @@ public class NanoStatus {
         if (freqMs > 0) {
             running = true;
             startRefresh();
+        }
+        if (debugStringStatic != null) {
+            debugString = debugStringStatic + " " + parameter;
         }
     }
 
@@ -125,6 +131,7 @@ public class NanoStatus {
             case "mtp-configure":
                 return collectorNano(getClassByName(".utilitymodels.MtpConfigure"));
             case "sensor-expiry":
+            case "s-expiry":
                 return getLocalOrRemoteSensorExpiry();
             default:
                 return new SpannableString("Invalid module type");
@@ -133,7 +140,7 @@ public class NanoStatus {
 
     private static SpannableString getLocalOrRemoteSensorExpiry() {
         if (Home.get_follower()) {
-            return getRemote("sensor-expiry");
+            return getRemote("s-expiry");
         }
         return SensorDays.get().getSpannable();
     }
@@ -141,6 +148,9 @@ public class NanoStatus {
 
     static SpannableString collectorNano(final Class<?> service) {
         if (service != null) {
+            if (debugStringStatic != null) {
+                return new SpannableString(debugStringStatic + " " + service.getSimpleName());
+            }
             try {
                 try {
                     return (SpannableString) cache.get(service).invoke(null);
@@ -168,7 +178,7 @@ public class NanoStatus {
 
     public static void keepFollowerUpdated(final boolean ratelimits) {
         keepFollowerUpdated("", 0); // legacy defaults to collector
-        keepFollowerUpdated("sensor-expiry", ratelimits ? 3600 : 0);
+        keepFollowerUpdated("s-expiry", ratelimits ? 3600 : 0);
     }
 
     public static void keepFollowerUpdated(final String prefix, final int rateLimit) {
@@ -203,6 +213,10 @@ public class NanoStatus {
     }
 
     public static SpannableString getRemote(final String prefix) {
+        if (debugStringStatic != null) {
+            return new SpannableString(debugStringStatic + " " + prefix);
+        }
+
         // TODO apply timeout?
         try {
             val result = PersistentStore.getString(REMOTE_COLLECTOR_STATUS_STORE + prefix);

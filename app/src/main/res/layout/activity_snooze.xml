@@ -20,8 +20,7 @@
                 android:showDividers="middle">
                 <LinearLayout
                     android:layout_width="fill_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight=".2"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center_horizontal">
                     <Button
@@ -34,8 +33,7 @@
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="fill_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight=".25"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center_horizontal">
 
@@ -48,8 +46,7 @@
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="fill_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight=".25"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center_horizontal"
                     android:paddingTop="10dp">

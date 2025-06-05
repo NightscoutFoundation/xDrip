@@ -58,8 +58,11 @@ public class Constants {
 
     static final int NIGHTSCOUT_ERROR_NOTIFICATION_ID = 2001;
     public static final int HEALTH_CONNECT_RESPONSE_ID = 2002;
+    public static final int ZXING_CAM_REQ_CODE = 49374;
+    public static final int ZXING_FILE_REQ_CODE = 49375; // This is created by just incrementing the existing camera scan code from the zxing package
     public static final int SENSORY_EXPIRY_NOTIFICATION_ID = 2003;
-
+    public static final int OUT_OF_RANGE_GLUCOSE_ENTRY_ID = 2004; // Preference setting out of range
+    public static final int XDRIP_UPDATE_NOTIFICATION_ID = 2005;
 
     // increments from this start number
     public static final int INCOMPATIBLE_BASE_ID = 5000;

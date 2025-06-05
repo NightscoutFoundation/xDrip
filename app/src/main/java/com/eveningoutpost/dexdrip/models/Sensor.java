@@ -1,10 +1,13 @@
 package com.eveningoutpost.dexdrip.models;
 
+import static com.eveningoutpost.dexdrip.models.JoH.tsl;
+
 import android.provider.BaseColumns;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
@@ -21,7 +24,11 @@ import org.json.JSONObject;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+
+import lombok.Setter;
+import lombok.val;
 
 /**
  * Created by Emma Black on 10/29/14.
@@ -52,22 +59,25 @@ public class Sensor extends Model {
   @Column(name = "sensor_location")
   public String sensor_location;
 
-    public synchronized static Sensor create(long started_at) {
-        Sensor sensor = new Sensor();
-        sensor.started_at = started_at;
-        sensor.uuid = UUID.randomUUID().toString();
 
-        sensor.save();
-        SensorSendQueue.addToQueue(sensor);
-        Log.d("SENSOR MODEL:", sensor.toString());
-        return sensor;
+  @Setter
+  private volatile static long unitTestStopTime;
+
+    public synchronized static Sensor create(long starting_at) {
+        stopSensor(true); // stop any existing sensor session clamping to the last reading
+        return create(starting_at, UUID.randomUUID().toString());
     }
 
-    public synchronized static Sensor create(long started_at, String uuid) {//KS
+    public synchronized static Sensor create(long starting_at, String uuid) {//KS
         Sensor sensor = new Sensor();
-        sensor.started_at = started_at;
+        val lastSensor = lastStopped(); // get the last sensor we stopped
+        // find the time it was stopped or 0 if there is no previous sensor
+        long lastStoppedTime = lastSensor != null ? lastSensor.stopped_at : 0;
+        sensor.started_at = Math.max(lastStoppedTime + 1, starting_at);
+        if (sensor.started_at > tsl()) {
+            UserError.Log.wtf(TAG, "Sensor create() called with future timestamp, this cannot be right. " + starting_at + " " + lastStoppedTime + " " + sensor.started_at);
+        }
         sensor.uuid = uuid;
-
         sensor.save();
         SensorSendQueue.addToQueue(sensor);
         Log.d("SENSOR MODEL:", sensor.toString());
@@ -77,19 +87,36 @@ public class Sensor extends Model {
     public static Sensor createDefaultIfMissing() {
         final Sensor sensor = currentSensor();
         if (sensor == null) {
-            Sensor.create(JoH.tsl());
+            Sensor.create(tsl());
             UserError.Log.ueh(TAG, "Created new default sensor");
         }
         return currentSensor();
     }
 
     public synchronized static void stopSensor() {
+        stopSensor(false); // by default don't clamp to last reading
+    }
+
+
+    public synchronized static void stopSensor(final boolean clampToLastReading) {
         final Sensor sensor = currentSensor();
         if (sensor == null) {
             return;
         }
-        sensor.stopped_at = JoH.tsl();
-        UserError.Log.ueh("SENSOR", "Sensor stopped at " + JoH.dateTimeText(sensor.stopped_at));
+
+        // stop now or use specified unit testing stop time
+        sensor.stopped_at = (unitTestStopTime == 0) ? tsl() : unitTestStopTime;
+
+        if (clampToLastReading) {
+            val lastReading = BgReading.last(true);
+            if (lastReading != null) {
+                // if we have a last reading then set the stop time to that last reading so long as it
+                // was actually from this sensor
+                sensor.stopped_at = Math.max(sensor.started_at, lastReading.timestamp + 1);
+            }
+        }
+
+        UserError.Log.ueh("SENSOR", "Sensor stopped at value: " + JoH.dateTimeText(sensor.stopped_at));
         sensor.save();
         if (currentSensor() != null) {
             UserError.Log.wtf(TAG, "Failed to update sensor stop in database");
@@ -122,36 +149,31 @@ public class Sensor extends Model {
 
     public static boolean stoppedRecently() {
         final Sensor last = lastStopped();
-        return last != null && last.stopped_at < JoH.tsl() && (JoH.msSince(last.stopped_at) < (Constants.HOUR_IN_MS * 2));
+        return last != null && last.stopped_at < tsl() && (JoH.msSince(last.stopped_at) < (Constants.HOUR_IN_MS * 2));
     }
 
     public static Sensor currentSensor() {
         Sensor sensor = new Select()
                 .from(Sensor.class)
                 .where("started_at != 0")
-                .where("stopped_at = 0")
                 .orderBy("_ID desc")
                 .limit(1)
                 .executeSingle();
+
+        if (sensor != null) {
+            if (sensor.stopped_at != 0) {
+                // last sensor is stopped
+                return null;
+            }
+        }
         return sensor;
     }
 
     public static boolean isActive() {
-        Sensor sensor = new Select()
-                .from(Sensor.class)
-                .where("started_at != 0")
-                .where("stopped_at = 0")
-                .orderBy("_ID desc")
-                .limit(1)
-                .executeSingle();
-        if(sensor == null) {
-            return false;
-        } else {
-            return true;
-        }
+        return currentSensor() != null;
     }
 
-    public static Sensor getByTimestamp(double started_at) {
+    public static Sensor getByTimestamp(long started_at) {
         return new Select()
                 .from(Sensor.class)
                 .where("started_at = ?", started_at)
@@ -259,6 +281,14 @@ public class Sensor extends Model {
         }
     }
 
+    public static void deleteAll() {
+        // will fail if bg readings not deleted first
+            SensorSendQueue.deleteAll();
+            new Delete()
+                    .from(Sensor.class)
+                    .execute();
+    }
+
     public String toJSON() {
         JSONObject jsonObject = new JSONObject();
         try {
@@ -272,6 +302,34 @@ public class Sensor extends Model {
             Log.e(TAG,"Got JSONException handeling sensor", e);
             return "";
         }
+    }
+
+    @Override
+    public String toString() {
+        return "SENSOR: " + toJSON() + " started: " + JoH.dateTimeText(started_at) + ((stopped_at != 0) ? " stopped: " + JoH.dateTimeText(stopped_at) : "");
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) { // Check for reference equality
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) { // Check for null and class type
+            return false;
+        }
+        Sensor sensor = (Sensor) obj; // Typecast
+
+        return started_at == sensor.started_at
+             //   && stopped_at == sensor.stopped_at // Note: not checking stopped_at as this maybe transient
+                && latest_battery_level == sensor.latest_battery_level
+                && Objects.equals(uuid, sensor.uuid)
+                && Objects.equals(sensor_location, sensor.sensor_location);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(started_at, stopped_at, latest_battery_level, uuid, sensor_location);
     }
     
     public static Sensor fromJSON(String json) {
