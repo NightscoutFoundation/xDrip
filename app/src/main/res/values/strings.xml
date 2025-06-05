@@ -251,7 +251,7 @@
     <string name="setting_pref_to_min">Set to min</string>
     <string name="pref_was_less_than_min">%1$s was set to a value less than minimum allowed.  It has been changed to minimum.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Considering the current value and trend, calculate what the next few readings will be if the trend persists (extrapolate).  This ignores insulin or carbs on board.</string>
-    <string name="alarm_at_forecasted_low_mins">Time threshold in minutes</string>
+    <string name="alarm_at_forecasted_low_mins">Time threshold [min]</string>
     <string name="title_forecast_low_threshold">Threshold</string>
     <string name="other_xdrip_plus_alerts">Other xDrip+ alerts</string>
     <string name="xdrip_plus_display_settings">xDrip+ Display Settings</string>
