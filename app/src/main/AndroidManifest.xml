@@ -587,6 +587,11 @@
                 <action android:name="com.eveningoutpost.dexdrip.OOP2_BLUETOOTH_ENABLE_RESULT" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".SyaiTagAppReceiver">
+            <intent-filter>
+                <action android:name="com.eveningoutpost.dexdrip.action.SYAI_TAG_APP" />
+            </intent-filter>
+        </receiver>
         <receiver android:name=".receivers.aidex.AidexReceiver">
             <intent-filter>
                 <action android:name="com.microtechmd.cgms.aidex.action.BgEstimate" />
