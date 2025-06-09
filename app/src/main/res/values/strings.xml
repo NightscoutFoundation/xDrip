@@ -1969,4 +1969,26 @@
     <string name="sensor_will_expire_in">Sensor will expire in %1$s</string>
     <string name="xdrip_update">xDrip+ Update</string>
     <string name="a_new_version_on_channel_1_s_is_available">A new version on channel %1$s is available</string>
+    <string name="alert_warning">Warning !</string>
+    <string name="no_active_low_alert_warning">No active Low Alert exists, without this there will be no alert on low glucose! Please add or enable a low alert.</string>
+    <string name="volume_profile_set_to_silent">Volume Profile is set to silent!</string>
+    <string name="volume_profile_set_to_ascending_with_delay">Ascending Volume Profile + delayed ascending means it will start silent</string>
+    <string name="start_snoozed_enabled">Start Snoozed setting means alert would normally start silent</string>
+    <string name="pre_snooze">pre-Snooze</string>
+    <string name="volume_profile_high">High volume</string>
+    <string name="volume_profile_medium">Medium volume</string>
+    <string name="volume_profile_ascending">Ascending volume</string>
+    <string name="volume_profile_vibrate_only">Vibrate only</string>
+    <string name="volume_profile_silent">Silent</string>
+    <string name="alert_threshold_already_in_use">Each alert should have it\'s own threshold. Please choose another threshold.</string>
+    <string name="high_alert_threshold_error">High alert threshold has to be higher than all low alerts. Please choose another threshold.</string>
+    <string name="low_alert_threshold_error">Low alert threshold has to be lower than all high alerts. Please choose another threshold.</string>
+    <string name="threshold_has_to_be_between">Threshold has to be between %1$s and %2$s</string>
+    <string name="alert_reraise_value_too_small">Reraise Value must be 1 minute or greater</string>
+    <string name="alert_reraise_value_too_big">Reraise Value must be less than snooze length</string>
+    <string name="start_and_end_time_same">Start time and end time of alert can not be equal</string>
+    <string name="what_type_of_alert">What type of Alert?</string>
+    <string name="system_sound_alarm">System Sound/Alarm</string>
+    <string name="custom_sound_alarm">Custom Sound/Alarm</string>
+    <string name="default_xdrip_sound">Default xDrip sound</string>
 </resources>
