@@ -73,7 +73,7 @@ public class CareLinkDataProcessor {
             filteredSgList = new ArrayList<>();
             for (SensorGlucose sg : recentData.sgs) {
                 //SG DateTime is null (sensor expired?)
-                if (sg != null && sg.datetimeAsDate != null) {
+                if (sg != null && sg.getDate() != null) {
                     filteredSgList.add(sg);
                 }
             }
@@ -84,31 +84,31 @@ public class CareLinkDataProcessor {
                 sensor.save();
 
                 // place in order of oldest first
-                Collections.sort(filteredSgList, (o1, o2) -> o1.datetimeAsDate.compareTo(o2.datetimeAsDate));
+                Collections.sort(filteredSgList, (o1, o2) -> o1.getDate().compareTo(o2.getDate()));
 
                 for (final SensorGlucose sg : filteredSgList) {
 
                     //Not EPOCH 0 (warmup?)
-                    if (sg.datetimeAsDate.getTime() > 1) {
+                    if (sg.getDate().getTime() > 1) {
 
                         //Not in the future
-                        if (sg.datetimeAsDate.getTime() < new Date().getTime() + 300_000) {
+                        if (sg.getDate().getTime() < new Date().getTime() + 300_000) {
 
                             //Not 0 SG (not calibrated?)
                             if (sg.sg > 0) {
 
                                 //newer than last BG
-                                if (sg.datetimeAsDate.getTime() > lastBgTimestamp) {
+                                if (sg.getDate().getTime() > lastBgTimestamp) {
 
-                                    if (sg.datetimeAsDate.getTime() > 0) {
+                                    if (sg.getDate().getTime() > 0) {
 
                                         //New entry
-                                        if (BgReading.getForPreciseTimestamp(sg.datetimeAsDate.getTime(), 10_000) == null) {
+                                        if (BgReading.getForPreciseTimestamp(sg.getDate().getTime(), 10_000) == null) {
                                             UserError.Log.d(TAG, "NEW NEW NEW New entry: " + sg.toS());
 
                                             if (live) {
                                                 final BgReading bg = new BgReading();
-                                                bg.timestamp = sg.datetimeAsDate.getTime();
+                                                bg.timestamp = sg.getDate().getTime();
                                                 bg.calculated_value = (double) sg.sg;
                                                 bg.raw_data = SPECIAL_FOLLOWER_PLACEHOLDER;
                                                 bg.filtered_data = (double) sg.sg;
@@ -149,14 +149,14 @@ public class CareLinkDataProcessor {
             //Filter markers
             filteredMarkerList = new ArrayList<>();
             for (Marker marker : recentData.markers) {
-                if (marker != null && marker.type != null && marker.dateTime != null) {
+                if (marker != null && marker.type != null && marker.getDate() != null) {
                     filteredMarkerList.add(marker);
                 }
             }
 
             if (filteredMarkerList.size() > 0) {
                 //sort markers by time
-                Collections.sort(filteredMarkerList, (o1, o2) -> o1.dateTime.compareTo(o2.dateTime));
+                Collections.sort(filteredMarkerList, (o1, o2) -> o1.getDate().compareTo(o2.getDate()));
 
                 //process markers one-by-one
                 for (Marker marker : filteredMarkerList) {
@@ -164,10 +164,10 @@ public class CareLinkDataProcessor {
                     //FINGER BG
                     if (marker.isBloodGlucose() && Pref.getBooleanDefaultFalse("clfollow_download_finger_bgs")) {
                         //check required values
-                        if (marker.value != null && !marker.value.equals(0)) {
+                        if (marker.getBloodGlucose() != null && !marker.getBloodGlucose().equals(0)) {
                             //new blood test
-                            if (BloodTest.getForPreciseTimestamp(marker.dateTime.getTime(), 10000) == null) {
-                                BloodTest.create(marker.dateTime.getTime(), marker.value, SOURCE_CARELINK_FOLLOW);
+                            if (BloodTest.getForPreciseTimestamp(marker.getDate().getTime(), 10000) == null) {
+                                BloodTest.create(marker.getDate().getTime(), marker.getBloodGlucose(), SOURCE_CARELINK_FOLLOW);
                             }
                         }
 
@@ -186,15 +186,15 @@ public class CareLinkDataProcessor {
                             //Insulin
                             if (marker.type.equals(Marker.MARKER_TYPE_INSULIN)) {
                                 carbs = 0;
-                                if (marker.deliveredExtendedAmount != null && marker.deliveredFastAmount != null) {
-                                    insulin = marker.deliveredExtendedAmount + marker.deliveredFastAmount;
+                                if (marker.getInsulinAmount() != null) {
+                                    insulin = marker.getInsulinAmount();
                                 }
                                 //SKIP if insulin = 0
                                 if (insulin == 0) continue;
                                 //Carbs
                             } else if (marker.type.equals(Marker.MARKER_TYPE_MEAL)) {
-                                if (marker.amount != null) {
-                                    carbs = marker.amount;
+                                if (marker.getCarbAmount() != null) {
+                                    carbs = marker.getCarbAmount();
                                 }
                                 insulin = 0;
                                 //SKIP if carbs = 0
@@ -202,8 +202,8 @@ public class CareLinkDataProcessor {
                             }
 
                             //new Treatment
-                            if (newTreatment(carbs, insulin, marker.dateTime.getTime())) {
-                                t = Treatments.create(carbs, insulin, marker.dateTime.getTime());
+                            if (newTreatment(carbs, insulin, marker.getDate().getTime())) {
+                                t = Treatments.create(carbs, insulin, marker.getDate().getTime());
                                 if (t != null) {
                                     t.enteredBy = SOURCE_CARELINK_FOLLOW;
                                     t.save();
@@ -222,7 +222,7 @@ public class CareLinkDataProcessor {
         //PUMP INFO (Pump Status)
         if (recentData.isNGP()) {
             PumpStatus.setReservoir(recentData.reservoirRemainingUnits);
-            PumpStatus.setBattery(recentData.medicalDeviceBatteryLevelPercent);
+            PumpStatus.setBattery(recentData.getDeviceBatteryLevel());
             if (recentData.activeInsulin != null)
                 PumpStatus.setBolusIoB(recentData.activeInsulin.amount);
             PumpStatus.syncUpdate();
@@ -246,13 +246,13 @@ public class CareLinkDataProcessor {
                 //Active Notifications
                 if (recentData.notificationHistory.activeNotifications != null) {
                     for (ActiveNotification activeNotification : recentData.notificationHistory.activeNotifications) {
-                        addNotification(activeNotification.dateTime, recentData.getDeviceFamily(), activeNotification.messageId, activeNotification.faultId);
+                        addNotification(activeNotification.dateTime, recentData.getDeviceFamily(), activeNotification.getMessageId(), activeNotification.faultId);
                     }
                 }
                 //Cleared Notifications
                 if (recentData.notificationHistory.clearedNotifications != null) {
                     for (ClearedNotification clearedNotification : recentData.notificationHistory.clearedNotifications) {
-                        addNotification(clearedNotification.triggeredDateTime, recentData.getDeviceFamily(), clearedNotification.messageId, clearedNotification.faultId);
+                        addNotification(clearedNotification.triggeredDateTime, recentData.getDeviceFamily(), clearedNotification.getMessageId(), clearedNotification.faultId);
                     }
                 }
             }

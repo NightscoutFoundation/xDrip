@@ -1022,7 +1022,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
 
         dialogBuilder.setTitle(((reminder == null) ? xdrip.getAppContext().getString(R.string.title_add_reminder) : xdrip.getAppContext().getString(R.string.title_edit_reminder)));
         //dialogBuilder.setMessage("Enter text below");
-        dialogBuilder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+        dialogBuilder.setPositiveButton(xdrip.getAppContext().getString(R.string.done), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 String reminder_title = titleEditText.getText().toString().trim();
                 Log.d(TAG, "Got reminder title: " + reminder_title);

@@ -1,5 +1,8 @@
 package com.eveningoutpost.dexdrip.cgm.carelinkfollow.message;
 
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.util.CareLinkJsonAdapter;
+import com.google.gson.annotations.JsonAdapter;
+
 import java.util.Date;
 import java.util.List;
 
@@ -54,6 +57,17 @@ public class RecentData {
     public boolean isNGP() {
         return getDeviceFamily().equals(DEVICE_FAMILY_NGP);
     }
+
+    public int getDeviceBatteryLevel(){
+        if(pumpBatteryLevelPercent == 0)
+            return  medicalDeviceBatteryLevelPercent;
+        else
+            return  pumpBatteryLevelPercent;
+
+    }
+
+    //As of new BLE endpoint v11:
+    public Long lastConduitUpdateServerDateTime;
 
     public long lastSensorTS;
     public String medicalDeviceTimeAsString;
@@ -110,9 +124,12 @@ public class RecentData {
     public int belowHypoLimit;
     public int aboveHyperLimit;
     public int timeInRange;
+    public Boolean pumpSuspended;
+    public int pumpBatteryLevelPercent;
     public Boolean pumpCommunicationState;
     public Boolean gstCommunicationState;
     public int gstBatteryLevel;
+    @JsonAdapter(CareLinkJsonAdapter.class)
     public Date lastConduitDateTime;
     public float maxAutoBasalRate;
     public float maxBolusAmount;

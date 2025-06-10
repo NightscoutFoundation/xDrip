@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import lombok.Getter;
+
 /**
  * Created by andy on 01/06/16.
  */
@@ -54,6 +56,7 @@ public enum DexCollectionType {
     LibreReceiver("LibreReceiver"),
     AidexReceiver("AidexReceiver");
 
+    @Getter
     String internalName;
     private static final Map<String, DexCollectionType> mapToInternalName;
     private static final HashSet<DexCollectionType> usesBluetooth = new HashSet<>();
@@ -111,6 +114,10 @@ public enum DexCollectionType {
 
     public static void setDexCollectionType(DexCollectionType t) {
         Pref.setString(DEX_COLLECTION_METHOD, t.internalName);
+    }
+
+    public static boolean isG7() {
+        return DexCollectionType.getBestCollectorHardwareName().equals("G7");
     }
 
     public static boolean hasBluetooth() {

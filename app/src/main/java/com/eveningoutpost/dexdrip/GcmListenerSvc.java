@@ -55,8 +55,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static com.eveningoutpost.dexdrip.GcmActivity.cease_all_activity;
 import static com.eveningoutpost.dexdrip.models.JoH.isAnyNetworkConnected;
 import static com.eveningoutpost.dexdrip.models.JoH.showNotification;
+import static com.eveningoutpost.dexdrip.models.JoH.tsl;
 
 public class GcmListenerSvc extends JamListenerSvc {
 
@@ -66,7 +68,7 @@ public class GcmListenerSvc extends JamListenerSvc {
     private static byte[] staticKey;
 
     public static int lastMessageMinutesAgo() {
-        return (int) ((JoH.tsl() - GcmListenerSvc.lastMessageReceived) / 60000);
+        return (int) ((tsl() - GcmListenerSvc.lastMessageReceived) / 60000);
     }
 
     // data for MegaStatus
@@ -128,7 +130,7 @@ public class GcmListenerSvc extends JamListenerSvc {
         final PowerManager.WakeLock wl = JoH.getWakeLock("xdrip-onMsgRec", 120000);
         try {
             if (rmessage == null) return;
-            if (GcmActivity.cease_all_activity) return;
+            if (cease_all_activity) return;
             String from = rmessage.getFrom();
 
             final Bundle data = new Bundle();
@@ -250,7 +252,7 @@ public class GcmListenerSvc extends JamListenerSvc {
                 }
 
                 Log.i(TAG, "Got action: " + action + " with payload: " + payload);
-                lastMessageReceived = JoH.tsl();
+                lastMessageReceived = tsl();
 
 
                 // new treatment
@@ -291,7 +293,7 @@ public class GcmListenerSvc extends JamListenerSvc {
                                 message_array[2] = Long.toString(Long.parseLong(message_array[2]) + timediff);
                             }
                             Log.i(TAG, "Processing remote CAL " + message_array[1] + " age: " + message_array[2]);
-                            calintent.putExtra("timestamp", JoH.tsl());
+                            calintent.putExtra("timestamp", tsl());
                             calintent.putExtra("bg_string", message_array[1]);
                             calintent.putExtra("bg_age", message_array[2]);
                             calintent.putExtra("cal_source", "gcm cal packet");
@@ -318,7 +320,7 @@ public class GcmListenerSvc extends JamListenerSvc {
                                 bg_age += timediff;
                             }
                             Log.i(TAG, "Processing remote CAL " + newCalibration.bgValue + " age: " + bg_age);
-                            calintent.putExtra("timestamp", JoH.tsl());
+                            calintent.putExtra("timestamp", tsl());
                             calintent.putExtra("bg_string", "" + (Pref.getString("units", "mgdl").equals("mgdl") ? newCalibration.bgValue : newCalibration.bgValue * Constants.MGDL_TO_MMOLL));
                             calintent.putExtra("bg_age", "" + bg_age);
                             calintent.putExtra("cal_source", "gcm cal2 packet");
@@ -434,7 +436,7 @@ public class GcmListenerSvc extends JamListenerSvc {
                                     if (ii.length > 1) sender_ssid = JoH.base64decode(ii[1]);
                                 }
                                 if (!Pref.getBooleanDefaultFalse("remote_snoozes_wifi_match") || JoH.getWifiFuzzyMatch(sender_ssid, JoH.getWifiSSID())) {
-                                    if (Math.abs(JoH.tsl() - snoozed_time) < 300000) {
+                                    if (Math.abs(tsl() - snoozed_time) < 300000) {
                                         if (JoH.pratelimit("received-remote-snooze", 30)) {
                                             AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1, false);
                                             UserError.Log.ueh(TAG, "Accepted remote snooze");
@@ -508,7 +510,7 @@ public class GcmListenerSvc extends JamListenerSvc {
                     } else {
                         Log.e(TAG, "Received sensorupdate packets but we are not set as a follower");
                     }
-                } else if (action.equals("sensor_calibrations_update")) {
+                } else if (action.equals("sencalup")) {
                     if (Home.get_master()) {
                         Log.i(TAG, "Received request for sensor calibration update");
                         GcmActivity.syncSensor(Sensor.currentSensor(), false);
@@ -563,7 +565,24 @@ public class GcmListenerSvc extends JamListenerSvc {
                 } else if (action.equals("libreBlock") || action.equals("libreBlck")) {
                     HandleLibreBlock(payload);
                 } else {
-                    Log.e(TAG, "Received message action we don't know about: " + action);
+                    switch (action) {
+                        case "cease0":
+                        case "cease1":
+                        case "cease2":
+                        case "cease3":
+                        case "cease4":
+                        case "cease5":
+                        case "cease6":
+                        case "cease7":
+                        case "cease8":
+                        case "cease9":
+                            cease_all_activity = true;
+                            Log.wtf(TAG, "Server requested to cease all activity for reason: " + action);
+                            break;
+                        default:
+                            Log.e(TAG, "Received message action we don't know about: " + action);
+                            break;
+                    }
                 }
             } else {
                 // direct downstream message.

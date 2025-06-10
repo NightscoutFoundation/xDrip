@@ -65,6 +65,14 @@ public class xdrip extends Application {
         }
     }
 
+    public static void setContextAlways(final Context context) {
+        if (context == null) return;
+        Log.d(TAG, "Set context: " + context.getResources().getConfiguration().getLocales().get(0).getLanguage()
+                + " was: " + xdrip.context.getResources().getConfiguration().getLocales().get(0).getLanguage());
+        xdrip.context = context;
+    }
+
+
     @Override
     public void onCreate() {
         xdrip.context = getApplicationContext();

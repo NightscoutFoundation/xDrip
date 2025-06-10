@@ -217,7 +217,8 @@ public class GcmActivity extends FauxActivity {
                             Log.i(TAG, "Resending unacknowledged queue item: " + datum.bundle.getString("action") + datum.bundle.getString("payload"));
                             datum.resent++;
                            // GoogleCloudMessaging.getInstance(context).send(senderid + "@gcm.googleapis.com", Integer.toString(msgId.incrementAndGet()), datum.bundle);
-                            JamCm.sendMessage(datum.bundle);
+                            datum.bundle.putBoolean("resend-from-queue", true);
+                            JamCm.sendMessageBackground(datum.bundle);
                         } catch (Exception e) {
                             Log.e(TAG, "Got exception during resend: " + e.toString());
                         }
@@ -741,6 +742,11 @@ public class GcmActivity extends FauxActivity {
                 return "";
             }
 
+            if (!Home.get_master_or_follower()) {
+                UserError.Log.d(TAG, "Refusing to send sync message as we are neither master or follower for action: " + action);
+                return "";
+            }
+
             final Bundle data = new Bundle();
             data.putString("action", action);
             data.putString("identity", identity);
@@ -778,7 +784,7 @@ public class GcmActivity extends FauxActivity {
             if (last_ack == -1) last_ack = JoH.tsl();
             last_send_previous = last_send;
             last_send = JoH.tsl();
-            JamCm.sendMessage(data);
+            JamCm.sendMessageBackground(data);
             msg = "Sent message OK " + messageid;
             DesertSync.fromGCM(data);
         } catch (Exception ex) {
@@ -800,6 +806,7 @@ public class GcmActivity extends FauxActivity {
             case "bfr":
             case "nscu":
             case "nscusensor-expiry":
+            case "nscus-expiry":
             case "esup":
             case "sencalup":
                 synchronized (queue_lock) {
