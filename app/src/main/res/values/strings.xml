@@ -1975,8 +1975,8 @@
     <string name="volume_profile_set_to_ascending_with_delay">Ascending Volume Profile + delayed ascending means it will start silent</string>
     <string name="start_snoozed_enabled">Start Snoozed setting means alert would normally start silent</string>
     <string name="pre_snooze">pre-Snooze</string>
-    <string name="volume_profile_high">High volume</string>
-    <string name="volume_profile_medium">Medium volume</string>
+    <string name="volume_profile_high">High</string>
+    <string name="volume_profile_medium">Medium</string>
     <string name="volume_profile_ascending">Ascending volume</string>
     <string name="volume_profile_vibrate_only">Vibrate only</string>
     <string name="volume_profile_silent">Silent</string>
