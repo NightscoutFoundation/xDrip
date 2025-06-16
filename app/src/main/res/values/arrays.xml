@@ -168,7 +168,7 @@
     <string-array name="BgAlertProfileEntries">
         <item>High</item>
         <item>Medium</item>
-        <item>Ascending volume</item>
+        <item>Ascending</item>
         <item>Vibrate only</item>
         <item>Silent</item>
     </string-array>
