@@ -742,6 +742,11 @@ public class GcmActivity extends FauxActivity {
                 return "";
             }
 
+            if (!Home.get_master_or_follower()) {
+                UserError.Log.d(TAG, "Refusing to send sync message as we are neither master or follower for action: " + action);
+                return "";
+            }
+
             final Bundle data = new Bundle();
             data.putString("action", action);
             data.putString("identity", identity);

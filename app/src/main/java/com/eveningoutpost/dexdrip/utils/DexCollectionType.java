@@ -116,6 +116,10 @@ public enum DexCollectionType {
         Pref.setString(DEX_COLLECTION_METHOD, t.internalName);
     }
 
+    public static boolean isG7() {
+        return DexCollectionType.getBestCollectorHardwareName().equals("G7");
+    }
+
     public static boolean hasBluetooth() {
         return usesBluetooth.contains(getDexCollectionType());
     }

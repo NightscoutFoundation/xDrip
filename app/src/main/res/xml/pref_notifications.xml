@@ -360,6 +360,18 @@
                         android:key="predict_lows_alarm"
                         android:summary="@string/notify_when_predicted_low_time_reaches_threshold"
                         android:title="@string/raise_alarm_on_forecast_low" />
+                    <SwitchPreference
+                        android:defaultValue="true"
+                        android:disableDependentsState="true"
+                        android:key="low_value_is_forecast_low_threshold"
+                        android:summary="@string/summary_forecast_low_threshold_link"
+                        android:title="@string/title_forecast_low_threshold_link" />
+                    <EditTextPreference
+                        android:defaultValue="70"
+                        android:dependency="low_value_is_forecast_low_threshold"
+                        android:inputType="numberDecimal"
+                        android:key="forecast_low_threshold"
+                        android:title="@string/title_forecast_low_threshold" />
                     <EditTextPreference
                         android:defaultValue="40"
                         android:dependency="predict_lows_alarm"
