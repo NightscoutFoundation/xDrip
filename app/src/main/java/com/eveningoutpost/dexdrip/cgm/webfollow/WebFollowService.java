@@ -119,7 +119,7 @@ public class WebFollowService extends ForegroundService {
                     }
                 }
                 if (context != null) {
-                    if (JoH.pratelimit("last-web-follow-poll", 180)) {
+                    if (JoH.pratelimit("last-web-follow-poll", 90)) {
                         Inevitable.task("WebFollow-Work", 200, () -> {
                             try {
                                 new Cmd(context).processAll();
