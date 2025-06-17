@@ -2178,7 +2178,8 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
 
         if (static_last_connected > 0) {
-            l.add(new StatusItem("Last Connected", niceTimeScalar(msSince(static_last_connected)) + " ago"));
+            long since = msSince(static_last_connected);
+            l.add(new StatusItem("Last Connected", niceTimeScalar(since) + " ago", since < MINUTE_IN_MS * 5 ? Highlight.NORMAL : NOTICE));
         }
 
         if ((!lastState.startsWith("Service Stopped")) && (!lastState.startsWith("Not running")))
