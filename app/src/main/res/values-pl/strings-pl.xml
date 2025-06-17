@@ -189,7 +189,7 @@
     <string name="event_logs">Dzienniki zdarzeń</string>
     <string name="calibration_graph">Wykres Kalibracji</string>
     <string name="glucose_units">Jednostki glukozy</string>
-    <string name="mmol_or_mgdl_high_and_low">mmol/l lub mg/dl górny i dolny zakres</string>
+    <string name="mmol_or_mgdl_high_and_low">mmol/l lub mg/dl górna i dolna granica</string>
     <string name="general_settings">Podstawowe Ustawienia</string>
     <string name="high_value">Wysoka wartość</string>
     <string name="low_value">Niska wartość</string>
@@ -234,6 +234,7 @@
     <string name="pref_was_less_than_min">Wartość %1$s przekroczyła minimalną dozwoloną wartość. Ustawiono w zamian wartość minimalną.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Ekstrapolacji danych, aby spróbować przewidzieć upadki</string>
     <string name="alarm_at_forecasted_low_mins">Alarm przy prognozowanych niskich w minutach</string>
+    <string name="title_forecast_low_threshold">Próg</string>
     <string name="other_xdrip_plus_alerts">Inne alarmy xDrip+</string>
     <string name="xdrip_plus_display_settings">xDrip+ Ustawienia ekranu</string>
     <string name="display_customisations">Dostosowania wyświetlania</string>
@@ -1475,6 +1476,10 @@
     <string name="category_falling_rising_bg">Spadająca/Wzrastająca glikemia</string>
     <string name="category_alert_prefs">Ustawienia alertów (dla tych alertów)</string>
     <string name="summary_persistent_high_alert">Gdy zbyt długo powyżej górnego zakresu i nie zmierza w dół</string>
+    <string name="summary_persistent_high_threshold_link">Po włączeniu górna granica zakresu jest progiem.\nPo wyłączeniu, próg jest wartością określoną poniżej.</string>
+    <string name="title_persistent_high_threshold_link">Próg: Wysoka wartość</string>
+    <string name="summary_forecast_low_threshold_link">Po włączeniu dolna granica zakresu jest progiem.\nPo wyłączeniu, próg jest wartością określoną poniżej.</string>
+    <string name="title_forecast_low_threshold_link">Próg: Niska wartość</string>
     <string name="note_search_button">SZUKAJ</string>
     <string name="all_note_button">WSZYSTKIE</string>
     <string name="title_full_screen_mode">Tryb pełnoekranowy</string>
@@ -1687,11 +1692,24 @@
     <string name="message_variant">Warianty xDrip+ pozwalają na zainstalowanie wielu aplikacji jednocześnie. Do zastosowań zaawansowanych lub żeby umożliwić jednoczesną instalacje xDrip-Experimental i xDrip+.\n\nZ wariantami, niektóre rzeczy mogą nie działać poprawnie, ponieważ jedna lub druga aplikacja posiada wyłączny dostęp, na przykład do parowania bluetooth. Opinie i raporty o błędach dotyczące wariantów są mile widziane!</string>
     <string name="expires_unknown">Wygasa: ???</string>
     <string name="sensor_expired">WYGASŁ!</string>
+    <plurals name="sensor_expires">
+        <item quantity="one">Wygasa: %sd</item>
+        <item quantity="few">Wygasa: %sd</item>
+        <item quantity="many">Wygasa: %sd</item>
+        <item quantity="other">Wygasa: %sd</item>
+    </plurals>
+    <plurals name="sensor_age">
+        <item quantity="one">Wiek: %sd</item>
+        <item quantity="few">Wiek: %sd</item>
+        <item quantity="many">Wiek: %sd</item>
+        <item quantity="other">Wiek: %sd</item>
+    </plurals>
     <string name="external_status_strings_eg_tbr">Zewnętrzne statusy np. TBR z AAPS</string>
     <string name="accept_external_status">Akceptuj status zewnętrzny</string>
     <string name="cancel_by_default">Anuluj domyślnie</string>
     <string name="old">Stary</string>
     <string name="neww">Nowy</string>
+    <string name="reschedule_with_new_timing">Czy zmienić harmonogram na nowy?</string>
     <string name="select_new_sound_source">Wybierz nowe źródło dźwięku</string>
     <string name="snooze_done">← Uśpij / Potwierdź →</string>
     <string name="zero_value">Wartość zerowa</string>
@@ -1701,6 +1719,7 @@
     <string name="invalid_serial">Nieprawidłowy numer seryjny</string>
     <string name="set_pen_to_format">Ustaw pen %s na %s</string>
     <string name="pen_contains_which_insulin_type">PEN %s zawiera jaki rodzaj insuliny?</string>
+    <string name="allow_do_not_disturb_text">Aby xDrip miał ewentualną możliwość włączenia alarmów, nawet gdy funkcja systemu Android \"Nie Przeszkadzaj\" jest włączona, proszę zezwolić na to w ustawieniach systemu na następnej stronie</string>
     <string name="graphical_editor_for_pump_basal">Edytor graficzny dla profili bazowych pompy</string>
     <string name="basal_profile_editor">Edytor profilu bazy</string>
     <string name="import_sounds">Dźwięki importu</string>
@@ -1721,6 +1740,7 @@
     <string name="special_pairing_workaround">Obejście trybu parowania</string>
     <string name="save_power">Oszczędzaj energię</string>
     <string name="use_xdrip_cloud">Użyj chmury xDrip</string>
+    <string name="reduce_battery_and_network_overhead">Zmniejsz zużycie baterii i sieci poprzez przetwarzanie partiami i wykluczenie niepotrzebnych danych</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Uproszczenie wykresów poprzez usunięcie nieprawidłowości</string>
     <string name="graph_smoothing">Wygładzanie wykresu</string>
     <string name="enable_graph_smoothing">Włącz</string>
@@ -1824,6 +1844,7 @@
     <string name="data_source">Źródło danych:</string>
     <string name="disable_collection"></string>
     <string name="insulin_pens">Wstrzykiwacze insuliny</string>
+    <string name="enable_missed_reading_alert">Włącz alarmy brakujących odczytów</string>
     <string name="alert_if_no_data_received_in_colon">Zgłoś alarm, jeżeli nie otrzymano danych przez:</string>
     <string name="wait_before_raising_the_same_alert_after_snooze_colon">Czekaj przed zgłoszeniem tego samego ostrzeżenia po jego uśpieniu:</string>
     <string name="reraise_alerts_before_snooze_time">Odnów alarm przed czasem drzemki</string>

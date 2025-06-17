@@ -234,6 +234,7 @@
     <string name="pref_was_less_than_min">%1$s ble satt til en verdi mindre enn minste tillatt. Den har blitt endret til minimum.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Ekstrapoler data for å prøve og beregne lave verdier</string>
     <string name="alarm_at_forecasted_low_mins">Grense i antall minutter før varsel går av</string>
+    <string name="title_forecast_low_threshold">Terskel</string>
     <string name="other_xdrip_plus_alerts">Andre xDrip+ varsler</string>
     <string name="xdrip_plus_display_settings">xDrip+ Skjerminnstillinger</string>
     <string name="display_customisations">Skjermtilpasninger</string>
@@ -1490,6 +1491,8 @@
     <string name="summary_persistent_high_alert">Når du er over høyt nivå for lenge og ikke er på vei nedover</string>
     <string name="summary_persistent_high_threshold_link">Når aktivert, er Høy Verdi terskelen.\nNår deaktivert, er terskelverdien angitt nedenfor.</string>
     <string name="title_persistent_high_threshold_link">Terskel: Høy verdi</string>
+    <string name="summary_forecast_low_threshold_link">Når aktivert, er Lav Verdi terskelen.\nNår deaktivert, er terskelverdien angitt nedenfor.</string>
+    <string name="title_forecast_low_threshold_link">Terskel: Lav verdi</string>
     <string name="note_search_button">SØK</string>
     <string name="all_note_button">ALLE</string>
     <string name="title_full_screen_mode">Fullskjerm-modus</string>

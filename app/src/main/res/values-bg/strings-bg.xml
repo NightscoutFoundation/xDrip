@@ -234,6 +234,7 @@
     <string name="pref_was_less_than_min">%1$s е сложена на стойност по-малка от минимално разрешената. Трябва да бъде променена на минималната.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Екстраполиране на данните в опит да се предвиди ниска КЗ</string>
     <string name="alarm_at_forecasted_low_mins">Аларма при предвиждане на Ниски стойности(Кз)</string>
+    <string name="title_forecast_low_threshold">Праг</string>
     <string name="other_xdrip_plus_alerts">Други xDrip+ известия</string>
     <string name="xdrip_plus_display_settings">xDrip+ Персонализиране</string>
     <string name="display_customisations">Покажи персонализация</string>
@@ -1490,6 +1491,8 @@
     <string name="summary_persistent_high_alert">Когато е над високо ниво за твърде дълго време и не се насочва надолу</string>
     <string name="summary_persistent_high_threshold_link">Когато е активирано, Висока Стойност ще бъде прага.\n Когато е деактивирано, прагът ще бъде стойността, която е посоченa по-долу.</string>
     <string name="title_persistent_high_threshold_link">Праг: Висока стойност</string>
+    <string name="summary_forecast_low_threshold_link">Когато е активирано, прагът е „Ниска стойност“.\nКогато е деактивирано, прагът е стойността, посочена по-долу.</string>
+    <string name="title_forecast_low_threshold_link">Праг: Ниска стойност</string>
     <string name="note_search_button">ТЪРСИ</string>
     <string name="all_note_button">ВСИЧКИ</string>
     <string name="title_full_screen_mode">Режим на цял екран</string>
@@ -1908,4 +1911,10 @@
     <string name="default_xdrip_reminder_sound">Звук за напомняне по подразбиране в xDrip+</string>
     <string name="custom_audio_file">Персонализиран аудио файл</string>
     <string name="android_ringtone_alarm">Мелодия/аларма за Android</string>
+    <string name="first_successful_connection_to_transmitter">"Първа успешна връзка с предавател %1$s с mac"</string>
+    <string name="first_successful_connection_to_transmitter_em">"Първа успешна връзка с предавател %1$s с mac %2$s"</string>
+    <string name="sensor_expiring">Сензорът изтича</string>
+    <string name="sensor_will_expire_in">Сензорът ще изтече след %1$s</string>
+    <string name="xdrip_update">xDrip+ Ъпдейт</string>
+    <string name="a_new_version_on_channel_1_s_is_available">Налична е нова версия в канал %1$s</string>
 </resources>

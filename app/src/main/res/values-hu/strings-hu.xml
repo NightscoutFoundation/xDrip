@@ -232,6 +232,7 @@
     <string name="pref_was_less_than_min">%1$s a minimálisan megengedettnél kisebb értékre lett beállítva.  A minimális értékre lett növelve.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Megpróbálja kiszámolni az esetleges hypot</string>
     <string name="alarm_at_forecasted_low_mins">Riasztás várható hypo előtt X perccel</string>
+    <string name="title_forecast_low_threshold">Határérték</string>
     <string name="other_xdrip_plus_alerts">További xDrip+ riasztások</string>
     <string name="xdrip_plus_display_settings">xDrip+ kijelző</string>
     <string name="display_customisations">Képernyő testreszabása</string>
@@ -1219,6 +1220,10 @@
     <string name="return_to_home_screen">Vissza a kezdőképernyőre</string>
     <string name="title_broadcast_service_api">Adattovábbitási API</string>
     <string name="summary_broadcast_service_api">Lehetővé teszi az xDrip adatcseréjét harmadik féltől származó applikációkkal</string>
+    <string name="title_enable_iob_in_api_endpoint">IoB-érték API-n küldése</string>
+    <string name="summary_enable_iob_in_api_endpoint">Aktív inzulin (IoB) értékjelentés engedélyezése egyes okosórák által használt Web Service API végpontban</string>
+    <string name="title_fetch_iob_from_companion_app">IoB érték lekérése a Companion App-ból</string>
+    <string name="summary_fetch_iob_from_companion_app">IoB-érték lekérése az ugyanazon az eszközön futó alkalmazásból (Omnipod 5 app)</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Adatok szinkronizálása MiBand-del</string>
     <string name="title_miband_enable">MiBand használata</string>
@@ -1331,7 +1336,7 @@
     <string name="title_clfollow_download_notifications">Értesítések</string>
     <string name="summary_clfollow_download_notifications">Értesítések letöltése CareLink-ből</string>
     <string name="title_ob1_options">OB1 G5/G6/G7 kollektor beállítások</string>
-    <string name="summary_use_ob1_g5_collector_service">Teljesen újraír kód. Működnie kell a 4.4 - 9-es Android verziókon. Támogatja a natív módot és még sok mást is</string>
+    <string name="summary_use_ob1_g5_collector_service">Teljesen újraírt kód. Működnie kell a 4.4-9-es Android verziókon. Támogatja a natív módot és még sok mást is</string>
     <string name="title_use_ob1_g5_collector_service">OB1 kollektor használata</string>
     <string name="summary_ob1_g5_use_transmitter_alg">Használja a távadó belső algoritmusát a VC-érték számításához, ha csak lehet.</string>
     <string name="title_ob1_g5_use_transmitter_alg">Natív algoritmus</string>
@@ -1347,14 +1352,14 @@
     <string name="title_ob1_minimize_scanning">Keresés minimalizálása</string>
     <string name="summary_ob1_avoid_scanning">Szkennelés mellőzése amennyire lehet (akku kímélés)</string>
     <string name="title_ob1_avoid_scanning">Szkennelés mellőzése</string>
-    <string name="summary_using_g6">Dexcom G6, G7, Dex1 vagy ONE+ szenzort használok</string>
-    <string name="title_using_g6">G6/G6/Dex1/ONE+ támogatás</string>
+    <string name="summary_using_g6">Dex szenzort használok</string>
+    <string name="title_using_g6">Dex támogatás</string>
     <string name="summary_ob1_g5_allow_resetbond">Az OB1 kollektor bonthatja a kapcsolatot, ha a titkosítás sikertelen. Ha problémákat okoz a szétkapcsolás, ne engedélyezze ezt a lehetőséget. Ha eztán teljesen megszűnik a kapcsolat, bizonyosodjon meg róla, hogy engedélyezve van.</string>
     <string name="title_ob1_g5_allow_resetbond">OB1 kapcsolatbontás engedélyezése</string>
     <string name="summary_ob1_initiate_bonding_flag">Az OB1 kollektor kezdeményezhet kapcsolatot.</string>
     <string name="title_ob1_initiate_bonding_flag">OB1 kapcsolódás engedélyezése</string>
     <string name="title_old_g5_options">Régi G5 kollektor beállítások</string>
-    <string name="title_g5g6_battery_options">G5/G6/G7/ONE akku beállítások</string>
+    <string name="title_g5g6_battery_options">G6/Dex1 akku beállítások</string>
     <string name="title_g5_battery_warning_level">Töltöttség figyelmeztető beállítása</string>
     <string name="title_plugins_and_features">Pluginok és funkciók</string>
     <string name="title_color_heart_rate1">Pulzusfigyelő</string>
@@ -1366,8 +1371,8 @@
     <string name="title_xdrip_plus_graph_display_settings">Grafikonbeállítások</string>
     <string name="summary_show_basal_line">Külső adatforrásból származó bázis inzulin mutatása</string>
     <string name="title_show_basal_line">Bázis inzulin (TBR) mutatása</string>
-    <string name="summary_show_g_prediction">G6/G7 előrejelzések mutatása</string>
-    <string name="title_show_g_prediction">G6/G7 előrejelzés</string>
+    <string name="summary_show_g_prediction">Dex előrejelzések mutatása</string>
+    <string name="title_show_g_prediction">Dex előrejelzés</string>
     <string name="title_show_smb_icons">Mikro bólus ikon mutatása</string>
     <string name="summary_illustrate_backfilled_data">Visszatöltött adatok eltérően mutatása</string>
     <string name="title_illustrate_backfilled_data">Visszatöltött adatok jelölése</string>
@@ -1434,7 +1439,7 @@
     <string name="summary_inpen_detect_priming">Légtelenítés érzékelése és kizárása</string>
     <string name="title_inpen_detect_priming">Légtelenítés érzékelése</string>
     <string name="title_inpen_prime_units">Légtelenítés adagja</string>
-    <string name="title_inpen_prime_minutes">Légtelenítés időtartama (perc)</string>
+    <string name="title_inpen_prime_minutes">Légtelenítés időszaka (perc)</string>
     <string name="summary_inpen_orphan_primes_ignored">Adagolás nélküli légtelenítések figyelmen kívül hagyása. Ha nem jelöli meg, ezeket is adagoknak tekinti</string>
     <string name="title_inpen_orphan_primes_ignored">Adag nélküli légtelenítések</string>
     <string name="summary_inpen_sounds">Adjon hangjelzést a pennel való adatforgalomkor</string>
@@ -1466,6 +1471,8 @@
     <string name="summary_persistent_high_alert">Ha magas érték felett van sokáig és nem tart lefelé</string>
     <string name="summary_persistent_high_threshold_link">Bekapcsolva a Magas érték a hatérték.\nKikapcsolva, a határérték az alábbi:</string>
     <string name="title_persistent_high_threshold_link">Határérték: Magas érték</string>
+    <string name="summary_forecast_low_threshold_link">Bekapcsolva az Alacsony érték a hatérték.\nKikapcsolva, a határérték az alábbi:</string>
+    <string name="title_forecast_low_threshold_link">Határérték: Alacsony érték</string>
     <string name="note_search_button">KERESÉS</string>
     <string name="all_note_button">MIND</string>
     <string name="title_full_screen_mode">Teljes képernyős mód</string>
@@ -1611,7 +1618,8 @@
     <string name="ob1_session_restarted_msg">A szenzor munkamenet elővigyázatosságból újraindult. Kérjük, ellenőrizze, hogy a következő mért értékek hihetőek-e, és szükség esetén kalibráljon</string>
     <string name="ob1_session_restarted_note">Szenzor újra lett indítva</string>
     <string name="title_ob1_g5_preemptive_restart_extended_time_travel">Szenzor használati idő növelése (\"időutazás\")</string>
-    <string name="title_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares">Szenzor használati idő növelése hosszabban (\"időutazás\")</string>
+    <string name="summary_ob1_g5_preemptive_restart_extended_time_travel">Indítsa újra a munkamenetet a 3. napon, hogy elkerülje a kihagyásokat</string>
+    <string name="title_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares">Szenzor használati idő növelése hosszabban, \"időutazás\"</string>
     <string name="summary_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares">Szenzor használati idő növelése minden firmware verzióval (csak fejlesztői módban)</string>
     <string name="collection_summary_ob1_g5_preemptive_restart">Szenzor automatikus újraindítása annak lejárta előtt</string>
     <string name="title_ob1_g5_preemptive_restart_alert">Riasztás a szenzor megelőző újraindulásakor</string>
@@ -1829,6 +1837,7 @@
     <string name="alert_reraise_time_colon">Riasztás ismétlése ennyi idő után:</string>
     <string name="accept_glucose">VC-érték fogadása</string>
     <string name="process_glucose_data_received">Fogadja a VC-értékeket a NSClient app-tól</string>
+    <string name="use_health_connect">Health Connect használata</string>
     <string name="audio_focus">Riasztás hangjának előtérbe helyezése</string>
     <string name="audio_focus_summary">Állítsa be, mi történjen a többi hanggal (app-ok és android) riasztás közben</string>
     <string name="audio_focus_dont_adjust_other_app_sounds">Hangok változatlanul szólnak</string>

@@ -234,6 +234,7 @@
     <string name="pref_was_less_than_min">%1$s a été défini à une valeur inférieure au minimum autorisé. Il a été changé en minimum.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapoler les données pour essayer de prévoir les hypoglycémies</string>
     <string name="alarm_at_forecasted_low_mins">Délai de prévisions d\'hypoglycémies en minutes</string>
+    <string name="title_forecast_low_threshold">Seuil</string>
     <string name="other_xdrip_plus_alerts">Autres alertes xDrip+</string>
     <string name="xdrip_plus_display_settings">xDrip+ Paramètres d\'affichage</string>
     <string name="display_customisations">Afficher les personnalisations</string>
@@ -1486,6 +1487,8 @@
     <string name="summary_persistent_high_alert">Quand supérieur au seuil pour une longue période, et ne redescend pas</string>
     <string name="summary_persistent_high_threshold_link">Lorsque cette option est activée, la valeur haute est le seuil.\nLorsqu\'elle est désactivée, le seuil est la valeur spécifiée ci-dessous.</string>
     <string name="title_persistent_high_threshold_link">Seuil : Valeur haute</string>
+    <string name="summary_forecast_low_threshold_link">Lorsque cette option est activée, la valeur basse est le seuil.\nLorsqu\'elle est désactivée, le seuil est la valeur spécifiée ci-dessous.</string>
+    <string name="title_forecast_low_threshold_link">Seuil : Valeur basse</string>
     <string name="note_search_button">RECHERCHE</string>
     <string name="all_note_button">TOUT</string>
     <string name="title_full_screen_mode">Mode plein écran</string>

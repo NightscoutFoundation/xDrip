@@ -234,6 +234,7 @@
     <string name="pref_was_less_than_min">Hodnota %1$s byla nastavena nižší, než je povolené minimum. Byla tak změněna na minimum.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolovat data pro predikci nízké glykémie</string>
     <string name="alarm_at_forecasted_low_mins">Alarm při prognóze nízkých hodnot (min)</string>
+    <string name="title_forecast_low_threshold">Limit</string>
     <string name="other_xdrip_plus_alerts">Ostatní xDrip+ výstrahy</string>
     <string name="xdrip_plus_display_settings">xDrip+ Nastavení zobrazení</string>
     <string name="display_customisations">Přizpůsobení obrazovky</string>
@@ -1491,6 +1492,8 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="summary_persistent_high_alert">Pokud trvá vysoká glykémie příliš dlouho a neklesá</string>
     <string name="summary_persistent_high_threshold_link">Pokud je povoleno, vysoká hodnota je hodnota limitu.\nJe-li vypnuto, hodnota limitu je hodnota uvedená níže.</string>
     <string name="title_persistent_high_threshold_link">Limit: Vysoká hodnota</string>
+    <string name="summary_forecast_low_threshold_link">Pokud je povoleno, nízká hodnota je hodnota limitu.\nJe-li vypnuto, hodnota limitu je hodnota uvedená níže.</string>
+    <string name="title_forecast_low_threshold_link">Limit: Nízká hodnota</string>
     <string name="note_search_button">HLEDAT</string>
     <string name="all_note_button">VŠE</string>
     <string name="title_full_screen_mode">Režim celé obrazovky</string>

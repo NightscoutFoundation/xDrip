@@ -227,6 +227,7 @@
     <string name="setting_pref_to_min">最小値に設定</string>
     <string name="extrapolate_data_to_try_to_predict_lows">データから外挿法によって低血糖を推定する</string>
     <string name="alarm_at_forecasted_low_mins">予測低血糖のあらアラームを鳴らす</string>
+    <string name="title_forecast_low_threshold">しきい値</string>
     <string name="other_xdrip_plus_alerts">他のxDrip+の通知</string>
     <string name="xdrip_plus_display_settings">xDrip+ディスプレイの設定</string>
     <string name="display_customisations">ディスプレイのカスタマイズ</string>
