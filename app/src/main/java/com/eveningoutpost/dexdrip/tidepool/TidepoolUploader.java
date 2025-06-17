@@ -133,29 +133,7 @@ public class TidepoolUploader {
         // TODO failure backoff
         if (JoH.ratelimit("tidepool-login", 10)) {
             extendWakeLock(30000);
-            if (Pref.getBooleanDefaultFalse("tidepool_new_auth")) {
-                UserError.Log.d(TAG, "Using new auth method");
-                AuthFlowIn.handleTokenLoginAndStartSession();
-            } else {
-                UserError.Log.d(TAG, "Using old auth method");
-                final Session session = new Session(MAuthRequest.getAuthRequestHeader(), SESSION_TOKEN_HEADER);
-                if (session.authHeader != null) {
-                    final Call<MAuthReply> call = session.service.getLogin(session.authHeader);
-                    status("Connecting");
-                    if (fromUi) {
-                        JoH.static_toast_long("Connecting to Tidepool");
-                    }
-                    call.enqueue(new TidepoolCallback<MAuthReply>(session, "Login", () -> startSession(session, fromUi))
-                            .setOnFailure(() -> loginFailed(fromUi)));
-                } else {
-                    UserError.Log.e(TAG, "Cannot do login as user credentials have not been set correctly");
-                    status("Invalid credentials");
-                    if (fromUi) {
-                        JoH.static_toast_long("Cannot login as Tidepool credentials have not been set correctly");
-                    }
-                }
-                releaseWakeLock();
-            }
+            AuthFlowIn.handleTokenLoginAndStartSession();
         }
     }
 
