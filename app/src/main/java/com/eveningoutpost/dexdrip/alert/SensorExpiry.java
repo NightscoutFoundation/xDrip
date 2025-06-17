@@ -50,7 +50,7 @@ public class SensorExpiry extends BaseAlert {
         val expireMsg = xdrip.gs(R.string.sensor_will_expire_in, expiry);
         showNotification(xdrip.gs(R.string.sensor_expiring), expireMsg, null, notificationId, null, true, true, null, null, null, true);
         Treatments.create_note("Warning: " + expireMsg, tsl()); // TODO i18n but note classifier also needs updating for that
-        UserError.Log.e(TAG, "Sensor will expire soon");
+        UserError.Log.uel(TAG, "Sensor will expire soon");
         return true;
     }
 

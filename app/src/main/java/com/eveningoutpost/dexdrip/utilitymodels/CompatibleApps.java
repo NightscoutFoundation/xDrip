@@ -52,7 +52,7 @@ public class CompatibleApps extends BroadcastReceiver {
             if (!Pref.getBooleanDefaultFalse("xdrip_webservice")) {
                 if (JoH.pratelimit(package_name + NOTIFY_MARKER, RENOTIFY_TIME)) {
                     id = notify(gs(R.string.garmin), gs(R.string.enable_local_web_server_feature), id, Feature.ENABLE_GARMIN_FEATURES);
-                    UserError.Log.e(TAG, "Enable local web server feature for Garmin watchface?");
+                    UserError.Log.uel(TAG, "Enable local web server feature for Garmin watchface?");
                 }
             }
         } else {
@@ -61,7 +61,7 @@ public class CompatibleApps extends BroadcastReceiver {
                 if (!Pref.getBooleanDefaultFalse("xdrip_webservice")) {
                     if (JoH.pratelimit(package_name + NOTIFY_MARKER, RENOTIFY_TIME)) {
                         id = notify(gs(R.string.fitbit), gs(R.string.enable_local_web_server_feature_fitbit), id, Feature.ENABLE_FITBIT_FEATURES);
-                        UserError.Log.e(TAG, "Enable local web server feature for Fitbit watchface?");
+                        UserError.Log.uel(TAG, "Enable local web server feature for Fitbit watchface?");
                     }
                 }
             }
@@ -72,7 +72,7 @@ public class CompatibleApps extends BroadcastReceiver {
             if (!Pref.getBooleanDefaultFalse("wear_sync")) {
                 if (JoH.pratelimit(package_name + NOTIFY_MARKER, RENOTIFY_TIME)) {
                     id = notify(gs(R.string.androidwear), gs(R.string.enable_wear_os_sync), id, Feature.ENABLE_WEAR_OS_SYNC);
-                    UserError.Log.e(TAG, "Enable Sync to Android Wear OS?");
+                    UserError.Log.uel(TAG, "Enable Sync to Android Wear OS?");
                 }
             }
         }
@@ -82,7 +82,7 @@ public class CompatibleApps extends BroadcastReceiver {
             if (!Pref.getBooleanDefaultFalse("broadcast_data_through_intents")) {
                 if (JoH.pratelimit(package_name + NOTIFY_MARKER, RENOTIFY_TIME)) {
                     id = notify(gs(R.string.androidaps), gs(R.string.enable_local_broadcast), id, Feature.ENABLE_ANDROIDAPS_FEATURE1);
-                    UserError.Log.e(TAG, "Enable local broadcast?");
+                    UserError.Log.uel(TAG, "Enable local broadcast?");
                 }
             }
 
@@ -90,7 +90,7 @@ public class CompatibleApps extends BroadcastReceiver {
                 if (!Pref.getString("local_broadcast_specific_package_destination", "").contains(package_name)) {
                     if (JoH.pratelimit(package_name + NOTIFY_MARKER + "2", RENOTIFY_TIME)) {
                         id = notify(gs(R.string.androidaps), gs(R.string.broadcast_only_to), id, Feature.ENABLE_ANDROIDAPS_FEATURE2);
-                        UserError.Log.e(TAG, "Broadcast only to AAPS?");
+                        UserError.Log.uel(TAG, "Broadcast only to AAPS?");
                     }
                 }
             }
@@ -101,7 +101,7 @@ public class CompatibleApps extends BroadcastReceiver {
             if (!Pref.getString("local_broadcast_specific_package_destination", "").contains(package_name)) {
                 if (JoH.pratelimit(package_name + NOTIFY_MARKER, RENOTIFY_TIME)) {
                     id = notify("Tasker", gs(R.string.enable_local_broadcast), id, Feature.ENABLE_TASKER);
-                    UserError.Log.e(TAG, "Enable local broadcast?");
+                    UserError.Log.uel(TAG, "Enable local broadcast?");
                 }
             }
         }
@@ -111,7 +111,7 @@ public class CompatibleApps extends BroadcastReceiver {
             if (DexCollectionType.getDexCollectionType() != DexCollectionType.LibreAlarm) {
                 if (JoH.pratelimit(package_name + NOTIFY_MARKER, RENOTIFY_TIME)) {
                     id = notify(gs(R.string.librealarm), gs(R.string.use_librealarm), id, Feature.ENABLE_LIBRE_ALARM);
-                    UserError.Log.e(TAG, "Use LibreAlarm app as data source?");
+                    UserError.Log.uel(TAG, "Use LibreAlarm app as data source?");
                 }
             }
         }

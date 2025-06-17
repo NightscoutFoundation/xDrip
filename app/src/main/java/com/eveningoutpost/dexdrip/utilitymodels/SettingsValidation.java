@@ -22,7 +22,7 @@ public class SettingsValidation {
         if (Pref.getBooleanDefaultFalse("engineering_mode")) {
             if (JoH.pratelimit(setting_name + NOTIFY_MARKER, RENOTIFY_TIME)) {
                 id = notifyDis("Engineering Mode", setting_name, "" + xdrip.getAppContext().getString(R.string.eng_mode_is_on), id);
-                UserError.Log.e(TAG, "Disable Engineering mode");
+                UserError.Log.uel(TAG, "Disable Engineering mode");
             }
         }
 
