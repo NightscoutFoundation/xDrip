@@ -2164,7 +2164,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         if ((lastSensorStatus != null)) {
             String sensorStatus = lastSensorStatus;
             if (shortTxId() && lastSensorStatus == "Sensor Failed 7") {
-                sensorStatus = "Temporary Sensor Issue";
+                sensorStatus = "May recover in up to 3 hours";
             }
             l.add(new StatusItem("Sensor Status", sensorStatus, lastSensorState != Ok ? NOTICE : NORMAL));
         }
