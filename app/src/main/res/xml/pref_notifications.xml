@@ -343,6 +343,10 @@
                         android:showSilent="true"
                         android:summary="@string/choose_sound_used_for_persistent_high_alarm"
                         android:title="@string/persistent_high_sound" />
+                    <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:key="persistent_high_alert_override_silent"
+                        android:title="@string/override_silent_mode" />
                 </PreferenceScreen>
                 <PreferenceScreen
                     android:key="@string/forecasted_low_alert"
@@ -388,6 +392,10 @@
                         android:showSilent="true"
                         android:summary="@string/choose_sound_used_for_predicted_low_alarm"
                         android:title="@string/predicted_low_sound" />
+                    <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:key="bg_predict_alert_override_silent"
+                        android:title="@string/override_silent_mode" />
                 </PreferenceScreen>
                 <PreferenceScreen
                     android:key="@string/title_sens_expiry"
