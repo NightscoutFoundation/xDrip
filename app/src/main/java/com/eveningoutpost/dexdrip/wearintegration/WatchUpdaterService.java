@@ -298,6 +298,7 @@ public class WatchUpdaterService extends WearableListenerService implements
             if (force_wearG5) {
                 final PendingIntent pendingIntent = android.app.PendingIntent.getActivity(xdrip.getAppContext(), 0, new Intent(xdrip.getAppContext(), Home.class), android.app.PendingIntent.FLAG_UPDATE_CURRENT);
                 showNotification("Force Wear Enabled", node_wearG5 + " Watch has enabled Force Wear Collection Service", pendingIntent, 771, true, true, true);
+                UserError.Log.uel(TAG, node_wearG5 + " Watch has enabled Force Wear Collection Service");
             }
         }
 

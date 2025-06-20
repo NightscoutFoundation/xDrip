@@ -628,6 +628,7 @@ public class NightscoutUploader {
                                         + " times. With message: " + last_exception + " " + ((last_success_time > 0) ? "Last succeeded: " + JoH.dateTimeText(last_success_time) : ""),
 
                                 MegaStatus.getStatusPendingIntent("Uploaders"), Constants.NIGHTSCOUT_ERROR_NOTIFICATION_ID, NotificationChannels.NIGHTSCOUT_UPLOADER_CHANNEL, false, false, null, null, msg);
+                        UserError.Log.uel(TAG, "REST-API upload to Nightscout has failed");
                     } else {
                         Log.e(TAG, "Cannot alert for nightscout failures as preference setting is disabled");
                     }

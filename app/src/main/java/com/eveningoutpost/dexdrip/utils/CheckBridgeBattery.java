@@ -69,6 +69,7 @@ public class CheckBridgeBattery {
                     final PendingIntent pendingIntent = android.app.PendingIntent.getActivity(xdrip.getAppContext(), 0, new Intent(xdrip.getAppContext(), Home.class), android.app.PendingIntent.FLAG_UPDATE_CURRENT);
                     showNotification("Low bridge battery", "Bridge battery dropped to: " + this_level + "%",
                             pendingIntent, NOTIFICATION_ITEM, NotificationChannels.LOW_BRIDGE_BATTERY_CHANNEL, sound, vibrate, null, null, null);
+                    UserError.Log.uel(TAG, "Bridge battery dropped to: " + this_level + "%");
                 }
             } else {
                 if (notification_showing) {
@@ -126,6 +127,7 @@ public class CheckBridgeBattery {
                     cancelNotification(PARAKEET_NOTIFICATION_ITEM);
                     showNotification(xdrip.getAppContext().getString(R.string.low_parakeet_battery), "Parakeet battery dropped to: " + this_level + "%",
                             pendingIntent, PARAKEET_NOTIFICATION_ITEM, NotificationChannels.LOW_BRIDGE_BATTERY_CHANNEL, true, true, null, null, null);
+                    UserError.Log.uel(TAG, "Parakeet battery dropped to: " + this_level + "%");
                     last_parakeet_notification = JoH.tsl();
                     if (d) UserError.Log.e(TAG, "checkParakeetBattery RAISED ALERT threshold:" + threshold + " this_level:" + this_level + " last:" + last_parakeet_level);
                 }

@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.ArrayList;
@@ -18,6 +19,8 @@ import lombok.val;
  */
 
 public class IncompatibleApps {
+
+    public final static String TAG = IncompatibleApps.class.getSimpleName();
 
     private static final String NOTIFY_MARKER = "-NOTIFY";
     private static final int RENOTIFY_TIME = 86400 * 30;
@@ -69,11 +72,13 @@ public class IncompatibleApps {
 
     private static int notify(String short_name, String package_string, String msg, int id) {
         JoH.showNotification("Incompatible App " + short_name, "Please uninstall or disable " + package_string, null, id, true, true, null, null, ((msg.length() > 0) ? msg + "\n\n" : "") + "Another installed app may be incompatible with xDrip. The other app should be uninstalled or disabled to prevent conflicts with shared resources.\nThe package identifier is: " + package_string);
+        UserError.Log.uel(TAG, "Please uninstall or disable package");
         return id + 1;
     }
 
     private static int notify2(String short_name, String package_string, String msg, int id) {
         JoH.showNotification(short_name, msg, null, id, true, true, null, null, ((msg.length() > 0) ? msg + "\n\n" : "") + "The Package identifier is: " + package_string);
+        UserError.Log.uel(TAG, "Remove xDrip from duraspeed");
         return id + 1;
     }
 

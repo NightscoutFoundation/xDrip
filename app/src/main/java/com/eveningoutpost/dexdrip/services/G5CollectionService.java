@@ -356,6 +356,7 @@ public class G5CollectionService extends G5BaseService {
                 if (!usingG6()) {
                     setG6bareBones();
                     JoH.showNotification("Enabled G6", "G6 Features for old collector automatically enabled", null, Constants.G6_DEFAULTS_MESSAGE, false, true, false);
+                    UserError.Log.uel(TAG, "G6 Features for old collector automatically enabled");
                 }
             }
         }
@@ -1639,6 +1640,7 @@ public class G5CollectionService extends G5BaseService {
                     final boolean loud = !PowerStateReceiver.is_power_connected();
                     JoH.showNotification("G5 Battery Low", "G5 Transmitter battery has dropped to: " + batteryInfoRxMessage.voltagea + " it may fail soon",
                             null, 770, NotificationChannels.LOW_TRANSMITTER_BATTERY_CHANNEL, loud, loud, null, null, null);
+                    UserError.Log.uel(TAG, "G5 Transmitter battery has dropped to: " + batteryInfoRxMessage.voltagea);
                 }
             }
             PersistentStore.setLong(G5_BATTERY_LEVEL_MARKER + transmitterId, batteryInfoRxMessage.voltagea);

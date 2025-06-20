@@ -392,6 +392,7 @@ public class GcmListenerSvc extends JamListenerSvc {
                             final String body = payloadA[1];
                             final PendingIntent pendingIntent = android.app.PendingIntent.getActivity(xdrip.getAppContext(), 0, new Intent(xdrip.getAppContext(), Home.class), android.app.PendingIntent.FLAG_UPDATE_CURRENT);
                             showNotification(title, body, pendingIntent, GCM_NOTIFICATION_ITEM, true, true, false);
+                            UserError.Log.uel(TAG, "Follower Notification with payload");
                         } catch (Exception e) {
                             UserError.Log.e(TAG, "Error showing follower notification with payload: " + payload);
                         }
@@ -466,6 +467,7 @@ public class GcmListenerSvc extends JamListenerSvc {
                         }
                         if (Pref.getBooleanDefaultFalse("follower_chime") && JoH.pratelimit("bgs-notify", 1200)) {
                             JoH.showNotification("New glucose data @" + JoH.hourMinuteString(), "Follower Chime: will alert whenever it has been more than 20 minutes since last", null, 60311, true, true, true);
+                            UserError.Log.uel(TAG, "Follower Chime");
                         }
                     } else {
                         Log.e(TAG, "Received remote BG packet but we are not set as a follower");
