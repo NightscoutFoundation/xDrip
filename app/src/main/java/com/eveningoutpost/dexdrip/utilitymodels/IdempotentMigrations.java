@@ -161,7 +161,7 @@ public class IdempotentMigrations {
         Pref.setBoolean("using_g6", true);
         Pref.setBoolean("tidepool_new_auth", true);
         Pref.setBoolean("bridge_battery_alerts", false); // Disable Parakeet
-        Pref.setInt("bridge_battery_alert_level", 30);
+        Pref.setString("bridge_battery_alert_level", "30");
         Pref.setBoolean("parakeet_status_alerts", false);
         Pref.setBoolean("parakeet_charge_silent", false);
 
