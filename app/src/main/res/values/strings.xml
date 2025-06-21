@@ -40,7 +40,7 @@
     <string name="auto_configure_title">Auto configure</string>
     <string name="prefs_auto_config_summary">Auto configure using a barcode.</string>
     <string name="auto_config_cam_title">Landscape Camera</string>
-    <string name="auto_config_cam_summary">Rotate the phone to landscape mode before tapping \'Landscape Camera\'.  Scan a QR code with your mobile (recommended)</string>
+    <string name="auto_config_cam_summary">Rotate the phone to landscape mode before tapping \'Landscape Camera\' to scan a QR code with your mobile (recommended)</string>
     <string name="auto_config_image_title">Image file</string>
     <string name="auto_config_image_summary">You can save a QR code as an image file (such as .png or .jpeg) on your mobile. Then, use this option to scan the QR code from the saved file.</string>
     <string name="scan_share2_barcode">Scan Share Barcode</string>
