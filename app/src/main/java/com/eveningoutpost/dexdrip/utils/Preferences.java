@@ -81,6 +81,7 @@ import com.eveningoutpost.dexdrip.healthconnect.HealthConnectEntry;
 import com.eveningoutpost.dexdrip.healthconnect.HealthGamut;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
 import com.eveningoutpost.dexdrip.models.DesertSync;
+import com.eveningoutpost.dexdrip.models.InsulinStockManager; // Added
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.Profile;
 import com.eveningoutpost.dexdrip.models.UserError;
@@ -2647,7 +2648,85 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 }
             });
             removeLegacyPreferences();
+            setupInsulinStockPreferences(); // Added call
             jumpToScreen(jumpTo);
+        }
+
+       private void setupInsulinStockPreferences() {
+            final Preference currentStockPref = findPreference("current_insulin_stock");
+            final EditTextPreference initialStockPref = (EditTextPreference) findPreference("initial_insulin_stock");
+            final SwitchPreference stockTrackingEnabledPref = (SwitchPreference) findPreference("insulin_stock_tracking_enabled");
+
+            updateCurrentStockSummary(currentStockPref);
+
+            if (initialStockPref != null) {
+                initialStockPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object newValue) {
+                        try {
+                            float units = Float.parseFloat(newValue.toString());
+                            if (units >= 0) {
+                                InsulinStockManager.setInitialStock(units);
+                                updateCurrentStockSummary(currentStockPref);
+                                preference.setSummary(newValue.toString() + " " + getString(R.string.units));
+                                return true;
+                            } else {
+                                JoH.static_toast_long("Initial stock cannot be negative.");
+                                return false;
+                            }
+                        } catch (NumberFormatException e) {
+                            JoH.static_toast_long("Invalid number for initial stock.");
+                            return false;
+                        }
+                    }
+                });
+                // Set initial summary for initialStockPref
+                String initialStockValue = prefs.getString("initial_insulin_stock", String.valueOf(InsulinStockManager.getDefaultInitialStock()));
+                initialStockPref.setSummary(initialStockValue + " " + getString(R.string.units));
+                if (initialStockPref.getText() == null || initialStockPref.getText().isEmpty()) {
+                    initialStockPref.setText(initialStockValue);
+                }
+            }
+
+            if (stockTrackingEnabledPref != null) {
+                stockTrackingEnabledPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object newValue) {
+                        boolean enabled = (Boolean) newValue;
+                        if (!enabled) {
+                            InsulinStockManager.resetInitialStockTracking();
+                        }
+                        // Update summary of current stock as its availability changes
+                        updateCurrentStockSummary(currentStockPref);
+                        // The dependency should handle enabling/disabling initialStockPref,
+                        // but a forced refresh of the screen or adapter might be needed if not.
+                        // For now, let's assume dependency works.
+                        return true;
+                    }
+                });
+            }
+        }
+
+        private void updateCurrentStockSummary(Preference currentStockPref) {
+            if (currentStockPref == null) return;
+
+            if (InsulinStockManager.isStockTrackingEnabled()) {
+                if (InsulinStockManager.isInitialStockSet()) {
+                    float stock = InsulinStockManager.getCurrentStock();
+                    currentStockPref.setSummary(String.format("%.1f %s", stock, getString(R.string.units)));
+                } else {
+                    currentStockPref.setSummary(getString(R.string.initial_insulin_stock_summary)); // Prompt to set initial
+                }
+            } else {
+                currentStockPref.setSummary(getString(R.string.current_insulin_stock_summary_default));
+            }
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            // Refresh stock summary when screen is shown
+            updateCurrentStockSummary(findPreference("current_insulin_stock"));
         }
 
        private void removeLegacyPreferences() {
