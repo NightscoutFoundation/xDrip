@@ -61,6 +61,7 @@ import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import static java.lang.StrictMath.abs;
 import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
+import com.eveningoutpost.dexdrip.models.InsulinStockManager; // Added import
 
 // TODO Switchable Carb models
 // TODO Linear array timeline optimization
@@ -297,6 +298,11 @@ public class Treatments extends Model {
         treatment.save();
         // GcmActivity.pushTreatmentAsync(Treatment);
         //  NSClientChat.pushTreatmentAsync(Treatment);
+
+        // Decrease insulin stock if tracking is enabled and insulin is given
+        if (insulinSum > 0) {
+            InsulinStockManager.decreaseStock(insulinSum);
+        }
 
         pushTreatmentSync(treatment);
         UndoRedo.addUndoTreatment(treatment.uuid);
