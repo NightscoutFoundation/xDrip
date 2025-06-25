@@ -1417,6 +1417,8 @@
     <string name="title_ob1_avoid_scanning">Avoid Scanning</string>
     <string name="summary_using_g6">I am using a Dex Sensor</string>
     <string name="title_using_g6">Dex Support</string>
+    <string name="summary_ob1_allow_scan_by_mac">Allowing to use the MAC-address of Bluetooth device while scanning.</string>
+    <string name="title_ob1_allow_scan_by_mac">Allow Scanning by MAC</string>
     <string name="summary_ob1_g5_allow_resetbond">OB1 collector can unbond if it thinks the encryption has failed. If you get problems with it unpairing then disable this option. If you then totally lose connection, make sure this is enabled.</string>
     <string name="title_ob1_g5_allow_resetbond">Allow OB1 unbonding</string>
     <string name="summary_ob1_initiate_bonding_flag">OB1 collector can initiate bonding.</string>
