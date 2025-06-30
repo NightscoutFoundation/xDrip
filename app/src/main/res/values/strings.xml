@@ -1977,7 +1977,7 @@
     <string name="pre_snooze">pre-Snooze</string>
     <string name="volume_profile_high">High</string>
     <string name="volume_profile_medium">Medium</string>
-    <string name="volume_profile_ascending">Ascending volume</string>
+    <string name="volume_profile_ascending">Ascending</string>
     <string name="volume_profile_vibrate_only">Vibrate only</string>
     <string name="volume_profile_silent">Silent</string>
     <string name="alert_threshold_already_in_use">Each alert should have it\'s own threshold. Please choose another threshold.</string>
