@@ -1,9 +1,10 @@
 # Nightscout xDrip+
+> Enhanced personal research version of xDrip
 
-## Guides and Documentation
-* Info page: https://jamorham.github.io/#xdrip-plus
-* Release notes: https://navid200.github.io/xDrip/docs/ReleaseNotes.html
-* Guide 1: https://navid200.github.io/xDrip/
+ <img align="right" src="Documentation/images/download-xdrip-plus-qr-code.png">
+ Info page and APK download: https://jamorham.github.io/#xdrip-plus
+
+<img align="right" src="https://travis-ci.org/jamorham/xDrip-plus.svg?branch=master"><a align="right" title="Crowdin" target="_blank" href="https://crowdin.com/project/xdrip"><img align="right" src="https://badges.crowdin.net/xdrip/localized.svg"></a>
 
 ## Features
 * Voice, Keypad or Watch input of Treatments (Insulin/Carbs/Notes)
@@ -19,11 +20,11 @@
 
 xDrip+ is an unofficial and independent Android app which works as data hub and processor between many different devices.
 
-It supports wireless connections to G4, G5, G6, G7, Medtrum A6, Libre via NFC and Bluetooth, 630G, 640G, 670G pumps, CareSens Air and Eversense CGM via companion apps. Bluetooth Glucose Meters such as the Contour Next One, AccuChek Guide, Verio Flex & Diamond Mini as well as devices like the Pendiq 2.0 Insulin Pen.
+It supports wireless connections to G6, G7, Medtrum A6, Libre via NFC and Bluetooth, 630G, 640G, 670G pumps, CareSens Air and Eversense CGM via companion apps. Bluetooth Glucose Meters such as the Contour Next One, AccuChek Guide, Verio Flex & Diamond Mini as well as devices like the Pendiq 2.0 Insulin Pen.
 
 Heart-rate and step counter data is processed from Android Wear, Garmin, Fitbit and Pebble smart-watches and watch-faces for those that show glucose values and graphs.
 
-On some Android Wear watches, it is possible for the G5 or G6 to talk directly to the watch so it can display values even when out of range of the phone.
+On some Android Wear watches, it is possible for the G6 to talk directly to the watch so it can display values even when out of range of the phone.
 
 The app contains sophisticated charting, customization and data entry features as well as a predictive simulation model.
 
@@ -37,18 +38,16 @@ Your data is yours and can be exported in many different ways. xDrip also interc
 ## Ethos
 * Developed using Rapid Prototyping methodology
 * Immediate results favoured to prove concepts
+* Designed to support my personal research goals
 * User Choice always a high priority
 * No registration or Internet access required
 * Community testing and collaboration appreciated!
 
 ## Roadmap
+* Calibration improvements
 * Supporting the large family of devices
 * Increasing automation and data backup and sync options
 * More Nightscout and APS integration
-
-## Translations
-<img align="right" src="https://travis-ci.org/jamorham/xDrip-plus.svg?branch=master"><a align="right" title="Crowdin" target="_blank" href="https://crowdin.com/project/xdrip"><img align="right" src="https://badges.crowdin.net/xdrip/localized.svg"></a>
-
 
 ## Collaboration
 We are very happy if people want to collaborate with this project. Please contact us at [Discussions](https://github.com/NightscoutFoundation/xDrip/discussions) if you want to get involved and study the [collaboration guidelines](CONTRIBUTING.md) before submitting any patches or pull requests.
