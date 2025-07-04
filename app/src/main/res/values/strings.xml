@@ -1969,4 +1969,14 @@
     <string name="sensor_will_expire_in">Sensor will expire in %1$s</string>
     <string name="xdrip_update">xDrip+ Update</string>
     <string name="a_new_version_on_channel_1_s_is_available">A new version on channel %1$s is available</string>
+
+    <!-- Insulin Stock Management -->
+    <string name="insulin_stock_management_title">Insulin Stock Management</string>
+    <string name="insulin_stock_management_summary">Track insulin vial/pen stock levels</string>
+    <string name="enable_insulin_stock_tracking">Enable Stock Tracking</string>
+    <string name="enable_insulin_stock_tracking_summary">Automatically deduct insulin doses from a configured stock level</string>
+    <string name="initial_insulin_stock_title">Initial Insulin Units</string>
+    <string name="initial_insulin_stock_summary">Set the starting units for a new vial/pen</string>
+    <string name="current_insulin_stock_title">Current Insulin Stock</string>
+    <string name="current_insulin_stock_summary_default">Stock tracking not enabled or not set</string>
 </resources>
