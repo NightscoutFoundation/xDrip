@@ -160,7 +160,11 @@ public class IdempotentMigrations {
         Pref.setBoolean("store_sensor_location", false);
         Pref.setBoolean("using_g6", true);
         Pref.setBoolean("tidepool_new_auth", true);
-        // TODO Simplify the code everywhere resolving conditionals based on "using_g6" now that it is always true.
+        Pref.setBoolean("bridge_battery_alerts", false); // Disable Parakeet
+        Pref.setString("bridge_battery_alert_level", "30");
+        Pref.setBoolean("parakeet_status_alerts", false);
+        Pref.setBoolean("parakeet_charge_silent", false);
+
     }
     private static void legacySettingsMoveLanguageFromNoToNb() {
         // Check if the user's language preference is set to "no"
