@@ -400,17 +400,6 @@
                         android:switchTextOn="@string/short_on_text_for_switches"
                         android:title="@string/title_sens_expiry_notify" />
                 </PreferenceScreen>
-                <PreferenceScreen
-                    android:key="@string/other_xdrip_plus_alerts"
-                    android:title="@string/other_xdrip_plus_alerts">
-                    <SwitchPreference
-                        android:defaultValue="false"
-                        android:key="follower_chime"
-                        android:summary="@string/notify_data_arrives_master"
-                        android:switchTextOff="@string/short_off_text_for_switches"
-                        android:switchTextOn="@string/short_on_text_for_switches"
-                        android:title="@string/follower_chime_new" />
-                </PreferenceScreen>
             </PreferenceScreen>
         </PreferenceCategory>
     </PreferenceScreen>

@@ -1432,6 +1432,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 }
             }
 
+            final Preference xSyncFollowChime = findPreference("follower_chime");
+
 
             if (collectionType != DexCollectionType.WebFollow) {
                 try {
@@ -1858,6 +1860,14 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     collectionCategory.removePreference(nsFollowUrl);
                     collectionCategory.removePreference(nsFollowDownload);
                     collectionCategory.removePreference(nsFollowLag);
+                } catch (Exception e) {
+                    //
+                }
+            }
+
+            if (collectionType != DexCollectionType.Follower) {
+                try {
+                    collectionCategory.removePreference(xSyncFollowChime);
                 } catch (Exception e) {
                     //
                 }
@@ -2578,6 +2588,10 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                         collectionCategory.addPreference(nsFollowUrl);
                         collectionCategory.addPreference(nsFollowDownload);
                         collectionCategory.addPreference(nsFollowLag);
+                    }
+
+                    if (collectionType == DexCollectionType.Follower) {
+                        collectionCategory.addPreference(xSyncFollowChime);
                     }
 
 

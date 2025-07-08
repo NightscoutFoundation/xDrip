@@ -242,6 +242,14 @@
             android:summary="Your account and follower app are from the USA"
             android:title="US Servers" />
 
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="follower_chime"
+            android:summary="@string/notify_data_arrives_master"
+            android:switchTextOff="@string/short_off_text_for_switches"
+            android:switchTextOn="@string/short_on_text_for_switches"
+            android:title="@string/follower_chime_new" />
+
         <ListPreference
             android:defaultValue="gb"
             android:entries="@array/carelinkCountryEntries"
