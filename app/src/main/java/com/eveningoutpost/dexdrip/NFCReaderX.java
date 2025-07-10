@@ -668,9 +668,13 @@ public class NFCReaderX {
                             Log.d(TAG, "Not using addressed mode since not a libre 1 sensor");
                             addressed = false;
                         }
-                        if (sensorType == SensorType.Libre2) {
+                        if (sensorType == SensorType.Libre2 || sensorType == SensorType.Libre2Plus) {
                             startLibre2Streaming(nfcvTag, patchUid, patchInfo);
+                        }
+                        if (sensorType == SensorType.Libre2) {
                             PersistentStore.setString("LibreVersion", "2");
+                        } else if (sensorType == SensorType.Libre2Plus) {
+                            PersistentStore.setString("LibreVersion", "3");
                         } else {
                             PersistentStore.setString("LibreVersion", "1");
                         }
@@ -680,7 +684,7 @@ public class NFCReaderX {
                             for (int i = 0; i < 43; i = i + 3) {
                                 int read_blocks = 3;
                                 int correct_reply_size = addressed ? 28 : 25;
-                                if (i == 42 && sensorType == SensorType.Libre2) {
+                                if (i == 42 && (sensorType == SensorType.Libre2 || sensorType == SensorType.Libre2Plus)) {
                                     read_blocks = 1;
                                     correct_reply_size = 9;
                                 }
