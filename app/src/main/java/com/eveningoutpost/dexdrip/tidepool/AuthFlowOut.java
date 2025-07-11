@@ -107,11 +107,6 @@ public class AuthFlowOut {
 
     public static void doTidePoolInitialLogin(boolean full) {
 
-        if (!Pref.getBooleanDefaultFalse("tidepool_new_auth")) {
-            Log.d(TAG, "Not using new authentication mechanism");
-            return;
-        }
-
         val context = xdrip.getAppContext();
         JoH.static_toast_long("Connecting to Tidepool");    // TODO I18n
         AuthorizationServiceConfiguration.fetchFromIssuer(

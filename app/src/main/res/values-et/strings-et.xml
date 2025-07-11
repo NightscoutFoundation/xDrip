@@ -234,6 +234,7 @@
     <string name="pref_was_less_than_min">%1$s määrati väärtusele, mis on väiksem kui lubatud miinimum. See on muudetud miinimumiks.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Ekstrapoleeri andmeid, et ennustada madalate suhkrute tekkimist</string>
     <string name="alarm_at_forecasted_low_mins">Alarm prognoositud madalal mins</string>
+    <string name="title_forecast_low_threshold">Piirmäär</string>
     <string name="other_xdrip_plus_alerts">Teised xDrip+ alarmid</string>
     <string name="xdrip_plus_display_settings">xDrip+ kuva seaded</string>
     <string name="display_customisations">Kuva kohandused</string>
@@ -1490,6 +1491,8 @@
     <string name="summary_persistent_high_alert">Kui VS on üle kõrge taseme liiga kaua ja ei liigu allapoole</string>
     <string name="summary_persistent_high_threshold_link">Kui lubatud, on piirmääraks kõrge väärtus.\nKui keelatud, on piirmääraks allpool seadistatud väärtus.</string>
     <string name="title_persistent_high_threshold_link">Piirmäär: kõrge väärtus</string>
+    <string name="summary_forecast_low_threshold_link">Kui lubatud, on piirmääraks madal väärtus.\nKui keelatud, on piirmääraks allpool seadistatud väärtus.</string>
+    <string name="title_forecast_low_threshold_link">Piirmäär: madal väärtus</string>
     <string name="note_search_button">OTSI</string>
     <string name="all_note_button">KÕIK</string>
     <string name="title_full_screen_mode">Täisekraani režiim</string>
