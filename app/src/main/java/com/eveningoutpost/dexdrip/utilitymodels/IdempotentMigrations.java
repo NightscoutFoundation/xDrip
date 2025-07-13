@@ -164,6 +164,7 @@ public class IdempotentMigrations {
         Pref.setString("bridge_battery_alert_level", "30");
         Pref.setBoolean("parakeet_status_alerts", false);
         Pref.setBoolean("parakeet_charge_silent", false);
+        Pref.setBoolean("ob1_g5_use_insufficiently_calibrated", true);
 
     }
     private static void legacySettingsMoveLanguageFromNoToNb() {

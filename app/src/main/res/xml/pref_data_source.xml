@@ -372,12 +372,6 @@
                         android:title="@string/title_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares" />
                 </PreferenceScreen>
                 <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:dependency="ob1_g5_use_transmitter_alg"
-                    android:key="ob1_g5_use_insufficiently_calibrated"
-                    android:summary="@string/summary_ob1_g5_use_insufficiently_calibrated"
-                    android:title="@string/title_ob1_g5_use_insufficiently_calibrated" />
-                <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="ob1_minimize_scanning"
                     android:summary="@string/summary_ob1_minimize_scanning"
