@@ -1897,6 +1897,7 @@
     <string name="bg_alert">ALERTE Glycémie %1$s : %2$s (@%3$s)</string>
     <string name="show_graphical_trend_arrow">Afficher la flèche de tendance graphique</string>
     <string name="no_alert_in_silent_mode">Aucune alerte en mode silencieux</string>
+    <string name="axis_x_raw_value">Valeur brute</string>
     <string name="first_successful_connection_to_transmitter">"Première connexion réussie à l'émetteur %1$s"</string>
     <string name="first_successful_connection_to_transmitter_em">"Première connexion réussie à l'émetteur %1$s avec mac %2$s"</string>
     <string name="sensor_expiring">Expiration du capteur</string>
