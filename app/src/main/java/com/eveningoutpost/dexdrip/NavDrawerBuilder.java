@@ -40,6 +40,7 @@ public class NavDrawerBuilder {
     private static boolean use_note_search = false;
 
     public NavDrawerBuilder(final Context context) {
+        final DexCollectionType collector = DexCollectionType.getDexCollectionType();
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean IUnderstand = prefs.getBoolean("I_understand", false);
@@ -67,13 +68,8 @@ public class NavDrawerBuilder {
         if ((prefs.getString("dex_collection_method", "").equals("Follower"))) {
             this.nav_drawer_options.add(context.getString(R.string.add_calibration));
             this.nav_drawer_intents.add(new Intent(context, AddCalibration.class));
-        } else if (!getBestCollectorHardwareName().equals("Nightscout")
-                && !getBestCollectorHardwareName().equals("Share")
-                && !getBestCollectorHardwareName().equals("UI Based")
-                && !getBestCollectorHardwareName().equals("CareLink")
-                && !getBestCollectorHardwareName().equals("Disabled")) {
-            // Only if the collector is neither Nightscout follower nor Dex share follower
-            // nor companion app nor Carelink follower nor disabled
+        } else if (!collector.canNotStartStopOrCal()) {
+            // Only if the collector can start/stop sensor and submit calibrations (is not passive)
 
             if (is_active_sensor) {
                 if (!CollectionServiceStarter.isBTShare(context)) {
