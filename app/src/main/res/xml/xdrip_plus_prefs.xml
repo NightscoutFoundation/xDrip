@@ -733,6 +733,36 @@
                     android:title="@string/title_multiple_insulin_use_basal_activity"/>
             </PreferenceScreen>
 
+            <PreferenceScreen
+                android:key="insulin_stock_management_settings"
+                android:title="@string/insulin_stock_management_title"
+                android:summary="@string/insulin_stock_management_summary">
+
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:key="insulin_stock_tracking_enabled"
+                    android:title="@string/enable_insulin_stock_tracking"
+                    android:summary="@string/enable_insulin_stock_tracking_summary"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches" />
+
+                <EditTextPreference
+                    android:key="initial_insulin_stock"
+                    android:title="@string/initial_insulin_stock_title"
+                    android:summary="@string/initial_insulin_stock_summary"
+                    android:inputType="number"
+                    android:defaultValue="300"
+                    android:dependency="insulin_stock_tracking_enabled" />
+
+                <Preference
+                    android:key="current_insulin_stock"
+                    android:title="@string/current_insulin_stock_title"
+                    android:summary="@string/current_insulin_stock_summary_default"
+                    android:selectable="false"
+                    android:dependency="insulin_stock_tracking_enabled"/>
+
+            </PreferenceScreen>
+
             <Preference
                 android:key="profile_carb_ratio_default"
                 android:summary="@string/grams_of_carbohydrate_one_unit_covers"
