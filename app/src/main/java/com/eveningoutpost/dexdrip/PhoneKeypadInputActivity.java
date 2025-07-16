@@ -13,6 +13,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.insulin.Insulin;
@@ -370,13 +371,13 @@ public class PhoneKeypadInputActivity extends BaseActivity {
 
         // The green tick is clickable even when it's hidden, so we might get here
         // without valid data.  Ignore the click if input is incomplete
-        if(!nonzeroBloodValue && !nonzeroCarbsValue && !nonzeroInsulin1Value && !nonzeroInsulin2Value && !nonzeroInsulin3Value) {
+        if (!nonzeroBloodValue && !nonzeroCarbsValue && !nonzeroInsulin1Value && !nonzeroInsulin2Value && !nonzeroInsulin3Value) {
             Log.d(TAG, "All zero values in tabs - not processing button click");
             return;
         }
 
         if (isInvalidTime()) {
-            Log.d(TAG,"Time value is invalid - not processing button click");
+            Log.d(TAG, "Time value is invalid - not processing button click");
             return;
         }
 
@@ -384,7 +385,7 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         // Add the dot to the time if it is missing
         String timeValue = getValue("time");
         if (timeValue.length() > 2 && !timeValue.contains(".")) {
-            timeValue = timeValue.substring(0, timeValue.length()-2) + "." + timeValue.substring(timeValue.length()-2);
+            timeValue = timeValue.substring(0, timeValue.length() - 2) + "." + timeValue.substring(timeValue.length() - 2);
         }
 
         String mystring = "";
@@ -392,7 +393,10 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         final DecimalFormat df = new DecimalFormat("0.0#", new DecimalFormatSymbols(Locale.ENGLISH));
         if (timeValue.length() > 0) mystring += timeValue + " time ";
         if (nonzeroBloodValue) mystring += getValue("bloodtest") + " blood ";
-        if (nonzeroCarbsValue) mystring += getValue("carbs") + " g carbs ";
+        if (nonzeroCarbsValue) {
+            String carbValue = String.valueOf(JoH.roundDouble(JoH.tolerantParseDouble(getValue("carbs")), 2)); // Let's round the entered carb value to 2 decimal points
+            mystring += carbValue + " g carbs ";
+        }
         if (nonzeroInsulin1Value && (insulinProfile1 != null))
         {
             double d = Double.parseDouble(getValue("insulin-1"));
