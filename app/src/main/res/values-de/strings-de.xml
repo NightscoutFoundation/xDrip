@@ -37,6 +37,9 @@
     <string name="pref_header_cloud_storage">Cloud-Speicher</string>
     <string name="auto_configure_title">Auto-Konfiguration</string>
     <string name="prefs_auto_config_summary">Auto-Konfiguration per Barcode</string>
+    <string name="auto_config_cam_title">Kamera</string>
+    <string name="auto_config_cam_summary">Scanne einen QR-Code mit deinem Handy (empfohlen)</string>
+    <string name="auto_config_image_title">Bilddatei</string>
     <string name="scan_share2_barcode">Barcode scannen</string>
     <string name="pref_share2_scan_barcode_summary">Oder Barcode auf dem Share Empfänger scannen</string>
     <!-- MongoDB Settings -->

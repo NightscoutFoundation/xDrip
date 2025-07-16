@@ -1489,7 +1489,7 @@
     <string name="category_falling_rising_bg">Падане/Покачване на КЗ</string>
     <string name="category_alert_prefs">Предпочитания за известия (за тези известия)</string>
     <string name="summary_persistent_high_alert">Когато е над високо ниво за твърде дълго време и не се насочва надолу</string>
-    <string name="summary_persistent_high_threshold_link">Когато е активирано, Висока Стойност ще бъде прага.\n Когато е деактивирано, прагът ще бъде стойността, която е посоченa по-долу.</string>
+    <string name="summary_persistent_high_threshold_link">Когато е активирано, прагът е „Висока стойност“.\nКогато е деактивирано, прагът е стойността, посочена по-долу.</string>
     <string name="title_persistent_high_threshold_link">Праг: Висока стойност</string>
     <string name="summary_forecast_low_threshold_link">Когато е активирано, прагът е „Ниска стойност“.\nКогато е деактивирано, прагът е стойността, посочена по-долу.</string>
     <string name="title_forecast_low_threshold_link">Праг: Ниска стойност</string>

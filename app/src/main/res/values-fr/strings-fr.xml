@@ -1189,6 +1189,7 @@
     <string name="summary_cloud_storage_api_download_enable">Essayer également de télécharger des données depuis Nightscout</string>
     <string name="title_cloud_storage_api_download_enable">Télécharger les données</string>
     <string name="title_cloud_storage_api_download_from_xdrip">Ignorer les éléments de xDrip</string>
+    <string name="title_nightscout_upload_failure_backfill_required">Téléchargement de Nightscout multi-sites incohérent</string>
     <string name="summary_cloud_storage_api_download_from_xdrip">Éviter de télécharger les éléments chargés par xDrip</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Calibrer en utilisant de nouvelles lectures de glycémie si les conditions semblent correctes sans demander confirmation (expérimental)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Calibration automatique</string>
@@ -1201,6 +1202,7 @@
     <string name="title_send_treatments_to_nightscout">Charger les traitements</string>
     <string name="summary_warn_nightscout_failures">Afficher et émettre une notification si le chargement vers Nightscout échoue.</string>
     <string name="title_warn_nightscout_failures">Alerter en cas d\'échecs</string>
+    <string name="title_warn_nightscout_multi_site_upload_failure">Alerte concernant l\'échec lors de l\'envoi multi-sites</string>
     <string name="summary_nightscout_device_append_source_info">Pour Dex, envoie le type de collecteur (par exemple OB1) et le statut de remplissage des valeurs (natives) vers Nightscout.</string>
     <string name="title_nightscout_device_append_source_info">Ajouter les informations sources au nom du périphérique</string>
     <string name="summary_tap_to_send_historical_data">Appuyer pour envoyer les données historiques à Nightscout</string>
@@ -1897,6 +1899,18 @@
     <string name="bg_alert">ALERTE Glycémie %1$s : %2$s (@%3$s)</string>
     <string name="show_graphical_trend_arrow">Afficher la flèche de tendance graphique</string>
     <string name="no_alert_in_silent_mode">Aucune alerte en mode silencieux</string>
+    <string name="calibration_slope_intercept">pente = Intersection %1$s = %2$s</string>
+    <string name="axis_x_raw_value">Valeur brute</string>
+    <string name="axis_y_glucose_mgdl_mmol">Glycémie + %s</string>
+    <string name="set_home_network">Définir le réseau domestique</string>
+    <string name="my_home_network_is">Le nom de mon réseau WiFi domestique est :\n\n%s</string>
+    <string name="set_home_network_to">Définir le réseau domestique à : %s</string>
+    <string name="not_connected_to_wifi">Non connecté au WiFi</string>
+    <string name="at_home_only">À la maison seulement</string>
+    <string name="speak">Parler</string>
+    <string name="graph_note">Note Graphique</string>
+    <string name="custom_audio_file">Fichier audio personnalisé</string>
+    <string name="android_ringtone_alarm">Sonnerie/Alarme Android</string>
     <string name="first_successful_connection_to_transmitter">"Première connexion réussie à l'émetteur %1$s"</string>
     <string name="first_successful_connection_to_transmitter_em">"Première connexion réussie à l'émetteur %1$s avec mac %2$s"</string>
     <string name="sensor_expiring">Expiration du capteur</string>
