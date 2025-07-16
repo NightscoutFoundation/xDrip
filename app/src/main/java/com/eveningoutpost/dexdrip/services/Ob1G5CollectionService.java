@@ -1898,6 +1898,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                 final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_CALIBRATION_REQUEST, JoH.getStartActivityIntent(c), PendingIntent.FLAG_UPDATE_CURRENT);
                 // pending intent not used on wear
                 JoH.showNotification(state.getText(), "Calibration Required", android_wear ? null : pi, G5_CALIBRATION_REQUEST, state == CalibrationState.NeedsFirstCalibration, true, false);
+                UserError.Log.uel(TAG, "Calibration Required");
 
             });
         } else if (!needs_calibration && was_needing_calibration) {
@@ -1917,6 +1918,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                     }
                     final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_RESTARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
                     JoH.showNotification("Auto Start", "Sensor Requesting Restart", pi, G5_SENSOR_RESTARTED, true, true, false);
+                    UserError.Log.uel(TAG, "Sensor Requesting Restart");
                 } else {
                     UserError.Log.uel(TAG, "Marking sensor session as stopped");
                     Sensor.stopSensor();
