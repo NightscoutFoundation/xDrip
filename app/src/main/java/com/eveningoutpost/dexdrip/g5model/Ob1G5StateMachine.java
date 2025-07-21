@@ -381,7 +381,7 @@ public class Ob1G5StateMachine {
             }
             if ((throwable instanceof BleDisconnectedException) || (throwable instanceof TimeoutException)) {
                 if ((parent.getState() == Ob1G5CollectionService.STATE.BOND) || (parent.getState() == Ob1G5CollectionService.STATE.CHECK_AUTH)) {
-
+                    parent.savePersist();
                     if (parent.getState() == Ob1G5CollectionService.STATE.BOND) {
                         UserError.Log.d(TAG, "SLEEPING BEFORE RECONNECT");
                         threadSleep(15000);
@@ -1623,6 +1623,7 @@ public class Ob1G5StateMachine {
             if (glucose.calibrationState().sensorFailed() && Sensor.isActive()) {
                 if (JoH.pratelimit("G5 Sensor Failed", 3600 * 3)) {
                     JoH.showNotification(devName() + " SENSOR FAILED", "Sensor reporting failed", null, Constants.G5_SENSOR_ERROR, true, true, false);
+                    UserError.Log.uel(TAG, "Sensor reporting failed");
                 }
             }
         }
@@ -1726,11 +1727,18 @@ public class Ob1G5StateMachine {
                 if (!usingG6()) {
                     setG6Defaults();
                     JoH.showNotification("Enabled defaults", "Default settings automatically enabled", null, Constants.G6_DEFAULTS_MESSAGE, false, true, false);
+                    UserError.Log.uel(TAG, "Default Dex settings automatically enabled");
                 } else if (!onlyUsingNativeMode() && !Home.get_engineering_mode()) {
                     // TODO revisit this now that there is scaling
                     setG6Defaults();
-                    UserError.Log.uel(TAG, "Dex Native mode enabled.  For your device, non-native mode is either not possible or not recommended.");
+                    UserError.Log.wtf(TAG, "Dex Native mode enabled.  For your device, non-native mode is either not possible or not recommended.");
                     JoH.showNotification("Enabled Native", "Native mode enabled", null, Constants.G6_DEFAULTS_MESSAGE, false, true, false);
+                }
+                if (FirmwareCapability.isTransmitterRawIncapable(getTransmitterID())) { // If we are using a G7 or G6 Firefly (mod or not)
+                    if (Pref.getBooleanDefaultFalse("ob1_g5_restart_sensor") && !Home.get_engineering_mode()) { // If restart is enabled, not in engineering mode
+                        Pref.setBoolean("ob1_g5_restart_sensor", false); // Disable restart
+                        UserError.Log.wtf(TAG, "Restart sensor disabled.  You cannot simply restart sensor with your device.");
+                    }
                 }
             }
         }
@@ -1818,6 +1826,7 @@ public class Ob1G5StateMachine {
                     final boolean loud = !PowerStateReceiver.is_power_connected();
                     JoH.showNotification("Battery Low", "Transmitter battery has dropped to: " + batteryInfoRxMessage.voltagea + " it may fail soon",
                             null, 770, NotificationChannels.LOW_TRANSMITTER_BATTERY_CHANNEL, loud, loud, null, null, null);
+                    UserError.Log.uel(TAG, "Dex battery has dropped to: " + batteryInfoRxMessage.voltagea);
                 }
             }
             PersistentStore.cleanupOld(G5_BATTERY_LEVEL_MARKER);

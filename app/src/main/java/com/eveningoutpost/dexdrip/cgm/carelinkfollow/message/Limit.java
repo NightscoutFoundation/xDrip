@@ -7,5 +7,6 @@ public class Limit {
     public int lowLimit;
     public String kind;
     public int version;
+    public String timestamp;
 
 }

@@ -6,6 +6,7 @@ import android.text.SpannableString;
 import com.eveningoutpost.dexdrip.models.Sensor;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utilitymodels.StatusItem.Highlight;
 import com.eveningoutpost.dexdrip.ui.helpers.Span;
@@ -20,6 +21,7 @@ import java.util.Locale;
 import lombok.Getter;
 import lombok.val;
 
+import static com.eveningoutpost.dexdrip.g5model.FirmwareCapability.isDeviceAlt2;
 import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.getFirmwareXDetails;
 import static com.eveningoutpost.dexdrip.models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.models.JoH.roundDouble;
@@ -79,7 +81,11 @@ public class SensorDays {
         val ths = new SensorDays();
 
         if (hasLibre(type)) {
+            String libreVersion = PersistentStore.getString("LibreVersion");
             ths.period = DAY_IN_MS * 14; // TODO 10 day sensors?
+            if (libreVersion.equals("3")) {
+                ths.period = DAY_IN_MS * 15;
+            }
             ths.strategy = USE_LIBRE_STRATEGY;
             ths.warmupMs = HOUR_IN_MS;
 
@@ -103,9 +109,13 @@ public class SensorDays {
                ths.warmupMs = 2 * HOUR_IN_MS;
             }
 
-            if (getBestCollectorHardwareName().equals("G7")) { // If using a G7
+            if (getBestCollectorHardwareName().equals("G7")) {
                 ths.period = DAY_IN_MS * 10 + HOUR_IN_MS * 12; // The device lasts 10.5 days.
                 ths.warmupMs = 30 * MINUTE_IN_MS; // The warmup time is 30 minutes.
+            }
+
+            if (isDeviceAlt2(getTransmitterID())) {
+                ths.period = DAY_IN_MS * 15 + HOUR_IN_MS * 12;
             }
 
         } else {

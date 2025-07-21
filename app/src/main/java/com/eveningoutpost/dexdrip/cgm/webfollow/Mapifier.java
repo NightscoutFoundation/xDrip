@@ -46,7 +46,8 @@ public class Mapifier {
                 val a = (ArrayList<?>) o;
                 if (singular) {
                     if (a.size() != 1) {
-                        throw new RuntimeException("Invalid singular");
+                        System.out.println("SINGULAR PROBLEM: array size: " + a.size());
+                        throw new RuntimeException("Invalid singular - only use one connection");
                     }
                 } else if (name.equals(last)) {
                     return a;

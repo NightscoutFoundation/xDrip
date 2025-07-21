@@ -10,26 +10,12 @@ import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.messages.Entry;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.utils.NightscoutUrl;
 import com.eveningoutpost.dexdrip.evaluators.MissedReadingsEstimator;
-import com.eveningoutpost.dexdrip.tidepool.InfoInterceptor;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.TypeAdapter;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.internal.bind.TypeAdapters;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
+import com.eveningoutpost.dexdrip.utils.framework.RetrofitService;
 
-import java.io.IOException;
 import java.util.List;
 
-import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
@@ -37,7 +23,6 @@ import retrofit2.http.Query;
 
 import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
 import static com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder.DEXCOM_PERIOD;
-import static com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper.enableTls12OnPreLollipop;
 import static com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollowService.msg;
 
 /**
@@ -52,7 +37,6 @@ public class NightscoutFollow {
 
     private static final boolean D = true;
 
-    private static Retrofit retrofit;
     private static Nightscout service;
 
 
@@ -71,7 +55,7 @@ public class NightscoutFollow {
     private static Nightscout getService() {
         if (service == null) {
             try {
-                service = getRetrofitInstance().create(Nightscout.class);
+                service = RetrofitService.getRetrofitInstance(getUrl(), TAG, D).create(Nightscout.class);
             } catch (NullPointerException e) {
                 UserError.Log.e(TAG, "Null pointer trying to getService()");
             }
@@ -142,72 +126,8 @@ public class NightscoutFollow {
         return Pref.getBooleanDefaultFalse("nsfollow_download_treatments");
     }
 
-    public static final TypeAdapter<Number> UNRELIABLE_INTEGER = new TypeAdapter<Number>() {
-        @Override
-        public Number read(JsonReader in) throws IOException {
-            JsonToken jsonToken = in.peek();
-            switch (jsonToken) {
-                case NUMBER:
-                case STRING:
-                    String s = in.nextString();
-                    try {
-                        return Integer.parseInt(s);
-                    } catch (NumberFormatException ignored) {
-                    }
-                    try {
-                        return (int)Double.parseDouble(s);
-                    } catch (NumberFormatException ignored) {
-                    }
-                    return null;
-                case NULL:
-                    in.nextNull();
-                    return null;
-                case BOOLEAN:
-                    in.nextBoolean();
-                    return null;
-                default:
-                    throw new JsonSyntaxException("Expecting number, got: " + jsonToken);
-            }
-        }
-        @Override
-        public void write(JsonWriter out, Number value) throws IOException {
-            out.value(value);
-        }
-    };
-    public static final TypeAdapterFactory UNRELIABLE_INTEGER_FACTORY = TypeAdapters.newFactory(int.class, Integer.class, UNRELIABLE_INTEGER);
-
-    // TODO make reusable
-    public static Retrofit getRetrofitInstance() throws IllegalArgumentException {
-        if (retrofit == null) {
-            final String url = getUrl();
-            if (emptyString(url)) {
-                UserError.Log.d(TAG, "Empty url - cannot create instance");
-                return null;
-            }
-            final HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
-            if (D) {
-                httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-            }
-            final OkHttpClient client = enableTls12OnPreLollipop(new OkHttpClient.Builder())
-                    .addInterceptor(httpLoggingInterceptor)
-                    .addInterceptor(new InfoInterceptor(TAG))
-                    .addInterceptor(new GzipRequestInterceptor())
-                    .build();
-
-            final Gson gson = new GsonBuilder()
-                    .registerTypeAdapterFactory(UNRELIABLE_INTEGER_FACTORY)
-                    .create();
-            retrofit = new retrofit2.Retrofit.Builder()
-                    .baseUrl(url)
-                    .client(client)
-                    .addConverterFactory(GsonConverterFactory.create(gson))
-                    .build();
-        }
-        return retrofit;
-    }
-
     public static void resetInstance() {
-        retrofit = null;
+        RetrofitService.remove(getUrl(), TAG, D);
         service = null;
         UserError.Log.d(TAG, "Instance reset");
         CollectionServiceStarter.restartCollectionServiceBackground();

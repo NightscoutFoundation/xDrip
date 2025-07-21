@@ -52,7 +52,10 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static com.eveningoutpost.dexdrip.alert.UpdateAvailable.XDRIP_UPDATE_NOTIFICATION_PENDING;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.XDRIP_UPDATE_NOTIFICATION_ID;
 import static com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper.enableTls12OnPreLollipop;
+import static com.eveningoutpost.dexdrip.utilitymodels.PersistentStore.incrementLong;
 
 public class UpdateActivity extends BaseAppCompatActivity {
 
@@ -60,6 +63,7 @@ public class UpdateActivity extends BaseAppCompatActivity {
     private static final String useInternalDownloaderPrefsName = "use_internal_downloader";
     private static final String last_update_check_time = "last_update_check_time";
     private static final String TAG = "jamorham update";
+    private static final String UP_LOAD_BALANCER = "UP_LOAD_BALANCER";
     private static OkHttpClient httpClient = null;
     public static long last_check_time = 0;
     private static SharedPreferences prefs;
@@ -101,7 +105,7 @@ public class UpdateActivity extends BaseAppCompatActivity {
                 Log.d(TAG, "Using subversion: " + subversion);
             }
 
-            final String CHECK_URL = context.getString(R.string.wserviceurl) + "/update-check/" + channel + subversion;
+            final String CHECK_URL = context.getString((incrementLong(UP_LOAD_BALANCER) % 2 == 1) ? R.string.qserviceurl : R.string.wserviceurl) + "/update-check/" + channel + subversion;
             DOWNLOAD_URL = "";
             newversion = 0;
 
@@ -167,6 +171,11 @@ public class UpdateActivity extends BaseAppCompatActivity {
                                         final Intent intent = new Intent(context, UpdateActivity.class);
                                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                         context.startActivity(intent);
+
+                                        if (!fromUi) {
+                                            // activate the flag for a notification if this was a background check
+                                            PersistentStore.setBoolean(XDRIP_UPDATE_NOTIFICATION_PENDING, true);
+                                        }
 
                                     } else {
                                         Log.e(TAG, "Error parsing second line of update reply");
@@ -328,6 +337,9 @@ public class UpdateActivity extends BaseAppCompatActivity {
         } else {
             Log.e(TAG, "Download button pressed but no download URL");
         }
+
+        PersistentStore.setBoolean(XDRIP_UPDATE_NOTIFICATION_PENDING, false); // clear notification trigger
+        JoH.cancelNotification(XDRIP_UPDATE_NOTIFICATION_ID);
     }
 
     private void viewIntentDownload(final String DOWNLOAD_URL) {

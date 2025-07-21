@@ -59,3 +59,12 @@
 -keep class com.newrelic.** { *; }
 -dontwarn com.newrelic.**
 -keepattributes Exceptions, Signature, InnerClasses, LineNumberTable, SourceFile, EnclosingMethod
+
+-keep class com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.*
+-keep class com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.util.*
+-keep class com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.** { *; }
+-keep class com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.util.** { *; }
+-keep class * extends com.google.gson.TypeAdapter
+-keep class * implements com.google.gson.TypeAdapterFactory
+-keep class * implements com.google.gson.JsonSerializer
+-keep class * implements com.google.gson.JsonDeserializer

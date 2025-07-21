@@ -79,6 +79,27 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/layout_dbsize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/database_size"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+                <TextView
+                    android:id="@+id/db_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="5dp"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/layout_device"
                 app:showIfTrue="@{ms.bluetooth()}"
                 android:layout_width="match_parent"
@@ -129,7 +150,7 @@
 
             <LinearLayout
                 android:id="@+id/layout_sensor"
-                app:showIfTrue="@{ms.bluetooth()}"
+                app:showIfTrue="@{ms.sessionStartTime()}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -210,7 +231,7 @@
                         android:id="@+id/restart_collection_service"
                         style="?android:attr/buttonStyleSmall"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:text="@string/restart_collector" />
 
                     <Button
@@ -218,7 +239,7 @@
                         app:showIfTrue="@{ms.bluetooth()}"
                         style="?android:attr/buttonStyleSmall"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:text="@string/forget_device" />
                 </LinearLayout>
 
