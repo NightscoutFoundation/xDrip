@@ -20,6 +20,7 @@ import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -220,8 +221,8 @@ public class CalibrationGraph extends ActivityWithMenu {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-        //Just generate the menu in engineering mode
-        if (!Pref.getBooleanDefaultFalse("engineering_mode")) {
+        if (DexCollectionType.getDexCollectionType() != DexCollectionType.Mock) {
+            // Generate the menu only for fake data source
             return false;
         }
 
