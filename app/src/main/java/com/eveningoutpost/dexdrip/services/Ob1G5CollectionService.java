@@ -1998,6 +1998,10 @@ public class Ob1G5CollectionService extends G5BaseService {
         updateG5State(needs_calibration, was_needing_calibration, NEEDING_CALIBRATION);
         updateG5State(is_started, was_started, IS_STARTED);
         updateG5State(is_failed, was_failed, IS_FAILED);
+
+        if (is_started && shortTxId() && JoH.pratelimit("update_alternate_dex_session_start_time", 60 * 60)) { // Once an hour if there is a local session
+            Treatments.sensorUpdateStartTimeIfNeeded();
+        }
     }
 
 
