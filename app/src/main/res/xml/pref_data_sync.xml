@@ -13,8 +13,8 @@
             android:title="@string/auto_configure_title">
             <PreferenceScreen
                 android:key="auto_configure"
-                android:summary="@string/auto_config_cam_summary"
-                android:title="@string/auto_config_cam_title" />
+                android:summary="@string/summary_wa_auto_config_cam"
+                android:title="@string/title_wa_auto_config_cam" />
             <PreferenceScreen
                 android:key="qr_code_from_file"
                 android:summary="@string/auto_config_image_summary"
