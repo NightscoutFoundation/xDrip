@@ -534,7 +534,7 @@ public class Ob1G5StateMachine {
     public synchronized static void doKeepAlive(Ob1G5CollectionService parent, RxBleConnection connection, Runnable runnable) {
         if (connection == null) return;
         connection.writeCharacteristic(Authentication, nn(new KeepAliveTxMessage(60).byteSequence))
-                .timeout(2, TimeUnit.SECONDS)
+                .timeout(3, TimeUnit.SECONDS)
                 .subscribe(
                         characteristicValue -> {
                             UserError.Log.d(TAG, "Sent keep-alive " + ((runnable != null) ? "Running runnable chain" : ""));
@@ -709,7 +709,7 @@ public class Ob1G5StateMachine {
 
                 })
                 .flatMap(notificationObservable -> notificationObservable)
-                .timeout(6, TimeUnit.SECONDS)
+                .timeout(10, TimeUnit.SECONDS)
                 .subscribe(bytes -> {
                     // incoming data notifications
                     UserError.Log.d(TAG, "Received indication bytes: " + bytesToHex(bytes));
@@ -875,7 +875,7 @@ public class Ob1G5StateMachine {
                             val eglucose2 = (EGlucoseRxMessage2) data_packet.msg;
                             UserError.Log.d(TAG, "EG2 Debug: " + eglucose2);
                             if (eglucose2.isValid()) {
-                                parent.processCalibrationState(eglucose2.calibrationState());
+                                parent.processCalibrationState(eglucose2.adjustedCalibrationState());
                                 DexTimeKeeper.updateAge(getTransmitterID(), (int) eglucose2.timestamp);
                                 DexSessionKeeper.setStart(eglucose2.getRealSessionStartTime());
                                 if (eglucose2.usable()) {
@@ -1498,7 +1498,7 @@ public class Ob1G5StateMachine {
                     if (unit.retry < 5 && JoH.msSince(unit.timestamp) < HOUR_IN_MS * 8) {
                         unit.preWrite();
                         connection.writeCharacteristic(Control, nn(unit.msg.byteSequence))
-                                .timeout(2, TimeUnit.SECONDS)
+                                .timeout(3, TimeUnit.SECONDS)
                                 .subscribe(value -> {
                                     UserError.Log.d(TAG, "Wrote Queue Message: " + unit.text);
                                     final long guardTime = unit.msg.guardTime();
