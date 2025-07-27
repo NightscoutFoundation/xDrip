@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip;
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 import static com.eveningoutpost.dexdrip.models.BgReading.AGE_ADJUSTMENT_TIME;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.getTransmitterID;
+import static com.eveningoutpost.dexdrip.ui.dialog.QuickSettingsDialogs.FINISH_ACTIVITY_ON_DIALOG_DISMISS;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 import android.app.Activity;
@@ -13,7 +14,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
-import android.view.View;
+
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -28,7 +29,6 @@ import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
-import com.eveningoutpost.dexdrip.utilitymodels.Experience;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.profileeditor.DatePickerFragment;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileAdapter;
@@ -36,6 +36,7 @@ import com.eveningoutpost.dexdrip.profileeditor.TimePickerFragment;
 import com.eveningoutpost.dexdrip.ui.dialog.G6CalibrationCodeDialog;
 import com.eveningoutpost.dexdrip.ui.dialog.G6EndOfLifeDialog;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
+import com.eveningoutpost.dexdrip.utils.DexCollectionHelper;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.LocationHelper;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
@@ -58,17 +59,23 @@ public class StartNewSensor extends ActivityWithMenu {
         return DexTimeKeeper.getTransmitterAgeInDays(getTransmitterID());
     }
 
+    private void activitySetupView() {
+        JoH.fixActionBar(this);
+        setContentView(R.layout.activity_start_new_sensor);
+        button = findViewById(R.id.startNewSensor);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (DexCollectionType.getBestCollectorHardwareName().equals("G7")) {
-            JoH.static_toast_long(getString(R.string.g7_should_start_automatically));
-            finish();
+        if (DexCollectionType.isG7()) {
+            //JoH.static_toast_long(getString(R.string.g7_should_start_automatically));
+            activitySetupView();
+            getIntent().putExtra(FINISH_ACTIVITY_ON_DIALOG_DISMISS, true);
+            DexCollectionHelper.assistance(this, DexCollectionType.DexcomG5);
         } else {
             if (!Sensor.isActive()) {
-                JoH.fixActionBar(this);
-                setContentView(R.layout.activity_start_new_sensor);
-                button = (Button) findViewById(R.id.startNewSensor);
+               activitySetupView();
                 //dp = (DatePicker)findViewById(R.id.datePicker);
                 //tp = (TimePicker)findViewById(R.id.timePicker);
                 addListenerOnButton();
@@ -88,18 +95,16 @@ public class StartNewSensor extends ActivityWithMenu {
     public void addListenerOnButton() {
         button = (Button) findViewById(R.id.startNewSensor);
 
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+        button.setOnClickListener(v -> {
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && DexCollectionType.hasBluetooth()) {
-                    if (!LocationHelper.locationPermission(StartNewSensor.this)) {
-                        LocationHelper.requestLocationForBluetooth(StartNewSensor.this);
-                    } else {
-                        sensorButtonClick();
-                    }
+            if (DexCollectionType.hasBluetooth()) {
+                if (!LocationHelper.locationPermission(StartNewSensor.this)) {
+                    LocationHelper.requestLocationForBluetooth(StartNewSensor.this);
                 } else {
                     sensorButtonClick();
                 }
+            } else {
+                sensorButtonClick();
             }
         });
     }

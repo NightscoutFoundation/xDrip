@@ -234,6 +234,7 @@
     <string name="pref_was_less_than_min">%1$s è stato impostato su un valore minore del minimo consentito. È stato modificato al minimo.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Estrapolare i dati per cercare di prevedere raggiungimento VALORE BASSO</string>
     <string name="alarm_at_forecasted_low_mins">Allarme previsione VALORE BASSO (minuti)</string>
+    <string name="title_forecast_low_threshold">Soglia</string>
     <string name="other_xdrip_plus_alerts">Altro xDrip+ avvisi</string>
     <string name="xdrip_plus_display_settings">xDrip+ impostazioni di visualizzazione</string>
     <string name="display_customisations">Personalizzazioni di visualizzazione</string>
@@ -1490,6 +1491,8 @@
     <string name="summary_persistent_high_alert">Quando la glicemia è sopra il livello alto per troppo tempo e non scende</string>
     <string name="summary_persistent_high_threshold_link">Se abilitato, la soglia è il valore di glicemia alta.\nQuando disabilitato, la soglia è il valore specificato sotto.</string>
     <string name="title_persistent_high_threshold_link">Soglia: Valore Alto</string>
+    <string name="summary_forecast_low_threshold_link">Se abilitato, la soglia è il valore di glicemia bassa.\nQuando disabilitato, la soglia è il valore specificato sotto.</string>
+    <string name="title_forecast_low_threshold_link">Soglia: Valore Basso</string>
     <string name="note_search_button">CERCA</string>
     <string name="all_note_button">TUTTO</string>
     <string name="title_full_screen_mode">Modalità schermo intero</string>

@@ -16,6 +16,7 @@ import com.eveningoutpost.dexdrip.cgm.carelinkfollow.CareLinkFollowService;
 import com.eveningoutpost.dexdrip.plugin.Dialog;
 import com.eveningoutpost.dexdrip.xdrip;
 
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.clearDataWhenTransmitterIdEntered;
 import static com.eveningoutpost.dexdrip.ui.dialog.QuickSettingsDialogs.booleanSettingDialog;
 import static com.eveningoutpost.dexdrip.ui.dialog.QuickSettingsDialogs.textSettingDialog;
 
@@ -44,13 +45,18 @@ public class DexCollectionHelper {
                 textSettingDialog(activity,
                         pref, activity.getString(R.string.dexcom_transmitter_id),
                         activity.getString(R.string.enter_your_transmitter_id_exactly),
-                        InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD,
+                        DexCollectionType.isG7()
+                        ? InputType.TYPE_CLASS_NUMBER // g7 numbers only
+                        : InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD,
                         () -> {
                             // InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS does not seem functional here
                             Pref.setString(pref, Pref.getString(pref, "").toUpperCase());
                             if (!Dialog.askIfNeeded(activity, Pref.getString(pref, ""))) {
                                 Home.staticRefreshBGCharts();
                             }
+
+                            clearDataWhenTransmitterIdEntered(Pref.getString(pref, ""));
+
                             CollectionServiceStarter.restartCollectionServiceBackground();
                         });
                 break;

@@ -228,6 +228,7 @@
     <string name="forecasted_low_alert">התראת סוכר נמוך חזויה</string>
     <string name="extrapolate_data_to_try_to_predict_lows">בצע אקסטרפולציה לחזות נמוכים</string>
     <string name="alarm_at_forecasted_low_mins">התריע על ירידה צפויה (דקות מראש)</string>
+    <string name="title_forecast_low_threshold">ערך סף</string>
     <string name="other_xdrip_plus_alerts">התראות xDrip אחרות</string>
     <string name="xdrip_plus_display_settings">xDrip+ הגדרות תצוגה</string>
     <string name="display_customisations">הצג התאמות אישיות</string>
@@ -1456,6 +1457,8 @@
     <string name="summary_persistent_high_alert">כאשר מעל לרמה גבוהה למשך זמן ממושך ושאינו מתחיל לרדת</string>
     <string name="summary_persistent_high_threshold_link">כאשר מופעל, הערך הגבוה ישמש כסף.\n כאשר כבוי, הסף יהיה הערך הרשום מטה.</string>
     <string name="title_persistent_high_threshold_link">ערך סף: ערך גבוה</string>
+    <string name="summary_forecast_low_threshold_link">כאשר מופעל, הערך הנמוך ישמש כסף.\n כאשר כבוי, הסף יהיה הערך הרשום מטה.</string>
+    <string name="title_forecast_low_threshold_link">ערך סף: ערך תחתון</string>
     <string name="note_search_button">חיפוש</string>
     <string name="all_note_button">הכל</string>
     <string name="title_full_screen_mode">מצב מסך מלא</string>

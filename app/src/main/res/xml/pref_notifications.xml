@@ -400,46 +400,6 @@
                         android:switchTextOn="@string/short_on_text_for_switches"
                         android:title="@string/title_sens_expiry_notify" />
                 </PreferenceScreen>
-                <PreferenceScreen
-                    android:key="@string/other_xdrip_plus_alerts"
-                    android:title="@string/other_xdrip_plus_alerts">
-                    <SwitchPreference
-                        android:defaultValue="true"
-                        android:key="bridge_battery_alerts"
-                        android:summary="@string/notify_on_low_battery_level"
-                        android:switchTextOff="@string/short_off_text_for_switches"
-                        android:switchTextOn="@string/short_on_text_for_switches"
-                        android:title="@string/collector_battery_alerts" />
-                    <EditTextPreference
-                        android:defaultValue="30"
-                        android:dependency="bridge_battery_alerts"
-                        android:digits="0123456789"
-                        android:inputType="number"
-                        android:key="bridge_battery_alert_level"
-                        android:summary=""
-                        android:title="@string/low_battery_percentage" />
-                    <SwitchPreference
-                        android:defaultValue="true"
-                        android:dependency="engineering_mode"
-                        android:key="parakeet_status_alerts"
-                        android:summary="@string/notify_when_parakeet_device_stops_checking_in"
-                        android:switchTextOff="@string/short_off_text_for_switches"
-                        android:switchTextOn="@string/short_on_text_for_switches"
-                        android:title="@string/parakeet_related_alerts" />
-                    <CheckBoxPreference
-                        android:defaultValue="false"
-                        android:dependency="parakeet_status_alerts"
-                        android:key="parakeet_charge_silent"
-                        android:summary="@string/raise_parakeet_notification_silently_when_charging"
-                        android:title="@string/silent_alert_when_charging" />
-                    <SwitchPreference
-                        android:defaultValue="false"
-                        android:key="follower_chime"
-                        android:summary="@string/notify_data_arrives_master"
-                        android:switchTextOff="@string/short_off_text_for_switches"
-                        android:switchTextOn="@string/short_on_text_for_switches"
-                        android:title="@string/follower_chime_new" />
-                </PreferenceScreen>
             </PreferenceScreen>
         </PreferenceCategory>
     </PreferenceScreen>
