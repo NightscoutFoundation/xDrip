@@ -179,7 +179,7 @@
     <string name="libre_last_x_minutes_graph">リブレの最後の %d 分グラフ</string>
     <string name="share_config_via_qr_code">QRコードで設定を共有する</string>
     <string name="check_for_updated_version">最新バージョンを確認する</string>
-    <string name="current_version_is_up_to_date">選択したチャンネルのアップデートがありません</string>
+    <string name="current_version_is_up_to_date">選択したチャンネルの更新はありません</string>
     <string name="send_feedback_to_developer">開発者にフィードバックを送信</string>
     <string name="home_screen">ホーム画面</string>
     <string name="event_logs">イベントログ</string>
@@ -190,7 +190,7 @@
     <string name="high_value">高値</string>
     <string name="low_value">低血糖</string>
     <string name="stats_range_settings">レンジ設定 </string>
-    <string name="end_user_license_agreement">エンドユーザーの使用許諾契約</string>
+    <string name="end_user_license_agreement">最終利用者の使用許諾契約</string>
     <string name="save">保存</string>
     <string name="view_important_warning">重要な警告を表示</string>
     <string name="view_google_licenses">Googleライセンスを表示</string>
@@ -298,7 +298,7 @@
     <string name="when">いつ</string>
     <string name="exported_to">"エクスポート先： "</string>
     <string name="done">完了</string>
-    <string name="update_channel_colon_space">"チャンネルを更新: "</string>
+    <string name="update_channel_colon_space">"更新対象の版: "</string>
     <string name="a_new_version_is_available">最新版あり</string>
     <string name="version_details">バージョンの詳細</string>
     <string name="download_now">今すぐダウンロード</string>
@@ -1003,4 +1003,5 @@
     <string name="bg_alert">BG %1$s アラート: %2$s (@%3$s)</string>
     <string name="show_graphical_trend_arrow">グラフィカルなトレンド矢印を表示</string>
     <string name="no_alert_in_silent_mode">サイレントモードでのアラートはありません</string>
+    <string name="a_new_version_on_channel_1_s_is_available">%1$s 版の最新版が利用可能</string>
 </resources>
