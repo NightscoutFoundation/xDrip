@@ -270,19 +270,18 @@ public class BgGraphBuilder {
     }
 
 
-    static public boolean isXLargeTablet(Context context) {
-        return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
-    }
-
-    static public boolean isLargeTablet(Context context) {
-        return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE;
-    }
-
-    static public boolean screenIsWide(Context context) {
+    static public boolean screenIsWideInDp(Context context) {
         UserError.Log.e(TAG, "screenWidth: " + context.getResources().getConfiguration().screenWidthDp);
         return (context.getResources().getConfiguration().screenWidthDp) > 630;
     }
 
+    static public boolean isXLargeTablet(Context context) {
+        return !screenIsWideInDp(context) && (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
+    }
+
+    static public boolean isLargeTablet(Context context) {
+        return !screenIsWideInDp(context) && (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+    }
 
     public static double mmolConvert(double mgdl) {
         return mgdl * Constants.MGDL_TO_MMOLL;
