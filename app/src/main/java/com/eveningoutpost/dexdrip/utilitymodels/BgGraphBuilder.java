@@ -278,6 +278,12 @@ public class BgGraphBuilder {
         return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE;
     }
 
+    static public boolean screenIsWide(Context context) {
+        UserError.Log.e(TAG, "screenWidth: " + context.getResources().getConfiguration().screenWidthDp);
+        return (context.getResources().getConfiguration().screenWidthDp) > 630;
+    }
+
+
     public static double mmolConvert(double mgdl) {
         return mgdl * Constants.MGDL_TO_MMOLL;
     }

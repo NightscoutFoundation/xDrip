@@ -1865,13 +1865,18 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         expiryStatus.setRunning(true);
 
         if (BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
+            UserError.Log.e(TAG, "xLarge Tablet ");
             this.currentBgValueText.setTextSize(100);
             this.notificationText.setTextSize(40);
             this.extraStatusLineText.setTextSize(40);
         } else if (BgGraphBuilder.isLargeTablet(getApplicationContext())) {
-            this.currentBgValueText.setTextSize(70);
-            this.notificationText.setTextSize(34); // 35 too big 33 works
-            this.extraStatusLineText.setTextSize(35);
+            UserError.Log.e(TAG, "Large tablet ");
+            if (!BgGraphBuilder.screenIsWide(getApplicationContext())) {
+                UserError.Log.e(TAG, "Not wide ");
+                this.currentBgValueText.setTextSize(70);
+                this.notificationText.setTextSize(34); // 35 too big 33 works
+                this.extraStatusLineText.setTextSize(35);
+            }
         }
 
         _broadcastReceiver = new BroadcastReceiver() {
