@@ -254,6 +254,9 @@
     <string name="dexcom_transmitter_id">ID del transmisor Dexcom</string>
     <string name="run_collector_in_foreground">Ejecutar Colector en primer plano</string>
     <string name="shows_a_persistent_notification">Muestra un gráfico de notificación permanente, visible en la pantalla de bloqueo y evita que Android elimine el servicio.</string>
+    <string name="title_collector_in_foreground">Colector en primer plano</string>
+    <string name="summary_compact_ongoing_notification">Activar para ocultar el gráfico en la notificación y mostrar solo el valor actual de glucosa.</string>
+    <string name="title_compact_ongoing_notification">Notificación persistente comprimida</string>
     <string name="list_of_receivers">Lista de Receptores</string>
     <string name="extra_tags_for_logging">Etiquetas extra para el registro</string>
     <string name="extra_tags_dialog_message">Las etiquetas introducidas aquí serán registradas en xDrip. El formato es \'etiqueta:nivel\'. El nivel puede ser v,d,i. Por ejemplo bgreading:i, DexCollectionService:v. Éstas etiquetas serán registradas con prioridad baja en las listas de errores y de eventos.</string>
