@@ -110,6 +110,7 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackages.add("com.kakaohealthcare.pasta"); // A Health app for sensors that we already collect from
         coOptedPackages.add("com.sinocare.cgm.ce");
         coOptedPackages.add("com.sinocare.ican.health.ce");
+        coOptedPackages.add("com.sinocare.ican.health.ru");
 
         coOptedPackagesAll.add("com.dexcom.dexcomone");
         coOptedPackagesAll.add("com.dexcom.d1plus");
@@ -126,6 +127,7 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackagesAll.add("com.kakaohealthcare.pasta"); // Experiment
         coOptedPackagesAll.add("com.sinocare.cgm.ce");
         coOptedPackagesAll.add("com.sinocare.ican.health.ce");
+        coOptedPackagesAll.add("com.sinocare.ican.health.ru");
 
         companionAppIoBPackages.add("com.insulet.myblue.pdm");
 
