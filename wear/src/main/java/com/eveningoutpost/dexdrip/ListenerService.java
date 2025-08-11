@@ -1137,7 +1137,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                         } catch (NumberFormatException e) {
                             snooze = 30;
                         }
-                        Log.d(TAG, "Received wearable: snooze payload: " + snooze);
+                        Log.e(TAG, "Received wearable: snooze payload: " + snooze);
                         AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), snooze, true);
                         sendLocalToast(getResources().getString(R.string.alert_snoozed_by_phone), Toast.LENGTH_SHORT);
                     }
