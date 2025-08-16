@@ -339,6 +339,10 @@
     <string name="pebble_and_android_wear_options">Options for different Watches</string>
     <string name="customize_colours">Customize Colors</string>
     <string name="xdrip_plus_color_settings">xDrip+ Color Settings</string>
+    <string name="summary_font_settings">Customize Fonts</string>
+    <string name="title_font_settings">Font Settings</string>
+    <string name="summary_enlarge_fonts_on_large_screens">Automatically enlarge the font size on large screens, such as tablets</string>
+    <string name="title_enlarge_fonts_on_large_screens">Enlarge fonts on larger displays</string>
     <string name="glucose_values_and_lines">Glucose Values and Lines</string>
     <string name="high_glucose_values">High Glucose Values</string>
     <string name="in_range_glucose_values">In-range Glucose Values</string>
