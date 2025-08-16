@@ -775,7 +775,7 @@
     <string name="calibrations_request_time_time_difference">Cuántas horas entre las solicitudes de calibración</string>
     <string name="hours_between_calibrations">Horas entre calibraciones</string>
     <string name="calibrations_sound">Establece el sonido utilizado para las solicitudes de calibración.</string>
-    <string name="override_silent_mode">Anular modo silencioso</string>
+    <string name="override_silent_mode">Cancelar modo silencio</string>
     <string name="even_when_charging">Incluso durante la carga</string>
     <string name="no_calibration_requests_charging">Desmarcar para no solicitar calibraciones cuando el teléfono se está cargando</string>
     <string name="keep_alert_no_calibration">Mantener alertas si no se realiza ninguna calibración</string>
