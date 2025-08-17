@@ -207,11 +207,30 @@ public class SensorDays {
         if (expiryMs > 0) {
             if (expiryMs > CAL_THRESHOLD1) {
                 val fmt = xdrip.gs(R.string.expires_days);
-                return new SpannableString(MessageFormat.format(fmt, roundDouble((double) expiryMs / DAY_IN_MS, 1)));
+                return new SpannableString(
+                        MessageFormat.format(fmt, roundDouble((double) expiryMs / DAY_IN_MS, 1))
+                );
             } else {
                 // expiring soon
-                val niceTime = new SimpleDateFormat(expiryMs < CAL_THRESHOLD2 ? "h:mm a" : "EEE, h:mm a", Locale.getDefault()).format(getSensorEndTimestamp());
-                return Span.colorSpan(MessageFormat.format(xdrip.gs(R.string.expires_at), niceTime), expiryMs < CAL_THRESHOLD2 ? Highlight.BAD.color() : Highlight.NOTICE.color());
+                val context = xdrip.getAppContext();
+                boolean is24Hour = android.text.format.DateFormat.is24HourFormat(context);
+
+                // choose skeleton: time only or weekday+time
+                String skeleton = (expiryMs < CAL_THRESHOLD2)
+                        ? (is24Hour ? "Hm" : "hma")        // time only
+                        : (is24Hour ? "EEEHm" : "EEEhma"); // weekday + time
+
+                // build best pattern for this locale + system 12h/24h setting
+                String pattern = android.text.format.DateFormat.getBestDateTimePattern(
+                        Locale.getDefault(), skeleton);
+
+                val dateFormat = new SimpleDateFormat(pattern, Locale.getDefault());
+                String niceTime = dateFormat.format(getSensorEndTimestamp());
+
+                return Span.colorSpan(
+                        MessageFormat.format(xdrip.gs(R.string.expires_at), niceTime),
+                        expiryMs < CAL_THRESHOLD2 ? Highlight.BAD.color() : Highlight.NOTICE.color()
+                );
             }
         }
         return new SpannableString("");
