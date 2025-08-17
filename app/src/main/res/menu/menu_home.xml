@@ -29,6 +29,13 @@
         android:orderInCategory="1">
 
         <menu>
+            <item android:id="@+id/configure_export_export"
+                android:title="@string/configure_export_export"
+                android:checkable="false"
+                android:onClick="configureImportExport"
+                android:visible="true"
+                android:orderInCategory="1"
+                android:showAsAction="never"/>
             <item
                 android:id="@+id/cloud_backup"
                 android:title="@string/cloud_backup"

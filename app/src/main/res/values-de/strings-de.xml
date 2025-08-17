@@ -7,6 +7,7 @@
     <string name="menu_stop">Stop</string>
     <string name="menu_refresh">Aktualisieren</string>
     <string name="menu_export_database">Datenbank exportieren</string>
+    <string name="configure_export_export">Konfiguriere das Import/Export Feature</string>
     <string name="menu_export_csv_sidiary">Export als CSV (SiDiary-Format)</string>
     <string name="menu_import_db">Datenbank importieren</string>
     <string name="error_bluetooth_not_supported">Fehler: Bluetooth wird von diesem Gerät nicht unterstützt</string>
@@ -356,6 +357,12 @@
     <string name="version_details">Version Details</string>
     <string name="download_now">Jetzt herunterladen</string>
     <string name="automatically_check_for_updates">Automatisch nach Updates suchen</string>
+    <string name="here_you_can_setup_the_importexport_feature">Here, you can configure your import/export feature to define\n- upload/restore to locally attached storage\n- WebDAV space\n- or even unconfigure everything to return to default behaviour.</string>
+    <string name="localstoragepath">lokaler Pfad</string>
+    <string name="webdavstorageserver">WebDAV Server</string>
+    <string name="webdavstoragepath">WebDAV Pfad</string>
+    <string name="webdavstorageuser">WebDAV Benutzername</string>
+    <string name="webdavstoragepassword">WebDAV Passwort</string>
     <string name="here_you_can_save_the_settings_to_the_external_storage_sdcard">Einstellungen auf internem Speicher sichern (Download/xDrip-export/com.eveningoutpost.dexdrip_preferences.xml).\n\nNach der Speicherung kann jede App auf (sensitive) Informationen zugreifen.\n\nDie Einstellungen sollten deshalb nach dem Import zügig gelöscht werden.</string>
     <string name="save_all_settings_to_sdcard">Alle Einstellungen auf SD-Karte speichern</string>
     <string name="load_all_settings_from_sdcard">Einstellungen von SD-Karte laden</string>
