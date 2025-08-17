@@ -103,6 +103,7 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackages.add("com.senseonics.gen12androidapp");
         coOptedPackages.add("com.senseonics.androidapp");
         coOptedPackages.add("com.microtech.aidexx.mgdl");
+        coOptedPackages.add("com.microtech.aidexx.equil.mmoll");
         coOptedPackages.add("com.ottai.seas");
         coOptedPackages.add("com.microtech.aidexx"); //for microtech china version
         coOptedPackages.add("com.ottai.tag"); // //for ottai china version
@@ -110,6 +111,7 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackages.add("com.kakaohealthcare.pasta"); // A Health app for sensors that we already collect from
         coOptedPackages.add("com.sinocare.cgm.ce");
         coOptedPackages.add("com.sinocare.ican.health.ce");
+        coOptedPackages.add("com.sinocare.ican.health.ru");
 
         coOptedPackagesAll.add("com.dexcom.dexcomone");
         coOptedPackagesAll.add("com.dexcom.d1plus");
@@ -119,6 +121,7 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackagesAll.add("com.senseonics.gen12androidapp");
         coOptedPackagesAll.add("com.senseonics.androidapp");
         coOptedPackagesAll.add("com.microtech.aidexx.mgdl");
+        coOptedPackagesAll.add("com.microtech.aidexx.equil.mmoll");
         coOptedPackagesAll.add("com.ottai.seas");
         coOptedPackagesAll.add("com.microtech.aidexx"); //for microtech china version
         coOptedPackagesAll.add("com.ottai.tag"); // //for ottai china version
@@ -126,6 +129,7 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackagesAll.add("com.kakaohealthcare.pasta"); // Experiment
         coOptedPackagesAll.add("com.sinocare.cgm.ce");
         coOptedPackagesAll.add("com.sinocare.ican.health.ce");
+        coOptedPackagesAll.add("com.sinocare.ican.health.ru");
 
         companionAppIoBPackages.add("com.insulet.myblue.pdm");
 

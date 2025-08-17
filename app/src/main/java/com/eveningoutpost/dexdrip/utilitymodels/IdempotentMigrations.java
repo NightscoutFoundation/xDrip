@@ -65,6 +65,7 @@ public class IdempotentMigrations {
         CompatibleApps.notifyAboutCompatibleApps();
         legacySettingsMoveLanguageFromNoToNb();
         prefSettingRangeVerification();
+        inheritPrefSettingsAfterUpdate();
 
     }
 
@@ -179,6 +180,17 @@ public class IdempotentMigrations {
     private static void prefSettingRangeVerification() {
         Preferences.applyPrefSettingRange("persistent_high_threshold", "170", MIN_GLUCOSE_INPUT, MAX_GLUCOSE_INPUT);
         Preferences.applyPrefSettingRange("forecast_low_threshold", "70", MIN_GLUCOSE_INPUT, MAX_GLUCOSE_INPUT);
+    }
+
+    // Set new settings such that a version update does not cause a surprise
+    private static void inheritPrefSettingsAfterUpdate() {
+        if (!Pref.getBooleanDefaultFalse("has_been_explicitly_set_persistent_high_alert_override_silent")) { // If override silent mode has never been explicitly set for the Persistent High alert
+            Pref.setBoolean("persistent_high_alert_override_silent", Pref.getBooleanDefaultFalse("other_alerts_override_silent")); // Inherit Persistent High override silent mode from other alerts
+            Pref.setBoolean("bg_predict_alert_override_silent", Pref.getBooleanDefaultFalse("other_alerts_override_silent")); // Inherit Forecasted Low override silent mode from other alerts
+            Pref.setBoolean("bg_missed_alerts_override_silent", Pref.getBooleanDefaultFalse("other_alerts_override_silent")); // Inherit Missed Reading override silent mode from other alerts
+            Pref.setBoolean("has_been_explicitly_set_persistent_high_alert_override_silent", true); // Set this setting so that we never inherit again.
+        }
+        //
     }
 
 }
