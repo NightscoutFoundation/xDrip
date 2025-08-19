@@ -55,9 +55,8 @@ public class UserError extends PlusModel {
     //todo: rather than include multiples of the same error, should we have a "Count" and just increase that on duplicates?
     //or rather, perhaps we should group up the errors
 
-    public String toString()
-    {
-        return severity+" ^ "+JoH.dateTimeText((long)timestamp)+" ^ "+shortError+" ^ "+message;
+    public String toString() {
+        return severity + " ^ " + JoH.dateTimeText((long) timestamp) + " ^ " + shortError + " ^ " + message;
     }
 
     public UserError() { super (); }
@@ -117,19 +116,19 @@ public class UserError extends PlusModel {
         List<UserError> userErrors = new Select()
                 .from(UserError.class)
                 .where("severity < ?", 3)
-                .where("timestamp < ?", (new Date().getTime() - 1000 * 60 * 60 * 24))
+                .where("timestamp < ?", (new Date().getTime() - 1000 * 60 * 15)) // last 15 minutes
                 .orderBy("timestamp desc")
                 .execute();
         List<UserError> highErrors = new Select()
                 .from(UserError.class)
                 .where("severity = ?", 3)
-                .where("timestamp < ?", (new Date().getTime() - 1000*60*60*24*3))
+                .where("timestamp < ?", (new Date().getTime() - 1000 * 60 * 15)) // last 15 minutes
                 .orderBy("timestamp desc")
                 .execute();
         List<UserError> events = new Select()
                 .from(UserError.class)
                 .where("severity > ?", 3)
-                .where("timestamp < ?", (new Date().getTime() - 1000*60*60*24*7))
+                .where("timestamp < ?", (new Date().getTime() - 1000 * 60 * 15)) // last 15 minutes
                 .orderBy("timestamp desc")
                 .execute();
         userErrors.addAll(highErrors);
@@ -142,11 +141,12 @@ public class UserError extends PlusModel {
         for (int level : levels) {
             levelsString += level + ",";
         }
-        Log.d("UserError", "severity in ("+levelsString.substring(0,levelsString.length() - 1)+")");
+        Log.d("UserError", "severity in (" + levelsString.substring(0, levelsString.length() - 1) + ")");
         return new Select()
                 .from(UserError.class)
-                .where("severity in ("+levelsString.substring(0,levelsString.length() - 1)+")")
+                .where("severity in (" + levelsString.substring(0, levelsString.length() - 1) + ")")
                 .orderBy("timestamp desc")
+                .limit(10000)//too many data can kill akp
                 .execute();
     }
 
@@ -155,6 +155,29 @@ public class UserError extends PlusModel {
                 .from(UserError.class)
                 .orderBy("_ID desc")
                 .executeSingle();
+    }
+
+    public static List<UserError> newerThanID(long id, int limit) {
+        return new Select()
+                .from(UserError.class)
+                .where("_ID > ?", id)
+                .orderBy("timestamp desc")
+                .limit(limit)
+                .execute();
+    }
+
+    public static List<UserError> latestDesc(int number, long startTime) {
+        return latestDesc(number, startTime, Long.MAX_VALUE);
+    }
+
+    public static List<UserError> latestDesc(int number, long startTime, long endTime) {
+        return new Select()
+                .from(UserError.class)
+                .where("timestamp >= " + Math.max(startTime, 0))
+                .where("timestamp <= " + endTime)
+                .orderBy("timestamp desc")
+                .limit(number)
+                .execute();
     }
 
     public static List<UserError> latestAsc(int number, long startTime) {
@@ -190,7 +213,7 @@ public class UserError extends PlusModel {
                     .where("message = ?", error.message)
                     .executeSingle();
         } catch (Exception e) {
-            Log.e(TAG,"getForTimestamp() Got exception on Select : "+e.toString());
+            Log.e(TAG, "getForTimestamp() Got exception on Select : " + e.toString());
             return null;
         }
     }
@@ -199,12 +222,12 @@ public class UserError extends PlusModel {
         @Override
         protected Boolean doInBackground(List<UserError>... errors) {
             try {
-                for(UserError userError : errors[0]) {
+                for (UserError userError : errors[0]) {
                     userError.delete();
                     //userError.save();
                 }
                 return true;
-            } catch(Exception e) {
+            } catch (Exception e) {
                 return false;
             }
         }
@@ -213,42 +236,48 @@ public class UserError extends PlusModel {
     public static List<UserError> bySeverity(int level) {
         return bySeverity(new Integer[]{level});
     }
+
     public static List<UserError> bySeverity(int level, int level2) {
-        return bySeverity(new Integer[]{ level, level2 });
+        return bySeverity(new Integer[]{level, level2});
     }
+
     public static List<UserError> bySeverity(int level, int level2, int level3) {
-        return bySeverity(new Integer[]{ level, level2, level3 });
+        return bySeverity(new Integer[]{level, level2, level3});
     }
 
 
     public static class Log {
-        public static void e(String a, String b){
+        public static void e(String a, String b) {
             android.util.Log.e(a, b);
             new UserError(a, b);
         }
 
-        public static void e(String tag, String b, Exception e){
+        public static void e(String tag, String b, Exception e) {
             android.util.Log.e(tag, b, e);
             new UserError(tag, b + "\n" + e.toString());
         }
 
-        public static void w(String tag, String b){
+        public static void w(String tag, String b) {
             android.util.Log.w(tag, b);
             UserError.UserErrorLow(tag, b);
         }
-        public static void w(String tag, String b, Exception e){
+
+        public static void w(String tag, String b, Exception e) {
             android.util.Log.w(tag, b, e);
             UserError.UserErrorLow(tag, b + "\n" + e.toString());
         }
-        public static void wtf(String tag, String b){
+
+        public static void wtf(String tag, String b) {
             android.util.Log.wtf(tag, b);
             UserError.UserErrorHigh(tag, b);
         }
-        public static void wtf(String tag, String b, Exception e){
+
+        public static void wtf(String tag, String b, Exception e) {
             android.util.Log.wtf(tag, b, e);
             UserError.UserErrorHigh(tag, b + "\n" + e.toString());
         }
-        public static void wtf(String tag, Exception e){
+
+        public static void wtf(String tag, Exception e) {
             android.util.Log.wtf(tag, e);
             UserError.UserErrorHigh(tag, e.toString());
         }
@@ -263,30 +292,30 @@ public class UserError extends PlusModel {
             UserError.UserEventHigh(tag, b);
         }
 
-        public static void d(String tag, String b){
+        public static void d(String tag, String b) {
             android.util.Log.d(tag, b);
-            if(ExtraLogTags.shouldLogTag(tag, android.util.Log.DEBUG)) {
+            if (ExtraLogTags.shouldLogTag(tag, android.util.Log.DEBUG)) {
                 UserErrorLow(tag, b);
             }
         }
 
-        public static void v(String tag, String b){
+        public static void v(String tag, String b) {
             android.util.Log.v(tag, b);
-            if(ExtraLogTags.shouldLogTag(tag, android.util.Log.VERBOSE)) {
-                UserErrorLow(tag, b);
-            }           
-        }
-
-        public static void i(String tag, String b){
-            android.util.Log.i(tag, b);
-            if(ExtraLogTags.shouldLogTag(tag, android.util.Log.INFO)) {
+            if (ExtraLogTags.shouldLogTag(tag, android.util.Log.VERBOSE)) {
                 UserErrorLow(tag, b);
             }
         }
-        
+
+        public static void i(String tag, String b) {
+            android.util.Log.i(tag, b);
+            if (ExtraLogTags.shouldLogTag(tag, android.util.Log.INFO)) {
+                UserErrorLow(tag, b);
+            }
+        }
+
         static ExtraLogTags extraLogTags = new ExtraLogTags();
     }
-    
+
     public static class ExtraLogTags {
 
         static Hashtable <String, Integer> extraTags;
@@ -295,12 +324,12 @@ public class UserError extends PlusModel {
             String extraLogs = Pref.getStringDefaultBlank("extra_tags_for_logging");
             readPreference(extraLogs);
         }
-        
+
         /*
          * This function reads a string representing tags that the user wants to log
          * Format of string is tag1:level1,tag2,level2
          * Example of string is Alerts:i,BG:W
-         * 
+         *
          */
         public static void readPreference(String extraLogs) {
             extraLogs = extraLogs.trim();
@@ -315,45 +344,44 @@ public class UserError extends PlusModel {
             if (tags.length == 0) {
                 return;
             }
-            
+
             // go over all tags and parse them
-            for(String tag : tags) {
+            for (String tag : tags) {
                 if (tag.length() > 0) parseTag(tag);
             }
         }
-        
+
         static void parseTag(String tag) {
             // Format is tag:level for example  Alerts:i
             String[] tagAndLevel = tag.trim().split(":");
-            if(tagAndLevel.length != 2) {
+            if (tagAndLevel.length != 2) {
                 Log.e(TAG, "Failed to parse " + tag);
                 return;
             }
-            String level =  tagAndLevel[1];
-            String tagName = tagAndLevel[0].toLowerCase();
+            String level = tagAndLevel[1];
+            String tagName = tagAndLevel[0];
             if (level.compareTo("d") == 0) {
                 extraTags.put(tagName, android.util.Log.DEBUG);
-                UserErrorLow(TAG, "Adding tag with DEBUG " + tagAndLevel[0] );
+                UserErrorLow(TAG, "Adding tag with DEBUG " + tagAndLevel[0]);
                 return;
             }
             if (level.compareTo("v") == 0) {
                 extraTags.put(tagName, android.util.Log.VERBOSE);
-                UserErrorLow(TAG,"Adding tag with VERBOSE " + tagAndLevel[0] );
+                UserErrorLow(TAG, "Adding tag with VERBOSE " + tagAndLevel[0]);
                 return;
             }
             if (level.compareTo("i") == 0) {
                 extraTags.put(tagName, android.util.Log.INFO);
-                UserErrorLow(TAG, "Adding tag with info " + tagAndLevel[0] );
+                UserErrorLow(TAG, "Adding tag with info " + tagAndLevel[0]);
                 return;
             }
             Log.e(TAG, "Unknown level for tag " + tag + " please use d v or i");
-
         }
-        
-        static boolean shouldLogTag(String tag, int level) {
-            Integer levelForTag = extraTags.get(tag.toLowerCase());
+
+        public static boolean shouldLogTag(final String tag, final int level) {
+            final Integer levelForTag = extraTags.get(tag != null ? tag : "");
             return levelForTag != null && level >= levelForTag;
         }
-        
+
     }
 }
