@@ -453,7 +453,7 @@ public class Treatments extends Model {
         val lastSensorStart = Treatments.lastEventTypeFromXdrip(Treatments.SENSOR_START_EVENT_TYPE);
         long localStartedAt = lastSensorStart.timestamp; // When the xDrip local session started
         long dexStartedAt = DexSessionKeeper.getStart(); // When the current session on the transmitter started
-        if (dexStartedAt > 0 && !(dexStartedAt - localStartedAt < MINUTE_IN_MS * 5)) { // If the start time of the local session is more than 5 minutes older than the one on the transmitter
+        if (dexStartedAt > 0 && !(Math.abs(dexStartedAt - localStartedAt) < MINUTE_IN_MS * 5)) { // If the start time of the local session is more than 5 minutes different than the one on the transmitter
             Treatments.sensorStart(dexStartedAt, "Start time updated");
         }
     }
