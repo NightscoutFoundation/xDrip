@@ -1582,6 +1582,7 @@
     <string name="connection_status">Connection Status:</string>
     <string name="range_in_high_low">Range: (in/high/low)</string>
     <string name="absolute_s">Absolute #s:</string>
+    <string name="cgm_usage_percent">Cgm usage:</string>
     <string name="median_bg">Median BG:</string>
     <string name="mean_bg">Mean BG:</string>
     <string name="hba1c_est">HbA1c est.:</string>
