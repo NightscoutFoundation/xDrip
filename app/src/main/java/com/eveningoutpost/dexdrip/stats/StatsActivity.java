@@ -213,28 +213,28 @@ public class StatsActivity extends ActivityWithMenu {
         button7d.setBackgroundTintList(csl);
         button30d.setBackgroundTintList(csl);
         button90d.setBackgroundTintList(csl);
-        TextView statsTimePeriodHeadingText = findViewById(R.id.stats_time_period_label);
+        TextView statsTimePeriodLabelText = findViewById(R.id.stats_time_period_label);
         csl = new ColorStateList(new int[][]{new int[0]}, new int[]{0xFFAA0000});
         switch (state) {
             case TODAY:
                 buttonTD.setBackgroundTintList(csl);
-                statsTimePeriodHeadingText.setText(R.string.today);
+                statsTimePeriodLabelText.setText(R.string.today);
                 break;
             case YESTERDAY:
                 buttonYTD.setBackgroundTintList(csl);
-                statsTimePeriodHeadingText.setText(R.string.yesterday);
+                statsTimePeriodLabelText.setText(R.string.yesterday);
                 break;
             case D7:
                 button7d.setBackgroundTintList(csl);
-                statsTimePeriodHeadingText.setText(R.string.last_7_days);
+                statsTimePeriodLabelText.setText(R.string.last_7_days);
                 break;
             case D30:
                 button30d.setBackgroundTintList(csl);
-                statsTimePeriodHeadingText.setText(R.string.last_30_days);
+                statsTimePeriodLabelText.setText(R.string.last_30_days);
                 break;
             case D90:
                 button90d.setBackgroundTintList(csl);
-                statsTimePeriodHeadingText.setText(R.string.last_90_days);
+                statsTimePeriodLabelText.setText(R.string.last_90_days);
                 break;
         }
     }
