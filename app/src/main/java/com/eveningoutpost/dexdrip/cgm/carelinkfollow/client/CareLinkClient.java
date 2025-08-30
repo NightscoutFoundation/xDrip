@@ -300,7 +300,7 @@ public class CareLinkClient {
             return null;
 
         for(DataUpload upload : this.sessionRecentUploads.recentUploads){
-            if(upload.device.toUpperCase().contains("MINIMED"))
+            if(upload.device.toUpperCase().contains("MINIMED") || upload.device.toUpperCase().contains("SIMPLERA"))
                 return  true;
             else if(upload.device.toUpperCase().contains("GUARDIAN"))
                 return  false;
