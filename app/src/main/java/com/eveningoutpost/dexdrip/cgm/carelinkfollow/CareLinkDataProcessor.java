@@ -18,6 +18,7 @@ import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.RecentData;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.SensorGlucose;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.TextMap;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -41,6 +42,7 @@ public class CareLinkDataProcessor {
 
     private static final String SOURCE_CARELINK_FOLLOW = "CareLink Follow";
 
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     static synchronized void processData(final RecentData recentData, final boolean live) {
 
@@ -175,10 +177,10 @@ public class CareLinkDataProcessor {
                     } else if ((marker.type.equals(Marker.MARKER_TYPE_INSULIN) && Pref.getBooleanDefaultFalse("clfollow_download_boluses"))
                             || (marker.type.equals(Marker.MARKER_TYPE_MEAL) && Pref.getBooleanDefaultFalse("clfollow_download_meals"))) {
 
-                        //insulin, meal only for pumps (not value in case of GC)
-                        if (recentData.isNGP()) {
+                        //insulin, meal only for pumps and cgm (cgm = currently only Simplera, no value in case of Guardian CGM)
+                        if (recentData.isNGP() || recentData.isCGM()) {
 
-                            final Treatments t;
+                            Treatments t;
                             double carbs = 0;
                             double insulin = 0;
 
@@ -209,6 +211,7 @@ public class CareLinkDataProcessor {
                                     t.save();
                                     if (Home.get_show_wear_treatments())
                                         pushTreatmentSyncToWatch(t, true);
+                                    UserError.Log.d(TAG, "NEW TREATMENT: " + treatmentToString(t));
                                 }
                             }
                         }
@@ -252,7 +255,8 @@ public class CareLinkDataProcessor {
                 //Cleared Notifications
                 if (recentData.notificationHistory.clearedNotifications != null) {
                     for (ClearedNotification clearedNotification : recentData.notificationHistory.clearedNotifications) {
-                        addNotification(clearedNotification.triggeredDateTime, recentData.getDeviceFamily(), clearedNotification.getMessageId(), clearedNotification.faultId);
+                        Date notificationDate = clearedNotification.triggeredDateTime != null ? clearedNotification.triggeredDateTime : clearedNotification.dateTime;
+                        addNotification(notificationDate, recentData.getDeviceFamily(), clearedNotification.getMessageId(), clearedNotification.faultId);
                     }
                 }
             }
@@ -277,7 +281,7 @@ public class CareLinkDataProcessor {
 
 
     //Create notification from CareLink messageId
-    protected static boolean addNotification(Date date, String deviceFamily, String messageId, int faultId) {
+    protected static boolean addNotification(Date date, String deviceFamily, String messageId, String faultId) {
 
         if (deviceFamily != null && messageId != null)
             return addNotification(date, TextMap.getNotificationMessage(deviceFamily, messageId, faultId));
@@ -337,6 +341,12 @@ public class CareLinkDataProcessor {
 
         return true;
 
+    }
+
+    protected static String treatmentToString(Treatments treatments){
+        return DateUtil.toISOString(treatments.timestamp) + " - "
+                + String.format("%.3f", treatments.insulin) + "U "
+                + String.format("%.0f", treatments.carbs) + "g ";
     }
 
 }

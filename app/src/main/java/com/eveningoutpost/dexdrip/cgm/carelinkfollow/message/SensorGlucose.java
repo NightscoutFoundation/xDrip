@@ -1,14 +1,18 @@
 package com.eveningoutpost.dexdrip.cgm.carelinkfollow.message;
 
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.util.CareLinkJsonAdapter;
+import com.eveningoutpost.dexdrip.models.DateUtil;
 import com.google.gson.annotations.JsonAdapter;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
  * CareLink SensorGlucose message with helper methods for processing
  */
 public class SensorGlucose {
+
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public Integer sg;
     public String datetime;
@@ -35,9 +39,9 @@ public class SensorGlucose {
         if (getDate() == null) {
             dt = "";
         } else {
-            dt = getDate().toString();
+            dt = DateUtil.toISOString(getDate());
         }
-        return dt + " " + sg;
+        return dt + " - " + sg;
     }
 
 }
