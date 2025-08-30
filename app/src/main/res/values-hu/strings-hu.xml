@@ -248,11 +248,13 @@
     <string name="calibration_data_table">Kalibrációs adattábla</string>
     <string name="bg_data_table">VC-érték adattábla</string>
     <string name="cannot_calibrate_right_now">Kalibrálás most nem lehetséges</string>
-    <string name="hardware_data_source">Adatforrás eszköz</string>
+    <string name="hardware_data_source">Adatforrás beállítása</string>
     <string name="enter_ten_character_dexcom_receiver_serial">Adja meg a Dexcom olvasó tíz karakteres szériaszámát</string>
     <string name="dexcom_transmitter_id">Dexcom távadó ID</string>
     <string name="run_collector_in_foreground">Kollektor előtéreben futtatása</string>
     <string name="shows_a_persistent_notification">Állandóan jelenítse meg az értesítési grafikont a zárolt képernyőn, hogy a szolgáltatás ne álljon le.</string>
+    <string name="title_collector_in_foreground">Kollektor előtérben futtatása</string>
+    <string name="summary_compact_ongoing_notification">Engedélyezi a grafikon elrejtését az értesítésben, és csak az aktuális VC-értéket mutassa.</string>
     <string name="list_of_receivers">Vevők listája</string>
     <string name="extra_tags_for_logging">További naplózandó adatok</string>
     <string name="extra_tags_dialog_message">Az xDrip naplózza az itt megadott tag-eket. Formája: tag:level (adat:szint). A szint lehet v, d vagy i. Például bgreading:i, DexCollectionService:v. Ezeket az adatok alacsony prioritással kerülnek rögzítésre a Hiba- és eseménynaplóban.</string>
@@ -507,7 +509,7 @@
     <string name="try_to_work_around_noisy_readings">Zajos VC-értékek javítása</string>
     <string name="show_tips_hints">Tippek, magyarázatok mutatása gombokhoz</string>
     <string name="show_interface_hints">Gyorstippek mutatása</string>
-    <string name="show_graph_time_lines">Idő segédrács mutatása grafikonon</string>
+    <string name="show_graph_time_lines">Idő segédrács mutatása</string>
     <string name="show_graph_glucose_lines">VC-érték segédrács mutatása grafikonon</string>
     <string name="display_filtered_plot">Szűrt adatok mutatása</string>
     <string name="display_raw_plot_data">Szűretlen (raw) adatok mutatása</string>
@@ -927,6 +929,7 @@
     <string name="bluereader_position">Adathiány! Ellenőrizze, hogy jól helyezte-e fel a blueReader-t a szenzorra!</string>
     <string name="bluereaderuglystate">blueReader kapcsolat megszakadt! Magától kikapcsol, eztán pár másodperc múlva kapcsolja be (Nyomja meg a gombot!). Eztán a blueReader ismét működik!</string>
     <string name="offical_msg">A hivatalos app</string>
+    <string name="aggressive_power_manager">Készüléke energiatakarékos üzemmódban van. Az xDrip-et ki kell zárni ezekből a háttérkorlátozásokból, amit az Android Beállítások menüben tehet meg.</string>
     <string name="use_conflict_msg">megpróbálhatja elérni a transmittert, ami mindkét app-nál gondot okozhat</string>
     <string name="eng_mode_is_on">Fejlesztői mód aktiválva. Kapcsolja ki, kivéve, ha biztos benne, hogy szüksége van rá, mert az app váratlan működését okozhatja.</string>
     <string name="yes">Igen</string>
@@ -942,7 +945,7 @@
     <string name="parakeet_wifi">Parakeet / Wifi</string>
     <string name="other">Egyéb</string>
     <string name="which_software_is_the_wixel_running">Milyen szoftver fut a Wixelen?</string>
-    <string name="start_source_setup_wizard">Adatforrás asszisztens indítása</string>
+    <string name="start_source_setup_wizard">Adatforrás beállítása</string>
     <string name="hour_format">%s óra</string>
     <string name="enter_your_transmitter_id_exactly">Adja meg a távadó ID értékét</string>
     <string name="which_type_of_device">Milyen fajta eszköz?</string>
@@ -1149,7 +1152,7 @@
     <string name="android_10_need_background_location">Az Android 10+ a Bluetooth használatához a háttérben igényli a helyadatokat</string>
     <string name="without_location_permission_emergency_cannot_get_location">A helymeghatározása engedélyezése szükséges az xDrip-nek a helykoordináták küldéséhez</string>
     <string name="force_speaker_colon">Hangszóró szóljon</string>
-    <string name="choose_data_source">Adatforrás választása</string>
+    <string name="choose_data_source">Adatforrás beállítása</string>
     <string name="which_system_do_you_use">Milyen rendszert használ?</string>
     <string name="please_allow_permission">Engedély kérése</string>
     <string name="location_permission_needed_to_use_bluetooth">Helyadatok engedélyezése szükséges a Bluetooth használatához!</string>
@@ -1712,8 +1715,9 @@
     <string name="show_sensor_expiry">Szenzor lejárat mutatása</string>
     <string name="show_collector_status">Kollektor állapot muitatása</string>
     <string name="show_chart_preview">Grafikon előnézet mutatása</string>
-    <string name="show_time_buttons">Időtartam gombok mutatása</string>
-    <string name="source_wizard_button">Varázsló gomb mutatása</string>
+    <string name="locked_time_period_always_used">Rögzített időablak gombok nélkül is</string>
+    <string name="show_time_buttons">Időablak gombok mutatása</string>
+    <string name="source_wizard_button">Adatforrás-beállító mutatása</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Várj %d másodpercet, mielőtt indítod a szenzort</string>
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">frissítse az OOP2-t vagy használja a nyers adatokon alapuló kalibrációs módot</string>
     <string name="reminder">Emlékeztető</string>

@@ -20,6 +20,7 @@ import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
 import static com.eveningoutpost.dexdrip.models.JoH.joinBytes;
 import static com.eveningoutpost.dexdrip.models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.models.JoH.niceTimeScalar;
+import static com.eveningoutpost.dexdrip.models.JoH.pratelimit;
 import static com.eveningoutpost.dexdrip.models.JoH.tolerantHexStringToByteArray;
 import static com.eveningoutpost.dexdrip.models.JoH.tsl;
 import static com.eveningoutpost.dexdrip.models.JoH.upForAtLeastMins;
@@ -86,6 +87,7 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.g5model.BatteryInfoRxMessage;
 import com.eveningoutpost.dexdrip.g5model.BluetoothServices;
 import com.eveningoutpost.dexdrip.g5model.CalibrationState;
+import com.eveningoutpost.dexdrip.g5model.DexPairKeeper;
 import com.eveningoutpost.dexdrip.g5model.DexSyncKeeper;
 import com.eveningoutpost.dexdrip.g5model.DexTimeKeeper;
 import com.eveningoutpost.dexdrip.g5model.FirmwareCapability;
@@ -219,6 +221,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     private volatile PowerManager.WakeLock floatingWakeLock;
     private PowerManager.WakeLock fullWakeLock;
 
+    private final DexPairKeeper pairKeeper = new DexPairKeeper();
     private volatile boolean background_launch_waiting = false;
     private static volatile long last_scan_started = -1;
     private static volatile long last_connect_started = -1;
@@ -562,6 +565,7 @@ public class Ob1G5CollectionService extends G5BaseService {
             stopScan();
             tryLoadingSavedMAC(); // did we already find it?
             expireFailures(false);
+            unBondAllG7notCurrentAsNeeded();
             if (always_scan || scan_next_run || (transmitterMAC == null) || (!transmitterID.equals(transmitterIDmatchingMAC)) || (static_last_timestamp < 1)) {
                 scan_next_run = false; // reset if set
                 transmitterMAC = null; // reset if set
@@ -652,6 +656,8 @@ public class Ob1G5CollectionService extends G5BaseService {
                     changeState(CLOSE);
                     return;
                 }
+
+                unBondAllG7notCurrentAsNeeded();
 
                 msg("Connect request");
                 if (state == CONNECT_NOW) {
@@ -929,6 +935,51 @@ public class Ob1G5CollectionService extends G5BaseService {
             }
         }
         UserError.Log.d(TAG, "unBond() finished");
+    }
+
+    private void unBondAllG7notCurrentAsNeeded() {
+        if (shortTxId() && get_engineering_mode()) {
+            if (pratelimit("unbond-g7-as-needed", 86400)) {
+                unBondAllG7notCurrent();
+            }
+        }
+    }
+
+    // remove any bonded devices that we previously paired but are not the current transmitter mac
+    public synchronized void unBondAllG7notCurrent() {
+        try {
+            UserError.Log.d(TAG, "unBondAllG7notCurrent() start");
+            if (transmitterMAC == null) {
+                UserError.Log.d(TAG, "unBondAllG7notCurrent() no transmitter mac");
+                return;
+            }
+
+            final BluetoothAdapter mBluetoothAdapter = ((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
+
+            final Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+            if (pairedDevices.size() > 0) {
+                for (final BluetoothDevice device : pairedDevices) {
+                    if (device.getAddress() != null) {
+                        if (pairKeeper.macEnded(device.getAddress()) && !device.getAddress().equals(transmitterMAC)) {
+
+                            try {
+                                UserError.Log.e(TAG, "unBondAllG7notCurrent() removing old Bond: " + device.getAddress());
+                                final Method m = device.getClass().getMethod("removeBond", (Class[]) null);
+                                m.invoke(device, (Object[]) null);
+
+                            } catch (Exception e) {
+                                UserError.Log.e(TAG, "unBondAllG7notCurrent() " + e.getMessage(), e);
+                            }
+                        }
+                    }
+                }
+            } else {
+                UserError.Log.d(TAG, "unBondAllG7notCurrent() Could not read any paired devices");
+            }
+            UserError.Log.d(TAG, "unBondAllG7notCurrent() finished");
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "unBondAllG7notCurrent() exception " + e);
+        }
     }
 
 
@@ -1237,7 +1288,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                 (emptyString(historical_address) && this_name.startsWith("DXCM")) ||
                 (emptyString(historical_address) && this_name.startsWith("DX02")) ||
                 (emptyString(historical_address) && this_name.startsWith("DX01")))) {
-            return !inFailureTally(this_address);
+            return !inFailureTally(this_address) && pairKeeper.check(getTransmitterID(), this_address);
         }
 
         boolean result = this_address.equalsIgnoreCase(historical_address) || (this_name != null && this_name.equalsIgnoreCase(search_name));
@@ -1741,7 +1792,9 @@ public class Ob1G5CollectionService extends G5BaseService {
                     if (parcel_device.getAddress().equals(transmitterMAC)) {
                         msg(bondState(bond_state_extra).replace(" ", ""));
                         if (parcel_device.getBondState() == BluetoothDevice.BOND_BONDED) {
-
+                            if (shortTxId()) {
+                                pairKeeper.add(getTransmitterID(), parcel_device.getAddress());
+                            }
                             if (waitingBondConfirmation == 1) {
                                 waitingBondConfirmation = 2; // received
                                 UserError.Log.e(TAG, "Bond confirmation received!");
@@ -1898,6 +1951,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                 final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_CALIBRATION_REQUEST, JoH.getStartActivityIntent(c), PendingIntent.FLAG_UPDATE_CURRENT);
                 // pending intent not used on wear
                 JoH.showNotification(state.getText(), "Calibration Required", android_wear ? null : pi, G5_CALIBRATION_REQUEST, state == CalibrationState.NeedsFirstCalibration, true, false);
+                UserError.Log.uel(TAG, "Calibration Required");
 
             });
         } else if (!needs_calibration && was_needing_calibration) {
@@ -1917,6 +1971,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                     }
                     final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_RESTARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
                     JoH.showNotification("Auto Start", "Sensor Requesting Restart", pi, G5_SENSOR_RESTARTED, true, true, false);
+                    UserError.Log.uel(TAG, "Sensor Requesting Restart");
                 } else {
                     UserError.Log.uel(TAG, "Marking sensor session as stopped");
                     Sensor.stopSensor();
@@ -1943,6 +1998,10 @@ public class Ob1G5CollectionService extends G5BaseService {
         updateG5State(needs_calibration, was_needing_calibration, NEEDING_CALIBRATION);
         updateG5State(is_started, was_started, IS_STARTED);
         updateG5State(is_failed, was_failed, IS_FAILED);
+
+        if (is_started && shortTxId() && JoH.pratelimit("update_alternate_dex_session_start_time", 60 * 60)) { // Once an hour if there is a local session
+            Treatments.sensorUpdateStartTimeIfNeeded();
+        }
     }
 
 

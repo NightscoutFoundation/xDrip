@@ -303,6 +303,17 @@
                         android:text="@string/choose_file"
                         android:textAllCaps="false" />
 
+                    <CheckBox
+                        android:id="@+id/bg_missed_alerts_override_silent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/override_silent_mode"
+                        android:textSize="15sp"
+                        android:padding="5dp"
+                        android:layout_gravity="left"
+                        android:layout_marginLeft="10dp"
+                        android:gravity="left" />
+
                 </LinearLayout>
 
             </LinearLayout>

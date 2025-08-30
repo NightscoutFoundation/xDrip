@@ -273,6 +273,9 @@
     <string name="dexcom_transmitter_id">Dexcom Transmitter ID</string>
     <string name="run_collector_in_foreground">Run Collector in foreground</string>
     <string name="shows_a_persistent_notification">Shows a persistent notification graph, visible on lock-screen and prevents Android killing the service.</string>
+    <string name="title_collector_in_foreground">Collector in foreground</string>
+    <string name="summary_compact_ongoing_notification">Enable to hide the graph in the notification and display only the current glucose value.</string>
+    <string name="title_compact_ongoing_notification">Compact Persistent Notification</string>
     <string name="list_of_receivers">List of receivers</string>
     <string name="extra_tags_for_logging">Extra tags for logging</string>
     <string name="extra_tags_dialog_message">The tags entered here will be logged into xDrip. Format is tag:level. Level can be v,d,i. For example bgreading:i,DexCollectionService:v. These tags will be logged with low priority to Error and event list.</string>
@@ -804,7 +807,7 @@
     <string name="calibrations_request_time_time_difference">How many hours between calibration requests</string>
     <string name="hours_between_calibrations">Hours between calibrations</string>
     <string name="calibrations_sound">Set sound used for calibration requests.</string>
-    <string name="override_silent_mode">Override Silent mode</string>
+    <string name="override_silent_mode">Override Silent Mode</string>
     <string name="even_when_charging">Even when charging</string>
     <string name="no_calibration_requests_charging">Uncheck to not ask for calibrations when phone is charging</string>
     <string name="keep_alert_no_calibration">Keep alerting if no calibration is performed</string>
@@ -1969,6 +1972,11 @@
     <string name="sensor_will_expire_in">Sensor will expire in %1$s</string>
     <string name="xdrip_update">xDrip+ Update</string>
     <string name="a_new_version_on_channel_1_s_is_available">A new version on channel %1$s is available</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="last_7_days">Last 7 days</string>
+    <string name="last_30_days">Last 30 days</string>
+    <string name="last_90_days">Last 90 days</string>
     <string name="alert_warning">Warning !</string>
     <string name="no_active_low_alert_warning">No active Low Alert exists, without this there will be no alert on low glucose! Please add or enable a low alert.</string>
     <string name="volume_profile_set_to_silent">Volume Profile is set to silent!</string>

@@ -255,6 +255,9 @@
     <string name="dexcom_transmitter_id">Dexcom saatja ID</string>
     <string name="run_collector_in_foreground">Jooksuta kogujat esiplaanil</string>
     <string name="shows_a_persistent_notification">Näitab järjepidevalt graafikut, on nähtav lukustusekraanil ja takistab Androidil selle teenuse peatamise.</string>
+    <string name="title_collector_in_foreground">Koguja esiplaanil</string>
+    <string name="summary_compact_ongoing_notification">Luba, et peita teavitusest graafik ja kuvada ainult jooksvat glükoosinäitu.</string>
+    <string name="title_compact_ongoing_notification">Kompaktne püsiv teavitus</string>
     <string name="list_of_receivers">Vastuvõtjate nimekiri</string>
     <string name="extra_tags_for_logging">Täiendavad märgised logimiseks</string>
     <string name="extra_tags_dialog_message">Siia sisestatud märgised salvestatakse xDrip sündmuste ajalukku. Formaat tag:level. Tase saab olla v,d,i. Näiteks bgreading:i,DexCollectionService:v.</string>

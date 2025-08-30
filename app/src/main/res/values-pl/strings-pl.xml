@@ -526,14 +526,14 @@
     <string name="handset_sync_grouping_key">Grupowy klucz synchronizacji danych</string>
     <string name="alert_name_colon">Nazwa alarmu:</string>
     <string name="threshold_colon">Próg:</string>
-    <string name="default_snooze_colon">Domyślnie uśpij</string>
+    <string name="default_snooze_colon">Domyślnie uśpij na:</string>
     <string name="re_raise_every_x_minutes_if_unaknowledged">Aktywuj co\nx\nminut, jeżeli niepotwierdzony:</string>
     <string name="alert_tone_colon">Sygnał alarmowy:</string>
     <string name="choose_file">Wybierz plik</string>
-    <string name="select_time_for_alert_colon">Wybierz czas dla wpisu:</string>
+    <string name="select_time_for_alert_colon">Wybierz czas dla alarmu:</string>
     <string name="all_day">cały dzień</string>
     <string name="tap_to_change">(dotknij, aby zmienić)</string>
-    <string name="override_phone_silent_mode_colon">Zastąp Tryb cichy:</string>
+    <string name="override_phone_silent_mode_colon">Zignoruj tryb cichy:</string>
     <string name="vibrate_on_alert">Wibracje podczas alarmu</string>
     <string name="test_alert">Testowy alarm</string>
     <string name="disable_alert">Wyłącz alarm</string>
