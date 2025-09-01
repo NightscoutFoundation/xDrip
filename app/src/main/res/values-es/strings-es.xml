@@ -1906,4 +1906,9 @@
     <string name="sensor_will_expire_in">El sensor caducará en %1$s</string>
     <string name="xdrip_update">actualizar xDrip+</string>
     <string name="a_new_version_on_channel_1_s_is_available">Una nueva versión en el canal %1$s está disponible</string>
+    <string name="today">Hoy</string>
+    <string name="yesterday">Ayer</string>
+    <string name="last_7_days">Últimos 7 días</string>
+    <string name="last_30_days">Últimos 30 días</string>
+    <string name="last_90_days">Últimos 90 días</string>
 </resources>
