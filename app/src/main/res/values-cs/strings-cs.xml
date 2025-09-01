@@ -1917,4 +1917,9 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="sensor_will_expire_in">Senzor skončí za %1$s</string>
     <string name="xdrip_update">Aktualizace xDrip+</string>
     <string name="a_new_version_on_channel_1_s_is_available">Je dostupná nová verze na kanálu %1$s</string>
+    <string name="today">Dnes</string>
+    <string name="yesterday">Včera</string>
+    <string name="last_7_days">Posledních 7 dní</string>
+    <string name="last_30_days">Posledních 30 dní</string>
+    <string name="last_90_days">Posledních 90 dní</string>
 </resources>
