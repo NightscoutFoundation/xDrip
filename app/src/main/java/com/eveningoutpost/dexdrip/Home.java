@@ -147,6 +147,7 @@ import com.eveningoutpost.dexdrip.ui.graphic.ITrendArrow;
 import com.eveningoutpost.dexdrip.ui.graphic.TrendArrowFactory;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
+import com.eveningoutpost.dexdrip.utils.ConfigureImportExport;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.DisplayQRCode;
@@ -3351,7 +3352,9 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                             0);
                     return null;
                 } else {
-                    return DatabaseUtil.saveSql(getBaseContext());
+                    String f = DatabaseUtil.saveSql(getBaseContext());
+                    ConfigureImportExport.dispatchAdditionalExports(f, true, false);
+                    return f;
                 }
 
             }
@@ -3408,7 +3411,9 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                                     0);
                             return null;
                         } else {
-                            return DatabaseUtil.saveCSV(getBaseContext(), date.getTimeInMillis());
+                            String f =  DatabaseUtil.saveCSV(getBaseContext(), date.getTimeInMillis());
+                            ConfigureImportExport.dispatchAdditionalExports(f, false, false);
+                            return f;
                         }
                     }
 
@@ -3430,6 +3435,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     public void settingsSDcardExport(MenuItem myitem) {
         startActivity(new Intent(getApplicationContext(), SdcardImportExport.class));
+    }
+
+    public void configureImportExport(MenuItem myitem) {
+        startActivity(new Intent(getApplicationContext(), ConfigureImportExport.class));
     }
 
     public void showMapFromMenu(MenuItem myitem) {
@@ -3619,12 +3628,43 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        /*// jamorham additions
+        switch (item.getItemId()) {
+            case R.id.action_resend_last_bg:
+                WatchUpdaterService.startServiceAndResendData(0);
+                if (Pref.getBooleanDefaultFalse("pref_amazfit_enable_key")) {
+                    Amazfitservice.start("xDrip_synced_SGV_data");
+                }
+                break;
+            case R.id.action_open_watch_settings:
+                startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_OPEN_SETTINGS));
+                break;
+            case R.id.action_sync_watch_db:
+                startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_RESET_DB));
+                break;
+        }
+
+        if (item.getItemId() == R.id.action_import_db) {
+            startActivity(new Intent(this, ImportDatabaseActivity.class));
+            return true;
+        }
+
+       /* // jamorham additions
         if (item.getItemId() == R.id.synctreatments) {
             startActivity(new Intent(this, GoogleDriveInterface.class));
             return true;
 
         }*/
+        ///
+
+        if (item.getItemId() == R.id.action_toggle_speakreadings) {
+            Pref.toggleBoolean("bg_to_speech");
+            invalidateOptionsMenu();
+            if (Pref.getBooleanDefaultFalse("bg_to_speech")) {
+                BgToSpeech.testSpeech();
+            }
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
