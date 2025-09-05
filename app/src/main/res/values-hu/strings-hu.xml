@@ -253,6 +253,8 @@
     <string name="dexcom_transmitter_id">Dexcom távadó ID</string>
     <string name="run_collector_in_foreground">Kollektor előtéreben futtatása</string>
     <string name="shows_a_persistent_notification">Állandóan jelenítse meg az értesítési grafikont a zárolt képernyőn, hogy a szolgáltatás ne álljon le.</string>
+    <string name="title_collector_in_foreground">Kollektor előtérben futtatása</string>
+    <string name="summary_compact_ongoing_notification">Engedélyezi a grafikon elrejtését az értesítésben, és csak az aktuális VC-értéket mutassa.</string>
     <string name="list_of_receivers">Vevők listája</string>
     <string name="extra_tags_for_logging">További naplózandó adatok</string>
     <string name="extra_tags_dialog_message">Az xDrip naplózza az itt megadott tag-eket. Formája: tag:level (adat:szint). A szint lehet v, d vagy i. Például bgreading:i, DexCollectionService:v. Ezeket az adatok alacsony prioritással kerülnek rögzítésre a Hiba- és eseménynaplóban.</string>
@@ -927,6 +929,7 @@
     <string name="bluereader_position">Adathiány! Ellenőrizze, hogy jól helyezte-e fel a blueReader-t a szenzorra!</string>
     <string name="bluereaderuglystate">blueReader kapcsolat megszakadt! Magától kikapcsol, eztán pár másodperc múlva kapcsolja be (Nyomja meg a gombot!). Eztán a blueReader ismét működik!</string>
     <string name="offical_msg">A hivatalos app</string>
+    <string name="aggressive_power_manager">Készüléke energiatakarékos üzemmódban van. Az xDrip-et ki kell zárni ezekből a háttérkorlátozásokból, amit az Android Beállítások menüben tehet meg.</string>
     <string name="use_conflict_msg">megpróbálhatja elérni a transmittert, ami mindkét app-nál gondot okozhat</string>
     <string name="eng_mode_is_on">Fejlesztői mód aktiválva. Kapcsolja ki, kivéve, ha biztos benne, hogy szüksége van rá, mert az app váratlan működését okozhatja.</string>
     <string name="yes">Igen</string>
