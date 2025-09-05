@@ -72,6 +72,7 @@ public class BuggySamsung {
                 || Build.MANUFACTURER.toLowerCase().contains("oneplus")
                 || Build.MANUFACTURER.toLowerCase().contains("oppo")
                 || Build.MANUFACTURER.toLowerCase().contains("huawei")
+                || Build.MANUFACTURER.toLowerCase().contains("realme")
                 || Build.MANUFACTURER.toLowerCase().contains("honor");
     }
 
