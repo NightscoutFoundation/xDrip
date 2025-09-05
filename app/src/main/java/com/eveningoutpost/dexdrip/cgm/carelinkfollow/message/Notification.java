@@ -10,7 +10,7 @@ public class Notification {
     @JsonAdapter(CareLinkJsonAdapter.class)
     public Date dateTime;
     public String type;
-    public int faultId;
+    public String faultId;
     public int instanceId;
     public String messageId;
     public String pumpDeliverySuspendState;
@@ -20,8 +20,8 @@ public class Notification {
     public String getMessageId(){
         if(messageId != null)
             return  messageId;
-        else if(faultId > 0)
-            return String.valueOf(faultId);
+        else if(faultId != null)
+            return faultId;
         else
             return null;
     }
