@@ -1924,4 +1924,9 @@
     <string name="sensor_will_expire_in">Sensor aegub %1$s</string>
     <string name="xdrip_update">xDrip+ uuendus</string>
     <string name="a_new_version_on_channel_1_s_is_available">Uus versioon on saadaval kanalis %1$s</string>
+    <string name="today">Täna</string>
+    <string name="yesterday">Eile</string>
+    <string name="last_7_days">Viimased 7 päeva</string>
+    <string name="last_30_days">Viimased 30 päeva</string>
+    <string name="last_90_days">Viimased 90 päeva</string>
 </resources>

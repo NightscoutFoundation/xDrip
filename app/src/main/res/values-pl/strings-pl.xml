@@ -1888,4 +1888,9 @@
     <string name="sensor_will_expire_in">Czujnik wygaśnie za %1$s</string>
     <string name="xdrip_update">Aktualizacja xDrip+</string>
     <string name="a_new_version_on_channel_1_s_is_available">Dostępna jest nowa wersja na kanale %1$s</string>
+    <string name="today">Dzisiaj</string>
+    <string name="yesterday">Wczoraj</string>
+    <string name="last_7_days">Ostatnie 7 dni</string>
+    <string name="last_30_days">Ostatnie 30 dni</string>
+    <string name="last_90_days">Ostatnie 90 dni</string>
 </resources>
