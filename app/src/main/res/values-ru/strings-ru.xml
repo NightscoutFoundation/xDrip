@@ -57,6 +57,7 @@
     <string name="pref_title_api_enabled">Включено</string>
     <string name="pref_summary_api_enabled">REST API - это стандартный способ подключения к Nightscout</string>
     <string name="pref_title_api_url">Основной URL</string>
+    <string name="pref_summary_api_url">Формат: https://пароль@хост/api/v1/</string>
     <string name="pref_dialog_api_url">Введите основной API URL</string>
     <string name="pref_message_api_url">Имейте в виду, что это лишь основной URL и загрузчик будет автоматически добавлять / записи для POST-запросов. Значение API-SECRET на сервере должно совпадать с вашим паролем (passphrase) в настройках.</string>
     <string name="pref_default_api_url">https://вашпароль@{вашсайт}.azurewebsites.net/api/v1/</string>
@@ -737,6 +738,8 @@
     <string name="glucose_meters">Глюкометры</string>
     <string name="glucose_meter_options">Параметры беспроводных глюкометров</string>
     <string name="auto_connect_to_meter">Автоматически подключаться и извлекать данные из стандартных подходящих глюкометров, таких как Contour Next One</string>
+    <string name="summary_use_nfc_meter">Скачивать показания глюкозы с глюкометра NFC, когда xDrip+ открыт</string>
+    <string name="title_use_nfc_meter">Использовать NFC-глюкометр</string>
     <string name="use_bluetooth_meter">Использовать Bluetooth глюкометр</string>
     <string name="scan_for_bluetooth_meter">Поиск Bluetooth измерителей</string>
     <string name="meter_connect_sound">Включите, чтобы воспроизводить звуковые уведомления при подключении, отключении или синхронизации данных</string>
@@ -1198,6 +1201,12 @@
     <string name="title_tidepool_window_latency">Срок данных (мин)</string>
     <string name="summary_tidepool_dev_servers">Если включено, данные будут загружены на https://int-app.tidepool.org вместо обычного https://app.tidepool.org/</string>
     <string name="title_tidepool_dev_servers">Использовать тестовые сервера</string>
+    <string name="summary_tidepool_upload_when_chargeonly">Отправлять данные только во время зарядки</string>
+    <string name="title_tidepool_upload_when_chargeonly">Только при зарядке</string>
+    <string name="summary_tidepool_upload_only_wifi">Отправлять данные только при подключении к безлимитной сети, напр. WiFi</string>
+    <string name="title_tidepool_upload_only_wifi">Только через WiFi</string>
+    <string name="summary_tidepool_upload_no_treatment">Отправлять только данные ГК, чтобы избежать дубликатов с ручной выгрузкой с помпы</string>
+    <string name="title_tidepool_upload_no_treatment">Не отправлять терапию</string>
     <string name="title_tidepool">Tidepool</string>
     <string name="show_help">Показать справку</string>
     <string name="load_save_settings_on_sdcard">Загрузить/сохранить настройки на SDcard</string>
@@ -1269,6 +1278,7 @@
     <string name="summary_lefun_send_alarms">Отправлять уведомления о глюкозе на браслет</string>
     <string name="title_lefun_send_alarms">Отправлять уведомления</string>
     <string name="title_lefun_option_shake_snoozes">Потрясти, чтобы отложить</string>
+    <string name="summary_lefun_send_calls">Отправлять уведомления о звонках на браслет</string>
     <string name="title_lefun_send_calls">Оповещения о звонках</string>
     <string name="title_lefun_screens_features">Экраны / Функции Lefun</string>
     <string name="title_features">Функции</string>
@@ -1337,6 +1347,8 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Откат к xDrip</string>
     <string name="summary_ob1_minimize_scanning">Использовать эвристику для минимизации поиска Bluetooth + сохранения энергии</string>
     <string name="title_ob1_minimize_scanning">Минимизировать сканирования</string>
+    <string name="summary_ob1_avoid_scanning">Избегать сканирования, насколько возможно (снижает использование батареи)</string>
+    <string name="title_ob1_avoid_scanning">Избегать сканирования</string>
     <string name="summary_using_g6">Я использую сенсор G6</string>
     <string name="title_using_g6">Поддержка G6</string>
     <string name="summary_ob1_g5_allow_resetbond">Служба сбора данных OB1 может разрывать соединение в случае обнаружения проблем с шифрованием. Если вы испытываете трудности с разрывом соединения, отключите данную опцию. В случае, если после отключения вы столкнулись с полной потерей соединения, снова активируйте данную опцию.</string>
@@ -1851,6 +1863,11 @@
     <string name="audio_focus_lower_volume_of_other_apps">Снизить громкость других приложений</string>
     <string name="audio_focus_pause_other_apps_playing_audio">Поставить на паузу воспроизведение звука в других приложениях</string>
     <string name="audio_focus_pause_all_other_sounds">Поставить на паузу все остальные звуки</string>
+    <string name="wake_up_screen">Включать экран</string>
+    <string name="wake_up_screen_summary">Включать экран во время тревог. Может разблокировать устройства с выключенной блокировкой экрана.</string>
     <string name="use_camera_light">Использовать вспышку фотокамеры</string>
     <string name="use_camera_light_summary">Мигать вспышкой фотокамеры во время оповещений, если телефон подключен к зарядному устройству</string>
+    <string name="bg_alert">ГК %1$s ТРЕВОГА: %2$s (@%3$s)</string>
+    <string name="show_graphical_trend_arrow">Показывать графическую стрелку тренда</string>
+    <string name="no_alert_in_silent_mode">Без тревог при режиме без звука</string>
 </resources>
