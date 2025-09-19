@@ -231,7 +231,7 @@
     <string name="pref_was_greater_than_max">%1$s se estableció a un valor mayor que el máximo permitido. Se ha cambiado al máximo.</string>
     <string name="setting_pref_to_min">Ajustar al mínimo</string>
     <string name="pref_was_less_than_min">%1$s se estableció a un valor menor que el mínimo permitido. Se ha cambiado al mínimo.</string>
-    <string name="extrapolate_data_to_try_to_predict_lows">Extrapolar datos para tratar de predecir bajadas</string>
+    <string name="extrapolate_data_to_try_to_predict_lows">Extrapolar datos para tratar de predecir mínimos</string>
     <string name="alarm_at_forecasted_low_mins">Alarma en minutos bajas predichas</string>
     <string name="title_forecast_low_threshold">Límite</string>
     <string name="other_xdrip_plus_alerts">Otras alertas xDrip+</string>
@@ -432,7 +432,7 @@
     <string name="persistent_high_sound">Sonido de valor Alto Persistente</string>
     <string name="forecast_lows">Bajas Previsión</string>
     <string name="raise_alarm_on_forecast_low">Dar la alarma en el pronóstico de baja</string>
-    <string name="notify_when_predicted_low_time_reaches_threshold">Notificar cuando predijo el tiempo de baja alcanza el umbral</string>
+    <string name="notify_when_predicted_low_time_reaches_threshold">Notificar cuando el tiempo de baja alcance el umbral</string>
     <string name="predicted_low_sound">Sonido de Baja pronosticada</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Permite seleccionar el sonido utilizado para la alarma de valo Bajo pronosticado.</string>
     <string name="notify_when_parakeet_device_stops_checking_in">Notificar cuando el dispositivo Patakeet deje de registrarse</string>
