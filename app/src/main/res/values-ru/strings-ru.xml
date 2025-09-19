@@ -232,8 +232,8 @@
     <string name="pref_was_greater_than_max">%1$s был задан выше максимального значения.  Заменено на максимум.</string>
     <string name="setting_pref_to_min">Установлено на мин.</string>
     <string name="pref_was_less_than_min">%1$s был задан ниже минимального значения.  Заменено на минимум.</string>
-    <string name="extrapolate_data_to_try_to_predict_lows">Экстраполировать данные для возможности прогнозирования гипогликемии</string>
-    <string name="alarm_at_forecasted_low_mins">Оповещать за (в минутах)</string>
+    <string name="extrapolate_data_to_try_to_predict_lows">Экстраполировать данные, чтобы попытаться предсказать низкий</string>
+    <string name="alarm_at_forecasted_low_mins">Тревога при предсказанном низком за x минут</string>
     <string name="title_forecast_low_threshold">Порог</string>
     <string name="other_xdrip_plus_alerts">Другие оповещения xDrip+</string>
     <string name="xdrip_plus_display_settings">Настройки отображения xDrip+</string>
@@ -431,7 +431,7 @@
     <string name="persistent_high_sound">Звук устойчиво высокого</string>
     <string name="forecast_lows">Прогнозировать гипогликемию</string>
     <string name="raise_alarm_on_forecast_low">Оповещать заранее о возможной гипогликемии</string>
-    <string name="notify_when_predicted_low_time_reaches_threshold">Оповещать, если достигнуто пороговое значение прогнозируемого времени до гипогликемии</string>
+    <string name="notify_when_predicted_low_time_reaches_threshold">Уведомлять, когда время до предсказанного низкого достигает порога</string>
     <string name="predicted_low_sound">Звук предсказанного низкого</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Выберите звук для тревоги о предсказанном низком.</string>
     <string name="notify_when_parakeet_device_stops_checking_in">Уведомлять, когда связь с устройством Parakeet потеряна</string>
