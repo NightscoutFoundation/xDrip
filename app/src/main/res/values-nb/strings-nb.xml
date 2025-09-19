@@ -1924,4 +1924,9 @@
     <string name="sensor_will_expire_in">Sensor vil utløpe om %1$s</string>
     <string name="xdrip_update">xDrip+-oppdatering</string>
     <string name="a_new_version_on_channel_1_s_is_available">En ny versjon på kanalen %1$s er tilgjengelig</string>
+    <string name="today">Idag</string>
+    <string name="yesterday">Igår</string>
+    <string name="last_7_days">Siste 7 dager</string>
+    <string name="last_30_days">Siste 30 dager</string>
+    <string name="last_90_days">Siste 90 dager</string>
 </resources>

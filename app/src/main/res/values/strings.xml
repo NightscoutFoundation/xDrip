@@ -250,8 +250,8 @@
     <string name="pref_was_greater_than_max">%1$s was set to a value greater than maximum allowed.  It has been changed to maximum.</string>
     <string name="setting_pref_to_min">Set to min</string>
     <string name="pref_was_less_than_min">%1$s was set to a value less than minimum allowed.  It has been changed to minimum.</string>
-    <string name="extrapolate_data_to_try_to_predict_lows">Extrapolate data to try to predict lows</string>
-    <string name="alarm_at_forecasted_low_mins">Alarm at Forecasted Low mins</string>
+    <string name="extrapolate_data_to_try_to_predict_lows">Considering the current value and trend, calculate what the next few readings will be if the trend persists (extrapolate).  This ignores insulin or carbs on board.</string>
+    <string name="alarm_at_forecasted_low_mins">Time threshold [min]</string>
     <string name="title_forecast_low_threshold">Threshold</string>
     <string name="other_xdrip_plus_alerts">Other xDrip+ alerts</string>
     <string name="xdrip_plus_display_settings">xDrip+ Display Settings</string>
@@ -339,6 +339,10 @@
     <string name="pebble_and_android_wear_options">Options for different Watches</string>
     <string name="customize_colours">Customize Colors</string>
     <string name="xdrip_plus_color_settings">xDrip+ Color Settings</string>
+    <string name="summary_font_settings">Customize Fonts</string>
+    <string name="title_font_settings">Font Settings</string>
+    <string name="summary_enlarge_fonts_on_large_screens">Automatically enlarge the font size on large screens, such as tablets</string>
+    <string name="title_enlarge_fonts_on_large_screens">Enlarge fonts on larger displays</string>
     <string name="glucose_values_and_lines">Glucose Values and Lines</string>
     <string name="high_glucose_values">High Glucose Values</string>
     <string name="in_range_glucose_values">In-range Glucose Values</string>
@@ -454,7 +458,7 @@
     <string name="persistent_high_sound">Alert Sound</string>
     <string name="forecast_lows">Forecast Lows</string>
     <string name="raise_alarm_on_forecast_low">Raise alarm on Forecast Low</string>
-    <string name="notify_when_predicted_low_time_reaches_threshold">Notify when predicted low time reaches threshold</string>
+    <string name="notify_when_predicted_low_time_reaches_threshold">Notify when forecasted low time reaches time threshold</string>
     <string name="predicted_low_sound">Alert Sound</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Choose the sound used for the alarm.</string>
     <string name="notify_when_parakeet_device_stops_checking_in">Notify when Parakeet device stops checking in</string>
