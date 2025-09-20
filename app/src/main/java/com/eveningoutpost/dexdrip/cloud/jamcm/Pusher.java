@@ -216,7 +216,7 @@ public class Pusher {
         log("establishConnection");
         status("Connecting");
         clientSocket = new Socket();
-        clientSocket.connect(new InetSocketAddress(getBestServerAddress(), PORT), CONNECT_TIMEOUT);
+        clientSocket.connect(new InetSocketAddress(getBestServerAddress(), 443), CONNECT_TIMEOUT);
         bis = new BufferedInputStream(clientSocket.getInputStream());
         bos = new BufferedOutputStream(clientSocket.getOutputStream());
         clientSocket.setSoTimeout(READ_TIMEOUT_MS);

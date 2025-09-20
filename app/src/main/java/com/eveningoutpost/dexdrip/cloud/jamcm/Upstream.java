@@ -7,7 +7,7 @@ public class Upstream {
 
     private static final String serverInstance = "jamcm3749021";
     private static final String legacyServerInstance = "legacypush188263";
-    private static final String serverDomain = "bluejay.website";
+    private static final String serverDomain = "bugaloop.com";
     private static final String serverAddress = serverInstance + "." + serverDomain;
     private static final String legacyServerAddress = legacyServerInstance + "." + serverDomain;
 
