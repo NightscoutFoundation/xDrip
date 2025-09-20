@@ -319,6 +319,10 @@
     <string name="pebble_and_android_wear_options">Options pour différentes montres</string>
     <string name="customize_colours">Personnaliser les couleurs</string>
     <string name="xdrip_plus_color_settings">xDrip+ Couleurs</string>
+    <string name="summary_font_settings">Personnaliser les polices</string>
+    <string name="title_font_settings">Paramètre de polices</string>
+    <string name="summary_enlarge_fonts_on_large_screens">Agrandir automatiquement la taille de la police sur les grands écrans, comme les tablettes</string>
+    <string name="title_enlarge_fonts_on_large_screens">Agrandir les polices sur des écrans plus grands</string>
     <string name="glucose_values_and_lines">Valeurs et lignes de glycémie</string>
     <string name="high_glucose_values">Valeurs Hyperglycémies</string>
     <string name="in_range_glucose_values">Valeurs de glycémie dans la cible</string>
