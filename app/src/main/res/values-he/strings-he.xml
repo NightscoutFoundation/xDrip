@@ -310,6 +310,10 @@
     <string name="pebble_and_android_wear_options">אפשרויות עבור שעונים שונים</string>
     <string name="customize_colours">התאם צבעים</string>
     <string name="xdrip_plus_color_settings">xDrip+ הגדרות צבע</string>
+    <string name="summary_font_settings">התאמה אישית של הגופן</string>
+    <string name="title_font_settings">הגדרות הגופן</string>
+    <string name="summary_enlarge_fonts_on_large_screens">הגדל באופן אוטומטי את הגופן במסכים גדולים כדוגמאת טבלטים</string>
+    <string name="title_enlarge_fonts_on_large_screens">הגדלת הגופן בתצוגות גדולות</string>
     <string name="glucose_values_and_lines">ערכי סוכר וקוים</string>
     <string name="high_glucose_values">ערכי סוכר גבוהים</string>
     <string name="in_range_glucose_values">ערכי סוכר בטווח</string>
