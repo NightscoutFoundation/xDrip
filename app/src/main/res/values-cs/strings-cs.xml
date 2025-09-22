@@ -255,6 +255,9 @@
     <string name="dexcom_transmitter_id">ID vysílače Dexcom</string>
     <string name="run_collector_in_foreground">Spustit kolektor v popředí</string>
     <string name="shows_a_persistent_notification">Zobrazit trvale graf v oznámeních, viditelný na uzamčené obrazovce a předejít ukončení služby androidem</string>
+    <string name="title_collector_in_foreground">Kolektor v popředí</string>
+    <string name="summary_compact_ongoing_notification">Povolit skrýt graf v oznámení a zobrazit pouze aktuální hodnotu glykémie.</string>
+    <string name="title_compact_ongoing_notification">Zkrácené trvalé oznámení</string>
     <string name="list_of_receivers">Seznam přjímačů</string>
     <string name="extra_tags_for_logging">Další klíčová slova pro logování</string>
     <string name="extra_tags_dialog_message">Klíčová slova zadaná zde, budou v xDripu logována. Formát je: klíčové_slovo:úroveň. Úroveň může být v,d,i. Např. bgreading:i,DexCollectionService:v. Tato klíčová slova budou logována s nízkou prioritou mezi chyby a do seznamu událostí.</string>
@@ -1914,4 +1917,9 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="sensor_will_expire_in">Senzor skončí za %1$s</string>
     <string name="xdrip_update">Aktualizace xDrip+</string>
     <string name="a_new_version_on_channel_1_s_is_available">Je dostupná nová verze na kanálu %1$s</string>
+    <string name="today">Dnes</string>
+    <string name="yesterday">Včera</string>
+    <string name="last_7_days">Posledních 7 dní</string>
+    <string name="last_30_days">Posledních 30 dní</string>
+    <string name="last_90_days">Posledních 90 dní</string>
 </resources>

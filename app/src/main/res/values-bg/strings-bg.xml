@@ -254,7 +254,10 @@
     <string name="enter_ten_character_dexcom_receiver_serial">Въведете 10 символа на Dexcom приемника сериен номер</string>
     <string name="dexcom_transmitter_id">Dexcom Трансмитер ID</string>
     <string name="run_collector_in_foreground">Колектора да работи на \"преден план\"</string>
-    <string name="shows_a_persistent_notification">Показва постоянна графика на известията, видима на заключен екран и предотвратява прекъсването на услугата от Android.</string>
+    <string name="shows_a_persistent_notification">Показва постоянна графика на известията, видима на заключен екран и предотвратява прекъсване на услугата от Android.</string>
+    <string name="title_collector_in_foreground">Колекционер на преден план</string>
+    <string name="summary_compact_ongoing_notification">Активирайте, за да скриете графиката в известието и да показва само текущата стойност на глюкозата.</string>
+    <string name="title_compact_ongoing_notification">Компактно постоянно известие</string>
     <string name="list_of_receivers">Списък приемници</string>
     <string name="extra_tags_for_logging">Допълнителни тагове</string>
     <string name="extra_tags_dialog_message">Въведените тагове ще бъдат записани в xDrip. Форматът е таг: ниво. Нивото може да бъде v,d,i. Например bgreading:i,DexCollectionService:v. Тези тагове ще бъдат записани с нисък приоритет за грешка и списък със събития.</string>
@@ -1917,4 +1920,9 @@
     <string name="sensor_will_expire_in">Сензорът ще изтече след %1$s</string>
     <string name="xdrip_update">xDrip+ Ъпдейт</string>
     <string name="a_new_version_on_channel_1_s_is_available">Налична е нова версия в канал %1$s</string>
+    <string name="today">Днес</string>
+    <string name="yesterday">Вчера</string>
+    <string name="last_7_days">Последните 7 дни</string>
+    <string name="last_30_days">Последните 30 дни</string>
+    <string name="last_90_days">Последните 90 дни</string>
 </resources>

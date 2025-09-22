@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.cgm.carelinkfollow.message;
 
+import com.microsoft.appcenter.ingestion.models.json.DefaultLogSerializer;
+
 import java.util.HashMap;
 
 public class TextMap {
@@ -311,21 +313,27 @@ public class TextMap {
         return getErrorMessage(deviceFamily, notification.messageId, notification.faultId);
     }
 
-    public static String getNotificationMessage(String deviceFamily, String messageId, int faultId) {
+    public static String getNotificationMessage(String deviceFamily, String messageId, String faultId) {
         return getErrorMessage(deviceFamily, messageId, faultId);
     }
 
-    public static String getErrorMessage(String deviceFamily, String guardianErrorCode, int ngpErrorCode) {
+    public static String getErrorMessage(String deviceFamily, String guardianErrorCode, String ngpErrorCode) {
         String errorTextId;
         String internalEC;
+        String formattedEC;
 
         if (deviceFamily.equals(RecentData.DEVICE_FAMILY_GUARDIAN)) {
             if (guardianErrorCode != null)
                 errorTextId = ERROR_TEXT_PREFIX_GUARDIAN + guardianErrorCode;
             else
                 errorTextId = null;
-        } else if (deviceFamily.equals(RecentData.DEVICE_FAMILY_NGP)) {
-            String formattedEC = String.format("%03d", ngpErrorCode);
+        } else if (deviceFamily.equals(RecentData.DEVICE_FAMILY_NGP) || deviceFamily.equals(RecentData.DEVICE_FAMILY_CGM)) {
+            if(ngpErrorCode.matches("\\d+"))
+            {
+                formattedEC = String.format("%03d", Integer.parseInt(ngpErrorCode));
+            }
+            else
+                formattedEC = ngpErrorCode;
             if (errorCodeMap.containsKey(formattedEC))
                 internalEC = errorCodeMap.get(formattedEC);
             else

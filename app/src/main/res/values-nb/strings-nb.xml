@@ -255,6 +255,9 @@
     <string name="dexcom_transmitter_id">Dexcom sender-ID</string>
     <string name="run_collector_in_foreground">Kjør innsamler i forgrunnen</string>
     <string name="shows_a_persistent_notification">Viser vedvarende varselgraf, synlig på låseskjermen og hindrer android i å stoppe tjenesten.</string>
+    <string name="title_collector_in_foreground">Innsamler i forgrunnen</string>
+    <string name="summary_compact_ongoing_notification">Aktiver for å skjule grafen i varselet og bare vise gjeldende glukoseverdi.</string>
+    <string name="title_compact_ongoing_notification">Kompakt vedvarende varsling</string>
     <string name="list_of_receivers">Liste over mottakere</string>
     <string name="extra_tags_for_logging">Ekstra koder for logging</string>
     <string name="extra_tags_dialog_message">De innskrevne kodene her vil være logget inn i xDrip. Formatet er tag:nivå. Nivå kan være v, d, i. For eksempel bgreading:i,DexCollectionService:v. Disse kodene vil bli logget med lav prioritet til feil- og hendelseslisten.</string>
@@ -1921,4 +1924,9 @@
     <string name="sensor_will_expire_in">Sensor vil utløpe om %1$s</string>
     <string name="xdrip_update">xDrip+-oppdatering</string>
     <string name="a_new_version_on_channel_1_s_is_available">En ny versjon på kanalen %1$s er tilgjengelig</string>
+    <string name="today">Idag</string>
+    <string name="yesterday">Igår</string>
+    <string name="last_7_days">Siste 7 dager</string>
+    <string name="last_30_days">Siste 30 dager</string>
+    <string name="last_90_days">Siste 90 dager</string>
 </resources>

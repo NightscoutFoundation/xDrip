@@ -255,6 +255,9 @@
     <string name="dexcom_transmitter_id">Dexcom trasmettitore ID</string>
     <string name="run_collector_in_foreground">Eseguire Collector in primo piano</string>
     <string name="shows_a_persistent_notification">Mostra un grafico di notifica, visibile sul blocco schermo e impedisce ad Android di chiudere la app</string>
+    <string name="title_collector_in_foreground">Eseguire Collector in primo piano</string>
+    <string name="summary_compact_ongoing_notification">Abilita per nascondere il grafico nelle notifiche e visualizzare solo il valore attuale di glucosio.</string>
+    <string name="title_compact_ongoing_notification">Notifica Persistente Compatta</string>
     <string name="list_of_receivers">Elenco dei ricevitori</string>
     <string name="extra_tags_for_logging">Tag aggiuntivi per la registrazione</string>
     <string name="extra_tags_dialog_message">I tag inseriti qui saranno registrati in xDrip. Il formato è tag: level. Il livello può essere v, d, i. Per esempio bgreading: i, DexCollectionService: v. Questi tag saranno registrati con bassa priorità per errori e lista eventi.</string>
@@ -1921,4 +1924,9 @@
     <string name="sensor_will_expire_in">Il sensore scadrà in %1$s</string>
     <string name="xdrip_update">Aggiornamento xDrip+</string>
     <string name="a_new_version_on_channel_1_s_is_available">È disponibile una nuova versione nel canale %1$s</string>
+    <string name="today">Oggi</string>
+    <string name="yesterday">Ieri</string>
+    <string name="last_7_days">Ultimi 7 giorni</string>
+    <string name="last_30_days">Ultimi 30 giorni</string>
+    <string name="last_90_days">Ultimi 90 giorni</string>
 </resources>

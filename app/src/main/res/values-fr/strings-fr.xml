@@ -255,6 +255,9 @@
     <string name="dexcom_transmitter_id">ID de l\'émetteur Dexcom</string>
     <string name="run_collector_in_foreground">Exécutez Collector au premier plan</string>
     <string name="shows_a_persistent_notification">Affiche un graphique de notification persistant, visible sur l\'écran verrouillée et empêche android de mettre fin au service.</string>
+    <string name="title_collector_in_foreground">Exécutez Collector au premier plan</string>
+    <string name="summary_compact_ongoing_notification">Activer pour masquer le graphique dans la notification et afficher uniquement la valeur de glucose actuelle.</string>
+    <string name="title_compact_ongoing_notification">Notification persistante compacte</string>
     <string name="list_of_receivers">Liste des récepteurs</string>
     <string name="extra_tags_for_logging">Balises supplémentaires pour le log</string>
     <string name="extra_tags_dialog_message">Les balises saisies ici seront enregistrées dans xDrip. Le format est tag:niveau. Le niveau peut être v, d, i. Par exemple bgreading:i, DexCollectionService:v. Cette balises seront enregistrées avec une faible priorité en Erreur dans la liste d\'événements.</string>
@@ -774,7 +777,7 @@
     <string name="calibrations_request_time_time_difference">Combien d\'heures entre les demandes de calibration</string>
     <string name="hours_between_calibrations">Heures entre les calibrations</string>
     <string name="calibrations_sound">Définir le son utilisé pour les demandes de calibrations.</string>
-    <string name="override_silent_mode">Remplacer le mode silencieux</string>
+    <string name="override_silent_mode">Ignorer le mode silencieux</string>
     <string name="even_when_charging">Même lors de la charge</string>
     <string name="no_calibration_requests_charging">Décocher la case pour ne pas demander de calibrations lorsque le téléphone est en charge</string>
     <string name="keep_alert_no_calibration">Continuer d\'alerter si aucune calibration n\'est réalisée</string>
@@ -1917,4 +1920,9 @@
     <string name="sensor_will_expire_in">Le capteur expirera dans %1$s</string>
     <string name="xdrip_update">Mise à jour xDrip+</string>
     <string name="a_new_version_on_channel_1_s_is_available">Une nouvelle version sur le canal %1$s est disponible</string>
+    <string name="today">Aujourd\'hui</string>
+    <string name="yesterday">Hier</string>
+    <string name="last_7_days">7 derniers jours</string>
+    <string name="last_30_days">30 derniers jours</string>
+    <string name="last_90_days">90 derniers jours</string>
 </resources>
