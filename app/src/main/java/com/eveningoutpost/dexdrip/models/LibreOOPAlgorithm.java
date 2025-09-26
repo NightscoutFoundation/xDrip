@@ -307,6 +307,7 @@ public class LibreOOPAlgorithm {
                 return SensorType.Libre2;
             case 0xc60931:
             case 0x7f0e31:
+            case 0x7f0e30:
                 return SensorType.Libre2Plus;
             case 0x700010:
                 return SensorType.LibreProH;
