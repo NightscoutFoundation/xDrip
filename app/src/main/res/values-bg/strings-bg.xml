@@ -319,6 +319,10 @@
     <string name="pebble_and_android_wear_options">Опции за различни часовници</string>
     <string name="customize_colours">Избор на цветове</string>
     <string name="xdrip_plus_color_settings">xDrip+ Цветови Настройки</string>
+    <string name="summary_font_settings">Персонализиране на шрифтове</string>
+    <string name="title_font_settings">Настройки на шрифта</string>
+    <string name="summary_enlarge_fonts_on_large_screens">Автоматично увеличаване на размера на шрифта на големи екрани, като например таблети</string>
+    <string name="title_enlarge_fonts_on_large_screens">Уголемяване на шрифтове на по-големи дисплеи</string>
     <string name="glucose_values_and_lines">Глюкозни Стойности и Линии</string>
     <string name="high_glucose_values">Високи Глюкозни стойности</string>
     <string name="in_range_glucose_values">Глюкозни стойности в диапазон</string>

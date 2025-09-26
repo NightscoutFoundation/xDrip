@@ -316,6 +316,10 @@
     <string name="pebble_and_android_wear_options">Beállítások okosórákhoz</string>
     <string name="customize_colours">Színek beállítása</string>
     <string name="xdrip_plus_color_settings">xDrip+ színbeállítások</string>
+    <string name="summary_font_settings">Betűk tulajdonságainak módosítása</string>
+    <string name="title_font_settings">Betű beállítások</string>
+    <string name="summary_enlarge_fonts_on_large_screens">A betűk automatikus nagyítása nagyobb képernyőn, pl. tableten</string>
+    <string name="title_enlarge_fonts_on_large_screens">Betűk nagyítása nagyobb képernyőn</string>
     <string name="glucose_values_and_lines">VC-értékek és határvonalak</string>
     <string name="high_glucose_values">Magas VC-értékek</string>
     <string name="in_range_glucose_values">Céltartományon belüli VC-értékek</string>

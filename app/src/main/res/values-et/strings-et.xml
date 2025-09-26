@@ -319,6 +319,10 @@
     <string name="pebble_and_android_wear_options">Valikud erinevate kellade jaoks</string>
     <string name="customize_colours">Kohanda värve</string>
     <string name="xdrip_plus_color_settings">xDrip+ värviseaded</string>
+    <string name="summary_font_settings">Kohanda fonte</string>
+    <string name="title_font_settings">Fondi seaded</string>
+    <string name="summary_enlarge_fonts_on_large_screens">Tõsta suurtel ekraanidel, nt. tahvelarvutis, automaatselt tekstisuurust</string>
+    <string name="title_enlarge_fonts_on_large_screens">Tõsta suurtel ekraanidel tekstisuurust</string>
     <string name="glucose_values_and_lines">Veresuhkru väärtused ja jooned</string>
     <string name="high_glucose_values">Kõrged veresuhkru väärtused</string>
     <string name="in_range_glucose_values">Sihtvahemikus olevad veresuhkruväärtused</string>
