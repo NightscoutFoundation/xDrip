@@ -232,8 +232,8 @@
     <string name="pref_was_greater_than_max">%1$s määrati maksimaalsest lubatud väärtusest suuremale väärtusele. See on muudetud maksimumiks.</string>
     <string name="setting_pref_to_min">Määra min</string>
     <string name="pref_was_less_than_min">%1$s määrati väärtusele, mis on väiksem kui lubatud miinimum. See on muudetud miinimumiks.</string>
-    <string name="extrapolate_data_to_try_to_predict_lows">Ekstrapoleeri andmeid, et ennustada madalate suhkrute tekkimist</string>
-    <string name="alarm_at_forecasted_low_mins">Alarm prognoositud madalal mins</string>
+    <string name="extrapolate_data_to_try_to_predict_lows">Arvestades praegust väärtust ja trendi, arvutatakse välja, millised on järgmised näidud kui trend püsib (ekstrapoleerimine). Ei arvestata insuliini ega süsivesikute koguseid.</string>
+    <string name="alarm_at_forecasted_low_mins">Ajaline piir [min.]</string>
     <string name="title_forecast_low_threshold">Piirmäär</string>
     <string name="other_xdrip_plus_alerts">Teised xDrip+ alarmid</string>
     <string name="xdrip_plus_display_settings">xDrip+ kuva seaded</string>
