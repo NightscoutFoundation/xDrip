@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.cgm.carelinkfollow.message;
 
-import com.microsoft.appcenter.ingestion.models.json.DefaultLogSerializer;
+
 
 import java.util.HashMap;
 
