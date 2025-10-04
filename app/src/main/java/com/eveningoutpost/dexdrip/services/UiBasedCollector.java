@@ -171,10 +171,24 @@ public class UiBasedCollector extends NotificationListenerService {
         if (notification.contentView != null) {
             processCompanionAppIoBNotificationCV(notification.contentView);
         } else {
-            UserError.Log.e(TAG, "Content is empty");
+            processCompanionAppIoBNotificationTitle(notification);
         }
     }
 
+    private void processCompanionAppIoBNotificationTitle(final Notification notification) {
+        Double iob = null;
+        try {
+            String notificationTitle = notification.extras.getString("android.title");
+            iob = parseIoB(notificationTitle);
+
+            if (iob != null) {
+                if (debug) UserError.Log.d(TAG, "Inserting new IoB value extracted from title: " + iob);
+                iob_store.set(iob);
+            }
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "exception in processCompanionAppIoBNotificationTitle: " + e);
+        }
+    }
     private void processCompanionAppIoBNotificationCV(final RemoteViews cview) {
         if (cview == null) return;
         val applied = cview.apply(this, null);
@@ -196,7 +210,7 @@ public class UiBasedCollector extends NotificationListenerService {
             }
 
             if (iob != null) {
-                if (debug) UserError.Log.d(TAG, "Inserting new IoB value: " + iob);
+                if (debug) UserError.Log.d(TAG, "Inserting new IoB value extracted from CV: " + iob);
                 iob_store.set(iob);
             }
         } catch (Exception e) {
