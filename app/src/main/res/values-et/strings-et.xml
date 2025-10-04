@@ -232,8 +232,8 @@
     <string name="pref_was_greater_than_max">%1$s määrati maksimaalsest lubatud väärtusest suuremale väärtusele. See on muudetud maksimumiks.</string>
     <string name="setting_pref_to_min">Määra min</string>
     <string name="pref_was_less_than_min">%1$s määrati väärtusele, mis on väiksem kui lubatud miinimum. See on muudetud miinimumiks.</string>
-    <string name="extrapolate_data_to_try_to_predict_lows">Ekstrapoleeri andmeid, et ennustada madalate suhkrute tekkimist</string>
-    <string name="alarm_at_forecasted_low_mins">Alarm prognoositud madalal mins</string>
+    <string name="extrapolate_data_to_try_to_predict_lows">Arvestades praegust väärtust ja trendi, arvutatakse välja, millised on järgmised näidud kui trend püsib (ekstrapoleerimine). Ei arvestata insuliini ega süsivesikute koguseid.</string>
+    <string name="alarm_at_forecasted_low_mins">Ajaline piir [min.]</string>
     <string name="title_forecast_low_threshold">Piirmäär</string>
     <string name="other_xdrip_plus_alerts">Teised xDrip+ alarmid</string>
     <string name="xdrip_plus_display_settings">xDrip+ kuva seaded</string>
@@ -321,8 +321,8 @@
     <string name="xdrip_plus_color_settings">xDrip+ värviseaded</string>
     <string name="summary_font_settings">Kohanda fonte</string>
     <string name="title_font_settings">Fondi seaded</string>
-    <string name="summary_enlarge_fonts_on_large_screens">Tõsta suurtel ekraanidel, nt. tahvelarvutis, automaatselt tekstisuurust</string>
-    <string name="title_enlarge_fonts_on_large_screens">Tõsta suurtel ekraanidel tekstisuurust</string>
+    <string name="summary_enlarge_fonts_on_large_screens">Suurenda fondi suurust automaatselt suurtel ekraanidel, nt. tahvelarvutites</string>
+    <string name="title_enlarge_fonts_on_large_screens">Suurenda fonte suurematel ekraanidel</string>
     <string name="glucose_values_and_lines">Veresuhkru väärtused ja jooned</string>
     <string name="high_glucose_values">Kõrged veresuhkru väärtused</string>
     <string name="in_range_glucose_values">Sihtvahemikus olevad veresuhkruväärtused</string>
