@@ -1022,7 +1022,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
 
         dialogBuilder.setTitle(((reminder == null) ? xdrip.getAppContext().getString(R.string.title_add_reminder) : xdrip.getAppContext().getString(R.string.title_edit_reminder)));
         //dialogBuilder.setMessage("Enter text below");
-        dialogBuilder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+        dialogBuilder.setPositiveButton(xdrip.getAppContext().getString(R.string.done), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 String reminder_title = titleEditText.getText().toString().trim();
                 Log.d(TAG, "Got reminder title: " + reminder_title);
@@ -1261,17 +1261,21 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
 
     private synchronized void hideSnoozeFloater() {
         if (!floaterHidden) {
-            animateSnoozeFloater(0, floatingsnooze.getHeight(), new AccelerateInterpolator(1.5f));
+            if (floatingsnooze != null) {
+                animateSnoozeFloater(0, floatingsnooze.getHeight(), new AccelerateInterpolator(1.5f));
+            }
             floaterHidden = true;
         }
     }
 
     private synchronized void showSnoozeFloater() {
         if (floaterHidden) {
-            animateSnoozeFloater(floatingsnooze.getHeight(), 0, new DecelerateInterpolator(1.5f));
             floaterHidden = false;
-            floatingsnooze.setVisibility(View.VISIBLE);
-            showcase(this, SHOWCASE_REMINDER3);
+            if (floatingsnooze != null) {
+                animateSnoozeFloater(floatingsnooze.getHeight(), 0, new DecelerateInterpolator(1.5f));
+                floatingsnooze.setVisibility(View.VISIBLE);
+                showcase(this, SHOWCASE_REMINDER3);
+            }
         }
         hideKeyboard(recyclerView);
     }

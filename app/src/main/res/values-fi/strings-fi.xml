@@ -218,6 +218,7 @@
     <string name="other_alerts">Muut hälytykset</string>
     <string name="extra_alerts_xdrip_plus">Lisähälytykset (xDrip+)</string>
     <string name="persistent_high_alert">Pitkäaikainen korkea hälytys</string>
+    <string name="persistent_high_alert_enable">Käytä</string>
     <string name="forecasted_low_alert">Ennustetun matalan hälytys</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Matalat ennustetaan tiedoista päättelemällä</string>
     <string name="alarm_at_forecasted_low_mins">Hälytä, kun matala ennustettu minuuteissa</string>
@@ -241,6 +242,9 @@
     <string name="dexcom_transmitter_id">Dexcom lähettimen ID</string>
     <string name="run_collector_in_foreground">Suorita tiedon kerääjä etualalla</string>
     <string name="shows_a_persistent_notification">Näytä kuvaaja pysyvänä ilmoituksena lukitusnäytöllä ja estä Androidia sulkemasta palvelua.</string>
+    <string name="title_collector_in_foreground">Suorita tiedonkerääjä päällimmäksenä</string>
+    <string name="summary_compact_ongoing_notification">Ota käyttöön piilottaaksesi kuvaajan ilmoituksissa ja näytä ainoastaan glukoosiarvo.</string>
+    <string name="title_compact_ongoing_notification">Tiivistetty pysyvä ilmoitus</string>
     <string name="list_of_receivers">Lista vastaanottimista</string>
     <string name="extra_tags_for_logging">Lisätunnisteet lokia varten</string>
     <string name="extra_tags_dialog_message">Tässä annetut tunnisteet kirjataan xDripille. Muoto on tunniste:taso. Taso voi olla v, d tai i. Esimerkiksi vsmittaus:i, DexcomKeräys:v. Nämä tunnisteet kirjoitetaan Virhelokiin ja tapahtumalistaan matalalla lokitustasolla.</string>
@@ -1260,6 +1264,7 @@
     <string name="summary_lefun_send_alarms">Lähetä rannekkeeseen ilmoituksia VS-hälytyksistä</string>
     <string name="title_lefun_send_alarms">Lähetä hälytykset</string>
     <string name="title_lefun_option_shake_snoozes">Torkuta ravistamalla</string>
+    <string name="title_lefun_send_calls">Lähetä puhelut</string>
     <string name="title_lefun_screens_features">Lefun näytöt / ominaisuudet</string>
     <string name="title_features">Ominaisuudet</string>
     <string name="title_lefun_feature_lift_to_wak">Herätä nostamalla</string>
@@ -1608,6 +1613,7 @@
     <string name="enable_graph_smoothing">Käytä</string>
     <string name="cannot_choose_file_without_permission">Tiedostoa ei voida valita ilman tallennustilan käyttöoikeutta</string>
     <string name="titleInside_yRange">Käytä</string>
+    <string name="title_sens_expiry_notify">Käytä</string>
     <string name="close">Sulje</string>
     <string name="data_source">Tietolähde:</string>
     <string name="reraise_alerts_before_snooze_time">Toista hälytykset ennen torkkuaikaa</string>

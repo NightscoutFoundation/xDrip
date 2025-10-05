@@ -75,14 +75,25 @@ public class UiBasedCollector extends NotificationListenerService {
     static {
         coOptedPackages.add("com.dexcom.g6");
         coOptedPackages.add("com.dexcom.g6.region1.mmol");
+        coOptedPackages.add("com.dexcom.g6.region2.mgdl");
         coOptedPackages.add("com.dexcom.g6.region3.mgdl");
+        coOptedPackages.add("com.dexcom.g6.region4.mmol");
+        coOptedPackages.add("com.dexcom.g6.region5.mmol");
+        coOptedPackages.add("com.dexcom.g6.region6.mgdl");
+        coOptedPackages.add("com.dexcom.g6.region7.mmol");
+        coOptedPackages.add("com.dexcom.g6.region8.mmol");
+        coOptedPackages.add("com.dexcom.g6.region9.mgdl");
+        coOptedPackages.add("com.dexcom.g6.region10.mgdl");
+        coOptedPackages.add("com.dexcom.g6.region11.mmol");
         coOptedPackages.add("com.dexcom.dexcomone");
+        coOptedPackages.add("com.dexcom.stelo");
         coOptedPackages.add("com.dexcom.g7");
         coOptedPackages.add("com.dexcom.d1plus");
         coOptedPackages.add("com.camdiab.fx_alert.mmoll");
         coOptedPackages.add("com.camdiab.fx_alert.mgdl");
         coOptedPackages.add("com.camdiab.fx_alert.hx.mmoll");
         coOptedPackages.add("com.camdiab.fx_alert.hx.mgdl");
+        coOptedPackages.add("com.camdiab.fx_alert.mmoll.ca");
         coOptedPackages.add("com.medtronic.diabetes.guardian");
         coOptedPackages.add("com.medtronic.diabetes.guardianconnect");
         coOptedPackages.add("com.medtronic.diabetes.guardianconnect.us");
@@ -91,15 +102,36 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackages.add("com.medtronic.diabetes.simplera.eu");
         coOptedPackages.add("com.senseonics.gen12androidapp");
         coOptedPackages.add("com.senseonics.androidapp");
-        coOptedPackages.add("com.microtech.aidexx.mgdl"); // Experiment
+        coOptedPackages.add("com.microtech.aidexx.mgdl");
+        coOptedPackages.add("com.microtech.aidexx.equil.mmoll");
+        coOptedPackages.add("com.ottai.seas");
+        coOptedPackages.add("com.microtech.aidexx"); //for microtech china version
+        coOptedPackages.add("com.ottai.tag"); // //for ottai china version
+        coOptedPackages.add("com.senseonics.eversense365.us");
+        coOptedPackages.add("com.kakaohealthcare.pasta"); // A Health app for sensors that we already collect from
+        coOptedPackages.add("com.sinocare.cgm.ce");
+        coOptedPackages.add("com.sinocare.ican.health.ce");
+        coOptedPackages.add("com.sinocare.ican.health.ru");
+        coOptedPackages.add("com.suswel.ai");
 
         coOptedPackagesAll.add("com.dexcom.dexcomone");
         coOptedPackagesAll.add("com.dexcom.d1plus");
+        coOptedPackagesAll.add("com.dexcom.stelo");
         coOptedPackagesAll.add("com.medtronic.diabetes.guardian");
         coOptedPackagesAll.add("com.medtronic.diabetes.simplera.eu");
         coOptedPackagesAll.add("com.senseonics.gen12androidapp");
         coOptedPackagesAll.add("com.senseonics.androidapp");
-        coOptedPackagesAll.add("com.microtech.aidexx.mgdl"); // Experiment
+        coOptedPackagesAll.add("com.microtech.aidexx.mgdl");
+        coOptedPackagesAll.add("com.microtech.aidexx.equil.mmoll");
+        coOptedPackagesAll.add("com.ottai.seas");
+        coOptedPackagesAll.add("com.microtech.aidexx"); //for microtech china version
+        coOptedPackagesAll.add("com.ottai.tag"); // //for ottai china version
+        coOptedPackagesAll.add("com.senseonics.eversense365.us");
+        coOptedPackagesAll.add("com.kakaohealthcare.pasta"); // Experiment
+        coOptedPackagesAll.add("com.sinocare.cgm.ce");
+        coOptedPackagesAll.add("com.sinocare.ican.health.ce");
+        coOptedPackagesAll.add("com.sinocare.ican.health.ru");
+        coOptedPackagesAll.add("com.suswel.ai");
 
         companionAppIoBPackages.add("com.insulet.myblue.pdm");
 
@@ -139,10 +171,24 @@ public class UiBasedCollector extends NotificationListenerService {
         if (notification.contentView != null) {
             processCompanionAppIoBNotificationCV(notification.contentView);
         } else {
-            UserError.Log.e(TAG, "Content is empty");
+            processCompanionAppIoBNotificationTitle(notification);
         }
     }
 
+    private void processCompanionAppIoBNotificationTitle(final Notification notification) {
+        Double iob = null;
+        try {
+            String notificationTitle = notification.extras.getString("android.title");
+            iob = parseIoB(notificationTitle);
+
+            if (iob != null) {
+                if (debug) UserError.Log.d(TAG, "Inserting new IoB value extracted from title: " + iob);
+                iob_store.set(iob);
+            }
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "exception in processCompanionAppIoBNotificationTitle: " + e);
+        }
+    }
     private void processCompanionAppIoBNotificationCV(final RemoteViews cview) {
         if (cview == null) return;
         val applied = cview.apply(this, null);
@@ -164,7 +210,7 @@ public class UiBasedCollector extends NotificationListenerService {
             }
 
             if (iob != null) {
-                if (debug) UserError.Log.d(TAG, "Inserting new IoB value: " + iob);
+                if (debug) UserError.Log.d(TAG, "Inserting new IoB value extracted from CV: " + iob);
                 iob_store.set(iob);
             }
         } catch (Exception e) {
@@ -173,6 +219,7 @@ public class UiBasedCollector extends NotificationListenerService {
 
         texts.clear();
     }
+
     Double parseIoB(final String value) {
         for (Pattern pattern : companionAppIoBRegexes) {
             Matcher matcher = pattern.matcher(value);
@@ -213,24 +260,36 @@ public class UiBasedCollector extends NotificationListenerService {
             }
             processRemote(notification.contentView);
         } else {
-            UserError.Log.e(TAG, "Content is empty");
+            int mgdl;
+            String t;
+            if (notification.extras != null
+                    && (isValidString(t = notification.extras.getString(Notification.EXTRA_TITLE)))
+                    && (mgdl = tryExtractString(t)) > 0) {
+                handleNewValue(mgdl);
+            } else {
+                UserError.Log.e(TAG, "Content is empty");
+            }
         }
+    }
+
+    private boolean isValidString(String str) {
+        return str != null && !str.trim().isEmpty();
     }
 
     String filterString(final String value) {
         if (lastPackage == null) return value;
         switch (lastPackage) {
             default:
-                    return (basicFilterString(arrowFilterString(value)))
+                return (basicFilterString(arrowFilterString(value)))
                         .trim();
         }
     }
 
     String basicFilterString(final String value) {
         return value
-                .replace("\u00a0"," ")
-                .replace("\u2060","")
-                .replace("\\","/")
+                .replace("\u00a0", " ")
+                .replace("\u2060", "")
+                .replace("\\", "/")
                 .replace("mmol/L", "")
                 .replace("mmol/l", "")
                 .replace("mg/dL", "")
@@ -261,8 +320,8 @@ public class UiBasedCollector extends NotificationListenerService {
     }
 
     @SuppressWarnings("UnnecessaryLocalVariable")
-    private void processRemote(final RemoteViews cview) {
-        if (cview == null) return;
+    private boolean processRemote(final RemoteViews cview) {
+        if (cview == null) return false;
         val applied = cview.apply(this, null);
         val root = (ViewGroup) applied.getRootView();
         val texts = new ArrayList<TextView>();
@@ -276,36 +335,50 @@ public class UiBasedCollector extends NotificationListenerService {
                 val text = tv.getText() != null ? tv.getText().toString() : "";
                 val desc = tv.getContentDescription() != null ? tv.getContentDescription().toString() : "";
                 UserError.Log.d(TAG, "Examining: >" + text + "< : >" + desc + "<");
-                val ftext = filterString(text);
-                if (Unitized.usingMgDl()) {
-                    mgdl = Integer.parseInt(ftext);
-                    if (mgdl > 0) {
-                        matches++;
-                    }
-                } else {
-                    if (isValidMmol(ftext)) {
-                        val result = JoH.tolerantParseDouble(ftext, -1);
-                        if (result != -1) {
-                            mgdl = (int) Math.round(Unitized.mgdlConvert(result));
-                            if (mgdl > 0) {
-                                matches++;
-                            }
-                        }
-                    }
+                val lmgdl = tryExtractString(text);
+                if (lmgdl > 0) {
+                    mgdl = lmgdl;
+                    matches++;
                 }
             } catch (Exception e) {
                 //
             }
         }
+        texts.clear();
         if (matches == 0) {
-            UserError.Log.e(TAG, "Did not find any matches");
+            UserError.Log.d(TAG, "Did not find any matches");
         } else if (matches > 1) {
             UserError.Log.e(TAG, "Found too many matches: " + matches);
         } else {
-            val timestamp = JoH.tsl();
-            handleNewValue(timestamp, mgdl);
+            handleNewValue(mgdl);
+            return true;
         }
-        texts.clear();
+        return false;
+    }
+
+    int tryExtractString(final String text) {
+        int mgdl = -1;
+        try {
+            val ftext = filterString(text);
+            if (Unitized.usingMgDl()) {
+                mgdl = Integer.parseInt(ftext);
+            } else {
+                if (isValidMmol(ftext)) {
+                    val result = JoH.tolerantParseDouble(ftext, -1);
+                    if (result != -1) {
+                        mgdl = (int) Math.round(Unitized.mgdlConvert(result));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            UserError.Log.d(TAG, "Got exception in tryExtractString: " + e);
+        }
+        return mgdl;
+    }
+
+    boolean handleNewValue(final int mgdl) {
+        val timestamp = JoH.tsl();
+        return handleNewValue(timestamp, mgdl);
     }
 
     boolean handleNewValue(final long timestamp, final int mgdl) {
@@ -335,7 +408,7 @@ public class UiBasedCollector extends NotificationListenerService {
                     }
                 }
             } else {
-                UserError.Log.d(TAG, "Duplicate value: "+existing.timeStamp());
+                UserError.Log.d(TAG, "Duplicate value: " + existing.timeStamp());
             }
         } else {
             UserError.Log.wtf(TAG, "Glucose value outside acceptable range: " + mgdl);
@@ -350,10 +423,11 @@ public class UiBasedCollector extends NotificationListenerService {
     private boolean shouldAllowTimeOffsetChange(final int mgdl) {
         return isDifferentToLast(mgdl); // TODO do we need to rate limit this or not?
     }
+
     // note this method only checks existing stored data
     private boolean isDifferentToLast(final int mgdl) {
-            val previousValue = PersistentStore.getLong(UI_BASED_STORE_LAST_VALUE);
-            return previousValue != mgdl;
+        val previousValue = PersistentStore.getLong(UI_BASED_STORE_LAST_VALUE);
+        return previousValue != mgdl;
     }
 
     // note this method actually updates the stored value

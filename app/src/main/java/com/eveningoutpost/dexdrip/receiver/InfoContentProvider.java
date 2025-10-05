@@ -124,7 +124,8 @@ public class InfoContentProvider extends ContentProvider {
                 case "nano-status": {
                     return matrixRow(
                             "collector", nanoStatus("collector"),
-                            "sensor-expiry", nanoStatus("sensor-expiry")
+                            "sensor-expiry", nanoStatus("sensor-expiry"),
+                            "s-expiry", nanoStatus("s-expiry")
                     );
                 }
 

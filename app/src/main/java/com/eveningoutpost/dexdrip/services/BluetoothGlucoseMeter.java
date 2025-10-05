@@ -223,8 +223,14 @@ public class BluetoothGlucoseMeter extends Service {
                     Bluetooth_CMD.notify(GLUCOSE_SERVICE, GLUCOSE_CHARACTERISTIC, "notify new glucose record");
                     Bluetooth_CMD.enable_notification_value(GLUCOSE_SERVICE, GLUCOSE_CHARACTERISTIC, "notify new glucose value");
 
-                    Bluetooth_CMD.enable_notification_value(GLUCOSE_SERVICE, CONTEXT_CHARACTERISTIC, "notify new context value");
-                    Bluetooth_CMD.notify(GLUCOSE_SERVICE, CONTEXT_CHARACTERISTIC, "notify new glucose context");
+                    if (hasContextCharacteristic(gatt)) {
+                        Bluetooth_CMD.enable_notification_value(GLUCOSE_SERVICE, CONTEXT_CHARACTERISTIC, "notify new context value");
+                        Bluetooth_CMD.notify(GLUCOSE_SERVICE, CONTEXT_CHARACTERISTIC, "notify new glucose context");
+                    } else {
+                        if (d) {
+                            Log.d(TAG, "Device has no context characteristic. Skipping");
+                        }
+                    }
 
                     Bluetooth_CMD.enable_indications(GLUCOSE_SERVICE, RECORDS_CHARACTERISTIC, "readings indication request");
                     Bluetooth_CMD.notify(GLUCOSE_SERVICE, RECORDS_CHARACTERISTIC, "notify glucose record");
@@ -239,6 +245,15 @@ public class BluetoothGlucoseMeter extends Service {
             } else {
                 Log.w(TAG, "onServicesDiscovered received: " + status);
             }
+        }
+
+        private boolean hasContextCharacteristic(BluetoothGatt gatt) {
+            BluetoothGattService glucoseService = gatt.getService(GLUCOSE_SERVICE);
+            if (glucoseService != null) {
+                BluetoothGattCharacteristic contextCharacteristic = glucoseService.getCharacteristic(CONTEXT_CHARACTERISTIC);
+                return contextCharacteristic != null;
+            }
+            return false;
         }
 
         @Override

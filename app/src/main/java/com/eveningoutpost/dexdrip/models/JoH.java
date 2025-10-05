@@ -49,6 +49,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.FileProvider;
 import androidx.loader.content.CursorLoader;
 
 import android.text.InputType;
@@ -62,6 +63,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.activeandroid.ActiveAndroid;
+import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
@@ -1426,14 +1428,15 @@ public class JoH {
         }
     }
 
-    public static void shareImage(Context context, File file) {
-        Uri uri = Uri.fromFile(file);
+    public static void shareImage(final Context context, final File file) {
+        final Uri uri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", file);
         final Intent intent = new Intent();
         intent.setAction(Intent.ACTION_SEND);
         intent.setType("image/*");
         intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "");
         intent.putExtra(android.content.Intent.EXTRA_TEXT, "");
         intent.putExtra(Intent.EXTRA_STREAM, uri);
+        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         try {
             context.startActivity(Intent.createChooser(intent, "Share"));
         } catch (ActivityNotFoundException e) {

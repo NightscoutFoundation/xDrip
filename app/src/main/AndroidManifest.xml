@@ -98,6 +98,7 @@
         android:theme="@style/AppTheme"
         tools:replace="android:appComponentFactory"
         android:appComponentFactory="android.support.v4.app.CoreComponentFactory"
+        android:requestLegacyExternalStorage="true"
         android:usesCleartextTraffic="true">
         <activity
             android:name=".HealthPrivacy"
@@ -637,14 +638,6 @@
             android:exported="true"></receiver>
 
         <service
-            android:name=".TaskService"
-            android:exported="true"
-            android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE">
-            <intent-filter>
-                <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY" />
-            </intent-filter>
-        </service>
-        <service
             android:name=".services.AlwaysOnDisplayService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
@@ -826,6 +819,8 @@
         <meta-data
             android:name="com.sec.android.multiwindow.MINIMUM_SIZE_H"
             android:value="598.0dip" />
+        <meta-data android:name="delivery_metrics_exported_to_big_query_enabled"
+            android:value="false"/>
 
         <activity android:name=".utilitymodels.XDripDreamSettingsActivity" />
 

@@ -52,7 +52,7 @@ public class AlertList extends ActivityWithMenu {
 
     String stringTimeFromAlert(AlertType alert) {
         if (alert.all_day) {
-            return "all day";
+            return getString(R.string.all_day);
         }
         String start = timeFormatString(AlertType.time2Hours(alert.start_time_minutes), AlertType.time2Minutes(alert.start_time_minutes));
         String end = timeFormatString(AlertType.time2Hours(alert.end_time_minutes), AlertType.time2Minutes(alert.end_time_minutes));
@@ -61,9 +61,9 @@ public class AlertList extends ActivityWithMenu {
 
     HashMap<String, String> createAlertMap(AlertType alert) {
         HashMap<String, String> map = new HashMap<String, String>();
-        String overrideSilentMode = "Override Silent Mode";
-        if (alert.override_silent_mode == false) {
-            overrideSilentMode = "No Alert in Silent Mode";
+        String overrideSilentMode = getString(R.string.override_silent_mode);
+        if (!alert.override_silent_mode) {
+            overrideSilentMode = getString(R.string.no_alert_in_silent_mode);
         }
         // We use a - sign to tell that this text should be stiked through
         String extra = "-";
@@ -191,7 +191,7 @@ public class AlertList extends ActivityWithMenu {
                 if (!isFinishing()) {
                     new AlertDialog.Builder(AlertList.this)
                             .setTitle("Warning !")
-                            .setMessage("No active Low Alert exists, without this there will be no alert on low glucose! Please add or enable a low alert.")
+                            .setMessage("No low alert is active. You won’t be notified of low glucose—please add or enable one.")
                             .setCancelable(false)
                             .setPositiveButton(
                                     "Ok",
