@@ -1933,4 +1933,5 @@
     <string name="last_7_days">Viimased 7 päeva</string>
     <string name="last_30_days">Viimased 30 päeva</string>
     <string name="last_90_days">Viimased 90 päeva</string>
+    <string name="could_not_create_qr_code">QR-koodi loomine ebaõnnestus</string>
 </resources>
