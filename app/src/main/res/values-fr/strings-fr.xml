@@ -1929,4 +1929,6 @@
     <string name="last_7_days">7 derniers jours</string>
     <string name="last_30_days">30 derniers jours</string>
     <string name="last_90_days">90 derniers jours</string>
+    <string name="scan_with_xdrip_settings_auto_configure"><![CDATA[Scanner avec\nxDrip Paramètres -> Auto Configurer]]></string>
+    <string name="could_not_create_qr_code">Impossible de créer le QR code</string>
 </resources>
