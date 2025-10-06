@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.models;
 
-import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getDexCollectionType;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
@@ -27,16 +27,12 @@ public class SensorSanity {
 
     private static final String TAG = "SensorSanity";
 
-    public static boolean isRawCapable(DexCollectionType type) { // This is true only if the sensor can provide raw values
-        return (DexCollectionType.hasDexcomRaw(type) || DexCollectionType.hasLibre(type) || type == DexCollectionType.Medtrum);
-    }
-
     public static boolean isRawValueSane(double raw_value) {
-        return isRawValueSane(raw_value, getDexCollectionType(), false);
+        return isRawValueSane(raw_value, DexCollectionType.getDexCollectionType(), false);
     }
 
     public static boolean isRawValueSane(double raw_value, boolean hard) {
-        return isRawValueSane(raw_value, getDexCollectionType(), hard);
+        return isRawValueSane(raw_value, DexCollectionType.getDexCollectionType(), hard);
     }
 
     public static boolean isRawValueSane(double raw_value, DexCollectionType type) {
@@ -77,7 +73,7 @@ public class SensorSanity {
             else if (raw_value > DEXCOM_MAX_RAW) state = false;
         }
 
-        if (!state && isRawCapable(type)) {
+        if (!state && !getBestCollectorHardwareName().equals("G7")) {
             if (JoH.ratelimit("sanity-failure", 20)) {
                 final String msg = "Sensor Raw Data Sanity Failure: " + raw_value;
                 UserError.Log.e(TAG, msg);
@@ -110,7 +106,7 @@ public class SensorSanity {
         PersistentStore.setString(PREF_LIBRE_SENSOR_UUID, "");
         PersistentStore.setString(PREF_LIBRE_SN, "");
     }
-    
+
     public static boolean checkLibreSensorChangeIfEnabled(final String sn) {
         if( Home.get_is_libre_whole_house_collector() && Sensor.currentSensor() != null) {
             Log.e(TAG, "Stopping sensor because in libre whold house coverage sensor must be stopped.");
