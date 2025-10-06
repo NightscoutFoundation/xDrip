@@ -82,9 +82,9 @@ class DexOldSchoolParameters extends SlopeParameters {
 class DexParametersAdrian extends SlopeParameters {
 
     /*
-     * Other default vlaues and thresholds that can be only activated in settings, when in engineering mode.
-     * promoted to be the regular defaults 20th March 2017
-     * */
+    * Other default vlaues and thresholds that can be only activated in settings, when in engineering mode.
+    * promoted to be the regular defaults 20th March 2017
+    * */
 
     DexParametersAdrian() {
         LOW_SLOPE_1 = 0.75;
@@ -293,7 +293,7 @@ public class Calibration extends Model {
         final List<BgReading> bgReadings = BgReading.latest_by_size(3);
 
         // don't allow initial calibration if data would be stale (but still use data for native mode)
-        if ((bgReadings == null) || (bgReadings.size() != 3) || !isDataSuitableForDoubleCalibration() ){
+            if ((bgReadings == null) || (bgReadings.size() != 3) || !isDataSuitableForDoubleCalibration() ){
 
             if (Ob1G5CollectionService.usingNativeMode()) {
                 JoH.static_toast_long("Sending Blood Tests to Transmitter"); // TODO extract string
@@ -1303,8 +1303,8 @@ public class Calibration extends Model {
         return new Select()
                 .from(Calibration.class)
                 .where("sensor_uuid = ? ", sensor.uuid)
-                .orderBy("timestamp desc")
-                .limit(limit)
+                 .orderBy("timestamp desc")
+                 .limit(limit)
                 .execute();
     }
 

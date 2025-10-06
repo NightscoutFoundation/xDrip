@@ -1,0 +1,20 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "com.eveningoutpost.dexdrip",
+  "variantName": "prodRelease",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 1603091400,
+      "versionName": "89ebdc0f8-Navid_2024_08_26-2025.10.05",
+      "outputFile": "app-prod-release.apk"
+    }
+  ],
+  "elementType": "File"
+}
