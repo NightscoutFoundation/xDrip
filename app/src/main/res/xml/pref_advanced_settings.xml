@@ -1536,11 +1536,20 @@
                 android:key="xdrip_other_misc_extra_screen"
                 android:summary=""
                 android:title="@string/title_Other_misc_options">
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="run_service_in_foreground"
-                    android:summary="@string/shows_a_persistent_notification"
-                    android:title="@string/run_collector_in_foreground" />
+                <PreferenceScreen
+                    android:key="collector_in_foreground"
+                    android:title="@string/title_collector_in_foreground">
+                    <CheckBoxPreference
+                        android:defaultValue="true"
+                        android:key="run_service_in_foreground"
+                        android:summary="@string/shows_a_persistent_notification"
+                        android:title="@string/run_collector_in_foreground" />
+                    <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:key="compact_persistent_notification"
+                        android:summary="@string/summary_compact_ongoing_notification"
+                        android:title="@string/title_compact_ongoing_notification" />
+                </PreferenceScreen>
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="engineering_mode"

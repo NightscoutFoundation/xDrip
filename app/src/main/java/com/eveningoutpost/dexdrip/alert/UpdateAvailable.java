@@ -1,11 +1,7 @@
 package com.eveningoutpost.dexdrip.alert;
 
 import static com.eveningoutpost.dexdrip.models.JoH.cancelNotification;
-import static com.eveningoutpost.dexdrip.models.JoH.niceTimeScalar;
-import static com.eveningoutpost.dexdrip.models.JoH.niceTimeScalarNatural;
 import static com.eveningoutpost.dexdrip.models.JoH.showNotification;
-import static com.eveningoutpost.dexdrip.models.JoH.tsl;
-import static com.eveningoutpost.dexdrip.utilitymodels.Constants.SENSORY_EXPIRY_NOTIFICATION_ID;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.XDRIP_UPDATE_NOTIFICATION_ID;
 import static com.eveningoutpost.dexdrip.utilitymodels.UpdateActivity.AUTO_UPDATE_PREFS_NAME;
 
@@ -13,12 +9,8 @@ import android.app.PendingIntent;
 import android.content.Intent;
 
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.g5model.SensorDays;
 import com.eveningoutpost.dexdrip.models.JoH;
-import com.eveningoutpost.dexdrip.models.Treatments;
 import com.eveningoutpost.dexdrip.models.UserError;
-import com.eveningoutpost.dexdrip.models.UserError.Log;
-import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utilitymodels.UpdateActivity;
@@ -55,6 +47,7 @@ public class UpdateAvailable extends BaseAlert {
 
         val channel = Pref.getString("update_channel", "beta"); // get the current update channel
         showNotification(xdrip.gs(R.string.xdrip_update), xdrip.gs(R.string.a_new_version_on_channel_1_s_is_available, channel), pendingIntent, notificationId, null, true, true, null, null, null, false);
+        UserError.Log.uel(TAG, "A new version is available");
         return true;
     }
 

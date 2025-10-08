@@ -328,11 +328,6 @@
                     android:key="tidepool_no_treatments"
                     android:summary="@string/summary_tidepool_upload_no_treatment"
                     android:title="@string/title_tidepool_upload_no_treatment" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="tidepool_new_auth"
-                    android:summary="2023 openid authentication method."
-                    android:title="Use new Auth" />
 
             </PreferenceScreen>
 

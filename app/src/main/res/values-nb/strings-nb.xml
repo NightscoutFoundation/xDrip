@@ -234,6 +234,7 @@
     <string name="pref_was_less_than_min">%1$s ble satt til en verdi mindre enn minste tillatt. Den har blitt endret til minimum.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Ekstrapoler data for å prøve og beregne lave verdier</string>
     <string name="alarm_at_forecasted_low_mins">Grense i antall minutter før varsel går av</string>
+    <string name="title_forecast_low_threshold">Terskel</string>
     <string name="other_xdrip_plus_alerts">Andre xDrip+ varsler</string>
     <string name="xdrip_plus_display_settings">xDrip+ Skjerminnstillinger</string>
     <string name="display_customisations">Skjermtilpasninger</string>
@@ -254,6 +255,9 @@
     <string name="dexcom_transmitter_id">Dexcom sender-ID</string>
     <string name="run_collector_in_foreground">Kjør innsamler i forgrunnen</string>
     <string name="shows_a_persistent_notification">Viser vedvarende varselgraf, synlig på låseskjermen og hindrer android i å stoppe tjenesten.</string>
+    <string name="title_collector_in_foreground">Innsamler i forgrunnen</string>
+    <string name="summary_compact_ongoing_notification">Aktiver for å skjule grafen i varselet og bare vise gjeldende glukoseverdi.</string>
+    <string name="title_compact_ongoing_notification">Kompakt vedvarende varsling</string>
     <string name="list_of_receivers">Liste over mottakere</string>
     <string name="extra_tags_for_logging">Ekstra koder for logging</string>
     <string name="extra_tags_dialog_message">De innskrevne kodene her vil være logget inn i xDrip. Formatet er tag:nivå. Nivå kan være v, d, i. For eksempel bgreading:i,DexCollectionService:v. Disse kodene vil bli logget med lav prioritet til feil- og hendelseslisten.</string>
@@ -1490,6 +1494,8 @@
     <string name="summary_persistent_high_alert">Når du er over høyt nivå for lenge og ikke er på vei nedover</string>
     <string name="summary_persistent_high_threshold_link">Når aktivert, er Høy Verdi terskelen.\nNår deaktivert, er terskelverdien angitt nedenfor.</string>
     <string name="title_persistent_high_threshold_link">Terskel: Høy verdi</string>
+    <string name="summary_forecast_low_threshold_link">Når aktivert, er Lav Verdi terskelen.\nNår deaktivert, er terskelverdien angitt nedenfor.</string>
+    <string name="title_forecast_low_threshold_link">Terskel: Lav verdi</string>
     <string name="note_search_button">SØK</string>
     <string name="all_note_button">ALLE</string>
     <string name="title_full_screen_mode">Fullskjerm-modus</string>
@@ -1918,4 +1924,9 @@
     <string name="sensor_will_expire_in">Sensor vil utløpe om %1$s</string>
     <string name="xdrip_update">xDrip+-oppdatering</string>
     <string name="a_new_version_on_channel_1_s_is_available">En ny versjon på kanalen %1$s er tilgjengelig</string>
+    <string name="today">Idag</string>
+    <string name="yesterday">Igår</string>
+    <string name="last_7_days">Siste 7 dager</string>
+    <string name="last_30_days">Siste 30 dager</string>
+    <string name="last_90_days">Siste 90 dager</string>
 </resources>

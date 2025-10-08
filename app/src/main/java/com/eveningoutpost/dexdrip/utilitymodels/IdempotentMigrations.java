@@ -65,6 +65,7 @@ public class IdempotentMigrations {
         CompatibleApps.notifyAboutCompatibleApps();
         legacySettingsMoveLanguageFromNoToNb();
         prefSettingRangeVerification();
+        inheritPrefSettingsAfterUpdate();
 
     }
 
@@ -159,7 +160,12 @@ public class IdempotentMigrations {
         Pref.setBoolean("ob1_initiate_bonding_flag", true);
         Pref.setBoolean("store_sensor_location", false);
         Pref.setBoolean("using_g6", true);
-        // TODO Simplify the code everywhere resolving conditionals based on "using_g6" now that it is always true.
+        Pref.setBoolean("tidepool_new_auth", true);
+        Pref.setBoolean("bridge_battery_alerts", false); // Disable Parakeet
+        Pref.setString("bridge_battery_alert_level", "30");
+        Pref.setBoolean("parakeet_status_alerts", false);
+        Pref.setBoolean("parakeet_charge_silent", false);
+
     }
     private static void legacySettingsMoveLanguageFromNoToNb() {
         // Check if the user's language preference is set to "no"
@@ -174,6 +180,17 @@ public class IdempotentMigrations {
     private static void prefSettingRangeVerification() {
         Preferences.applyPrefSettingRange("persistent_high_threshold", "170", MIN_GLUCOSE_INPUT, MAX_GLUCOSE_INPUT);
         Preferences.applyPrefSettingRange("forecast_low_threshold", "70", MIN_GLUCOSE_INPUT, MAX_GLUCOSE_INPUT);
+    }
+
+    // Set new settings such that a version update does not cause a surprise
+    private static void inheritPrefSettingsAfterUpdate() {
+        if (!Pref.getBooleanDefaultFalse("has_been_explicitly_set_persistent_high_alert_override_silent")) { // If override silent mode has never been explicitly set for the Persistent High alert
+            Pref.setBoolean("persistent_high_alert_override_silent", Pref.getBooleanDefaultFalse("other_alerts_override_silent")); // Inherit Persistent High override silent mode from other alerts
+            Pref.setBoolean("bg_predict_alert_override_silent", Pref.getBooleanDefaultFalse("other_alerts_override_silent")); // Inherit Forecasted Low override silent mode from other alerts
+            Pref.setBoolean("bg_missed_alerts_override_silent", Pref.getBooleanDefaultFalse("other_alerts_override_silent")); // Inherit Missed Reading override silent mode from other alerts
+            Pref.setBoolean("has_been_explicitly_set_persistent_high_alert_override_silent", true); // Set this setting so that we never inherit again.
+        }
+        //
     }
 
 }

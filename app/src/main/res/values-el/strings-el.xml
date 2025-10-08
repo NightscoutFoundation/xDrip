@@ -37,6 +37,9 @@
     <string name="pref_header_cloud_storage">Χώρο αποθήκευσης στο cloud</string>
     <string name="auto_configure_title">Αυτόματη ρύθμιση</string>
     <string name="prefs_auto_config_summary">Αυτόματη ρύθμιση παραμέτρων χρησιμοποιώντας barcode.</string>
+    <string name="auto_config_cam_title">Κάμερα</string>
+    <string name="auto_config_cam_summary">Σαρώστε έναν κωδικό QR με το κινητό σας (συνιστάται)</string>
+    <string name="auto_config_image_title">Αρχείο εικόνας</string>
     <string name="scan_share2_barcode">Σάρωση Κοινοποίησης Barcode</string>
     <string name="pref_share2_scan_barcode_summary">Ή σκάναρε το barcode στο δέκτη διαμοιρασμού</string>
     <!-- MongoDB Settings -->
@@ -57,6 +60,7 @@
     <string name="pref_title_api_enabled">Ενεργό</string>
     <string name="pref_summary_api_enabled">Το REST API είναι ο τυπικός τρόπος για να συνδεθείτε στο Nightscout</string>
     <string name="pref_title_api_url">Βασική διεύθυνση URL</string>
+    <string name="pref_summary_api_url">Μορφή: https://password@hostname/api/v1/</string>
     <string name="pref_dialog_api_url">Εισάγετε το βασικό API URL</string>
     <string name="pref_message_api_url">Εδώ πρέπει να εισαχθεί μόνο το βασικό URL. Ο αποστολέας θα προσθέσει αυτόματα τη διαδρομή \"/entries\" στο αίτημα POST. Το API_SECRET στον διακομιστή πρέπει να ταιριάζει με τη συνθηματική σας φράση (passphrase) σε αυτή τη ρύθμιση.</string>
     <string name="pref_default_api_url">https://κωδικόςπρόσβασης@{YOUR-SITE}.azurewebsites.net/api/v1/</string>
@@ -276,6 +280,7 @@
     <string name="carbs_per_unit">Υδατάνθρακες ανά μονάδα</string>
     <string name="everyday">Κάθε μέρα</string>
     <string name="insulin_sensitivity_glucose_drop_per_unit">Ευαισθησία ινσουλίνης: σταγόνα γλυκόζης ανά μονάδα</string>
+    <string name="transmitter_battery">μπαταρία πομπού</string>
     <string name="space_units">" μονάδες"</string>
     <string name="units">μονάδες</string>
     <string name="carbs">υδατάνθρακες</string>

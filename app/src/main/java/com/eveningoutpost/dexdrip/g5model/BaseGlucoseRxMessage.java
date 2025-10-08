@@ -1,13 +1,17 @@
 package com.eveningoutpost.dexdrip.g5model;
 
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.SECOND_IN_MS;
+
 import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.services.G5CollectionService;
 
 import lombok.NoArgsConstructor;
+import lombok.val;
 
 /**
  * Created by jamorham on 02/07/2018.
- *
  */
 
 @NoArgsConstructor
@@ -29,6 +33,17 @@ public abstract class BaseGlucoseRxMessage extends BaseMessage {
 
     CalibrationState calibrationState() {
         return CalibrationState.parse(state);
+    }
+
+    CalibrationState adjustedCalibrationState() {
+        val realState = CalibrationState.parse(state);
+        if (realState == CalibrationState.Stopped) {
+            if (timestamp * SECOND_IN_MS < MINUTE_IN_MS * 30) {
+                UserError.Log.e(TAG, "Reporting Warming up state when marked stopped at timestamp " + JoH.niceTimeScalar(timestamp * SECOND_IN_MS));
+                return CalibrationState.WarmingUp;
+            }
+        }
+        return realState;
     }
 
     public boolean usable() {

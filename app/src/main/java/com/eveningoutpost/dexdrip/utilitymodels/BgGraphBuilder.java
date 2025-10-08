@@ -271,11 +271,17 @@ public class BgGraphBuilder {
 
 
     static public boolean isXLargeTablet(Context context) {
-        return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
+        if (Pref.getBooleanDefaultFalse("enlarge_fonts_on_large_screens")) {
+            return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
+        }
+        return false;
     }
 
     static public boolean isLargeTablet(Context context) {
-        return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+        if (Pref.getBooleanDefaultFalse("enlarge_fonts_on_large_screens")) {
+            return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+        }
+        return false;
     }
 
     public static double mmolConvert(double mgdl) {

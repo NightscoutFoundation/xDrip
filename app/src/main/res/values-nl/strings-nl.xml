@@ -220,7 +220,7 @@
     <string name="persistent_high_alert_enable">Inschakelen</string>
     <string name="forecasted_low_alert">Voorspelde lage alarm</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapoleer gegevens om te proberen dieptepunten te voorspellen</string>
-    <string name="alarm_at_forecasted_low_mins">Alarm bij Voorspelde Low mins</string>
+    <string name="alarm_at_forecasted_low_mins">Alarm voorspelde lage waarde vanaf minuut</string>
     <string name="other_xdrip_plus_alerts">Andere xDrip+ waarschuwingen</string>
     <string name="xdrip_plus_display_settings">xDrip+ weergaveinstellingen</string>
     <string name="display_customisations">Aanpassingen weergeven</string>

@@ -33,6 +33,8 @@ public class Marker {
     public Date dateTime;
     @JsonAdapter(CareLinkJsonAdapter.class)
     public Date timestamp = null;
+    @JsonAdapter(CareLinkJsonAdapter.class)
+    public Date displayTime = null;
     public Integer relativeOffset;
     public Boolean calibrationSuccess;
     public Double amount;
@@ -50,7 +52,9 @@ public class Marker {
     public MarkerData data;
 
     public Date getDate(){
-        if(timestamp != null)
+        if(displayTime != null)
+            return displayTime;
+        else if(timestamp != null)
             return timestamp;
         else if(dateTime != null)
             return dateTime;
@@ -63,6 +67,12 @@ public class Marker {
             return deliveredExtendedAmount + deliveredFastAmount;
         else if(data.dataValues != null && data.dataValues.deliveredFastAmount != null)
             return data.dataValues.deliveredFastAmount;
+        else if(data != null && data.dataValues != null && data.dataValues.insulinUnits != null)
+            try {
+                return Float.parseFloat(data.dataValues.insulinUnits);
+            } catch (Exception ex){
+                return null;
+            }
         else
             return null;
     }

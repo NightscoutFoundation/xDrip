@@ -9,5 +9,5 @@ public class ShareConstants {
 
     static final String APPLICATION_ID = "d89443d2-327c-4a6f-89e5-496bbb0317db";
     static final long SESSION_ID_VALIDITY_TIME = 60 * 60 * 8 * 1000;
-    static final int MAX_RECORDS_TO_ASK_FOR = 36;
+    static final int MAX_RECORDS_TO_ASK_FOR = 288;
 }

@@ -8,6 +8,7 @@ public class MarkerDataValues {
     public Float bolusAmount;
     public Float maxAutoBasalRate;
     public String insulinType;
+    public String insulinUnits;
     public Float  programmedFastAmount;
     public Float deliveredFastAmount;
     public String activationType;

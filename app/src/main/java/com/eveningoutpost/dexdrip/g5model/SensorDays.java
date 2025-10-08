@@ -6,6 +6,7 @@ import android.text.SpannableString;
 import com.eveningoutpost.dexdrip.models.Sensor;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utilitymodels.StatusItem.Highlight;
 import com.eveningoutpost.dexdrip.ui.helpers.Span;
@@ -80,7 +81,11 @@ public class SensorDays {
         val ths = new SensorDays();
 
         if (hasLibre(type)) {
+            String libreVersion = PersistentStore.getString("LibreVersion");
             ths.period = DAY_IN_MS * 14; // TODO 10 day sensors?
+            if (libreVersion.equals("3")) {
+                ths.period = DAY_IN_MS * 15;
+            }
             ths.strategy = USE_LIBRE_STRATEGY;
             ths.warmupMs = HOUR_IN_MS;
 

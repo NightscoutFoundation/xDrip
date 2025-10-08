@@ -15,6 +15,7 @@ import com.eveningoutpost.dexdrip.models.DesertSync;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.Reminder;
 import com.eveningoutpost.dexdrip.models.Sensor;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.eveningoutpost.dexdrip.models.UserNotification;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
@@ -57,6 +58,7 @@ public class MissedReadingService extends IntentService {
         try {
 
             final boolean sensorActive = Sensor.isActive();
+            final boolean weAreAFollower = DexCollectionType.getDexCollectionType() == DexCollectionType.Follower; // For now, this is true only for xDrip Sync Follower
 
             Log.d(TAG, "MissedReadingService onHandleIntent"); // test debug log
 
@@ -109,8 +111,9 @@ public class MissedReadingService extends IntentService {
                 // we should not do anything in this case. if the ui, changes will be called again
                 return;
             }
-            if (!sensorActive) {
-                // sensor not running we should return
+            if (!sensorActive && !weAreAFollower) {
+                // sensor not running we should return if we are not a follower
+                UserError.Log.d(TAG, "Not processing missed reading alert with no active sensor and not following"); // If this is issued, we may need to expand the list of followers (companion app? Carelink? ...)
                 return;
             }
 

@@ -282,9 +282,8 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
 
                 if (dbFile.getAbsolutePath().endsWith(".zip")) {
                     // uncompress first
-                    try {
-                        final FileInputStream fileInputStream = new FileInputStream(dbFile.getAbsolutePath());
-                        final ZipInputStream zip_stream = new ZipInputStream(new BufferedInputStream(fileInputStream));
+                    try (final FileInputStream fileInputStream = new FileInputStream(dbFile.getAbsolutePath());
+                         final ZipInputStream zip_stream = new ZipInputStream(new BufferedInputStream(fileInputStream))) {
                         ZipEntry zipEntry = zip_stream.getNextEntry();
                         if ((zipEntry != null) && zipEntry.isDirectory())
                             zipEntry = zip_stream.getNextEntry();
@@ -292,13 +291,13 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
                             String filename = zipEntry.getName();
                             if (filename.endsWith(".sqlite")) {
                                 String output_filename = dbFile.getAbsolutePath().replaceFirst(".zip$", ".sqlite");
-                                FileOutputStream fout = new FileOutputStream(output_filename);
-                                byte[] buffer = new byte[4096];
-                                int count = 0;
-                                while ((count = zip_stream.read(buffer)) != -1) {
-                                    fout.write(buffer, 0, count);
+                                try (FileOutputStream fout = new FileOutputStream(output_filename)) {
+                                    byte[] buffer = new byte[4096];
+                                    int count;
+                                    while ((count = zip_stream.read(buffer)) != -1) {
+                                        fout.write(buffer, 0, count);
+                                    }
                                 }
-                                fout.close();
                                 dbFile = new File(output_filename);
                                 delete_file = dbFile;
                                 Log.d(TAG, "New filename: " + output_filename);
@@ -313,9 +312,6 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
                             JoH.static_toast_long(msg);
                             return msg;
                         }
-
-                            zip_stream.close();
-                            fileInputStream.close();
 
                     } catch (IOException e) {
                         String msg = "Could not open file";

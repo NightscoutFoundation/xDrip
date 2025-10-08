@@ -309,6 +309,17 @@
                 </PreferenceCategory>
             </PreferenceScreen>
 
+            <PreferenceScreen
+                android:key="xdrip_font_settings"
+                android:summary="@string/summary_font_settings"
+                android:title="@string/title_font_settings">
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="enlarge_fonts_on_large_screens"
+                    android:summary="@string/summary_enlarge_fonts_on_large_screens"
+                    android:title="@string/title_enlarge_fonts_on_large_screens" />
+            </PreferenceScreen>
+
             <SwitchPreference
                 android:defaultValue="false"
                 android:key="force_english"

@@ -250,8 +250,8 @@
     <string name="pref_was_greater_than_max">%1$s was set to a value greater than maximum allowed.  It has been changed to maximum.</string>
     <string name="setting_pref_to_min">Set to min</string>
     <string name="pref_was_less_than_min">%1$s was set to a value less than minimum allowed.  It has been changed to minimum.</string>
-    <string name="extrapolate_data_to_try_to_predict_lows">Extrapolate data to try to predict lows</string>
-    <string name="alarm_at_forecasted_low_mins">Alarm at Forecasted Low mins</string>
+    <string name="extrapolate_data_to_try_to_predict_lows">Considering the current value and trend, calculate what the next few readings will be if the trend persists (extrapolate).  This ignores insulin or carbs on board.</string>
+    <string name="alarm_at_forecasted_low_mins">Time threshold [min]</string>
     <string name="title_forecast_low_threshold">Threshold</string>
     <string name="other_xdrip_plus_alerts">Other xDrip+ alerts</string>
     <string name="xdrip_plus_display_settings">xDrip+ Display Settings</string>
@@ -273,6 +273,9 @@
     <string name="dexcom_transmitter_id">Dexcom Transmitter ID</string>
     <string name="run_collector_in_foreground">Run Collector in foreground</string>
     <string name="shows_a_persistent_notification">Shows a persistent notification graph, visible on lock-screen and prevents Android killing the service.</string>
+    <string name="title_collector_in_foreground">Collector in foreground</string>
+    <string name="summary_compact_ongoing_notification">Enable to hide the graph in the notification and display only the current glucose value.</string>
+    <string name="title_compact_ongoing_notification">Compact Persistent Notification</string>
     <string name="list_of_receivers">List of receivers</string>
     <string name="extra_tags_for_logging">Extra tags for logging</string>
     <string name="extra_tags_dialog_message">The tags entered here will be logged into xDrip. Format is tag:level. Level can be v,d,i. For example bgreading:i,DexCollectionService:v. These tags will be logged with low priority to Error and event list.</string>
@@ -336,6 +339,10 @@
     <string name="pebble_and_android_wear_options">Options for different Watches</string>
     <string name="customize_colours">Customize Colors</string>
     <string name="xdrip_plus_color_settings">xDrip+ Color Settings</string>
+    <string name="summary_font_settings">Customize Fonts</string>
+    <string name="title_font_settings">Font Settings</string>
+    <string name="summary_enlarge_fonts_on_large_screens">Automatically enlarge the font size on large screens, such as tablets</string>
+    <string name="title_enlarge_fonts_on_large_screens">Enlarge fonts on larger displays</string>
     <string name="glucose_values_and_lines">Glucose Values and Lines</string>
     <string name="high_glucose_values">High Glucose Values</string>
     <string name="in_range_glucose_values">In-range Glucose Values</string>
@@ -451,7 +458,7 @@
     <string name="persistent_high_sound">Alert Sound</string>
     <string name="forecast_lows">Forecast Lows</string>
     <string name="raise_alarm_on_forecast_low">Raise alarm on Forecast Low</string>
-    <string name="notify_when_predicted_low_time_reaches_threshold">Notify when predicted low time reaches threshold</string>
+    <string name="notify_when_predicted_low_time_reaches_threshold">Notify when forecasted low time reaches time threshold</string>
     <string name="predicted_low_sound">Alert Sound</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Choose the sound used for the alarm.</string>
     <string name="notify_when_parakeet_device_stops_checking_in">Notify when Parakeet device stops checking in</string>
@@ -804,7 +811,7 @@
     <string name="calibrations_request_time_time_difference">How many hours between calibration requests</string>
     <string name="hours_between_calibrations">Hours between calibrations</string>
     <string name="calibrations_sound">Set sound used for calibration requests.</string>
-    <string name="override_silent_mode">Override Silent mode</string>
+    <string name="override_silent_mode">Override Silent Mode</string>
     <string name="even_when_charging">Even when charging</string>
     <string name="no_calibration_requests_charging">Uncheck to not ask for calibrations when phone is charging</string>
     <string name="keep_alert_no_calibration">Keep alerting if no calibration is performed</string>
@@ -1971,4 +1978,11 @@
     <string name="sensor_will_expire_in">Sensor will expire in %1$s</string>
     <string name="xdrip_update">xDrip+ Update</string>
     <string name="a_new_version_on_channel_1_s_is_available">A new version on channel %1$s is available</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="last_7_days">Last 7 days</string>
+    <string name="last_30_days">Last 30 days</string>
+    <string name="last_90_days">Last 90 days</string>
+    <string name="scan_with_xdrip_settings_auto_configure"><![CDATA[Scan with\nxDrip Settings -> Auto Configure]]></string>
+    <string name="could_not_create_qr_code">Could not create QR code</string>
 </resources>

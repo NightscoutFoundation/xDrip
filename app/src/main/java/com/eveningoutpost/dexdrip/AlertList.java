@@ -191,7 +191,7 @@ public class AlertList extends ActivityWithMenu {
                 if (!isFinishing()) {
                     new AlertDialog.Builder(AlertList.this)
                             .setTitle("Warning !")
-                            .setMessage("No active Low Alert exists, without this there will be no alert on low glucose! Please add or enable a low alert.")
+                            .setMessage("No low alert is active. You won’t be notified of low glucose—please add or enable one.")
                             .setCancelable(false)
                             .setPositiveButton(
                                     "Ok",

@@ -14,7 +14,7 @@ public class Alarm {
         return null;
     }
 
-    public int code;
+    public String code;
     //@JsonAdapter(CareLinkJsonAdapter.class)
     public String datetime;
     public Date datetimeAsDate;

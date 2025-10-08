@@ -10,6 +10,7 @@ public class RecentData {
 
     public static final String DEVICE_FAMILY_GUARDIAN = "GUARDIAN";
     public static final String DEVICE_FAMILY_NGP = "NGP";
+    public static final String DEVICE_FAMILY_CGM = "CGM";
 
     //sensorState
     public static final String SENSOR_STATE_CALIBRATION_REQUIRED = "CALIBRATION_REQUIRED";
@@ -56,6 +57,10 @@ public class RecentData {
 
     public boolean isNGP() {
         return getDeviceFamily().equals(DEVICE_FAMILY_NGP);
+    }
+
+    public boolean isCGM() {
+        return getDeviceFamily().equals(DEVICE_FAMILY_CGM);
     }
 
     public int getDeviceBatteryLevel(){

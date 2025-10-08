@@ -69,9 +69,11 @@ public class BuggySamsung {
     public static boolean isSamsung() {
         return Build.MANUFACTURER.toLowerCase().contains("samsung")
                 || Build.MANUFACTURER.toLowerCase().contains("xiaomi")
-                || Build.MANUFACTURER.toLowerCase().contains("oneplus")    // experimental test
-                || Build.MANUFACTURER.toLowerCase().contains("oppo")      // experimental test
-                || Build.MANUFACTURER.toLowerCase().contains("huawei");      // experimental test
+                || Build.MANUFACTURER.toLowerCase().contains("oneplus")
+                || Build.MANUFACTURER.toLowerCase().contains("oppo")
+                || Build.MANUFACTURER.toLowerCase().contains("huawei")
+                || Build.MANUFACTURER.toLowerCase().contains("realme")
+                || Build.MANUFACTURER.toLowerCase().contains("honor");
     }
 
 }

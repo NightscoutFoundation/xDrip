@@ -37,6 +37,10 @@
     <string name="pref_header_cloud_storage">Облачное хранилище</string>
     <string name="auto_configure_title">Автонастройка</string>
     <string name="prefs_auto_config_summary">Автонастройка при помощи штрих-кода.</string>
+    <string name="auto_config_cam_title">Камера</string>
+    <string name="auto_config_cam_summary">Сканировать QR-код телефоном (рекомендовано)</string>
+    <string name="auto_config_image_title">Файл изображения</string>
+    <string name="auto_config_image_summary">Вы можете сохранить QR-код как файл изображения (как .png или .jpeg) на телефон. Затем используйте эту опцию, чтобы сканировать QR-код из сохраненного файла.</string>
     <string name="scan_share2_barcode">Сканировать штрих-код Share</string>
     <string name="pref_share2_scan_barcode_summary">Или отсканируйте штрих-код на ресивере</string>
     <!-- MongoDB Settings -->
@@ -57,6 +61,7 @@
     <string name="pref_title_api_enabled">Включено</string>
     <string name="pref_summary_api_enabled">REST API - это стандартный способ подключения к Nightscout</string>
     <string name="pref_title_api_url">Основной URL</string>
+    <string name="pref_summary_api_url">Формат: https://пароль@хост/api/v1/</string>
     <string name="pref_dialog_api_url">Введите основной API URL</string>
     <string name="pref_message_api_url">Имейте в виду, что это лишь основной URL и загрузчик будет автоматически добавлять / записи для POST-запросов. Значение API-SECRET на сервере должно совпадать с вашим паролем (passphrase) в настройках.</string>
     <string name="pref_default_api_url">https://вашпароль@{вашсайт}.azurewebsites.net/api/v1/</string>
@@ -115,6 +120,7 @@
     <string name="title_activity_update">Доступны обновления для xDrip+</string>
     <string name="title_activity_display_qrcode">Поделиться настройками через QR-код</string>
     <string name="title_activity_send_feed_back">Отправить отзыв Jamorham-у</string>
+    <string name="title_activity_save_logs">Сохранить логи</string>
     <string name="title_activity_maps">Карта Parakeet</string>
     <string name="title_activity_display_preferences">Настройки отображения</string>
     <string name="export_submenu">Импорт / Экспорт данных</string>
@@ -219,9 +225,16 @@
     <string name="extra_alerts_xdrip_plus">Дополнительные оповещения (xDrip+)</string>
     <string name="persistent_high_alert">Оповещение о длительной гипергликемии</string>
     <string name="persistent_high_alert_enable">Включить</string>
+    <string name="title_persistent_high_threshold">Порог</string>
+    <string name="the_value_must_be_between_min_and_max">Значение должно быть между %1$s и %2$s</string>
     <string name="forecasted_low_alert">Оповещение о прогнозируемой гипогликемии</string>
-    <string name="extrapolate_data_to_try_to_predict_lows">Экстраполировать данные для возможности прогнозирования гипогликемии</string>
-    <string name="alarm_at_forecasted_low_mins">Оповещать за (в минутах)</string>
+    <string name="setting_pref_to_max">Установлено на макс.</string>
+    <string name="pref_was_greater_than_max">%1$s был задан выше максимального значения.  Заменено на максимум.</string>
+    <string name="setting_pref_to_min">Установлено на мин.</string>
+    <string name="pref_was_less_than_min">%1$s был задан ниже минимального значения.  Заменено на минимум.</string>
+    <string name="extrapolate_data_to_try_to_predict_lows">Экстраполировать данные, чтобы попытаться предсказать низкий</string>
+    <string name="alarm_at_forecasted_low_mins">Тревога при предсказанном низком за x минут</string>
+    <string name="title_forecast_low_threshold">Порог</string>
     <string name="other_xdrip_plus_alerts">Другие оповещения xDrip+</string>
     <string name="xdrip_plus_display_settings">Настройки отображения xDrip+</string>
     <string name="display_customisations">Настройки отображения</string>
@@ -395,7 +408,9 @@
     <string name="please_enter_your_question_or_comments_here">Пожалуйста, введите здесь ваш вопрос или комментарий.\n\nЕсли вы укажете свой email, то сможете получить ответ.\n\n</string>
     <string name="optional_contact_info_here_eg_email">Введите ваши контактные данные, например email (опционально)</string>
     <string name="send_message">Отправить сообщение</string>
+    <string name="save_logs">Сохранить логи</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Пожалуйста, расскажите, что вы думаете о приложении в целом</string>
+    <string name="log_confidential_note">Предупреждение!\nЖурналы могут содержать конфиденциальную информацию, такую как пароли или ID пользователей.</string>
     <string name="preferences_saved_in_sdcard_downloads">Настройки сохранены в SDcard/Загрузки</string>
     <string name="could_not_write_to_sdcard_check_perms">Невозможно записать на SDcard - проверить разрешения?</string>
     <string name="loaded_preferences_restarting">Настройки загружены! − Перезапуск</string>
@@ -416,7 +431,7 @@
     <string name="persistent_high_sound">Звук устойчиво высокого</string>
     <string name="forecast_lows">Прогнозировать гипогликемию</string>
     <string name="raise_alarm_on_forecast_low">Оповещать заранее о возможной гипогликемии</string>
-    <string name="notify_when_predicted_low_time_reaches_threshold">Оповещать, если достигнуто пороговое значение прогнозируемого времени до гипогликемии</string>
+    <string name="notify_when_predicted_low_time_reaches_threshold">Уведомлять, когда время до предсказанного низкого достигает порога</string>
     <string name="predicted_low_sound">Звук предсказанного низкого</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Выберите звук для тревоги о предсказанном низком.</string>
     <string name="notify_when_parakeet_device_stops_checking_in">Уведомлять, когда связь с устройством Parakeet потеряна</string>
@@ -737,6 +752,8 @@
     <string name="glucose_meters">Глюкометры</string>
     <string name="glucose_meter_options">Параметры беспроводных глюкометров</string>
     <string name="auto_connect_to_meter">Автоматически подключаться и извлекать данные из стандартных подходящих глюкометров, таких как Contour Next One</string>
+    <string name="summary_use_nfc_meter">Скачивать показания глюкозы с глюкометра NFC, когда xDrip+ открыт</string>
+    <string name="title_use_nfc_meter">Использовать NFC-глюкометр</string>
     <string name="use_bluetooth_meter">Использовать Bluetooth глюкометр</string>
     <string name="scan_for_bluetooth_meter">Поиск Bluetooth измерителей</string>
     <string name="meter_connect_sound">Включите, чтобы воспроизводить звуковые уведомления при подключении, отключении или синхронизации данных</string>
@@ -1198,6 +1215,12 @@
     <string name="title_tidepool_window_latency">Срок данных (мин)</string>
     <string name="summary_tidepool_dev_servers">Если включено, данные будут загружены на https://int-app.tidepool.org вместо обычного https://app.tidepool.org/</string>
     <string name="title_tidepool_dev_servers">Использовать тестовые сервера</string>
+    <string name="summary_tidepool_upload_when_chargeonly">Отправлять данные только во время зарядки</string>
+    <string name="title_tidepool_upload_when_chargeonly">Только при зарядке</string>
+    <string name="summary_tidepool_upload_only_wifi">Отправлять данные только при подключении к безлимитной сети, напр. WiFi</string>
+    <string name="title_tidepool_upload_only_wifi">Только через WiFi</string>
+    <string name="summary_tidepool_upload_no_treatment">Отправлять только данные ГК, чтобы избежать дубликатов с ручной выгрузкой с помпы</string>
+    <string name="title_tidepool_upload_no_treatment">Не отправлять терапию</string>
     <string name="title_tidepool">Tidepool</string>
     <string name="show_help">Показать справку</string>
     <string name="load_save_settings_on_sdcard">Загрузить/сохранить настройки на SDcard</string>
@@ -1269,6 +1292,7 @@
     <string name="summary_lefun_send_alarms">Отправлять уведомления о глюкозе на браслет</string>
     <string name="title_lefun_send_alarms">Отправлять уведомления</string>
     <string name="title_lefun_option_shake_snoozes">Потрясти, чтобы отложить</string>
+    <string name="summary_lefun_send_calls">Отправлять уведомления о звонках на браслет</string>
     <string name="title_lefun_send_calls">Оповещения о звонках</string>
     <string name="title_lefun_screens_features">Экраны / Функции Lefun</string>
     <string name="title_features">Функции</string>
@@ -1337,6 +1361,8 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Откат к xDrip</string>
     <string name="summary_ob1_minimize_scanning">Использовать эвристику для минимизации поиска Bluetooth + сохранения энергии</string>
     <string name="title_ob1_minimize_scanning">Минимизировать сканирования</string>
+    <string name="summary_ob1_avoid_scanning">Избегать сканирования, насколько возможно (снижает использование батареи)</string>
+    <string name="title_ob1_avoid_scanning">Избегать сканирования</string>
     <string name="summary_using_g6">Я использую сенсор G6</string>
     <string name="title_using_g6">Поддержка G6</string>
     <string name="summary_ob1_g5_allow_resetbond">Служба сбора данных OB1 может разрывать соединение в случае обнаружения проблем с шифрованием. Если вы испытываете трудности с разрывом соединения, отключите данную опцию. В случае, если после отключения вы столкнулись с полной потерей соединения, снова активируйте данную опцию.</string>
@@ -1407,6 +1433,7 @@
     <string name="summary_plus_accept_follower_actions">Разрешить добавление значений и калибровок фолловерами</string>
     <string name="title_plus_accept_follower_actions">Принимать изменения фолловеров</string>
     <string name="summary_plus_whole_house">Учавствовать в сети всего дома</string>
+    <string name="summary_plus_xdrip_cloud">Использовать новые серверы xDrip+ cloud. Эта настройка должна совпадать на всех мастерах и фолловерах.</string>
     <string name="title_plus_whole_house">По всему дому</string>
     <string name="summary_libre_whole_house_collector">Это устройство будет коллектором в сети всего дома</string>
     <string name="title_libre_whole_house_collector">Libre по всему дому</string>
@@ -1453,6 +1480,8 @@
     <string name="category_falling_rising_bg">Снижение/Повышение глюкозы</string>
     <string name="category_alert_prefs">Настройки оповещений (для этих оповещений)</string>
     <string name="summary_persistent_high_alert">Когда слишком долго выше порога высокого и не идет вниз</string>
+    <string name="summary_persistent_high_threshold_link">Когда включено, Значение высокого – это порог.\nКогда выключено, порог – значение, заданное ниже.</string>
+    <string name="title_persistent_high_threshold_link">Порог: Значение высокого</string>
     <string name="note_search_button">ПОИСК</string>
     <string name="all_note_button">ВСЕ</string>
     <string name="title_full_screen_mode">Полноэкранный режим</string>
@@ -1487,6 +1516,7 @@
     <string name="progress">прогресс</string>
     <string name="bluetooth_device">Bluetooth-устройство:   </string>
     <string name="transmitter_battery_status">Заряд передатчика:</string>
+    <string name="database_size">Размер базы данных:  </string>
     <string name="top">Верх</string>
     <string name="connect_device_usb_otg">Пожалуйста, подключите Ваше устройство кабелем USB OTG</string>
     <string name="connection_status">Состояние подключения:</string>
@@ -1728,6 +1758,7 @@
     <string name="proceed">Продолжить</string>
     <string name="special_pairing_workaround">Специальный обходной путь сопряжения</string>
     <string name="save_power">Экономить энергию</string>
+    <string name="use_xdrip_cloud">Исп. xDrip Cloud</string>
     <string name="reduce_battery_and_network_overhead">Уменьшить нагрузку на батарею и сеть, используя пакетную обработку и исключая ненужные данные</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Упростить графики, сглаживая неровности</string>
     <string name="graph_smoothing">Сглаживание графика</string>
@@ -1804,6 +1835,7 @@
     <string name="summary_ymax">Укажите y max когда нет больших показаний.</string>
     <string name="wait_to_connect">Проверьте настройки и дождитесь подключения.</string>
     <string name="summary_sens_expiry_notify">Выводить уведомления, когда приближается окончание срока работы сенсора.</string>
+    <string name="title_sens_expiry">Уведомления о сроке сенсора</string>
     <string name="title_sens_expiry_notify">Пришло окончание срока работы сенсора</string>
     <string name="close">Закрыть</string>
     <string name="title_advanced_settings_4_Lib2">Расширенные настройки для Libre 2</string>
@@ -1851,6 +1883,13 @@
     <string name="audio_focus_lower_volume_of_other_apps">Снизить громкость других приложений</string>
     <string name="audio_focus_pause_other_apps_playing_audio">Поставить на паузу воспроизведение звука в других приложениях</string>
     <string name="audio_focus_pause_all_other_sounds">Поставить на паузу все остальные звуки</string>
+    <string name="wake_up_screen">Включать экран</string>
+    <string name="wake_up_screen_summary">Включать экран во время тревог. Может разблокировать устройства с выключенной блокировкой экрана.</string>
     <string name="use_camera_light">Использовать вспышку фотокамеры</string>
     <string name="use_camera_light_summary">Мигать вспышкой фотокамеры во время оповещений, если телефон подключен к зарядному устройству</string>
+    <string name="g7_should_start_automatically">G7 должен запускаться автоматически</string>
+    <string name="screenshot">Скриншот</string>
+    <string name="bg_alert">ГК %1$s ТРЕВОГА: %2$s (@%3$s)</string>
+    <string name="show_graphical_trend_arrow">Показывать графическую стрелку тренда</string>
+    <string name="no_alert_in_silent_mode">Без тревог при режиме без звука</string>
 </resources>

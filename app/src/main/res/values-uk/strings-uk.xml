@@ -234,6 +234,7 @@
     <string name="pref_was_less_than_min">%1$s встановлено значення менше мінімального дозволеного. Його було змінено на мінімальне значення.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Екстраполювати дані для можливості прогнозування гіпоглікемії</string>
     <string name="alarm_at_forecasted_low_mins">Сповіщати за (в хвилинах)</string>
+    <string name="title_forecast_low_threshold">Граничний поріг</string>
     <string name="other_xdrip_plus_alerts">Інші сповіщення</string>
     <string name="xdrip_plus_display_settings">Налаштування відображення</string>
     <string name="display_customisations">Налаштування відображення</string>

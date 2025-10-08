@@ -390,7 +390,7 @@ public class EditAlertActivity extends ActivityWithMenu {
         List<AlertType> highAlerts = AlertType.getAll(true);
 
         if(threshold < MIN_ALERT || threshold > MAX_ALERT) {
-            Toast.makeText(getApplicationContext(), "threshold has to be between " +unitsConvert2Disp(doMgdl, MIN_ALERT) + " and " + unitsConvert2Disp(doMgdl, MAX_ALERT),Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Threshold must be between " +unitsConvert2Disp(doMgdl, MIN_ALERT) + " and " + unitsConvert2Disp(doMgdl, MAX_ALERT) + ".", Toast.LENGTH_LONG).show();
             return false;
         }
         // We want to make sure that for each threashold there is only one alert. Otherwise, which file should we play.
@@ -398,7 +398,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             if(lowAlert.threshold == threshold  && overlapping(lowAlert, allDay, startTime, endTime) && lowAlert.active) {
                 if(uuid == null || ! uuid.equals(lowAlert.uuid)){ //new alert or not myself
                     Toast.makeText(getApplicationContext(),
-                            "Each alert should have it's own threshold. Please choose another threshold.",Toast.LENGTH_LONG).show();
+                            "Each alert needs a unique threshold. Please choose a different one.",Toast.LENGTH_LONG).show();
                     return false;
                 }
             }
@@ -407,7 +407,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             if(highAlert.threshold == threshold  && overlapping(highAlert, allDay, startTime, endTime) && highAlert.active) {
                 if(uuid == null || ! uuid.equals(highAlert.uuid)){ //new alert or not myself
                     Toast.makeText(getApplicationContext(),
-                            "Each alert should have it's own threshold. Please choose another threshold.",Toast.LENGTH_LONG).show();
+                            "Each alert needs a unique threshold. Please choose a different one.",Toast.LENGTH_LONG).show();
                     return false;
                 }
             }
@@ -418,7 +418,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             for (AlertType lowAlert : lowAlerts) {
                 if(threshold < lowAlert.threshold  && overlapping(lowAlert, allDay, startTime, endTime) && lowAlert.active) {
                     Toast.makeText(getApplicationContext(),
-                            "High alert threshold has to be higher than all low alerts. Please choose another threshold.",Toast.LENGTH_LONG).show();
+                            "High alerts must be set above all low alerts. Please adjust the threshold.",Toast.LENGTH_LONG).show();
                     return false;
                 }
             }
@@ -427,7 +427,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             for (AlertType highAlert : highAlerts) {
                 if(threshold > highAlert.threshold  && overlapping(highAlert, allDay, startTime, endTime) && highAlert.active) {
                     Toast.makeText(getApplicationContext(),
-                            "Low alert threshold has to be lower than all high alerts. Please choose another threshold.",Toast.LENGTH_LONG).show();
+                            "Low alerts must be set below all high alerts. Please adjust the threshold.",Toast.LENGTH_LONG).show();
                     return false;
                 }
             }
@@ -536,7 +536,7 @@ public class EditAlertActivity extends ActivityWithMenu {
                     allDay = true;
                 }
                 if (timeStart == timeEnd && (allDay==false)) {
-                    Toast.makeText(getApplicationContext(), "start time and end time of alert can not be equal",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Alert start and end times cannot be equal.", Toast.LENGTH_LONG).show();
                     return;
                 }
                 boolean disabled = checkboxDisabled.isChecked();
@@ -592,7 +592,7 @@ public class EditAlertActivity extends ActivityWithMenu {
         buttonalertMp3.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                builder.setTitle("What type of Alert?")
+                builder.setTitle("What type of sound?")
                         .setItems(R.array.alertType, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 if (which == 0) {
@@ -928,7 +928,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             allDay = true;
         }
         if (timeStart == timeEnd && (!allDay)) {
-            Toast.makeText(getApplicationContext(), "start time and end time of alert can not be equal",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Alert start and end times cannot be equal.", Toast.LENGTH_LONG).show();
             return;
         }
         if(!verifyThreshold(threshold, allDay, timeStart, timeEnd)) {
