@@ -1543,7 +1543,7 @@
     <string name="median_bg">Медиана КЗ:</string>
     <string name="mean_bg">Средна КЗ:</string>
     <string name="hba1c_est">HbA1c и т.н.:</string>
-    <string name="stddev">СтандОткл:</string>
+    <string name="stddev">Станд. Откл. :</string>
     <string name="relative_sd_cv">Относително SD (CV):</string>
     <string name="important_warning">Важно предупреждение!</string>
     <string name="i_agree">СЪГЛАСЕН СЪМ</string>
