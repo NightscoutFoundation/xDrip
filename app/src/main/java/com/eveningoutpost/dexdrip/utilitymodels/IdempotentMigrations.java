@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.utilitymodels;
 
+import static com.eveningoutpost.dexdrip.services.DexCollectionService.MAX_BT_WDG;
 import static com.eveningoutpost.dexdrip.utils.Preferences.MAX_GLUCOSE_INPUT;
 import static com.eveningoutpost.dexdrip.utils.Preferences.MIN_GLUCOSE_INPUT;
 
@@ -64,6 +65,7 @@ public class IdempotentMigrations {
         IncompatibleApps.notifyAboutIncompatibleApps();
         CompatibleApps.notifyAboutCompatibleApps();
         legacySettingsMoveLanguageFromNoToNb();
+        settingsFix();
         prefSettingRangeVerification();
         inheritPrefSettingsAfterUpdate();
 
@@ -167,6 +169,17 @@ public class IdempotentMigrations {
         Pref.setBoolean("parakeet_charge_silent", false);
 
     }
+
+    // Required adjustments/conversions to settings after an update
+    private static void settingsFix() {
+        try { // This used to be an integer.  But, is a string now.
+            Pref.setString("bluetooth_watchdog_timer", null);
+        } catch (ClassCastException e) {
+            int oldValue = Pref.getInt("bluetooth_watchdog_timer", MAX_BT_WDG);
+            Pref.setString("bluetooth_watchdog_timer", Integer.toString(oldValue));
+        }
+    }
+
     private static void legacySettingsMoveLanguageFromNoToNb() {
         // Check if the user's language preference is set to "no"
         if ("no".equals(Pref.getString("forced_language", ""))) {
