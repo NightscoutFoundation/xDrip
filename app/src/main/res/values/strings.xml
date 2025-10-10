@@ -1983,4 +1983,26 @@
     <string name="last_90_days">Last 90 days</string>
     <string name="scan_with_xdrip_settings_auto_configure"><![CDATA[Scan with\nxDrip Settings -> Auto Configure]]></string>
     <string name="could_not_create_qr_code">Could not create QR code</string>
+    <string name="alert_warning">Warning !</string>
+    <string name="no_active_low_alert_warning">No low alert is active. You won\'t be notified of low glucose—please add or enable one.</string>
+    <string name="volume_profile_set_to_silent">Volume Profile is set to silent!</string>
+    <string name="volume_profile_set_to_ascending_with_delay">Ascending Volume Profile + delayed ascending means it will start silent</string>
+    <string name="start_snoozed_enabled">Start Snoozed setting means alert would normally start silent</string>
+    <string name="pre_snooze">pre-Snooze</string>
+    <string name="volume_profile_high">High</string>
+    <string name="volume_profile_medium">Medium</string>
+    <string name="volume_profile_ascending">Ascending</string>
+    <string name="volume_profile_vibrate_only">Vibrate only</string>
+    <string name="volume_profile_silent">Silent</string>
+    <string name="alert_threshold_already_in_use">Each alert needs a unique threshold. Please choose a different one.</string>
+    <string name="high_alert_threshold_error">High alerts must be set above all low alerts. Please adjust the threshold.</string>
+    <string name="low_alert_threshold_error">Low alerts must be set below all high alerts. Please adjust the threshold.</string>
+    <string name="threshold_has_to_be_between">Threshold must be between %1$s and %2$s.</string>
+    <string name="alert_reraise_value_too_small">Reraise Value must be 1 minute or greater</string>
+    <string name="alert_reraise_value_too_big">Reraise Value must be less than snooze length</string>
+    <string name="start_and_end_time_same">Alert start and end times cannot be equal.</string>
+    <string name="what_type_of_alert">What type of sound?</string>
+    <string name="system_sound_alarm">System Sound/Alarm</string>
+    <string name="custom_sound_alarm">Custom Sound/Alarm</string>
+    <string name="default_xdrip_sound">Default xDrip sound</string>
 </resources>
