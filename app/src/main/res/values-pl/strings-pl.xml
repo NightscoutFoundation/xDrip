@@ -316,6 +316,10 @@
     <string name="pebble_and_android_wear_options">Opcje dla różnych zegarków</string>
     <string name="customize_colours">Dostosuj kolory</string>
     <string name="xdrip_plus_color_settings">Ustawienia kolorów xDrip+</string>
+    <string name="summary_font_settings">Dostosuj czcionki</string>
+    <string name="title_font_settings">Ustawienia czcionki</string>
+    <string name="summary_enlarge_fonts_on_large_screens">Automatycznie powiększ rozmiar czcionki na dużych ekranach, takich jak tablety</string>
+    <string name="title_enlarge_fonts_on_large_screens">Powiększ czcionki na większych wyświetlaczach</string>
     <string name="glucose_values_and_lines">Glikemia i linie</string>
     <string name="high_glucose_values">Wysoka wartość stężenia glukozy</string>
     <string name="in_range_glucose_values">Dopuszczalne wartości glikemii</string>

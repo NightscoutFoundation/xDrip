@@ -319,6 +319,10 @@
     <string name="pebble_and_android_wear_options">Nastavení pro různé hodinky</string>
     <string name="customize_colours">Přizpůsobit barvy</string>
     <string name="xdrip_plus_color_settings">xDrip+ Nastavení barev</string>
+    <string name="summary_font_settings">Přizpůsobení velikosti textu</string>
+    <string name="title_font_settings">Nastavení velikosti textu</string>
+    <string name="summary_enlarge_fonts_on_large_screens">Automaticky zvětšit velikost textu na zařízení s velkou obrazovkou jako jsou tablety</string>
+    <string name="title_enlarge_fonts_on_large_screens">Zvětšit velikost textu na velké obrazovce</string>
     <string name="glucose_values_and_lines">Hodnoty a čáry glykémií</string>
     <string name="high_glucose_values">Hodnoty vysoké glykémie</string>
     <string name="in_range_glucose_values">Hodnoty v rozsahu</string>

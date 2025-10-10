@@ -319,6 +319,10 @@
     <string name="pebble_and_android_wear_options">Opzioni per Smartwatch</string>
     <string name="customize_colours">Personalizzazione Colori</string>
     <string name="xdrip_plus_color_settings">xDrip+ Impostazioni colore</string>
+    <string name="summary_font_settings">Personalizza Caratteri</string>
+    <string name="title_font_settings">Impostazioni Caratteri</string>
+    <string name="summary_enlarge_fonts_on_large_screens">Allarga automaticamente la dimensione dei caratteri su schermi di grande dimensione, come i tablet</string>
+    <string name="title_enlarge_fonts_on_large_screens">Ingrandisci caratteri su schermi grandi</string>
     <string name="glucose_values_and_lines">Valori di glucosio e linee</string>
     <string name="high_glucose_values">Valori Glicemici Elevati</string>
     <string name="in_range_glucose_values">Valori Glicemici nella media</string>
