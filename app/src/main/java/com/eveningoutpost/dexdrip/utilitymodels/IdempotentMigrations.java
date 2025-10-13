@@ -21,6 +21,7 @@ import com.eveningoutpost.dexdrip.models.LibreBlock;
 import com.eveningoutpost.dexdrip.models.LibreData;
 import com.eveningoutpost.dexdrip.models.PenData;
 import com.eveningoutpost.dexdrip.models.Prediction;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.models.UserNotification;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
@@ -172,12 +173,20 @@ public class IdempotentMigrations {
 
     // Required adjustments/conversions to settings after an update
     private static void settingsFix() {
-        try { // This used to be an integer.  But, is a string now.
-            Pref.setString("bluetooth_watchdog_timer", null);
+
+        try { // Use the closest list value for the Bluetooth watchdog timer
+            int oldValue = JoH.parseIntWithDefault(Pref.getString("bluetooth_watchdog_timer", Integer.toString(MAX_BT_WDG)), 10, MAX_BT_WDG);
+            int roundedValue = Math.round(oldValue / 5.0f) * 5; // Round to the nearest multiple of 5
+
+            // Clamp to valid range (just in case)
+            if (roundedValue < 5) roundedValue = 5;
+            if (roundedValue > MAX_BT_WDG) roundedValue = MAX_BT_WDG;
+
+            Pref.setString("bluetooth_watchdog_timer", Integer.toString(roundedValue));
         } catch (ClassCastException e) {
-            int oldValue = Pref.getInt("bluetooth_watchdog_timer", MAX_BT_WDG);
-            Pref.setString("bluetooth_watchdog_timer", Integer.toString(oldValue));
+            UserError.Log.e(TAG, "Converting bluetooth_watchdog_timer to list failed");
         }
+
     }
 
     private static void legacySettingsMoveLanguageFromNoToNb() {
