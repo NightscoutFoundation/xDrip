@@ -21,7 +21,6 @@ import com.eveningoutpost.dexdrip.models.LibreBlock;
 import com.eveningoutpost.dexdrip.models.LibreData;
 import com.eveningoutpost.dexdrip.models.PenData;
 import com.eveningoutpost.dexdrip.models.Prediction;
-import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.models.UserNotification;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
@@ -184,7 +183,7 @@ public class IdempotentMigrations {
 
             Pref.setString("bluetooth_watchdog_timer", Integer.toString(roundedValue));
         } catch (ClassCastException e) {
-            UserError.Log.e(TAG, "Converting bluetooth_watchdog_timer to list failed");
+            Log.e(TAG, "Converting bluetooth_watchdog_timer to list failed");
         }
 
     }
