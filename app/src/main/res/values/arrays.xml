@@ -166,11 +166,11 @@
 
     <!--     make sure to keep this values in sync with AlertPlayer.getAlertProfile -->
     <string-array name="BgAlertProfileEntries">
-        <item>High</item>
-        <item>Medium</item>
-        <item>Ascending</item>
-        <item>Vibrate only</item>
-        <item>Silent</item>
+        <item>@string/volume_profile_high</item>
+        <item>@string/volume_profile_medium</item>
+        <item>@string/volume_profile_ascending</item>
+        <item>@string/volume_profile_vibrate_only</item>
+        <item>@string/volume_profile_silent</item>
     </string-array>
 
     <string-array name="BgAlertProfileValues">
@@ -194,9 +194,9 @@
     </string-array>
 
     <string-array name="alertType">
-        <item>System Sound/Alarm</item>
-        <item>Custom Sound/Alarm</item>
-        <item>Default xDrip sound</item>
+        <item>@string/system_sound_alarm</item>
+        <item>@string/custom_sound_alarm</item>
+        <item>@string/default_xdrip_sound</item>
     </string-array>
 
     <string-array name="reminderAlertType">

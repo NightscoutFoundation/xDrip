@@ -390,7 +390,7 @@ public class EditAlertActivity extends ActivityWithMenu {
         List<AlertType> highAlerts = AlertType.getAll(true);
 
         if(threshold < MIN_ALERT || threshold > MAX_ALERT) {
-            Toast.makeText(getApplicationContext(), "Threshold must be between " +unitsConvert2Disp(doMgdl, MIN_ALERT) + " and " + unitsConvert2Disp(doMgdl, MAX_ALERT) + ".", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), getString(R.string.threshold_has_to_be_between, unitsConvert2Disp(doMgdl, MIN_ALERT), unitsConvert2Disp(doMgdl, MAX_ALERT)),Toast.LENGTH_LONG).show();
             return false;
         }
         // We want to make sure that for each threashold there is only one alert. Otherwise, which file should we play.
@@ -398,7 +398,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             if(lowAlert.threshold == threshold  && overlapping(lowAlert, allDay, startTime, endTime) && lowAlert.active) {
                 if(uuid == null || ! uuid.equals(lowAlert.uuid)){ //new alert or not myself
                     Toast.makeText(getApplicationContext(),
-                            "Each alert needs a unique threshold. Please choose a different one.",Toast.LENGTH_LONG).show();
+                            getString(R.string.alert_threshold_already_in_use),Toast.LENGTH_LONG).show();
                     return false;
                 }
             }
@@ -407,7 +407,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             if(highAlert.threshold == threshold  && overlapping(highAlert, allDay, startTime, endTime) && highAlert.active) {
                 if(uuid == null || ! uuid.equals(highAlert.uuid)){ //new alert or not myself
                     Toast.makeText(getApplicationContext(),
-                            "Each alert needs a unique threshold. Please choose a different one.",Toast.LENGTH_LONG).show();
+                            getString(R.string.alert_threshold_already_in_use),Toast.LENGTH_LONG).show();
                     return false;
                 }
             }
@@ -418,7 +418,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             for (AlertType lowAlert : lowAlerts) {
                 if(threshold < lowAlert.threshold  && overlapping(lowAlert, allDay, startTime, endTime) && lowAlert.active) {
                     Toast.makeText(getApplicationContext(),
-                            "High alerts must be set above all low alerts. Please adjust the threshold.",Toast.LENGTH_LONG).show();
+                            getString(R.string.high_alert_threshold_error),Toast.LENGTH_LONG).show();
                     return false;
                 }
             }
@@ -427,7 +427,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             for (AlertType highAlert : highAlerts) {
                 if(threshold > highAlert.threshold  && overlapping(highAlert, allDay, startTime, endTime) && highAlert.active) {
                     Toast.makeText(getApplicationContext(),
-                            "Low alerts must be set below all high alerts. Please adjust the threshold.",Toast.LENGTH_LONG).show();
+                            getString(R.string.low_alert_threshold_error),Toast.LENGTH_LONG).show();
                     return false;
                 }
             }
@@ -513,10 +513,10 @@ public class EditAlertActivity extends ActivityWithMenu {
                 int defaultSnooze = safeGetDefaultSnooze();
 
                 if(alertReraise < 1) {
-                    Toast.makeText(getApplicationContext(), "Reraise Value must be 1 minute or greater", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.alert_reraise_value_too_small), Toast.LENGTH_LONG).show();
                     return;
                 } else if (alertReraise >= defaultSnooze) {
-                    Toast.makeText(getApplicationContext(), "Reraise Value must be less than snooze length", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.alert_reraise_value_too_big), Toast.LENGTH_LONG).show();
                     return;
                 }
 
@@ -536,7 +536,7 @@ public class EditAlertActivity extends ActivityWithMenu {
                     allDay = true;
                 }
                 if (timeStart == timeEnd && (allDay==false)) {
-                    Toast.makeText(getApplicationContext(), "Alert start and end times cannot be equal.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.start_and_end_time_same),Toast.LENGTH_LONG).show();
                     return;
                 }
                 boolean disabled = checkboxDisabled.isChecked();
@@ -592,7 +592,7 @@ public class EditAlertActivity extends ActivityWithMenu {
         buttonalertMp3.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                builder.setTitle("What type of sound?")
+                builder.setTitle(getString(R.string.what_type_of_alert))
                         .setItems(R.array.alertType, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 if (which == 0) {
@@ -857,7 +857,7 @@ public class EditAlertActivity extends ActivityWithMenu {
                 d.setContentView(R.layout.snooze_picker);
                 Button b1 = (Button) d.findViewById(R.id.button1);
                 Button b2 = (Button) d.findViewById(R.id.button2);
-                b1.setText("pre-Snooze");
+                b1.setText(getString(R.string.pre_snooze));
 
                 final NumberPicker snoozeValue = (NumberPicker) d.findViewById(R.id.numberPicker1);
 
@@ -928,7 +928,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             allDay = true;
         }
         if (timeStart == timeEnd && (!allDay)) {
-            Toast.makeText(getApplicationContext(), "Alert start and end times cannot be equal.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), getString(R.string.start_and_end_time_same),Toast.LENGTH_LONG).show();
             return;
         }
         if(!verifyThreshold(threshold, allDay, timeStart, timeEnd)) {
@@ -942,11 +942,11 @@ public class EditAlertActivity extends ActivityWithMenu {
             int defaultSnooze = safeGetDefaultSnooze();
 
             if (Pref.getBooleanDefaultFalse("start_snoozed"))  {
-                JoH.static_toast_long("Start Snoozed setting means alert would normally start silent");
+                JoH.static_toast_long(getString(R.string.start_snoozed_enabled));
             } else if (Pref.getStringDefaultBlank("bg_alert_profile").equals("ascending") && Pref.getBoolean("delay_ascending_3min", true)) {
-                JoH.static_toast_long("Ascending Volume Profile + delayed ascending means it will start silent");
+                JoH.static_toast_long(getString(R.string.volume_profile_set_to_ascending_with_delay));
             } else if (Pref.getStringDefaultBlank("bg_alert_profile").equals("Silent")) {
-                JoH.static_toast_long("Volume Profile is set to silent!");
+                JoH.static_toast_long(getString(R.string.volume_profile_set_to_silent));
             }
 
             AlertType.testAlert(alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd, overrideSilentMode, forceSpeaker, defaultSnooze, vibrate, mContext);
