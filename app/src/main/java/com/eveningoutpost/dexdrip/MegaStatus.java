@@ -190,6 +190,7 @@ public class MegaStatus extends FloatingLocaleActivityWithScreenshot {
             }
             if (Pref.getBooleanDefaultFalse("cloud_storage_mongodb_enable")
                     || Pref.getBooleanDefaultFalse("cloud_storage_api_enable")
+                    || Pref.getBooleanDefaultFalse("cloud_storage_tidepool_enable")
                     || Pref.getBooleanDefaultFalse("share_upload")
                     || (Pref.getBooleanDefaultFalse("wear_sync") && Home.get_engineering_mode())) {
                 addAsection(UPLOADERS, "Cloud Uploader Queues");
