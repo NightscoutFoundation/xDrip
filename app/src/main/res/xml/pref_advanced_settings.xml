@@ -1332,13 +1332,14 @@
                     android:key="bluetooth_watchdog"
                     android:summary="@string/reset_bluetooth"
                     android:title="@string/bluetooth_watchdog" />
-                <EditTextPreference
-                    android:defaultValue="20"
-                    android:dependency="bluetooth_watchdog"
-                    android:inputType="numberDecimal"
+                <ListPreference
                     android:key="bluetooth_watchdog_timer"
                     android:summary="@string/bluetooth_watchdog_timer_sums"
-                    android:title="@string/bluetooth_watchdog_timers" />
+                    android:title="@string/bluetooth_watchdog_timers"
+                    android:entries="@array/bluetooth_watchdog_timer_entries"
+                    android:entryValues="@array/bluetooth_watchdog_timer_values"
+                    android:defaultValue="20"
+                    android:dependency="bluetooth_watchdog" />
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="g5_bluetooth_watchdog"
