@@ -190,11 +190,11 @@ public class AlertList extends ActivityWithMenu {
 
                 if (!isFinishing()) {
                     new AlertDialog.Builder(AlertList.this)
-                            .setTitle("Warning !")
-                            .setMessage("No low alert is active. You won’t be notified of low glucose—please add or enable one.")
+                            .setTitle(getString(R.string.alert_warning))
+                            .setMessage(getString(R.string.no_active_low_alert_warning))
                             .setCancelable(false)
                             .setPositiveButton(
-                                    "Ok",
+                                    getString(R.string.ok),
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
                                             dialog.cancel();
