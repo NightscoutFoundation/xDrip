@@ -1933,4 +1933,6 @@
     <string name="last_7_days">Ultimi 7 giorni</string>
     <string name="last_30_days">Ultimi 30 giorni</string>
     <string name="last_90_days">Ultimi 90 giorni</string>
+    <string name="scan_with_xdrip_settings_auto_configure"><![CDATA[Scansiona con\nImpostazioni xDrip -> Configurazione automatica]]></string>
+    <string name="could_not_create_qr_code">Impossibile creare il QR code</string>
 </resources>

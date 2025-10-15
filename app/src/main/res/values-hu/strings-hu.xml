@@ -1867,4 +1867,5 @@
     <string name="sensor_will_expire_in">Szenzor lejár: %1$s múlva</string>
     <string name="xdrip_update">xDrip+ frissítés</string>
     <string name="a_new_version_on_channel_1_s_is_available">A %1$s csatornán új verzió érhető el</string>
+    <string name="could_not_create_qr_code">A QR-kód generálása sikertelen</string>
 </resources>

@@ -1679,4 +1679,7 @@
     <string name="wake_up_screen_summary">הער את המסך בזמו התראות. יתכן שהמכשיר יפתח אם נעילת מכשיר אינה מאופשרת.</string>
     <string name="g7_should_start_automatically">חיישן ה-G7 יתחיל אוטומטית</string>
     <string name="screenshot">צילום מסך</string>
+    <string name="scan_with_xdrip_settings_auto_configure"><![CDATA[סרוק עם 
+הגדרות xDrip -> הגדרות אוטומטיות]]></string>
+    <string name="could_not_create_qr_code">לא ניתן היה ליצור קוד QR</string>
 </resources>

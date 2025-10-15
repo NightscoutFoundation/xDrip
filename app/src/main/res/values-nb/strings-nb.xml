@@ -232,8 +232,8 @@
     <string name="pref_was_greater_than_max">%1$s ble satt til en verdi større enn maksimalt tillatt. Den har blitt endret til maksimum.</string>
     <string name="setting_pref_to_min">Sett til minimum</string>
     <string name="pref_was_less_than_min">%1$s ble satt til en verdi mindre enn minste tillatt. Den har blitt endret til minimum.</string>
-    <string name="extrapolate_data_to_try_to_predict_lows">Ekstrapoler data for å prøve og beregne lave verdier</string>
-    <string name="alarm_at_forecasted_low_mins">Grense i antall minutter før varsel går av</string>
+    <string name="extrapolate_data_to_try_to_predict_lows">Basert på nåværende verdi og trend, beregn hva de neste målingene vil bli dersom trenden fortsetter (ekstrapoler). Dette ignorerer insulin eller karbohydrater i kroppen.</string>
+    <string name="alarm_at_forecasted_low_mins">Tidsgrense [min]</string>
     <string name="title_forecast_low_threshold">Terskel</string>
     <string name="other_xdrip_plus_alerts">Andre xDrip+ varsler</string>
     <string name="xdrip_plus_display_settings">xDrip+ Skjerminnstillinger</string>
@@ -319,6 +319,10 @@
     <string name="pebble_and_android_wear_options">Alternativer for ulike smartklokker</string>
     <string name="customize_colours">Tilpass farger</string>
     <string name="xdrip_plus_color_settings">xDrip+ fargeinnstillinger</string>
+    <string name="summary_font_settings">Tilpass skrifttyper</string>
+    <string name="title_font_settings">Skriftinnstilinger</string>
+    <string name="summary_enlarge_fonts_on_large_screens">Forstørr automatisk skriftstørrelsen på store skjermer, for eksempel nettbrett</string>
+    <string name="title_enlarge_fonts_on_large_screens">Forstørr skrifter på større skjermer</string>
     <string name="glucose_values_and_lines">Glukoseverdier og linjer</string>
     <string name="high_glucose_values">Høy glukoseverdier</string>
     <string name="in_range_glucose_values">Vanlige glukoseverdier</string>
@@ -434,7 +438,7 @@
     <string name="persistent_high_sound">Lyd ved vedvarende høy</string>
     <string name="forecast_lows">Beregnet lav</string>
     <string name="raise_alarm_on_forecast_low">Varsel ved beregnet lave verdier</string>
-    <string name="notify_when_predicted_low_time_reaches_threshold">Varsle når tid innen beregnet lav når terskelen</string>
+    <string name="notify_when_predicted_low_time_reaches_threshold">Varsle når den beregnede lavtiden når tidsgrensen</string>
     <string name="predicted_low_sound">Lyd ved beregnet lav</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Velg varsellyd for beregnet lav.</string>
     <string name="notify_when_parakeet_device_stops_checking_in">Gi beskjed når Parakeet-enheten slutter og sjekke inn</string>
@@ -1929,4 +1933,6 @@
     <string name="last_7_days">Siste 7 dager</string>
     <string name="last_30_days">Siste 30 dager</string>
     <string name="last_90_days">Siste 90 dager</string>
+    <string name="scan_with_xdrip_settings_auto_configure"><![CDATA[Skann med\nxDrip-innstillinger -> Autokonfigurer]]></string>
+    <string name="could_not_create_qr_code">Kunne ikke opprette QR-kode</string>
 </resources>
