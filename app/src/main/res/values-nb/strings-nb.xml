@@ -1935,4 +1935,26 @@
     <string name="last_90_days">Siste 90 dager</string>
     <string name="scan_with_xdrip_settings_auto_configure"><![CDATA[Skann med\nxDrip-innstillinger -> Autokonfigurer]]></string>
     <string name="could_not_create_qr_code">Kunne ikke opprette QR-kode</string>
+    <string name="alert_warning">Advarsel !</string>
+    <string name="no_active_low_alert_warning">Inget lav varsel er aktivt. Du vil ikke få varsel ved lavt glukosenivå – legg til eller aktiver et varsel.</string>
+    <string name="volume_profile_set_to_silent">Volumprofilen er satt til stille!</string>
+    <string name="volume_profile_set_to_ascending_with_delay">Stigende volumprofil + forsinket stigende betyr at den starter stille</string>
+    <string name="start_snoozed_enabled">Innstillingen start slumret betyr at varselet vanligvis starter stille</string>
+    <string name="pre_snooze">før-Slumre</string>
+    <string name="volume_profile_high">Høy</string>
+    <string name="volume_profile_medium">Medium</string>
+    <string name="volume_profile_ascending">Stigende</string>
+    <string name="volume_profile_vibrate_only">Vibrasjon</string>
+    <string name="volume_profile_silent">Stille</string>
+    <string name="alert_threshold_already_in_use">Hvert varsel må ha en unik grenseverdi. Velg en annen.</string>
+    <string name="high_alert_threshold_error">Høye varsler må settes høyere enn alle lave varsler. Juster grenseverdien.</string>
+    <string name="low_alert_threshold_error">Lave varsler må settes lavere enn alle høye varsler. Juster grenseverdien.</string>
+    <string name="threshold_has_to_be_between">Grenseverdien må være mellom %1$s og %2$s.</string>
+    <string name="alert_reraise_value_too_small">Reaktiver-verdien må være 1 minutt eller høyere</string>
+    <string name="alert_reraise_value_too_big">Reaktiver-verdien må være mindre enn slumrelengden</string>
+    <string name="start_and_end_time_same">Start- og sluttid for varsel kan ikke være like.</string>
+    <string name="what_type_of_alert">Hvilken type lyd?</string>
+    <string name="system_sound_alarm">Systemlyd/Alarm</string>
+    <string name="custom_sound_alarm">Egendefinert lyd/Alarm</string>
+    <string name="default_xdrip_sound">Standard xDrip-lyd</string>
 </resources>
