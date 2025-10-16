@@ -1617,4 +1617,25 @@
     <string name="close">Sulje</string>
     <string name="data_source">Tietolähde:</string>
     <string name="reraise_alerts_before_snooze_time">Toista hälytykset ennen torkkuaikaa</string>
+    <string name="alert_warning">Varoitus!</string>
+    <string name="no_active_low_alert_warning">Matala-hälytys ei ole aktiivinen. Et saa ilmoituksia alhaisesta verensokerista. Lisää tai aktivoi hälytys.</string>
+    <string name="volume_profile_set_to_ascending_with_delay">Voimistuvan äänenvoimakkuuden profiili + viivästetty voimistuminen tarkoittaa, että se alkaa äänettömänä</string>
+    <string name="start_snoozed_enabled">Käynnistä Torkutettuna -asetus tarkoittaa, että hälytys alkaa äänettömänä</string>
+    <string name="pre_snooze">esi-torkutus</string>
+    <string name="volume_profile_high">Voimakas</string>
+    <string name="volume_profile_medium">Keskitaso</string>
+    <string name="volume_profile_ascending">Voimistuva</string>
+    <string name="volume_profile_vibrate_only">Vain värinä</string>
+    <string name="volume_profile_silent">Äänetön</string>
+    <string name="alert_threshold_already_in_use">Jokaisella hälytyksellä tulee olla yksilöllinen kynnysarvo. Valitse jokin toinen kynnysarvo.</string>
+    <string name="high_alert_threshold_error">Korkeiden hälytysten kynnysarvojen tulee olla suurempia kuin matalien hälytysten kynnysarvojen. Valitse sopiva kynnysarvo.</string>
+    <string name="low_alert_threshold_error">Matalien hälytysten kynnysarvojen tulee olla piemenpiä kuin korkeiden hälytysten kynnysarvojen. Valitse sopiva kynnysarvo.</string>
+    <string name="threshold_has_to_be_between">Kynnysarvon on oltava välillä %1$s ja %2$s.</string>
+    <string name="alert_reraise_value_too_small">Korotus-arvon on oltava vähintään 1 minuutti</string>
+    <string name="alert_reraise_value_too_big">Korotus-arvon on oltava vähemmän kuin torkutuksen kesto</string>
+    <string name="start_and_end_time_same">Hälytyksen aloitus- ja lopetusajat eivät voi olla samoja.</string>
+    <string name="what_type_of_alert">Millainen ääni?</string>
+    <string name="system_sound_alarm">Käyttöjärjestelmän ääni/hälytys</string>
+    <string name="custom_sound_alarm">Mukautettu ääni/hälytys</string>
+    <string name="default_xdrip_sound">xDrip-oletusääni</string>
 </resources>
