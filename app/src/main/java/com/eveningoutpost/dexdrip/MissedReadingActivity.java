@@ -36,6 +36,7 @@ public class MissedReadingActivity extends ActivityWithMenu {
     private CheckBox checkboxAllDay;
     private CheckBox checkboxEnableReraise;
     private CheckBox checkboxOverrideSilent;
+    private CheckBox checkboxVibrateOnAlert;
     private String audioPath; // Local representation of the path to the sound file
     private EditText alertMp3File; // Sound file title
     
@@ -76,6 +77,7 @@ public class MissedReadingActivity extends ActivityWithMenu {
         checkboxAllDay = (CheckBox) findViewById(R.id.missed_reading_all_day);
         checkboxEnableAlert = (CheckBox) findViewById(R.id.missed_reading_enable_alert);
         checkboxOverrideSilent = (CheckBox) findViewById(R.id.bg_missed_alerts_override_silent);
+        checkboxVibrateOnAlert = (CheckBox) findViewById(R.id.bg_missed_alerts_vibrate_on_alert);
         checkboxEnableReraise = (CheckBox) findViewById(R.id.missed_reading_enable_alerts_reraise);
         /** xDrip used to use the other alerts sound file for the missed readings alert.
          * To avoid causing an unexpected behavior for a previous user of xDrip, the missed reading alert
@@ -107,12 +109,14 @@ public class MissedReadingActivity extends ActivityWithMenu {
         boolean allDay = prefs.getBoolean("missed_readings_all_day",true);
         boolean enableReraise = prefs.getBoolean("bg_missed_alerts_enable_alerts_reraise",false);
         boolean overrideSilentMode = prefs.getBoolean("bg_missed_alerts_override_silent", false);
+        boolean vibrateOnAlert = prefs.getBoolean("bg_missed_alerts_vibrate_on_alert", true);
         audioPath = Pref.getString("bg_missed_alerts_sound", null);
         
         checkboxAllDay.setChecked(allDay);
         checkboxEnableAlert.setChecked(enableAlert);
         checkboxEnableReraise.setChecked(enableReraise);
         checkboxOverrideSilent.setChecked(overrideSilentMode);
+        checkboxVibrateOnAlert.setChecked(vibrateOnAlert);
         
         startHour = AlertType.time2Hours(startMinutes);
         startMinute = AlertType.time2Minutes(startMinutes);
@@ -147,6 +151,7 @@ public class MissedReadingActivity extends ActivityWithMenu {
         prefs.edit().putBoolean("missed_readings_all_day", checkboxAllDay.isChecked()).apply();
         prefs.edit().putBoolean("bg_missed_alerts_enable_alerts_reraise", checkboxEnableReraise.isChecked()).apply();
         prefs.edit().putBoolean("bg_missed_alerts_override_silent", checkboxOverrideSilent.isChecked()).apply();
+        prefs.edit().putBoolean("bg_missed_alerts_vibrate_on_alert", checkboxVibrateOnAlert.isChecked()).apply();
 
         MissedReadingService.delayedLaunch();
       //  context.startService(new Intent(context, MissedReadingService.class));
@@ -163,6 +168,7 @@ public class MissedReadingActivity extends ActivityWithMenu {
         checkboxAllDay.setEnabled(enabled);
         checkboxEnableReraise.setEnabled(enabled);
         checkboxOverrideSilent.setEnabled(enabled);
+        checkboxVibrateOnAlert.setEnabled(enabled);
         bgMissedMinutes.setEnabled(enabled);
         bgMissedSnoozeMin.setEnabled(enabled);
         bgMissedReraiseSec.setEnabled(enabled);
@@ -218,6 +224,13 @@ public class MissedReadingActivity extends ActivityWithMenu {
         });
 
         checkboxOverrideSilent.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            // @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                enableAllControls();
+            }
+        });
+
+        checkboxVibrateOnAlert.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             // @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 enableAllControls();
