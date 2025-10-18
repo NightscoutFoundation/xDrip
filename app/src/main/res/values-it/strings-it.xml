@@ -1935,4 +1935,26 @@
     <string name="last_90_days">Ultimi 90 giorni</string>
     <string name="scan_with_xdrip_settings_auto_configure"><![CDATA[Scansiona con\nImpostazioni xDrip -> Configurazione automatica]]></string>
     <string name="could_not_create_qr_code">Impossibile creare il QR code</string>
+    <string name="alert_warning">Attenzione !</string>
+    <string name="no_active_low_alert_warning">Nessun allarme glicemia bassa è attivo. Non sarai avvisato delle ipoglicemie—per favore aggiungine o abilitane uno.</string>
+    <string name="volume_profile_set_to_silent">Il profilo del volume è impostato su silenzioso!</string>
+    <string name="volume_profile_set_to_ascending_with_delay">Profilo volume crescente + aumento volume ritardato significa che inizierà silenzioso</string>
+    <string name="start_snoozed_enabled">L\'impostazione avvio posticipato significa che l\'allarme inizierà silenziato</string>
+    <string name="pre_snooze">pre-Snooze</string>
+    <string name="volume_profile_high">Alto</string>
+    <string name="volume_profile_medium">Medio</string>
+    <string name="volume_profile_ascending">Crescente</string>
+    <string name="volume_profile_vibrate_only">Solo vibrazione</string>
+    <string name="volume_profile_silent">Silenzioso</string>
+    <string name="alert_threshold_already_in_use">Ogni allarme ha bisogno di una soglia unica. Si prega di sceglierne una diversa.</string>
+    <string name="high_alert_threshold_error">Gli allarmi alti devono essere impostati sopra tutti gli allarmi bassi. Si prega di regolare la soglia.</string>
+    <string name="low_alert_threshold_error">Gli allarmi bassi devono essere impostati sotto tutti gli allarmi alti. Si prega di regolare la soglia.</string>
+    <string name="threshold_has_to_be_between">La soglia deve essere compresa tra %1$s e %2$s.</string>
+    <string name="alert_reraise_value_too_small">Il valore di ripetizione deve essere di 1 minuto o superiore</string>
+    <string name="alert_reraise_value_too_big">Il valore di ripetizione deve essere inferiore alla durata dello snooze</string>
+    <string name="start_and_end_time_same">L\'inizio e la fine dell\'allarme non possono essere uguali.</string>
+    <string name="what_type_of_alert">Che tipo di suono?</string>
+    <string name="system_sound_alarm">Suono/Allarme di Sistema</string>
+    <string name="custom_sound_alarm">Suono/Allarme Personalizzato</string>
+    <string name="default_xdrip_sound">Suono xDrip predefinito</string>
 </resources>
