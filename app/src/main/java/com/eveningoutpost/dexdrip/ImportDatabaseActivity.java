@@ -20,12 +20,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
+import com.eveningoutpost.dexdrip.utils.ConfigureImportExport;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
 import com.eveningoutpost.dexdrip.utils.FileUtils;
 import com.eveningoutpost.dexdrip.utils.ListActivityWithMenu;
+import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 import java.io.BufferedInputStream;
@@ -48,6 +52,9 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
     private Handler mHandler;
     private ArrayList<String> databaseNames;
     private ArrayList<File> databases;
+    private ArrayList<File> toDeleteAfterImport;
+    private ConfigureImportExport.ImportSelection selected;
+    private File prefsFile2ImportAfterSuccessRestore;
     private final static int MY_PERMISSIONS_REQUEST_STORAGE = 132;
 
     @Override
@@ -56,6 +63,9 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
         super.onCreate(savedInstanceState);
         mHandler = new Handler();
         setContentView(R.layout.activity_import_db);
+        selected = ConfigureImportExport.ImportSelection.old;
+        toDeleteAfterImport = new ArrayList<>();
+        prefsFile2ImportAfterSuccessRestore = null;
         final String importit = getIntent().getStringExtra("importit");
         if ((importit != null) && (importit.length() > 0)) {
             importDB(new File(importit), this);
@@ -67,9 +77,20 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
     private void generateDBGui() {
         int permissionCheck = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_EXTERNAL_STORAGE);
-        if (permissionCheck == PackageManager.PERMISSION_GRANTED && findAllDatabases()) {
-            sortDatabasesAlphabetically();
-            showDatabasesInList();
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            RadioGroup rg = findViewById(R.id.importSelection_radiogroup);
+            if (ConfigureImportExport.isLocalStorageEnabled()) {
+                RadioButton b = new RadioButton(this);
+                b.setText("local Storage Place");
+                rg.addView(b);
+            }
+            if (ConfigureImportExport.isWebDAVStorageEnabled()) {
+                RadioButton b = new RadioButton(this);
+                b.setText("WebDAV Storage Place");
+                rg.addView(b);
+            }
+            rg.setOnCheckedChangeListener(this::OnCheckedChangeListener);
+            rg.check(1);
         } else if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
             JoH.static_toast_long("Need permission for saved files");
             ActivityCompat.requestPermissions(this,
@@ -78,6 +99,21 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
         } else {
             postImportDB("\'xdrip\' is not a directory... aborting.");
         }
+    }
+
+    protected void OnCheckedChangeListener(RadioGroup group, int checkedId) {
+        if (checkedId == 1) {       // old school storage
+            selected = ConfigureImportExport.ImportSelection.old;
+            findAllDatabases();
+        } else if ((checkedId == 2) && ConfigureImportExport.isLocalStorageEnabled()) {    // local Storage
+            selected = ConfigureImportExport.ImportSelection.localStorage;
+            databases = ConfigureImportExport.findAllBackups(selected);
+        } else {                    // WebDAV Storage
+            selected = ConfigureImportExport.ImportSelection.WebDAVStorage;
+            databases = ConfigureImportExport.findAllBackups(selected);
+        }
+        sortDatabasesAlphabetically();
+        showDatabasesInList();
     }
 
     private void showWarningAndInstructions() {
@@ -147,9 +183,9 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
                 android.R.layout.simple_list_item_1, databaseNames);
         setListAdapter(adapter);
 
-        if (databaseNames.size() == 0) {
-            postImportDB("No databases found.");
-        }
+//        if (databaseNames.size() == 0) {
+//            postImportDB("No databases found.");
+//        }
     }
 
     private void addAllDatabases(File file, ArrayList<File> databases) {
@@ -223,7 +259,30 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
 
 
     private void importDB(int position) {
-        importDB(databases.get(position), this);
+        if (selected == ConfigureImportExport.ImportSelection.old)
+            importDB(databases.get(position), this);
+        else {
+            File f = fetchExternalBackup(databases.get(position), this);
+            importDB(f, this);
+        }
+    }
+
+    private File fetchExternalBackup(File the_file, Activity activity) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Importing, please wait");
+        builder.setMessage("Importing, please wait");
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        dialog.setMessage("Step 0a: fetching from external storage");
+        dialog.setCancelable(false);
+        File fetched = ConfigureImportExport.fetchBackup(selected, the_file);
+        dialog.setMessage("Step 0b: extracting content");
+        File db = ConfigureImportExport.extractDBBackup(selected, fetched);
+        prefsFile2ImportAfterSuccessRestore = ConfigureImportExport.extractPrefsFile(selected, fetched);
+        ConfigureImportExport.cleanup(selected, fetched);
+        toDeleteAfterImport.add(db);       // delete temporary DB backup file
+        toDeleteAfterImport.add(prefsFile2ImportAfterSuccessRestore);      // delete temporary prefs file
+        return db;
     }
 
     private void importDB(File the_file, Activity activity) {
@@ -240,6 +299,8 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
 
     protected void postImportDB(String result) {
 
+        for (File f: toDeleteAfterImport)
+            f.delete();
         startWatchUpdaterService(this, WatchUpdaterService.ACTION_RESET_DB, TAG);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -277,7 +338,6 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
 
         protected String doInBackground(Void... args) {
             //Check if db has the correct version:
-            File delete_file = null;
             try {
 
                 if (dbFile.getAbsolutePath().endsWith(".zip")) {
@@ -299,7 +359,9 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
                                     }
                                 }
                                 dbFile = new File(output_filename);
-                                delete_file = dbFile;
+                                toDeleteAfterImport.add(dbFile);
+                                toDeleteAfterImport.add(new File(output_filename + "-shm"));
+                                toDeleteAfterImport.add(new File(output_filename + "-wal"));
                                 Log.d(TAG, "New filename: " + output_filename);
                             } else {
                                 String msg = "Cant find sqlite in zip file";
@@ -323,7 +385,7 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
                 SQLiteDatabase db = SQLiteDatabase.openDatabase(dbFile.getAbsolutePath(), null, SQLiteDatabase.OPEN_READONLY);
                 int version = db.getVersion();
                 db.close();
-                if (getDBVersion() != version) {
+                if (getDBVersion() < version) { // changed 24/8/11 gruoner: it should be possible to import an older DB-version
                     statusDialog.dismiss();
                     return "Wrong Database version.\n(" + version + " instead of " + getDBVersion() + ")";
                 }
@@ -339,6 +401,8 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
             });
 
             String export = DatabaseUtil.saveSql(xdrip.getAppContext(), "b4import");
+            /// gruoner: 15.5.'24 - keine Ahnung wieso das seit Jahren auskommentiert ist
+//            ConfigureImportExport.dispatchAdditionalExports(export, true, false);
 
 
             if (export == null) {
@@ -354,7 +418,16 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
             });
 
             String result = DatabaseUtil.loadSql(xdrip.getAppContext(), dbFile.getAbsolutePath());
-            if (delete_file != null) delete_file.delete();
+            if ((prefsFile2ImportAfterSuccessRestore != null) && result.toLowerCase().contains("successfull")) {
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        statusDialog.setMessage("Step 4: restoring preferences");
+                    }
+                });
+                SdcardImportExport.directCopyFile(prefsFile2ImportAfterSuccessRestore,
+                        new File(xdrip.getAppContext().getFilesDir().getParent() + "/" + SdcardImportExport.PREFERENCES_FILE));
+            }
             statusDialog.dismiss();;
             return result;
         }
@@ -363,7 +436,7 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             postImportDB(result);
-
+            SdcardImportExport.hardReset();
         }
     }
 }

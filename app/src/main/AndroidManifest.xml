@@ -708,6 +708,10 @@
             android:name=".utils.SdcardImportExport"
             android:configChanges="orientation|screenSize"
             android:label="@string/settings_on_external_storage" />
+        <activity
+            android:name=".utils.ConfigureImportExport"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/configure_export_export" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").

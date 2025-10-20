@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.PowerManager;
 
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.utils.ConfigureImportExport;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.DesertSync;
 import com.eveningoutpost.dexdrip.models.JoH;
@@ -71,6 +72,7 @@ public class DailyIntentService extends IntentService {
                 if (Pref.getBooleanDefaultFalse("save_db_ondemand")) {
                     try {
                         String export = DatabaseUtil.saveSql(xdrip.getAppContext(), "daily");
+                        ConfigureImportExport.dispatchAdditionalExports(export, true, false);
                     } catch (Exception e) {
                         Log.e(TAG, "DailyIntentService exception on Daily Save Database - ", e);
                     }
