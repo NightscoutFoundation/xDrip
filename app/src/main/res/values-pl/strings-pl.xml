@@ -232,7 +232,7 @@
     <string name="pref_was_greater_than_max">Wartość %1$s przekroczyła maksymalną dozwoloną wartość. Ustawiono w zamian wartość maksymalną.</string>
     <string name="setting_pref_to_min">Ustaw na minimum</string>
     <string name="pref_was_less_than_min">Wartość %1$s przekroczyła minimalną dozwoloną wartość. Ustawiono w zamian wartość minimalną.</string>
-    <string name="extrapolate_data_to_try_to_predict_lows">Ekstrapolacji danych, aby spróbować przewidzieć upadki</string>
+    <string name="extrapolate_data_to_try_to_predict_lows">Biorąc pod uwagę aktualną wartość i tendencję, przewidzi, jakie będą kolejne odczyty, jeśli trend będzie się utrzymywał (ekstrapolacja). Funkcja ignoruje insulinę i węglowodany.</string>
     <string name="alarm_at_forecasted_low_mins">Alarm przy prognozowanych niskich w minutach</string>
     <string name="title_forecast_low_threshold">Próg</string>
     <string name="other_xdrip_plus_alerts">Inne alarmy xDrip+</string>
@@ -1899,4 +1899,26 @@
     <string name="last_90_days">Ostatnie 90 dni</string>
     <string name="scan_with_xdrip_settings_auto_configure"><![CDATA[Zeskanuj za pomocą\nxDrip Ustawienia -> Automatyczna konfiguracja]]></string>
     <string name="could_not_create_qr_code">Nie udało się utworzyć kodu QR</string>
+    <string name="alert_warning">Uwaga !</string>
+    <string name="no_active_low_alert_warning">Alarm niskiego poziomu nie jest aktywny. Nie będziesz powiadamiany o niskim poziomie glukozy — dodaj lub włącz jakiś.</string>
+    <string name="volume_profile_set_to_silent">Profil głośności jest ustawiony na wyciszenie!</string>
+    <string name="volume_profile_set_to_ascending_with_delay">Rosnący profil głośności + opóźnienie wzrostu oznacza, że rozpocznie się bez dźwięku</string>
+    <string name="start_snoozed_enabled">Rozpocznij od wyciszenia, oznacza, że alarm uruchomi się bez dźwięku</string>
+    <string name="pre_snooze">Wstępna drzemka</string>
+    <string name="volume_profile_high">Wysoki</string>
+    <string name="volume_profile_medium">Średni</string>
+    <string name="volume_profile_ascending">Rosnący</string>
+    <string name="volume_profile_vibrate_only">Tylko wibracje</string>
+    <string name="volume_profile_silent">Wyciszony</string>
+    <string name="alert_threshold_already_in_use">Każdy alarm musi mieć unikalny próg. Wpisz inną wartość.</string>
+    <string name="high_alert_threshold_error">Alarmy wysokiego poziomu muszą mieć ustawione wartości progów powyżej wszystkich progów alarmów niskiego poziomu. Proszę, zmień wartość progu.</string>
+    <string name="low_alert_threshold_error">Alarmy niskiego poziomu muszą mieć ustawione wartości progów poniżej wszystkich progów alarmów wysokiego poziomu. Proszę, zmień wartość progu.</string>
+    <string name="threshold_has_to_be_between">Próg musi mieć wartość pomiędzy %1$s i %2$s.</string>
+    <string name="alert_reraise_value_too_small">Wznowienie ponowne musi mieć wartość 1 minuty albo wyższą</string>
+    <string name="alert_reraise_value_too_big">Wznowienie ponowne musi mieć wartość większą niż długość drzemki</string>
+    <string name="start_and_end_time_same">Godziny rozpoczęcia i zakończenia alarmu nie mogą być takie same.</string>
+    <string name="what_type_of_alert">Jaki rodzaj dźwięku?</string>
+    <string name="system_sound_alarm">Dźwięk/Alarm systemowy</string>
+    <string name="custom_sound_alarm">Własny dźwięk/Alarm</string>
+    <string name="default_xdrip_sound">Domyślny dźwięk xDrip</string>
 </resources>
