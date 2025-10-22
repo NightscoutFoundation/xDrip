@@ -1945,4 +1945,12 @@
     <string name="alert_threshold_already_in_use">Всяко предупреждение изисква уникален праг. Моля, изберете различен.</string>
     <string name="high_alert_threshold_error">Високите аларми трябва да бъдат зададени над всички ниски аларми. Моля, коригирайте прага.</string>
     <string name="low_alert_threshold_error">Ниските аларми трябва да бъдат зададени под всички високи аларми. Моля, коригирайте прага.</string>
+    <string name="threshold_has_to_be_between">Прагът трябва да е между %1$s и %2$s.</string>
+    <string name="alert_reraise_value_too_small">Повторната аларма трябва да бъде 1 минута или повече</string>
+    <string name="alert_reraise_value_too_big">Стойността на повторната аларма трябва да е по-малко от продължителността на отлагането</string>
+    <string name="start_and_end_time_same">Началният и крайният час на алармата не могат да са еднакви.</string>
+    <string name="what_type_of_alert">Какъв тип звук?</string>
+    <string name="system_sound_alarm">Системен звук/аларма</string>
+    <string name="custom_sound_alarm">Персонализиран звук/аларма</string>
+    <string name="default_xdrip_sound">Звук по подразбиране на xDrip</string>
 </resources>
