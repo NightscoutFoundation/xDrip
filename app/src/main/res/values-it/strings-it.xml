@@ -255,6 +255,9 @@
     <string name="dexcom_transmitter_id">Dexcom trasmettitore ID</string>
     <string name="run_collector_in_foreground">Eseguire Collector in primo piano</string>
     <string name="shows_a_persistent_notification">Mostra un grafico di notifica, visibile sul blocco schermo e impedisce ad Android di chiudere la app</string>
+    <string name="title_collector_in_foreground">Eseguire Collector in primo piano</string>
+    <string name="summary_compact_ongoing_notification">Abilita per nascondere il grafico nelle notifiche e visualizzare solo il valore attuale di glucosio.</string>
+    <string name="title_compact_ongoing_notification">Notifica Persistente Compatta</string>
     <string name="list_of_receivers">Elenco dei ricevitori</string>
     <string name="extra_tags_for_logging">Tag aggiuntivi per la registrazione</string>
     <string name="extra_tags_dialog_message">I tag inseriti qui saranno registrati in xDrip. Il formato è tag: level. Il livello può essere v, d, i. Per esempio bgreading: i, DexCollectionService: v. Questi tag saranno registrati con bassa priorità per errori e lista eventi.</string>
@@ -316,6 +319,10 @@
     <string name="pebble_and_android_wear_options">Opzioni per Smartwatch</string>
     <string name="customize_colours">Personalizzazione Colori</string>
     <string name="xdrip_plus_color_settings">xDrip+ Impostazioni colore</string>
+    <string name="summary_font_settings">Personalizza Caratteri</string>
+    <string name="title_font_settings">Impostazioni Caratteri</string>
+    <string name="summary_enlarge_fonts_on_large_screens">Allarga automaticamente la dimensione dei caratteri su schermi di grande dimensione, come i tablet</string>
+    <string name="title_enlarge_fonts_on_large_screens">Ingrandisci caratteri su schermi grandi</string>
     <string name="glucose_values_and_lines">Valori di glucosio e linee</string>
     <string name="high_glucose_values">Valori Glicemici Elevati</string>
     <string name="in_range_glucose_values">Valori Glicemici nella media</string>
@@ -1921,4 +1928,11 @@
     <string name="sensor_will_expire_in">Il sensore scadrà in %1$s</string>
     <string name="xdrip_update">Aggiornamento xDrip+</string>
     <string name="a_new_version_on_channel_1_s_is_available">È disponibile una nuova versione nel canale %1$s</string>
+    <string name="today">Oggi</string>
+    <string name="yesterday">Ieri</string>
+    <string name="last_7_days">Ultimi 7 giorni</string>
+    <string name="last_30_days">Ultimi 30 giorni</string>
+    <string name="last_90_days">Ultimi 90 giorni</string>
+    <string name="scan_with_xdrip_settings_auto_configure"><![CDATA[Scansiona con\nImpostazioni xDrip -> Configurazione automatica]]></string>
+    <string name="could_not_create_qr_code">Impossibile creare il QR code</string>
 </resources>

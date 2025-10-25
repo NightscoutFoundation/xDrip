@@ -316,6 +316,10 @@
     <string name="pebble_and_android_wear_options">Opcje dla różnych zegarków</string>
     <string name="customize_colours">Dostosuj kolory</string>
     <string name="xdrip_plus_color_settings">Ustawienia kolorów xDrip+</string>
+    <string name="summary_font_settings">Dostosuj czcionki</string>
+    <string name="title_font_settings">Ustawienia czcionki</string>
+    <string name="summary_enlarge_fonts_on_large_screens">Automatycznie powiększ rozmiar czcionki na dużych ekranach, takich jak tablety</string>
+    <string name="title_enlarge_fonts_on_large_screens">Powiększ czcionki na większych wyświetlaczach</string>
     <string name="glucose_values_and_lines">Glikemia i linie</string>
     <string name="high_glucose_values">Wysoka wartość stężenia glukozy</string>
     <string name="in_range_glucose_values">Dopuszczalne wartości glikemii</string>
@@ -526,14 +530,14 @@
     <string name="handset_sync_grouping_key">Grupowy klucz synchronizacji danych</string>
     <string name="alert_name_colon">Nazwa alarmu:</string>
     <string name="threshold_colon">Próg:</string>
-    <string name="default_snooze_colon">Domyślnie uśpij</string>
+    <string name="default_snooze_colon">Domyślnie uśpij na:</string>
     <string name="re_raise_every_x_minutes_if_unaknowledged">Aktywuj co\nx\nminut, jeżeli niepotwierdzony:</string>
     <string name="alert_tone_colon">Sygnał alarmowy:</string>
     <string name="choose_file">Wybierz plik</string>
-    <string name="select_time_for_alert_colon">Wybierz czas dla wpisu:</string>
+    <string name="select_time_for_alert_colon">Wybierz czas dla alarmu:</string>
     <string name="all_day">cały dzień</string>
     <string name="tap_to_change">(dotknij, aby zmienić)</string>
-    <string name="override_phone_silent_mode_colon">Zastąp Tryb cichy:</string>
+    <string name="override_phone_silent_mode_colon">Zignoruj tryb cichy:</string>
     <string name="vibrate_on_alert">Wibracje podczas alarmu</string>
     <string name="test_alert">Testowy alarm</string>
     <string name="disable_alert">Wyłącz alarm</string>
@@ -1888,4 +1892,11 @@
     <string name="sensor_will_expire_in">Czujnik wygaśnie za %1$s</string>
     <string name="xdrip_update">Aktualizacja xDrip+</string>
     <string name="a_new_version_on_channel_1_s_is_available">Dostępna jest nowa wersja na kanale %1$s</string>
+    <string name="today">Dzisiaj</string>
+    <string name="yesterday">Wczoraj</string>
+    <string name="last_7_days">Ostatnie 7 dni</string>
+    <string name="last_30_days">Ostatnie 30 dni</string>
+    <string name="last_90_days">Ostatnie 90 dni</string>
+    <string name="scan_with_xdrip_settings_auto_configure"><![CDATA[Zeskanuj za pomocą\nxDrip Ustawienia -> Automatyczna konfiguracja]]></string>
+    <string name="could_not_create_qr_code">Nie udało się utworzyć kodu QR</string>
 </resources>

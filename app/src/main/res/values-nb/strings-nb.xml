@@ -232,8 +232,8 @@
     <string name="pref_was_greater_than_max">%1$s ble satt til en verdi større enn maksimalt tillatt. Den har blitt endret til maksimum.</string>
     <string name="setting_pref_to_min">Sett til minimum</string>
     <string name="pref_was_less_than_min">%1$s ble satt til en verdi mindre enn minste tillatt. Den har blitt endret til minimum.</string>
-    <string name="extrapolate_data_to_try_to_predict_lows">Ekstrapoler data for å prøve og beregne lave verdier</string>
-    <string name="alarm_at_forecasted_low_mins">Grense i antall minutter før varsel går av</string>
+    <string name="extrapolate_data_to_try_to_predict_lows">Basert på nåværende verdi og trend, beregn hva de neste målingene vil bli dersom trenden fortsetter (ekstrapoler). Dette ignorerer insulin eller karbohydrater i kroppen.</string>
+    <string name="alarm_at_forecasted_low_mins">Tidsgrense [min]</string>
     <string name="title_forecast_low_threshold">Terskel</string>
     <string name="other_xdrip_plus_alerts">Andre xDrip+ varsler</string>
     <string name="xdrip_plus_display_settings">xDrip+ Skjerminnstillinger</string>
@@ -255,6 +255,9 @@
     <string name="dexcom_transmitter_id">Dexcom sender-ID</string>
     <string name="run_collector_in_foreground">Kjør innsamler i forgrunnen</string>
     <string name="shows_a_persistent_notification">Viser vedvarende varselgraf, synlig på låseskjermen og hindrer android i å stoppe tjenesten.</string>
+    <string name="title_collector_in_foreground">Innsamler i forgrunnen</string>
+    <string name="summary_compact_ongoing_notification">Aktiver for å skjule grafen i varselet og bare vise gjeldende glukoseverdi.</string>
+    <string name="title_compact_ongoing_notification">Kompakt vedvarende varsling</string>
     <string name="list_of_receivers">Liste over mottakere</string>
     <string name="extra_tags_for_logging">Ekstra koder for logging</string>
     <string name="extra_tags_dialog_message">De innskrevne kodene her vil være logget inn i xDrip. Formatet er tag:nivå. Nivå kan være v, d, i. For eksempel bgreading:i,DexCollectionService:v. Disse kodene vil bli logget med lav prioritet til feil- og hendelseslisten.</string>
@@ -316,6 +319,10 @@
     <string name="pebble_and_android_wear_options">Alternativer for ulike smartklokker</string>
     <string name="customize_colours">Tilpass farger</string>
     <string name="xdrip_plus_color_settings">xDrip+ fargeinnstillinger</string>
+    <string name="summary_font_settings">Tilpass skrifttyper</string>
+    <string name="title_font_settings">Skriftinnstilinger</string>
+    <string name="summary_enlarge_fonts_on_large_screens">Forstørr automatisk skriftstørrelsen på store skjermer, for eksempel nettbrett</string>
+    <string name="title_enlarge_fonts_on_large_screens">Forstørr skrifter på større skjermer</string>
     <string name="glucose_values_and_lines">Glukoseverdier og linjer</string>
     <string name="high_glucose_values">Høy glukoseverdier</string>
     <string name="in_range_glucose_values">Vanlige glukoseverdier</string>
@@ -431,7 +438,7 @@
     <string name="persistent_high_sound">Lyd ved vedvarende høy</string>
     <string name="forecast_lows">Beregnet lav</string>
     <string name="raise_alarm_on_forecast_low">Varsel ved beregnet lave verdier</string>
-    <string name="notify_when_predicted_low_time_reaches_threshold">Varsle når tid innen beregnet lav når terskelen</string>
+    <string name="notify_when_predicted_low_time_reaches_threshold">Varsle når den beregnede lavtiden når tidsgrensen</string>
     <string name="predicted_low_sound">Lyd ved beregnet lav</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Velg varsellyd for beregnet lav.</string>
     <string name="notify_when_parakeet_device_stops_checking_in">Gi beskjed når Parakeet-enheten slutter og sjekke inn</string>
@@ -1921,4 +1928,11 @@
     <string name="sensor_will_expire_in">Sensor vil utløpe om %1$s</string>
     <string name="xdrip_update">xDrip+-oppdatering</string>
     <string name="a_new_version_on_channel_1_s_is_available">En ny versjon på kanalen %1$s er tilgjengelig</string>
+    <string name="today">Idag</string>
+    <string name="yesterday">Igår</string>
+    <string name="last_7_days">Siste 7 dager</string>
+    <string name="last_30_days">Siste 30 dager</string>
+    <string name="last_90_days">Siste 90 dager</string>
+    <string name="scan_with_xdrip_settings_auto_configure"><![CDATA[Skann med\nxDrip-innstillinger -> Autokonfigurer]]></string>
+    <string name="could_not_create_qr_code">Kunne ikke opprette QR-kode</string>
 </resources>

@@ -1133,7 +1133,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             bindPreferenceSummaryToValue(findPreference("falling_bg_val"));
             bindPreferenceSummaryToValue(findPreference("rising_bg_val"));
             bindPreferenceSummaryToValue(findPreference("other_alerts_sound"));
-            bindPreferenceSummaryToValue(findPreference("bridge_battery_alert_level"));
             bindPreferenceSummaryToUnitizedValueAndEnsureNumeric(findPreference("persistent_high_threshold"));
             bindPreferenceSummaryToUnitizedValueAndEnsureNumeric(findPreference("forecast_low_threshold"));
 
@@ -1431,6 +1430,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     //
                 }
             }
+
+            final Preference xSyncFollowChime = findPreference("follower_chime");
 
 
             if (collectionType != DexCollectionType.WebFollow) {
@@ -1858,6 +1859,14 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     collectionCategory.removePreference(nsFollowUrl);
                     collectionCategory.removePreference(nsFollowDownload);
                     collectionCategory.removePreference(nsFollowLag);
+                } catch (Exception e) {
+                    //
+                }
+            }
+
+            if (collectionType != DexCollectionType.Follower) {
+                try {
+                    collectionCategory.removePreference(xSyncFollowChime);
                 } catch (Exception e) {
                     //
                 }
@@ -2578,6 +2587,10 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                         collectionCategory.addPreference(nsFollowUrl);
                         collectionCategory.addPreference(nsFollowDownload);
                         collectionCategory.addPreference(nsFollowLag);
+                    }
+
+                    if (collectionType == DexCollectionType.Follower) {
+                        collectionCategory.addPreference(xSyncFollowChime);
                     }
 
 

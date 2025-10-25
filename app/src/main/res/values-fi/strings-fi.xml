@@ -242,6 +242,9 @@
     <string name="dexcom_transmitter_id">Dexcom lähettimen ID</string>
     <string name="run_collector_in_foreground">Suorita tiedon kerääjä etualalla</string>
     <string name="shows_a_persistent_notification">Näytä kuvaaja pysyvänä ilmoituksena lukitusnäytöllä ja estä Androidia sulkemasta palvelua.</string>
+    <string name="title_collector_in_foreground">Suorita tiedonkerääjä päällimmäksenä</string>
+    <string name="summary_compact_ongoing_notification">Ota käyttöön piilottaaksesi kuvaajan ilmoituksissa ja näytä ainoastaan glukoosiarvo.</string>
+    <string name="title_compact_ongoing_notification">Tiivistetty pysyvä ilmoitus</string>
     <string name="list_of_receivers">Lista vastaanottimista</string>
     <string name="extra_tags_for_logging">Lisätunnisteet lokia varten</string>
     <string name="extra_tags_dialog_message">Tässä annetut tunnisteet kirjataan xDripille. Muoto on tunniste:taso. Taso voi olla v, d tai i. Esimerkiksi vsmittaus:i, DexcomKeräys:v. Nämä tunnisteet kirjoitetaan Virhelokiin ja tapahtumalistaan matalalla lokitustasolla.</string>

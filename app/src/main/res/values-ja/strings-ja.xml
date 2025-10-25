@@ -61,6 +61,7 @@
     <string name="pref_title_api_enabled">有効</string>
     <string name="pref_summary_api_enabled">REST APIは Nightscoutに接続する標準的な方法です</string>
     <string name="pref_title_api_url">ベースURL</string>
+    <string name="pref_summary_api_url">書式: https://password@hostname/api/v1/</string>
     <string name="pref_dialog_api_url">ベースAPIのURLを入力</string>
     <string name="pref_message_api_url">これはベース URLのみです。アップローダーがPOSTの/entries が自動的に追加します。この設定で サーバー側のAPI_SECRETは yourpassphrase を一致する必要があります。</string>
     <string name="pref_default_api_url">https://yourpassphrase@{YOUR-SITE}.azurewebsites.net/api/v1/</string>
@@ -118,7 +119,7 @@
     <string name="speaktreatment">治療手段を言う</string>
     <string name="title_activity_update">xDrip+の最新版あり</string>
     <string name="title_activity_display_qrcode">QRコードで設定を共有</string>
-    <string name="title_activity_send_feed_back">Jamorham にフィードバックを送信する。</string>
+    <string name="title_activity_send_feed_back">Jamorham にフィードバックを送信</string>
     <string name="title_activity_save_logs">ログを保存</string>
     <string name="title_activity_maps">Parakeetマップ</string>
     <string name="title_activity_display_preferences">表示の設定</string>
@@ -159,7 +160,7 @@
     <string name="in">で</string>
     <string name="yes_enter_setup_mode">はい、セットアップ モードに入ります</string>
     <string name="nokeep_parakeet_as_it_is">いいえ、Parakeetはそのままでいい</string>
-    <string name="are_you_sure_you_want_switch_parakeet_to_setup">Parakeetをセットアップモードに切り替えて宜しいですか。\n\n普段、これはParakeetにさらにテキストメッセージを送信して、それが受信する発信機を再設定するためだけに使用されます。</string>
+    <string name="are_you_sure_you_want_switch_parakeet_to_setup">Parakeetをセットアップモードに切り替えますか。\n\n普段、これはParakeetにさらにメッセージを送信して、それが受信する発信機を再設定するためだけに使用されます。</string>
     <string name="split_delete_or_do_nothing">分割、削除、または何もしない</string>
     <string name="split_this_block_in_two">このブロックを2つに分割する</string>
     <string name="delete_this_time_block">このタイムブロックを削除する</string>
@@ -173,13 +174,13 @@
     <string name="space_minute_ago">" 分前"</string>
     <string name="show_parakeet_map">Parakeetのマップを表示</string>
     <string name="switch_parakeet_to_setup_mode">Parakeetをセットアップモードに切り替える</string>
-    <string name="view_events_log">イベントログを見る</string>
+    <string name="view_events_log">イベントログを表示</string>
     <string name="show_libre_trend">リブレの傾向を表示</string>
     <string name="libre_15_minutes_graph">リブレの15 分グラフ</string>
     <string name="libre_last_x_minutes_graph">リブレの最後の %d 分グラフ</string>
     <string name="share_config_via_qr_code">QRコードで設定を共有する</string>
-    <string name="check_for_updated_version">最新バージョンを確認する</string>
-    <string name="current_version_is_up_to_date">選択したチャンネルのアップデートがありません</string>
+    <string name="check_for_updated_version">最新版がないか確認</string>
+    <string name="current_version_is_up_to_date">選択対象の版の更新なし</string>
     <string name="send_feedback_to_developer">開発者にフィードバックを送信</string>
     <string name="home_screen">ホーム画面</string>
     <string name="event_logs">イベントログ</string>
@@ -190,7 +191,7 @@
     <string name="high_value">高値</string>
     <string name="low_value">低血糖</string>
     <string name="stats_range_settings">レンジ設定 </string>
-    <string name="end_user_license_agreement">エンドユーザーの使用許諾契約</string>
+    <string name="end_user_license_agreement">最終利用者の使用許諾契約</string>
     <string name="save">保存</string>
     <string name="view_important_warning">重要な警告を表示</string>
     <string name="view_google_licenses">Googleライセンスを表示</string>
@@ -203,7 +204,7 @@
     <string name="xdrip_plus_sync_settings">xDrip+同期の設定</string>
     <string name="xdrip_plus_update_settings">xDrip+更新の設定</string>
     <string name="automatic_update_check">自動更新</string>
-    <string name="update_channel">チャンネルを更新</string>
+    <string name="update_channel">更新対象</string>
     <string name="send_crash_errors_to_developer">クラッシュ エラーを開発者に送信する</string>
     <string name="automatic_crash_reporting">自動クラッシュ レポート</string>
     <string name="send_feedback_message">フィードバックメッセージを送信する</string>
@@ -222,9 +223,12 @@
     <string name="persistent_high_alert">高血糖の永続的通知</string>
     <string name="persistent_high_alert_enable">有効にする</string>
     <string name="title_persistent_high_threshold">しきい値</string>
+    <string name="the_value_must_be_between_min_and_max">値は %1$s から %2$s の間にしてください</string>
     <string name="forecasted_low_alert">低血糖の予測通知</string>
     <string name="setting_pref_to_max">最大値に設定</string>
+    <string name="pref_was_greater_than_max">%1$s は、可能な最大値より大きかったので、最大値に変更されました。</string>
     <string name="setting_pref_to_min">最小値に設定</string>
+    <string name="pref_was_less_than_min">%1$s は可能な最小値より小さかったので、最小値に変更されました。</string>
     <string name="extrapolate_data_to_try_to_predict_lows">データから外挿法によって低血糖を推定する</string>
     <string name="alarm_at_forecasted_low_mins">予測低血糖のあらアラームを鳴らす</string>
     <string name="title_forecast_low_threshold">しきい値</string>
@@ -283,13 +287,16 @@
     <string name="history">履歴</string>
     <string name="statistics">統計</string>
     <string name="snooze_alert">スヌーズ　アラート</string>
+    <string name="view_recent_errors_warnings">最近のエラー/警告を表示</string>
     <string name="other_settings">その他の設定</string>
     <string name="glucose_calibration_and_other_alerts">血糖値、キャリブレーション、その他のアラート</string>
     <string name="smart_alerting">スマート通知</string>
     <string name="reset">リセット</string>
+    <string name="customize_colours">色をカスタマイズ</string>
     <string name="xdrip_plus_color_settings">xDrip+ 色の設定</string>
     <string name="xdrip_plus_extra_settings">xDrip+ 追加設定</string>
     <string name="everyday">毎日</string>
+    <string name="transmitter_battery">送信機の充電池</string>
     <string name="very_low">非常に低い</string>
     <string name="low">低い</string>
     <string name="space_units">" 単位"</string>
@@ -298,7 +305,11 @@
     <string name="when">いつ</string>
     <string name="exported_to">"エクスポート先： "</string>
     <string name="done">完了</string>
-    <string name="update_channel_colon_space">"チャンネルを更新: "</string>
+    <string name="until_you_reenable">再度有効にするまで</string>
+    <string name="set">設定</string>
+    <string name="disable_all_alerts">すべてのアラートを無効にする</string>
+    <string name="re_enable_all_alerts">すべてのアラートを再び有効にする</string>
+    <string name="update_channel_colon_space">"更新対象の版: "</string>
     <string name="a_new_version_is_available">最新版あり</string>
     <string name="version_details">バージョンの詳細</string>
     <string name="download_now">今すぐダウンロード</string>
@@ -329,7 +340,7 @@
     <string name="optional_contact_info_here_eg_email">任意の連絡先情報、メールなど</string>
     <string name="send_message">メッセージ送信</string>
     <string name="save_logs">ログを保存</string>
-    <string name="please_indicate_what_you_think_of_the_app_generally">アプリについて一般的に考えていることを示してください</string>
+    <string name="please_indicate_what_you_think_of_the_app_generally">アプリ全体について、意見をお聞かせください</string>
     <string name="log_confidential_note">警告！\nログにはパスワードやユーザーIDなど機密情報が含まれる場合があります。</string>
     <string name="preferences_saved_in_sdcard_downloads">設定を内部ストレージ/ダウンロードに保存しました</string>
     <string name="could_not_write_to_sdcard_check_perms">SDカードに書き込めません。権限を確認しますか？</string>
@@ -349,8 +360,10 @@
     <string name="choose_sound_used_for_predicted_low_alarm">アラームに使用されるサウンドを選択します。</string>
     <string name="silent_alert_when_charging">充電時にアラートをサイレント</string>
     <string name="average">平均</string>
+    <string name="in_percentage">割合</string>
     <string name="time">時間</string>
     <string name="start_sensor">センサーを開始</string>
+    <string name="backgrounds">背景</string>
     <string name="alert_name_colon">通知名:</string>
     <string name="threshold_colon">しきい値:</string>
     <string name="alert_tone_colon">通知音</string>
@@ -402,6 +415,8 @@
     <string name="use_nfc_feature">NFC 機能を使用</string>
     <string name="nfc_scanning_xdrip_open">NFCスキャンはxDrip+アプリが表示されている場合にのみ行われます</string>
     <string name="nfc_scanning_launcher">NFCスキャンはアプリランチャー画面からも動作します</string>
+    <string name="advanced_g5_settings">まれな状況用のDexcomの高度な設定</string>
+    <string name="g5_debug_settings">Dexのデバッグ用設定</string>
     <string name="data_sync">データの同期</string>
     <string name="options_for_upload">Nightscout、MongoDB、Dexcomの共有のアップロードのオプション</string>
     <string name="cloud_upload">クラウドアップロード</string>
@@ -454,6 +469,7 @@
     <string name="stop_sensor">センサーを停止</string>
     <string name="initial_calibration">初期キリブレーション</string>
     <string name="bluetooth_scan">Bluetoothスキャン</string>
+    <string name="data_collector_running">データ収集実行中</string>
     <!-- trend arrow for speak -->
     <string name="Flat">フラット</string>
     <string name="Speak_everything_twice">すべて2回読み上げる</string>
@@ -498,8 +514,11 @@
     <string name="zero_zero_zero_zero">0000</string>
     <string name="emergency_messages">緊急メッセージ</string>
     <string name="emergency_message_feature">緊急メッセージ機能</string>
+    <string name="text_messages_can_be_sent_with_your_location_if_you_do_not_respond_to_alarms_this_feature_is_experimental_and_may_not_be_reliable">アラームに応答しない場合、あなたの位置情報を伴ったテキストメッセージが送信されます。この機能は実験段階であり、信頼性が保証されない場合があります。</string>
     <string name="your_name">あなたのお名前</string>
     <string name="choose_when_to_send_messages">メッセージを送信する条件を選択:</string>
+    <string name="device_inactivity">機器が稼働していない</string>
+    <string name="d_selected_contacts_for_text_messages_format">メッセージ の連絡先を %d 件選択</string>
     <string name="xdrip_software_changed_format">xDripソフトウェアのバージョンが変更: %1$s から %2$s に</string>
     <string name="when_connected_to_the_audio_device_shown_below_switch_to_vehicle_mode">以下のオーディオ機器に接続したら、乗り物モードに切り替えます。</string>
     <string name="select_device">機器を選択</string>
@@ -586,7 +605,7 @@
     <string name="quiet_at_night">夜は静かにする</string>
     <string name="alerts_disabled">アラートを無効にしました</string>
     <string name="restart_in_the_morning">朝に再起動</string>
-    <string name="reminder_title">リマインダーの題名</string>
+    <string name="reminder_title">リマインダーの名前</string>
     <string name="what_time_of_day_question">何時ですか？</string>
     <string name="all_alerts_currently_disabled">すべてのアラームが現在無効になっています</string>
     <string name="not_connected">未接続</string>
@@ -969,7 +988,7 @@
     <string name="summary_Lib2_show_raw_values">グラフに生の値を表示するにはオンにします。</string>
     <string name="title_Lib2_show_sense_on_status">ステータスにセンサー情報を表示する</string>
     <string name="summary_Lib2_show_sense_on_status">オンにすると、Libre 2センサーのステータスに追加情報が表示されます。</string>
-    <string name="import_qr_code_warning">信頼できるソースからの設定のみインポートします！\n\n以下の設定をインポートすることを確認してください：\n\n</string>
+    <string name="import_qr_code_warning">信頼できる提供元からの設定のみインポートします！\n\n以下の設定をインポートすることを確認してください：\n\n</string>
     <string name="scan_to_load_xdrip_settings">スキャンして、xDrip の設定を読み込みます</string>
     <string name="manage_permissions">権限の管理</string>
     <string name="open_health_connect_settings_to_manually_manage_permissions">Health Connectの設定を開き、権限を手動で管理します。</string>
@@ -1000,7 +1019,14 @@
     <string name="audio_focus_pause_all_other_sounds">他のすべての音声を一時停止する</string>
     <string name="use_camera_light">カメラのライトを使用</string>
     <string name="g7_should_start_automatically">G7は自動的に開始する必要があります</string>
+    <string name="screenshot">スクリーンショット</string>
     <string name="bg_alert">BG %1$s アラート: %2$s (@%3$s)</string>
     <string name="show_graphical_trend_arrow">グラフィカルなトレンド矢印を表示</string>
     <string name="no_alert_in_silent_mode">サイレントモードでのアラートはありません</string>
+    <string name="set_home_network">ホームネットワークを設定</string>
+    <string name="my_home_network_is">よく使うWiFiネットーワークは以下ですか？:\n\n%s</string>
+    <string name="set_home_network_to">ホームネットワークを %s に設定</string>
+    <string name="at_home_only">ホームに居る時のみ</string>
+    <string name="xdrip_update">xDrip + アップデート</string>
+    <string name="a_new_version_on_channel_1_s_is_available">%1$s 版の最新版が利用可能</string>
 </resources>

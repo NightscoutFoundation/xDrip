@@ -34,7 +34,7 @@ public class QRcodeUtils {
 
     private static final String TAG = "qrcode utils";
     public static final String qrmarker = "xdpref:";
-    private static final String qrmarker2 = "xdp2:";
+    public static final String qrmarker2 = "xdp2:";
 
     public static boolean hasDecoderMarker(final String scanresults) {
         if (scanresults == null) return false;
@@ -136,8 +136,8 @@ public class QRcodeUtils {
         return null;
     }
 
-    public static Bitmap createQRCodeBitmap(final byte[] data, final int width, final int height) throws WriterException {
-        val inputData = qrmarker2 + Base64.encodeToString(data, Base64.NO_WRAP | Base64.NO_PADDING);
+    public static Bitmap createQRCodeBitmap(final byte[] data, final int width, final int height, String prefix) throws WriterException {
+        val inputData = prefix + Base64.encodeToString(data, Base64.NO_WRAP | Base64.NO_PADDING);
         Log.d(TAG, "Input data length: " + inputData.length());
         Map<EncodeHintType, Object> hints = new EnumMap<>(EncodeHintType.class);
         hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");

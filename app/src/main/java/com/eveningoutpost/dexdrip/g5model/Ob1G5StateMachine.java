@@ -534,7 +534,7 @@ public class Ob1G5StateMachine {
     public synchronized static void doKeepAlive(Ob1G5CollectionService parent, RxBleConnection connection, Runnable runnable) {
         if (connection == null) return;
         connection.writeCharacteristic(Authentication, nn(new KeepAliveTxMessage(60).byteSequence))
-                .timeout(2, TimeUnit.SECONDS)
+                .timeout(3, TimeUnit.SECONDS)
                 .subscribe(
                         characteristicValue -> {
                             UserError.Log.d(TAG, "Sent keep-alive " + ((runnable != null) ? "Running runnable chain" : ""));
@@ -709,7 +709,7 @@ public class Ob1G5StateMachine {
 
                 })
                 .flatMap(notificationObservable -> notificationObservable)
-                .timeout(6, TimeUnit.SECONDS)
+                .timeout(10, TimeUnit.SECONDS)
                 .subscribe(bytes -> {
                     // incoming data notifications
                     UserError.Log.d(TAG, "Received indication bytes: " + bytesToHex(bytes));
@@ -875,7 +875,7 @@ public class Ob1G5StateMachine {
                             val eglucose2 = (EGlucoseRxMessage2) data_packet.msg;
                             UserError.Log.d(TAG, "EG2 Debug: " + eglucose2);
                             if (eglucose2.isValid()) {
-                                parent.processCalibrationState(eglucose2.calibrationState());
+                                parent.processCalibrationState(eglucose2.adjustedCalibrationState());
                                 DexTimeKeeper.updateAge(getTransmitterID(), (int) eglucose2.timestamp);
                                 DexSessionKeeper.setStart(eglucose2.getRealSessionStartTime());
                                 if (eglucose2.usable()) {
@@ -1498,7 +1498,7 @@ public class Ob1G5StateMachine {
                     if (unit.retry < 5 && JoH.msSince(unit.timestamp) < HOUR_IN_MS * 8) {
                         unit.preWrite();
                         connection.writeCharacteristic(Control, nn(unit.msg.byteSequence))
-                                .timeout(2, TimeUnit.SECONDS)
+                                .timeout(3, TimeUnit.SECONDS)
                                 .subscribe(value -> {
                                     UserError.Log.d(TAG, "Wrote Queue Message: " + unit.text);
                                     final long guardTime = unit.msg.guardTime();
@@ -1623,6 +1623,7 @@ public class Ob1G5StateMachine {
             if (glucose.calibrationState().sensorFailed() && Sensor.isActive()) {
                 if (JoH.pratelimit("G5 Sensor Failed", 3600 * 3)) {
                     JoH.showNotification(devName() + " SENSOR FAILED", "Sensor reporting failed", null, Constants.G5_SENSOR_ERROR, true, true, false);
+                    UserError.Log.uel(TAG, "Sensor reporting failed");
                 }
             }
         }
@@ -1726,6 +1727,7 @@ public class Ob1G5StateMachine {
                 if (!usingG6()) {
                     setG6Defaults();
                     JoH.showNotification("Enabled defaults", "Default settings automatically enabled", null, Constants.G6_DEFAULTS_MESSAGE, false, true, false);
+                    UserError.Log.uel(TAG, "Default Dex settings automatically enabled");
                 } else if (!onlyUsingNativeMode() && !Home.get_engineering_mode()) {
                     // TODO revisit this now that there is scaling
                     setG6Defaults();
@@ -1824,6 +1826,7 @@ public class Ob1G5StateMachine {
                     final boolean loud = !PowerStateReceiver.is_power_connected();
                     JoH.showNotification("Battery Low", "Transmitter battery has dropped to: " + batteryInfoRxMessage.voltagea + " it may fail soon",
                             null, 770, NotificationChannels.LOW_TRANSMITTER_BATTERY_CHANNEL, loud, loud, null, null, null);
+                    UserError.Log.uel(TAG, "Dex battery has dropped to: " + batteryInfoRxMessage.voltagea);
                 }
             }
             PersistentStore.cleanupOld(G5_BATTERY_LEVEL_MARKER);
