@@ -1641,6 +1641,7 @@
     <string name="calibrate">Calibrate</string>
     <string name="confirm_delete">Confirm Delete</string>
     <string name="are_you_sure_you_want_to_delete_this_treatment">Are you sure you want to delete this Treatment?</string>
+    <string name="toast_treatment_more_than_one_hour_in_the_future">xDrip cannot accept treatments more than one hour in the future.</string>
     <string name="no_data_received_from_master_yet">No data received from master yet</string>
     <string name="last_from_master_">Last from master: </string>
     <string name="prepare_to_test">Prepare to test!</string>
