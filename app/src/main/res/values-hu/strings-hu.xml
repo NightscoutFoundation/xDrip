@@ -307,7 +307,7 @@
     <string name="manage_existing_followers">Követők kezelése és újak meghívása.</string>
     <string name="invite_follower">Követő meghívása</string>
     <string name="glucose_calibration_and_other_alerts">VC-érték, kalibráció és egyéb riasztások</string>
-    <string name="alert_volume_profile">Riasztáshang ereje</string>
+    <string name="alert_volume_profile">Riasztás hangereje</string>
     <string name="smart_alerting">Okos riasztás</string>
     <string name="dont_alarm_during_phone_calls">Nincs riasztás telefonálás közben</string>
     <string name="start_snoozed">Késleltetés</string>
@@ -542,8 +542,8 @@
     <string name="vibrate_on_alert">Rezgés riasztáskor</string>
     <string name="test_alert">tesztriasztás</string>
     <string name="disable_alert">Riasztás leállítása</string>
-    <string name="save_alert">riasztás mentése</string>
-    <string name="remove_alert">riasztás törlése</string>
+    <string name="save_alert">Mentés</string>
+    <string name="remove_alert">Törlés</string>
     <string name="snooze_alert_before_it_fires">szundi mielőtt riaszt</string>
     <string name="create_low_alert">Alacsony érték riasztás beállítása</string>
     <string name="create_high_alert">Magas érték riasztás beállítása</string>
@@ -1838,6 +1838,7 @@
     <string name="carelink_credential_status_refresh_expired">Belépés lejárt! Jelentkezzen be!</string>
     <string name="data_source">Adatforrás:</string>
     <string name="insulin_pens">Inzulinadagoló tollak</string>
+    <string name="editing">Típus:</string>
     <string name="enable_missed_reading_alert">Elmulasztott VC-érték riasztás bekapcsolása</string>
     <string name="alert_if_no_data_received_in_colon">Riasztás, ha nincsen adat ennyi ideig:</string>
     <string name="wait_before_raising_the_same_alert_after_snooze_colon">Várakozás ennyi ideig, Szundiztatás után:</string>
@@ -1868,4 +1869,18 @@
     <string name="xdrip_update">xDrip+ frissítés</string>
     <string name="a_new_version_on_channel_1_s_is_available">A %1$s csatornán új verzió érhető el</string>
     <string name="could_not_create_qr_code">A QR-kód generálása sikertelen</string>
+    <string name="volume_profile_set_to_silent">A hangerő profil csendesre van állítva!</string>
+    <string name="pre_snooze">Elő-szundi</string>
+    <string name="volume_profile_high">Nagy</string>
+    <string name="volume_profile_medium">Közepes</string>
+    <string name="volume_profile_ascending">Emelkedő</string>
+    <string name="volume_profile_vibrate_only">Csak rezgés</string>
+    <string name="volume_profile_silent">Néma</string>
+    <string name="high_alert_threshold_error">A magas riasztás határértéke nagyobb kell legyen, mint az alacsonyé. Módosítsa a határértéket.</string>
+    <string name="low_alert_threshold_error">Az alacsony riasztás határértéke alacsonyabb kell legyen, mint a magasé. Módosítsa a határértéket.</string>
+    <string name="start_and_end_time_same">A risztás időtartamának kezdete és vége nem lehet azonos!</string>
+    <string name="what_type_of_alert">Milyen típusú hang?</string>
+    <string name="system_sound_alarm">Rendszerhang</string>
+    <string name="custom_sound_alarm">Saját hang fájlból</string>
+    <string name="default_xdrip_sound">Alapértelmezett xDrip hang</string>
 </resources>
