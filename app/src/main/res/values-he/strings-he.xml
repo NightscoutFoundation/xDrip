@@ -1682,4 +1682,26 @@
     <string name="scan_with_xdrip_settings_auto_configure"><![CDATA[סרוק עם 
 הגדרות xDrip -> הגדרות אוטומטיות]]></string>
     <string name="could_not_create_qr_code">לא ניתן היה ליצור קוד QR</string>
+    <string name="alert_warning">אזהרה !</string>
+    <string name="no_active_low_alert_warning">לא הופעלה התראה נמוכה, לא יתקבלו הודעות על רמת גלוקוס נמוכה- אנא הוסף או הפעל התראה.</string>
+    <string name="volume_profile_set_to_silent">פרופיל השמע שלך מוגר על שקט!</string>
+    <string name="volume_profile_set_to_ascending_with_delay">פרופיל שמע עולה + התחלה מעוכבת אומר שההתחלה תהיה שקטה</string>
+    <string name="start_snoozed_enabled">התחלה דחויה בהגדרות גורמת לכך שהתראות יתחילו באופן נורמלי בשקט</string>
+    <string name="pre_snooze">לפני-הדחייה</string>
+    <string name="volume_profile_high">גבוה</string>
+    <string name="volume_profile_medium">בינוני</string>
+    <string name="volume_profile_ascending">עולה</string>
+    <string name="volume_profile_vibrate_only">רטט בלבד</string>
+    <string name="volume_profile_silent">שקט</string>
+    <string name="alert_threshold_already_in_use">כל התראה דורשת ערך סף נפרדת, אנא בחר ערך שונה.</string>
+    <string name="high_alert_threshold_error">התראה גבוהה צריכה להיות מוגדרת מעל ההתראה הנמוכה. אנא כוון את ערך הסף.</string>
+    <string name="low_alert_threshold_error">התראה נמוכה צריכה להיות מוגדרת מתכת ההתראה הגבוהה. אנא כוון את ערך הסף.</string>
+    <string name="threshold_has_to_be_between">ערך הסף צריך להיות בין %1$s ל %2$s.</string>
+    <string name="alert_reraise_value_too_small">ערך העלייה צריך להיות דקה אחת או יותר</string>
+    <string name="alert_reraise_value_too_big">ערך העלייה צריך להיות נמוך מאורך ההשהייה</string>
+    <string name="start_and_end_time_same">זמן ההתחלה והסיום של ההתראה לא יכולים להיות שווים.</string>
+    <string name="what_type_of_alert">איזה סוג צליל?</string>
+    <string name="system_sound_alarm">צליל\התראת מערכת</string>
+    <string name="custom_sound_alarm">צליל\התראת מוגדר אישית</string>
+    <string name="default_xdrip_sound">צליל ברירת המחדל של xDrip</string>
 </resources>
