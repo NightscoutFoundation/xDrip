@@ -1593,6 +1593,7 @@
     <string name="calibrate">Calibrer</string>
     <string name="confirm_delete">Confirmer la Suppression</string>
     <string name="are_you_sure_you_want_to_delete_this_treatment">Êtes-vous sûr(e) de vouloir supprimer ce traitement ?</string>
+    <string name="toast_treatment_more_than_one_hour_in_the_future">xDrip ne peut pas accepter les traitements plus d\'une heure dans le futur.</string>
     <string name="no_data_received_from_master_yet">Aucune donnée reçue du maître</string>
     <string name="last_from_master_">Dernier du maître : </string>
     <string name="prepare_to_test">Préparez-vous à tester !</string>
