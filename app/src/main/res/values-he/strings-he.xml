@@ -1554,6 +1554,7 @@
     <string name="calibrate">כייל</string>
     <string name="confirm_delete">אשר מחיקה</string>
     <string name="are_you_sure_you_want_to_delete_this_treatment">האם אתם בטוחים שברצונכם למחוק את הטיפול?</string>
+    <string name="toast_treatment_more_than_one_hour_in_the_future">xDRIP אינו יכול לקבל טיפולים שמתוזמנים יותר משעה אחת קדימה.</string>
     <string name="no_data_received_from_master_yet">לא התקבלו עדיין נתונים מהמאסטר</string>
     <string name="last_from_master_">התקבל לאחרונה מהמאסטר: </string>
     <string name="prepare_to_test">היכונו לבדיקה!</string>
