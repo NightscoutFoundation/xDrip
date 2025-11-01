@@ -210,7 +210,19 @@ public class SensorDays {
                 return new SpannableString(MessageFormat.format(fmt, roundDouble((double) expiryMs / DAY_IN_MS, 1)));
             } else {
                 // expiring soon
-                val niceTime = new SimpleDateFormat(expiryMs < CAL_THRESHOLD2 ? "h:mm a" : "EEE, h:mm a", Locale.getDefault()).format(getSensorEndTimestamp());
+                val context = xdrip.getAppContext();
+                boolean is24Hour = android.text.format.DateFormat.is24HourFormat(context);
+
+                // pick skeleton based on expiry window
+                String timeSkeleton = is24Hour ? "Hm" : "hma";
+                String skeleton = (expiryMs < CAL_THRESHOLD2) ? timeSkeleton : "EEE" + timeSkeleton;
+
+                // build best pattern for this locale + system 12h/24h setting
+                String pattern = android.text.format.DateFormat.getBestDateTimePattern(Locale.getDefault(), skeleton);
+
+                val dateFormat = new SimpleDateFormat(pattern, Locale.getDefault());
+                String niceTime = dateFormat.format(getSensorEndTimestamp());
+
                 return Span.colorSpan(MessageFormat.format(xdrip.gs(R.string.expires_at), niceTime), expiryMs < CAL_THRESHOLD2 ? Highlight.BAD.color() : Highlight.NOTICE.color());
             }
         }
