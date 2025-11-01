@@ -165,6 +165,9 @@ android {
         exclude 'META-INF/androidx.core_core.version'
         pickFirst 'org/bouncycastle/x509/CertPathReviewerMessages.properties'
         pickFirst 'org/bouncycastle/x509/CertPathReviewerMessages_de.properties'
+
+        exclude "**/libsentry*.so" // exclude the ndk libraries we are not utilizing
+
     }
 
     compileOptions {
