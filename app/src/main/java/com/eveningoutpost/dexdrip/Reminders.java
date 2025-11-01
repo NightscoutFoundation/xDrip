@@ -796,6 +796,10 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
         // TODO lock?
         Log.d(TAG, "child Reinjection position: " + i);
         reminders.add(i, reminder);
+        if (mAdapter == null) {
+            Log.d(TAG, "Returning from reinject as no UI adapter");
+            return;
+        }
         mAdapter.notifyItemInserted(i);
         final AtomicBoolean corrected = new AtomicBoolean();
 
@@ -810,12 +814,9 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
         if (highlighted < 2) {
             Log.d(TAG, "Reinjection: scrolling to: " + i);
             recyclerView.smoothScrollToPosition(i);
-            JoH.runOnUiThreadDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    // failsafe
-                    correctiveScrolling(i, corrected);
-                }
+            JoH.runOnUiThreadDelayed(() -> {
+                // failsafe
+                correctiveScrolling(i, corrected);
             }, 1000);
         } else {
             Log.d(TAG, "Not scrolling due to highlighted: " + highlighted);
