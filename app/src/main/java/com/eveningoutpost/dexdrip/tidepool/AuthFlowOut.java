@@ -5,7 +5,7 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Base64;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
@@ -159,11 +159,16 @@ public class AuthFlowOut {
                     val authRequest = authRequestBuilder.build();
 
                     Log.d(TAG, "Firing off request");
-                    getAuthService().performAuthorizationRequest(
-                            authRequest,
-                            // TODO will need mutability flag in later target sdk versions
-                            PendingIntent.getActivity(context, 0, new Intent(context, AuthFlowIn.class), 0),
-                            PendingIntent.getActivity(context, 0, new Intent(context, AuthFlowIn.class), 0));
+                    try {
+                        getAuthService().performAuthorizationRequest(
+                                authRequest,
+                                PendingIntent.getActivity(context, 0, new Intent(context, AuthFlowIn.class), PendingIntent.FLAG_MUTABLE),
+                                PendingIntent.getActivity(context, 0, new Intent(context, AuthFlowIn.class), PendingIntent.FLAG_MUTABLE));
+                    } catch (Exception e) {
+                        val msg = "Tidepool: exception when trying to perform authorization. Is Chrome installed? "+e;
+                        Log.wtf(TAG, msg);
+                        JoH.static_toast_long(msg);
+                    }
                 });
     }
 }
