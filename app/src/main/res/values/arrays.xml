@@ -546,4 +546,18 @@
         <item>180</item>
     </string-array>
 
+    <!-- Bluetooth watchdog timer -->
+    <string-array name="bluetooth_watchdog_timer_entries">
+        <item>20 min ></item>
+        <item>15 min</item>
+        <item>10 min</item>
+        <item>5 min</item>
+    </string-array>
+    <string-array name="bluetooth_watchdog_timer_values">
+        <item>20</item>
+        <item>15</item>
+        <item>10</item>
+        <item>5</item>
+    </string-array>
+
 </resources>
