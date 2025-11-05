@@ -142,9 +142,13 @@ public class AuthFlowOut {
                             ResponseTypeValues.CODE, // the response_type value: we want a code
                             MY_REDIRECT_URI); // the redirect URI to which the auth response is sent
 
+                    String hint = Pref.getString("tidepool_username", null);
+                    if (hint != null && hint.isEmpty()) {
+                        hint = null; // cannot be empty string
+                    }
                     authRequestBuilder
                             .setScopes("openid", "offline_access")
-                            .setLoginHint(Pref.getString("tidepool_username", ""))
+                            .setLoginHint(hint)
                             .setCodeVerifier(codeVerifier, codeChallenge, codeVerifierChallengeMethod);
 
                     if (full) {
