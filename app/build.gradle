@@ -4,7 +4,7 @@ buildscript {
     }
     dependencies {
         if (getGradle().getStartParameter().getTaskRequests().toString().contains("Release]")) {
-            println("Enabling New Relic")
+           // println("Enabling New Relic")
            // classpath "com.newrelic.agent.android:agent-gradle-plugin:5.27.1"
         }
     }
@@ -320,7 +320,7 @@ dependencies {
     implementation 'net.tribe7.seeds:seeds-primitives:16.0.1'
     implementation 'me.tatarka.bindingcollectionadapter2:bindingcollectionadapter:2.2.0'
     implementation 'me.tatarka.bindingcollectionadapter2:bindingcollectionadapter-recyclerview:2.2.0'
-   // implementation 'org.slf4j:slf4j-api:1.7.7'
+    implementation 'org.slf4j:slf4j-api:1.7.30' // used by NSBarcodeConfig
     implementation 'org.apache.commons:commons-math3:3.6'
     implementation 'uk.com.robust-it:cloning:1.9.5'
     implementation 'com.github.amlcurran.showcaseview:library:5.4.3'
