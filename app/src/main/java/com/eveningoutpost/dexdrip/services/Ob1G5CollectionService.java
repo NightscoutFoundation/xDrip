@@ -2225,7 +2225,11 @@ public class Ob1G5CollectionService extends G5BaseService {
             l.add(new StatusItem("Scan Error", lastScanError, BAD));
         }
         if ((lastSensorStatus != null)) {
-            l.add(new StatusItem("Sensor Status", lastSensorStatus, lastSensorState != Ok ? NOTICE : NORMAL));
+            String sensorStatus = lastSensorStatus;
+            if (shortTxId() && lastSensorStatus == "Sensor Failed 7") {
+                sensorStatus = "May recover in up to 3 hours";
+            }
+            l.add(new StatusItem("Sensor Status", sensorStatus, lastSensorState != Ok ? NOTICE : NORMAL));
         }
 
         if (hardResetTransmitterNow) {
