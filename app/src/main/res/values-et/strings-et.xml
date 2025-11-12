@@ -1595,6 +1595,7 @@
     <string name="calibrate">Kalibreeri</string>
     <string name="confirm_delete">Kinnita kustutamine</string>
     <string name="are_you_sure_you_want_to_delete_this_treatment">Oled kindel, et soovid selle ravi info kustutada?</string>
+    <string name="toast_treatment_more_than_one_hour_in_the_future">xDrip ei saa vastu võtta raviandmeid, mis on rohkem kui üks tund tulevikus.</string>
     <string name="no_data_received_from_master_yet">Põhiseadmelt pole veel saabunud andmeid</string>
     <string name="last_from_master_">Viimased andmed põhiseadmelt: </string>
     <string name="prepare_to_test">Valmistu testimiseks!</string>

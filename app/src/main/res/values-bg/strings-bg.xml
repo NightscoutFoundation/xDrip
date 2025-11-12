@@ -1595,6 +1595,7 @@
     <string name="calibrate">Калибрирай</string>
     <string name="confirm_delete">Потвърждавате ли изтриването</string>
     <string name="are_you_sure_you_want_to_delete_this_treatment">Сигурни ли сте, че искате да изтриете това лечение?</string>
+    <string name="toast_treatment_more_than_one_hour_in_the_future">xDrip не може да приема лечения повече от един час в бъдещето.</string>
     <string name="no_data_received_from_master_yet">Все още няма получени данни от управителя</string>
     <string name="last_from_master_">Последно от управителя: </string>
     <string name="prepare_to_test">Подгответе се за тестване!</string>

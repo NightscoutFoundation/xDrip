@@ -1596,6 +1596,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="calibrate">Kalibrovat</string>
     <string name="confirm_delete">Potvrdit odstranění</string>
     <string name="are_you_sure_you_want_to_delete_this_treatment">Opravdu chcete smazat toto ošetření?</string>
+    <string name="toast_treatment_more_than_one_hour_in_the_future">xDrip nemůže přijmout ošetření zadané dopředu o více než jednu hodinu.</string>
     <string name="no_data_received_from_master_yet">Zatím nebyla obdržena žádná data z hlavního zařízení</string>
     <string name="last_from_master_">Poslední přijatá data: </string>
     <string name="prepare_to_test">Připravte se na test!</string>
