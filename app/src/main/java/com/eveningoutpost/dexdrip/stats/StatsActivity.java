@@ -62,11 +62,25 @@ public class StatsActivity extends ActivityWithMenu {
     private Button button90d;
     MenuItem menuItem;
     MenuItem menuItem2;
+    MenuItem menuItem3;
+    MenuItem menuItem4;
+    MenuItem menuItem5;
+    MenuItem menuItem6;
+    MenuItem menuItem7;
+    MenuItem menuItem8;
+    MenuItem menuItem9;
     private View decorView;
     private String stateString;
     private final static int MY_PERMISSIONS_REQUEST_STORAGE_SCREENSHOT = 106;
     private static final String SHOW_STATISTICS_FULL_SCREEN = "show_statistics_full_screen";
     public static final String SHOW_STATISTICS_PRINT_COLOR = "show_statistics_print_color";
+    public static final String SHOW_STATISTICS_Absolutes = "show_statistics_absolutes";
+    public static final String SHOW_STATISTICS_Median_BG = "show_statistics_median";
+    public static final String SHOW_STATISTICS_A1C = "show_statistics_a1cestimate";
+    public static final String SHOW_STATISTICS_SD = "show_statistics_sd";
+    public static final String SHOW_STATISTICS_Rel_SD = "show_statistics_relsd";
+    public static final String SHOW_STATISTICS_GVI = "show_statistics_gvi";
+    public static final String SHOW_STATISTICS_PGS = "show_statistics_pgs";
     private static final String TAG = "Statistics";
 
     @Override
@@ -245,6 +259,13 @@ public class StatsActivity extends ActivityWithMenu {
 
         menuItem = menu.findItem(R.id.action_toggle_fullscreen);
         menuItem2 = menu.findItem(R.id.action_toggle_printing);
+        menuItem3 = menu.findItem(R.id.action_show_absolutes);
+        menuItem4 = menu.findItem(R.id.action_show_median);
+        menuItem5 = menu.findItem(R.id.action_show_a1cestimate);
+        menuItem6 = menu.findItem(R.id.action_show_sd);
+        menuItem7 = menu.findItem(R.id.action_show_relsd);
+        menuItem8 = menu.findItem(R.id.action_show_gvi);
+        menuItem9 = menu.findItem(R.id.action_show_pgs);
 
         updateMenuChecked();
 
@@ -262,6 +283,13 @@ public class StatsActivity extends ActivityWithMenu {
     private void updateMenuChecked() {
         menuItem.setChecked(Pref.getBoolean(SHOW_STATISTICS_FULL_SCREEN, false));
         menuItem2.setChecked(Pref.getBoolean(SHOW_STATISTICS_PRINT_COLOR, false));
+        menuItem3.setChecked(Pref.getBoolean(SHOW_STATISTICS_Absolutes, false));
+        menuItem4.setChecked(Pref.getBoolean(SHOW_STATISTICS_Median_BG, false));
+        menuItem5.setChecked(Pref.getBoolean(SHOW_STATISTICS_A1C, false));
+        menuItem6.setChecked(Pref.getBoolean(SHOW_STATISTICS_SD, false));
+        menuItem7.setChecked(Pref.getBoolean(SHOW_STATISTICS_Rel_SD, false));
+        menuItem8.setChecked(Pref.getBoolean(SHOW_STATISTICS_GVI, false));
+        menuItem9.setChecked(Pref.getBoolean(SHOW_STATISTICS_PGS, false));
     }
 
     private void evaluateColors(boolean recreate) {
@@ -291,6 +319,56 @@ public class StatsActivity extends ActivityWithMenu {
         evaluateColors(true);
         updateMenuChecked();
     }
+
+    public void toggleStatisticsShowAbsolutes(MenuItem m) // Toggle visibility of absolute numbers
+    {
+        Pref.toggleBoolean(SHOW_STATISTICS_Absolutes);
+        evaluateColors(true);
+        updateMenuChecked();
+    }
+
+    public void toggleStatisticsShowMedianBG(MenuItem m) // Toggle visibility of median
+    {
+        Pref.toggleBoolean(SHOW_STATISTICS_Median_BG);
+        evaluateColors(true);
+        updateMenuChecked();
+    }
+
+    public void toggleStatisticsShowA1C(MenuItem m) // Toggle visibility of estimated A1C
+    {
+        Pref.toggleBoolean(SHOW_STATISTICS_A1C);
+        evaluateColors(true);
+        updateMenuChecked();
+    }
+
+    public void toggleStatisticsShowSD(MenuItem m) // Toggle visibility of standard deviation
+    {
+        Pref.toggleBoolean(SHOW_STATISTICS_SD);
+        evaluateColors(true);
+        updateMenuChecked();
+    }
+
+    public void toggleStatisticsShowRelSD(MenuItem m) // Toggle visibility of relative standard deviation
+    {
+        Pref.toggleBoolean(SHOW_STATISTICS_Rel_SD);
+        evaluateColors(true);
+        updateMenuChecked();
+    }
+
+    public void toggleStatisticsShowGVI(MenuItem m) // Toggle visibility of GVI
+    {
+        Pref.toggleBoolean(SHOW_STATISTICS_GVI);
+        evaluateColors(true);
+        updateMenuChecked();
+    }
+
+    public void toggleStatisticsShowPGS(MenuItem m) // Toggle visibility of PGS
+    {
+        Pref.toggleBoolean(SHOW_STATISTICS_PGS);
+        evaluateColors(true);
+        updateMenuChecked();
+    }
+
     public void statisticsDisableFullScreen(View v)
     {
         toggleStatisticsFullScreenMode(null);
