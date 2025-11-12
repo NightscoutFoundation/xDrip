@@ -40,6 +40,7 @@
     <string name="auto_config_cam_title">Kamera</string>
     <string name="auto_config_cam_summary">Skannaa QR-koodi mobiililaitteellasi (suositeltu)</string>
     <string name="auto_config_image_title">Kuvatiedosto</string>
+    <string name="auto_config_image_summary">Voit tallentaa QR-koodin kuvatiedostona (esimerkiksi .png- tai .jpeg-muodossa) puhelimeesi. Sen jälkeen voit käyttää tätä vaihtoehtoa skannataksesi QR-koodin tallennetusta tiedostosta.</string>
     <string name="scan_share2_barcode">Skannaa Share viivakoodi</string>
     <string name="pref_share2_scan_barcode_summary">Tai skannaa Share vastaanottimen viivakoodi</string>
     <!-- MongoDB Settings -->
@@ -60,6 +61,7 @@
     <string name="pref_title_api_enabled">Käytössä</string>
     <string name="pref_summary_api_enabled">Tiedot tallennetaan Nightscoutiin käyttämällä REST APIa</string>
     <string name="pref_title_api_url">Perus-URL</string>
+    <string name="pref_summary_api_url">Käytä muotoa: https://password@hostname/api/v1/</string>
     <string name="pref_dialog_api_url">Anna API URL</string>
     <string name="pref_message_api_url">Kirjoita vain Nightscoutin perusosoite ilman /entries -loppua. Laita API_SECRET kohtaan sama arvo kuin minkä asetit Nightscoutissa.</string>
     <string name="pref_default_api_url">https://API_SECRET@SIVUSTONNIMI.herokuapp.com/api/v1/</string>
@@ -118,6 +120,7 @@
     <string name="title_activity_update">xDrip+ päivitys saatavilla</string>
     <string name="title_activity_display_qrcode">Jaa asetukset QR-koodilla</string>
     <string name="title_activity_send_feed_back">Lähetä Palautetta Jamorhamille</string>
+    <string name="title_activity_save_logs">Tallenna lokit</string>
     <string name="title_activity_maps">Parakeet kartta</string>
     <string name="title_activity_display_preferences">Näytön asetukset</string>
     <string name="export_submenu">Tuo / vie tietoja</string>
@@ -223,7 +226,9 @@
     <string name="persistent_high_alert">Pitkäaikainen korkea hälytys</string>
     <string name="persistent_high_alert_enable">Käytä</string>
     <string name="title_persistent_high_threshold">Kynnysarvo</string>
+    <string name="the_value_must_be_between_min_and_max">Arvon on oltava väliltä %1$s ja %2$s</string>
     <string name="forecasted_low_alert">Ennustetun matalan hälytys</string>
+    <string name="setting_pref_to_max">Aseta maksimiin</string>
     <string name="pref_was_greater_than_max">Asetettu arvo, %1$s, on suurempi kuin suurin sallittu arvo. Arvo on nyt asetettu suurimmaksi mahdolliseksi.</string>
     <string name="setting_pref_to_min">Aseta minimiin</string>
     <string name="pref_was_less_than_min">Asetettu arvo on, %1$s on pienempi kuin pienin sallittu arvo. Arvoksi on nyt asetettu pienin sallittu arvo.</string>
@@ -1205,6 +1210,8 @@
     <string name="title_send_treatments_to_nightscout">Lähetä hoidot</string>
     <string name="summary_warn_nightscout_failures">Näytä ilmoitus ja anna äänimerkki, jos lähetys Nightscoutiin ei onnistu.</string>
     <string name="title_warn_nightscout_failures">Hälytä virheistä</string>
+    <string name="summary_warn_nightscout_multi_site_upload_failure">xDrip tyhjentää lähetysjonon, vaikka lähetys onnistuu vain yhteen palveluun ja muut jäävät keskeneräisiksi. Tämä ilmoittaa sinulle tilanteesta, jotta voit tarvittaessa täydentää puuttuvat tiedot.</string>
+    <string name="title_warn_nightscout_multi_site_upload_failure">Hälytys: tietojen lataaminen joihinkin palveluihin epäonnistui</string>
     <string name="summary_nightscout_device_append_source_info">Lähettää G5:n kerääjän tyypin (esim. OB1) ja täydennettyjen lukemien tilan (natiivina) Nightscoutiin.</string>
     <string name="title_nightscout_device_append_source_info">Lisää tietolähteen info laitteen nimeen</string>
     <string name="summary_tap_to_send_historical_data">Napauta lähettääksesi vanhat tiedot Nightscoutiin</string>
@@ -1219,8 +1226,12 @@
     <string name="title_tidepool_window_latency">Tietojen ikä minuuteissa</string>
     <string name="summary_tidepool_dev_servers">Jos tämä valinta sallitaan, tiedot ladataan osoitteeseen https://int-app.tidepool.org tavallisen https://app.tidepool.org/ sijaan</string>
     <string name="title_tidepool_dev_servers">Käytä Integraation (testi) palvelimia</string>
+    <string name="summary_tidepool_upload_when_chargeonly">Lataa tiedoja vain silloin kun laturi on kytkettynä</string>
+    <string name="title_tidepool_upload_when_chargeonly">Ainoastaan silloin kun laturi on kytkettynä</string>
     <string name="summary_tidepool_upload_only_wifi">Lataa tiedot ainoastaan silloin, kun laite on kytketty WiFi-verkkoon</string>
     <string name="title_tidepool_upload_only_wifi">Ainoastaan WiFi:n kautta</string>
+    <string name="summary_tidepool_upload_no_treatment">Lähetä vain CGM-tiedot välttääksesi päällekkäisyydet pumpusta manuaalisesti ladattujen tietojen kanssa</string>
+    <string name="title_tidepool_upload_no_treatment">Älä lataa hoitotietoja</string>
     <string name="title_tidepool">Tidepool</string>
     <string name="show_help">Näytä ohje</string>
     <string name="load_save_settings_on_sdcard">Lataa / tallenna asetukset SD-kortille</string>
@@ -1232,6 +1243,10 @@
     <string name="return_to_home_screen">Palaa aloitusnäyttöön</string>
     <string name="title_broadcast_service_api">Broadcast Service API</string>
     <string name="summary_broadcast_service_api">Sallii xDripin kommunikoida kolmansien osapuolten sovellusten kanssa käytten uutta API: a</string>
+    <string name="title_enable_iob_in_api_endpoint">Ota IoB raportointi käyttöön API:ssa</string>
+    <string name="summary_enable_iob_in_api_endpoint">Ota käyttöön IoB-arvon raportointi Web Service -rajapinnassa, jota jotkin älykellot käyttävät</string>
+    <string name="title_fetch_iob_from_companion_app">Hae IoB-arvo oheissovelluksesta</string>
+    <string name="summary_fetch_iob_from_companion_app">Hae IoB-arvo samassa laitteessa toimivasta oheissovelluksesta, kuten Omnipod 5 -sovelluksesta</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Synkronoi tiedot MiBand-aktiivisuusrannekkeiden kanssa</string>
     <string name="title_miband_enable">Käytä MiBandia</string>
@@ -1547,6 +1562,7 @@
     <string name="calibrate">Kalibroi</string>
     <string name="confirm_delete">Vahvista poistaminen</string>
     <string name="are_you_sure_you_want_to_delete_this_treatment">Oletko varma että haluat poistaa tämän hoidon?</string>
+    <string name="toast_treatment_more_than_one_hour_in_the_future">xDrip ei voi hyväksyä hoitotietoja, jotka ovat yli tunnin tulevaisuudessa.</string>
     <string name="no_data_received_from_master_yet">Päälaitteelta ei ole vielä saatu tietoja</string>
     <string name="last_from_master_">Viimeisin tieto päälaitteelta: </string>
     <string name="prepare_to_test">Valmistaudu testaamaan!</string>

@@ -1578,6 +1578,7 @@
     <string name="calibrate">Kalibruj</string>
     <string name="confirm_delete">Potwierdź usunięcie</string>
     <string name="are_you_sure_you_want_to_delete_this_treatment">Czy na pewno chcesz usunąć ten zabieg?</string>
+    <string name="toast_treatment_more_than_one_hour_in_the_future">xDrip nie może zaakceptować zabiegów nowszych niż godzinę w przyszłości.</string>
     <string name="no_data_received_from_master_yet">Nie otrzymano jeszcze żadnych danych od mastera</string>
     <string name="last_from_master_">Ostatnia od mastera: </string>
     <string name="prepare_to_test">Przygotuj się do testu!</string>
