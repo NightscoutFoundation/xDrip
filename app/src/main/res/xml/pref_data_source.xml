@@ -381,7 +381,7 @@
                 </PreferenceScreen>
                 <CheckBoxPreference
                     android:defaultValue="true"
-                    android:dependency="ob1_g5_use_transmitter_alg"
+                    android:dependency="engineering_mode"
                     android:key="ob1_g5_use_insufficiently_calibrated"
                     android:summary="@string/summary_ob1_g5_use_insufficiently_calibrated"
                     android:title="@string/title_ob1_g5_use_insufficiently_calibrated" />
