@@ -113,6 +113,7 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackages.add("com.sinocare.ican.health.ce");
         coOptedPackages.add("com.sinocare.ican.health.ru");
         coOptedPackages.add("com.suswel.ai");
+        coOptedPackages.add("com.glucotech.app.android");
 
         coOptedPackagesAll.add("com.dexcom.dexcomone");
         coOptedPackagesAll.add("com.dexcom.d1plus");
@@ -132,6 +133,7 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackagesAll.add("com.sinocare.ican.health.ce");
         coOptedPackagesAll.add("com.sinocare.ican.health.ru");
         coOptedPackagesAll.add("com.suswel.ai");
+        coOptedPackagesAll.add("com.glucotech.app.android");
 
         companionAppIoBPackages.add("com.insulet.myblue.pdm");
 
