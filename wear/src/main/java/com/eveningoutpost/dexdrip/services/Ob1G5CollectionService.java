@@ -1,15 +1,26 @@
 package com.eveningoutpost.dexdrip.services;
 
+import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.ExtraData;
+import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.Mask16;
 import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.getUUIDName;
 import static com.eveningoutpost.dexdrip.g5model.CalibrationState.Ok;
 import static com.eveningoutpost.dexdrip.g5model.CalibrationState.Unknown;
 import static com.eveningoutpost.dexdrip.g5model.G6CalibrationParameters.getCurrentSensorCode;
 import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.CLOSED_OK_TEXT;
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.doKeepAlive;
 import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.evaluateG6Settings;
 import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.pendingCalibration;
 import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.pendingStart;
 import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.pendingStop;
+import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.shortTxId;
 import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.usingAlt;
+import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
+import static com.eveningoutpost.dexdrip.models.JoH.joinBytes;
+import static com.eveningoutpost.dexdrip.models.JoH.msSince;
+import static com.eveningoutpost.dexdrip.models.JoH.niceTimeScalar;
+import static com.eveningoutpost.dexdrip.models.JoH.tolerantHexStringToByteArray;
+import static com.eveningoutpost.dexdrip.models.JoH.tsl;
+import static com.eveningoutpost.dexdrip.plugin.Dialog.txIdMatch;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.BOND;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.CLOSE;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.CLOSED;
@@ -73,7 +84,10 @@ import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.Sensor;
 import com.eveningoutpost.dexdrip.models.UserError;
-import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.plugin.IPluginDA;
+import com.eveningoutpost.dexdrip.plugin.Loader;
+import com.eveningoutpost.dexdrip.plugin.Registry;
+import com.eveningoutpost.dexdrip.ui.helpers.Span;
 import com.eveningoutpost.dexdrip.utilitymodels.BroadcastGlucose;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
@@ -140,6 +154,8 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static final int DEFAULT_AUTOMATA_DELAY = 100;
     private static final String BUGGY_SAMSUNG_ENABLED = "buggy-samsung-enabled";
     private static final String STOP_SCAN_TASK_ID = "ob1-g5-scan-timeout_scan";
+    private static final String KEKS = "keks";
+    private static final String KEKS_ONE = "keks1_";
     private static volatile STATE state = INIT;
     private static volatile STATE last_automata_state = CLOSED;
 
@@ -179,6 +195,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     private Subscription discoverSubscription;
     private RxBleDevice bleDevice;
     private RxBleConnection connection;
+    public volatile IPluginDA plugin;
 
     private PowerManager.WakeLock connection_linger;
     private volatile PowerManager.WakeLock scanWakeLock;
@@ -331,7 +348,15 @@ public class Ob1G5CollectionService extends G5BaseService {
                     case CHECK_AUTH:
                         if (do_auth) {
                             final PowerManager.WakeLock linger_wl_connect = JoH.getWakeLock("jam-g5-check-linger", 6000);
-                            if (!Ob1G5StateMachine.doCheckAuth(this, connection)) resetState();
+                            if (plugin != null) {
+                                if (!Ob1G5StateMachine.doCheckAuth2(this, connection)) {
+                                    resetState();
+                                }
+                            } else {
+                                if (!Ob1G5StateMachine.doCheckAuth(this, connection)) {
+                                    resetState();
+                                }
+                            }
                         } else {
                             UserError.Log.d(TAG, "Skipping authentication");
                             changeState(GET_DATA);
@@ -358,7 +383,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                     case UNBOND:
                         UserError.Log.d(TAG, "Unbond state");
                         Ob1G5StateMachine.doUnBond(this, connection);
-                        Inevitable.task("unbond close", 10000, () -> changeState(CLOSE));
+                        Inevitable.task("unbond close", 10000, () -> changeState(Ob1G5CollectionService.STATE.CLOSE));
                         break;
                     case RESET:
                         UserError.Log.d(TAG, "Entering hard reset state");
@@ -471,15 +496,15 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     private synchronized void scan_for_device() {
         if (state == SCAN) {
-            msg(gs(R.string.scanning));
+            // msg(gs(R.string.scanning));
             stopScan();
             tryLoadingSavedMAC(); // did we already find it?
             expireFailures(false);
             if (always_scan || scan_next_run || (transmitterMAC == null) || (!transmitterID.equals(transmitterIDmatchingMAC)) || (static_last_timestamp < 1)) {
                 scan_next_run = false; // reset if set
                 transmitterMAC = null; // reset if set
-                last_scan_started = JoH.tsl();
-                scanWakeLock = JoH.getWakeLock("xdrip-jam-g5-scan", (int) Constants.MINUTE_IN_MS * 7);
+                last_scan_started = tsl();
+                scanWakeLock = JoH.getWakeLock("xdrip-jam-g5-scan", (int) MINUTE_IN_MS * 7);
 
 
                 historicalTransmitterMAC = PersistentStore.getString(OB1G5_MACSTORE + transmitterID); // "" if unset
@@ -657,15 +682,24 @@ public class Ob1G5CollectionService extends G5BaseService {
         } else {
 
             try {
-                Ob1G5StateMachine.doKeepAlive(this, connection, () -> {
-                    weInitiatedBondConfirmation = 1;
-                    instantCreateBondIfAllowed();
-                });
-
+                if (transmitterID.length() > 4) {
+                    doKeepAlive(this, connection, this::startInitiateBondReal);
+                } else {
+                    startInitiateBondReal();
+                }
                 //background_automata(10000);
             } catch (Exception e) {
                 UserError.Log.wtf(TAG, "Got exception in do_create_bond() " + e);
             }
+        }
+    }
+
+    private void startInitiateBondReal() {
+        try {
+            weInitiatedBondConfirmation = 1;
+            instantCreateBondIfAllowed();
+        } catch (Exception e) {
+            UserError.Log.wtf(TAG, "Got exception in startInitiateBondReal() " + e);
         }
     }
 
@@ -681,6 +715,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     private String getTransmitterBluetoothName() {
+        if (transmitterID == null || transmitterID.length() <= 4) return null;
         final String transmitterIdLastTwo = getLastTwoCharacters(transmitterID);
         // todo check for bad config
         return "Dexcom" + transmitterIdLastTwo;
@@ -745,6 +780,27 @@ public class Ob1G5CollectionService extends G5BaseService {
             }
         }
         return false;
+    }
+
+    public static boolean immediateBonding() {
+        return Pref.getBooleanDefaultFalse("engineering_ob1_bonding_test");
+    }
+
+    public static boolean ignoreBonding() {
+        return Pref.getBooleanDefaultFalse("engineering_ob1_ignore_bonding");
+    }
+
+    private byte[] fwChalCache(boolean prefix) {
+        final long chal = Pref.getLong("engineering_ob1_chal_cache" + (prefix ? "_1" : ""), 0);
+        if (chal != 0 && shortTxId()) {
+            final byte[] bytes = new byte[8];
+            for (int i = 0; i < 8; i++) {
+                bytes[i] = (byte) (chal >> (8 - i - 1) * 8);
+            }
+            return bytes;
+        } else {
+            return new byte[0];
+        }
     }
 
     private synchronized void checkAndEnableBT() {
@@ -826,8 +882,8 @@ public class Ob1G5CollectionService extends G5BaseService {
         if (JoH.ratelimit("g5-wakeup-timer", 5)) {
             final long when = DexSyncKeeper.anticipate(transmitterID);
             if (when > 0) {
-                final long when_offset = when - JoH.tsl();
-                UserError.Log.d(TAG, "(" + JoH.dateTimeText(JoH.tsl()) + ")  Wake up time anticipated at: " + JoH.dateTimeText(when));
+                final long when_offset = when - tsl();
+                UserError.Log.d(TAG, "(" + JoH.dateTimeText(tsl()) + ")  Wake up time anticipated at: " + JoH.dateTimeText(when));
                 scheduleWakeUp(when_offset - Constants.SECOND_IN_MS * 15, "anticipate");
             } else {
                 scheduleWakeUp(Constants.SECOND_IN_MS * 285, "anticipate");
@@ -844,15 +900,36 @@ public class Ob1G5CollectionService extends G5BaseService {
             stopConnect();
         }
 
+        if (plugin != null) {
+            UserError.Log.d(TAG, "Saving persistent data for keks");
+            savePersist();
+        }
+
+    }
+
+    public synchronized void savePersist() {
+        if (plugin != null) {
+            PersistentStore.cleanupOld(KEKS_ONE);
+            PersistentStore.setBytes(KEKS_ONE + transmitterMAC, plugin.getPersistence(1));
+        }
+    }
+
+    public static void clearPersistStore() {
+        PersistentStore.removeItem(KEKS_ONE + transmitterMAC);
+    }
+
+    public static void clearPersist() {
+        clearPersistStore();
+        expireFailures(true);
     }
 
     private void scheduleWakeUp(long future, final String info) {
         if (future <= 0) future = 5000;
-        UserError.Log.d(TAG, "Scheduling wakeup @ " + JoH.dateTimeText(JoH.tsl() + future) + " (" + info + ")");
+        UserError.Log.d(TAG, "Scheduling wakeup @ " + JoH.dateTimeText(tsl() + future) + " (" + info + ")");
         if (pendingIntent == null)
-           //pendingIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
+            //pendingIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
             pendingIntent = WakeLockTrampoline.getPendingIntent(this.getClass());
-        wakeup_time = JoH.tsl() + future;
+        wakeup_time = tsl() + future;
         JoH.wakeUpIntent(this, future, pendingIntent);
     }
 
@@ -924,7 +1001,11 @@ public class Ob1G5CollectionService extends G5BaseService {
             final IntentFilter pairingRequestFilter = new IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST);
             pairingRequestFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY - 1);
             try {
-                registerReceiver(mPairingRequestRecevier, pairingRequestFilter);
+                if (Build.VERSION.SDK_INT < 26) {
+                    registerReceiver(mPairingRequestRecevier, pairingRequestFilter);
+                } else {
+                    UserError.Log.d(TAG, "Not registering pairing receiver on Android 8+");
+                }
             } catch (Exception e) {
                 UserError.Log.e(TAG, "Could not register pairing request receiver:" + e);
             }
@@ -950,17 +1031,17 @@ public class Ob1G5CollectionService extends G5BaseService {
         xdrip.checkAppContext(getApplicationContext());
         final PowerManager.WakeLock wl = JoH.getWakeLock("g5-start-service", 310000);
         try {
-            UserError.Log.d(TAG, "WAKE UP WAKE UP WAKE UP WAKE UP @ " + JoH.dateTimeText(JoH.tsl()));
+            UserError.Log.d(TAG, "WAKE UP WAKE UP WAKE UP WAKE UP @ " + JoH.dateTimeText(tsl()));
             msg("Wake up");
             if (wakeup_time > 0) {
-                wakeup_jitter = JoH.msSince(wakeup_time);
+                wakeup_jitter = msSince(wakeup_time);
                 if (wakeup_jitter < 0) {
                     UserError.Log.d(TAG, "Woke up Early..");
                 } else {
                     if (wakeup_jitter > 1000) {
-                        UserError.Log.d(TAG, "Wake up, time jitter: " + JoH.niceTimeScalar(wakeup_jitter));
+                        UserError.Log.d(TAG, "Wake up, time jitter: " + niceTimeScalar(wakeup_jitter));
                         if ((wakeup_jitter > TOLERABLE_JITTER) && (!JoH.buggy_samsung) && JoH.isSamsung()) {
-                            UserError.Log.wtf(TAG, "Enabled wake workaround due to jitter of: " + JoH.niceTimeScalar(wakeup_jitter));
+                            UserError.Log.wtf(TAG, "Enabled wake workaround due to jitter of: " + niceTimeScalar(wakeup_jitter));
                             JoH.buggy_samsung = true;
                             PersistentStore.incrementLong(BUGGY_SAMSUNG_ENABLED);
                             max_wakeup_jitter = 0;
@@ -979,7 +1060,7 @@ public class Ob1G5CollectionService extends G5BaseService {
             }
 
 
-            scheduleWakeUp(Constants.MINUTE_IN_MS * 6, "fail-over");
+            scheduleWakeUp(MINUTE_IN_MS * 6, "fail-over");
             if ((state == BOND) || (state == PREBOND) || (state == DISCOVER) || (state == CONNECT))
                 state = SCAN;
 
@@ -992,7 +1073,7 @@ public class Ob1G5CollectionService extends G5BaseService {
             }
 
             minimize_scanning = Pref.getBooleanDefaultFalse("ob1_minimize_scanning");
-
+            // allow_scan_by_mac = Build.VERSION.SDK_INT >= 32 && shortTxId();
             automata(); // sequence logic
 
             UserError.Log.d(TAG, "Releasing service start");
@@ -1037,7 +1118,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         try {
             unregisterReceiver(mPairingRequestRecevier);
         } catch (Exception e) {
-            UserError.Log.e(TAG, "Got exception unregistering pairing receiver: " + e);
+            UserError.Log.d(TAG, "Got exception unregistering pairing receiver: " + e);
         }
     }
 
@@ -1050,6 +1131,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         if (scanWakeLock != null) {
             JoH.releaseWakeLock(scanWakeLock);
         }
+        last_scan_started = 0;
     }
 
     private synchronized void stopConnect() {
@@ -1068,6 +1150,13 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     private boolean isScanMatch(final String this_address, final String historical_address, final String this_name, final String search_name) {
+        if (search_name == null && (this_address.equalsIgnoreCase(historical_address) || this_name == null ||
+                (emptyString(historical_address) && this_name.startsWith("DXCM")) ||
+                (emptyString(historical_address) && this_name.startsWith("DX02")) ||
+                (emptyString(historical_address) && this_name.startsWith("DX01")))) {
+            return !inFailureTally(this_address);
+        }
+
         boolean result = this_address.equalsIgnoreCase(historical_address) || (this_name != null && this_name.equalsIgnoreCase(search_name));
         if (result) {
             if (historical_address.length() == this_address.length()
@@ -1100,7 +1189,9 @@ public class Ob1G5CollectionService extends G5BaseService {
             UserError.Log.d(TAG, "Got scan result match: " + bleScanResult.getBleDevice().getName() + " " + this_address + " rssi: " + this_rssi);
             transmitterMAC = bleScanResult.getBleDevice().getMacAddress();
             transmitterIDmatchingMAC = transmitterID;
-            PersistentStore.setString(OB1G5_MACSTORE + transmitterID, transmitterMAC);
+            if (search_name != null) {
+                saveTransmitterMac();
+            }
             //if (JoH.ratelimit("ob1-g5-scan-to-connect-transition", 3)) {
             if (state == SCAN) {
                 //  if (always_scan) {
@@ -1118,6 +1209,12 @@ public class Ob1G5CollectionService extends G5BaseService {
                 UserError.Log.d(TAG, "Bluetooth scanned device doesn't match (" + search_name + ") found: " + this_name + " " + bleScanResult.getBleDevice().getMacAddress());
             }
         }
+    }
+
+    public void saveTransmitterMac() {
+        UserError.Log.d(TAG, "Saving transmitter mac: " + transmitterID + " = " + transmitterMAC);
+        PersistentStore.cleanupOld(OB1G5_MACSTORE);
+        PersistentStore.setString(OB1G5_MACSTORE + transmitterID, transmitterMAC);
     }
 
     // Failed result from our bluetooth scan
@@ -1295,19 +1392,19 @@ public class Ob1G5CollectionService extends G5BaseService {
         switch (newState) {
             case CONNECTING:
                 connection_state = "Connecting";
-                connecting_time = JoH.tsl();
+                connecting_time = tsl();
                 break;
             case CONNECTED:
                 connection_state = "Connected";
                 JoH.releaseWakeLock(floatingWakeLock);
                 floatingWakeLock = JoH.getWakeLock("floating-connected", 40000);
-                final long since_connecting = JoH.msSince(connecting_time);
+                final long since_connecting = msSince(connecting_time);
                 if ((connecting_time > static_last_timestamp) && (since_connecting > Constants.SECOND_IN_MS * 310) && (since_connecting < Constants.SECOND_IN_MS * 620)) {
                     if (!always_scan) {
-                        UserError.Log.e(TAG, "Connection time shows missed reading, switching to always scan, metric: " + JoH.niceTimeScalar(since_connecting));
+                        UserError.Log.e(TAG, "Connection time shows missed reading, switching to always scan, metric: " + niceTimeScalar(since_connecting));
                         always_scan = true;
                     } else {
-                        UserError.Log.e(TAG, "Connection time shows missed reading, despite always scan, metric: " + JoH.niceTimeScalar(since_connecting));
+                        UserError.Log.e(TAG, "Connection time shows missed reading, despite always scan, metric: " + niceTimeScalar(since_connecting));
                     }
                 }
                 break;
@@ -1344,6 +1441,10 @@ public class Ob1G5CollectionService extends G5BaseService {
 
 
     private void onServicesDiscovered(RxBleDeviceServices services) {
+        Pref.setString("KEKS_p1", "308201EA3082018FA00302010202142F3C52B6EB08701046D45D78CE81784C9DFE5240300A06082A8648CE3D04030230133111300F06035504030C084445583030504731301E170D3230313033303135353930345A170D3335313032373135353930345A30133111300F06035504030C0844455830335047313059301306072A8648CE3D020106082A8648CE3D03010703420004FB1ACA21D8AEEC9A4EB51F85304953D977A1AD569799250FF863987F42A3CD9FA4FF571EB568BC6C396277C3DCB51DEDAEE85513C80A5C4435538A19F5A96348A381C03081BD300F0603551D130101FF040530030101FF301F0603551D230418301680149E0F1E36F3F276A701FE8E883A6E26A635BD6AFC305A0603551D1F04533051304FA034A0328630687474703A2F2F63726C2E64702E736161732E7072696D656B65792E636F6D2F63726C2F44455830305047312E63726CA217A41530133111300F06035504030C084445583030504731301D0603551D0E0416041488F61E81BC4B17F05C6B1BE2991D60087CCEDD79300E0603551D0F0101FF040403020186300A06082A8648CE3D0403020349003046022100AA69CD897EC663AF5F9E158187DF6851FF0756F00C401624564F81A19F5A0785022100DAEBB9FDB163B731EB0661F1C0A1932871A50E399AD1C6F519EABD4C9E7BA013");
+        Pref.setString("KEKS_p2", "308201CD30820174A003020102021419052FCC17530BFA56E49DCAFCDACF853CE5BA73300A06082A8648CE3D04030230133111300F06035504030C084445583033504731301E170D3233303431343130323831345A170D3235303431333130323831335A303A3138303606035504030C2F30312C303030302C303330304C514543437A4142417741412C63696F69653356625132686C5A4D6A64556D357267413059301306072A8648CE3D020106082A8648CE3D030107034200045118C35E9E41E7E0654FEE801C52A9C5DFC510EF09597D5CCA8461E4AF9C666714834F2BC903F16FABFC45755B0183F1A09745CDFFCB4E2F799E50BED9A6B58CA37F307D300C0603551D130101FF04023000301F0603551D2304183016801488F61E81BC4B17F05C6B1BE2991D60087CCEDD79301D0603551D250416301406082B0601050507030206082B06010505070301301D0603551D0E04160414D309E75C0725412D7A7922E3AACFB27F7EBD6BE0300E0603551D0F0101FF0404030205A0300A06082A8648CE3D0403020347003044022048D4868CF393D9044101B6F07FD68D7F0642805F85DA74E2FE9DE8DD3507F02702201CD1BF7C6C7EDD59435E324925FCF0EBB3CAE2110D79407C77AA3B93B7BC04CB");
+        Pref.setString("KEKS_p1", "308187020100301306072A8648CE3D020106082A8648CE3D030107046D306B0201010420007CFBD596F6E74477B8C0E9F6F7A174275E101EF6BF7D18CAF01181D127B579A144034200045118C35E9E41E7E0654FEE801C52A9C5DFC510EF09597D5CCA8461E4AF9C666714834F2BC903F16FABFC45755B0183F1A09745CDFFCB4E2F799E50BED9A6B58C");
+
         for (BluetoothGattService service : services.getBluetoothGattServices()) {
             if (d) UserError.Log.d(TAG, "Service: " + getUUIDName(service.getUuid()));
             if (service.getUuid().equals(BluetoothServices.CGMService)) {
@@ -1351,7 +1452,41 @@ public class Ob1G5CollectionService extends G5BaseService {
                 if (!always_discover) {
                     do_discovery = false;
                 }
-                changeState(STATE.CHECK_AUTH);
+
+                if (txIdMatch(getTransmitterID()) && service.getCharacteristic(ExtraData) != null) {
+                    try {
+                        plugin = Loader.getLocalInstance(Registry.get(KEKS), getTransmitterID());
+                        if (plugin == null) {
+                            val msg = "Unable to load keks plugin - please re-enter transmitter id";
+                            UserError.Log.wtf(TAG, msg);
+                            JoH.static_toast_long(msg);
+                        } else {
+                            plugin.setPersistence(2, PersistentStore.getBytes(KEKS_ONE + transmitterMAC));
+                            // if (immediateBonding())
+                            //     needsBonding(!isDeviceLocallyBonded() || ignoreBonding());
+                            try {
+                                for (int i = 1; i < 4; i++) {
+                                    plugin.setPersistence(7 + i, tolerantHexStringToByteArray(Pref.getStringDefaultBlank(KEKS + "_p" + i)));
+                                }
+                            } catch (Exception e) {
+                                UserError.Log.e(TAG, "Problem with persistence");
+                            }
+                        }
+                    } catch (Exception e) {
+                        UserError.Log.e(TAG, "Exception getting instance: " + e);
+                        e.printStackTrace();
+                    }
+                } else {
+                    plugin = null;
+                }
+
+                //if (specialPairingWorkaround()) {
+                //    UserError.Log.d(TAG, "Samsung additional delay");
+                //    Inevitable.task("samsung delay", 1000, () -> changeState(STATE.CHECK_AUTH));
+                //} else {
+                    changeState(STATE.CHECK_AUTH);
+                //}
+
                 return;
             }
         }
@@ -1383,7 +1518,7 @@ public class Ob1G5CollectionService extends G5BaseService {
             final String ref = "last-ob1-data-" + transmitterID;
             if (PersistentStore.getLong(ref) == 0) {
                 PersistentStore.setLong(ref, timestamp);
-                if (!android_wear) JoH.playResourceAudio(R.raw.labbed_musical_chime);
+                //if (!android_wear) JoH.playResourceAudio(R.raw.labbed_musical_chime);
             }
         }
         static_last_timestamp = timestamp;
@@ -1677,11 +1812,11 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     private static void storeCalibrationState(final CalibrationState state) {
         PersistentStore.setByte(OB1G5_STATESTORE, state.getValue());
-        PersistentStore.setLong(OB1G5_STATESTORE_TIME, JoH.tsl());
+        PersistentStore.setLong(OB1G5_STATESTORE_TIME, tsl());
     }
 
     private static CalibrationState getStoredCalibrationState() {
-        if (JoH.msSince(PersistentStore.getLong(OB1G5_STATESTORE_TIME)) < HOUR_IN_MS * 2) {
+        if (msSince(PersistentStore.getLong(OB1G5_STATESTORE_TIME)) < HOUR_IN_MS * 2) {
             return CalibrationState.parse(PersistentStore.getByte(OB1G5_STATESTORE));
         }
         return CalibrationState.Unknown;
@@ -1886,7 +2021,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                     l.add(new StatusItem("Compat Version", "" + vr1.version_code, Highlight.BAD));
                 }
                 if (vr1.max_runtime_days != 110 && vr1.max_runtime_days != 112) {
-                    l.add(new StatusItem("Transmitter Life", "" + vr1.max_runtime_days + " " + gs(R.string.days)));
+                    l.add(new StatusItem("Transmitter Life", "" + vr1.max_runtime_days + " days"));
                 }
             }
         } catch (Exception e) {

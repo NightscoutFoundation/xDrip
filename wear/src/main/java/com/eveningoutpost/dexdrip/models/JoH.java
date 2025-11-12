@@ -107,15 +107,24 @@ public class JoH {
 
     private static double benchmark_time = 0;
     private static Map<String, Double> benchmarks = new HashMap<String, Double>();
-    private static final Map<String, Long> rateLimits = new HashMap<String, Long>();
+    private static final Map<String, Long> rateLimits = new HashMap<>();
 
     public static boolean buggy_samsung = false; // flag set when we detect samsung devices which do not perform to android specifications
+
+    // quick string conversion with leading zero
+    public static String qs0(double x, int digits) {
+        final String qs = qs(x, digits);
+        return qs.startsWith(".") ? "0" + qs : qs;
+    }
 
     // qs = quick string conversion of double for printing
     public static String qs(double x) {
         return qs(x, 2);
     }
 
+    // singletons to avoid repeated allocation
+    private static DecimalFormatSymbols dfs;
+    private static DecimalFormat df;
     public static String qs(double x, int digits) {
 
         if (digits == -1) {
@@ -129,12 +138,27 @@ public class JoH {
             }
         }
 
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-        symbols.setDecimalSeparator('.');
-        DecimalFormat df = new DecimalFormat("#", symbols);
-        df.setMaximumFractionDigits(digits);
-        df.setMinimumIntegerDigits(1);
-        return df.format(x);
+        if (dfs == null) {
+            final DecimalFormatSymbols local_dfs = new DecimalFormatSymbols();
+            local_dfs.setDecimalSeparator('.');
+            dfs = local_dfs; // avoid race condition
+        }
+
+        final DecimalFormat this_df;
+        // use singleton if on ui thread otherwise allocate new as DecimalFormat is not thread safe
+        if (Thread.currentThread().getId() == 1) {
+            if (df == null) {
+                final DecimalFormat local_df = new DecimalFormat("#", dfs);
+                local_df.setMinimumIntegerDigits(1);
+                df = local_df; // avoid race condition
+            }
+            this_df = df;
+        } else {
+            this_df = new DecimalFormat("#", dfs);
+        }
+
+        this_df.setMaximumFractionDigits(digits);
+        return this_df.format(x);
     }
 
     public static double ts() {
@@ -215,6 +239,16 @@ public class JoH {
             return null;
         }
     }
+
+    public static String macFormat(final String unformatted) {
+        if (unformatted == null) return null;
+        try {
+            return unformatted.replaceAll("[^a-fA-F0-9]", "").replaceAll("(.{2})", "$1:").substring(0, 17);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
 
 
     public static String compressString(String source) {
@@ -360,6 +394,7 @@ public class JoH {
         }
     }
 
+
     public static String ucFirst(String input) {
         return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
     }
@@ -371,10 +406,10 @@ public class JoH {
     private static final String BUGGY_SAMSUNG_ENABLED = "buggy-samsung-enabled";
     public static void persistentBuggySamsungCheck() {
         if (!buggy_samsung) {
-            if (JoH.isSamsung() && PersistentStore.getLong(BUGGY_SAMSUNG_ENABLED) > 4) {
-                buggy_samsung = true;
-                UserError.Log.d(TAG,"Enabling wake workaround mode due to historical pattern");
-            }
+           if (JoH.isSamsung() && PersistentStore.getLong(BUGGY_SAMSUNG_ENABLED) > 4) {
+               buggy_samsung = true;
+               UserError.Log.d(TAG,"Enabling wake workaround mode due to historical pattern");
+           }
         }
     }
 
@@ -460,16 +495,6 @@ public class JoH {
         }
     }
 
-    /*KS// compare stored byte array hashes
-    public static synchronized boolean differentBytes(String name, byte[] bytes) {
-        final String id = "differentBytes-" + name;
-        final String last_hash = PersistentStore.getString(id);
-        final String this_hash = CipherUtils.getSHA256(bytes);
-        if (this_hash.equals(last_hash)) return false;
-        PersistentStore.setString(id, this_hash);
-        return true;
-    }*/
-
     public static synchronized void clearRatelimit(final String name) {
         if (PersistentStore.getLong(name) > 0) {
             PersistentStore.setLong(name, 0);
@@ -489,7 +514,7 @@ public class JoH {
         } else {
             rate_time = rateLimits.get(name);
         }
-        if ((rate_time > 0) && (time_now - rate_time) < (seconds * 1000)) {
+        if ((rate_time > 0) && (time_now - rate_time) < (seconds * 1000L)) {
             Log.d(TAG, name + " rate limited: " + seconds + " seconds");
             return false;
         }
@@ -526,7 +551,7 @@ public class JoH {
     public static synchronized boolean ratelimitmilli(String name, int milliseconds) {
         // check if over limit
         if ((rateLimits.containsKey(name)) && (JoH.tsl() - rateLimits.get(name) < (milliseconds))) {
-            Log.d(TAG, name + " rate limited: " + milliseconds + " milliseconds");
+            //Log.d(TAG, name + " rate limited: " + milliseconds + " milliseconds");
             return false;
         }
         // not over limit
@@ -1540,13 +1565,6 @@ public class JoH {
         }
         return false;
     }
-
-    public static ByteBuffer bArrayAsBuffer(byte[] bytes) {
-        final ByteBuffer bb = ByteBuffer.allocate(bytes.length);
-        bb.put(bytes);
-        return bb;
-    }
-
     public synchronized static void restartBluetooth(final Context context) {
         restartBluetooth(context, 0);
     }
@@ -1610,13 +1628,6 @@ public class JoH {
         UserError.Log.d(TAG, "unBond() finished");
     }
 
-    public static void threadSleep(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            //
-        }
-    }
 
     public static Map<String, String> bundleToMap(Bundle bundle) {
         final HashMap<String, String> map = new HashMap<>();
@@ -1629,12 +1640,46 @@ public class JoH {
         return map;
     }
 
+    public static void threadSleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            //
+        }
+    }
+
+    public static ByteBuffer bArrayAsBuffer(byte[] bytes) {
+        final ByteBuffer bb = ByteBuffer.allocate(bytes.length);
+        bb.put(bytes);
+        return bb;
+    }
+
+    public static byte[] splitBytes(final byte[] source, final int start, final int length) {
+        final byte[] newBytes = new byte[length];
+        System.arraycopy(source, start, newBytes, 0, length);
+        return newBytes;
+    }
+
+    public static byte[] joinBytes(final byte[] first, final byte[] second) {
+        if (first == null || second == null) {
+            throw new IllegalArgumentException("Input arrays cannot be null");
+        }
+        final int totalLength = first.length + second.length;
+        final byte[] result = new byte[totalLength];
+        System.arraycopy(first, 0, result, 0, first.length);
+        System.arraycopy(second, 0, result, first.length, second.length);
+        return result;
+    }
+
+
     public static long checksum(byte[] bytes) {
         if (bytes == null) return 0;
         final CRC32 crc = new CRC32();
         crc.update(bytes);
         return crc.getValue();
     }
+
+
 
     public static byte[] bchecksum(byte[] bytes) {
         final long c = checksum(bytes);
@@ -1654,13 +1699,13 @@ public class JoH {
     public static int parseIntWithDefault(String number, int radix, int defaultVal) {
         try {
             return Integer.parseInt(number, radix);
-        } catch (NumberFormatException e) {
-            Log.e(TAG, "Error parsing integer number = " + number + " radix = " + radix);
-            return defaultVal;
-        }
+       } catch (NumberFormatException e) {
+           Log.e(TAG, "Error parsing integer number = " + number + " radix = " + radix);
+           return defaultVal;
+       }
     }
 
-    public static double roundDouble(double value, int places) {
+    public static double roundDouble(final double value, int places) {
         if (places < 0) throw new IllegalArgumentException("Invalid decimal places");
         BigDecimal bd = new BigDecimal(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
@@ -1692,4 +1737,6 @@ public class JoH {
     public static boolean emptyString(final String str) {
         return str == null || str.length() == 0;
     }
+
+
 }
