@@ -2006,4 +2006,5 @@
     <string name="system_sound_alarm">System Sound/Alarm</string>
     <string name="custom_sound_alarm">Custom Sound/Alarm</string>
     <string name="default_xdrip_sound">Default xDrip sound</string>
+    <string name="error_with_value">Error with value</string>
 </resources>
