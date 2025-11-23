@@ -39,6 +39,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.Vibrator;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.text.InputType;
 import android.text.method.DigitsKeyListener;
@@ -167,6 +168,14 @@ public class JoH {
 
     public static long tsl() {
         return System.currentTimeMillis();
+    }
+
+    public static long uptime() {
+        return SystemClock.elapsedRealtime();
+    }
+
+    public static boolean upForAtLeastMins(int mins) {
+        return uptime() > Constants.MINUTE_IN_MS * mins;
     }
 
     public static long msSince(long when) {

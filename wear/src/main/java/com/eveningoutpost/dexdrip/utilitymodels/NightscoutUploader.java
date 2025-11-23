@@ -296,81 +296,81 @@ public class NightscoutUploader {
                 }
             }
             return any_successes;
+    }
+
+    private void doLegacyRESTUploadTo(NightscoutService nightscoutService, List<BgReading> glucoseDataSets) throws Exception {
+        for (BgReading record : glucoseDataSets) {
+            Response<ResponseBody> r = nightscoutService.upload(populateLegacyAPIEntry(record)).execute();
+            if (!r.isSuccessful()) throw new UploaderException(r.message(), r.code());
+
+        }
+        try {
+            postDeviceStatus(nightscoutService, null);
+        } catch (Exception e) {
+            Log.e(TAG, "Ignoring legacy devicestatus post exception: " + e);
+        }
+    }
+
+    private void doRESTUploadTo(NightscoutService nightscoutService, String secret, List<BgReading> glucoseDataSets, List<BloodTest> meterRecords, List<Calibration> calRecords) throws Exception {
+        final JSONArray array = new JSONArray();
+
+        for (BgReading record : glucoseDataSets) {
+            populateV1APIBGEntry(array, record);
+        }
+        for (BloodTest record : meterRecords) {
+            populateV1APIMeterReadingEntry(array, record);
+        }
+        for (Calibration record : calRecords) {
+            final BloodTest dupe = BloodTest.getForPreciseTimestamp(record.timestamp, 60000);
+            if (dupe == null) {
+                populateV1APIMeterReadingEntry(array, record); // also add calibrations as meter records
+            } else {
+                Log.d(TAG, "Found duplicate blood test entry for this calibration record: " + record.bg + " vs " + dupe.mgdl + " mg/dl");
+            }
+            populateV1APICalibrationEntry(array, record);
         }
 
-        private void doLegacyRESTUploadTo(NightscoutService nightscoutService, List<BgReading> glucoseDataSets) throws Exception {
-            for (BgReading record : glucoseDataSets) {
-                Response<ResponseBody> r = nightscoutService.upload(populateLegacyAPIEntry(record)).execute();
-                if (!r.isSuccessful()) throw new UploaderException(r.message(), r.code());
-
-            }
+        if (array.length() > 0) {//KS
+            final RequestBody body = RequestBody.create(MediaType.parse("application/json"), array.toString());
+            final Response<ResponseBody> r = nightscoutService.upload(secret, body).execute();
+            if (!r.isSuccessful()) throw new UploaderException(r.message(), r.code());
+            checkGzipSupport(r);
             try {
-                postDeviceStatus(nightscoutService, null);
+                postDeviceStatus(nightscoutService, secret);
             } catch (Exception e) {
-                Log.e(TAG, "Ignoring legacy devicestatus post exception: " + e);
+                Log.e(TAG, "Ignoring devicestatus post exception: " + e);
             }
         }
 
-        private void doRESTUploadTo(NightscoutService nightscoutService, String secret, List<BgReading> glucoseDataSets, List<BloodTest> meterRecords, List<Calibration> calRecords) throws Exception {
-            final JSONArray array = new JSONArray();
-
-            for (BgReading record : glucoseDataSets) {
-                populateV1APIBGEntry(array, record);
-            }
-            for (BloodTest record : meterRecords) {
-                populateV1APIMeterReadingEntry(array, record);
-            }
-            for (Calibration record : calRecords) {
-                final BloodTest dupe = BloodTest.getForPreciseTimestamp(record.timestamp, 60000);
-                if (dupe == null) {
-                    populateV1APIMeterReadingEntry(array, record); // also add calibrations as meter records
-                } else {
-                    Log.d(TAG, "Found duplicate blood test entry for this calibration record: " + record.bg + " vs " + dupe.mgdl + " mg/dl");
-                }
-                populateV1APICalibrationEntry(array, record);
-            }
-
-            if (array.length() > 0) {//KS
-                final RequestBody body = RequestBody.create(MediaType.parse("application/json"), array.toString());
-                final Response<ResponseBody> r = nightscoutService.upload(secret, body).execute();
-                if (!r.isSuccessful()) throw new UploaderException(r.message(), r.code());
-                checkGzipSupport(r);
-                try {
-                    postDeviceStatus(nightscoutService, secret);
-                } catch (Exception e) {
-                    Log.e(TAG, "Ignoring devicestatus post exception: " + e);
-                }
-            }
-
-            try {
+        try {
                 if (Pref.getBooleanDefaultFalse("send_treatments_to_nightscout")) {
                     postTreatments(nightscoutService, secret);
-                } else {
-                    Log.d(TAG,"Skipping treatment upload due to preference disabled");
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Exception uploading REST API treatments: ", e);
-                if (e.getMessage().equals("Not Found")) {
-                    final String msg = "Please ensure careportal plugin is enabled on nightscout for treatment upload!";
-                    Log.wtf(TAG, msg);
-                    Home.toaststaticnext(msg);
-                    handleRestFailure(msg);
-                }
+            } else {
+                Log.d(TAG, "Skipping treatment upload due to preference disabled");
             }
-            // TODO we may want to check nightscout version before trying to upload!!
-            // TODO in the future we may want to merge these in to a single post
-            if (Pref.getBooleanDefaultFalse("use_pebble_health") && (Home.get_engineering_mode())) {
-                try {
-                    postHeartRate(nightscoutService, secret);
-                    postStepsCount(nightscoutService, secret);
-                } catch (Exception e) {
-                  if (JoH.ratelimit("heartrate-upload-exception", 3600)) {
-                      Log.e(TAG, "Exception uploading REST API heartrate: " + e.getMessage());
-                  }
-                }
+        } catch (Exception e) {
+            Log.e(TAG, "Exception uploading REST API treatments: ", e);
+            if (e.getMessage().equals("Not Found")) {
+                final String msg = "Please ensure careportal plugin is enabled on nightscout for treatment upload!";
+                Log.wtf(TAG, msg);
+                Home.toaststaticnext(msg);
+                handleRestFailure(msg);
             }
-
         }
+        // TODO we may want to check nightscout version before trying to upload!!
+        // TODO in the future we may want to merge these in to a single post
+        if (Pref.getBooleanDefaultFalse("use_pebble_health") && (Home.get_engineering_mode())) {
+            try {
+                postHeartRate(nightscoutService, secret);
+                postStepsCount(nightscoutService, secret);
+            } catch (Exception e) {
+                if (JoH.ratelimit("heartrate-upload-exception", 3600)) {
+                    Log.e(TAG, "Exception uploading REST API heartrate: " + e.getMessage());
+                }
+            }
+        }
+
+    }
 
     private static synchronized void handleRestFailure(String msg) {
         last_exception = msg;
@@ -420,12 +420,12 @@ public class NightscoutUploader {
         if (record != null) {//KS
             json.put("date", record.timestamp);
             json.put("dateString", format.format(record.timestamp));
-            if(prefs.getBoolean("cloud_storage_api_use_best_glucose", false)){
+            if (prefs.getBoolean("cloud_storage_api_use_best_glucose", false)) {
                 json.put("sgv", (int) record.getDg_mgdl());
                 try {
                     json.put("delta", new BigDecimal(record.getDg_slope() * 5 * 60 * 1000).setScale(3, BigDecimal.ROUND_HALF_UP));
                 } catch (NumberFormatException e) {
-                        UserError.Log.e(TAG, "Problem calculating delta from getDg_slope() for Nightscout REST Upload, skipping");
+                    UserError.Log.e(TAG, "Problem calculating delta from getDg_slope() for Nightscout REST Upload, skipping");
                 }
                 json.put("direction", record.getDg_deltaName());
             } else {
@@ -433,7 +433,7 @@ public class NightscoutUploader {
                 try {
                     json.put("delta", new BigDecimal(record.currentSlope() * 5 * 60 * 1000).setScale(3, BigDecimal.ROUND_HALF_UP)); // jamorham for automation
                 } catch (NumberFormatException e) {
-                        UserError.Log.e(TAG, "Problem calculating delta from currentSlope() for Nightscout REST Upload, skipping");
+                    UserError.Log.e(TAG, "Problem calculating delta from currentSlope() for Nightscout REST Upload, skipping");
                 }
                 json.put("direction", record.slopeName());
             }
@@ -444,90 +444,90 @@ public class NightscoutUploader {
             json.put("noise", record.noiseValue());
             json.put("sysTime", format.format(record.timestamp));
             array.put(json);
-        }
-        else
+        } else
             Log.e(TAG, "doRESTUploadTo BG record is null.");
     }
 
-        private RequestBody populateLegacyAPIEntry(BgReading record) throws Exception {
-            JSONObject json = new JSONObject();
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
-            format.setTimeZone(TimeZone.getDefault());
-            json.put("device", getDeviceString(record));
-            json.put("date", record.timestamp);
-            json.put("dateString", format.format(record.timestamp));
-            json.put("sgv", (int)record.calculated_value);
-            json.put("direction", record.slopeName());
-            return RequestBody.create(MediaType.parse("application/json"), json.toString());
+    private RequestBody populateLegacyAPIEntry(BgReading record) throws Exception {
+        JSONObject json = new JSONObject();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
+        format.setTimeZone(TimeZone.getDefault());
+        json.put("device", getDeviceString(record));
+        json.put("date", record.timestamp);
+        json.put("dateString", format.format(record.timestamp));
+        json.put("sgv", (int) record.calculated_value);
+        json.put("direction", record.slopeName());
+        return RequestBody.create(MediaType.parse("application/json"), json.toString());
+    }
+
+    private void populateV1APIMeterReadingEntry(JSONArray array, Calibration record) throws Exception {
+        if (record == null) {
+            Log.e(TAG, "Received null calibration record in populateV1ApiMeterReadingEntry !");
+            return;
         }
+        JSONObject json = new JSONObject();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
+        format.setTimeZone(TimeZone.getDefault());
+        json.put("device", "xDrip-" + prefs.getString("dex_collection_method", "BluetoothWixel"));
+        json.put("type", "mbg");
+        json.put("date", record.timestamp);
+        json.put("dateString", format.format(record.timestamp));
+        json.put("mbg", record.bg);
+        json.put("sysTime", format.format(record.timestamp));
+        array.put(json);
+    }
 
-        private void populateV1APIMeterReadingEntry(JSONArray array, Calibration record) throws Exception {
-            if (record == null) {
-                Log.e(TAG, "Received null calibration record in populateV1ApiMeterReadingEntry !");
-                return;
-            }
-            JSONObject json = new JSONObject();
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
-            format.setTimeZone(TimeZone.getDefault());
-            json.put("device", "xDrip-" + prefs.getString("dex_collection_method", "BluetoothWixel"));
-            json.put("type", "mbg");
-            json.put("date", record.timestamp);
-            json.put("dateString", format.format(record.timestamp));
-            json.put("mbg", record.bg);
-            json.put("sysTime", format.format(record.timestamp));
-            array.put(json);
+    private void populateV1APIMeterReadingEntry(JSONArray array, BloodTest record) throws Exception {
+        if (record == null) {
+            Log.e(TAG, "Received null bloodtest record in populateV1ApiMeterReadingEntry !");
+            return;
         }
+        JSONObject json = new JSONObject();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
+        format.setTimeZone(TimeZone.getDefault());
+        json.put("device", record.source);
+        json.put("type", "mbg");
+        json.put("date", record.timestamp);
+        json.put("dateString", format.format(record.timestamp));
+        json.put("mbg", record.mgdl);
+        json.put("sysTime", format.format(record.timestamp));
+        array.put(json);
+    }
 
-        private void populateV1APIMeterReadingEntry(JSONArray array, BloodTest record) throws Exception {
-            if (record == null) {
-                Log.e(TAG, "Received null bloodtest record in populateV1ApiMeterReadingEntry !");
-                return;
-            }
-            JSONObject json = new JSONObject();
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
-            format.setTimeZone(TimeZone.getDefault());
-            json.put("device", record.source);
-            json.put("type", "mbg");
-            json.put("date", record.timestamp);
-            json.put("dateString", format.format(record.timestamp));
-            json.put("mbg", record.mgdl);
-            json.put("sysTime", format.format(record.timestamp));
-            array.put(json);
+
+    private void populateV1APICalibrationEntry(JSONArray array, Calibration record) throws Exception {
+        if (record == null) {
+            Log.e(TAG, "Received null calibration record in populateV1ApiCalibrationEntry !");
+            return;
         }
+        //do not upload undefined slopes
+        if (record.slope == 0d) return;
 
-
-        private void populateV1APICalibrationEntry(JSONArray array, Calibration record) throws Exception {
-            if (record == null) {
-                Log.e(TAG, "Received null calibration record in populateV1ApiCalibrationEntry !");
-                return;
-            }
-            //do not upload undefined slopes
-            if(record.slope == 0d) return;
-
-            JSONObject json = new JSONObject();
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
-            format.setTimeZone(TimeZone.getDefault());
-            json.put("device", "xDrip-" + prefs.getString("dex_collection_method", "BluetoothWixel"));
-            json.put("type", "cal");
-            json.put("date", record.timestamp);
-            json.put("dateString", format.format(record.timestamp));
-            if(record.check_in) {
-                json.put("slope", (record.first_slope));
-                json.put("intercept", ((record.first_intercept)));
-                json.put("scale", record.first_scale);
-            } else {
-                json.put("slope", (1000/record.slope));
-                json.put("intercept", ((record.intercept * -1000) / (record.slope)));
-                json.put("scale", 1);
-            }
-            json.put("sysTime", format.format(record.timestamp));
-            array.put(json);
+        JSONObject json = new JSONObject();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
+        format.setTimeZone(TimeZone.getDefault());
+        json.put("device", "xDrip-" + prefs.getString("dex_collection_method", "BluetoothWixel"));
+        json.put("type", "cal");
+        json.put("date", record.timestamp);
+        json.put("dateString", format.format(record.timestamp));
+        if (record.check_in) {
+            json.put("slope", (record.first_slope));
+            json.put("intercept", ((record.first_intercept)));
+            json.put("scale", record.first_scale);
+        } else {
+            json.put("slope", (1000 / record.slope));
+            json.put("intercept", ((record.intercept * -1000) / (record.slope)));
+            json.put("scale", 1);
         }
+        json.put("sysTime", format.format(record.timestamp));
+        array.put(json);
+    }
 
     private void populateV1APITreatmentEntry(JSONArray array, Treatments treatment) throws Exception {
 
         if (treatment == null) return;
-        if (treatment.enteredBy != null && ((treatment.enteredBy.endsWith(VIA_NIGHTSCOUT_TAG)) || (treatment.enteredBy.contains(VIA_NIGHTSCOUT_LOADER_TAG)))) return; // don't send back to nightscout what came from there
+        if (treatment.enteredBy != null && ((treatment.enteredBy.endsWith(VIA_NIGHTSCOUT_TAG)) || (treatment.enteredBy.contains(VIA_NIGHTSCOUT_LOADER_TAG))))
+            return; // don't send back to nightscout what came from there
         final JSONObject record = new JSONObject();
         final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
         record.put("timestamp", treatment.timestamp);

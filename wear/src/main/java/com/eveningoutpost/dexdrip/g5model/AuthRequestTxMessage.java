@@ -16,7 +16,7 @@ public class AuthRequestTxMessage extends BaseMessage {
 
     public byte[] singleUseToken;
     private static final byte endByteStd = 0x2;
-    private static final byte endByteAlt = 0x1;
+    private static final byte endByteAlt = 0x3;
 
     public AuthRequestTxMessage(int token_size) {
         this(token_size, false);
