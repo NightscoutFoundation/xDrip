@@ -1951,4 +1951,5 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="system_sound_alarm">Systémový zvuk/upozornění</string>
     <string name="custom_sound_alarm">Vlastní zvuk/upozornění</string>
     <string name="default_xdrip_sound">Výchozí xDrip zvuk</string>
+    <string name="error_with_value">Chybná hodnota</string>
 </resources>
