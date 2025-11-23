@@ -1937,7 +1937,7 @@
     <string name="scan_with_xdrip_settings_auto_configure"><![CDATA[Skaneerimiseks mine\nxDrip seaded -> Automaatne seadistamine]]></string>
     <string name="could_not_create_qr_code">QR-koodi loomine ebaõnnestus</string>
     <string name="alert_warning">Hoiatus !</string>
-    <string name="no_active_low_alert_warning">Aktiivne madala hoiatus puudub. Sind ei hoiatata madala veresuhkru puhul—palun lisa uus hoiatus või lülita olemasolev sisse.</string>
+    <string name="no_active_low_alert_warning">Madala VS hoiatus pole aktiivne. Sind ei hoiatata madala VS puhul—palun lisa või luba olemasolev hoiatus.</string>
     <string name="volume_profile_set_to_silent">Heliprofiil on seatud vaikseks!</string>
     <string name="volume_profile_set_to_ascending_with_delay">Kasvav helitugevus + viivitusega kasvamine tähendab, et hoiatus algab vaikselt</string>
     <string name="start_snoozed_enabled">Alusta vaigistatult tähendab, et hoiatus algab vaikselt</string>
@@ -1945,8 +1945,8 @@
     <string name="volume_profile_high">Kõrge</string>
     <string name="volume_profile_medium">Keskmine</string>
     <string name="volume_profile_ascending">Kasvav</string>
-    <string name="volume_profile_vibrate_only">Vibratsioon</string>
-    <string name="volume_profile_silent">Vaikne</string>
+    <string name="volume_profile_vibrate_only">Ainult vibratsioon</string>
+    <string name="volume_profile_silent">Hääletu</string>
     <string name="alert_threshold_already_in_use">Igal hoiatusel peab olema erinev piirmäär. Palun vali erinev väärtus.</string>
     <string name="high_alert_threshold_error">Kõrge hoiatused peavad olema seadistatud ülespoole madala hoiatusi. Palun muuda piirmäära.</string>
     <string name="low_alert_threshold_error">Madala hoiatused peavad olema seadistatud allapoole kõrge hoiatusi. Palun muuda piirmäära.</string>
@@ -1958,4 +1958,5 @@
     <string name="system_sound_alarm">Süsteemi heli/alarm</string>
     <string name="custom_sound_alarm">Kohandatud heli/alarm</string>
     <string name="default_xdrip_sound">Vaikimisi xDrip heli</string>
+    <string name="error_with_value">Viga väärtusega</string>
 </resources>
