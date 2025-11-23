@@ -62,11 +62,25 @@ public class StatsActivity extends ActivityWithMenu {
     private Button button90d;
     MenuItem menuItem;
     MenuItem menuItem2;
+    MenuItem menuItem3;
+    MenuItem menuItem4;
+    MenuItem menuItem5;
+    MenuItem menuItem6;
+    MenuItem menuItem7;
+    MenuItem menuItem8;
+    MenuItem menuItem9;
     private View decorView;
     private String stateString;
     private final static int MY_PERMISSIONS_REQUEST_STORAGE_SCREENSHOT = 106;
     private static final String SHOW_STATISTICS_FULL_SCREEN = "show_statistics_full_screen";
     public static final String SHOW_STATISTICS_PRINT_COLOR = "show_statistics_print_color";
+    public static final String SHOW_STATISTICS_Absolutes = "show_statistics_absolutes";
+    public static final String SHOW_STATISTICS_Median_BG = "show_statistics_median";
+    public static final String SHOW_STATISTICS_A1C = "show_statistics_a1cestimate";
+    public static final String SHOW_STATISTICS_SD = "show_statistics_sd";
+    public static final String SHOW_STATISTICS_Rel_SD = "show_statistics_relsd";
+    public static final String SHOW_STATISTICS_GVI = "show_statistics_gvi";
+    public static final String SHOW_STATISTICS_PGS = "show_statistics_pgs";
     private static final String TAG = "Statistics";
 
     @Override
@@ -207,55 +221,35 @@ public class StatsActivity extends ActivityWithMenu {
                 break;
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            ColorStateList csl = new ColorStateList(new int[][]{new int[0]}, new int[]{0xFF606060});
-            buttonTD.setBackgroundTintList(csl);
-            buttonYTD.setBackgroundTintList(csl);
-            button7d.setBackgroundTintList(csl);
-            button30d.setBackgroundTintList(csl);
-            button90d.setBackgroundTintList(csl);
-            csl = new ColorStateList(new int[][]{new int[0]}, new int[]{0xFFAA0000});
-            switch (state) {
-                case TODAY:
-                    buttonTD.setBackgroundTintList(csl);
-                    break;
-                case YESTERDAY:
-                    buttonYTD.setBackgroundTintList(csl);
-                    break;
-                case D7:
-                    button7d.setBackgroundTintList(csl);
-                    break;
-                case D30:
-                    button30d.setBackgroundTintList(csl);
-                    break;
-                case D90:
-                    button90d.setBackgroundTintList(csl);
-                    break;
-            }
-        } else {
-
-            buttonTD.setAlpha(0.5f);
-            buttonYTD.setAlpha(0.5f);
-            button7d.setAlpha(0.5f);
-            button30d.setAlpha(0.5f);
-            button90d.setAlpha(0.5f);
-            switch (state) {
-                case TODAY:
-                    buttonTD.setAlpha(1f);
-                    break;
-                case YESTERDAY:
-                    buttonYTD.setAlpha(1f);
-                    break;
-                case D7:
-                    button7d.setAlpha(1f);
-                    break;
-                case D30:
-                    button30d.setAlpha(1f);
-                    break;
-                case D90:
-                    button90d.setAlpha(1f);
-                    break;
-            }
+        ColorStateList csl = new ColorStateList(new int[][]{new int[0]}, new int[]{0xFF606060});
+        buttonTD.setBackgroundTintList(csl);
+        buttonYTD.setBackgroundTintList(csl);
+        button7d.setBackgroundTintList(csl);
+        button30d.setBackgroundTintList(csl);
+        button90d.setBackgroundTintList(csl);
+        TextView statsTimePeriodLabelText = findViewById(R.id.stats_time_period_label);
+        csl = new ColorStateList(new int[][]{new int[0]}, new int[]{0xFFAA0000});
+        switch (state) {
+            case TODAY:
+                buttonTD.setBackgroundTintList(csl);
+                statsTimePeriodLabelText.setText(R.string.today);
+                break;
+            case YESTERDAY:
+                buttonYTD.setBackgroundTintList(csl);
+                statsTimePeriodLabelText.setText(R.string.yesterday);
+                break;
+            case D7:
+                button7d.setBackgroundTintList(csl);
+                statsTimePeriodLabelText.setText(R.string.last_7_days);
+                break;
+            case D30:
+                button30d.setBackgroundTintList(csl);
+                statsTimePeriodLabelText.setText(R.string.last_30_days);
+                break;
+            case D90:
+                button90d.setBackgroundTintList(csl);
+                statsTimePeriodLabelText.setText(R.string.last_90_days);
+                break;
         }
     }
 
@@ -265,6 +259,13 @@ public class StatsActivity extends ActivityWithMenu {
 
         menuItem = menu.findItem(R.id.action_toggle_fullscreen);
         menuItem2 = menu.findItem(R.id.action_toggle_printing);
+        menuItem3 = menu.findItem(R.id.action_show_absolutes);
+        menuItem4 = menu.findItem(R.id.action_show_median);
+        menuItem5 = menu.findItem(R.id.action_show_a1cestimate);
+        menuItem6 = menu.findItem(R.id.action_show_sd);
+        menuItem7 = menu.findItem(R.id.action_show_relsd);
+        menuItem8 = menu.findItem(R.id.action_show_gvi);
+        menuItem9 = menu.findItem(R.id.action_show_pgs);
 
         updateMenuChecked();
 
@@ -282,6 +283,13 @@ public class StatsActivity extends ActivityWithMenu {
     private void updateMenuChecked() {
         menuItem.setChecked(Pref.getBoolean(SHOW_STATISTICS_FULL_SCREEN, false));
         menuItem2.setChecked(Pref.getBoolean(SHOW_STATISTICS_PRINT_COLOR, false));
+        menuItem3.setChecked(Pref.getBoolean(SHOW_STATISTICS_Absolutes, false));
+        menuItem4.setChecked(Pref.getBoolean(SHOW_STATISTICS_Median_BG, false));
+        menuItem5.setChecked(Pref.getBoolean(SHOW_STATISTICS_A1C, false));
+        menuItem6.setChecked(Pref.getBoolean(SHOW_STATISTICS_SD, false));
+        menuItem7.setChecked(Pref.getBoolean(SHOW_STATISTICS_Rel_SD, false));
+        menuItem8.setChecked(Pref.getBoolean(SHOW_STATISTICS_GVI, false));
+        menuItem9.setChecked(Pref.getBoolean(SHOW_STATISTICS_PGS, false));
     }
 
     private void evaluateColors(boolean recreate) {
@@ -311,6 +319,56 @@ public class StatsActivity extends ActivityWithMenu {
         evaluateColors(true);
         updateMenuChecked();
     }
+
+    public void toggleStatisticsShowAbsolutes(MenuItem m) // Toggle visibility of absolute numbers
+    {
+        Pref.toggleBoolean(SHOW_STATISTICS_Absolutes);
+        evaluateColors(true);
+        updateMenuChecked();
+    }
+
+    public void toggleStatisticsShowMedianBG(MenuItem m) // Toggle visibility of median
+    {
+        Pref.toggleBoolean(SHOW_STATISTICS_Median_BG);
+        evaluateColors(true);
+        updateMenuChecked();
+    }
+
+    public void toggleStatisticsShowA1C(MenuItem m) // Toggle visibility of estimated A1C
+    {
+        Pref.toggleBoolean(SHOW_STATISTICS_A1C);
+        evaluateColors(true);
+        updateMenuChecked();
+    }
+
+    public void toggleStatisticsShowSD(MenuItem m) // Toggle visibility of standard deviation
+    {
+        Pref.toggleBoolean(SHOW_STATISTICS_SD);
+        evaluateColors(true);
+        updateMenuChecked();
+    }
+
+    public void toggleStatisticsShowRelSD(MenuItem m) // Toggle visibility of relative standard deviation
+    {
+        Pref.toggleBoolean(SHOW_STATISTICS_Rel_SD);
+        evaluateColors(true);
+        updateMenuChecked();
+    }
+
+    public void toggleStatisticsShowGVI(MenuItem m) // Toggle visibility of GVI
+    {
+        Pref.toggleBoolean(SHOW_STATISTICS_GVI);
+        evaluateColors(true);
+        updateMenuChecked();
+    }
+
+    public void toggleStatisticsShowPGS(MenuItem m) // Toggle visibility of PGS
+    {
+        Pref.toggleBoolean(SHOW_STATISTICS_PGS);
+        evaluateColors(true);
+        updateMenuChecked();
+    }
+
     public void statisticsDisableFullScreen(View v)
     {
         toggleStatisticsFullScreenMode(null);

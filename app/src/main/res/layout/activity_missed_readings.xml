@@ -257,8 +257,64 @@
                                 android:text="@string/unit_seconds" />
                         </LinearLayout>
 
+                    </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:orientation="vertical"
+                    android:paddingTop="30dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingLeft="15dp">
+
+                        <TextView
+                            android:id="@+id/param_title_mra_mp3_file"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="left"
+                            android:text="@string/alert_tone_colon"
+                            android:textSize="15sp" />
+
+                        <EditText
+                            android:id="@+id/bg_missed_alerts_sound"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:inputType="text"
+                            android:ems="10"
+                            android:autoText="false"
+                            android:text=""
+                            android:singleLine="true"
+                            android:textAlignment="center"
+                            android:textSize="15sp"
+                            android:layout_alignParentStart="true"
+                            android:editable="false" />
 
                     </LinearLayout>
+
+                    <Button
+                        android:id="@+id/Button_mra_mp3_file"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="@string/choose_file"
+                        android:textAllCaps="false" />
+
+                    <CheckBox
+                        android:id="@+id/bg_missed_alerts_override_silent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/override_silent_mode"
+                        android:textSize="15sp"
+                        android:padding="5dp"
+                        android:layout_gravity="left"
+                        android:layout_marginLeft="10dp"
+                        android:gravity="left" />
+
+                </LinearLayout>
 
             </LinearLayout>
         </ScrollView>

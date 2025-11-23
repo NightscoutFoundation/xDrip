@@ -57,6 +57,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
+import static com.eveningoutpost.dexdrip.utils.DatabaseUtil.getDataBaseSizeInBytes;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
@@ -80,6 +81,7 @@ public class SystemStatusFragment extends Fragment {
     private ActiveBluetoothDevice activeBluetoothDevice;
     private static final String TAG = "SystemStatus";
     private BroadcastReceiver serviceDataReceiver;
+    private TextView db_size_view;
 
     //@Inject
     MicroStatus microStatus;
@@ -177,6 +179,7 @@ public class SystemStatusFragment extends Fragment {
         sensor_status_view = (TextView) v.findViewById(R.id.sensor_status);
         transmitter_status_view = (TextView) v.findViewById(R.id.transmitter_status);
         current_device = (TextView) v.findViewById(R.id.remembered_device);
+        db_size_view = (TextView) v.findViewById(R.id.db_size);
 
         notes = (TextView) v.findViewById(R.id.other_notes);
 
@@ -238,6 +241,7 @@ public class SystemStatusFragment extends Fragment {
         setTransmitterStatus();
         setNotes();
         futureDataCheck();
+        setDbSize();
 
        /* if (notes.getText().length()==0) {
             notes.setText("Swipe for more status pages!");
@@ -274,6 +278,18 @@ public class SystemStatusFragment extends Fragment {
 
     }
 
+    private void setDbSize() {
+        long dbSizeLengthLong = getDataBaseSizeInBytes();
+        String dbSizeString = "0";
+        if (dbSizeLengthLong > 0) { // If there is a database
+            if (dbSizeLengthLong < 31457280) { // When smaller than 30M, round and show one decimal point
+                dbSizeString = JoH.roundFloat((float) dbSizeLengthLong / (1024 * 1024), 1) + "";
+            } else { // When greater than 30M, round and just show integer
+                dbSizeString = (int) (JoH.roundFloat((float) dbSizeLengthLong / (1024 * 1024), 0)) + "";
+            }
+            db_size_view.setText(dbSizeString + "M");
+        }
+    }
 
     private void setSensorStatus() {
         sensor_status_view.setText(SensorStatus.status());
@@ -285,7 +301,7 @@ public class SystemStatusFragment extends Fragment {
         try {
             versionName = safeGetContext().getPackageManager().getPackageInfo(safeGetContext().getPackageName(), PackageManager.GET_META_DATA).versionName;
             int versionNumber = safeGetContext().getPackageManager().getPackageInfo(safeGetContext().getPackageName(), PackageManager.GET_META_DATA).versionCode;
-            versionName += "\nCode: " + BuildConfig.buildVersion + "\nDowngradable to: " + versionNumber;
+            versionName += "\nCode: " + BuildConfig.buildVersion;
             version_name_view.setText(versionName);
         } catch (PackageManager.NameNotFoundException e) {
             //e.printStackTrace();

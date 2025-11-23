@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.alert;
 
+import static com.eveningoutpost.dexdrip.utilitymodels.UpdateActivity.AUTO_UPDATE_PREFS_NAME;
+
 import android.content.SharedPreferences;
 
 import com.eveningoutpost.dexdrip.models.UserError.Log;
@@ -35,6 +37,9 @@ public class Registry {
             registry.clear();
             if (Pref.getBooleanDefaultFalse("alert_raise_for_sensor_expiry")) {
                 registry.add(new SensorExpiry());
+            }
+            if (Pref.getBoolean(AUTO_UPDATE_PREFS_NAME, true)) {
+                registry.add(new UpdateAvailable());
             }
             //  addGlucoseAlerts();
             // sort();

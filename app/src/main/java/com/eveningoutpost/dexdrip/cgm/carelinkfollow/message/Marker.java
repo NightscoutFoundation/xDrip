@@ -1,5 +1,8 @@
 package com.eveningoutpost.dexdrip.cgm.carelinkfollow.message;
 
+import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.util.CareLinkJsonAdapter;
+import com.google.gson.annotations.JsonAdapter;
+
 import java.util.Date;
 
 /**
@@ -28,6 +31,10 @@ public class Marker {
     public String kind;
     public int version;
     public Date dateTime;
+    @JsonAdapter(CareLinkJsonAdapter.class)
+    public Date timestamp = null;
+    @JsonAdapter(CareLinkJsonAdapter.class)
+    public Date displayTime = null;
     public Integer relativeOffset;
     public Boolean calibrationSuccess;
     public Double amount;
@@ -42,5 +49,51 @@ public class Marker {
     public String bolusType;
     public Boolean autoModeOn;
     public Float bolusAmount;
+    public MarkerData data;
+
+    public Date getDate(){
+        if(displayTime != null)
+            return displayTime;
+        else if(timestamp != null)
+            return timestamp;
+        else if(dateTime != null)
+            return dateTime;
+        else
+            return null;
+    }
+
+    public Float getInsulinAmount(){
+        if(deliveredExtendedAmount != null && deliveredFastAmount != null)
+            return deliveredExtendedAmount + deliveredFastAmount;
+        else if(data.dataValues != null && data.dataValues.deliveredFastAmount != null)
+            return data.dataValues.deliveredFastAmount;
+        else if(data != null && data.dataValues != null && data.dataValues.insulinUnits != null)
+            try {
+                return Float.parseFloat(data.dataValues.insulinUnits);
+            } catch (Exception ex){
+                return null;
+            }
+        else
+            return null;
+    }
+
+    public Double getCarbAmount(){
+        if(amount != null)
+            return amount;
+        else if(data.dataValues.amount != null)
+            return data.dataValues.amount;
+        else
+            return null;
+    }
+
+    public Double getBloodGlucose()
+    {
+        if(value != null)
+            return value;
+        else if(data.dataValues.unitValue != null)
+            return data.dataValues.unitValue;
+        else
+            return null;
+    }
 
 }

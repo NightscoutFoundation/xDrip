@@ -1074,6 +1074,10 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public BgReading appendSourceInfo(String info) {
+        return appendSourceInfo(info, false);
+    }
+
+    public BgReading appendSourceInfo(String info, final boolean autoSave) {
         if ((source_info == null) || (source_info.length() == 0)) {
             source_info = info;
         } else {
@@ -1082,6 +1086,9 @@ public class BgReading extends Model implements ShareUploadableBg {
             } else {
                 UserError.Log.e(TAG, "Ignoring duplicate source info " + source_info + " -> " + info);
             }
+        }
+        if (autoSave) {
+            save();
         }
         return this;
     }
@@ -1324,12 +1331,16 @@ public class BgReading extends Model implements ShareUploadableBg {
         return bgr;
     }
 
-    // TODO this method shares some code with above.. merge
     public static void bgReadingInsertFromInt(int value, long timestamp, long margin, boolean do_notification) {
+        bgReadingInsertFromInt(value, timestamp, margin, do_notification, "");
+    }
+
+    // TODO this method shares some code with above.. merge
+    public static void bgReadingInsertFromInt(int value, long timestamp, long margin, boolean do_notification, String source_info) {
         // TODO sanity check data!
 
         if ((value <= 0) || (timestamp <= 0)) {
-            Log.e(TAG, "Invalid data fed to InsertFromInt");
+            Log.e(TAG, "Invalid data fed to InsertFromInt " + value + " " + JoH.dateTimeText(timestamp));
             return;
         }
 
@@ -1347,6 +1358,8 @@ public class BgReading extends Model implements ShareUploadableBg {
             bgr.raw_data = value;
             bgr.age_adjusted_raw_value = value;
             bgr.filtered_data = value;
+
+            bgr.source_info = source_info;
 
             final Sensor forced_sensor = Sensor.currentSensor();
             if (forced_sensor != null) {
@@ -2146,7 +2159,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     public static Long getTimeSinceLastReading() {
         BgReading bgReading = BgReading.last();
         if (bgReading != null) {
-            return (new Date().getTime() - bgReading.timestamp);
+            return (new Date().getTime() - bgReading.timestamp); // TODO should be tsl
         }
         return (long) 0;
     }

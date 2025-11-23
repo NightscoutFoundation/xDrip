@@ -20,6 +20,7 @@ import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.eveningoutpost.dexdrip.utilitymodels.BgSendQueue;
 import com.eveningoutpost.dexdrip.utilitymodels.CalibrationSendQueue;
 import com.eveningoutpost.dexdrip.utilitymodels.IncompatibleApps;
+import com.eveningoutpost.dexdrip.utilitymodels.NightscoutUploader;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utilitymodels.UploaderQueue;
 import com.eveningoutpost.dexdrip.cloud.backup.Backup;
@@ -171,6 +172,12 @@ public class DailyIntentService extends IntentService {
                     SettingsValidation.notifyAboutInadvisableSettings();
                 } catch (Exception e) {
                     Log.e(TAG, "Exception in SettingsValidation: " + e);
+                }
+
+                try {
+                    NightscoutUploader.notifyInconsistentMultiSiteUpload();
+                } catch (Exception e) {
+                    Log.e(TAG, "Exception in Nightscout multi site upload failure log: " + e);
                 }
 
                 Log.i(TAG, "DailyIntentService onHandleIntent exiting after " + ((JoH.tsl() - start) / 1000) + " seconds");

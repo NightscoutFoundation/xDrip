@@ -3,11 +3,15 @@ package com.eveningoutpost.dexdrip;
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.format.DateFormat;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -16,17 +20,24 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.eveningoutpost.dexdrip.models.AlertType;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.services.MissedReadingService;
+import com.eveningoutpost.dexdrip.utilitymodels.AlertPlayer;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
 
 public class MissedReadingActivity extends ActivityWithMenu {
     public static String menu_name = "Missed reading";
     private Context mContext;
+    private Button buttonalertMp3;
     
     private CheckBox checkboxEnableAlert;
     private CheckBox checkboxAllDay;
     private CheckBox checkboxEnableReraise;
+    private CheckBox checkboxOverrideSilent;
+    private String audioPath; // Local representation of the path to the sound file
+    private EditText alertMp3File; // Sound file title
     
     private LinearLayout layoutTimeBetween;
     private LinearLayout timeInstructions;
@@ -49,6 +60,8 @@ public class MissedReadingActivity extends ActivityWithMenu {
     private int endHour = 23;
     private int endMinute = 59;
     private int missedMinutes = 59;
+    private final static String TAG = AlertPlayer.class.getSimpleName();
+    EditAlertActivity editAlert = new EditAlertActivity();
     
 
     @Override
@@ -59,9 +72,19 @@ public class MissedReadingActivity extends ActivityWithMenu {
         
         viewTimeStart = (TextView) findViewById(R.id.missed_reading_time_start);
         viewTimeEnd = (TextView) findViewById(R.id.missed_reading_time_end);
+        buttonalertMp3 = (Button)findViewById(R.id.Button_mra_mp3_file);
         checkboxAllDay = (CheckBox) findViewById(R.id.missed_reading_all_day);
         checkboxEnableAlert = (CheckBox) findViewById(R.id.missed_reading_enable_alert);
+        checkboxOverrideSilent = (CheckBox) findViewById(R.id.bg_missed_alerts_override_silent);
         checkboxEnableReraise = (CheckBox) findViewById(R.id.missed_reading_enable_alerts_reraise);
+        /** xDrip used to use the other alerts sound file for the missed readings alert.
+         * To avoid causing an unexpected behavior for a previous user of xDrip, the missed reading alert
+         * by default uses the same sound file as the other alerts alert.
+        **/
+        if (Pref.getString("bg_missed_alerts_sound", null) == null) { // If missed reading sound file has never been set
+            Pref.setString("bg_missed_alerts_sound", Pref.getString("other_alerts_sound", "content://settings/system/alarm_alert")); // Set it to the other alerts sound
+        }
+        alertMp3File = (EditText) findViewById(R.id.bg_missed_alerts_sound);
         
         layoutTimeBetween = (LinearLayout) findViewById(R.id.missed_reading_time_between);
         timeInstructions = (LinearLayout) findViewById(R.id.missed_reading_instructions);
@@ -83,10 +106,13 @@ public class MissedReadingActivity extends ActivityWithMenu {
         boolean enableAlert = prefs.getBoolean("bg_missed_alerts",false);
         boolean allDay = prefs.getBoolean("missed_readings_all_day",true);
         boolean enableReraise = prefs.getBoolean("bg_missed_alerts_enable_alerts_reraise",false);
+        boolean overrideSilentMode = prefs.getBoolean("bg_missed_alerts_override_silent", false);
+        audioPath = Pref.getString("bg_missed_alerts_sound", null);
         
         checkboxAllDay.setChecked(allDay);
         checkboxEnableAlert.setChecked(enableAlert);
         checkboxEnableReraise.setChecked(enableReraise);
+        checkboxOverrideSilent.setChecked(overrideSilentMode);
         
         startHour = AlertType.time2Hours(startMinutes);
         startMinute = AlertType.time2Minutes(startMinutes);
@@ -95,9 +121,15 @@ public class MissedReadingActivity extends ActivityWithMenu {
         bgMissedMinutes.setText(prefs.getString("bg_missed_minutes", "30"));
         bgMissedSnoozeMin.setText("" + MissedReadingService.getOtherAlertSnoozeMinutes(prefs, "bg_missed_alerts"));
         bgMissedReraiseSec.setText(prefs.getString("bg_missed_alerts_reraise_sec", "60"));
+        if (!audioPath.equals("")) {
+            alertMp3File.setText(editAlert.shortPath(audioPath));
+        } else {
+            alertMp3File.setText("Silent");
+        }
         
         addListenerOnButtons();
         enableAllControls();
+        alertMp3File.setKeyListener(null);
     }
     
     @Override
@@ -114,6 +146,7 @@ public class MissedReadingActivity extends ActivityWithMenu {
         prefs.edit().putBoolean("bg_missed_alerts", checkboxEnableAlert.isChecked()).apply();
         prefs.edit().putBoolean("missed_readings_all_day", checkboxAllDay.isChecked()).apply();
         prefs.edit().putBoolean("bg_missed_alerts_enable_alerts_reraise", checkboxEnableReraise.isChecked()).apply();
+        prefs.edit().putBoolean("bg_missed_alerts_override_silent", checkboxOverrideSilent.isChecked()).apply();
 
         MissedReadingService.delayedLaunch();
       //  context.startService(new Intent(context, MissedReadingService.class));
@@ -129,6 +162,7 @@ public class MissedReadingActivity extends ActivityWithMenu {
         timeInstructions.setEnabled(enabled);
         checkboxAllDay.setEnabled(enabled);
         checkboxEnableReraise.setEnabled(enabled);
+        checkboxOverrideSilent.setEnabled(enabled);
         bgMissedMinutes.setEnabled(enabled);
         bgMissedSnoozeMin.setEnabled(enabled);
         bgMissedReraiseSec.setEnabled(enabled);
@@ -183,6 +217,13 @@ public class MissedReadingActivity extends ActivityWithMenu {
             }
         });
 
+        checkboxOverrideSilent.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            // @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                enableAllControls();
+            }
+        });
+
         
         View.OnClickListener startTimeListener = new View.OnClickListener() {
 
@@ -225,6 +266,35 @@ public class MissedReadingActivity extends ActivityWithMenu {
         viewTimeEnd.setOnClickListener(endTimeListener);
         timeInstructionsEnd.setOnClickListener(endTimeListener);
 
+        buttonalertMp3.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true);
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALL);
+                startActivityForResult(intent, 999);
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        }); //- See more at: http://blog.kerul.net/2011/12/pick-file-using-intentactiongetcontent.html#sthash.c8xtIr1Y.dpuf
+
+
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            Uri uri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
+            if (uri != null) {
+                audioPath = uri.toString();
+                alertMp3File.setText(editAlert.shortPath(audioPath));
+            } else {
+                audioPath = "";
+                alertMp3File.setText("Silent");
+            }
+            UserError.Log.d(TAG, "Selected sound path: " + audioPath);
+            Pref.setString("bg_missed_alerts_sound", audioPath); // Update the sound file preference
+        }
     }
     
     public void setTimeRanges() {

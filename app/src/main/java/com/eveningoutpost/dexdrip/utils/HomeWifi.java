@@ -38,14 +38,14 @@ public class HomeWifi {
         if (isConnectedToAnything()) {
             final String ssid = getSSID();
             final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-            builder.setTitle("Set Home Network");
-            builder.setMessage(String.format("My Home WiFi Network name is:\n\n%s", ssid));
+            builder.setTitle(activity.getString(R.string.set_home_network));
+            builder.setMessage(activity.getString(R.string.my_home_network_is, ssid));
 
             builder.setPositiveButton(activity.getString(R.string.yes), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                    Pref.setString(PREF,ssid);
-                   JoH.static_toast_long(String.format("Set home network to: %s",ssid));
+                   JoH.static_toast_long(activity.getString(R.string.set_home_network_to, ssid));
                 }
             });
             builder.setNegativeButton(activity.getString(R.string.cancel), new DialogInterface.OnClickListener() {
@@ -57,7 +57,7 @@ public class HomeWifi {
 
             builder.create().show();
         } else {
-            JoH.static_toast_long("Not connected to Wifi");
+            JoH.static_toast_long(activity.getString(R.string.not_connected_to_wifi));
         }
     }
 

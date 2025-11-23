@@ -299,6 +299,7 @@ public class WatchUpdaterService extends WearableListenerService implements
             if (force_wearG5) {
                 final PendingIntent pendingIntent = android.app.PendingIntent.getActivity(xdrip.getAppContext(), 0, new Intent(xdrip.getAppContext(), Home.class), android.app.PendingIntent.FLAG_UPDATE_CURRENT);
                 showNotification("Force Wear Enabled", node_wearG5 + " Watch has enabled Force Wear Collection Service", pendingIntent, 771, true, true, true);
+                UserError.Log.uel(TAG, node_wearG5 + " Watch has enabled Force Wear Collection Service");
             }
         }
 
@@ -1501,7 +1502,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                                                                         output.write(new byte[64000]); // seems to need some kind of padding
                                                                         JoH.threadSleep(5000);
                                                                         Log.d(TAG, "VUP: sent bytes: " + (apkBytes.length - finalStartAt));
-                                                                    } catch (final IOException e) {
+                                                                    } catch (final IOException | NullPointerException e) {
                                                                         Log.w(TAG, "VUP: could not send message: " + "Node: " + channel.getNodeId() + "Path: " + channel.getPath() + " Error message: " + e.getMessage() + " Error cause: " + e.getCause());
                                                                     } finally {
                                                                         try {

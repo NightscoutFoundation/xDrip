@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import lombok.Getter;
+
 /**
  * Created by andy on 01/06/16.
  */
@@ -54,6 +56,7 @@ public enum DexCollectionType {
     LibreReceiver("LibreReceiver"),
     AidexReceiver("AidexReceiver");
 
+    @Getter
     String internalName;
     private static final Map<String, DexCollectionType> mapToInternalName;
     private static final HashSet<DexCollectionType> usesBluetooth = new HashSet<>();
@@ -63,6 +66,7 @@ public enum DexCollectionType {
     private static final HashSet<DexCollectionType> usesFiltered = new HashSet<>();
     private static final HashSet<DexCollectionType> usesLibre = new HashSet<>();
     private static final HashSet<DexCollectionType> isPassive = new HashSet<>();
+    private static final HashSet<DexCollectionType> canNotStartStopOrCal = new HashSet<>();
     private static final HashSet<DexCollectionType> usesBattery = new HashSet<>();
     private static final HashSet<DexCollectionType> usesDexcomRaw = new HashSet<>();
     private static final HashSet<DexCollectionType> usesTransmitterBattery = new HashSet<>();
@@ -86,6 +90,7 @@ public enum DexCollectionType {
         Collections.addAll(usesFiltered, DexbridgeWixel, WifiDexBridgeWixel, DexcomG5, WifiWixel, Follower, Mock); // Bluetooth and Wifi+Bluetooth need dynamic mode
         Collections.addAll(usesLibre, LimiTTer, LibreAlarm, LimiTTerWifi, LibreWifi, LibreReceiver);
         Collections.addAll(isPassive, NSEmulator, NSFollow, SHFollow, WebFollow, LibreReceiver, UiBased, CLFollow, AidexReceiver);
+        Collections.addAll(canNotStartStopOrCal, NSFollow, SHFollow, WebFollow, UiBased, CLFollow, Disabled); // Collectors that cannot start/stop sensor or submit calibration
         Collections.addAll(usesBattery, BluetoothWixel, DexbridgeWixel, WifiBlueToothWixel, WifiDexBridgeWixel, Follower, LimiTTer, LibreAlarm, LimiTTerWifi, LibreWifi); // parakeet separate
         Collections.addAll(usesDexcomRaw, BluetoothWixel, DexbridgeWixel, WifiWixel, WifiBlueToothWixel, DexcomG5, WifiDexBridgeWixel, Mock);
         Collections.addAll(usesTransmitterBattery, WifiWixel, BluetoothWixel, DexbridgeWixel, WifiBlueToothWixel, WifiDexBridgeWixel); // G4 transmitter battery
@@ -111,6 +116,10 @@ public enum DexCollectionType {
 
     public static void setDexCollectionType(DexCollectionType t) {
         Pref.setString(DEX_COLLECTION_METHOD, t.internalName);
+    }
+
+    public static boolean isG7() {
+        return DexCollectionType.getBestCollectorHardwareName().equals("G7");
     }
 
     public static boolean hasBluetooth() {
@@ -323,6 +332,9 @@ public enum DexCollectionType {
 
     public boolean isPassive() {
         return isPassive.contains(this);
+    }
+    public boolean canNotStartStopOrCal() {
+        return canNotStartStopOrCal.contains(this);
     }
 
     public long getSamplePeriod() {

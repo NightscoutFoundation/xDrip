@@ -6,7 +6,7 @@
         <item>Wifi Wixel / Parakeet</item>
         <item>Wifi Wixel + BT Wixel</item>
         <item>Wifi Wixel + xBridge Wixel</item>
-        <item>G6/G7/1/1+ Transmitter</item>
+        <item>Dex</item>
         <item>Libre Bluetooth</item>
         <item>Libre Bluetooth + wifi</item>
         <item>Libre wifi</item>
@@ -166,11 +166,11 @@
 
     <!--     make sure to keep this values in sync with AlertPlayer.getAlertProfile -->
     <string-array name="BgAlertProfileEntries">
-        <item>High</item>
-        <item>Medium</item>
-        <item>Ascending volume</item>
-        <item>Vibrate only</item>
-        <item>Silent</item>
+        <item>@string/volume_profile_high</item>
+        <item>@string/volume_profile_medium</item>
+        <item>@string/volume_profile_ascending</item>
+        <item>@string/volume_profile_vibrate_only</item>
+        <item>@string/volume_profile_silent</item>
     </string-array>
 
     <string-array name="BgAlertProfileValues">
@@ -194,15 +194,15 @@
     </string-array>
 
     <string-array name="alertType">
-        <item>System Sound/Alarm</item>
-        <item>Custom Sound/Alarm</item>
-        <item>Default xDrip sound</item>
+        <item>@string/system_sound_alarm</item>
+        <item>@string/custom_sound_alarm</item>
+        <item>@string/default_xdrip_sound</item>
     </string-array>
 
     <string-array name="reminderAlertType">
-        <item>Android Ringtone/Alarm</item>
-        <item>Custom Audio file</item>
-        <item>Default xDrip+ reminder sound</item>
+        <item>@string/android_ringtone_alarm</item>
+        <item>@string/custom_audio_file</item>
+        <item>@string/default_xdrip_reminder_sound</item>
     </string-array>
 
 <!--    TODO abstract noise values to single source -->
@@ -501,30 +501,30 @@
     </string-array>
 
     <string-array name="ymin_entries">
-        <item>40 mg/dl (2.2 mmol/l) ></item>
-        <item>50 mg/dl (2.8 mmol/l)</item>
-        <item>60 mg/dl (3.3 mmol/l)</item>
         <item>70 mg/dl (3.9 mmol/l)</item>
+        <item>60 mg/dl (3.3 mmol/l)</item>
+        <item>50 mg/dl (2.8 mmol/l)</item>
+        <item>40 mg/dl (2.2 mmol/l) ></item>
     </string-array>
     <string-array name="ymin_values">
-        <item>40</item>
-        <item>50</item>
-        <item>60</item>
         <item>70</item>
+        <item>60</item>
+        <item>50</item>
+        <item>40</item>
     </string-array>
     <string-array name="ymax_entries">
-        <item>210 mg/dl (11.7 mmol/l)</item>
-        <item>230 mg/dl (12.8 mmol/l)</item>
-        <item>250 mg/dl (13.9 mmol/l) ></item>
-        <item>300 mg/dl (16.7 mmol/l)</item>
         <item>400 mg/dl (22.2 mmol/l)</item>
+        <item>300 mg/dl (16.7 mmol/l)</item>
+        <item>250 mg/dl (13.9 mmol/l) ></item>
+        <item>230 mg/dl (12.8 mmol/l)</item>
+        <item>210 mg/dl (11.7 mmol/l)</item>
     </string-array>
     <string-array name="ymax_values">
-        <item>210</item>
-        <item>230</item>
-        <item>250</item>
-        <item>300</item>
         <item>400</item>
+        <item>300</item>
+        <item>250</item>
+        <item>230</item>
+        <item>210</item>
     </string-array>
 
     <!--    Nightscout follow wake delay, with respect to the source timestamp

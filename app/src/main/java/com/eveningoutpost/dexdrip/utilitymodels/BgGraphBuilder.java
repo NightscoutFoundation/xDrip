@@ -129,6 +129,7 @@ public class BgGraphBuilder {
     private SharedPreferences prefs;
     public double highMark;
     public double lowMark;
+    public double forecastLowMark; // Marker used for forecast low analysis
     public double defaultMinY;
     public double defaultMaxY;
     public boolean doMgdl;
@@ -243,6 +244,10 @@ public class BgGraphBuilder {
         this.context = context;
         this.highMark = tolerantParseDouble(prefs.getString("highValue", "170"), 170);
         this.lowMark = tolerantParseDouble(prefs.getString("lowValue", "70"), 70);
+        this.forecastLowMark = this.lowMark; // Set the forecast low marker to match the low value marker
+        if (!Pref.getBoolean("low_value_is_forecast_low_threshold", true)) { // If the user has chosen not to use the Low Value as the Forecast Low threshold
+            this.forecastLowMark = tolerantParseDouble(prefs.getString("forecast_low_threshold", "70"), 70); // Set the forecast low marker to match the forecast low threshold specified by the user
+        }
         this.doMgdl = (prefs.getString("units", "mgdl").equals("mgdl"));
         defaultMinY = unitized(40);
         defaultMaxY = unitized(250);
@@ -266,11 +271,17 @@ public class BgGraphBuilder {
 
 
     static public boolean isXLargeTablet(Context context) {
-        return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
+        if (Pref.getBooleanDefaultFalse("enlarge_fonts_on_large_screens")) {
+            return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
+        }
+        return false;
     }
 
     static public boolean isLargeTablet(Context context) {
-        return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+        if (Pref.getBooleanDefaultFalse("enlarge_fonts_on_large_screens")) {
+            return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+        }
+        return false;
     }
 
     public static double mmolConvert(double mgdl) {
@@ -1461,15 +1472,15 @@ public class BgGraphBuilder {
                         double polyPredicty = poly.predict(plow_timestamp);
                         Log.d(TAG, "Low predictor at max lookahead is: " + JoH.qs(polyPredicty));
                         low_occurs_at_processed_till_timestamp = highest_bgreading_timestamp; // store that we have processed up to this timestamp
-                        if (polyPredicty <= (lowMark + offset)) {
+                        if (polyPredicty <= (forecastLowMark + offset)) {
                             low_occurs_at = plow_timestamp;
-                            final double lowMarkIndicator = (lowMark - (lowMark / 4));
+                            final double lowMarkIndicator = (forecastLowMark - (forecastLowMark / 4));
                             //if (d) Log.d(TAG, "Poly predict: "+JoH.qs(polyPredict)+" @ "+JoH.qsz(iob.timestamp));
                             while (plow_timestamp > plow_now) {
 //                                plow_timestamp = plow_timestamp - FUZZER;
                                 plow_timestamp = plow_timestamp - (1000 * 30 * 5); // TODO check this! 2.5 minute accuracy on dots and low mark intercept for low_occurs at
                                 polyPredicty = poly.predict(plow_timestamp);
-                                if (polyPredicty > (lowMark + offset)) {
+                                if (polyPredicty > (forecastLowMark + offset)) {
                                     PointValue zv = new HPointValue((double) (plow_timestamp / FUZZER), (float) polyPredicty);
                                     polyBgValues.add(zv);
                                 } else {
@@ -2370,7 +2381,7 @@ public class BgGraphBuilder {
                     final View.OnClickListener mOnClickListener = new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Home.startHomeWithExtra(xdrip.getAppContext(), Home.CREATE_TREATMENT_NOTE, time.toString(), Double.toString(ypos));
+                            Home.startHomeWithExtra(xdrip.getAppContext(), Home.CREATE_TREATMENT_NOTE, time.toString(), "-1"); // Let's not enter a y position to avoid having to worry about the BG units
                         }
                     };
                     Home.snackBar(R.string.add_note, message, mOnClickListener, callerActivity);

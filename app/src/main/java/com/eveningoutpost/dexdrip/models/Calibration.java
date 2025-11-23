@@ -11,6 +11,7 @@ import com.activeandroid.ActiveAndroid;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
@@ -41,6 +42,7 @@ import java.util.UUID;
 
 import static com.eveningoutpost.dexdrip.models.BgReading.isDataSuitableForDoubleCalibration;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.newFingerStickData;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
 
 
 class DexParameters extends SlopeParameters {
@@ -639,7 +641,8 @@ public class Calibration extends Model {
                     } else {
                         Log.d(TAG, "Follower mode or note so not processing calibration deeply");
                     }
-                } else {
+                } else if (!getBestCollectorHardwareName().equals("G7")) {
+                    // Only if we are not using newer devices, which are limited to native behavior
                     final String msg = "Sensor data fails sanity test - Cannot Calibrate! raw:" + bgReading.raw_data;
                     UserError.Log.e(TAG, msg);
                     JoH.static_toast_long(msg);
@@ -1359,6 +1362,12 @@ public class Calibration extends Model {
         String msg = "Deleted all calibrations for sensor";
         Log.ueh(TAG, msg);
         JoH.static_toast_long(msg);
+    }
+
+    public static void deleteAll() {
+        new Delete()
+                .from(Calibration.class)
+                .execute();
     }
 
 }

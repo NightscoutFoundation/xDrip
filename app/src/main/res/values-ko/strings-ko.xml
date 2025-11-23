@@ -216,6 +216,7 @@
     <string name="other_alerts">기타 알림</string>
     <string name="extra_alerts_xdrip_plus">추가 알림 (xDrip+)</string>
     <string name="persistent_high_alert">지속적인 고혈당 알림</string>
+    <string name="persistent_high_alert_enable">사용</string>
     <string name="forecasted_low_alert">예측되는 저혈당 알림</string>
     <string name="extrapolate_data_to_try_to_predict_lows">저혈당을 추정하기 위한 예측 데이터</string>
     <string name="alarm_at_forecasted_low_mins">예측 낮은 분에 알람</string>
@@ -717,6 +718,7 @@
     <string name="bg_falling_fast">혈당이 빠르게 떨어짐</string>
     <string name="bg_rising_fast">혈당이 빠르게 상승함</string>
     <string name="set_sound_for_bg_alerts">혈당 알림에 사용되는 소리 설정</string>
+    <string name="alert_sound">고혈당 사운드</string>
     <string name="notify_on_low_battery_level">배터리 용량이 낮아지면 알림</string>
     <string name="enable_reminder_features">알림 기능 활성화</string>
     <string name="low_prediction_values">저혈당으로 예측된 값</string>
@@ -783,4 +785,5 @@
     <string name="enable_streaming_dialog_dont_ask_again">다시 묻지 않음</string>
     <string name="enable_graph_smoothing">사용</string>
     <string name="titleInside_yRange">사용</string>
+    <string name="title_sens_expiry_notify">사용</string>
 </resources>
