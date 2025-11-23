@@ -86,6 +86,7 @@ import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.immedia
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.onlyUsingNativeMode;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.resetSomeInternalState;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.wear_broadcast;
+import static com.eveningoutpost.dexdrip.services.SyncService.startSyncService;
 import static com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder.DEXCOM_PERIOD;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.DAY_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HOUR_IN_MS;
@@ -1508,6 +1509,9 @@ public class Ob1G5StateMachine {
             DexSyncKeeper.store(getTransmitterID(), rxtimestamp, parent.static_last_connected, lastGlucosePacket);
             final BgReading bgReading = BgReading.bgReadingInsertFromG5(glucose.glucose, rxtimestamp);
             if (bgReading != null) {
+                if (Pref.getBooleanDefaultFalse("cloud_storage_api_enable")) {
+                    startSyncService(3000); // sync in 3 seconds
+                }
                 try {
                     bgReading.calculated_value_slope = glucose.getTrend() / Constants.MINUTE_IN_MS; // note this is different to the typical calculated slope, (normally delta)
                     if (bgReading.calculated_value_slope == Double.NaN) {
