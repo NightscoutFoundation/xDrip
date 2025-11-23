@@ -165,6 +165,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.internal.bind.DateTypeAdapter;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
 
+import org.apache.commons.math3.analysis.function.Min;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -2677,13 +2679,19 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
         if (!BgReading.doWeHaveRecentUsableData()) {
-            long startedAt = Sensor.currentSensor().started_at;
+            long startedAt = Sensor.currentSensor().started_at; // This field from the database can never be less than when the previous sensor was stopped.
+            long started_warmup_at = Sensor.currentSensor().started_warmup_at; // This field from the database represents when the user started the sensor, which could be remote,
+            // according to the user's response to the corresponding question as to when they started the sensor regardless of when the previous sensor stopped.
             long computedStartedAt = SensorDays.get().getStart();
             if (computedStartedAt > 0 && msSince(computedStartedAt) < HOUR_IN_MS * 3) {
                 startedAt = Math.min(computedStartedAt, startedAt);
             }
             final long warmUpMs = SensorDays.get().getWarmupMs();
             final long now = tsl();
+            startedAt = Math.min(startedAt, started_warmup_at); // If started_warmup_at is less than started_at, it means the local session overlaps the previous and we
+            // have clamped the start time to when the previous session ended.
+            // But, for calculating how much time is left from warmup, we still have to use the real start time of the current sensor.
+            // That's why we use started_warmup_at for calculating the remaining warmup time.
             if (startedAt + warmUpMs > now) {
                 double waitTime = (startedAt + warmUpMs - now) / (double)MINUTE_IN_MS;
                 // TODO better resource format string

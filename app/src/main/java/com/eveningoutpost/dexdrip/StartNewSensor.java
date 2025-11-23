@@ -239,7 +239,13 @@ public class StartNewSensor extends ActivityWithMenu {
      * Sends command to G5/G6 sensor for sensor start and adds a Sensor Start entry in the xDrip db
      */
     public static void startSensorForTime(long startTime) {
-        Sensor.create(startTime);
+        if (DexCollectionType.hasLibre() || DexCollectionType.getBestCollectorHardwareName().equals("Mock")) {
+            // Only if the sensor is Libre or fake, we also populate the Sensor.started_warmup_at field in the database.
+            Sensor.create(startTime, startTime);
+        } else {
+            // Otherwise, we only populate the Sensor.started_at field in the database.
+            Sensor.create(startTime);
+        }
         UserError.Log.ueh("NEW SENSOR", "Sensor started at " + JoH.dateTimeText(startTime));
 
         JoH.static_toast_long(gs(R.string.new_sensor_started));
