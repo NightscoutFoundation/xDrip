@@ -1305,6 +1305,7 @@
     <string name="summary_lefun_send_alarms">Lähetä rannekkeeseen ilmoituksia VS-hälytyksistä</string>
     <string name="title_lefun_send_alarms">Lähetä hälytykset</string>
     <string name="title_lefun_option_shake_snoozes">Torkuta ravistamalla</string>
+    <string name="summary_lefun_send_calls">Lähetä puheluilmoitukset rannelaitteeseen</string>
     <string name="title_lefun_send_calls">Lähetä puhelut</string>
     <string name="title_lefun_screens_features">Lefun näytöt / ominaisuudet</string>
     <string name="title_features">Ominaisuudet</string>
@@ -1329,6 +1330,7 @@
     <string name="title_nsfollow_url">Nightscout-seuraajan URL</string>
     <string name="summary_nsfollow_download_treatments">Lataa seuraajana myös hoitotapahtumat Nightscoutista</string>
     <string name="title_nsfollow_download_treatments">Lataa hoidot</string>
+    <string name="title_nsfollow_lag">Nightscout-seuraajan viive</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
     <string name="summary_clfollow_user">CareLink login username</string>
@@ -1345,6 +1347,12 @@
     -->
     <string name="title_clfollow_login">Kirjautuminen</string>
     <string name="summary_clfollow_login">Kirjaudu selaimen kautta</string>
+    <string name="title_clfollow_grace_period">Vanhenemisaika</string>
+    <string name="summary_clfollow_grace_period">Pyynnön vanhenemisaika sekunteina</string>
+    <string name="title_clfollow_missed_poll_interval">Kyselyjen uusinta-aika tietojen puuttuessa</string>
+    <string name="summary_clfollow_missed_poll_interval">Uusintakyselyn aikaväli minuutteina</string>
+    <string name="title_clfollow_download_finger_bgs">Sormenpäästä mitattu VS</string>
+    <string name="summary_clfollow_download_finger_bgs">Lataa sormenpäästä mitatut VS-arvot CareLinkistä</string>
     <string name="title_clfollow_download_boluses">Bolukset</string>
     <string name="summary_clfollow_download_boluses">Lataa bolukset CareLinkista</string>
     <string name="title_clfollow_download_meals">Ateriat</string>
@@ -1366,6 +1374,8 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Takaisin xDrip:iin</string>
     <string name="summary_ob1_minimize_scanning">Käytä heuristiikkaa vähentääksesi bluetooth-skannauksia ja säästääksesi virtaa</string>
     <string name="title_ob1_minimize_scanning">Minimoi skannaamista</string>
+    <string name="summary_ob1_avoid_scanning">Vältä scannausta niin paljon kuin mahdollista (pienentää akun kulutusta)</string>
+    <string name="title_ob1_avoid_scanning">Vältä skannausta</string>
     <string name="summary_using_g6">Käytän G6-sensoria</string>
     <string name="title_using_g6">Tuki G6:lle</string>
     <string name="summary_ob1_g5_allow_resetbond">OB1-kerääjä voi katkaista yhteyden, jos se luulee, että tietojen salaaminen ei onnistu. Jos laiteparin purkamisessa esiintyy ongelmia, poista tämä käytöstä. Jos yhteys katkeaa kokonaan, varmista että tämä valinta on käytössä.</string>
@@ -1419,12 +1429,24 @@
     <string name="title_use_number_icon_large">Käytä suurta numerokuvaketta</string>
     <string name="summary_number_icon_large_arrow">Näyttää trendinuolen suuren numerokuvakkeen vieressä</string>
     <string name="title_number_icon_large_arrow">Näytä nuoli suurissa kuvakkeissa</string>
+    <string name="title_xdrip_plus_accessibility">Always On Display:n asetukset</string>
+    <string name="summary_aod_use_top">Käytä näytön ylintä viidennestä AOD Widgetissä</string>
+    <string name="title_aod_use_top">Käytä yläosaa</string>
+    <string name="summary_aod_use_top_center">Käytä näytön toista viidennestä AOD Widgetissä</string>
+    <string name="title_aod_use_top_center">Käytä ylä-keskikohtaa</string>
+    <string name="summary_aod_use_center">Käytä näytön kolmatta viidennestä AOD Widgetissä</string>
+    <string name="title_aod_use_center">Käytä keskikohtaa</string>
+    <string name="summary_aod_use_center_bottom">Käytä näytön neljättä viidennestä AOD Widgetissä</string>
+    <string name="title_aod_use_center_bottom">Käytä ala-keskikohtaa</string>
+    <string name="summary_aod_use_bottom">Käytä näytön alinta viidennestä AOD Widgetissä</string>
+    <string name="title_aod_use_bottom">Käytä alaosaa</string>
     <string name="summary_show_home_on_boot">Avaa xDripin automaattisesti laitteen käynnistyksen jälkeen</string>
     <string name="title_show_home_on_boot">Näytä xDrip kun puhelin käynnistetään</string>
     <string name="eula">KÄYTTÖOIKEUSSOPIMUS</string>
     <string name="summary_plus_accept_follower_actions">Hyväksy seuraajien tekemät hoitomerkinnät ja kalibroinnit</string>
     <string name="title_plus_accept_follower_actions">Hyväksy seuraajien toimenpiteet</string>
     <string name="summary_plus_whole_house">Liity Koko Talo -verkkoon</string>
+    <string name="summary_plus_xdrip_cloud">Käytä uusia xDrip+ -pilvipalvelimia. Tämä tulee asettaa samalla tavalla masteriin ja seuraajiin.</string>
     <string name="title_plus_whole_house">Koko Talo</string>
     <string name="summary_libre_whole_house_collector">Tämä puhelin toimii kerääjänä Koko Talo -verkossa</string>
     <string name="title_libre_whole_house_collector">Libre Koko Talo</string>
@@ -1463,13 +1485,21 @@
     <string name="title_ongoing_notification_channel">Käytä jatkuvaa ilmoituskanavaa</string>
     <string name="summary_notification_channels_grouping">Valinta ilmoitusten ryhmittelemiseksi. Yhteensopimaton \'Numerokuvake yläreunan ilmoituspalkissa\' -valinnan kanssa</string>
     <string name="title_notification_channels_grouping">Ryhmitä ilmoitukset</string>
+    <string name="summary_delay_ascending_3min">Jos haluat nousevan äänenvoimakkuuden, viivytä hälytysäänen alkua 3 minuutilla. Värinä (jos käytössä) alkaa heti hälytyksen sattuessa riippumatta tästä asetuksesta.</string>
+    <string name="title_ascending_volume">Nousevan äänenvoimakkuuden asetukset</string>
     <string name="title_delay_ascending_3min">Viivästetty nouseva äänenvoimakkuus</string>
+    <string name="summary_ascending_volume_to_medium">Mikäli käytössä, äänenvoimakkuus nousee keskitasoon maksimin sijaan</string>
+    <string name="title_ascending_volume_to_medium">Kasvata keskitasoon</string>
     <string name="summary_play_sound_for_initial_calibration">Anna äänimerkki, kun ensimmäistä kalibrointia pyydetään</string>
     <string name="title_play_sound_for_initial_calibration">Aloituskalibroinnin hälytys</string>
     <string name="category_noisy_readings">Paljon häiriölukemia</string>
     <string name="category_falling_rising_bg">Laskeva/nouseva VS</string>
     <string name="category_alert_prefs">Hälytysten asetukset (näille hälytyksille)</string>
     <string name="summary_persistent_high_alert">Kun VS on korkean rajan yläpuolella liian pitkään eikä tule alas</string>
+    <string name="summary_persistent_high_threshold_link">Mikäli käytössä, korkea arvo toimii kynnysarvona.\nMikäli ei käytössä, alla määritelty arvo toimii kynnysarvona.</string>
+    <string name="title_persistent_high_threshold_link">Kynnys: Korkea Arvo</string>
+    <string name="summary_forecast_low_threshold_link">Mikäli käytössä, matala arvo toimii kynnysarvona.\nMikäli ei käytössä, alla määritelty arvo toimii kynnysarvona.</string>
+    <string name="title_forecast_low_threshold_link">Kynnys: Matala-arvo</string>
     <string name="note_search_button">ETSI</string>
     <string name="all_note_button">KAIKKI</string>
     <string name="title_full_screen_mode">Koko näytön tila</string>
@@ -1504,6 +1534,7 @@
     <string name="progress">edistyminen</string>
     <string name="bluetooth_device">Bluetooth-laite:   </string>
     <string name="transmitter_battery_status">Lähettimen akku:  </string>
+    <string name="database_size">Tietokannan koko:  </string>
     <string name="top">Yläreuna</string>
     <string name="connect_device_usb_otg">Yhdistä laite USB-OTG-kaapelilla.</string>
     <string name="connection_status">Yhteyden tila:</string>
@@ -1533,6 +1564,8 @@
     <string name="change_settings">Muuta asetuksia</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Haluatko nollata tämän sensorin kalibroinnit?</string>
     <string name="sensor_stop_confirm">Haluatko pysäyttää sensorin?</string>
+    <string name="sensor_stop_confirm_norestart">Sensorin uudelleenkäynnistäminen ei ole mahdollista.</string>
+    <string name="sensor_stop_confirm_really_norestart">VAROITUS!\n\nEt voi käynnistää sensoria uudelleen.</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Olet ottanut käyttöön vanhan ja kokeellisen verensokeriennustuksen asetukset.\n\nTätä EI SUOSITELLA, sillä se voi sekoittaa asioita.\n\nPoistetaanko tämä käytöstä?</string>
     <string name="settings_issue">Asetuksissa ongelma!</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Haluatko kalibroida tällä langattoman verensokerimittarin tuloksella?\n\n(voit muuttaa asetuksista, milloin tämä kysymys näytetään)</string>
@@ -1640,6 +1673,8 @@
     <string name="libre_filter_length_10">10 minuuttia</string>
     <string name="libre_filter_length_15">15 minuuttia</string>
     <string name="libre_filter_length_25">25 minutes &gt;</string>
+    <string name="libre_filter_length_summary">Librex-tietojen käytössä huomiotava aika minuutteina</string>
+    <string name="libre_filter_length_title">Suodata Libre3-dataa kun käytössä on xxx menetelmä</string>
     <string name="enable_streaming_dialog_yes">yhdistä tähän libre2-sensoriin</string>
     <string name="enable_streaming_dialog_no">Älä yhdistä tähän libre2-sensoriin </string>
     <string name="enable_streaming_dialog_dont_ask_again">Älä kysy tätä uudelleen</string>
@@ -1647,10 +1682,28 @@
     <string name="enable_streaming_dialog_title">Yhdistetään Libre-sensori Bluetoothiin</string>
     <string name="without_camera_permission_cannot_scan_barcode">Ilman kameran lupaa emme voi skannata viivakoodia</string>
     <string name="summary_create_missing_filtered">Suodata dataa tarvittaessa</string>
+    <string name="title_create_missing_filtered">Luo puuttuvat</string>
+    <string name="summary_widget_hide_graph">Piilota kaavio widgeteissä (näkyy seuraavalle lukemalle)</string>
     <string name="title_widget_hide_graph">Piilota widgetin kuvaaja</string>
+    <string name="summary_illustrate_remote_data">Näytä ulkopuolelta vastaanotettu data (vain diagnostiikka)</string>
+    <string name="title_illustrate_remote_data">Illustroi ulkopuolinen data</string>
+    <string name="summary_show_accessibility_settings">Jos puhelimessasi on Always On Display -toiminto, voit ottaa xDrip -widgetin käyttöön valitsemalla xDrip accessibity palvelun käyttöön Android-järjestelmän asetuksista.</string>
+    <string name="title_show_accessibility_settings">Ota xDrip Accessibility käyttöön</string>
     <string name="title_multiple_insulin_types_settings">Useita Insuliinityyppejä</string>
+    <string name="summary_multiple_insulin_types_settings">Usean insuliinityypin käyttöön liittyvät asetukset</string>
     <string name="title_multiple_insulin_types">Useita Insuliinityyppejä</string>
+    <string name="summary_multiple_insulin_use_basal_activity">Piirrä basalin aktiivisuuskuvaaja ja ennuste</string>
+    <string name="title_multiple_insulin_use_basal_activity">Basaalin aktiivisuus</string>
+    <string name="title_xdrip_plus_snooze_broadcast">Local Broadcast</string>
+    <string name="summary_broadcast_snooze">Torkuta laitteen muut soveukset</string>
+    <string name="title_broadcast_snooze">Local Broadcast</string>
+    <string name="summary_accept_broadcast_snooze">Hyväksy torkutuspyynnöt laitteen muista sovelluksista</string>
+    <string name="title_accept_broadcast_snooze">Hyväksy Local Broadcast</string>
+    <string name="title_bg_compensate_noise">\u26A0 Suodata sensorin arvoja</string>
+    <string name="title_bg_compensate_noise_ultrasensitive">Suodata sensorin häiriöitä ultrasensitiivisesti</string>
+    <string name="no_i_really_know">Ei, tiedän todella, mitä teen</string>
     <string name="use_for_calibration">Käytetäänkö %s kalibrointiin?</string>
+    <string name="problem_loading_speech_lexicon">Virhe ladattaessa sanastoa!</string>
     <string name="no_never">Ei, Ei Koskaan</string>
     <string name="enable_graph_smoothing">Käytä</string>
     <string name="cannot_choose_file_without_permission">Tiedostoa ei voida valita ilman tallennustilan käyttöoikeutta</string>
@@ -1682,4 +1735,5 @@
     <string name="system_sound_alarm">Käyttöjärjestelmän ääni/hälytys</string>
     <string name="custom_sound_alarm">Mukautettu ääni/hälytys</string>
     <string name="default_xdrip_sound">xDrip-oletusääni</string>
+    <string name="error_with_value">Virheellinen arvo</string>
 </resources>
