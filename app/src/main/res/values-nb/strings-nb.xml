@@ -1958,4 +1958,5 @@
     <string name="system_sound_alarm">Systemlyd/Alarm</string>
     <string name="custom_sound_alarm">Egendefinert lyd/Alarm</string>
     <string name="default_xdrip_sound">Standard xDrip-lyd</string>
+    <string name="error_with_value">Feil med verdi</string>
 </resources>

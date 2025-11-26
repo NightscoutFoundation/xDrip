@@ -1705,4 +1705,5 @@
     <string name="system_sound_alarm">צליל\התראת מערכת</string>
     <string name="custom_sound_alarm">צליל\התראת מוגדר אישית</string>
     <string name="default_xdrip_sound">צליל ברירת המחדל של xDrip</string>
+    <string name="error_with_value">שיגאה עם ערך</string>
 </resources>

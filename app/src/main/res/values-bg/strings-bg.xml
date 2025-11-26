@@ -1539,7 +1539,7 @@
     <string name="connect_device_usb_otg">Моля, свържете вашето устройство чрез USB OTG кабел.</string>
     <string name="connection_status">Състояние на връзката:</string>
     <string name="range_in_high_low">Диапазон: (в/високо/ниско)</string>
-    <string name="absolute_s">Абсолютно #s:</string>
+    <string name="absolute_s">Абсолютни числа:</string>
     <string name="median_bg">Медиана КЗ:</string>
     <string name="mean_bg">Средна КЗ:</string>
     <string name="hba1c_est">HbA1c и т.н.:</string>
@@ -1954,4 +1954,5 @@
     <string name="system_sound_alarm">Системен звук/аларма</string>
     <string name="custom_sound_alarm">Персонализиран звук/аларма</string>
     <string name="default_xdrip_sound">Звук по подразбиране на xDrip</string>
+    <string name="error_with_value">Грешка със стойност</string>
 </resources>
