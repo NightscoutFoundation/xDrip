@@ -43,15 +43,6 @@ public class Sensor extends Model {
     public long started_at;
 
     @Expose
-    @Column(name = "started_warmup_at") // A change was made to this class not allowing started_at to
-    // ever be less than when the previous sensor was stopped.
-    // This has resulted in Libre devices already started by another app and already warmed up
-    // to trigger another unnecessary warm-up time in xDrip.
-    // This new field, started_warmup_at represents the same started_at, but not limited to when the previous sensor was stopped.
-    // Therefore, for Libre, we can use it for calculating the warmup period to avoid having to wait again.
-    public long started_warmup_at;
-
-    @Expose
     @Column(name = "stopped_at")
     public long stopped_at;
 
@@ -82,7 +73,6 @@ public class Sensor extends Model {
         val lastSensor = lastStopped(); // get the last sensor we stopped
         // find the time it was stopped or 0 if there is no previous sensor
         long lastStoppedTime = lastSensor != null ? lastSensor.stopped_at : 0;
-        sensor.started_warmup_at = starting_at;
         sensor.started_at = Math.max(lastStoppedTime + 1, starting_at);
         if (sensor.started_at > tsl()) {
             UserError.Log.wtf(TAG, "Sensor create() called with future timestamp, this cannot be right. " + starting_at + " " + lastStoppedTime + " " + sensor.started_at);
@@ -281,7 +271,6 @@ public class Sensor extends Model {
             } else {
                 Log.d(TAG, "updating existing sensor record.");
                 existingSensor.started_at = jsonSensor.started_at;
-                existingSensor.started_warmup_at = jsonSensor.started_warmup_at;
                 existingSensor.stopped_at = jsonSensor.stopped_at;
                 existingSensor.latest_battery_level = jsonSensor.latest_battery_level;
                 existingSensor.sensor_location = jsonSensor.sensor_location;
@@ -304,7 +293,6 @@ public class Sensor extends Model {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("started_at", started_at);
-            jsonObject.put("started_warmup_at", started_warmup_at);
             jsonObject.put("stopped_at", stopped_at);
             jsonObject.put("latest_battery_level", latest_battery_level);
             jsonObject.put("uuid", uuid);
@@ -333,7 +321,6 @@ public class Sensor extends Model {
 
         return started_at == sensor.started_at
              //   && stopped_at == sensor.stopped_at // Note: not checking stopped_at as this maybe transient
-                && started_warmup_at == sensor.started_warmup_at
                 && latest_battery_level == sensor.latest_battery_level
                 && Objects.equals(uuid, sensor.uuid)
                 && Objects.equals(sensor_location, sensor.sensor_location);
@@ -342,7 +329,7 @@ public class Sensor extends Model {
 
     @Override
     public int hashCode() {
-        return Objects.hash(started_at, started_warmup_at, stopped_at, latest_battery_level, uuid, sensor_location);
+        return Objects.hash(started_at, stopped_at, latest_battery_level, uuid, sensor_location);
     }
     
     public static Sensor fromJSON(String json) {
