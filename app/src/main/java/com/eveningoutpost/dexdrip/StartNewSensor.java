@@ -29,6 +29,7 @@ import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.profileeditor.DatePickerFragment;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileAdapter;
@@ -239,6 +240,7 @@ public class StartNewSensor extends ActivityWithMenu {
      * Sends command to G5/G6 sensor for sensor start and adds a Sensor Start entry in the xDrip db
      */
     public static void startSensorForTime(long startTime) {
+        PersistentStore.setLong("user-entered-sensor-start-time", startTime); // Record the time the user has entered as when they started the sensor
         Sensor.create(startTime);
         UserError.Log.ueh("NEW SENSOR", "Sensor started at " + JoH.dateTimeText(startTime));
 

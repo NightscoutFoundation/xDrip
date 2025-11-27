@@ -2677,7 +2677,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
         if (!BgReading.doWeHaveRecentUsableData()) {
-            long startedAt = Sensor.currentSensor().started_at;
+            long userEnteredStartTime = PersistentStore.getLong("user-entered-sensor-start-time");
+
+            // If the user has entered a value for when they started the sensor, use it.  Otherwise, use the start time from the database.
+            long startedAt = userEnteredStartTime > 0 ? userEnteredStartTime : Sensor.currentSensor().started_at;
             long computedStartedAt = SensorDays.get().getStart();
             if (computedStartedAt > 0 && msSince(computedStartedAt) < HOUR_IN_MS * 3) {
                 startedAt = Math.min(computedStartedAt, startedAt);
