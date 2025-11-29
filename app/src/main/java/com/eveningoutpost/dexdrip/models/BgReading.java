@@ -483,6 +483,10 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public static BgReading create(double raw_data, double filtered_data, Context context, Long timestamp, boolean quick) {
+        return create(raw_data, filtered_data, context, timestamp, quick, "");
+    }
+
+    public static BgReading create(double raw_data, double filtered_data, Context context, Long timestamp, boolean quick, String source_info) {
         if (context == null) context = xdrip.getAppContext();
         BgReading bgReading = new BgReading();
         final Sensor sensor = Sensor.currentSensor();
@@ -508,6 +512,7 @@ public class BgReading extends Model implements ShareUploadableBg {
             bgReading.calibration_flag = false;
 
             bgReading.calculateAgeAdjustedRawValue();
+            bgReading.source_info = source_info;
 
             bgReading.save();
             bgReading.perform_calculations();
@@ -515,6 +520,7 @@ public class BgReading extends Model implements ShareUploadableBg {
         } else {
             Log.d(TAG, "Calibrations, so doing everything: " + calibration.uuid);
             bgReading = createFromRawNoSave(sensor, calibration, raw_data, filtered_data, timestamp);
+            bgReading.source_info = source_info;
 
             bgReading.save();
 
