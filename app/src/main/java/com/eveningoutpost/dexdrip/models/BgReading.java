@@ -484,7 +484,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public static BgReading create(double raw_data, double filtered_data, Context context, Long timestamp, boolean quick) {
-        return create(raw_data, filtered_data, context, timestamp, quick, "");
+        return create(raw_data, filtered_data, context, timestamp, quick, null);
     }
 
     public static BgReading create(double raw_data, double filtered_data, Context context, Long timestamp, boolean quick, String source_info) {
