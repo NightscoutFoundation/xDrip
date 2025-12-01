@@ -74,7 +74,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
 
     private static void createBGfromGD(GlucoseData gd, boolean use_smoothed_data, boolean quick) {
         final double converted;
-        String sourceInfo = "";
+        String sourceInfo = null;
         if (useGlucoseAsRaw()) {
             // if treating converted value as raw
             if (gd.glucoseLevel > 0) {
