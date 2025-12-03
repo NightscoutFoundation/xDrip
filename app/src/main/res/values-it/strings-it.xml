@@ -1958,4 +1958,5 @@
     <string name="system_sound_alarm">Suono/Allarme di Sistema</string>
     <string name="custom_sound_alarm">Suono/Allarme Personalizzato</string>
     <string name="default_xdrip_sound">Suono xDrip predefinito</string>
+    <string name="error_with_value">Errore con il valore</string>
 </resources>

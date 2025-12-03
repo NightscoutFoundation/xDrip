@@ -2682,7 +2682,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             // If the user has entered a value for when they started the sensor, use it.  Otherwise, use the start time from the database.
             long startedAt = userEnteredStartTime > 0 ? userEnteredStartTime : Sensor.currentSensor().started_at;
             long computedStartedAt = SensorDays.get().getStart();
-            if (computedStartedAt > 0 && msSince(computedStartedAt) < HOUR_IN_MS * 3) {
+            if (computedStartedAt > 0) {
+                UserError.Log.d(TAG, "computedStartedAt " + JoH.dateTimeText(computedStartedAt));
                 startedAt = Math.min(computedStartedAt, startedAt);
             }
             final long warmUpMs = SensorDays.get().getWarmupMs();
