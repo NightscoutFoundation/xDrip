@@ -3652,13 +3652,21 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     public static void snackBar(int buttonString, String message, View.OnClickListener mOnClickListener, Activity activity) {
 
-        Snackbar.make(
+        // Store Snackbar in a variable
+        Snackbar snackbar = Snackbar.make(
+                        activity.findViewById(android.R.id.content),
+                        message, Snackbar.LENGTH_LONG)
+                .setAction(buttonString, mOnClickListener);
 
-                activity.findViewById(android.R.id.content),
-                message, Snackbar.LENGTH_LONG)
-                .setAction(buttonString, mOnClickListener)
-                //.setActionTextColor(Color.RED)
-                .show();
+        // Disable ALL CAPS on the action button
+        Button b = snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_action);
+        if (b != null) b.setAllCaps(false);
+
+        // Maximum number of lines to wrap into
+        TextView t = snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_text);
+        if (t != null) t.setMaxLines(5);
+
+        snackbar.show();
     }
 
     public static void staticBlockUI(Activity context, boolean state) {
