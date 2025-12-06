@@ -2068,16 +2068,20 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     public static boolean isG5WantingInitialCalibration() {
         loadCalibrationStateAsRequired();
-        return lastSensorStatus != null
+        return lastSensorState != null
                 && lastSensorState == CalibrationState.NeedsFirstCalibration
                 && usingNativeMode();
     }
 
     public static boolean isG5WantingCalibration() {
         loadCalibrationStateAsRequired();
-        return lastSensorStatus != null
-                && lastSensorState.needsCalibration()
-                && usingNativeMode();
+        try {
+            return lastSensorState != null
+                    && lastSensorState.needsCalibration()
+                    && usingNativeMode();
+        } catch (NullPointerException e) {
+            return false;
+        }
     }
 
     // are we using the G5 Transmitter to evaluate readings

@@ -314,7 +314,9 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
     private void reloadList() {
         reminders.clear();
         reminders.addAll(Reminder.getAllReminders());
-        mAdapter.notifyDataSetChanged();
+        if (mAdapter != null) {
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
 
@@ -544,29 +546,33 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
     }
 
     private void askWhenToReschedule(final Reminder remind) {
-        val now = tsl();
-        val oldt = remind.getPotentialNextSchedule();
-        val newt = now + remind.period;
-        val choice = String.format("%s:    %s  @  %s\n\nor\n\n%s:   %s  @  %s",
-                getString(R.string.old), niceTimeScalarNatural(-msSince(oldt)),hourMinuteString(oldt),
-                getString(R.string.neww), niceTimeScalarNatural(-msSince(newt)),hourMinuteString(newt));
-
-        val builder = new AlertDialog.Builder(this)
-                .setTitle(R.string.reschedule_with_new_timing)
-                .setMessage(choice);
-
-        builder.setPositiveButton(getString(R.string.old), (dialog, which) -> rescheduleNextOld(remind));
-        builder.setNegativeButton(getString(R.string.neww), (dialog, which) -> rescheduleNextNew(remind, newt));
-
-        val dialog = builder.create();
         try {
-            if (dialog.isShowing()) {
-                dialog.dismiss();
+            val now = tsl();
+            val oldt = remind.getPotentialNextSchedule();
+            val newt = now + remind.period;
+            val choice = String.format("%s:    %s  @  %s\n\nor\n\n%s:   %s  @  %s",
+                    xdrip.gs(R.string.old), niceTimeScalarNatural(-msSince(oldt)), hourMinuteString(oldt),
+                    xdrip.gs(R.string.neww), niceTimeScalarNatural(-msSince(newt)), hourMinuteString(newt));
+
+            val builder = new AlertDialog.Builder(this)
+                    .setTitle(R.string.reschedule_with_new_timing)
+                    .setMessage(choice);
+
+            builder.setPositiveButton(xdrip.gs(R.string.old), (dialog, which) -> rescheduleNextOld(remind));
+            builder.setNegativeButton(xdrip.gs(R.string.neww), (dialog, which) -> rescheduleNextNew(remind, newt));
+
+            val dialog = builder.create();
+            try {
+                if (dialog.isShowing()) {
+                    dialog.dismiss();
+                }
+            } catch (Exception e) {
+                //
             }
+            dialog.show();
         } catch (Exception e) {
-            //
+            UserError.Log.e(TAG, "Got exception in askWhenToReschedule: " + e);
         }
-        dialog.show();
     }
 
 
@@ -790,6 +796,10 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
         // TODO lock?
         Log.d(TAG, "child Reinjection position: " + i);
         reminders.add(i, reminder);
+        if (mAdapter == null) {
+            Log.d(TAG, "Returning from reinject as no UI adapter");
+            return;
+        }
         mAdapter.notifyItemInserted(i);
         final AtomicBoolean corrected = new AtomicBoolean();
 
@@ -804,12 +814,9 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
         if (highlighted < 2) {
             Log.d(TAG, "Reinjection: scrolling to: " + i);
             recyclerView.smoothScrollToPosition(i);
-            JoH.runOnUiThreadDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    // failsafe
-                    correctiveScrolling(i, corrected);
-                }
+            JoH.runOnUiThreadDelayed(() -> {
+                // failsafe
+                correctiveScrolling(i, corrected);
             }, 1000);
         } else {
             Log.d(TAG, "Not scrolling due to highlighted: " + highlighted);

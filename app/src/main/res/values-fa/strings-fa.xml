@@ -72,6 +72,7 @@
     <string name="add_note">افزودن یادداشت</string>
     <string name="space_mins">" دقیقه"</string>
     <string name="expires_at">در {0} تمام می شود</string>
+    <string name="space_minutes_ago">" دقیقه پیش"</string>
     <string name="home_screen">صفحه اصلی</string>
     <string name="glucose_units">واحد قند خون</string>
     <string name="high_value">حد بالا</string>

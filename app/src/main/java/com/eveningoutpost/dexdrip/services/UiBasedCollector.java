@@ -103,6 +103,7 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackages.add("com.senseonics.gen12androidapp");
         coOptedPackages.add("com.senseonics.androidapp");
         coOptedPackages.add("com.microtech.aidexx.mgdl");
+        coOptedPackages.add("com.microtech.aidexx.linxneo.mmoll");
         coOptedPackages.add("com.microtech.aidexx.equil.mmoll");
         coOptedPackages.add("com.ottai.seas");
         coOptedPackages.add("com.microtech.aidexx"); //for microtech china version
@@ -113,6 +114,7 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackages.add("com.sinocare.ican.health.ce");
         coOptedPackages.add("com.sinocare.ican.health.ru");
         coOptedPackages.add("com.suswel.ai");
+        coOptedPackages.add("com.glucotech.app.android");
 
         coOptedPackagesAll.add("com.dexcom.dexcomone");
         coOptedPackagesAll.add("com.dexcom.d1plus");
@@ -122,6 +124,7 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackagesAll.add("com.senseonics.gen12androidapp");
         coOptedPackagesAll.add("com.senseonics.androidapp");
         coOptedPackagesAll.add("com.microtech.aidexx.mgdl");
+        coOptedPackagesAll.add("com.microtech.aidexx.linxneo.mmoll");
         coOptedPackagesAll.add("com.microtech.aidexx.equil.mmoll");
         coOptedPackagesAll.add("com.ottai.seas");
         coOptedPackagesAll.add("com.microtech.aidexx"); //for microtech china version
@@ -132,6 +135,7 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackagesAll.add("com.sinocare.ican.health.ce");
         coOptedPackagesAll.add("com.sinocare.ican.health.ru");
         coOptedPackagesAll.add("com.suswel.ai");
+        coOptedPackagesAll.add("com.glucotech.app.android");
 
         companionAppIoBPackages.add("com.insulet.myblue.pdm");
 

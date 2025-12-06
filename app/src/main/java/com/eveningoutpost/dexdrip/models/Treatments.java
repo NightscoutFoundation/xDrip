@@ -252,7 +252,8 @@ public class Treatments extends Model {
         final long future_seconds = (timestamp - JoH.tsl()) / 1000;
         // if treatment more than 1 hour in the future
         if (future_seconds > (60 * 60)) {
-            JoH.static_toast_long("Refusing to create a treatement more than 1 hours in the future!");
+            JoH.static_toast_long(xdrip.gs(R.string.toast_treatment_more_than_one_hour_in_the_future));
+            UserError.Log.e(TAG, "Refusing to create a treatment more than 1 hour in the future!");
             return null;
         }
         // if treatment more than 3 minutes in the future
