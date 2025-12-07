@@ -137,7 +137,7 @@ public class InstallPebbleWatchFace extends BaseAppCompatActivity {
             Intent intent = new Intent(Intent.ACTION_VIEW);
             Uri uri = FileProvider.getUriForFile(this.getApplicationContext(), this.getPackageName() + ".provider", new File(dest_filename));
             intent.setDataAndType(uri, "application/octet-stream");
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startActivity(intent);
 
         } catch (Exception e) {
