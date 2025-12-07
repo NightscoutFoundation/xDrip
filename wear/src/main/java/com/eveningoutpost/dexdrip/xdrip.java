@@ -16,6 +16,7 @@ import com.eveningoutpost.dexdrip.models.LibreData;
 import com.eveningoutpost.dexdrip.models.Sensor;
 import com.eveningoutpost.dexdrip.utilitymodels.PlusAsyncExecutor;
 import com.eveningoutpost.dexdrip.utilitymodels.VersionTracker;
+import com.eveningoutpost.dexdrip.models.UserError;
 
 
 import static com.eveningoutpost.dexdrip.utils.VersionFixer.disableUpdates;
@@ -51,9 +52,11 @@ public class xdrip extends Application {
         DemiGod.isPresent();
         JoH.forceBatteryWhitelisting();
         executor = new PlusAsyncExecutor();
+        // Cleanup logs
+        UserError.cleanup();
         VersionTracker.updateDevice();
         disableUpdates();
-
+        JoH.forceCellularOrWifiUsage();
     }
 
 
