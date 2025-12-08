@@ -37,6 +37,7 @@ import com.eveningoutpost.dexdrip.models.Calibration;
 import com.eveningoutpost.dexdrip.models.CalibrationRequest;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.Sensor;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.eveningoutpost.dexdrip.models.UserNotification;
 import com.eveningoutpost.dexdrip.R;
@@ -451,7 +452,7 @@ public class Notifications extends IntentService {
                 if (wakeTimeBg < now) {
                     // next alert should be at least one minute from now.
                     wakeTimeBg = now + 60000;
-                    Log.w(TAG , "setting next alert to 1 minute from now (no problem right now, but needs a fix someplace else)");
+                    UserError.Log.d(TAG, "setting next alert to 1 minute from now (no problem right now, but needs a fix someplace else)");
                 }
                 
             }
