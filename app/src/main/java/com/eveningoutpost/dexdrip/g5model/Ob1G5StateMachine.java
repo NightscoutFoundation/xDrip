@@ -1824,8 +1824,13 @@ public class Ob1G5StateMachine {
             if (batteryInfoRxMessage.voltagea < LOW_BATTERY_WARNING_LEVEL) {
                 if (JoH.pratelimit("g5-low-battery-warning", 40000)) {
                     final boolean loud = !PowerStateReceiver.is_power_connected();
+                    final boolean silent = false;
+                    boolean sound_vibrate = loud;
+                    if (getBestCollectorHardwareName().equals("G7")) {
+                        sound_vibrate = silent;
+                    }
                     JoH.showNotification("Battery Low", "Transmitter battery has dropped to: " + batteryInfoRxMessage.voltagea + " it may fail soon",
-                            null, 770, NotificationChannels.LOW_TRANSMITTER_BATTERY_CHANNEL, loud, loud, null, null, null);
+                            null, 770, NotificationChannels.LOW_TRANSMITTER_BATTERY_CHANNEL, sound_vibrate, sound_vibrate, null, null, null);
                     UserError.Log.uel(TAG, "Dex battery has dropped to: " + batteryInfoRxMessage.voltagea);
                 }
             }
