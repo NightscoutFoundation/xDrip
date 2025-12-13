@@ -1827,8 +1827,8 @@
     <string name="google_health_connect">Google Health Connect</string>
     <string name="google_health_connect_needs_perms">HIBA: A Health engedélyeket kér! - próbálja meg a beállítokban megint</string>
     <string name="carelink_auth_country_required">Ország kötelező!</string>
-    <string name="carelink_auth_status_authenticated">Azonosított állapot!</string>
-    <string name="carelink_auth_status_not_authenticated">Nincs azonosítva!</string>
+    <string name="carelink_auth_status_authenticated">Azonosítás sikeres!</string>
+    <string name="carelink_auth_status_not_authenticated">Azonosítás sikertelen!</string>
     <string name="carelink_auth_login_in_progress">Belépés folyamatban...</string>
     <string name="carelink_refresh_token_start">Hozzáférés megújítása</string>
     <string name="carelink_refresh_token_failed">Hozzáférés megújítása sikertelen! Majd újrapróbálja!</string>
