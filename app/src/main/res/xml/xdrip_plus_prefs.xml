@@ -25,6 +25,10 @@
                     android:title="@string/example_chart" />
 
                 <PreferenceCategory
+                    android:key="color_settings_colorset1_gap"
+                    android:title=" "
+                    />
+                <PreferenceCategory
                     android:key="xdrip_plus_display_colorset1"
                     android:title="@string/glucose_values_and_lines">
 
@@ -69,6 +73,10 @@
                 </PreferenceCategory>
 
                 <PreferenceCategory
+                    android:key="color_settings_textcolorset1_gap"
+                    android:title=" "
+                    />
+                <PreferenceCategory
                     android:key="xdrip_plus_display_textcolorset1"
                     android:title="@string/color_bg_values">
                     <com.eveningoutpost.dexdrip.utilitymodels.ColorPicker
@@ -93,8 +101,20 @@
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
                         app:colorpicker_showHex="false" />
+
+                    <com.eveningoutpost.dexdrip.utilitymodels.ColorPicker
+                        android:defaultValue="#C30909"
+                        android:key="color_low_predicted_critical_note"
+                        android:title="@string/low_predicted_too_close_note"
+                        app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
+                        app:colorpicker_selectNoneButtonText="@string/revert_to_default"
+                        app:colorpicker_showHex="false" />
                 </PreferenceCategory>
 
+                <PreferenceCategory
+                    android:key="color_settings_colorset2_gap"
+                    android:title=" "
+                    />
                 <PreferenceCategory
                     android:key="xdrip_plus_display_colorset2"
                     android:title="@string/treatments_prediction_curves">
@@ -129,6 +149,10 @@
                 </PreferenceCategory>
 
                 <PreferenceCategory
+                    android:key="color_settings_colorset3_gap"
+                    android:title=" "
+                    />
+                <PreferenceCategory
                     android:key="xdrip_plus_display_colorset3"
                     android:title="@string/average_and_target_lines">
 
@@ -155,6 +179,10 @@
                         app:colorpicker_showHex="false" />
                 </PreferenceCategory>
 
+                <PreferenceCategory
+                    android:key="color_settings_colorset4_gap"
+                    android:title=" "
+                    />
                 <PreferenceCategory
                     android:key="xdrip_plus_display_colorset4"
                     android:title="@string/annotations_and_dots">
@@ -191,6 +219,11 @@
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
                         app:colorpicker_showHex="false" />
                 </PreferenceCategory>
+
+                <PreferenceCategory
+                    android:key="color_settings_colorset5_gap"
+                    android:title=" "
+                    />
                 <PreferenceCategory
                     android:key="xdrip_plus_display_colorset5"
                     android:title="@string/backgrounds">
@@ -219,6 +252,10 @@
                         app:colorpicker_showHex="false" />
                 </PreferenceCategory>
 
+                <PreferenceCategory
+                    android:key="color_settings_colorset8_gap"
+                    android:title=" "
+                    />
                 <PreferenceCategory
                     android:key="xdrip_plus_display_colorset8"
                     android:title="@string/title_plugins_and_features">
@@ -256,6 +293,11 @@
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
                         app:colorpicker_showHex="false" />
                 </PreferenceCategory>
+
+                <PreferenceCategory
+                    android:key="color_settings_colorset12_gap"
+                    android:title=" "
+                    />
                 <PreferenceCategory
                     android:key="xdrip_plus_display_colorset12"
                     android:title="@string/title_insulin_colors">
@@ -282,6 +324,11 @@
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
                         app:colorpicker_showHex="false" />
                 </PreferenceCategory>
+
+                <PreferenceCategory
+                    android:key="color_settings_colorset9_gap"
+                    android:title=" "
+                    />
                 <PreferenceCategory
                     android:key="xdrip_plus_display_colorset9_android5plus"
                     android:title="@string/flair_colors">
