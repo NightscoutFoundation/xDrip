@@ -451,7 +451,7 @@ public class Notifications extends IntentService {
                 if (wakeTimeBg < now) {
                     // next alert should be at least one minute from now.
                     wakeTimeBg = now + 60000;
-                    Log.w(TAG , "setting next alert to 1 minute from now (no problem right now, but needs a fix someplace else)");
+                    Log.d(TAG, "setting next alert to 1 minute from now (no problem right now, but needs a fix someplace else)");
                 }
                 
             }
