@@ -1714,4 +1714,5 @@
     <string name="audio_focus_lower_volume_of_other_apps">Diminuir o volume de outros aplicativos</string>
     <string name="audio_focus_pause_other_apps_playing_audio">Silenciar outros aplicativos quando estiver tocando</string>
     <string name="audio_focus_pause_all_other_sounds">Silenciar todos os outros sons</string>
+    <string name="volume_profile_high">Valores Glicémia Hiper</string>
 </resources>
