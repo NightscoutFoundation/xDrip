@@ -493,6 +493,7 @@
     <string name="start_sensor">Start sensor</string>
     <string name="debug_and_other_misc_options">Feilsøking og andre diverse alternativer</string>
     <string name="low_glucose_values">Lave glukoseverdier</string>
+    <string name="low_predicted_too_close_note">Beregnet lav (kritisk)</string>
     <string name="bad_glucose_values">Dårlige glukoseverdier</string>
     <string name="revert_to_default">Gå tilbake til standard</string>
     <string name="filtered_values">Filtrerte verdier</string>
