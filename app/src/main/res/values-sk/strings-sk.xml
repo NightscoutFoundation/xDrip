@@ -1308,4 +1308,5 @@ Je nutné zakázať v prípade, že chcete používať xdrip cifreník. (Požado
     <string name="title_sens_expiry_notify">Povoliť</string>
     <string name="wake_up_screen">Prebudenie obrazovky</string>
     <string name="wake_up_screen_summary">Prebúdzať obrazovku pri upozorneniach. Môže to odomknúť zariadenia, ktoré nemajú aktivované uzamykanie obrazovky.</string>
+    <string name="volume_profile_high">Vysoká glykémia</string>
 </resources>
