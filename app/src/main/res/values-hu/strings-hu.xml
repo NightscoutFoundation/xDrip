@@ -490,6 +490,7 @@
     <string name="start_sensor">Szenzor indítása</string>
     <string name="debug_and_other_misc_options">Hibakeresési és további beállítások</string>
     <string name="low_glucose_values">Alacsony VC-értékek</string>
+    <string name="low_predicted_too_close_note">Alacsony előrejelzés (kritikus)</string>
     <string name="bad_glucose_values">Hibás VC-értékek</string>
     <string name="revert_to_default">Alapértelemezett</string>
     <string name="filtered_values">Zajszűrt VC-értékek</string>
