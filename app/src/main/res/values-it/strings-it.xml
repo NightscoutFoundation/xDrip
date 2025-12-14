@@ -493,6 +493,7 @@
     <string name="start_sensor">Inizializza Sensore</string>
     <string name="debug_and_other_misc_options">Debug e altre opzioni misc</string>
     <string name="low_glucose_values">Valori Glicemici Bassi</string>
+    <string name="low_predicted_too_close_note">Previsione ipo (critica)</string>
     <string name="bad_glucose_values">Valori Glicemici Errati</string>
     <string name="revert_to_default">Ritorna ai parametri di Default</string>
     <string name="filtered_values">Valori Filtrati</string>
