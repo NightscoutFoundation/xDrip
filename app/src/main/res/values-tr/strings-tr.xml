@@ -1831,4 +1831,5 @@
     <string name="carelink_credential_status_refresh_expired">Oturum açma süresi doldu! Lütfen giriş yapın!</string>
     <string name="data_source">Veri Kaynağı:</string>
     <string name="reraise_alerts_before_snooze_time">Ertelemeden önce uyarıları tekrar yükselt</string>
+    <string name="volume_profile_high">Yüksek Kan Şekeri değerleri</string>
 </resources>
