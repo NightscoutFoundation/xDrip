@@ -10,8 +10,10 @@ import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.X;
 import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.getCol;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.DAY_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HOUR_IN_MS;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MAX_READINGS_PER_HOUR;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.SECOND_IN_MS;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getDexCollectionType;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 import android.Manifest;
@@ -275,6 +277,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private static final float DEFAULT_CHART_HOURS = 2.5f;
     private static double last_speech_time = 0;
     private static float hours = DEFAULT_CHART_HOURS;
+    public static final float Y_AXIS_AUTO_PAN_LOOKBACK_HOURS = 3; // Look-back window (in hours)
+                                        // used to evaluate recent readings for Y-axis auto-panning.
     private PreviewLineChartView previewChart;
     private Button stepsButton;
     private Button bpmButton;
@@ -2104,8 +2108,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             float tempwidth = (float) moveViewPort.width() / 4;
             holdViewport.left = moveViewPort.right - tempwidth;
             holdViewport.right = moveViewPort.right + (moveViewPort.width() / 24);
-            holdViewport.top = moveViewPort.top;
-            holdViewport.bottom = moveViewPort.bottom;
+            updateYWindow();
             chart.setCurrentViewport(holdViewport);
             previewChart.setCurrentViewport(holdViewport);
             UserError.Log.e(TAG, "SMALL HEIGHT VIEWPORT WARNING");
@@ -2290,8 +2293,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             case "time tick":
                 if (msSince(lastViewPortPan) < 45 * SECOND_IN_MS) {
                     UserError.Log.d(TAG, "Skipping VIEWPORT adjustment as panning and data just arrived: " + holdViewport.toString());
-                    holdViewport.top = maxViewPort.top;
-                    holdViewport.bottom = maxViewPort.bottom;
                     chart.setCurrentViewport(holdViewport); // reuse existing
                     return;
                 }
@@ -2311,8 +2312,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         double hour_width = maxViewPort.width() / bgGraphBuilder.hoursShownOnChart();
         holdViewport.left = maxViewPort.right - hour_width * hours_to_show;
         holdViewport.right = maxViewPort.right;
-        holdViewport.top = maxViewPort.top;
-        holdViewport.bottom = maxViewPort.bottom;
 
         // if locked, center display on current bg values, not predictions
         if (homeShelf.get("time_locked_always")) {
@@ -2325,6 +2324,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             UserError.Log.d(TAG, "MAX VIEWPORT " + maxViewPort);
         }
 
+        updateYWindow();
         chart.setCurrentViewport(holdViewport);
 
     }
@@ -2369,6 +2369,68 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         ui.bump();
         return false;
+    }
+
+    private void updateYWindow() { // Adjust Y axis window to include recent readings while keeping a constant span.
+
+        double defaultMinY = bgGraphBuilder.defaultMinY; // Y axis minimum chosen by the user
+        double defaultMaxY = bgGraphBuilder.defaultMaxY; // Y axis maximum chosen by the user
+        double spanY = defaultMaxY - defaultMinY; // Resulting Y axis range
+        boolean topIsAnchor = true; // True = top is anchor (extend bottom from top); false = bottom is anchor (extend top from bottom)
+        double currentTop = defaultMaxY; // currentTop is the current top if topIsAnchor is true.
+        double currentBottom = defaultMinY; // currentBottom is the current bottom if topIsAnchor is false.
+        double lookbackHours = Y_AXIS_AUTO_PAN_LOOKBACK_HOURS; // Look-back time period in hours
+        long lookbackMs = (long) (HOUR_IN_MS * lookbackHours); // Look-back time period in milliseconds
+        int numberOfReadings = (int) Math.ceil(lookbackHours * MAX_READINGS_PER_HOUR) * 2; // Maximum number of readings requested from the database
+        // Doubled to ensure we catch all readings, including rare backfill overlaps.
+
+        // Retrieve recent BG readings in ascending time order.
+        final List<BgReading> recent = BgReading.latestForGraphAscNewest(numberOfReadings,JoH.tsl() - lookbackMs, JoH.tsl());
+
+        if (recent != null && !recent.isEmpty()) {
+
+            String collector = getDexCollectionType().toString(); // Identify which collector is being used
+
+            for (BgReading r : recent) { // Process each reading in the Look-back period
+                double valueY = bgGraphBuilder.unitized(r.calculated_value); // Reading value
+
+                if (Double.isNaN(valueY)) { // Skip invalid readings
+                    UserError.Log.e(TAG, "NaN detected. Collector = " + collector + ",  Raw = " + r.raw_data);
+                    continue;
+                }
+
+                if (topIsAnchor) { // We extend bottom from top
+                    if (valueY > currentTop) currentTop = valueY; // Extend top for newer high
+
+                    if (currentTop - valueY > spanY) { // Exceeds allowed span → switch anchor to bottom
+                        topIsAnchor = false;
+                        currentBottom = valueY;
+                    }
+
+                } else { // We extend top from bottom
+                    if (valueY < currentBottom) currentBottom = valueY; // Extend bottom for newer low
+
+                    if (valueY - currentBottom > spanY) { // Exceeds allowed span → switch anchor to top
+                        topIsAnchor = true;
+                        currentTop = valueY;
+                    }
+                }
+            }
+        }
+
+        // Set viewport boundaries
+        if (topIsAnchor) {
+            holdViewport.top = currentTop;
+            holdViewport.bottom = holdViewport.top - spanY;
+        } else {
+            holdViewport.bottom = currentBottom;
+            holdViewport.top = holdViewport.bottom + spanY;
+        }
+
+        chart.setCurrentViewport(holdViewport); // Update main chart viewport
+
+        Viewport pv = previewChart.getMaximumViewport();
+        chart.setMaximumViewport(pv); // Allow manual vertical panning only within preview chart limits.
     }
 
     private void updateHealthInfo(String caller) {
