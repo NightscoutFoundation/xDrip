@@ -322,9 +322,9 @@
     <string name="title_font_settings">Ajustes de fuentes</string>
     <string name="summary_enlarge_fonts_on_large_screens">Ampliar automáticamente el tamaño de la fuente en pantallas grandes, como tablets</string>
     <string name="title_enlarge_fonts_on_large_screens">Ampliar fuentes en pantallas más grandes</string>
-    <string name="glucose_values_and_lines">Valores de glucosa y Líneas</string>
+    <string name="glucose_values_and_lines">Valores de glucosa y líneas</string>
     <string name="high_glucose_values">Valores de glucosa alta</string>
-    <string name="in_range_glucose_values">Dentro de la gama de valores de glucosa</string>
+    <string name="in_range_glucose_values">Valores de Glucosa en Rango</string>
     <string name="default_color_selected">Color por defecto seleccionado</string>
     <string name="color_bg_values">Colores de lectura BG y flecha de tendencia</string>
     <string name="xdrip_plus_extra_settings">xDrip+ Ajustes adicionales</string>
@@ -491,8 +491,9 @@
     <string name="start_sensor">Inicio Sensor</string>
     <string name="debug_and_other_misc_options">Depuración y otras opciones</string>
     <string name="low_glucose_values">Valores de glucosa baja</string>
+    <string name="low_predicted_too_close_note">Predicado bajo (crítico)</string>
     <string name="bad_glucose_values">Valores de glucosa incorrectos</string>
-    <string name="revert_to_default">Volver a los valores predeterminados</string>
+    <string name="revert_to_default">Volver a los valores predefinidos</string>
     <string name="filtered_values">Valores filtrados</string>
     <string name="treatment_color">Insulina Activa</string>
     <string name="treatment_color_dark">Actividad de la insulina</string>
@@ -505,12 +506,12 @@
     <string name="annotations_and_dots">Anotaciones y puntos</string>
     <string name="blood_test_background">Fondo de Análisis de sangre</string>
     <string name="blood_test_foreground">Primer plano de Análisis de sangre</string>
-    <string name="treatment_background">Fondo de Tratamientos</string>
+    <string name="treatment_background">Fondo Tratamiento</string>
     <string name="treatment_foreground">Primer plano de Tratamientos</string>
     <string name="backgrounds">Fondos</string>
     <string name="main_chart_background">Fondo gráfico principal</string>
-    <string name="notification_chart_background">Fondo del Gráfico de notificación</string>
-    <string name="widget_chart_background">Fondo del gráfico del widget</string>
+    <string name="notification_chart_background">Fondo Gráfico de notificación</string>
+    <string name="widget_chart_background">Gráfico del Widget de fondo</string>
     <string name="try_to_work_around_noisy_readings">Trate de trabajar en torno a lecturas ruidosas</string>
     <string name="show_tips_hints">Mostrar sugerencias / consejos que describen funciones de los botones, etc. Desmarque y otra vez para restablecer al principio</string>
     <string name="show_interface_hints">Mostar consejos en interfaz</string>
@@ -1918,5 +1919,6 @@
     <string name="last_90_days">Últimos 90 días</string>
     <string name="scan_with_xdrip_settings_auto_configure"><![CDATA[Escanear con\nxDrip Settings -> Auto Configurar]]></string>
     <string name="could_not_create_qr_code">No se pudo crear el código QR</string>
+    <string name="volume_profile_high">Valores de glucosa alta</string>
     <string name="error_with_value">Error con valor</string>
 </resources>
