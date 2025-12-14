@@ -140,10 +140,13 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackagesAll.add("com.glucotech.app.android");
 
         companionAppIoBPackages.add("com.insulet.myblue.pdm");
+        companionAppIoBPackages.add("com.medtronic.diabetes.minimedmobile.eu");
 
         // The IoB value should be captured into the first match group.
         // English localization of the Omnipod 5 App
         companionAppIoBRegexes.add(Pattern.compile("IOB: ([\\d\\.,]+) U"));
+        // MiniMed Mobile (EU): "Active Insulin" label and "1.234 U" value in separate TextViews
+        companionAppIoBRegexes.add(Pattern.compile("^([\\d\\.]+) U$"));
     }
 
     @Override
