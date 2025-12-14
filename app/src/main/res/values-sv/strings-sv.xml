@@ -1710,4 +1710,5 @@
     <string name="audio_focus_pause_all_other_sounds">Pausa alla andra ljud</string>
     <string name="use_camera_light">Använd kameramampa</string>
     <string name="use_camera_light_summary">Blixtra med kameramampan vid varningar när ansluten till en laddare</string>
+    <string name="volume_profile_high">Högt glukosvärde</string>
 </resources>
