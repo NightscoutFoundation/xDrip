@@ -493,6 +493,7 @@
     <string name="start_sensor">Démarrer le capteur</string>
     <string name="debug_and_other_misc_options">Debug et autres options</string>
     <string name="low_glucose_values">Valeurs Hypoglycémies</string>
+    <string name="low_predicted_too_close_note">Prévision hypo (critique)</string>
     <string name="bad_glucose_values">Mauvaises valeurs glycémiques</string>
     <string name="revert_to_default">Revenir aux valeurs par défaut</string>
     <string name="filtered_values">Valeurs filtrées</string>
