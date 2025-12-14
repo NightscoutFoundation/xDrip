@@ -1320,7 +1320,7 @@
     <string name="title_g5_battery_warning_level">Pas het batterijwaarschuwingsniveau aan</string>
     <string name="title_plugins_and_features">Plug-ins en functies</string>
     <string name="title_color_heart_rate1">Hartslag monitor</string>
-    <string name="title_insulin_colors">Insuline kleuren</string>
+    <string name="title_insulin_colors">Insulinekleuren</string>
     <string name="title_color_basal_tbr">Basale TBR</string>
     <string name="title_color_smb_icon">SMB icoon</string>
     <string name="title_color_smb_line">SMB lijn</string>
@@ -1683,4 +1683,5 @@
     <string name="title_Lib2_show_sense_on_status">Toon sensorinfo in Status</string>
     <string name="summary_Lib2_show_sense_on_status">Inschakelen om extra informatie in Status voor Libre 2-sensor weer te geven.</string>
     <string name="reraise_alerts_before_snooze_time">Verhoog waarschuwingen vóór de sluimertijd</string>
+    <string name="volume_profile_high">Hoge glucosewaarden</string>
 </resources>
