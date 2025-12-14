@@ -485,6 +485,7 @@
     <string name="start_sensor">התחל סנסור</string>
     <string name="debug_and_other_misc_options">דיבאגינג ואפשרויות שונות</string>
     <string name="low_glucose_values">ערכי סוכר נמוכים</string>
+    <string name="low_predicted_too_close_note">רמה נמוכה צפויה (קריטי)</string>
     <string name="bad_glucose_values">ערכי סוכר לא טובים</string>
     <string name="revert_to_default">חזור לערכי ברירת המחדל</string>
     <string name="filtered_values">ערכים מפולטרים</string>
