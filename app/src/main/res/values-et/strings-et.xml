@@ -493,6 +493,7 @@
     <string name="start_sensor">Käivita sensor</string>
     <string name="debug_and_other_misc_options">Paranduste ja muud täiendavad seaded</string>
     <string name="low_glucose_values">Madala veresuhkru väärtused</string>
+    <string name="low_predicted_too_close_note">Prognoositud madal (kriitiline)</string>
     <string name="bad_glucose_values">Mittekorralikud veresuhkru andmed</string>
     <string name="revert_to_default">Taasta vaikeväärtused</string>
     <string name="filtered_values">Filtreeritud väärtused</string>
@@ -512,7 +513,7 @@
     <string name="backgrounds">Taustapildid</string>
     <string name="main_chart_background">Põhigraafiku taust</string>
     <string name="notification_chart_background">Teavituste taust</string>
-    <string name="widget_chart_background">Vidina taust</string>
+    <string name="widget_chart_background">Vidina graafiku taust</string>
     <string name="try_to_work_around_noisy_readings">Proovi töötada vigaste andmetega</string>
     <string name="show_tips_hints">Näita selgitusi - nuppude funktsioonid jms. Selgituste taasalustamiseks eemaldage märge ja märkige uuesti</string>
     <string name="show_interface_hints">Kuva programmi vihjed</string>
