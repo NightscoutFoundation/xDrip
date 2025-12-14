@@ -106,6 +106,7 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackages.add("com.microtech.aidexx.linxneo.mmoll");
         coOptedPackages.add("com.microtech.aidexx.equil.mmoll");
         coOptedPackages.add("com.microtech.aidexx.diaexport.mmoll"); //for microtech germany version, typo is intentional!
+        coOptedPackages.add("com.microtech.aidexx.smart.mmoll"); //for microtech Brazil version
         coOptedPackages.add("com.ottai.seas");
         coOptedPackages.add("com.microtech.aidexx"); //for microtech china version
         coOptedPackages.add("com.ottai.tag"); // //for ottai china version
@@ -128,6 +129,7 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackagesAll.add("com.microtech.aidexx.linxneo.mmoll");
         coOptedPackagesAll.add("com.microtech.aidexx.equil.mmoll");
         coOptedPackagesAll.add("com.microtech.aidexx.diaexport.mmoll");
+        coOptedPackagesAll.add("com.microtech.aidexx.smart.mmoll"); //for microtech Brazil version
         coOptedPackagesAll.add("com.ottai.seas");
         coOptedPackagesAll.add("com.microtech.aidexx"); //for microtech china version
         coOptedPackagesAll.add("com.ottai.tag"); // //for ottai china version
