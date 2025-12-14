@@ -870,4 +870,5 @@
     <string name="titleInside_yRange">Aktiver</string>
     <string name="title_sens_expiry_notify">Aktiver</string>
     <string name="reraise_alerts_before_snooze_time">Gjenoppta alarm hvis den ikke først er utsatt</string>
+    <string name="volume_profile_high">Høy glukoseverdier</string>
 </resources>
