@@ -102,6 +102,7 @@ public class Mdns {
     }
 
     private static String fastResolve(String name) {
+        UserError.Log.d(TAG, "fastResolve called " + name);
         String address = superFastResolve(name);
         if (address != null) return address;
         final long wait_until = JoH.tsl() + NORMAL_RESOLVE_TIMEOUT_MS;
@@ -117,6 +118,7 @@ public class Mdns {
     }
 
     private static String superFastResolve(String name) {
+        UserError.Log.d(TAG, "superFastResolve called " + name);
         final LookUpInfo li = iplookup.get(name);
         if ((li == null) || (JoH.msSince(li.received) > CACHE_REFRESH_MS)) {
             if (JoH.quietratelimit("mdns-hunting", 60)) {
@@ -161,6 +163,7 @@ public class Mdns {
     }
 
     private void hunt() {
+        UserError.Log.d(TAG, "hunt called " );
         final PowerManager.WakeLock wl = JoH.getWakeLock("mdns-hunt", 30000);
         if (hunt_running) {
             UserError.Log.wtf(TAG, "Hunt already running");
