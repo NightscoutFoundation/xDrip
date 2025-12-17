@@ -57,14 +57,27 @@ public class UiBasedCollectorTest extends RobolectricTestWithConfig {
     }
 
     @Test
-    public void parseIoBTest() {
+    public void parseIoBOmnipodTest() {
         val i = new UiBasedCollector();
 
         val valid = "Automated Mode (IOB: 5.1 U)";
         val invalid = "Foobar";
 
-        assertWithMessage("valid IoB message").that(i.parseIoB(valid)).isEqualTo(5.1);
+        assertWithMessage("valid Omnipod IoB message").that(i.parseIoB(valid)).isEqualTo(5.1);
         assertWithMessage("invalid IoB message").that(i.parseIoB(invalid)).isNull();
+    }
+
+    @Test
+    public void parseIoBMiniMedTest() {
+        val i = new UiBasedCollector();
+
+        val valid = "2.400 U";
+        val invalidNoUnit = "2.400";
+        val invalidExtraText = "Active Insulin 2.400 U";
+
+        assertWithMessage("valid MiniMed IoB message").that(i.parseIoB(valid)).isEqualTo(2.4);
+        assertWithMessage("invalid IoB message (no unit)").that(i.parseIoB(invalidNoUnit)).isNull();
+        assertWithMessage("invalid IoB message (extra text)").that(i.parseIoB(invalidExtraText)).isNull();
     }
 
     // standard 5 minute apart readings are all accepted

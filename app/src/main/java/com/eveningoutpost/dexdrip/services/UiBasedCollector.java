@@ -106,6 +106,7 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackages.add("com.microtech.aidexx.linxneo.mmoll");
         coOptedPackages.add("com.microtech.aidexx.equil.mmoll");
         coOptedPackages.add("com.microtech.aidexx.diaexport.mmoll"); //for microtech germany version, typo is intentional!
+        coOptedPackages.add("com.microtech.aidexx.smart.mmoll"); //for microtech Brazil version
         coOptedPackages.add("com.ottai.seas");
         coOptedPackages.add("com.microtech.aidexx"); //for microtech china version
         coOptedPackages.add("com.ottai.tag"); // //for ottai china version
@@ -128,6 +129,7 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackagesAll.add("com.microtech.aidexx.linxneo.mmoll");
         coOptedPackagesAll.add("com.microtech.aidexx.equil.mmoll");
         coOptedPackagesAll.add("com.microtech.aidexx.diaexport.mmoll");
+        coOptedPackagesAll.add("com.microtech.aidexx.smart.mmoll"); //for microtech Brazil version
         coOptedPackagesAll.add("com.ottai.seas");
         coOptedPackagesAll.add("com.microtech.aidexx"); //for microtech china version
         coOptedPackagesAll.add("com.ottai.tag"); // //for ottai china version
@@ -140,10 +142,13 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackagesAll.add("com.glucotech.app.android");
 
         companionAppIoBPackages.add("com.insulet.myblue.pdm");
+        companionAppIoBPackages.add("com.medtronic.diabetes.minimedmobile.eu");
 
         // The IoB value should be captured into the first match group.
         // English localization of the Omnipod 5 App
         companionAppIoBRegexes.add(Pattern.compile("IOB: ([\\d\\.,]+) U"));
+        // MiniMed Mobile (EU): "Active Insulin" label and "1.234 U" value in separate TextViews
+        companionAppIoBRegexes.add(Pattern.compile("^([\\d\\.]+) U$"));
     }
 
     @Override

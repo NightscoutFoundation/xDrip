@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.utilitymodels;
 
+import static com.eveningoutpost.dexdrip.services.DexCollectionService.MAX_BT_WDG;
 import static com.eveningoutpost.dexdrip.utils.Preferences.MAX_GLUCOSE_INPUT;
 import static com.eveningoutpost.dexdrip.utils.Preferences.MIN_GLUCOSE_INPUT;
 
@@ -65,6 +66,7 @@ public class IdempotentMigrations {
         IncompatibleApps.notifyAboutIncompatibleApps();
         CompatibleApps.notifyAboutCompatibleApps();
         legacySettingsMoveLanguageFromNoToNb();
+        settingsFix();
         FirstPageFragment.defineDefaults(); // Define the statistics page visibility defaults.
         prefSettingRangeVerification();
         inheritPrefSettingsAfterUpdate();
@@ -169,6 +171,25 @@ public class IdempotentMigrations {
         Pref.setBoolean("parakeet_charge_silent", false);
 
     }
+
+    // Required adjustments/conversions to settings after an update
+    private static void settingsFix() {
+
+        try { // Use the closest list value for the Bluetooth watchdog timer
+            int oldValue = JoH.parseIntWithDefault(Pref.getString("bluetooth_watchdog_timer", Integer.toString(MAX_BT_WDG)), 10, MAX_BT_WDG);
+            int roundedValue = Math.round(oldValue / 5.0f) * 5; // Round to the nearest multiple of 5
+
+            // Clamp to valid range (just in case)
+            if (roundedValue < 5) roundedValue = 5;
+            if (roundedValue > MAX_BT_WDG) roundedValue = MAX_BT_WDG;
+
+            Pref.setString("bluetooth_watchdog_timer", Integer.toString(roundedValue));
+        } catch (ClassCastException e) {
+            Log.e(TAG, "Converting bluetooth_watchdog_timer to list failed");
+        }
+
+    }
+
     private static void legacySettingsMoveLanguageFromNoToNb() {
         // Check if the user's language preference is set to "no"
         if ("no".equals(Pref.getString("forced_language", ""))) {

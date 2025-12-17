@@ -148,6 +148,7 @@ public class DexCollectionService extends Service implements BtCallBack {
     private static long failover_time_watch = 0;
     private static String static_last_hexdump_watch;
     private static String static_last_sent_hexdump_watch;
+    public static int MAX_BT_WDG = 20; // Bluetooth watchdog timer default (max)
     private static final UUID CCCD = UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG);
     public final UUID nrfDataService = UUID.fromString(HM10Attributes.NRF_UART_SERVICE);
     public final UUID nrfDataRXCharacteristic = UUID.fromString(HM10Attributes.NRF_UART_TX);
@@ -1918,12 +1919,7 @@ public class DexCollectionService extends Service implements BtCallBack {
         if (last_time_seen == 0) return;
         if (prefs.getBoolean("bluetooth_watchdog", false)) {
 
-            int MAX_BT_WDG = 20;
-            int bt_wdg_timer = JoH.parseIntWithDefault(Pref.getString("bluetooth_watchdog_timer", Integer.toString(MAX_BT_WDG)), 10, MAX_BT_WDG);
-
-            if ((bt_wdg_timer <= 5) || (bt_wdg_timer > MAX_BT_WDG)) {
-                bt_wdg_timer = MAX_BT_WDG;
-            }
+            int bt_wdg_timer = Pref.getStringToInt("bluetooth_watchdog_timer", MAX_BT_WDG);
 
             if ((JoH.msSince(last_time_seen)) > bt_wdg_timer * Constants.MINUTE_IN_MS) {
                 Log.d(TAG, "Use BT Watchdog timer=" + bt_wdg_timer);
