@@ -817,7 +817,7 @@
     <string name="secondary_plugin_glucose_value">Täiendava liidese väärtus</string>
     <string name="step_counter_1st_color">Sammulugeja 1.värv</string>
     <string name="step_counter_2nd_color">Sammulugeja 2.värv</string>
-    <string name="flair_colors">Erksad värvid</string>
+    <string name="flair_colors">Stiil</string>
     <string name="use_flair_colors">Kohanda pealkirja/navigeerimisriba</string>
     <string name="upper_title_bar_flair">Ülemine tiitliriba</string>
     <string name="lower_button_bar_falir">Alumine navigeerimisriba</string>
