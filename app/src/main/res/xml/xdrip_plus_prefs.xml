@@ -1256,94 +1256,129 @@
             </PreferenceScreen>
 
             <PreferenceScreen
-            android:icon="@drawable/ic_mode_edit_grey_600_48dp"
-            android:key="inpen_screen"
-            android:summary="@string/summary_inpen_screen"
-            android:title="@string/title_inpen_screen">
-            <SwitchPreference
-                android:defaultValue="false"
-                android:key="inpen_enabled"
-                android:switchTextOff="@string/short_off_text_for_switches"
-                android:switchTextOn="@string/short_on_text_for_switches"
-                android:title="@string/title_inpen_enabled" />
+                android:icon="@drawable/ic_mode_edit_grey_600_48dp"
+                android:key="inpen_screen"
+                android:summary="@string/summary_inpen_screen"
+                android:title="@string/title_inpen_screen">
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:key="inpen_enabled"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="@string/title_inpen_enabled" />
 
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="inpen_detect_priming"
-                android:summary="@string/summary_inpen_detect_priming"
-                android:title="@string/title_inpen_detect_priming" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="inpen_detect_priming"
+                    android:summary="@string/summary_inpen_detect_priming"
+                    android:title="@string/title_inpen_detect_priming" />
 
-            <EditTextPreference
-                android:defaultValue="2.0"
-                android:inputType="numberPassword|textVisiblePassword"
-                android:key="inpen_prime_units"
-                android:maxLength="4"
-                android:title="@string/title_inpen_prime_units" />
+                <EditTextPreference
+                    android:defaultValue="2.0"
+                    android:inputType="numberPassword|textVisiblePassword"
+                    android:key="inpen_prime_units"
+                    android:maxLength="4"
+                    android:title="@string/title_inpen_prime_units" />
 
-            <EditTextPreference
-                android:defaultValue="2"
-                android:inputType="numberPassword|textVisiblePassword"
-                android:key="inpen_prime_minutes"
-                android:maxLength="3"
-                android:title="@string/title_inpen_prime_minutes" />
+                <EditTextPreference
+                    android:defaultValue="2"
+                    android:inputType="numberPassword|textVisiblePassword"
+                    android:key="inpen_prime_minutes"
+                    android:maxLength="3"
+                    android:title="@string/title_inpen_prime_minutes" />
 
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="inpen_orphan_primes_ignored"
-                android:summary="@string/summary_inpen_orphan_primes_ignored"
-                android:title="@string/title_inpen_orphan_primes_ignored" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="inpen_orphan_primes_ignored"
+                    android:summary="@string/summary_inpen_orphan_primes_ignored"
+                    android:title="@string/title_inpen_orphan_primes_ignored" />
 
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="inpen_sounds"
-                android:summary="@string/summary_inpen_sounds"
-                android:title="@string/title_inpen_sounds" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="inpen_sounds"
+                    android:summary="@string/summary_inpen_sounds"
+                    android:title="@string/title_inpen_sounds" />
 
-            <Preference
-                android:key="inpen_reset"
-                android:summary="@string/summary_inpen_reset"
-                android:title="@string/title_inpen_reset">
-                <intent
-                    android:action="android.intent.action.MAIN"
-                    android:targetClass="com.eveningoutpost.dexdrip.Home"
-                    android:targetPackage="@string/local_target_package">
-                    <extra
-                        android:name="inpen-reset"
-                        android:value="inpen-reset" />
-                </intent>
-            </Preference>
-        </PreferenceScreen>
+                <Preference
+                    android:key="inpen_reset"
+                    android:summary="@string/summary_inpen_reset"
+                    android:title="@string/title_inpen_reset">
+                    <intent
+                        android:action="android.intent.action.MAIN"
+                        android:targetClass="com.eveningoutpost.dexdrip.Home"
+                        android:targetPackage="@string/local_target_package">
+                        <extra
+                            android:name="inpen-reset"
+                            android:value="inpen-reset" />
+                    </intent>
+                </Preference>
+            </PreferenceScreen>
 
-        <PreferenceScreen
-            android:icon="@drawable/ic_mode_edit_grey_600_48dp"
-            android:key="pendiq_screen"
-            android:summary="@string/summary_pendiq_screen"
-            android:title="@string/title_pendiq_screen">
-            <SwitchPreference
-                android:defaultValue="false"
-                android:key="use_pendiq"
-                android:switchTextOff="@string/short_off_text_for_switches"
-                android:switchTextOn="@string/short_on_text_for_switches"
-                android:title="@string/title_use_pendiq" />
+            <PreferenceScreen
+                android:icon="@drawable/ic_mode_edit_grey_600_48dp"
+                android:key="pendiq_screen"
+                android:summary="@string/summary_pendiq_screen"
+                android:title="@string/title_pendiq_screen">
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:key="use_pendiq"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="@string/title_use_pendiq" />
 
-            <SwitchPreference
-                android:defaultValue="false"
-                android:dependency="use_pendiq"
-                android:key="pendiq_send_treatments"
-                android:summary="@string/summary_pendiq_send_treatments"
-                android:switchTextOff="@string/short_off_text_for_switches"
-                android:switchTextOn="@string/short_on_text_for_switches"
-                android:title="@string/title_pendiq_send_treatments" />
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:dependency="use_pendiq"
+                    android:key="pendiq_send_treatments"
+                    android:summary="@string/summary_pendiq_send_treatments"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="@string/title_pendiq_send_treatments" />
 
-            <EditTextPreference
-                android:defaultValue="@string/zero_zero_zero_zero"
-                android:dependency="use_pendiq"
-                android:inputType="numberPassword|textVisiblePassword"
-                android:key="pendiq_pin"
-                android:maxLength="4"
-                android:title="@string/title_pendiq_pin" />
+                <EditTextPreference
+                    android:defaultValue="@string/zero_zero_zero_zero"
+                    android:dependency="use_pendiq"
+                    android:inputType="numberPassword|textVisiblePassword"
+                    android:key="pendiq_pin"
+                    android:maxLength="4"
+                    android:title="@string/title_pendiq_pin" />
 
-        </PreferenceScreen>
+            </PreferenceScreen>
+
+            <PreferenceScreen
+                android:icon="@drawable/ic_mode_edit_grey_600_48dp"
+                android:key="diaconnp8_screen"
+                android:summary="@string/summary_diaconnp8_screen"
+                android:title="@string/title_diaconnp8_screen">
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:key="use_diaconnp8"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="@string/title_use_diaconnp8" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:dependency="use_diaconnp8"
+                    android:key="diaconnp8_play_sounds"
+                    android:summary="@string/summary_diaconnp8_sounds"
+                    android:title="@string/title_diaconnp8_sounds" />
+                <EditTextPreference
+                    android:defaultValue="@string/zero_zero_zero_zero_zero"
+                    android:dependency="use_diaconnp8"
+                    android:inputType="number"
+                    android:key="diaconnp8_searial_5digits"
+                    android:summary="@string/summary_diaconnp8_searial_5digits"
+                    android:maxLength="5"
+                    android:title="@string/title_diaconnp8_searial_5digits" />
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:dependency="use_diaconnp8"
+                    android:key="use_diaconnp8_background_sync"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="@string/title_use_diaconnp8_background_sync"
+                    android:summary="@string/summary_use_diaconnp8_background_sync"/>
+            </PreferenceScreen>
         </PreferenceScreen>
 
     </PreferenceCategory>

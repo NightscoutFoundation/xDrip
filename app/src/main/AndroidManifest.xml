@@ -481,7 +481,11 @@
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="connectedDevice|location" />
-
+        <service
+            android:name=".insulin.diaconnp8.DiaconnP8Service"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="connectedDevice|location" />
         <activity
             android:name=".ShareTest"
             android:label="@string/title_activity_share_test" />
