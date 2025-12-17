@@ -63,7 +63,7 @@ public class UiBasedCollectorTest extends RobolectricTestWithConfig {
         val valid = "Automated Mode (IOB: 5.1 U)";
         val invalid = "Foobar";
 
-        assertWithMessage("valid Omnipod IoB message").that(i.parseIoB(valid)).isEqualTo(5.12);
+        assertWithMessage("valid Omnipod IoB message").that(i.parseIoB(valid)).isEqualTo(5.1);
         assertWithMessage("invalid IoB message").that(i.parseIoB(invalid)).isNull();
     }
 
