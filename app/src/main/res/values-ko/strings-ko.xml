@@ -786,4 +786,5 @@
     <string name="enable_graph_smoothing">사용</string>
     <string name="titleInside_yRange">사용</string>
     <string name="title_sens_expiry_notify">사용</string>
+    <string name="volume_profile_high">고혈당 수치</string>
 </resources>

@@ -318,7 +318,7 @@
     <string name="xdrip_plus_color_settings">Настройки цветовой схемы xDrip+</string>
     <string name="glucose_values_and_lines">Значения и линии глюкозы на графике</string>
     <string name="high_glucose_values">Высокие значения глюкозы</string>
-    <string name="in_range_glucose_values">Значения глюкозы в диапазоне</string>
+    <string name="in_range_glucose_values">Нормальные значения глюкозы</string>
     <string name="default_color_selected">Цвет по-умолчанию</string>
     <string name="color_bg_values">Цвета показания ГК и стрелки тренда</string>
     <string name="xdrip_plus_extra_settings">Дополнительные настройки xDrip+</string>
@@ -485,10 +485,10 @@
     <string name="double_tap_or_pinch_to_zoom">Дважды нажмите или защипните для увеличения.</string>
     <string name="start_sensor">Запустить сенсор</string>
     <string name="debug_and_other_misc_options">Отладка и другие настройки</string>
-    <string name="low_glucose_values">Значения низкого уровня глюкозы</string>
+    <string name="low_glucose_values">Низкие значения глюкозы</string>
     <string name="bad_glucose_values">Неверные показания глюкозы</string>
-    <string name="revert_to_default">Вернуть значения по-умолчанию</string>
-    <string name="filtered_values">Отфильтрованные значения</string>
+    <string name="revert_to_default">Вернуть к стандартному</string>
+    <string name="filtered_values">Сглаженные значения</string>
     <string name="treatment_color">Цвет события терапии</string>
     <string name="treatment_color_dark">Темный цвет события терапии</string>
     <string name="predictive_color">Цвет прогноза</string>
@@ -496,16 +496,16 @@
     <string name="average_and_target_lines">Средняя и целевая линии</string>
     <string name="eight_hour_average_line">Линия среднего за 8 часов</string>
     <string name="twenty_four_hour_average_line">Линия среднего за 24 часа</string>
-    <string name="glucose_target_line">Линия целевого уровня</string>
+    <string name="glucose_target_line">Линия целевой глюкозы</string>
     <string name="annotations_and_dots">Примечания и точки</string>
-    <string name="blood_test_background">Задний фон значений с глюкометра</string>
-    <string name="blood_test_foreground">Передний фон значений с глюкометра</string>
-    <string name="treatment_background">Задний фон пользовательских значений</string>
-    <string name="treatment_foreground">Передний фон пользовательских значений</string>
+    <string name="blood_test_background">Фон анализа крови</string>
+    <string name="blood_test_foreground">Передний план анализа крови</string>
+    <string name="treatment_background">Фон события терапии</string>
+    <string name="treatment_foreground">Передний план события терапии</string>
     <string name="backgrounds">Задний фон</string>
-    <string name="main_chart_background">Задний фон основного графика</string>
-    <string name="notification_chart_background">Задний фон графика в строке уведомлений</string>
-    <string name="widget_chart_background">Задний фон графика в виджете</string>
+    <string name="main_chart_background">Фон главного графика</string>
+    <string name="notification_chart_background">Фон диаграммы уведомления</string>
+    <string name="widget_chart_background">Фон графика виджета</string>
     <string name="try_to_work_around_noisy_readings">Пытаться отфильтровывать некорректные значения (шум)</string>
     <string name="show_tips_hints">Отображать подсказки, описывающие назначение кнопок и т.д. Поставьте или снимите галочку, чтобы сбросить к начальному состоянию</string>
     <string name="show_interface_hints">Показывать подсказки по работе с интерфейсом</string>
@@ -806,10 +806,10 @@
     <string name="enable_dedicated_insulin_profiles">Настройки профилей инсулина</string>
     <string name="desc_enable_dedicated_insulin_profiles">Активация и настройки различных профилей инсулина</string>
     <string name="insulin_sensitivity">Чувствительность к инсулину</string>
-    <string name="secondary_plugin_glucose_value">Показания глюкозы дополнительного плагина</string>
-    <string name="step_counter_1st_color">Шагометр 1-й цвет</string>
-    <string name="step_counter_2nd_color">Шагометр 2-й цвет</string>
-    <string name="flair_colors">Цвет шторки/кнопок</string>
+    <string name="secondary_plugin_glucose_value">Знач. глюкозы от вторичного плагина</string>
+    <string name="step_counter_1st_color">1-ый цвет счетчика шагов</string>
+    <string name="step_counter_2nd_color">2-ой цвет счетчика шагов</string>
+    <string name="flair_colors">Цвета панелей</string>
     <string name="use_flair_colors">Использовать цвета панелей</string>
     <string name="upper_title_bar_flair">Верхняя панель уведомлений</string>
     <string name="lower_button_bar_falir">Нижняя панель кнопок навигации</string>
@@ -1374,7 +1374,7 @@
     <string name="title_g5_battery_warning_level">Настройки предупреждений о состоянии батареи</string>
     <string name="title_plugins_and_features">Функции и дополнения</string>
     <string name="title_color_heart_rate1">Монитор пульса</string>
-    <string name="title_insulin_colors">Цвет инсулина</string>
+    <string name="title_insulin_colors">Цвета инсулина</string>
     <string name="title_color_basal_tbr">Базальный инсулин</string>
     <string name="title_color_smb_icon">Значек болюсного инсулина</string>
     <string name="title_color_smb_line">Линия болюсного инсулина</string>
@@ -1892,4 +1892,5 @@
     <string name="bg_alert">ГК %1$s ТРЕВОГА: %2$s (@%3$s)</string>
     <string name="show_graphical_trend_arrow">Показывать графическую стрелку тренда</string>
     <string name="no_alert_in_silent_mode">Без тревог при режиме без звука</string>
+    <string name="volume_profile_high">Высокие значения глюкозы</string>
 </resources>

@@ -1105,4 +1105,5 @@ CONTEXTREQUEST?</string>
     <string name="summary_ymax">Odaberite yMax kada nema većih očitanja.</string>
     <string name="title_sens_expiry_notify">Omogući</string>
     <string name="reraise_alerts_before_snooze_time">Ponovno upozorenje prije roka odgađanja</string>
+    <string name="volume_profile_high">Visoke vrijednosti glukoze</string>
 </resources>

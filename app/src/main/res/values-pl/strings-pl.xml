@@ -227,13 +227,13 @@
     <string name="persistent_high_alert_enable">Włącz</string>
     <string name="title_persistent_high_threshold">Próg</string>
     <string name="the_value_must_be_between_min_and_max">Wartość musi być pomiędzy %1$s i %2$s</string>
-    <string name="forecasted_low_alert">Prognozowany Low Alert</string>
+    <string name="forecasted_low_alert">Przewidziany alarm hipoglikemii</string>
     <string name="setting_pref_to_max">Ustaw na maksimum</string>
     <string name="pref_was_greater_than_max">Wartość %1$s przekroczyła maksymalną dozwoloną wartość. Ustawiono w zamian wartość maksymalną.</string>
     <string name="setting_pref_to_min">Ustaw na minimum</string>
     <string name="pref_was_less_than_min">Wartość %1$s przekroczyła minimalną dozwoloną wartość. Ustawiono w zamian wartość minimalną.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Biorąc pod uwagę aktualną wartość i tendencję, przewidzi, jakie będą kolejne odczyty, jeśli trend będzie się utrzymywał (ekstrapolacja). Funkcja ignoruje insulinę i węglowodany.</string>
-    <string name="alarm_at_forecasted_low_mins">Alarm przy prognozowanych niskich w minutach</string>
+    <string name="alarm_at_forecasted_low_mins">Próg czasu [minuty]</string>
     <string name="title_forecast_low_threshold">Próg</string>
     <string name="other_xdrip_plus_alerts">Inne alarmy xDrip+</string>
     <string name="xdrip_plus_display_settings">xDrip+ Ustawienia ekranu</string>
@@ -434,7 +434,7 @@
     <string name="persistent_high_sound">Trwały wysoki dźwięk</string>
     <string name="forecast_lows">Prognoza niskich</string>
     <string name="raise_alarm_on_forecast_low">Aktywuj alarm gdy przewiduje niski poziom</string>
-    <string name="notify_when_predicted_low_time_reaches_threshold">Powiadom gdy przewidywany czas dla niskich wartosci osiągnie próg</string>
+    <string name="notify_when_predicted_low_time_reaches_threshold">Powiadom, jeżeli przewidziano hipoglikemie za mniej minut niż próg</string>
     <string name="predicted_low_sound">Dźwiek dla Przewidywanej Niskiej wartości</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Wybierz dźwięk alarmu używany do przewidywanego niskiego poziomu.</string>
     <string name="notify_when_parakeet_device_stops_checking_in">Powiadom, jeśli urządzenie Parakeet przestanie nadawać</string>
@@ -489,6 +489,7 @@
     <string name="start_sensor">Rozpocznij czujnik</string>
     <string name="debug_and_other_misc_options">Debug i inne opcje</string>
     <string name="low_glucose_values">Niskie wartości glikemii</string>
+    <string name="low_predicted_too_close_note">Przewidziana hipoglikemia (krytyczna)</string>
     <string name="bad_glucose_values">Złe wartości glukozy</string>
     <string name="revert_to_default">Przywróć domyślne</string>
     <string name="filtered_values">Przefiltrowane wartości</string>

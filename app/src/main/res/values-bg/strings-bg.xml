@@ -493,6 +493,7 @@
     <string name="start_sensor">Стартирай сензор</string>
     <string name="debug_and_other_misc_options">Дебъг и разни други настройки</string>
     <string name="low_glucose_values">Ниски стойности на глюкозата</string>
+    <string name="low_predicted_too_close_note">Прогнозирано ниско (критично)</string>
     <string name="bad_glucose_values">Високи стойности на глюкозата</string>
     <string name="revert_to_default">Възстановяване на фабрични настройки</string>
     <string name="filtered_values">Филтрирани стойности</string>

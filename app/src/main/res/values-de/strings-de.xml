@@ -1855,4 +1855,5 @@
     <string name="audio_focus_pause_all_other_sounds">Alle anderen Töne pausieren</string>
     <string name="use_camera_light">Kamera-Licht verwenden</string>
     <string name="use_camera_light_summary">Kamera-Licht bei Warnungen aufblitzen lassen (nur am Ladegerät)</string>
+    <string name="volume_profile_high">Hohe Zuckerwerte</string>
 </resources>
