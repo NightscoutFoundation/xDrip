@@ -28,6 +28,7 @@ import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 
 /**
@@ -219,7 +220,8 @@ public class xDripWidget extends AppWidgetProvider {
                 // render information about last value age
                 final long ageMs = Math.max(0, new Date().getTime() - lastBgreading.timestamp);
                 final long ageMinutes = ageMs / Constants.MINUTE_IN_MS;
-                final String minutesAgo = JoH.formatMinutesSeconds(ageMs, true);
+                final String minuteSuffix = ageMinutes == 1 ? context.getString(R.string.space_minute_ago) : context.getString(R.string.space_minutes_ago);
+                final String minutesAgo = String.format(Locale.getDefault(), "%d%s", ageMinutes, minuteSuffix);
                 views.setTextViewText(R.id.readingAge, minutesAgo + extrastring);
                 if (ageMinutes > 15) {
                     views.setTextColor(R.id.readingAge, Color.parseColor("#FFBB33"));

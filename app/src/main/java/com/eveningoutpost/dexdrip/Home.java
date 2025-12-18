@@ -1882,7 +1882,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     }
 
     private String formatAgeLine(final long ageMs) {
-        return small_width ? JoH.formatMinutesSecondsShort(ageMs) : JoH.formatMinutesSeconds(ageMs, true);
+        return JoH.formatMinutesSeconds(ageMs, true);
     }
 
     private void updateAgeLine(final String ageLine) {
