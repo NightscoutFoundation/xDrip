@@ -52,6 +52,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.text.InputType;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -237,13 +238,9 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             try {
                 final BgReading lastBgReading = BgReading.lastNoSenssor();
                 if (lastBgReading != null) {
-                    boolean predictive = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("predictive_bg", false);
-                    if (isBTShare) {
-                        predictive = false;
-                    }
-                    // reset the status line so per-second updates replace text instead of appending
-                    notificationText.setText("");
-                    displayCurrentInfoFromReading(lastBgReading, predictive);
+                    final long ageMs = Math.max(0, System.currentTimeMillis() - lastBgReading.timestamp);
+                    final String ageLine = formatAgeLine(ageMs);
+                    updateAgeLine(ageLine);
                 }
             } finally {
                 if (activityVisible) {
@@ -1884,6 +1881,34 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         uiHandler.removeCallbacks(ageUpdateRunnable);
     }
 
+    private String formatAgeLine(final long ageMs) {
+        return small_width ? JoH.formatMinutesSecondsShort(ageMs) : JoH.formatMinutesSeconds(ageMs, true);
+    }
+
+    private void updateAgeLine(final String ageLine) {
+        final CharSequence current = notificationText.getText();
+        if (TextUtils.isEmpty(current)) {
+            notificationText.setText(ageLine);
+            return;
+        }
+        final String[] lines = current.toString().split("\n", -1);
+        int idx = 0;
+        while (idx < lines.length && lines[idx].length() == 0) {
+            idx++; // skip any leading blank line
+        }
+        if (idx >= lines.length) {
+            notificationText.setText(ageLine);
+            return;
+        }
+        lines[idx] = ageLine;
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < lines.length; i++) {
+            if (i > 0) sb.append("\n");
+            sb.append(lines[i]);
+        }
+        notificationText.setText(sb.toString());
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -3125,13 +3150,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 currentBgValueText.setText(extrastring + currentBgValueText.getText());
         }
         final long ageMs = Math.max(0, System.currentTimeMillis() - lastBgReading.timestamp);
+        final String ageLine = formatAgeLine(ageMs);
 
-        if ((!small_width) || (notificationText.length() > 0)) notificationText.append("\n");
-        if (!small_width) {
-            notificationText.append(JoH.formatMinutesSeconds(ageMs, true));
-        } else {
-            // small screen
-            notificationText.append(JoH.formatMinutesSecondsShort(ageMs));
+        if (notificationText.length() > 0) notificationText.append("\n");
+        notificationText.append(ageLine);
+        if (small_width) {
             currentBgValueText.setPadding(0, 0, 0, 0);
         }
 
