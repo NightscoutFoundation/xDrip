@@ -190,6 +190,7 @@
     <string name="expires_days">{0, choice,0#Sensor Expired!|1#Ends in {0, number} day|1&lt;Ends in {0, number} days}</string>
     <string name="expires_at">Ends {0}</string>
     <string name="space_minutes_ago">" Minutes ago"</string>
+    <string name="word_ago">ago</string>
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"In Libre all house mode: no readings collected yet."</string>
     <string name="in_libre_all_house_mode_last_data_collected">"In Libre all house mode: Last reading "</string>
     <string name="space_minute_ago">" Minute ago"</string>

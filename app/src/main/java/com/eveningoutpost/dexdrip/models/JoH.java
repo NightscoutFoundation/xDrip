@@ -842,6 +842,42 @@ public class JoH {
         }
     }
 
+    public static String formatMinutesSeconds(long durationMs, boolean includeAgoWord) {
+        final long safeDurationMs = Math.max(durationMs, 0);
+        final long totalSeconds = safeDurationMs / 1000;
+        final long minutes = totalSeconds / 60;
+        final long seconds = totalSeconds % 60;
+
+        final StringBuilder builder = new StringBuilder();
+        final String minuteUnit = xdrip.getAppContext().getString(minutes == 1 ? R.string.unit_minute : R.string.unit_minutes);
+        final String secondUnit = xdrip.getAppContext().getString(seconds == 1 ? R.string.unit_second : R.string.unit_seconds);
+
+        if (minutes > 0) {
+            builder.append(minutes).append(" ").append(minuteUnit).append(" ");
+            builder.append(String.format(Locale.getDefault(), "%02d", seconds)).append(" ").append(secondUnit);
+        } else {
+            builder.append(seconds).append(" ").append(secondUnit);
+        }
+
+        if (includeAgoWord) {
+            builder.append(" ").append(xdrip.getAppContext().getString(R.string.word_ago));
+        }
+
+        return builder.toString().trim();
+    }
+
+    public static String formatMinutesSecondsSince(long timestamp, boolean includeAgoWord) {
+        return formatMinutesSeconds(msSince(timestamp), includeAgoWord);
+    }
+
+    public static String formatMinutesSecondsShort(long durationMs) {
+        final long safeDurationMs = Math.max(durationMs, 0);
+        final long totalSeconds = safeDurationMs / 1000;
+        final long minutes = totalSeconds / 60;
+        final long seconds = totalSeconds % 60;
+        return String.format(Locale.getDefault(), "%d:%02d", minutes, seconds);
+    }
+
 
     public static double tolerantParseDouble(String str) throws NumberFormatException {
         return Double.parseDouble(str.replace(",", "."));

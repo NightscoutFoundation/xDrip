@@ -21,11 +21,11 @@ import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.utilitymodels.BgSparklineBuilder;
 import com.eveningoutpost.dexdrip.utilitymodels.ColorCache;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utilitymodels.StatusLine;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 
-import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -217,11 +217,11 @@ public class xDripWidget extends AppWidgetProvider {
                 }
 
                 // render information about last value age
-                int timeAgo = (int) Math.floor((new Date().getTime() - lastBgreading.timestamp) / (1000 * 60));
-                final String fmt = context.getString(R.string.minutes_ago);
-                final String minutesAgo = MessageFormat.format(fmt, timeAgo);
+                final long ageMs = Math.max(0, new Date().getTime() - lastBgreading.timestamp);
+                final long ageMinutes = ageMs / Constants.MINUTE_IN_MS;
+                final String minutesAgo = JoH.formatMinutesSeconds(ageMs, true);
                 views.setTextViewText(R.id.readingAge, minutesAgo + extrastring);
-                if (timeAgo > 15) {
+                if (ageMinutes > 15) {
                     views.setTextColor(R.id.readingAge, Color.parseColor("#FFBB33"));
                 } else {
                     views.setTextColor(R.id.readingAge, Color.WHITE);
