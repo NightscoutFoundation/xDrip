@@ -1,0 +1,68 @@
+
+plugins {
+    id 'com.android.library'
+}
+repositories {
+    google()
+    mavenCentral()
+}
+
+android {
+    compileSdkVersion 34
+
+    defaultConfig {
+        minSdkVersion 24
+        targetSdkVersion 24
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    namespace 'lwld.glucose.profile'
+
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+
+dependencies {
+
+    dependencies {
+        implementation "no.nordicsemi.android:ble:2.6.1"
+        implementation 'no.nordicsemi.android:ble-common:2.6.1'
+        implementation "no.nordicsemi.android.support.v18:scanner:1.5.1"
+    }
+
+    testImplementation 'junit:junit:4.13.2'
+
+    testImplementation 'org.powermock:powermock-api-mockito2:2.0.9'
+    testImplementation 'org.powermock:powermock-module-junit4:2.0.9'
+    testImplementation "org.robolectric:robolectric:4.16"
+    testImplementation "org.mockito:mockito-core:2.23.0"
+    // don't update as mismatches with powermock
+
+    // you will want to install the android studio lombok plugin
+    compileOnly 'org.projectlombok:lombok:1.18.42' //
+    annotationProcessor "org.projectlombok:lombok:1.18.42"
+    // use lombok in unit tests
+    testCompileOnly 'org.projectlombok:lombok:1.18.42'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.42'
+    testImplementation "com.google.truth:truth:1.4.5"
+
+}
