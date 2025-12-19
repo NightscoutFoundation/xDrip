@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <string name="title_activity_bluetooth_scan">Bluetooth Scan</string>
@@ -2008,4 +2008,58 @@
     <string name="custom_sound_alarm">Custom Sound/Alarm</string>
     <string name="default_xdrip_sound">Default xDrip sound</string>
     <string name="error_with_value">Error with value</string>
+    <string name="turn_feature_off_on">Turn feature off/on</string>
+    <string name="glupro_activity_title">xDrip+ GluPro</string>
+    <string name="glupro_status">Glucose Profile Status</string>
+    <string name="sending_blood_tests_to_transmitter">Sending Blood Tests to Transmitter</string>
+    <string name="glupro_bluetooth_scanning">Bluetooth scanning</string>
+    <string name="need_bluetooth_permissions">Need bluetooth permissions</string>
+    <string name="glupro_scan_again">Scan again</string>
+    <string name="smartguide_pairing">SmartGuide Pairing</string>
+    <string name="glupro_pairing_pin">Pairing Pin</string>
+    <string name="glupro_operational">Operational</string>
+    <string name="glupro_sensor_malfunction">Sensor malfunction</string>
+    <string name="glupro_battery_low">Battery low</string>
+    <string name="glupro_session_stopped">Session stopped</string>
+    <string name="glupro_calibration_recommended">Calibration recommended</string>
+    <string name="glupro_calibration_required">Calibration required</string>
+    <string name="glupro_value_too_low">Value too low</string>
+    <string name="glupro_value_too_high">Value too high</string>
+    <string name="glupro_sensor_alert">Sensor alert</string>
+    <string name="glupro_sensor_fault">Sensor fault</string>
+    <string name="glupro_temperature_too_high">Temperature too high</string>
+    <string name="glupro_temperature_too_low">Temperature too low</string>
+    <string name="glupro_disconnected">Disconnected</string>
+    <string name="glupro_connected">Connected</string>
+    <string name="glupro_configuring">Configuring</string>
+    <string name="glupro_configured">Configured</string>
+    <string name="glupro_connect_failed">Connect failed</string>
+    <string name="glupro_bonding">Bonding</string>
+    <string name="glupro_bonded">Bonded</string>
+    <string name="glupro_bonding_failed">Bonding failed</string>
+    <string name="glupro_scanning_error">Scanning error</string>
+    <string name="glupro_insufficient_permissions">Insufficient permissions</string>
+    <string name="glupro_bluetooth_disabled">Bluetooth disabled</string>
+    <string name="glupro_scan_stopped">Scan stopped</string>
+    <string name="glupro_setup_failed">Setup failed</string>
+    <string name="glupro_shut_down">Shut down</string>
+    <string name="glupro_starting_up">Starting up</string>
+    <string name="glupro_collector_status">Collector Status</string>
+    <string name="glupro_reading_quality">Reading quality</string>
+    <string name="glupro_model_number">Model number</string>
+    <string name="glupro_hardware_revision">Hardware revision</string>
+    <string name="glupro_firmware_version">Firmware version</string>
+    <string name="glupro_manufacturer">Manufacturer</string>
+    <string name="glupro_start_time">Start time</string>
+    <string name="glupro_total_sensor_period">Total sensor period</string>
+    <string name="glupro_period_remaining">Period remaining</string>
+    <string name="glupro_search_sensor_screen">Search sensor screen</string>
+    <string name="glupro_open">Open</string>
+    <string name="glupro_connecting">Connecting</string>
+    <string name="glupro_collector_state">Collector state</string>
+    <string name="glupro_sensor_serial">Sensor serial</string>
+    <string name="glupro_device">Device</string>
+    <string name="glupro_reconnect_attempt">Reconnect attempt</string>
+    <string name="glupro_reading_frequency">Reading frequency</string>
+    <string name="need_bluetooth_permission">Need bluetooth permission</string>
 </resources>

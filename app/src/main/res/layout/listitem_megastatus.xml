@@ -38,4 +38,17 @@
         android:layout_weight="1"
         android:textSize="14sp" />
 
+
+    <Button
+        android:id="@+id/button"
+        android:gravity="center"
+        android:layout_gravity="start"
+        android:text="value"
+        android:paddingLeft="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:visibility="gone"
+        android:textSize="14sp" />
+
 </LinearLayout>

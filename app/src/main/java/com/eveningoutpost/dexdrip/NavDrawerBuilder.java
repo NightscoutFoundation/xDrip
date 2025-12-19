@@ -65,7 +65,7 @@ public class NavDrawerBuilder {
             this.nav_drawer_intents.add(new Intent(context, CalibrationDataTable.class));
         }
 
-        if ((prefs.getString("dex_collection_method", "").equals("Follower"))) {
+        if (DexCollectionType.isAlwaysNativeCal()) {
             this.nav_drawer_options.add(context.getString(R.string.add_calibration));
             this.nav_drawer_intents.add(new Intent(context, AddCalibration.class));
         } else if (!collector.canNotStartStopOrCal()) {
@@ -113,7 +113,7 @@ public class NavDrawerBuilder {
             }
         }
 
-        if (DexCollectionType.hasBluetooth() && (DexCollectionType.getDexCollectionType() != DexCollectionType.DexcomG5)) {
+        if (DexCollectionType.usesBluetoothScan()) {
             this.nav_drawer_options.add(context.getString(R.string.bluetooth_scan));
             this.nav_drawer_intents.add(new Intent(context, BluetoothScan.class));
         }

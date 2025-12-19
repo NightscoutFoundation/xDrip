@@ -372,18 +372,25 @@ public class SystemStatusFragment extends Fragment {
 
     private void setConnectionStatus() {
         boolean connected = false;
-        if (mBluetoothManager != null && activeBluetoothDevice != null && (Build.VERSION.SDK_INT >= 18)) {
-            for (BluetoothDevice bluetoothDevice : mBluetoothManager.getConnectedDevices(BluetoothProfile.GATT)) {
-                if (bluetoothDevice.getAddress().compareTo(activeBluetoothDevice.address) == 0) {
-                    connected = true;
+        try {
+            if (mBluetoothManager != null && activeBluetoothDevice != null && (Build.VERSION.SDK_INT >= 18)) {
+                for (BluetoothDevice bluetoothDevice : mBluetoothManager.getConnectedDevices(BluetoothProfile.GATT)) {
+                    if (bluetoothDevice.getAddress().compareTo(activeBluetoothDevice.address) == 0) {
+                        connected = true;
+                    }
                 }
             }
+
+            if (connected) {
+                connection_status.setText(safeGetContext().getString(R.string.connected));
+            } else {
+                connection_status.setText(safeGetContext().getString(R.string.not_connected));
+            }
+        } catch (SecurityException e) {
+            Log.e(TAG, "Got SecurityException in setConnectionStatus ", e);
+            connection_status.setText(R.string.need_bluetooth_permission);
         }
-        if (connected) {
-            connection_status.setText(safeGetContext().getString(R.string.connected));
-        } else {
-            connection_status.setText(safeGetContext().getString(R.string.not_connected));
-        }
+
 
         String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
         if (collection_method.compareTo("DexcomG5") == 0) {

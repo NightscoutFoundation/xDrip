@@ -249,6 +249,7 @@ dependencies {
 
     implementation project(':localeapi')
     implementation project(':libkeks')
+    implementation project(':libglupro')
 
     // add missing JAXB dependencies for JDK 9+
     if (JavaVersion.current().ordinal() >= JavaVersion.VERSION_1_9.ordinal()) {

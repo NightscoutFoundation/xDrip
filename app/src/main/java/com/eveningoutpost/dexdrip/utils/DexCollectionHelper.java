@@ -8,6 +8,7 @@ import com.eveningoutpost.dexdrip.BluetoothScan;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
@@ -109,6 +110,10 @@ public class DexCollectionHelper {
                 Home.staticRefreshBGChartsOnIdle();
                 break;
 
+            default:
+                UserError.Log.d(TAG, "Default case in assistance - restarting collection service");
+                CollectionServiceStarter.restartCollectionServiceBackground();
+                break;
             /* LOGIN via browser is required currently
             case CLFollow:
                 textSettingDialog(activity,

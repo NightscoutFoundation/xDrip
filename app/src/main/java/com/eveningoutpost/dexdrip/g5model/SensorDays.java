@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.g5model;
 
 import android.text.SpannableString;
 
+import com.eveningoutpost.dexdrip.cgm.glupro.GluProService;
 import com.eveningoutpost.dexdrip.models.Sensor;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
@@ -32,6 +33,7 @@ import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.usingNa
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.DAY_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.GluPro;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.None;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getDexCollectionType;
@@ -49,6 +51,7 @@ public class SensorDays {
     private static final long UNKNOWN = -1;
     private static final int USE_DEXCOM_STRATEGY = 5;
     private static final int USE_LIBRE_STRATEGY = 6;
+    private static final int USE_GLUPRO_STRATEGY = 7;
 
     private static final long CAL_THRESHOLD1 = DAY_IN_MS * 4;
     private static final long CAL_THRESHOLD2 = Constants.HOUR_IN_MS * 18;
@@ -106,7 +109,7 @@ public class SensorDays {
             if (vr3 != null) {
                 ths.warmupMs = Math.min(Constants.SECOND_IN_MS * vr3.warmupSeconds, 2 * HOUR_IN_MS);
             } else {
-               ths.warmupMs = 2 * HOUR_IN_MS;
+                ths.warmupMs = 2 * HOUR_IN_MS;
             }
 
             if (getBestCollectorHardwareName().equals("G7")) {
@@ -117,6 +120,11 @@ public class SensorDays {
             if (isDeviceAlt2(getTransmitterID())) {
                 ths.period = DAY_IN_MS * 15 + HOUR_IN_MS * 12;
             }
+
+        } else if (type == GluPro) {
+            ths.strategy = USE_GLUPRO_STRATEGY;
+            ths.period = GluProService.getRunTime();
+            ths.warmupMs = HOUR_IN_MS;
 
         } else {
             // unknown type
@@ -166,6 +174,8 @@ public class SensorDays {
                 return getDexcomStart();
             case USE_LIBRE_STRATEGY:
                 return getLibreStart();
+            case USE_GLUPRO_STRATEGY:
+                return com.eveningoutpost.dexdrip.cgm.glupro.GluPro.getStart();
             default:
                 return 0; // very large error default will be caught by sanity check
         }

@@ -34,7 +34,8 @@ public class PrefsViewString extends ObservableArrayMapNoNotify<String, String> 
 
     @Override
     public String put(String key, String value) {
-        if (!(super.get(key).equals(value))) {
+        String current = super.get(key);
+        if (current == null || !current.equals(value)) {
             setString(key, value);
         }
         return value;
