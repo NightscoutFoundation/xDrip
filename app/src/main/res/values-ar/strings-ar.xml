@@ -321,4 +321,6 @@
     <string name="titleInside_yRange">تفعيل</string>
     <string name="title_sens_expiry_notify">تفعيل</string>
     <string name="volume_profile_high">قيم السكر المرتفعة</string>
+    <string name="glupro_disconnected">غير متصل</string>
+    <string name="glupro_connected">متصل</string>
 </resources>
