@@ -389,6 +389,9 @@ public class SystemStatusFragment extends Fragment {
         } catch (SecurityException e) {
             Log.e(TAG, "Got SecurityException in setConnectionStatus ", e);
             connection_status.setText(R.string.need_bluetooth_permission);
+        } catch (Exception e) {
+            connection_status.setText("Unknown");
+            Log.d(TAG, "Got Exception in setConnectionStatus "+ e);
         }
 
 

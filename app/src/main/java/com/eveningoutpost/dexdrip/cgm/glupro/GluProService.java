@@ -292,7 +292,9 @@ public class GluProService extends ForegroundService {
                     Pref.setString(PREFS_LAST_GLUPRO_MAC, address); // invalidate mac
                     setStart(0L); // invalidate start
                     lastReconnectAttempt = 0;
-                    ActiveBluetoothDevice.setDevice(name, address); // cosmetic only
+                    if (name != null && address != null) {
+                        ActiveBluetoothDevice.setDevice(name, address); // cosmetic only
+                    }
                     client.start(name, address, listener);
                     if (name == null && address == null) {
                         // calling twice seems helpful
