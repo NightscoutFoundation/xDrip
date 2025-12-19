@@ -1684,4 +1684,6 @@
     <string name="summary_Lib2_show_sense_on_status">Inschakelen om extra informatie in Status voor Libre 2-sensor weer te geven.</string>
     <string name="reraise_alerts_before_snooze_time">Verhoog waarschuwingen vóór de sluimertijd</string>
     <string name="volume_profile_high">Hoge glucosewaarden</string>
+    <string name="glupro_disconnected">Verbinding verbroken</string>
+    <string name="glupro_connected">Verbonden</string>
 </resources>
