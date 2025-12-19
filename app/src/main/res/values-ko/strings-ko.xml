@@ -787,4 +787,6 @@
     <string name="titleInside_yRange">사용</string>
     <string name="title_sens_expiry_notify">사용</string>
     <string name="volume_profile_high">고혈당 수치</string>
+    <string name="glupro_disconnected">연결 되지 않음</string>
+    <string name="glupro_connected">연결됨</string>
 </resources>
