@@ -1884,4 +1884,6 @@
     <string name="g7_should_start_automatically">G7 має стартувати автоматично</string>
     <string name="screenshot">Знімок екрану</string>
     <string name="volume_profile_high">Високі значення глюкози</string>
+    <string name="glupro_disconnected">Відключено</string>
+    <string name="glupro_connected">Підключено</string>
 </resources>
