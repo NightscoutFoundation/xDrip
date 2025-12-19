@@ -1960,4 +1960,6 @@
     <string name="custom_sound_alarm">Son/Alarme personnalisés</string>
     <string name="default_xdrip_sound">Son xDrip par défaut</string>
     <string name="error_with_value">Erreur de la valeur</string>
+    <string name="glupro_disconnected">Déconnecté</string>
+    <string name="glupro_connected">Connecté</string>
 </resources>
