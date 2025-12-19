@@ -1029,4 +1029,6 @@
     <string name="at_home_only">ホームに居る時のみ</string>
     <string name="xdrip_update">xDrip + アップデート</string>
     <string name="a_new_version_on_channel_1_s_is_available">%1$s 版の最新版が利用可能</string>
+    <string name="glupro_disconnected">切断済み</string>
+    <string name="glupro_connected">接続済み</string>
 </resources>
