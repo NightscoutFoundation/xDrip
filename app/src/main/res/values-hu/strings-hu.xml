@@ -1900,4 +1900,6 @@
     <string name="system_sound_alarm">Rendszerhang</string>
     <string name="custom_sound_alarm">Saját hang fájlból</string>
     <string name="default_xdrip_sound">Alapértelmezett xDrip hang</string>
+    <string name="glupro_disconnected">Szétkapcsolva</string>
+    <string name="glupro_connected">Csatlakoztatva</string>
 </resources>
