@@ -1129,16 +1129,16 @@ public class JoH {
                         // likes to generate exceptions that really can't be avoided as
                         // the state can change between testing if its playing and telling it
                         // to stop
-                    } catch (IllegalStateException e) {
+                    } catch (IllegalStateException | IllegalArgumentException e) {
                         UserError.Log.e(TAG, "Exception when stopping sound media player: " + e);
                     }
                 }
-            } catch (IllegalStateException e) {
+            } catch (IllegalStateException | IllegalArgumentException e) {
                 UserError.Log.d(TAG, "Exception when detecting if media player playing: " + e);
             }
             try {
                 player.release();
-            } catch (IllegalStateException e) {
+            } catch (IllegalStateException | IllegalArgumentException e) {
                 UserError.Log.d(TAG, "Exception when releasing media player");
             }
         }
