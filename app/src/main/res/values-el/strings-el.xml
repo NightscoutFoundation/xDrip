@@ -516,4 +516,6 @@
     <string name="titleInside_yRange">Ενεργό</string>
     <string name="title_sens_expiry_notify">Ενεργό</string>
     <string name="volume_profile_high">Υψηλές Τιμές Γλυκόζης</string>
+    <string name="glupro_disconnected">Αποσύνδεση</string>
+    <string name="glupro_connected">Συνδεδεμένο</string>
 </resources>

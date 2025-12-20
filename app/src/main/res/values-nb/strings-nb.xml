@@ -1960,4 +1960,6 @@
     <string name="custom_sound_alarm">Egendefinert lyd/Alarm</string>
     <string name="default_xdrip_sound">Standard xDrip-lyd</string>
     <string name="error_with_value">Feil med verdi</string>
+    <string name="glupro_disconnected">Frakoblet</string>
+    <string name="glupro_connected">Tilkoblet</string>
 </resources>

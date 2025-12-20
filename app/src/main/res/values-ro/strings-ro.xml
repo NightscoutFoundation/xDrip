@@ -1576,4 +1576,6 @@
     <string name="title_sens_expiry_notify">Permite</string>
     <string name="reraise_alerts_before_snooze_time">Reactivează alarmele înainte de amânare</string>
     <string name="volume_profile_high">Valori ridicate ale glicemiei</string>
+    <string name="glupro_disconnected">Deconectat</string>
+    <string name="glupro_connected">Conectat</string>
 </resources>

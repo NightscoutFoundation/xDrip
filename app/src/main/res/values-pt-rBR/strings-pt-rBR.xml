@@ -1715,4 +1715,6 @@
     <string name="audio_focus_pause_other_apps_playing_audio">Silenciar outros aplicativos quando estiver tocando</string>
     <string name="audio_focus_pause_all_other_sounds">Silenciar todos os outros sons</string>
     <string name="volume_profile_high">Valores Glicémia Hiper</string>
+    <string name="glupro_disconnected">Desconectado</string>
+    <string name="glupro_connected">Conectado</string>
 </resources>
