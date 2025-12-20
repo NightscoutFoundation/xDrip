@@ -12,6 +12,9 @@ import static com.eveningoutpost.dexdrip.utilitymodels.Constants.DAY_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.SECOND_IN_MS;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.GluPro;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.LibreAlarm;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.Medtrum;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 import android.Manifest;
@@ -2463,7 +2466,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             displayCurrentInfo();
             Inevitable.task("home-notifications-start", 5000, Notifications::start);
             // TODO add dexcollectiontype set handling for these
-        } else if (!alreadyDisplayedBgInfoCommon && (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm || collector == DexCollectionType.Medtrum || collector == GluPro)) {
+        } else if (!alreadyDisplayedBgInfoCommon && (collector == LibreAlarm || collector == Medtrum || collector == GluPro)) {
             updateCurrentBgInfoCommon(collector, notificationText);
         }
         if (collector.equals(DexCollectionType.Disabled)) {
@@ -3018,7 +3021,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     // TODO consider moving this out of Home
     public static long stale_data_millis() {
-        if (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm)
+        if (DexCollectionType.getDexCollectionType() == LibreAlarm)
             return (60000 * 13);
         return (60000 * 11);
     }
