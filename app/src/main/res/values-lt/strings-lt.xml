@@ -1792,4 +1792,6 @@
     <string name="scan_to_load_xdrip_settings">Skenuokite xDrip nustatymams įkelti</string>
     <string name="reraise_alerts_before_snooze_time">Aktyvuoti aliarmą nepasibaigus nutildymo laikui</string>
     <string name="volume_profile_high">Hiperglikemija</string>
+    <string name="glupro_disconnected">Atsieta</string>
+    <string name="glupro_connected">Susieta</string>
 </resources>

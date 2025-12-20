@@ -1711,4 +1711,6 @@
     <string name="use_camera_light">Använd kameramampa</string>
     <string name="use_camera_light_summary">Blixtra med kameramampan vid varningar när ansluten till en laddare</string>
     <string name="volume_profile_high">Högt glukosvärde</string>
+    <string name="glupro_disconnected">Frånkopplad</string>
+    <string name="glupro_connected">Ansluten</string>
 </resources>

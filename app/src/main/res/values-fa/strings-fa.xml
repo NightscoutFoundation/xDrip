@@ -107,4 +107,6 @@
     <string name="enable_graph_smoothing">فعال سازی</string>
     <string name="titleInside_yRange">فعال سازی</string>
     <string name="title_sens_expiry_notify">فعال سازی</string>
+    <string name="glupro_disconnected">قطع شده</string>
+    <string name="glupro_connected">متصل</string>
 </resources>

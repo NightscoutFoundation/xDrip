@@ -1711,4 +1711,6 @@
     <string name="data_source">Origem dos dados:</string>
     <string name="reraise_alerts_before_snooze_time">Alertar novamente antes do tempo silenciado</string>
     <string name="volume_profile_high">Valores Hiperglicemia</string>
+    <string name="glupro_disconnected">Desconectado</string>
+    <string name="glupro_connected">Conectado</string>
 </resources>

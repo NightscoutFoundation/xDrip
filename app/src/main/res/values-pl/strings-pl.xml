@@ -1923,4 +1923,6 @@
     <string name="system_sound_alarm">Dźwięk/Alarm systemowy</string>
     <string name="custom_sound_alarm">Własny dźwięk/Alarm</string>
     <string name="default_xdrip_sound">Domyślny dźwięk xDrip</string>
+    <string name="glupro_disconnected">Rozłączony</string>
+    <string name="glupro_connected">Połączony</string>
 </resources>

@@ -1956,4 +1956,6 @@
     <string name="custom_sound_alarm">Персонализиран звук/аларма</string>
     <string name="default_xdrip_sound">Звук по подразбиране на xDrip</string>
     <string name="error_with_value">Грешка със стойност</string>
+    <string name="glupro_disconnected">Раздвоено</string>
+    <string name="glupro_connected">Свързано</string>
 </resources>

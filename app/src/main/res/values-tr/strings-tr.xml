@@ -1832,4 +1832,6 @@
     <string name="data_source">Veri Kaynağı:</string>
     <string name="reraise_alerts_before_snooze_time">Ertelemeden önce uyarıları tekrar yükselt</string>
     <string name="volume_profile_high">Yüksek Kan Şekeri değerleri</string>
+    <string name="glupro_disconnected">Bağlı değil</string>
+    <string name="glupro_connected">Bağlandı</string>
 </resources>

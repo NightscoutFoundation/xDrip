@@ -1893,4 +1893,6 @@
     <string name="show_graphical_trend_arrow">Показывать графическую стрелку тренда</string>
     <string name="no_alert_in_silent_mode">Без тревог при режиме без звука</string>
     <string name="volume_profile_high">Высокие значения глюкозы</string>
+    <string name="glupro_disconnected">Отключено</string>
+    <string name="glupro_connected">Подключено</string>
 </resources>

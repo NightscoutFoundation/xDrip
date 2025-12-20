@@ -1921,4 +1921,6 @@
     <string name="could_not_create_qr_code">No se pudo crear el código QR</string>
     <string name="volume_profile_high">Valores de glucosa alta</string>
     <string name="error_with_value">Error con valor</string>
+    <string name="glupro_disconnected">Desconectado</string>
+    <string name="glupro_connected">Conectado</string>
 </resources>
