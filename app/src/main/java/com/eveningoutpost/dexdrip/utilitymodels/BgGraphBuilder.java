@@ -67,6 +67,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import lecho.lib.hellocharts.ILog;
 import lecho.lib.hellocharts.formatter.LineChartValueFormatter;
 import lecho.lib.hellocharts.formatter.SimpleLineChartValueFormatter;
 import lecho.lib.hellocharts.listener.LineChartOnValueSelectListener;
@@ -85,6 +86,7 @@ import lombok.val;
 import static com.eveningoutpost.dexdrip.models.JoH.tolerantParseDouble;
 import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.X;
 import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.getCol;
+import static lecho.lib.hellocharts.Log.setLogger;
 
 public class BgGraphBuilder {
     public static final int FUZZER = (int) (30 * Constants.SECOND_IN_MS);
@@ -2393,5 +2395,33 @@ public class BgGraphBuilder {
         public void onValueDeselected() {
             // do nothing
         }
+    }
+
+    public static void setLogging() {
+        setLogger(new ILog() {
+            @Override
+            public int d(String tag, String msg) {
+                UserError.Log.d(tag, msg);
+                return 1;
+            }
+
+            @Override
+            public int e(String tag, String msg) {
+                UserError.Log.e(tag, msg);
+                return 1;
+            }
+
+            @Override
+            public int i(String tag, String msg) {
+                UserError.Log.uel(tag, msg);
+                return 1;
+            }
+
+            @Override
+            public int wtf(String tag, String msg) {
+                UserError.Log.wtf(tag, msg);
+                return 1;
+            }
+        });
     }
 }

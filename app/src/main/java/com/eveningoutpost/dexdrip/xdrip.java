@@ -18,6 +18,7 @@ import com.eveningoutpost.dexdrip.services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.services.BluetoothGlucoseMeter;
 import com.eveningoutpost.dexdrip.services.MissedReadingService;
 import com.eveningoutpost.dexdrip.services.PlusSyncService;
+import com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utilitymodels.ColorCache;
 import com.eveningoutpost.dexdrip.utilitymodels.IdempotentMigrations;
@@ -131,6 +132,7 @@ public class xdrip extends Application {
         Reminder.firstInit(xdrip.getAppContext());
         PluggableCalibration.invalidateCache();
         Poller.init();
+        BgGraphBuilder.setLogging();
     }
 
 
