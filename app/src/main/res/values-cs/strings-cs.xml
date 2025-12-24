@@ -1958,6 +1958,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="glupro_status">Stav glykemického profilu</string>
     <string name="sending_blood_tests_to_transmitter">Odesílání glykémie z krve do vysílače</string>
     <string name="glupro_bluetooth_scanning">Skenování Bluetooth</string>
+    <string name="need_bluetooth_permissions">Je potřeba více oprávnění pro Bluetooth</string>
     <string name="glupro_scan_again">Skenovat znovu</string>
     <string name="smartguide_pairing">SmartGuide párování</string>
     <string name="glupro_pairing_pin">Párovací PIN</string>
@@ -1965,6 +1966,8 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="glupro_sensor_malfunction">Porucha senzoru</string>
     <string name="glupro_battery_low">Slabá baterie</string>
     <string name="glupro_session_stopped">Relace ukončena</string>
+    <string name="glupro_calibration_recommended">Doporučena kalibrace</string>
+    <string name="glupro_calibration_required">Vyžadována kalibrace</string>
     <string name="glupro_value_too_low">Příliš nízká hodnota</string>
     <string name="glupro_value_too_high">Hodnota je příliš vysoká</string>
     <string name="glupro_sensor_alert">Výstraha senzoru</string>
@@ -1973,11 +1976,21 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="glupro_temperature_too_low">Příliš nízká teplota</string>
     <string name="glupro_disconnected">Odpojeno</string>
     <string name="glupro_connected">Připojeno</string>
+    <string name="glupro_configuring">Nastavování</string>
+    <string name="glupro_configured">Nastaveno</string>
+    <string name="glupro_connect_failed">Připojení se nezdařilo</string>
+    <string name="glupro_bonding">Spojování</string>
+    <string name="glupro_bonded">Spojeno</string>
+    <string name="glupro_bonding_failed">Spojení se nezdařilo</string>
     <string name="glupro_scanning_error">Chyba skenování</string>
     <string name="glupro_insufficient_permissions">Nedostatečná oprávnění</string>
     <string name="glupro_bluetooth_disabled">Bluetooth je vypnuto</string>
     <string name="glupro_scan_stopped">Skenování zastaveno</string>
+    <string name="glupro_setup_failed">Nastavení se nezdařilo</string>
+    <string name="glupro_shut_down">Vypnout</string>
+    <string name="glupro_starting_up">Spouštění</string>
     <string name="glupro_collector_status">Stav kolektoru</string>
+    <string name="glupro_reading_quality">Kvalita hodnot glykémií</string>
     <string name="glupro_model_number">Číslo modelu</string>
     <string name="glupro_hardware_revision">Verze hardwaru</string>
     <string name="glupro_firmware_version">Verze firmwaru</string>
@@ -1987,7 +2000,11 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="glupro_period_remaining">Zbývá</string>
     <string name="glupro_search_sensor_screen">Zobrazit vyhledávání senzoru</string>
     <string name="glupro_open">Otevřít</string>
+    <string name="glupro_connecting">Připojování</string>
     <string name="glupro_collector_state">Stav kolektoru</string>
     <string name="glupro_sensor_serial">Sériové číslo senzoru</string>
     <string name="glupro_device">Zařízení</string>
+    <string name="glupro_reconnect_attempt">Pokus o opětovné připojení</string>
+    <string name="glupro_reading_frequency">Frekvence hodnot glykémií</string>
+    <string name="need_bluetooth_permission">Je potřeba oprávnění pro Bluetooth</string>
 </resources>
