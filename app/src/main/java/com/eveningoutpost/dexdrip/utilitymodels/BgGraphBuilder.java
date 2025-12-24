@@ -354,7 +354,7 @@ public class BgGraphBuilder {
 
             final List<APStatus> aplist = APStatus.latestForGraph(2000, loaded_start, loaded_end);
 
-            if (aplist.size() > 0) {
+            if (!aplist.isEmpty()) {
 
                 // divider line
 
@@ -370,23 +370,30 @@ public class BgGraphBuilder {
 
                 final float one_hundred_percent = (100 * yscale) / 100f;
                 final List<PointValue> divider_points = new ArrayList<>(2);
-                divider_points.add(new HPointValue(loaded_start / FUZZER, one_hundred_percent));
+                divider_points.add(new HPointValue((double) loaded_start / FUZZER, one_hundred_percent));
                 dividerLine.setPointRadius(0);
-                divider_points.add(new HPointValue(loaded_end / FUZZER, one_hundred_percent));
+                divider_points.add(new HPointValue((double) loaded_end / FUZZER, one_hundred_percent));
                 dividerLine.setValues(divider_points);
                 basalLines.add(dividerLine);
 
                 final List<PointValue> points = new ArrayList<>(aplist.size());
 
                 int last_percent = -1;
+                double last_timestamp = Double.MIN_VALUE;
 
                 int count = aplist.size();
                 for (APStatus item : aplist) {
-                    if (--count == 0 || (item.basal_percent != last_percent)) {
-                        final float this_ypos = (Math.min(item.basal_percent, 500) * yscale) / 100f; // capped at 500%
-                        points.add(new HPointValue((double) item.timestamp / FUZZER, this_ypos));
-
-                        last_percent = item.basal_percent;
+                    val sanitized_percent = Math.min(500, Math.max(0, item.basal_percent)); // capped at 500%
+                    if (--count == 0 || (sanitized_percent != last_percent)) {
+                        final float this_ypos = (sanitized_percent * yscale) / 100f;
+                        final double fuzzedT = (double) item.timestamp / FUZZER;
+                        if (fuzzedT != last_timestamp) {
+                            points.add(new HPointValue(fuzzedT, this_ypos));
+                            last_timestamp = fuzzedT;
+                            last_percent = sanitized_percent;
+                        } else {
+                            UserError.Log.d(TAG, "EXCLUDING APSTAT: " + fuzzedT + " " + this_ypos);
+                        }
                     }
                 }
 
@@ -2420,6 +2427,12 @@ public class BgGraphBuilder {
             @Override
             public int wtf(String tag, String msg) {
                 UserError.Log.wtf(tag, msg);
+                return 1;
+            }
+            
+            @Override
+            public int wtf(String tag, Exception e) {
+                JoH.logException(e);
                 return 1;
             }
         });
