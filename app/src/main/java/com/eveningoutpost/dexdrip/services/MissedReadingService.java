@@ -181,7 +181,7 @@ public class MissedReadingService extends IntentService {
     }
 
     private void checkBackAfterMissedTime(long alarmIn) {
-        setAlarm(alarmIn, false);
+        setAlarm(alarmIn, true); // Set an alarm in alarmIn from now no matter how close alarmIn may be
     }
 
     // alarmIn is relative time ms
