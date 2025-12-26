@@ -26,7 +26,10 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
+import android.net.NetworkRequest;
 import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -36,6 +39,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.Vibrator;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.text.InputType;
 import android.text.method.DigitsKeyListener;
@@ -91,17 +95,6 @@ import static android.bluetooth.BluetoothDevice.PAIRING_VARIANT_PIN;
 import static android.content.Context.ALARM_SERVICE;
 import static android.content.Context.VIBRATOR_SERVICE;
 
-//KS import android.content.DialogInterface;
-//KS import android.graphics.Canvas;
-//KS import android.graphics.Color;
-//KS import android.graphics.Paint;
-//KS import android.support.v7.app.AlertDialog;
-//KS import android.support.v4.app.NotificationCompat;
-//KS import androidx.appcompat.app.AppCompatActivity;
-//KS import android.support.v7.view.ContextThemeWrapper;
-//KS import com.eveningoutpost.dexdrip.utils.CipherUtils;
-//KS import static com.eveningoutpost.dexdrip.stats.StatsActivity.SHOW_STATISTICS_PRINT_COLOR;
-
 /**
  * Created by jamorham on 06/01/16.
  * <p>
@@ -110,20 +103,29 @@ import static android.content.Context.VIBRATOR_SERVICE;
 public class JoH {
     private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
     private final static String TAG = "jamorham JoH";
-    private final static boolean debug_wakelocks = false;
     private final static int PAIRING_VARIANT_PASSKEY = 1; // hidden in api
+    private final static boolean debug_wakelocks = false;
 
     private static double benchmark_time = 0;
     private static Map<String, Double> benchmarks = new HashMap<String, Double>();
-    private static final Map<String, Long> rateLimits = new HashMap<String, Long>();
+    private static final Map<String, Long> rateLimits = new HashMap<>();
 
     public static boolean buggy_samsung = false; // flag set when we detect samsung devices which do not perform to android specifications
+
+    // quick string conversion with leading zero
+    public static String qs0(double x, int digits) {
+        final String qs = qs(x, digits);
+        return qs.startsWith(".") ? "0" + qs : qs;
+    }
 
     // qs = quick string conversion of double for printing
     public static String qs(double x) {
         return qs(x, 2);
     }
 
+    // singletons to avoid repeated allocation
+    private static DecimalFormatSymbols dfs;
+    private static DecimalFormat df;
     public static String qs(double x, int digits) {
 
         if (digits == -1) {
@@ -137,21 +139,43 @@ public class JoH {
             }
         }
 
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-        symbols.setDecimalSeparator('.');
-        DecimalFormat df = new DecimalFormat("#", symbols);
-        df.setMaximumFractionDigits(digits);
-        df.setMinimumIntegerDigits(1);
-        return df.format(x);
+        if (dfs == null) {
+            final DecimalFormatSymbols local_dfs = new DecimalFormatSymbols();
+            local_dfs.setDecimalSeparator('.');
+            dfs = local_dfs; // avoid race condition
+        }
+
+        final DecimalFormat this_df;
+        // use singleton if on ui thread otherwise allocate new as DecimalFormat is not thread safe
+        if (Thread.currentThread().getId() == 1) {
+            if (df == null) {
+                final DecimalFormat local_df = new DecimalFormat("#", dfs);
+                local_df.setMinimumIntegerDigits(1);
+                df = local_df; // avoid race condition
+            }
+            this_df = df;
+        } else {
+            this_df = new DecimalFormat("#", dfs);
+        }
+
+        this_df.setMaximumFractionDigits(digits);
+        return this_df.format(x);
     }
 
     public static double ts() {
         return new Date().getTime();
     }
 
-    // TODO can we optimize this with System.currentTimeMillis ?
     public static long tsl() {
-        return new Date().getTime();
+        return System.currentTimeMillis();
+    }
+
+    public static long uptime() {
+        return SystemClock.elapsedRealtime();
+    }
+
+    public static boolean upForAtLeastMins(int mins) {
+        return uptime() > Constants.MINUTE_IN_MS * mins;
     }
 
     public static long msSince(long when) {
@@ -172,9 +196,9 @@ public class JoH {
 
     public static String bytesToHex(byte[] bytes) {
         if (bytes == null) return "<empty>";
-        char[] hexChars = new char[bytes.length * 2];
+        final char[] hexChars = new char[bytes.length * 2];
         for (int j = 0; j < bytes.length; j++) {
-            int v = bytes[j] & 0xFF;
+            final int v = bytes[j] & 0xFF;
             hexChars[j * 2] = hexArray[v >>> 4];
             hexChars[j * 2 + 1] = hexArray[v & 0x0F];
         }
@@ -224,6 +248,16 @@ public class JoH {
             return null;
         }
     }
+
+    public static String macFormat(final String unformatted) {
+        if (unformatted == null) return null;
+        try {
+            return unformatted.replaceAll("[^a-fA-F0-9]", "").replaceAll("(.{2})", "$1:").substring(0, 17);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
 
 
     public static String compressString(String source) {
@@ -369,6 +403,7 @@ public class JoH {
         }
     }
 
+
     public static String ucFirst(String input) {
         return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
     }
@@ -380,10 +415,10 @@ public class JoH {
     private static final String BUGGY_SAMSUNG_ENABLED = "buggy-samsung-enabled";
     public static void persistentBuggySamsungCheck() {
         if (!buggy_samsung) {
-            if (JoH.isSamsung() && PersistentStore.getLong(BUGGY_SAMSUNG_ENABLED) > 4) {
-                buggy_samsung = true;
-                UserError.Log.d(TAG,"Enabling wake workaround mode due to historical pattern");
-            }
+           if (JoH.isSamsung() && PersistentStore.getLong(BUGGY_SAMSUNG_ENABLED) > 4) {
+               buggy_samsung = true;
+               UserError.Log.d(TAG,"Enabling wake workaround mode due to historical pattern");
+           }
         }
     }
 
@@ -469,16 +504,6 @@ public class JoH {
         }
     }
 
-    /*KS// compare stored byte array hashes
-    public static synchronized boolean differentBytes(String name, byte[] bytes) {
-        final String id = "differentBytes-" + name;
-        final String last_hash = PersistentStore.getString(id);
-        final String this_hash = CipherUtils.getSHA256(bytes);
-        if (this_hash.equals(last_hash)) return false;
-        PersistentStore.setString(id, this_hash);
-        return true;
-    }*/
-
     public static synchronized void clearRatelimit(final String name) {
         if (PersistentStore.getLong(name) > 0) {
             PersistentStore.setLong(name, 0);
@@ -498,7 +523,7 @@ public class JoH {
         } else {
             rate_time = rateLimits.get(name);
         }
-        if ((rate_time > 0) && (time_now - rate_time) < (seconds * 1000)) {
+        if ((rate_time > 0) && (time_now - rate_time) < (seconds * 1000L)) {
             Log.d(TAG, name + " rate limited: " + seconds + " seconds");
             return false;
         }
@@ -511,7 +536,7 @@ public class JoH {
     // return true if below rate limit
     public static synchronized boolean ratelimit(String name, int seconds) {
         // check if over limit
-        if ((rateLimits.containsKey(name)) && (JoH.tsl() - rateLimits.get(name) < (seconds * 1000))) {
+        if ((rateLimits.containsKey(name)) && (JoH.tsl() - rateLimits.get(name) < (seconds * 1000L))) {
             Log.d(TAG, name + " rate limited: " + seconds + " seconds");
             return false;
         }
@@ -535,7 +560,7 @@ public class JoH {
     public static synchronized boolean ratelimitmilli(String name, int milliseconds) {
         // check if over limit
         if ((rateLimits.containsKey(name)) && (JoH.tsl() - rateLimits.get(name) < (milliseconds))) {
-            Log.d(TAG, name + " rate limited: " + milliseconds + " milliseconds");
+            //Log.d(TAG, name + " rate limited: " + milliseconds + " milliseconds");
             return false;
         }
         // not over limit
@@ -745,6 +770,11 @@ public class JoH {
         return wl;
     }
 
+    public static String getRFC822String(long timestamp) {
+        final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
+        return dateFormat.format(new Date(timestamp));
+    }
+
     public static PowerManager.WakeLock getWakeLock(final int type, final String name, int millis) {//KS
         final PowerManager pm = (PowerManager) xdrip.getAppContext().getSystemService(Context.POWER_SERVICE);//KS
         PowerManager.WakeLock wl = pm.newWakeLock(type, name);//PowerManager.SCREEN_BRIGHT_WAKE_LOCK
@@ -860,6 +890,42 @@ public class JoH {
         }
         //Log.d(TAG, "l:" + local + " r:" + remote + " slen:" + slen + " llen:" + llen + " matched:" + matched + "  q:" + JoH.qs(quota, 2) + "  dm:" + dmatch + " RESULT: " + result);
         return result;
+    }
+
+    public static void forceCellularOrWifiUsage() {
+        final ConnectivityManager cm =
+                (ConnectivityManager) xdrip.getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        final NetworkRequest.Builder networkBuilder =  new NetworkRequest.Builder()
+                .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+                .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+                .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+
+        final ConnectivityManager.NetworkCallback callback = new ConnectivityManager.NetworkCallback() {
+            @Override
+            public void onAvailable(Network network) {
+                UserError.Log.e(TAG, "Bind process to use cellular or wifi network by default. " + network);
+                cm.bindProcessToNetwork(network);
+            }
+
+            @Override
+            public void onLost(Network network) {
+                UserError.Log.e(TAG, "Network lost :/ " + network);
+                cm.bindProcessToNetwork(null);
+            }
+
+            @Override
+            public void onUnavailable() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    super.onUnavailable();
+                }
+                UserError.Log.e(TAG, "Network not available ");
+            }
+        };
+
+        UserError.Log.e(TAG, "Request cellular or wifi network.");
+        cm.requestNetwork(networkBuilder.build(), callback
+        );
     }
 
     public static boolean runOnUiThread(Runnable theRunnable) {
@@ -1027,58 +1093,6 @@ public class JoH {
         }
     }
 
-
-/*//KS    public static Bitmap screenShot(View view, String annotation) {
-
-        if (view == null) {
-            static_toast_long("View is null in screenshot!");
-            return null;
-        }
-        final int width = view.getWidth();
-        final int height = view.getHeight();
-        Log.d(TAG, "Screenshot called: " + width + "," + height);
-        final Bitmap bitmap = Bitmap.createBitmap(width,
-                height, Bitmap.Config.ARGB_8888);
-
-        final Canvas canvas = new Canvas(bitmap);
-        if (Pref.getBooleanDefaultFalse(SHOW_STATISTICS_PRINT_COLOR)) {
-            Paint paint = new Paint();
-            paint.setColor(Color.WHITE);
-            paint.setStyle(Paint.Style.FILL);
-            canvas.drawRect(0, 0, width, height, paint);
-        }
-
-
-        view.destroyDrawingCache();
-        view.layout(0, 0, width, height);
-        view.draw(canvas);
-
-        if (annotation != null) {
-            final int offset = (annotation != null) ? 40 : 0;
-            final Bitmap bitmapf = Bitmap.createBitmap(width,
-                    height + offset, Bitmap.Config.ARGB_8888);
-            final Canvas canvasf = new Canvas(bitmapf);
-
-            Paint paint = new Paint();
-            if (Pref.getBooleanDefaultFalse(SHOW_STATISTICS_PRINT_COLOR)) {
-                paint.setColor(Color.WHITE);
-                paint.setStyle(Paint.Style.FILL);
-                canvasf.drawRect(0, 0, width, offset, paint);
-                paint.setColor(Color.BLACK);
-            } else {
-                paint.setColor(Color.GRAY);
-            }
-            paint.setTextSize(20);
-            // paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OUT));
-            canvasf.drawBitmap(bitmap, 0, offset, paint);
-            canvasf.drawText(annotation, 50, (offset / 2) + 5, paint);
-            bitmap.recycle();
-            return bitmapf;
-        }
-
-        return bitmap;
-    }*/
-
     public static Bitmap screenShot2(View view) {
         Log.d(TAG, "Screenshot2 called: " + view.getWidth() + "," + view.getHeight());
         view.setDrawingCacheEnabled(true);
@@ -1086,7 +1100,6 @@ public class JoH {
         final Bitmap bitmap = view.getDrawingCache(true);
         return bitmap;
     }
-
 
     public static void bitmapToFile(Bitmap bitmap, String path, String fileName) {
 
@@ -1561,13 +1574,6 @@ public class JoH {
         }
         return false;
     }
-
-    public static ByteBuffer bArrayAsBuffer(byte[] bytes) {
-        final ByteBuffer bb = ByteBuffer.allocate(bytes.length);
-        bb.put(bytes);
-        return bb;
-    }
-
     public synchronized static void restartBluetooth(final Context context) {
         restartBluetooth(context, 0);
     }
@@ -1631,13 +1637,6 @@ public class JoH {
         UserError.Log.d(TAG, "unBond() finished");
     }
 
-    public static void threadSleep(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            //
-        }
-    }
 
     public static Map<String, String> bundleToMap(Bundle bundle) {
         final HashMap<String, String> map = new HashMap<>();
@@ -1650,12 +1649,46 @@ public class JoH {
         return map;
     }
 
+    public static void threadSleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            //
+        }
+    }
+
+    public static ByteBuffer bArrayAsBuffer(byte[] bytes) {
+        final ByteBuffer bb = ByteBuffer.allocate(bytes.length);
+        bb.put(bytes);
+        return bb;
+    }
+
+    public static byte[] splitBytes(final byte[] source, final int start, final int length) {
+        final byte[] newBytes = new byte[length];
+        System.arraycopy(source, start, newBytes, 0, length);
+        return newBytes;
+    }
+
+    public static byte[] joinBytes(final byte[] first, final byte[] second) {
+        if (first == null || second == null) {
+            throw new IllegalArgumentException("Input arrays cannot be null");
+        }
+        final int totalLength = first.length + second.length;
+        final byte[] result = new byte[totalLength];
+        System.arraycopy(first, 0, result, 0, first.length);
+        System.arraycopy(second, 0, result, first.length, second.length);
+        return result;
+    }
+
+
     public static long checksum(byte[] bytes) {
         if (bytes == null) return 0;
         final CRC32 crc = new CRC32();
         crc.update(bytes);
         return crc.getValue();
     }
+
+
 
     public static byte[] bchecksum(byte[] bytes) {
         final long c = checksum(bytes);
@@ -1675,13 +1708,13 @@ public class JoH {
     public static int parseIntWithDefault(String number, int radix, int defaultVal) {
         try {
             return Integer.parseInt(number, radix);
-        } catch (NumberFormatException e) {
-            Log.e(TAG, "Error parsing integer number = " + number + " radix = " + radix);
-            return defaultVal;
-        }
+       } catch (NumberFormatException e) {
+           Log.e(TAG, "Error parsing integer number = " + number + " radix = " + radix);
+           return defaultVal;
+       }
     }
 
-    public static double roundDouble(double value, int places) {
+    public static double roundDouble(final double value, int places) {
         if (places < 0) throw new IllegalArgumentException("Invalid decimal places");
         BigDecimal bd = new BigDecimal(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
@@ -1713,4 +1746,6 @@ public class JoH {
     public static boolean emptyString(final String str) {
         return str == null || str.length() == 0;
     }
+
+
 }
