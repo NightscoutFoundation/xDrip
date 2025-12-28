@@ -308,7 +308,7 @@ dependencies {
     implementation ("androidx.health.connect:connect-client:1.1.0-alpha06") {
         exclude group: 'androidx.core', module: 'core'
     }
-    implementation 'com.github.jamorham:amazfitcommunication:master-SNAPSHOT'
+    implementation 'com.github.jamorham:amazfitcommunication:1.0'
     implementation 'io.reactivex:rxjava:1.3.3'
     implementation "com.polidea.rxandroidble2:rxandroidble:1.12.1"
     implementation 'com.google.guava:guava:24.1-android'
