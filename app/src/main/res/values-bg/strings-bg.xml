@@ -201,7 +201,7 @@
     <string name="not_for_medical_use">Не е за медицинско предназначение - инструмент само за проучване</string>
     <string name="deel_settings_for_algs">По-подробни настройки за алгоритмите</string>
     <string name="low_level_prediction_values">Стойности на предсказание за ниска КЗ</string>
-    <string name="glucose_drop_for_one_unit">Глюкозен спад за 1 единица</string>
+    <string name="glucose_drop_for_one_unit">Глюкозен спад за 1 единица инсулин</string>
     <string name="xdrip_plus_prediction_settings">xDrip+ Настройки на симулация за предвиждане</string>
     <string name="settings_for_syncing">Настройки за синхронизация между слушалки</string>
     <string name="xdrip_plus_sync_settings">xDrip+ синхронизиращи настройки</string>
@@ -239,7 +239,7 @@
     <string name="xdrip_plus_display_settings">xDrip+ Персонализиране</string>
     <string name="display_customisations">Покажи персонализация</string>
     <string name="insulin_carb_ratios_etc_for_models">Инсулин, Въглехидратно съотношение и др. за модели</string>
-    <string name="grams_of_carbohydrate_one_unit_covers">Грама въглехидрати на 1 ед. инсулин</string>
+    <string name="grams_of_carbohydrate_one_unit_covers">Грамове въглехидрати покриващи 1 единица</string>
     <string name="linear_model_carbs_absorbed_per_hour">Линеен модел въглих. абсорбирани на час</string>
     <string name="carb_absorption_rate">Коефициент на усвояване на въглехидрати</string>
     <string name="calculate_including_glucose_trend">Изчисли отчитайки тренда на глюкозата</string>
