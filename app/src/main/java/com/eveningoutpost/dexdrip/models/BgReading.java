@@ -1166,6 +1166,22 @@ public class BgReading extends Model implements ShareUploadableBg {
             Log.w(TAG, "No sensor, ignoring this bg reading");
             return null;
         }
+
+        if (Double.isInfinite(calculated_value) || Double.isNaN(calculated_value)) {
+            Log.e(TAG, "Ignoring invalid bg reading: " + calculated_value);
+            return null;
+        }
+
+        if (calculated_value < 0) {
+            Log.e(TAG, "Ignoring negative bg reading: " + calculated_value);
+            return null;
+        }
+
+        if (calculated_value > 600) {
+            Log.e(TAG, "Ignoring too high bg reading: " + calculated_value);
+            return null;
+        }
+
         // TODO slope!!
         final BgReading existing = getForPreciseTimestamp(timestamp, Constants.MINUTE_IN_MS);
         if (existing == null) {
