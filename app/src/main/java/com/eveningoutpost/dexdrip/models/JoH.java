@@ -575,6 +575,24 @@ public class JoH {
     }
 
 
+    static volatile String lastLoggedMessage = "";
+    public static synchronized void logMessage(final String message) {
+        if (message == null) return;
+        if (message.equals(lastLoggedMessage)) return;
+        if (ratelimit("joh-logMessage", 300)) {
+            if (Telemetry.isTelemetryEnabled()) {
+                try {
+                    Sentry.captureMessage(message);
+                    UserError.Log.e(TAG, "Message logged: " + message);
+                } catch (Exception ex) {
+                    //
+                }
+            }
+        }
+    }
+
+
+
     // compare stored byte array hashes
     public static synchronized boolean differentBytes(String name, byte[] bytes) {
         final String id = "differentBytes-" + name;
@@ -595,7 +613,7 @@ public class JoH {
     }
 
     // return true if below rate limit (persistent version)
-    public static synchronized boolean pratelimit(String name, int seconds) {
+    public static synchronized boolean pratelimit(final String name, final int seconds) {
         // check if over limit
         final long time_now = JoH.tsl();
         final long rate_time;
