@@ -89,6 +89,10 @@ public enum CalibrationState {
                 || this == SensorFailed7;
     }
 
+    public boolean warmUpOrOkay() {
+        return this == WarmingUp || this == Ok;
+    }
+
     public boolean insufficientCalibration() {
         return this == InsufficientCalibration;
     }
