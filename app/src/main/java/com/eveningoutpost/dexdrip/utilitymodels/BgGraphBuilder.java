@@ -77,6 +77,7 @@ import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.ValueShape;
+import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.ChartUtils;
 
 import lombok.Getter;
@@ -86,6 +87,9 @@ import lombok.val;
 import static com.eveningoutpost.dexdrip.models.JoH.tolerantParseDouble;
 import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.X;
 import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.getCol;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HOUR_IN_MS;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MAX_READINGS_PER_HOUR;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getDexCollectionType;
 import static lecho.lib.hellocharts.Log.setLogger;
 
 public class BgGraphBuilder {
@@ -103,6 +107,23 @@ public class BgGraphBuilder {
     private final static String TAG = "jamorham graph";
     //private final static int pluginColor = Color.parseColor("#AA00FFFF"); // temporary
     public boolean custimze_y_range = Pref.getBoolean("Customize_yRange", false); // True when Customize y axis range is enabled
+    public static final float Y_AXIS_AUTO_PAN_LOOKBACK_HOURS = 3f; // Look-back window (in hours) for Y-axis auto-panning.
+
+    /*
+     * xDrip historically treats insulin-related plots (IoB, CoB, insulin activity and notes)
+     * differently from other non-glucose elements. When present, they force the Y-axis
+     * to extend down to 0 and are drawn relative to that baseline, while elements like
+     * steps or heart rate are drawn at fixed on-screen positions.
+     *
+     * To avoid coupling Y-axis panning logic to the presence of insulin plots, we no longer
+     * extend the Y-axis to 0 when auto-pan is enabled. Instead:
+     * - insulin-related elements are anchored to the bottom of the current glucose viewport
+     * - other non-glucose elements are shifted only by the amount of vertical auto-pan
+     *
+     * This requires two distinct offsets.
+     */
+    private float windowBottomOffset; // Anchors insulin-related non-glucose elements (IoB, CoB, insulin activity, and related notes) to the bottom of the glucose window.
+    private float panCompensationOffset; // Shifts the non-glucose elements like step counter or heart rate to position them correctly when auto-panning.
 
     private final static int pluginSize = 2;
     final int pointSize;
@@ -271,6 +292,78 @@ public class BgGraphBuilder {
             return 1;
     }
 
+    private boolean isAutoYPanEnabled() {
+        // When true, xDrip auto-pans the Y-axis instead of extending the range for out-of-range readings.
+        return Pref.getBooleanDefaultFalse("auto_y_pan");
+    }
+
+    public Viewport computeYViewport() {
+        // Compute current viewport
+        double spanY = defaultMaxY - defaultMinY; // Y axis range
+        boolean topIsAnchor = true; // True = top is anchor (extend bottom from top); false = bottom is anchor (extend top from bottom)
+        double currentTop = defaultMaxY; // currentTop is the current top if topIsAnchor is true.
+        double currentBottom = defaultMinY; // currentBottom is the current bottom if topIsAnchor is false.
+
+        long lookbackMs = (long) (HOUR_IN_MS * Y_AXIS_AUTO_PAN_LOOKBACK_HOURS); // Look-back time period in milliseconds
+        int numberOfReadings = (int) Math.ceil(Y_AXIS_AUTO_PAN_LOOKBACK_HOURS * MAX_READINGS_PER_HOUR) * 2; // Maximum number of readings requested from the database
+        // Doubled to ensure we catch all readings, including rare backfill overlaps.
+
+        // Retrieve recent BG readings in ascending time order.
+        final List<BgReading> recent = BgReading.latestForGraphAscNewest(numberOfReadings, JoH.tsl() - lookbackMs, JoH.tsl());
+
+        if (recent != null && !recent.isEmpty()) {
+
+            String collector = getDexCollectionType().toString(); // Identify which collector is being used
+
+            for (BgReading r : recent) { // Process each reading in the Look-back period
+                double valueY = unitized(r.calculated_value); // Reading value
+                if (Double.isNaN(valueY)) { // Skip invalid readings
+                    UserError.Log.e(TAG, "NaN detected. Collector = " + collector + ",  Raw = " + r.raw_data);
+                    continue;
+                }
+
+                if (topIsAnchor) { // We extend bottom from top
+                    if (valueY > currentTop) currentTop = valueY; // Extend top for newer high
+                    if (currentTop - valueY > spanY) { // Exceeds allowed span → switch anchor to bottom
+                        topIsAnchor = false; currentBottom = valueY;
+                    }
+                } else { // We extend top from bottom
+                    if (valueY < currentBottom) currentBottom = valueY; // Extend bottom for newer low
+                    if (valueY - currentBottom > spanY) { // Exceeds allowed span → switch anchor to top
+                        topIsAnchor = true; currentTop = valueY;
+                    }
+                }
+            }
+        }
+
+        Viewport v = new Viewport();
+        if (topIsAnchor) {
+            v.top = currentTop; v.bottom = v.top - spanY;
+        }
+        else {
+            v.bottom = currentBottom; v.top = v.bottom + spanY;
+        }
+        return v;
+    }
+
+    private void computeYPanOffsets() {
+        if (!isAutoYPanEnabled()) { // If auto Y-panning is not active, set the offsets to 0.
+            windowBottomOffset = 0f;
+            panCompensationOffset = 0f;
+            return;
+        }
+
+        Viewport v = computeYViewport();
+        windowBottomOffset = (float) v.bottom; // Bottom of the auto-panned glucose viewport
+        panCompensationOffset = (float) (v.top - defaultMaxY); // Delta between the top of the auto-panned glucose viewport and the chosen top by the user
+    }
+
+    private float clampNonGlucoseY(float y) {
+        // Prevent drawing outside the glucose chart range
+        y = Math.max(0f, y); // 0 is the smallest acceptable value for the vertical position of a non-glucose item.
+        y = Math.min(y, BgReading.BG_READING_MAXIMUM_VALUE); // BG_READING_MAXIMUM_VALUE is the largest acceptable value for the vertical position of a non-glucose item.
+        return y;
+    }
 
     static public boolean isXLargeTablet(Context context) {
         if (Pref.getBooleanDefaultFalse("enlarge_fonts_on_large_screens")) {
@@ -383,9 +476,10 @@ public class BgGraphBuilder {
 
                 int count = aplist.size();
                 for (APStatus item : aplist) {
-                    val sanitized_percent = Math.min(500, Math.max(0, item.basal_percent)); // capped at 500%
+                    val sanitized_percent = Math.min(BgReading.BG_READING_MAXIMUM_VALUE, Math.max(0, item.basal_percent)); // percent value plotted on glucose axis; capped to prevent Y-axis growth
                     if (--count == 0 || (sanitized_percent != last_percent)) {
-                        final float this_ypos = (sanitized_percent * yscale) / 100f;
+                        float this_ypos = (sanitized_percent * yscale) / 100f;
+                        this_ypos = clampNonGlucoseY(this_ypos + panCompensationOffset);
                         final double fuzzedT = (double) item.timestamp / FUZZER;
                         if (fuzzedT != last_timestamp) {
                             points.add(new HPointValue(fuzzedT, this_ypos));
@@ -427,7 +521,8 @@ public class BgGraphBuilder {
             final boolean d = false;
             if (d) Log.d(TAG, "Delta: pmlist size: " + pmlist.size());
             final float yscale = doMgdl ? (float) Constants.MMOLL_TO_MGDL : 1f;
-            final float ypos = 6 * yscale; // TODO Configurable
+            float ypos = 6 * yscale; // TODO Configurable
+            ypos = clampNonGlucoseY(ypos + panCompensationOffset);
             //final long last_timestamp = pmlist.get(pmlist.size() - 1).timestamp;
             final float MAX_SIZE = 50;
             int flipper = 0;
@@ -522,6 +617,7 @@ public class BgGraphBuilder {
                     UserError.Log.d("HEARTRATE: ", JoH.dateTimeText(pm.timestamp) + " \tHR: " + pm.bpm);
 
                 ypos = (pm.bpm * yscale) / 10;
+                ypos = clampNonGlucoseY(ypos + panCompensationOffset);
                 final PointValue this_point = new HPointValue((double) pm.timestamp / FUZZER, ypos);
                 new_points.add(this_point);
             }
@@ -673,6 +769,7 @@ public class BgGraphBuilder {
         List<Line> lines = new ArrayList<Line>();
         try {
 
+            computeYPanOffsets(); // Calculate the panning offsets so that the non-glucose elements can be drawn.
             addBgReadingValues(simple);
 
             if (!simple) {
@@ -1557,7 +1654,9 @@ public class BgGraphBuilder {
                         if (showSMB && treatment.likelySMB()) {
                             final Pair<Float, Float> yPositions = GraphTools.bestYPosition(bgReadings, treatment.timestamp, doMgdl, false, highMark, 10 + (100d * treatment.insulin));
                             if (yPositions.first > 0) {
-                                final PointValueExtended pv = new PointValueExtended(treatment.timestamp / FUZZER, yPositions.first); // TEST VALUES
+                                float yPosition = yPositions.first;
+                                yPosition = clampNonGlucoseY(yPosition + panCompensationOffset);
+                                final PointValueExtended pv = new PointValueExtended(treatment.timestamp / FUZZER, yPosition); // TEST VALUES
                                 pv.setPlumbPos(GraphTools.yposRatio(yPositions.second, yPositions.first, 0.1f));
                                 BitmapLoader.loadAndSetKey(pv, R.drawable.triangle, 180);
                                 pv.setBitmapTint(getCol(X.color_smb_icon));
@@ -1584,7 +1683,9 @@ public class BgGraphBuilder {
                                     consecutiveCloseIcons = 0;
                                 }
                                 final Pair<Float, Float> yPositions = GraphTools.bestYPosition(bgReadings, treatment.timestamp, doMgdl, false, highMark, 27d + (18d * consecutiveCloseIcons));
-                                pv.set((double)treatment.timestamp / FUZZER, yPositions.first);
+                                float yPosition = yPositions.first;
+                                yPosition = clampNonGlucoseY(yPosition + panCompensationOffset);
+                                pv.set((double)treatment.timestamp / FUZZER, yPosition);
                                 //pv.setPlumbPos(yPositions.second);
                                 iconValues.add(pv);
                                 lastIconTimestamp = treatment.timestamp;
@@ -1598,7 +1699,8 @@ public class BgGraphBuilder {
                             height = treatment.insulin; // some scaling needed I think
                         if (height > highMark) height = highMark;
                         if (height < lowMark) height = lowMark;
-                        final PointValueExtended pv = new PointValueExtended((double) (treatment.timestamp / FUZZER), height);
+                        float yPosition = clampNonGlucoseY((float) height + windowBottomOffset);
+                        final PointValueExtended pv = new PointValueExtended((double) (treatment.timestamp / FUZZER), yPosition);
                         pv.real_timestamp = treatment.timestamp;
                         if (treatment.isPenSyncedDose()) {
                             pv.setType(PointValueExtended.AdjustableDose).setUUID(treatment.uuid);
@@ -1622,7 +1724,8 @@ public class BgGraphBuilder {
                             BitmapLoader.loadAndSetKey(pv, R.drawable.ic_eyedropper_variant_grey600_24dp, 0);
                             pv.setBitmapTint(getCol(X.color_basal_tbr));
                             final Pair<Float, Float> yPositions = GraphTools.bestYPosition(bgReadings, treatment.timestamp, doMgdl, false, highMark, 27d + (18d * consecutiveCloseIcons));
-                            pv.set(treatment.timestamp / FUZZER, yPositions.first);
+                            yPosition = clampNonGlucoseY(yPositions.first + panCompensationOffset);
+                            pv.set(treatment.timestamp / FUZZER, yPosition);
                             pv.note = treatment.getBestShortText();
                             iconValues.add(pv);
                             lastIconTimestamp = treatment.timestamp;
@@ -1636,7 +1739,9 @@ public class BgGraphBuilder {
                             try {
                                 final Matcher m = posPattern.matcher(treatment.enteredBy);
                                 if (m.matches()) {
-                                    pv.set(pv.getX(), Math.min(tolerantParseDouble(m.group(1)), 18 * bgScale)); // don't allow pos note to exceed 18mmol on chart
+                                    yPosition = (float) Math.min(tolerantParseDouble(m.group(1)), 18 * bgScale); // don't allow pos note to exceed 18mmol on chart
+                                    yPosition = clampNonGlucoseY(yPosition + panCompensationOffset);
+                                    pv.set(pv.getX(), yPosition);
                                 }
                             } catch (Exception e) {
                                 Log.d(TAG, "Exception matching position: " + e);
@@ -1731,12 +1836,16 @@ public class BgGraphBuilder {
                                     double height = iob.iob * iobscale;
                                     if (height > cob_insulin_max_draw_value)
                                         height = cob_insulin_max_draw_value;
-                                    PointValue pv = new HPointValue((double) fuzzed_timestamp, (float) height);
+                                    float yPosition = (float) height;
+                                    yPosition = clampNonGlucoseY(yPosition + windowBottomOffset);
+                                    PointValue pv = new HPointValue((double) fuzzed_timestamp, yPosition);
                                     iobValues.add(pv);
                                     double activityheight = iob.jActivity * 3; // currently scaled by profile
                                     if (activityheight > cob_insulin_max_draw_value)
                                         activityheight = cob_insulin_max_draw_value;
-                                    PointValue av = new HPointValue((double) fuzzed_timestamp, (float) activityheight);
+                                    yPosition = (float) activityheight;
+                                    yPosition = clampNonGlucoseY(yPosition + windowBottomOffset);
+                                    PointValue av = new HPointValue((double) fuzzed_timestamp, yPosition);
                                     activityValues.add(av);
                                 }
 
@@ -1744,7 +1853,9 @@ public class BgGraphBuilder {
                                     double height = iob.cob * cobscale;
                                     if (height > cob_insulin_max_draw_value)
                                         height = cob_insulin_max_draw_value;
-                                    PointValue pv = new HPointValue((double) fuzzed_timestamp, (float) height);
+                                    float yPosition = (float) height;
+                                    yPosition = clampNonGlucoseY(yPosition + windowBottomOffset);
+                                    PointValue pv = new HPointValue((double) fuzzed_timestamp, yPosition);
                                     if (d)
                                         Log.d(TAG, "Cob total record: " + JoH.qs(height) + " " + JoH.qs(iob.cob) + " " + Double.toString(pv.getY()) + " @ timestamp: " + Long.toString(iob.timestamp));
                                     cobValues.add(pv); // warning should not be hardcoded

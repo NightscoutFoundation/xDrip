@@ -57,6 +57,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -970,6 +971,26 @@ public class BgReading extends Model implements ShareUploadableBg {
                 .orderBy("timestamp asc")
                 .limit(number)
                 .execute();
+    }
+
+    public static List<BgReading> latestForGraphAscNewest(int number, long startTime, long endTime) {
+        // If the number of readings in the specified period exceeds the limit, keep the most recent readings.
+        List<BgReading> list = new Select()
+                .from(BgReading.class)
+                .where("timestamp >= " + Math.max(startTime, 0))
+                .where("timestamp <= " + endTime)
+                .where("calculated_value != 0")
+                .where("raw_data != 0")
+                .orderBy("timestamp desc") // get newest first
+                .limit(number)
+                .execute();
+
+        // Restore ascending order for graph logic
+        if (list != null) {
+            Collections.reverse(list);
+        }
+
+        return list;
     }
 
     public static BgReading readingNearTimeStamp(long startTime) {
