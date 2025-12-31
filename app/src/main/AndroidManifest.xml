@@ -531,6 +531,16 @@
                 android:resource="@xml/x_drip_widget_info" />
         </receiver>
 
+        <receiver android:name=".xDripWidgetExtended">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/x_drip_widget_extended_info" />
+        </receiver>
+
         <service
             android:name=".WidgetUpdateService"
             android:enabled="true"
