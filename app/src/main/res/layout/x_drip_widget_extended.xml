@@ -109,67 +109,65 @@
         android:paddingTop="4dp">
 
         <!-- 7-day average -->
-        <LinearLayout
+        <FrameLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="7d:"
-                android:textColor="#aaaaaa"
-                android:textSize="28sp" />
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/widgetAvg7d"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
+                android:layout_marginStart="18dp"
                 android:text="--"
                 android:textColor="#ffffff"
                 android:textSize="28sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="7d"
+                android:textColor="#aaaaaa"
+                android:textSize="10sp" />
 
             <TextView
                 android:id="@+id/widgetAvg7dTrend"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="68dp"
                 android:text="→"
                 android:textColor="#aaaaaa"
                 android:textSize="24sp" />
-        </LinearLayout>
+        </FrameLayout>
 
         <!-- 30-day average -->
-        <LinearLayout
+        <FrameLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="30d:"
-                android:textColor="#aaaaaa"
-                android:textSize="28sp" />
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/widgetAvg30d"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
+                android:layout_marginStart="18dp"
                 android:text="--"
                 android:textColor="#ffffff"
                 android:textSize="28sp" />
 
             <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="30d"
+                android:textColor="#aaaaaa"
+                android:textSize="10sp" />
+
+            <TextView
                 android:id="@+id/widgetAvg30dTrend"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="68dp"
                 android:text="→"
                 android:textColor="#aaaaaa"
                 android:textSize="24sp" />
-        </LinearLayout>
+        </FrameLayout>
     </LinearLayout>
 </LinearLayout>
