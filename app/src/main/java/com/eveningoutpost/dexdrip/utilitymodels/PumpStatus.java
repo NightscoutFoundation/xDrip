@@ -1,11 +1,10 @@
 package com.eveningoutpost.dexdrip.utilitymodels;
 
-import android.util.Log;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.models.JoH;
-import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,8 +30,13 @@ public class PumpStatus {
     }
 
     private static double getValue(String name) {
+        long timeout = Constants.MINUTE_IN_MS * 180;
+        if (name.equals(PUMP_BOLUSIOB)) {
+            timeout = Constants.MINUTE_IN_MS * 30;
+        }
+
         final long ts = PersistentStore.getLong(name + TIME);
-        if ((ts > 1503081681000L) && (JoH.msSince(ts) < Constants.MINUTE_IN_MS * 30)) {
+        if ((ts > 1503081681000L) && (JoH.msSince(ts) < timeout)) {
             return PersistentStore.getDouble(name);
         } else {
             return -1;
@@ -66,7 +70,7 @@ public class PumpStatus {
     public static String getReservoirString() {
         final double reservoir = getReservoir();
         if (reservoir > -1) {
-            return "\uD83D\uDCDF" + "" + JoH.qs(reservoir, 1) + "U ";
+            return "\uD83D\uDCDF" + "" + JoH.qs(reservoir, 1) + "U "; // pager emoji
         } else {
             return "";
         }
@@ -76,7 +80,7 @@ public class PumpStatus {
         final double value = getBolusIoB();
         if (value > -1) {
             // return "\u231B" + " " + JoH.qs(value, 1) + "U ";
-            return "\u23F3" + "" + JoH.qs(value, 2) + "U ";
+            return "\u23F3" + "" + JoH.qs(value, 2) + "U "; // hourglass emoji
         } else {
             return "";
         }
@@ -85,7 +89,7 @@ public class PumpStatus {
     public static String getBatteryString() {
         final double value = getBattery();
         if (value > -1) {
-            return "\uD83D\uDD0B" + "" + JoH.qs(value, 0) + "% ";
+            return "\uD83D\uDD0B" + "" + JoH.qs(value, 0) + "% "; // battery emoji
         } else {
             return "";
         }
@@ -98,7 +102,7 @@ public class PumpStatus {
             json.put("bolusiob", getBolusIoB());
             json.put("battery", getBattery());
         } catch (JSONException e) {
-            UserError.Log.e(TAG, "Got exception building PumpStatus " + e);
+            Log.e(TAG, "Got exception building PumpStatus " + e);
         }
         return json.toString();
     }
@@ -121,8 +125,9 @@ public class PumpStatus {
                 Log.d(TAG, "No sync as data is identical");
             } else {
                 Log.d(TAG, "Sending update: " + current_json);
-                GcmActivity.sendPumpStatus(current_json);
-                last_json = current_json;
+                if (GcmActivity.sendPumpStatus(current_json)) {
+                    last_json = current_json;
+                }
             }
         }
     }
