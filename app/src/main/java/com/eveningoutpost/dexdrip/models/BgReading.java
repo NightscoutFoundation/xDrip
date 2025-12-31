@@ -1003,9 +1003,10 @@ public class BgReading extends Model implements ShareUploadableBg {
                 .limit(number)
                 .execute();
 
-        // Restore ascending order for graph logic
+        // Restore ascending order for graph logic and remove invalid readings.
         if (list != null) {
             Collections.reverse(list);
+            list = filterInvalidReadings(list);
         }
 
         return list;
