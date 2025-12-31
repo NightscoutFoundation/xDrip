@@ -90,13 +90,14 @@ public class UpdateActivity extends BaseAppCompatActivity {
     public static void checkForAnUpdate(final Context context, final boolean fromUi) {
         if (prefs == null) prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if ((last_check_time != -1) && (!prefs.getBoolean(AUTO_UPDATE_PREFS_NAME, true))) return;
+        String channel = prefs.getString("update_channel", "beta");
         if (last_check_time == 0)
             last_check_time = prefs.getLong(last_update_check_time, 0);
-        if (((JoH.tsl() - last_check_time) > (86300000 * 2)) || (debug)) {
+        long checkFrequency = channel.equals("beta") ? (86300_000 * 3) : (86300_000 * 2);
+        if (((JoH.tsl() - last_check_time) > checkFrequency) || (debug)) {
             last_check_time = JoH.tsl();
             prefs.edit().putLong(last_update_check_time, last_check_time).apply();
 
-            String channel = prefs.getString("update_channel", "beta");
             Log.i(TAG, "Checking for a software update, channel: " + channel);
 
             String subversion = "";
@@ -140,7 +141,7 @@ public class UpdateActivity extends BaseAppCompatActivity {
                     final Response response = httpClient.newCall(request).execute();
                     if (response.isSuccessful()) {
 
-                        final String lines[] = response.body().string().split("\\r?\\n");
+                        final String[] lines = response.body().string().split("\\r?\\n");
                         if (lines.length > 1) {
                             try {
                                 newversion = Integer.parseInt(lines[0]);
