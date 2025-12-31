@@ -895,7 +895,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public static List<BgReading> latestForGraph(int number, long startTime, long endTime) {
-        return new Select()
+        final List<BgReading> readings = new Select()
                 .from(BgReading.class)
                 .where("timestamp >= " + Math.max(startTime, 0))
                 .where("timestamp <= " + endTime)
@@ -904,6 +904,24 @@ public class BgReading extends Model implements ShareUploadableBg {
                 .orderBy("timestamp desc")
                 .limit(number)
                 .execute();
+
+       return filterInvalidReadings(readings);
+    }
+
+    private static List<BgReading> filterInvalidReadings(final List<BgReading> readings) {
+        // Filter out invalid values
+        if (readings != null) {
+            if (readings.removeIf(r -> {
+                final double v = r.calculated_value;
+                //noinspection ExpressionComparedToItself
+                return v <= 0.0 || v > 1000.0 || (v != v); // check out of range or NaN
+            })) {
+                if (JoH.ratelimit("bgreading-filtered-invalid", 120)) {
+                    Log.wtf(TAG, "Filtered out invalid BG readings");
+                }
+            }
+        }
+        return readings;
     }
 
     public static List<BgReading> latestForGraphSensor(int number, long startTime, long endTime) {
