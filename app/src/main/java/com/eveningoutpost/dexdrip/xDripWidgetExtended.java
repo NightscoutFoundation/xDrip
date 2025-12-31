@@ -1,38 +1,22 @@
 package com.eveningoutpost.dexdrip;
 
-import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.getCol;
-
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.view.View;
 import android.widget.RemoteViews;
 
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.JoH;
-import com.eveningoutpost.dexdrip.models.Sensor;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder;
-import com.eveningoutpost.dexdrip.utilitymodels.BgSparklineBuilder;
-import com.eveningoutpost.dexdrip.utilitymodels.ColorCache;
-import com.eveningoutpost.dexdrip.utilitymodels.Pref;
-import com.eveningoutpost.dexdrip.utilitymodels.StatusLine;
-import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
+import com.eveningoutpost.dexdrip.utilitymodels.WidgetDisplayHelper;
 
-import java.text.MessageFormat;
-import java.util.Date;
 import java.util.List;
-
-import com.activeandroid.Cache;
-
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 
 /**
  * Extended xDrip Widget with 7-day and 30-day averages.
@@ -41,11 +25,18 @@ import android.database.sqlite.SQLiteDatabase;
 public class xDripWidgetExtended extends AppWidgetProvider {
 
     public static final String TAG = "xDripWidgetExtended";
-    private static final boolean use_best_glucose = true;
     private static final String CUTOFF = "38";
     private static final int DEFAULT_GRAPH_HEIGHT_DP = 110;
-    private static final double TREND_THRESHOLD_PERCENT = 3.0;
     private static final double MIN_VALID_AVG = 40.0;  // Minimum valid average in mg/dL
+
+    // Memoization cache for averages
+    private static double cachedAvg7d = 0;
+    private static long cachedAvg7dTime = 0;
+    private static final long AVG_7D_CACHE_MS = 60 * 60 * 1000L;  // 1 hour
+
+    private static double cachedAvg30d = 0;
+    private static long cachedAvg30dTime = 0;
+    private static final long AVG_30D_CACHE_MS = 6 * 60 * 60 * 1000L;  // 6 hours
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -105,172 +96,76 @@ public class xDripWidgetExtended extends AppWidgetProvider {
     }
 
     private static void displayCurrentInfo(AppWidgetManager appWidgetManager, int appWidgetId, Context context, RemoteViews views, int maxWidth, int maxHeight) {
+        // Update common widget elements (BG, arrow, delta, age, graph, colors)
+        WidgetDisplayHelper.updateCommonWidgetElements(
+                appWidgetManager, appWidgetId, context, views,
+                R.id.xDripWidgetExtended, maxWidth, maxHeight, DEFAULT_GRAPH_HEIGHT_DP);
+
+        // Add extended-specific: 7-day and 30-day averages
         BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(context);
-        BgReading lastBgReading = BgReading.lastNoSenssor();
 
-        final boolean showLines = Pref.getBoolean("widget_range_lines", false);
-        final boolean showExtraStatus = Pref.getBoolean("extra_status_line", false) && Pref.getBoolean("widget_status_line", false);
+        // Calculate and display 7-day average with trend
+        double avg7d = getAverageDays(7);
+        String avg7dString = bgGraphBuilder.unitized_string(avg7d);
+        views.setTextViewText(R.id.widgetAvg7d, avg7dString);
 
-        if (lastBgReading != null) {
-            double estimate;
-            double estimated_delta = -9999;
-            try {
-                int height = maxHeight == -1 ? appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT) : maxHeight;
-                int width = maxWidth == -1 ? appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH) : maxWidth;
-                if (width >= 100 && !Pref.getBooleanDefaultFalse("widget_hide_graph")) {
-                    // render bg graph - constrain to top portion
-                    int graphHeight = Math.min(height, DEFAULT_GRAPH_HEIGHT_DP);
-                    views.setImageViewBitmap(R.id.widgetGraph, new BgSparklineBuilder(context)
-                            .setBgGraphBuilder(bgGraphBuilder)
-                            .setHeight(graphHeight)
-                            .setWidth(width)
-                            .showHighLine(showLines).showLowLine(showLines).build());
-                    views.setViewVisibility(R.id.widgetGraph, View.VISIBLE);
-                } else {
-                    // hide bg graph
-                    views.setViewVisibility(R.id.widgetGraph, View.INVISIBLE);
-                }
+        // Calculate 7-day trend (compare to previous 7 days, days 8-14)
+        double avg7dPrev = getAverageDaysOffset(7, 7);  // days 8-14
+        String trend7d = (avg7d >= MIN_VALID_AVG && avg7dPrev >= MIN_VALID_AVG)
+                ? getTrendArrow(avg7d, avg7dPrev)
+                : "–";  // em dash for insufficient data
+        views.setTextViewText(R.id.widgetAvg7dTrend, trend7d);
 
-                views.setInt(R.id.xDripWidgetExtended, "setBackgroundColor", ColorCache.getCol(ColorCache.X.color_widget_chart_background));
+        // Calculate and display 30-day average with trend
+        double avg30d = getAverageDays(30);
+        String avg30dString = bgGraphBuilder.unitized_string(avg30d);
+        views.setTextViewText(R.id.widgetAvg30d, avg30dString);
 
-                final BestGlucose.DisplayGlucose dg = (use_best_glucose) ? BestGlucose.getDisplayGlucose() : null;
-                estimate = (dg != null) ? dg.mgdl : lastBgReading.calculated_value;
-                String extrastring = "";
-                String slopeArrow = (dg != null) ? dg.delta_arrow : lastBgReading.slopeArrow();
-                String stringEstimate;
+        // Calculate 30-day trend (compare to previous 30 days, days 31-60)
+        double avg30dPrev = getAverageDaysOffset(30, 30);  // days 31-60
+        String trend30d = (avg30d >= MIN_VALID_AVG && avg30dPrev >= MIN_VALID_AVG)
+                ? getTrendArrow(avg30d, avg30dPrev)
+                : "–";  // em dash for insufficient data
+        views.setTextViewText(R.id.widgetAvg30dTrend, trend30d);
 
-                if (dg == null) {
-                    if (BestGlucose.compensateNoise()) {
-                        estimate = BgGraphBuilder.best_bg_estimate;
-                        estimated_delta = BgGraphBuilder.best_bg_estimate - BgGraphBuilder.last_bg_estimate;
-                        slopeArrow = BgReading.slopeToArrowSymbol(estimated_delta / (BgGraphBuilder.DEXCOM_PERIOD / 60000));
-                        extrastring = " \u26A0";
-                    }
-                    if (Pref.getBooleanDefaultFalse("display_glucose_from_plugin") && (PluggableCalibration.getCalibrationPluginFromPreferences() != null)) {
-                        extrastring += " " + context.getString(R.string.p_in_circle);
-                    }
-                } else {
-                    extrastring = " " + dg.extra_string + ((dg.from_plugin) ? " " + context.getString(R.string.p_in_circle) : "");
-                    estimated_delta = dg.delta_mgdl;
-                    if (dg.warning > 1) slopeArrow = "";
-                }
-
-                if ((new Date().getTime()) - Home.stale_data_millis() - lastBgReading.timestamp > 0) {
-                    Log.d(TAG, "old value, estimate " + estimate);
-                    stringEstimate = bgGraphBuilder.unitized_string(estimate);
-                    slopeArrow = "--";
-                    views.setInt(R.id.widgetBg, "setPaintFlags", Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
-                } else {
-                    stringEstimate = bgGraphBuilder.unitized_string(estimate);
-                    if (lastBgReading.hide_slope) {
-                        slopeArrow = "--";
-                    }
-                    Log.d(TAG, "newish value, estimate " + stringEstimate + slopeArrow);
-                    views.setInt(R.id.widgetBg, "setPaintFlags", 0);
-                }
-
-                if (Sensor.isActive() || Home.get_follower()) {
-                    views.setTextViewText(R.id.widgetBg, stringEstimate);
-                    views.setTextViewText(R.id.widgetArrow, slopeArrow);
-                    if (stringEstimate.length() > 3) {
-                        views.setFloat(R.id.widgetBg, "setTextSize", 45);
-                    } else {
-                        views.setFloat(R.id.widgetBg, "setTextSize", 55);
-                    }
-                } else {
-                    views.setTextViewText(R.id.widgetBg, "");
-                    views.setTextViewText(R.id.widgetArrow, "");
-                }
-
-                // Delta
-                List<BgReading> bgReadingList = BgReading.latest(2, Home.get_follower());
-                if (estimated_delta == -9999) {
-                    if (bgReadingList != null && bgReadingList.size() == 2) {
-                        views.setTextViewText(R.id.widgetDelta, bgGraphBuilder.unitizedDeltaString(true, true, Home.get_follower()));
-                    } else {
-                        views.setTextViewText(R.id.widgetDelta, "--");
-                    }
-                } else {
-                    views.setTextViewText(R.id.widgetDelta, bgGraphBuilder.unitizedDeltaStringRaw(true, true, estimated_delta));
-                }
-
-                // Reading age
-                int timeAgo = (int) Math.floor((new Date().getTime() - lastBgReading.timestamp) / (1000 * 60));
-                final String fmt = context.getString(R.string.minutes_ago);
-                final String minutesAgo = MessageFormat.format(fmt, timeAgo);
-                views.setTextViewText(R.id.readingAge, minutesAgo + extrastring);
-                if (timeAgo > 15) {
-                    views.setTextColor(R.id.readingAge, Color.parseColor("#FFBB33"));
-                } else {
-                    views.setTextColor(R.id.readingAge, Color.WHITE);
-                }
-
-                if (showExtraStatus) {
-                    views.setTextViewText(R.id.widgetStatusLine, StatusLine.extraStatusLine());
-                    views.setViewVisibility(R.id.widgetStatusLine, View.VISIBLE);
-                } else {
-                    views.setTextViewText(R.id.widgetStatusLine, "");
-                    views.setViewVisibility(R.id.widgetStatusLine, View.GONE);
-                }
-
-                // Calculate and display 7-day average with trend
-                double avg7d = getAverageDays(7);
-                String avg7dString = bgGraphBuilder.unitized_string(avg7d);
-                views.setTextViewText(R.id.widgetAvg7d, avg7dString);
-
-                // Calculate 7-day trend (compare to previous 7 days, days 8-14)
-                double avg7dPrev = getAverageDaysOffset(7, 7);  // days 8-14
-                String trend7d = (avg7d >= MIN_VALID_AVG && avg7dPrev >= MIN_VALID_AVG)
-                        ? getTrendArrow(avg7d, avg7dPrev, TREND_THRESHOLD_PERCENT)
-                        : "–";  // em dash for insufficient data
-                views.setTextViewText(R.id.widgetAvg7dTrend, trend7d);
-
-                // Calculate and display 30-day average with trend
-                double avg30d = getAverageDays(30);
-                String avg30dString = bgGraphBuilder.unitized_string(avg30d);
-                views.setTextViewText(R.id.widgetAvg30d, avg30dString);
-
-                // Calculate 30-day trend (compare to previous 30 days, days 31-60)
-                double avg30dPrev = getAverageDaysOffset(30, 30);  // days 31-60
-                String trend30d = (avg30d >= MIN_VALID_AVG && avg30dPrev >= MIN_VALID_AVG)
-                        ? getTrendArrow(avg30d, avg30dPrev, TREND_THRESHOLD_PERCENT)
-                        : "–";  // em dash for insufficient data
-                views.setTextViewText(R.id.widgetAvg30dTrend, trend30d);
-
-                // Color for current BG based on range
-                if (bgGraphBuilder.unitized(estimate) <= bgGraphBuilder.lowMark) {
-                    views.setTextColor(R.id.widgetBg, getCol(ColorCache.X.color_low_bg_values));
-                    views.setTextColor(R.id.widgetDelta, getCol(ColorCache.X.color_low_bg_values));
-                    views.setTextColor(R.id.widgetArrow, getCol(ColorCache.X.color_low_bg_values));
-                } else if (bgGraphBuilder.unitized(estimate) >= bgGraphBuilder.highMark) {
-                    views.setTextColor(R.id.widgetBg, getCol(ColorCache.X.color_high_bg_values));
-                    views.setTextColor(R.id.widgetDelta, getCol(ColorCache.X.color_high_bg_values));
-                    views.setTextColor(R.id.widgetArrow, getCol(ColorCache.X.color_high_bg_values));
-                } else {
-                    views.setTextColor(R.id.widgetBg, getCol(ColorCache.X.color_inrange_bg_values));
-                    views.setTextColor(R.id.widgetDelta, getCol(ColorCache.X.color_inrange_bg_values));
-                    views.setTextColor(R.id.widgetArrow, getCol(ColorCache.X.color_inrange_bg_values));
-                }
-
-                // Averages use neutral color (white)
-                views.setTextColor(R.id.widgetAvg7d, Color.WHITE);
-                views.setTextColor(R.id.widgetAvg30d, Color.WHITE);
-
-            } catch (RuntimeException e) {
-                Log.e(TAG, "Got exception in displayCurrentInfo: " + e);
-            }
-        }
+        // Averages use neutral color (white)
+        views.setTextColor(R.id.widgetAvg7d, Color.WHITE);
+        views.setTextColor(R.id.widgetAvg30d, Color.WHITE);
     }
 
     /**
-     * Calculate average glucose over specified number of days.
+     * Calculate average glucose over specified number of days with memoization.
      * @param days Number of days (7 or 30)
      * @return Average glucose in mg/dL, or 0 if insufficient data
      */
     private static double getAverageDays(int days) {
-        long endTime = System.currentTimeMillis();
-        long startTime = endTime - (days * 24L * 60L * 60L * 1000L);
-        return getAverageForPeriod(startTime, endTime);
+        long now = System.currentTimeMillis();
+
+        if (days == 7) {
+            // Check cache for 7-day average (1 hour cache)
+            if (cachedAvg7dTime > 0 && (now - cachedAvg7dTime) < AVG_7D_CACHE_MS) {
+                return cachedAvg7d;
+            }
+            // Cache miss - calculate and cache
+            long startTime = now - (7 * 24L * 60L * 60L * 1000L);
+            cachedAvg7d = getAverageForPeriod(startTime, now);
+            cachedAvg7dTime = now;
+            return cachedAvg7d;
+        } else if (days == 30) {
+            // Check cache for 30-day average (6 hour cache)
+            if (cachedAvg30dTime > 0 && (now - cachedAvg30dTime) < AVG_30D_CACHE_MS) {
+                return cachedAvg30d;
+            }
+            // Cache miss - calculate and cache
+            long startTime = now - (30 * 24L * 60L * 60L * 1000L);
+            cachedAvg30d = getAverageForPeriod(startTime, now);
+            cachedAvg30dTime = now;
+            return cachedAvg30d;
+        }
+
+        // Fallback for any other day count (no caching)
+        long startTime = now - (days * 24L * 60L * 60L * 1000L);
+        return getAverageForPeriod(startTime, now);
     }
 
     /**
@@ -292,57 +187,45 @@ public class xDripWidgetExtended extends AppWidgetProvider {
      * @return Average glucose in mg/dL, or 0 if insufficient data
      */
     private static double getAverageForPeriod(long startTime, long endTime) {
-        SQLiteDatabase db = null;
-        Cursor cur = null;
         try {
-            db = Cache.openDatabase();
-            cur = db.query("bgreadings",
-                    new String[]{"calculated_value"},
-                    "timestamp >= ? AND timestamp <= ? AND calculated_value > ?",
-                    new String[]{"" + startTime, "" + endTime, CUTOFF},
-                    null, null, null);
+            List<BgReading> readings = BgReading.latestForGraph(Integer.MAX_VALUE, startTime, endTime);
+            if (readings == null || readings.isEmpty()) {
+                return 0;
+            }
 
             double sum = 0;
             int count = 0;
-            if (cur.moveToFirst()) {
-                do {
-                    double value = cur.getDouble(0);
+            for (BgReading reading : readings) {
+                double value = reading.calculated_value;
+                if (value > Double.parseDouble(CUTOFF)) {
                     sum += value;
                     count++;
-                } while (cur.moveToNext());
+                }
             }
 
             return count > 0 ? sum / count : 0;
         } catch (Exception e) {
             Log.e(TAG, "Error calculating average: " + e);
             return 0;
-        } finally {
-            if (cur != null) {
-                try { cur.close(); } catch (Exception ignored) {}
-            }
         }
     }
 
     /**
-     * Get trend arrow based on comparison of two values.
+     * Get trend arrow for average comparison by reusing slopeToArrowSymbol.
+     * Treats the two averages as consecutive readings 5 minutes apart.
      * @param current Current average value
      * @param previous Previous average value
-     * @param thresholdPercent Threshold percentage for "no change" (e.g., 3.0 = 3%)
-     * @return Trend arrow string: ↗ (higher), ↘ (lower), or → (no change)
+     * @return Trend arrow string from BgReading.slopeToArrowSymbol()
      */
-    private static String getTrendArrow(double current, double previous, double thresholdPercent) {
+    private static String getTrendArrow(double current, double previous) {
         if (previous <= 0) {
             return "→";  // No valid previous data
         }
 
-        double percentChange = ((current - previous) / previous) * 100;
+        // Compute slope as if these were two readings 5 minutes apart
+        double slope = (current - previous) / 5;  // mg/dL per 5 minutes -> mg/dL per minute
 
-        if (Math.abs(percentChange) <= thresholdPercent) {
-            return "→";  // Roughly the same
-        } else if (percentChange > 0) {
-            return "↗";  // Higher
-        } else {
-            return "↘";  // Lower
-        }
+        // Reuse the existing slopeToArrowSymbol function
+        return BgReading.slopeToArrowSymbol(slope);
     }
 }
