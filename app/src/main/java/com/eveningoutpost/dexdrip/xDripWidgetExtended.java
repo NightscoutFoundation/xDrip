@@ -43,6 +43,9 @@ public class xDripWidgetExtended extends AppWidgetProvider {
     public static final String TAG = "xDripWidgetExtended";
     private static final boolean use_best_glucose = true;
     private static final String CUTOFF = "38";
+    private static final int DEFAULT_GRAPH_HEIGHT_DP = 110;
+    private static final double TREND_THRESHOLD_PERCENT = 3.0;
+    private static final double MIN_VALID_AVG = 40.0;  // Minimum valid average in mg/dL
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -93,7 +96,7 @@ public class xDripWidgetExtended extends AppWidgetProvider {
         try {
             appWidgetManager.updateAppWidget(appWidgetId, views);
         } catch (Exception e) {
-            Log.e(TAG, "Got Rexception in widget update: " + e);
+            Log.e(TAG, "Got exception in widget update: " + e);
         }
     }
 
@@ -103,20 +106,20 @@ public class xDripWidgetExtended extends AppWidgetProvider {
 
     private static void displayCurrentInfo(AppWidgetManager appWidgetManager, int appWidgetId, Context context, RemoteViews views, int maxWidth, int maxHeight) {
         BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(context);
-        BgReading lastBgreading = BgReading.lastNoSenssor();
+        BgReading lastBgReading = BgReading.lastNoSenssor();
 
         final boolean showLines = Pref.getBoolean("widget_range_lines", false);
         final boolean showExtraStatus = Pref.getBoolean("extra_status_line", false) && Pref.getBoolean("widget_status_line", false);
 
-        if (lastBgreading != null) {
-            double estimate = 0;
+        if (lastBgReading != null) {
+            double estimate;
             double estimated_delta = -9999;
             try {
                 int height = maxHeight == -1 ? appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT) : maxHeight;
                 int width = maxWidth == -1 ? appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH) : maxWidth;
                 if (width >= 100 && !Pref.getBooleanDefaultFalse("widget_hide_graph")) {
                     // render bg graph - constrain to top portion
-                    int graphHeight = Math.min(height, 110);
+                    int graphHeight = Math.min(height, DEFAULT_GRAPH_HEIGHT_DP);
                     views.setImageViewBitmap(R.id.widgetGraph, new BgSparklineBuilder(context)
                             .setBgGraphBuilder(bgGraphBuilder)
                             .setHeight(graphHeight)
@@ -131,16 +134,16 @@ public class xDripWidgetExtended extends AppWidgetProvider {
                 views.setInt(R.id.xDripWidgetExtended, "setBackgroundColor", ColorCache.getCol(ColorCache.X.color_widget_chart_background));
 
                 final BestGlucose.DisplayGlucose dg = (use_best_glucose) ? BestGlucose.getDisplayGlucose() : null;
-                estimate = (dg != null) ? dg.mgdl : lastBgreading.calculated_value;
+                estimate = (dg != null) ? dg.mgdl : lastBgReading.calculated_value;
                 String extrastring = "";
-                String slope_arrow = (dg != null) ? dg.delta_arrow : lastBgreading.slopeArrow();
+                String slopeArrow = (dg != null) ? dg.delta_arrow : lastBgReading.slopeArrow();
                 String stringEstimate;
 
                 if (dg == null) {
                     if (BestGlucose.compensateNoise()) {
                         estimate = BgGraphBuilder.best_bg_estimate;
                         estimated_delta = BgGraphBuilder.best_bg_estimate - BgGraphBuilder.last_bg_estimate;
-                        slope_arrow = BgReading.slopeToArrowSymbol(estimated_delta / (BgGraphBuilder.DEXCOM_PERIOD / 60000));
+                        slopeArrow = BgReading.slopeToArrowSymbol(estimated_delta / (BgGraphBuilder.DEXCOM_PERIOD / 60000));
                         extrastring = " \u26A0";
                     }
                     if (Pref.getBooleanDefaultFalse("display_glucose_from_plugin") && (PluggableCalibration.getCalibrationPluginFromPreferences() != null)) {
@@ -149,26 +152,26 @@ public class xDripWidgetExtended extends AppWidgetProvider {
                 } else {
                     extrastring = " " + dg.extra_string + ((dg.from_plugin) ? " " + context.getString(R.string.p_in_circle) : "");
                     estimated_delta = dg.delta_mgdl;
-                    if (dg.warning > 1) slope_arrow = "";
+                    if (dg.warning > 1) slopeArrow = "";
                 }
 
-                if ((new Date().getTime()) - Home.stale_data_millis() - lastBgreading.timestamp > 0) {
+                if ((new Date().getTime()) - Home.stale_data_millis() - lastBgReading.timestamp > 0) {
                     Log.d(TAG, "old value, estimate " + estimate);
                     stringEstimate = bgGraphBuilder.unitized_string(estimate);
-                    slope_arrow = "--";
+                    slopeArrow = "--";
                     views.setInt(R.id.widgetBg, "setPaintFlags", Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
                 } else {
                     stringEstimate = bgGraphBuilder.unitized_string(estimate);
-                    if (lastBgreading.hide_slope) {
-                        slope_arrow = "--";
+                    if (lastBgReading.hide_slope) {
+                        slopeArrow = "--";
                     }
-                    Log.d(TAG, "newish value, estimate " + stringEstimate + slope_arrow);
+                    Log.d(TAG, "newish value, estimate " + stringEstimate + slopeArrow);
                     views.setInt(R.id.widgetBg, "setPaintFlags", 0);
                 }
 
                 if (Sensor.isActive() || Home.get_follower()) {
                     views.setTextViewText(R.id.widgetBg, stringEstimate);
-                    views.setTextViewText(R.id.widgetArrow, slope_arrow);
+                    views.setTextViewText(R.id.widgetArrow, slopeArrow);
                     if (stringEstimate.length() > 3) {
                         views.setFloat(R.id.widgetBg, "setTextSize", 45);
                     } else {
@@ -192,7 +195,7 @@ public class xDripWidgetExtended extends AppWidgetProvider {
                 }
 
                 // Reading age
-                int timeAgo = (int) Math.floor((new Date().getTime() - lastBgreading.timestamp) / (1000 * 60));
+                int timeAgo = (int) Math.floor((new Date().getTime() - lastBgReading.timestamp) / (1000 * 60));
                 final String fmt = context.getString(R.string.minutes_ago);
                 final String minutesAgo = MessageFormat.format(fmt, timeAgo);
                 views.setTextViewText(R.id.readingAge, minutesAgo + extrastring);
@@ -217,7 +220,9 @@ public class xDripWidgetExtended extends AppWidgetProvider {
 
                 // Calculate 7-day trend (compare to previous 7 days, days 8-14)
                 double avg7dPrev = getAverageDaysOffset(7, 7);  // days 8-14
-                String trend7d = getTrendArrow(avg7d, avg7dPrev, 3.0);  // 3% threshold
+                String trend7d = (avg7d >= MIN_VALID_AVG && avg7dPrev >= MIN_VALID_AVG)
+                        ? getTrendArrow(avg7d, avg7dPrev, TREND_THRESHOLD_PERCENT)
+                        : "–";  // em dash for insufficient data
                 views.setTextViewText(R.id.widgetAvg7dTrend, trend7d);
 
                 // Calculate and display 30-day average with trend
@@ -227,7 +232,9 @@ public class xDripWidgetExtended extends AppWidgetProvider {
 
                 // Calculate 30-day trend (compare to previous 30 days, days 31-60)
                 double avg30dPrev = getAverageDaysOffset(30, 30);  // days 31-60
-                String trend30d = getTrendArrow(avg30d, avg30dPrev, 3.0);  // 3% threshold
+                String trend30d = (avg30d >= MIN_VALID_AVG && avg30dPrev >= MIN_VALID_AVG)
+                        ? getTrendArrow(avg30d, avg30dPrev, TREND_THRESHOLD_PERCENT)
+                        : "–";  // em dash for insufficient data
                 views.setTextViewText(R.id.widgetAvg30dTrend, trend30d);
 
                 // Color for current BG based on range
@@ -258,51 +265,38 @@ public class xDripWidgetExtended extends AppWidgetProvider {
     /**
      * Calculate average glucose over specified number of days.
      * @param days Number of days (7 or 30)
-     * @return Average glucose in mg/dL
+     * @return Average glucose in mg/dL, or 0 if insufficient data
      */
     private static double getAverageDays(int days) {
-        try {
-            long endTime = System.currentTimeMillis();
-            long startTime = endTime - (days * 24L * 60L * 60L * 1000L);
-
-            SQLiteDatabase db = Cache.openDatabase();
-            Cursor cur = db.query("bgreadings",
-                    new String[]{"calculated_value"},
-                    "timestamp >= ? AND timestamp <= ? AND calculated_value > ?",
-                    new String[]{"" + startTime, "" + endTime, CUTOFF},
-                    null, null, null);
-
-            double sum = 0;
-            int count = 0;
-            if (cur.moveToFirst()) {
-                do {
-                    double value = cur.getDouble(0);
-                    sum += value;
-                    count++;
-                } while (cur.moveToNext());
-            }
-            cur.close();
-
-            return count > 0 ? sum / count : 0;
-        } catch (Exception e) {
-            Log.e(TAG, "Error calculating average: " + e);
-            return 0;
-        }
+        long endTime = System.currentTimeMillis();
+        long startTime = endTime - (days * 24L * 60L * 60L * 1000L);
+        return getAverageForPeriod(startTime, endTime);
     }
 
     /**
      * Calculate average glucose for a period starting at an offset.
      * @param days Number of days to average
      * @param offsetDays Days to skip before starting (e.g., 7 for days 8-14)
-     * @return Average glucose in mg/dL
+     * @return Average glucose in mg/dL, or 0 if insufficient data
      */
     private static double getAverageDaysOffset(int days, int offsetDays) {
-        try {
-            long endTime = System.currentTimeMillis() - (offsetDays * 24L * 60L * 60L * 1000L);
-            long startTime = endTime - (days * 24L * 60L * 60L * 1000L);
+        long endTime = System.currentTimeMillis() - (offsetDays * 24L * 60L * 60L * 1000L);
+        long startTime = endTime - (days * 24L * 60L * 60L * 1000L);
+        return getAverageForPeriod(startTime, endTime);
+    }
 
-            SQLiteDatabase db = Cache.openDatabase();
-            Cursor cur = db.query("bgreadings",
+    /**
+     * Calculate average glucose for a specific time period.
+     * @param startTime Start timestamp in milliseconds
+     * @param endTime End timestamp in milliseconds
+     * @return Average glucose in mg/dL, or 0 if insufficient data
+     */
+    private static double getAverageForPeriod(long startTime, long endTime) {
+        SQLiteDatabase db = null;
+        Cursor cur = null;
+        try {
+            db = Cache.openDatabase();
+            cur = db.query("bgreadings",
                     new String[]{"calculated_value"},
                     "timestamp >= ? AND timestamp <= ? AND calculated_value > ?",
                     new String[]{"" + startTime, "" + endTime, CUTOFF},
@@ -317,12 +311,15 @@ public class xDripWidgetExtended extends AppWidgetProvider {
                     count++;
                 } while (cur.moveToNext());
             }
-            cur.close();
 
             return count > 0 ? sum / count : 0;
         } catch (Exception e) {
-            Log.e(TAG, "Error calculating average with offset: " + e);
+            Log.e(TAG, "Error calculating average: " + e);
             return 0;
+        } finally {
+            if (cur != null) {
+                try { cur.close(); } catch (Exception ignored) {}
+            }
         }
     }
 
@@ -330,8 +327,8 @@ public class xDripWidgetExtended extends AppWidgetProvider {
      * Get trend arrow based on comparison of two values.
      * @param current Current average value
      * @param previous Previous average value
-     * @param thresholdPercent Threshold percentage for "no change" (e.g., 5.0 = 5%)
-     * @return Trend arrow string: ↗, ↘, or →
+     * @param thresholdPercent Threshold percentage for "no change" (e.g., 3.0 = 3%)
+     * @return Trend arrow string: ↗ (higher), ↘ (lower), or → (no change)
      */
     private static String getTrendArrow(double current, double previous, double thresholdPercent) {
         if (previous <= 0) {
