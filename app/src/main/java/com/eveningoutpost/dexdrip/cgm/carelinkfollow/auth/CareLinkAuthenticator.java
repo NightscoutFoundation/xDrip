@@ -655,7 +655,7 @@ public class CareLinkAuthenticator {
                     //new Date(Calendar.getInstance().getTime().getTime() + 15 * 60000),
                     //new Date(Calendar.getInstance().getTime().getTime() + 30 * 60000),
                     new Date(Calendar.getInstance().getTime().getTime() + (tokenRefreshResult.get("expires_in").getAsInt() * 1000)),
-                    new Date(Calendar.getInstance().getTime().getTime() + (500000000 * 1000)), // just a random number
+                    null,
                     //new Date(Calendar.getInstance().getTime().getTime() + (this.carepartnerAppConfig.getRefreshLifetimeSec() * 1000)), // this is unfortunately not given anymore :(
                     tokenRefreshResult.get("refresh_token").getAsString());
             //Completed successfully
