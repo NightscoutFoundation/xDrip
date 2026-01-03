@@ -1185,6 +1185,11 @@ public class BgReading extends Model implements ShareUploadableBg {
             return null;
         }
 
+        if (calculated_value == Double.NEGATIVE_INFINITY) {
+            Log.d(TAG, "bgReadingInsertFromGluPro: converting negative infinity to LOW state");
+            calculated_value = 38; // map the value to LOW
+        }
+
         if (Double.isInfinite(calculated_value) || Double.isNaN(calculated_value)) {
             Log.e(TAG, "Ignoring invalid bg reading: " + calculated_value);
             return null;
