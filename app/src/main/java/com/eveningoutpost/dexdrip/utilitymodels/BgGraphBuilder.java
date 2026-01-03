@@ -244,8 +244,9 @@ public class BgGraphBuilder {
             loaded_start = start;
             loaded_end = end;
             bgReadings = BgReading.latestForGraph(numValues, start, end);
-            if (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreReceiver)
-                Libre2RawValues = Libre2RawValue.latestForGraph(numValues, start, end);
+            if (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreReceiver
+                    || (DexCollectionType.getDexCollectionType() == DexCollectionType.Follower && prefs.getBoolean("Libre2_showRawGraph",false)))
+                Libre2RawValues = Libre2RawValue.latestForGraph(numValues * 5, start, end);
             plugin_adjusted = false;
             smoother_adjusted = false;
         } finally {
@@ -1460,7 +1461,8 @@ public class BgGraphBuilder {
             }
 
             try {
-                if (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreReceiver && prefs.getBoolean("Libre2_showRawGraph", false)) {
+                if ((DexCollectionType.getDexCollectionType() == DexCollectionType.LibreReceiver || DexCollectionType.getDexCollectionType () == DexCollectionType.Follower)
+                    && prefs.getBoolean("Libre2_showRawGraph", false)) {
                     for (final Libre2RawValue bgLibre : Libre2RawValues) {
                         if (bgLibre.glucose > 0) {
                             rawInterpretedValues.add(new HPointValue((double) (bgLibre.timestamp / FUZZER), (float) unitized(bgLibre.glucose)));
