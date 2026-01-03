@@ -119,6 +119,13 @@ public class CareLinkAuthenticator {
     private boolean carelinkCommunicationError = false;
 
 
+    class RefreshTokenExpiredException extends Exception {
+        public RefreshTokenExpiredException(String message) {
+            super(message);
+        }
+    }
+
+
     public CareLinkAuthenticator(String carelinkCountry, CareLinkCredentialStore credentialStore) {
         this.carelinkCountry = carelinkCountry;
         this.credentialStore = credentialStore;
@@ -447,7 +454,13 @@ public class CareLinkAuthenticator {
             requestBuilder.addHeader("mag-identifier", magIdentifier);
         }
 
-        return this.callSsoRestApi(requestBuilder, carepartnerAppConfig.getOAuthTokenEndpoint(), null);
+        try {
+            return this.callSsoRestApi(requestBuilder, carepartnerAppConfig.getOAuthTokenEndpoint(), null);
+        } catch (RefreshTokenExpiredException ex) {
+            UserError.Log.e(TAG, "Refresh token expired. Details: \r\n " + ex.getMessage());
+            this.credentialStore.informExpiredRefreshToken();
+            throw new IOException("Refresh token expired");
+        }
 
     }
 
@@ -506,7 +519,7 @@ public class CareLinkAuthenticator {
 
     }
 
-    private String prepareAuth(String clientId, String codeVerifier) throws IOException {
+    private String prepareAuth(String clientId, String codeVerifier) throws IOException, RefreshTokenExpiredException {
 
         Request.Builder requestBuilder;
         Map<String, String> queryParams;
@@ -547,7 +560,7 @@ public class CareLinkAuthenticator {
 
     }
 
-    private JsonObject createClientCredential(String deviceId) throws IOException {
+    private JsonObject createClientCredential(String deviceId) throws IOException, RefreshTokenExpiredException {
 
         RequestBody form;
         Request.Builder requestBuilder;
@@ -592,11 +605,15 @@ public class CareLinkAuthenticator {
         return Base64.encodeToString(codeVerifier, PKCE_BASE64_ENCODE_SETTINGS);
     }
 
-    private JsonObject callSsoRestApi(Request.Builder requestBuilder, String endpoint, Map<String, String> queryParams) throws IOException {
+    private JsonObject callSsoRestApi(Request.Builder requestBuilder, String endpoint, Map<String, String> queryParams) throws IOException, RefreshTokenExpiredException {
 
         Response response = this.callSsoApi(requestBuilder, endpoint, queryParams);
         if (response.isSuccessful()) {
             return JsonParser.parseString(response.body().string()).getAsJsonObject();
+        } else if(response.code() == 403) {
+            // see https://auth0.com/docs/api/authentication/refresh-token/refresh-token#response-messages
+            // 403 Forbidden. The refresh token is invalid or has expired.
+            throw new RefreshTokenExpiredException("The Refresh token has expired");
         } else {
             return null;
         }

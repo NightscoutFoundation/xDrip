@@ -81,7 +81,7 @@ public class CareLinkCredentialStore {
         credential.clientSecret = clientSecret;
         credential.magIdentifier = magIdentifier;
         credential.refreshToken = refreshToken;
-        credential.refreshValidTo = refreshValidTo;
+        credential.refreshValidTo = null;
         if (credential.accessToken == null || credential.accessValidTo == null)
             authStatus = NOT_AUTHENTICATED;
         else
@@ -119,20 +119,6 @@ public class CareLinkCredentialStore {
             return credential.accessValidTo.getTime();
     }
 
-    public long getRefreshExpiresIn() {
-        if (credential == null || credential.refreshValidTo == null)
-            return -1;
-        else
-            return credential.refreshValidTo.getTime() - Calendar.getInstance().getTime().getTime();
-    }
-
-    public long getRefreshExpiresOn() {
-        if (credential == null || credential.refreshValidTo == null)
-            return -1;
-        else
-            return credential.refreshValidTo.getTime();
-    }
-
     synchronized void clear() {
         this.credential = null;
         PersistentStore.setString(PREF_CARELINK_CREDENTIAL, "");
@@ -141,12 +127,14 @@ public class CareLinkCredentialStore {
     }
 
     protected void evaluateExpiration() {
-        if (this.getRefreshExpiresIn() < 0)
-            authStatus = REFRESH_EXPIRED;
-        else if (this.getAccessExpiresIn() < 0)
+        if (this.getAccessExpiresIn() < 0)
             authStatus = ACCESS_EXPIRED;
         else
             authStatus = AUTHENTICATED;
+    }
+
+    public void informExpiredRefreshToken() {
+        authStatus = REFRESH_EXPIRED;
     }
 
 }
