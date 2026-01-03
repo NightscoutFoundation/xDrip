@@ -21,16 +21,6 @@ public class CarePartnerAppConfig {
         return regionConfig.get(sso_configuration_key).getAsString();
     }
 
-    /**
-     * Determine if the SSO flow is Auth0 based or not
-     * 
-     * @return true if Auth0 based, false otherwise
-     */
-    public boolean ssoIsAuth0Method() {
-        String sso_configuration_key = regionConfig.get("UseSSOConfiguration").getAsString();
-        return sso_configuration_key.contains("Auth0");
-    }
-
     public String getCloudBaseUrl() {
         return regionConfig.get("baseUrlCumulus").getAsString();
     }
@@ -93,10 +83,6 @@ public class CarePartnerAppConfig {
 
         return obj;
 
-    }
-
-    public String getAuthorizeEndpoint() {
-        return this.getChildJsonString(ssoConfig, "system_endpoints.authorization_endpoint_path");
     }
 
 }

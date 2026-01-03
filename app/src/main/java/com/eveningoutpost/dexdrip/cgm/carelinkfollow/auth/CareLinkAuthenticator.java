@@ -26,7 +26,6 @@ import com.google.gson.JsonParser;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
@@ -369,7 +368,7 @@ public class CareLinkAuthenticator {
             .host(carepartnerAppConfig.getSSOServerHost())
             .port(carepartnerAppConfig.getSSOServerPort())
             .addPathSegments(carepartnerAppConfig.getSSOServerPrefix())
-            .addPathSegments(carepartnerAppConfig.getAuthorizeEndpoint().replaceFirst("^/", ""))
+            .addPathSegments(carepartnerAppConfig.getOAuthAuthEndpoint().replaceFirst("^/", ""))
             .addQueryParameter("client_id", carepartnerAppConfig.getOAuthClientId())
             .addQueryParameter("response_type", "code")
             .addQueryParameter("scope", carepartnerAppConfig.getOAuthScope())
