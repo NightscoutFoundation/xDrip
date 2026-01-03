@@ -32,7 +32,7 @@ public class CareLinkCredential {
         //Build authentication
         Headers.Builder headers = new Headers.Builder();
         headers.add("Authorization", this.getAuthorizationFieldValue());
-        if (this.authType == CareLinkAuthType.MobileApp)
+        if (this.authType == CareLinkAuthType.MobileApp && this.magIdentifier != null)
             headers.add("mag-identifier", this.magIdentifier);
         return new CareLinkAuthentication(headers.build(), this.authType);
 

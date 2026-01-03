@@ -21,6 +21,16 @@ public class CarePartnerAppConfig {
         return regionConfig.get(sso_configuration_key).getAsString();
     }
 
+    /**
+     * Determine if the SSO flow is Auth0 based or not
+     * 
+     * @return true if Auth0 based, false otherwise
+     */
+    public boolean ssoIsAuth0Method() {
+        String sso_configuration_key = regionConfig.get("UseSSOConfiguration").getAsString();
+        return sso_configuration_key.contains("Auth0");
+    }
+
     public String getCloudBaseUrl() {
         return regionConfig.get("baseUrlCumulus").getAsString();
     }
@@ -42,22 +52,14 @@ public class CarePartnerAppConfig {
     }
 
     public String getOAuthAuthEndpoint() {
-        return this.getChildJsonString(ssoConfig, "oauth.system_endpoints.authorization_endpoint_path").substring(1);
+        return this.getChildJsonString(ssoConfig, "system_endpoints.authorization_endpoint_path").substring(1);
     }
 
     public String getOAuthTokenEndpoint() {
-        return this.getChildJsonString(ssoConfig, "oauth.system_endpoints.token_endpoint_path").substring(1);
+        return this.getChildJsonString(ssoConfig, "system_endpoints.token_endpoint_path").substring(1);
     }
 
-    public String getMagCredentialInitEndpoint() {
-        return this.getChildJsonString(ssoConfig, "mag.system_endpoints.client_credential_init_endpoint_path").substring(1);
-    }
-
-    public String getMagDeviceRegisterEndpoint() {
-        return this.getChildJsonString(ssoConfig, "mag.system_endpoints.device_register_endpoint_path").substring(1);
-    }
-
-    public String getClientId() {
+    public String getOAuthClientId() {
         return getClientMemberString("client_id");
     }
 
@@ -69,13 +71,12 @@ public class CarePartnerAppConfig {
         return getClientMemberString("redirect_uri");
     }
 
-    public int getRefreshLifetimeSec() {
-        return Integer.parseInt(getClientMemberString("client_key_custom.lifetimes.oauth2_refresh_token_lifetime_sec"));
+    public String getOAuthAudience() {
+        return getClientMemberString("audience");
     }
 
     private String getClientMemberString(String clientMember) {
-        return this.getChildJsonString(this.getChildJsonElement(ssoConfig, "oauth.client.client_ids").getAsJsonArray().get(0)
-                .getAsJsonObject(), clientMember);
+        return this.getChildJsonString(this.getChildJsonElement(ssoConfig, "client").getAsJsonObject(), clientMember);
     }
 
     private String getChildJsonString(JsonObject parent, String path) {
@@ -92,6 +93,10 @@ public class CarePartnerAppConfig {
 
         return obj;
 
+    }
+
+    public String getAuthorizeEndpoint() {
+        return this.getChildJsonString(ssoConfig, "system_endpoints.authorization_endpoint_path");
     }
 
 }

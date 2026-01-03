@@ -26,6 +26,7 @@ import com.google.gson.JsonParser;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
@@ -135,7 +136,7 @@ public class CareLinkAuthenticator {
                 this.authenticateAsBrowser(context);
                 break;
             case MobileApp:
-                this.authenticateAsCpApp(context);
+                this.authenticateAsCpAppAuth0(context);
                 break;
         }
 
@@ -233,7 +234,9 @@ public class CareLinkAuthenticator {
                         //new Date(Calendar.getInstance().getTime().getTime() + 15 * 60000),
                         //new Date(Calendar.getInstance().getTime().getTime() + 30 * 60000));
                         new Date(Calendar.getInstance().getTime().getTime() + (tokenObject.get("expires_in").getAsInt() * 1000)),
-                        new Date(Calendar.getInstance().getTime().getTime() + (this.carepartnerAppConfig.getRefreshLifetimeSec() * 1000)));
+                        // new Date(Calendar.getInstance().getTime().getTime() + (this.carepartnerAppConfig.getRefreshLifetimeSec() * 1000)),
+                        new Date()
+                        );
 
                 //Hide progress dialog
                 this.hideProgressDialog();
@@ -264,7 +267,116 @@ public class CareLinkAuthenticator {
                 }
             });
         }
+    }
 
+    private void authenticateAsCpAppAuth0(Activity context) {
+        String androidModel;
+        String clientId;
+        String magIdentifier;
+        String codeVerifier;
+        String authUrl;
+        String idToken;
+        String idTokenType;
+
+        try {
+
+            carelinkCommunicationError = false;
+
+            //Show progress dialog while preparing for login page
+            this.showProgressDialog(context);
+
+            //Generate ID, models
+            androidModel = this.generateAndroidModel();
+
+            //Load application config
+            this.loadAppConfig();
+
+            //Create client credential
+            clientId = carepartnerAppConfig.getOAuthClientId();
+
+            //Prepare authentication
+            UserError.Log.d(TAG, "Prepare authentication");
+            authUrl = createAuthUrl();
+
+            //Hide progress dialog
+            this.hideProgressDialog();
+
+            //Authenticate in browser
+            UserError.Log.d(TAG, "Start browser login");
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    CareLinkAuthenticator.this.showCpAppAuthPage(context, authUrl);
+                }
+            });
+            available.acquire();
+
+            //Continue if not cancelled and no error
+            if (!this.authWebViewCancelled && !carelinkCommunicationError) {
+                //Show progress dialog while completing authentication
+                this.showProgressDialog(context);
+
+                //Get access token
+                UserError.Log.d(TAG, "Get access token");
+                JsonObject tokenObject = this.getAccessToken(clientId, null, null, authCode, "authorization_code");
+
+                //Store credentials
+                UserError.Log.d(TAG, "Store credentials");
+                this.credentialStore.setMobileAppCredential(this.carelinkCountry,
+                        null, androidModel, clientId, null, null,
+                        tokenObject.get("access_token").getAsString(), tokenObject.get("refresh_token").getAsString(),
+                        //new Date(Calendar.getInstance().getTime().getTime() + 15 * 60000),
+                        //new Date(Calendar.getInstance().getTime().getTime() + 30 * 60000));
+                        new Date(Calendar.getInstance().getTime().getTime() + (tokenObject.get("expires_in").getAsInt() * 1000)),
+                        new Date(Calendar.getInstance().getTime().getTime() + (500000000 * 1000)) // just a random number
+                        //new Date(Calendar.getInstance().getTime().getTime() + (this.carepartnerAppConfig.getRefreshLifetimeSec() * 1000)), // this is unfortunately not given anymore :(
+                );
+
+                //Hide progress dialog
+                this.hideProgressDialog();
+            }
+
+        } catch (Exception ex) {
+            UserError.Log.e(TAG, "Error authenticating as CpApp. Details: \r\n " + ex.getMessage());
+            carelinkCommunicationError = true;
+            this.hideProgressDialog();
+        }
+
+        //Show communication error
+        if (carelinkCommunicationError) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    new AlertDialog.Builder(context)
+                            .setTitle("Communication error!")
+                            .setMessage("Error communicating with CareLink Server! Please try again later!")
+                            .setCancelable(true)
+                            .setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.cancel();
+                                }
+                            })
+                            .show();
+                }
+            });
+        }
+    }
+
+    private String createAuthUrl() {
+        return new HttpUrl.Builder()
+            .scheme("https")
+            .host(carepartnerAppConfig.getSSOServerHost())
+            .port(carepartnerAppConfig.getSSOServerPort())
+            .addPathSegments(carepartnerAppConfig.getSSOServerPrefix())
+            .addPathSegments(carepartnerAppConfig.getAuthorizeEndpoint().replaceFirst("^/", ""))
+            .addQueryParameter("client_id", carepartnerAppConfig.getOAuthClientId())
+            .addQueryParameter("response_type", "code")
+            .addQueryParameter("scope", carepartnerAppConfig.getOAuthScope())
+            .addQueryParameter("redirect_uri", carepartnerAppConfig.getOAuthRedirectUri())
+            .addQueryParameter("audience", carepartnerAppConfig.getOAuthAudience())
+            .build()
+            .toString();
     }
 
     private void authenticateAsBrowser(Activity context) throws InterruptedException {
@@ -311,13 +423,17 @@ public class CareLinkAuthenticator {
 
         //Common token request params
         form = new FormBody.Builder()
-                .add("client_id", clientId)
-                .add("client_secret", clientSecret);
+                .add("client_id", clientId);
+        if (clientSecret != null) {
+                form.add("client_secret", clientSecret);
+        }
+
         //Authentication token request params
         if (idToken != null) {
-            form.add("assertion", idToken)
+            form.add("code", idToken)
                     .add("grant_type", idTokenType)
-                    .add("scope", this.carepartnerAppConfig.getOAuthScope());
+                    //.add("scope", this.carepartnerAppConfig.getOAuthScope())
+                    .add("redirect_uri", this.carepartnerAppConfig.getOAuthRedirectUri());
             //Refresh token request params
         } else {
             form.add("refresh_token", refreshToken)
@@ -326,8 +442,11 @@ public class CareLinkAuthenticator {
 
         requestBuilder = new Request.Builder()
                 .post(form.build())
-                .addHeader("mag-identifier", magIdentifier)
                 .header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+
+        if (magIdentifier != null) {
+            requestBuilder.addHeader("mag-identifier", magIdentifier);
+        }
 
         return this.callSsoRestApi(requestBuilder, carepartnerAppConfig.getOAuthTokenEndpoint(), null);
 
@@ -364,8 +483,8 @@ public class CareLinkAuthenticator {
                 .addHeader("code-verifier", codeVerifier)
                 .addHeader("redirect-uri", carepartnerAppConfig.getOAuthRedirectUri());
 
-        return this.callSsoApi(requestBuilder, carepartnerAppConfig.getMagDeviceRegisterEndpoint(), null);
-
+        // return this.callSsoApi(requestBuilder, carepartnerAppConfig.getMagDeviceRegisterEndpoint(), null);
+        return this.callSsoApi(requestBuilder, null, null);
     }
 
     private String createTrimmedCsr(KeyPair keypair, String signAlgo, String cn, String ou, String dc, String o) throws IOException, OperatorCreationException {
@@ -435,7 +554,7 @@ public class CareLinkAuthenticator {
         Request.Builder requestBuilder;
 
         form = new FormBody.Builder()
-                .add("client_id", carepartnerAppConfig.getClientId())
+                .add("client_id", carepartnerAppConfig.getOAuthClientId())
                 .add("nonce", UUID.randomUUID().toString())
                 .build();
 
@@ -443,8 +562,8 @@ public class CareLinkAuthenticator {
                 .post(form)
                 .addHeader("device-id", Base64.encodeToString(deviceId.getBytes(StandardCharsets.UTF_8), Base64.NO_WRAP | Base64.URL_SAFE));
 
-        return this.callSsoRestApi(requestBuilder, carepartnerAppConfig.getMagCredentialInitEndpoint(), null);
-
+        // return this.callSsoRestApi(requestBuilder, carepartnerAppConfig.getMagCredentialInitEndpoint(), null);
+        return this.callSsoRestApi(requestBuilder, null, null);
     }
 
     private String generateDeviceId() {
@@ -523,7 +642,8 @@ public class CareLinkAuthenticator {
                     //new Date(Calendar.getInstance().getTime().getTime() + 15 * 60000),
                     //new Date(Calendar.getInstance().getTime().getTime() + 30 * 60000),
                     new Date(Calendar.getInstance().getTime().getTime() + (tokenRefreshResult.get("expires_in").getAsInt() * 1000)),
-                    new Date(Calendar.getInstance().getTime().getTime() + (this.carepartnerAppConfig.getRefreshLifetimeSec() * 1000)),
+                    new Date(Calendar.getInstance().getTime().getTime() + (500000000 * 1000)), // just a random number
+                    //new Date(Calendar.getInstance().getTime().getTime() + (this.carepartnerAppConfig.getRefreshLifetimeSec() * 1000)), // this is unfortunately not given anymore :(
                     tokenRefreshResult.get("refresh_token").getAsString());
             //Completed successfully
             return true;
