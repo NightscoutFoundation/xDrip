@@ -13,7 +13,12 @@ public class CarePartnerAppConfig {
     }
 
     public String getSSOConfigUrl() {
-        return regionConfig.get("SSOConfiguration").getAsString();
+        String sso_configuration_key = regionConfig.get("UseSSOConfiguration").getAsString();
+        if (!regionConfig.has(sso_configuration_key)) {
+            sso_configuration_key = "SSOConfiguration";
+        }
+
+        return regionConfig.get(sso_configuration_key).getAsString();
     }
 
     public String getCloudBaseUrl() {
