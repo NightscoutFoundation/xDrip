@@ -13,7 +13,7 @@ public class CareLinkCredential {
     public String accessToken = null;
     public Cookie[] cookies = null;
     public Date accessValidTo = null;
-    public Date refreshValidTo = null; // deprecated; todo: remove
+    public Date refreshValidTo = null;
     public CareLinkAuthType authType = null;
     public String androidModel = null;
     public String deviceId = null;

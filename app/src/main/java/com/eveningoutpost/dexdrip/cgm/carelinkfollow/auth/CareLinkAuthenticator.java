@@ -331,11 +331,8 @@ public class CareLinkAuthenticator {
                 this.credentialStore.setMobileAppCredential(this.carelinkCountry,
                         null, androidModel, clientId, null, null,
                         tokenObject.get("access_token").getAsString(), tokenObject.get("refresh_token").getAsString(),
-                        //new Date(Calendar.getInstance().getTime().getTime() + 15 * 60000),
-                        //new Date(Calendar.getInstance().getTime().getTime() + 30 * 60000));
                         new Date(Calendar.getInstance().getTime().getTime() + (tokenObject.get("expires_in").getAsInt() * 1000)),
-                        new Date(Calendar.getInstance().getTime().getTime() + (500000000 * 1000)) // just a random number
-                        //new Date(Calendar.getInstance().getTime().getTime() + (this.carepartnerAppConfig.getRefreshLifetimeSec() * 1000)), // this is unfortunately not given anymore :(
+                        null
                 );
 
                 //Hide progress dialog

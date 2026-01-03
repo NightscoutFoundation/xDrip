@@ -329,6 +329,9 @@ public class CareLinkFollowService extends ForegroundService {
         megaStatus.add(new StatusItem("Client type", clientType));
         megaStatus.add(new StatusItem("Authentication status", authStatus, authHighlight));
         megaStatus.add(new StatusItem("Access expires in", JoH.niceTimeScalar(CareLinkCredentialStore.getInstance().getAccessExpiresIn())));
+        if (CareLinkCredentialStore.getInstance().refreshExpiryKnown()){
+            megaStatus.add(new StatusItem("Login expires in", JoH.niceTimeScalar(CareLinkCredentialStore.getInstance().getRefreshExpiresIn())));
+        }
         megaStatus.add(new StatusItem());
         megaStatus.add(new StatusItem("Latest BG", ageLastBg + (lastBg != null ? " ago" : ""), bgAgeHighlight));
         megaStatus.add(new StatusItem("BG receive delay", ageOfBgLastPoll, ageOfLastBgPollHighlight));
