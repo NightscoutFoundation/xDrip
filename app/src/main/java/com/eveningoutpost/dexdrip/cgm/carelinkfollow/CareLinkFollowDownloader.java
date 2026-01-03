@@ -104,7 +104,7 @@ public class CareLinkFollowDownloader {
 
     private boolean checkCredentials(boolean checkAuthenticated, boolean checkAccessExpired, boolean checkRefreshExpired) {
         // Not authenticated
-        if (checkAuthenticated && CareLinkCredentialStore.getInstance().getAuthStatus() != CareLinkCredentialStore.AUTHENTICATED) {
+        if (checkAuthenticated && CareLinkCredentialStore.getInstance().getAuthStatus() == CareLinkCredentialStore.NOT_AUTHENTICATED) {
             msg(xdrip.gs(R.string.carelink_credential_status_not_authenticated));
             return false;
         }
