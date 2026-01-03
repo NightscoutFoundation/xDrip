@@ -86,7 +86,7 @@ public class CareLinkFollowDownloader {
 
     private void refreshToken() {
         msg(xdrip.gs(R.string.carelink_refresh_token_start));
-        if (checkCredentials(true, false, true)) {
+        if (canRefreshToken()) {
             try {
                 if (new CareLinkAuthenticator(CareLinkCredentialStore.getInstance().getCredential().country, CareLinkCredentialStore.getInstance()).refreshToken()) {
                     UserError.Log.d(TAG, "Access renewed!");
@@ -102,6 +102,20 @@ public class CareLinkFollowDownloader {
         }
     }
 
+    private boolean canRefreshToken() {
+        // cant refresh if the refresh token is expired
+        if (CareLinkCredentialStore.getInstance().refreshExpiryKnown() && CareLinkCredentialStore.getInstance().getRefreshExpiresIn() <= 0) {
+            return false;
+        }
+
+        // cant refresh if we are not authenticated at all
+        if (CareLinkCredentialStore.getInstance().getAuthStatus() == CareLinkCredentialStore.NOT_AUTHENTICATED) {
+            return false;
+        }
+
+        return true;
+    }
+
     private boolean checkCredentials(boolean checkAuthenticated, boolean checkAccessExpired, boolean checkRefreshExpired) {
         // Not authenticated
         if (checkAuthenticated && CareLinkCredentialStore.getInstance().getAuthStatus() != CareLinkCredentialStore.AUTHENTICATED) {
@@ -112,7 +126,7 @@ public class CareLinkFollowDownloader {
             msg(xdrip.gs(R.string.carelink_credential_status_access_expired));
             return false;
         }
-        if (checkRefreshExpired && CareLinkCredentialStore.getInstance().getRefreshExpiresIn() <= 0) {
+        if (checkRefreshExpired && CareLinkCredentialStore.getInstance().refreshExpiryKnown() && CareLinkCredentialStore.getInstance().getRefreshExpiresIn() <= 0) {
             msg(xdrip.gs(R.string.carelink_credential_status_refresh_expired));
             return false;
         }

@@ -73,7 +73,7 @@ public class CareLinkAuthenticator {
 
     private static final String TAG = "CareLinkAuthenticator";
 
-    protected static final String CAREPARTNER_APP_DISCO_URL = "https://clcloud.minimed.eu/connect/carepartner/v11/discover/android/3.2";
+    protected static final String CAREPARTNER_APP_DISCO_URL = "https://clcloud.minimed.eu/connect/carepartner/v13/discover/android/3.6";
     protected static final String CARELINK_CONNECT_SERVER_EU = "carelink.minimed.eu";
     protected static final String CARELINK_CONNECT_SERVER_US = "carelink.minimed.com";
     protected static final String CARELINK_LANGUAGE_EN = "en";
@@ -119,6 +119,13 @@ public class CareLinkAuthenticator {
     private boolean carelinkCommunicationError = false;
 
 
+    class RefreshTokenExpiredException extends Exception {
+        public RefreshTokenExpiredException(String message) {
+            super(message);
+        }
+    }
+
+
     public CareLinkAuthenticator(String carelinkCountry, CareLinkCredentialStore credentialStore) {
         this.carelinkCountry = carelinkCountry;
         this.credentialStore = credentialStore;
@@ -159,18 +166,11 @@ public class CareLinkAuthenticator {
         }
     }
 
-    private void authenticateAsCpApp(Activity context) {
 
-        String deviceId;
+    private void authenticateAsCpApp(Activity context) {
         String androidModel;
         String clientId;
-        String clientSecret;
-        String magIdentifier;
-        JsonObject clientCredential;
-        String codeVerifier;
         String authUrl;
-        String idToken;
-        String idTokenType;
 
         try {
 
@@ -180,21 +180,17 @@ public class CareLinkAuthenticator {
             this.showProgressDialog(context);
 
             //Generate ID, models
-            deviceId = generateDeviceId();
             androidModel = this.generateAndroidModel();
 
             //Load application config
             this.loadAppConfig();
 
             //Create client credential
-            clientCredential = this.createClientCredential(deviceId);
-            clientId = clientCredential.get("client_id").getAsString();
-            clientSecret = clientCredential.get("client_secret").getAsString();
+            clientId = carepartnerAppConfig.getOAuthClientId();
 
             //Prepare authentication
             UserError.Log.d(TAG, "Prepare authentication");
-            codeVerifier = generateRandomDataBase64url(32);
-            authUrl = this.prepareAuth(clientId, codeVerifier);
+            authUrl = createAuthUrl();
 
             //Hide progress dialog
             this.hideProgressDialog();
@@ -214,26 +210,18 @@ public class CareLinkAuthenticator {
                 //Show progress dialog while completing authentication
                 this.showProgressDialog(context);
 
-                //Register device
-                UserError.Log.d(TAG, "Register device");
-                Response registerResp = this.registerDevice(deviceId, androidModel, clientId, clientSecret, authCode, codeVerifier);
-                magIdentifier = registerResp.header("mag-identifier");
-                idToken = registerResp.header("id-token");
-                idTokenType = registerResp.header("id-token-type");
-
                 //Get access token
                 UserError.Log.d(TAG, "Get access token");
-                JsonObject tokenObject = this.getAccessToken(clientId, clientSecret, magIdentifier, idToken, idTokenType);
+                JsonObject tokenObject = this.getAccessToken(clientId, null, authCode);
 
                 //Store credentials
                 UserError.Log.d(TAG, "Store credentials");
                 this.credentialStore.setMobileAppCredential(this.carelinkCountry,
-                        deviceId, androidModel, clientId, clientSecret, magIdentifier,
+                        androidModel, clientId, null,
                         tokenObject.get("access_token").getAsString(), tokenObject.get("refresh_token").getAsString(),
-                        //new Date(Calendar.getInstance().getTime().getTime() + 15 * 60000),
-                        //new Date(Calendar.getInstance().getTime().getTime() + 30 * 60000));
                         new Date(Calendar.getInstance().getTime().getTime() + (tokenObject.get("expires_in").getAsInt() * 1000)),
-                        new Date(Calendar.getInstance().getTime().getTime() + (this.carepartnerAppConfig.getRefreshLifetimeSec() * 1000)));
+                        null
+                );
 
                 //Hide progress dialog
                 this.hideProgressDialog();
@@ -264,7 +252,22 @@ public class CareLinkAuthenticator {
                 }
             });
         }
+    }
 
+    private String createAuthUrl() {
+        return new HttpUrl.Builder()
+            .scheme("https")
+            .host(carepartnerAppConfig.getSSOServerHost())
+            .port(carepartnerAppConfig.getSSOServerPort())
+            .addPathSegments(carepartnerAppConfig.getSSOServerPrefix())
+            .addPathSegments(carepartnerAppConfig.getOAuthAuthEndpoint().replaceFirst("^/", ""))
+            .addQueryParameter("client_id", carepartnerAppConfig.getOAuthClientId())
+            .addQueryParameter("response_type", "code")
+            .addQueryParameter("scope", carepartnerAppConfig.getOAuthScope())
+            .addQueryParameter("redirect_uri", carepartnerAppConfig.getOAuthRedirectUri())
+            .addQueryParameter("audience", carepartnerAppConfig.getOAuthAudience())
+            .build()
+            .toString();
     }
 
     private void authenticateAsBrowser(Activity context) throws InterruptedException {
@@ -296,28 +299,31 @@ public class CareLinkAuthenticator {
         return true;
     }
 
-    private JsonObject getAccessToken(String clientId, String clientSecret, String magIdentifier, String idToken, String idTokenType) throws IOException {
-        return this.getToken(clientId, clientSecret, magIdentifier, idToken, idTokenType, null);
+    private JsonObject getAccessToken(String clientId, String clientSecret, String idToken) throws IOException {
+        return this.getToken(clientId, clientSecret, idToken, null);
     }
 
-    private JsonObject refreshToken(String clientId, String clientSecret, String magIdentifier, String refreshToken) throws IOException {
-        return this.getToken(clientId, clientSecret, magIdentifier, null, null, refreshToken);
+    private JsonObject refreshToken(String clientId, String clientSecret, String refreshToken) throws IOException {
+        return this.getToken(clientId, clientSecret, null, refreshToken);
     }
 
-    private JsonObject getToken(String clientId, String clientSecret, String magIdentifier, String idToken, String idTokenType, String refreshToken) throws IOException {
+    private JsonObject getToken(String clientId, String clientSecret, String idToken,  String refreshToken) throws IOException {
 
         Request.Builder requestBuilder;
         FormBody.Builder form;
 
         //Common token request params
         form = new FormBody.Builder()
-                .add("client_id", clientId)
-                .add("client_secret", clientSecret);
+                .add("client_id", clientId);
+        if (clientSecret != null) {
+                form.add("client_secret", clientSecret);
+        }
+
         //Authentication token request params
         if (idToken != null) {
-            form.add("assertion", idToken)
-                    .add("grant_type", idTokenType)
-                    .add("scope", this.carepartnerAppConfig.getOAuthScope());
+            form.add("code", idToken)
+                    .add("grant_type", "authorization_code")
+                    .add("redirect_uri", this.carepartnerAppConfig.getOAuthRedirectUri());
             //Refresh token request params
         } else {
             form.add("refresh_token", refreshToken)
@@ -326,140 +332,15 @@ public class CareLinkAuthenticator {
 
         requestBuilder = new Request.Builder()
                 .post(form.build())
-                .addHeader("mag-identifier", magIdentifier)
                 .header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
 
-        return this.callSsoRestApi(requestBuilder, carepartnerAppConfig.getOAuthTokenEndpoint(), null);
-
-    }
-
-    private Response registerDevice(String deviceId, String androidModel, String clientId, String clientSecret, String authCode, String codeVerifier) throws IOException {
-
-        String trimmedCsr = null;
-
-        //Create RSA2048 keypair and CSR
         try {
-            KeyPairGenerator keygen = KeyPairGenerator.getInstance("RSA");
-            keygen.initialize(2048);
-            KeyPair keypair = keygen.genKeyPair();
-            trimmedCsr = createTrimmedCsr(keypair, "SHA256withRSA", "socialLogin", deviceId, androidModel, "Medtronic");
-        } catch (Exception e) {
-            UserError.Log.e(TAG, "Error creating CSR! Details: \r\n" + e.getMessage());
+            return this.callSsoRestApi(requestBuilder, carepartnerAppConfig.getOAuthTokenEndpoint(), null);
+        } catch (RefreshTokenExpiredException ex) {
+            UserError.Log.e(TAG, "Refresh token expired. Details: \r\n " + ex.getMessage());
+            this.credentialStore.informExpiredRefreshToken();
+            throw new IOException("Refresh token expired");
         }
-
-        //Register device and get certificate for CSR
-        RequestBody body;
-        Request.Builder requestBuilder;
-
-        body = RequestBody.create(null, trimmedCsr);
-
-        requestBuilder = new Request.Builder()
-                .post(body)
-                .addHeader("device-id", Base64.encodeToString(deviceId.getBytes(StandardCharsets.UTF_8), Base64.NO_WRAP))
-                .addHeader("device-name", Base64.encodeToString(androidModel.getBytes(StandardCharsets.UTF_8), Base64.NO_WRAP))
-                .addHeader("authorization", "Bearer " + authCode)
-                .addHeader("client-authorization", "Basic " + Base64.encodeToString((clientId + ":" + clientSecret).getBytes(StandardCharsets.UTF_8), Base64.NO_WRAP))
-                .addHeader("cert-format", "pem")
-                .addHeader("create-session", "true")
-                .addHeader("code-verifier", codeVerifier)
-                .addHeader("redirect-uri", carepartnerAppConfig.getOAuthRedirectUri());
-
-        return this.callSsoApi(requestBuilder, carepartnerAppConfig.getMagDeviceRegisterEndpoint(), null);
-
-    }
-
-    private String createTrimmedCsr(KeyPair keypair, String signAlgo, String cn, String ou, String dc, String o) throws IOException, OperatorCreationException {
-
-        PKCS10CertificationRequestBuilder p10Builder = new JcaPKCS10CertificationRequestBuilder(
-                new X500Principal(
-                        "CN=" + cn +
-                                ", OU=" + ou +
-                                ", DC=" + dc +
-                                ", O=" + o), keypair.getPublic());
-        JcaContentSignerBuilder csBuilder = new JcaContentSignerBuilder(signAlgo);
-        ContentSigner signer = csBuilder.build(keypair.getPrivate());
-        PKCS10CertificationRequest csr = p10Builder.build(signer);
-        StringWriter writer = new StringWriter();
-        JcaPEMWriter jcaPEMWriter = new JcaPEMWriter(writer);
-        jcaPEMWriter.writeObject(csr);
-        jcaPEMWriter.close();
-
-        return writer.toString().replaceAll("-----.*-----", "").replaceAll("\\r", "").replaceAll("\\n", "");
-
-    }
-
-    private String prepareAuth(String clientId, String codeVerifier) throws IOException {
-
-        Request.Builder requestBuilder;
-        Map<String, String> queryParams;
-        String codeChallenge = null;
-        JsonObject providers;
-
-        //Generate SHA-256 code challenge
-        try {
-            codeChallenge = Base64.encodeToString(
-                    MessageDigest.getInstance("SHA-256").digest(codeVerifier.getBytes("ISO_8859_1")),
-                    PKCE_BASE64_ENCODE_SETTINGS);
-        } catch (Exception ex) {
-        }
-
-        //Set params
-        queryParams = new HashMap<String, String>();
-        queryParams.put("client_id", clientId);
-        queryParams.put("response_type", "code");
-        queryParams.put("display", "social_login");
-        queryParams.put("scope", this.carepartnerAppConfig.getOAuthScope());
-        queryParams.put("code_challenge", codeChallenge);
-        queryParams.put("code_challenge_method", "S256");
-        queryParams.put("redirect_uri", this.carepartnerAppConfig.getOAuthRedirectUri());
-        queryParams.put("state", generateRandomDataBase64url(32));
-
-        requestBuilder = new Request.Builder()
-                .get();
-
-        providers = this.callSsoRestApi(requestBuilder, carepartnerAppConfig.getOAuthAuthEndpoint(), queryParams);
-
-        //Get auth url of enterprise login provider
-        for (JsonElement provider : providers.get("providers").getAsJsonArray()) {
-            if (provider.getAsJsonObject().get("provider").getAsJsonObject().get("id").getAsString().contentEquals("enterprise"))
-                return (provider.getAsJsonObject().get("provider").getAsJsonObject().get("auth_url").getAsString());
-        }
-
-        return null;
-
-    }
-
-    private JsonObject createClientCredential(String deviceId) throws IOException {
-
-        RequestBody form;
-        Request.Builder requestBuilder;
-
-        form = new FormBody.Builder()
-                .add("client_id", carepartnerAppConfig.getClientId())
-                .add("nonce", UUID.randomUUID().toString())
-                .build();
-
-        requestBuilder = new Request.Builder()
-                .post(form)
-                .addHeader("device-id", Base64.encodeToString(deviceId.getBytes(StandardCharsets.UTF_8), Base64.NO_WRAP | Base64.URL_SAFE));
-
-        return this.callSsoRestApi(requestBuilder, carepartnerAppConfig.getMagCredentialInitEndpoint(), null);
-
-    }
-
-    private String generateDeviceId() {
-
-        try {
-            byte[] bytes = MessageDigest.getInstance("SHA-256").digest(UUID.randomUUID().toString().getBytes(StandardCharsets.UTF_8));
-            StringBuilder stringBuilder = new StringBuilder(bytes.length);
-            for (byte byteChar : bytes)
-                stringBuilder.append(String.format("%02x", byteChar));
-            return stringBuilder.toString();
-        } catch (NoSuchAlgorithmException e) {
-            UserError.Log.e(TAG, "Error generating deviceId! Details: \r\n" + e.getMessage());
-        }
-
-        return null;
 
     }
 
@@ -467,18 +348,16 @@ public class CareLinkAuthenticator {
         return ANDROID_MODELS[new Random().nextInt(ANDROID_MODELS.length)];
     }
 
-    private String generateRandomDataBase64url(int length) {
-        SecureRandom secureRandom = new SecureRandom();
-        byte[] codeVerifier = new byte[length];
-        secureRandom.nextBytes(codeVerifier);
-        return Base64.encodeToString(codeVerifier, PKCE_BASE64_ENCODE_SETTINGS);
-    }
 
-    private JsonObject callSsoRestApi(Request.Builder requestBuilder, String endpoint, Map<String, String> queryParams) throws IOException {
+    private JsonObject callSsoRestApi(Request.Builder requestBuilder, String endpoint, Map<String, String> queryParams) throws IOException, RefreshTokenExpiredException {
 
         Response response = this.callSsoApi(requestBuilder, endpoint, queryParams);
         if (response.isSuccessful()) {
             return JsonParser.parseString(response.body().string()).getAsJsonObject();
+        } else if(response.code() == 403) {
+            // see https://auth0.com/docs/api/authentication/refresh-token/refresh-token#response-messages
+            // 403 Forbidden. The refresh token is invalid or has expired.
+            throw new RefreshTokenExpiredException("The Refresh token has expired");
         } else {
             return null;
         }
@@ -515,15 +394,14 @@ public class CareLinkAuthenticator {
             this.loadAppConfig();
             //Refresh token
             tokenRefreshResult = this.refreshToken(
-                    credentialStore.getCredential().clientId, credentialStore.getCredential().clientSecret,
-                    credentialStore.getCredential().magIdentifier, credentialStore.getCredential().refreshToken);
+                    credentialStore.getCredential().clientId, credentialStore.getCredential().clientSecret, credentialStore.getCredential().refreshToken);
             //Save token
             credentialStore.updateMobileAppCredential(
                     tokenRefreshResult.get("access_token").getAsString(),
                     //new Date(Calendar.getInstance().getTime().getTime() + 15 * 60000),
                     //new Date(Calendar.getInstance().getTime().getTime() + 30 * 60000),
                     new Date(Calendar.getInstance().getTime().getTime() + (tokenRefreshResult.get("expires_in").getAsInt() * 1000)),
-                    new Date(Calendar.getInstance().getTime().getTime() + (this.carepartnerAppConfig.getRefreshLifetimeSec() * 1000)),
+                    null,
                     tokenRefreshResult.get("refresh_token").getAsString());
             //Completed successfully
             return true;
@@ -761,22 +639,6 @@ public class CareLinkAuthenticator {
                 .build();
         Response response = this.getHttpClient().newCall(request).execute();
         return JsonParser.parseString(response.body().string()).getAsJsonObject();
-
-    }
-
-    private String getWebAppLoginUrl() {
-
-        HttpUrl url = null;
-
-        url = new HttpUrl.Builder()
-                .scheme("https")
-                .host(this.careLinkServer())
-                .addPathSegments("patient/sso/login")
-                .addQueryParameter("country", this.carelinkCountry)
-                .addQueryParameter("lang", CARELINK_LANGUAGE_EN)
-                .build();
-
-        return url.toString();
 
     }
 

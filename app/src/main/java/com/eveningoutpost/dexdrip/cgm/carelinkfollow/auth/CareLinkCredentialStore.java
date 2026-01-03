@@ -39,7 +39,7 @@ public class CareLinkCredentialStore {
                 try {
                     CareLinkCredential savedCred = new GsonBuilder().create().fromJson(credJson, CareLinkCredential.class);
                     instance.setCredential(savedCred.country, savedCred.authType, savedCred.accessToken, savedCred.accessValidTo, savedCred.refreshValidTo, savedCred.cookies,
-                            savedCred.androidModel, savedCred.deviceId, savedCred.clientId, savedCred.clientSecret, savedCred.magIdentifier, savedCred.refreshToken, false);
+                            savedCred.androidModel, savedCred.clientId, savedCred.clientSecret, savedCred.refreshToken, false);
                 } catch (Exception e) {
                     UserError.Log.d(TAG, "Error when restoring saved Credential: " + e.getMessage());
                 }
@@ -51,23 +51,23 @@ public class CareLinkCredentialStore {
         return instance;
     }
 
-    synchronized void setMobileAppCredential(String country, String deviceId, String androidModel, String clientId, String clientSecret, String magIdentifier, String accessToken, String refreshToken, Date accessValidTo, Date refreshValidTo) {
-        this.setCredential(country, CareLinkAuthType.MobileApp, accessToken, accessValidTo, refreshValidTo, null, androidModel, deviceId, clientId, clientSecret, magIdentifier, refreshToken, true);
+    synchronized void setMobileAppCredential(String country, String androidModel, String clientId, String clientSecret, String accessToken, String refreshToken, Date accessValidTo, Date refreshValidTo) {
+        this.setCredential(country, CareLinkAuthType.MobileApp, accessToken, accessValidTo, refreshValidTo, null, androidModel, clientId, clientSecret, refreshToken, true);
     }
 
     synchronized void updateMobileAppCredential(String accessToken, Date accessValidTo, Date refreshValidTo, String refreshToken) {
-        this.setCredential(credential.country, CareLinkAuthType.MobileApp, accessToken, accessValidTo, refreshValidTo, null, credential.androidModel, credential.deviceId, credential.clientId, credential.clientSecret, credential.magIdentifier, refreshToken, true);
+        this.setCredential(credential.country, CareLinkAuthType.MobileApp, accessToken, accessValidTo, refreshValidTo, null, credential.androidModel,  credential.clientId, credential.clientSecret, refreshToken, true);
     }
 
     synchronized void updateBrowserCredential(String accessToken, Date accessValidTo, Date refreshValidTo, Cookie[] cookies) {
-        this.setCredential(credential.country, CareLinkAuthType.Browser, accessToken, accessValidTo, refreshValidTo, cookies, null, null, null, null, null, null, true);
+        this.setCredential(credential.country, CareLinkAuthType.Browser, accessToken, accessValidTo, refreshValidTo, cookies, null, null, null, null, true);
     }
 
     synchronized void setBrowserCredential(String country, String accessToken, Date accessValidTo, Date refreshValidTo, Cookie[] cookies) {
-        this.setCredential(country, CareLinkAuthType.Browser, accessToken, accessValidTo, refreshValidTo, cookies, null, null, null, null, null, null, true);
+        this.setCredential(country, CareLinkAuthType.Browser, accessToken, accessValidTo, refreshValidTo, cookies, null, null, null, null, true);
     }
 
-    protected synchronized void setCredential(String country, CareLinkAuthType authType, String accessToken, Date accessValidTo, Date refreshValidTo, Cookie[] cookies, String androidModel, String deviceId, String clientId, String clientSecret, String magIdentifier, String refreshToken, boolean save) {
+    protected synchronized void setCredential(String country, CareLinkAuthType authType, String accessToken, Date accessValidTo, Date refreshValidTo, Cookie[] cookies, String androidModel, String clientId, String clientSecret, String refreshToken, boolean save) {
 
         credential = new CareLinkCredential();
         credential.authType = authType;
@@ -76,10 +76,8 @@ public class CareLinkCredentialStore {
         credential.accessValidTo = accessValidTo;
         credential.cookies = cookies;
         credential.androidModel = androidModel;
-        credential.deviceId = deviceId;
         credential.clientId = clientId;
         credential.clientSecret = clientSecret;
-        credential.magIdentifier = magIdentifier;
         credential.refreshToken = refreshToken;
         credential.refreshValidTo = refreshValidTo;
         if (credential.accessToken == null || credential.accessValidTo == null)
@@ -119,6 +117,11 @@ public class CareLinkCredentialStore {
             return credential.accessValidTo.getTime();
     }
 
+    // Returns whether we know the refresh token expiry time or not, true if we do
+    public boolean refreshExpiryKnown() {
+        return credential != null && credential.refreshValidTo != null;
+    }
+
     public long getRefreshExpiresIn() {
         if (credential == null || credential.refreshValidTo == null)
             return -1;
@@ -141,12 +144,16 @@ public class CareLinkCredentialStore {
     }
 
     protected void evaluateExpiration() {
-        if (this.getRefreshExpiresIn() < 0)
+        if (refreshExpiryKnown() && this.getRefreshExpiresIn() < 0)
             authStatus = REFRESH_EXPIRED;
         else if (this.getAccessExpiresIn() < 0)
             authStatus = ACCESS_EXPIRED;
         else
             authStatus = AUTHENTICATED;
+    }
+
+    public void informExpiredRefreshToken() {
+        authStatus = REFRESH_EXPIRED;
     }
 
 }
