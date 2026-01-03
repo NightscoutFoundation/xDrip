@@ -240,8 +240,7 @@ public class CareLinkAuthenticator {
                         //new Date(Calendar.getInstance().getTime().getTime() + 15 * 60000),
                         //new Date(Calendar.getInstance().getTime().getTime() + 30 * 60000));
                         new Date(Calendar.getInstance().getTime().getTime() + (tokenObject.get("expires_in").getAsInt() * 1000)),
-                        // new Date(Calendar.getInstance().getTime().getTime() + (this.carepartnerAppConfig.getRefreshLifetimeSec() * 1000)),
-                        new Date()
+                        null
                         );
 
                 //Hide progress dialog
@@ -278,11 +277,7 @@ public class CareLinkAuthenticator {
     private void authenticateAsCpAppAuth0(Activity context) {
         String androidModel;
         String clientId;
-        String magIdentifier;
-        String codeVerifier;
         String authUrl;
-        String idToken;
-        String idTokenType;
 
         try {
 
@@ -435,7 +430,6 @@ public class CareLinkAuthenticator {
         if (idToken != null) {
             form.add("code", idToken)
                     .add("grant_type", idTokenType)
-                    //.add("scope", this.carepartnerAppConfig.getOAuthScope())
                     .add("redirect_uri", this.carepartnerAppConfig.getOAuthRedirectUri());
             //Refresh token request params
         } else {
