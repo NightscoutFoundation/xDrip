@@ -217,7 +217,7 @@ public class CareLinkAuthenticator {
                 //Store credentials
                 UserError.Log.d(TAG, "Store credentials");
                 this.credentialStore.setMobileAppCredential(this.carelinkCountry,
-                        null, androidModel, clientId,
+                        androidModel, clientId, null,
                         tokenObject.get("access_token").getAsString(), tokenObject.get("refresh_token").getAsString(),
                         new Date(Calendar.getInstance().getTime().getTime() + (tokenObject.get("expires_in").getAsInt() * 1000)),
                         null
