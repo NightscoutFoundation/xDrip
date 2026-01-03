@@ -149,6 +149,8 @@ public class UiBasedCollector extends NotificationListenerService {
         companionAppIoBRegexes.add(Pattern.compile("IOB: ([\\d\\.,]+) U"));
         // MiniMed Mobile (EU): "Active Insulin" label and "1.234 U" value in separate TextViews
         companionAppIoBRegexes.add(Pattern.compile("^([\\d\\.]+) U$"));
+        // MiniMed Mobile (EU): "Aktives Insulin" label and "1,234 IE" value in separate TextViews
+        companionAppIoBRegexes.add(Pattern.compile("^([\\d\\,]+) IE$"));
     }
 
     @Override
