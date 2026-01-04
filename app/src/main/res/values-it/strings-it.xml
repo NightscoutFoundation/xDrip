@@ -1850,6 +1850,8 @@
     <string name="title_ymax">Imposta il massimo dell\'asse y</string>
     <string name="summary_ymin">Scegli yMin per quando non ci sono letture più basse.</string>
     <string name="summary_ymax">Scegli yMax per quando non ci sono letture più alte.</string>
+    <string name="summary_auto_y_pan"><b>Abilita:</b> Sposta il grafico con un asse Y fisso (minimo-massimo) per mostrare le letture fuori intervallo.\n<b>Disabilita:</b> Espandi l\'intervallo dell\'asse Y per includere le letture fuori intervallo.</string>
+    <string name="title_auto_y_pan">Spostamento auto asse Y</string>
     <string name="wait_to_connect">Verifica le impostazioni e aspetta il collegamento.</string>
     <string name="summary_sens_expiry_notify">Genera delle notifiche quando il sensore si avvicina alla scadenza.</string>
     <string name="title_sens_expiry">Notifiche Scadenza Sensore</string>
