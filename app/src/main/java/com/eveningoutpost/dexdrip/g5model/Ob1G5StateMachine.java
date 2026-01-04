@@ -80,6 +80,7 @@ import static com.eveningoutpost.dexdrip.services.G5BaseService.setG6Defaults;
 import static com.eveningoutpost.dexdrip.services.G5BaseService.unBondAndStop;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.GET_DATA;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.SCAN;
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.UNBOND;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.android_wear;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.getTransmitterID;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.ignoreBonding;
@@ -196,6 +197,8 @@ public class Ob1G5StateMachine {
     }
 
 
+
+    @SuppressLint("CheckResult")
     private static void doNext(final Ob1G5CollectionService parent, final RxBleConnection connection) {
         try {
             val p = parent.plugin.aNext();
@@ -220,7 +223,10 @@ public class Ob1G5StateMachine {
                         val buf = new byte[size];
                         System.arraycopy(data, i, buf, 0, size);
                         UserError.Log.d(TAG, "Sending auth data: " + bytesToHex(buf));
-                        connection.writeCharacteristic(ExtraData, nn(buf)).subscribe();
+                        connection.writeCharacteristic(ExtraData, nn(buf)).subscribe(value -> {
+                        }, throwable -> {
+                            handleAuthenticationThrowable(throwable, parent);
+                        });
                         threadSleep(40);
                     }
                     // TODO wait for completion?
@@ -230,7 +236,10 @@ public class Ob1G5StateMachine {
                     UserError.Log.d(TAG, "Sending auth command: " + HexDump.dumpHexString(cmd));
                     connection.getCharacteristic(Authentication)
                             .blockingGet().setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
-                    connection.writeCharacteristic(Authentication, nn(cmd)).subscribe();
+                    connection.writeCharacteristic(Authentication, nn(cmd)).subscribe( value -> {
+                    }, throwable -> {
+                       handleAuthenticationThrowable(throwable, parent);
+                    });
                 }
             } else if (p.length == 1) {
                 if (cmd != null) {
@@ -239,7 +248,11 @@ public class Ob1G5StateMachine {
             } else if (p.length == 3) {
                 parent.savePersist();
                 if (parent.isDeviceLocallyBonded()) {
-                    parent.changeState(Ob1G5CollectionService.STATE.UNBOND);
+                    if (parent.isBluetoothEnabled()) {
+                        parent.changeState(UNBOND);
+                    } else {
+                        UserError.Log.e(TAG, "Bluetooth is not enabled! when detecting for unbond");
+                    }
                 } else {
                     UserError.Log.d(TAG, "Device does not appear to be bonded?");
                 }
@@ -452,8 +465,8 @@ public class Ob1G5StateMachine {
                 if (status.isAuthenticated()) {
 
                     if (parent.unBondAndStop) {
-                        UserError.Log.d(TAG, "Processing unbond and stop");
-                        parent.changeState(Ob1G5CollectionService.STATE.UNBOND);
+                        UserError.Log.e(TAG, "Processing unbond and stop");
+                        parent.changeState(UNBOND);
 
                     } else {
                         if (!status.isBonded()
@@ -1575,11 +1588,21 @@ public class Ob1G5StateMachine {
         if (glucose.calibrationState().warmingUp()) {
             checkAndActivateSensor();
         }
+        final long rxtimestamp = glucose.getRealTimestamp();
+        if (glucose.calibrationState().warmUpOrOkay()) {
+            if (glucose instanceof EGlucoseRxMessage2) {
+                if (((EGlucoseRxMessage2) glucose).ageRecent()) {
+                    DexSyncKeeper.store(getTransmitterID(), rxtimestamp, parent.static_last_connected, lastGlucosePacket);
+                }
+            } else {
+                DexSyncKeeper.store(getTransmitterID(), rxtimestamp, parent.static_last_connected, lastGlucosePacket);
+            }
+        }
         if (glucose.usable() || (glucose.insufficient() && Pref.getBoolean("ob1_g5_use_insufficiently_calibrated", true))) {
             UserError.Log.d(TAG, "Got usable glucose data from transmitter!!");
-            final long rxtimestamp = glucose.getRealTimestamp();
+
             checkAndActivateSensor();
-            DexSyncKeeper.store(getTransmitterID(), rxtimestamp, parent.static_last_connected, lastGlucosePacket);
+
             final BgReading bgReading = BgReading.bgReadingInsertFromG5(glucose.glucose, rxtimestamp);
             if (bgReading != null) {
                 try {

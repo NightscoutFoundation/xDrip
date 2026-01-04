@@ -21,6 +21,7 @@ import static com.eveningoutpost.dexdrip.models.JoH.joinBytes;
 import static com.eveningoutpost.dexdrip.models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.models.JoH.niceTimeScalar;
 import static com.eveningoutpost.dexdrip.models.JoH.pratelimit;
+import static com.eveningoutpost.dexdrip.models.JoH.quietratelimit;
 import static com.eveningoutpost.dexdrip.models.JoH.tolerantHexStringToByteArray;
 import static com.eveningoutpost.dexdrip.models.JoH.tsl;
 import static com.eveningoutpost.dexdrip.models.JoH.upForAtLeastMins;
@@ -156,7 +157,7 @@ import lombok.val;
 
 
 /**
- * OB1 G5/G6 collector
+ * OB1 G5/G6/G7 collector
  * Created by jamorham on 16/09/2017.
  * <p>
  * App version is master, best to avoid editing wear version directly
@@ -340,7 +341,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                         break;
                     case SCAN:
                         // no connection? lets try a restart
-                        if (msSince(static_last_connected) > 30 * 60 * 1000) {
+                        if (msSince(static_last_connected) > 30 * MINUTE_IN_MS) {
                             if (JoH.pratelimit("ob1-collector-restart", 1200)) {
                                 CollectionServiceStarter.restartCollectionServiceBackground();
                                 break;
@@ -754,6 +755,10 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     private synchronized void do_create_bond() {
+        if (!isBluetoothEnabled()) {
+            UserError.Log.e(TAG, "Bluetooth not enabled when attempting to create bond");
+            return;
+        }
         final boolean isDeviceLocallyBonded = isDeviceLocallyBonded();
         UserError.Log.d(TAG, "Attempting to create bond, device is : " + (isDeviceLocallyBonded ? "BONDED" : "NOT Bonded"));
 
@@ -892,8 +897,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     private synchronized void checkAndEnableBT() {
         try {
             if (Pref.getBoolean("automatically_turn_bluetooth_on", true)) {
-                final BluetoothAdapter mBluetoothAdapter = ((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
-                if (!mBluetoothAdapter.isEnabled()) {
+                if (!isBluetoothEnabled()) {
                     if (JoH.ratelimit("g5-enabling-bluetooth", 30)) {
                         JoH.setBluetoothEnabled(this, true);
                         UserError.Log.e(TAG, "Enabling bluetooth");
@@ -906,10 +910,19 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
     }
 
+    public boolean isBluetoothEnabled() {
+        final BluetoothAdapter mBluetoothAdapter = ((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
+        return mBluetoothAdapter != null && mBluetoothAdapter.isEnabled();
+    }
+
     public synchronized void unBond() {
 
         UserError.Log.d(TAG, "unBond() start");
         if (transmitterMAC == null) return;
+        if (!isBluetoothEnabled()) {
+            UserError.Log.e(TAG, "Bluetooth not enabled when attempting to unbond");
+            return;
+        }
 
         final BluetoothAdapter mBluetoothAdapter = ((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
 
@@ -953,7 +966,10 @@ public class Ob1G5CollectionService extends G5BaseService {
                 UserError.Log.d(TAG, "unBondAllG7notCurrent() no transmitter mac");
                 return;
             }
-
+            if (!isBluetoothEnabled()) {
+                UserError.Log.e(TAG, "unBondAllG7notCurrent() bluetooth not enabled");
+                return;
+            }
             final BluetoothAdapter mBluetoothAdapter = ((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
 
             final Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
@@ -1429,6 +1445,10 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     private boolean resetBondIfAllowed(boolean force) {
+        if (!isBluetoothEnabled()) {
+            UserError.Log.e(TAG, "Bluetooth is not enabled, cannot reset bond");
+            return false;
+        }
         if (Pref.getBoolean("ob1_g5_allow_resetbond", false)
                 && !specialPairingWorkaround()) {
             reset_bond(force);
@@ -1515,8 +1535,10 @@ public class Ob1G5CollectionService extends G5BaseService {
                     UserError.Log.d(TAG, "Got exception trying gatt refresh: " + e);
                 }
             } else {
-                UserError.Log.d(TAG, "Gatt refresh rate limited");
+                UserError.Log.d(TAG, "Gatt refresh block by preference");
             }
+        } else {
+            UserError.Log.d(TAG, "Gatt refresh rate limited");
         }
     }
 
@@ -1528,8 +1550,11 @@ public class Ob1G5CollectionService extends G5BaseService {
             static_last_connected = tsl();
             lastConnectFailed = false;
             preScanFailureMarker = false;
-
-            DexSyncKeeper.store(transmitterID, static_last_connected);
+            if (!shortTxId() || !DexSyncKeeper.isReady(transmitterID)) {
+                DexSyncKeeper.store(transmitterID, static_last_connected);
+            } else {
+                UserError.Log.d(TAG, "onConnectionReceived slc:" + ((static_last_connected / 1000) % 300) + " dsk:" + ((DexSyncKeeper.get(transmitterID) / 1000) % 300) + "   " + JoH.dateTimeText(DexSyncKeeper.anticipate(transmitterID)));
+            }
             // TODO check connection already exists - close etc?
             if (connection_linger != null) JoH.releaseWakeLock(connection_linger);
             connection = this_connection;
@@ -1706,7 +1731,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                 text = "Scan with the same filters is already started";
                 break;
             case BleScanException.SCAN_FAILED_APPLICATION_REGISTRATION_FAILED:
-                text = "Failed to register application for bluetooth scan";
+                text = "Failed to register application for bluetooth scan - Nearby devices permission disabled?";
                 break;
             case BleScanException.SCAN_FAILED_FEATURE_UNSUPPORTED:
                 text = "Scan with specified parameters is not supported";
@@ -2295,6 +2320,13 @@ public class Ob1G5CollectionService extends G5BaseService {
         try {
             if (vr1 != null) {
                 val known = FirmwareCapability.isKnownFirmware(vr1.firmware_version_string);
+                if (!known) {
+                    if (quietratelimit("log ob1 unknown firmware outer", 3600)) {
+                        if (pratelimit("log ob1 unknown firmware", 86400 * 7)) {
+                            JoH.logMessage("Unknown firmware: " + DexCollectionType.getBestCollectorHardwareName() + " " + vr1.firmware_version_string);
+                        }
+                    }
+                }
                 val unknown = !known ? (" " + "Unknown!" + "\n" + (UpdateActivity.testAndSetNightly(false) ? "Tap to report" : "Tap to use nightly version")) : "";
 
                 l.add(new StatusItem("Firmware Version", vr1.firmware_version_string + unknown, !known ? CRITICAL : NORMAL, !known ? "long-press" : null, !known ? (Runnable) Ob1G5CollectionService::handleUnknownFirmwareClick : null));
