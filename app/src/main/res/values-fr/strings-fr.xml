@@ -1845,7 +1845,7 @@
     <string name="android_8_background_scanning">Utiliser la fonction de scan en arrière-plan d\'Android 8+</string>
     <string name="title_yRange">Personnaliser la plage de l\'axe y</string>
     <string name="titleInside_yRange">Activer</string>
-    <string name="summaryInside_yRange">Vous pouvez ajuster la plage d\'axe vertical (y) ici.\nCependant, si vous avez des valeurs en dehors de cette fourchette, elles s\'étendront automatiquement, pendant plusieurs heures, pour permettre à ces valeurs de s\'afficher.</string>
+    <string name="summaryInside_yRange">Vous pouvez ajuster la plage d\'axe vertical (y) ici.\nCependant, si vous avez des valeurs en dehors de cette fourchette, l\'axe s\'étendra automatiquement, pendant plusieurs heures, pour permettre à ces valeurs de s\'afficher.</string>
     <string name="title_ymin">Ajuster le minimum de l\'axe y</string>
     <string name="title_ymax">Ajuster le maximum de l\'axe y</string>
     <string name="summary_ymin">Choisir yMin lorsqu\'il n\'y a pas de mesures plus petites.</string>
