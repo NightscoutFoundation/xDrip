@@ -1655,6 +1655,8 @@
     <string name="show_unsmoothed_summary">הראה מידע לא מוחלק גם עם החלקת הגרף מאופשרצ, 
 אם תוסף הכיול בשימוש יוצג גרף לא מוחלק ולא הגרף מהתוסף.</string>
     <string name="titleInside_yRange">אפשר</string>
+    <string name="summary_auto_y_pan"><b>אפשר</b> תזוזה של התרשים כאשר הציר האנכי בעל טווח קבוע (מקסימום-מינימום) כדי להראות קריאות מחוץ לטווח \n<b> בטל</b> הרחב את הציר האנכי כדי לכלול קריאות מחוץ לטווח.</string>
+    <string name="title_auto_y_pan">הזז את הציר האנכי בצורה אוטומטית</string>
     <string name="title_sens_expiry">התראות תוקף החיישן</string>
     <string name="title_sens_expiry_notify">אפשר</string>
     <string name="manage_permissions">ניהול הרשאות</string>
