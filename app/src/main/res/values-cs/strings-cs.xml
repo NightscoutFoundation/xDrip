@@ -1836,13 +1836,15 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="format_string_ago">před %s</string>
     <string name="use_background_scans">Použít vyhledávání na pozadí</string>
     <string name="android_8_background_scanning">Použít funkci vyhledávání na pozadí pro Android 8+</string>
-    <string name="title_yRange">Přizpůsobit rozsah osy y</string>
+    <string name="title_yRange">Přizpůsobit rozsah osy Y</string>
     <string name="titleInside_yRange">Povolit</string>
-    <string name="summaryInside_yRange">Zde můžete upravit rozsah svislé osy (y).\nPokud však máte hodnoty mimo tento rozsah, osa se automaticky prodlouží o několik hodin, aby bylo možné tyto hodnoty zobrazit.</string>
+    <string name="summaryInside_yRange">Zde můžete upravit rozsah svislé osy (Y).\nPokud však máte hodnoty mimo tento rozsah, osa se automaticky prodlouží o několik hodin, aby bylo možné tyto hodnoty zobrazit.</string>
     <string name="title_ymin">Upravit minimum osy y</string>
     <string name="title_ymax">Upravit maximum osy y</string>
     <string name="summary_ymin">Zvolit minimum osy y, pokud se nebudou vyskytovat nižší hodnoty glykémie.</string>
     <string name="summary_ymax">Zvolit maximum osy y, pokud se nebudou vyskytovat výšší hodnoty glykémie.</string>
+    <string name="summary_auto_y_pan"><b>Povolit:</b> Posouvání grafu s pevným rozsahem osy Y (minimum–maximum) pro zobrazení hodnot mimo rozsah.\n<b>Zakázát:</b> Rozšíření rozsahu osy Y pro zobrazení hodnot mimo rozsah.</string>
+    <string name="title_auto_y_pan">Automatický posun osy Y</string>
     <string name="wait_to_connect">Ověřte nastavení a počkejte na připojení.</string>
     <string name="summary_sens_expiry_notify">Upozornit, když se blíží konec senzoru.</string>
     <string name="title_sens_expiry">Oznámení konce senzoru</string>
