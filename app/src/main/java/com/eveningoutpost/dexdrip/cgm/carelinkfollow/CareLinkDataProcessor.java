@@ -223,7 +223,7 @@ public class CareLinkDataProcessor {
         }
 
         //PUMP INFO (Pump Status)
-        if (recentData.isNGP()) {
+        if (recentData.isNGP() || recentData.isCC()) {
             PumpStatus.setReservoir(recentData.reservoirRemainingUnits);
             PumpStatus.setBattery(recentData.getDeviceBatteryLevel());
             if (recentData.activeInsulin != null)

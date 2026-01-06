@@ -224,7 +224,7 @@ public class CareLinkClient {
             return null;
 
         // 7xxG
-        if (this.isBleDevice(patientUsername))
+        if (this.useConnectDisplayMessageData(patientUsername))
             return this.getConnectDisplayMessage(this.sessionProfile.username, this.sessionUser.getUserRole(), patientUsername,
                     sessionCountrySettings.blePereodicDataEndpoint);
             // Guardian + multi
@@ -256,7 +256,7 @@ public class CareLinkClient {
             return null;
     }
 
-    public boolean isBleDevice(String patientUsername){
+    public boolean useConnectDisplayMessageData(String patientUsername){
 
         Boolean recentUploadBle;
 
@@ -284,13 +284,13 @@ public class CareLinkClient {
             else {
                 for (int i = 0; i < this.sessionPatients.length; i++) {
                     if (sessionPatients[i].username.equals(patientUsername))
-                        return sessionPatients[i].isBle();
+                        return sessionPatients[i].isBle() || sessionPatients[i].isCC();
                 }
                 return false;
             }
         // Other: classic method (session monitor data)
         else
-            return this.sessionMonitorData.isBle();
+            return this.sessionMonitorData.isBle(); // todo: check if CC should be added here as well
 
     }
 

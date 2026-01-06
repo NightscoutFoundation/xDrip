@@ -11,6 +11,7 @@ public class RecentData {
     public static final String DEVICE_FAMILY_GUARDIAN = "GUARDIAN";
     public static final String DEVICE_FAMILY_NGP = "NGP";
     public static final String DEVICE_FAMILY_CGM = "CGM";
+    public static final String DEVICE_FAMILY_CC = "CC"; // Includes Instinct
 
     //sensorState
     public static final String SENSOR_STATE_CALIBRATION_REQUIRED = "CALIBRATION_REQUIRED";
@@ -56,6 +57,10 @@ public class RecentData {
     }
 
     public boolean isNGP() {
+        return getDeviceFamily().equals(DEVICE_FAMILY_NGP);
+    }
+
+    public boolean isCC() {
         return getDeviceFamily().equals(DEVICE_FAMILY_NGP);
     }
 
