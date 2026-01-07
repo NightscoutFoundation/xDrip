@@ -60,6 +60,10 @@ public class QuickSettingsDialogs {
     }
 
     public static void textSettingDialog(Activity activity, String setting, String title, String message, int input_type, final Runnable postRun) {
+        textSettingDialog(activity, setting, title, message, input_type, postRun, false);
+    }
+
+    public static void textSettingDialog(Activity activity, String setting, String title, String message, int input_type, final Runnable postRun, boolean ignoreExisting) {
         final boolean finishOnDismiss = activity.getIntent().getBooleanExtra(FINISH_ACTIVITY_ON_DIALOG_DISMISS, false);
 
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
@@ -77,7 +81,9 @@ public class QuickSettingsDialogs {
             edt.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
         }
 
-        edt.setText(Pref.getString(setting, ""));
+        if (!ignoreExisting) {
+            edt.setText(Pref.getString(setting, ""));
+        }
 
         final TextView tv = dialogView.findViewById(R.id.dialogTextEntryTextView);
         dialogBuilder.setTitle(title);
