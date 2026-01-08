@@ -241,6 +241,10 @@ public class NightscoutUploader {
     }
 
     public static String uuid_to_id(String uuid) {
+        if (uuid.contains(":")) {
+            // convert non-standard uuids to compatible ones
+            return CipherUtils.getMD5(uuid).substring(0, 24);
+        }
         if (uuid.length() == 24) return uuid; // already converted
         if (uuid.length() < 24) {
             // convert non-standard uuids to compatible ones
