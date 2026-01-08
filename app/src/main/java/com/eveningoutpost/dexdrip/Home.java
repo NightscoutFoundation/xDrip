@@ -36,9 +36,11 @@ import android.graphics.Point;
 import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.os.Handler;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -53,6 +55,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.text.InputType;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -230,6 +233,25 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private long lastViewPortPan;
     private long lastDataTick;
     private boolean screen_forced_on = false;
+    private final Handler uiHandler = new Handler(Looper.getMainLooper());
+    private final Runnable ageUpdateRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (!activityVisible) return;
+            try {
+                final BgReading lastBgReading = BgReading.lastNoSenssor();
+                if (lastBgReading != null) {
+                    final long ageMs = Math.max(0, System.currentTimeMillis() - lastBgReading.timestamp);
+                    final String ageLine = formatAgeLine(ageMs);
+                    updateAgeLine(ageLine);
+                }
+            } finally {
+                if (activityVisible) {
+                    uiHandler.postDelayed(this, SECOND_IN_MS);
+                }
+            }
+        }
+    };
     public BgGraphBuilder bgGraphBuilder;
     private Viewport tempViewport = new Viewport();
     public Viewport holdViewport = new Viewport();
@@ -1858,6 +1880,43 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
     }
 
+    private void startAgeTicker() {
+        uiHandler.removeCallbacks(ageUpdateRunnable);
+        uiHandler.post(ageUpdateRunnable);
+    }
+
+    private void stopAgeTicker() {
+        uiHandler.removeCallbacks(ageUpdateRunnable);
+    }
+
+    private String formatAgeLine(final long ageMs) {
+        return JoH.formatMinutesSeconds(ageMs, true);
+    }
+
+    private void updateAgeLine(final String ageLine) {
+        final CharSequence current = notificationText.getText();
+        if (TextUtils.isEmpty(current)) {
+            notificationText.setText(ageLine);
+            return;
+        }
+        final String[] lines = current.toString().split("\n", -1);
+        int idx = 0;
+        while (idx < lines.length && lines[idx].length() == 0) {
+            idx++; // skip any leading blank line
+        }
+        if (idx >= lines.length) {
+            notificationText.setText(ageLine);
+            return;
+        }
+        lines[idx] = ageLine;
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < lines.length; i++) {
+            if (i > 0) sb.append("\n");
+            sb.append(lines[i]);
+        }
+        notificationText.setText(sb.toString());
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -1918,6 +1977,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         activityVisible = true;
         updateCurrentBgInfo("generic on resume");
         updateHealthInfo("generic on resume");
+
+        startAgeTicker();
 
         NFControl.initNFC(this, false);
 
@@ -2155,6 +2216,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         NFControl.initNFC(this, true); // disables
         nanoStatus.setRunning(false);
         expiryStatus.setRunning(false);
+        stopAgeTicker();
         if (_broadcastReceiver != null) {
             try {
                 unregisterReceiver(_broadcastReceiver);
@@ -2638,10 +2700,9 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             if(lastReading == 0) {
                 notificationText.setText(R.string.in_libre_all_house_mode_no_readings_collected_yet);
             } else {
-                int minutes = (int) (tsl() - lastReading) / (60 * 1000);
-                final String fmt = getString(R.string.minutes_ago);
+                final long ageMs = Math.max(0, tsl() - lastReading);
                 notificationText.setText(R.string.in_libre_all_house_mode_last_data_collected);
-                notificationText.append(MessageFormat.format(fmt, minutes));
+                notificationText.append(JoH.formatMinutesSeconds(ageMs, true));
             }
             return;
         }
@@ -3119,15 +3180,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             if (extrastring.length() > 0)
                 currentBgValueText.setText(extrastring + currentBgValueText.getText());
         }
-        int minutes = (int) (System.currentTimeMillis() - lastBgReading.timestamp) / (60 * 1000);
+        final long ageMs = Math.max(0, System.currentTimeMillis() - lastBgReading.timestamp);
+        final String ageLine = formatAgeLine(ageMs);
 
-        if ((!small_width) || (notificationText.length() > 0)) notificationText.append("\n");
-        if (!small_width) {
-            final String fmt = getString(R.string.minutes_ago);
-            notificationText.append(MessageFormat.format(fmt, minutes));
-        } else {
-            // small screen
-            notificationText.append(minutes + getString(R.string.space_mins));
+        if (notificationText.length() > 0) notificationText.append("\n");
+        notificationText.append(ageLine);
+        if (small_width) {
             currentBgValueText.setPadding(0, 0, 0, 0);
         }
 

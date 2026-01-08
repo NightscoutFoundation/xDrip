@@ -880,6 +880,30 @@ public class JoH {
         }
     }
 
+    public static String formatMinutesSeconds(long durationMs, boolean includeAgoWord) {
+        final long safeDurationMs = Math.max(durationMs, 0);
+        final long totalSeconds = safeDurationMs / 1000;
+        final long minutes = totalSeconds / 60;
+        final long seconds = totalSeconds % 60;
+
+        final StringBuilder builder = new StringBuilder();
+        builder.append(String.format(Locale.getDefault(), "%d:%02d", minutes, seconds));
+
+        if (includeAgoWord) {
+            builder.append(minutes == 1 ? xdrip.getAppContext().getString(R.string.space_minute_ago) : xdrip.getAppContext().getString(R.string.space_minutes_ago));
+        }
+
+        return builder.toString().trim();
+    }
+
+    public static String formatMinutesSecondsSince(long timestamp, boolean includeAgoWord) {
+        return formatMinutesSeconds(msSince(timestamp), includeAgoWord);
+    }
+
+    public static String formatMinutesSecondsShort(long durationMs) {
+        return formatMinutesSeconds(durationMs, false);
+    }
+
 
     public static double tolerantParseDouble(String str) throws NumberFormatException {
         return Double.parseDouble(str.replace(",", "."));
