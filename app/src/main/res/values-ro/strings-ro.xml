@@ -230,6 +230,8 @@
     <string name="forecasted_low_alert">Alertă de hipoglicemie anticipată</string>
     <string name="setting_pref_to_max">Setează la maxim</string>
     <string name="pref_was_greater_than_max">%1$s a fost setat la o valoare mai mare decât maximul permis. A fost schimbat la maximum.</string>
+    <string name="setting_pref_to_min">Setează la minimum</string>
+    <string name="pref_was_less_than_min">%1$s a fost setat la o valoare mai mică decât minimul permis. A fost schimbat la minimum.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolează datele pentru a încerca prezicerea hipoglicemiilor</string>
     <string name="alarm_at_forecasted_low_mins">Alarma la min scăzut prognozate</string>
     <string name="title_forecast_low_threshold">Prag</string>
@@ -253,6 +255,9 @@
     <string name="dexcom_transmitter_id">ID Transmițător Dexcom</string>
     <string name="run_collector_in_foreground">Rulează Colectorul în prim-plan</string>
     <string name="shows_a_persistent_notification">Arată un graphic de notificări persistent, vizibil și pe ecranul de blocare, și previne oprirea procesului de către sistemul Android.</string>
+    <string name="title_collector_in_foreground">Colector în prim-plan</string>
+    <string name="summary_compact_ongoing_notification">Permite ascunderea graficului în notificare și afișarea doar a valorii curente a glicemiei.</string>
+    <string name="title_compact_ongoing_notification">Notificare persistentă compactă</string>
     <string name="list_of_receivers">Listă de receptori</string>
     <string name="extra_tags_for_logging">Etichete suplimentare pentru înregistrarea în jurnal</string>
     <string name="extra_tags_dialog_message">Etichetele introduse aici vor fi înregistrate în xDrip. Formatul este: etichetă:nivel. Nivlul poate fi: v, d sau i. De exemplu, bgreading:i,DexCollectionService:v. Aceste etichete vor fi înregistrate cu prioritate scăzută în Lista de erori și evenimente.</string>
