@@ -832,7 +832,8 @@
     <string name="rising_threshold">rising rate threshold</string>
     <string name="set_sound_for_bg_alerts">Set sound used for BG Alerts.</string>
     <string name="alert_sound">Alert Sound</string>
-    <string name="override_silent_mode_these">Override Silent mode on these alerts</string>
+    <string name="override_silent_mode_these">Ignore Do not disturb</string>
+    <string name="no_effect_when_using_notification_channels">This setting has no effect when using Notification Channels. You can configure the behavior in the Android notification settings, then.</string>
     <string name="persistent_repeat_max">Repeating max every (minutes)</string>
     <string name="momentum_indicates_low">When momentum trend indicates a Low would be predicted</string>
     <string name="notify_on_low_battery_level">Notify when battery level goes below</string>
