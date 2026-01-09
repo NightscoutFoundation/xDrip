@@ -293,7 +293,7 @@ public class BestGlucose {
         return dg;
     }
 
-    protected static boolean compensateNoise() {
+    public static boolean compensateNoise() {
         return (BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_TRIGGER
                 || (BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_TRIGGER_ULTRASENSITIVE
                         && Pref.getBooleanDefaultFalse("engineering_mode")
