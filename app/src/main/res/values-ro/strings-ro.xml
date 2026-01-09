@@ -308,6 +308,7 @@
     <string name="upload_data_to_dex_servers">Încarcă date în serverele Dexcom pentu a le putea folosi în aplicațiile tale Dexcom</string>
     <string name="manage_followers">Gestionează abonații</string>
     <string name="manage_existing_followers">Gestionează-ți abonații și invită și alții să se aboneze</string>
+    <string name="invite_follower">Invită un Urmăritor</string>
     <string name="glucose_calibration_and_other_alerts">Alerte de glicemie, calibrare și altele</string>
     <string name="alert_volume_profile">Profilul volumului de alertă</string>
     <string name="smart_alerting">Alerte inteligente</string>
