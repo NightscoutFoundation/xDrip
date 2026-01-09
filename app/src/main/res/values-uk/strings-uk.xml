@@ -255,6 +255,7 @@
     <string name="dexcom_transmitter_id">ID трансмітера Dexcom</string>
     <string name="run_collector_in_foreground">Пріоритет служби збору даних</string>
     <string name="shows_a_persistent_notification">Постійно присутнє повідомлення, також присутнє на екрані блокування, яке дозволяє уникнути закриття служби Android.</string>
+    <string name="title_collector_in_foreground">Активний збірник</string>
     <string name="list_of_receivers">Список ресиверів</string>
     <string name="extra_tags_for_logging">Додаткові теги для журналювання</string>
     <string name="extra_tags_dialog_message">Теги, введені тут, будуть додані в журнал xDrip +. Формат даних − тег:рівень. Рівні можуть називатися v, d або i. Наприклад, bgreading:i, DexCollectionService:v. Дані теги будуть додані з низьким пріоритетом у Журнал помилок і подій.</string>
@@ -316,6 +317,8 @@
     <string name="pebble_and_android_wear_options">Налаштування для різних смарт-годинників</string>
     <string name="customize_colours">Налаштування кольорів</string>
     <string name="xdrip_plus_color_settings">Налаштування кольорової схеми</string>
+    <string name="summary_font_settings"></string>
+    <string name="summary_enlarge_fonts_on_large_screens">Автоматично збільшувати розмір шрифту на великих екранах, зокрема на планшетах</string>
     <string name="glucose_values_and_lines">Значення і лінії глюкози на графіку</string>
     <string name="high_glucose_values">Високі значення глюкози</string>
     <string name="in_range_glucose_values">Значення глюкози в діапазоні</string>

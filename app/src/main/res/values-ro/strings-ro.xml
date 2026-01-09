@@ -37,6 +37,10 @@
     <string name="pref_header_cloud_storage">Stocare în cloud</string>
     <string name="auto_configure_title">Configurează automat</string>
     <string name="prefs_auto_config_summary">Configurează automat cu ajutorul unui cod de bare.</string>
+    <string name="auto_config_cam_title">Cameră</string>
+    <string name="auto_config_cam_summary">Scanați un cod QR cu telefonul mobil (recomandat)</string>
+    <string name="auto_config_image_title">Fișier imagine</string>
+    <string name="auto_config_image_summary">Puteți salva un cod QR ca un fișier imagine (cum ar fi .png sau .jpeg) pe telefonul mobil. Apoi, utilizați această opțiune pentru a scana codul QR din fișierul salvat.</string>
     <string name="scan_share2_barcode">Scanează cod de bare partajat</string>
     <string name="pref_share2_scan_barcode_summary">Sau scanează codul de bare de pe dispozitivul asociat</string>
     <!-- MongoDB Settings -->
@@ -57,6 +61,7 @@
     <string name="pref_title_api_enabled">Activat</string>
     <string name="pref_summary_api_enabled">API REST este modul standard de conectare la Nightscout</string>
     <string name="pref_title_api_url">Adresa URL de bază</string>
+    <string name="pref_summary_api_url">Format: https://password@hostname/api/v1/</string>
     <string name="pref_dialog_api_url">Introdu adresa URL de bază pentru API</string>
     <string name="pref_message_api_url">Aceasta este doar adresa URL de bază. Utilizatorul care încarcă va atașa automat parametrii / pentru POST.  Valoarea API_SECRET de pe server trebuie să fie aceeași cu parola din această setare.</string>
     <string name="pref_default_api_url">https://parolata@{SITE-UL-TAU}.azurewebsites.net/api/v1/</string>
@@ -115,6 +120,7 @@
     <string name="title_activity_update">Actualizare disponibilă pentru xDrip+</string>
     <string name="title_activity_display_qrcode">Partajează setări printr-un cod QR</string>
     <string name="title_activity_send_feed_back">Trimite feedback la Jamorham</string>
+    <string name="title_activity_save_logs">Salvează jurnalele</string>
     <string name="title_activity_maps">Hartă Parakeet</string>
     <string name="title_activity_display_preferences">Preferințe de afișare</string>
     <string name="export_submenu">Funcții de Import/Export</string>
@@ -177,6 +183,7 @@
     <string name="libre_last_x_minutes_graph">Grafic Libre pe ultimele %d minute</string>
     <string name="share_config_via_qr_code">Partajează configurarea printr-un cod QR</string>
     <string name="check_for_updated_version">Verifică dacă există actualizări</string>
+    <string name="current_version_is_up_to_date">Nicio actualizare în canalul selectat</string>
     <string name="send_feedback_to_developer">Trimite feedback la dezvoltator</string>
     <string name="home_screen">Ecranul principal</string>
     <string name="event_logs">Jurnale de evenimente</string>
@@ -186,6 +193,7 @@
     <string name="general_settings">Setări generale</string>
     <string name="high_value">Valoare ridicată</string>
     <string name="low_value">Valoare scăzută</string>
+    <string name="stats_range_settings">Setări interval: </string>
     <string name="end_user_license_agreement">Acord de licență pentru utilizatorul final</string>
     <string name="save">Salvează</string>
     <string name="view_important_warning">Vizualizează avertismentele importante</string>
@@ -217,9 +225,16 @@
     <string name="extra_alerts_xdrip_plus">Alerte suplimentare (xDrip+)</string>
     <string name="persistent_high_alert">Alertă de valori constant ridicate</string>
     <string name="persistent_high_alert_enable">Permite</string>
+    <string name="title_persistent_high_threshold">Prag</string>
+    <string name="the_value_must_be_between_min_and_max">Valoarea trebuie să fie între %1$s și %2$s</string>
     <string name="forecasted_low_alert">Alertă de hipoglicemie anticipată</string>
+    <string name="setting_pref_to_max">Setează la maxim</string>
+    <string name="pref_was_greater_than_max">%1$s a fost setat la o valoare mai mare decât maximul permis. A fost schimbat la maximum.</string>
+    <string name="setting_pref_to_min">Setează la minimum</string>
+    <string name="pref_was_less_than_min">%1$s a fost setat la o valoare mai mică decât minimul permis. A fost schimbat la minimum.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolează datele pentru a încerca prezicerea hipoglicemiilor</string>
     <string name="alarm_at_forecasted_low_mins">Alarma la min scăzut prognozate</string>
+    <string name="title_forecast_low_threshold">Prag</string>
     <string name="other_xdrip_plus_alerts">Alte alerte xDrip+</string>
     <string name="xdrip_plus_display_settings">Setări de afișare xDrip+</string>
     <string name="display_customisations">Personalizarea afișării</string>
@@ -240,6 +255,9 @@
     <string name="dexcom_transmitter_id">ID Transmițător Dexcom</string>
     <string name="run_collector_in_foreground">Rulează Colectorul în prim-plan</string>
     <string name="shows_a_persistent_notification">Arată un graphic de notificări persistent, vizibil și pe ecranul de blocare, și previne oprirea procesului de către sistemul Android.</string>
+    <string name="title_collector_in_foreground">Colector în prim-plan</string>
+    <string name="summary_compact_ongoing_notification">Permite ascunderea graficului în notificare și afișarea doar a valorii curente a glicemiei.</string>
+    <string name="title_compact_ongoing_notification">Notificare persistentă compactă</string>
     <string name="list_of_receivers">Listă de receptori</string>
     <string name="extra_tags_for_logging">Etichete suplimentare pentru înregistrarea în jurnal</string>
     <string name="extra_tags_dialog_message">Etichetele introduse aici vor fi înregistrate în xDrip. Formatul este: etichetă:nivel. Nivlul poate fi: v, d sau i. De exemplu, bgreading:i,DexCollectionService:v. Aceste etichete vor fi înregistrate cu prioritate scăzută în Lista de erori și evenimente.</string>
@@ -391,6 +409,7 @@
     <string name="please_enter_your_question_or_comments_here">Scrie întrebarea sau comentariile aici.\n\nDacă incluzi și adresa de e-mail, e posibil să primești un răspuns.\n\n</string>
     <string name="optional_contact_info_here_eg_email">(opțional) Scrie date de contact, de exemplu, o adresă de e-mail</string>
     <string name="send_message">Trimite mesajul</string>
+    <string name="save_logs">Salvează jurnalele</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Te rog să ne spui părerea ta generală despre aplicație</string>
     <string name="preferences_saved_in_sdcard_downloads">Preferințe salvate în directorul Descărcări, de pe SDcard</string>
     <string name="could_not_write_to_sdcard_check_perms">Nu s-a putut scrie pe sdcard. Poate trebuie să verifici permisiunile.</string>
