@@ -37,6 +37,7 @@ import com.eveningoutpost.dexdrip.models.Calibration;
 import com.eveningoutpost.dexdrip.models.CalibrationRequest;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.Sensor;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.eveningoutpost.dexdrip.models.UserNotification;
 import com.eveningoutpost.dexdrip.R;
@@ -54,6 +55,7 @@ import com.eveningoutpost.dexdrip.xdrip;
 import java.util.Date;
 import java.util.List;
 
+import static com.eveningoutpost.dexdrip.models.JoH.safeParseSoundUri;
 import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.X;
 import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.getCol;
 
@@ -994,8 +996,8 @@ public class Notifications extends IntentService {
     private static void OtherAlert(Context context, String type, String title, String message, int notificatioId, String channelId, boolean addDeleteIntent, long reraiseSec) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String otherAlertsSound = prefs.getString(type+"_sound",prefs.getString("other_alerts_sound", "content://settings/system/notification_sound"));
-        Boolean otherAlertsOverrideSilent = prefs.getBoolean("other_alerts_override_silent", false);
-        Boolean extraAlertsOverrideSilent = prefs.getBoolean(type+"_override_silent", otherAlertsOverrideSilent); // Inherit from other alerts if the alert itself does not have a dedicated setting
+        boolean otherAlertsOverrideSilent = prefs.getBoolean("other_alerts_override_silent", false);
+        boolean extraAlertsOverrideSilent = prefs.getBoolean(type+"_override_silent", otherAlertsOverrideSilent); // Inherit from other alerts if the alert itself does not have a dedicated setting
 
         Log.d(TAG,"OtherAlert called " + type + " " + message + " reraiseSec = " + reraiseSec);
         UserNotification userNotification = UserNotification.GetNotificationByType(type); //"bg_unclear_readings_alert"
@@ -1036,9 +1038,9 @@ public class Notifications extends IntentService {
             mBuilder.setLights(0xff00ff00, 300, 1000);
             if (AlertPlayer.notSilencedDueToCall()) {
                 if (extraAlertsOverrideSilent) {
-                    mBuilder.setSound(Uri.parse(otherAlertsSound), AudioAttributes.USAGE_ALARM);
+                    mBuilder.setSound(safeParseSoundUri(otherAlertsSound), AudioAttributes.USAGE_ALARM);
                 } else {
-                    mBuilder.setSound(Uri.parse(otherAlertsSound));
+                    mBuilder.setSound(safeParseSoundUri(otherAlertsSound));
                     if (isSoundBlockedBySystem(context)) {
                         Log.ueh(TAG, "No " + type + " in silent mode");
                     }

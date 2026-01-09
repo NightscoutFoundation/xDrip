@@ -880,15 +880,65 @@ public class JoH {
         }
     }
 
+    public static Uri safeParseSoundUri(final String input) {
+        if (input == null || input.trim().isEmpty()) {
+            return null;
+        }
+
+        // Already safe URIs
+        if (input.startsWith("content://") ||
+                input.startsWith("android.resource://")) {
+            return Uri.parse(input);
+        }
+
+        // Handle file:// or raw file paths
+        File file;
+        if (input.startsWith("file://")) {
+            file = new File(Uri.parse(input).getPath());
+        } else {
+            file = new File(input);
+        }
+
+        // If file doesn't exist, fallback to parsing
+        if (!file.exists()) {
+            UserError.Log.wtf(TAG, "File does not exist: " + file.getAbsolutePath()+ " using fallback sound");
+            return Uri.parse("content://settings/system/notification_sound");
+        }
+        val context = xdrip.getAppContext();
+        return FileProvider.getUriForFile(
+                context,
+                context.getPackageName() + ".provider",
+                file
+        );
+    }
+
+    public static String normalizeNumber(final String str) {
+        val normalized = new StringBuilder();
+
+        for (char ch : str.toCharArray()) {
+            if (Character.isDigit(ch)) {
+                normalized.append(Character.getNumericValue(ch));
+            } else if (ch == '٫' || ch == ',') { // Arabic decimal separator or comma
+                normalized.append('.');
+            } else {
+                normalized.append(ch);
+            }
+        }
+        return normalized.toString();
+    }
 
     public static double tolerantParseDouble(String str) throws NumberFormatException {
-        return Double.parseDouble(str.replace(",", "."));
+        if (str == null) {
+            throw new NumberFormatException("null");
+        }
+
+        return Double.parseDouble(normalizeNumber(str));
     }
 
     public static double tolerantParseDouble(final String str, final double def) {
         if (str == null) return def;
         try {
-            return Double.parseDouble(str.replace(",", "."));
+            return tolerantParseDouble(str);
         } catch (NumberFormatException e) {
             return def;
         }
