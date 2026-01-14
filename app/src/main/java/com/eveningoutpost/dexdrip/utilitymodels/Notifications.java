@@ -999,6 +999,10 @@ public class Notifications extends IntentService {
         boolean otherAlertsOverrideSilent = prefs.getBoolean("other_alerts_override_silent", false);
         boolean extraAlertsOverrideSilent = prefs.getBoolean(type+"_override_silent", otherAlertsOverrideSilent); // Inherit from other alerts if the alert itself does not have a dedicated setting
 
+        // Let's create a local variable representing if there should be vibration for this alert or not.
+        // If 'type' does not correspond to a real setting, which will be the case for "other alerts", the Other_alerts_vibrate_on_alert setting will be used.
+        Boolean extraAlertsVibrateOnAlert = prefs.getBoolean(type+"_vibrate_on_alert", prefs.getBoolean("other_alerts_vibrate_on_alert", true));
+
         Log.d(TAG,"OtherAlert called " + type + " " + message + " reraiseSec = " + reraiseSec);
         UserNotification userNotification = UserNotification.GetNotificationByType(type); //"bg_unclear_readings_alert"
         if ((userNotification == null) || userNotification.timestamp <= new Date().getTime() ) {
@@ -1034,7 +1038,9 @@ public class Notifications extends IntentService {
                 deleteIntent.putExtra("raisedTimeStamp", JoH.tsl());
                 mBuilder.setDeleteIntent(PendingIntent.getService(context, 0, deleteIntent, PendingIntent.FLAG_UPDATE_CURRENT));
             }
-            mBuilder.setVibrate(vibratePattern);
+            if (extraAlertsVibrateOnAlert) {
+                mBuilder.setVibrate(vibratePattern);
+            }
             mBuilder.setLights(0xff00ff00, 300, 1000);
             if (AlertPlayer.notSilencedDueToCall()) {
                 if (extraAlertsOverrideSilent) {
