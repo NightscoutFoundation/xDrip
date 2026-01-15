@@ -164,7 +164,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     private volatile String mWearNodeId = null;
     static final int GET_CAPABILITIES_TIMEOUT_MS = 5000;
 
-    private static final String TAG = "jamorham watchupdater";
+    private static final String TAG = WatchUpdaterService.class.getSimpleName();
     private static final String LAST_WATCH_RECEIVED_TEXT = "watch-last-received-text";
     private static GoogleApiClient googleApiClient;
     private static long lastRequest = 0;//KS
@@ -172,6 +172,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     private static final Integer sendCalibrationCount = 3;//KS
     private final static Integer sendBgCount = 4;//KS
     private boolean wear_integration = false;
+    private boolean only_ever_use_wear = false;
     private boolean pebble_integration = false;
     private boolean is_using_bt = false;
     private static long syncLogsRequested = 0;//KS
@@ -731,6 +732,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     public void onCreate() {
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         wear_integration = mPrefs.getBoolean("wear_sync", false);
+        only_ever_use_wear = mPrefs.getBoolean("only_ever_use_wear_collector", false);
         //is_using_g5 = (getDexCollectionType() == DexCollectionType.DexcomG5);
         is_using_bt = DexCollectionType.hasBluetooth();
         if (wear_integration) {
@@ -1032,8 +1034,8 @@ public class WatchUpdaterService extends WearableListenerService implements
             sendData();
         }
 
-        //if ((!wear_integration)&&(!pebble_integration))
-        if (!wear_integration)    // only wear sync starts this service, pebble features are not used?
+        // only wear sync starts this service
+        if (!wear_integration)
         {
             Log.i(TAG, "Stopping service");
             startBtService();
@@ -1570,7 +1572,8 @@ public class WatchUpdaterService extends WearableListenerService implements
     }
 
     private void sendG5QueueData(String queueData) {
-        if ((wear_integration) && (queueData != null)) {
+        // Only send data to mobile if only_ever_use_wear is not enabled
+        if (wear_integration && !only_ever_use_wear && queueData != null) {
             forceGoogleApiConnect();
             new SendToDataLayerThread(WEARABLE_G5_QUEUE_PATH, googleApiClient).executeOnExecutor(xdrip.executor, dataMap("queueData", queueData));
         }
@@ -1578,12 +1581,11 @@ public class WatchUpdaterService extends WearableListenerService implements
 
     private void sendData() {
         BgReading bg = BgReading.last();
-        if (bg != null) {
+        // Only send data to mobile if only_ever_use_wear is not enabled
+        if (wear_integration && !only_ever_use_wear && bg != null) {
             forceGoogleApiConnect();
-            if (wear_integration) {
-                final int battery = PowerStateReceiver.getBatteryLevel(getApplicationContext());
-                new SendToDataLayerThread(WEARABLE_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, dataMap(bg, mPrefs, new BgGraphBuilder(getApplicationContext()), battery));
-            }
+            final int battery = PowerStateReceiver.getBatteryLevel(getApplicationContext());
+            new SendToDataLayerThread(WEARABLE_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, dataMap(bg, mPrefs, new BgGraphBuilder(getApplicationContext()), battery));
         }
     }
 
@@ -1834,6 +1836,11 @@ public class WatchUpdaterService extends WearableListenerService implements
             if (dex_time_keeper != null) {
                 dataMap.putString("dex-timekeeping", dex_time_keeper);
             }
+
+            //Nightscout settings
+            dataMap.putBoolean("cloud_storage_api_enable", mPrefs.getBoolean("cloud_storage_api_enable", false));
+            dataMap.putString("cloud_storage_api_base", mPrefs.getString("cloud_storage_api_base", ""));
+            dataMap.putBoolean("cloud_storage_api_use_mobile", mPrefs.getBoolean("cloud_storage_api_use_mobile", false));
 
         }
         //Step Counter
