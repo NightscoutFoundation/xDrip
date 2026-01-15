@@ -319,7 +319,7 @@
     <string name="pebble_and_android_wear_options">다양한 워치 옵션</string>
     <string name="customize_colours">색상 사용자 정의</string>
     <string name="xdrip_plus_color_settings">xDrip+ 색상 세팅</string>
-    <string name="summary_font_settings">글꼴 사용자 정의</string>
+    <string name="summary_font_settings">글꼴 사용자 지정</string>
     <string name="title_font_settings">글꼴 설정</string>
     <string name="summary_enlarge_fonts_on_large_screens">태블릿과 같은 큰 화면에서 자동으로 글꼴 크기를 키웁니다</string>
     <string name="title_enlarge_fonts_on_large_screens">큰 화면에서 글꼴 확대</string>
@@ -509,7 +509,7 @@
     <string name="blood_test_background">혈액 테스트 백그라운드</string>
     <string name="blood_test_foreground">혈액 테스트 포그라운드</string>
     <string name="treatment_background">처치 백그라운드</string>
-    <string name="treatment_foreground">처치 포그라운드</string>
+    <string name="treatment_foreground">처치 점</string>
     <string name="backgrounds">백그라운드</string>
     <string name="main_chart_background">메인 그래프</string>
     <string name="notification_chart_background">알림창 그래프</string>
@@ -588,7 +588,7 @@
     <string name="label_show_insulin">U:%1$su</string>
     <string name="label_show_carbs">Carbs:%1$sg</string>
     <string name="label_show_royceratio">C/I:%1$s</string>
-    <string name="label_show_steps">Steps:%1$d</string>
+    <string name="label_show_steps">걸음수:%1$d</string>
     <string name="label_show_steps_km">km:%1$s</string>
     <string name="label_show_steps_mi">mi:%1$s</string>
     <string name="pref_summary_influxdb_enabled">개인 InfluxDB 데이터베이스를 사용하는 경우 활성화하세요</string>
@@ -610,9 +610,9 @@
     <string name="send_display_glucose">표시되는 혈당값 전송</string>
     <string name="send_broadcasts_old_permission_model">이전 권한 모델을 사용하여 브로드캐스트 전송</string>
     <string name="process_nsclient_treatments">NSClient 앱에서 수신한 처치 데이터 처리</string>
-    <string name="accept_treatments">처치 데이터 수락</string>
+    <string name="accept_treatments">처치 수락</string>
     <string name="process_broadcasted_calibrations">다른 앱에서 수신한 보정값 처리</string>
-    <string name="spoken_readings_locale">음성 읽기용 사용자 지정 로케일, 예: de 또는 en_IN</string>
+    <string name="spoken_readings_locale">음성 읽기용 사용자 지정 로케일 (예: de 또는 en_IN)</string>
     <string name="speak_glucose_twice">혈당 수치를 매번 두 번씩 읽기</string>
     <string name="short_speak_readings_shortcut">☰ 메뉴에 \'수치 읽어주기\' 토글 단축키 표시</string>
     <string name="speak_readings_shortcut">수치 읽어주기 단축키</string>
@@ -631,8 +631,8 @@
     <string name="older_bluetooth_wakelocks">블루투스 수신을 위해 필요할 수 있지만 배터리를 더 소모하는 구형 블루투스 웨이크락입니다</string>
     <string name="reset_bluetooth_on_off">몇 분마다 블루투스를 껐다 켭니다! 테스트용으로만 선택하세요. 다른 블루투스 기기 사용에 방해가 될 수 있습니다.</string>
     <string name="constantly_reset_bluetooth">지속적인 블루투스 초기화</string>
-    <string name="experimental_transmitter_fpv_uav">\@FPV-UAV의 \'Transmitter\' 장치에 대한 실험적 지원 - 테스트 전용</string>
-    <string name="transmitter_pl_support">Transmitter (PL) 지원</string>
+    <string name="experimental_transmitter_fpv_uav">\@FPV-UAV의 \'트랜스미터\' 장치에 대한 실험적 지원 - 테스트 전용</string>
+    <string name="transmitter_pl_support">트랜스미터 (PL) 지원</string>
     <string name="experimental_rdfuino_support">Tomasz Stachowicz의 RFduino에 대한 실험적 지원</string>
     <string name="rfduino_support">RFduino 지원</string>
     <string name="repeatedly_restart_collection_service">데이터 누락 징후가 보이면 수집 서비스를 반복적으로 재시작합니다. 데이터 손실이 발생하는 경우에만 활성화하세요.</string>
