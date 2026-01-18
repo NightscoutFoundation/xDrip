@@ -23,6 +23,7 @@ import lombok.Getter;
 import lombok.val;
 
 import static com.eveningoutpost.dexdrip.g5model.FirmwareCapability.isDeviceAlt2;
+import static com.eveningoutpost.dexdrip.g5model.FirmwareCapability.isDeviceAlt3;
 import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.getFirmwareXDetails;
 import static com.eveningoutpost.dexdrip.models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.models.JoH.roundDouble;
@@ -114,11 +115,16 @@ public class SensorDays {
 
             if (getBestCollectorHardwareName().equals("G7")) {
                 ths.period = DAY_IN_MS * 10 + HOUR_IN_MS * 12; // The device lasts 10.5 days.
-                ths.warmupMs = 30 * MINUTE_IN_MS; // The warmup time is 30 minutes.
+                ths.warmupMs = 27 * MINUTE_IN_MS;
             }
 
             if (isDeviceAlt2(getTransmitterID())) {
                 ths.period = DAY_IN_MS * 15 + HOUR_IN_MS * 12;
+            }
+
+            if (isDeviceAlt3(getTransmitterID())) {
+                ths.period = DAY_IN_MS * 15 + HOUR_IN_MS * 12;
+                ths.warmupMs = HOUR_IN_MS;
             }
 
         } else if (type == GluPro) {
