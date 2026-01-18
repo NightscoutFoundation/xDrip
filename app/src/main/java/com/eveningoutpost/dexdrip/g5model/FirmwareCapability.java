@@ -22,6 +22,7 @@ public class FirmwareCapability {
     private static final ImmutableSet<String> KNOWN_ALT_FIRMWARES = ImmutableSet.of("29.192.104.59", "32.192.104.82", "32.192.104.109", "32.192.105.64", "32.192.106.0", "44.192.105.72");
     private static final ImmutableSet<String> KNOWN_TIME_TRAVEL_TESTED = ImmutableSet.of("1.6.5.25");
     private static final ImmutableSet<String> KNOWN_ALT2_FIRMWARES = ImmutableSet.of("37.192.105.94");
+    private static final ImmutableSet<String> KNOWN_ALT3_FIRMWARES = ImmutableSet.of("63.192.109.41");
 
     // new G6 firmware versions will need to be added here / above
     static boolean isG6Firmware(final String version) {
@@ -80,12 +81,16 @@ public class FirmwareCapability {
         return isFirmwareRawCapable(version); // hang off this for now as they are currently the same
     }
 
-    static boolean isAltOrAlt2Firmware(final String version) {
-        return KNOWN_ALT_FIRMWARES.contains(version) || KNOWN_ALT2_FIRMWARES.contains(version);
+    static boolean isAltOrAlt2OrAlt3Firmware(final String version) {
+        return KNOWN_ALT_FIRMWARES.contains(version) || KNOWN_ALT2_FIRMWARES.contains(version) || KNOWN_ALT3_FIRMWARES.contains(version);
     }
 
     static boolean isAlt2Firmware(final String version) {
         return KNOWN_ALT2_FIRMWARES.contains(version);
+    }
+
+    static boolean isAlt3Firmware(final String version) {
+        return KNOWN_ALT3_FIRMWARES.contains(version);
     }
 
     public static boolean isTransmitterPredictiveCapable(final String tx_id) {
@@ -107,12 +112,16 @@ public class FirmwareCapability {
         return false;
     }
 
-    public static boolean isDeviceAltOrAlt2(final String tx_id) {
-        return isAltOrAlt2Firmware(getRawFirmwareVersionString(tx_id));
+    public static boolean isDeviceAltOrAlt2OrAlt3(final String tx_id) {
+        return isAltOrAlt2OrAlt3Firmware(getRawFirmwareVersionString(tx_id));
     }
 
     public static boolean isDeviceAlt2(final String tx_id) {
         return isAlt2Firmware(getRawFirmwareVersionString(tx_id));
+    }
+
+    public static boolean isDeviceAlt3(final String tx_id) {
+        return isAlt3Firmware(getRawFirmwareVersionString(tx_id));
     }
 
     public static boolean isTransmitterG5(final String tx_id) {
@@ -158,7 +167,8 @@ public class FirmwareCapability {
                 || KNOWN_ALT_FIRMWARES.contains(version)
                 || KNOWN_G6_REV2_FIRMWARES.contains(version)
                 || KNOWN_G6_PLUS_FIRMWARES.contains(version)
-                || KNOWN_ALT2_FIRMWARES.contains(version));
+                || KNOWN_ALT2_FIRMWARES.contains(version)
+                || KNOWN_ALT3_FIRMWARES.contains(version));
     }
 
     public static boolean isTransmitterKnownFirmware(final String tx_id) {
