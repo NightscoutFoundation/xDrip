@@ -74,7 +74,7 @@
     <string name="location_yes">사용</string>
     <!-- broadcast settings -->
     <string name="pref_title_broadcast_enabled">로컬 브로드캐스트</string>
-    <string name="pref_summary_broadcast_enabled">로컬 브로드캐스트를 활성화하면 NightWatch와 같은 다른 앱에서 데이터를 받아볼 수 있습니다</string>
+    <string name="pref_summary_broadcast_enabled">로컬 브로드캐스트를 활성화하면 다른 앱(예.NightWatch)에서 데이터를 받아볼 수 있습니다</string>
     <string name="title_activity_share_test">공유 테스트</string>
     <!-- pebble settings -->
     <string name="pref_pebble_trend_watchface">Pebble Trend Watchface 사용</string>
@@ -413,7 +413,7 @@
     <string name="automatic_updates_crash_reports_and_feedback">자동 업데이트, 오류 보고서, 개발자에게 피드백</string>
     <string name="crowd_sourced_translation">번역 참여</string>
     <string name="please_enter_your_question_or_comments_here">여기에 질문이나 의견을 입력하세요.\n\n당신이 이메일 주소를 제공하는 경우 당신은 응답을 받을 것입니다.\n\n</string>
-    <string name="optional_contact_info_here_eg_email">선택 사항: 연락처 정보 (예: 이메일)</string>
+    <string name="optional_contact_info_here_eg_email">추가적인 연락처 정보, 예: 이메일</string>
     <string name="send_message">메시지 보내기</string>
     <string name="save_logs">로그 저장</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">당신은 일반적으로 앱을 어떻게 생각하는지 알려주세요.</string>
@@ -612,7 +612,7 @@
     <string name="process_nsclient_treatments">NSClient 앱에서 수신한 처치 데이터 처리</string>
     <string name="accept_treatments">처치 수락</string>
     <string name="process_broadcasted_calibrations">다른 앱에서 수신한 보정값 처리</string>
-    <string name="spoken_readings_locale">음성 읽기용 사용자 지정 로케일 (예: de 또는 en_IN)</string>
+    <string name="spoken_readings_locale">음성으로 읽어주기용 사용자 지정 언어, 예: de 또는 en_IN</string>
     <string name="speak_glucose_twice">혈당 수치를 매번 두 번씩 읽기</string>
     <string name="short_speak_readings_shortcut">☰ 메뉴에 \'수치 읽어주기\' 토글 단축키 표시</string>
     <string name="speak_readings_shortcut">수치 읽어주기 단축키</string>
@@ -1051,7 +1051,7 @@
     <string name="title_Pump_Status">펌프 상태</string>
     <string name="summary_Show_treatment_carb_insulin_ratio">처치 탄수화물/인슐린 비율 표시</string>
     <string name="title_Carb_Insulin_Ratio">탄수화물/인슐린 비율</string>
-    <string name="summary_Ask_for_a_second_optional_initial_calibration_blood_test">선택적으로 두 번째 초기 보정 혈당 측정을 요청합니다</string>
+    <string name="summary_Ask_for_a_second_optional_initial_calibration_blood_test">추가적으로 두 번째 초기 보정 혈당 측정을 요청합니다</string>
     <string name="title_Double_Calibrations">이중 보정</string>
     <string name="summary_Enable_to_allow_variable_slopes_with_Libre_collection_methods">Libre 수집 방식에서 가변 기울기를 허용하려면 활성화하세요</string>
     <string name="title_Non_fixed_Libre_slopes">Libre 가변 기울기</string>
