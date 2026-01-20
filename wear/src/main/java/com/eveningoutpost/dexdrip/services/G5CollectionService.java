@@ -91,8 +91,8 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
-import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.getStatusName;
 import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.getUUIDName;
+import static com.eveningoutpost.dexdrip.utils.bt.Helper.getStatusName;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class G5CollectionService extends G5BaseService {

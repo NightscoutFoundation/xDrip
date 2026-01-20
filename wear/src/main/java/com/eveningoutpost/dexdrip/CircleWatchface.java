@@ -134,7 +134,7 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
             Context context = xdrip.getAppContext();
             if (Home.get_forced_wear()) {
                 if (d) Log.d(TAG, "performViewSetup FORCE WEAR init BGs for graph");
-                BgSendQueue.resendData(context);
+                BgSendQueue.updateWatchfaceData(context);
             }
             Log.d(TAG, "performViewSetup requestData");
             ListenerService.requestData(this); //usually connection is not set up yet  //KS uncomment
