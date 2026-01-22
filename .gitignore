@@ -57,3 +57,6 @@ patches/
 *.dll
 *.exe
 *.iml
+
+installed-sdkmanager-stamp
+sdk-update-stamp
