@@ -149,7 +149,15 @@ public class LibreReceiver extends BroadcastReceiver {
                                     processValues(currentRawValue, smoothingValues, smoothing_minutes, context);
                                 }
                                 currentRawValue.save();
+
                                 clearNFCsensorAge();
+
+                                // send raw values to sync+ followers
+                                if (Pref.getBooleanDefaultFalse("plus_follow_master") // we are the master
+                                        && !Pref.getBooleanDefaultFalse("plus_follower_save_power") // we don't want to save power
+                                        && Pref.getBooleanDefaultFalse("Libre2_showRawGraph")) // we want to see raw values
+                                    GcmActivity.syncLibre2RawReading(currentRawValue);
+
                                 break;
 
                             default:
