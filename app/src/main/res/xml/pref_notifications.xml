@@ -291,7 +291,8 @@
                     <CheckBoxPreference
                         android:defaultValue="false"
                         android:key="other_alerts_override_silent"
-                        android:title="@string/override_silent_mode_these" />
+                        android:title="@string/override_silent_mode_these"
+                        android:summary="@string/no_effect_when_using_notification_channels" />
                 </PreferenceCategory>
             </PreferenceScreen>
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
