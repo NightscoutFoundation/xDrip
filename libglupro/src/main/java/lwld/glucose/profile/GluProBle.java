@@ -430,7 +430,10 @@ public class GluProBle {
                         jobScheduler.postDeduped(READ_CHARACTERISTICS, bleManager::readStaticParameters);
                     } else {
                         Log.d(TAG, "Device ready, but not bonded and not bonding in progress so disconnecting");
-                        bleManager.disconnect().enqueue();
+                        val lbleManager = bleManager;
+                        if (lbleManager!= null) {
+                            lbleManager.disconnect().enqueue();
+                        }
                     }
                 } catch (SecurityException e) {
                     Log.e(TAG, "Security exception in onDeviceReady: " + e);
