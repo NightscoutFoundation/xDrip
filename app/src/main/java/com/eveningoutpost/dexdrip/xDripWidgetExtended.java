@@ -25,7 +25,7 @@ import java.util.List;
 public class xDripWidgetExtended extends AppWidgetProvider {
 
     public static final String TAG = "xDripWidgetExtended";
-    private static final String CUTOFF = "38";
+    private static final double CUTOFF = 38.0;
     private static final int DEFAULT_GRAPH_HEIGHT_DP = 110;
     private static final double MIN_VALID_AVG = 40.0;  // Minimum valid average in mg/dL
 
@@ -197,7 +197,7 @@ public class xDripWidgetExtended extends AppWidgetProvider {
             int count = 0;
             for (BgReading reading : readings) {
                 double value = reading.calculated_value;
-                if (value > Double.parseDouble(CUTOFF)) {
+                if (value > CUTOFF) {
                     sum += value;
                     count++;
                 }
