@@ -304,7 +304,7 @@ dependencies {
     //implementation 'org.influxdb:influxdb-java:2.6'
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
-    implementation 'com.getpebble:pebblekit:3.1.0'
+    implementation 'com.getpebble:pebblekit:4.0.1'
     implementation ("androidx.health.connect:connect-client:1.1.0-alpha06") {
         exclude group: 'androidx.core', module: 'core'
     }

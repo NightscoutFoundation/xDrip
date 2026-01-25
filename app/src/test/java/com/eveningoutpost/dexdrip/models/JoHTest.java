@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import static com.eveningoutpost.dexdrip.models.JoH.validateMacAddress;
 import static com.google.common.truth.Truth.assertWithMessage;
+import static org.junit.Assert.fail;
 
 // jamorham
 
@@ -50,6 +51,59 @@ public class JoHTest extends HexTestTools {
         assertWithMessage("test2").that(JoH.macFormat("001A:F2B3EDC5")).isEqualTo("00:1A:F2:B3:ED:C5");
         assertWithMessage("test too short").that(JoH.macFormat("A3")).isNull();
         assertWithMessage("test null").that(JoH.macFormat(null)).isNull();
+    }
+
+    @Test
+    public void tolerantParseDoubleTest() {
+
+        // Valid string inputs
+        assertWithMessage("Valid number string")
+                .that(JoH.tolerantParseDouble("123.456"))
+                .isEqualTo(123.456);
+
+        assertWithMessage("Valid number with commas")
+                .that(JoH.tolerantParseDouble("1234,56"))
+                .isEqualTo(1234.56);
+
+        assertWithMessage("Valid number with Arabic decimal separator")
+                .that(JoH.tolerantParseDouble("1٫234"))
+                .isEqualTo(1.234);
+
+        assertWithMessage("Valid number with Arabic digits and separator")
+                .that(JoH.tolerantParseDouble("٩٫٤"))
+                .isEqualTo(9.4);
+
+        // Handling malformed strings
+        try {
+            JoH.tolerantParseDouble("abc");
+            fail("Expected NumberFormatException for malformed string");
+        } catch (NumberFormatException expected) {
+            // OK
+        }
+
+        try {
+            JoH.tolerantParseDouble("123abc");
+            fail("Expected NumberFormatException for string with extra characters");
+        } catch (NumberFormatException expected) {
+            // OK
+        }
+
+        // Null handling (no default overload)
+        try {
+            JoH.tolerantParseDouble(null);
+            fail("Expected NumberFormatException for null input");
+        } catch (NumberFormatException expected) {
+            // OK
+        }
+
+        // Default overload behavior
+        assertWithMessage("Null input with default overload")
+                .that(JoH.tolerantParseDouble(null, 0.0))
+                .isEqualTo(0.0);
+
+        assertWithMessage("Malformed string with default overload")
+                .that(JoH.tolerantParseDouble("invalid", 42.42))
+                .isEqualTo(42.42);
     }
 
 }

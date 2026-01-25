@@ -57,6 +57,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -895,7 +896,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public static List<BgReading> latestForGraph(int number, long startTime, long endTime) {
-        return new Select()
+        final List<BgReading> readings = new Select()
                 .from(BgReading.class)
                 .where("timestamp >= " + Math.max(startTime, 0))
                 .where("timestamp <= " + endTime)
@@ -904,6 +905,24 @@ public class BgReading extends Model implements ShareUploadableBg {
                 .orderBy("timestamp desc")
                 .limit(number)
                 .execute();
+
+       return filterInvalidReadings(readings);
+    }
+
+    private static List<BgReading> filterInvalidReadings(final List<BgReading> readings) {
+        // Filter out invalid values
+        if (readings != null) {
+            if (readings.removeIf(r -> {
+                final double v = r.calculated_value;
+                //noinspection ExpressionComparedToItself
+                return v <= 0.0 || v > 1000.0 || (v != v); // check out of range or NaN
+            })) {
+                if (JoH.ratelimit("bgreading-filtered-invalid", 120)) {
+                    Log.wtf(TAG, "Filtered out invalid BG readings");
+                }
+            }
+        }
+        return readings;
     }
 
     public static List<BgReading> latestForGraphSensor(int number, long startTime, long endTime) {
@@ -970,6 +989,27 @@ public class BgReading extends Model implements ShareUploadableBg {
                 .orderBy("timestamp asc")
                 .limit(number)
                 .execute();
+    }
+
+    public static List<BgReading> latestForGraphAscNewest(int number, long startTime, long endTime) {
+        // If the number of readings in the specified period exceeds the limit, keep the most recent readings.
+        List<BgReading> list = new Select()
+                .from(BgReading.class)
+                .where("timestamp >= " + Math.max(startTime, 0))
+                .where("timestamp <= " + endTime)
+                .where("calculated_value != 0")
+                .where("raw_data != 0")
+                .orderBy("timestamp desc") // get newest first
+                .limit(number)
+                .execute();
+
+        // Restore ascending order for graph logic and remove invalid readings.
+        if (list != null) {
+            Collections.reverse(list);
+            list = filterInvalidReadings(list);
+        }
+
+        return list;
     }
 
     public static BgReading readingNearTimeStamp(long startTime) {
@@ -1165,6 +1205,11 @@ public class BgReading extends Model implements ShareUploadableBg {
         if (sensor == null) {
             Log.w(TAG, "No sensor, ignoring this bg reading");
             return null;
+        }
+
+        if (calculated_value == Double.NEGATIVE_INFINITY) {
+            Log.d(TAG, "bgReadingInsertFromGluPro: converting negative infinity to LOW state");
+            calculated_value = 38; // map the value to LOW
         }
 
         if (Double.isInfinite(calculated_value) || Double.isNaN(calculated_value)) {

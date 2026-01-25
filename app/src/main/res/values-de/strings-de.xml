@@ -40,6 +40,7 @@
     <string name="auto_config_cam_title">Kamera</string>
     <string name="auto_config_cam_summary">Scanne einen QR-Code mit deinem Handy (empfohlen)</string>
     <string name="auto_config_image_title">Bilddatei</string>
+    <string name="auto_config_image_summary">Sie können einen QR-Code als Bilddatei (wie .png oder .jpeg) auf Ihrem Handy speichern. Verwenden Sie diese Option, um den QR-Code aus der gespeicherten Datei zu scannen.</string>
     <string name="scan_share2_barcode">Barcode scannen</string>
     <string name="pref_share2_scan_barcode_summary">Oder Barcode auf dem Share Empfänger scannen</string>
     <!-- MongoDB Settings -->
@@ -60,6 +61,7 @@
     <string name="pref_title_api_enabled">Aktiviert</string>
     <string name="pref_summary_api_enabled">Die REST-API ist der Standardweg um sich mit Nightscout zu verbinden</string>
     <string name="pref_title_api_url">Basis URL</string>
+    <string name="pref_summary_api_url">Format: https://password@hostname/api/v1/</string>
     <string name="pref_dialog_api_url">API Basis-URL eingeben</string>
     <string name="pref_message_api_url">Dies ist nur die Basis URL, /entries wird automatisch angefügt. API_SECRET auf dem Server sollte mit yourpassphrase in den Einstellung übereinstimmen.</string>
     <string name="pref_default_api_url">https://{DEINE_API_PASSPHRASE}@{DEINE-SEITE}.azurewebsites.net/api/v1/</string>
@@ -118,6 +120,7 @@
     <string name="title_activity_update">xDrip+ Update verfügbar</string>
     <string name="title_activity_display_qrcode">Einstellungen per QR-Code teilen</string>
     <string name="title_activity_send_feed_back">Feedback an Jamorham senden</string>
+    <string name="title_activity_save_logs">Logs speichern</string>
     <string name="title_activity_maps">Parakeet Karte</string>
     <string name="title_activity_display_preferences">Anzeigeeinstellungen</string>
     <string name="export_submenu">Import-/Export-Einstellungen</string>
@@ -222,9 +225,16 @@
     <string name="extra_alerts_xdrip_plus">Weitere Warnungen (xDrip+)</string>
     <string name="persistent_high_alert">Dauerhafter Hoch-Alarm</string>
     <string name="persistent_high_alert_enable">Aktivieren</string>
+    <string name="title_persistent_high_threshold">Grenzwert</string>
+    <string name="the_value_must_be_between_min_and_max">Der Wert muss zwischen %1$s und %2$s liegen</string>
     <string name="forecasted_low_alert">Vorhergesagter Niedrig-Alarm</string>
+    <string name="setting_pref_to_max">Maximum setzen auf</string>
+    <string name="pref_was_greater_than_max">%1$s wurde auf einen Wert gesetzt, der größer als maximal zulässig ist. Er wurde auf Maximal geändert.</string>
+    <string name="setting_pref_to_min">Minimum setzen auf</string>
+    <string name="pref_was_less_than_min">%1$s wurde auf einen Wert gesetzt, der kleiner als minimal zulässig ist. Er wurde auf das Minimum geändert.</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolation, um niedrige Werte vorherzusagen</string>
     <string name="alarm_at_forecasted_low_mins">Alarm bei vorhergesagten Niedrig-Werten (in Minuten)</string>
+    <string name="title_forecast_low_threshold">Grenzwert</string>
     <string name="other_xdrip_plus_alerts">Weitere xDrip+ Warnungen</string>
     <string name="xdrip_plus_display_settings">xDrip+ Anzeigeeinstellungen</string>
     <string name="display_customisations">Anpassungen der Anzeige</string>
@@ -245,6 +255,9 @@
     <string name="dexcom_transmitter_id">Dexcom Sender ID</string>
     <string name="run_collector_in_foreground">Collector im Vordergrund ausführen</string>
     <string name="shows_a_persistent_notification">Zeigt dauerhaft einen Benachrichtigungsgraph auf dem Lock-Screen, damit der Dienst nicht beendet wird.</string>
+    <string name="title_collector_in_foreground">Sammler im Vordergrund</string>
+    <string name="summary_compact_ongoing_notification">Aktivieren, um das Graphen in der Benachrichtigung auszublenden und nur den aktuellen Glukosewert anzuzeigen.</string>
+    <string name="title_compact_ongoing_notification">Persistente Benachrichtigung kompakt</string>
     <string name="list_of_receivers">Liste der Empfänger</string>
     <string name="extra_tags_for_logging">Zusätzliche Tags für die Protokollierung</string>
     <string name="extra_tags_dialog_message">Die hier eingegebenen Tags werden in xDrip protokolliert. Format ist tag:level. Level kann v, d oder i sein. Zum Beispiel bgreading:i, DexCollectionService:v. Diese Tags werden mit niedriger Priorität protokolliert in der Fehler- und Ereignisliste.</string>
@@ -306,6 +319,10 @@
     <string name="pebble_and_android_wear_options">Optionen für verschiedene Uhren</string>
     <string name="customize_colours">Farben anpassen</string>
     <string name="xdrip_plus_color_settings">xDrip+ Farbeinstellungen</string>
+    <string name="summary_font_settings">Schriftarten anpassen</string>
+    <string name="title_font_settings">Schrifteinstellungen</string>
+    <string name="summary_enlarge_fonts_on_large_screens">Vergrößern Sie die Schriftgröße automatisch auf großen Bildschirmen, wie z. B. Tablets</string>
+    <string name="title_enlarge_fonts_on_large_screens">Schriftarten auf größeren Bildschirmen vergrößern</string>
     <string name="glucose_values_and_lines">Grenzwerte und Linien</string>
     <string name="high_glucose_values">Hohe Zuckerwerte</string>
     <string name="in_range_glucose_values">Werte im Zielbereich</string>
@@ -398,7 +415,9 @@
     <string name="please_enter_your_question_or_comments_here">Bitte Frage oder Kommentare hier eingeben.\n\Durch Angabe einer E-Mail-Adresse kann eine Antwort direkt erhalten werden.\n\n</string>
     <string name="optional_contact_info_here_eg_email">Optionale Informationen (z. B. E-Mail)</string>
     <string name="send_message">Nachricht senden</string>
+    <string name="save_logs">Logs speichern</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Bitte bewerte die App</string>
+    <string name="log_confidential_note">Warnung!\nDie Protokolle können vertrauliche Informationen wie Passwörter oder Benutzer-IDs enthalten.</string>
     <string name="preferences_saved_in_sdcard_downloads">Einstellungen im internen Speicher unter Download gespeichert</string>
     <string name="could_not_write_to_sdcard_check_perms">Fehler beim Schreiben auf SD-Karte - Berechtigungen prüfen?</string>
     <string name="loaded_preferences_restarting">Einstellungen geladen! - Starte neu...</string>
@@ -474,6 +493,7 @@
     <string name="start_sensor">Sensor starten</string>
     <string name="debug_and_other_misc_options">Weitere Optionen und Debugs</string>
     <string name="low_glucose_values">Niedrige Werte</string>
+    <string name="low_predicted_too_close_note">Geschätzt niedrig (kritisch)</string>
     <string name="bad_glucose_values">Schlechte Glukose-Werte</string>
     <string name="revert_to_default">Auf Standard zurücksetzen</string>
     <string name="filtered_values">Gefilterte Werte</string>
@@ -740,6 +760,8 @@
     <string name="glucose_meters">Blutzuckermessgräte</string>
     <string name="glucose_meter_options">Optionen für kabellose Blutzuckermessgeräte</string>
     <string name="auto_connect_to_meter">Automatisch mit einem standardkonformen Blutzuckermessgerät - wie dem Contour Next One - verbinden und Daten empfangen</string>
+    <string name="summary_use_nfc_meter">Laden Sie die Glukosedatensätze von NFC-Messer herunter, wenn xDrip geöffnet ist</string>
+    <string name="title_use_nfc_meter">NFC Messer verwenden</string>
     <string name="use_bluetooth_meter">Benutze das Bluetooth-Messgerät</string>
     <string name="scan_for_bluetooth_meter">Nach einem Bluetooth-Messgerät scannen</string>
     <string name="meter_connect_sound">Aktivieren, damit Soundeffekte abgespielt werden, wenn das Messgerät sich verbindet/trennt oder wenn Daten synchronisiert werden</string>
@@ -1175,6 +1197,8 @@
     <string name="summary_cloud_storage_api_download_enable">Versuche Behandlungen von Nightscout herunterzuladen</string>
     <string name="title_cloud_storage_api_download_enable">Behandlungen herunterladen</string>
     <string name="title_cloud_storage_api_download_from_xdrip">Überspringe Elemente aus xDrip</string>
+    <string name="nightscout_upload_failure_backfill_required">Uploads sind nicht für alle Seiten erfolgreich. Backfill wird empfohlen. Erster Fehlschlag: %1$s</string>
+    <string name="title_nightscout_upload_failure_backfill_required">Inkonsistenter Mehr-Site Nacht-Upload</string>
     <string name="summary_cloud_storage_api_download_from_xdrip">Von xDrip hochgeladene Elemente nicht herunterladen</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Ohne zu fragen mit einem neuen Blutzuckerwert kalibrieren, wenn die Bedingungen gut scheinen (experimentell)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatische Kalibrierung</string>
@@ -1187,6 +1211,8 @@
     <string name="title_send_treatments_to_nightscout">Behandlungen hochladen</string>
     <string name="summary_warn_nightscout_failures">Anzeige- und Ton-Benachrichtigung, wenn Nightscout Upload fehlgeschlagen ist.</string>
     <string name="title_warn_nightscout_failures">Alarm bei Fehlern</string>
+    <string name="summary_warn_nightscout_multi_site_upload_failure">xDrip löscht die Upload-Warteschlange, auch wenn nur eine Seite einen erfolgreichen Upload hat, wodurch andere unvollständig bleiben. Sie werden benachrichtigt, so dass Sie Auffüllen bei Bedarf nutzen können.</string>
+    <string name="title_warn_nightscout_multi_site_upload_failure">Warnung bei mehrseitigem Upload fehlgeschlagen</string>
     <string name="summary_nightscout_device_append_source_info">Für G5, sendet Sammlertyp (z.B. OB1) und lese Nachfüll-Status (native) an Nightscout.</string>
     <string name="title_nightscout_device_append_source_info">Quell-Info an Gerätename anhängen</string>
     <string name="summary_tap_to_send_historical_data">Klicken um historische Daten an Nightscout zu senden</string>
@@ -1201,6 +1227,12 @@
     <string name="title_tidepool_window_latency">Datenalter in Minuten</string>
     <string name="summary_tidepool_dev_servers">Wenn aktiviert, gehen Uploads zu https://int-app.tidepool.org statt der regulären https://app.tidepool.org/</string>
     <string name="title_tidepool_dev_servers">Integration (Test) Server verwenden</string>
+    <string name="summary_tidepool_upload_when_chargeonly">Daten nur beim Laden hochladen</string>
+    <string name="title_tidepool_upload_when_chargeonly">Nur beim Laden</string>
+    <string name="summary_tidepool_upload_only_wifi">Daten nur hochladen, wenn sie mit einem ungehinderten Netzwerk verbunden sind wie Wifi</string>
+    <string name="title_tidepool_upload_only_wifi">Nur im WLAN</string>
+    <string name="summary_tidepool_upload_no_treatment">Nur CGM Daten hochladen, um Duplikate mit manuellem Pump-Upload zu vermeiden</string>
+    <string name="title_tidepool_upload_no_treatment">Keine Behandlungen hochladen</string>
     <string name="title_tidepool">Tidepool</string>
     <string name="show_help">Hilfe anzeigen</string>
     <string name="load_save_settings_on_sdcard">Einstellungen von/auf SD-Karte laden/speichern</string>
@@ -1274,6 +1306,7 @@
     <string name="summary_lefun_send_alarms">Sende Benachrichtigungen an das Band für Glukosealarme</string>
     <string name="title_lefun_send_alarms">Alarme senden</string>
     <string name="title_lefun_option_shake_snoozes">Zum Schlummern schütteln</string>
+    <string name="summary_lefun_send_calls">Schicke Anrufbenachrichtigungen an die Info-Zeile</string>
     <string name="title_lefun_send_calls">Sende Anrufe</string>
     <string name="title_lefun_screens_features">Lefun Bildschirme / Funktionen</string>
     <string name="title_features">Funktionen</string>
@@ -1342,6 +1375,8 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Auf xDrip zurückgreifen</string>
     <string name="summary_ob1_minimize_scanning">Verwende Heuristiken, um Bluetooth-Scannen zu minimieren und Strom zu sparen</string>
     <string name="title_ob1_minimize_scanning">Scannen minimieren</string>
+    <string name="summary_ob1_avoid_scanning">Vermeiden Sie das Scannen so weit wie möglich (verringert den Akkuverbrauch weiter)</string>
+    <string name="title_ob1_avoid_scanning">Scannen vermeiden</string>
     <string name="summary_using_g6">Ich nutze einen Dexcom G6, G7 oder ONE Sensor</string>
     <string name="title_using_g6">Unterstützung für Dexcom G6/G7/ONE</string>
     <string name="summary_ob1_g5_allow_resetbond">Der OB1 Kollektor kann die Kopplung aufheben, wenn er glaubt, dass die Verschlüsselung fehlgeschlagen ist. Wenn Unpairing zum Problem wird, deaktivierebbdiese Option. Wenn du danach die Verbindung vollständig verlierst, stelle sicher, dass sie aktiviert ist.</string>
@@ -1412,6 +1447,7 @@
     <string name="summary_plus_accept_follower_actions">Behandlungen und Kalibrierung von Followern werden akzeptiert</string>
     <string name="title_plus_accept_follower_actions">Follower-Aktionen akzeptieren</string>
     <string name="summary_plus_whole_house">An einem Whole-House-Netzwerk teilnehmen</string>
+    <string name="summary_plus_xdrip_cloud">Verwenden Sie die neuen xDrip+ Cloud-Server. Master und Follower müssen alle diese Einstellung gleich haben.</string>
     <string name="title_plus_whole_house">Whole-House</string>
     <string name="summary_libre_whole_house_collector">Dieses Telefon wird ein Collector im Whole-House-Netzwerk sein</string>
     <string name="title_libre_whole_house_collector">Libre-Whole-House</string>
@@ -1451,13 +1487,20 @@
     <string name="summary_notification_channels_grouping">Ob Benachrichtigungen gruppiert werden sollen. Inkompatibel mit \"Nummern-Symbol im Benachrichtigungsbereich\"</string>
     <string name="title_notification_channels_grouping">Gruppiere Benachrichtigungen</string>
     <string name="summary_delay_ascending_3min">Um einen ansteigenden Alarmton zu nutzen, musst Du den Alarmton 3 Minuten verzögert starten. Die Vibration startet - sofern aktiviert - unabhängig von dieser Einstellung direkt beim Auslösen des Alarms.</string>
+    <string name="title_ascending_volume">Aufsteigende Lautstärke-Einstellungen</string>
     <string name="title_delay_ascending_3min">Ansteigende Lautstärke verzögern</string>
+    <string name="summary_ascending_volume_to_medium">Wenn aktiviert, steigt das Volumenprofil auf das mittlere Volumen statt auf das Maximum</string>
+    <string name="title_ascending_volume_to_medium">Aufsteigend zu Medium</string>
     <string name="summary_play_sound_for_initial_calibration">Ton abspielen, wenn die initiale Kalibrierung angefordert wird</string>
     <string name="title_play_sound_for_initial_calibration">Initiale Warnung</string>
     <string name="category_noisy_readings">Verrauschte Werte</string>
     <string name="category_falling_rising_bg">Glukose fällt/steigt</string>
     <string name="category_alert_prefs">Alarm-Einstellungen (für diese Warnungen)</string>
     <string name="summary_persistent_high_alert">Wenn zu lange über der Obergrenze ohne Tendenz nach unten</string>
+    <string name="summary_persistent_high_threshold_link">Wenn aktiviert, ist der Höchstwert der Schwellenwert.\nWenn deaktiviert, ist der Schwellenwert der unten angegebene Wert.</string>
+    <string name="title_persistent_high_threshold_link">Schwellenwert: Hoher Wert</string>
+    <string name="summary_forecast_low_threshold_link">Wenn aktiviert, ist der Höchstwert der Schwellenwert.\nWenn deaktiviert, ist der Schwellenwert der unten angegebene Wert.</string>
+    <string name="title_forecast_low_threshold_link">Schwellenwert: Hoher Wert</string>
     <string name="note_search_button">SUCHE</string>
     <string name="all_note_button">ALLE</string>
     <string name="title_full_screen_mode">Vollbild-Modus</string>
@@ -1492,6 +1535,7 @@
     <string name="progress">Fortschritt</string>
     <string name="bluetooth_device">Bluetooth-Gerät:</string>
     <string name="transmitter_battery_status">Transmitter-Batterie:</string>
+    <string name="database_size">Datenbankgröße:  </string>
     <string name="top">Nach oben</string>
     <string name="connect_device_usb_otg">Schließe dein Gerät bitte per USB OTG Kabel an.</string>
     <string name="connection_status">Verbindungsstatus:</string>
@@ -1552,6 +1596,7 @@
     <string name="calibrate">Kalibrieren</string>
     <string name="confirm_delete">Löschen bestätigen</string>
     <string name="are_you_sure_you_want_to_delete_this_treatment">Bist du dir sicher, dass du diese Behandlung entfernen möchtest?</string>
+    <string name="toast_treatment_more_than_one_hour_in_the_future">xDrip kann in Zukunft keine Behandlungen mehr als eine Stunde akzeptieren.</string>
     <string name="no_data_received_from_master_yet">Noch keine Daten vom Master empfangen</string>
     <string name="last_from_master_">Zuletzt vom Master: </string>
     <string name="prepare_to_test">Bereite dich auf den Test vor!</string>
@@ -1729,6 +1774,7 @@
     <string name="proceed">Weiter</string>
     <string name="special_pairing_workaround">Besonderer Kopplungs-Workaround</string>
     <string name="save_power">Akku schonen</string>
+    <string name="use_xdrip_cloud">Nutze xDrip Cloud</string>
     <string name="reduce_battery_and_network_overhead">Reduziere den Akkuverbrauch und die Netzwerkbelastung durch Stapelverarbeitung und den Ausschluss unnötiger Daten</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Vereinfache die grafische Darstellung durch das Glätten von Unregelmäßigkeiten</string>
     <string name="graph_smoothing">Glättung der grafischen Darstellung</string>

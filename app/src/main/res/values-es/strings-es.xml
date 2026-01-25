@@ -1833,6 +1833,8 @@
     <string name="title_ymax">Ajustar el máximo del eje y</string>
     <string name="summary_ymin">Escoge yMin para cuando no hay lecturas inferiores.</string>
     <string name="summary_ymax">Escoge yMin para cuando no hay lecturas superiores.</string>
+    <string name="summary_auto_y_pan"><b>Habilitar:</b> Ponga el gráfico con un rango fijo de eje Y (mínimo-máximo) para mostrar lecturas fuera de rango.\n<b>Desactivar:</b> Expande el rango del eje Y para incluir lecturas fuera de rango.</string>
+    <string name="title_auto_y_pan">Eje Y de auto-pan</string>
     <string name="wait_to_connect">Verificar ajustes y esperar a la conectividad</string>
     <string name="summary_sens_expiry_notify">Aumentar las notificaciones cuando el sensor se acerca a la caducidad.</string>
     <string name="title_sens_expiry">Notificaciones de caducidad del sensor</string>

@@ -35,6 +35,7 @@ import com.eveningoutpost.dexdrip.models.Sensor;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
+import com.eveningoutpost.dexdrip.utilitymodels.PumpStatus;
 import com.eveningoutpost.dexdrip.utilitymodels.Unitized;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -58,8 +59,6 @@ public class UiBasedCollector extends NotificationListenerService {
     private static final String UI_BASED_STORE_LAST_VALUE = "UI_BASED_STORE_LAST_VALUE";
     private static final String UI_BASED_STORE_LAST_REPEAT = "UI_BASED_STORE_LAST_REPEAT";
     private static final String COMPANION_APP_IOB_ENABLED_PREFERENCE_KEY = "fetch_iob_from_companion_app";
-    private static final Persist.DoubleTimeout iob_store =
-            new Persist.DoubleTimeout("COMPANION_APP_IOB_VALUE", Constants.MINUTE_IN_MS * 5);
     private static final String ENABLED_NOTIFICATION_LISTENERS = "enabled_notification_listeners";
     private static final String ACTION_NOTIFICATION_LISTENER_SETTINGS = "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS";
 
@@ -149,6 +148,8 @@ public class UiBasedCollector extends NotificationListenerService {
         companionAppIoBRegexes.add(Pattern.compile("IOB: ([\\d\\.,]+) U"));
         // MiniMed Mobile (EU): "Active Insulin" label and "1.234 U" value in separate TextViews
         companionAppIoBRegexes.add(Pattern.compile("^([\\d\\.]+) U$"));
+        // MiniMed Mobile (EU): "Aktives Insulin" label and "1,234 IE" value in separate TextViews
+        companionAppIoBRegexes.add(Pattern.compile("^([\\d\\,]+) IE$"));
     }
 
     @Override
@@ -194,7 +195,7 @@ public class UiBasedCollector extends NotificationListenerService {
 
             if (iob != null) {
                 if (debug) UserError.Log.d(TAG, "Inserting new IoB value extracted from title: " + iob);
-                iob_store.set(iob);
+                PumpStatus.setBolusIoB(iob);
             }
         } catch (Exception e) {
             UserError.Log.e(TAG, "exception in processCompanionAppIoBNotificationTitle: " + e);
@@ -222,7 +223,7 @@ public class UiBasedCollector extends NotificationListenerService {
 
             if (iob != null) {
                 if (debug) UserError.Log.d(TAG, "Inserting new IoB value extracted from CV: " + iob);
-                iob_store.set(iob);
+                PumpStatus.setBolusIoB(iob);
             }
         } catch (Exception e) {
             UserError.Log.e(TAG, "exception in processCompanionAppIoBNotificationCV: " + e);
@@ -241,10 +242,6 @@ public class UiBasedCollector extends NotificationListenerService {
         }
 
         return null;
-    }
-
-    public static Double getCurrentIoB() {
-        return iob_store.get();
     }
 
     @Override

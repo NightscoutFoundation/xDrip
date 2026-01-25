@@ -1807,6 +1807,8 @@
     <string name="title_ymax">Y-tengely maximum beállítása</string>
     <string name="summary_ymin">Állítsa be yMin értékét, amelynél kisebbet nem mutat a grafikon.</string>
     <string name="summary_ymax">Állítsa be yMax értékét, amelynél nagyobbat nem mutat a grafikon.</string>
+    <string name="summary_auto_y_pan"><b>Engedélyezés:</b> Mozgassa a grafikont a rögzített Y-tengely tartományban (minimum–maximum) a tartományon kívüli értékek megjelenítéséhez.\n<b>Letiltás:</b> Bővítse a Y-tengely tartományát, hogy az tartományon kívüli értékeket is tartalmazza.</string>
+    <string name="title_auto_y_pan">Automatikus Y-tengely</string>
     <string name="wait_to_connect">Beállítások megerősítése és várakozás a kapcsolatfelvételre.</string>
     <string name="summary_sens_expiry_notify">Értesítés szenzor lejárata előtt.</string>
     <string name="title_sens_expiry">Értesítő szenzor lejáratáról</string>
@@ -1902,4 +1904,9 @@
     <string name="default_xdrip_sound">Alapértelmezett xDrip hang</string>
     <string name="glupro_disconnected">Szétkapcsolva</string>
     <string name="glupro_connected">Csatlakoztatva</string>
+    <string name="glupro_insufficient_permissions">Nincsenek megfelelő engedélyek</string>
+    <string name="glupro_model_number">Modellszám</string>
+    <string name="glupro_firmware_version">Firmware-verzió</string>
+    <string name="glupro_manufacturer">Gyártó</string>
+    <string name="glupro_sensor_serial">Szenzor szériaszáma</string>
 </resources>

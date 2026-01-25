@@ -1850,6 +1850,7 @@
     <string name="title_ymax">Seadista y-telje ülempiir</string>
     <string name="summary_ymin">Vali yMin, kui sellest väiksemaid näitusid ei ole.</string>
     <string name="summary_ymax">Vali yMax, kui sellest suuremaid näitusid ei ole.</string>
+    <string name="title_auto_y_pan">Liiguta Y-telge automaatselt</string>
     <string name="wait_to_connect">Kontrolli seadeid ja oota ühendust.</string>
     <string name="summary_sens_expiry_notify">Käivita teavitused kui sensori kehtivusaeg hakkab lõppema.</string>
     <string name="title_sens_expiry">Sensori aegumise teavitused</string>

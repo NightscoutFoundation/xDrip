@@ -16,10 +16,8 @@ public class CareLinkCredential {
     public Date refreshValidTo = null;
     public CareLinkAuthType authType = null;
     public String androidModel = null;
-    public String deviceId = null;
     public String clientId = null;
     public String clientSecret = null;
-    public String magIdentifier = null;
     public String refreshToken = null;
 
 
@@ -32,8 +30,6 @@ public class CareLinkCredential {
         //Build authentication
         Headers.Builder headers = new Headers.Builder();
         headers.add("Authorization", this.getAuthorizationFieldValue());
-        if (this.authType == CareLinkAuthType.MobileApp)
-            headers.add("mag-identifier", this.magIdentifier);
         return new CareLinkAuthentication(headers.build(), this.authType);
 
     }
