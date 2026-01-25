@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/xDripWidgetExtended"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#B3000000">
+
+    <!-- Top half: standard widget content -->
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="110dp">
+
+        <ImageView
+            android:id="@+id/widgetGraph"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:adjustViewBounds="false"
+            android:contentDescription="@string/blood_glucose_graph"
+            android:scaleType="centerInside" />
+
+        <LinearLayout
+            android:id="@+id/widgetLinearExtended"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical"
+            android:paddingBottom="10dp"
+            android:paddingEnd="5dp"
+            android:paddingStart="5dp"
+            android:paddingTop="2dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/widgetBg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="-5dp"
+                    android:text="---"
+                    android:textColor="#ffffff"
+                    android:textSize="55sp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingEnd="0dp"
+                    android:paddingStart="0dp">
+
+                    <TextView
+                        android:id="@+id/widgetArrow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="-5dp"
+                        android:layout_marginTop="-2dp"
+                        android:paddingBottom="-2dp"
+                        android:text="--"
+                        android:textColor="#ffffff"
+                        android:textSize="37sp" />
+
+                    <TextView
+                        android:id="@+id/widgetDelta"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="-- mgdl"
+                        android:textColor="#ffffff"
+                        android:textSize="10sp" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/readingAge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="--- minutes ago"
+                android:textColor="#ffffff"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/widgetStatusLine"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="---"
+                android:textColor="#ffffff"
+                android:textSize="13sp" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <!-- Bottom half: averages -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="start"
+        android:paddingBottom="8dp"
+        android:paddingStart="8dp"
+        android:paddingTop="4dp">
+
+        <!-- 7-day average -->
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/widgetAvg7d"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="18dp"
+                android:text="--"
+                android:textColor="#ffffff"
+                android:textSize="28sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="7d"
+                android:textColor="#aaaaaa"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/widgetAvg7dTrend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="68dp"
+                android:text="→"
+                android:textColor="#aaaaaa"
+                android:textSize="24sp" />
+        </FrameLayout>
+
+        <!-- 30-day average -->
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/widgetAvg30d"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="18dp"
+                android:text="--"
+                android:textColor="#ffffff"
+                android:textSize="28sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="30d"
+                android:textColor="#aaaaaa"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/widgetAvg30dTrend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="68dp"
+                android:text="→"
+                android:textColor="#aaaaaa"
+                android:textSize="24sp" />
+        </FrameLayout>
+    </LinearLayout>
+</LinearLayout>
