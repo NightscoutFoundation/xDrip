@@ -1,12 +1,14 @@
 package com.eveningoutpost.dexdrip.services;
 
 import static com.eveningoutpost.dexdrip.Home.get_engineering_mode;
+import static com.eveningoutpost.dexdrip.g5model.BatteryInfoRxMessage.battery0VException;
 import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.Advertisement;
 import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.ExtraData;
 import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.Mask16;
 import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.getUUIDName;
 import static com.eveningoutpost.dexdrip.g5model.CalibrationState.Ok;
 import static com.eveningoutpost.dexdrip.g5model.CalibrationState.Unknown;
+import static com.eveningoutpost.dexdrip.g5model.FirmwareCapability.isTransmitterModified;
 import static com.eveningoutpost.dexdrip.g5model.G6CalibrationParameters.getCurrentSensorCode;
 import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.CLOSED_OK_TEXT;
 import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.doKeepAlive;
@@ -439,7 +441,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                         Ob1G5StateMachine.doReset(this, connection);
                         break;
                     case GET_DATA:
-                        if (hardResetTransmitterNow) {
+                        if (hardResetTransmitterNow && isTransmitterModified(getTransmitterID())) {
                             send_reset_command();
                             DexSyncKeeper.clear(transmitterID);
                         } else {
@@ -2409,6 +2411,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
 
         // battery details
+        boolean bat_request_shown_already = false;
         final BatteryInfoRxMessage bt = Ob1G5StateMachine.getBatteryDetails(tx_id);
         long last_battery_query = PersistentStore.getLong(G5_BATTERY_FROM_MARKER + tx_id);
         if (getBatteryStatusNow) {
@@ -2419,6 +2422,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                             getBatteryStatusNow = false;
                         }
                     }));
+            bat_request_shown_already = true;
         }
 
         if (JoH.quietratelimit("update-g5-battery-warning", 10)) {
@@ -2432,13 +2436,25 @@ public class Ob1G5CollectionService extends G5BaseService {
         if ((bt != null) && (last_battery_query > 0)) {
             Ob1DexTransmitterBattery parsedBattery = new Ob1DexTransmitterBattery(tx_id, bt, vr);
 
-            l.add(new StatusItem("Battery Last queried", JoH.niceTimeSince(last_battery_query) + " " + "ago", NORMAL, "long-press",
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            getBatteryStatusNow = true;
-                        }
-                    }));
+            if (!bat_request_shown_already) { // Only if we have not already requested an update.
+                if (battery0VException) {
+                    l.add(new StatusItem("Battery status unavailable", "tap to request update", NORMAL, "long-press",
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    getBatteryStatusNow = true;
+                                }
+                            }));
+                } else {
+                    l.add(new StatusItem("Battery Last queried", JoH.niceTimeSince(last_battery_query) + " " + "ago", NORMAL, "long-press",
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    getBatteryStatusNow = true;
+                                }
+                            }));
+                }
+            }
             if (vr != null) {
                 final String battery_status = TransmitterStatus.getBatteryLevel(vr.status).toString();
                 if (!battery_status.equals("OK"))
@@ -2462,8 +2478,10 @@ public class Ob1G5CollectionService extends G5BaseService {
                 }
             }
             l.add(new StatusItem("Transmitter Days", parsedBattery.daysEstimate(), TX_dys_highlight));
-            l.add(new StatusItem("Voltage A", parsedBattery.voltageA(), parsedBattery.voltageAWarning() ? BAD : NORMAL));
-            l.add(new StatusItem("Voltage B", parsedBattery.voltageB(), parsedBattery.voltageBWarning() ? BAD : NORMAL));
+            if (!battery0VException) { // Only show voltages if they are not 0
+                l.add(new StatusItem("Voltage A", parsedBattery.voltageA(), parsedBattery.voltageAWarning() ? BAD : NORMAL));
+                l.add(new StatusItem("Voltage B", parsedBattery.voltageB(), parsedBattery.voltageBWarning() ? BAD : NORMAL));
+            }
             if (vr != null && FirmwareCapability.isFirmwareResistanceCapable(vr.firmware_version_string)) {
                 if (parsedBattery.resistance() != 0) {
                     l.add(new StatusItem("Resistance", parsedBattery.resistance(), parsedBattery.resistanceStatus().highlight));
@@ -2475,13 +2493,15 @@ public class Ob1G5CollectionService extends G5BaseService {
                 }
             }
         } else {
-            l.add(new StatusItem("Battery Info Unavailable", "Click to trigger update", NORMAL, "long-press",
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            getBatteryStatusNow = true;
-                        }
-                    }));
+            if (!bat_request_shown_already) { // Only if we have not already requested an update
+                l.add(new StatusItem("Battery status unavailable", "tap to request update", NORMAL, "long-press",
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                getBatteryStatusNow = true;
+                            }
+                        }));
+            }
         }
 
         return l;
