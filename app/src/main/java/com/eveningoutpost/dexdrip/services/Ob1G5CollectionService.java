@@ -2411,6 +2411,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
 
         // battery details
+        boolean bat_request_shown_already = false;
         final BatteryInfoRxMessage bt = Ob1G5StateMachine.getBatteryDetails(tx_id);
         long last_battery_query = PersistentStore.getLong(G5_BATTERY_FROM_MARKER + tx_id);
         if (getBatteryStatusNow) {
@@ -2421,6 +2422,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                             getBatteryStatusNow = false;
                         }
                     }));
+            bat_request_shown_already = true;
         }
 
         if (JoH.quietratelimit("update-g5-battery-warning", 10)) {
@@ -2434,13 +2436,25 @@ public class Ob1G5CollectionService extends G5BaseService {
         if ((bt != null) && (last_battery_query > 0)) {
             Ob1DexTransmitterBattery parsedBattery = new Ob1DexTransmitterBattery(tx_id, bt, vr);
 
-            l.add(new StatusItem("Battery Last queried", JoH.niceTimeSince(last_battery_query) + " " + "ago", NORMAL, "long-press",
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            getBatteryStatusNow = true;
-                        }
-                    }));
+            if (!bat_request_shown_already) { // Only if we have not already requested an update.
+                if (battery0VException) {
+                    l.add(new StatusItem("Battery status unavailable", "tap to request update", NORMAL, "long-press",
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    getBatteryStatusNow = true;
+                                }
+                            }));
+                } else {
+                    l.add(new StatusItem("Battery Last queried", JoH.niceTimeSince(last_battery_query) + " " + "ago", NORMAL, "long-press",
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    getBatteryStatusNow = true;
+                                }
+                            }));
+                }
+            }
             if (vr != null) {
                 final String battery_status = TransmitterStatus.getBatteryLevel(vr.status).toString();
                 if (!battery_status.equals("OK"))
@@ -2479,13 +2493,15 @@ public class Ob1G5CollectionService extends G5BaseService {
                 }
             }
         } else {
-            l.add(new StatusItem("Battery Info Unavailable", "Click to trigger update", NORMAL, "long-press",
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            getBatteryStatusNow = true;
-                        }
-                    }));
+            if (!bat_request_shown_already) { // Only if we have not already requested an update
+                l.add(new StatusItem("Battery status unavailable", "tap to request update", NORMAL, "long-press",
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                getBatteryStatusNow = true;
+                            }
+                        }));
+            }
         }
 
         return l;
