@@ -794,7 +794,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     private synchronized void send_reset_command() {
         hardResetTransmitterNow = false;
         getBatteryStatusNow = true;
-        if (JoH.ratelimit("reset-command", 120)) {
+        if (JoH.ratelimit("reset-command", 1200)) {
             UserError.Log.e(TAG, "Issuing reset command!");
             changeState(STATE.RESET);
         } else {
