@@ -61,6 +61,7 @@ import javax.crypto.spec.SecretKeySpec;
 import io.reactivex.schedulers.Schedulers;
 import lombok.val;
 
+import static com.eveningoutpost.dexdrip.g5model.BatteryInfoRxMessage.battery0VException;
 import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.Authentication;
 import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.Control;
 import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.ExtraData;
@@ -642,15 +643,12 @@ public class Ob1G5StateMachine {
     @SuppressLint("CheckResult")
     public static boolean doReset(Ob1G5CollectionService parent, RxBleConnection connection) {
         if (connection == null) return false;
-        parent.msg("Hard Resetting Transmitter");
         connection.writeCharacteristic(Control, nn(new ResetTxMessage().byteSequence))
                 .subscribe(characteristicValue -> {
                     if (d)
                         UserError.Log.d(TAG, "Wrote ResetTxMessage request!!");
                     parent.msg("Hard Reset Sent");
                 }, throwable -> {
-                    parent.msg("Hard Reset maybe Failed");
-                    UserError.Log.e(TAG, "Failed to write ResetTxMessage: " + throwable);
                     if (throwable instanceof BleGattCharacteristicException) {
                         final int status = ((BleGattCharacteristicException) throwable).getStatus();
                         UserError.Log.e(TAG, "Got status message: " + getStatusName(status));
@@ -1852,9 +1850,11 @@ public class Ob1G5StateMachine {
                     if (getBestCollectorHardwareName().equals("G7")) {
                         sound_vibrate = silent;
                     }
-                    JoH.showNotification("Battery Low", "Transmitter battery has dropped to: " + batteryInfoRxMessage.voltagea + " it may fail soon",
-                            null, 770, NotificationChannels.LOW_TRANSMITTER_BATTERY_CHANNEL, sound_vibrate, sound_vibrate, null, null, null);
-                    UserError.Log.uel(TAG, "Dex battery has dropped to: " + batteryInfoRxMessage.voltagea);
+                    if (!battery0VException) { // Skip warnings for a recently reset transmitter
+                        JoH.showNotification("Battery Low", "Transmitter battery has dropped to: " + batteryInfoRxMessage.voltagea + " it may fail soon",
+                                null, 770, NotificationChannels.LOW_TRANSMITTER_BATTERY_CHANNEL, sound_vibrate, sound_vibrate, null, null, null);
+                        UserError.Log.uel(TAG, "Dex battery has dropped to: " + batteryInfoRxMessage.voltagea);
+                    }
                 }
             }
             PersistentStore.cleanupOld(G5_BATTERY_LEVEL_MARKER);

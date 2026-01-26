@@ -1,12 +1,14 @@
 package com.eveningoutpost.dexdrip.services;
 
 import static com.eveningoutpost.dexdrip.Home.get_engineering_mode;
+import static com.eveningoutpost.dexdrip.g5model.BatteryInfoRxMessage.battery0VException;
 import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.Advertisement;
 import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.ExtraData;
 import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.Mask16;
 import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.getUUIDName;
 import static com.eveningoutpost.dexdrip.g5model.CalibrationState.Ok;
 import static com.eveningoutpost.dexdrip.g5model.CalibrationState.Unknown;
+import static com.eveningoutpost.dexdrip.g5model.FirmwareCapability.isTransmitterModified;
 import static com.eveningoutpost.dexdrip.g5model.G6CalibrationParameters.getCurrentSensorCode;
 import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.CLOSED_OK_TEXT;
 import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.doKeepAlive;
@@ -439,7 +441,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                         Ob1G5StateMachine.doReset(this, connection);
                         break;
                     case GET_DATA:
-                        if (hardResetTransmitterNow) {
+                        if (hardResetTransmitterNow && isTransmitterModified(getTransmitterID())) {
                             send_reset_command();
                             DexSyncKeeper.clear(transmitterID);
                         } else {
@@ -792,7 +794,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     private synchronized void send_reset_command() {
         hardResetTransmitterNow = false;
         getBatteryStatusNow = true;
-        if (JoH.ratelimit("reset-command", 1200)) {
+        if (JoH.ratelimit("reset-command", 120)) {
             UserError.Log.e(TAG, "Issuing reset command!");
             changeState(STATE.RESET);
         } else {
@@ -2462,8 +2464,10 @@ public class Ob1G5CollectionService extends G5BaseService {
                 }
             }
             l.add(new StatusItem("Transmitter Days", parsedBattery.daysEstimate(), TX_dys_highlight));
-            l.add(new StatusItem("Voltage A", parsedBattery.voltageA(), parsedBattery.voltageAWarning() ? BAD : NORMAL));
-            l.add(new StatusItem("Voltage B", parsedBattery.voltageB(), parsedBattery.voltageBWarning() ? BAD : NORMAL));
+            if (!battery0VException) { // Only show voltages if they are not 0
+                l.add(new StatusItem("Voltage A", parsedBattery.voltageA(), parsedBattery.voltageAWarning() ? BAD : NORMAL));
+                l.add(new StatusItem("Voltage B", parsedBattery.voltageB(), parsedBattery.voltageBWarning() ? BAD : NORMAL));
+            }
             if (vr != null && FirmwareCapability.isFirmwareResistanceCapable(vr.firmware_version_string)) {
                 if (parsedBattery.resistance() != 0) {
                     l.add(new StatusItem("Resistance", parsedBattery.resistance(), parsedBattery.resistanceStatus().highlight));
