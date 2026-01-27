@@ -560,7 +560,7 @@
                         android:key="autopan"
                         android:title=" ">
                         <CheckBoxPreference
-                            android:defaultValue="false"
+                            android:defaultValue="true"
                             android:key="auto_y_pan"
                             android:summary="@string/summary_auto_y_pan"
                             android:title="@string/title_auto_y_pan" />
