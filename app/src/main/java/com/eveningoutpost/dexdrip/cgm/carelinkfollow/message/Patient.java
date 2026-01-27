@@ -15,4 +15,8 @@ public class Patient {
         return (lastDeviceFamily.contains("BLE") || lastDeviceFamily.contains("SIMPLERA"));
     }
 
+    public boolean isCC() {
+        return (lastDeviceFamily.contains("INSTINCT"));
+    }
+
 }
