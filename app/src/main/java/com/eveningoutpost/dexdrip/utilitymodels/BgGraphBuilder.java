@@ -294,7 +294,7 @@ public class BgGraphBuilder {
 
     private boolean isAutoYPanEnabled() {
         // When true, xDrip auto-pans the Y-axis instead of extending the range for out-of-range readings.
-        return Pref.getBooleanDefaultFalse("auto_y_pan");
+        return Pref.getBoolean("auto_y_pan", true);
     }
 
     public Viewport computeYViewport() {
