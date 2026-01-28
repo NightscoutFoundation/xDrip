@@ -653,20 +653,32 @@
                         android:targetClass="com.eveningoutpost.dexdrip.ui.activities.NumberWallPreview"
                         android:targetPackage="@string/local_target_package" />
                 </Preference>
-                <SwitchPreference
+                <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="number_wall_on_lockscreen"
                     android:summary="@string/summary_number_wall_on_lockscreen"
-                    android:switchTextOff="@string/short_off_text_for_switches"
-                    android:switchTextOn="@string/short_on_text_for_switches"
-                    android:title="@string/title_number_wall_on_lockscreen" />
+                    android:title="@string/enable" />
+
+                <PreferenceCategory
+                    android:key="gap_before_force_text_color"
+                    android:title=" " />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="force_lock_screen_text_color"
+                    android:summary="@string/summary_force_lockscreen_text_color"
+                    android:title="@string/title_force_lockscreen_text_color" />
                 <com.eveningoutpost.dexdrip.utilitymodels.ColorPicker
                     android:defaultValue="#FFEEEEEE"
+                    android:dependency="force_lock_screen_text_color"
                     android:key="color_number_wall"
                     android:title="@string/title_color_number_wall"
                     app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                     app:colorpicker_selectNoneButtonText="@string/revert_to_default"
                     app:colorpicker_showHex="false" />
+                <PreferenceCategory
+                    android:key="gap_after_text_color"
+                    android:title=" " />
+
                 <com.eveningoutpost.dexdrip.utilitymodels.ColorPicker
                     android:defaultValue="#FF000000"
                     android:key="color_number_wall_shadow"

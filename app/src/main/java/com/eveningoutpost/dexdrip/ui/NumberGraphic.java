@@ -98,7 +98,7 @@ public class NumberGraphic {
         return Pref.getBooleanDefaultFalse(PREF_numberwall_multi_param);
     }
 
-    public static Bitmap getLockScreenBitmap(final String text, final String arrow, final boolean strike_through) {
+    public static Bitmap getLockScreenBitmap(final String text, final String arrow, final boolean strike_through, final int textColor) {
         final boolean tiled = isLockScreenBitmapTiled();
         final double x_ratio = JoH.tolerantParseDouble(Pref.getString("numberwall_x_param", ""), 50d) / 100d;
         double y_ratio = JoH.tolerantParseDouble(Pref.getString("numberwall_y_param", ""), 50d) / 100d;
@@ -108,7 +108,7 @@ public class NumberGraphic {
             y_ratio = 0.30d; // standardized defaults somewhere for this would be nice; and roll in to final declaration above
             spacer_ratio = 0d;
         }
-        return getBitmap(text, getCol(ColorCache.X.color_number_wall), arrow, (int) (getScreenDpi() * x_ratio), (int) (getScreenDpi() * x_ratio * y_ratio), (int) (getScreenDpi() * x_ratio * spacer_ratio), strike_through, !tiled, true);
+        return getBitmap(text, textColor, arrow, (int) (getScreenDpi() * x_ratio), (int) (getScreenDpi() * x_ratio * y_ratio), (int) (getScreenDpi() * x_ratio * spacer_ratio), strike_through, !tiled, true);
     }
 
     public static Bitmap getBitmap(final String text, int fillColor, final String arrow) {
@@ -129,47 +129,46 @@ public class NumberGraphic {
     }
 
     public static Bitmap getBitmap(final String text, int fillColor, final String arrow, final int width, final int height, final int margin, final boolean strike_through, boolean expandable, final boolean shadow) {
-        {
-            if ((text == null) || (text.length() > 4)) return null;
-            try {
 
-                if ((width > 2000) || height > 2000 || height < 16 || width < 16) return null;
+        if ((text == null) || (text.length() > 4)) return null;
+        try {
 
-                final Paint paint = new Paint();
-                paint.setStrikeThruText(strike_through);
-                paint.setStyle(Paint.Style.FILL);
-                paint.setColor(fillColor);
-                paint.setAntiAlias(true);
-                //paint.setTypeface(Typeface.MONOSPACE);
-                paint.setTypeface(Typeface.SANS_SERIF); // TODO BEST?
-                paint.setTextAlign(Paint.Align.LEFT);
-                float paintTs = (arrow == null ? 17 : 17 - arrow.length());
-                paint.setTextSize(paintTs);
-                final Rect bounds = new Rect();
+            if ((width > 2000) || height > 2000 || height < 16 || width < 16) return null;
 
-                final String fullText = text + (arrow != null ? arrow : "");
+            final Paint paint = new Paint();
+            paint.setStrikeThruText(strike_through);
+            paint.setStyle(Paint.Style.FILL);
+            paint.setColor(fillColor);
+            paint.setAntiAlias(true);
+            //paint.setTypeface(Typeface.MONOSPACE);
+            paint.setTypeface(Typeface.SANS_SERIF); // TODO BEST?
+            paint.setTextAlign(Paint.Align.LEFT);
+            float paintTs = (arrow == null ? 17 : 17 - arrow.length());
+            paint.setTextSize(paintTs);
+            final Rect bounds = new Rect();
 
-                paint.getTextBounds(fullText, 0, fullText.length(), bounds);
-                float textsize = ((paintTs - 1) * (width - margin)) / bounds.width();
-                paint.setTextSize(textsize);
-                paint.getTextBounds(fullText, 0, fullText.length(), bounds);
+            final String fullText = text + (arrow != null ? arrow : "");
 
-                // cannot be Config.ALPHA_8 as it doesn't work on Samsung
-                final Bitmap bitmap = Bitmap.createBitmap(width, expandable ? Math.max(height, bounds.height() + 30) : height, Bitmap.Config.ARGB_8888);
-                final Canvas c = new Canvas(bitmap);
+            paint.getTextBounds(fullText, 0, fullText.length(), bounds);
+            float textsize = ((paintTs - 1) * (width - margin)) / bounds.width();
+            paint.setTextSize(textsize);
+            paint.getTextBounds(fullText, 0, fullText.length(), bounds);
 
-                if (shadow) {
-                    paint.setShadowLayer(10, 0, 0, getCol(ColorCache.X.color_number_wall_shadow));
-                }
-                c.drawText(fullText, 0, (height / 2) + (bounds.height() / 2), paint);
+            // cannot be Config.ALPHA_8 as it doesn't work on Samsung
+            final Bitmap bitmap = Bitmap.createBitmap(width, expandable ? Math.max(height, bounds.height() + 30) : height, Bitmap.Config.ARGB_8888);
+            final Canvas c = new Canvas(bitmap);
 
-                return bitmap;
-            } catch (Exception e) {
-                if (JoH.ratelimit("icon-failure", 60)) {
-                    UserError.Log.e(TAG, "Cannot create number icon: " + e);
-                }
-                return null;
+            if (shadow) {
+                paint.setShadowLayer(10, 0, 0, getCol(ColorCache.X.color_number_wall_shadow));
             }
+            c.drawText(fullText, 0, (height / 2) + (bounds.height() / 2), paint);
+
+            return bitmap;
+        } catch (Exception e) {
+            if (JoH.ratelimit("icon-failure", 60)) {
+                UserError.Log.e(TAG, "Cannot create number icon: " + e);
+            }
+            return null;
         }
     }
 
