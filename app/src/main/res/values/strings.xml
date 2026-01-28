@@ -1455,9 +1455,9 @@
     <string name="title_high_priority_notifications">High Priority Notifications</string>
     <string name="summary_public_notifications">Show notification content on secure lockscreen</string>
     <string name="title_public_notifications">Public Notifications</string>
-    <string name="title_xdrip_plus_number_wall">Number Wall on Lock Screen</string>
+    <string name="title_xdrip_plus_number_wall">Number wall on lock screen</string>
     <string name="summary_do_number_wall_configuration">Adjust and preview wall layout</string>
-    <string name="title_do_number_wall_configuration">Configure Number Wall</string>
+    <string name="title_do_number_wall_configuration">Configure number wall</string>
     <string name="summary_number_wall_on_lockscreen">Show number wall on lock screen when enabled</string>
     <string name="title_number_wall_on_lockscreen">Use on Lock screen</string>
     <string name="title_color_number_wall">Text color</string>
