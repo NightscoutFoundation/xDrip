@@ -532,7 +532,8 @@ public class NFCReaderX {
             Libre2SensorData.setLibre2SensorData(patchUid, patchInfo, 42, 1, unlockData.second);
             byte[] nfc_command = unlockData.first;
 
-            final byte[] cmd = new byte[]{0x02, (byte) 0xa1, 0x07};
+            final byte manufacturerCode = patchUid[6];
+            final byte[] cmd = new byte[]{0x02, (byte) 0xa1, manufacturerCode};
             final byte[] full_cmd = new byte[cmd.length + nfc_command.length];
             System.arraycopy(cmd, 0, full_cmd, 0, cmd.length);
             System.arraycopy(nfc_command, 0, full_cmd, cmd.length, nfc_command.length);
@@ -633,11 +634,17 @@ public class NFCReaderX {
                         // if multiblock mode
                         JoH.benchmark(null);
 
+                        byte[] patchUid = tag.getId();
+                        Log.d(TAG, "patchUid = " + HexDump.dumpHexString(patchUid));
+
+                        final byte manufacturerCode = patchUid[6];
+                        Log.d(TAG, "NFC manufacturer code = 0x" + String.format("%02x", manufacturerCode));
+
                         Long time_patch = System.currentTimeMillis();
                         while (true) {
                             try {
 
-                                final byte[] cmd = new byte[]{0x02, (byte) 0xa1, 0x07};
+                                final byte[] cmd = new byte[]{0x02, (byte) 0xa1, manufacturerCode};
                                 patchInfo = nfcvTag.transceive(cmd);
                                 if (patchInfo != null) {
                                     // We need to throw away the first byte.
@@ -655,9 +662,8 @@ public class NFCReaderX {
                             }
                         }
                         Log.d(TAG, "patchInfo = " + HexDump.dumpHexString(patchInfo));
-                        byte[] patchUid = tag.getId();
-                        Log.d(TAG, "patchUid = " + HexDump.dumpHexString(patchUid));
-                        if (use_fake_de_data()) {
+
+                         if (use_fake_de_data()) {
                             patchUid = de_new_patch_uid;
                             patchInfo = de_new_patch_info;
                         }
