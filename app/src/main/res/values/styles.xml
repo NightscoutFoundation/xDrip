@@ -112,4 +112,11 @@
     <style name="WhiteActionBar.Subtitle">
         <item name="android:textColor">@android:color/black</item>
     </style>
+
+    <style name="StatusTitle" parent="TextAppearance.AppCompat.Medium">
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="StatusLabel" parent="TextAppearance.AppCompat.Small"/>
+    <style name="StatusValue" parent="TextAppearance.AppCompat.Small"/>
+
 </resources>
