@@ -163,7 +163,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="2dp"
                     android:layout_marginTop="4dp"
-                    android:background="?android:attr/listDivider" />
+                    android:background="?android:attr/listDivider"
+                    app:showIfTrue="@{ms.bluetooth()}"/>
 
                 <LinearLayout
                     android:id="@+id/layout_sensor"
@@ -191,7 +192,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="2dp"
                     android:layout_marginTop="4dp"
-                    android:background="?android:attr/listDivider" />
+                    android:background="?android:attr/listDivider"
+                    app:showIfTrue="@{ms.sessionStartTime()}"/>
 
                 <LinearLayout
                     android:id="@+id/layout_transmitter"
