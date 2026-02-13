@@ -26,7 +26,7 @@ public class SensorStatus {
             sensor_status.append(((tsl() - sensor.started_at) % Constants.DAY_IN_MS) / Constants.HOUR_IN_MS);
             sensor_status.append("h)");
         } else {
-            sensor_status.append("Not available");
+            sensor_status.append("not available");
         }
         return sensor_status.toString();
     }

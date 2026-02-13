@@ -123,20 +123,20 @@ public class MegaStatus extends FloatingLocaleActivityWithScreenshot {
         MegaStatusAdapters.add(new MegaStatusListAdapter());
     }
 
-    private static final String G4_STATUS = "BT device";
-    public static final String G5_STATUS = "Dex status";
-    private static final String MEDTRUM_STATUS = "Medtrum status";
-    private static final String IP_COLLECTOR = "IP collector";
+    private static final String G4_STATUS = "BT Device";
+    public static final String G5_STATUS = "Dex Status";
+    private static final String MEDTRUM_STATUS = "Medtrum Status";
+    private static final String IP_COLLECTOR = "IP Collector";
     private static final String XDRIP_PLUS_SYNC = "Followers";
     private static final String UPLOADERS = "Uploaders";
     private static final String LEFUN_STATUS = "Lefun";
     private static final String MIBAND_STATUS = "MiBand";
     private static final String BLUEJAY_STATUS = "BlueJay";
     private static final String INPEN_STATUS = "InPen";
-    private static final String NIGHTSCOUT_FOLLOW = "Nightscout follow";
-    private static final String SHARE_FOLLOW = "Dex share follow";
-    private static final String WEB_FOLLOW = "Web follower";
-    private static final String CARELINK_FOLLOW = "CareLink follow";
+    private static final String NIGHTSCOUT_FOLLOW = "Nightscout Follow";
+    private static final String SHARE_FOLLOW = "Dex Share Follow";
+    private static final String WEB_FOLLOW = "Web Follower";
+    private static final String CARELINK_FOLLOW = "CareLink Follow";
     public static final String GLU_PRO = "Smart Guide";
     private static final String XDRIP_LIBRE2 = "Libre2";
 
@@ -166,18 +166,18 @@ public class MegaStatus extends FloatingLocaleActivityWithScreenshot {
 
         if (sectionList.isEmpty()) {
 
-            addAsection("Classic status page", "Legacy system status");
+            addAsection("Classic Status Page", "Legacy System Status");
 
             final DexCollectionType dexCollectionType = DexCollectionType.getDexCollectionType();
 
             // probably want a DexCollectionService related set
             if (DexCollectionType.usesDexCollectionService(dexCollectionType)) {
-                addAsection(G4_STATUS, "Bluetooth collector status");
+                addAsection(G4_STATUS, "Bluetooth Collector Status");
             }
             if (dexCollectionType.equals(DexcomG5)) {
-                addAsection(G5_STATUS, "Dex collector/Transmitter status");
+                addAsection(G5_STATUS, "Dex Collector/Transmitter Status");
             } else if (dexCollectionType.equals(Medtrum)) {
-                addAsection(MEDTRUM_STATUS, "Medtrum A6 status");
+                addAsection(MEDTRUM_STATUS, "Medtrum A6 Status");
             }
             if (dexCollectionType.equals(GluPro)) {
                 addAsection(GLU_PRO, getString(R.string.glupro_status));
@@ -186,41 +186,41 @@ public class MegaStatus extends FloatingLocaleActivityWithScreenshot {
                 addAsection(BLUEJAY_STATUS, "BlueJay watch status");
             }
             if (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreReceiver) {
-                addAsection(XDRIP_LIBRE2, "Libre patched app status");
+                addAsection(XDRIP_LIBRE2, "Libre Patched App Status");
             }
             if (DexCollectionType.hasWifi()) {
-                addAsection(IP_COLLECTOR, dexCollectionType == DexCollectionType.Mock ? "FAKE / MOCK DATA SOURCE" : "Wifi Wixel / Parakeet status");
+                addAsection(IP_COLLECTOR, dexCollectionType == DexCollectionType.Mock ? "FAKE / MOCK DATA SOURCE" : "Wifi Wixel / Parakeet Status");
             }
             if (InPenEntry.isEnabled()) {
-                addAsection(INPEN_STATUS,"InPen status");
+                addAsection(INPEN_STATUS,"InPen Status");
             }
             if (Home.get_master_or_follower()) {
-                addAsection(XDRIP_PLUS_SYNC, "xDrip+ sync group");
+                addAsection(XDRIP_PLUS_SYNC, "xDrip+ Sync Group");
             }
             if (Pref.getBooleanDefaultFalse("cloud_storage_mongodb_enable")
                     || Pref.getBooleanDefaultFalse("cloud_storage_api_enable")
                     || Pref.getBooleanDefaultFalse("cloud_storage_tidepool_enable")
                     || Pref.getBooleanDefaultFalse("share_upload")
                     || (Pref.getBooleanDefaultFalse("wear_sync") && Home.get_engineering_mode())) {
-                addAsection(UPLOADERS, "Cloud uploader queues");
+                addAsection(UPLOADERS, "Cloud Uploader Queues");
             }
             if (LeFunEntry.isEnabled()) {
-                addAsection(LEFUN_STATUS, "Lefun watch status");
+                addAsection(LEFUN_STATUS, "Lefun Watch Status");
             }
             if (MiBandEntry.isEnabled()) {
-                addAsection(MIBAND_STATUS, "MiBand watch status");
+                addAsection(MIBAND_STATUS, "MiBand Watch Status");
             }
             if(dexCollectionType.equals(NSFollow)) {
-                addAsection(NIGHTSCOUT_FOLLOW, "Nightscout follow status");
+                addAsection(NIGHTSCOUT_FOLLOW, "Nightscout Follow Status");
             }
             if(dexCollectionType.equals(SHFollow)) {
-                addAsection(SHARE_FOLLOW, "Dex share follow status");
+                addAsection(SHARE_FOLLOW, "Dex Share Follow Status");
             }
             if(dexCollectionType.equals(WebFollow)) {
-                addAsection(WEB_FOLLOW, "Web follower status");
+                addAsection(WEB_FOLLOW, "Web Follower Status");
             }
             if(dexCollectionType.equals(CLFollow)) {
-                addAsection(CARELINK_FOLLOW, "CareLink follow status");
+                addAsection(CARELINK_FOLLOW, "CareLink Follow Status");
             }
 
             //addAsection("Misc", "Currently Empty");
