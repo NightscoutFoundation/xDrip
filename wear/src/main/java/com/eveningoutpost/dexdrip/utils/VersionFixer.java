@@ -40,6 +40,10 @@ public class VersionFixer {
     private static final String APK_PATH = "/data/local/tmp/installme.apk";
     // check peer version
 
+    // Disable Wear auto-update until a companion app is added for xDrip WearOS.
+    // TODO: Remove or enable when auto update becomes possible again
+    public static final boolean ENABLE_WEAR_AUTO_UPDATE = false;
+
     public static synchronized void updateAndCheck(String version, String processingVersion) {
         if (version == null) return;
         if (Build.VERSION.SDK_INT > 23) {
@@ -167,6 +171,13 @@ public class VersionFixer {
 
 
     private static void checkAndActOnVersionDifference() {
+        if (!ENABLE_WEAR_AUTO_UPDATE) {
+            // Wear auto-update disabled to prevent continuous failed update attempts
+            // TODO: Remove or enable when auto update becomes possible again
+            UserError.Log.d(TAG, "Wear auto-update disabled");
+            return;
+        }
+
         if (checkVersion()) {
             UserError.Log.d(TAG, "Version report as different: " + getLocalVersion() + " vs " + getPeerVersion());
             resolveVersionDifference(getPeerVersion());
