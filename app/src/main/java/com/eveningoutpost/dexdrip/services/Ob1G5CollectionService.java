@@ -2368,7 +2368,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                 }
 
                 if (vr3 == null && vr2.version1 != 0 && vr2.warmupSeconds != 0 && vr2.warmupSeconds != 7200 && vr2.warmupSeconds != 1620 && vr2.warmupSeconds != 3600) {
-                    l.add(new StatusItem("Warm-Up Time", niceTimeScalar(vr2.warmupSeconds * SECOND_IN_MS), Highlight.NOTICE));
+                    l.add(new StatusItem("Warm Up Time", niceTimeScalar(vr2.warmupSeconds * SECOND_IN_MS), Highlight.NOTICE));
                 }
 
                 //l.add(new StatusItem("Feature mask", vr2.featureBits));
@@ -2380,7 +2380,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         try {
             if (vr3 != null) {
                 if (vr3.warmupSeconds != 7200 && vr3.warmupSeconds != 3600 && !isTransmitterModified(getTransmitterID())) {
-                    l.add(new StatusItem("Warm-Up Time", niceTimeScalar(vr3.warmupSeconds * SECOND_IN_MS), Highlight.NOTICE));
+                    l.add(new StatusItem("Warm Up Time", niceTimeScalar(vr3.warmupSeconds * SECOND_IN_MS), Highlight.NOTICE));
                 }
             }
         } catch (Exception e) {
