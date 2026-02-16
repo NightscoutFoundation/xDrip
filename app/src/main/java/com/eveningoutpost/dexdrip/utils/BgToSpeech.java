@@ -14,6 +14,7 @@ import com.eveningoutpost.dexdrip.utilitymodels.VehicleMode;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.text.DecimalFormat;
+import java.util.Calendar;
 
 import static com.eveningoutpost.dexdrip.utilitymodels.SpeechUtil.TWICE_DELIMITER;
 
@@ -55,6 +56,11 @@ public class BgToSpeech implements NamedSliderProcessor {
             return;
         }
 
+        // If a schedule is enabled, ensure current time is within range
+        if (!isWithinSchedule()) {
+            return;
+        }
+
         // check constraints
         final long change_time = getMinutesSliderValue(Pref.getInt("speak_readings_change_time", 0)) * Constants.MINUTE_IN_MS;
 
@@ -79,6 +85,59 @@ public class BgToSpeech implements NamedSliderProcessor {
         updateLastSpokenSince();
         realSpeakNow(value, timestamp, delta_name);
 
+    }
+
+    /**
+     * Check if the current time falls within the configured speak readings schedule.
+     * Returns true if no schedule is set (i.e. speak all day) or if the current time is within the scheduled range.
+     * Also used by speak alerts to respect the same schedule.
+     */
+    public static boolean isWithinSchedule() {
+        try {
+            if (Pref.getBooleanDefaultFalse("speak_readings_schedule_enabled")) {
+                long startMillis = Pref.getLong("speak_readings_schedule_start", 0);
+                long endMillis = Pref.getLong("speak_readings_schedule_end", 0);
+                if (startMillis != 0 || endMillis != 0) {
+                    Calendar now = Calendar.getInstance();
+                    int nowMinutes = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE);
+
+                    int startMinutes = 0; // default: midnight
+                    if (startMillis != 0) {
+                        Calendar cs = Calendar.getInstance();
+                        cs.setTimeInMillis(startMillis);
+                        startMinutes = cs.get(Calendar.HOUR_OF_DAY) * 60 + cs.get(Calendar.MINUTE);
+                    }
+
+                    int endMinutes = 24 * 60; // default: end of day
+                    if (endMillis != 0) {
+                        Calendar ce = Calendar.getInstance();
+                        ce.setTimeInMillis(endMillis);
+                        endMinutes = ce.get(Calendar.HOUR_OF_DAY) * 60 + ce.get(Calendar.MINUTE);
+                    }
+
+                    // Same start and end means all day (no restriction)
+                    if (startMinutes == endMinutes) {
+                        return true;
+                    }
+
+                    boolean inRange;
+                    if (startMinutes < endMinutes) {
+                        inRange = nowMinutes >= startMinutes && nowMinutes < endMinutes;
+                    } else {
+                        // range spans midnight
+                        inRange = nowMinutes >= startMinutes || nowMinutes < endMinutes;
+                    }
+
+                    if (!inRange) {
+                        UserError.Log.d(TAG, "Not speaking due to schedule: now " + nowMinutes + " not in " + startMinutes + "-" + endMinutes);
+                        return false;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Error reading schedule preferences, falling back to speaking: " + e);
+        }
+        return true;
     }
 
     private static final String LAST_SPOKEN_TIME = "last-spoken-reading-time";

@@ -46,6 +46,7 @@ import com.eveningoutpost.dexdrip.services.MissedReadingService;
 import com.eveningoutpost.dexdrip.services.SnoozeOnNotificationDismissService;
 import com.eveningoutpost.dexdrip.evaluators.PersistentHigh;
 import com.eveningoutpost.dexdrip.ui.NumberGraphic;
+import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
@@ -937,7 +938,7 @@ public class Notifications extends IntentService {
         if (on) {
             if ((Pref.getLong("alerts_disabled_until", 0) < JoH.tsl()) && (Pref.getLong("low_alerts_disabled_until", 0) < JoH.tsl())) {
                 OtherAlert(context, type, msg, lowPredictAlertNotificationId, NotificationChannels.BG_PREDICTED_LOW_CHANNEL, false, 20 * 60);
-                if (Pref.getBooleanDefaultFalse("speak_alerts")) {
+                if (Pref.getBooleanDefaultFalse("speak_alerts") && BgToSpeech.isWithinSchedule()) {
                    if (JoH.pratelimit("low-predict-speak", 1800)) SpeechUtil.say(msg, 4000);
                 }
             } else {
@@ -963,7 +964,7 @@ public class Notifications extends IntentService {
                 if (snooze_time < 1) snooze_time = 1;       // not less than 1 minute
                 if (snooze_time > 1440) snooze_time = 1440; // not more than 1 day
                 OtherAlert(context, type, msg, persistentHighAlertNotificationId, NotificationChannels.BG_PERSISTENT_HIGH_CHANNEL, false, snooze_time * 60);
-                if (Pref.getBooleanDefaultFalse("speak_alerts")) {
+                if (Pref.getBooleanDefaultFalse("speak_alerts") && BgToSpeech.isWithinSchedule()) {
                     if (JoH.pratelimit("persist-high-speak", 1800)) {
                         SpeechUtil.say(msg, 4000);
                     }

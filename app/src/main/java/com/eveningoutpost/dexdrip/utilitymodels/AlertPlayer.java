@@ -35,6 +35,7 @@ import com.eveningoutpost.dexdrip.utilitymodels.pebble.PebbleWatchSync;
 import com.eveningoutpost.dexdrip.eassist.AlertTracker;
 import com.eveningoutpost.dexdrip.ui.FlashLight;
 import com.eveningoutpost.dexdrip.ui.helpers.AudioFocusType;
+import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFun;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
@@ -628,8 +629,8 @@ public class AlertPlayer {
             BroadcastEntry.sendAlert(Const.BG_ALERT_TYPE, highlow + " " + bgValue);
         }
 
-        // speak alert
-        if (Pref.getBooleanDefaultFalse("speak_alerts")) {
+        // speak alert (respects speak readings schedule if enabled)
+        if (Pref.getBooleanDefaultFalse("speak_alerts") && BgToSpeech.isWithinSchedule()) {
             SpeechUtil.say(highlow + ", " + bgValue, 3000);
         }
 

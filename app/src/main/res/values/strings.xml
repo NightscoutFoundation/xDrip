@@ -323,6 +323,10 @@
     <string name="older_gratuitous_wakelocks">Older gratuitous wakelocks which can drain extra battery but might be needed for NightWatch or Android Wear</string>
     <string name="use_excessive_wakelocks">Use Excessive Wakelocks</string>
     <string name="speak_readings">Speak Readings</string>
+    <string name="speak_readings_schedule">Use schedule</string>
+    <string name="speak_readings_schedule_summary">Only speak readings and alerts during a specified time range</string>
+    <string name="speak_readings_schedule_start">Schedule start</string>
+    <string name="speak_readings_schedule_end">Schedule end</string>
     <string name="extra_status_line">Extra Status Line</string>
     <string name="dexcom_share_server_upload">Dex Share</string>
     <string name="upload_data_to_dex_servers">Upload data to Dex Share Servers</string>

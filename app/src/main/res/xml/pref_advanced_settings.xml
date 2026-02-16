@@ -939,6 +939,17 @@
                 android:title="@string/Speech_pitch" />
             <CheckBoxPreference
                 android:defaultValue="false"
+                android:key="speak_readings_schedule_enabled"
+                android:summary="@string/speak_readings_schedule_summary"
+                android:title="@string/speak_readings_schedule" />
+            <com.eveningoutpost.dexdrip.utils.TimePreference
+                android:key="speak_readings_schedule_start"
+                android:title="@string/speak_readings_schedule_start" />
+            <com.eveningoutpost.dexdrip.utils.TimePreference
+                android:key="speak_readings_schedule_end"
+                android:title="@string/speak_readings_schedule_end" />
+            <CheckBoxPreference
+                android:defaultValue="false"
                 android:key="bg_to_speech_shortcut"
                 android:summary="@string/short_speak_readings_shortcut"
                 android:title="@string/speak_readings_shortcut" />
