@@ -18,6 +18,7 @@ import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.File;
@@ -40,9 +41,6 @@ public class VersionFixer {
     private static final String APK_PATH = "/data/local/tmp/installme.apk";
     // check peer version
 
-    // Disable Wear auto-update until a companion app is added for xDrip WearOS.
-    // TODO: Remove or enable when auto update becomes possible again
-    public static final boolean ENABLE_WEAR_AUTO_UPDATE = false;
 
     public static synchronized void updateAndCheck(String version, String processingVersion) {
         if (version == null) return;
@@ -66,6 +64,10 @@ public class VersionFixer {
         } else {
             return false;
         }
+    }
+
+    public static boolean isWearAutoUpdateEnabled() {
+        return Pref.getBoolean("enable_wear_auto_update", true);
     }
 
 
@@ -171,9 +173,7 @@ public class VersionFixer {
 
 
     private static void checkAndActOnVersionDifference() {
-        if (!ENABLE_WEAR_AUTO_UPDATE) {
-            // Wear auto-update disabled to prevent continuous failed update attempts
-            // TODO: Remove or enable when auto update becomes possible again
+        if (!isWearAutoUpdateEnabled()) {
             UserError.Log.d(TAG, "Wear auto-update disabled");
             return;
         }

@@ -86,6 +86,12 @@
                     android:key="show_wear_treatments"
                     android:summary="@string/pref_summary_show_treatments"
                     android:title="@string/pref_show_treatments" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:dependency="wear_sync"
+                    android:key="enable_wear_auto_update"
+                    android:summary="@string/summary_enable_wear_auto_update"
+                    android:title="@string/title_enable_wear_auto_update" />
 
             </PreferenceCategory>
         </PreferenceScreen>

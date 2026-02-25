@@ -33,9 +33,7 @@ public class UpdateActivity extends Activity {
                 JoH.threadSleep(10000);
             }
             if (canInstallHere) {
-                if (!VersionFixer.ENABLE_WEAR_AUTO_UPDATE) {
-                    // Wear update temporarily disabled until official WearOS companion app exists
-                    // TODO: Remove or enable when auto update becomes possible again
+                if (!VersionFixer.isWearAutoUpdateEnabled()) {
                     JoH.static_toast_long("Wear update temporarily disabled");
                     return;
                 }

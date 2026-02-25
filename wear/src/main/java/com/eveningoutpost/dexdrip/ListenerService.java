@@ -2900,9 +2900,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     public void onChannelClosed(final Channel channel, final int closeReason, final int appSpecificErrorCode) {
         logChannelCloseReason("Whole Channel", channel, closeReason, appSpecificErrorCode);
         // TODO counter for failures??
-        if (!VersionFixer.ENABLE_WEAR_AUTO_UPDATE) {
-            // Wear update temporarily disabled until official WearOS companion app exists
-            // TODO: Remove or enable when auto update becomes possible again
+        if (!VersionFixer.isWearAutoUpdateEnabled()) {
             UserError.Log.d(TAG, "Wear auto-update disabled; not re-requesting APK on channel close");
             return;
         }
