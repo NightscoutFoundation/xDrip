@@ -41,7 +41,6 @@ public class VersionFixer {
     private static final String APK_PATH = "/data/local/tmp/installme.apk";
     // check peer version
 
-
     public static synchronized void updateAndCheck(String version, String processingVersion) {
         if (version == null) return;
         if (Build.VERSION.SDK_INT > 23) {
