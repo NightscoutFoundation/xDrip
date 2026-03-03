@@ -81,7 +81,7 @@ public class DexSyncKeeper {
         }
 
         if (now - last > VALIDITY_PERIOD) {
-            UserError.Log.e(TAG, "Anticipation time too old to use: " + JoH.dateTimeText(last));
+            UserError.Log.d(TAG, "Anticipation time too old to use: " + JoH.dateTimeText(last));
             return -1;
         }
 
