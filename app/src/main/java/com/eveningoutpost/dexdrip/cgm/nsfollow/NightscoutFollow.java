@@ -45,10 +45,10 @@ public class NightscoutFollow {
                 "User-Agent: xDrip+ " + BuildConfig.VERSION_NAME,
         })
 
-        @GET("/api/v1/entries.json")
+        @GET("api/v1/entries.json")
         Call<List<Entry>> getEntries(@Header("api-secret") String secret, @Query("count") int count, @Query("rr") String rr);
 
-        @GET("/api/v1/treatments")
+        @GET("api/v1/treatments")
         Call<ResponseBody> getTreatments(@Header("api-secret") String secret);
     }
 
