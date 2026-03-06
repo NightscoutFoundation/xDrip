@@ -32,6 +32,7 @@ import com.eveningoutpost.dexdrip.models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.models.GlucoseData;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.Libre2SensorData;
+import com.eveningoutpost.dexdrip.models.Libre3;
 import com.eveningoutpost.dexdrip.models.LibreBlock;
 import com.eveningoutpost.dexdrip.models.LibreOOPAlgorithm;
 import com.eveningoutpost.dexdrip.models.ReadingData;
@@ -661,6 +662,17 @@ public class NFCReaderX {
                                 Thread.sleep(100);
                             }
                         }
+
+                        if (patchInfo[0] == (byte) 0xA5 && patchInfo.length >= 28) {
+                            Log.d(TAG, "Libre 3's 24-byte patchInfo will be extracted and CRC verified from " + HexDump.dumpHexString(patchInfo));
+                            long crc = ((patchInfo[patchInfo.length - 1] & 0xFF) << 8) | (patchInfo[patchInfo.length - 2] & 0xFF);
+                            byte[] extractedPatchInfo = Arrays.copyOfRange(patchInfo, patchInfo.length - 26, patchInfo.length - 2);
+                            long computedCRC = LibreUtils.computeCRC16(extractedPatchInfo, -2, extractedPatchInfo.length + 2);
+                            if (crc == computedCRC) {
+                                patchInfo = extractedPatchInfo;
+                            }
+                        }
+
                         Log.d(TAG, "patchInfo = " + HexDump.dumpHexString(patchInfo));
 
                          if (use_fake_de_data()) {
@@ -670,6 +682,9 @@ public class NFCReaderX {
 
                         SensorType sensorType = LibreOOPAlgorithm.getSensorType(patchInfo);
                         Log.uel(TAG, "Libre sensor of type " + sensorType.name() + " detected.");
+                        if (sensorType == SensorType.Libre3) {
+                            Libre3.parsePatchInfo(patchInfo);
+                        }
                         if (addressed && sensorType != SensorType.Libre1 && sensorType != SensorType.Libre1New) {
                             Log.d(TAG, "Not using addressed mode since not a libre 1 sensor");
                             addressed = false;
