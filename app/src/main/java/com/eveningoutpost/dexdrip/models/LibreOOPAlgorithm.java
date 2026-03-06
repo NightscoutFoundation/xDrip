@@ -56,7 +56,8 @@ public class LibreOOPAlgorithm {
         LibreUS14Day(2),
         Libre2(3),
         LibreProH(4),
-        Libre2Plus(5);
+        Libre2Plus(5),
+        Libre3(6);
 
         int value;
 
@@ -292,6 +293,9 @@ public class LibreOOPAlgorithm {
     public static SensorType getSensorType(byte[] SensorInfo) {
         if (SensorInfo == null) {
             return SensorType.Libre1;
+        }
+        if (SensorInfo.length == 24) {
+            return SensorType.Libre3;
         }
         int SensorNum = (SensorInfo[0] & 0xff) << 16 | (SensorInfo[1] & 0xff) << 8 | SensorInfo[2];
         switch (SensorNum) {
