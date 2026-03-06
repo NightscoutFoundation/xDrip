@@ -118,12 +118,12 @@ public class Libre3 {
         Log.i(TAG, "Serial number = " + serial);
     }
 
-    // Converts a LibreView account ID string into a receiverID
-    // i.e. "2977dec2-492a-11ea-9702-0242ac110002" -> 524381581
+    // Converts a LibreView account UUID (8-4-4-4-12 string) into a receiverID
+    // see https://insulinclub.de/index.php?thread/33795-free-three-ein-xposed-lsposed-modul-mit-erweiterungen-f%C3%BCr-abbott-libre-3-dexcom/&postID=655055#post655055
     public static long computeReceiverID(String accountID) {
         int res = 0;
         for (byte el : accountID.getBytes()) {
-            res = (res * 0x811C9DC5) ^ (el & 0xff);
+            res = (res * 0x811C9DC5) ^ (el & 0xFF);
         }
         return (long) res & 0xFFFFFFFFL;
     }
