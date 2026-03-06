@@ -466,7 +466,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     editor.putString("cloud_storage_api_base", Joiner.on(' ').join(barcode.getApiUris()));
                     editor.apply();
                 } else {
-                    prefs.edit().putBoolean("cloud_storage_api_enable", false).apply();
+                  //  prefs.edit().putBoolean("cloud_storage_api_enable", false).apply(); // no need to disable
                 }
             }
             if (barcode.hasApiConfig()) {
@@ -475,7 +475,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 editor.putString("cloud_storage_api_base", Joiner.on(' ').join(barcode.getApiUris()));
                 editor.apply();
             } else {
-                prefs.edit().putBoolean("cloud_storage_api_enable", false).apply();
+               // prefs.edit().putBoolean("cloud_storage_api_enable", false).apply(); // no need to disable
             }
 
             if (barcode.hasMqttConfig()) {
@@ -497,9 +497,9 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     }
                 }
             } else {
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putBoolean("cloud_storage_mqtt_enable", false);
-                editor.apply();
+              //  SharedPreferences.Editor editor = prefs.edit();
+               // editor.putBoolean("cloud_storage_mqtt_enable", false); // no need to disable
+              //  editor.apply();
             }
 
             try {
