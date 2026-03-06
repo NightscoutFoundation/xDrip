@@ -118,4 +118,14 @@ public class Libre3 {
         Log.i(TAG, "Serial number = " + serial);
     }
 
+    // Converts a LibreView account ID string into a receiverID
+    // i.e. "2977dec2-492a-11ea-9702-0242ac110002" -> 524381581
+    public static long computeReceiverID(String accountID) {
+        int res = 0;
+        for (byte el : accountID.getBytes()) {
+            res = (res * 0x811C9DC5) ^ (el & 0xff);
+        }
+        return (long) res & 0xFFFFFFFFL;
+    }
+
 }
