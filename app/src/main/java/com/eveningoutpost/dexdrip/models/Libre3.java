@@ -87,14 +87,14 @@ public class Libre3 {
 
         Log.i(TAG, "Product type = " + type);
         Log.i(TAG, "Security version = " + securityVersion);
-        Log.i(TAG, "Localization = " + localization + " (Region = " + region + ")");
+        Log.i(TAG, "Localization = " + localization + " (region = " + region + ")");
 
         int generation = (patchInfo[4] & 0xFF) + ((patchInfo[5] & 0xFF) << 8);
         String model = generation == 1 ? "Libre 3 Plus" : "Libre 3";
-        Log.i(TAG, "Puck generation = " + generation + " (Model = " + model + ")");
+        Log.i(TAG, "Puck generation = " + generation + " (model = " + model + ")");
 
         int wearDuration = (patchInfo[6] & 0xFF) + ((patchInfo[7] & 0xFF) << 8);
-        Log.i(TAG, "Wear Duration = " + wearDuration + " minutes (" + (wearDuration / 60.0 / 24.0) + " days)");
+        Log.i(TAG, "Wear duration = " + wearDuration + " minutes (" + (wearDuration / 60.0 / 24.0) + " days)");
 
         byte[] fwVersion = Arrays.copyOfRange(patchInfo, 8, 12);
         String firmware = String.format("%d.%d.%d.%d", fwVersion[3], fwVersion[2], fwVersion[1], fwVersion[0]);
