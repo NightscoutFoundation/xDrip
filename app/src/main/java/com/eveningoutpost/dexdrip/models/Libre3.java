@@ -53,7 +53,7 @@ public class Libre3 {
     }
 
 
-    public static void parse(byte[] patchInfo) {
+    public static void parsePatchInfo(byte[] patchInfo) {
         if (patchInfo == null || patchInfo.length < 24) {
             Log.e(TAG, "Invalid patchInfo length: " + (patchInfo == null ? "null" : patchInfo.length));
             return;

@@ -683,7 +683,7 @@ public class NFCReaderX {
                         SensorType sensorType = LibreOOPAlgorithm.getSensorType(patchInfo);
                         Log.uel(TAG, "Libre sensor of type " + sensorType.name() + " detected.");
                         if (sensorType == SensorType.Libre3) {
-                            Libre3.parse(patchInfo);
+                            Libre3.parsePatchInfo(patchInfo);
                         }
                         if (addressed && sensorType != SensorType.Libre1 && sensorType != SensorType.Libre1New) {
                             Log.d(TAG, "Not using addressed mode since not a libre 1 sensor");
