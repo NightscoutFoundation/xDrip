@@ -32,6 +32,7 @@ import com.eveningoutpost.dexdrip.models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.models.GlucoseData;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.Libre2SensorData;
+import com.eveningoutpost.dexdrip.models.Libre3;
 import com.eveningoutpost.dexdrip.models.LibreBlock;
 import com.eveningoutpost.dexdrip.models.LibreOOPAlgorithm;
 import com.eveningoutpost.dexdrip.models.ReadingData;
@@ -681,6 +682,9 @@ public class NFCReaderX {
 
                         SensorType sensorType = LibreOOPAlgorithm.getSensorType(patchInfo);
                         Log.uel(TAG, "Libre sensor of type " + sensorType.name() + " detected.");
+                        if (sensorType == SensorType.Libre3) {
+                            Libre3.parse(patchInfo);
+                        }
                         if (addressed && sensorType != SensorType.Libre1 && sensorType != SensorType.Libre1New) {
                             Log.d(TAG, "Not using addressed mode since not a libre 1 sensor");
                             addressed = false;
