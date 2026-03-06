@@ -85,7 +85,7 @@ public class Libre3 {
             }
         }
 
-        Log.i(TAG, "Product type = " + type);
+        Log.i(TAG, "Product type = " + type + " (raw: " + productType + ")");
         Log.i(TAG, "Security version = " + securityVersion);
         Log.i(TAG, "Localization = " + localization + " (region = " + region + ")");
 
@@ -100,8 +100,9 @@ public class Libre3 {
         String firmware = String.format("%d.%d.%d.%d", fwVersion[3], fwVersion[2], fwVersion[1], fwVersion[0]);
         Log.i(TAG, "Firmware version = " + firmware);
 
-        int warmupTime = patchInfo[13] & 0xFF;
-        Log.i(TAG, "Warmup time = " + (warmupTime * 5) + " minutes");
+        int warmupDuration = patchInfo[13] & 0xFF;
+        int warmupTime = warmupDuration * 5;
+        Log.i(TAG, "Warmup time = " + warmupTime + " minutes");
 
         int state = patchInfo[14] & 0xFF;
         PatchState patchState = PatchState.fromInt(state);
