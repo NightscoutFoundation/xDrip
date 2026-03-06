@@ -85,7 +85,7 @@ public class Libre3 {
             }
         }
 
-        Log.i(TAG, "Product type = " + type + " (raw: " + productType + ")");
+        Log.i(TAG, "Product type = " + type + " (family = " + productType + ")");
         Log.i(TAG, "Security version = " + securityVersion);
         Log.i(TAG, "Localization = " + localization + " (region = " + region + ")");
 
