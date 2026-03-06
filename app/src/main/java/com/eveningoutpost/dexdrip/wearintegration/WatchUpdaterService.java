@@ -1790,6 +1790,7 @@ public class WatchUpdaterService extends WearableListenerService implements
             dataMap.putInt("bridge_battery", mPrefs.getInt("bridge_battery", -1));
             dataMap.putInt("nfc_sensor_age", mPrefs.getInt("nfc_sensor_age", -1));
 
+            dataMap.putBoolean("enable_wear_auto_update", mPrefs.getBoolean("enable_wear_auto_update", true));
             dataMap.putBoolean("sync_wear_logs", mPrefs.getBoolean("sync_wear_logs", false));
             //Alerts:
             dataMap.putString("persistent_high_repeat_mins", mPrefs.getString("persistent_high_repeat_mins", "20"));
