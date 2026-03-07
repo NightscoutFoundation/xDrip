@@ -688,10 +688,11 @@ public class NFCReaderX {
                             long activationTime = 0; // TEST with current time
                             String accountID = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"; // TEST
                             byte[] cmd = Libre3.buildActivationCommand(manufacturerCode, activationTime, Libre3.computeReceiverID(accountID));
-                            Log.d(TAG, "Sending Libre 3 activation command = " + HexDump.dumpHexString(cmd));
-                            byte[] response = nfcvTag.transceive(cmd);
+                            Log.d(TAG, "Sending Libre 3 activation command " + HexDump.dumpHexString(cmd));
+                            byte[] output = nfcvTag.transceive(cmd);
+                            byte[] response = Arrays.copyOfRange(output, 1, output.length);
                             Log.d(TAG, "Response to Libre 3 activation command = " + HexDump.dumpHexString(response));
-
+                            Libre3.parseActivationResponse(response);
                         }
                         if (addressed && sensorType != SensorType.Libre1 && sensorType != SensorType.Libre1New) {
                             Log.d(TAG, "Not using addressed mode since not a libre 1 sensor");
