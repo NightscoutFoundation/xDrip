@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.models;
 
 import com.eveningoutpost.dexdrip.models.UserError.Log;
+import com.eveningoutpost.dexdrip.utilitymodels.LibreUtils;
 
 import java.util.Arrays;
 
@@ -47,7 +48,7 @@ public class Libre3 {
         public int productType;
         public int warmupDuration;
         public byte[] fwVersion;
-        public int state;
+        public PatchState state;
         public byte[] compressedSerialNumber; // DMX
         public int mode;
     }
@@ -134,6 +135,37 @@ public class Libre3 {
             res = (res * 0x811C9DC5) ^ (el & 0xFF);
         }
         return (long) res & 0xFFFFFFFFL;
+    }
+
+    public class ActivationResponse {
+        public byte[] bdAddress; // 6-byte Bluetooth device address (MAC)
+        public byte[] BLE_Pin; // 4 bytes
+        public long activationTime; // 4-byte UNIX timestamp
+    }
+
+    public static byte[] buildActivationCommand(byte manufacturerCode, long activationTime, long receiverID) {
+        byte[] nfcActivationCommand = new byte[]{0x02, (byte) 0xA0, manufacturerCode};
+        byte[] parameters = new byte[10];
+
+        long time = (activationTime != 0 ? activationTime : System.currentTimeMillis() / 1000) - 1;
+        parameters[0] = (byte) (time & 0xFF);
+        parameters[1] = (byte) ((time >> 8) & 0xFF);
+        parameters[2] = (byte) ((time >> 16) & 0xFF);
+        parameters[3] = (byte) ((time >> 24) & 0xFF);
+
+        parameters[4] = (byte) (receiverID & 0xFF);
+        parameters[5] = (byte) ((receiverID >> 8) & 0xFF);
+        parameters[6] = (byte) ((receiverID >> 16) & 0xFF);
+        parameters[7] = (byte) ((receiverID >> 24) & 0xFF);
+        
+        long crc = LibreUtils.computeCRC16(parameters, -2, parameters.length);
+        parameters[8] = (byte) (crc & 0xFF);
+        parameters[9] = (byte) ((crc >> 8) & 0xFF);
+
+        byte[] activationCommand = Arrays.copyOf(nfcActivationCommand, nfcActivationCommand.length + parameters.length);
+        System.arraycopy(parameters, 0, activationCommand, nfcActivationCommand.length, parameters.length);
+
+        return activationCommand;
     }
 
 }
