@@ -75,22 +75,30 @@ public class Libre3 {
 
         int securityVersion = (patchInfo[0] & 0xFF) + ((patchInfo[1] & 0xFF) << 8);
         int localization = (patchInfo[2] & 0xFF) + ((patchInfo[3] & 0xFF) << 8);
-        String region = (localization & 0xFF) == 2 ? "USA" : "Europe";
 
+        String region = (localization & 0xFF) == 2 ? "USA" : "Europe";
         int subregion = (localization & 0xFF00) >> 8;
         if (subregion != 0) {
             type = "Libre Select";
-            if (subregion == 0xC0) {
-                Log.i(TAG, "Subregion: France (0x" + Integer.toHexString(subregion) + ")");
-            }
         }
 
         Log.i(TAG, "Product type = " + type + " (family = " + productType + ")");
         Log.i(TAG, "Security version = " + securityVersion);
-        Log.i(TAG, "Localization = " + localization + " (region = " + region + ")");
+
+        String msg = "Localization = 0x" + Integer.toHexString(localization) + " (region = " + region;
+        if (subregion != 0) {
+            msg += ", subregion = 0x" + Integer.toHexString(subregion);
+            if (subregion == 0xC0) {
+                msg += " (France)";
+            }
+        }
+        Log.i(TAG, msg + ")");
 
         int generation = (patchInfo[4] & 0xFF) + ((patchInfo[5] & 0xFF) << 8);
-        String model = generation == 1 ? "Libre 3 Plus" : "Libre 3";
+        String model = type;
+        if (generation == 1 && type.equals("Libre 3")) {
+            model += " Plus";
+        }
         Log.i(TAG, "Puck generation = " + generation + " (model = " + model + ")");
 
         int wearDuration = (patchInfo[6] & 0xFF) + ((patchInfo[7] & 0xFF) << 8);
