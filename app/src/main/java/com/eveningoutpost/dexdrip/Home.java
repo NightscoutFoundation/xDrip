@@ -2505,10 +2505,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             }
         } else if (collector.equals(DexCollectionType.Mock)) {
             notificationText.append("\n USING FAKE DATA SOURCE !!!");
-            if (MockDataSource.divisor_scale == 1500000) {
+            if (MockDataSource.getDivisorScale() == 1500000) {
                 notificationText.append(" F");
             }
-            if (MockDataSource.amplify_cnst == 330000) {
+            if (MockDataSource.getAmplifyConst() == 330000) {
                 notificationText.append(" Amp");
             }
         }
