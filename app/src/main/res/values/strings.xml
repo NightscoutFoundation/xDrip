@@ -682,6 +682,8 @@
     <string name="retrieve_blukon_history_title">Retrieve Libre history</string>
     <string name="summary_libre_one_minute_interval">Accept data at one-minute intervals from Libre. Reboot your phone for changes to take effect.</string>
     <string name="title_libre_one_minute_interval">Libre 1-minute</string>
+    <string name="summary_nsfollow_sample_period">Default: 5 min\nCurrent: %s</string>
+    <string name="title_sample_period">Sample period</string>
     <string name="retrieve_blukon_history_summary">Retrieve missed history from BluCon device when reconnecting to sensor.</string>
     <string name="interpret_share_raw">If using Share, xDrip will show values when they are normally hidden on the receiver.</string>
     <string name="interpret_raw">Interpret Raw Values</string>
@@ -1387,6 +1389,7 @@
     <string name="title_nsfollow_url">Nightscout Follow URL</string>
     <string name="summary_nsfollow_download_treatments">Also download treatments from Nightscout as follower</string>
     <string name="title_nsfollow_download_treatments">Download Treatments</string>
+    <string name="summary_nsfollow_lag">Default: 0\nCurrent: %s</string>
     <string name="title_nsfollow_lag">Nightscout Follow delay</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>

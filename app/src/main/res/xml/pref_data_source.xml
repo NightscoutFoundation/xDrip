@@ -212,9 +212,17 @@
                 android:title="@string/title_cloud_storage_api_download_from_xdrip" />
         </PreferenceScreen>
         <ListPreference
+            android:defaultValue="5"
+            android:key="nsfollow_sample_period_in_minutes"
+            android:summary="@string/summary_nsfollow_sample_period"
+            android:title="@string/title_sample_period"
+            android:entries="@array/nsfollow_sample_period_entries"
+            android:entryValues="@array/nsfollow_sample_period_values"
+            />
+        <ListPreference
             android:defaultValue="0"
             android:key="nsfollow_lag"
-            android:summary=""
+            android:summary="@string/summary_nsfollow_lag"
             android:title="@string/title_nsfollow_lag"
             android:entries="@array/nsfollowlag_entries"
             android:entryValues="@array/nsfollowlag_values"
