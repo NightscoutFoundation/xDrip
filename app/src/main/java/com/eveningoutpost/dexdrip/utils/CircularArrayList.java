@@ -102,6 +102,8 @@ public class CircularArrayList<E>
         if (s == n - 1) {
             if (autoEvict) {
                 remove(0);
+                s = size();
+                i = Math.min(i, s);
             } else {
                 throw new IllegalStateException(
                         "CircularArrayList is filled to capacity. "
