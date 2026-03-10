@@ -5,6 +5,9 @@ import org.junit.Test;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
+/**
+ * @author Asbjørn Aarrestad
+ */
 public class LogSliderTest {
 
     private static final double TOLERANCE = 0.01;
@@ -13,14 +16,20 @@ public class LogSliderTest {
 
     @Test
     public void atSliderStart_returnsValueStart() {
+        // :: Act
         double result = LogSlider.calc(0, 100, 1, 100, 0);
+
+        // :: Verify
         assertWithMessage("slider at start position")
                 .that(result).isWithin(TOLERANCE).of(1.0);
     }
 
     @Test
     public void atSliderEnd_returnsValueEnd() {
+        // :: Act
         double result = LogSlider.calc(0, 100, 1, 100, 100);
+
+        // :: Verify
         assertWithMessage("slider at end position")
                 .that(result).isWithin(TOLERANCE).of(100.0);
     }
@@ -29,8 +38,10 @@ public class LogSliderTest {
 
     @Test
     public void atMidpoint_returnsGeometricMean() {
-        // Geometric mean of 1 and 100 = sqrt(1*100) = 10
+        // :: Act
         double result = LogSlider.calc(0, 100, 1, 100, 50);
+
+        // :: Verify — geometric mean of 1 and 100 = sqrt(1*100) = 10
         assertWithMessage("midpoint should be geometric mean")
                 .that(result).isWithin(0.5).of(10.0);
     }
@@ -39,9 +50,12 @@ public class LogSliderTest {
 
     @Test
     public void higherPosition_givesHigherValue() {
+        // :: Act
         double low = LogSlider.calc(0, 100, 1, 1000, 25);
         double mid = LogSlider.calc(0, 100, 1, 1000, 50);
         double high = LogSlider.calc(0, 100, 1, 1000, 75);
+
+        // :: Verify
         assertThat(low).isLessThan(mid);
         assertThat(mid).isLessThan(high);
     }
@@ -50,8 +64,11 @@ public class LogSliderTest {
 
     @Test
     public void nonZeroSliderStart_mapsCorrectly() {
+        // :: Act
         double atStart = LogSlider.calc(10, 50, 1, 100, 10);
         double atEnd = LogSlider.calc(10, 50, 1, 100, 50);
+
+        // :: Verify
         assertWithMessage("at start").that(atStart).isWithin(TOLERANCE).of(1.0);
         assertWithMessage("at end").that(atEnd).isWithin(TOLERANCE).of(100.0);
     }
@@ -60,7 +77,10 @@ public class LogSliderTest {
 
     @Test
     public void smallValueRange_interpolatesCorrectly() {
+        // :: Act
         double result = LogSlider.calc(0, 10, 5, 10, 0);
+
+        // :: Verify
         assertWithMessage("start of small range")
                 .that(result).isWithin(TOLERANCE).of(5.0);
     }
