@@ -28,6 +28,7 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="no">No</string>
+    <string name="incorrect">Incorrect!</string>
     <string name="pref_sensor_location_dont_ask_again">Don\'t ask me that again</string>
 
     <string name="title_activity_error">"Error and Event List"</string>
@@ -1660,6 +1661,9 @@
     <string name="restore_backup">Restore Backup?</string>
     <string name="do_you_want_to_restore_the_backup_file_">Do you want to restore the backup file: </string>
     <string name="restore">Restore</string>
+    <string name="title_transmitter_id_ending_with_dash1">Incorrect transmitter ID</string>
+    <string name="message_transmitter_id_ending_with_dash1">Use only the first 6 characters of the transmitter serial number for the transmitter ID.</string>
+    <string name="enter_the_first_6_characters_only">Enter the first 6 characters only</string>
     <string name="calibrate_sensor">Calibrate Sensor?</string>
     <string name="we_have_some_readings__next_we_need_the_first_calibration_blood_test__ready_to_calibrate_now">We have some readings!\n\nNext, we need the first calibration blood test.\n\nReady to calibrate now?</string>
     <string name="calibrate">Calibrate</string>
