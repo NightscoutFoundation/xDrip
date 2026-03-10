@@ -63,6 +63,21 @@ public class CircularArrayListTest {
         buf.add(3);
     }
 
+    // -- AutoEvict drops oldest element --
+
+    @Test
+    public void addBeyondCapacity_withAutoEvict_dropsOldest() {
+        CircularArrayList<Integer> buf = new CircularArrayList<>(3);
+        buf.setAutoEvict(true);
+        buf.add(1);
+        buf.add(2);
+        buf.add(3);
+        buf.add(4);
+        assertThat(buf.size()).isEqualTo(3);
+        assertThat(buf.head()).isEqualTo(2);
+        assertThat(buf.tail()).isEqualTo(4);
+    }
+
     // -- Remove shifts correctly --
 
     @Test
