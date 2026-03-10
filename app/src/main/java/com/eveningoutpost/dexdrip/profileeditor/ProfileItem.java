@@ -12,7 +12,7 @@ import java.util.Locale;
  */
 public class ProfileItem implements Comparable<ProfileItem>{
 
-    final private static SimpleDateFormat hourMinConvert = new SimpleDateFormat("HHmm", Locale.ENGLISH);
+    final static SimpleDateFormat hourMinConvert = new SimpleDateFormat("HHmm", Locale.ENGLISH);
 
     private String title;
     @Expose
