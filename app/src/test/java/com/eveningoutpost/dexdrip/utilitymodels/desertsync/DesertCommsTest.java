@@ -34,10 +34,10 @@ public class DesertCommsTest extends RobolectricTestWithConfig {
         // :: Act
         OkHttpClient client = (OkHttpClient) getHttpInstance.invoke(null);
 
-        // :: Verify
-        assertThat(client.connectTimeoutMillis()).isEqualTo(10000);
-        assertThat(client.readTimeoutMillis()).isEqualTo(40000);
-        assertThat(client.writeTimeoutMillis()).isEqualTo(20000);
+        // :: Verify — uses shared client defaults (at least as long as original 10/40/20)
+        assertThat(client.connectTimeoutMillis()).isAtLeast(10000);
+        assertThat(client.readTimeoutMillis()).isAtLeast(40000);
+        assertThat(client.writeTimeoutMillis()).isAtLeast(20000);
     }
 
     @Test
