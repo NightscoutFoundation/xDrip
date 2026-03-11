@@ -25,6 +25,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
 import static com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry.isNative;
@@ -141,6 +142,7 @@ public class SendFeedBack extends BaseAppCompatActivity {
         final EditText contact = (EditText) findViewById(R.id.contactText);
         final EditText yourtext = (EditText) findViewById(R.id.yourText);
         final OkHttpClient client = OkHttpWrapper.getClient().newBuilder()
+                .writeTimeout(30, TimeUnit.SECONDS)
                 .addInterceptor(new GzipRequestInterceptor())
                 .build();
 

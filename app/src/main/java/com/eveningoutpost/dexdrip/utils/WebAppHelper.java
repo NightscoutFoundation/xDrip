@@ -10,6 +10,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by jamorham on 29/01/2016.
@@ -19,7 +20,9 @@ public class WebAppHelper extends AsyncTask<String, Integer, Integer> {
     // TODO probably migrate uploader here as well
 
     private final String TAG = "jamorham webapphelper";
-    private final OkHttpClient client = OkHttpWrapper.getClient();
+    private final OkHttpClient client = OkHttpWrapper.getClient().newBuilder()
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .build();
     private final Preferences.OnServiceTaskCompleted listener;
     private byte[] body = new byte[0];
 

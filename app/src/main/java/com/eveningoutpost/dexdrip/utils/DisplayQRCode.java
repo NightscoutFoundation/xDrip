@@ -195,7 +195,9 @@ public class DisplayQRCode extends BaseAppCompatActivity {
             if ((crypted_data != null) && (crypted_data.length > 0)) {
                 Log.d(TAG, "Before: " + result.length + " After: " + crypted_data.length);
 
-                final OkHttpClient client = OkHttpWrapper.getClient();
+                final OkHttpClient client = OkHttpWrapper.getClient().newBuilder()
+                        .writeTimeout(30, TimeUnit.SECONDS)
+                        .build();
 
                 toast("Preparing");
 
