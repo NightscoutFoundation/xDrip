@@ -243,6 +243,7 @@ dependencies {
     wearApp project(':wear')
     //weapApp files('../wear/build/outputs/apk/wear_release.apk')
     //testimplementation 'com.squareup.okhttp:mockwebserver:2.5.0'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:3.12.13'
     implementation('com.github.nightscout:android-uploader:CORE_FOR_XDRIP') {
         transitive = false
     }
