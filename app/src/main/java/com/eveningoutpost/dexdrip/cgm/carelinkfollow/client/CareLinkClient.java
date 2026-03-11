@@ -19,6 +19,7 @@ import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.RecentUploads;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.SensorGlucose;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.User;
 import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -166,7 +167,7 @@ public class CareLinkClient {
         lastDataSuccess = false;
 
         //Create main http client with CookieJar
-        this.httpClient = new OkHttpClient.Builder()
+        this.httpClient = OkHttpWrapper.getClient().newBuilder()
                 .cookieJar(new SimpleOkHttpCookieJar())
                 .build();
 
@@ -188,7 +189,7 @@ public class CareLinkClient {
             cookieJar.AddCookies(this.credentialStore.getCredential().cookies);
         }
 
-        this.httpClient = new OkHttpClient.Builder()
+        this.httpClient = OkHttpWrapper.getClient().newBuilder()
                 .cookieJar(cookieJar)
                 .connectionPool(new ConnectionPool(5, 10, TimeUnit.MINUTES))
                 .build();
