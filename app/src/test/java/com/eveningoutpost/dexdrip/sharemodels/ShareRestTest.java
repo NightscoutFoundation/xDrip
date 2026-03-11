@@ -5,10 +5,13 @@ import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.robolectric.RuntimeEnvironment;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 
 import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -40,15 +43,17 @@ public class ShareRestTest extends RobolectricTestWithConfig {
         // :: Setup
         server.enqueue(new MockResponse().setBody("\"ok\""));
 
-        // Use reflection to call the private getOkHttpClient method
-        java.lang.reflect.Method method = ShareRest.class.getDeclaredMethod("getOkHttpClient");
+        // Create ShareRest with a real context, passing a dummy client to avoid using the private one
+        // Then call the private getOkHttpClient to get the interceptor-equipped client
+        ShareRest shareRest = new ShareRest(RuntimeEnvironment.application, new OkHttpClient());
+        Method method = ShareRest.class.getDeclaredMethod("getOkHttpClient");
         method.setAccessible(true);
-        OkHttpClient client = (OkHttpClient) method.invoke(new ShareRest(null, new OkHttpClient()));
+        OkHttpClient client = (OkHttpClient) method.invoke(shareRest);
 
         // :: Act
         okhttp3.Request request = new okhttp3.Request.Builder()
                 .url(server.url("/test"))
-                .post(okhttp3.RequestBody.create(okhttp3.MediaType.parse("application/json"), "{}"))
+                .post(RequestBody.create(okhttp3.MediaType.parse("application/json"), "{}"))
                 .build();
         client.newCall(request).execute();
         RecordedRequest recorded = server.takeRequest();
@@ -62,9 +67,10 @@ public class ShareRestTest extends RobolectricTestWithConfig {
     @Test
     public void getOkHttpClient_returnsOkHttp3Client() throws Exception {
         // :: Setup & Act
-        java.lang.reflect.Method method = ShareRest.class.getDeclaredMethod("getOkHttpClient");
+        ShareRest shareRest = new ShareRest(RuntimeEnvironment.application, new OkHttpClient());
+        Method method = ShareRest.class.getDeclaredMethod("getOkHttpClient");
         method.setAccessible(true);
-        Object client = method.invoke(new ShareRest(null, new OkHttpClient()));
+        Object client = method.invoke(shareRest);
 
         // :: Verify
         assertThat(client).isInstanceOf(OkHttpClient.class);

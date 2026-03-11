@@ -92,16 +92,16 @@ public class DexcomShareTest extends RobolectricTestWithConfig {
     }
 
     @Test
-    public void uploadBGRecords_sendsSessionIdAndPayload() throws Exception {
+    public void startRemoteMonitoringSession_sendsSessionIdAndSerial() throws Exception {
         // :: Setup
         server.enqueue(new MockResponse().setResponseCode(200));
 
         // :: Act
-        api.uploadBGRecords("session-123", null).execute();
+        api.StartRemoteMonitoringSession("session-123", "SN456").execute();
         RecordedRequest request = server.takeRequest();
 
         // :: Verify
-        assertThat(request.getPath()).isEqualTo("/Publisher/PostReceiverEgvRecords?sessionId=session-123");
+        assertThat(request.getPath()).isEqualTo("/Publisher/StartRemoteMonitoringSession?sessionId=session-123&serialNumber=SN456");
         assertThat(request.getMethod()).isEqualTo("POST");
     }
 
