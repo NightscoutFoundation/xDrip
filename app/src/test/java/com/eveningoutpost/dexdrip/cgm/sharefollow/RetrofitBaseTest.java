@@ -1,6 +1,9 @@
 package com.eveningoutpost.dexdrip.cgm.sharefollow;
 
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
+import com.eveningoutpost.dexdrip.cgm.nsfollow.GzipRequestInterceptor;
+import com.eveningoutpost.dexdrip.tidepool.InfoInterceptor;
+import com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper;
 
 import org.junit.After;
 import org.junit.Before;
@@ -29,7 +32,7 @@ public class RetrofitBaseTest extends RobolectricTestWithConfig {
     public void setUpServer() throws Exception {
         server = new MockWebServer();
         server.start();
-        // Clear the static instances cache
+        // :: Setup — clear the static instances cache
         Field instancesField = RetrofitBase.class.getDeclaredField("instances");
         instancesField.setAccessible(true);
         ((ConcurrentHashMap<?, ?>) instancesField.get(null)).clear();
@@ -44,19 +47,46 @@ public class RetrofitBaseTest extends RobolectricTestWithConfig {
     }
 
     @Test
-    public void getRetrofitInstance_createsClientWithInterceptors() throws Exception {
+    public void getRetrofitInstance_clientSharesConnectionPool() throws Exception {
         // :: Setup
         String url = server.url("/").toString();
 
         // :: Act
         Retrofit retrofit = RetrofitBase.getRetrofitInstance("TEST", url, true);
+        OkHttpClient client = extractClient(retrofit);
 
         // :: Verify
-        Field callFactoryField = Retrofit.class.getDeclaredField("callFactory");
-        callFactoryField.setAccessible(true);
-        OkHttpClient client = (OkHttpClient) callFactoryField.get(retrofit);
-        // Should have: InfoInterceptor + GzipRequestInterceptor (at minimum)
-        assertThat(client.interceptors().size()).isAtLeast(2);
+        assertThat(client.connectionPool()).isSameInstanceAs(OkHttpWrapper.getClient().connectionPool());
+    }
+
+    @Test
+    public void getRetrofitInstance_clientHasInfoInterceptor() throws Exception {
+        // :: Setup
+        String url = server.url("/").toString();
+
+        // :: Act
+        Retrofit retrofit = RetrofitBase.getRetrofitInstance("TEST", url, true);
+        OkHttpClient client = extractClient(retrofit);
+
+        // :: Verify
+        boolean hasInfoInterceptor = client.interceptors().stream()
+                .anyMatch(i -> i instanceof InfoInterceptor);
+        assertThat(hasInfoInterceptor).isTrue();
+    }
+
+    @Test
+    public void getRetrofitInstance_clientHasGzipInterceptor() throws Exception {
+        // :: Setup
+        String url = server.url("/").toString();
+
+        // :: Act
+        Retrofit retrofit = RetrofitBase.getRetrofitInstance("TEST", url, true);
+        OkHttpClient client = extractClient(retrofit);
+
+        // :: Verify
+        boolean hasGzipInterceptor = client.interceptors().stream()
+                .anyMatch(i -> i instanceof GzipRequestInterceptor);
+        assertThat(hasGzipInterceptor).isTrue();
     }
 
     @Test
@@ -67,13 +97,17 @@ public class RetrofitBaseTest extends RobolectricTestWithConfig {
         Retrofit retrofit = RetrofitBase.getRetrofitInstance("TEST", url, false);
 
         // :: Act
-        Field callFactoryField = Retrofit.class.getDeclaredField("callFactory");
-        callFactoryField.setAccessible(true);
-        OkHttpClient client = (OkHttpClient) callFactoryField.get(retrofit);
+        OkHttpClient client = extractClient(retrofit);
         client.newCall(new okhttp3.Request.Builder().url(server.url("/check")).build()).execute();
         RecordedRequest recorded = server.takeRequest();
 
         // :: Verify
         assertThat(recorded.getPath()).isEqualTo("/check");
+    }
+
+    private OkHttpClient extractClient(Retrofit retrofit) throws Exception {
+        Field callFactoryField = Retrofit.class.getDeclaredField("callFactory");
+        callFactoryField.setAccessible(true);
+        return (OkHttpClient) callFactoryField.get(retrofit);
     }
 }

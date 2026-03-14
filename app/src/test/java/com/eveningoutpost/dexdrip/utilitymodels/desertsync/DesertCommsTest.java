@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.utilitymodels.desertsync;
 
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
+import com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,14 +20,14 @@ public class DesertCommsTest extends RobolectricTestWithConfig {
 
     @Before
     public void resetClient() throws Exception {
-        // Reset static okHttpClient to null for fresh creation
+        // :: Setup — reset static okHttpClient to null for fresh creation
         Field clientField = DesertComms.class.getDeclaredField("okHttpClient");
         clientField.setAccessible(true);
         clientField.set(null, null);
     }
 
     @Test
-    public void getHttpInstance_hasCorrectTimeouts() throws Exception {
+    public void getHttpInstance_sharesConnectionPool() throws Exception {
         // :: Setup
         Method getHttpInstance = DesertComms.class.getDeclaredMethod("getHttpInstance");
         getHttpInstance.setAccessible(true);
@@ -34,10 +35,24 @@ public class DesertCommsTest extends RobolectricTestWithConfig {
         // :: Act
         OkHttpClient client = (OkHttpClient) getHttpInstance.invoke(null);
 
-        // :: Verify — uses shared client defaults (at least as long as original 10/40/20)
-        assertThat(client.connectTimeoutMillis()).isAtLeast(10000);
-        assertThat(client.readTimeoutMillis()).isAtLeast(40000);
-        assertThat(client.writeTimeoutMillis()).isAtLeast(20000);
+        // :: Verify — built via OkHttpWrapper.getClient().newBuilder(), so shares pool
+        assertThat(client.connectionPool()).isSameInstanceAs(OkHttpWrapper.getClient().connectionPool());
+    }
+
+    @Test
+    public void getHttpInstance_inheritsSharedClientTimeouts() throws Exception {
+        // :: Setup
+        Method getHttpInstance = DesertComms.class.getDeclaredMethod("getHttpInstance");
+        getHttpInstance.setAccessible(true);
+
+        // :: Act
+        OkHttpClient client = (OkHttpClient) getHttpInstance.invoke(null);
+
+        // :: Verify — inherits shared client defaults (no timeout overrides in getHttpInstance)
+        OkHttpClient sharedClient = OkHttpWrapper.getClient();
+        assertThat(client.connectTimeoutMillis()).isEqualTo(sharedClient.connectTimeoutMillis());
+        assertThat(client.readTimeoutMillis()).isEqualTo(sharedClient.readTimeoutMillis());
+        assertThat(client.writeTimeoutMillis()).isEqualTo(sharedClient.writeTimeoutMillis());
     }
 
     @Test
@@ -49,7 +64,7 @@ public class DesertCommsTest extends RobolectricTestWithConfig {
         // :: Act
         OkHttpClient client = (OkHttpClient) getHttpInstance.invoke(null);
 
-        // :: Verify — custom hostname verifier is set (not the default)
+        // :: Verify — custom hostname verifier and SSL are set
         assertThat(client.hostnameVerifier()).isNotNull();
         assertThat(client.sslSocketFactory()).isNotNull();
     }
