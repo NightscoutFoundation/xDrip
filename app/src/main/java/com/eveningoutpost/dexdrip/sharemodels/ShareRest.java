@@ -144,9 +144,11 @@ public class ShareRest {
                                         .header("Accept", "application/json")
                                         .build();
                                 Log.d(TAG, "Sending request: " + modifiedRequest.toString());
-                                Buffer buffer = new Buffer();
-                                copy.body().writeTo(buffer);
-                                Log.d(TAG, "Request body: " + buffer.readUtf8());
+                                if (copy.body() != null) {
+                                    Buffer buffer = new Buffer();
+                                    copy.body().writeTo(buffer);
+                                    Log.d(TAG, "Request body: " + buffer.readUtf8());
+                                }
 
                                 final Response response = chain.proceed(modifiedRequest);
                                 Log.d(TAG, "Received response: " + response.toString());
