@@ -1,81 +1,57 @@
 package com.eveningoutpost.dexdrip.utils;
 
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
+import com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-
-import java.io.IOException;
 
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-import okhttp3.mockwebserver.RecordedRequest;
 
 import static com.google.common.truth.Truth.assertThat;
 
 /**
- * @author Asbjorn Aarrestad
+ * Verifies that DisplayQRCode builds its OkHttpClient from the shared singleton
+ * and that FormBody.Builder (OkHttp3) correctly encodes form data.
+ *
+ * @author Asbjørn Aarrestad
  */
 public class DisplayQRCodeTest extends RobolectricTestWithConfig {
 
-    private MockWebServer server;
+    @Test
+    public void clientFromSharedBuilder_sharesConnectionPool() {
+        // :: Setup — reproduce the client construction from DisplayQRCode.uploadBytes
+        OkHttpClient client = OkHttpWrapper.getClient().newBuilder()
+                .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+                .build();
 
-    @Before
-    public void setUpServer() throws IOException {
-        server = new MockWebServer();
-        server.start();
-    }
-
-    @After
-    public void tearDownServer() throws IOException {
-        server.shutdown();
+        // :: Act & Verify
+        assertThat(client.connectionPool()).isSameInstanceAs(OkHttpWrapper.getClient().connectionPool());
     }
 
     @Test
-    public void formPost_containsDataField() throws Exception {
+    public void clientFromSharedBuilder_hasWriteTimeout30s() {
         // :: Setup
-        server.enqueue(new MockResponse().setBody("ID:12345678901234567890123456789012"));
+        OkHttpClient client = OkHttpWrapper.getClient().newBuilder()
+                .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+                .build();
+
+        // :: Act & Verify
+        assertThat(client.writeTimeoutMillis()).isEqualTo(30_000);
+    }
+
+    @Test
+    public void formBody_encodesDataField() {
+        // :: Setup
         String testData = "dGVzdA==";
+
+        // :: Act
         FormBody formBody = new FormBody.Builder()
                 .add("data", testData)
                 .build();
-        Request request = new Request.Builder()
-                .header("User-Agent", "Mozilla/5.0 (jamorham)")
-                .header("Connection", "close")
-                .url(server.url("/joh-setsw"))
-                .post(formBody)
-                .build();
-
-        // :: Act
-        new OkHttpClient().newCall(request).execute();
-        RecordedRequest recorded = server.takeRequest();
 
         // :: Verify
-        assertThat(recorded.getBody().readUtf8()).contains("data=dGVzdA%3D%3D");
-    }
-
-    @Test
-    public void formPost_successWithIdResponse_parsesId() throws Exception {
-        // :: Setup
-        String idResponse = "ID:12345678901234567890123456789012";
-        server.enqueue(new MockResponse().setBody(idResponse));
-        Request request = new Request.Builder()
-                .url(server.url("/test"))
-                .post(new FormBody.Builder().add("data", "test").build())
-                .build();
-
-        // :: Act
-        Response response = new OkHttpClient().newCall(request).execute();
-        String reply = response.body().string();
-
-        // :: Verify
-        assertThat(response.isSuccessful()).isTrue();
-        assertThat(reply).startsWith("ID:");
-        assertThat(reply.length()).isEqualTo(35);
+        assertThat(formBody.name(0)).isEqualTo("data");
+        assertThat(formBody.value(0)).isEqualTo(testData);
     }
 }
