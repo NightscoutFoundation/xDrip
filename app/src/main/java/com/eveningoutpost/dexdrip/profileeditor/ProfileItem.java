@@ -15,7 +15,7 @@ public class ProfileItem implements Comparable<ProfileItem>{
 
     final private static SimpleDateFormat hourMinConvert = new SimpleDateFormat("HHmm", Locale.ENGLISH);
 
-    public static void updateTimeZone() {
+    static void updateTimeZone() {
         hourMinConvert.setTimeZone(TimeZone.getDefault());
     }
 
