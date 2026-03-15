@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.provider.Settings;
 
 import com.eveningoutpost.dexdrip.BuildConfig;
+import com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.GzipRequestInterceptor;
 import com.eveningoutpost.dexdrip.models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.models.JoH;
@@ -35,7 +36,7 @@ public class NightLiteClient {
 
     private static final String TAG = "NightLiteClient";
 
-    private static final OkHttpClient client = new OkHttpClient.Builder()
+    private static final OkHttpClient client = OkHttpWrapper.getClient().newBuilder()
             .addInterceptor(new GzipRequestInterceptor())
             .build();
 

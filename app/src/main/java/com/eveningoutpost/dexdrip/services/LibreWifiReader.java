@@ -10,6 +10,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper;
 import com.eveningoutpost.dexdrip.models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.models.LibreBluetooth;
 import com.eveningoutpost.dexdrip.NFCReaderX;
@@ -41,7 +42,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
+
 
 // Important note, this class is based on the fact that android will always run it one thread, which means it does not
 // need synchronization
@@ -221,11 +222,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
         final List<LibreWifiData> trd_list = new LinkedList<LibreWifiData>();
         try {
             if (httpClient == null) {
-                httpClient = new OkHttpClient.Builder()
-                        .connectTimeout(30, TimeUnit.SECONDS)
-                        .writeTimeout(20, TimeUnit.SECONDS)
-                        .readTimeout(60, TimeUnit.SECONDS)
-                        .build();
+                httpClient = OkHttpWrapper.getClient();
             }
 
             // simple HTTP GET request

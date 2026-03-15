@@ -37,11 +37,12 @@ import com.eveningoutpost.dexdrip.utilitymodels.desertsync.RouteTools;
 import com.eveningoutpost.dexdrip.databinding.ActivityDisplayQrcodeBinding;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.zxing.WriterException;
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
+import com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 import org.json.JSONObject;
 
@@ -194,11 +195,9 @@ public class DisplayQRCode extends BaseAppCompatActivity {
             if ((crypted_data != null) && (crypted_data.length > 0)) {
                 Log.d(TAG, "Before: " + result.length + " After: " + crypted_data.length);
 
-                final OkHttpClient client = new OkHttpClient();
-
-                client.setConnectTimeout(15, TimeUnit.SECONDS);
-                client.setReadTimeout(30, TimeUnit.SECONDS);
-                client.setWriteTimeout(30, TimeUnit.SECONDS);
+                final OkHttpClient client = OkHttpWrapper.getClient().newBuilder()
+                        .writeTimeout(30, TimeUnit.SECONDS)
+                        .build();
 
                 toast("Preparing");
 
@@ -206,7 +205,7 @@ public class DisplayQRCode extends BaseAppCompatActivity {
                     send_url = xdrip.getAppContext().getString(R.string.wserviceurl) + "/joh-setsw";
                     final String bbody = Base64.encodeToString(crypted_data, Base64.NO_WRAP);
                     Log.d(TAG, "Upload Body size: " + bbody.length());
-                    final RequestBody formBody = new FormEncodingBuilder()
+                    final RequestBody formBody = new FormBody.Builder()
                             .add("data", bbody)
                             .build();
                     new Thread(new Runnable() {
