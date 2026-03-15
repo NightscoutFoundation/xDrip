@@ -96,6 +96,7 @@ import com.eveningoutpost.dexdrip.g5model.DexTimeKeeper;
 import com.eveningoutpost.dexdrip.g5model.FirmwareCapability;
 import com.eveningoutpost.dexdrip.g5model.Ob1DexTransmitterBattery;
 import com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine;
+import com.eveningoutpost.dexdrip.g5model.Transmitter;
 import com.eveningoutpost.dexdrip.g5model.TransmitterStatus;
 import com.eveningoutpost.dexdrip.g5model.VersionRequest1RxMessage;
 import com.eveningoutpost.dexdrip.g5model.VersionRequest2RxMessage;
@@ -2259,8 +2260,13 @@ public class Ob1G5CollectionService extends G5BaseService {
             l.add(new StatusItem("Hard Reset", "Attempting - please wait", Highlight.CRITICAL));
         }
 
-        if (transmitterID != null) {
-            l.add(new StatusItem("Transmitter ID", transmitterID + ((transmitterMAC != null && get_engineering_mode()) ? "\n" + transmitterMAC : "")));
+        try {
+            if (transmitterID != null) {
+                val wrongId = Transmitter.isDexTxIdEndingWithDash1();
+                l.add(new StatusItem("Transmitter ID", transmitterID + ((transmitterMAC != null && get_engineering_mode()) ? "\n" + transmitterMAC : "") + (wrongId ? " " + (gs(R.string.incorrect)) + "\n" + (gs(R.string.enter_the_first_6_characters_only)) : ""), wrongId ? CRITICAL : NORMAL));
+            }
+        } catch (Exception e) {
+
         }
 
         if (static_connection_state != null) {

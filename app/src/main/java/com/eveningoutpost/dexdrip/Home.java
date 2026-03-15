@@ -77,6 +77,7 @@ import com.eveningoutpost.dexdrip.g5model.DexSyncKeeper;
 import com.eveningoutpost.dexdrip.g5model.DexTimeKeeper;
 import com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.g5model.SensorDays;
+import com.eveningoutpost.dexdrip.g5model.Transmitter;
 import com.eveningoutpost.dexdrip.importedlibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.models.ActiveBluetoothDevice;
@@ -1871,6 +1872,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         refreshStatusLine();
         nanoStatus.setRunning(true);
         expiryStatus.setRunning(true);
+        handleDexTxIdEndingWithDash1();
 
         if (BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
             this.currentBgValueText.setTextSize(100);
@@ -2800,6 +2802,21 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                             dontKeepScreenOn();
                         }
                     }
+                }
+            }
+        }
+    }
+
+    public void handleDexTxIdEndingWithDash1() {
+        if (Transmitter.isDexTxIdEndingWithDash1()) {
+            // Inform the user to correct the transmitter ID
+            if (dialog == null || !dialog.isShowing()) {
+                if (JoH.ratelimit("g6_txid_ending_with_dash1", 120)) {
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle(gs(R.string.title_transmitter_id_ending_with_dash1));
+                    builder.setMessage(gs(R.string.message_transmitter_id_ending_with_dash1));
+                    builder.setPositiveButton(R.string.close, null);
+                    builder.show();
                 }
             }
         }
