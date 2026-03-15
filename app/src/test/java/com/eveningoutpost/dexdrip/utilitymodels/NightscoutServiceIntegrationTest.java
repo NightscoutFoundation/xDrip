@@ -3,12 +3,18 @@ package com.eveningoutpost.dexdrip.utilitymodels;
 import static com.google.common.truth.Truth.assertThat;
 
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
+import com.eveningoutpost.dexdrip.cgm.nsfollow.GzipRequestInterceptor;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+import java.util.zip.GZIPInputStream;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -51,7 +57,9 @@ public class NightscoutServiceIntegrationTest extends RobolectricTestWithConfig 
 
     @After
     public void tearDown() throws IOException {
-        server.shutdown();
+        if (server != null) {
+            server.shutdown();
+        }
     }
 
     @Test
@@ -242,5 +250,53 @@ public class NightscoutServiceIntegrationTest extends RobolectricTestWithConfig 
         assertThat(request.getPath()).isEqualTo("/api/v1/activity");
         assertThat(request.getHeader("api-secret")).isEqualTo(API_SECRET);
         assertThat(request.getBody().readUtf8()).isEqualTo("{\"mills\":1234567890}");
+    }
+
+    @Test
+    public void upload_withGzipInterceptor_compressesRequestBody() throws Exception {
+        // :: Setup
+        final MockWebServer gzipServer = new MockWebServer();
+        gzipServer.start();
+        gzipServer.enqueue(new MockResponse().setResponseCode(200));
+
+        final OkHttpClient gzipClient = new OkHttpClient.Builder()
+                .addInterceptor(new GzipRequestInterceptor())
+                .build();
+        final Retrofit gzipRetrofit = new Retrofit.Builder()
+                .baseUrl(gzipServer.url("/api/v1/"))
+                .client(gzipClient)
+                .build();
+        final NightscoutUploader.NightscoutService gzipService =
+                gzipRetrofit.create(NightscoutUploader.NightscoutService.class);
+
+        final String payload = "[{\"sgv\":120,\"type\":\"sgv\",\"direction\":\"Flat\"}]";
+        final RequestBody body = RequestBody.create(JSON, payload);
+
+        // :: Act
+        final Response<ResponseBody> response = gzipService.upload(API_SECRET, body).execute();
+        final RecordedRequest request = gzipServer.takeRequest();
+
+        // :: Verify
+        assertThat(response.isSuccessful()).isTrue();
+        assertThat(request.getHeader("Content-Encoding")).isEqualTo("gzip");
+        assertThat(decompress(request.getBody().readByteArray())).isEqualTo(payload);
+
+        gzipServer.shutdown();
+    }
+
+    /**
+     * Decompresses a GZIP-compressed byte array to a String.
+     */
+    private static String decompress(byte[] compressed) throws IOException {
+        try (final GZIPInputStream gis = new GZIPInputStream(new ByteArrayInputStream(compressed));
+             final Reader reader = new InputStreamReader(gis, StandardCharsets.UTF_8)) {
+            final StringBuilder sb = new StringBuilder();
+            final char[] buffer = new char[1024];
+            int len;
+            while ((len = reader.read(buffer)) != -1) {
+                sb.append(buffer, 0, len);
+            }
+            return sb.toString();
+        }
     }
 }
