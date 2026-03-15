@@ -81,7 +81,6 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
-import static com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper.enableTls12OnPreLollipop;
 import static com.nightscout.core.barcode.NSBarcodeConfigKeys.API_CONFIG;
 import static com.nightscout.core.barcode.NSBarcodeConfigKeys.API_URI;
 
@@ -97,7 +96,6 @@ public class NightscoutUploader {
 
     private static final String TAG = NightscoutUploader.class.getSimpleName();
     private static final int SOCKET_TIMEOUT = 60000;
-    private static final int CONNECTION_TIMEOUT = 30000;
     private static final boolean d = false;
     private static final boolean USE_GZIP = true; // conditional inside interceptor
     public static final String VIA_NIGHTSCOUT_LOADER_TAG = "Nightscout Loader";
@@ -177,14 +175,12 @@ public class NightscoutUploader {
     public NightscoutUploader(Context context) {
         mContext = context;
         prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-        final OkHttpClient.Builder okHttp3Builder = enableTls12OnPreLollipop(new OkHttpClient.Builder());
+        final OkHttpClient.Builder okHttp3Builder = OkHttpWrapper.getClient().newBuilder()
+                .writeTimeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS);
         if (UserError.ExtraLogTags.shouldLogTag(TAG, android.util.Log.VERBOSE)) {
             okHttp3Builder.addInterceptor(new SSLHandshakeInterceptor());
         }
         if (USE_GZIP) okHttp3Builder.addInterceptor(new GzipRequestInterceptor());
-        okHttp3Builder.connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
-        okHttp3Builder.writeTimeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS);
-        okHttp3Builder.readTimeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS);
         client = okHttp3Builder.build();
         enableRESTUpload = prefs.getBoolean("cloud_storage_api_enable", false);
         enableMongoUpload = prefs.getBoolean("cloud_storage_mongodb_enable", false);

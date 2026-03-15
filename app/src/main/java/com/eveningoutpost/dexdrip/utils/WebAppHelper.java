@@ -3,9 +3,11 @@ package com.eveningoutpost.dexdrip.utils;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
+import com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -18,7 +20,9 @@ public class WebAppHelper extends AsyncTask<String, Integer, Integer> {
     // TODO probably migrate uploader here as well
 
     private final String TAG = "jamorham webapphelper";
-    private final OkHttpClient client = new OkHttpClient();
+    private final OkHttpClient client = OkHttpWrapper.getClient().newBuilder()
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .build();
     private final Preferences.OnServiceTaskCompleted listener;
     private byte[] body = new byte[0];
 
@@ -40,10 +44,6 @@ public class WebAppHelper extends AsyncTask<String, Integer, Integer> {
                     .header("Connection", "close")
                     .url(url[0])
                     .build();
-
-            client.setConnectTimeout(15, TimeUnit.SECONDS);
-            client.setReadTimeout(30, TimeUnit.SECONDS);
-            client.setWriteTimeout(30, TimeUnit.SECONDS);
 
             final Response response = client.newCall(request).execute();
             if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
