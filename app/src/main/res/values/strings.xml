@@ -222,9 +222,9 @@
     <string name="deel_settings_for_algs">Deep settings for algorithms</string>
     <string name="low_level_prediction_values">Low level prediction values</string>
     <string name="glucose_drop_for_one_unit">Glucose drop for 1 Unit</string>
-    <string name="xdrip_plus_prediction_settings">Predictive simulation settings</string>
+    <string name="xdrip_plus_prediction_settings">Predictive simulations</string>
     <string name="settings_for_syncing">Settings for syncing between handsets</string>
-    <string name="xdrip_plus_sync_settings">xDrip+ Sync settings</string>
+    <string name="xdrip_plus_sync_settings">xDrip+ sync</string>
     <string name="xdrip_plus_update_settings">Update settings</string>
     <string name="automatic_update_check">Automatic update check</string>
     <string name="update_channel">Update Channel</string>
@@ -256,7 +256,7 @@
     <string name="alarm_at_forecasted_low_mins">Time threshold [min]</string>
     <string name="title_forecast_low_threshold">Threshold</string>
     <string name="other_xdrip_plus_alerts">Other xDrip+ alerts</string>
-    <string name="xdrip_plus_display_settings">Display settings</string>
+    <string name="xdrip_plus_display_settings">Display</string>
     <string name="display_customisations">Display customizations</string>
     <string name="insulin_carb_ratios_etc_for_models">Insulin, Carb ratios etc. for models</string>
     <string name="grams_of_carbohydrate_one_unit_covers">Grams of Carbohydrate 1 Unit covers</string>
