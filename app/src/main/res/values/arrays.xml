@@ -529,15 +529,15 @@
         <item>210</item>
     </string-array>
 
-    <!--    Nightscout follow wake delay, with respect to the source timestamp
+    <!--    Nightscout follow wake delay, with respect to the source timestamp as a percentage of the sample period
             The default is no delay, and is marked with the single symbol >  -->
     <string-array name="nsfollowlag_entries">
-        <item>0 ></item>
-        <item>40 s</item>
-        <item>1 min</item>
-        <item>1.5 min</item>
-        <item>2 min</item>
-        <item>3 min</item>
+        <item>0</item>
+        <item>13%</item>
+        <item>20%</item>
+        <item>30%</item>
+        <item>40%</item>
+        <item>60%</item>
     </string-array>
     <string-array name="nsfollowlag_values">
         <item>0</item>
@@ -560,6 +560,16 @@
         <item>15</item>
         <item>10</item>
         <item>5</item>
+    </string-array>
+
+    <!-- Nightscout follower sample period -->
+    <string-array name="nsfollow_sample_period_entries">
+        <item>5 min</item>
+        <item>1 min</item>
+    </string-array>
+    <string-array name="nsfollow_sample_period_values">
+        <item>5</item>
+        <item>1</item>
     </string-array>
 
 </resources>
