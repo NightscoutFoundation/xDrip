@@ -139,17 +139,12 @@ public class TidepoolCallerTest extends RobolectricTestWithConfig {
     /**
      * Clears the JoH rate limiter for a given name so that rate-limited methods proceed.
      */
-    private void clearRateLimit(String name) {
-        try {
-            Field rateLimitsField = com.eveningoutpost.dexdrip.models.JoH.class.getDeclaredField("rateLimits");
-            rateLimitsField.setAccessible(true);
-            Object map = rateLimitsField.get(null);
-            if (map instanceof java.util.Map) {
-                ((java.util.Map<?, ?>) map).remove(name);
-            }
-        } catch (Exception e) {
-            // If the field doesn't exist or has a different name, the rate limiter
-            // should pass on first call anyway
+    private void clearRateLimit(String name) throws Exception {
+        Field rateLimitsField = com.eveningoutpost.dexdrip.models.JoH.class.getDeclaredField("rateLimits");
+        rateLimitsField.setAccessible(true);
+        Object map = rateLimitsField.get(null);
+        if (map instanceof java.util.Map) {
+            ((java.util.Map<?, ?>) map).remove(name);
         }
     }
 }
