@@ -15,6 +15,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
@@ -58,6 +59,8 @@ import java.util.List;
 import static com.eveningoutpost.dexdrip.models.JoH.safeParseSoundUri;
 import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.X;
 import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.getCol;
+
+import lombok.val;
 
 /**
  * Created by Emma Black on 11/28/14.
@@ -703,6 +706,26 @@ public class Notifications extends IntentService {
         b.setContentIntent(resultPendingIntent);
         b.setLocalOnly(true);
         b.setOnlyAlertOnce(true);
+
+        // use a chip style notification if selected
+        if (Build.VERSION.SDK_INT >= 36 && Pref.getBooleanDefaultFalse("ongoing_notification_aodchipstyle")) {
+            final SpannableString deltaString = new SpannableString("Delta: " + ((dg != null) ? (dg.spannableString(dg.unitized_delta + (dg.from_plugin ? " " + context.getString(R.string.p_in_circle) : "")))
+                    : bgGraphBuilder.unitizedDeltaString(true, true)));
+
+            val critical = lastReading == null ? "None"
+                    : ((dg != null) ? (dg.isStale() ? "---" : (dg.unitized + " " + dg.delta_arrow))
+                    : (lastReading.isStale() ? "---" : (lastReading.displayValue(mContext) + " " + lastReading.slopeArrow())));
+            val extras = new Bundle();
+            // TODO these two lines can be replaced when SDK build tools updated
+            extras.putBoolean("android.requestPromotedOngoing", true);
+            extras.putString("android.shortCriticalText", critical);
+            b.addExtras(extras);
+            b.setContentTitle(titleString);
+            b.setStyle(new Notification.BigTextStyle().bigText(deltaString));
+            b.setCustomContentView(null);
+            b.setCustomBigContentView(null);
+        }
+
         // strips channel ID if disabled
         return XdripNotification.build(b);
     }
