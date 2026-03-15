@@ -6,24 +6,17 @@ import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.auth.CareLinkAuthType;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.auth.CareLinkAuthentication;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.CountrySettings;
-import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.DisplayMessage;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.MonitorData;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.Profile;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.RecentData;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.User;
-import com.eveningoutpost.dexdrip.models.JoH;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Map;
-
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
-import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -40,7 +33,6 @@ import okhttp3.mockwebserver.RecordedRequest;
 public class CareLinkClientCallerTest extends RobolectricTestWithConfig {
 
     private MockWebServer server;
-    private boolean authReturnsNull = false;
 
     @Before
     public void setUp() {
@@ -58,13 +50,18 @@ public class CareLinkClientCallerTest extends RobolectricTestWithConfig {
     // ---------------------------------------------------------------
 
     /**
-     * Overrides authentication and URL building so that requests go
-     * to MockWebServer over plain HTTP.
+     * Overrides authentication and the core getData(HttpUrl, ...) method so that
+     * all requests go to MockWebServer over plain HTTP. Production methods like
+     * getConnectDisplayMessage run their actual code — only the transport is swapped.
      */
-    private class TestableCareLinkClient extends CareLinkClient {
+    private static class TestableCareLinkClient extends CareLinkClient {
 
-        TestableCareLinkClient() {
+        private final MockWebServer mockServer;
+        private boolean authReturnsNull = false;
+
+        TestableCareLinkClient(MockWebServer server) {
             super("testuser", "testpass", "eu");
+            this.mockServer = server;
         }
 
         @Override
@@ -80,68 +77,23 @@ public class CareLinkClientCallerTest extends RobolectricTestWithConfig {
 
         @Override
         protected String careLinkServer() {
-            return server.getHostName() + ":" + server.getPort();
+            return mockServer.getHostName();
         }
 
         @Override
         protected String cloudServer() {
-            return server.getHostName() + ":" + server.getPort();
+            return mockServer.getHostName();
         }
 
+        /** Rewrite https→http and fix port so production code hits MockWebServer */
         @Override
-        protected <T> T getData(String host, String path, RequestBody requestBody, Class<T> dataClass) {
-            HttpUrl url = new HttpUrl.Builder()
+        protected <T> T getData(HttpUrl url, RequestBody requestBody, Class<T> dataClass) {
+            HttpUrl httpUrl = url.newBuilder()
                     .scheme("http")
-                    .host(server.getHostName())
-                    .port(server.getPort())
-                    .addPathSegments(path)
+                    .host(mockServer.getHostName())
+                    .port(mockServer.getPort())
                     .build();
-            return getData(url, requestBody, dataClass);
-        }
-
-        @Override
-        protected <T> T getData(String host, String path, Map<String, String> queryParams,
-                                RequestBody requestBody, Class<T> dataClass) {
-            HttpUrl.Builder urlBuilder = new HttpUrl.Builder()
-                    .scheme("http")
-                    .host(server.getHostName())
-                    .port(server.getPort())
-                    .addPathSegments(path);
-            if (queryParams != null) {
-                for (Map.Entry<String, String> param : queryParams.entrySet()) {
-                    urlBuilder.addQueryParameter(param.getKey(), param.getValue());
-                }
-            }
-            return getData(urlBuilder.build(), requestBody, dataClass);
-        }
-
-        @Override
-        public RecentData getConnectDisplayMessage(String username, String role,
-                                                   String patientUsername, String endpointUrl) {
-            JsonObject userJson = new JsonObject();
-            userJson.addProperty("username", username);
-            userJson.addProperty("role", role);
-            if (!JoH.emptyString(patientUsername)) {
-                userJson.addProperty("patientId", patientUsername);
-            }
-            userJson.addProperty("appVersion", "3.6.0");
-
-            RequestBody requestBody = RequestBody.create(
-                    MediaType.get("application/json; charset=utf-8"),
-                    new GsonBuilder().create().toJson(userJson));
-
-            HttpUrl url = new HttpUrl.Builder()
-                    .scheme("http")
-                    .host(server.getHostName())
-                    .port(server.getPort())
-                    .addPathSegments(API_PATH_DISPLAY_MESSAGE)
-                    .build();
-
-            DisplayMessage displayMessage = getData(url, requestBody, DisplayMessage.class);
-            if (displayMessage != null && displayMessage.patientData != null) {
-                return displayMessage.patientData;
-            }
-            return null;
+            return super.getData(httpUrl, requestBody, dataClass);
         }
     }
 
@@ -151,7 +103,7 @@ public class CareLinkClientCallerTest extends RobolectricTestWithConfig {
 
     private TestableCareLinkClient createClient() throws Exception {
         server.start();
-        TestableCareLinkClient client = new TestableCareLinkClient();
+        TestableCareLinkClient client = new TestableCareLinkClient(server);
         client.sessionInfosLoaded = true;
         client.sessionUser = new User();
         client.sessionUser.role = "patient";
@@ -208,7 +160,7 @@ public class CareLinkClientCallerTest extends RobolectricTestWithConfig {
         assertThat(body).contains("\"role\":\"patient\"");
         assertThat(body).contains("\"patientId\":\"patient123\"");
         assertThat(body).contains("\"appVersion\":\"3.6.0\"");
-        assertThat(request.getPath()).contains(API_PATH_DISPLAY_MESSAGE);
+        assertThat(request.getPath()).contains(CareLinkClient.API_PATH_DISPLAY_MESSAGE);
         assertThat(result).isNotNull();
     }
 
@@ -216,7 +168,7 @@ public class CareLinkClientCallerTest extends RobolectricTestWithConfig {
     public void getData_returnsNullWhenAuthFails() throws Exception {
         // :: Setup
         TestableCareLinkClient client = createClient();
-        authReturnsNull = true;
+        client.authReturnsNull = true;
 
         // :: Act
         User result = client.getMyUser();
@@ -258,5 +210,4 @@ public class CareLinkClientCallerTest extends RobolectricTestWithConfig {
         assertThat(request.getHeader("Accept")).contains("application/json");
     }
 
-    private static final String API_PATH_DISPLAY_MESSAGE = "connect/carepartner/v13/display/message";
 }
