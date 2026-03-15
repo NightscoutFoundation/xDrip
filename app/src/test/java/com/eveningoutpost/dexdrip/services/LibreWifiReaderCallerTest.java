@@ -53,9 +53,7 @@ public class LibreWifiReaderCallerTest extends RobolectricTestWithConfig {
                 + "}]";
         server.enqueue(new MockResponse().setBody(json));
         server.start();
-        String baseUrl = server.url("/").toString();
-        // Remove trailing slash since readHttpJson appends "/libre/N"
-        baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
+        String baseUrl = stripTrailingSlash(server.url("/").toString());
 
         // :: Act
         List<LibreWifiData> result = invokeReadHttpJson(baseUrl, 10);
