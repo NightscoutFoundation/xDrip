@@ -36,6 +36,7 @@ public class NightscoutFollowCallerTest extends RobolectricTestWithConfig {
 
     @Before
     public void setUpServer() throws Exception {
+        super.setUp();
         RetrofitService.clear();
         server = new MockWebServer();
         server.start();
