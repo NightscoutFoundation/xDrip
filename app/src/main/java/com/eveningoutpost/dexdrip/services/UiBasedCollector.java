@@ -41,6 +41,7 @@ import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -72,7 +73,7 @@ public class UiBasedCollector extends NotificationListenerService {
     String lastPackage;
 
     @VisibleForTesting
-    final java.util.HashMap<String, Long> lastNotificationWhen = new java.util.HashMap<>();
+    final HashMap<String, Long> lastNotificationWhen = new HashMap<>();
 
     @VisibleForTesting
     boolean isStaleNotification(final String packageName, final long when) {

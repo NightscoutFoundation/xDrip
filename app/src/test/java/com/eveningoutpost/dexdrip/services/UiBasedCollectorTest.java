@@ -283,6 +283,8 @@ public class UiBasedCollectorTest extends RobolectricTestWithConfig {
                 .that(ui.isStaleNotification("com.medtronic.diabetes.guardian", notificationWhen)).isTrue();
         assertWithMessage("notification with new 'when' should not be stale")
                 .that(ui.isStaleNotification("com.medtronic.diabetes.guardian", notificationWhen + Constants.MINUTE_IN_MS * 5)).isFalse();
+        assertWithMessage("same new 'when' again should be stale")
+                .that(ui.isStaleNotification("com.medtronic.diabetes.guardian", notificationWhen + Constants.MINUTE_IN_MS * 5)).isTrue();
     }
 
     /**
