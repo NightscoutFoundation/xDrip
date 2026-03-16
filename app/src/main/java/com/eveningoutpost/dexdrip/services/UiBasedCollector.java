@@ -71,6 +71,11 @@ public class UiBasedCollector extends NotificationListenerService {
     @VisibleForTesting
     String lastPackage;
 
+    @VisibleForTesting
+    boolean isStaleNotification(final String packageName, final long when) {
+        return false; // stub — always treats notifications as fresh
+    }
+
     static {
         coOptedPackages.add("com.dexcom.g6");
         coOptedPackages.add("com.dexcom.g6.region1.mmol");

@@ -262,4 +262,64 @@ public class UiBasedCollectorTest extends RobolectricTestWithConfig {
                 .that(ui.handleNewValue(start + Constants.MINUTE_IN_MS * 10 * 10, 100)).isFalse();
     }
 
+    /**
+     * Regression test for GitHub Discussion #4385: "Staircase" data effect.
+     *
+     * When the Companion App (e.g. Medtronic Guardian) re-posts a notification
+     * with the same {@code Notification.when} timestamp, the notification
+     * content hasn't actually been refreshed. xDrip should skip processing
+     * stale notifications to prevent duplicate "staircase" readings.
+     */
+    @Test
+    public void staleNotificationTest_sameWhenTimestamp_skipped() {
+        // :: Setup
+        val ui = new UiBasedCollector();
+        val notificationWhen = JoH.tsl();
+
+        // :: Act & Verify
+        assertWithMessage("fresh notification should not be stale")
+                .that(ui.isStaleNotification("com.medtronic.diabetes.guardian", notificationWhen)).isFalse();
+        assertWithMessage("notification with same 'when' should be stale")
+                .that(ui.isStaleNotification("com.medtronic.diabetes.guardian", notificationWhen)).isTrue();
+        assertWithMessage("notification with new 'when' should not be stale")
+                .that(ui.isStaleNotification("com.medtronic.diabetes.guardian", notificationWhen + Constants.MINUTE_IN_MS * 5)).isFalse();
+    }
+
+    /**
+     * Safety test: when companion app doesn't set Notification.when (value is 0),
+     * staleness detection must be bypassed. No readings should ever be silently
+     * dropped due to missing metadata.
+     */
+    @Test
+    public void staleNotificationTest_whenZero_alwaysFresh() {
+        // :: Setup
+        val ui = new UiBasedCollector();
+
+        // :: Act & Verify - when=0 should never be considered stale
+        assertWithMessage("first when=0 is fresh")
+                .that(ui.isStaleNotification("com.example.app", 0)).isFalse();
+        assertWithMessage("second when=0 is still fresh (safety bypass)")
+                .that(ui.isStaleNotification("com.example.app", 0)).isFalse();
+    }
+
+    /**
+     * Staleness tracking should be independent per package. Two different
+     * companion apps posting notifications with the same 'when' value
+     * should both be treated as fresh.
+     */
+    @Test
+    public void staleNotificationTest_differentPackages_independent() {
+        // :: Setup
+        val ui = new UiBasedCollector();
+        val when = JoH.tsl();
+
+        // :: Act & Verify
+        assertWithMessage("pkg A first notification is fresh")
+                .that(ui.isStaleNotification("com.app.a", when)).isFalse();
+        assertWithMessage("pkg B same 'when' but different package is fresh")
+                .that(ui.isStaleNotification("com.app.b", when)).isFalse();
+        assertWithMessage("pkg A same 'when' again is stale")
+                .that(ui.isStaleNotification("com.app.a", when)).isTrue();
+    }
+
 }
