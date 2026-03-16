@@ -390,6 +390,10 @@ public class Ob1G5StateMachine {
                 parent.incrementErrors();
                 if (throwable instanceof BleCannotSetCharacteristicNotificationException
                         || throwable instanceof BleGattCharacteristicException) {
+                    if (parent.getErrorCount() >= 4) {
+                        parent.requestBluetoothRestart();
+                    }
+                    parent.setPreScanFailureMarker();
                     parent.tryGattRefresh();
                     parent.changeState(SCAN);
                 }

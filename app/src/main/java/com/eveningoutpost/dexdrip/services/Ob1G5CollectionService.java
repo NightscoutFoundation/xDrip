@@ -490,7 +490,8 @@ public class Ob1G5CollectionService extends G5BaseService {
         if (transmitterMAC == null) {
             UserError.Log.d(TAG, "Do not know transmitter mac inside minimize scanning!!");
         }
-        return minimize_scanning && transmitterMAC != null && (!lastConnectFailed || (modulo == 1) || alwaysMinimize)
+        return minimize_scanning && transmitterMAC != null && !preScanFailureMarker
+                && (!lastConnectFailed || (modulo == 1) || alwaysMinimize)
                 && (DexSyncKeeper.isReady(transmitterID));
     }
 
@@ -1107,11 +1108,15 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     public void setPreScanFailureMarker() {
-        // TODO: implement in commit 3
+        UserError.Log.d(TAG, "Setting pre-scan failure marker due to indication setup failure");
+        preScanFailureMarker = true;
     }
 
     public void requestBluetoothRestart() {
-        // TODO: implement in commit 3
+        if (genericBluetoothWatchdog()) {
+            UserError.Log.e(TAG, "Requesting bluetooth restart due to repeated indication failures");
+            JoH.niceRestartBluetooth(xdrip.getAppContext());
+        }
     }
 
     public void clearRetries() {
