@@ -72,8 +72,14 @@ public class UiBasedCollector extends NotificationListenerService {
     String lastPackage;
 
     @VisibleForTesting
+    final java.util.HashMap<String, Long> lastNotificationWhen = new java.util.HashMap<>();
+
+    @VisibleForTesting
     boolean isStaleNotification(final String packageName, final long when) {
-        return false; // stub — always treats notifications as fresh
+        if (when == 0) return false; // companion app doesn't set 'when', bypass staleness check
+        final Long lastWhen = lastNotificationWhen.get(packageName);
+        lastNotificationWhen.put(packageName, when);
+        return lastWhen != null && lastWhen == when;
     }
 
     static {
@@ -165,7 +171,11 @@ public class UiBasedCollector extends NotificationListenerService {
                 UserError.Log.d(TAG, "Notification from: " + fromPackage);
                 if (sbn.isOngoing() || coOptedPackagesAll.contains(fromPackage)) {
                     lastPackage = fromPackage;
-                    processNotification(sbn.getNotification());
+                    if (isStaleNotification(fromPackage, sbn.getNotification().when)) {
+                        UserError.Log.d(TAG, "Skipping stale notification from: " + fromPackage);
+                    } else {
+                        processNotification(sbn.getNotification());
+                    }
                     BlueTails.immortality();
                 }
             } else {
