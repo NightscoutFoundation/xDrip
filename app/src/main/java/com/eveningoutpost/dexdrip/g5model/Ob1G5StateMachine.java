@@ -372,7 +372,8 @@ public class Ob1G5StateMachine {
                 );
     }
 
-    private static void handleAuthenticationThrowable(final Throwable throwable, final Ob1G5CollectionService parent) {
+    // Visible for testing
+    static void handleAuthenticationThrowable(final Throwable throwable, final Ob1G5CollectionService parent) {
         if (!(throwable instanceof OperationSuccess)) {
             if (((parent.getState() == Ob1G5CollectionService.STATE.CLOSED)
                     || (parent.getState() == Ob1G5CollectionService.STATE.CLOSE))

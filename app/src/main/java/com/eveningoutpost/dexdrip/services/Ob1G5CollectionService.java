@@ -464,7 +464,8 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
     }
 
-    private boolean useMinimizeScanningStrategy() {
+    // Visible for testing
+    boolean useMinimizeScanningStrategy() {
         tryLoadingSavedMAC();
         final int modulo = (connectNowFailures + scanTimeouts) % 2;
         UserError.Log.d(TAG, "minimize: " + minimize_scanning + " mac: " + transmitterMAC + " lastfailed:" + lastConnectFailed + " nowfail:" + connectNowFailures + " stimeout:" + scanTimeouts + " modulo:" + modulo);
@@ -1099,6 +1100,10 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     public void clearErrors() {
         error_count = 0;
+    }
+
+    public int getErrorCount() {
+        return error_count;
     }
 
     public void clearRetries() {
