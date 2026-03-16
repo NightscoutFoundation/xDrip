@@ -134,4 +134,23 @@ public class Ob1G5CollectionServiceTest extends RobolectricTestWithConfig {
         // :: Verify
         assertThat(result).isFalse();
     }
+
+    // ================================= useMinimizeScanningStrategy — Part A red test =================================
+
+    @Test
+    public void useMinimizeScanningStrategy_returnsFalse_whenPreScanFailureMarkerSet() throws Exception {
+        // :: Setup
+        setStaticField("minimize_scanning", true);
+        setStaticField("transmitterMAC", "AA:BB:CC:DD:EE:FF");
+        setStaticField("transmitterID", "ABCD");
+        setStaticField("preScanFailureMarker", true);
+        setStaticField("lastConnectFailed", false);
+        DexSyncKeeper.store("ABCD");
+
+        // :: Act
+        boolean result = service.useMinimizeScanningStrategy();
+
+        // :: Verify
+        assertThat(result).isFalse();
+    }
 }

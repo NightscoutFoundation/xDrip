@@ -1106,6 +1106,14 @@ public class Ob1G5CollectionService extends G5BaseService {
         return error_count;
     }
 
+    public void setPreScanFailureMarker() {
+        // TODO: implement in commit 3
+    }
+
+    public void requestBluetoothRestart() {
+        // TODO: implement in commit 3
+    }
+
     public void clearRetries() {
         retry_count = 0;
     }

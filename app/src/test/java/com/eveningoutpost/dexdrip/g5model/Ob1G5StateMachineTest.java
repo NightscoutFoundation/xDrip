@@ -150,4 +150,68 @@ public class Ob1G5StateMachineTest extends RobolectricTestWithConfig {
         verify(parent, never()).tryGattRefresh();
         verify(parent, never()).changeState(Ob1G5CollectionService.STATE.SCAN);
     }
+
+    // ========================= handleAuthenticationThrowable — Part A: preScanFailureMarker ==========================
+
+    @Test
+    public void handleAuthThrowable_notificationException_setsPreScanFailureMarker() {
+        // :: Setup
+        when(parent.getState()).thenReturn(Ob1G5CollectionService.STATE.CHECK_AUTH);
+        BleCannotSetCharacteristicNotificationException exception =
+                new BleCannotSetCharacteristicNotificationException(
+                        mock(BluetoothGattCharacteristic.class));
+
+        // :: Act
+        Ob1G5StateMachine.handleAuthenticationThrowable(exception, parent);
+
+        // :: Verify
+        verify(parent).setPreScanFailureMarker();
+    }
+
+    @Test
+    public void handleAuthThrowable_gattCharException_setsPreScanFailureMarker() {
+        // :: Setup
+        when(parent.getState()).thenReturn(Ob1G5CollectionService.STATE.CHECK_AUTH);
+        BleGattCharacteristicException exception = mock(BleGattCharacteristicException.class);
+
+        // :: Act
+        Ob1G5StateMachine.handleAuthenticationThrowable(exception, parent);
+
+        // :: Verify
+        verify(parent).setPreScanFailureMarker();
+    }
+
+    // ==================== handleAuthenticationThrowable — Part C: BT restart on repeated failures ====================
+
+    @Test
+    public void handleAuthThrowable_notificationException_withHighErrorCount_requestsBtRestart() {
+        // :: Setup
+        when(parent.getState()).thenReturn(Ob1G5CollectionService.STATE.CHECK_AUTH);
+        when(parent.getErrorCount()).thenReturn(4);
+        BleCannotSetCharacteristicNotificationException exception =
+                new BleCannotSetCharacteristicNotificationException(
+                        mock(BluetoothGattCharacteristic.class));
+
+        // :: Act
+        Ob1G5StateMachine.handleAuthenticationThrowable(exception, parent);
+
+        // :: Verify
+        verify(parent).requestBluetoothRestart();
+    }
+
+    @Test
+    public void handleAuthThrowable_notificationException_withLowErrorCount_doesNotRequestBtRestart() {
+        // :: Setup
+        when(parent.getState()).thenReturn(Ob1G5CollectionService.STATE.CHECK_AUTH);
+        when(parent.getErrorCount()).thenReturn(2);
+        BleCannotSetCharacteristicNotificationException exception =
+                new BleCannotSetCharacteristicNotificationException(
+                        mock(BluetoothGattCharacteristic.class));
+
+        // :: Act
+        Ob1G5StateMachine.handleAuthenticationThrowable(exception, parent);
+
+        // :: Verify
+        verify(parent, never()).requestBluetoothRestart();
+    }
 }
