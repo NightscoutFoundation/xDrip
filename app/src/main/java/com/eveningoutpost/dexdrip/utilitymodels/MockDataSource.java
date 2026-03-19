@@ -24,22 +24,25 @@ public class MockDataSource {
 
     private static final String PREF_AMPLIFY = "MockDataSource-amplify";
 
-    public static double divisor_scale = 5000000;
-    public static double amplify_cnst = 100000;
+    public static final String PREF_INTERVAL = "mock_data_source_interval_in_minutes"; // Data interval in minutes
+
+    public static double getDivisorScale() {
+        return Pref.getBooleanDefaultFalse(PREF_SPEED_UP) ? 1500000 : 5000000;
+    }
+
+    public static double getAmplifyConst() {
+        return Pref.getBooleanDefaultFalse(PREF_AMPLIFY) ? 330000 : 100000;
+    }
 
     public static String getFakeWifiData() {
 
         long time = JoH.tsl();
-        if (Pref.getBooleanDefaultFalse(PREF_SPEED_UP)) {
-            divisor_scale = 1500000;
-        }
-        double mod_raw = (time / divisor_scale) % Math.PI;
-        double mod_filtered = ((time - 500000) / divisor_scale) % Math.PI;
-        if (Pref.getBooleanDefaultFalse(PREF_AMPLIFY)) {
-            amplify_cnst = 330000;
-        }
-        double raw_value = (Math.sin(mod_raw) * amplify_cnst) + 50000;
-        double filtered_value = (Math.sin(mod_filtered) * amplify_cnst) + 50000;
+        double divisorScale = getDivisorScale();
+        double mod_raw = (time / divisorScale) % Math.PI;
+        double mod_filtered = ((time - 500000) / divisorScale) % Math.PI;
+        double amplifyConst = getAmplifyConst();
+        double raw_value = (Math.sin(mod_raw) * amplifyConst) + 50000;
+        double filtered_value = (Math.sin(mod_filtered) * amplifyConst) + 50000;
 
         if (Pref.getBooleanDefaultFalse(PREF_BROKEN_RAW)) {
             raw_value = Math.sin(mod_raw) * 1000;
@@ -65,6 +68,7 @@ public class MockDataSource {
     public static void defaults() {
         Pref.setBoolean(PREF_SPEED_UP, false);
         Pref.setBoolean(PREF_AMPLIFY, false);
+        Pref.setInt(PREF_INTERVAL, 5);
     }
 
     public static void breakRaw() {
@@ -75,15 +79,15 @@ public class MockDataSource {
         Pref.setBoolean(PREF_BROKEN_RAW, false);
     }
 
-    public static void speedup() {
+    public static void speedUp() {
         Pref.setBoolean(PREF_SPEED_UP, true);
     }
 
     public static void amplify() {
         Pref.setBoolean(PREF_AMPLIFY, true);
     }
+
+    public static void setInterval(int interval) {
+        Pref.setInt(PREF_INTERVAL, interval);
+    }
 }
-
-
-
-

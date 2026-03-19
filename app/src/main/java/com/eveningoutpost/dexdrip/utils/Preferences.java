@@ -1983,6 +1983,15 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             } catch (NullPointerException e) {
                 //
             }
+            try {
+                findPreference("ongoing_notification_aodchipstyle").setOnPreferenceChangeListener((preference, newValue) -> {
+                    UserError.Log.d(TAG,"Restarting collector due to notification style change");
+                    CollectionServiceStarter.restartCollectionServiceBackground();
+                    return true;
+                });
+            } catch (Exception e) {
+                //
+            }
 
             final boolean engineering_mode = this.prefs.getBoolean("engineering_mode",false);
 

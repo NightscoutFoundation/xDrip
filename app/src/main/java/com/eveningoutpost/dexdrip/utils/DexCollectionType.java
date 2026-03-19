@@ -9,6 +9,7 @@ import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.services.UiBasedCollector;
 import com.eveningoutpost.dexdrip.services.WifiCollectionService;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.MockDataSource;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollowService;
@@ -383,6 +384,9 @@ public enum DexCollectionType {
             case NSFollow:
                 long samplePeriodInMinutes = Pref.getStringToInt("nsfollow_sample_period_in_minutes", 5);
                 return Constants.MINUTE_IN_MS * samplePeriodInMinutes;
+            case Mock:
+                int mockInterval = Pref.getInt(MockDataSource.PREF_INTERVAL, 5) ;
+                return mockInterval * Constants.MINUTE_IN_MS;
             default:
                 return 300_000; // 5 minutes
         }
