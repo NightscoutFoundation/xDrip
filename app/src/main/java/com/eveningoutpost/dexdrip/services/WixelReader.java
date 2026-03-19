@@ -22,9 +22,10 @@ import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.Mdns;
 import com.google.gson.Gson;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
+import com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -235,11 +236,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
         try {
 
             if (httpClient == null) {
-                httpClient = new OkHttpClient();
-                // suitable for GPRS
-                httpClient.setConnectTimeout(30, TimeUnit.SECONDS);
-                httpClient.setReadTimeout(60, TimeUnit.SECONDS);
-                httpClient.setWriteTimeout(20, TimeUnit.SECONDS);
+                httpClient = OkHttpWrapper.getClient();
             }
 
 
