@@ -8,6 +8,8 @@ import com.eveningoutpost.dexdrip.services.G5CollectionService;
 import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.services.UiBasedCollector;
 import com.eveningoutpost.dexdrip.services.WifiCollectionService;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.MockDataSource;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollowService;
@@ -362,6 +364,10 @@ public enum DexCollectionType {
         return getCollectorSamplePeriod(this);
     }
 
+    public double getSamplePeriodScale() {
+        return getSamplePeriod() / (5.0 * Constants.MINUTE_IN_MS);
+    }
+
     private static final boolean libreOneMinute = Pref.getBooleanDefaultFalse("libre_one_minute");
 
     private static final boolean EversenseOneMinute = Pref.getBooleanDefaultFalse("Eversense_one_minute")
@@ -373,6 +379,9 @@ public enum DexCollectionType {
                 return libreOneMinute ? 60_000 : 300_000;
             case NSEmulator:
                 return EversenseOneMinute ? 60_000 : 300_000;
+            case Mock:
+                int mockInterval = Pref.getInt(MockDataSource.PREF_INTERVAL, 5) ;
+                return mockInterval * Constants.MINUTE_IN_MS;
             default:
                 return 300_000; // 5 minutes
         }
@@ -380,6 +389,10 @@ public enum DexCollectionType {
 
     public static long getCurrentSamplePeriod() {
         return getDexCollectionType().getSamplePeriod();
+    }
+
+    public static double getCurrentSamplePeriodScale() {
+        return getDexCollectionType().getSamplePeriodScale();
     }
 
     public static long getCurrentDeduplicationPeriod() {
