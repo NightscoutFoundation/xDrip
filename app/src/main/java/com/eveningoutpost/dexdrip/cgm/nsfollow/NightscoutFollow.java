@@ -1,7 +1,9 @@
 package com.eveningoutpost.dexdrip.cgm.nsfollow;
 
 import com.eveningoutpost.dexdrip.BuildConfig;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.xdrip;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
@@ -64,7 +66,11 @@ public class NightscoutFollow {
     }
 
     public static void work(final boolean live) {
-        msg("Connecting to Nightscout");
+        if (Pref.getBooleanDefaultFalse("nsfollow_use_v3")) {
+            NightscoutFollowV3.work(live);
+            return;
+        }
+        msg(xdrip.gs(R.string.nsfollow_connecting));
 
         final String urlString = getUrl();
 
@@ -88,7 +94,7 @@ public class NightscoutFollow {
                 NightscoutTreatments.processTreatmentResponse(session.treatments.string());
                 NightscoutFollowService.updateTreatmentDownloaded();
             } catch (Exception e) {
-                msg("Treatments: " + e);
+                msg(xdrip.gs(R.string.nsfollow_treatments_exception) + e);
             }
         })
                 .setOnFailure(() -> msg(session.treatmentsCallback.getStatus()));
@@ -101,7 +107,7 @@ public class NightscoutFollow {
                 getService().getEntries(session.url.getHashedSecret(), count, JoH.tsl() + "").enqueue(session.entriesCallback);
             } catch (Exception e) {
                 UserError.Log.e(TAG, "Exception in entries work() " + e);
-                msg("Nightscout follow entries error: " + e);
+                msg(xdrip.gs(R.string.nsfollow_entries_error) + e);
             }
             if (treatmentDownloadEnabled()) {
                 if (JoH.ratelimit("nsfollow-treatment-download", 60)) {
@@ -109,12 +115,12 @@ public class NightscoutFollow {
                         getService().getTreatments(session.url.getHashedSecret()).enqueue(session.treatmentsCallback);
                     } catch (Exception e) {
                         UserError.Log.e(TAG, "Exception in treatments work() " + e);
-                        msg("Nightscout follow treatments error: " + e);
+                        msg(xdrip.gs(R.string.nsfollow_treatments_error) + e);
                     }
                 }
             }
         } else {
-            msg("Please define Nightscout follow URL");
+            msg(xdrip.gs(R.string.nsfollow_no_url));
         }
     }
 
@@ -129,6 +135,7 @@ public class NightscoutFollow {
     public static void resetInstance() {
         RetrofitService.remove(getUrl(), TAG, D);
         service = null;
+        NightscoutFollowV3.resetInstance();
         UserError.Log.d(TAG, "Instance reset");
         CollectionServiceStarter.restartCollectionServiceBackground();
     }

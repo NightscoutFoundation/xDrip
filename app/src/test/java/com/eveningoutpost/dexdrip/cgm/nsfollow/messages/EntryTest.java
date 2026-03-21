@@ -239,4 +239,32 @@ public class EntryTest {
         // :: Verify
         assertThat(timeStamp).isEqualTo(2000000);
     }
+
+    // ===== identifier field ======================================================================
+
+    @Test
+    public void identifier_isPopulatedFromJson() {
+        // :: Setup
+        String json = "{\"sgv\":180,\"date\":1773944260838,\"identifier\":\"805201b8-b8ef-5423-845b-0e62530e589e\"}";
+        final com.google.gson.Gson gson = new com.google.gson.Gson();
+
+        // :: Act
+        Entry entry = gson.fromJson(json, Entry.class);
+
+        // :: Verify
+        assertThat(entry.identifier).isEqualTo("805201b8-b8ef-5423-845b-0e62530e589e");
+    }
+
+    @Test
+    public void identifier_isNullWhenAbsentFromJson() {
+        // :: Setup
+        String json = "{\"sgv\":180,\"date\":1773944260838}";
+        final com.google.gson.Gson gson = new com.google.gson.Gson();
+
+        // :: Act
+        Entry entry = gson.fromJson(json, Entry.class);
+
+        // :: Verify
+        assertThat(entry.identifier).isNull();
+    }
 }

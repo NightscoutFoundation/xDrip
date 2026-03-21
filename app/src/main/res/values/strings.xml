@@ -1387,10 +1387,40 @@
     <string name="title_medtrum_a_hex">Medtrum Debug</string>
     <string name="summary_nsfollow_url">Web address for following</string>
     <string name="title_nsfollow_url">Nightscout Follow URL</string>
+    <string name="title_nsfollow_use_v3">Use Nightscout API v3</string>
+    <string name="summary_nsfollow_use_v3">Use the newer v3 API. Embed your role-based access token in the URL: https://token@hostname. Open instances (no token) work without a token.</string>
     <string name="summary_nsfollow_download_treatments">Also download treatments from Nightscout as follower</string>
     <string name="title_nsfollow_download_treatments">Download Treatments</string>
     <string name="summary_nsfollow_lag">Default: 0\nCurrent: %s</string>
     <string name="title_nsfollow_lag">Nightscout Follow delay</string>
+    <!-- NSFollow shared status labels -->
+    <string name="nsfollow_connecting">Connecting to Nightscout</string>
+    <string name="nsfollow_no_url">Please define Nightscout follow URL</string>
+    <string name="nsfollow_entries_error">Nightscout follow entries error: </string>
+    <string name="nsfollow_treatments_error">Nightscout follow treatments error: </string>
+    <string name="nsfollow_treatments_exception">Treatments: </string>
+    <string name="nsfollow_status_latest_bg">Latest BG</string>
+    <string name="nsfollow_status_bg_receive_delay">BG receive delay</string>
+    <string name="nsfollow_status_latest_treatment">Latest Treatment</string>
+    <string name="nsfollow_status_treatment_receive_delay">Treatment receive delay</string>
+    <string name="nsfollow_status_last_poll">Last poll</string>
+    <string name="nsfollow_status_next_poll_in">Next poll in</string>
+    <string name="nsfollow_status_last_bg_time">Last BG time</string>
+    <string name="nsfollow_status_next_poll_time">Next poll time</string>
+    <string name="nsfollow_status_buggy_handset">Buggy handset</string>
+    <string name="nsfollow_status_download_treatments">Download treatments</string>
+    <string name="nsfollow_status_last_state">Last state</string>
+    <string name="nsfollow_status_jwt_token">Auth token (JWT)</string>
+    <!-- NSFollow v3 API specific messages -->
+    <string name="nsfollow_v3_cannot_connect">Cannot connect — check Nightscout URL</string>
+    <string name="nsfollow_v3_error_auth">Authentication failed — v3 needs a role-based access token (not API secret)</string>
+    <string name="nsfollow_v3_error_access_denied">Access denied — check token permissions</string>
+    <string name="nsfollow_v3_error_not_found">API v3 not found — server may not support v3</string>
+    <string name="nsfollow_v3_error_connection">Connection failed — check your Nightscout URL</string>
+    <string name="nsfollow_v3_error_unknown">Unknown error</string>
+    <string name="nsfollow_v3_jwt_not_fetched">Not fetched</string>
+    <string name="nsfollow_v3_jwt_expired">Expired</string>
+    <string name="nsfollow_v3_jwt_active">Active, expires in %s</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
     <string name="summary_clfollow_user">CareLink login username</string>

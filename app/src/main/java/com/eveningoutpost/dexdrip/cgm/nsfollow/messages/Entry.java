@@ -37,6 +37,8 @@ public class Entry extends BaseMessage {
     public String type;
     @Expose
     public double unfiltered;
+    @Expose
+    public String identifier;
 
     public long getTimeStamp() {
         if (date > 1000000) {

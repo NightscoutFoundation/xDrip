@@ -1405,8 +1405,18 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             final Preference nsFollowUrl = findPreference("nsfollow_url");
             final Preference nsFollowSamplePeriod = findPreference("nsfollow_sample_period_in_minutes"); // Show the Nightscout follow sample period setting only when NS follow is the data source
             final Preference nsFollowLag = findPreference("nsfollow_lag"); // Show the Nightscout follow wake delay setting only when NS follow is the data source
+            final Preference nsFollowUseV3 = findPreference("nsfollow_use_v3");
+            bindPreferenceSummaryToValue(findPreference("nsfollow_lag")); // Show the selected value as summary
             try {
                 nsFollowUrl.setOnPreferenceChangeListener((preference, newValue) -> {
+                    NightscoutFollow.resetInstance();
+                    return true;
+                });
+            } catch (Exception e) {
+                //
+            }
+            try {
+                nsFollowUseV3.setOnPreferenceChangeListener((preference, newValue) -> {
                     NightscoutFollow.resetInstance();
                     return true;
                 });
@@ -1875,6 +1885,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     collectionCategory.removePreference(nsFollowUrl);
                     collectionCategory.removePreference(nsFollowDownload);
                     collectionCategory.removePreference(nsFollowSamplePeriod);
+                    collectionCategory.removePreference(nsFollowUseV3);
                     collectionCategory.removePreference(nsFollowLag);
                 } catch (Exception e) {
                     //
@@ -2611,6 +2622,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
                     if (collectionType == DexCollectionType.NSFollow) {
                         collectionCategory.addPreference(nsFollowUrl);
+                        collectionCategory.addPreference(nsFollowUseV3);
                         collectionCategory.addPreference(nsFollowDownload);
                         collectionCategory.addPreference(nsFollowSamplePeriod);
                         collectionCategory.addPreference(nsFollowLag);
