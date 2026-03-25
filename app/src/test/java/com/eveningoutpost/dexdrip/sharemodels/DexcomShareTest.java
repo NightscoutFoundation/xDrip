@@ -8,6 +8,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.eveningoutpost.dexdrip.sharemodels.models.ShareUploadPayload;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -118,5 +120,88 @@ public class DexcomShareTest extends RobolectricTestWithConfig {
         assertThat(request.getPath()).isEqualTo("/Publisher/DeleteContact?sessionId=session-123&contactId=contact-456");
         assertThat(request.getMethod()).isEqualTo("POST");
         assertThat(request.getHeader("Content-Length")).isEqualTo("0");
+    }
+
+    @Test
+    public void uploadBGRecords_sendsSessionIdAndSerializedPayload() throws Exception {
+        // :: Setup
+        server.enqueue(new MockResponse().setResponseCode(200));
+        ShareUploadableBg bg = new ShareUploadableBg() {
+            @Override public int getMgdlValue() { return 120; }
+            @Override public long getEpochTimestamp() { return 0L; }
+            @Override public int getSlopeOrdinal() { return 0; }
+        };
+        ShareUploadPayload payload = new ShareUploadPayload("SN-123", bg);
+
+        // :: Act
+        api.uploadBGRecords("session-abc", payload).execute();
+        RecordedRequest request = server.takeRequest();
+
+        // :: Verify
+        assertThat(request.getPath()).isEqualTo("/Publisher/PostReceiverEgvRecords?sessionId=session-abc");
+        assertThat(request.getMethod()).isEqualTo("POST");
+        assertThat(request.getHeader("Content-Type")).contains("application/json");
+        assertThat(request.getBody().readUtf8()).contains("SN-123");
+    }
+
+    @Test
+    public void getContacts_sendsSessionIdAsQueryParam_withNoBody() throws Exception {
+        // :: Setup
+        server.enqueue(new MockResponse().setBody("[]"));
+
+        // :: Act
+        api.getContacts("session-abc").execute();
+        RecordedRequest request = server.takeRequest();
+
+        // :: Verify — bodyless POST: exercises the null-body guard in the network interceptor
+        assertThat(request.getPath()).isEqualTo("/Publisher/ListPublisherAccountSubscriptions?sessionId=session-abc");
+        assertThat(request.getMethod()).isEqualTo("POST");
+        assertThat(request.getBody().readUtf8()).isEmpty();
+    }
+
+    @Test
+    public void checkMonitorAssignment_sendsSessionIdAndSerial() throws Exception {
+        // :: Setup
+        server.enqueue(new MockResponse().setBody("\"AssignedToYou\""));
+
+        // :: Act
+        String result = api.checkMonitorAssignment("session-abc", "SN-123").execute().body();
+        RecordedRequest request = server.takeRequest();
+
+        // :: Verify
+        assertThat(request.getPath()).isEqualTo("/Publisher/CheckMonitoredReceiverAssignmentStatus?sessionId=session-abc&serialNumber=SN-123");
+        assertThat(request.getMethod()).isEqualTo("POST");
+        assertThat(result).isEqualTo("AssignedToYou");
+    }
+
+    @Test
+    public void updateMonitorAssignment_sendsSessionIdAndSerial() throws Exception {
+        // :: Setup
+        server.enqueue(new MockResponse().setResponseCode(200));
+
+        // :: Act
+        api.updateMonitorAssignment("session-abc", "SN-123").execute();
+        RecordedRequest request = server.takeRequest();
+
+        // :: Verify
+        assertThat(request.getPath()).isEqualTo("/Publisher/ReplacePublisherAccountMonitoredReceiver?sessionId=session-abc&serialNumber=SN-123");
+        assertThat(request.getMethod()).isEqualTo("POST");
+    }
+
+    @Test
+    public void authenticatePublisherAccount_sendsSessionIdSerialAndBody() throws Exception {
+        // :: Setup
+        server.enqueue(new MockResponse().setBody("\"auth-result\""));
+        Map<String, String> body = new HashMap<>();
+        body.put("accountName", "user");
+
+        // :: Act
+        api.authenticatePublisherAccount("session-abc", "SN-123", body).execute();
+        RecordedRequest request = server.takeRequest();
+
+        // :: Verify
+        assertThat(request.getPath()).isEqualTo("/General/AuthenticatePublisherAccount?sessionId=session-abc&serialNumber=SN-123");
+        assertThat(request.getMethod()).isEqualTo("POST");
+        assertThat(request.getBody().readUtf8()).contains("\"accountName\":\"user\"");
     }
 }

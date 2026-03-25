@@ -65,6 +65,29 @@ public class ShareRestTest extends RobolectricTestWithConfig {
     }
 
     @Test
+    public void getOkHttpClient_handlesRequestWithNoBody_withoutException() throws Exception {
+        // :: Setup
+        server.enqueue(new MockResponse().setBody("ok"));
+        ShareRest shareRest = new ShareRest(RuntimeEnvironment.application, new OkHttpClient());
+        Method method = ShareRest.class.getDeclaredMethod("getOkHttpClient");
+        method.setAccessible(true);
+        OkHttpClient client = (OkHttpClient) method.invoke(shareRest);
+
+        // :: Act — GET request has a null body, exercises the null-body guard in the interceptor
+        okhttp3.Request request = new okhttp3.Request.Builder()
+                .url(server.url("/test"))
+                .get()
+                .build();
+        okhttp3.Response response = client.newCall(request).execute();
+
+        // :: Verify — required headers are still injected on bodyless requests
+        RecordedRequest recorded = server.takeRequest();
+        assertThat(response.code()).isEqualTo(200);
+        assertThat(recorded.getHeader("User-Agent")).contains("CGM-Store-1.2");
+        assertThat(recorded.getHeader("Accept")).isEqualTo("application/json");
+    }
+
+    @Test
     public void getOkHttpClient_returnsOkHttp3Client() throws Exception {
         // :: Setup & Act
         ShareRest shareRest = new ShareRest(RuntimeEnvironment.application, new OkHttpClient());

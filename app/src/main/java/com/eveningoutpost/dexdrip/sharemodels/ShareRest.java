@@ -160,12 +160,9 @@ public class ShareRest {
                                 } else
                                     return response;
 
-                            } catch (NullPointerException e) {
-                                Log.e(TAG, "Got null pointer exception: " + e);
-                                return null;
                             } catch (IllegalStateException e) {
-                                UserError.Log.wtf(TAG,"Got illegal state exception: " + e);
-                                return null;
+                                UserError.Log.wtf(TAG, "Got illegal state exception in network interceptor: " + e);
+                                throw new IOException("Network interceptor failed: " + e.getMessage(), e);
                             }
                         }
                     })
