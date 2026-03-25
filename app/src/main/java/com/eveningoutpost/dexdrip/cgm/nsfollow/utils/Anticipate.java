@@ -24,9 +24,7 @@ public class Anticipate {
      */
 
     public static long next(long now, final long lastTimeStamp, final long period, final long grace) {
-        val useLag = DexCollectionType.getDexCollectionType().isPassive(); // not perfect selector but will do for now
-        final long lag = useLag ? Constants.SECOND_IN_MS * Pref.getStringToInt("nsfollow_lag", 0) : 0; // User can choose a wake delay with a 0 default.
-        final long last = lastTimeStamp + lag; // We delay the source timestamp and use it as the time we received the reading to account for any source delay.
+        final long last = lastTimeStamp;
 
         final long since = now - last;
         if (since <= (grace * 2)) {

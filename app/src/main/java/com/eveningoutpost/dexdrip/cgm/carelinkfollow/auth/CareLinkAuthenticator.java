@@ -18,6 +18,7 @@ import android.webkit.WebViewClient;
 
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -284,7 +285,7 @@ public class CareLinkAuthenticator {
 
     private OkHttpClient getHttpClient() {
         if (this.httpClient == null)
-            this.httpClient = new OkHttpClient();
+            this.httpClient = OkHttpWrapper.getClient();
         return this.httpClient;
     }
 
@@ -426,7 +427,7 @@ public class CareLinkAuthenticator {
 
         //Build client with cookies from CredentialStore
         cookieJar = new EditableCookieJar();
-        httpClient = new OkHttpClient.Builder()
+        httpClient = OkHttpWrapper.getClient().newBuilder()
                 .cookieJar(cookieJar)
                 .build();
         cookieJar.AddCookies(credentialStore.getCredential().cookies);
