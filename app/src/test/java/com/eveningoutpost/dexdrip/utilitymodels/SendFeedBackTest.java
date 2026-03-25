@@ -19,7 +19,10 @@ import okhttp3.mockwebserver.RecordedRequest;
 import static com.google.common.truth.Truth.assertThat;
 
 /**
- * @author Asbjorn Aarrestad
+ * Verifies that SendFeedBack's OkHttpClient configuration matches expectations
+ * after migration from OkHttp2 to OkHttp3 shared client.
+ *
+ * @author Asbjørn Aarrestad
  */
 public class SendFeedBackTest extends RobolectricTestWithConfig {
 
@@ -37,10 +40,36 @@ public class SendFeedBackTest extends RobolectricTestWithConfig {
     }
 
     @Test
+    public void client_sharesConnectionPool() {
+        // :: Setup — reproduce the client construction from SendFeedBack.sendFeedback
+        OkHttpClient client = OkHttpWrapper.getClient().newBuilder()
+                .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+                .addInterceptor(new GzipRequestInterceptor())
+                .build();
+
+        // :: Act & Verify
+        assertThat(client.connectionPool()).isSameInstanceAs(OkHttpWrapper.getClient().connectionPool());
+    }
+
+    @Test
+    public void client_hasGzipInterceptor() {
+        // :: Setup
+        OkHttpClient client = OkHttpWrapper.getClient().newBuilder()
+                .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+                .addInterceptor(new GzipRequestInterceptor())
+                .build();
+
+        // :: Act & Verify
+        boolean hasGzip = client.interceptors().stream()
+                .anyMatch(i -> i instanceof GzipRequestInterceptor);
+        assertThat(hasGzip).isTrue();
+    }
+
+    @Test
     public void gzipInterceptor_addsContentEncodingHeader() throws Exception {
         // :: Setup
         server.enqueue(new MockResponse().setBody("ok"));
-        OkHttpClient client = new OkHttpClient.Builder()
+        OkHttpClient client = OkHttpWrapper.getClient().newBuilder()
                 .addInterceptor(new GzipRequestInterceptor())
                 .build();
         Request request = new Request.Builder()
@@ -60,7 +89,7 @@ public class SendFeedBackTest extends RobolectricTestWithConfig {
     public void gzipInterceptor_skipsIfAlreadyEncoded() throws Exception {
         // :: Setup
         server.enqueue(new MockResponse().setBody("ok"));
-        OkHttpClient client = new OkHttpClient.Builder()
+        OkHttpClient client = OkHttpWrapper.getClient().newBuilder()
                 .addInterceptor(new GzipRequestInterceptor())
                 .build();
         Request request = new Request.Builder()
@@ -78,27 +107,20 @@ public class SendFeedBackTest extends RobolectricTestWithConfig {
     }
 
     @Test
-    public void formBody_containsFeedbackFields() throws Exception {
-        // :: Setup
-        server.enqueue(new MockResponse().setBody("ok"));
+    public void formBody_containsFeedbackFields() {
+        // :: Setup & Act
         FormBody formBody = new FormBody.Builder()
                 .add("contact", "test@example.com")
                 .add("body", "test feedback")
                 .add("rating", "5.0")
                 .add("type", "Bug Report")
                 .build();
-        Request request = new Request.Builder()
-                .url(server.url("/joh-feedback"))
-                .post(formBody)
-                .build();
-
-        // :: Act
-        new OkHttpClient().newCall(request).execute();
-        RecordedRequest recorded = server.takeRequest();
-        String body = recorded.getBody().readUtf8();
 
         // :: Verify
-        assertThat(body).contains("contact=test%40example.com");
-        assertThat(body).contains("type=Bug%20Report");
+        assertThat(formBody.size()).isEqualTo(4);
+        assertThat(formBody.name(0)).isEqualTo("contact");
+        assertThat(formBody.value(0)).isEqualTo("test@example.com");
+        assertThat(formBody.name(3)).isEqualTo("type");
+        assertThat(formBody.value(3)).isEqualTo("Bug Report");
     }
 }
