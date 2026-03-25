@@ -40,7 +40,7 @@ public class DesertCommsTest extends RobolectricTestWithConfig {
     }
 
     @Test
-    public void getHttpInstance_inheritsSharedClientTimeouts() throws Exception {
+    public void getHttpInstance_hasLanOptimizedTimeouts() throws Exception {
         // :: Setup
         Method getHttpInstance = DesertComms.class.getDeclaredMethod("getHttpInstance");
         getHttpInstance.setAccessible(true);
@@ -48,11 +48,10 @@ public class DesertCommsTest extends RobolectricTestWithConfig {
         // :: Act
         OkHttpClient client = (OkHttpClient) getHttpInstance.invoke(null);
 
-        // :: Verify — inherits shared client defaults (no timeout overrides in getHttpInstance)
-        OkHttpClient sharedClient = OkHttpWrapper.getClient();
-        assertThat(client.connectTimeoutMillis()).isEqualTo(sharedClient.connectTimeoutMillis());
-        assertThat(client.readTimeoutMillis()).isEqualTo(sharedClient.readTimeoutMillis());
-        assertThat(client.writeTimeoutMillis()).isEqualTo(sharedClient.writeTimeoutMillis());
+        // :: Verify — short connect timeout (10s) for fast LAN failure detection; 40s read for local sync
+        assertThat(client.connectTimeoutMillis()).isEqualTo(10_000);
+        assertThat(client.readTimeoutMillis()).isEqualTo(40_000);
+        assertThat(client.writeTimeoutMillis()).isEqualTo(20_000);
     }
 
     @Test

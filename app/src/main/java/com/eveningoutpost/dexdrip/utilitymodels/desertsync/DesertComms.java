@@ -234,6 +234,9 @@ public class DesertComms {
     private static OkHttpClient getHttpInstance() {
         if (okHttpClient == null) {
             final OkHttpClient.Builder b = OkHttpWrapper.getClient().newBuilder();
+            b.connectTimeout(10, java.util.concurrent.TimeUnit.SECONDS);
+            b.readTimeout(40, java.util.concurrent.TimeUnit.SECONDS);
+            b.writeTimeout(20, java.util.concurrent.TimeUnit.SECONDS);
             try {
                 b.sslSocketFactory(TrustManager.getSSLSocketFactory(), TrustManager.getNaiveTrustManager());
             } catch (Exception e) {

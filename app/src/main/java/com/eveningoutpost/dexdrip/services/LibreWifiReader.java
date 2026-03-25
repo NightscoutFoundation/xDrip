@@ -222,7 +222,11 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
         final List<LibreWifiData> trd_list = new LinkedList<LibreWifiData>();
         try {
             if (httpClient == null) {
-                httpClient = OkHttpWrapper.getClient();
+                httpClient = OkHttpWrapper.getClient().newBuilder()
+                        .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+                        .readTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
+                        .writeTimeout(20, java.util.concurrent.TimeUnit.SECONDS)
+                        .build();
             }
 
             // simple HTTP GET request
