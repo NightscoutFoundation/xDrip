@@ -365,6 +365,8 @@ public enum DexCollectionType {
     }
 
     public double getSamplePeriodScale() {
+        // Only use samplePeriodScale for timings derived from the CGM sensor sample period.
+        // Do NOT use for user-facing time (alerts, snoozes, UI delays).
         return getSamplePeriod() / (5.0 * Constants.MINUTE_IN_MS);
     }
 
@@ -379,6 +381,9 @@ public enum DexCollectionType {
                 return libreOneMinute ? 60_000 : 300_000;
             case NSEmulator:
                 return EversenseOneMinute ? 60_000 : 300_000;
+            case NSFollow:
+                long samplePeriodInMinutes = Pref.getStringToInt("nsfollow_sample_period_in_minutes", 5);
+                return Constants.MINUTE_IN_MS * samplePeriodInMinutes;
             case Mock:
                 int mockInterval = Pref.getInt(MockDataSource.PREF_INTERVAL, 5) ;
                 return mockInterval * Constants.MINUTE_IN_MS;
@@ -392,6 +397,8 @@ public enum DexCollectionType {
     }
 
     public static double getCurrentSamplePeriodScale() {
+        // Only use CurrentSamplePeriodScale for timings derived from the CGM sensor sample period.
+        // Do NOT use for user-facing time (alerts, snoozes, UI delays).
         return getDexCollectionType().getSamplePeriodScale();
     }
 
