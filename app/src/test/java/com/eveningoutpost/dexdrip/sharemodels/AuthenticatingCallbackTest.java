@@ -58,7 +58,8 @@ public class AuthenticatingCallbackTest extends RobolectricTestWithConfig {
     // :: Tests
 
     /**
-     * A 500 response triggers re-authentication via getSessionId and then calls onRetry().
+     * A 500 response triggers re-authentication via getSessionId, saves the new session ID to
+     * SharedPreferences, and then calls onRetry().
      */
     @Test
     public void authenticatingCallback_on500_callsGetSessionIdAndThenOnRetry() {
@@ -80,6 +81,48 @@ public class AuthenticatingCallbackTest extends RobolectricTestWithConfig {
         // :: Verify
         assertThat(retryWasCalled.get()).isTrue();
         verify(mockApi).getSessionId(anyMap());
+        assertThat(android.preference.PreferenceManager
+                .getDefaultSharedPreferences(RuntimeEnvironment.application)
+                .getString("dexcom_share_session_id", null))
+                .isEqualTo("new-session-id");
+    }
+
+    /**
+     * When re-authentication returns a non-2xx HTTP response (e.g. 401), the failure is forwarded
+     * to the delegate and onRetry() is not called.
+     */
+    @Test
+    public void authenticatingCallback_on500_whenReAuthReturnsNon2xx_delegatesFailureToDelegate() {
+        // :: Setup
+        simulateReAuthWithHttpError(401);
+
+        AtomicReference<Throwable> capturedThrowable = new AtomicReference<>();
+        AtomicBoolean retryWasCalled = new AtomicBoolean(false);
+        Callback<ResponseBody> delegate = new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {}
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                capturedThrowable.set(t);
+            }
+        };
+
+        ShareRest.AuthenticatingCallback<ResponseBody> callback =
+                shareRest.new AuthenticatingCallback<ResponseBody>(delegate) {
+                    @Override
+                    public void onRetry() {
+                        retryWasCalled.set(true);
+                    }
+                };
+
+        // :: Act
+        callback.onResponse(dummyCall(), Response.error(500, ResponseBody.create(null, "")));
+
+        // :: Verify
+        assertThat(retryWasCalled.get()).isFalse();
+        assertThat(capturedThrowable.get()).isNotNull();
+        assertThat(capturedThrowable.get().getMessage()).contains("401");
     }
 
     /**
@@ -237,6 +280,16 @@ public class AuthenticatingCallbackTest extends RobolectricTestWithConfig {
         Answer<Void> answer = invocation -> {
             Callback<String> cb = invocation.getArgument(0);
             cb.onFailure(mockGetSessionIdCall, t);
+            return null;
+        };
+        doAnswer(answer).when(mockGetSessionIdCall).enqueue(any(Callback.class));
+    }
+
+    /** Configures mockGetSessionIdCall to invoke onResponse with the given HTTP error code. */
+    private void simulateReAuthWithHttpError(int code) {
+        Answer<Void> answer = invocation -> {
+            Callback<String> cb = invocation.getArgument(0);
+            cb.onResponse(mockGetSessionIdCall, Response.error(code, ResponseBody.create(null, "")));
             return null;
         };
         doAnswer(answer).when(mockGetSessionIdCall).enqueue(any(Callback.class));

@@ -289,6 +289,9 @@ public class ShareRest {
                             sessionId = response.body();
                             ShareRest.this.sharedPreferences.edit().putString("dexcom_share_session_id", sessionId).apply();
                             onRetry();
+                        } else {
+                            UserError.Log.e(TAG, "Re-authentication failed with HTTP " + response.code() + " - upload will not be retried");
+                            delegate.onFailure(call, new java.io.IOException("Re-authentication failed: HTTP " + response.code()));
                         }
                     }
 
