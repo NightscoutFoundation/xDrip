@@ -1,6 +1,6 @@
 files:
   - source: /app/src/main/res/values/strings.xml
-    translation: /app/src/main/res/values-%two_letters_code%/%original_file_name%
+    translation: /app/src/main/res/values-%two_letters_code%/strings-%two_letters_code%.xml
     update_option: update_as_unapproved
     languages_mapping:
       two_letters_code:
@@ -9,3 +9,12 @@ files:
         pt-BR: pt-rBR
         es-ES: es
         ru-RU: ru
+        bg-BG: bg
+        cs-CZ: cs
+        de-DE: de
+        el-GR: el
+        et-EE: et
+        fr-FR: fr
+        fi-FI: fi
+        tr-TR: tr
+        uk-UA: uk
