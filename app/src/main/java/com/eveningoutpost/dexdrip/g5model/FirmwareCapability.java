@@ -19,7 +19,7 @@ public class FirmwareCapability {
     private static final ImmutableSet<String> KNOWN_G6_REV2_RAW_FIRMWARES = ImmutableSet.of("2.18.2.67");
     private static final ImmutableSet<String> KNOWN_G6_PLUS_FIRMWARES = ImmutableSet.of("2.4.2.88");
     private static final ImmutableSet<String> KNOWN_ONE_FIRMWARES = ImmutableSet.of("30.192.103.34");
-    private static final ImmutableSet<String> KNOWN_ALT_FIRMWARES = ImmutableSet.of("29.192.104.59", "32.192.104.82", "32.192.104.109", "32.192.105.64", "32.192.106.0", "32.192.109.40", "44.192.105.72");
+    private static final ImmutableSet<String> KNOWN_ALT_FIRMWARES = ImmutableSet.of("29.192.104.59", "32.192.104.82", "32.192.104.109", "32.192.105.64", "32.192.106.0", "32.192.109.40", "44.192.105.72", "63.192.109.41");
     private static final ImmutableSet<String> KNOWN_TIME_TRAVEL_TESTED = ImmutableSet.of("1.6.5.25");
     private static final ImmutableSet<String> KNOWN_ALT2_FIRMWARES = ImmutableSet.of("37.192.105.94");
     private static final ImmutableSet<String> KNOWN_ALT3_FIRMWARES = ImmutableSet.of("63.192.109.41");

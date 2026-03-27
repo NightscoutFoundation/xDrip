@@ -1972,13 +1972,13 @@ public class Ob1G5StateMachine {
 
         final BackFillStream backfill = new BackFillStream();
 
-        connection.setupNotification(ProbablyBackfill)
+        val res = connection.setupNotification(ProbablyBackfill)
                 .timeout(15, TimeUnit.SECONDS) // WARN
                 .observeOn(Schedulers.newThread())
                 .flatMap(notificationObservable -> notificationObservable)
                 .subscribe(bytes -> {
                             UserError.Log.d(TAG, "Received backfill notification bytes: " + bytesToHex(bytes));
-                            backfill.pushNew(bytes);
+                            backfill.pushNew(bytes, shortTxId() ? 1 : 0);
                             inevitableDisconnect(parent, connection);
                             Inevitable.task("Process G5 backfill", 3000, () -> processBacksies(backfill.decode()));
                         }, throwable -> {

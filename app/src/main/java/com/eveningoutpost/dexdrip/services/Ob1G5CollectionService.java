@@ -2180,6 +2180,9 @@ public class Ob1G5CollectionService extends G5BaseService {
                         return Span.colorSpan(lastSensorState.getExtendedText(), lastSensorState.transitional() ? NOTICE.color() : lastSensorState.sensorFailed() ? CRITICAL.color() : BAD.color());
                     }
                 } else {
+                    if ((transmitterMAC == null || transmitterMAC.isEmpty()) && transmitterID != null) {
+                        return Span.colorSpan("Searching for " + transmitterID, NOTICE.color()); // TODO i18n + color?
+                    }
                     return Span.colorSpan("", NORMAL.color()); // non native blank
                 }
             } else {
@@ -2367,7 +2370,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                     }
                 }
 
-                if (vr3 == null && vr2.version1 != 0 && vr2.warmupSeconds != 0 && vr2.warmupSeconds != 7200 && vr2.warmupSeconds != 1620 && vr2.warmupSeconds != 3600) {
+                if (vr3 == null && vr2.version1 != 0 && vr2.warmupSeconds != 0 && vr2.warmupSeconds != 7200 && vr2.warmupSeconds != 1620 && vr2.warmupSeconds != 3600 && vr2.warmupSeconds != 3720) {
                     l.add(new StatusItem("Warm Up Time", niceTimeScalar(vr2.warmupSeconds * SECOND_IN_MS), Highlight.NOTICE));
                 }
 
