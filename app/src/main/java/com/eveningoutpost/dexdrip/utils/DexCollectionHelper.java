@@ -30,7 +30,7 @@ public class DexCollectionHelper {
     private static final String TAG = DexCollectionHelper.class.getSimpleName();
 
 
-    public static void assistance(Activity activity, DexCollectionType type) {
+    public static void assistance(final Activity activity, DexCollectionType type) {
 
         switch (type) {
 
@@ -59,7 +59,8 @@ public class DexCollectionHelper {
                             clearDataWhenTransmitterIdEntered(Pref.getString(pref, ""));
 
                             CollectionServiceStarter.restartCollectionServiceBackground();
-                        });
+                            LocationHelper.requestLocationForBluetooth(activity);
+                        }, true);
                 break;
 
             case DexbridgeWixel:
