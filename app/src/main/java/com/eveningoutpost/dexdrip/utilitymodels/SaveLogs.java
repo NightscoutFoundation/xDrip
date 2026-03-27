@@ -61,13 +61,15 @@ public class SaveLogs extends BaseAppCompatActivity {
 
     public void saveLogs(View myview) {
         if (saveLogsToStorage(log_data)) {
-            UserError.Log.e(TAG, "Saved log file to /Download/xDrip-export/xDrip-log.txt");
+            UserError.Log.e(TAG, "Saved log file to " + pathPlusFileName);
         } else {
             UserError.Log.e(TAG, "Could not write log file");
         }
         log_data = "";
         closeActivity(null); // Let's close the menu
     }
+
+    String pathPlusFileName;
 
     public boolean saveLogsToStorage(String contents) {
         if (isStorageWritable(this, MY_PERMISSIONS_REQUEST_STORAGE)) {
@@ -77,17 +79,17 @@ public class SaveLogs extends BaseAppCompatActivity {
                 sb.append(LOG_FILE_PATH);
                 final String dir = sb.toString();
                 makeSureDirectoryExists(dir);
-                final String pathPlusFileName = dir + "/" + LOG_FILE_NAME;
+                pathPlusFileName = dir + "/" + (JoH.tsl()/1000) + "-" + LOG_FILE_NAME;
                 final File myExternalFile = new File(pathPlusFileName);
                 FileOutputStream fos = new FileOutputStream(myExternalFile);
                 fos.write(contents.getBytes());
                 fos.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                UserError.Log.e(TAG, "Error writing log file: " + e);
             }
             return true;
         } else {
-            JoH.static_toast_long("getString(R.string.sdcard_not_writable_cannot_save)");
+            JoH.static_toast_long(getString(R.string.sdcard_not_writable_cannot_save));
             return false;
         }
     }
