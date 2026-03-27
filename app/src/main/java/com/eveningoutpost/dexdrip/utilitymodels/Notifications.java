@@ -718,7 +718,8 @@ public class Notifications extends IntentService {
             val extras = new Bundle();
             // TODO these two lines can be replaced when SDK build tools updated
             extras.putBoolean("android.requestPromotedOngoing", true);
-            extras.putString("android.shortCriticalText", critical);
+            // reduce flat arrow size to avoid problems of oversized text in high mmol values
+            extras.putString("android.shortCriticalText", critical.replace("\u2192"+"\uFE0E","›"));
             b.addExtras(extras);
             b.setContentTitle(titleString);
             b.setStyle(new Notification.BigTextStyle().bigText(deltaString));
