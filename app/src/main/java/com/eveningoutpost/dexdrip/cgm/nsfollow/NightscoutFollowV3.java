@@ -143,12 +143,12 @@ public class NightscoutFollowV3 {
 
         if (!emptyString(urlString)) {
             final String auth = buildBearerAuth();
+            final Nightscout svc = getService();
+            if (svc == null) {
+                msg(xdrip.gs(R.string.nsfollow_v3_cannot_connect));
+                return;
+            }
             try {
-                final Nightscout svc = getService();
-                if (svc == null) {
-                    msg(xdrip.gs(R.string.nsfollow_v3_cannot_connect));
-                    return;
-                }
                 final BgReading last = BgReading.last(true);  // true = follower mode (no sensor constraint)
                 final long sinceMs = (last != null) ? last.timestamp : 0;
                 final int safetyLimit = (int) (Constants.DAY_IN_MS / DEXCOM_PERIOD);
