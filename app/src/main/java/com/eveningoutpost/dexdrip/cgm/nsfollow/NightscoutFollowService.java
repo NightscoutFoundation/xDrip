@@ -1,9 +1,12 @@
 package com.eveningoutpost.dexdrip.cgm.nsfollow;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.IBinder;
 import android.os.PowerManager;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import android.text.SpannableString;
 
 import com.eveningoutpost.dexdrip.models.BgReading;
@@ -57,6 +60,11 @@ public class NightscoutFollowService extends ForegroundService {
     private static volatile long lastTreatmentTime = 0;
     private static volatile long treatmentReceivedDelay = 0;
 
+    @VisibleForTesting
+    static boolean isNetworkAvailable(final ConnectivityManager cm) {
+        return cm != null && cm.getActiveNetwork() != null;
+    }
+
     private static long getLag() {
         // Wake delay derived from the nsfollow_lag setting.
         // Values represent seconds of a 5-minute sample period and are scaled
@@ -81,7 +89,6 @@ public class NightscoutFollowService extends ForegroundService {
             // Check service should be running
             if (!shouldServiceRun()) {
                 UserError.Log.d(TAG, "Stopping service due to shouldServiceRun() result");
-                //       msg("Stopping");
                 stopSelf();
                 return START_NOT_STICKY;
             }
@@ -92,6 +99,19 @@ public class NightscoutFollowService extends ForegroundService {
             if (lastBg != null) {
                 lastBgTime = lastBg.timestamp;
             }
+
+            // Always re-arm next wakeup, even if we skip the poll below
+            scheduleWakeUp();
+
+            // Skip network I/O when there is no data connection — saves wake lock extension,
+            // DNS resolution, and TCP handshake cost. The alarm above ensures we retry.
+            final ConnectivityManager cm =
+                    (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (!isNetworkAvailable(cm)) {
+                UserError.Log.d(TAG, "No network — skipping poll");
+                return START_STICKY;
+            }
+
             if (lastBg == null || JoH.msSince(lastBg.timestamp) > DexCollectionType.getCurrentSamplePeriod()) {
                 if (JoH.ratelimit("last-ns-follow-poll", 5)) {
                     Inevitable.task("NS-Follow-Work", 200, () -> {
@@ -103,7 +123,6 @@ public class NightscoutFollowService extends ForegroundService {
                 UserError.Log.d(TAG, "Already have recent reading: " + JoH.msSince(lastBg.timestamp));
             }
 
-            scheduleWakeUp();
         } finally {
             JoH.releaseWakeLock(wl);
         }
