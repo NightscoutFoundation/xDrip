@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.cgm.nsfollow;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
@@ -7,6 +9,8 @@ import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.NightscoutTreatments;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.PumpStatus;
+import com.eveningoutpost.dexdrip.cgm.nsfollow.messages.DeviceStatus;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.messages.Entry;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.utils.NightscoutUrl;
 import com.eveningoutpost.dexdrip.evaluators.MissedReadingsEstimator;
@@ -129,7 +133,19 @@ public class NightscoutFollow {
     public static void resetInstance() {
         RetrofitService.remove(getUrl(), TAG, D);
         service = null;
+        PumpStatus.setBattery(-1);
+        PumpStatus.setReservoir(-1);
         UserError.Log.d(TAG, "Instance reset");
         CollectionServiceStarter.restartCollectionServiceBackground();
+    }
+
+    @VisibleForTesting
+    static void applyDeviceStatus(final DeviceStatus ds) {
+        if (ds.uploaderBattery != null) {
+            PumpStatus.setBattery(ds.uploaderBattery);
+        }
+        if (ds.pump != null && ds.pump.reservoir != null) {
+            PumpStatus.setReservoir(ds.pump.reservoir);
+        }
     }
 }

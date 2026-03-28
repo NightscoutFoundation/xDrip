@@ -1,0 +1,114 @@
+package com.eveningoutpost.dexdrip.cgm.nsfollow;
+
+import static com.google.common.truth.Truth.assertThat;
+
+import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
+import com.eveningoutpost.dexdrip.cgm.nsfollow.messages.DeviceStatus;
+import com.eveningoutpost.dexdrip.utilitymodels.PumpStatus;
+
+import org.junit.Before;
+import org.junit.Test;
+
+/**
+ * Verifies that {@link NightscoutFollow#applyDeviceStatus} maps device status fields
+ * to {@link PumpStatus}, so NS follower data appears in the pump status display block.
+ *
+ * @author Asbjørn Aarrestad
+ */
+public class NightscoutFollowDeviceStatusApplyTest extends RobolectricTestWithConfig {
+
+    @Before
+    public void setUp() {
+        super.setUp();
+        // Reset PumpStatus to "not set" state before each test
+        PumpStatus.setBattery(-1);
+        PumpStatus.setReservoir(-1);
+    }
+
+    // ===== Battery ===============================================================================
+
+    @Test
+    public void applyDeviceStatus_populatesUploaderBatteryInPumpStatus() {
+        // :: Setup
+        DeviceStatus ds = new DeviceStatus();
+        ds.uploaderBattery = 84;
+
+        // :: Act
+        NightscoutFollow.applyDeviceStatus(ds);
+
+        // :: Verify
+        assertThat(PumpStatus.getBattery()).isWithin(0.001).of(84.0);
+    }
+
+    @Test
+    public void applyDeviceStatus_skipsSettingBatteryWhenUploaderBatteryIsNull() {
+        // :: Setup — uploaderBattery intentionally null
+        DeviceStatus ds = new DeviceStatus();
+
+        // :: Act
+        NightscoutFollow.applyDeviceStatus(ds);
+
+        // :: Verify — battery unchanged (below zero = not set)
+        assertThat(PumpStatus.getBattery()).isLessThan(0.0);
+    }
+
+    // ===== Reservoir =============================================================================
+
+    @Test
+    public void applyDeviceStatus_populatesReservoirInPumpStatus() {
+        // :: Setup
+        DeviceStatus ds = new DeviceStatus();
+        ds.pump = new DeviceStatus.Pump();
+        ds.pump.reservoir = 11.5;
+
+        // :: Act
+        NightscoutFollow.applyDeviceStatus(ds);
+
+        // :: Verify
+        assertThat(PumpStatus.getReservoirString()).contains("11.5");
+    }
+
+    @Test
+    public void applyDeviceStatus_skipsSettingReservoirWhenPumpIsNull() {
+        // :: Setup — pump intentionally null
+        DeviceStatus ds = new DeviceStatus();
+        ds.uploaderBattery = 75;
+
+        // :: Act — should not NPE
+        NightscoutFollow.applyDeviceStatus(ds);
+
+        // :: Verify — reservoir not set, battery set correctly
+        assertThat(PumpStatus.getReservoirString()).isEmpty();
+        assertThat(PumpStatus.getBattery()).isWithin(0.001).of(75.0);
+    }
+
+    @Test
+    public void applyDeviceStatus_skipsSettingReservoirWhenReservoirIsNull() {
+        // :: Setup — pump present but reservoir null
+        DeviceStatus ds = new DeviceStatus();
+        ds.pump = new DeviceStatus.Pump();
+        // reservoir not set — remains null
+
+        // :: Act
+        NightscoutFollow.applyDeviceStatus(ds);
+
+        // :: Verify
+        assertThat(PumpStatus.getReservoirString()).isEmpty();
+    }
+
+    // ===== Reset clears PumpStatus ===============================================================
+
+    @Test
+    public void resetInstance_clearsBatteryAndReservoirFromPumpStatus() {
+        // :: Setup — populate PumpStatus as if NSFollow was running
+        PumpStatus.setBattery(84);
+        PumpStatus.setReservoir(11.5);
+
+        // :: Act — simulate user switching off NSFollow
+        NightscoutFollow.resetInstance();
+
+        // :: Verify — stale device status no longer shown
+        assertThat(PumpStatus.getBatteryString()).isEmpty();
+        assertThat(PumpStatus.getReservoirString()).isEmpty();
+    }
+}
