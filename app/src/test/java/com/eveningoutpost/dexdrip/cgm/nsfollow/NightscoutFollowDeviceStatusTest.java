@@ -151,4 +151,19 @@ public class NightscoutFollowDeviceStatusTest extends RobolectricTestWithConfig 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).uploaderBattery).isNull();
     }
+
+    @Test
+    public void getDeviceStatus_parsesNestedUploaderBattery() throws Exception {
+        // :: Setup — modern REST upload format
+        server.enqueue(new MockResponse()
+                .setBody("[{\"uploader\":{\"battery\":72},\"date\":1700000000000}]"));
+
+        // :: Act
+        List<DeviceStatus> result = api.getDeviceStatus(null).execute().body();
+
+        // :: Verify
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).uploader).isNotNull();
+        assertThat(result.get(0).uploader.battery).isEqualTo(72);
+    }
 }
