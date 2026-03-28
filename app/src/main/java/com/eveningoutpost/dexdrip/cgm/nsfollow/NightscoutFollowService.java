@@ -74,12 +74,6 @@ public class NightscoutFollowService extends ForegroundService {
     }
 
     @Override
-    public void onCreate() {
-        super.onCreate();
-        NightscoutFollow.resetInstance(); // manage static reference life cycle
-    }
-
-    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("NSFollow-osc", 60000);
         try {
