@@ -74,6 +74,12 @@ public class NightscoutFollowService extends ForegroundService {
     }
 
     @Override
+    public void onCreate() {
+        super.onCreate();
+        NightscoutFollow.resetInstance(); // manage static reference life cycle
+    }
+
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("NSFollow-osc", 60000);
         try {
@@ -109,10 +115,7 @@ public class NightscoutFollowService extends ForegroundService {
                 return START_STICKY;
             }
 
-            // v3 always polls (incremental fetch); v1 skips if reading is recent
-            if (Pref.getBooleanDefaultFalse("nsfollow_use_v3")
-                    || lastBg == null
-                    || JoH.msSince(lastBg.timestamp) > DexCollectionType.getCurrentSamplePeriod()) {
+            if (lastBg == null || JoH.msSince(lastBg.timestamp) > DexCollectionType.getCurrentSamplePeriod()) {
                 if (JoH.ratelimit("last-ns-follow-poll", 5)) {
                     Inevitable.task("NS-Follow-Work", 200, () -> {
                         NightscoutFollow.work(true);
