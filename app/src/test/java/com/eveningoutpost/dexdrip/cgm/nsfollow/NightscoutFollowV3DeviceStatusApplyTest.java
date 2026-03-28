@@ -69,6 +69,22 @@ public class NightscoutFollowV3DeviceStatusApplyTest extends RobolectricTestWith
         assertThat(PumpStatus.getReservoirString()).contains("11.5");
     }
 
+    // ===== Reset clears PumpStatus =======================================================
+
+    @Test
+    public void resetInstance_clearsBatteryAndReservoirFromPumpStatus() {
+        // :: Setup — populate PumpStatus as if v3 was running
+        PumpStatus.setBattery(84);
+        PumpStatus.setReservoir(11.5);
+
+        // :: Act — simulate user switching off v3
+        NightscoutFollowV3.resetInstance();
+
+        // :: Verify — stale device status no longer shown
+        assertThat(PumpStatus.getBatteryString()).isEmpty();
+        assertThat(PumpStatus.getReservoirString()).isEmpty();
+    }
+
     @Test
     public void applyDeviceStatus_skipsSettingReservoirWhenPumpIsNull() {
         // :: Setup — pump intentionally null

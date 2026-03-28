@@ -298,6 +298,8 @@ public class NightscoutFollowV3 {
         service = null;
         cachedJwt = null;
         jwtExpiry = 0;
+        PumpStatus.setBattery(-1);
+        PumpStatus.setReservoir(-1);
         UserError.Log.d(TAG, "Instance reset");
     }
 }
