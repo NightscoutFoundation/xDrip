@@ -157,8 +157,12 @@ public class NightscoutFollow {
 
     @VisibleForTesting
     static void applyDeviceStatus(final DeviceStatus ds) {
-        if (ds.uploaderBattery != null) {
-            PumpStatus.setBattery(ds.uploaderBattery);
+        Integer battery = ds.uploaderBattery;
+        if (battery == null && ds.uploader != null) {
+            battery = ds.uploader.battery;
+        }
+        if (battery != null) {
+            PumpStatus.setBattery(battery);
         }
         if (ds.pump != null && ds.pump.reservoir != null) {
             PumpStatus.setReservoir(ds.pump.reservoir);

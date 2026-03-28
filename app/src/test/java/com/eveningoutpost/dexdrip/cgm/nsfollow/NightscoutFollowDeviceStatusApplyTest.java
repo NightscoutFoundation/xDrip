@@ -52,6 +52,35 @@ public class NightscoutFollowDeviceStatusApplyTest extends RobolectricTestWithCo
         assertThat(PumpStatus.getBattery()).isLessThan(0.0);
     }
 
+    @Test
+    public void applyDeviceStatus_populatesBatteryFromNestedUploaderField() {
+        // :: Setup — modern REST upload format: {"uploader": {"battery": 72}}
+        DeviceStatus ds = new DeviceStatus();
+        ds.uploader = new DeviceStatus.Uploader();
+        ds.uploader.battery = 72;
+
+        // :: Act
+        NightscoutFollow.applyDeviceStatus(ds);
+
+        // :: Verify
+        assertThat(PumpStatus.getBattery()).isWithin(0.001).of(72.0);
+    }
+
+    @Test
+    public void applyDeviceStatus_prefersUploaderBatteryOverNestedWhenBothPresent() {
+        // :: Setup — flat field takes priority (it is the API-v1 canonical field)
+        DeviceStatus ds = new DeviceStatus();
+        ds.uploaderBattery = 80;
+        ds.uploader = new DeviceStatus.Uploader();
+        ds.uploader.battery = 50;
+
+        // :: Act
+        NightscoutFollow.applyDeviceStatus(ds);
+
+        // :: Verify — flat uploaderBattery wins
+        assertThat(PumpStatus.getBattery()).isWithin(0.001).of(80.0);
+    }
+
     // ===== Reservoir =============================================================================
 
     @Test

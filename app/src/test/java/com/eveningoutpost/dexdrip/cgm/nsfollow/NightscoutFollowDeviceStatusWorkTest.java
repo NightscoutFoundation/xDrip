@@ -151,4 +151,17 @@ public class NightscoutFollowDeviceStatusWorkTest extends RobolectricTestWithCon
         // :: Verify
         assertThat(PumpStatus.getReservoirString()).contains("14.5");
     }
+
+    @Test
+    public void work_appliesBatteryFromNestedUploaderField() throws Exception {
+        // :: Setup — modern REST format with nested uploader.battery
+        usePathDispatcher("[{\"uploader\":{\"battery\":65},\"date\":1700000000000}]");
+
+        // :: Act
+        NightscoutFollow.work(false);
+        awaitCallbacks();
+
+        // :: Verify
+        assertThat(PumpStatus.getBattery()).isWithin(0.001).of(65.0);
+    }
 }
