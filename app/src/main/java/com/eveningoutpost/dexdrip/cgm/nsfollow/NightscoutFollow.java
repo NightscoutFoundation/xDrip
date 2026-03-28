@@ -120,6 +120,19 @@ public class NightscoutFollow {
                     }
                 }
             }
+            if (JoH.ratelimit("nsfollow-devicestatus", 5 * 60)) {
+                try {
+                    getService().getDeviceStatus(session.url.getHashedSecret()).enqueue(
+                            new NightscoutCallback<>("NS devicestatus download", session,
+                                    statusList -> {
+                                        if (!statusList.isEmpty()) {
+                                            applyDeviceStatus(statusList.get(0));
+                                        }
+                                    }, null));
+                } catch (Exception e) {
+                    UserError.Log.e(TAG, "Exception in devicestatus work() " + e);
+                }
+            }
         } else {
             msg("Please define Nightscout follow URL");
         }
