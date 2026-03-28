@@ -54,6 +54,9 @@ public class NightscoutFollow {
 
         @GET("/api/v1/treatments")
         Call<ResponseBody> getTreatments(@Header("api-secret") String secret);
+
+        @GET("/api/v1/devicestatus.json?count=1")
+        Call<List<DeviceStatus>> getDeviceStatus(@Header("api-secret") String secret);
     }
 
     private static Nightscout getService() {
