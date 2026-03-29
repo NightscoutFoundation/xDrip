@@ -151,21 +151,34 @@ public class NightscoutFollow {
         service = null;
         PumpStatus.setBattery(-1);
         PumpStatus.setReservoir(-1);
+        NightscoutFollowService.clearUploaderStatus();
         UserError.Log.d(TAG, "Instance reset");
         CollectionServiceStarter.restartCollectionServiceBackground();
     }
 
     @VisibleForTesting
     static void applyDeviceStatus(final DeviceStatus ds) {
-        Integer battery = ds.uploaderBattery;
-        if (battery == null && ds.uploader != null) {
-            battery = ds.uploader.battery;
+        final Integer pumpBatteryPercent = ds.pump != null && ds.pump.battery != null
+                ? ds.pump.battery.percent : null;
+        if (pumpBatteryPercent != null) {
+            PumpStatus.setBattery(pumpBatteryPercent);
+        } else {
+            final Integer uploaderBat = resolveUploaderBattery(ds);
+            if (uploaderBat != null) {
+                PumpStatus.setBattery(uploaderBat);
+            }
         }
-        if (battery != null) {
-            PumpStatus.setBattery(battery);
-        }
+
         if (ds.pump != null && ds.pump.reservoir != null) {
             PumpStatus.setReservoir(ds.pump.reservoir);
         }
+
+        NightscoutFollowService.updateUploaderStatus(resolveUploaderBattery(ds), ds.isCharging);
+    }
+
+    private static Integer resolveUploaderBattery(final DeviceStatus ds) {
+        if (ds.uploaderBattery != null) return ds.uploaderBattery;
+        if (ds.uploader != null) return ds.uploader.battery;
+        return null;
     }
 }

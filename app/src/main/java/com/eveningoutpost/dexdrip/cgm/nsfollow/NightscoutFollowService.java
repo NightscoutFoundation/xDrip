@@ -60,6 +60,9 @@ public class NightscoutFollowService extends ForegroundService {
     private static volatile long lastTreatmentTime = 0;
     private static volatile long treatmentReceivedDelay = 0;
 
+    static volatile Integer uploaderBattery = null;
+    static volatile Boolean uploaderCharging = null;
+
     @VisibleForTesting
     static boolean isNetworkAvailable(final ConnectivityManager cm) {
         return cm != null && cm.getActiveNetwork() != null;
@@ -146,6 +149,16 @@ public class NightscoutFollowService extends ForegroundService {
             treatmentReceivedDelay = JoH.msSince(lastTreatment.timestamp);
             lastTreatmentTime = lastTreatment.timestamp;
         }
+    }
+
+    static void updateUploaderStatus(final Integer battery, final Boolean charging) {
+        uploaderBattery = battery;
+        uploaderCharging = charging;
+    }
+
+    static void clearUploaderStatus() {
+        uploaderBattery = null;
+        uploaderCharging = null;
     }
 
     static void scheduleWakeUp() {
