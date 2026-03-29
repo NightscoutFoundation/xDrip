@@ -88,7 +88,7 @@
     <string name="pref_amazfit_enable_summary">Amazfit 데이터 연동 기능을 활성화합니다</string>
     <string name="pref_amazfit_enable">활성화</string>
     <string name="pref_amazfit_tile">Amazfit 서비스</string>
-    <string name="pref_amazfit_BG_alert_enable_summary">스마트워치에 활성화된 혈당 알림 보내기</string>
+    <string name="pref_amazfit_BG_alert_enable_summary">활성 혈당 알림을 스마트워치로 전송합니다</string>
     <string name="pref_amazfit_BG_alert_enable">활성화</string>
     <string name="pref_amazfit_BG_alert_title">혈당 알림</string>
     <string name="pref_amazfit_other_alert_enable_summary">기타 알림을 스마트워치로 전송합니다</string>
@@ -101,7 +101,7 @@
     <string name="pref_amazfit_watchface_graph_enable_summary">워치페이스 배경에 그래프를 표시합니다</string>
     <string name="pref_amazfit_watchface_graph_hours_title">워치페이스 그래프 시간</string>
     <string name="pref_amazfit_watchface_graph_hours_summary">그래프에 표시할 시간 범위를 설정합니다</string>
-    <string name="pref_amazfit_widget_graph_hours_title">위젯 그래프</string>
+    <string name="pref_amazfit_widget_graph_hours_title">위젯 그래프 시간</string>
     <string name="pref_amazfit_widget_graph_hours_summary">위젯 그래프에 표시할 시간 범위를 설정합니다</string>
     <string name="pref_amazfit_widget_graph_dots_title">위젯 그래프 점</string>
     <string name="pref_amazfit_widget_graph_dots_summary">위젯 그래프 점을 기본 크기보다 더 작게 표시합니다</string>
@@ -151,7 +151,7 @@
     <string name="now_choose_start_sensor_in_settings">이제 세팅에서 시작 센서(Start sensor)를 선택하세요.</string>
     <string name="double_check_dex_receiver_serial_number">Dexcom 수신기 시리얼 번호를 다시 확인하세요. 10자리여야 하며 문자를 빠뜨리지 마세요</string>
     <string name="please_set_dex_receiver_serial_number">앱 설정에서 Dexcom 수신기 시리얼 번호를 설정하세요</string>
-    <string name="unfortunately_andoird_version_no_blueooth_low_energy">안타깝게도, 현재 사용 중인 안드로이드 버전은 블루투스 로우에너지를 지원하지 않습니다</string>
+    <string name="unfortunately_andoird_version_no_blueooth_low_energy">안타깝게도, 현재 사용 중인 안드로이드 버전은 블루투스 저에너지(BLE)를 지원하지 않습니다.</string>
     <string name="waiting_for_packet">패킷을 기다리는 중..</string>
     <string name="persistent_high_for_greater_than">지속적으로 높은&gt; </string>
     <string name="space_mins">" 분"</string>
@@ -184,6 +184,8 @@
     <string name="share_config_via_qr_code">QR 코드를 통한 공유 구성</string>
     <string name="check_for_updated_version">업데이트 된 버전 확인</string>
     <string name="current_version_is_up_to_date">선택한 채널에 새로운 업데이트가 없습니다</string>
+    <string name="title_dialog_check_for_update">%1$s 채널에 업데이트가 없습니다</string>
+    <string name="message_dialog_check_for_update">다른 채널에 최신 버전이 존재할 수 있습니다.</string>
     <string name="send_feedback_to_developer">개발자에게 피드백 보내기</string>
     <string name="home_screen">홈 화면</string>
     <string name="event_logs">이벤트 로그</string>
@@ -286,6 +288,8 @@
     <string name="pref_summary_show_treatments">그래프에 인슐린/탄수화물 처치 지점을 표시합니다</string>
     <string name="pref_use_wear_health">Wear 건강 데이터 사용</string>
     <string name="pref_summary_use_wear_health">가능한 경우 만보기 걸음 수 데이터를 수집하고 표시합니다</string>
+    <string name="summary_enable_wear_auto_update">활성화 시, 휴대전화 버전과 일치하도록 워치의 xDrip을 자동 업데이트합니다.</string>
+    <string name="title_enable_wear_auto_update">워치 자동 업데이트</string>
     <string name="pebble_integration">Pebble 연동</string>
     <string name="send_data_to_pebble_watchface">Pebble 와치 페이스에 데이터를 전송합니다.</string>
     <string name="pebble_watch_integration">Pebble 와치 연동</string>
@@ -386,7 +390,7 @@
     <string name="enter_first_bg_value">첫번째 혈당을 입력하세요.</string>
     <string name="enter_second_bg_value">두번째 혈당을 입력하세요.</string>
     <string name="language_editor">언어 편집기</string>
-    <string name="configure_missed_readings">손실된 혈당 구성</string>
+    <string name="configure_missed_readings">수신 실패(Missed Readings) 설정</string>
     <string name="install_pebble_snooze_control_app">Pebble Snooze Control 앱 설치</string>
     <string name="install_pebble_classic_trend_watchface">Pebble Classic 트렌드 와치 페이스를 설치하세요.</string>
     <string name="install_pebble_trend_watchface">Pebble 트렌드 와치 페이스를 설치하세요.</string>
@@ -419,7 +423,7 @@
     <string name="please_indicate_what_you_think_of_the_app_generally">당신은 일반적으로 앱을 어떻게 생각하는지 알려주세요.</string>
     <string name="log_confidential_note">경고!\n로그에는 비밀번호나 사용자 ID와 같은 민감한 정보가 포함될 수 있습니다.</string>
     <string name="preferences_saved_in_sdcard_downloads">설정이 내부 저장소/Download 폴더에 저장되었습니다</string>
-    <string name="could_not_write_to_sdcard_check_perms">SDCARD에 쓸 수 없습니다.- 권한을 확인할까요?</string>
+    <string name="could_not_write_to_sdcard_check_perms">SD 카드에 쓸 수 없습니다. 권한을 확인할까요?</string>
     <string name="loaded_preferences_restarting">환경 설정 불러오기! - 다시 시작</string>
     <string name="could_not_load_preferences_check_pers">환경 설정을 불러올 수 없습니다. - 권한이나 파일을 체크할까요?</string>
     <string name="external_storage_not_writable">외부 저장 장치에 쓰기 가능 권한이 없습니다.</string>
@@ -551,7 +555,7 @@
     <string name="snooze_alert_before_it_fires">알림이 울리기 전 미리 스누즈</string>
     <string name="create_low_alert">저혈당 알림 생성</string>
     <string name="create_high_alert">고혈당 알림 생성</string>
-    <string name="long_press_an_existing_alert_to_edit">(기존 알림을 편지하기 위해서는 길게 누르세요.)</string>
+    <string name="long_press_an_existing_alert_to_edit">(기존 알림을 길게 눌러 편집하세요)</string>
     <string name="adding">추가 중</string>
     <string name="high">고혈당</string>
     <string name="alert">알림</string>
@@ -575,8 +579,8 @@
     <string name="glucose_number_from_filtered">필터링된 혈당 갯수</string>
     <string name="if_the_phone_has_text_to_speech">폰에 문자 음성 변환기능(TTS)이 있으면 매번 새로운 혈당이 들어오면 말해줄 것입니다.</string>
     <string name="upload_logs">업로드 로그</string>
-    <string name="short_off_text_for_switches">떨어져서</string>
-    <string name="short_on_text_for_switches">에</string>
+    <string name="short_off_text_for_switches">꺼짐</string>
+    <string name="short_on_text_for_switches">켜짐</string>
     <string name="install_pebble_apps">Pebble 앱 설치</string>
     <string name="sliding_24_hour_window_summary">통계 계산 시 자정부터가 아닌 지난 24시간 데이터를 사용합니다.</string>
     <string name="sliding_24_hour_window">슬라이딩 윈도우</string>
@@ -606,7 +610,7 @@
     <string name="attach_to_button">Pebble 버튼에 할당하여 워치에서 즉시 알림을 스누즈하거나, 원격 스누즈 기능에 사용합니다.</string>
     <string name="for_interacting_compatible_apps">호환되는 다른 앱과의 상호작용 설정</string>
     <string name="interapp_settings">앱 간 연동 설정</string>
-    <string name="use_plugins_for_brodcast">브로드캐스트 값에 플러그인 적용 (활성화된 경우)</string>
+    <string name="use_plugins_for_brodcast">브로드캐스트 값에 평탄화 및 플러그인 적용 (활성화된 경우)</string>
     <string name="send_display_glucose">표시되는 혈당값 전송</string>
     <string name="send_broadcasts_old_permission_model">이전 권한 모델을 사용하여 브로드캐스트 전송</string>
     <string name="process_nsclient_treatments">NSClient 앱에서 수신한 처치 데이터 처리</string>
@@ -648,6 +652,10 @@
     <string name="libre_use_smoothed_data_summary">5개 지점의 평균을 사용하여 더 부드러운 리브레 데이터를 얻습니다.</string>
     <string name="libre_use_smoothed_data_title">리브레 데이터 매끄럽게 처리.</string>
     <string name="retrieve_blukon_history_title">리브레 기록 가져오기</string>
+    <string name="summary_libre_one_minute_interval">리브레로부터 1분 간격으로 데이터를 수신합니다. 변경 사항을 적용하려면 휴대전화를 재부팅하세요.</string>
+    <string name="title_libre_one_minute_interval">리브레 1분 간격</string>
+    <string name="summary_nsfollow_sample_period">기본값: 5분\n현재: %s</string>
+    <string name="title_sample_period">샘플링 주기</string>
     <string name="retrieve_blukon_history_summary">센서에 다시 연결할 때 BluCon 장치에서 누락된 기록을 가져옵니다.</string>
     <string name="interpret_share_raw">Share 사용 시, 일반적으로 수신기에서 숨겨진 값을 xDrip에 표시합니다.</string>
     <string name="interpret_raw">원시값 해석</string>
@@ -789,7 +797,7 @@
     <string name="repeat_alerts">알림 반복</string>
     <string name="calibration_minutes_reraise">보정 요청 재알림 간격(분)</string>
     <string name="alert_repeat_minutes">알림 반복 간격(분)</string>
-    <string name="alert_noisy_values">X분 후 노이즈 값 지속 시 알림</string>
+    <string name="alert_noisy_values">노이즈 값 지속 시 알림(분)</string>
     <string name="alert_snooze">알림 스누즈</string>
     <string name="alert_minutes_reraise">스누즈 후 재알림 대기 시간(분)</string>
     <string name="reraise_before_snooze">스누즈 시간 전 재알림</string>
@@ -903,6 +911,9 @@
     <string name="only_stop_your_sensor_when_you_actually_plan">실제로 센서를 제거할 때만 센서를 중지하세요. 그렇지 않으면 계속 실행해 두세요!</string>
     <string name="restart_collector">수집기 다시 시작</string>
     <string name="forget_device">장치 지우기</string>
+    <string name="re_read_transmitter">트랜스미터 재인식</string>
+    <string name="tx_reread_confirmation_title">트랜스미터 정보 새로고침</string>
+    <string name="tx_reread_confirmation_message">xDrip이 트랜스미터의 특성 정보를 강제로 다시 읽도록 합니다. 트랜스미터가 교체되지 않은 경우에는 이점이 없으며, 상태 페이지에 일시적인 변화가 나타날 수 있습니다. 센서 세션 사이에 사용하는 것이 가장 권장됩니다.</string>
     <string name="other_notes">기타 메모:</string>
     <string name="delete_future_data">미래 데이터 삭제</string>
     <string name="show_only_untranslated">번역되지 않은 항목만 표시</string>
@@ -944,6 +955,7 @@
     <string name="use_confict_msg_glimp">Glimp 설정을 조정하세요: 옵션 -&gt; 장치 -&gt; 블루투스 옵션 선택 해제</string>
     <string name="eng_mode_is_on">개발자 모드가 활성화되었습니다. 예상치 못한 동작을 유발할 수 있으므로 꼭 필요한 경우가 아니라면 비활성화해 주세요.</string>
     <string name="yes">예</string>
+    <string name="enable">사용</string>
     <string name="xdrip_compatible_features">xDrip+ %s 기능</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
@@ -1022,7 +1034,7 @@
     <string name="bluetooth_watchdog_timer_sums">입력 값 분</string>
     <string name="basal_editor">기초량 편집기 - 조정할 시간 선택</string>
     <string name="sensor_is_still_warming_up_please_wait">센서가 아직 예열 중입니다. 잠시만 기다려 주세요</string>
-    <string name="number_wall_config">번호 월 구성</string>
+    <string name="number_wall_config">키패드 설정</string>
     <string name="summary_If_you_plan_to_only_use_a_Wear_collector_and_never_your_phone">Wear 수집기만 사용하고 휴대폰 수집기는 절대 사용하지 않을 계획인 경우 선택하세요.</string>
     <string name="title_Only_use_Wear">Wear만 사용</string>
     <string name="summary_Also_show_the_filtered_data_on_the_trend">추세 그래프에 필터링된 데이터도 함께 표시합니다</string>
@@ -1035,7 +1047,7 @@
     <string name="title_Heart_Rate_Sensor">심박수 센서</string>
     <string name="summary_Smooth_heart_rate_graph">심박수 그래프 부드럽게 표시</string>
     <string name="title_When_changes_by">변화량 기준</string>
-    <string name="title_Or_per_number_of_minutes">또는 시간 분 기준</string>
+    <string name="title_Or_per_number_of_minutes">시간(분) 기준</string>
     <string name="title_Identify_receiver">수신기 식별</string>
     <string name="summary_Only_send_to_named_package">지정된 패키지로만 전송</string>
     <string name="title_Accept_Calibrations">보정값 수락</string>
@@ -1176,11 +1188,11 @@
     <string name="which_system_do_you_use">어떤 시스템을 사용하십니까?</string>
     <string name="please_allow_permission">권한을 허용해 주세요</string>
     <string name="location_permission_needed_to_use_bluetooth">블루투스를 사용하려면 위치 권한이 필요합니다!</string>
-    <string name="did_you_insert_it_today">오늘 삽입하셨습니까?</string>
+    <string name="did_you_insert_it_today">오늘 장착하셨습니까?</string>
     <string name="we_need_to_know_when_the_sensor_was_inserted_to_improve_calculation_accuracy__was_it_inserted_today">계산 정확도를 높이기 위해 센서 삽입 시점을 알아야 합니다.\n\n오늘 삽입하셨습니까?</string>
     <string name="yes_today">네, 오늘입니다</string>
-    <string name="which_day_was_it_inserted">어떤 요일에 삽입하셨습니까?</string>
-    <string name="what_time_was_it_inserted">몇 시에 삽입하셨습니까?</string>
+    <string name="which_day_was_it_inserted">어떤 요일에 장착하셨습니까?</string>
+    <string name="what_time_was_it_inserted">몇 시에 장착하셨습니까?</string>
     <string name="new_sensor_started">새 센서 시작됨</string>
     <string name="error_sensor_start_time_in_future">오류: 센서 시작 시간이 미래로 설정됨</string>
     <string name="not_today">오늘 아님</string>
@@ -1330,6 +1342,7 @@
     <string name="title_nsfollow_url">Nightscout 팔로우 URL</string>
     <string name="summary_nsfollow_download_treatments">팔로워로서 Nightscout에서 처치 기록도 다운로드합니다</string>
     <string name="title_nsfollow_download_treatments">처치 기록 다운로드</string>
+    <string name="summary_nsfollow_lag">기본값: 0\n현재: %s</string>
     <string name="title_nsfollow_lag">Nightscout 팔로우 지연 시간</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
@@ -1407,17 +1420,19 @@
     <string name="title_high_priority_notifications">최우선 순위 알림</string>
     <string name="summary_public_notifications">보안 잠금 화면에서도 알림 내용을 표시합니다</string>
     <string name="title_public_notifications">공개 알림</string>
-    <string name="title_xdrip_plus_number_wall">잠금 화면 번호 월</string>
-    <string name="summary_do_number_wall_configuration">월 레이아웃을 조정하고 미리 봅니다</string>
-    <string name="title_do_number_wall_configuration">번호 월 구성</string>
+    <string name="title_xdrip_plus_number_wall">잠금 화면 키패드</string>
+    <string name="summary_do_number_wall_configuration">키패드 화면 구성 조정 및 미리보기</string>
+    <string name="title_do_number_wall_configuration">키패드 구성</string>
     <string name="summary_number_wall_on_lockscreen">잠금 화면에 표시합니다. 안드로이드 7 이상 전용!</string>
     <string name="title_number_wall_on_lockscreen">잠금 화면에서 사용</string>
-    <string name="title_color_number_wall">패드 문자 색상</string>
-    <string name="title_color_number_wall_shadow">월 그림자 색상</string>
+    <string name="title_color_number_wall">키패드 문자 색상</string>
+    <string name="title_color_number_wall_shadow">키패드 그림자 색상</string>
     <string name="summary_pick_numberwall_start">표시 시작 시간을 선택하세요</string>
     <string name="title_pick_numberwall_start">켜지는 시간</string>
     <string name="summary_pick_numberwall_stop">중지 시간을 선택하세요. 시작 시간과 같게 설정하면 항상 켜짐</string>
     <string name="title_pick_numberwall_stop">꺼지는 시간</string>
+    <string name="summary_force_lockscreen_text_color"><b>Enable:</b> 항상 선택한 텍스트 색상을 사용합니다.\n<b>Disable:</b> 메인 화면의 혈당 색상(저혈당 / 정상 범위 / 고혈당)을 사용합니다.</string>
+    <string name="title_force_lockscreen_text_color">텍스트 색상 강제 지정</string>
     <string name="title_xdrip_plus_number_icon">알림 영역 번호 아이콘</string>
     <string name="summary_do_number_icon_test">번호 아이콘은 일부 휴대폰을 충돌시킬 수 있습니다! 기능을 활성화하기 전에 탭하여 테스트를 실행하세요!</string>
     <string name="title_do_number_icon_test">번호 아이콘 테스트 실행</string>
@@ -1460,17 +1475,28 @@
     <string name="summary_desert_use_https">공용 WiFi 등 공유 네트워크를 위해 추가 암호화 계층을 사용합니다</string>
     <string name="title_desert_use_https">HTTPS 사용</string>
     <string name="title_xdrip_plus_experimental">실험적 기능 섹션</string>
+    <string name="title_novopen_insulin_pen">NovoPen 인슐린 펜</string>
+    <string name="summary_inpen_open_nov_support">노보펜 6 및 에코 플러스 모델의 NFC 투여량 다운로드</string>
+    <string name="title_inpen_open_nov_support">OpenNov 지원</string>
     <string name="summary_inpen_screen">투여량 다운로드 중</string>
     <string name="title_inpen_screen">InPen 인슐린 펜</string>
     <string name="title_inpen_enabled">InPen 지원</string>
     <string name="summary_inpen_detect_priming">프라이밍 투여를 감지하고 제외합니다</string>
     <string name="title_inpen_detect_priming">프라이밍 감지</string>
+    <string name="summary_inpen_prime_units">해당 단위 이하의 투여량은 프라이밍(기구 점검) 투여로 간주합니다.</string>
     <string name="title_inpen_prime_units">프라이밍 단위</string>
+    <string name="summary_inpen_prime_minutes">해당 시간(분) 이내의 투여는 프라이밍(기구 점검) 투여로 간주합니다.</string>
     <string name="title_inpen_prime_minutes">프라이밍 시간 윈도우</string>
+    <string name="summary_inpen_additional_debug_logs">디버깅을 위해 추가 데이터를 기록합니다. 속도가 느려질 수 있습니다.</string>
+    <string name="title_inpen_additional_debug_logs">추가 디버그 로그</string>
     <string name="summary_inpen_orphan_primes_ignored">체크 시, 후속 투여가 없는 프라이밍은 무시됩니다. 투여로 처리하려면 체크 해제하세요</string>
     <string name="title_inpen_orphan_primes_ignored">고립된 프라이밍 무시</string>
     <string name="summary_inpen_sounds">펜과 데이터 전송 시 소리로 알려줍니다</string>
     <string name="title_inpen_sounds">소리 재생</string>
+    <string name="summary_inpen_remove_priming_doses">다음 투여 전, 설정된 프라이밍 시간(분) 이내에 발생한 설정 단위 이하의 투여량을 프라이밍(기구 점검)으로 간주하여 자동으로 삭제합니다.</string>
+    <string name="title_inpen_remove_priming_doses">프라이밍(기구 점검) 투여 삭제</string>
+    <string name="summary_inpen_hide_priming_doses">그래프에서 프라이밍(기구 점검) 투여 메모 항목을 숨깁니다.</string>
+    <string name="title_inpen_hide_priming_doses">프라이밍(기구 점검) 투여 숨기기</string>
     <string name="summary_inpen_reset">초기화하고 페어링 모드인 새 펜을 검색합니다</string>
     <string name="title_inpen_reset">새 펜 찾기</string>
     <string name="summary_pendiq_screen">투여량 읽기 및 쓰기</string>
@@ -2013,4 +2039,5 @@
     <string name="glupro_reconnect_attempt">재연결 시도</string>
     <string name="glupro_reading_frequency">측정 주기</string>
     <string name="need_bluetooth_permission">블루투스 권한 필요</string>
+    <string name="ob1_sensor_stopped">센서 중지됨</string>
 </resources>
