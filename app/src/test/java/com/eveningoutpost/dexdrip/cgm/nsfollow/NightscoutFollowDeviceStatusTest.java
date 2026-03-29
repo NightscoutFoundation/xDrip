@@ -166,4 +166,20 @@ public class NightscoutFollowDeviceStatusTest extends RobolectricTestWithConfig 
         assertThat(result.get(0).uploader).isNotNull();
         assertThat(result.get(0).uploader.battery).isEqualTo(72);
     }
+
+    @Test
+    public void getDeviceStatus_parsesPumpBatteryPercent() throws Exception {
+        // :: Setup
+        server.enqueue(new MockResponse()
+                .setBody("[{\"pump\":{\"battery\":{\"percent\":87}},\"date\":1700000000000}]"));
+
+        // :: Act
+        List<DeviceStatus> result = api.getDeviceStatus(null).execute().body();
+
+        // :: Verify
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).pump).isNotNull();
+        assertThat(result.get(0).pump.battery).isNotNull();
+        assertThat(result.get(0).pump.battery.percent).isEqualTo(87);
+    }
 }
