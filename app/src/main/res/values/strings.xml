@@ -28,7 +28,6 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="no">No</string>
-    <string name="incorrect">Incorrect!</string>
     <string name="pref_sensor_location_dont_ask_again">Don\'t ask me that again</string>
 
     <string name="title_activity_error">"Error and Event List"</string>
@@ -989,6 +988,7 @@
     <string name="eng_mode_is_on">Engineering mode is enabled.  Please disable it unless you are certain you need it as it may cause unexpected behavior.</string>
     <string name="yes">Yes</string>
     <string name="enable">Enable</string>
+    <string name="dismiss">Dismiss</string>
     <string name="xdrip_compatible_features">xDrip+ %s Features</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
@@ -1661,9 +1661,6 @@
     <string name="restore_backup">Restore Backup?</string>
     <string name="do_you_want_to_restore_the_backup_file_">Do you want to restore the backup file: </string>
     <string name="restore">Restore</string>
-    <string name="title_transmitter_id_ending_with_dash1">Incorrect transmitter ID</string>
-    <string name="message_transmitter_id_ending_with_dash1">Use only the first 6 characters of the transmitter serial number for the transmitter ID.</string>
-    <string name="enter_the_first_6_characters_only">Enter the first 6 characters only</string>
     <string name="calibrate_sensor">Calibrate Sensor?</string>
     <string name="we_have_some_readings__next_we_need_the_first_calibration_blood_test__ready_to_calibrate_now">We have some readings!\n\nNext, we need the first calibration blood test.\n\nReady to calibrate now?</string>
     <string name="calibrate">Calibrate</string>
@@ -1785,6 +1782,11 @@
     <string name="auto_starting_sensor">Auto starting sensor!</string>
     <string name="start_sensor_confirmation">Data Source is set to: %s\n\nDo you want to change settings or start sensor?</string>
     <string name="state_not_currently_known">%s  State isn\'t currently known. Next connection will update this</string>
+    <string name="state_tx_id_ends_with_dash_1">Use only the first 6 characters of the transmitter serial number as the transmitter ID.</string>
+    <string name="message_transmitter_id_ending_with_dash1">Enter the first 6 characters of the transmitter ID without “-1”.</string>
+    <string name="title_transmitter_id_ending_with_dash1">Invalid Transmitter ID</string>
+    <string name="message_removed_dash1_from_transmitter_id">Using the first 6 characters; “-1” has been removed.</string>
+    <string name="title_removed_dash1_from_transmitter_id">Corrected transmitter ID</string>
     <string name="unusual_calibration_waiting">Unusual calibration state - waiting for more data</string>
     <string name="could_not_find_blood_data">Could not find blood test data!! %s</string>
     <string name="transmitter_waiting_for_calibration">Waiting for Transmitter to receive calibration</string>

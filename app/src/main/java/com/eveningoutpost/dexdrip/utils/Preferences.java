@@ -196,6 +196,11 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
     private volatile String scanContents = null; // Text content of the scan coming either from camera or file
     private volatile byte[] scanRawBytes = null; // Raw bytes of the scan
 
+    public static boolean doesTxIdEndWithDash1() {
+        String txId = Pref.getString("dex_txid", "ABCDEF");
+        return txId.endsWith("-1");
+    }
+
     private void refreshFragments() {
         refreshFragments(null);
     }
@@ -1122,8 +1127,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 Log.e(TAG, "Exception during setSummary: " + e.toString());
             }
         }
-
-
 
         @SuppressLint("ApplySharedPref")
         @Override
@@ -2497,25 +2500,39 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     val activity = getActivity();
+                    String txId = (String) newValue;
+                    boolean allowSave = true;
+                    if (txId != null && txId.endsWith("-1")) {
+                        String title;
+                        String msg;
+                        if (((String) newValue).length() == 8) {
+                            // If there are 8 characters, remove -1 from the end and update TX ID.
+                            txId = txId.substring(0, 6);
+                            Pref.setString("dex_txid", txId);
+                            allowSave = false;
+                            title = gs(R.string.title_removed_dash1_from_transmitter_id);
+                            msg = gs(R.string.message_removed_dash1_from_transmitter_id);
+                        } else {
+                            // If the number of characters with -1 is not 8, leave TX ID as is, but inform the user.
+                            title = gs(R.string.title_transmitter_id_ending_with_dash1);
+                            msg = gs(R.string.message_transmitter_id_ending_with_dash1);
+                        }
+                        GenericConfirmDialog.inform(activity, title, msg, () -> {});
+                    }
+                    final String finalTxId = txId;
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            Dialog.askIfNeeded(activity, (String)newValue);
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                //
-                            }
                             Log.d(TAG, "Trying to restart collector due to tx id change");
 
-                            clearDataWhenTransmitterIdEntered((String)newValue);
+                            clearDataWhenTransmitterIdEntered(finalTxId);
 
                             CollectionServiceStarter.restartCollectionService(xdrip.getAppContext());
                         }
                     }).start();
-                    sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, newValue);
+                    sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, finalTxId);
 
-                    return true;
+                    return allowSave;
                 }
             });
 

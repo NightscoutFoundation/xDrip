@@ -44,5 +44,32 @@ public class GenericConfirmDialog {
         }
         dialog.show();
     }
+
+    public static void inform(final Activity activity, String title, String message, Runnable runnable) {
+        // Simply inform without offering a decline option.
+        // Think of it as a toast message that stays on screen until dismissed.
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(activity)
+                .setTitle(title)
+                .setMessage(message);
+
+        builder.setPositiveButton(R.string.dismiss, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                runnable.run();
+            }
+        });
+
+        final AlertDialog dialog = builder.create();
+        // apparently possible dialog is already showing, probably due to hash code
+        try {
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
+        } catch (Exception e) {
+            //
+        }
+        dialog.show();
+    }
 }
 

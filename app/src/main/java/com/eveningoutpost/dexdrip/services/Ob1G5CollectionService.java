@@ -2260,13 +2260,8 @@ public class Ob1G5CollectionService extends G5BaseService {
             l.add(new StatusItem("Hard Reset", "Attempting - please wait", Highlight.CRITICAL));
         }
 
-        try {
-            if (transmitterID != null) {
-                val wrongId = Transmitter.isDexTxIdEndingWithDash1();
-                l.add(new StatusItem("Transmitter ID", transmitterID + ((transmitterMAC != null && get_engineering_mode()) ? "\n" + transmitterMAC : "") + (wrongId ? " " + (gs(R.string.incorrect)) + "\n" + (gs(R.string.enter_the_first_6_characters_only)) : ""), wrongId ? CRITICAL : NORMAL));
-            }
-        } catch (Exception e) {
-
+        if (transmitterID != null) {
+            l.add(new StatusItem("Transmitter ID", transmitterID + ((transmitterMAC != null && get_engineering_mode()) ? "\n" + transmitterMAC : "")));
         }
 
         if (static_connection_state != null) {

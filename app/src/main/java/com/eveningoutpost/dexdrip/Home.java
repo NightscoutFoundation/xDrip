@@ -75,9 +75,7 @@ import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.g5model.DexSyncKeeper;
 import com.eveningoutpost.dexdrip.g5model.DexTimeKeeper;
-import com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.g5model.SensorDays;
-import com.eveningoutpost.dexdrip.g5model.Transmitter;
 import com.eveningoutpost.dexdrip.importedlibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.models.ActiveBluetoothDevice;
@@ -1872,7 +1870,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         refreshStatusLine();
         nanoStatus.setRunning(true);
         expiryStatus.setRunning(true);
-        handleDexTxIdEndingWithDash1();
 
         if (BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
             this.currentBgValueText.setTextSize(100);
@@ -2739,7 +2736,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         // TODO this logic needed a rework even a year ago, now its a lot more confused with the additional complexity of native mode
         if (Ob1G5CollectionService.isG5ActiveButUnknownState() && Calibration.latestValid(2).size() < 2) {
             // TODO use format string
-            notificationText.setText(String.format(gs(R.string.state_not_currently_known), (Ob1G5StateMachine.usingG6() ? (shortTxId() ? "G7" : "G6") : "G5")));
+            boolean endsWithDash1 = Preferences.doesTxIdEndWithDash1();
+            String device = shortTxId() ? "G7" : "G6";
+            int resId = endsWithDash1 ? R.string.state_tx_id_ends_with_dash_1 : R.string.state_not_currently_known;
+            notificationText.setText(String.format(gs(resId), device));
             showUncalibratedSlope();
         } else {
 
@@ -2802,21 +2802,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                             dontKeepScreenOn();
                         }
                     }
-                }
-            }
-        }
-    }
-
-    public void handleDexTxIdEndingWithDash1() {
-        if (Transmitter.isDexTxIdEndingWithDash1()) {
-            // Inform the user to correct the transmitter ID
-            if (dialog == null || !dialog.isShowing()) {
-                if (JoH.ratelimit("g6_txid_ending_with_dash1", 120)) {
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setTitle(gs(R.string.title_transmitter_id_ending_with_dash1));
-                    builder.setMessage(gs(R.string.message_transmitter_id_ending_with_dash1));
-                    builder.setPositiveButton(R.string.close, null);
-                    builder.show();
                 }
             }
         }

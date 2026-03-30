@@ -18,10 +18,4 @@ public class Transmitter {
     public void authenticate() {
 
     }
-
-    // True if G6 is being used and the G6 transmitter ID has more than 6 characters and the last 2 are -1
-    public static boolean isDexTxIdEndingWithDash1() {
-        return DexCollectionType.getDexCollectionType() == DexcomG5 && getTransmitterID().length() > 6 && getTransmitterID().endsWith("-1");
-    }
-
 }
