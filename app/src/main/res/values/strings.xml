@@ -1783,7 +1783,7 @@
     <string name="start_sensor_confirmation">Data Source is set to: %s\n\nDo you want to change settings or start sensor?</string>
     <string name="state_not_currently_known">%s  State isn\'t currently known. Next connection will update this</string>
     <string name="state_tx_id_ends_with_dash_1">Use only the first 6 characters of the transmitter serial number as the transmitter ID.</string>
-    <string name="message_transmitter_id_ending_with_dash1">Enter the first 6 characters of the transmitter ID without “-1”.</string>
+    <string name="message_transmitter_id_ending_with_dash1">Enter the first 6 characters of the transmitter serial number without “-1”.</string>
     <string name="title_transmitter_id_ending_with_dash1">Invalid Transmitter ID</string>
     <string name="message_removed_dash1_from_transmitter_id">Using the first 6 characters; “-1” has been removed.</string>
     <string name="title_removed_dash1_from_transmitter_id">Corrected transmitter ID</string>
