@@ -60,7 +60,9 @@ public class NightscoutFollowService extends ForegroundService {
     private static volatile long lastTreatmentTime = 0;
     private static volatile long treatmentReceivedDelay = 0;
 
+    @VisibleForTesting
     static volatile Integer uploaderBattery = null;
+    @VisibleForTesting
     static volatile Boolean uploaderCharging = null;
 
     @VisibleForTesting
@@ -233,34 +235,29 @@ public class NightscoutFollowService extends ForegroundService {
         statuses.add(new StatusItem("BG receive delay", ageOfBgLastPoll, ageOfLastBgPollHighlight));
 
         if(NightscoutFollow.treatmentDownloadEnabled()) {
-            statuses.add(new StatusItem());
             statuses.add(new StatusItem("Latest Treatment", ageLastTreatment + (lastTreatment != null ? " ago" : "")));
             statuses.add(new StatusItem("Treatment receive delay", ageOfTreatmentWhenReceived));
         }
 
         if (uploaderBattery != null || uploaderCharging != null) {
-            statuses.add(new StatusItem());
             if (uploaderBattery != null) {
-                statuses.add(new StatusItem("Uploader battery", uploaderBattery + "%"));
-            }
-            if (uploaderCharging != null) {
+                final String charging = Boolean.TRUE.equals(uploaderCharging) ? " (charging)" : "";
+                statuses.add(new StatusItem("Uploader battery", uploaderBattery + "%" + charging));
+            } else if (uploaderCharging != null) {
                 statuses.add(new StatusItem("Uploader charging", uploaderCharging ? gs(R.string.yes) : gs(R.string.no)));
             }
         }
 
-        statuses.add(new StatusItem());
         statuses.add(new StatusItem("Last poll", lastPollText + (lastPoll > 0 ? " ago" : "")));
         statuses.add(new StatusItem("Next poll in", JoH.niceTimeScalar(wakeup_time - JoH.tsl())));
         if (lastBg != null) {
             statuses.add(new StatusItem("Last BG time", JoH.dateTimeText(lastBg.timestamp)));
         }
         statuses.add(new StatusItem("Next poll time", JoH.dateTimeText(wakeup_time)));
-        statuses.add(new StatusItem());
         statuses.add(new StatusItem("Buggy handset", JoH.buggy_samsung ? gs(R.string.yes) : gs(R.string.no)));
         statuses.add(new StatusItem("Download treatments", NightscoutFollow.treatmentDownloadEnabled() ? gs(R.string.yes) : gs(R.string.no)));
 
         if (StringUtils.isNotBlank(lastState)) {
-            statuses.add(new StatusItem());
             statuses.add(new StatusItem("Last state", lastState));
         }
 
