@@ -45,7 +45,11 @@ public class GetURL {
     private static Response getURLresponse(final String URL) {
 
         if (httpClient == null) {
-            httpClient = OkHttpWrapper.getClient();
+            httpClient = OkHttpWrapper.getClient().newBuilder()
+                    .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+                    .readTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
+                    .writeTimeout(20, java.util.concurrent.TimeUnit.SECONDS)
+                    .build();
         }
 
 

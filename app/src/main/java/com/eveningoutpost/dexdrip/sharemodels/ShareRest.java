@@ -12,14 +12,9 @@ import com.eveningoutpost.dexdrip.sharemodels.models.InvitationPayload;
 import com.eveningoutpost.dexdrip.sharemodels.models.ShareAuthenticationBody;
 import com.eveningoutpost.dexdrip.sharemodels.models.ShareUploadPayload;
 import com.eveningoutpost.dexdrip.xdrip;
+import com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-import com.squareup.okhttp.ResponseBody;
 
 import java.io.IOException;
 import java.security.cert.CertificateException;
@@ -33,10 +28,17 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import okhttp3.Interceptor;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import okio.Buffer;
-import retrofit.Callback;
-import retrofit.GsonConverterFactory;
-import retrofit.Retrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by Emma Black on 12/26/14.
@@ -105,7 +107,7 @@ public class ShareRest {
 
     private synchronized OkHttpClient getOkHttpClient() {
         try {
-            final TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+            final X509TrustManager trustManager = new X509TrustManager() {
                 @Override
                 public void checkClientTrusted(
                         java.security.cert.X509Certificate[] chain,
@@ -120,62 +122,58 @@ public class ShareRest {
 
                 @Override
                 public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                    return null;
+                    return new java.security.cert.X509Certificate[0];
                 }
-            } };
+            };
 
             final SSLContext sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+            sslContext.init(null, new TrustManager[] { trustManager }, new java.security.SecureRandom());
             final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
 
-            final OkHttpClient okHttpClient = new OkHttpClient();
-            okHttpClient.networkInterceptors().add(new Interceptor() {
-                @Override
-                public synchronized Response intercept(Chain chain) throws IOException {
-                    try {
-                        // Add user-agent and relevant headers.
-                        Request original = chain.request();
-                        Request copy = original.newBuilder().build();
-                        Request modifiedRequest = original.newBuilder()
-                                .header("User-Agent", "CGM-Store-1.2/22 CFNetwork/711.5.6 Darwin/14.0.0")
-                                .header("Content-Type", "application/json")
-                                .header("Accept", "application/json")
-                                .build();
-                        Log.d(TAG, "Sending request: " + modifiedRequest.toString());
-                        Buffer buffer = new Buffer();
-                        copy.body().writeTo(buffer);
-                        Log.d(TAG, "Request body: " + buffer.readUtf8());
+            return OkHttpWrapper.getClient().newBuilder()
+                    .addNetworkInterceptor(new Interceptor() {
+                        @Override
+                        public synchronized Response intercept(Chain chain) throws IOException {
+                            try {
+                                // Add user-agent and relevant headers.
+                                Request original = chain.request();
+                                Request copy = original.newBuilder().build();
+                                Request modifiedRequest = original.newBuilder()
+                                        .header("User-Agent", "CGM-Store-1.2/22 CFNetwork/711.5.6 Darwin/14.0.0")
+                                        .header("Content-Type", "application/json")
+                                        .header("Accept", "application/json")
+                                        .build();
+                                Log.d(TAG, "Sending request: " + modifiedRequest.toString());
+                                if (copy.body() != null) {
+                                    Buffer buffer = new Buffer();
+                                    copy.body().writeTo(buffer);
+                                    Log.d(TAG, "Request body: " + buffer.readUtf8());
+                                }
 
-                        final Response response = chain.proceed(modifiedRequest);
-                        Log.d(TAG, "Received response: " + response.toString());
-                        if (response.body() != null) {
-                            MediaType contentType = response.body().contentType();
-                            String bodyString = response.body().string();
-                            Log.d(TAG, "Response body: " + bodyString);
-                            return response.newBuilder().body(ResponseBody.create(contentType, bodyString)).build();
-                        } else
-                            return response;
+                                final Response response = chain.proceed(modifiedRequest);
+                                Log.d(TAG, "Received response: " + response.toString());
+                                if (response.body() != null) {
+                                    MediaType contentType = response.body().contentType();
+                                    String bodyString = response.body().string();
+                                    Log.d(TAG, "Response body: " + bodyString);
+                                    return response.newBuilder().body(ResponseBody.create(contentType, bodyString)).build();
+                                } else
+                                    return response;
 
-                    } catch (NullPointerException e) {
-                        Log.e(TAG, "Got null pointer exception: " + e);
-                        return null;
-                    } catch (IllegalStateException e) {
-                        UserError.Log.wtf(TAG,"Got illegal state exception: " + e);
-                        return null;
-                    }
-                }
-            });
-
-            okHttpClient.setSslSocketFactory(sslSocketFactory);
-            okHttpClient.setHostnameVerifier(new HostnameVerifier() {
-
-                @Override
-                public boolean verify(String hostname, SSLSession session) {
-                        return true;
-                }
-            });
-
-            return okHttpClient;
+                            } catch (IllegalStateException e) {
+                                UserError.Log.wtf(TAG, "Got illegal state exception in network interceptor: " + e);
+                                throw new IOException("Network interceptor failed: " + e.getMessage(), e);
+                            }
+                        }
+                    })
+                    .sslSocketFactory(sslSocketFactory, trustManager)
+                    .hostnameVerifier(new HostnameVerifier() {
+                        @Override
+                        public boolean verify(String hostname, SSLSession session) {
+                            return true;
+                        }
+                    })
+                    .build();
         } catch (Exception e) {
             throw new RuntimeException("Error occurred initializing OkHttp: ", e);
         }
@@ -280,33 +278,36 @@ public class ShareRest {
         public abstract void onRetry();
 
         @Override
-        public void onResponse(retrofit.Response<T> response, Retrofit retrofit) {
+        public void onResponse(final Call<T> call, retrofit2.Response<T> response) {
             if (response.code() == 500 && attempts == 0) {
                 // retry with new session ID
                 attempts += 1;
                 dexcomShareApi.getSessionId(new ShareAuthenticationBody(password, username).toMap()).enqueue(new Callback<String>() {
                     @Override
-                    public void onResponse(retrofit.Response<String> response, Retrofit retrofit) {
-                        if (response.isSuccess()) {
+                    public void onResponse(Call<String> innerCall, retrofit2.Response<String> response) {
+                        if (response.isSuccessful()) {
                             sessionId = response.body();
                             ShareRest.this.sharedPreferences.edit().putString("dexcom_share_session_id", sessionId).apply();
                             onRetry();
+                        } else {
+                            UserError.Log.e(TAG, "Re-authentication failed with HTTP " + response.code() + " - upload will not be retried");
+                            delegate.onFailure(call, new java.io.IOException("Re-authentication failed: HTTP " + response.code()));
                         }
                     }
 
                     @Override
-                    public void onFailure(Throwable t) {
-                        delegate.onFailure(t);
+                    public void onFailure(Call<String> innerCall, Throwable t) {
+                        delegate.onFailure(call, t);
                     }
                 });
             } else {
-                delegate.onResponse(response, retrofit);
+                delegate.onResponse(call, response);
             }
         }
 
         @Override
-        public void onFailure(Throwable t) {
-            delegate.onFailure(t);
+        public void onFailure(Call<T> call, Throwable t) {
+            delegate.onFailure(call, t);
         }
     }
 }

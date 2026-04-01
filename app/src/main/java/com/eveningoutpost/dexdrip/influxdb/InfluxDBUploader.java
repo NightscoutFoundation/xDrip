@@ -32,6 +32,7 @@ import okhttp3.Response;
 
 public class InfluxDBUploader {
     private static final int SOCKET_TIMEOUT = 60000;
+    private static final int CONNECTION_TIMEOUT = 30000;
     private static final String TAG = InfluxDBUploader.class.getSimpleName();
     private static String last_error;
     private SharedPreferences prefs;
@@ -50,6 +51,8 @@ public class InfluxDBUploader {
         dbPassword = prefs.getString("cloud_storage_influxdb_password", null);
 
         client = OkHttpWrapper.getClient().newBuilder()
+                .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
+                .readTimeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS)
                 .writeTimeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS)
                 .addNetworkInterceptor(new Interceptor() {
                     @Override
