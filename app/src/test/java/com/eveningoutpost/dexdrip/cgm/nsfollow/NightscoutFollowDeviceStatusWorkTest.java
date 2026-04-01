@@ -164,4 +164,32 @@ public class NightscoutFollowDeviceStatusWorkTest extends RobolectricTestWithCon
         // :: Verify
         assertThat(PumpStatus.getBattery()).isWithin(0.001).of(65.0);
     }
+
+    @Test
+    public void work_routesChargingFalse_toService() throws Exception {
+        // :: Setup — AAPS-style payload matching actual NS response shape
+        usePathDispatcher("[{\"uploaderBattery\":33,\"isCharging\":false,"
+                + "\"pump\":{\"battery\":{},\"reservoir\":75},\"uploader\":{},"
+                + "\"date\":1700000000000}]");
+
+        // :: Act
+        NightscoutFollow.work(false);
+        awaitCallbacks();
+
+        // :: Verify — false is non-null, charging row will show "No"
+        assertThat(NightscoutFollowService.uploaderCharging).isFalse();
+    }
+
+    @Test
+    public void work_routesChargingTrue_toService() throws Exception {
+        // :: Setup
+        usePathDispatcher("[{\"uploaderBattery\":80,\"isCharging\":true,\"date\":1700000000000}]");
+
+        // :: Act
+        NightscoutFollow.work(false);
+        awaitCallbacks();
+
+        // :: Verify
+        assertThat(NightscoutFollowService.uploaderCharging).isTrue();
+    }
 }

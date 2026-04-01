@@ -50,11 +50,11 @@ public class DeviceStatus {
             @Expose
             public Integer percent;
         }
-    }
 
-    public static class Extended {
+        public static class Extended {
 
-        @Expose
-        public Double BaseBasalRate;
+            @Expose
+            public Double BaseBasalRate;
+        }
     }
 }

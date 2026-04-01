@@ -168,6 +168,20 @@ public class NightscoutFollowDeviceStatusTest extends RobolectricTestWithConfig 
     }
 
     @Test
+    public void getDeviceStatus_parsesIsCharging() throws Exception {
+        // :: Setup
+        server.enqueue(new MockResponse()
+                .setBody("[{\"uploaderBattery\":80,\"isCharging\":true,\"date\":1700000000000}]"));
+
+        // :: Act
+        List<DeviceStatus> result = api.getDeviceStatus(null).execute().body();
+
+        // :: Verify
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).isCharging).isTrue();
+    }
+
+    @Test
     public void getDeviceStatus_parsesPumpBatteryPercent() throws Exception {
         // :: Setup
         server.enqueue(new MockResponse()

@@ -38,7 +38,7 @@ public class NightscoutCallback<T> extends BaseCallback<T> {
                 try {
                     populator.accept(response.body());
                 } catch (Exception e) {
-                    UserError.Log.e("NightscoutCallback", name + " populator error: " + e);
+                    UserError.Log.e(TAG, name + " populator error: " + e);
                 }
             } else {
                 session.populate(response.body());

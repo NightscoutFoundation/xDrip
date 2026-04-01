@@ -1,15 +1,9 @@
 package com.eveningoutpost.dexdrip.cgm.nsfollow;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.robolectric.Shadows.shadowOf;
-
-import android.os.Looper;
 
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.messages.Entry;
-import com.eveningoutpost.dexdrip.models.JoH;
-import com.eveningoutpost.dexdrip.utilitymodels.Pref;
-import com.eveningoutpost.dexdrip.utilitymodels.PumpStatus;
 import com.eveningoutpost.dexdrip.utils.framework.RetrofitService;
 
 import org.junit.After;
@@ -17,9 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-import okhttp3.mockwebserver.Dispatcher;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -111,66 +103,5 @@ public class NightscoutFollowCallerTest extends RobolectricTestWithConfig {
         // :: Verify
         assertThat(response.isSuccessful()).isFalse();
         assertThat(response.code()).isEqualTo(500);
-    }
-
-    // ===== Device status ==========================================================================
-
-    @Test
-    public void work_requestsDeviceStatusPath() throws Exception {
-        // :: Setup — clear rate limiter, configure path-aware dispatcher
-        JoH.clearRatelimit("nsfollow-devicestatus");
-        Pref.setString("nsfollow_url", server.url("/").toString());
-        server.setDispatcher(new Dispatcher() {
-            @Override
-            public MockResponse dispatch(RecordedRequest request) {
-                if (request.getPath() != null && request.getPath().contains("devicestatus")) {
-                    return new MockResponse().setBody("[{\"uploaderBattery\":55,\"date\":1700000000000}]");
-                }
-                return new MockResponse().setBody("[]");
-            }
-        });
-
-        // :: Act
-        NightscoutFollow.work(false);
-        Thread.sleep(300);
-        shadowOf(Looper.getMainLooper()).idle();
-
-        // :: Verify — at least one request hit the devicestatus path
-        boolean found = false;
-        int count = server.getRequestCount();
-        for (int i = 0; i < count; i++) {
-            String path = server.takeRequest(1, TimeUnit.SECONDS).getPath();
-            if (path != null && path.contains("devicestatus")) {
-                found = true;
-            }
-        }
-        assertThat(found).isTrue();
-        NightscoutFollow.resetInstance();
-    }
-
-    @Test
-    public void work_deviceStatusAppliesBatteryToPumpStatus() throws Exception {
-        // :: Setup
-        JoH.clearRatelimit("nsfollow-devicestatus");
-        PumpStatus.setBattery(-1);
-        Pref.setString("nsfollow_url", server.url("/").toString());
-        server.setDispatcher(new Dispatcher() {
-            @Override
-            public MockResponse dispatch(RecordedRequest request) {
-                if (request.getPath() != null && request.getPath().contains("devicestatus")) {
-                    return new MockResponse().setBody("[{\"uploaderBattery\":62,\"date\":1700000000000}]");
-                }
-                return new MockResponse().setBody("[]");
-            }
-        });
-
-        // :: Act
-        NightscoutFollow.work(false);
-        Thread.sleep(300);
-        shadowOf(Looper.getMainLooper()).idle();
-
-        // :: Verify
-        assertThat(PumpStatus.getBattery()).isWithin(0.001).of(62.0);
-        NightscoutFollow.resetInstance();
     }
 }
