@@ -10,10 +10,14 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 
 import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import retrofit2.Retrofit;
+
+import com.eveningoutpost.dexdrip.cgm.nsfollow.GzipRequestInterceptor;
+import com.eveningoutpost.dexdrip.tidepool.InfoInterceptor;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -48,8 +52,10 @@ public class RetrofitServiceTest extends RobolectricTestWithConfig {
         Field callFactoryField = Retrofit.class.getDeclaredField("callFactory");
         callFactoryField.setAccessible(true);
         OkHttpClient client = (OkHttpClient) callFactoryField.get(retrofit);
-        // Should have: HttpLoggingInterceptor, InfoInterceptor, GzipRequestInterceptor
         assertThat(client.interceptors()).hasSize(3);
+        assertThat(client.interceptors().stream().anyMatch(i -> i instanceof HttpLoggingInterceptor)).isTrue();
+        assertThat(client.interceptors().stream().anyMatch(i -> i instanceof InfoInterceptor)).isTrue();
+        assertThat(client.interceptors().stream().anyMatch(i -> i instanceof GzipRequestInterceptor)).isTrue();
     }
 
     @Test

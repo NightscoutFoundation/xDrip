@@ -163,12 +163,13 @@ public class NightscoutFollowService extends ForegroundService {
         // Status for BG receive delay (time from bg was recorded till received in xdrip)
         String ageOfBgLastPoll = "n/a";
         Highlight ageOfLastBgPollHighlight = Highlight.NORMAL;
+        final long lag = getLag();
         if (bgReceiveDelay > 0) {
             ageOfBgLastPoll = JoH.niceTimeScalar(bgReceiveDelay);
-            if (bgReceiveDelay - getLag() > DexCollectionType.getCurrentSamplePeriod() / 2) {
+            if (bgReceiveDelay - lag > DexCollectionType.getCurrentSamplePeriod() / 2) {
                 ageOfLastBgPollHighlight = Highlight.BAD;
             }
-            if (bgReceiveDelay - getLag() > DexCollectionType.getCurrentSamplePeriod() * 2) {
+            if (bgReceiveDelay - lag > DexCollectionType.getCurrentSamplePeriod() * 2) {
                 ageOfLastBgPollHighlight = Highlight.CRITICAL;
             }
         }
@@ -179,7 +180,7 @@ public class NightscoutFollowService extends ForegroundService {
         if (lastBg != null) {
             long age = JoH.msSince(lastBg.timestamp);
             ageLastBg = JoH.niceTimeScalar(age);
-            if (age > DexCollectionType.getCurrentSamplePeriod() + hightlightGrace + getLag()) {
+            if (age > DexCollectionType.getCurrentSamplePeriod() + hightlightGrace + lag) {
                 bgAgeHighlight = Highlight.BAD;
             }
         }

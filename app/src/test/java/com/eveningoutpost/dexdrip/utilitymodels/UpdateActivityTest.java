@@ -1,11 +1,13 @@
 package com.eveningoutpost.dexdrip.utilitymodels;
 
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
+import com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 
@@ -27,31 +29,25 @@ public class UpdateActivityTest extends RobolectricTestWithConfig {
     }
 
     @Test
-    public void httpClient_usesSharedClient() throws Exception {
+    public void httpClient_sharesConnectionPoolAndHasCorrectTimeouts() throws Exception {
         // :: Setup
         Field httpClientField = UpdateActivity.class.getDeclaredField("httpClient");
         httpClientField.setAccessible(true);
 
-        // :: Act — simulate the lazy init: if (httpClient == null) httpClient = OkHttpWrapper.getClient()
-        httpClientField.set(null, OkHttpWrapper.getClient());
-        OkHttpClient client = (OkHttpClient) httpClientField.get(null);
+        // :: Act — simulate the lazy init using newBuilder() as in production code
+        OkHttpClient client = OkHttpWrapper.getClient().newBuilder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .writeTimeout(20, TimeUnit.SECONDS)
+                .build();
+        httpClientField.set(null, client);
 
-        // :: Verify — same instance as shared client
-        assertThat(client).isSameInstanceAs(OkHttpWrapper.getClient());
-    }
-
-    @Test
-    public void httpClient_sharesConnectionPool() throws Exception {
-        // :: Setup
-        Field httpClientField = UpdateActivity.class.getDeclaredField("httpClient");
-        httpClientField.setAccessible(true);
-
-        // :: Act
-        httpClientField.set(null, OkHttpWrapper.getClient());
-        OkHttpClient client = (OkHttpClient) httpClientField.get(null);
-
-        // :: Verify
+        // :: Verify — newBuilder() shares pool but is a distinct instance with explicit timeouts
+        assertThat(client).isNotSameInstanceAs(OkHttpWrapper.getClient());
         assertThat(client.connectionPool()).isSameInstanceAs(OkHttpWrapper.getClient().connectionPool());
+        assertThat(client.connectTimeoutMillis()).isEqualTo(30_000);
+        assertThat(client.readTimeoutMillis()).isEqualTo(60_000);
+        assertThat(client.writeTimeoutMillis()).isEqualTo(20_000);
     }
 
     @Test

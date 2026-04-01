@@ -132,7 +132,7 @@
     <string name="title_activity_alert_list">Alert List</string>
     <string name="speaktreatment">Speak treatment</string>
 
-    <string name="title_activity_update">xDrip+ Update Available</string>
+    <string name="title_activity_update">Update available</string>
     <string name="title_activity_display_qrcode">Share Settings via QR code</string>
     <string name="title_activity_send_feed_back">Send Feedback to Jamorham</string>
     <string name="title_activity_save_logs">Save Logs</string>
@@ -222,10 +222,10 @@
     <string name="deel_settings_for_algs">Deep settings for algorithms</string>
     <string name="low_level_prediction_values">Low level prediction values</string>
     <string name="glucose_drop_for_one_unit">Glucose drop for 1 Unit</string>
-    <string name="xdrip_plus_prediction_settings">xDrip+ Predictive Simulation settings</string>
+    <string name="xdrip_plus_prediction_settings">Predictive simulations</string>
     <string name="settings_for_syncing">Settings for syncing between handsets</string>
-    <string name="xdrip_plus_sync_settings">xDrip+ Sync settings</string>
-    <string name="xdrip_plus_update_settings">xDrip+ Update Settings</string>
+    <string name="xdrip_plus_sync_settings">xDrip+ sync</string>
+    <string name="xdrip_plus_update_settings">Update settings</string>
     <string name="automatic_update_check">Automatic update check</string>
     <string name="update_channel">Update Channel</string>
     <string name="send_crash_errors_to_developer">Send crash errors to developer</string>
@@ -256,7 +256,7 @@
     <string name="alarm_at_forecasted_low_mins">Time threshold [min]</string>
     <string name="title_forecast_low_threshold">Threshold</string>
     <string name="other_xdrip_plus_alerts">Other xDrip+ alerts</string>
-    <string name="xdrip_plus_display_settings">xDrip+ Display Settings</string>
+    <string name="xdrip_plus_display_settings">Display</string>
     <string name="display_customisations">Display customizations</string>
     <string name="insulin_carb_ratios_etc_for_models">Insulin, Carb ratios etc. for models</string>
     <string name="grams_of_carbohydrate_one_unit_covers">Grams of Carbohydrate 1 Unit covers</string>
@@ -342,7 +342,7 @@
     <string name="reset">Reset</string>
     <string name="pebble_and_android_wear_options">Options for different Watches</string>
     <string name="customize_colours">Customize Colors</string>
-    <string name="xdrip_plus_color_settings">xDrip+ Color Settings</string>
+    <string name="xdrip_plus_color_settings">Color settings</string>
     <string name="summary_font_settings">Customize Fonts</string>
     <string name="title_font_settings">Font Settings</string>
     <string name="summary_enlarge_fonts_on_large_screens">Automatically enlarge the font size on large screens, such as tablets</string>
@@ -352,7 +352,7 @@
     <string name="in_range_glucose_values">In-range</string>
     <string name="default_color_selected">Default Color Selected</string>
     <string name="color_bg_values">Fonts</string>
-    <string name="xdrip_plus_extra_settings">xDrip+ extra settings</string>
+    <string name="xdrip_plus_extra_settings">Extra settings</string>
     <string name="example_chart">Example graph</string>
     <string name="treatments_prediction_curves">Treatments / Prediction Curves</string>
     <string name="carbs_per_unit">Carbs per Unit</string>
@@ -402,7 +402,7 @@
     <string name="load_all_settings_from_sdcard">Load all settings from the settings file</string>
     <string name="delete_any_settings_on_sdcard">Delete settings folder (Download/xDrip-export)</string>
     <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Use QR codes to transfer settings using Settings->Auto Configure feature]]></string>
-    <string name="xdrip_plus_security_key_settings_only">xDrip Plus Security Key Settings only</string>
+    <string name="xdrip_plus_security_key_settings_only">Security key settings only</string>
     <string name="show_general_and_collection_settings">Show General and Collection Settings</string>
     <string name="copy_all_settings">Copy all Settings</string>
     <string name="sensor_is_ready_please_enter_double_calibration">Sensor is ready, please enter an initial calibration</string>
@@ -896,7 +896,7 @@
 
 
     <string name="movement_detection_and_vehicle_mode">Movement detection and vehicle mode</string>
-    <string name="xdrip_motion_tracking">xDrip+ Motion Tracking</string>
+    <string name="xdrip_motion_tracking">Motion tracking</string>
     <string name="detect_motion_types">Use sensors to detect types of motion</string>
     <string name="enable_motion_tracking">Enable Motion Tracking</string>
     <string name="display_motion_types">Store recent motion types and plot these on the main graph</string>
@@ -1055,7 +1055,7 @@
     <string name="device_inactivity">Device inactivity</string>
     <string name="test_message_sending">Test Message Sending</string>
     <string name="d_selected_contacts_for_text_messages_format">%d selected contacts for text messages</string>
-    <string name="xdrip_software_changed_format">xDrip software version changed from: %1$s to %2$s</string>
+    <string name="xdrip_software_changed_format">Software version changed from: %1$s to %2$s</string>
     <string name="when_connected_to_the_audio_device_shown_below_switch_to_vehicle_mode">Switch to Vehicle Mode when connected to the audio device shown below.</string>
     <string name="select_device">Select Device</string>
     <string name="no_bluetooth_audio_found">No Bluetooth audio found</string>
@@ -1090,7 +1090,7 @@
     <string name="summary_Accept_connections_from_any_network_instead_of_just_internally">Accept connections from any network instead of just internally within this device. There are security implications to enabling this! Shared Secret will be required if set.</string>
     <string name="title_Open_Web_Service">Open Web Service</string>
     <string name="summary_Shared_Secret_for_open_web_service">Shared Secret for open web service (should match your Nightscout API secret)</string>
-    <string name="title_xDrip_Web_Service_Secret">xDrip Web Service Secret</string>
+    <string name="title_xDrip_Web_Service_Secret">Web service secret</string>
     <string name="summary_Display_status_from_other_apps_like_AndroidAPS">Display status from other apps like AndroidAPS</string>
     <string name="title_External_Status">External Status</string>
     <string name="summary_Display_pump_status_information_if_available">Display pump status information if available</string>
@@ -1180,7 +1180,7 @@
     <string name="weekdays">Weekdays</string>
     <string name="weekends">Weekends</string>
     <string name="mega_priority">Mega-priority</string>
-    <string name="xdrip_reminders">xDrip+ Reminders</string>
+    <string name="xdrip_reminders">Reminders</string>
     <string name="button_15_min">15 Min</string>
     <string name="button_2_hour">2 Hour</string>
     <string name="button_1_day">1 Day</string>

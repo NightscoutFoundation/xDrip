@@ -80,6 +80,7 @@ public class WebDeposit {
             final OkHttpClient client = OkHttpWrapper.getClient().newBuilder()
                     .addInterceptor(httpLoggingInterceptor)
                     .addInterceptor(new InfoInterceptor(TAG))
+                    .connectTimeout(30, TimeUnit.SECONDS)
                     .readTimeout(600, TimeUnit.SECONDS)
                     .build();
 

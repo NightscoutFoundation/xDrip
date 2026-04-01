@@ -114,7 +114,11 @@ public class UpdateActivity extends BaseAppCompatActivity {
             new Thread(() -> {
                 try {
                     if (httpClient == null) {
-                        httpClient = OkHttpWrapper.getClient();
+                        httpClient = OkHttpWrapper.getClient().newBuilder()
+                                .connectTimeout(30, TimeUnit.SECONDS)
+                                .readTimeout(60, TimeUnit.SECONDS)
+                                .writeTimeout(20, TimeUnit.SECONDS)
+                                .build();
                     }
                     getVersionInformation(context);
                     if (versionnumber == 0) return;
