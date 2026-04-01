@@ -184,6 +184,8 @@
     <string name="share_config_via_qr_code">Dela inställningar med QR-kod</string>
     <string name="check_for_updated_version">Sök efter uppdateringar</string>
     <string name="current_version_is_up_to_date">Inga uppdateringar i den valda kanalen</string>
+    <string name="title_dialog_check_for_update">Ingen uppdatering i %1$s kanal</string>
+    <string name="message_dialog_check_for_update">En nyare version kan finnas i andra kanaler.</string>
     <string name="send_feedback_to_developer">Skicka feedback till utvecklare</string>
     <string name="home_screen">Startskärm</string>
     <string name="event_logs">Händelselogg</string>
@@ -286,6 +288,8 @@
     <string name="pref_summary_show_treatments">Visa behandlingar som punkter på grafen</string>
     <string name="pref_use_wear_health">Använd hälsodata från Wear</string>
     <string name="pref_summary_use_wear_health">Spara och visa stegräknaren om den finns</string>
+    <string name="summary_enable_wear_auto_update">När aktiverad, uppdatera automatiskt xDrip på klockan för att matcha telefonversionen.</string>
+    <string name="title_enable_wear_auto_update">Automatisk Wear-uppdatering</string>
     <string name="pebble_integration">Pebble-integration</string>
     <string name="send_data_to_pebble_watchface">Skicka data till Pebbles urtavla.</string>
     <string name="pebble_watch_integration">Pebble Watch-integration</string>
@@ -648,6 +652,10 @@
     <string name="libre_use_smoothed_data_summary">Använd i genomsnitt 5 punkter för att få bättre Libre data.</string>
     <string name="libre_use_smoothed_data_title">Utjämna Libre-värden.</string>
     <string name="retrieve_blukon_history_title">Hämta historik för Libre</string>
+    <string name="summary_libre_one_minute_interval">Acceptera data med en minuts intervall från Libre. Starta om telefonen för att ändringarna ska träda i kraft.</string>
+    <string name="title_libre_one_minute_interval">Libre 1 minut</string>
+    <string name="summary_nsfollow_sample_period">Standard: 5 min\nNuvarande: %s</string>
+    <string name="title_sample_period">Samplingsperiod</string>
     <string name="retrieve_blukon_history_summary">Hämta missad historik från BlueCon-enheten när du ansluter till sensorn.</string>
     <string name="interpret_share_raw">Om du använder Share, kommer xDrip visa värden som annars inte syns på mottagaren.</string>
     <string name="interpret_raw">Tolka råvärden</string>
@@ -903,6 +911,9 @@
     <string name="only_stop_your_sensor_when_you_actually_plan">Stoppa bara din sensor när du faktiskt planerar att ta bort den, annars lämna den igång!</string>
     <string name="restart_collector">Starta om samlare</string>
     <string name="forget_device">Glöm enhet</string>
+    <string name="re_read_transmitter">Återläs sändare</string>
+    <string name="tx_reread_confirmation_title">Uppdatera information om sändare</string>
+    <string name="tx_reread_confirmation_message">Tvingar xDrip att läsa om sändaregenskaper. Använd ej om sändaren inte har ändrats; ändringar av temporär statussida kan förekomma. Används bäst mellan sensorsessioner.</string>
     <string name="other_notes">Andra anteckningar:</string>
     <string name="delete_future_data">Ta bort framtida data</string>
     <string name="show_only_untranslated">Visa endast oöversatta</string>
@@ -944,6 +955,7 @@
     <string name="use_confict_msg_glimp">Du kan justera Glips inställningar: alternativ -&gt; enheter -&gt; avmarkera blåtandsvalet</string>
     <string name="eng_mode_is_on">Ingenjörsläge är påslaget. Stäng av det om du inte är helt säker på att du behöver det eftersom det kan leda till oväntade beteenden.</string>
     <string name="yes">Ja</string>
+    <string name="enable">Aktivera</string>
     <string name="xdrip_compatible_features">xDrip+ %s funktioner</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
@@ -1301,6 +1313,7 @@
     <string name="summary_lefun_enable">Synkronisera data med Lefun träningsband</string>
     <string name="title_lefun_enable">Använd Lefun Band</string>
     <string name="title_lefun_mac">Mac-adress</string>
+    <string name="summary_lefun_send_readings">Lämplig klockdatum för att representera glukosvärden. Bättre med mmol/l - se dokumentation</string>
     <string name="title_lefun_send_readings">Skicka avläsningar</string>
     <string name="summary_lefun_send_alarms">Skicka notifieringar till bandet för glukoslarm</string>
     <string name="title_lefun_send_alarms">Skicka alarm</string>
@@ -1320,11 +1333,18 @@
     <string name="title_lefun_screen_heart_pressure">Visa blodtryck</string>
     <string name="title_lefun_screen_find_phone">Visa Sök telefon / Snooze</string>
     <string name="title_lefun_screen_mac_address">Visa MAC-adress</string>
+    <string name="summary_allow_samsung_workaround">Använd alternativa lösningar för att undvika beteende hos vissa klockor som avviker från standarden. Utan detta kan vissa mottagare misslyckas med att få data.</string>
+    <string name="title_allow_samsung_workaround">Lösningar för väckning</string>
     <string name="summary_medtrum_use_native">Använd sändarens kalibrering istället för xDrip:s för primär</string>
+    <string name="title_medtrum_use_native">Medtrum standard</string>
+    <string name="summary_medtrum_a_hex">Diagnostiskt testvärde i hex-format</string>
+    <string name="title_medtrum_a_hex">Medtrum felsökning</string>
     <string name="summary_nsfollow_url">Webbadress för att följa</string>
     <string name="title_nsfollow_url">Nightscout Follow-länk</string>
     <string name="summary_nsfollow_download_treatments">Ladda också ned behandlingar från Nightscout som följare</string>
     <string name="title_nsfollow_download_treatments">Ladda ner behandlingar</string>
+    <string name="summary_nsfollow_lag">Standard: 0\nAktuellt: %s</string>
+    <string name="title_nsfollow_lag">Nightscout follow fördröjning</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
     <string name="summary_clfollow_user">CareLink login username</string>
@@ -1332,6 +1352,9 @@
     <string name="summary_clfollow_pass">CareLink login password</string>
     !-->
     <string name="title_clfollow_country">Land för CareLink</string>
+    <string name="summary_clfollow_country">Välj ditt land för carelink.</string>
+    <string name="title_clfollow_patient">CareLink Patient Användarnamn</string>
+    <string name="summary_clfollow_patient">CareLink patientanvändarnamn (valfritt)</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_lang">CareLink Language</string>
     <string name="summary_clfollow_lang">CareLink language code</string>
@@ -1340,6 +1363,7 @@
     <string name="summary_clfollow_login">Logga in med webbläsare</string>
     <string name="title_clfollow_grace_period">Tid för frist</string>
     <string name="summary_clfollow_grace_period">Fristtid för databegäran i sekunder</string>
+    <string name="title_clfollow_missed_poll_interval">Intervall för utebliven datainsamling</string>
     <string name="summary_clfollow_missed_poll_interval">Intervall för avstämning efter saknad data i minuter</string>
     <string name="title_clfollow_download_finger_bgs">Fingerstick</string>
     <string name="summary_clfollow_download_finger_bgs">Hämta fingerstick från CareLink</string>
@@ -1364,6 +1388,8 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Återgå till xDrip</string>
     <string name="summary_ob1_minimize_scanning">Använd heuristik för att minimera skanning med Bluetooth + spara ström</string>
     <string name="title_ob1_minimize_scanning">Minimera avsökning</string>
+    <string name="summary_ob1_avoid_scanning">Undvik skanning så mycket som möjligt (minskar batterianvändningen ytterligare)</string>
+    <string name="title_ob1_avoid_scanning">Undvik skanning</string>
     <string name="summary_using_g6">Jag använder en G6- eller Dexcom 1-sensor</string>
     <string name="title_using_g6">G6/Dex1-stöd</string>
     <string name="summary_ob1_g5_allow_resetbond">OB1-samlare kan frikoppla sessionen om den tror att krypteringen har misslyckats. Om du får problem med att den kopplar från så inaktivera detta alternativ. Om du sedan helt förlorar anslutningen, se till att detta är aktiverat.</string>
@@ -1378,11 +1404,21 @@
     <string name="title_insulin_colors">Insulinfärger</string>
     <string name="title_color_basal_tbr">Temporära basaler</string>
     <string name="title_color_smb_icon">SMB-ikon</string>
+    <string name="title_color_smb_line">SMB Linje</string>
     <string name="summary_xdrip_plus_graph_display_settings">Justera objekt i grafen</string>
     <string name="title_xdrip_plus_graph_display_settings">Grafinställningar</string>
+    <string name="summary_show_basal_line">Visa TBR-information från extern status</string>
+    <string name="title_show_basal_line">Visa Basal TBR</string>
     <string name="summary_show_g_prediction">Visa prediktiva glukosprickar för G6</string>
     <string name="title_show_g_prediction">G6-förutsägelser</string>
+    <string name="summary_show_smb_icons">Rensa bort ikoner för små bolusar</string>
     <string name="title_show_smb_icons">Visa ikoner för mikrobolus</string>
+    <string name="summary_show_medtrum_secondary">Visa alternativa glukosprickar</string>
+    <string name="title_show_medtrum_secondary">Medtrum Sekundär</string>
+    <string name="summary_illustrate_backfilled_data">Indikera att data fyllts på i efterhand i grafen</string>
+    <string name="title_illustrate_backfilled_data">Visa data som fyllts på i efterhand</string>
+    <string name="summary_high_priority_notifications">Visa aviseringar och diagram överst (även användbart på låsskärmen)</string>
+    <string name="title_high_priority_notifications">Notifikationer med hög prioritet</string>
     <string name="summary_public_notifications">Visa aviseringsinnehåll på säker låsskärm</string>
     <string name="title_public_notifications">Publika aviseringar</string>
     <string name="title_xdrip_plus_number_wall">Nummervägg på låsskärmen</string>
@@ -1396,6 +1432,8 @@
     <string name="title_pick_numberwall_start">Slå på</string>
     <string name="summary_pick_numberwall_stop">Välj tid att sluta - sätt till samma som start för alltid på</string>
     <string name="title_pick_numberwall_stop">Avstängningstid</string>
+    <string name="summary_force_lockscreen_text_color"><b>Aktivera:</b> Använd alltid den valda textfärgen.\n<b>Inaktivera:</b> Använd huvudskärmens glukosfärger (lågt / in-range / hög).</string>
+    <string name="title_force_lockscreen_text_color">Tvinga textfärg</string>
     <string name="title_xdrip_plus_number_icon">Nummerikon i aviseringsområdet</string>
     <string name="summary_do_number_icon_test">Nummerikoner kraschar vissa telefoner! Tryck för att köra testet innan du aktiverar funktionen!</string>
     <string name="title_do_number_icon_test">Kör Nummerikontest</string>
@@ -1408,6 +1446,12 @@
     <string name="summary_number_icon_large_arrow">Visar trendpilen i den stora ikonen</string>
     <string name="title_number_icon_large_arrow">Visa pilen i stor ikon</string>
     <string name="title_xdrip_plus_accessibility">Inställningar för alltid på-skärm</string>
+    <string name="summary_aod_use_top">Använd första femtedelen av skärmen för AOD-widget</string>
+    <string name="title_aod_use_top">Använd topp</string>
+    <string name="summary_aod_use_top_center">Använd andra femtedelen av skärmen för AOD-widget</string>
+    <string name="title_aod_use_top_center">Använd övre mitten</string>
+    <string name="summary_aod_use_center">Använd tredje femtedelen av skärmen för AOD-widget</string>
+    <string name="title_aod_use_center">Använd mitten</string>
     <string name="summary_show_home_on_boot">Ta fram xDrip-skärmen automatiskt efter att enheten startat upp</string>
     <string name="title_show_home_on_boot">Visa xDrip vid uppstart</string>
     <string name="eula">LICENSAVTAL</string>
@@ -1881,5 +1925,6 @@
     <string name="turn_feature_off_on">Slå av/på funktionen</string>
     <string name="glupro_disconnected">Frånkopplad</string>
     <string name="glupro_connected">Ansluten</string>
+    <string name="glupro_start_time">Slå på</string>
     <string name="need_bluetooth_permission">Behöver bluetooth-behörighet</string>
 </resources>
