@@ -64,45 +64,6 @@ public class NightscoutFollowServiceMegaStatusTest extends RobolectricTestWithCo
     }
 
     // ===== Charging status ======================================================================
-
-    @Test
-    public void megaStatus_showsChargingYes_whenCharging() {
-        // :: Setup
-        NightscoutFollowService.updateUploaderStatus(null, true);
-
-        // :: Act
-        List<StatusItem> items = NightscoutFollowService.megaStatus();
-
-        // :: Verify
-        assertThat(hasLabel(items, "Uploader charging")).isTrue();
-        assertThat(valueFor(items, "Uploader charging")).isEqualTo("Yes");
-    }
-
-    @Test
-    public void megaStatus_showsChargingNo_whenNotCharging() {
-        // :: Setup
-        NightscoutFollowService.updateUploaderStatus(null, false);
-
-        // :: Act
-        List<StatusItem> items = NightscoutFollowService.megaStatus();
-
-        // :: Verify
-        assertThat(hasLabel(items, "Uploader charging")).isTrue();
-        assertThat(valueFor(items, "Uploader charging")).isEqualTo("No");
-    }
-
-    @Test
-    public void megaStatus_omitsChargingRow_whenChargingIsNull() {
-        // :: Setup — battery present but charging unknown
-        NightscoutFollowService.updateUploaderStatus(80, null);
-
-        // :: Act
-        List<StatusItem> items = NightscoutFollowService.megaStatus();
-
-        // :: Verify
-        assertThat(hasLabel(items, "Uploader charging")).isFalse();
-    }
-
     @Test
     public void megaStatus_appendsChargingSuffix_whenBatteryAndChargingBothSet() {
         // :: Setup — typical NS response: battery known and charging
@@ -113,7 +74,6 @@ public class NightscoutFollowServiceMegaStatusTest extends RobolectricTestWithCo
 
         // :: Verify — single row showing battery with charging suffix
         assertThat(valueFor(items, "Uploader battery")).isEqualTo("100% (charging)");
-        assertThat(hasLabel(items, "Uploader charging")).isFalse();
     }
 
     @Test
@@ -126,7 +86,6 @@ public class NightscoutFollowServiceMegaStatusTest extends RobolectricTestWithCo
 
         // :: Verify — value shows plain percentage, no suffix
         assertThat(valueFor(items, "Uploader battery")).isEqualTo("84%");
-        assertThat(hasLabel(items, "Uploader charging")).isFalse();
     }
 
     // ===== Section omission ======================================================================
@@ -140,6 +99,5 @@ public class NightscoutFollowServiceMegaStatusTest extends RobolectricTestWithCo
 
         // :: Verify — neither row present
         assertThat(hasLabel(items, "Uploader battery")).isFalse();
-        assertThat(hasLabel(items, "Uploader charging")).isFalse();
     }
 }

@@ -242,8 +242,6 @@ public class NightscoutFollowService extends ForegroundService {
         if (uploaderBattery != null) {
             final String charging = Boolean.TRUE.equals(uploaderCharging) ? " (charging)" : "";
             statuses.add(new StatusItem("Uploader battery", uploaderBattery + "%" + charging));
-        } else if (uploaderCharging != null) {
-            statuses.add(new StatusItem("Uploader charging", uploaderCharging ? gs(R.string.yes) : gs(R.string.no)));
         }
 
         statuses.add(new StatusItem("Last poll", lastPollText + (lastPoll > 0 ? " ago" : "")));
