@@ -117,7 +117,7 @@
     <string name="add_widget">Přidat widget</string>
     <string name="title_activity_alert_list">Seznam výstrah</string>
     <string name="speaktreatment">Mluvené ošetření</string>
-    <string name="title_activity_update">xDrip+ K dispozici je aktualizace</string>
+    <string name="title_activity_update">k dispozici je aktualizace xDrip+</string>
     <string name="title_activity_display_qrcode">Sdílet nastavení pomocí QR kódu</string>
     <string name="title_activity_send_feed_back">Poslat zpětnou vazbu Jamorhamovi (autor)</string>
     <string name="title_activity_save_logs">Uložit záznamy událostí</string>
@@ -184,6 +184,8 @@
     <string name="share_config_via_qr_code">Sdílet konfiguraci QR kódem</string>
     <string name="check_for_updated_version">Kontrola nové verze</string>
     <string name="current_version_is_up_to_date">Zvolený kanál nemá žádnou aktualizaci</string>
+    <string name="title_dialog_check_for_update">Žádná aktualizace v kanálu %1$s</string>
+    <string name="message_dialog_check_for_update">V jiných aktualizačních kanálech může existovat novější verze.</string>
     <string name="send_feedback_to_developer">Odeslat zpětnou vazbou vývojářům</string>
     <string name="home_screen">Domácí obrazovka</string>
     <string name="event_logs">Log událostí</string>
@@ -202,7 +204,7 @@
     <string name="deel_settings_for_algs">Pokročilé nastavení algoritmů</string>
     <string name="low_level_prediction_values">Hodnoty predikce nízkoúrovňové</string>
     <string name="glucose_drop_for_one_unit">Snížení glykémie po 1U</string>
-    <string name="xdrip_plus_prediction_settings">xDrip+ Prediktivní nastavení Simulace</string>
+    <string name="xdrip_plus_prediction_settings">xDrip+ Nastavení prediktivní simulace</string>
     <string name="settings_for_syncing">Nastavení pro synchronizaci mezi telefony</string>
     <string name="xdrip_plus_sync_settings">Nastavení xDrip+ synchronizace</string>
     <string name="xdrip_plus_update_settings">xDrip+ Nastavení Aktualizace</string>
@@ -286,6 +288,8 @@
     <string name="pref_summary_show_treatments">Zobrazit body s ošetřeními v grafu</string>
     <string name="pref_use_wear_health">Používat zdravotní údaje z hodinek Wear</string>
     <string name="pref_summary_use_wear_health">Sbírat a zobrazovat údaje o počtu kroků, pokud jsou dostupné</string>
+    <string name="summary_enable_wear_auto_update">Pokud je povoleno, automaticky aktualizovat xDrip na hodinkách na stejnou verzi jako v telefonu.</string>
+    <string name="title_enable_wear_auto_update">Automatická aktualizace Android Wear</string>
     <string name="pebble_integration">Integrace s Pebble</string>
     <string name="send_data_to_pebble_watchface">Odeslat data na Pebble hodinky.</string>
     <string name="pebble_watch_integration">Integrace s hodinkami Pebble</string>
@@ -328,7 +332,7 @@
     <string name="in_range_glucose_values">V rozsahu</string>
     <string name="default_color_selected">Vybrána výchozí barva</string>
     <string name="color_bg_values">Barva hodnoty glykémie a šipky trendu</string>
-    <string name="xdrip_plus_extra_settings">xDrip+ možnost nastavení</string>
+    <string name="xdrip_plus_extra_settings">xDrip+ rozšíření nastavení</string>
     <string name="example_chart">Příklad grafu</string>
     <string name="treatments_prediction_curves">Křivky ošetření / predikce</string>
     <string name="carbs_per_unit">Sacharidů na U</string>
@@ -551,7 +555,7 @@
     <string name="snooze_alert_before_it_fires">Potvrzení výstrahy před jejím spuštěním</string>
     <string name="create_low_alert">Vytvořít výstrahu pro nízké glykémie</string>
     <string name="create_high_alert">Vytvořit výstrahu pro vysoké glykémie</string>
-    <string name="long_press_an_existing_alert_to_edit">(Dlouhé stisknutí pro úpravy)</string>
+    <string name="long_press_an_existing_alert_to_edit">(Dlouhým stisknutím upravíte existující výstrahu)</string>
     <string name="adding">Přidávám</string>
     <string name="high">vysoká</string>
     <string name="alert">Výstraha</string>
@@ -648,6 +652,10 @@
     <string name="libre_use_smoothed_data_summary">Použít průměr z 5 měření, pro získání plynulejších dat z Libre.</string>
     <string name="libre_use_smoothed_data_title">Vyhlazovat data z Libre.</string>
     <string name="retrieve_blukon_history_title">Načíst historii z Libre</string>
+    <string name="summary_libre_one_minute_interval">Přijímat data v jednominutových intervalech z Libre. Restartujte telefon, aby se změny projevily.</string>
+    <string name="title_libre_one_minute_interval">Libre 1 minuta</string>
+    <string name="summary_nsfollow_sample_period">Výchozí: 5 min\nAktuální: %s</string>
+    <string name="title_sample_period">Časový interval</string>
     <string name="retrieve_blukon_history_summary">Načíst chybějící hodnoty z Blukonu při připojení senzoru</string>
     <string name="interpret_share_raw">Při použití Share, xDrip bude zobrazovat hodnoty na příjímači běžně skryté</string>
     <string name="interpret_raw">Interpretovat raw hodnoty</string>
@@ -903,6 +911,9 @@
     <string name="only_stop_your_sensor_when_you_actually_plan">Senzor zastavte pouze v případě, že ho skutečně plánujete odstranit, jinak ho nechte běžet!</string>
     <string name="restart_collector">Restartovat kolektor</string>
     <string name="forget_device">Zapomenout zařízení</string>
+    <string name="re_read_transmitter">Znovu načíst vysílač</string>
+    <string name="tx_reread_confirmation_title">Obnovit údaje vysílače</string>
+    <string name="tx_reread_confirmation_message">Přinutí xDrip znovu načíst údaje vysílače. Pokud nedošlo ke změně vysílače, nemá to žádný přínos; může dojít k dočasným změnám na stránce Stav systému. Nejlépe použít mezi jednotlivými relacemi senzoru.</string>
     <string name="other_notes">Další poznámky:</string>
     <string name="delete_future_data">Odstranit budoucí data</string>
     <string name="show_only_untranslated">Zobrazit pouze nepřeložené</string>
@@ -944,6 +955,7 @@
     <string name="use_confict_msg_glimp">Lze upravit nastavení aplikace Glimp: možnosti -&gt; zařízení -&gt; zrušit výběr možnosti Bluetooth</string>
     <string name="eng_mode_is_on">Vývojářský režim je povolen. Prosím vypněte jej, pokud si nejste opravdu jisti, že ho potřebujete, může způsobovat neočekávané chování aplikace xDrip+.</string>
     <string name="yes">Ano</string>
+    <string name="enable">Povolit</string>
     <string name="xdrip_compatible_features">xDrip+ %s funkce</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
@@ -1330,6 +1342,7 @@
     <string name="title_nsfollow_url">Nightscout URL pro sledování</string>
     <string name="summary_nsfollow_download_treatments">Pokusit se také pro sledující stáhnout ošetření z Nightscoutu</string>
     <string name="title_nsfollow_download_treatments">Stáhnout ošetření</string>
+    <string name="summary_nsfollow_lag">Výchozí:  min\nAktuální: %s</string>
     <string name="title_nsfollow_lag">Zpozdění pro Nightscout sledování</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
@@ -1417,7 +1430,9 @@
     <string name="summary_pick_numberwall_start">Zvolit čas zobrazení hodnoty glykémie</string>
     <string name="title_pick_numberwall_start">Zapnout</string>
     <string name="summary_pick_numberwall_stop">Zvolit čas ukončení zobrazení hodnoty glykémie - pro trvalé zobrazení zadat stejný čas jako zvolený čas zobrazení hodnoty glykémie</string>
-    <string name="title_pick_numberwall_stop">Čas vypnutí</string>
+    <string name="title_pick_numberwall_stop">Vypnout</string>
+    <string name="summary_force_lockscreen_text_color"><b>Povolit:</b> Vždy používat vybranou barvu textu.\n<b>Zakázat:</b> Použít barvy glykémie na hlavní obrazovce (nízká / ok / vysoká).</string>
+    <string name="title_force_lockscreen_text_color">Použít barvu textu</string>
     <string name="title_xdrip_plus_number_icon">Hodnota glykémie jako číselná ikona v notifikační liště</string>
     <string name="summary_do_number_icon_test">Číselná ikona může způsobit pády/zamrznutí telefónu! Klepnutím otestujte předtím než povolíte tuto funkci!
 
@@ -1462,17 +1477,28 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="summary_desert_use_https">Přidat další vrstvu šifrování pro sdílené sítě, např. veřejné WiFi</string>
     <string name="title_desert_use_https">Použít HTTPS</string>
     <string name="title_xdrip_plus_experimental">Experimentální funkce</string>
+    <string name="title_novopen_insulin_pen">Inzulínové pero NovoPen</string>
+    <string name="summary_inpen_open_nov_support">NFC stahování dávek modelu 6 a Echo Plus</string>
+    <string name="title_inpen_open_nov_support">Podpora OpenNov</string>
     <string name="summary_inpen_screen">Stahování informací o dávkách</string>
     <string name="title_inpen_screen">Inzulínové pero InPen</string>
     <string name="title_inpen_enabled">Podpora pera InPen</string>
     <string name="summary_inpen_detect_priming">Zjistit a odstranit odstřikovací dávky</string>
     <string name="title_inpen_detect_priming">Zjistit odstřikování</string>
+    <string name="summary_inpen_prime_units">Dávky musí být menší nebo rovny tomuto počtu jednotek, aby mohly být považovány za odstřikovací dávku.</string>
     <string name="title_inpen_prime_units">Počet jednotek odstřikování</string>
+    <string name="summary_inpen_prime_minutes">Jak blízko v minutách musí být dávka považována za odstřikovací dávku.</string>
     <string name="title_inpen_prime_minutes">Časová lhůta pro odstřikování</string>
+    <string name="summary_inpen_additional_debug_logs">Zaznamenávat dodatečná data pro snazší ladění. Může zpomalit xDrip.</string>
+    <string name="title_inpen_additional_debug_logs">Další záznamy ladění</string>
     <string name="summary_inpen_orphan_primes_ignored">Pokud je zaškrnuto, odstřiky bez následující dávky inzulínu budou ignorovány. Zrušením zaškrnutí budou považovány za normální dávky inzulínu.</string>
     <string name="title_inpen_orphan_primes_ignored">Ignorovat ojedinělé odstřiky</string>
     <string name="summary_inpen_sounds">Zvukem oznámit přenos dat s perem</string>
     <string name="title_inpen_sounds">Přehrát zvuky</string>
+    <string name="summary_inpen_remove_priming_doses">Automaticky odstranit odstřikovací dávky, které jsou stejné nebo menší než hodnota (počet jednotek) odstřikovací dávky a které se odehrávají během časové lhůty pro odstřikování.</string>
+    <string name="title_inpen_remove_priming_doses">Odstranit odstřikovací dávky</string>
+    <string name="summary_inpen_hide_priming_doses">Skrýt z grafu poznámky u odstřikovacích dávek.</string>
+    <string name="title_inpen_hide_priming_doses">Skrýt odstřikovací dávky</string>
     <string name="summary_inpen_reset">Smazat a hledat nové pero v režimu párování</string>
     <string name="title_inpen_reset">Najít nové pero</string>
     <string name="summary_pendiq_screen">Čtení a psaní dávek inzulínu</string>
@@ -1964,7 +1990,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="glupro_scan_again">Skenovat znovu</string>
     <string name="smartguide_pairing">SmartGuide párování</string>
     <string name="glupro_pairing_pin">Párovací PIN</string>
-    <string name="glupro_operational">V provozu</string>
+    <string name="glupro_operational">Funkční</string>
     <string name="glupro_sensor_malfunction">Porucha senzoru</string>
     <string name="glupro_battery_low">Slabá baterie</string>
     <string name="glupro_session_stopped">Relace ukončena</string>
@@ -2009,4 +2035,5 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="glupro_reconnect_attempt">Pokus o opětovné připojení</string>
     <string name="glupro_reading_frequency">Frekvence hodnot glykémií</string>
     <string name="need_bluetooth_permission">Je potřeba oprávnění pro Bluetooth</string>
+    <string name="ob1_sensor_stopped">Senzor zastaven</string>
 </resources>
