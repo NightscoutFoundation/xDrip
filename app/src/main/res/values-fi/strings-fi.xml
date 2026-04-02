@@ -184,6 +184,8 @@
     <string name="share_config_via_qr_code">Jaa asetukset QR koodilla</string>
     <string name="check_for_updated_version">Etsi ohjelmapäivitystä</string>
     <string name="current_version_is_up_to_date">Ei päivityksiä valitussa kanavassa</string>
+    <string name="title_dialog_check_for_update">Ei päivityksiä %1$s -kanavalla</string>
+    <string name="message_dialog_check_for_update">Muissa kanavissa voi olla uudempi versio.</string>
     <string name="send_feedback_to_developer">Lähetä palautetta kehittäjälle</string>
     <string name="home_screen">Aloitusnäyttö</string>
     <string name="event_logs">Tapahtumaloki</string>
@@ -286,6 +288,8 @@
     <string name="pref_summary_show_treatments">Näytä hoitotapahtumien pisteet kuvaajassa</string>
     <string name="pref_use_wear_health">Käytä Wear OS terveystietoja</string>
     <string name="pref_summary_use_wear_health">Kerää ja näytä askeleet kun tieto on saatavilla</string>
+    <string name="summary_enable_wear_auto_update">Kun käytössä, kellon XDrip päivityy automaattisesti samaan versioon kuin puhelimessa.</string>
+    <string name="title_enable_wear_auto_update">Automaattinen Wear-päivitys</string>
     <string name="pebble_integration">Pebble tuki</string>
     <string name="send_data_to_pebble_watchface">Lähetä tiedot Pebble-kellotaululle.</string>
     <string name="pebble_watch_integration">Pebble-kellon tuki</string>
@@ -647,6 +651,8 @@
     <string name="libre_use_smoothed_data_summary">Tasoita Libren kuvaajaa laskemalla tulos 5 edellisen lukeman perusteella.</string>
     <string name="libre_use_smoothed_data_title">Tasoita Libren kuvaajaa.</string>
     <string name="retrieve_blukon_history_title">Hae Libren vanhemmat tiedot</string>
+    <string name="summary_libre_one_minute_interval">Hyväksy tietojen siirto Librestä yhden minuutin välein. Käynnistä puhelin uudelleen, jotta muutokset tulevat voimaan.</string>
+    <string name="title_libre_one_minute_interval">Libre 1 minuutti</string>
     <string name="retrieve_blukon_history_summary">Kerää puuttuvat vanhemmat tiedot Bluconista, kun muodostat yhteyden sensoriin uudelleen.</string>
     <string name="interpret_share_raw">Jos käytät Share-palvelua, xDrip näyttää arvot, jotka on tavallisesti piilotettu vastaanottimeen.</string>
     <string name="interpret_raw">Tulkitse raaka-arvot</string>
@@ -902,6 +908,9 @@
     <string name="only_stop_your_sensor_when_you_actually_plan">Lopeta anturi vain, jos aiot irrottaa sen. Muussa tapauksessa jätä se käyntiin!</string>
     <string name="restart_collector">Käynnistä kerääjä uudelleen</string>
     <string name="forget_device">Unohda laite</string>
+    <string name="re_read_transmitter">Lue uudelleen</string>
+    <string name="tx_reread_confirmation_title">Päivitä lähettimen tiedot</string>
+    <string name="tx_reread_confirmation_message">Pakottaa xDrip:n lukemaan lähettimen tiedot uudelleen. to reeread transmitter ominaisuuksia. Ei vaikutusta, mikäli lähetin ei ole vaihtunut. Status-sivun väliaikaisia muutoksia voi esiintyä. Toimii parhaiten sensoria vaihdettaessa.</string>
     <string name="other_notes">Muut merkinnät:</string>
     <string name="delete_future_data">Poista tulevat tiedot</string>
     <string name="show_only_untranslated">Näytä vain kääntämättömät</string>
@@ -943,6 +952,7 @@
     <string name="use_confict_msg_glimp">Voit säätää Glimpin asetukset: valinnat -&gt; laitteet -&gt; poista Bluetooth -valinta</string>
     <string name="eng_mode_is_on">Engineering-tila on käytössä. Poista se käytöstä, ellet ole varma, että tarvitset sitä. Engineering-tila voi aiheuttaa odottamattomia seuraamuksia.</string>
     <string name="yes">Kyllä</string>
+    <string name="enable">Käytä</string>
     <string name="xdrip_compatible_features">xDrip+ %s ominaisuudet</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
@@ -1418,6 +1428,8 @@
     <string name="title_pick_numberwall_start">Käännä päälle</string>
     <string name="summary_pick_numberwall_stop">Valitse lopetusaika - käytä aloitusaikaa, jos haluat sen päälle jatkuvasti</string>
     <string name="title_pick_numberwall_stop">Sammutusaika</string>
+    <string name="summary_force_lockscreen_text_color"><b>Käytössä:</b> Käytä aina valittua tekstin väriä.\n<b>Pois käytöstä:</b> Käytä päänäytön glukoosivärejä (pieni / in-range / high).</string>
+    <string name="title_force_lockscreen_text_color">Pakota tekstin väri</string>
     <string name="title_xdrip_plus_number_icon">Numerokuvake yläreunan ilmoituspalkissa</string>
     <string name="summary_do_number_icon_test">Numerokuvake kaataa jotkin puhelimet! Napauta testataksesi ominaisuutta ennen kuin otat sen käyttöön!</string>
     <string name="title_do_number_icon_test">Testaa numerokuvakkeen toimivuutta</string>
@@ -1460,6 +1472,9 @@
     <string name="summary_desert_use_https">Lisää toinen salauskerros jaetuille verkoille, esim. julkiseen wifi-verkkoon</string>
     <string name="title_desert_use_https">Käytä HTTPS</string>
     <string name="title_xdrip_plus_experimental">Kokeellinen osa</string>
+    <string name="title_novopen_insulin_pen">NovoPen-insuliinikynä</string>
+    <string name="summary_inpen_open_nov_support">Insuliiniannoksen lataaminen malleista 6 ja Echo Plus NFC:llä</string>
+    <string name="title_inpen_open_nov_support">OpenNov tuki</string>
     <string name="summary_inpen_screen">Ladataan annostuksia</string>
     <string name="title_inpen_screen">InPen-insuliinikynä</string>
     <string name="title_inpen_enabled">InPen-tuki</string>
@@ -1467,6 +1482,7 @@
     <string name="title_inpen_detect_priming">Tunnista täyttö</string>
     <string name="title_inpen_prime_units">Täyttömäärät</string>
     <string name="title_inpen_prime_minutes">Täyttämisen aikaikkuna</string>
+    <string name="summary_inpen_additional_debug_logs">Kirjaa lisätiedot vianetsintää varten. Pystyy hidastamaan asioita.</string>
     <string name="summary_inpen_orphan_primes_ignored">Kynän täytöt, joita ei seuraa hoitotieto, jätetään huomioimatta. Poista valinta jotta nämä käsitellään hoitoina</string>
     <string name="title_inpen_orphan_primes_ignored">Älä huomioi orpoja kynän täyttöjä</string>
     <string name="summary_inpen_sounds">Varmista kynän tiedonsiirto äänimerkillä</string>
@@ -1788,4 +1804,5 @@
     <string name="glupro_sensor_serial">Sensorin sarjanumero</string>
     <string name="glupro_device">Laite</string>
     <string name="glupro_reconnect_attempt">Yritetään yhdistää uudelleen</string>
+    <string name="ob1_sensor_stopped">Sensori loppunut</string>
 </resources>
