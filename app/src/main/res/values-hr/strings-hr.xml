@@ -112,7 +112,7 @@
     <string name="add_widget">Dodaj widget</string>
     <string name="title_activity_alert_list">Lista alarma</string>
     <string name="speaktreatment">Izgovaraj tretman</string>
-    <string name="title_activity_update">Nadogradnja za xDrip+ je dostupna</string>
+    <string name="title_activity_update">Ažuriranje za xDrip+ je dostupno</string>
     <string name="title_activity_display_qrcode">Dijeli postavke preko QR koda</string>
     <string name="title_activity_send_feed_back">Pošalji povratnu informaciju Jamorham-u</string>
     <string name="title_activity_maps">Parakeet mapa</string>
@@ -918,6 +918,7 @@
     <string name="use_confict_msg_glimp">Možete prilagoditi Glimp postavke: opcije -&gt; uređaji -&gt; poništite odabir opcije Bluetooth</string>
     <string name="eng_mode_is_on">Omogućen je inženjerski način rada. Onemogućite ga osim ako niste sigurni da vam je potreban jer može uzrokovati neočekivano ponašanje.</string>
     <string name="yes">Da</string>
+    <string name="enable">Omogući</string>
     <string name="xdrip_compatible_features">xDrip + %s značajke</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
@@ -981,6 +982,7 @@
     <string name="title_xDrip_Web_Service_Secret">lozinka za xDrip web servis</string>
     <string name="title_Batterylog">Zapisi o bateriji</string>
     <string name="title_what_time_day">Koje doba dana?</string>
+    <string name="xdrip_reminders">Podsjetnici</string>
     <string name="unit_minutes">minute</string>
     <string name="unit_hours">sati</string>
     <string name="unit_days">dani\"</string>
