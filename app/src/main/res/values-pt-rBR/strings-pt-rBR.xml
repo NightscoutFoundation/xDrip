@@ -926,6 +926,7 @@
     <string name="use_confict_msg_glimp">Ajustar Configurações do Glimp: opções -&gt; dispositivos -&gt; desseleccionar opção Bluetooth</string>
     <string name="eng_mode_is_on">O modo de engenharia está ativado. Desative-o, a menos que tenha certeza que precisa, pois pode causar um comportamento inesperado.</string>
     <string name="yes">Sim</string>
+    <string name="enable">Ligar</string>
     <string name="xdrip_compatible_features">xDrip+ %s Recursos</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
@@ -1717,4 +1718,5 @@
     <string name="volume_profile_high">Valores Glicémia Hiper</string>
     <string name="glupro_disconnected">Desconectado</string>
     <string name="glupro_connected">Conectado</string>
+    <string name="glupro_start_time">Ativar</string>
 </resources>
