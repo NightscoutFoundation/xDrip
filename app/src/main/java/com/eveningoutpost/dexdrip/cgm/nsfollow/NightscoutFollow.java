@@ -13,7 +13,7 @@ import com.eveningoutpost.dexdrip.utilitymodels.PumpStatus;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.messages.DeviceStatus;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.messages.Entry;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.utils.NightscoutUrl;
-import com.eveningoutpost.dexdrip.evaluators.MissedReadingsEstimator;
+import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.utils.framework.RetrofitService;
 
 import java.util.List;
@@ -51,6 +51,9 @@ public class NightscoutFollow {
 
         @GET("/api/v1/entries.json")
         Call<List<Entry>> getEntries(@Header("api-secret") String secret, @Query("count") int count, @Query("rr") String rr);
+
+        @GET("/api/v1/entries.json")
+        Call<List<Entry>> getEntriesSince(@Header("api-secret") String secret, @Query("count") int count, @Query(value = "find[date][$gt]", encoded = true) long sinceMs, @Query("rr") String rr);
 
         @GET("/api/v1/treatments")
         Call<ResponseBody> getTreatments(@Header("api-secret") String secret);
@@ -102,10 +105,16 @@ public class NightscoutFollow {
 
         if (!emptyString(urlString)) {
             try {
-                int count = Math.min(MissedReadingsEstimator.estimate() + 1, (int) (Constants.DAY_IN_MS / DEXCOM_PERIOD));
-                UserError.Log.d(TAG, "Estimating missed readings as: " + count);
-                count = Math.max(10, count); // pep up with a view to potential period mismatches - might be excessive
-                getService().getEntries(session.url.getHashedSecret(), count, JoH.tsl() + "").enqueue(session.entriesCallback);
+                final BgReading last = BgReading.last(true);
+                final long sinceMs = (last != null) ? last.timestamp : 0;
+                final int safetyLimit = (int) (Constants.DAY_IN_MS / DEXCOM_PERIOD);
+                if (sinceMs > 0) {
+                    UserError.Log.d(TAG, "Fetching entries since: " + sinceMs + " (limit " + safetyLimit + ")");
+                    getService().getEntriesSince(session.url.getHashedSecret(), safetyLimit, sinceMs, JoH.tsl() + "").enqueue(session.entriesCallback);
+                } else {
+                    UserError.Log.d(TAG, "No prior reading - fetching last 10 entries");
+                    getService().getEntries(session.url.getHashedSecret(), 10, JoH.tsl() + "").enqueue(session.entriesCallback);
+                }
             } catch (Exception e) {
                 UserError.Log.e(TAG, "Exception in entries work() " + e);
                 msg("Nightscout follow entries error: " + e);
