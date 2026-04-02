@@ -42,19 +42,10 @@ public class DeviceStatus {
         @Expose
         public Battery battery;
 
-        @Expose
-        public Extended extended;
-
         public static class Battery {
 
             @Expose
             public Integer percent;
-        }
-
-        public static class Extended {
-
-            @Expose
-            public Double BaseBasalRate;
         }
     }
 }

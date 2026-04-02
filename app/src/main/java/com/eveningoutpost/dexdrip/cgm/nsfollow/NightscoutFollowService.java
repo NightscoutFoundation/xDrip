@@ -239,13 +239,11 @@ public class NightscoutFollowService extends ForegroundService {
             statuses.add(new StatusItem("Treatment receive delay", ageOfTreatmentWhenReceived));
         }
 
-        if (uploaderBattery != null || uploaderCharging != null) {
-            if (uploaderBattery != null) {
-                final String charging = Boolean.TRUE.equals(uploaderCharging) ? " (charging)" : "";
-                statuses.add(new StatusItem("Uploader battery", uploaderBattery + "%" + charging));
-            } else if (uploaderCharging != null) {
-                statuses.add(new StatusItem("Uploader charging", uploaderCharging ? gs(R.string.yes) : gs(R.string.no)));
-            }
+        if (uploaderBattery != null) {
+            final String charging = Boolean.TRUE.equals(uploaderCharging) ? " (charging)" : "";
+            statuses.add(new StatusItem("Uploader battery", uploaderBattery + "%" + charging));
+        } else if (uploaderCharging != null) {
+            statuses.add(new StatusItem("Uploader charging", uploaderCharging ? gs(R.string.yes) : gs(R.string.no)));
         }
 
         statuses.add(new StatusItem("Last poll", lastPollText + (lastPoll > 0 ? " ago" : "")));
