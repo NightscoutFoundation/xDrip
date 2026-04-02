@@ -184,6 +184,8 @@
     <string name="share_config_via_qr_code">Udostepnij konfiguracje poprzez kod QR</string>
     <string name="check_for_updated_version">Sprawdź czy jest nowa wersja</string>
     <string name="current_version_is_up_to_date">Brak aktualizacji dla wybranego kanału</string>
+    <string name="title_dialog_check_for_update">Brak aktualizacji na kanale %1$s</string>
+    <string name="message_dialog_check_for_update">Na innych kanałach może istnieć nowsza wersja.</string>
     <string name="send_feedback_to_developer">Prześlij uwagi do programisty</string>
     <string name="home_screen">Ekran główny</string>
     <string name="event_logs">Dzienniki zdarzeń</string>
@@ -940,6 +942,7 @@
     <string name="use_confict_msg_glimp">Możesz dostosować ustawienia Glimp: opcje -&gt; urządzenia -&gt; odznacz opcję Bluetooth</string>
     <string name="eng_mode_is_on">Tryb inżynieryjny jest włączony. Proszę go wyłączyć, chyba że jesteś pewien, że go potrzebujesz, ponieważ może spowodować nieoczekiwane zachowanie.</string>
     <string name="yes">Tak</string>
+    <string name="enable">Włącz</string>
     <string name="xdrip_compatible_features">Funkcje xDrip+ %s</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
@@ -1948,7 +1951,9 @@
     <string name="glupro_bluetooth_disabled">Bluetooth wyłączony</string>
     <string name="glupro_scan_stopped">Zatrzymano skanowanie</string>
     <string name="glupro_model_number">Numer modelu</string>
+    <string name="glupro_start_time">Włącz</string>
     <string name="glupro_sensor_serial">Numer seryjny czujnika</string>
     <string name="glupro_device">Urządzenie</string>
     <string name="need_bluetooth_permission">Potrzebne uprawnienia do korzystania z Bluetooth</string>
+    <string name="ob1_sensor_stopped">Czujnik zatrzymany</string>
 </resources>
