@@ -872,6 +872,7 @@
     <string name="bluereaderuglystate">blueReader nefunguje správne! Bude vypnutý a vy ho zapnite (krátkym stlačením tlačítka). Potom by blueReader mal pracovať správne!</string>
     <string name="offical_msg">Oficiálna aplikácia</string>
     <string name="yes">Áno</string>
+    <string name="enable">Povoliť</string>
     <string name="xdrip_compatible_features">Vlastnosti xDrip+ %s</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
@@ -1311,4 +1312,5 @@ Je nutné zakázať v prípade, že chcete používať xdrip cifreník. (Požado
     <string name="volume_profile_high">Vysoká glykémia</string>
     <string name="glupro_disconnected">Odpojené</string>
     <string name="glupro_connected">Pripojené</string>
+    <string name="glupro_start_time">Čas, kedy sa má hodnota zobraziť</string>
 </resources>
