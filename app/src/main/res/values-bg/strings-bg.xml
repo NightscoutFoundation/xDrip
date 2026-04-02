@@ -142,7 +142,7 @@
     <string name="first_use_menu_to_scan">Първо използвайте менюто да сканирате за вашето Bluetooth устройство или променете \"Източник на данни\" в настройките!</string>
     <string name="first_configure_ip_address">Първо конфигурирайте вашия WiFi Wixel четец IP адреси или Parakeet URL</string>
     <string name="now_start_your_sensor">Сега стартирайте сенсора или проверете Настройките</string>
-    <string name="please_wait_while_sensor_warms_up">Моля изчакайте докато сенозра загрее! (</string>
+    <string name="please_wait_while_sensor_warms_up">Моля изчакайте докато сензора загрее! (</string>
     <string name="minutes_with_bracket">" минути)"</string>
     <string name="possible_bad_calibration">Възможност за грешен калибриращ наклон, моля изпиите чаша с вода, измиите си ръцете, и рекалибрирайте отново след малко!</string>
     <string name="please_wait_need_two_readings_first">Моля изчакайте, имаме нужда от 2 отчитания от трансмитера.</string>
@@ -184,6 +184,8 @@
     <string name="share_config_via_qr_code">Сподели настройки чрез QR код</string>
     <string name="check_for_updated_version">Проверка за нова версия</string>
     <string name="current_version_is_up_to_date">Няма актуализация в избрания канал</string>
+    <string name="title_dialog_check_for_update">Няма актуализация в канала %1$s</string>
+    <string name="message_dialog_check_for_update">В другите канали може да съществува по-нова версия.</string>
     <string name="send_feedback_to_developer">Изпращане на отзиви към разработчика</string>
     <string name="home_screen">Началния екран</string>
     <string name="event_logs">Журнали със събития</string>
@@ -286,6 +288,8 @@
     <string name="pref_summary_show_treatments">Покажи точките/моментите на лечение на графиката</string>
     <string name="pref_use_wear_health">Използвай Wear здравни данни</string>
     <string name="pref_summary_use_wear_health">Събирай и показвай крачкомер, когато е възможно</string>
+    <string name="summary_enable_wear_auto_update">Когато е активирано, xDrip на часовника ще се актуализира автоматично, за да съответства на версията на телефона.</string>
+    <string name="title_enable_wear_auto_update">Автоматична актуализация на Wear</string>
     <string name="pebble_integration">Pebble Интеграция</string>
     <string name="send_data_to_pebble_watchface">Изпрати данни към Pebble часовника.</string>
     <string name="pebble_watch_integration">Pebble Интеграция</string>
@@ -632,7 +636,7 @@
     <string name="reset_bluetooth_on_off">Нулиране на Bluetooth чрез изключване и включване на няколко минути! Изберете това само при тестване. Това може да развали всичко други, което използва Bluetooth.</string>
     <string name="constantly_reset_bluetooth">Постоянно нулиране на Bluetooth</string>
     <string name="experimental_transmitter_fpv_uav">Експериментална поддръжка за \'Трансмитер\' устройство от @FPV-UAV - само тест</string>
-    <string name="transmitter_pl_support">Поддръжка на предавател/трансмитер (PL)</string>
+    <string name="transmitter_pl_support">Поддръжка на трансмитер (PL)</string>
     <string name="experimental_rdfuino_support">Експериментална поддръжка за RFduino от Tomasz Stachowicz</string>
     <string name="rfduino_support">Поддръжка на RFduino</string>
     <string name="repeatedly_restart_collection_service">Многократно рестартирайте услугата за събиране при всеки намек за липсващи данни. Активирайте, само ако получавате загуба на данни.</string>
@@ -648,6 +652,10 @@
     <string name="libre_use_smoothed_data_summary">Използвай средна стойност от 5 точки, за да получите по-гладки Libre данни.</string>
     <string name="libre_use_smoothed_data_title">Плавни Libre данни.</string>
     <string name="retrieve_blukon_history_title">Извличане на историята на Libre</string>
+    <string name="summary_libre_one_minute_interval">Приемане на данни на интервали от една минута от Libre. Рестартирайте телефона си, за да влязат в сила промените.</string>
+    <string name="title_libre_one_minute_interval">Libre 1 минута</string>
+    <string name="summary_nsfollow_sample_period">По подразбиране: 5 мин\nТекуща стойност: %s</string>
+    <string name="title_sample_period">Примерен период</string>
     <string name="retrieve_blukon_history_summary">Извличане на пропусната история от BluCon устройство при повторно свързване към сензора.</string>
     <string name="interpret_share_raw">Ако използвате Споделяне, xDrip ще покаже стойности, когато те обикновено са скрити на приемника.</string>
     <string name="interpret_raw">Интерпретиране на необработени стойности</string>
@@ -660,7 +668,7 @@
     <string name="only_enable_on_trouble">Активирайте само ако имате проблеми с приложението.</string>
     <string name="store_logs">Съхранявайте логове за отстраняване на неизправности</string>
     <string name="show_datatables_in_app_drawer">Покажи таблици с данни за калибриране и КЗ в приложенията.</string>
-    <string name="disable_log_transmitter_battery_warning">Деактивирайте предупреждението за изтощена батерия на предавателя на началния екран. (Приложимо само за направи си сам приемници.)</string>
+    <string name="disable_log_transmitter_battery_warning">Деактивирайте предупреждението за изтощена батерия на трансмитера на началния екран. (Приложимо само за направи си сам трансмитер.)</string>
     <string name="engineering_mode">Инженерен режим</string>
     <string name="allow_unsafe_settings">Позволява промяна на най-опасните настройки, които могат да счупят всичко!</string>
     <string name="daily_save_db">Ежедневно запазване на база данни</string>
@@ -702,7 +710,7 @@
     <string name="all_new_glucose_data_plugin">ВСИЧКИ нови данни за глюкозата ще бъдат изчислени и запазени от избрания плъгин, а не от стандартния алгоритъм xDrip. Това не е тествано и може да е неточно и с грешки. Използвайте с изключително внимание.</string>
     <string name="old_school_calibrations">Оригинален по-тесен диапазон от разрешени наклони в рамките на xDrip класически алгоритъм за калибриране (преди 2017 г.). По подразбиране склонове по-вероятно! (само инженерен режим)</string>
     <string name="old_school_calibration_mode">Режим на калибриране - старата школа</string>
-    <string name="how_receive_data">Как ще получавате данни от вашия Dexcom/Предавател?</string>
+    <string name="how_receive_data">Как ще получавате данни от вашия Dexcom/Трансмитер?</string>
     <string name="nfc_options">Опции за сканиране на NFC базирани сензори с телефонната слушалка</string>
     <string name="nfc_scan_features">Функции за NFC сканиране</string>
     <string name="use_nfc_feature">Използвай NFC функция</string>
@@ -719,7 +727,7 @@
     <string name="use_multi_block">Използвайте по-бърз метод за четене на много блокове</string>
     <string name="use_any_tag">Използвайте метод за четене, оптимизиран за произволен етикет</string>
     <string name="low_level_value">Ниско ниво на диагностична/прототипна стойност</string>
-    <string name="transmitter_id">ID на вашия предавател Dexcom, напр. 12AB3</string>
+    <string name="transmitter_id">ID на вашия трансмитер Dexcom, напр. 12AB3</string>
     <string name="advanced_g5_settings">Разширени настройки на Dexcom за редки ситуации</string>
     <string name="g5_debug_settings">Dexcom Debug Настройки</string>
     <string name="g5_scan_constantly">Някои устройства работят по-добре при постоянно сканиране, други не. Ако четенето е надеждно, когато тази настройка не е избрана, трябва да имате подобрен живот на батерията. Обикновено е най-добре това да е деактивирано</string>
@@ -727,7 +735,7 @@
     <string name="g5_force_ui_thread">Това е от решаващо значение за правилното свързване на някои устройства с Android, но може да причини пропуснати показания, когато се използват други интензивни дейности на потребителския интерфейс.</string>
     <string name="force_g5_ui_thread">Принуди Dexcom към UI Thread</string>
     <string name="authentificate_before_reading">Аутентикирай преди всяко четене</string>
-    <string name="g5_full_authentification">Това ще направи опит за пълно удостоверяване при всеки опит за четене. Необходим за по-нови версии на фърмуера на предавателя G5.</string>
+    <string name="g5_full_authentification">Това ще направи опит за пълно удостоверяване при всеки опит за четене. Необходим за по-нови версии на фърмуера на трансмитер G5.</string>
     <string name="unbond_g5_before_read">Премахване на G5 преди всяко четене</string>
     <string name="g5_remove_before_read">Това ще премахне G5 от списъка със сдвоени устройства на вашето устройство и ще направи опит за пълна аутентикация и свързване при всеки опит за четене.</string>
     <string name="g5_experimental_mode">Експериментален режим, който не използва необработени данни</string>
@@ -739,7 +747,7 @@
     <string name="mongo_db_uri">MongoDB URI</string>
     <string name="skip_local_lan">За локални сървъри с адреси 192.168.x.x, пропускайте качванията, когато няма връзка с локална мрежа.</string>
     <string name="skip_lan_uploads">Пропусни LAN качвания/upload</string>
-    <string name="mongo_load_transmitter_data_title">Качете данни от Libre предавателите</string>
+    <string name="mongo_load_transmitter_data_title">Качете данни от Libre трансмитер</string>
     <string name="mongo_load_transmitter_data_summary">Позволете на повече от един xDrip да се свързва с Bluetooth устройства и да съхранява данните, които получават в облака. Това трябва да позволи покритие на цялата къща за Libre с MiaoMiao или 2 родители, използващи едно и също Bluetooth устройство прозрачно.</string>
     <string name="influxdb_sync">Активирайте синхронизирането на InfluxDB</string>
     <string name="influxdb_uri">InfluxDB URI</string>
@@ -821,7 +829,7 @@
     <string name="use_flair_colors">Персонализирано заглавие/Навигационна лента</string>
     <string name="upper_title_bar_flair">Горна лента за известия</string>
     <string name="lower_button_bar_falir">Долна лента за известия</string>
-    <string name="force_english_text">Използвай английски текст</string>
+    <string name="force_english_text">Принудително английски текст</string>
     <string name="using_local_language">В момента се използва местният език на вашето устройство</string>
     <string name="forcing_alternate_language">В момента се налага използването на алтернативен език</string>
     <string name="need_alternate_language">Ако имате нужда от превод на алтернативен език в xDrip+</string>
@@ -903,6 +911,9 @@
     <string name="only_stop_your_sensor_when_you_actually_plan">Спрете сензора само когато наистина планирате да го премахнете, в противен случай го оставете да работи!</string>
     <string name="restart_collector">Рестартирай колекционера</string>
     <string name="forget_device">Забрави устройство</string>
+    <string name="re_read_transmitter">Препрочети трансмитера</string>
+    <string name="tx_reread_confirmation_title">Обновяване данните на трансмитера</string>
+    <string name="tx_reread_confirmation_message">Принудително xDrip да препрочете характеристиките на трансмитера. Няма полза, ако трансмитера не е сменен; може да възникнат промени във страницата със състоянието. Най-добре да се използва между сесиите на сензора.</string>
     <string name="other_notes">Други бележки:</string>
     <string name="delete_future_data">Изтриване на бъдещи данни</string>
     <string name="show_only_untranslated">Показване само на непреведени</string>
@@ -940,10 +951,11 @@
     <string name="bluereaderuglystate">BlueReader беше намерен в лошо състояние! Сега ще бъде изключено и ще го го включите отново (кратко натискане върху бутона). След това blueReader би трябвало да работи, както се очаква!</string>
     <string name="offical_msg">Официалното приложение</string>
     <string name="aggressive_power_manager">Вашето устройство има приложение за агресивно управление на захранването. Обикновено се осъществява чрез системни настройки. Моля, уверете се, че xDrip е изключен от фоновите ограничения.</string>
-    <string name="use_conflict_msg">може да се опита да получи достъп и до предавателното устройство и това може да причини проблеми и с двете приложения</string>
+    <string name="use_conflict_msg">може да се опита да получи достъп и до трансмитера и това може да причини проблеми и с двете приложения</string>
     <string name="use_confict_msg_glimp">Можете да коригирате настройките на Glimp: опции -&gt; устройства -&gt; премахване на избора от опцията Bluetooth</string>
     <string name="eng_mode_is_on">Инженеринг режим активиран. Моля деактивирайте освен, ако не сте сигурни, че ви е нужен, тъй като може да предизвика неочаквани резултати.</string>
     <string name="yes">Да</string>
+    <string name="enable">Включи</string>
     <string name="xdrip_compatible_features">xDrip+ %s функции</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
@@ -958,7 +970,7 @@
     <string name="which_software_is_the_wixel_running">С кой софтуер работи Wixel?</string>
     <string name="start_source_setup_wizard">Стартирай съветника за настройка на източника</string>
     <string name="hour_format">%s Час</string>
-    <string name="enter_your_transmitter_id_exactly">Въведете ID на вашия предавател точно както е отпечатан</string>
+    <string name="enter_your_transmitter_id_exactly">Въведете ID на вашия трансмитер точно както е отпечатан</string>
     <string name="which_type_of_device">Кой тип устройство?</string>
     <string name="enable_local_broadcast">Активиране на локален broadcast?</string>
     <string name="broadcast_only_to">Broadcast само до?</string>
@@ -1205,8 +1217,8 @@
     <string name="title_rest_api_extra_options">Допълнителни опции</string>
     <string name="summary_send_bridge_battery_to_nightscout">Изпратете нивото на bridge батерията на Nightscout. Премахнете отметката, ако сензорът на батерията ви е повреден.</string>
     <string name="title_send_bridge_battery_to_nightscout">Качване на bridge батерия</string>
-    <string name="summary_send_dexcom_transmitter_battery_to_nightscout">Изпратете статистика за батерията на предавателя Dexcom до Nightscout. Включва всички данни, показани на екрана за състояние на колекционера.</string>
-    <string name="title_send_dexcom_transmitter_battery_to_nightscout">Качване на Dexcom батерия на предавателя</string>
+    <string name="summary_send_dexcom_transmitter_battery_to_nightscout">Изпратете статистика за батерията на трансмитера Dexcom до Nightscout. Включва всички данни, показани на екрана за състояние на колекционера.</string>
+    <string name="title_send_dexcom_transmitter_battery_to_nightscout">Качване на Dexcom батерия на трансмитера</string>
     <string name="summary_send_treatments_to_nightscout">Изпратете данни за лечението на Nightscout. Премахнете отметката, ако вашият портал за грижи е повреден.</string>
     <string name="title_send_treatments_to_nightscout">Качване на лечения</string>
     <string name="summary_warn_nightscout_failures">Визуално и звуково известие, ако качването на Nightscout е неуспешно.</string>
@@ -1331,6 +1343,7 @@
     <string name="title_nsfollow_url">Nightscout URL за следване</string>
     <string name="summary_nsfollow_download_treatments">Също така изтеглете лечения от Nightscout като последовател</string>
     <string name="title_nsfollow_download_treatments">Изтегляне на лечения</string>
+    <string name="summary_nsfollow_lag">По подразбиране: 0\nТекуща стойност: %s</string>
     <string name="title_nsfollow_lag">Nightscout забавяне на следването</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
@@ -1419,6 +1432,8 @@
     <string name="title_pick_numberwall_start">Включи</string>
     <string name="summary_pick_numberwall_stop">Изберете време за спиране - задайте същото като началото за винаги включено</string>
     <string name="title_pick_numberwall_stop">Време за изключване</string>
+    <string name="summary_force_lockscreen_text_color"><b>Активиране:</b> Винаги използвайте избрания цвят на текста.\n<b>Деактивиране:</b> Използвайте цветовете за глюкоза от главния екран (ниско / в обхват / високо).</string>
+    <string name="title_force_lockscreen_text_color">Принудително зададен цвят на текста</string>
     <string name="title_xdrip_plus_number_icon">Икона с номер в областта за уведомяване</string>
     <string name="summary_do_number_icon_test">Иконите с числа счупват някои телефони! Докоснете, за да стартирате теста, преди да активирате функцията!</string>
     <string name="title_do_number_icon_test">Изпълни тест с икона с число</string>
@@ -1461,17 +1476,28 @@
     <string name="summary_desert_use_https">Добавете друг слой на криптиране за споделени мрежи, напр. обществен WiFi</string>
     <string name="title_desert_use_https">Използване на HTTPS</string>
     <string name="title_xdrip_plus_experimental">Експериментални услуги</string>
+    <string name="title_novopen_insulin_pen">Инсулинова писалка NovoPen</string>
+    <string name="summary_inpen_open_nov_support">Изтегляне на доза от NFC за модели 6 и Echo Plus</string>
+    <string name="title_inpen_open_nov_support">Поддръжка на OpenNov</string>
     <string name="summary_inpen_screen">Изтегляне на дози</string>
     <string name="title_inpen_screen">InPen Инсулинова писалка</string>
     <string name="title_inpen_enabled">InPen Поддръжка</string>
     <string name="summary_inpen_detect_priming">Открийте и игнорирайте почистващите дози</string>
     <string name="title_inpen_detect_priming">Почистване на иглата и въздуха</string>
+    <string name="summary_inpen_prime_units">Дозите трябва да са по-малки или равни на тoзи брой единици, за да се считат за почистване на иглата.</string>
     <string name="title_inpen_prime_units">Единици за почистване на иглата</string>
+    <string name="summary_inpen_prime_minutes">Колко близо в минути трябва да е една доза, за да се счита за почистване на иглата.</string>
     <string name="title_inpen_prime_minutes">Времеви прозорец за почистване на иглата</string>
+    <string name="summary_inpen_additional_debug_logs">Записване на допълнителни данни, за подпомогнане на отстраняването на грешки. Може да забави нещата.</string>
+    <string name="title_inpen_additional_debug_logs">Допълнителни debug логове</string>
     <string name="summary_inpen_orphan_primes_ignored">Почистване на иглата без да се третира като доза, ако е отметнато. Премахнете отметката, за да третирате като дози</string>
     <string name="title_inpen_orphan_primes_ignored">Игнориране на дози за почистване на иглата</string>
     <string name="summary_inpen_sounds">Използвайте звуци при прехвърлянето на данни от писалката</string>
     <string name="title_inpen_sounds">Възпроизвеждане на звук</string>
+    <string name="summary_inpen_remove_priming_doses">Автоматично премахване на дозите за почистване на иглата, които са равни или по-малки от стойността на единиците за почистване на иглата и се случват в рамките на минутите за начална доза.</string>
+    <string name="title_inpen_remove_priming_doses">Премахване на дозите за почистване на иглата</string>
+    <string name="summary_inpen_hide_priming_doses">Скриване на записите за дозата за почистване на иглата от графиката.</string>
+    <string name="title_inpen_hide_priming_doses">Скриване на дозите за почистване на иглата</string>
     <string name="summary_inpen_reset">Нулиране и търсене на нова писалка в режим на сдвояване</string>
     <string name="title_inpen_reset">Намери нова писалка</string>
     <string name="summary_pendiq_screen">Дози за четене и писане</string>
@@ -1512,7 +1538,7 @@
     <string name="collecting">събиране...</string>
     <string name="insulin">инсулин</string>
     <string name="nothing_found">нищо не е намерено</string>
-    <string name="do_not_hit_start_long">Не натискайте сензора за стартиране, освен ако сензорът вече не е вграден и предавателят е свързан.</string>
+    <string name="do_not_hit_start_long">Не натискайте сензора за стартиране, освен ако сензорът вече не е вграден и трансмитера е свързан.</string>
     <string name="calibration_graph_no_calibration">графика за калибриране (без калибриране)</string>
     <string name="calibration_plugin_header">име на приставката за калибриране</string>
     <string name="usb_device_was_not_recognized">USB устройството не беше разпознато</string>
@@ -1714,11 +1740,11 @@
     <string name="state_not_currently_known">%s  Състоянието в момента не е известно. Следващата връзка ще актуализира това</string>
     <string name="unusual_calibration_waiting">Необичайно калибрационно състояние - изчакване на повече данни</string>
     <string name="could_not_find_blood_data">Не можах да намеря данни за кръвен тест!! %s</string>
-    <string name="transmitter_waiting_for_calibration">Изчаква се предавателят да получи калибриране</string>
+    <string name="transmitter_waiting_for_calibration">Изчаква се трансмитера да получи калибриране</string>
     <string name="sensor_not_started">Сесията на сензора не изглежда да е стартирана</string>
     <string name="not_getting_readings">Не получава никакви показания.</string>
     <string name="bridge_battery">Bridge батерия</string>
-    <string name="transmitter_maybe_dead">филтрираните данни са точно двойни необработени сензорни данни, което изглежда грешно! (Предавателят може би е мъртъв)</string>
+    <string name="transmitter_maybe_dead">филтрираните данни са точно двойни необработени сензорни данни, което изглежда грешно! (Трансмитерът може би е мъртъв)</string>
     <string name="noise_workings_noise">Шум: %s</string>
     <string name="snoozing_due_button_press">Отлагане на аларма поради натискане на бутона за сила на звука</string>
     <string name="share_database">Споделете база данни...</string>
@@ -1764,9 +1790,9 @@
     <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">моля, актуализирайте OOP2 или преминете към калибриране въз основа на необработен режим</string>
     <string name="reminder">Напомняне</string>
     <string name="notification">Уведомяване</string>
-    <string name="TX_EOL_reminder">Когато дните на предавателя на страницата за състояние на системата достигнат %1$d, това ще бъде последната възможност за стартиране на сензор на този предавател. В момента на %2$d дни.</string>
+    <string name="TX_EOL_reminder">Когато дните на трансмитера на страницата за състояние на системата достигнат %1$d, това ще бъде последната възможност за стартиране на сензор на този трансмитер. В момента на %2$d дни.</string>
     <string name="TX_EOL_notification">Ако продължите и стартирате сензора, е много вероятно той да не успее, тъй като Дните на трансмитера са достигнали максимума.</string>
-    <string name="TX_EOL_reminder_mod">Дните на предавателя наближават максимума си. Скоро няма да можете да стартирате сензори на този предавател. В момента на %d дни.</string>
+    <string name="TX_EOL_reminder_mod">Дните на трансмитера наближават максимума си. Скоро няма да можете да стартирате сензори на този трансмитер. В момента на %d дни.</string>
     <string name="proceed">Продължи</string>
     <string name="special_pairing_workaround">Специално решение за сдвояване</string>
     <string name="save_power">Съхранение на енергия</string>
@@ -1922,8 +1948,8 @@
     <string name="default_xdrip_reminder_sound">Звук за напомняне по подразбиране в xDrip+</string>
     <string name="custom_audio_file">Персонализиран аудио файл</string>
     <string name="android_ringtone_alarm">Мелодия/аларма за Android</string>
-    <string name="first_successful_connection_to_transmitter">"Първа успешна връзка с предавател %1$s с mac"</string>
-    <string name="first_successful_connection_to_transmitter_em">"Първа успешна връзка с предавател %1$s с mac %2$s"</string>
+    <string name="first_successful_connection_to_transmitter">"Първа успешна връзка с трансмитер %1$s"</string>
+    <string name="first_successful_connection_to_transmitter_em">"Първа успешна връзка с трансмитер %1$s с mac %2$s"</string>
     <string name="sensor_expiring">Сензорът изтича</string>
     <string name="sensor_will_expire_in">Сензорът ще изтече след %1$s</string>
     <string name="xdrip_update">xDrip+ Ъпдейт</string>
@@ -1961,7 +1987,7 @@
     <string name="turn_feature_off_on">Включване/изключване на функцията</string>
     <string name="glupro_activity_title">xDrip+ GluPro</string>
     <string name="glupro_status">Състояние на глюкозния профил</string>
-    <string name="sending_blood_tests_to_transmitter">Изпращане на кръвни изследвания към предавателя</string>
+    <string name="sending_blood_tests_to_transmitter">Изпращане на кръвни изследвания към трансмитер</string>
     <string name="glupro_bluetooth_scanning">Сканиране с Bluetooth</string>
     <string name="need_bluetooth_permissions">Необходимо е разрешение за Bluetooth</string>
     <string name="glupro_scan_again">Сканиране отново</string>
@@ -2012,4 +2038,5 @@
     <string name="glupro_reconnect_attempt">Опит за повторно свързване</string>
     <string name="glupro_reading_frequency">Честота на четене</string>
     <string name="need_bluetooth_permission">Необходимо е разрешение за Bluetooth</string>
+    <string name="ob1_sensor_stopped">Сензорът е спрял</string>
 </resources>
