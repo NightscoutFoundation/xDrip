@@ -918,6 +918,7 @@
     <string name="use_confict_msg_glimp">Galite derinti Glimp nustatymus: options -&gt; devices -&gt; unselect Bluetooth option</string>
     <string name="eng_mode_is_on">Įjungtas programavimo režimas. Jei nesate tikri, ką darote, išjunkite jį.</string>
     <string name="yes">Taip</string>
+    <string name="enable">Įjungti</string>
     <string name="xdrip_compatible_features">xDrip+ %s funkcijos</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
@@ -1794,4 +1795,5 @@
     <string name="volume_profile_high">Hiperglikemija</string>
     <string name="glupro_disconnected">Atsieta</string>
     <string name="glupro_connected">Susieta</string>
+    <string name="glupro_start_time">Įjungti</string>
 </resources>
