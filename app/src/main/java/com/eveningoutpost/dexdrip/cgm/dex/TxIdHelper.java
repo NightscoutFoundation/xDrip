@@ -36,7 +36,7 @@ public class TxIdHelper {
 
     // g6 regular
     private static final Pattern VALID_SERIAL_NUMBER_PATTERN = Pattern.compile(
-            "^[0-9A-HJ-NP-UWXY]{6}$"
+            "^[0-9A-HJ-NP-UVWXYZ]{6}$" // TODO improve validation logic for V + Z
     );
 
     // g6 extended
@@ -81,9 +81,9 @@ public class TxIdHelper {
     // g6 characters we can substitute
     private static final Map<Character, Character> disallowedCharacters = Map.of(
             'I', '1',
-            'O', '0',
-            'V', 'U',
-            'Z', '2'
+            'O', '0'
+            //   'V', 'U' // allowed on some versions - check
+         //   'Z', '2' // allowed on some versions 6+
     );
 
     // return true if the input string is a valid short pairing code
@@ -264,9 +264,9 @@ public class TxIdHelper {
             @Override
             public void afterTextChanged(Editable s) {
                 // delay after keystroke
-                Inevitable.task("txid-validator", 350, () -> {
+                Inevitable.task("txid-validator", 50, () -> {
                     val serial = s.toString().trim();
-                    if (serial.length() == 4 || serial.length() >= 6) {
+                    if (serial.length() >= 6) {
                         if (!isTransmitterIdOkayOrFixable(serial)) {
                             runOnUiThread(() -> editText.setError(gs(R.string.invalid_transmitter_id)));
                         }
