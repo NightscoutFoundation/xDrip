@@ -44,7 +44,6 @@ import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
 import android.preference.SwitchPreference;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -69,6 +68,7 @@ import com.eveningoutpost.dexdrip.alert.Registry;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.CareLinkFollowService;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.auth.CareLinkAuthType;
+import com.eveningoutpost.dexdrip.cgm.dex.TxIdHelper;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollow;
 import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
 import com.eveningoutpost.dexdrip.cgm.webfollow.Cpref;
@@ -88,14 +88,12 @@ import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.models.UserError.ExtraLogTags;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.eveningoutpost.dexdrip.models.UserNotification;
-import com.eveningoutpost.dexdrip.plugin.Dialog;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
 import com.eveningoutpost.dexdrip.receiver.InfoContentProvider;
 import com.eveningoutpost.dexdrip.services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.services.BluetoothGlucoseMeter;
 import com.eveningoutpost.dexdrip.services.DexCollectionService;
 import com.eveningoutpost.dexdrip.services.G5BaseService;
-import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.services.PlusSyncService;
 import com.eveningoutpost.dexdrip.services.UiBasedCollector;
 import com.eveningoutpost.dexdrip.services.broadcastservice.BroadcastService;
@@ -2494,7 +2492,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             });
 
             bindPreferenceSummaryToValue(transmitterId); // duplicated below but this sets initial value
-            transmitterId.getEditText().setFilters(new InputFilter[]{new InputFilter.AllCaps()}); // TODO filter O ?
+            transmitterId.getEditText().setFilters(new InputFilter[]{new InputFilter.AllCaps()});
             transmitterId.getEditText().post(() -> {
                 try {
                     // position to end of input text
@@ -2503,34 +2501,27 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     UserError.Log.d(TAG, "Could not set selection for transmitter id: " + e);
                 }
             });
-            transmitterId.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    val activity = getActivity();
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Dialog.askIfNeeded(activity, (String)newValue);
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                //
-                            }
-                            Log.d(TAG, "Trying to restart collector due to tx id change");
+            TxIdHelper.attachValidator(transmitterId.getEditText());
+            transmitterId.setOnPreferenceChangeListener((preference, newValue) -> {
 
-                            clearDataWhenTransmitterIdEntered((String)newValue);
+                TxIdHelper.handleTransmitterEntry((String)newValue, getActivity(), transmitterId1 -> {
+                    Pref.setString(preference.getKey(), transmitterId1); // save the accepted value
+                    ((EditTextPreference)preference).setText(transmitterId1); // update active value
 
-                            CollectionServiceStarter.restartCollectionService(xdrip.getAppContext());
-                        }
+                    new Thread(() -> { // TODO this logic is duplicated and could be centralized
+                        Log.d(TAG, "Trying to restart collector due to tx id change");
+                        clearDataWhenTransmitterIdEntered(transmitterId1);
+                        CollectionServiceStarter.restartCollectionServiceBackground();
                     }).start();
-                    sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, newValue);
 
-                    return true;
-                }
+                    sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, transmitterId1);
+                });
+
+                return false; // don't allow by default - handled by callback
             });
 
             // when changing collection method
-                    collectionMethod.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            collectionMethod.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
 

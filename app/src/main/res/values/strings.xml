@@ -2091,4 +2091,10 @@
     <string name="glupro_reading_frequency">Reading frequency</string>
     <string name="need_bluetooth_permission">Need bluetooth permission</string>
     <string name="ob1_sensor_stopped">Sensor Stopped</string>
+    <string name="invalid_transmitter_id">Invalid transmitter ID</string>
+    <string name="you_entered">You entered:</string>
+    <string name="fixed_version">Fixed version:</string>
+    <string name="click">Click</string>
+    <string name="to_use_this_instead">to use this instead?</string>
+    <string name="the_transmitter_id_you_have_entered_is_incorrect">The transmitter ID or pairing code you have entered is incorrect and would not work.\n\nPlease double-check the details and try again.</string>
 </resources>
