@@ -944,6 +944,7 @@
     <string name="use_confict_msg_glimp">Ви можете налаштувати Glimp: Опції - Пристрої - Вимкніть налаштування Bluetooth</string>
     <string name="eng_mode_is_on">Увімкнуто інженерний режим. Бажано вимкнути його, якщо не впевнені навіщо вам це потрібно - це може призвести до неочікуваної поведінки програми.</string>
     <string name="yes">Так</string>
+    <string name="enable">Увімкнути GPS</string>
     <string name="xdrip_compatible_features">Функції %s xDrip+</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>

@@ -287,6 +287,7 @@
     <string name="initial_calibration">المعايرة الأولية</string>
     <string name="bluetooth_scan">بحث البلوتوث</string>
     <!-- trend arrow for speak -->
+    <string name="enable">تفعيل</string>
     <string name="summary_cloud_storage_api_download_enable">قم بتحميل بيانات المعالجة من NS</string>
     <string name="title_cloud_storage_api_download_enable">تنزيل بيانات العلاج</string>
     <string name="title_send_treatments_to_nightscout">رفع بيانات العلاج</string>

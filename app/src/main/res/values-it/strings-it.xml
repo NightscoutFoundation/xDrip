@@ -184,6 +184,8 @@
     <string name="share_config_via_qr_code">Configura via codice QR</string>
     <string name="check_for_updated_version">Verifica versione aggiornata</string>
     <string name="current_version_is_up_to_date">Nessun aggiornamento nel canale selezionato</string>
+    <string name="title_dialog_check_for_update">Nessun aggiornamento nel canale %1$s</string>
+    <string name="message_dialog_check_for_update">Può esserci una versione più recente in altri canali.</string>
     <string name="send_feedback_to_developer">Invia Feedback agli  sviluppatori</string>
     <string name="home_screen">Schermata Home</string>
     <string name="event_logs">Registro eventi</string>
@@ -286,6 +288,8 @@
     <string name="pref_summary_show_treatments">Visualizzare trattamenti nel grafico</string>
     <string name="pref_use_wear_health">Usa dati sensori salute di Wear</string>
     <string name="pref_summary_use_wear_health">Raccogli e visualizza il contatore di passi quando disponibile</string>
+    <string name="summary_enable_wear_auto_update">Se abilitato, aggiorna automaticamente xDrip sull\'orologio per corrispondere alla versione del telefono.</string>
+    <string name="title_enable_wear_auto_update">Aggiornamento automatico Wear</string>
     <string name="pebble_integration">Integrazione Pebble</string>
     <string name="send_data_to_pebble_watchface">Inviare dati a Pebble Watchface.</string>
     <string name="pebble_watch_integration">Integrazione Pebble Watch</string>
@@ -648,6 +652,8 @@
     <string name="libre_use_smoothed_data_summary">Usa una media di 5 punti per ottenere risultati Libre meno rumorosi.</string>
     <string name="libre_use_smoothed_data_title">Liscia dati Libre.</string>
     <string name="retrieve_blukon_history_title">Recupera cronologia Libre</string>
+    <string name="summary_libre_one_minute_interval">Accetta i dati ad intervalli di un minuto da Libre. Riavvia il telefono per attivare la modifica.</string>
+    <string name="title_libre_one_minute_interval">Libre 1-minuto</string>
     <string name="retrieve_blukon_history_summary">Recupera la cronologia dal dispositivo Blukon quando si ricollega al sensore.</string>
     <string name="interpret_share_raw">Se usi Condividi, xDrip mostrerà i valori quando sono normalmente nascosti sul ricevitore.</string>
     <string name="interpret_raw">Interpreta Valori Grezzi</string>
@@ -903,6 +909,9 @@
     <string name="only_stop_your_sensor_when_you_actually_plan">Ferma il tuo sensore solo quando pensi di rimuoverlo, altrimenti lascialo avviato!</string>
     <string name="restart_collector">Riavvia Collector</string>
     <string name="forget_device">Dimentica questo dispositivo</string>
+    <string name="re_read_transmitter">Rileggi trasmettitore</string>
+    <string name="tx_reread_confirmation_title">Aggiorna dettagli trasmettitore</string>
+    <string name="tx_reread_confirmation_message">Forza xDrip a rileggere le caratteristiche del trasmettitore. Nessun beneficio se il trasmettitore non è cambiato; possono verificarsi cambiamenti temporanei della pagina di stato. Uso consigliato tra due sessioni del sensore.</string>
     <string name="other_notes">Altri appunti:</string>
     <string name="delete_future_data">Elimina i dati nel futuro</string>
     <string name="show_only_untranslated">Mostra solo non tradotti</string>
@@ -944,6 +953,7 @@
     <string name="use_confict_msg_glimp">Puoi regolare le impostazioni di Glimp: opzioni -&gt; dispositivi -&gt; opzione Bluetooth deseleziona</string>
     <string name="eng_mode_is_on">La modalità ingegneria è abilitata. Disabilitala se non sei certo di averne bisogno perché potrebbe causare comportamenti imprevedibili.</string>
     <string name="yes">Si</string>
+    <string name="enable">Consentire</string>
     <string name="xdrip_compatible_features">Funzionalità xDrip+ %s</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
@@ -1419,6 +1429,8 @@
     <string name="title_pick_numberwall_start">Accendi</string>
     <string name="summary_pick_numberwall_stop">Scegli l\'orario di fine visualizzazione - setti uguale a l\'inizio per averlo sempre visibile</string>
     <string name="title_pick_numberwall_stop">Orario spegnimento</string>
+    <string name="summary_force_lockscreen_text_color"><b>Abilita:</b> Usa sempre il colore di testo selezionato.\n<b>Disabilita:</b> Usa i colori della glicemia nella schermata principale (bassa / nell\'intervallo / alta).</string>
+    <string name="title_force_lockscreen_text_color">Colore testo imposto</string>
     <string name="title_xdrip_plus_number_icon">Icona numerica nell\'area di notifica</string>
     <string name="summary_do_number_icon_test">Le icone numeriche bloccano alcuni telefoni! Esegui il test prima di abilitare la funzione!</string>
     <string name="title_do_number_icon_test">Esegui test icona numerica</string>
@@ -1461,17 +1473,28 @@
     <string name="summary_desert_use_https">Aggiungi un altro livello di crittografia per reti condivise, per esempio wifi pubblici</string>
     <string name="title_desert_use_https">Usa HTTPS</string>
     <string name="title_xdrip_plus_experimental">Funzioni sperimentali</string>
+    <string name="title_novopen_insulin_pen">Penna insulina NovoPen</string>
+    <string name="summary_inpen_open_nov_support">Scaricamento NFC della dose per modelli 6 ed Echo Plus</string>
+    <string name="title_inpen_open_nov_support">Supporto per OpenNov</string>
     <string name="summary_inpen_screen">Download delle dose in corso</string>
     <string name="title_inpen_screen">Penna insulina InPen</string>
     <string name="title_inpen_enabled">Supporto InPen</string>
     <string name="summary_inpen_detect_priming">Rileva ed esclude le dosi a vuoto</string>
     <string name="title_inpen_detect_priming">Rileva le dosi a vuoto</string>
+    <string name="summary_inpen_prime_units">Le dosi devono essere inferiori o uguali a queste unità per essere considerate tiri a vuoto.</string>
     <string name="title_inpen_prime_units">Unità per dosi a vuoto</string>
+    <string name="summary_inpen_prime_minutes">Quanto vicina in minuti una dose deve essere considerata un tiro a vuoto.</string>
     <string name="title_inpen_prime_minutes">Tempo tra dose a vuoto e iniezione</string>
+    <string name="summary_inpen_additional_debug_logs">Registra dati extra per aiutare nel debug. Puoi rallentare le cose.</string>
+    <string name="title_inpen_additional_debug_logs">Registri di debug aggiuntivi</string>
     <string name="summary_inpen_orphan_primes_ignored">Ignorare le dose a vuoto non seguite da bolo. Deselezionare per usare come boli.</string>
     <string name="title_inpen_orphan_primes_ignored">Ignora dosi a vuoto isolate</string>
     <string name="summary_inpen_sounds">Suona per indicare il trasferimento dei dati con la penna</string>
     <string name="title_inpen_sounds">Suona</string>
+    <string name="summary_inpen_remove_priming_doses">Rimuovere automaticamente le dosi di tiri a vuoto uguali o inferiori al valore delle unità di tiro a vuoto e si verificano entro i minuti di tiro a vuoto prima della dose successiva.</string>
+    <string name="title_inpen_remove_priming_doses">Rimuovere le dosi di tiri a vuoto</string>
+    <string name="summary_inpen_hide_priming_doses">Nascondere le voci delle note di tiro a vuoto dal grafico.</string>
+    <string name="title_inpen_hide_priming_doses">Nascondi le dosi di tiri a vuoto</string>
     <string name="summary_inpen_reset">Resetta e cerca nuova penna in attesa abbinamento</string>
     <string name="title_inpen_reset">Cerca nuova penna</string>
     <string name="summary_pendiq_screen">Lettura e scrittura dosi</string>
@@ -1988,4 +2011,6 @@
     <string name="glupro_configuring">Configurazione</string>
     <string name="glupro_configured">Configurato</string>
     <string name="glupro_connect_failed">Connessione fallita</string>
+    <string name="glupro_start_time">Accendi</string>
+    <string name="ob1_sensor_stopped">Sensore Fermato</string>
 </resources>

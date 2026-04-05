@@ -117,7 +117,7 @@
     <string name="add_widget">위젯 추가</string>
     <string name="title_activity_alert_list">알림 목록</string>
     <string name="speaktreatment">추가사항을 말하세요.</string>
-    <string name="title_activity_update">xDrip+ 업데이트</string>
+    <string name="title_activity_update">xDrip+ 업데이트 가능</string>
     <string name="title_activity_display_qrcode">QR 코드로 설정 공유</string>
     <string name="title_activity_send_feed_back">Jamorham에게 피드백 보내기</string>
     <string name="title_activity_save_logs">로그 저장</string>
@@ -204,10 +204,10 @@
     <string name="deel_settings_for_algs">알고리즘을 위한 상세 세팅</string>
     <string name="low_level_prediction_values">저혈당으로 예측된 값</string>
     <string name="glucose_drop_for_one_unit">1단위로 떨어지는 혈당 수치</string>
-    <string name="xdrip_plus_prediction_settings">xDrip+ 예측 시뮬레이션 세팅</string>
+    <string name="xdrip_plus_prediction_settings">xDrip+ 예측 시뮬레이션 설정</string>
     <string name="settings_for_syncing">단말 사이의 동기화에 대한 세팅</string>
-    <string name="xdrip_plus_sync_settings">xDrip+ 동기화 세팅</string>
-    <string name="xdrip_plus_update_settings">xDrip+ 업데이트 세팅</string>
+    <string name="xdrip_plus_sync_settings">xDrip+ 동기화 설정</string>
+    <string name="xdrip_plus_update_settings">xDrip+ 업데이트 설정</string>
     <string name="automatic_update_check">자동 업데이트 확인</string>
     <string name="update_channel">채널 업데이트</string>
     <string name="send_crash_errors_to_developer">개발자 크래쉬 오류 보내기</string>
@@ -238,7 +238,7 @@
     <string name="alarm_at_forecasted_low_mins">예측 시간 임계값 [분]</string>
     <string name="title_forecast_low_threshold">역치</string>
     <string name="other_xdrip_plus_alerts">다른 xDrip+ 알림</string>
-    <string name="xdrip_plus_display_settings">xDrip+ 디스플레이 세팅</string>
+    <string name="xdrip_plus_display_settings">xDrip+ 화면 설정</string>
     <string name="display_customisations">화면 사용자 지정</string>
     <string name="insulin_carb_ratios_etc_for_models">예측 모델용 인슐린 및 탄수화물 비 등</string>
     <string name="grams_of_carbohydrate_one_unit_covers">1단위로 커버되는 탄수화물 양</string>
@@ -322,7 +322,7 @@
     <string name="reset">리셋</string>
     <string name="pebble_and_android_wear_options">다양한 워치 옵션</string>
     <string name="customize_colours">색상 사용자 정의</string>
-    <string name="xdrip_plus_color_settings">xDrip+ 색상 세팅</string>
+    <string name="xdrip_plus_color_settings">xDrip+ 색상 설정</string>
     <string name="summary_font_settings">글꼴 사용자 지정</string>
     <string name="title_font_settings">글꼴 설정</string>
     <string name="summary_enlarge_fonts_on_large_screens">태블릿과 같은 큰 화면에서 자동으로 글꼴 크기를 키웁니다</string>
@@ -382,7 +382,7 @@
     <string name="load_all_settings_from_sdcard">파일에서 모든 설정 불러오기</string>
     <string name="delete_any_settings_on_sdcard">설정 폴더 삭제 (Download/xDrip-export)</string>
     <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[세팅 -&gt; 자동 구성 기능을 사용하여 세팅을 전달하는 QR 코드를 사용하세요.]]></string>
-    <string name="xdrip_plus_security_key_settings_only">xDrip 플러스 보안 키 세팅</string>
+    <string name="xdrip_plus_security_key_settings_only">xDrip+ 보안 키 설정만</string>
     <string name="show_general_and_collection_settings">일반 및 컬렉션 세팅 보기</string>
     <string name="copy_all_settings">모든 세팅 복사</string>
     <string name="sensor_is_ready_please_enter_double_calibration">센서가 준비 되었습니다, 두번의 보정값을 입력하세요.</string>

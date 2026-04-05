@@ -551,7 +551,7 @@
     <string name="snooze_alert_before_it_fires">Erst schlummern, dann alarmieren</string>
     <string name="create_low_alert">Warnung (Niedrig) erstellen</string>
     <string name="create_high_alert">Warnung (Hoch) erstellen</string>
-    <string name="long_press_an_existing_alert_to_edit">(Lange Drücken zum editieren)</string>
+    <string name="long_press_an_existing_alert_to_edit">(Zum Bearbeiten lange drücken)</string>
     <string name="adding">Hinzufügen</string>
     <string name="high">hoch</string>
     <string name="alert">Warnung</string>
@@ -944,6 +944,7 @@
     <string name="use_confict_msg_glimp">Du kannst die Glimp-Einstellungen anpassen: Einstellungen -&gt; devices -&gt; deselektieren der Bluetooth-Option</string>
     <string name="eng_mode_is_on">Entwicklermodus ist aktiviert. Bitte deaktivieren Sie ihn, es sei denn, Sie sind sicher, dass Sie ihn benötigen, da er unerwartetes Verhalten verursachen kann.</string>
     <string name="yes">Ja</string>
+    <string name="enable">Aktivieren</string>
     <string name="xdrip_compatible_features">xDrip+ %s Funktionen</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
@@ -1904,4 +1905,5 @@
     <string name="volume_profile_high">Hohe Zuckerwerte</string>
     <string name="glupro_disconnected">Getrennt</string>
     <string name="glupro_connected">Verbunden</string>
+    <string name="glupro_start_time">Einschalten</string>
 </resources>

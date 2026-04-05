@@ -383,12 +383,14 @@
     <string name="calibration_out_of_range">Βαθμονόμηση εκτός περιοχής τιμών</string>
     <string name="bluetooth_scan">Bluetooth Scan</string>
     <!-- trend arrow for speak -->
+    <string name="enable">Ενεργό</string>
     <string name="hour_format">%s ώρες</string>
     <string name="external_calibration_app">Εξωτερική Εφαρμογή για Βαθμονόμηση</string>
     <string name="use_app_for_calibration">Να χρησιμοποιείται εφαρμογή για βαθμονόμηση;</string>
     <string name="title_Accept_Calibrations">Αποδοχή τιμών βαθμονόμησης</string>
     <string name="title_Double_Calibrations">Διπλή Βαθμονόμηση</string>
     <string name="title_You_have_no_reminders_yet">Δεν έχετε ορίσει ακόμη υπενθυμίσεις</string>
+    <string name="xdrip_reminders">Υπενθυμίσεις</string>
     <string name="button_15_min">15 Λεπτά</string>
     <string name="button_2_hour">2 Ώρες</string>
     <string name="button_1_day">1 Ημέρα</string>
@@ -518,4 +520,5 @@
     <string name="volume_profile_high">Υψηλές Τιμές Γλυκόζης</string>
     <string name="glupro_disconnected">Αποσύνδεση</string>
     <string name="glupro_connected">Συνδεδεμένο</string>
+    <string name="glupro_start_time">Ενεργοποίηση</string>
 </resources>

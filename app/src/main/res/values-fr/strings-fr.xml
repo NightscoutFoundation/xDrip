@@ -184,6 +184,8 @@
     <string name="share_config_via_qr_code">Partager la config via le code QR</string>
     <string name="check_for_updated_version">Vérifier les mises à jour</string>
     <string name="current_version_is_up_to_date">Pas de mise à jour disponible dans le canal sélectionné</string>
+    <string name="title_dialog_check_for_update">Pas de mise à jour dans le canal %1$s</string>
+    <string name="message_dialog_check_for_update">Une version plus récente peut exister dans d\'autres canaux.</string>
     <string name="send_feedback_to_developer">Envoyer des messages au développeur</string>
     <string name="home_screen">Écran d\'accueil</string>
     <string name="event_logs">Journal des événements</string>
@@ -202,7 +204,7 @@
     <string name="deel_settings_for_algs">Paramètres avancés pour les algorithmes</string>
     <string name="low_level_prediction_values">Valeurs de niveau de prédiction d\'hypoglycémie</string>
     <string name="glucose_drop_for_one_unit">Baisse de la glycémie pour 1 Unité</string>
-    <string name="xdrip_plus_prediction_settings">xDrip+ Simulation prédictive</string>
+    <string name="xdrip_plus_prediction_settings">xDrip+ Simulations prédictives</string>
     <string name="settings_for_syncing">Paramètres pour la sync entre appareils</string>
     <string name="xdrip_plus_sync_settings">xDrip+ Synchronisation</string>
     <string name="xdrip_plus_update_settings">xDrip+ Mises à jour</string>
@@ -286,6 +288,8 @@
     <string name="pref_summary_show_treatments">Afficher les points de Traitements sur le graphique</string>
     <string name="pref_use_wear_health">Utiliser les données de santé Wear</string>
     <string name="pref_summary_use_wear_health">Collecter et afficher le compteur de pas lorsque disponible</string>
+    <string name="summary_enable_wear_auto_update">Quand activé, mettre à jour automatiquement xDrip sur la montre pour correspondre à la version du téléphone.</string>
+    <string name="title_enable_wear_auto_update">Mise à jour automatique de la montre</string>
     <string name="pebble_integration">Intégration Pebble</string>
     <string name="send_data_to_pebble_watchface">Envoyer des données au cadran Pebble.</string>
     <string name="pebble_watch_integration">Intégration de la montre Pebble</string>
@@ -648,6 +652,8 @@
     <string name="libre_use_smoothed_data_summary">Utiliser une moyenne de 5 points pour obtenir des données Libre plus lisses.</string>
     <string name="libre_use_smoothed_data_title">Lissage des données Libre.</string>
     <string name="retrieve_blukon_history_title">Récupérer l\'historique du Freestyle Libre</string>
+    <string name="summary_libre_one_minute_interval">Accepter les données à intervalles d\'une minute de Libre. Redémarrez votre téléphone pour que les modifications prennent effet.</string>
+    <string name="title_libre_one_minute_interval">Libre 1 minute</string>
     <string name="retrieve_blukon_history_summary">Extraire l\'historique manqué du périphérique BluCon lors de la reconnexion au capteur.</string>
     <string name="interpret_share_raw">Si vous utilisez Share, xDrip affichera les valeurs quand elles sont normalement cachées sur le récepteur.</string>
     <string name="interpret_raw">Interpréter les valeurs brutes</string>
@@ -903,6 +909,9 @@
     <string name="only_stop_your_sensor_when_you_actually_plan">N\'arrêtez votre capteur que lorsque vous planifiez de l\'enlever, sinon laissez fonctionner!</string>
     <string name="restart_collector">Redémarrer le collecteur</string>
     <string name="forget_device">Oublier ce périphérique</string>
+    <string name="re_read_transmitter">Relire l\'émetteur</string>
+    <string name="tx_reread_confirmation_title">Actualiser les détails de l\'émetteur</string>
+    <string name="tx_reread_confirmation_message">Force xDrip à relire les caractéristiques de l\'émetteur. Aucun avantage si l\'émetteur n\'a pas changé; des changements de page d\'état temporaire peuvent se produire. Mieux vaut utiliser entre les sessions de capteurs.</string>
     <string name="other_notes">Autres Notes:</string>
     <string name="delete_future_data">Supprimer les données futures</string>
     <string name="show_only_untranslated">Afficher uniquement les non traduites</string>
@@ -944,6 +953,7 @@
     <string name="use_confict_msg_glimp">Vous pouvez ajuster les paramètres de Glimp : options -&gt; périphériques -&gt; désélectionner l\'option Bluetooth</string>
     <string name="eng_mode_is_on">Le mode Ingénierie est activé. Veuillez le désactiver à moins que vous n\'en ayez besoin car il peut causer un comportement inattendu.</string>
     <string name="yes">Oui</string>
+    <string name="enable">Activer</string>
     <string name="xdrip_compatible_features">Fonctionnalités %s xDrip+</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
@@ -1962,4 +1972,5 @@
     <string name="error_with_value">Erreur de la valeur</string>
     <string name="glupro_disconnected">Déconnecté</string>
     <string name="glupro_connected">Connecté</string>
+    <string name="glupro_start_time">Mettre en marche</string>
 </resources>

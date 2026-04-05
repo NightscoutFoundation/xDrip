@@ -203,8 +203,8 @@
     <string name="glucose_drop_for_one_unit">Caída de glucosa por Unidad</string>
     <string name="xdrip_plus_prediction_settings">xDrip+ Ajustes de simulación predictiva</string>
     <string name="settings_for_syncing">Ajustes para la sincronización entre dispositivos</string>
-    <string name="xdrip_plus_sync_settings">xDrip+ Ajustes de Sicronización</string>
-    <string name="xdrip_plus_update_settings">xDrip+ Ajustes de actualizaciones</string>
+    <string name="xdrip_plus_sync_settings">Ajustar sinc. xDrip+</string>
+    <string name="xdrip_plus_update_settings">Configurar actualización de xDrip+</string>
     <string name="automatic_update_check">Comprobación automática de actualizaciones</string>
     <string name="update_channel">Canal de actualización</string>
     <string name="send_crash_errors_to_developer">Enviar errores de bloqueo al desarrollador</string>
@@ -235,7 +235,7 @@
     <string name="alarm_at_forecasted_low_mins">Alarma en minutos bajas predichas</string>
     <string name="title_forecast_low_threshold">Límite</string>
     <string name="other_xdrip_plus_alerts">Otras alertas xDrip+</string>
-    <string name="xdrip_plus_display_settings">xDrip+ Ajustes de pantalla</string>
+    <string name="xdrip_plus_display_settings">Pantalla de Ajustes de xDrip+</string>
     <string name="display_customisations">Personalizaciones de pantalla</string>
     <string name="insulin_carb_ratios_etc_for_models">Insulina, ratios de carbohidratos, etc para los modelos</string>
     <string name="grams_of_carbohydrate_one_unit_covers">Gramos de carbohidratos cubiertos por Unidad</string>
@@ -317,7 +317,7 @@
     <string name="reset">Reset</string>
     <string name="pebble_and_android_wear_options">Opciones para distintos Relojes</string>
     <string name="customize_colours">Personalizar los colores</string>
-    <string name="xdrip_plus_color_settings">xDrip+ Ajustes de color</string>
+    <string name="xdrip_plus_color_settings">Ajustes de color xDrip+</string>
     <string name="summary_font_settings">Personalizar fuentes</string>
     <string name="title_font_settings">Ajustes de fuentes</string>
     <string name="summary_enlarge_fonts_on_large_screens">Ampliar automáticamente el tamaño de la fuente en pantallas grandes, como tablets</string>
@@ -327,7 +327,7 @@
     <string name="in_range_glucose_values">Valores de Glucosa en Rango</string>
     <string name="default_color_selected">Color por defecto seleccionado</string>
     <string name="color_bg_values">Colores de lectura BG y flecha de tendencia</string>
-    <string name="xdrip_plus_extra_settings">xDrip+ Ajustes adicionales</string>
+    <string name="xdrip_plus_extra_settings">Ajustes adicionales de xDrip+</string>
     <string name="example_chart">Ejemplo gráfico</string>
     <string name="treatments_prediction_curves">Tratamientos / curvas de predicción</string>
     <string name="carbs_per_unit">Hidratos de carbono por unidad</string>
@@ -377,7 +377,7 @@
     <string name="load_all_settings_from_sdcard">Cargar todos los ajustes de tarjeta SD</string>
     <string name="delete_any_settings_on_sdcard">Elimina carpeta de ajustes (Download/xDrip-export)</string>
     <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Utilizar códigos QR para transferir la configuración usando Preferencias->Función Auto configuración]]></string>
-    <string name="xdrip_plus_security_key_settings_only">Sólo Configuración de clave de seguridad xDrip Plus</string>
+    <string name="xdrip_plus_security_key_settings_only">Sólo ajustes de clave de seguridad xDrip Plus</string>
     <string name="show_general_and_collection_settings">Mostrar Ajustes Generales y de recolección</string>
     <string name="copy_all_settings">Copiar todos los ajustes</string>
     <string name="sensor_is_ready_please_enter_double_calibration">El sensor está listo, introduzca una doble calibración</string>
@@ -549,7 +549,7 @@
     <string name="snooze_alert_before_it_fires">Difiere alerta antes de que se active</string>
     <string name="create_low_alert">Crear alerta de baja</string>
     <string name="create_high_alert">Crear alerta de alta</string>
-    <string name="long_press_an_existing_alert_to_edit">(Pulsación larga para editar una alerta existente)</string>
+    <string name="long_press_an_existing_alert_to_edit">(Mantener presionada una alerta existente para editarla)</string>
     <string name="adding">Añadiendo</string>
     <string name="high">alto</string>
     <string name="alert">alerta</string>
@@ -646,6 +646,8 @@
     <string name="libre_use_smoothed_data_summary">Utilizar una media de 5 puntos para obtener datos del libre más suaves.</string>
     <string name="libre_use_smoothed_data_title">Suavizar Datos de Libre.</string>
     <string name="retrieve_blukon_history_title">Recuperar el historial del Libre</string>
+    <string name="summary_nsfollow_sample_period">Predeterminado: 5 min\nActual: %s</string>
+    <string name="title_sample_period">Período de ejemplo</string>
     <string name="retrieve_blukon_history_summary">Recuperar historial pendiente de BluCon cuando se reconecte al sensor.</string>
     <string name="interpret_share_raw">Si usa Compartir, xDrip mostrará los valores cuando están normalmente ocultos en el receptor.</string>
     <string name="interpret_raw">Interpretar los valores en bruto</string>
@@ -854,7 +856,7 @@
     <string name="are_you_sure_you_wish_to_snooze_all_other_devices_in_your_sync_group">¿Está seguro de que desea diferir todos los demás móviles de su grupo de sincronización?</string>
     <string name="yes_send_it">SÍ, ¡enviar!</string>
     <string name="movement_detection_and_vehicle_mode">Detección de movimientos y modo vehículo</string>
-    <string name="xdrip_motion_tracking">xDrip+ Rastreo de movimientos</string>
+    <string name="xdrip_motion_tracking">xDrip+ seguimiento de movimientos</string>
     <string name="detect_motion_types">Usar los sensores para detectar tipos de movimiento</string>
     <string name="enable_motion_tracking">Habilitar rastreo de movimientos</string>
     <string name="display_motion_types">Almacenar los tipos de movimiento recientes y trazarlos en el gráfico principal</string>
@@ -942,6 +944,7 @@
     <string name="use_confict_msg_glimp">Puedes ajustar la configuración de Glimp: opciones -&gt; dispositivos -&gt; deseleccionar la opción Bluetooth</string>
     <string name="eng_mode_is_on">El modo de ingeniería está activado. Deshabilítelo a menos que esté seguro de que lo necesita, ya que puede causar un comportamiento inesperado.</string>
     <string name="yes">Si</string>
+    <string name="enable">Activar</string>
     <string name="xdrip_compatible_features">Caracteristicas %s xDrip+</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
@@ -1071,7 +1074,7 @@
     <string name="title_Batterylog">Registro de la bateria</string>
     <string name="summary_Choose_to_display_the_bridge_battery_level">Seleccionar para mostrar el nivel de la batería del puente</string>
     <string name="title_Glucose_Retention">Retención de glucosa</string>
-    <string name="summary_Erase_data_older_than_this_many_days">Borrar datos más antiguos que tantos días. 0 = no borrar nada</string>
+    <string name="summary_Erase_data_older_than_this_many_days">Borrar datos más antiguos que estos días. 0 = no borrar nada</string>
     <string name="title_Other_misc_options">Otras opciones</string>
     <string name="summary_allow_testing_with_dead_sensor">permitir pruebas con un sensor muerto</string>
     <string name="title_NOT_FOR_PRODUCTION_USE">NO PARA USO DE PRODUCCION</string>
@@ -1322,6 +1325,7 @@
     <string name="title_nsfollow_url">URL de Nightscout a Seguir</string>
     <string name="summary_nsfollow_download_treatments">También descargar tratamientos de Nightscout como seguidor</string>
     <string name="title_nsfollow_download_treatments">Descargar tratamientos</string>
+    <string name="summary_nsfollow_lag">Predeterminado: 0\nActual: %s</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
     <string name="summary_clfollow_user">CareLink login username</string>
@@ -1925,4 +1929,5 @@
     <string name="error_with_value">Error con valor</string>
     <string name="glupro_disconnected">Desconectado</string>
     <string name="glupro_connected">Conectado</string>
+    <string name="glupro_start_time">Encender</string>
 </resources>

@@ -853,6 +853,8 @@
     <string name="advanced_bluereader_settings_summary">Avanserte blueReader innstillinger</string>
     <string name="advanced_bluereader_settings">Innstillinger for blueReader</string>
     <string name="bluereader_turnoff_sum">Skru av blueReader hvis batterinivå er lavere enn valgt verdi</string>
+    <string name="enable">Aktiver</string>
+    <string name="xdrip_reminders">Påminnelser</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Kalibrer med nye blodsukkermålinger hvis tilstanden synes riktig uten å be om samtykke (eksperimentell)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatisk kalibrering</string>
     <!-- Maybe we can use them later?
