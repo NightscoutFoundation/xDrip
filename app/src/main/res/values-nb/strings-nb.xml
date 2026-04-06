@@ -2043,4 +2043,10 @@
     <string name="glupro_reading_frequency">Avlesningsfrekvens</string>
     <string name="need_bluetooth_permission">Trenger Bluetooth-tillatelse</string>
     <string name="ob1_sensor_stopped">Sensor stoppet</string>
+    <string name="invalid_transmitter_id">Ugyldig sender-ID</string>
+    <string name="you_entered">Du skrev inn:</string>
+    <string name="fixed_version">Fast versjon:</string>
+    <string name="click">Klikk</string>
+    <string name="to_use_this_instead">å bruke dette i stedet?</string>
+    <string name="the_transmitter_id_you_have_entered_is_incorrect">Sender-ID-en eller paringskoden du har skrevet inn er feil og vil ikke fungere.\n\nDobbeltsjekk detaljene og prøv på nytt.</string>
 </resources>
