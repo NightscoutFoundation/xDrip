@@ -2041,4 +2041,10 @@
     <string name="glupro_reading_frequency">讀取頻率</string>
     <string name="need_bluetooth_permission">需要藍牙權限</string>
     <string name="ob1_sensor_stopped">傳感器已停止</string>
+    <string name="invalid_transmitter_id">無效的發射器 ID</string>
+    <string name="you_entered">您輸入的是：</string>
+    <string name="fixed_version">修正後內容：</string>
+    <string name="click">點選</string>
+    <string name="to_use_this_instead">以改用這個嗎？</string>
+    <string name="the_transmitter_id_you_have_entered_is_incorrect">您輸入的發射器 ID 或配對碼不正確，將無法使用。\n\n請再次確認詳細資訊，然後重試。</string>
 </resources>
