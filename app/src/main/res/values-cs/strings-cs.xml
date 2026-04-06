@@ -1627,7 +1627,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="no_data_received_from_master_yet">Zatím nebyla obdržena žádná data z hlavního zařízení</string>
     <string name="last_from_master_">Poslední přijatá data: </string>
     <string name="prepare_to_test">Připravte se na test!</string>
-    <string name="after_you_click_ok_look_for_a_number_icon_in_the_notification_area_if_you_see_123_then_the_test_has_succeeded__on_some_phones_this_test_will_crash_the_phone__after_30_seconds_we_will_shut_off_the_notification_if_your_phone_does_not_recover_after_this_then_hold_the_power_button_to_reboot_it">Po stiskutí tlačítka OK vyhledejte číselnou ikonu v oznamovací liště.\nPokud uvidíte 123, test byl úspěšný.\n\nTento test způsobí pád/zamrznutí některých telefonů.\n\nPo 30 vteřinách bude oznámení vypnuto. Pokud se poté telefon sám neobnoví, podržte tlačítko napájení pro jeho restartování.</string>
+    <string name="after_you_click_ok_look_for_a_number_icon_in_the_notification_area_if_you_see_123_then_the_test_has_succeeded__on_some_phones_this_test_will_crash_the_phone__after_30_seconds_we_will_shut_off_the_notification_if_your_phone_does_not_recover_after_this_then_hold_the_power_button_to_reboot_it">Po stisknutí tlačítka OK vyhledejte číselnou ikonu v oznamovací liště.\nPokud uvidíte 123, test byl úspěšný.\n\nTento test způsobí pád/zamrznutí některých telefonů.\n\nPo 30 vteřinách bude oznámení vypnuto. Pokud se poté telefon sám neobnoví, podržte tlačítko napájení pro jeho restartování.</string>
     <string name="running_test_with_number_123">Spuštění testu s číslem: 123</string>
     <string name="unusual_internal_context_problem__please_report">Neobvyklá interní kontextová chyba systému - prosím nahlaste</string>
     <string name="cannot_start__please_report_context_problem">Nelze spustit - prosím nahlaste kontextový problém</string>
@@ -2036,4 +2036,10 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="glupro_reading_frequency">Frekvence hodnot glykémií</string>
     <string name="need_bluetooth_permission">Je potřeba oprávnění pro Bluetooth</string>
     <string name="ob1_sensor_stopped">Senzor zastaven</string>
+    <string name="invalid_transmitter_id">Neplatný identifikátor vysílače</string>
+    <string name="you_entered">Zadáno:</string>
+    <string name="fixed_version">Opravená verze:</string>
+    <string name="click">Kliknutím na</string>
+    <string name="to_use_this_instead">použít opravenou verzi?</string>
+    <string name="the_transmitter_id_you_have_entered_is_incorrect">Zadaný identifikátor vysílače nebo párovací kód není správný a nebude fungovat.\n\nZkontrolujte prosím zadané údaje a zkuste to znovu.</string>
 </resources>
