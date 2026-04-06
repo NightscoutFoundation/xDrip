@@ -1930,4 +1930,6 @@
     <string name="glupro_disconnected">Desconectado</string>
     <string name="glupro_connected">Conectado</string>
     <string name="glupro_start_time">Encender</string>
+    <string name="invalid_transmitter_id">ID transmisor no válida</string>
+    <string name="fixed_version">Versión arreglada:</string>
 </resources>
