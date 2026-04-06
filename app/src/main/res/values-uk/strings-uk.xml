@@ -2020,4 +2020,5 @@
     <string name="glupro_reconnect_attempt">Спроба повторного підключення</string>
     <string name="glupro_reading_frequency">Частота зчитування</string>
     <string name="need_bluetooth_permission">Потрібен дозвіл Bluetooth</string>
+    <string name="the_transmitter_id_you_have_entered_is_incorrect">Введено хибний код передавача або з\'єднання.\n\nПеревірте, будь ласка, та спробуйте вдруге.</string>
 </resources>
