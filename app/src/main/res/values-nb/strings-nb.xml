@@ -117,7 +117,7 @@
     <string name="add_widget">Legg til modul</string>
     <string name="title_activity_alert_list">Liste over varsler</string>
     <string name="speaktreatment">Snakk inn behandling</string>
-    <string name="title_activity_update">xDrip+ oppdatering tilgjengelig</string>
+    <string name="title_activity_update">Oppdatering tilgjengelig</string>
     <string name="title_activity_display_qrcode">Del innstillinger med QR-kode</string>
     <string name="title_activity_send_feed_back">Send tilbakemelding til Jamorham</string>
     <string name="title_activity_save_logs">Lagre logger</string>
@@ -204,10 +204,10 @@
     <string name="deel_settings_for_algs">Avanserte innstillinger for algoritmer</string>
     <string name="low_level_prediction_values">Lavt nivå prediksjonsverdier</string>
     <string name="glucose_drop_for_one_unit">Glukosefall for 1 enhet</string>
-    <string name="xdrip_plus_prediction_settings">xDrip+ Simuleringsinnstillinger for beregninger</string>
+    <string name="xdrip_plus_prediction_settings">Simuleringsinnstillinger for beregninger</string>
     <string name="settings_for_syncing">Innstillinger for synkronisering mellom telefoner</string>
-    <string name="xdrip_plus_sync_settings">xDrip+ Synkroniseringsinnstillinger</string>
-    <string name="xdrip_plus_update_settings">xDrip+ Oppdateringsinnstillinger</string>
+    <string name="xdrip_plus_sync_settings">xDrip+ sync</string>
+    <string name="xdrip_plus_update_settings">Oppdateringsinnstillinger</string>
     <string name="automatic_update_check">Automatisk oppdatering sjekk</string>
     <string name="update_channel">Oppdateringskanal</string>
     <string name="send_crash_errors_to_developer">Send krasjfeil til utvikler</string>
@@ -238,7 +238,7 @@
     <string name="alarm_at_forecasted_low_mins">Tidsgrense [min]</string>
     <string name="title_forecast_low_threshold">Terskel</string>
     <string name="other_xdrip_plus_alerts">Andre xDrip+ varsler</string>
-    <string name="xdrip_plus_display_settings">xDrip+ Skjerminnstillinger</string>
+    <string name="xdrip_plus_display_settings">Skjerminnstillinger</string>
     <string name="display_customisations">Skjermtilpasninger</string>
     <string name="insulin_carb_ratios_etc_for_models">Insulin-, karbohydratforhold etc. for modeller</string>
     <string name="grams_of_carbohydrate_one_unit_covers">Gram karbohydrater 1 enhet dekker</string>
@@ -322,7 +322,7 @@
     <string name="reset">Tilbakestill</string>
     <string name="pebble_and_android_wear_options">Alternativer for ulike smartklokker</string>
     <string name="customize_colours">Tilpass farger</string>
-    <string name="xdrip_plus_color_settings">xDrip+ fargeinnstillinger</string>
+    <string name="xdrip_plus_color_settings">Fargeinnstillinger</string>
     <string name="summary_font_settings">Tilpass skrifttyper</string>
     <string name="title_font_settings">Skriftinnstilinger</string>
     <string name="summary_enlarge_fonts_on_large_screens">Forstørr automatisk skriftstørrelsen på store skjermer, for eksempel nettbrett</string>
@@ -332,7 +332,7 @@
     <string name="in_range_glucose_values">I målområdet</string>
     <string name="default_color_selected">Standardfarge Valgt</string>
     <string name="color_bg_values">Skrifttyper</string>
-    <string name="xdrip_plus_extra_settings">xDrip+ ekstra innstillinger</string>
+    <string name="xdrip_plus_extra_settings">Ekstra innstillinger</string>
     <string name="example_chart">Eksempelgraf</string>
     <string name="treatments_prediction_curves">Behandlinger / prediksjonkurver</string>
     <string name="carbs_per_unit">Karbohydrater per enhet</string>
@@ -382,7 +382,7 @@
     <string name="load_all_settings_from_sdcard">Last inn alle innstillinger fra intern lagring</string>
     <string name="delete_any_settings_on_sdcard">Slett innstillinger-mappen (Download/xDrip-export)</string>
     <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Bruk QR-koder for å overføre innstillinger ved hjelp av funksjonen Innstillinger -> Autokonfigurer]]></string>
-    <string name="xdrip_plus_security_key_settings_only">Kun xDrip Plus sikkerhetsnøkkel-innstillinger</string>
+    <string name="xdrip_plus_security_key_settings_only">Sikkerhetsnøkkel-innstillinger</string>
     <string name="show_general_and_collection_settings">Vis Generelle- og innsamlingsinnstillinger</string>
     <string name="copy_all_settings">Kopier alle innstillinger</string>
     <string name="sensor_is_ready_please_enter_double_calibration">Sensor er klar, skriv inn en initiell kalibrering</string>
@@ -864,7 +864,7 @@
     <string name="are_you_sure_you_wish_to_snooze_all_other_devices_in_your_sync_group">Er du sikker på at du vil slumre alle andre enheter in din synk-gruppe?</string>
     <string name="yes_send_it">JA, send den!</string>
     <string name="movement_detection_and_vehicle_mode">Oppdag bevegelse og bilmodus</string>
-    <string name="xdrip_motion_tracking">xDrip+ Bevegelsessporing</string>
+    <string name="xdrip_motion_tracking">Bevegelsessporing</string>
     <string name="detect_motion_types">Bruk sensorer for å oppdage bevegelsestype</string>
     <string name="enable_motion_tracking">Aktiver bevegelsessensor</string>
     <string name="display_motion_types">Lagre nylige bevegelsestyper og vis disse på hovedgrafen</string>
@@ -1021,7 +1021,7 @@
     <string name="device_inactivity">Enhetsinaktivitet</string>
     <string name="test_message_sending">Sender testmelding</string>
     <string name="d_selected_contacts_for_text_messages_format">%d valgte kontakter for tekstmeldinger</string>
-    <string name="xdrip_software_changed_format">xDrip-versjon endret fra: %1$s til %2$s</string>
+    <string name="xdrip_software_changed_format">Versjon endret fra: %1$s til %2$s</string>
     <string name="when_connected_to_the_audio_device_shown_below_switch_to_vehicle_mode">Bytt til bilmodus når du er koblet til lydenheten nedenfor.</string>
     <string name="select_device">Velg enhet</string>
     <string name="no_bluetooth_audio_found">Ingen Bluetooth-lyd funnet</string>
@@ -1056,7 +1056,7 @@
     <string name="summary_Accept_connections_from_any_network_instead_of_just_internally">Aksepter tilkoblinger fra hvilket som helst nettverk i stedet for bare internt innenfor denne enheten. Det er sikkerhetsrisikoer for å aktivere dette! Delt hemmelig kode er nødvendig hvis aktivert.</string>
     <string name="title_Open_Web_Service">Åpen webtjeneste</string>
     <string name="summary_Shared_Secret_for_open_web_service">Delt hemmelig kode for åpen webtjeneste (burde matche din Nightscout API secret)</string>
-    <string name="title_xDrip_Web_Service_Secret">xDrip webtjeneste hemmelig kode</string>
+    <string name="title_xDrip_Web_Service_Secret">Webtjeneste hemmelig kode</string>
     <string name="summary_Display_status_from_other_apps_like_AndroidAPS">Vis status fra andre apper som AndroidAPS</string>
     <string name="title_External_Status">Ekstern status</string>
     <string name="summary_Display_pump_status_information_if_available">Vis informasjon om pumpestatus hvis tilgjengelig</string>
@@ -1145,7 +1145,7 @@
     <string name="weekdays">Ukedager</string>
     <string name="weekends">Helger</string>
     <string name="mega_priority">Mega-prioritet</string>
-    <string name="xdrip_reminders">xDrip+ påminnelser</string>
+    <string name="xdrip_reminders">Påminnelser</string>
     <string name="button_15_min">15 min</string>
     <string name="button_2_hour">2 timer</string>
     <string name="button_1_day">1 dag</string>
