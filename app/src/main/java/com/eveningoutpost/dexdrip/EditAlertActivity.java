@@ -144,6 +144,7 @@ public class EditAlertActivity extends ActivityWithMenu {
         super.onCreate(savedInstanceState);
         mContext = this;
         setContentView(R.layout.activity_edit_alert);
+        JoH.fixActionBar(this);
 
         viewHeader = (TextView) findViewById(R.id.view_alert_header);
 

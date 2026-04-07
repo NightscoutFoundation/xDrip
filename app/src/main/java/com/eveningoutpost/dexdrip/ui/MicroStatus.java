@@ -14,4 +14,6 @@ public interface MicroStatus {
 
     boolean sessionStartTime(); // Show session start time on the classic status page only when true (not G7)
 
+    boolean rereadTx();
+
 }

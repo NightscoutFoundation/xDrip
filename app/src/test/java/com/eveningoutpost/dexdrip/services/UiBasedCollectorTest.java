@@ -6,12 +6,22 @@ import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import lombok.val;
 
 public class UiBasedCollectorTest extends RobolectricTestWithConfig {
+
+    @Before
+    @Override
+    public void setUp() {
+        super.setUp();
+        PersistentStore.setLong("UI_BASED_STORE_LAST_VALUE", 0);
+        PersistentStore.setLong("UI_BASED_STORE_LAST_REPEAT", 0);
+    }
 
     @Test
     public void isValidMmolTest() {
@@ -57,14 +67,27 @@ public class UiBasedCollectorTest extends RobolectricTestWithConfig {
     }
 
     @Test
-    public void parseIoBTest() {
+    public void parseIoBOmnipodTest() {
         val i = new UiBasedCollector();
 
         val valid = "Automated Mode (IOB: 5.1 U)";
         val invalid = "Foobar";
 
-        assertWithMessage("valid IoB message").that(i.parseIoB(valid)).isEqualTo(5.1);
+        assertWithMessage("valid Omnipod IoB message").that(i.parseIoB(valid)).isEqualTo(5.1);
         assertWithMessage("invalid IoB message").that(i.parseIoB(invalid)).isNull();
+    }
+
+    @Test
+    public void parseIoBMiniMedTest() {
+        val i = new UiBasedCollector();
+
+        val valid = "2.400 U";
+        val invalidNoUnit = "2.400";
+        val invalidExtraText = "Active Insulin 2.400 U";
+
+        assertWithMessage("valid MiniMed IoB message").that(i.parseIoB(valid)).isEqualTo(2.4);
+        assertWithMessage("invalid IoB message (no unit)").that(i.parseIoB(invalidNoUnit)).isNull();
+        assertWithMessage("invalid IoB message (extra text)").that(i.parseIoB(invalidExtraText)).isNull();
     }
 
     // standard 5 minute apart readings are all accepted
@@ -156,6 +179,87 @@ public class UiBasedCollectorTest extends RobolectricTestWithConfig {
                 .that(ui.handleNewValue(start + (Constants.MINUTE_IN_MS * 5 * 1), 100)).isTrue();
     }
 
+    /**
+     * Characterization: different values 5 minutes apart should always be accepted.
+     * Exercises the normal case where the sensor provides fresh, unique readings
+     * every 5 minutes.
+     */
+    @Test
+    public void deDupeTest_differentValues5minApart_accepted() {
+        // :: Setup
+        BgReading.deleteALL();
+        val ui = new UiBasedCollector();
+        val start = JoH.tsl();
 
+        // :: Act & Verify
+        assertWithMessage("first reading accepted")
+                .that(ui.handleNewValue(start, 100)).isTrue();
+        assertWithMessage("different value 5 min later accepted")
+                .that(ui.handleNewValue(start + Constants.MINUTE_IN_MS * 5, 110)).isTrue();
+        assertWithMessage("different value 10 min later accepted")
+                .that(ui.handleNewValue(start + Constants.MINUTE_IN_MS * 10, 120)).isTrue();
+    }
+
+    /**
+     * Characterization: same value 10 minutes apart should be accepted.
+     * When the sensor genuinely reads the same value after a full update cycle,
+     * it should be recorded.
+     */
+    @Test
+    public void deDupeTest_sameValue10minApart_accepted() {
+        // :: Setup
+        BgReading.deleteALL();
+        val ui = new UiBasedCollector();
+        val start = JoH.tsl();
+
+        // :: Act & Verify
+        assertWithMessage("first reading accepted")
+                .that(ui.handleNewValue(start, 100)).isTrue();
+        assertWithMessage("same value 10 min later accepted")
+                .that(ui.handleNewValue(start + Constants.MINUTE_IN_MS * 10, 100)).isTrue();
+    }
+
+    /**
+     * Characterization: alternating values at 5-min intervals all accepted.
+     * e.g. 100, 110, 100 — each differs from its predecessor.
+     */
+    @Test
+    public void deDupeTest_alternatingValues_allAccepted() {
+        // :: Setup
+        BgReading.deleteALL();
+        val ui = new UiBasedCollector();
+        val start = JoH.tsl();
+
+        // :: Act & Verify
+        assertWithMessage("reading 1 accepted")
+                .that(ui.handleNewValue(start, 100)).isTrue();
+        assertWithMessage("different reading 2 accepted")
+                .that(ui.handleNewValue(start + Constants.MINUTE_IN_MS * 5, 110)).isTrue();
+        assertWithMessage("back to original reading 3 accepted")
+                .that(ui.handleNewValue(start + Constants.MINUTE_IN_MS * 10, 100)).isTrue();
+    }
+
+    /**
+     * Characterization: jam detection rejects after Medtronic threshold (9 repeats).
+     * Readings spaced at 10-min intervals to pass dedup but increment jam counter.
+     */
+    @Test
+    public void deDupeTest_jamDetection_rejectsExcessiveRepeats() {
+        // :: Setup
+        BgReading.deleteALL();
+        val ui = new UiBasedCollector();
+        ui.lastPackage = "com.medtronic.diabetes.guardian";
+        val start = JoH.tsl();
+
+        // :: Act - insert same value 10 times at 10-min intervals
+        for (int i = 0; i <= 9; i++) {
+            assertWithMessage("reading " + i + " accepted")
+                    .that(ui.handleNewValue(start + Constants.MINUTE_IN_MS * 10 * i, 100)).isTrue();
+        }
+
+        // :: Verify - 11th same value rejected by jam detection
+        assertWithMessage("11th identical value rejected by jam detection")
+                .that(ui.handleNewValue(start + Constants.MINUTE_IN_MS * 10 * 10, 100)).isFalse();
+    }
 
 }

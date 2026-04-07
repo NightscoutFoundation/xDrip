@@ -99,6 +99,11 @@ public class ScanMeister {
         return this;
     }
 
+    public ScanMeister setTimeout(final int timeout) {
+        this.scanSeconds = timeout;
+        return this;
+    }
+
     public ScanMeister unlimitedMatches() {
         this.stopOnFirstMatch = false;
         return this;

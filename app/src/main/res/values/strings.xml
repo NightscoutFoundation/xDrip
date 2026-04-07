@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <string name="title_activity_bluetooth_scan">Bluetooth Scan</string>
@@ -132,7 +132,7 @@
     <string name="title_activity_alert_list">Alert List</string>
     <string name="speaktreatment">Speak treatment</string>
 
-    <string name="title_activity_update">xDrip+ Update Available</string>
+    <string name="title_activity_update">Update available</string>
     <string name="title_activity_display_qrcode">Share Settings via QR code</string>
     <string name="title_activity_send_feed_back">Send Feedback to Jamorham</string>
     <string name="title_activity_save_logs">Save Logs</string>
@@ -201,7 +201,9 @@
     <string name="libre_last_x_minutes_graph">Libre last %d minutes graph</string>
     <string name="share_config_via_qr_code">Share config via QR code</string>
     <string name="check_for_updated_version">Check for updated version</string>
-    <string name="current_version_is_up_to_date">No update in the selected channel</string>
+    <string name="current_version_is_up_to_date">You have the most recent xDrip version</string>
+    <string name="title_dialog_check_for_update">No update in %1$s channel</string>
+    <string name="message_dialog_check_for_update">A newer version may exist in other channels.</string>
     <string name="send_feedback_to_developer">Send Feedback to developers</string>
     <string name="home_screen">Home Screen</string>
     <string name="event_logs">Event Logs</string>
@@ -220,10 +222,10 @@
     <string name="deel_settings_for_algs">Deep settings for algorithms</string>
     <string name="low_level_prediction_values">Low level prediction values</string>
     <string name="glucose_drop_for_one_unit">Glucose drop for 1 Unit</string>
-    <string name="xdrip_plus_prediction_settings">xDrip+ Predictive Simulation settings</string>
+    <string name="xdrip_plus_prediction_settings">Predictive simulations</string>
     <string name="settings_for_syncing">Settings for syncing between handsets</string>
-    <string name="xdrip_plus_sync_settings">xDrip+ Sync settings</string>
-    <string name="xdrip_plus_update_settings">xDrip+ Update Settings</string>
+    <string name="xdrip_plus_sync_settings">xDrip+ sync</string>
+    <string name="xdrip_plus_update_settings">Update settings</string>
     <string name="automatic_update_check">Automatic update check</string>
     <string name="update_channel">Update Channel</string>
     <string name="send_crash_errors_to_developer">Send crash errors to developer</string>
@@ -254,7 +256,7 @@
     <string name="alarm_at_forecasted_low_mins">Time threshold [min]</string>
     <string name="title_forecast_low_threshold">Threshold</string>
     <string name="other_xdrip_plus_alerts">Other xDrip+ alerts</string>
-    <string name="xdrip_plus_display_settings">xDrip+ Display Settings</string>
+    <string name="xdrip_plus_display_settings">Display</string>
     <string name="display_customisations">Display customizations</string>
     <string name="insulin_carb_ratios_etc_for_models">Insulin, Carb ratios etc. for models</string>
     <string name="grams_of_carbohydrate_one_unit_covers">Grams of Carbohydrate 1 Unit covers</string>
@@ -305,6 +307,8 @@
     <string name="pref_summary_show_treatments">Show Treatment points on graph</string>
     <string name="pref_use_wear_health">Use Wear Health Data</string>
     <string name="pref_summary_use_wear_health">Collect and display Step counter when available</string>
+    <string name="summary_enable_wear_auto_update">When enabled, automatically update xDrip on the watch to match the phone version.</string>
+    <string name="title_enable_wear_auto_update">Automatic Wear update</string>
 
     <string name="pebble_integration">Pebble Integration</string>
     <string name="send_data_to_pebble_watchface">Send data to Pebble Watchface.</string>
@@ -338,7 +342,7 @@
     <string name="reset">Reset</string>
     <string name="pebble_and_android_wear_options">Options for different Watches</string>
     <string name="customize_colours">Customize Colors</string>
-    <string name="xdrip_plus_color_settings">xDrip+ Color Settings</string>
+    <string name="xdrip_plus_color_settings">Color settings</string>
     <string name="summary_font_settings">Customize Fonts</string>
     <string name="title_font_settings">Font Settings</string>
     <string name="summary_enlarge_fonts_on_large_screens">Automatically enlarge the font size on large screens, such as tablets</string>
@@ -348,7 +352,7 @@
     <string name="in_range_glucose_values">In-range</string>
     <string name="default_color_selected">Default Color Selected</string>
     <string name="color_bg_values">Fonts</string>
-    <string name="xdrip_plus_extra_settings">xDrip+ extra settings</string>
+    <string name="xdrip_plus_extra_settings">Extra settings</string>
     <string name="example_chart">Example graph</string>
     <string name="treatments_prediction_curves">Treatments / Prediction Curves</string>
     <string name="carbs_per_unit">Carbs per Unit</string>
@@ -398,7 +402,7 @@
     <string name="load_all_settings_from_sdcard">Load all settings from the settings file</string>
     <string name="delete_any_settings_on_sdcard">Delete settings folder (Download/xDrip-export)</string>
     <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Use QR codes to transfer settings using Settings->Auto Configure feature]]></string>
-    <string name="xdrip_plus_security_key_settings_only">xDrip Plus Security Key Settings only</string>
+    <string name="xdrip_plus_security_key_settings_only">Security key settings only</string>
     <string name="show_general_and_collection_settings">Show General and Collection Settings</string>
     <string name="copy_all_settings">Copy all Settings</string>
     <string name="sensor_is_ready_please_enter_double_calibration">Sensor is ready, please enter an initial calibration</string>
@@ -406,7 +410,7 @@
     <string name="enter_first_bg_value">Enter First BG Value</string>
     <string name="enter_second_bg_value">Enter Second BG Value</string>
     <string name="language_editor">Language Editor</string>
-    <string name="configure_missed_readings">Configure Missed Readings</string>
+    <string name="configure_missed_readings">Missed readings</string>
     <string name="install_pebble_snooze_control_app">Install Pebble Snooze Control App</string>
     <string name="install_pebble_classic_trend_watchface">Install Pebble Classic Trend Watchface</string>
     <string name="install_pebble_trend_watchface">Install Pebble Trend Watchface</string>
@@ -571,7 +575,7 @@
     <string name="snooze_alert_before_it_fires">Snooze alert before it fires</string>
     <string name="create_low_alert">Create low alert</string>
     <string name="create_high_alert">Create high alert</string>
-    <string name="long_press_an_existing_alert_to_edit">(Long Press an existing alert to edit)</string>
+    <string name="long_press_an_existing_alert_to_edit">Long press an existing alert to edit</string>
     <string name="adding">Adding</string>
     <string name="high">high</string>
     <string name="alert">alert</string>
@@ -676,6 +680,10 @@
     <string name="libre_use_smoothed_data_summary">Use average of 5 points to get smoother Libre data.</string>
     <string name="libre_use_smoothed_data_title">Smooth Libre data.</string>
     <string name="retrieve_blukon_history_title">Retrieve Libre history</string>
+    <string name="summary_libre_one_minute_interval">Accept data at one-minute intervals from Libre. Reboot your phone for changes to take effect.</string>
+    <string name="title_libre_one_minute_interval">Libre 1-minute</string>
+    <string name="summary_nsfollow_sample_period">Default: 5 min\nCurrent: %s</string>
+    <string name="title_sample_period">Sample period</string>
     <string name="retrieve_blukon_history_summary">Retrieve missed history from BluCon device when reconnecting to sensor.</string>
     <string name="interpret_share_raw">If using Share, xDrip will show values when they are normally hidden on the receiver.</string>
     <string name="interpret_raw">Interpret Raw Values</string>
@@ -888,7 +896,7 @@
 
 
     <string name="movement_detection_and_vehicle_mode">Movement detection and vehicle mode</string>
-    <string name="xdrip_motion_tracking">xDrip+ Motion Tracking</string>
+    <string name="xdrip_motion_tracking">Motion tracking</string>
     <string name="detect_motion_types">Use sensors to detect types of motion</string>
     <string name="enable_motion_tracking">Enable Motion Tracking</string>
     <string name="display_motion_types">Store recent motion types and plot these on the main graph</string>
@@ -935,6 +943,9 @@
     <string name="only_stop_your_sensor_when_you_actually_plan">Only stop your sensor when you actually plan to remove it, otherwise leave it running!</string>
     <string name="restart_collector">Restart Collector</string>
     <string name="forget_device">Forget Device</string>
+    <string name="re_read_transmitter">Reread transmitter</string>
+    <string name="tx_reread_confirmation_title">Refresh transmitter details</string>
+    <string name="tx_reread_confirmation_message">Forces xDrip to reread transmitter characteristics. No benefit if the transmitter has not changed; temporary status page changes may occur. Best used between sensor sessions.</string>
     <string name="other_notes">Other Notes:</string>
     <string name="delete_future_data">Delete Future Data</string>
     <string name="show_only_untranslated">Show only untranslated</string>
@@ -978,6 +989,7 @@
     <string name="use_confict_msg_glimp">You can adjust Glimp Settings: options -> devices -> unselect Bluetooth option</string>
     <string name="eng_mode_is_on">Engineering mode is enabled.  Please disable it unless you are certain you need it as it may cause unexpected behavior.</string>
     <string name="yes">Yes</string>
+    <string name="enable">Enable</string>
     <string name="xdrip_compatible_features">xDrip+ %s Features</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
@@ -1043,7 +1055,7 @@
     <string name="device_inactivity">Device inactivity</string>
     <string name="test_message_sending">Test Message Sending</string>
     <string name="d_selected_contacts_for_text_messages_format">%d selected contacts for text messages</string>
-    <string name="xdrip_software_changed_format">xDrip software version changed from: %1$s to %2$s</string>
+    <string name="xdrip_software_changed_format">Software version changed from: %1$s to %2$s</string>
     <string name="when_connected_to_the_audio_device_shown_below_switch_to_vehicle_mode">Switch to Vehicle Mode when connected to the audio device shown below.</string>
     <string name="select_device">Select Device</string>
     <string name="no_bluetooth_audio_found">No Bluetooth audio found</string>
@@ -1078,7 +1090,7 @@
     <string name="summary_Accept_connections_from_any_network_instead_of_just_internally">Accept connections from any network instead of just internally within this device. There are security implications to enabling this! Shared Secret will be required if set.</string>
     <string name="title_Open_Web_Service">Open Web Service</string>
     <string name="summary_Shared_Secret_for_open_web_service">Shared Secret for open web service (should match your Nightscout API secret)</string>
-    <string name="title_xDrip_Web_Service_Secret">xDrip Web Service Secret</string>
+    <string name="title_xDrip_Web_Service_Secret">Web service secret</string>
     <string name="summary_Display_status_from_other_apps_like_AndroidAPS">Display status from other apps like AndroidAPS</string>
     <string name="title_External_Status">External Status</string>
     <string name="summary_Display_pump_status_information_if_available">Display pump status information if available</string>
@@ -1107,7 +1119,7 @@
     <string name="title_Batterylog">Batterylog</string>
     <string name="summary_Choose_to_display_the_bridge_battery_level">Choose to display the bridge battery level</string>
     <string name="title_Glucose_Retention">Glucose Retention</string>
-    <string name="summary_Erase_data_older_than_this_many_days">Erase data older than this many days. 0 = don\'t erase anything</string>
+    <string name="summary_Erase_data_older_than_this_many_days">Erase data older than this many days. Setting 0 will keep all data, but xDrip should not be used as a repository — use Nightscout or Tidepool for long-term storage.</string>
     <string name="title_Other_misc_options">Other misc. options</string>
     <string name="summary_allow_testing_with_dead_sensor">allow testing with dead sensor</string>
     <string name="title_NOT_FOR_PRODUCTION_USE">NOT FOR PRODUCTION USE</string>
@@ -1168,7 +1180,7 @@
     <string name="weekdays">Weekdays</string>
     <string name="weekends">Weekends</string>
     <string name="mega_priority">Mega-priority</string>
-    <string name="xdrip_reminders">xDrip+ Reminders</string>
+    <string name="xdrip_reminders">Reminders</string>
     <string name="button_15_min">15 Min</string>
     <string name="button_2_hour">2 Hour</string>
     <string name="button_1_day">1 Day</string>
@@ -1377,6 +1389,7 @@
     <string name="title_nsfollow_url">Nightscout Follow URL</string>
     <string name="summary_nsfollow_download_treatments">Also download treatments from Nightscout as follower</string>
     <string name="title_nsfollow_download_treatments">Download Treatments</string>
+    <string name="summary_nsfollow_lag">Default: 0\nCurrent: %s</string>
     <string name="title_nsfollow_lag">Nightscout Follow delay</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
@@ -1454,17 +1467,19 @@
     <string name="title_high_priority_notifications">High Priority Notifications</string>
     <string name="summary_public_notifications">Show notification content on secure lockscreen</string>
     <string name="title_public_notifications">Public Notifications</string>
-    <string name="title_xdrip_plus_number_wall">Number Wall on Lock Screen</string>
+    <string name="title_xdrip_plus_number_wall">Number wall on lock screen</string>
     <string name="summary_do_number_wall_configuration">Adjust and preview wall layout</string>
-    <string name="title_do_number_wall_configuration">Configure Number Wall</string>
-    <string name="summary_number_wall_on_lockscreen">Show on lock-screen. Android 7 and above only!</string>
+    <string name="title_do_number_wall_configuration">Configure number wall</string>
+    <string name="summary_number_wall_on_lockscreen">Show number wall on lock screen when enabled</string>
     <string name="title_number_wall_on_lockscreen">Use on Lock screen</string>
-    <string name="title_color_number_wall">Wall Text Color</string>
-    <string name="title_color_number_wall_shadow">Wall Shadow Color</string>
-    <string name="summary_pick_numberwall_start">Chose time to start showing</string>
-    <string name="title_pick_numberwall_start">Turn On</string>
-    <string name="summary_pick_numberwall_stop">Chose time to stop - set to same as start for always on</string>
-    <string name="title_pick_numberwall_stop">Turn Off Time</string>
+    <string name="title_color_number_wall">Text color</string>
+    <string name="title_color_number_wall_shadow">Text shadow color</string>
+    <string name="summary_pick_numberwall_start">Choose number wall start time (same as end for all day)</string>
+    <string name="title_pick_numberwall_start">Start time</string>
+    <string name="summary_pick_numberwall_stop">Choose number wall end time (same as start for all day)</string>
+    <string name="title_pick_numberwall_stop">End time</string>
+    <string name="summary_force_lockscreen_text_color"><b>Enable:</b> Always use the selected text color.\n<b>Disable:</b> Use main screen glucose colors (low / in-range / high).</string>
+    <string name="title_force_lockscreen_text_color">Force text color</string>
     <string name="title_xdrip_plus_number_icon">Number Icon in Notification Area</string>
     <string name="summary_do_number_icon_test">Number icons crash some phones! Tap to run the test before enabling the feature!</string>
     <string name="title_do_number_icon_test">Run Number Icon Test</string>
@@ -1507,17 +1522,28 @@
     <string name="summary_desert_use_https">Add another layer of encryption for shared networks, e.g. public WiFi</string>
     <string name="title_desert_use_https">Use HTTPS</string>
     <string name="title_xdrip_plus_experimental">Experimental Section</string>
+    <string name="title_novopen_insulin_pen">NovoPen insulin pen</string>
+    <string name="summary_inpen_open_nov_support">NFC dose downloading of models 6 and Echo Plus</string>
+    <string name="title_inpen_open_nov_support">OpenNov support</string>
     <string name="summary_inpen_screen">Downloading dosages</string>
     <string name="title_inpen_screen">InPen Insulin Pen</string>
     <string name="title_inpen_enabled">InPen Support</string>
     <string name="summary_inpen_detect_priming">Detect and exclude priming doses</string>
     <string name="title_inpen_detect_priming">Detect priming</string>
+    <string name="summary_inpen_prime_units">Doses must be less than or equal to this many units to be considered a priming dose.</string>
     <string name="title_inpen_prime_units">Priming Units</string>
+    <string name="summary_inpen_prime_minutes">How close in minutes a dose must be to be considered a priming dose.</string>
     <string name="title_inpen_prime_minutes">Priming Time Window</string>
+    <string name="summary_inpen_additional_debug_logs">Log extra data to aid in debugging. Can slow things down.</string>
+    <string name="title_inpen_additional_debug_logs">Additional debug logs</string>
     <string name="summary_inpen_orphan_primes_ignored">Primes with no following dose are ignored if checked. Uncheck to treat as doses</string>
     <string name="title_inpen_orphan_primes_ignored">Ignore Orphan primes</string>
     <string name="summary_inpen_sounds">Use sounds to indicate data transfer with the pen</string>
     <string name="title_inpen_sounds">Play Sounds</string>
+    <string name="summary_inpen_remove_priming_doses">Automatically remove priming doses that are the same or less as the priming units value and happen within the priming minutes before the next dose.</string>
+    <string name="title_inpen_remove_priming_doses">Remove priming doses</string>
+    <string name="summary_inpen_hide_priming_doses">Hide priming dose note entries from graph.</string>
+    <string name="title_inpen_hide_priming_doses">Hide priming doses</string>
     <string name="summary_inpen_reset">Reset and search for a new pen in pairing mode</string>
     <string name="title_inpen_reset">Find New Pen</string>
     <string name="summary_pendiq_screen">Reading and writing dosages</string>
@@ -1891,13 +1917,15 @@
     <string name="format_string_ago">%s ago</string>
     <string name="use_background_scans">Use Background Scans</string>
     <string name="android_8_background_scanning">Use Android 8+ background scanning feature</string>
-    <string name="title_yRange">Customize y axis range</string>
-    <string name="titleInside_yRange">Enable</string>
-    <string name="summaryInside_yRange">You can adjust the vertical (y) axis range here.\nHowever, if you have readings outside that range, it will automatically extend, for several hours, to allow those readings to show.</string>
-    <string name="title_ymin">Adjust y axis minimum</string>
-    <string name="title_ymax">Adjust y axis maximum</string>
+    <string name="title_yRange">Y-axis</string>
+    <string name="titleInside_yRange">Customize Y-axis range</string>
+    <string name="summaryInside_yRange">Specify minimum and maximum glucose values for the Y-axis.\nThe graph may temporarily override these limits to keep out-of-range readings visible.</string>
+    <string name="title_ymin">Minimum</string>
+    <string name="title_ymax">Maximum</string>
     <string name="summary_ymin">Choose yMin for when there are no smaller readings.</string>
     <string name="summary_ymax">Choose yMax for when there are no greater readings.</string>
+    <string name="summary_auto_y_pan"><b>Enable:</b> Pan the graph with a fixed Y-axis range (minimum–maximum) to show out-of-range readings.\n<b>Disable:</b> Expand the Y-axis range to include out-of-range readings.</string>
+    <string name="title_auto_y_pan">Auto-pan Y-axis</string>
     <string name="wait_to_connect">Verify settings and wait for connectivity.</string>
     <string name="summary_sens_expiry_notify">Raise notifications when the sensor gets close to expiry.</string>
     <string name="title_sens_expiry">Sensor Expiry Notifications</string>
@@ -2008,4 +2036,65 @@
     <string name="custom_sound_alarm">Custom Sound/Alarm</string>
     <string name="default_xdrip_sound">Default xDrip sound</string>
     <string name="error_with_value">Error with value</string>
+    <string name="turn_feature_off_on">Turn feature off/on</string>
+    <string name="glupro_activity_title">xDrip+ GluPro</string>
+    <string name="glupro_status">Glucose Profile Status</string>
+    <string name="sending_blood_tests_to_transmitter">Sending Blood Tests to Transmitter</string>
+    <string name="glupro_bluetooth_scanning">Bluetooth scanning</string>
+    <string name="need_bluetooth_permissions">Need bluetooth permissions</string>
+    <string name="glupro_scan_again">Scan again</string>
+    <string name="smartguide_pairing">SmartGuide Pairing</string>
+    <string name="glupro_pairing_pin">Pairing Pin</string>
+    <string name="glupro_operational">Operational</string>
+    <string name="glupro_sensor_malfunction">Sensor malfunction</string>
+    <string name="glupro_battery_low">Battery low</string>
+    <string name="glupro_session_stopped">Session stopped</string>
+    <string name="glupro_calibration_recommended">Calibration recommended</string>
+    <string name="glupro_calibration_required">Calibration required</string>
+    <string name="glupro_value_too_low">Value too low</string>
+    <string name="glupro_value_too_high">Value too high</string>
+    <string name="glupro_sensor_alert">Sensor alert</string>
+    <string name="glupro_sensor_fault">Sensor fault</string>
+    <string name="glupro_temperature_too_high">Temperature too high</string>
+    <string name="glupro_temperature_too_low">Temperature too low</string>
+    <string name="glupro_disconnected">Disconnected</string>
+    <string name="glupro_connected">Connected</string>
+    <string name="glupro_configuring">Configuring</string>
+    <string name="glupro_configured">Configured</string>
+    <string name="glupro_connect_failed">Connect failed</string>
+    <string name="glupro_bonding">Bonding</string>
+    <string name="glupro_bonded">Bonded</string>
+    <string name="glupro_bonding_failed">Bonding failed</string>
+    <string name="glupro_scanning_error">Scanning error</string>
+    <string name="glupro_insufficient_permissions">Insufficient permissions</string>
+    <string name="glupro_bluetooth_disabled">Bluetooth disabled</string>
+    <string name="glupro_scan_stopped">Scan stopped</string>
+    <string name="glupro_setup_failed">Setup failed</string>
+    <string name="glupro_shut_down">Shut down</string>
+    <string name="glupro_starting_up">Starting up</string>
+    <string name="glupro_collector_status">Collector Status</string>
+    <string name="glupro_reading_quality">Reading quality</string>
+    <string name="glupro_model_number">Model number</string>
+    <string name="glupro_hardware_revision">Hardware revision</string>
+    <string name="glupro_firmware_version">Firmware version</string>
+    <string name="glupro_manufacturer">Manufacturer</string>
+    <string name="glupro_start_time">Start time</string>
+    <string name="glupro_total_sensor_period">Total sensor period</string>
+    <string name="glupro_period_remaining">Period remaining</string>
+    <string name="glupro_search_sensor_screen">Search sensor screen</string>
+    <string name="glupro_open">Open</string>
+    <string name="glupro_connecting">Connecting</string>
+    <string name="glupro_collector_state">Collector state</string>
+    <string name="glupro_sensor_serial">Sensor serial</string>
+    <string name="glupro_device">Device</string>
+    <string name="glupro_reconnect_attempt">Reconnect attempt</string>
+    <string name="glupro_reading_frequency">Reading frequency</string>
+    <string name="need_bluetooth_permission">Need bluetooth permission</string>
+    <string name="ob1_sensor_stopped">Sensor Stopped</string>
+    <string name="invalid_transmitter_id">Invalid transmitter ID</string>
+    <string name="you_entered">You entered:</string>
+    <string name="fixed_version">Fixed version:</string>
+    <string name="click">Click</string>
+    <string name="to_use_this_instead">to use this instead?</string>
+    <string name="the_transmitter_id_you_have_entered_is_incorrect">The transmitter ID or pairing code you have entered is incorrect and would not work.\n\nPlease double-check the details and try again.</string>
 </resources>

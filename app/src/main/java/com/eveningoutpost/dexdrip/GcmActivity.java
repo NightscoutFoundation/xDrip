@@ -508,10 +508,12 @@ public class GcmActivity extends FauxActivity {
         }
     }
 
-    public static void sendPumpStatus(String json) {
+    public static boolean sendPumpStatus(String json) {
         if (JoH.pratelimit("gcm-psu", 180)) {
             sendMessage("psu", json);
+            return true;
         }
+        return false;
     }
 
     public static void sendNanoStatusUpdate(final String prefix, final String json) {

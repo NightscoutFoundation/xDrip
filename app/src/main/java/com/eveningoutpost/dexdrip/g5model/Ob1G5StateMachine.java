@@ -61,6 +61,7 @@ import javax.crypto.spec.SecretKeySpec;
 import io.reactivex.schedulers.Schedulers;
 import lombok.val;
 
+import static com.eveningoutpost.dexdrip.g5model.BatteryInfoRxMessage.battery0VException;
 import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.Authentication;
 import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.Control;
 import static com.eveningoutpost.dexdrip.g5model.BluetoothServices.ExtraData;
@@ -80,6 +81,7 @@ import static com.eveningoutpost.dexdrip.services.G5BaseService.setG6Defaults;
 import static com.eveningoutpost.dexdrip.services.G5BaseService.unBondAndStop;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.GET_DATA;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.SCAN;
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.STATE.UNBOND;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.android_wear;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.getTransmitterID;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.ignoreBonding;
@@ -196,6 +198,8 @@ public class Ob1G5StateMachine {
     }
 
 
+
+    @SuppressLint("CheckResult")
     private static void doNext(final Ob1G5CollectionService parent, final RxBleConnection connection) {
         try {
             val p = parent.plugin.aNext();
@@ -220,7 +224,10 @@ public class Ob1G5StateMachine {
                         val buf = new byte[size];
                         System.arraycopy(data, i, buf, 0, size);
                         UserError.Log.d(TAG, "Sending auth data: " + bytesToHex(buf));
-                        connection.writeCharacteristic(ExtraData, nn(buf)).subscribe();
+                        connection.writeCharacteristic(ExtraData, nn(buf)).subscribe(value -> {
+                        }, throwable -> {
+                            handleAuthenticationThrowable(throwable, parent);
+                        });
                         threadSleep(40);
                     }
                     // TODO wait for completion?
@@ -230,7 +237,10 @@ public class Ob1G5StateMachine {
                     UserError.Log.d(TAG, "Sending auth command: " + HexDump.dumpHexString(cmd));
                     connection.getCharacteristic(Authentication)
                             .blockingGet().setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
-                    connection.writeCharacteristic(Authentication, nn(cmd)).subscribe();
+                    connection.writeCharacteristic(Authentication, nn(cmd)).subscribe( value -> {
+                    }, throwable -> {
+                       handleAuthenticationThrowable(throwable, parent);
+                    });
                 }
             } else if (p.length == 1) {
                 if (cmd != null) {
@@ -239,7 +249,11 @@ public class Ob1G5StateMachine {
             } else if (p.length == 3) {
                 parent.savePersist();
                 if (parent.isDeviceLocallyBonded()) {
-                    parent.changeState(Ob1G5CollectionService.STATE.UNBOND);
+                    if (parent.isBluetoothEnabled()) {
+                        parent.changeState(UNBOND);
+                    } else {
+                        UserError.Log.e(TAG, "Bluetooth is not enabled! when detecting for unbond");
+                    }
                 } else {
                     UserError.Log.d(TAG, "Device does not appear to be bonded?");
                 }
@@ -452,8 +466,8 @@ public class Ob1G5StateMachine {
                 if (status.isAuthenticated()) {
 
                     if (parent.unBondAndStop) {
-                        UserError.Log.d(TAG, "Processing unbond and stop");
-                        parent.changeState(Ob1G5CollectionService.STATE.UNBOND);
+                        UserError.Log.e(TAG, "Processing unbond and stop");
+                        parent.changeState(UNBOND);
 
                     } else {
                         if (!status.isBonded()
@@ -629,15 +643,12 @@ public class Ob1G5StateMachine {
     @SuppressLint("CheckResult")
     public static boolean doReset(Ob1G5CollectionService parent, RxBleConnection connection) {
         if (connection == null) return false;
-        parent.msg("Hard Resetting Transmitter");
         connection.writeCharacteristic(Control, nn(new ResetTxMessage().byteSequence))
                 .subscribe(characteristicValue -> {
                     if (d)
                         UserError.Log.d(TAG, "Wrote ResetTxMessage request!!");
                     parent.msg("Hard Reset Sent");
                 }, throwable -> {
-                    parent.msg("Hard Reset maybe Failed");
-                    UserError.Log.e(TAG, "Failed to write ResetTxMessage: " + throwable);
                     if (throwable instanceof BleGattCharacteristicException) {
                         final int status = ((BleGattCharacteristicException) throwable).getStatus();
                         UserError.Log.e(TAG, "Got status message: " + getStatusName(status));
@@ -1575,11 +1586,21 @@ public class Ob1G5StateMachine {
         if (glucose.calibrationState().warmingUp()) {
             checkAndActivateSensor();
         }
+        final long rxtimestamp = glucose.getRealTimestamp();
+        if (glucose.calibrationState().warmUpOrOkay()) {
+            if (glucose instanceof EGlucoseRxMessage2) {
+                if (((EGlucoseRxMessage2) glucose).ageRecent()) {
+                    DexSyncKeeper.store(getTransmitterID(), rxtimestamp, parent.static_last_connected, lastGlucosePacket);
+                }
+            } else {
+                DexSyncKeeper.store(getTransmitterID(), rxtimestamp, parent.static_last_connected, lastGlucosePacket);
+            }
+        }
         if (glucose.usable() || (glucose.insufficient() && Pref.getBoolean("ob1_g5_use_insufficiently_calibrated", true))) {
             UserError.Log.d(TAG, "Got usable glucose data from transmitter!!");
-            final long rxtimestamp = glucose.getRealTimestamp();
+
             checkAndActivateSensor();
-            DexSyncKeeper.store(getTransmitterID(), rxtimestamp, parent.static_last_connected, lastGlucosePacket);
+
             final BgReading bgReading = BgReading.bgReadingInsertFromG5(glucose.glucose, rxtimestamp);
             if (bgReading != null) {
                 try {
@@ -1829,9 +1850,11 @@ public class Ob1G5StateMachine {
                     if (getBestCollectorHardwareName().equals("G7")) {
                         sound_vibrate = silent;
                     }
-                    JoH.showNotification("Battery Low", "Transmitter battery has dropped to: " + batteryInfoRxMessage.voltagea + " it may fail soon",
-                            null, 770, NotificationChannels.LOW_TRANSMITTER_BATTERY_CHANNEL, sound_vibrate, sound_vibrate, null, null, null);
-                    UserError.Log.uel(TAG, "Dex battery has dropped to: " + batteryInfoRxMessage.voltagea);
+                    if (!battery0VException) { // Skip warnings for a recently reset transmitter
+                        JoH.showNotification("Battery Low", "Transmitter battery has dropped to: " + batteryInfoRxMessage.voltagea + " it may fail soon",
+                                null, 770, NotificationChannels.LOW_TRANSMITTER_BATTERY_CHANNEL, sound_vibrate, sound_vibrate, null, null, null);
+                        UserError.Log.uel(TAG, "Dex battery has dropped to: " + batteryInfoRxMessage.voltagea);
+                    }
                 }
             }
             PersistentStore.cleanupOld(G5_BATTERY_LEVEL_MARKER);
@@ -1949,13 +1972,13 @@ public class Ob1G5StateMachine {
 
         final BackFillStream backfill = new BackFillStream();
 
-        connection.setupNotification(ProbablyBackfill)
+        val res = connection.setupNotification(ProbablyBackfill)
                 .timeout(15, TimeUnit.SECONDS) // WARN
                 .observeOn(Schedulers.newThread())
                 .flatMap(notificationObservable -> notificationObservable)
                 .subscribe(bytes -> {
                             UserError.Log.d(TAG, "Received backfill notification bytes: " + bytesToHex(bytes));
-                            backfill.pushNew(bytes);
+                            backfill.pushNew(bytes, shortTxId() ? 1 : 0);
                             inevitableDisconnect(parent, connection);
                             Inevitable.task("Process G5 backfill", 3000, () -> processBacksies(backfill.decode()));
                         }, throwable -> {

@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.eveningoutpost.dexdrip.models.AlertType;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.services.MissedReadingService;
 import com.eveningoutpost.dexdrip.utilitymodels.AlertPlayer;
@@ -68,6 +69,7 @@ public class MissedReadingActivity extends ActivityWithMenu {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_missed_readings);
+        JoH.fixActionBar(this);
         mContext = this;
         
         viewTimeStart = (TextView) findViewById(R.id.missed_reading_time_start);

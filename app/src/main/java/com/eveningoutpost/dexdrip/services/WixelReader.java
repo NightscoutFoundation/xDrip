@@ -22,9 +22,10 @@ import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.Mdns;
 import com.google.gson.Gson;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
+import com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -235,11 +236,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
         try {
 
             if (httpClient == null) {
-                httpClient = new OkHttpClient();
-                // suitable for GPRS
-                httpClient.setConnectTimeout(30, TimeUnit.SECONDS);
-                httpClient.setReadTimeout(60, TimeUnit.SECONDS);
-                httpClient.setWriteTimeout(20, TimeUnit.SECONDS);
+                httpClient = OkHttpWrapper.getClient();
             }
 
 
@@ -463,43 +460,45 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
     }
 
     static Long timeForNextRead() {
+        final long samplePeriod = DexCollectionType.getCurrentSamplePeriod();
+        final double scale = DexCollectionType.getCurrentSamplePeriodScale();
 
         TransmitterData lastTransmitterData = TransmitterData.last();
         if (lastTransmitterData == null) {
             // We did not receive a packet, well someone hopefully is looking at data, return relatively fast
-            Log.e(TAG, "lastTransmitterData == null returning 60000");
-            return 60 * 1000L;
+            Log.e(TAG, "lastTransmitterData == null returning in 20% of the cycle");
+            return Math.round(60 * 1000L * scale);
         }
         Long gapTime = new Date().getTime() - lastTransmitterData.timestamp;
         Log.d(TAG, "gapTime = " + gapTime);
         if (gapTime < 0) {
             // There is some confusion here (clock was readjusted?)
-            Log.e(TAG, "gapTime <= null returning 60000");
-            return 60 * 1000L;
+            Log.e(TAG, "gapTime < 0 returning in 20% of the cycle");
+            return Math.round(60 * 1000L * scale);
         }
 
-        if (gapTime < DEXCOM_PERIOD) {
+        if (gapTime < samplePeriod) {
             // We have received the last packet...
-            // 300000 - gaptime is when we expect to have the next packet.
-            return (DEXCOM_PERIOD - gapTime) + 2000;
+            // Cycle - gaptime is when we expect to have the next packet.
+            return (samplePeriod - gapTime) + 2000;
         }
 
-        gapTime = gapTime % DEXCOM_PERIOD;
+        gapTime = gapTime % samplePeriod;
         Log.d(TAG, "modulus gapTime = " + gapTime);
-        if (gapTime < 10000) {
+        if (gapTime < 10000 * scale) {
             // A new packet should arrive any second now
-            return 10000L;
+            return Math.round(10000L * scale);
         }
-        if (gapTime < 60000) {
+        if (gapTime < 60000 * scale) {
             // A new packet should arrive but chance is we have missed it...
-            return 30000L;
+            return Math.round(30000L * scale);
         }
 
         if (httpClient == null) {
-            return (DEXCOM_PERIOD - gapTime) + 2000;
+            return (samplePeriod - gapTime) + 2000;
         } else {
             // compensate for parakeet gprs lag
-            return (DEXCOM_PERIOD - gapTime) + 12000;
+            return (samplePeriod - gapTime) + Math.round(12000 * scale);
         }
     }
 
@@ -517,13 +516,15 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
 
 
     private void readData() {
+        final long samplePeriod = DexCollectionType.getCurrentSamplePeriod();
+        final double scale = DexCollectionType.getCurrentSamplePeriodScale();
         Long LastReportedTime = 0L;
         TransmitterData lastTransmitterData = TransmitterData.last();
         if (lastTransmitterData != null) {
             LastReportedTime = lastTransmitterData.timestamp;
 
             // jamorham fix to avoid going twice to network when we just got a packet
-            if ((new Date().getTime() - LastReportedTime) < DEXCOM_PERIOD - 2000) {
+            if ((new Date().getTime() - LastReportedTime) < samplePeriod - 2000) {
                 Log.d(TAG, "Already have a recent packet - returning");
                 if (JoH.ratelimit("deferred-msg", 60)) {
                     statusLog(" Deferred", "Already have recent reading");
@@ -561,8 +562,8 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
         if (lastCalibration != null) {
             startReadTime = Math.max(startReadTime, lastCalibration.timestamp);
         }
-        Long gapTime = new Date().getTime() - startReadTime + 120000;
-        int packetsToRead = (int) (gapTime / (5 * 60000));
+        Long gapTime = new Date().getTime() - startReadTime + Math.round(120000 * scale);
+        int packetsToRead = (int) (gapTime / (samplePeriod));
         packetsToRead = Math.min(packetsToRead, 200); // don't read too much, but always read 1.
         packetsToRead = Math.max(packetsToRead, 1);
 
@@ -581,9 +582,9 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
 
             //if (LastReading.CaptureDateTime > LastReportedReading + 5000) {
             // Make sure we do not report packets from the far future...
-            if ((LastReading.CaptureDateTime > LastReportedTime + 120000) &&
+            if ((LastReading.CaptureDateTime > LastReportedTime + 120000 * scale) &&
                     (!almostEquals(LastReading, LastReportedReading)) &&
-                    LastReading.CaptureDateTime < new Date().getTime() + 120000) {
+                    LastReading.CaptureDateTime < new Date().getTime() + 120000 * scale) {
                 // We have a real new reading...
                 Log.d(TAG, "calling setSerialDataToTransmitterRawData " + LastReading.RawValue +
                         " LastReading.CaptureDateTime " + LastReading.CaptureDateTime + " " + LastReading.TransmissionId);

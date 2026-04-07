@@ -919,6 +919,7 @@
     <string name="use_confict_msg_glimp">Glimp ayarlarını yapabilirsiniz: seçenekler -&gt; cihazlar -&gt; Bluetooth seçeneğini kaldır</string>
     <string name="eng_mode_is_on">Mühendislik modu etkinleştirildi. Beklenmeyen davranışlara neden olabileceğinden, ihtiyacınız olduğundan emin değilseniz lütfen devre dışı bırakın.</string>
     <string name="yes">Evet</string>
+    <string name="enable">Etkinleştir</string>
     <string name="xdrip_compatible_features">xDrip + %s özellikleri</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
@@ -1831,4 +1832,8 @@
     <string name="carelink_credential_status_refresh_expired">Oturum açma süresi doldu! Lütfen giriş yapın!</string>
     <string name="data_source">Veri Kaynağı:</string>
     <string name="reraise_alerts_before_snooze_time">Ertelemeden önce uyarıları tekrar yükselt</string>
+    <string name="volume_profile_high">Yüksek Kan Şekeri değerleri</string>
+    <string name="glupro_disconnected">Bağlı değil</string>
+    <string name="glupro_connected">Bağlandı</string>
+    <string name="glupro_start_time">Açılma Zamanı</string>
 </resources>

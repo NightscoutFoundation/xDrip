@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.utilitymodels;
 // jamorham
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +16,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
@@ -54,7 +56,6 @@ import okhttp3.Response;
 
 import static com.eveningoutpost.dexdrip.alert.UpdateAvailable.XDRIP_UPDATE_NOTIFICATION_PENDING;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.XDRIP_UPDATE_NOTIFICATION_ID;
-import static com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper.enableTls12OnPreLollipop;
 import static com.eveningoutpost.dexdrip.utilitymodels.PersistentStore.incrementLong;
 
 public class UpdateActivity extends BaseAppCompatActivity {
@@ -90,13 +91,14 @@ public class UpdateActivity extends BaseAppCompatActivity {
     public static void checkForAnUpdate(final Context context, final boolean fromUi) {
         if (prefs == null) prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if ((last_check_time != -1) && (!prefs.getBoolean(AUTO_UPDATE_PREFS_NAME, true))) return;
+        String channel = prefs.getString("update_channel", "beta");
         if (last_check_time == 0)
             last_check_time = prefs.getLong(last_update_check_time, 0);
-        if (((JoH.tsl() - last_check_time) > (86300000 * 2)) || (debug)) {
+        long checkFrequency = channel.equals("beta") ? (86300_000 * 3) : (86300_000 * 2);
+        if (((JoH.tsl() - last_check_time) > checkFrequency) || (debug)) {
             last_check_time = JoH.tsl();
             prefs.edit().putLong(last_update_check_time, last_check_time).apply();
 
-            String channel = prefs.getString("update_channel", "beta");
             Log.i(TAG, "Checking for a software update, channel: " + channel);
 
             String subversion = "";
@@ -112,10 +114,10 @@ public class UpdateActivity extends BaseAppCompatActivity {
             new Thread(() -> {
                 try {
                     if (httpClient == null) {
-                        httpClient = enableTls12OnPreLollipop(new OkHttpClient.Builder()
+                        httpClient = OkHttpWrapper.getClient().newBuilder()
                                 .connectTimeout(30, TimeUnit.SECONDS)
                                 .readTimeout(60, TimeUnit.SECONDS)
-                                .writeTimeout(20, TimeUnit.SECONDS))
+                                .writeTimeout(20, TimeUnit.SECONDS)
                                 .build();
                     }
                     getVersionInformation(context);
@@ -140,7 +142,7 @@ public class UpdateActivity extends BaseAppCompatActivity {
                     final Response response = httpClient.newCall(request).execute();
                     if (response.isSuccessful()) {
 
-                        final String lines[] = response.body().string().split("\\r?\\n");
+                        final String[] lines = response.body().string().split("\\r?\\n");
                         if (lines.length > 1) {
                             try {
                                 newversion = Integer.parseInt(lines[0]);
@@ -183,7 +185,17 @@ public class UpdateActivity extends BaseAppCompatActivity {
                                 } else {
                                     Log.i(TAG, "Our current version is the most recent: " + versionnumber + " vs " + newversion);
                                     if (fromUi) { // Only for manual update check
-                                        JoH.static_toast_long(xdrip.gs(R.string.current_version_is_up_to_date));
+                                        if (channel.equals("nightly")) {
+                                            JoH.static_toast_long(xdrip.gs(R.string.current_version_is_up_to_date));
+                                        } else {
+                                            ((Activity) context).runOnUiThread(() -> {
+                                                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                                                builder.setTitle(context.getString(R.string.title_dialog_check_for_update, channel));
+                                                builder.setMessage(context.getString(R.string.message_dialog_check_for_update));
+                                                builder.setPositiveButton(R.string.close, null);
+                                                builder.show();
+                                            });
+                                        }
                                     }
                                 }
                             } catch (Exception e) {
@@ -282,16 +294,14 @@ public class UpdateActivity extends BaseAppCompatActivity {
     }
 
     private boolean checkPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(getApplicationContext(),
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
 
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        MY_PERMISSIONS_REQUEST_STORAGE_DOWNLOAD);
-                return false;
-            }
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    MY_PERMISSIONS_REQUEST_STORAGE_DOWNLOAD);
+            return false;
         }
         return true;
     }
@@ -351,14 +361,13 @@ public class UpdateActivity extends BaseAppCompatActivity {
     private class AsyncDownloader extends AsyncTask<Void, Long, Boolean> {
         private final String URL = DOWNLOAD_URL + "&rr=" + JoH.tsl();
 
-        private final OkHttpClient.Builder okbuilder = new OkHttpClient.Builder()
+        private final OkHttpClient client = OkHttpWrapper.getClient().newBuilder()
                 .connectTimeout(15, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
                 .writeTimeout(30, TimeUnit.SECONDS)
                 .followRedirects(true)
-                .followSslRedirects(true);
-
-        private final OkHttpClient client = enableTls12OnPreLollipop(okbuilder).build();
+                .followSslRedirects(true)
+                .build();
         private String filename;
 
         @Override

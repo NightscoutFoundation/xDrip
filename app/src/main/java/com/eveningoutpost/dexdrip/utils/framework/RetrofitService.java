@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.utils.framework;
 
 import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
-import static com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper.enableTls12OnPreLollipop;
+
+import com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper;
 
 import com.eveningoutpost.dexdrip.cgm.nsfollow.GzipRequestInterceptor;
 import com.eveningoutpost.dexdrip.models.UserError;
@@ -56,7 +57,7 @@ public class RetrofitService {
         if (debugLogging) {
             httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         }
-        final OkHttpClient client = enableTls12OnPreLollipop(new OkHttpClient.Builder())
+        final OkHttpClient client = OkHttpWrapper.getClient().newBuilder()
                 .addInterceptor(httpLoggingInterceptor)
                 .addInterceptor(new InfoInterceptor(tag))
                 .addInterceptor(new GzipRequestInterceptor())

@@ -22,9 +22,9 @@ import com.eveningoutpost.dexdrip.g5model.DexSessionKeeper;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.services.SyncService;
-import com.eveningoutpost.dexdrip.services.UiBasedCollector;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.PumpStatus;
 import com.eveningoutpost.dexdrip.utilitymodels.UndoRedo;
 import com.eveningoutpost.dexdrip.utilitymodels.UploaderQueue;
 import com.eveningoutpost.dexdrip.insulin.Insulin;
@@ -1313,9 +1313,8 @@ public class Treatments extends Model {
     }
 
     public static Double getCurrentIoBFromCompanionApp() {
-        Double iob = UiBasedCollector.getCurrentIoB();
-
-        return iob;
+        // UiBasedCollector reads IoB data from companion apps and saves it to PumpStatus.
+        return PumpStatus.getBolusIoB();
     }
 
     public static Double getCurrentIoBFromGraphCalculation() {

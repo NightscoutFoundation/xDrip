@@ -526,29 +526,45 @@
                     android:summary="@string/summary_illustrate_remote_data"
                     android:title="@string/title_illustrate_remote_data" />
                 <PreferenceScreen
-                    android:key="Y_axis_range"
+                    android:key="Y_axis"
                     android:title="@string/title_yRange">
-                    <CheckBoxPreference
-                        android:defaultValue="false"
-                        android:key="Customize_yRange"
-                        android:title="@string/titleInside_yRange"
-                        android:summary="@string/summaryInside_yRange" />
-                    <ListPreference
-                        android:key="default_ymax"
-                        android:summary="@string/summary_ymax"
-                        android:title="@string/title_ymax"
-                        android:entries="@array/ymax_entries"
-                        android:entryValues="@array/ymax_values"
-                        android:defaultValue="250"
-                        android:dependency="Customize_yRange"/>
-                    <ListPreference
-                        android:key="default_ymin"
-                        android:summary="@string/summary_ymin"
-                        android:title="@string/title_ymin"
-                        android:entries="@array/ymin_entries"
-                        android:entryValues="@array/ymin_values"
-                        android:defaultValue="40"
-                        android:dependency="Customize_yRange"/>
+                    <PreferenceCategory
+                        android:key="Y_axis_range"
+                        android:title=" ">
+                        <CheckBoxPreference
+                            android:defaultValue="false"
+                            android:key="Customize_yRange"
+                            android:title="@string/titleInside_yRange"
+                            android:summary="@string/summaryInside_yRange"/>
+                        <ListPreference
+                            android:key="default_ymax"
+                            android:summary="%s"
+                            android:title="@string/title_ymax"
+                            android:entries="@array/ymax_entries"
+                            android:entryValues="@array/ymax_values"
+                            android:defaultValue="250"
+                            android:dependency="Customize_yRange" />
+                        <ListPreference
+                            android:key="default_ymin"
+                            android:summary="%s"
+                            android:title="@string/title_ymin"
+                            android:entries="@array/ymin_entries"
+                            android:entryValues="@array/ymin_values"
+                            android:defaultValue="40"
+                            android:dependency="Customize_yRange"/>
+                    </PreferenceCategory>
+                    <PreferenceCategory
+                        android:key="gap_after_y_window_range"
+                        android:title=" " />
+                    <PreferenceCategory
+                        android:key="autopan"
+                        android:title=" ">
+                        <CheckBoxPreference
+                            android:defaultValue="true"
+                            android:key="auto_y_pan"
+                            android:summary="@string/summary_auto_y_pan"
+                            android:title="@string/title_auto_y_pan" />
+                    </PreferenceCategory>
                 </PreferenceScreen>
             </PreferenceScreen>
 
@@ -637,20 +653,32 @@
                         android:targetClass="com.eveningoutpost.dexdrip.ui.activities.NumberWallPreview"
                         android:targetPackage="@string/local_target_package" />
                 </Preference>
-                <SwitchPreference
+                <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="number_wall_on_lockscreen"
                     android:summary="@string/summary_number_wall_on_lockscreen"
-                    android:switchTextOff="@string/short_off_text_for_switches"
-                    android:switchTextOn="@string/short_on_text_for_switches"
-                    android:title="@string/title_number_wall_on_lockscreen" />
+                    android:title="@string/enable" />
+
+                <PreferenceCategory
+                    android:key="gap_before_force_text_color"
+                    android:title=" " />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="force_lock_screen_text_color"
+                    android:summary="@string/summary_force_lockscreen_text_color"
+                    android:title="@string/title_force_lockscreen_text_color" />
                 <com.eveningoutpost.dexdrip.utilitymodels.ColorPicker
                     android:defaultValue="#FFEEEEEE"
+                    android:dependency="force_lock_screen_text_color"
                     android:key="color_number_wall"
                     android:title="@string/title_color_number_wall"
                     app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                     app:colorpicker_selectNoneButtonText="@string/revert_to_default"
                     app:colorpicker_showHex="false" />
+                <PreferenceCategory
+                    android:key="gap_after_text_color"
+                    android:title=" " />
+
                 <com.eveningoutpost.dexdrip.utilitymodels.ColorPicker
                     android:defaultValue="#FF000000"
                     android:key="color_number_wall_shadow"
@@ -1200,14 +1228,12 @@
                 android:icon="@drawable/ic_mode_edit_grey_600_48dp"
                 android:key="opennov_screen"
                 android:summary="NFC dose downloading of models 6 and Echo Plus"
-                android:title="NovoPen Insulin Pen">
-                <SwitchPreference
+                android:title="@string/title_novopen_insulin_pen">
+                <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="opennov_enabled"
-                    android:summary="NFC dose downloading of models 6 and Echo Plus"
-                    android:switchTextOff="@string/short_off_text_for_switches"
-                    android:switchTextOn="@string/short_on_text_for_switches"
-                    android:title="OpenNov support" />
+                    android:summary="@string/summary_inpen_open_nov_support"
+                    android:title="@string/enable" />
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:dependency="opennov_enabled"
@@ -1219,15 +1245,15 @@
                     android:defaultValue="false"
                     android:dependency="opennov_enabled"
                     android:key="opennov_remove_priming"
-                    android:summary="Automatically remove priming doses that are the same or less as the priming units value and happen within the priming minutes before the next dose."
-                    android:title="Remove priming doses" />
+                    android:summary="@string/summary_inpen_remove_priming_doses"
+                    android:title="@string/title_inpen_remove_priming_doses" />
 
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="opennov_enabled"
                     android:key="opennov_hide_priming"
-                    android:summary="Hide priming dose note entries from graph"
-                    android:title="Hide priming doses" />
+                    android:summary="@string/summary_inpen_hide_priming_doses"
+                    android:title="@string/title_inpen_hide_priming_doses" />
 
                 <EditTextPreference
                     android:dependency="opennov_enabled"
@@ -1235,7 +1261,7 @@
                     android:inputType="numberPassword|textVisiblePassword"
                     android:key="opennov_prime_units"
                     android:maxLength="3"
-                    android:summary="Doses must be less than or equal to this many units to be considered a priming dose"
+                    android:summary="@string/summary_inpen_prime_units"
                     android:title="@string/title_inpen_prime_units" />
 
                 <EditTextPreference
@@ -1244,15 +1270,15 @@
                     android:inputType="numberPassword|textVisiblePassword"
                     android:key="opennov_prime_minutes"
                     android:maxLength="3"
-                    android:summary="How close in minutes a dose must be to be considered a priming dose"
+                    android:summary="@string/summary_inpen_prime_minutes"
                     android:title="@string/title_inpen_prime_minutes" />
 
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="engineering_mode"
                     android:key="opennov_debug"
-                    android:summary="Log extra data to aid in debugging. Can slow things down."
-                    android:title="Additional debug logs" />
+                    android:summary="@string/summary_inpen_additional_debug_logs"
+                    android:title="@string/title_inpen_additional_debug_logs" />
             </PreferenceScreen>
 
             <PreferenceScreen

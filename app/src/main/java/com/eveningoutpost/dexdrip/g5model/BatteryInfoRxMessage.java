@@ -27,6 +27,7 @@ public class BatteryInfoRxMessage extends BaseMessage {
     public int resist;
     public int runtime;
     public int temperature;
+    public static volatile boolean battery0VException = false; // True when voltage A and Voltage B are both 0.
 
     public BatteryInfoRxMessage(byte[] packet) {
         if (packet.length >= 10) {
@@ -44,6 +45,13 @@ public class BatteryInfoRxMessage extends BaseMessage {
                     runtime = -1; // this byte isn't runtime on rev2
                 }
                 temperature = data.get(); // not sure if signed or not, but <0c or >127C seems unlikely!
+
+                // Exception for 0-V battery
+                if (voltagea < 1 && voltageb <1) {
+                    battery0VException = true;
+                } else {
+                    battery0VException = false;
+                }
             } else {
                 UserError.Log.wtf(TAG, "Invalid opcode for BatteryInfoRxMessage");
             }

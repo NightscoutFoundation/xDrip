@@ -133,4 +133,11 @@ public class Telemetry {
 
     }
 
+    public static boolean isCrashReportingEnabled() {
+        return Pref.getBooleanDefaultFalse("enable_crashlytics");
+    }
+
+    public static boolean isTelemetryEnabled() {
+        return Pref.getBooleanDefaultFalse("enable_telemetry");
+    }
 }

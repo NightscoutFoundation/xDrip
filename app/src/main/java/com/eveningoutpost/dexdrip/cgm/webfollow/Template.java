@@ -5,13 +5,13 @@ import static com.eveningoutpost.dexdrip.utils.DexCollectionType.setDexCollectio
 
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper;
 import com.google.common.primitives.Bytes;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import lombok.val;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
 /**
@@ -30,7 +30,7 @@ public class Template {
     private static byte[] getData() {
         val url = getUrl();
         if (url == null) return null;
-        val client = new OkHttpClient();
+        val client = OkHttpWrapper.getClient();
         val builder = new Request.Builder().url(getUrl());
         val request = builder.build();
         UserError.Log.d(TAG, "T REQUEST URL: " + request.url());

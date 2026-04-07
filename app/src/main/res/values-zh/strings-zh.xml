@@ -1546,4 +1546,7 @@
     <string name="titleInside_yRange">启用</string>
     <string name="title_sens_expiry_notify">启用</string>
     <string name="reraise_alerts_before_snooze_time">尽管延迟时间没到，重新发起警报</string>
+    <string name="volume_profile_high">高血糖值</string>
+    <string name="glupro_disconnected">断开连接</string>
+    <string name="glupro_connected">已经连接</string>
 </resources>

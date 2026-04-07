@@ -35,4 +35,5 @@
     <string name="summary_clfollow_lang">CareLink language code</string>
     -->
     <string name="enable_streaming_dialog_dont_ask_again">फिर से मत पूछना</string>
+    <string name="glupro_connected">जुड़ गया</string>
 </resources>

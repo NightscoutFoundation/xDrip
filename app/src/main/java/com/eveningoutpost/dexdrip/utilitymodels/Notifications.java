@@ -15,6 +15,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
@@ -37,6 +38,7 @@ import com.eveningoutpost.dexdrip.models.Calibration;
 import com.eveningoutpost.dexdrip.models.CalibrationRequest;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.Sensor;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.eveningoutpost.dexdrip.models.UserNotification;
 import com.eveningoutpost.dexdrip.R;
@@ -54,8 +56,11 @@ import com.eveningoutpost.dexdrip.xdrip;
 import java.util.Date;
 import java.util.List;
 
+import static com.eveningoutpost.dexdrip.models.JoH.safeParseSoundUri;
 import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.X;
 import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.getCol;
+
+import lombok.val;
 
 /**
  * Created by Emma Black on 11/28/14.
@@ -451,7 +456,7 @@ public class Notifications extends IntentService {
                 if (wakeTimeBg < now) {
                     // next alert should be at least one minute from now.
                     wakeTimeBg = now + 60000;
-                    Log.w(TAG , "setting next alert to 1 minute from now (no problem right now, but needs a fix someplace else)");
+                    Log.d(TAG, "setting next alert to 1 minute from now (no problem right now, but needs a fix someplace else)");
                 }
                 
             }
@@ -701,6 +706,27 @@ public class Notifications extends IntentService {
         b.setContentIntent(resultPendingIntent);
         b.setLocalOnly(true);
         b.setOnlyAlertOnce(true);
+
+        // use a chip style notification if selected
+        if (Build.VERSION.SDK_INT >= 36 && Pref.getBooleanDefaultFalse("ongoing_notification_aodchipstyle")) {
+            final SpannableString deltaString = new SpannableString("Delta: " + ((dg != null) ? (dg.spannableString(dg.unitized_delta + (dg.from_plugin ? " " + context.getString(R.string.p_in_circle) : "")))
+                    : bgGraphBuilder.unitizedDeltaString(true, true)));
+
+            val critical = lastReading == null ? "None"
+                    : ((dg != null) ? (dg.isStale() ? "---" : (dg.unitized + " " + dg.delta_arrow))
+                    : (lastReading.isStale() ? "---" : (lastReading.displayValue(mContext) + " " + lastReading.slopeArrow())));
+            val extras = new Bundle();
+            // TODO these two lines can be replaced when SDK build tools updated
+            extras.putBoolean("android.requestPromotedOngoing", true);
+            // reduce flat arrow size to avoid problems of oversized text in high mmol values
+            extras.putString("android.shortCriticalText", critical.replace("\u2192"+"\uFE0E","›"));
+            b.addExtras(extras);
+            b.setContentTitle(titleString);
+            b.setStyle(new Notification.BigTextStyle().bigText(deltaString));
+            b.setCustomContentView(null);
+            b.setCustomBigContentView(null);
+        }
+
         // strips channel ID if disabled
         return XdripNotification.build(b);
     }
@@ -994,8 +1020,8 @@ public class Notifications extends IntentService {
     private static void OtherAlert(Context context, String type, String title, String message, int notificatioId, String channelId, boolean addDeleteIntent, long reraiseSec) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String otherAlertsSound = prefs.getString(type+"_sound",prefs.getString("other_alerts_sound", "content://settings/system/notification_sound"));
-        Boolean otherAlertsOverrideSilent = prefs.getBoolean("other_alerts_override_silent", false);
-        Boolean extraAlertsOverrideSilent = prefs.getBoolean(type+"_override_silent", otherAlertsOverrideSilent); // Inherit from other alerts if the alert itself does not have a dedicated setting
+        boolean otherAlertsOverrideSilent = prefs.getBoolean("other_alerts_override_silent", false);
+        boolean extraAlertsOverrideSilent = prefs.getBoolean(type+"_override_silent", otherAlertsOverrideSilent); // Inherit from other alerts if the alert itself does not have a dedicated setting
 
         Log.d(TAG,"OtherAlert called " + type + " " + message + " reraiseSec = " + reraiseSec);
         UserNotification userNotification = UserNotification.GetNotificationByType(type); //"bg_unclear_readings_alert"
@@ -1036,9 +1062,9 @@ public class Notifications extends IntentService {
             mBuilder.setLights(0xff00ff00, 300, 1000);
             if (AlertPlayer.notSilencedDueToCall()) {
                 if (extraAlertsOverrideSilent) {
-                    mBuilder.setSound(Uri.parse(otherAlertsSound), AudioAttributes.USAGE_ALARM);
+                    mBuilder.setSound(safeParseSoundUri(otherAlertsSound), AudioAttributes.USAGE_ALARM);
                 } else {
-                    mBuilder.setSound(Uri.parse(otherAlertsSound));
+                    mBuilder.setSound(safeParseSoundUri(otherAlertsSound));
                     if (isSoundBlockedBySystem(context)) {
                         Log.ueh(TAG, "No " + type + " in silent mode");
                     }

@@ -88,6 +88,7 @@ public class StatsActivity extends ActivityWithMenu {
         evaluateColors(false);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistics);
+        JoH.fixActionBar(this);
         decorView = getWindow().getDecorView();
         assignButtonNames();
         initPagerAndIndicator();

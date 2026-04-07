@@ -86,6 +86,12 @@
                     android:key="show_wear_treatments"
                     android:summary="@string/pref_summary_show_treatments"
                     android:title="@string/pref_show_treatments" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:dependency="wear_sync"
+                    android:key="enable_wear_auto_update"
+                    android:summary="@string/summary_enable_wear_auto_update"
+                    android:title="@string/title_enable_wear_auto_update" />
 
             </PreferenceCategory>
         </PreferenceScreen>
@@ -1332,13 +1338,14 @@
                     android:key="bluetooth_watchdog"
                     android:summary="@string/reset_bluetooth"
                     android:title="@string/bluetooth_watchdog" />
-                <EditTextPreference
-                    android:defaultValue="20"
-                    android:dependency="bluetooth_watchdog"
-                    android:inputType="numberDecimal"
+                <ListPreference
                     android:key="bluetooth_watchdog_timer"
                     android:summary="@string/bluetooth_watchdog_timer_sums"
-                    android:title="@string/bluetooth_watchdog_timers" />
+                    android:title="@string/bluetooth_watchdog_timers"
+                    android:entries="@array/bluetooth_watchdog_timer_entries"
+                    android:entryValues="@array/bluetooth_watchdog_timer_values"
+                    android:defaultValue="20"
+                    android:dependency="bluetooth_watchdog" />
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="g5_bluetooth_watchdog"
@@ -1354,6 +1361,11 @@
                     android:key="bluetooth_use_scan"
                     android:summary="@string/summary_Scan_before_connecting_on_xBridge_and_Libre_bluetooth"
                     android:title="@string/title_Use_scanning" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="bluetooth_use_blemanager"
+                    android:summary="Use a more modern BLE manager system"
+                    android:title="Use BLE manager" />
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="bluetooth_trust_autoconnect"
@@ -1400,6 +1412,12 @@
                     android:key="always_discover_services"
                     android:summary="@string/summary_Probe_Bluetooth_services_on_every_connect"
                     android:title="@string/title_Always_discover_services" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:dependency="engineering_mode"
+                    android:key="use_gatt_refresh"
+                    android:summary="Whether to use the low level gatt refresh mechanism"
+                    android:title="Use GATT refresh" />
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="blukon_unbonding"
@@ -1526,7 +1544,7 @@
                 android:summary="@string/allow_daily_db_save"
                 android:title="@string/daily_save_db" />
             <EditTextPreference
-                android:defaultValue="0"
+                android:defaultValue="180"
                 android:key="retention_days_bg_reading"
                 android:max="366"
                 android:numeric="integer"
@@ -1613,11 +1631,18 @@
 
                 <CheckBoxPreference
                     android:defaultValue="false"
-                    android:dependency="engineering_mode"
                     android:enabled="true"
                     android:key="libre_one_minute"
-                    android:summary="Accept data at one minute intervals from Libre source. WARNING: This feature is still under development and may break different things. Currently only for patched app data source. Please report anything you notice not working and to activate changes to this setting you need to reboot your phone. Requires engineering mode to be enabled to change setting."
-                    android:title="Libre one minute" />
+                    android:summary="@string/summary_libre_one_minute_interval"
+                    android:title="@string/title_libre_one_minute_interval" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="engineering_mode"
+                    android:enabled="true"
+                    android:key="Eversense_one_minute"
+                    android:summary="Accept data at one-minute intervals from 640G/Eversense. WARNING: This feature is still under development and may break different things. Please report anything you notice not working. Reboot your phone for changes to take effect. Requires engineering mode"
+                    android:title="640G/Eversense 1-minute" />
 
                 <CheckBoxPreference
                     android:defaultValue="false"

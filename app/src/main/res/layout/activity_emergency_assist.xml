@@ -48,7 +48,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:gravity="center_vertical"
-                android:hint="Turn feature off/on"
+                android:hint="@string/turn_feature_off_on"
                 android:switchMinWidth="55dp"
                 android:text="@string/emergency_message_feature"
                 android:textSize="18sp"

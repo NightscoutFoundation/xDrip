@@ -152,4 +152,19 @@ public class QRcodeUtils {
         return bitmap;
     }
 
+    public static Bitmap createQRCodeFromString(final String inputData, final int width, final int height) throws WriterException {
+        Log.d(TAG, "Input data length: " + inputData.length());
+        Map<EncodeHintType, Object> hints = new EnumMap<>(EncodeHintType.class);
+        hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+        val multiFormatWriter = new MultiFormatWriter();
+        val bitMatrix = multiFormatWriter.encode(inputData, BarcodeFormat.QR_CODE, width, height, hints);
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                bitmap.setPixel(i, j, bitMatrix.get(i, j) ? Color.BLACK : Color.WHITE);
+            }
+        }
+        return bitmap;
+    }
+
 }

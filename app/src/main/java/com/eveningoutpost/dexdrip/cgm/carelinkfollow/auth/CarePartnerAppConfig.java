@@ -13,7 +13,12 @@ public class CarePartnerAppConfig {
     }
 
     public String getSSOConfigUrl() {
-        return regionConfig.get("SSOConfiguration").getAsString();
+        String sso_configuration_key = regionConfig.get("UseSSOConfiguration").getAsString();
+        if (!regionConfig.has(sso_configuration_key)) {
+            sso_configuration_key = "SSOConfiguration";
+        }
+
+        return regionConfig.get(sso_configuration_key).getAsString();
     }
 
     public String getCloudBaseUrl() {
@@ -37,22 +42,14 @@ public class CarePartnerAppConfig {
     }
 
     public String getOAuthAuthEndpoint() {
-        return this.getChildJsonString(ssoConfig, "oauth.system_endpoints.authorization_endpoint_path").substring(1);
+        return this.getChildJsonString(ssoConfig, "system_endpoints.authorization_endpoint_path").substring(1);
     }
 
     public String getOAuthTokenEndpoint() {
-        return this.getChildJsonString(ssoConfig, "oauth.system_endpoints.token_endpoint_path").substring(1);
+        return this.getChildJsonString(ssoConfig, "system_endpoints.token_endpoint_path").substring(1);
     }
 
-    public String getMagCredentialInitEndpoint() {
-        return this.getChildJsonString(ssoConfig, "mag.system_endpoints.client_credential_init_endpoint_path").substring(1);
-    }
-
-    public String getMagDeviceRegisterEndpoint() {
-        return this.getChildJsonString(ssoConfig, "mag.system_endpoints.device_register_endpoint_path").substring(1);
-    }
-
-    public String getClientId() {
+    public String getOAuthClientId() {
         return getClientMemberString("client_id");
     }
 
@@ -64,13 +61,12 @@ public class CarePartnerAppConfig {
         return getClientMemberString("redirect_uri");
     }
 
-    public int getRefreshLifetimeSec() {
-        return Integer.parseInt(getClientMemberString("client_key_custom.lifetimes.oauth2_refresh_token_lifetime_sec"));
+    public String getOAuthAudience() {
+        return getClientMemberString("audience");
     }
 
     private String getClientMemberString(String clientMember) {
-        return this.getChildJsonString(this.getChildJsonElement(ssoConfig, "oauth.client.client_ids").getAsJsonArray().get(0)
-                .getAsJsonObject(), clientMember);
+        return this.getChildJsonString(this.getChildJsonElement(ssoConfig, "client").getAsJsonObject(), clientMember);
     }
 
     private String getChildJsonString(JsonObject parent, String path) {

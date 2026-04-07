@@ -8,7 +8,6 @@ import com.eveningoutpost.dexdrip.models.UserError;
 
 import io.sentry.Sentry;
 import io.sentry.android.core.SentryAndroid;
-import io.sentry.android.core.SentryAndroidOptions;
 
 // jamorham
 public class SentryCrashReporting {
@@ -37,7 +36,8 @@ public class SentryCrashReporting {
                     // options.setEnableRootCheck(false);
                     // TODO
                 });
-                Sentry.addBreadcrumb(DexCollectionType.getBestCollectorHardwareName(),"BootCollector");
+                addBreadcrumb(DexCollectionType.getBestCollectorHardwareName(),"BootCollector");
+                setTag("BootCollector", DexCollectionType.getBestCollectorHardwareName());
                 // Sentry.captureMessage("Hello world");
             } else {
                 if (JoH.pratelimit("crash-reporting-start-failure", 3600)) {
@@ -53,5 +53,21 @@ public class SentryCrashReporting {
 
     static String getDsn() {
         return String.format("%s%s@%s.%s/1", scheme, segment1, segment2, serverDomain);
+    }
+
+    public static void setTag(String key, String value) {
+        try {
+            Sentry.setTag(key, value);
+        } catch (Exception e) {
+            //
+        }
+    }
+
+    public static void addBreadcrumb(String message, String category) {
+        try {
+            Sentry.addBreadcrumb(message, category);
+        } catch (Exception e) {
+            //
+        }
     }
 }

@@ -158,7 +158,7 @@ public class BroadcastGlucose {
                 if (getBestCollectorHardwareName().equals("G7") || getBestCollectorHardwareName().equals("G6 Native")) { // If we are using G7 or One+, or G6 in native mode
                     usingG6OrG7 = true;
                 }
-                if (getBestCollectorHardwareName().equals("G7") && FirmwareCapability.isDeviceAltOrAlt2(getTransmitterID())) { // If we are using G7 or One+ and there is connectivity
+                if (getBestCollectorHardwareName().equals("G7") && FirmwareCapability.isDeviceAltOrAlt2OrAlt3(getTransmitterID())) { // If we are using G7 or One+ and there is connectivity
                     connectedToG7 = true;
                 }
                 if (getBestCollectorHardwareName().equals("G6 Native") && FirmwareCapability.isTransmitterG6(getTransmitterID())) { // If we are using a G6 in native mode and there is connectivity

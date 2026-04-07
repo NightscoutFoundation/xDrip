@@ -56,7 +56,8 @@ public class LibreOOPAlgorithm {
         LibreUS14Day(2),
         Libre2(3),
         LibreProH(4),
-        Libre2Plus(5);
+        Libre2Plus(5),
+        Libre3(6);
 
         int value;
 
@@ -293,6 +294,9 @@ public class LibreOOPAlgorithm {
         if (SensorInfo == null) {
             return SensorType.Libre1;
         }
+        if (SensorInfo.length == 24) {
+            return SensorType.Libre3;
+        }
         int SensorNum = (SensorInfo[0] & 0xff) << 16 | (SensorInfo[1] & 0xff) << 8 | SensorInfo[2];
         switch (SensorNum) {
             case 0xdf0000:
@@ -304,10 +308,10 @@ public class LibreOOPAlgorithm {
                 return SensorType.LibreUS14Day;
             case 0x9d0830:
             case 0xc50930:
+            case 0x7f0e30:
                 return SensorType.Libre2;
             case 0xc60931:
             case 0x7f0e31:
-            case 0x7f0e30:
                 return SensorType.Libre2Plus;
             case 0x700010:
                 return SensorType.LibreProH;

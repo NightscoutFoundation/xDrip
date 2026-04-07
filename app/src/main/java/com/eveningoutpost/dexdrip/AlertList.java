@@ -140,6 +140,7 @@ public class AlertList extends ActivityWithMenu {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alert_list);
+        JoH.fixActionBar(this);
         mContext = getApplicationContext();
         listViewLow = (ListView) findViewById(R.id.listView_low);
         listViewHigh = (ListView) findViewById(R.id.listView_high);

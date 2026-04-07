@@ -232,7 +232,8 @@
                         style="?android:attr/buttonStyleSmall"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:text="@string/restart_collector" />
+                        android:text="@string/restart_collector"
+                        android:textAllCaps="false"/>
 
                     <Button
                         android:id="@+id/forget_device"
@@ -240,7 +241,8 @@
                         style="?android:attr/buttonStyleSmall"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:text="@string/forget_device" />
+                        android:text="@string/forget_device"
+                        android:textAllCaps="false"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -279,7 +281,22 @@
                         style="?android:attr/buttonStyleSmall"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/delete_future_data" />
+                        android:text="@string/delete_future_data"
+                        android:textAllCaps="false"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal|bottom"
+                    android:layout_marginTop="40dp">
+                    <Button
+                        android:id="@+id/reread_transmitter"
+                        app:showIfTrue="@{ms.rereadTx()}"
+                        style="?android:attr/buttonStyleSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="@string/re_read_transmitter"
+                        android:textAllCaps="false"/>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

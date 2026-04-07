@@ -31,6 +31,7 @@ public class ClassifierAction {
     static final String CONTROL = "control";
     static final String TXID = "UIUIUI";
     public static volatile long lastReadingTimestamp;
+    private static volatile int lastType = 0;
     static final BackFillStream stream = new BackFillStream();
 
     public static void action(final String type, final byte[] data) {
@@ -45,7 +46,7 @@ public class ClassifierAction {
                 break;
 
             case BACKFILL:
-                stream.pushNew(data);
+                stream.pushNew(data, lastType);
                 UserError.Log.d(TAG, "Added backfill cache: " + JoH.bytesToHex(data));
                 break;
 
@@ -81,8 +82,14 @@ public class ClassifierAction {
                 } else {
                     val bfc1 = new BackFillRxMessage(data);
                     val bfc2 = new BackfillControlRx(data);
+                    if (bfc1.isValid()) {
+                        lastType = 0;
+                    }
+                    if (bfc2.isValid()) {
+                        lastType = 1;
+                    }
                     if (bfc1.isValid() || bfc2.isValid()) {
-                        Inevitable.task("Process G6/G7 backfill", 3000, ClassifierAction::processBackfill);
+                        Inevitable.task("Process G6/G7 backfill", 4000, ClassifierAction::processBackfill);
                     } else {
                         BaseGlucoseRxMessage glucose = new GlucoseRxMessage(data);
                         if (!glucose.usable()) {

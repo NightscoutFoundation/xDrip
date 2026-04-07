@@ -4,6 +4,7 @@ import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollecto
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
+import com.eveningoutpost.dexdrip.services.TransmitterRereadHelper;
 import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -46,6 +47,14 @@ public class SensorSanity {
         if (allowTestingWithDeadSensor()) {
             if (JoH.pratelimit("dead-sensor-sanity-passing", 3600)) {
                 UserError.Log.e(TAG, "Allowing any value due to Allow Dead Sensor being enabled");
+            }
+            return true;
+        }
+
+        if (TransmitterRereadHelper.isTxRereadActive()) {
+            // Allow readings on the main screen even though we temporarily have no firmware!
+            if (JoH.pratelimit("reread-transmitter-sanity-passing", 30 * 60)) {
+                UserError.Log.e(TAG, "Allowing any value due to transmitter reread.");
             }
             return true;
         }
