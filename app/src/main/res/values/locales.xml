@@ -23,6 +23,7 @@
         <item>עברית</item>
         <item>한국어</item>
         <item>Українська</item>
+        <item>繁體中文</item>
     </string-array>
     <string-array name="LocaleChoicesValues">
         <item>bg</item>
@@ -47,5 +48,6 @@
         <item>iw</item>
         <item>ko</item>
         <item>uk</item>
+        <item>zh-TW</item>
     </string-array>
 </resources>
