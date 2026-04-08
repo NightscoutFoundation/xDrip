@@ -2045,4 +2045,10 @@
     <string name="glupro_reading_frequency">Frecvența de citire</string>
     <string name="need_bluetooth_permission">Este necesară permisiunea Bluetooth</string>
     <string name="ob1_sensor_stopped">Senzor oprit</string>
+    <string name="invalid_transmitter_id">ID transmițător invalid</string>
+    <string name="you_entered">Ați introdus:</string>
+    <string name="fixed_version">Versiune fixă:</string>
+    <string name="click">Clic</string>
+    <string name="to_use_this_instead">pentru a folosi asta în schimb?</string>
+    <string name="the_transmitter_id_you_have_entered_is_incorrect">ID-ul transmițătorului sau codul de asociere introdus este incorect și nu va funcționa.\n\nVă rugăm să verificați din nou detaliile și încercați din nou.</string>
 </resources>
