@@ -361,7 +361,7 @@ public class BgGraphBuilder {
     private float clampNonGlucoseY(float y) {
         // Prevent drawing outside the glucose chart range
         y = Math.max(0f, y); // 0 is the smallest acceptable value for the vertical position of a non-glucose item.
-        y = Math.min(y, BgReading.BG_READING_MAXIMUM_VALUE); // BG_READING_MAXIMUM_VALUE is the largest acceptable value for the vertical position of a non-glucose item.
+        y = Math.min(y, BgReading.getBgReadingMaximumValue()); // BG_READING_MAXIMUM_VALUE is the largest acceptable value for the vertical position of a non-glucose item.
         return y;
     }
 
@@ -476,7 +476,7 @@ public class BgGraphBuilder {
 
                 int count = aplist.size();
                 for (APStatus item : aplist) {
-                    val sanitized_percent = Math.min(BgReading.BG_READING_MAXIMUM_VALUE, Math.max(0, item.basal_percent)); // percent value plotted on glucose axis; capped to prevent Y-axis growth
+                    val sanitized_percent = Math.min(BgReading.getBgReadingMaximumValue(), Math.max(0, item.basal_percent)); // percent value plotted on glucose axis; capped to prevent Y-axis growth
                     if (--count == 0 || (sanitized_percent != last_percent)) {
                         float this_ypos = (sanitized_percent * yscale) / 100f;
                         this_ypos = clampNonGlucoseY(this_ypos + panCompensationOffset);
@@ -1369,26 +1369,26 @@ public class BgGraphBuilder {
                 }
 
                 if ((show_filtered) && (bgReading.filtered_calculated_value > 0) && (bgReading.filtered_calculated_value != bgReading.calculated_value)) {
-                    filteredValues.add(new HPointValue((double) ((bgReading.timestamp - timeshift) / FUZZER), (float) unitized(Math.min(bgReading.filtered_calculated_value, BgReading.BG_READING_MAXIMUM_VALUE))));
+                    filteredValues.add(new HPointValue((double) ((bgReading.timestamp - timeshift) / FUZZER), (float) unitized(Math.min(bgReading.filtered_calculated_value, BgReading.getBgReadingMaximumValue()))));
                 } else if (show_pseudo_filtered) {
                     // TODO differentiate between filtered and pseudo-filtered when both may be in play at different times
                     final double rollingValue = rollingAverage.put(bgReading.calculated_value);
                     if (rollingAverage.reachedPeak()) {
-                        filteredValues.add(new HPointValue((double) ((bgReading.timestamp + rollingOffset) / FUZZER), (float) unitized(Math.min(rollingValue, BgReading.BG_READING_MAXIMUM_VALUE))));
+                        filteredValues.add(new HPointValue((double) ((bgReading.timestamp + rollingOffset) / FUZZER), (float) unitized(Math.min(rollingValue, BgReading.getBgReadingMaximumValue()))));
                     }
                 }
                 if ((interpret_raw && (bgReading.raw_calculated > 0))) {
-                    rawInterpretedValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(Math.min(bgReading.raw_calculated, BgReading.BG_READING_MAXIMUM_VALUE))));
+                    rawInterpretedValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(Math.min(bgReading.raw_calculated, BgReading.getBgReadingMaximumValue()))));
                 }
                 if ((!glucose_from_plugin) && (plugin != null) && (cd != null)) {
-                    pluginValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(Math.min(plugin.getGlucoseFromBgReading(bgReading, cd), BgReading.BG_READING_MAXIMUM_VALUE))));
+                    pluginValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(Math.min(plugin.getGlucoseFromBgReading(bgReading, cd), BgReading.getBgReadingMaximumValue()))));
                 }
                 if (bgReading.ignoreForStats) {
                     if (unitized(bgReading.calculated_value) <= defaultMaxY) { // Don't display value marked as bad if greater than the default Max (defaultMaxY)
                         badValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
                     }
-                } else if (bgReading.calculated_value >= BgReading.BG_READING_MAXIMUM_VALUE) {
-                    highValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(BgReading.BG_READING_MAXIMUM_VALUE)));
+                } else if (bgReading.calculated_value >= BgReading.getBgReadingMaximumValue()) {
+                    highValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(BgReading.getBgReadingMaximumValue())));
                 } else if (unitized(bgReading.calculated_value) >= highMark) {
                     highValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
                 } else if (unitized(bgReading.calculated_value) >= lowMark) {
@@ -2178,7 +2178,7 @@ public class BgGraphBuilder {
         yAxis.setAutoGenerated(false);
         List<AxisValue> axisValues = new ArrayList<AxisValue>();
 
-        for (int j = 1; j <= 12; j += 1) {
+        for (int j = 1; j <= 14; j += 1) {
             if (doMgdl) {
                 axisValues.add(new AxisValue(j * 50));
             } else {
@@ -2309,7 +2309,7 @@ public class BgGraphBuilder {
 
     public static String unitized_string(double value, boolean doMgdl) {
         final DecimalFormat df = new DecimalFormat("#");
-        if (value >= 400) {
+        if (value >= BgReading.getBgReadingMaximumValue()) {
             return "HIGH";
         } else if (value >= 40) {
             if (doMgdl) {

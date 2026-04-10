@@ -23,6 +23,7 @@ import com.activeandroid.util.SQLiteUtils;
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.importedlibraries.dexcom.records.EGVRecord;
 import com.eveningoutpost.dexdrip.importedlibraries.dexcom.records.SensorRecord;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
@@ -81,8 +82,8 @@ public class BgReading extends Model implements ShareUploadableBg {
 
     public static final int BG_READING_ERROR_VALUE = 38; // error marker
     public static final int BG_READING_MINIMUM_VALUE = 39;
-    public static final int BG_READING_MAXIMUM_VALUE = 400;
-
+    private static final int BG_READING_MAXIMUM_VALUE = 500; // xDrip will only display values below this boundary.
+    private static final int BG_READING_MAXIMUM_VALUE_SAFE = 400; // xDrip will only display unverified values below this boundary.
     private static volatile long earliest_backfill = 0;
 
     @Column(name = "sensor", index = true)
@@ -195,6 +196,14 @@ public class BgReading extends Model implements ShareUploadableBg {
     @Expose
     @Column(name = "source_info")
     public volatile String source_info;
+
+    public static int getBgReadingMaximumValue() {
+        if (Pref.getBooleanDefaultFalse("display_glucose_from_plugin") || PluggableCalibration.getCalibrationPluginFromPreferences() != null) {
+            return BG_READING_MAXIMUM_VALUE_SAFE;
+        } else {
+            return BG_READING_MAXIMUM_VALUE;
+        }
+    }
 
     public synchronized static void updateDB() {
         final String[] updates = new String[]{"ALTER TABLE BgReadings ADD COLUMN dg_mgdl REAL;",
@@ -654,7 +663,7 @@ public class BgReading extends Model implements ShareUploadableBg {
             bgReading.calculated_value = BG_READING_ERROR_VALUE;
             bgReading.hide_slope = true;
         } else {
-            bgReading.calculated_value = Math.min(BG_READING_MAXIMUM_VALUE, Math.max(BG_READING_MINIMUM_VALUE, bgReading.calculated_value));
+            bgReading.calculated_value = Math.min(getBgReadingMaximumValue(), Math.max(BG_READING_MINIMUM_VALUE, bgReading.calculated_value));
         }
         Log.i(TAG, "NEW VALUE CALCULATED AT: " + bgReading.calculated_value);
     }
