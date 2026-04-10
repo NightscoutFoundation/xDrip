@@ -58,8 +58,11 @@ public class PdfReportRenderer {
         this.context = context;
         this.config = config;
         this.doMgdl = Pref.getString("units", "mgdl").equals("mgdl");
-        this.highMark = Double.parseDouble(Pref.getString("highValue", "170"));
-        this.lowMark = Double.parseDouble(Pref.getString("lowValue", "70"));
+        double highPref = Double.parseDouble(Pref.getString("highValue", "170"));
+        double lowPref = Double.parseDouble(Pref.getString("lowValue", "70"));
+        // Preferences store in display units — convert to mg/dl for internal use
+        this.highMark = doMgdl ? highPref : highPref * Constants.MMOLL_TO_MGDL;
+        this.lowMark = doMgdl ? lowPref : lowPref * Constants.MMOLL_TO_MGDL;
         this.dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         this.timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
         this.dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
@@ -156,7 +159,8 @@ public class PdfReportRenderer {
         final float footerY = PAGE_HEIGHT - MARGIN - 15f;
         final boolean hasSidePanel = config.includeEvents || config.includeTreatments;
         final float graphRight = hasSidePanel ? PAGE_WIDTH * 0.73f : PAGE_WIDTH - MARGIN;
-        final RectF graphArea = new RectF(MARGIN + 30f, yOffset, graphRight, footerY - 5f);
+        final float endpointLabelMargin = 25f; // space for start/end readouts
+        final RectF graphArea = new RectF(MARGIN + 30f + endpointLabelMargin, yOffset, graphRight - endpointLabelMargin, footerY - 5f);
 
         if (readings != null && !readings.isEmpty()) {
             drawGlucoseGraph(canvas, graphArea, readings, sliceStart, sliceEnd);
@@ -237,13 +241,33 @@ public class PdfReportRenderer {
     private void drawGlucoseGraph(Canvas canvas, RectF area, List<BgReading> readings, long sliceStart, long sliceEnd) {
         canvas.drawRect(area, graphBgPaint);
 
-        final double yMin = 40;
-        final double yMax = 300;
+        // Dynamic Y range: starts at 0, includes thresholds, fits all data
+        double dataMax = Double.MIN_VALUE;
+        for (BgReading r : readings) {
+            if (r.calculated_value > dataMax) dataMax = r.calculated_value;
+        }
+        dataMax = Math.max(dataMax, highMark);
+        double dataPadding = dataMax * 0.05;
+        final double yMin = 0;
+        final double yMax = dataMax + dataPadding;
 
-        final double[] gridValues = doMgdl
-                ? new double[]{50, 100, 150, 200, 250, 300}
-                : new double[]{3, 5, 7, 9, 11, 13, 15};
-        for (double gv : gridValues) {
+        // Generate grid values dynamically based on range
+        final double gridStepDisplay;
+        if (doMgdl) {
+            double range = yMax - yMin;
+            if (range <= 100) gridStepDisplay = 20;
+            else if (range <= 200) gridStepDisplay = 50;
+            else gridStepDisplay = 50;
+        } else {
+            double rangeMmol = (yMax - yMin) * Constants.MGDL_TO_MMOLL;
+            if (rangeMmol <= 5) gridStepDisplay = 1;
+            else if (rangeMmol <= 10) gridStepDisplay = 2;
+            else gridStepDisplay = 3;
+        }
+        double gridStart = doMgdl ? Math.ceil(yMin / gridStepDisplay) * gridStepDisplay
+                : Math.ceil(yMin * Constants.MGDL_TO_MMOLL / gridStepDisplay) * gridStepDisplay;
+        double gridEnd = doMgdl ? yMax : yMax * Constants.MGDL_TO_MMOLL;
+        for (double gv = gridStart; gv <= gridEnd; gv += gridStepDisplay) {
             double mgdlVal = doMgdl ? gv : gv * Constants.MMOLL_TO_MGDL;
             float y = valueToY(mgdlVal, yMin, yMax, area);
             if (y >= area.top && y <= area.bottom) {
@@ -295,11 +319,182 @@ public class PdfReportRenderer {
         }
         canvas.drawPath(glucosePath, linePaint);
 
+        // Peak/valley labels
+        drawPeakLabels(canvas, area, readings, sliceStart, sliceEnd, yMin, yMax);
+
         Paint borderPaint = new Paint();
         borderPaint.setColor(Color.GRAY);
         borderPaint.setStrokeWidth(0.5f);
         borderPaint.setStyle(Paint.Style.STROKE);
         canvas.drawRect(area, borderPaint);
+    }
+
+    private void drawPeakLabels(Canvas canvas, RectF area, List<BgReading> readings,
+                                long sliceStart, long sliceEnd, double yMin, double yMax) {
+        if (readings.size() < 3) return;
+
+        // Sort readings by timestamp ascending (they come desc from the query)
+        java.util.ArrayList<BgReading> sorted = new java.util.ArrayList<>(readings);
+        java.util.Collections.sort(sorted, (a, b) -> Long.compare(a.timestamp, b.timestamp));
+
+        // 1-hour moving average smoothing
+        final long smoothWindow = 30 * 60 * 1000L; // half-window = 30 min
+        double[] smoothed = new double[sorted.size()];
+        for (int i = 0; i < sorted.size(); i++) {
+            double sum = 0;
+            int count = 0;
+            long t = sorted.get(i).timestamp;
+            for (int j = 0; j < sorted.size(); j++) {
+                if (Math.abs(sorted.get(j).timestamp - t) <= smoothWindow) {
+                    sum += sorted.get(j).calculated_value;
+                    count++;
+                }
+            }
+            smoothed[i] = sum / count;
+        }
+
+        // Find local extrema on smoothed curve
+        java.util.ArrayList<Integer> extrema = new java.util.ArrayList<>();
+        for (int i = 1; i < smoothed.length - 1; i++) {
+            boolean isPeak = smoothed[i] > smoothed[i - 1] && smoothed[i] > smoothed[i + 1];
+            boolean isValley = smoothed[i] < smoothed[i - 1] && smoothed[i] < smoothed[i + 1];
+            if (isPeak || isValley) {
+                extrema.add(i);
+            }
+        }
+
+        // Prominence filter: only keep if change from last kept exceeds threshold
+        final double minDelta = doMgdl ? 27 : 27; // ~1.5 mmol/l in mg/dl
+        java.util.ArrayList<Integer> significant = new java.util.ArrayList<>();
+        double lastKeptValue = smoothed.length > 0 ? smoothed[0] : 0;
+        for (int idx : extrema) {
+            if (Math.abs(smoothed[idx] - lastKeptValue) >= minDelta) {
+                significant.add(idx);
+                lastKeptValue = smoothed[idx];
+            }
+        }
+
+        // Build array of curve Y positions for collision detection
+        final float[] curveYAtPixel = new float[(int) area.width() + 1];
+        java.util.Arrays.fill(curveYAtPixel, Float.NaN);
+        for (BgReading r : sorted) {
+            float px = timeToX(r.timestamp, sliceStart, sliceEnd, area);
+            int pxi = (int) (px - area.left);
+            if (pxi >= 0 && pxi < curveYAtPixel.length) {
+                curveYAtPixel[pxi] = valueToY(r.calculated_value, yMin, yMax, area);
+            }
+        }
+        // Interpolate gaps
+        float lastValid = Float.NaN;
+        for (int i = 0; i < curveYAtPixel.length; i++) {
+            if (!Float.isNaN(curveYAtPixel[i])) {
+                lastValid = curveYAtPixel[i];
+            } else if (!Float.isNaN(lastValid)) {
+                curveYAtPixel[i] = lastValid;
+            }
+        }
+
+        // For each significant extremum, find the true peak/valley within ±30 min
+        final long searchWindow = 30 * 60 * 1000L;
+        Paint peakPaint = new Paint();
+        peakPaint.setColor(Color.parseColor("#555555"));
+        peakPaint.setTextSize(7f);
+        peakPaint.setAntiAlias(true);
+        peakPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        final float textHeight = 7f; // approximate text height matching font size
+
+        for (int idx : significant) {
+            boolean isPeak = idx > 0 && idx < smoothed.length - 1
+                    && smoothed[idx] > smoothed[idx - 1] && smoothed[idx] > smoothed[idx + 1];
+
+            // Search ±30 min for the actual max (if peak) or min (if valley)
+            long centerTime = sorted.get(idx).timestamp;
+            BgReading bestReading = sorted.get(idx);
+            for (BgReading candidate : sorted) {
+                if (Math.abs(candidate.timestamp - centerTime) > searchWindow) continue;
+                if (isPeak && candidate.calculated_value > bestReading.calculated_value) {
+                    bestReading = candidate;
+                } else if (!isPeak && candidate.calculated_value < bestReading.calculated_value) {
+                    bestReading = candidate;
+                }
+            }
+
+            float x = timeToX(bestReading.timestamp, sliceStart, sliceEnd, area);
+            String label = String.format(Locale.US, doMgdl ? "%.0f" : "%.1f", unitize(bestReading.calculated_value));
+            float labelWidth = peakPaint.measureText(label);
+            float labelX = x - labelWidth / 2f;
+            labelX = Math.max(area.left + 2f, Math.min(area.right - labelWidth - 2f, labelX));
+
+            float curveY = valueToY(bestReading.calculated_value, yMin, yMax, area);
+            float labelY = findNonOverlappingY(curveYAtPixel, area, labelX, labelWidth, textHeight, curveY, isPeak);
+
+            canvas.drawText(label, labelX, labelY, peakPaint);
+        }
+
+        // Start and end value readouts — placed in the reserved margins outside the curve area
+        BgReading firstReading = sorted.get(0);
+        BgReading lastReading = sorted.get(sorted.size() - 1);
+        for (int ei = 0; ei < 2; ei++) {
+            BgReading endpoint = (ei == 0) ? firstReading : lastReading;
+            float curveY = valueToY(endpoint.calculated_value, yMin, yMax, area);
+            curveY = Math.max(area.top + textHeight, Math.min(area.bottom - 2f, curveY));
+            String elabel = String.format(Locale.US, doMgdl ? "%.0f" : "%.1f", unitize(endpoint.calculated_value));
+            float elabelWidth = peakPaint.measureText(elabel);
+
+            float elabelX;
+            if (ei == 0) {
+                // Left margin: right-align just before the curve area
+                elabelX = area.left - elabelWidth - 2f;
+            } else {
+                // Right margin: left-align just after the curve area
+                elabelX = area.right + 2f;
+            }
+
+            // Vertically centered on the data point
+            float labelY = curveY + textHeight / 2f;
+            labelY = Math.max(area.top + textHeight, Math.min(area.bottom - 2f, labelY));
+
+            canvas.drawText(elabel, elabelX, labelY, peakPaint);
+        }
+    }
+
+    // Find a Y position for a label that doesn't overlap the glucose curve
+    private float findNonOverlappingY(float[] curveYAtPixel, RectF area, float labelX, float labelWidth, float textHeight, float curveY, boolean preferAbove) {
+        float labelY = preferAbove ? curveY - 4f : curveY + textHeight + 4f;
+
+        for (int attempt = 0; attempt < 20; attempt++) {
+            // Label bbox with 3pt padding to avoid barely touching
+            float bboxTop = labelY - textHeight - 3f;
+            float bboxBottom = labelY + 5f;
+
+            boolean overlaps = false;
+            int startPx = Math.max(0, (int) (labelX - area.left));
+            int endPx = Math.min(curveYAtPixel.length - 1, (int) (labelX + labelWidth - area.left));
+            for (int px = startPx; px <= endPx; px++) {
+                if (!Float.isNaN(curveYAtPixel[px]) && curveYAtPixel[px] >= bboxTop && curveYAtPixel[px] <= bboxBottom) {
+                    overlaps = true;
+                    break;
+                }
+            }
+
+            if (!overlaps) break;
+
+            // Nudge further away from curve
+            if (preferAbove) {
+                labelY -= 3f;
+            } else {
+                labelY += 3f;
+            }
+
+            // If we've gone out of bounds, try the other direction
+            if (labelY - textHeight < area.top || labelY + 2f > area.bottom) {
+                preferAbove = !preferAbove;
+                labelY = preferAbove ? curveY - 4f : curveY + textHeight + 4f;
+            }
+        }
+
+        // Final clamp
+        return Math.max(area.top + textHeight, Math.min(area.bottom - 2f, labelY));
     }
 
     private void drawEventMarkers(Canvas canvas, RectF area, List<UserEvent> events, long sliceStart, long sliceEnd) {
