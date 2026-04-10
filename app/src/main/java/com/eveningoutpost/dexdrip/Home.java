@@ -23,6 +23,7 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
@@ -97,6 +98,8 @@ import com.eveningoutpost.dexdrip.models.Sensor;
 import com.eveningoutpost.dexdrip.models.StepCounter;
 import com.eveningoutpost.dexdrip.models.Treatments;
 import com.eveningoutpost.dexdrip.models.UserEvent;
+import com.eveningoutpost.dexdrip.pdf.PdfExportConfig;
+import com.eveningoutpost.dexdrip.pdf.PdfReportRenderer;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.services.DexCollectionService;
@@ -3522,6 +3525,119 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     public void settingsSDcardExport(MenuItem myitem) {
         startActivity(new Intent(getApplicationContext(), SdcardImportExport.class));
+    }
+
+    public void exportPdf(MenuItem myitem) {
+        showPdfExportDialog();
+    }
+
+    private void showPdfExportDialog() {
+        final long now = System.currentTimeMillis();
+        final long[] startTime = {now - 7 * 24 * 3600 * 1000L};
+        final long[] endTime = {now};
+
+        final LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        final int pad = (int) (16 * getResources().getDisplayMetrics().density);
+        layout.setPadding(pad, pad, pad, 0);
+
+        // Start date button
+        final Button btnStart = new Button(this);
+        btnStart.setText(gs(R.string.pdf_start_date) + ": " + new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(new java.util.Date(startTime[0])));
+        btnStart.setOnClickListener(v -> {
+            final java.util.Calendar cal = java.util.Calendar.getInstance();
+            cal.setTimeInMillis(startTime[0]);
+            new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
+                cal.set(year, month, dayOfMonth, 0, 0, 0);
+                cal.set(java.util.Calendar.MILLISECOND, 0);
+                startTime[0] = cal.getTimeInMillis();
+                btnStart.setText(gs(R.string.pdf_start_date) + ": " + new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(new java.util.Date(startTime[0])));
+            }, cal.get(java.util.Calendar.YEAR), cal.get(java.util.Calendar.MONTH), cal.get(java.util.Calendar.DAY_OF_MONTH)).show();
+        });
+        layout.addView(btnStart);
+
+        // End date button
+        final Button btnEnd = new Button(this);
+        btnEnd.setText(gs(R.string.pdf_end_date) + ": " + new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(new java.util.Date(endTime[0])));
+        btnEnd.setOnClickListener(v -> {
+            final java.util.Calendar cal = java.util.Calendar.getInstance();
+            cal.setTimeInMillis(endTime[0]);
+            new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
+                cal.set(year, month, dayOfMonth, 23, 59, 59);
+                cal.set(java.util.Calendar.MILLISECOND, 999);
+                endTime[0] = cal.getTimeInMillis();
+                btnEnd.setText(gs(R.string.pdf_end_date) + ": " + new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(new java.util.Date(endTime[0])));
+            }, cal.get(java.util.Calendar.YEAR), cal.get(java.util.Calendar.MONTH), cal.get(java.util.Calendar.DAY_OF_MONTH)).show();
+        });
+        layout.addView(btnEnd);
+
+        // Page count
+        final TextView pageLabel = new TextView(this);
+        pageLabel.setText(gs(R.string.pdf_page_count));
+        pageLabel.setPadding(0, pad / 2, 0, 0);
+        layout.addView(pageLabel);
+        final Spinner pageSpinner = new Spinner(this);
+        final String[] pageOptions = new String[30];
+        for (int i = 0; i < 30; i++) pageOptions[i] = String.valueOf(i + 1);
+        pageSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, pageOptions));
+        layout.addView(pageSpinner);
+
+        // Checkboxes
+        final CheckBox cbEvents = new CheckBox(this);
+        cbEvents.setText(R.string.pdf_include_events);
+        cbEvents.setChecked(true);
+        layout.addView(cbEvents);
+
+        final CheckBox cbTreatments = new CheckBox(this);
+        cbTreatments.setText(R.string.pdf_include_treatments);
+        cbTreatments.setChecked(true);
+        layout.addView(cbTreatments);
+
+        final CheckBox cbStats = new CheckBox(this);
+        cbStats.setText(R.string.pdf_include_statistics);
+        cbStats.setChecked(true);
+        layout.addView(cbStats);
+
+        final ScrollView scrollView = new ScrollView(this);
+        scrollView.addView(layout);
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.export_pdf_report)
+                .setView(scrollView)
+                .setPositiveButton(R.string.done, (dialog, which) -> {
+                    final PdfExportConfig pdfConfig = new PdfExportConfig(
+                            startTime[0], endTime[0],
+                            pageSpinner.getSelectedItemPosition() + 1,
+                            cbEvents.isChecked(),
+                            cbTreatments.isChecked(),
+                            cbStats.isChecked());
+
+                    JoH.static_toast_short(gs(R.string.pdf_exporting));
+
+                    new AsyncTask<Void, Void, File>() {
+                        @Override
+                        protected File doInBackground(Void... params) {
+                            try {
+                                return new PdfReportRenderer(getBaseContext(), pdfConfig).render();
+                            } catch (Exception e) {
+                                UserError.Log.e("PdfExport", "PDF export failed: " + e.toString());
+                                return null;
+                            }
+                        }
+
+                        @Override
+                        protected void onPostExecute(File file) {
+                            if (file != null) {
+                                snackBar(R.string.share, getString(R.string.exported_to) + file.getAbsolutePath(),
+                                        makeSnackBarUriLauncher(Uri.fromFile(file), getString(R.string.share)), Home.this);
+                            } else {
+                                Toast.makeText(Home.this, gs(R.string.pdf_export_failed), Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    }.execute();
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
     }
 
     public void showMapFromMenu(MenuItem myitem) {
