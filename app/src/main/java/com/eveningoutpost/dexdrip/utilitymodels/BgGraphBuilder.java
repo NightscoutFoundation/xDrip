@@ -193,6 +193,7 @@ public class BgGraphBuilder {
     private final List<PointValue> noisePolyBgValues = new ArrayList<PointValue>();
     private final List<PointValue> activityValues = new ArrayList<PointValue>();
     private final List<PointValue> annotationValues = new ArrayList<>();
+    private final List<PointValue> eventValues = new ArrayList<>();
     private final Pattern posPattern = Pattern.compile(".*?pos:([0-9.]+).*");
     private final boolean hidePriming = Options.hidePrimingDoses();
     private static TrendLine noisePoly;
@@ -852,6 +853,7 @@ public class BgGraphBuilder {
                 lines.addAll(smbLines());
             }
             lines.addAll(iconLines());
+            lines.addAll(eventLines());
 
             lines.add(calib[0]); // white circle of calib in background
             lines.add(treatments[0]); // white circle of treatment in background
@@ -1774,6 +1776,48 @@ public class BgGraphBuilder {
                     readings_lock.unlock();
                 }
 
+                // Populate user event markers
+                try {
+                    final long eventQueryStart = (long) (start_time * FUZZER);
+                    final long eventQueryEnd = (long) (end_time * FUZZER);
+                    UserError.Log.e(TAG, "UserEvent query range: " + eventQueryStart + " to " + eventQueryEnd);
+                    final java.util.List<com.eveningoutpost.dexdrip.models.UserEvent> userEvents =
+                            com.eveningoutpost.dexdrip.models.UserEvent.latestForGraph(eventQueryStart, eventQueryEnd);
+                    UserError.Log.e(TAG, "UserEvent query returned: " + (userEvents != null ? userEvents.size() : "null") + " events");
+                    if (userEvents != null && !userEvents.isEmpty()) {
+                        final float eventYMid = (float) (windowBottomOffset + (defaultMaxY - defaultMinY) / 2.0);
+                        final float yStackStep = (float) ((defaultMaxY - defaultMinY) / 15.0); // stacking offset
+                        final long overlapThresholdMs = 15 * 60 * 1000; // 15 minutes
+                        int stackIndex = 0;
+                        long lastTimestamp = 0;
+                        UserError.Log.e(TAG, "UserEvent Y mid: " + eventYMid + " yStackStep: " + yStackStep);
+                        for (final com.eveningoutpost.dexdrip.models.UserEvent event : userEvents) {
+                            if (lastTimestamp > 0 && Math.abs(event.timestamp - lastTimestamp) < overlapThresholdMs) {
+                                stackIndex++;
+                            } else {
+                                stackIndex = 0;
+                            }
+                            lastTimestamp = event.timestamp;
+                            // Alternate stacking above and below center
+                            final float yOffset = (stackIndex == 0) ? 0 : ((stackIndex % 2 == 1) ? 1 : -1) * ((stackIndex + 1) / 2) * yStackStep;
+                            final float eventY = eventYMid + yOffset;
+                            final PointValueExtended pv = new PointValueExtended((double) event.timestamp / FUZZER, eventY);
+                            BitmapLoader.loadAndSetKey(pv, com.eveningoutpost.dexdrip.models.UserEvent.eventTypeIcon(event.eventType, event.details), 0);
+                            pv.setBitmapTint(com.eveningoutpost.dexdrip.models.UserEvent.eventTypeColor(event.eventType));
+                            pv.setBitmapScale(1f);
+                            pv.note = event.getSummary();
+                            pv.type = PointValueExtended.UserEvent;
+                            pv.uuid = event.uuid;
+                            pv.real_timestamp = event.timestamp;
+                            pv.setLabel(com.eveningoutpost.dexdrip.models.UserEvent.eventTypeName(event.eventType));
+                            eventValues.add(pv);
+                        }
+                        UserError.Log.e(TAG, "UserEvent: added " + eventValues.size() + " markers to graph");
+                    }
+                } catch (Exception e) {
+                    UserError.Log.e(TAG, "Exception doing user event values: " + e.toString());
+                }
+
                 try {
 
 
@@ -2172,6 +2216,25 @@ public class BgGraphBuilder {
     }
 
 
+    private List<Line> eventLines() {
+        final List<Line> lines = new LinkedList<>();
+        if (eventValues.isEmpty()) return lines;
+
+        final Line line = new Line(eventValues);
+        line.setTag("events");
+        line.setHasPoints(true);
+        line.setHasLines(false);
+        line.setPointRadius(5);
+        line.setPointColor(ColorUtil.blendColor(Color.BLACK, Color.TRANSPARENT, 0.99f));
+        line.setBitmapScale(1f);
+        line.setBitmapLabels(true);
+        line.setBitmapLabelShadowColor(Color.WHITE);
+        line.setFullShadow(true);
+        line.setBitmapCacheProvider(BitmapLoader.getInstance());
+        lines.add(line);
+        return lines;
+    }
+
     /////////AXIS RELATED//////////////
     public Axis yAxis() {
         Axis yAxis = new Axis();
@@ -2496,6 +2559,10 @@ public class BgGraphBuilder {
                 case PointValueExtended.AdjustableDose:
                     Home.snackBar(R.string.Dose, message,
                             v -> DoseAdjustDialog.show(callerActivity, fuuid), callerActivity);
+                    break;
+                case PointValueExtended.UserEvent:
+                    Home.snackBar(R.string.event_log, message,
+                            v -> Home.startHomeWithExtra(xdrip.getAppContext(), Home.EVENT_LOG_ACTION, time.toString(), fuuid), callerActivity);
                     break;
                 default:
                     final View.OnClickListener mOnClickListener = new View.OnClickListener() {
