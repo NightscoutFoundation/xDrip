@@ -39,6 +39,16 @@ Try not to bundle different patches together and keep the change set to the mini
 
 Maintainers are not always immediately aware of pull request submissions, which is another reason why it helps to have discussed your work prior to submission. Feel free to ask about the progress of processing your PR as maintainers may not realise a PR is awaiting action.  
 
+# Policy on AI based submissions (pull requests)
+
+AI can be a useful tool, especially for accelerating changes which might be menial and assisting less experienced developers. However, in order to ensure the smooth running of the project, the following rules are applied relating to AI submissions.
+
+* Automated agentic or bot based submissions are not allowed. A human must be responsible for raising the change set.
+* You take full responsibility for all code submitted no matter how it was created. You must be fully aware and understand all of the code.
+* Copyright is assumed to be a hybrid of human authored copyright which you are assigning fully to the project when submitting a pull request. You are asserting that all code is effectively your own work and does not infringe copyright.
+* Agentic workflows or bot replies must not be used to respond to comments on your pull request. We reserve the right to block users who raise or respond to PRs / Issues / Discussions using automation. You can use AI to help you respond to queries but this process must not be automated.
+* Be aware that submissions are reviewed by humans who have limited bandwidth and so, regardless of the technical merit of a submission, there are limits to the amount of time which will be spent reviewing features that for other reasons are unsuitable to be accepted. See the earlier guidance on raising your idea for a change in the discussion section before producing code to do it.
+
 # Translations
 
 Please use [xDrip+ on Crowdin](https://crowdin.com/project/xdrip) if you have any questions about translations, or like to add a language or contribute to an existing language. 
