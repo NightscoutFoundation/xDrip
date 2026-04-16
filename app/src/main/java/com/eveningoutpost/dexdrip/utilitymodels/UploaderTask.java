@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.utilitymodels;
 import android.os.AsyncTask;
 
 import com.eveningoutpost.dexdrip.influxdb.InfluxDBUploader;
+import com.eveningoutpost.dexdrip.nocturne.NocturneUploader;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.BloodTest;
 import com.eveningoutpost.dexdrip.models.Calibration;
@@ -61,6 +62,11 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
             }
             if (Pref.getBooleanDefaultFalse("cloud_storage_influxdb_enable")) {
                 circuits.add(UploaderQueue.INFLUXDB_RESTAPI);
+            }
+            if (Pref.getBooleanDefaultFalse("nocturne_upload_enable")) {
+                if (Pref.getBoolean("nocturne_use_mobile", true) || JoH.isLANConnected()) {
+                    circuits.add(UploaderQueue.NOCTURNE_RESTAPI);
+                }
             }
 
 
@@ -170,6 +176,9 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
                         uploadStatus = influxDBUploader.upload(bgReadings, calibrations, calibrations);
                     } else if (THIS_QUEUE == UploaderQueue.WATCH_WEARAPI) {
                         uploadStatus = WatchUpdaterService.sendWearUpload(bgReadings, calibrations, bloodtests, treatmentsAdd, treatmentsDel);
+                    } else if (THIS_QUEUE == UploaderQueue.NOCTURNE_RESTAPI) {
+                        final NocturneUploader nocturneUploader = new NocturneUploader(xdrip.getAppContext());
+                        uploadStatus = nocturneUploader.upload(bgReadings);
                     }
 
                     if (retry_timer) {

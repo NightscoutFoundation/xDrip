@@ -219,6 +219,22 @@
                     android:path="/callback/tidepool"/>
             </intent-filter>
         </activity>
+        <activity
+            android:name=".nocturne.NocturneConnectActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:label="@string/nocturne_connect_activity_label">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="xdrip"
+                      android:host="connect"
+                      android:path="/nocturne"/>
+            </intent-filter>
+        </activity>
         <activity android:name=".tidepool.AuthFlowIn" android:exported="true"/>
         <activity
             android:name=".BluetoothScan"

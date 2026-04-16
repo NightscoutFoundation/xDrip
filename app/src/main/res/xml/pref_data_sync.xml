@@ -411,6 +411,63 @@
 
             </PreferenceScreen>
 
+            <PreferenceScreen
+                android:key="nocturne_settings"
+                android:summary="Upload to Nocturne V4 API"
+                android:title="Nocturne">
+
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:key="nocturne_upload_enable"
+                    android:switchTextOff="OFF"
+                    android:switchTextOn="ON"
+                    android:title="Enable Nocturne Upload" />
+
+                <EditTextPreference
+                    android:defaultValue=""
+                    android:dependency="nocturne_upload_enable"
+                    android:dialogMessage="Enter the URL of your Nocturne instance (e.g. https://mynocturne.example.com)"
+                    android:dialogTitle="Nocturne Instance URL"
+                    android:inputType="textUri"
+                    android:key="nocturne_instance_url"
+                    android:title="Nocturne Instance URL" />
+
+                <Preference
+                    android:dependency="nocturne_upload_enable"
+                    android:key="nocturne_connect"
+                    android:title="Connect to Nocturne"
+                    android:summary="Authorize xDrip+ with your Nocturne instance" />
+
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:dependency="nocturne_upload_enable"
+                    android:key="nocturne_upload_sgv"
+                    android:summary="Upload CGM sensor glucose readings"
+                    android:title="Upload SGV" />
+
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:dependency="nocturne_upload_enable"
+                    android:key="nocturne_upload_heartrate"
+                    android:summary="Upload heart rate data"
+                    android:title="Upload Heart Rate" />
+
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:dependency="nocturne_upload_enable"
+                    android:key="nocturne_upload_stepcount"
+                    android:summary="Upload step count data"
+                    android:title="Upload Step Count" />
+
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:dependency="nocturne_upload_enable"
+                    android:key="nocturne_use_mobile"
+                    android:summary="Allow uploads over mobile data"
+                    android:title="Use Mobile Data" />
+
+            </PreferenceScreen>
+
 
         </PreferenceScreen>
         <PreferenceScreen

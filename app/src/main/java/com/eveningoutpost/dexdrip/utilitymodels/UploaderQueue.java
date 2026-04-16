@@ -77,6 +77,7 @@ public class UploaderQueue extends Model {
     public static final long TEST_OUTPUT_PLUGIN = 1 << 2;
     public static final long INFLUXDB_RESTAPI = 1 << 3;
     public static final long WATCH_WEARAPI = 1 << 4;
+    public static final long NOCTURNE_RESTAPI = 1 << 5;    // 32
 
 
     public static final long DEFAULT_UPLOAD_CIRCUITS = 0;
@@ -88,6 +89,7 @@ public class UploaderQueue extends Model {
             append(TEST_OUTPUT_PLUGIN, "Test Plugin");
             append(INFLUXDB_RESTAPI, "InfluxDB REST");
             append(WATCH_WEARAPI, "Watch Wear API");
+            append(NOCTURNE_RESTAPI, "Nocturne REST");
         }
     };
 
@@ -153,7 +155,8 @@ public class UploaderQueue extends Model {
                 | (Pref.getBooleanDefaultFalse("cloud_storage_mongodb_enable") ? MONGO_DIRECT : 0)
                 | (Pref.getBooleanDefaultFalse("cloud_storage_api_enable") ? NIGHTSCOUT_RESTAPI : 0)
                 | (Pref.getBooleanDefaultFalse("cloud_storage_influxdb_enable") ? INFLUXDB_RESTAPI : 0)
-                | (Pref.getBooleanDefaultFalse("wear_sync") ? WATCH_WEARAPI : 0);
+                | (Pref.getBooleanDefaultFalse("wear_sync") ? WATCH_WEARAPI : 0)
+                | (Pref.getBooleanDefaultFalse("nocturne_upload_enable") ? NOCTURNE_RESTAPI : 0);
         if (result.bitfield_wanted == 0) return null; // no queue required
         result.timestamp = JoH.tsl();
         result.reference_id = obj.getId();
