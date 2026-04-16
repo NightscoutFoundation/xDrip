@@ -642,7 +642,7 @@
     <string name="repeatedly_restart_collection_service">Resetează repetat serviciul de colectare la orice sugestie de date lipsă. Activați numai dacă aveți pierderi de date.</string>
     <string name="aggressive_service_restarts">Restart agresiv al serviciului</string>
     <string name="predictive_readings_old">Metoda veche - nu este recomandată! Încercări de prezicere a citirilor în fiecare minut pe baza ultimelor valori.</string>
-    <string name="use_external_blukon_algorithm_summary">Utilizaţi un algoritm libre în afara procesului. (blukon/NFC/LibreAlarm)</string>
+    <string name="use_external_blukon_algorithm_summary">Utilizați un algoritm Libre în afara procesului. (blukon/NFC/LibreAlarm)</string>
     <string name="display_predictive_values">Afișare valori predictive</string>
     <string name="use_external_blukon_algorithm">Algoritm libre în afara procesului.</string>
     <string name="calibrate_external_libre_algorithm_summary">Aplică metodele de calibrare xDrip pe datele OOP.</string>
@@ -659,7 +659,7 @@
     <string name="retrieve_blukon_history_summary">Recuperează din dispozitivul Blukon istoricul pierdut atunci când se reconectează la senzor.</string>
     <string name="interpret_share_raw">Dacă se utilizează Share, xDrip va afișa valorile când acestea sunt în mod normal ascunse pe receptor.</string>
     <string name="interpret_raw">Interpretează valorile primare</string>
-    <string name="use_infrequent_calibrations">Dacă este necesar, utilizaţi calibrări din trecutul mai îndepărtat, de exemplu dacă calibrările sunt furnizate ocazional.</string>
+    <string name="use_infrequent_calibrations">Dacă este necesar, utilizați calibrări din trecutul mai îndepărtat, de exemplu dacă calibrările sunt furnizate ocazional.</string>
     <string name="infrequent_calibrations">Calibrare ocazională</string>
     <string name="extra_logging">Setări de jurnal suplimentare</string>
     <string name="send_logs_to_developer">Trimite automat jurnalele evenimentelor și erorilor către dezvoltator</string>
