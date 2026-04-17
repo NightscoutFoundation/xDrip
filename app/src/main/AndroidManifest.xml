@@ -216,7 +216,8 @@
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data android:scheme="xdrip"
-                    android:path="/callback/tidepool"/>
+                    android:host="callback"
+                    android:path="/tidepool"/>
             </intent-filter>
         </activity>
         <activity
