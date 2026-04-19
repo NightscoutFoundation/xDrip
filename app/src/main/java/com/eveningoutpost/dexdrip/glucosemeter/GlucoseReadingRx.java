@@ -50,7 +50,7 @@ public class GlucoseReadingRx extends BluetoothCHelper {
             final boolean sensorStatusAnnunciationPresent = (flags & 0x08) > 0;
             contextInfoFollows = (flags & 0x10) > 0;
 
-            sequence = data.getShort(1);
+            sequence = data.getShort(1) & 0xFFFF;
             year = data.getShort(3);
             month = data.get(5);
             day = data.get(6);
