@@ -27,7 +27,7 @@ public class ContextRx {
         hasMealType = (flags & 2) > 0;
         hasCarbInfo = (flags & 1) > 0;
 
-        sequence = data.getShort() & 0xFFFF;
+        sequence = data.getShort();
 
         if (hasSecondaryFlags) {
             secondaryFlags = data.get();

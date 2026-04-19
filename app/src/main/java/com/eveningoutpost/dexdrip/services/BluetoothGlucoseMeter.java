@@ -318,7 +318,7 @@ public class BluetoothGlucoseMeter extends Service {
                     // Ascensia/Contour meters - use incremental pull instead of all records
                     if (mLastManufacturer.startsWith("Ascensia") || mLastManufacturer.startsWith("Contour")) {
                         Bluetooth_CMD.replace_command(GLUCOSE_SERVICE, RECORDS_CHARACTERISTIC, "W",
-                                new Bluetooth_CMD("W", GLUCOSE_SERVICE, RECORDS_CHARACTERISTIC, RecordsCmdTx.getNewerThanSequenceExclusive(getHighestSequence()), "request reading newer than " + getHighestSequence()));
+                                new Bluetooth_CMD("W", GLUCOSE_SERVICE, RECORDS_CHARACTERISTIC, RecordsCmdTx.getNewerThanSequenceExclusive(getHighestSequence() & 0xFFFF), "request reading newer than " + (getHighestSequence() & 0xFFFF)));
                     }
 
                     // Diamond Mobile Mini DM30b firmware v1.2.4
