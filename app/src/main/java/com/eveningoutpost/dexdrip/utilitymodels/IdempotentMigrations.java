@@ -169,6 +169,10 @@ public class IdempotentMigrations {
         Pref.setString("bridge_battery_alert_level", "30");
         Pref.setBoolean("parakeet_status_alerts", false);
         Pref.setBoolean("parakeet_charge_silent", false);
+        Pref.setBoolean("g5_bluetooth_watchdog", true);
+        Pref.setBoolean("bluetooth_frequent_reset", false);
+        Pref.setBoolean("use_transmiter_pl_bluetooth", false);
+        Pref.setBoolean("use_rfduino_bluetooth", false);
 
     }
 
