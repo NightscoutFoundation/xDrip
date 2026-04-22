@@ -250,6 +250,7 @@ public class GluProService extends ForegroundService {
 
     @Override
     public void onCreate() {
+        super.onCreate();
         connected = false;
         lastReconnectAttempt = 0;
 
