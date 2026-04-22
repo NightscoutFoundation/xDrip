@@ -1973,4 +1973,10 @@
     <string name="glupro_disconnected">Déconnecté</string>
     <string name="glupro_connected">Connecté</string>
     <string name="glupro_start_time">Mettre en marche</string>
+    <string name="invalid_transmitter_id">ID transmetteur invalide</string>
+    <string name="you_entered">Vous avez entré :</string>
+    <string name="fixed_version">Version fixe:</string>
+    <string name="click">Cliquer</string>
+    <string name="to_use_this_instead">utiliser ceci à la place ?</string>
+    <string name="the_transmitter_id_you_have_entered_is_incorrect">L\'ID du transmetteur ou le code d\'appairage que vous avez entré est incorrect et ne fonctionnerait pas.\n\nVeuillez vérifier les détails et réessayer.</string>
 </resources>

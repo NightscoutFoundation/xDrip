@@ -2039,4 +2039,10 @@
     <string name="glupro_reading_frequency">Честота на четене</string>
     <string name="need_bluetooth_permission">Необходимо е разрешение за Bluetooth</string>
     <string name="ob1_sensor_stopped">Сензорът е спрял</string>
+    <string name="invalid_transmitter_id">Невалиден идентификатор на трансмитера</string>
+    <string name="you_entered">Вие въведохте:</string>
+    <string name="fixed_version">Фиксирана версия:</string>
+    <string name="click">Натисни</string>
+    <string name="to_use_this_instead">да използвам това вместо другото?</string>
+    <string name="the_transmitter_id_you_have_entered_is_incorrect">Въведеният от вас идентификатор на предавателя или код за сдвояване е неправилен и няма да работи.\n\nМоля, проверете данните и опитайте отново.</string>
 </resources>

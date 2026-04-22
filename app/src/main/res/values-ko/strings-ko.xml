@@ -1468,7 +1468,7 @@
     <string name="summary_xdrip_plus_desert_sync_settings">오프라인 팔로잉 설정</string>
     <string name="title_xdrip_plus_desert_sync_settings">사막 동기화</string>
     <string name="summary_desert_sync_enabled">로컬 비인터넷 동기화 기능을 활성화합니다</string>
-    <string name="title_desert_sync_enabled">데저트 싱크 활성화</string>
+    <string name="title_desert_sync_enabled">사막 싱크 활성화</string>
     <string name="title_desert_sync_master_ip">마스터 IP 주소</string>
     <string name="summary_send_sync_show_qr">팔로워가 자동 구성을 위해 스캔할 바코드입니다</string>
     <string name="title_send_sync_show_qr">QR 코드 보기</string>
@@ -2040,4 +2040,10 @@
     <string name="glupro_reading_frequency">측정 주기</string>
     <string name="need_bluetooth_permission">블루투스 권한 필요</string>
     <string name="ob1_sensor_stopped">센서 중지됨</string>
+    <string name="invalid_transmitter_id">유효하지 않은 송신기 ID</string>
+    <string name="you_entered">입력한 내용:</string>
+    <string name="fixed_version">수정된 버전:</string>
+    <string name="click">클릭</string>
+    <string name="to_use_this_instead">대신 이것을 사용하시겠습니까?</string>
+    <string name="the_transmitter_id_you_have_entered_is_incorrect">입력하신 송신기 ID 또는 페어링 코드가 올바르지 않아 작동하지 않습니다.\n\n내용을 다시 한번 확인한 후 시도해 주세요.</string>
 </resources>
