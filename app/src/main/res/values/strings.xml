@@ -25,6 +25,13 @@
     <string name="title_activity_usb_connected">USB Connected Activity</string>
     <string name="snooze">Snooze</string>
     <string name="snooze_hint">Snooze alert for x minutes</string>
+    <string name="snooze_all_alerts">Snooze all alerts</string>
+    <string name="all_alerts_snoozed">All alerts snoozed for %s</string>
+    <string name="new_insulin_pen">New Pen</string>
+    <string name="pen_total_units_prompt">Total units in pen (default 300):</string>
+    <string name="pen_low_warning">Pen low: %.0f IU remaining</string>
+    <string name="pen_empty_ended">Pen empty — pen ended</string>
+    <string name="pen_end_confirm">End this pen?</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="no">No</string>

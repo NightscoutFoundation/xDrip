@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 android {
+    namespace 'com.twofortyfouram.locale.api'
     compileSdkVersion 34
 
     defaultConfig {
@@ -12,7 +13,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
         }
     }
 }

@@ -48,7 +48,8 @@ public class Loader {
     public static synchronized IPluginDA getLocalInstance(final PluginDef def, final String parameter) {
         switch (def.name) {
             case "keks":
-                return jamorham.keks.Plugin.getInstance(parameter);
+                // libkeks module disabled due to Lombok/Java 21 incompatibility
+                return null;
             default:
                 throw new RuntimeException("Unknown local plugin " + def.name);
         }

@@ -12,7 +12,7 @@ buildscript {
 apply plugin: 'com.android.application'
 //apply from: 'token-replace.gradle'
 apply from: '../common.gradle'
-apply plugin: 'kotlin-android'
+// kotlin-android is built into AGP 9.0.1, no separate plugin needed
 
 if (project.file('local.gradle').exists()) {
     apply from: 'local.gradle'
@@ -35,7 +35,7 @@ repositories {
         url "https://jitpack.io"
     }
     flatDir {
-        dirs  project(':app').file('libs'), project(':wear').file('libs')
+        dirs  project(':app').file('libs') //, project(':wear').file('libs')
     }
 }
 
@@ -69,6 +69,7 @@ def getLocalProperty(String propertyName) {
 }
 
 android {
+    namespace 'com.eveningoutpost.dexdrip'
     compileSdk 34
 
 
@@ -80,7 +81,7 @@ android {
                 // changes to databinding libraries can apparently result in nasty bugs on some handsets
                 // the following checks that databinding dependencies are not changed from the tested configuration
                 // 2.3.0 and 1.3.1 are from me.tatarka.bindingcollectionadapter2
-                if (!["3.1.4", "2.3.0", "1.3.1", "3.4.3", "3.6.4", "7.4.2"].contains(details.target.version)) {
+                if (!["3.1.4", "2.3.0", "1.3.1", "3.4.3", "3.6.4", "7.4.2", "9.0.1"].contains(details.target.version)) {
                     throw new GradleException("Untested databinding version: " + details.requested.group + " " + details.requested.name + "- " + details.requested.version + " - " + details.target.version)
                 }
             }
@@ -117,10 +118,10 @@ android {
     // But for release builds, it's okay. So the following script iterates through
     // all the known variants, finds those that are "release" build types, and
     // changes those properties to something dynamic.
-    applicationVariants.all { variant ->
-        if (variant.buildType.name == "release") {
-            variant.outputs.each { output ->
-                output.versionNameOverride = generateVersionName()
+    androidComponents {
+        onVariants(selector().withBuildType("release")) { variant ->
+            variant.outputs.forEach { output ->
+                output.versionName.set(generateVersionName())
             }
         }
     }
@@ -133,7 +134,7 @@ android {
         }
     }
 
-    lintOptions {
+    lint {
         checkReleaseBuilds false
         disable 'MissingTranslation'
         disable 'ExtraTranslation'
@@ -147,27 +148,26 @@ android {
     }
 
 
-    packagingOptions {
-        exclude 'META-INF/DEPENDENCIES'
-        exclude 'META-INF/INDEX.LIST'
-        exclude 'META-INF/NOTICE.md'
-        exclude 'META-INF/LICENSE.md'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/NOTICE.txt'
-        exclude 'META-INF/NOTICE'
-        exclude 'org/apache/http/version.properties'
-        exclude 'org/apache/http/client/version.properties'
-        //exclude 'META-INF/androidx.core_core.version'
-        exclude 'META-INF/com.android.tools/proguard/coroutines.pro'
-        exclude 'META-INF/ASL2.0'
-        exclude 'META-INF/androidx.interpolator_interpolator.version'
-        exclude 'META-INF/androidx.core_core.version'
-        pickFirst 'org/bouncycastle/x509/CertPathReviewerMessages.properties'
-        pickFirst 'org/bouncycastle/x509/CertPathReviewerMessages_de.properties'
-
-        exclude "**/libsentry*.so" // exclude the ndk libraries we are not utilizing
-
+    packaging {
+        resources {
+            excludes += ['META-INF/DEPENDENCIES',
+                         'META-INF/INDEX.LIST',
+                         'META-INF/NOTICE.md',
+                         'META-INF/LICENSE.md',
+                         'META-INF/LICENSE.txt',
+                         'META-INF/LICENSE',
+                         'META-INF/NOTICE.txt',
+                         'META-INF/NOTICE',
+                         'org/apache/http/version.properties',
+                         'org/apache/http/client/version.properties',
+                         'META-INF/com.android.tools/proguard/coroutines.pro',
+                         'META-INF/ASL2.0',
+                         'META-INF/androidx.interpolator_interpolator.version',
+                         'META-INF/androidx.core_core.version',
+                         '**/libsentry*.so']
+            pickFirsts += ['org/bouncycastle/x509/CertPathReviewerMessages.properties',
+                          'org/bouncycastle/x509/CertPathReviewerMessages_de.properties']
+        }
     }
 
     compileOptions {
@@ -175,21 +175,22 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    dataBinding {
-        enabled = true
+    buildFeatures {
+        dataBinding = true
+        buildConfig = true
     }
 
     buildTypes {
         release {
             minifyEnabled true
             shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'),
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules.pro'
         }
         debug {
             minifyEnabled true
             shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'),
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules.pro'
             testProguardFile 'proguard-debug.pro'
             multiDexKeepProguard file('proguard-debug.pro')
@@ -240,7 +241,8 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    wearApp project(':wear')
+    // wearApp is deprecated in newer Gradle versions, using implementation instead
+    //implementation project(':wear')
     //weapApp files('../wear/build/outputs/apk/wear_release.apk')
     //testimplementation 'com.squareup.okhttp:mockwebserver:2.5.0'
     implementation('com.github.nightscout:android-uploader:CORE_FOR_XDRIP') {
@@ -248,7 +250,7 @@ dependencies {
     }
 
     implementation project(':localeapi')
-    implementation project(':libkeks')
+    //implementation project(':libkeks')
     implementation project(':libglupro')
 
     // add missing JAXB dependencies for JDK 9+

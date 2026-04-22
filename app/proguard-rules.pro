@@ -157,3 +157,20 @@
 -keep class * implements com.google.gson.TypeAdapterFactory
 -keep class * implements com.google.gson.JsonSerializer
 -keep class * implements com.google.gson.JsonDeserializer
+
+# Keep TypeToken and all anonymous subclasses (e.g. new TypeToken<List<X>>(){}).
+# R8 class-merging strips the Signature attribute from these anonymous classes even when
+# -keepattributes Signature is set, causing TypeToken.getSuperclassTypeParameter() to throw
+# "Missing type parameter" at static-initializer time.
+-keep class com.google.gson.reflect.TypeToken { *; }
+-keep class * extends com.google.gson.reflect.TypeToken { *; }
+
+# Keep Activity methods called via android:onClick in menu XML (reflection-based dispatch).
+# Use *** to match any return type (void, boolean, etc.) since showSearch returns boolean.
+-keepclassmembers public class * extends android.app.Activity {
+    public *** *(android.view.MenuItem);
+}
+
+# Keep Home inner classes used for Gson JSON deserialization of voice lexicon
+-keep class com.eveningoutpost.dexdrip.Home$wordData { *; }
+-keep class com.eveningoutpost.dexdrip.Home$wordDataWrapper { *; }

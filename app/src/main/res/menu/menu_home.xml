@@ -142,7 +142,7 @@
         android:onClick="ShowLibreTrend"
         android:visible="true"
         android:showAsAction="never"/>
-    
+
     <item android:id="@+id/synctreatments"
         android:title="@string/sync_treatments"
         android:checkable="false"

@@ -3,8 +3,9 @@ apply plugin: 'com.android.application'
 apply from: '../common.gradle'
 
 android {
+    namespace 'com.eveningoutpost.dexdrip'
     compileSdkVersion 34
-    lintOptions {
+    lint {
         checkReleaseBuilds false
 //        abortOnError false
     }
@@ -35,10 +36,10 @@ android {
     // But for release builds, it's okay. So the following script iterates through
     // all the known variants, finds those that are "release" build types, and
     // changes those properties to something dynamic.
-    applicationVariants.all { variant ->
-        if (variant.buildType.name == "release") {
-            variant.outputs.each { output ->
-                output.versionNameOverride = generateVersionName()
+    androidComponents {
+        onVariants(selector().withBuildType("release")) { variant ->
+            variant.outputs.forEach { output ->
+                output.versionName.set(generateVersionName())
             }
         }
     }
@@ -51,8 +52,10 @@ android {
         }
     }
 
-    packagingOptions {
-        exclude 'META-INF/INDEX.LIST'
+    packaging {
+        resources {
+            excludes += ['META-INF/INDEX.LIST']
+        }
     }
 
     compileOptions {
@@ -60,15 +63,17 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    dataBinding {
-        enabled = true
+    buildFeatures {
+        dataBinding = true
+        buildConfig = true
+        resValues = true
     }
 
     buildTypes {
         release {
             minifyEnabled true
             shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'),
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules.pro'
         }
     }

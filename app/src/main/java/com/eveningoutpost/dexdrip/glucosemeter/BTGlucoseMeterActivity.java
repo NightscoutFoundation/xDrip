@@ -203,20 +203,19 @@ public class BTGlucoseMeterActivity extends ListActivityWithMenu {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_scan:
-                check_and_enable_bluetooth();
-                if (JoH.ratelimit("bluetooth-scan-button", 4)) {
-                    UserError.Log.d(TAG, "Starting Bluetooth Glucose Meter Service");
-                    mLeDeviceListAdapter.clear();
-                    BluetoothGlucoseMeter.start_service(null);
-                } else {
-                    UserError.Log.d(TAG, "Rate limited scan button");
-                }
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
+        int id = item.getItemId();
+        if (id == R.id.menu_scan) {
+            check_and_enable_bluetooth();
+            if (JoH.ratelimit("bluetooth-scan-button", 4)) {
+                UserError.Log.d(TAG, "Starting Bluetooth Glucose Meter Service");
+                mLeDeviceListAdapter.clear();
+                BluetoothGlucoseMeter.start_service(null);
+            } else {
+                UserError.Log.d(TAG, "Rate limited scan button");
+            }
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
     }
 

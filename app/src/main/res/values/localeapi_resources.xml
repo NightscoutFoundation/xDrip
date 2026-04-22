@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Localeapi integer resources -->
+    <integer name="twofortyfouram_locale_maximum_blurb_length">60</integer>
+</resources>

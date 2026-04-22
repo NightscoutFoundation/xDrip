@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- needle tip -->
+    <path android:fillColor="#757575"
+        android:pathData="M11,2v2h2V2h-2z"/>
+    <!-- pen body -->
+    <path android:fillColor="#757575"
+        android:pathData="M9,4v13l3,5 3,-5V4H9zM14,16.18l-2,3.32 -2,-3.32V6h4v10.18z"/>
+</vector>

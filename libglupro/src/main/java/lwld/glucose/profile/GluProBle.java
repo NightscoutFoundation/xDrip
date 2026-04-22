@@ -213,7 +213,7 @@ public class GluProBle {
         }
         bleManager.disconnect().enqueue();
 
-        val settings = new ScanSettings.Builder()
+        final ScanSettings settings = new ScanSettings.Builder()
                 .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
                 .build();
 
@@ -258,16 +258,16 @@ public class GluProBle {
 
     public synchronized void backFill(long start, long end) {
         if (ready && sensorStartTime > 0) {
-            val b = bleManager;
+            final InternalManager b = bleManager;
             if (start == -1 && end == -1) {
                 if (b != null) {
                     b.backFillLastRecord(); // didn't seem to work
                 }
             } else {
-                val backfillStart = Math.max(start, sensorStartTime);
-                val backfillEnd = Math.min(end, System.currentTimeMillis());
-                val startPosition = (int) Math.max(0, (((backfillStart - sensorStartTime) / 60_000)) - 5);
-                val endPosition = (int) Math.max(0, ((backfillEnd - sensorStartTime) / 60_000)) + 5;
+                final long backfillStart = Math.max(start, sensorStartTime);
+                final long backfillEnd = Math.min(end, System.currentTimeMillis());
+                final int startPosition = (int) Math.max(0, (((backfillStart - sensorStartTime) / 60_000)) - 5);
+                final int endPosition = (int) Math.max(0, ((backfillEnd - sensorStartTime) / 60_000)) + 5;
                 Log.d(TAG, "Asking for backfill from " + Util.dateTimeText(backfillStart) + " at position " + startPosition + " to " + Util.dateTimeText(backfillEnd) + " position " + endPosition);
                 if (b != null) {
                     b.backFillBetween(startPosition, endPosition);
@@ -430,7 +430,7 @@ public class GluProBle {
                         jobScheduler.postDeduped(READ_CHARACTERISTICS, bleManager::readStaticParameters);
                     } else {
                         Log.d(TAG, "Device ready, but not bonded and not bonding in progress so disconnecting");
-                        val lbleManager = bleManager;
+                        final InternalManager lbleManager = bleManager;
                         if (lbleManager!= null) {
                             lbleManager.disconnect().enqueue();
                         }
@@ -466,7 +466,7 @@ public class GluProBle {
     private synchronized void setState(State state) {
         if (state == lastState) return;
         lastState = state;
-        val l = listener;
+        final Listener l = listener;
         if (l != null) {
             l.onState(state);
             Log.d(TAG, "State changed to " + state);
@@ -579,11 +579,11 @@ public class GluProBle {
     }
 
     public void calibrate(long timestamp, int glucose) {
-        val timeDiff = System.currentTimeMillis() - timestamp;
+        final long timeDiff = System.currentTimeMillis() - timestamp;
         if (glucose > 0 && timeDiff >= 0 && timeDiff < 8 * 3600_000) {
             Log.d(TAG, "Calibrate request: " + Util.dateTimeText(timestamp) + " glucose:" + glucose + " mgdl");
-            val whenOffset = calculateTimeOffsetFromUtc(timestamp);
-            val nextOffset = calculateTimeOffsetFromUtc(timestamp + (12 * 3600_000));
+            final int whenOffset = calculateTimeOffsetFromUtc(timestamp);
+            final int nextOffset = calculateTimeOffsetFromUtc(timestamp + (12 * 3600_000));
             Log.d(TAG, "Calibration offset: " + whenOffset + " next:" + nextOffset);
             if (whenOffset > 0) {
                 bleManager.calibrate(glucose, whenOffset, nextOffset);
@@ -600,9 +600,9 @@ public class GluProBle {
     }
 
     private synchronized void updateOnDataInBackground() {
-        val snapshot = new EnumMap<>(data); // create snapshot
+        final Map<DataKey, String> snapshot = new EnumMap<>(data); // create snapshot
         executeInBackgroundMulti(() -> {
-            val llistener = listener;
+            final Listener llistener = listener;
             if (llistener != null) {
                 llistener.onData(snapshot);
             }
@@ -627,13 +627,13 @@ public class GluProBle {
         private final ContinuousGlucoseMeasurementDataCallback glucoseCallback = new ContinuousGlucoseMeasurementDataCallback() {
             @Override
             public synchronized void onContinuousGlucoseMeasurementReceived(@NonNull BluetoothDevice device, float glucoseConcentration, @Nullable Float cgmTrend, @Nullable Float cgmQuality, @Nullable CGMStatus status, int timeOffset, boolean secured) {
-                val ourStatus = Status.fromCGMStatus(status);
+                final HashSet<Status> ourStatus = Status.fromCGMStatus(status);
                 Log.d(TAG, "CGM measurement read: glucose:" + glucoseConcentration + " trend:" + cgmTrend + " quality:" + cgmQuality + " status:" + Status.getStatusString(ourStatus) + " timeoffset:" + timeOffset + " secured:" + secured);
 
                 handleStatus(ourStatus);
 
                 if (sensorStartTime > 0) { // TODO also validate drift??
-                    val timestamp = calculateUtcFromTimeOffset(timeOffset);
+                    final long timestamp = calculateUtcFromTimeOffset(timeOffset);
                     Log.d(TAG, "Received glucose reading at " + timestamp + " with value: " + glucoseConcentration);
                     if (!Float.isNaN(glucoseConcentration)) {
                         data.put(MGDL, glucoseConcentration + "");
@@ -677,7 +677,7 @@ public class GluProBle {
         @Override
         public boolean isRequiredServiceSupported(@NonNull BluetoothGatt gatt) {
             BluetoothGattCharacteristic ch = null;
-            val gService = gatt.getService(uuid(GLUCOSE_SERVICE));
+            final android.bluetooth.BluetoothGattService gService = gatt.getService(uuid(GLUCOSE_SERVICE));
             if (gService != null) {
                 ch = gService.getCharacteristic(uuid(GLUCOSE));
                 chars.put(GLUCOSE, ch);
@@ -692,7 +692,7 @@ public class GluProBle {
 
             } // end glucose service present
 
-            val dService = gatt.getService(uuid(DEVICE_INFORMATION_SERVICE));
+            final android.bluetooth.BluetoothGattService dService = gatt.getService(uuid(DEVICE_INFORMATION_SERVICE));
             if (dService != null) {
                 chars.put(FIRMWARE_CHAR, dService.getCharacteristic(uuid(FIRMWARE_CHAR)));
                 chars.put(MANUFACTURER_CHAR, dService.getCharacteristic(uuid(MANUFACTURER_CHAR)));
@@ -709,7 +709,7 @@ public class GluProBle {
         @Override
         protected void initialize() {
 
-            val ldevice = connectedDevice;
+            final BluetoothDevice ldevice = connectedDevice;
             if (ldevice != null) {
                 try {
                     if (ldevice.getBondState() != BluetoothDevice.BOND_BONDED
@@ -739,7 +739,7 @@ public class GluProBle {
                         Log.d(TAG, "Configuring...");
                         setState(CONFIGURING);
 
-                        val glucoseNotify = chars.get(GLUCOSE);
+                        final BluetoothGattCharacteristic glucoseNotify = chars.get(GLUCOSE);
                         if (glucoseNotify == null) {
                             Log.e(TAG, "No glucose characteristic found");
                             setState(SETUP_FAILED);
@@ -790,7 +790,7 @@ public class GluProBle {
                     Log.d(TAG, "CGM status: Current clock: " + timeOffset);
                     sensorStartTime = System.currentTimeMillis() - (timeOffset * 60_000L); // TODO watch for time changes
                     data.put(START_TIME_MILLIS, sensorStartTime + "");
-                    val ourStatus = Status.fromCGMStatus(status);
+                    final HashSet<Status> ourStatus = Status.fromCGMStatus(status);
                     Log.d(TAG, "Current status: " + Status.getStatusString(ourStatus));
                     handleStatus(ourStatus);
                 }
@@ -808,7 +808,7 @@ public class GluProBle {
                     @Override
                     public void onContinuousGlucoseMonitorSessionStartTimeReceived(@NonNull BluetoothDevice device, @NonNull Calendar calendar, boolean secured) {
 
-                        val result = DateFormat.getMediumDateFormat(context)
+                        final String result = DateFormat.getMediumDateFormat(context)
                                 .format(calendar.getTime()) + " " + DateFormat
                                 .getTimeFormat(context).format(calendar.getTime());
                         Log.d(TAG, "Session start time: " + result);
@@ -854,18 +854,18 @@ public class GluProBle {
             if (whenOffset <= 0) {
                 return;
             }
-            val calibration = CGMSpecificOpsControlPointData.setCalibrationValue(glucose,
+            final Data calibration = CGMSpecificOpsControlPointData.setCalibrationValue(glucose,
                     TYPE_CAPILLARY_WHOLE_BLOOD, SAMPLE_LOCATION_FINGER, whenOffset, nextOffset,
                     true);
             bleManager.safeWriteCharacteristic(chars.get(CONTROL_POINT), calibration);
         }
 
         public void readOrChangeReportingPeriod(int period) {
-            val r = CGMSpecificOpsControlPointData.getCommunicationInterval(true);
+            final Data r = CGMSpecificOpsControlPointData.getCommunicationInterval(true);
             safeWriteCharacteristic(chars.get(CONTROL_POINT), r);
             if (period != -1) {
                 Log.d(TAG, "Setting reporting period to " + period + " minutes");
-                val w = CGMSpecificOpsControlPointData.setCommunicationInterval(period, true);
+                final Data w = CGMSpecificOpsControlPointData.setCommunicationInterval(period, true);
                 safeWriteCharacteristic(chars.get(CONTROL_POINT), w);
                 safeWriteCharacteristic(chars.get(CONTROL_POINT), r);
             }

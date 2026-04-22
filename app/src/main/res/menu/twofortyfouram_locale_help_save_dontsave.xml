@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/twofortyfouram_locale_menu_dontsave"
+        android:title="Don't Save"/>
+
+    <item
+        android:id="@+id/twofortyfouram_locale_menu_save"
+        android:title="Save"/>
+
+    <item
+        android:id="@+id/twofortyfouram_locale_menu_help"
+        android:title="Help"
+        android:visible="false"/>
+
+</menu>

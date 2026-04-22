@@ -116,8 +116,6 @@
         android:largeHeap="true"
         android:maxAspectRatio="2.1"
         android:theme="@style/AppTheme"
-        tools:replace="android:appComponentFactory"
-        android:appComponentFactory="android.support.v4.app.CoreComponentFactory"
         android:requestLegacyExternalStorage="true"
         android:usesCleartextTraffic="true">
         <activity
@@ -173,6 +171,10 @@
         <provider
             android:name="io.sentry.android.core.SentryPerformanceProvider"
             android:authorities="${applicationId}.SentryPerformanceProvider"
+            tools:node="remove" />
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
             tools:node="remove" />
 
         <provider

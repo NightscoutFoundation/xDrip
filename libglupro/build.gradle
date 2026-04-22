@@ -8,6 +8,7 @@ repositories {
 }
 
 android {
+    namespace 'lwld.glucose.profile'
     compileSdkVersion 34
 
     defaultConfig {
@@ -30,7 +31,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    namespace 'lwld.glucose.profile'
 
 }
 

@@ -8,6 +8,7 @@ repositories {
 }
 
 android {
+    namespace 'jamorham.libkeks'
     compileSdkVersion 34
 
     defaultConfig {

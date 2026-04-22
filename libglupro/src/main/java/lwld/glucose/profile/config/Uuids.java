@@ -58,8 +58,8 @@ public class Uuids {
     }
 
     public static UUID get(Flavour flavour, Item item) {
-        val specificKey = key(flavour, item);
-        val genericKey = key(GENERIC, item);
+        final String specificKey = key(flavour, item);
+        final String genericKey = key(GENERIC, item);
         return uuidMap.getOrDefault(specificKey, uuidMap.get(genericKey));
     }
 

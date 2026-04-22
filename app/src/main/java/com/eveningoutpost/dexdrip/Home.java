@@ -118,6 +118,7 @@ import com.eveningoutpost.dexdrip.utilitymodels.SendFeedBack;
 import com.eveningoutpost.dexdrip.utilitymodels.ShotStateStore;
 import com.eveningoutpost.dexdrip.utilitymodels.SourceWizard;
 import com.eveningoutpost.dexdrip.utilitymodels.StatusLine;
+import com.eveningoutpost.dexdrip.utilitymodels.InsulinPenManager;
 import com.eveningoutpost.dexdrip.utilitymodels.UndoRedo;
 import com.eveningoutpost.dexdrip.utilitymodels.UpdateActivity;
 import com.eveningoutpost.dexdrip.utilitymodels.VoiceCommands;
@@ -250,6 +251,9 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private ImageButton btnTime;
     private ImageButton btnUndo;
     private ImageButton btnRedo;
+    private ImageButton btnSnooze;
+    private ImageButton btnPen;
+    private TextView penStatusText;
     private ImageButton btnVehicleMode;
     private TextView voiceRecognitionText;
     private TextView textCarbohydrates;
@@ -499,6 +503,19 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 promptSpeechNoteInput(v);
             }
         });
+
+        this.btnSnooze = (ImageButton) findViewById(R.id.btnSnooze);
+        btnSnooze.setOnClickListener(v -> snoozeAllAlerts());
+        btnSnooze.setOnLongClickListener(v -> {
+            startActivity(new Intent(Home.this, SnoozeActivity.class));
+            return true;
+        });
+
+        this.btnPen = (ImageButton) findViewById(R.id.btnPen);
+        this.penStatusText = (TextView) findViewById(R.id.penStatusText);
+        btnPen.setOnClickListener(v -> onPenButtonClick());
+        btnPen.setOnLongClickListener(v -> { onPenLongPress(); return true; });
+        updatePenStatus();
 
         btnCancel.setOnClickListener(v -> cancelTreatment());
 
@@ -954,6 +971,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         } else
             processCalibrationNoUI(myglucosenumber, mytimeoffset);
         staticRefreshBGCharts();
+        final String penWarning = InsulinPenManager.checkAfterTreatment();
+        if (penWarning != null) {
+            JoH.static_toast_long(penWarning);
+        }
+        updatePenStatus();
     }
 
     private void processIncomingBundle(Bundle bundle) {
@@ -2360,19 +2382,15 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     private long getButtonHours(View v) {
         long this_button_hours = 3;
-        switch (v.getId()) {
-            case R.id.hourbutton3:
-                this_button_hours = 3;
-                break;
-            case R.id.hourbutton6:
-                this_button_hours = 6;
-                break;
-            case R.id.hourbutton12:
-                this_button_hours = 12;
-                break;
-            case R.id.hourbutton24:
-                this_button_hours = 24;
-                break;
+        int id = v.getId();
+        if (id == R.id.hourbutton3) {
+            this_button_hours = 3;
+        } else if (id == R.id.hourbutton6) {
+            this_button_hours = 6;
+        } else if (id == R.id.hourbutton12) {
+            this_button_hours = 12;
+        } else if (id == R.id.hourbutton24) {
+            this_button_hours = 24;
         }
         return this_button_hours;
     }
@@ -3595,6 +3613,72 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     public void doBackFillBroadcast(MenuItem myitem) {
         GcmActivity.syncBGTable2();
         toast(gs(R.string.starting_sync_to_other_devices));
+    }
+
+    private void snoozeAllAlerts() {
+        final int minutes = AlertPlayer.getPlayer().GuessDefaultSnoozeTime();
+        SnoozeActivity.snoozeForType(minutes, SnoozeActivity.SnoozeType.ALL_ALERTS,
+                PreferenceManager.getDefaultSharedPreferences(this));
+        AlertPlayer.getPlayer().Snooze(this, minutes);
+        JoH.static_toast_short(String.format(gs(R.string.all_alerts_snoozed),
+                SnoozeActivity.getNameFromTime(minutes)));
+    }
+
+    private void onPenButtonClick() {
+        if (InsulinPenManager.isActive()) {
+            onPenLongPress();
+        } else {
+            showNewPenDialog();
+        }
+    }
+
+    private void showNewPenDialog() {
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+        input.setText(String.valueOf(InsulinPenManager.DEFAULT_UNITS));
+        input.selectAll();
+        new AlertDialog.Builder(this)
+                .setTitle(gs(R.string.new_insulin_pen))
+                .setMessage(gs(R.string.pen_total_units_prompt))
+                .setView(input)
+                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                    final String text = input.getText().toString().trim();
+                    final int units = text.isEmpty() ? InsulinPenManager.DEFAULT_UNITS
+                                                     : Integer.parseInt(text);
+                    InsulinPenManager.startNewPen(units);
+                    updatePenStatus();
+                    JoH.static_toast_short("New pen started: " + units + " IU");
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void onPenLongPress() {
+        if (!InsulinPenManager.isActive()) {
+            showNewPenDialog();
+            return;
+        }
+        final String status = InsulinPenManager.getStatusString();
+        new AlertDialog.Builder(this)
+                .setTitle(status != null ? status : gs(R.string.new_insulin_pen))
+                .setMessage(gs(R.string.pen_end_confirm))
+                .setPositiveButton("End Pen", (d, w) -> {
+                    InsulinPenManager.endPen();
+                    updatePenStatus();
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void updatePenStatus() {
+        if (penStatusText == null) return;
+        final String s = InsulinPenManager.getStatusString();
+        if (s != null) {
+            penStatusText.setText(s);
+            penStatusText.setVisibility(View.VISIBLE);
+        } else {
+            penStatusText.setVisibility(View.GONE);
+        }
     }
 
     public void deleteAllBG(MenuItem myitem) {

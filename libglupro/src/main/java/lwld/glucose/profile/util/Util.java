@@ -39,7 +39,7 @@ public class Util {
         try {
             BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
             if (adapter == null) return false; // ??
-            val pairedDevices = adapter.getBondedDevices();
+            final java.util.Set<BluetoothDevice> pairedDevices = adapter.getBondedDevices();
             if ((pairedDevices != null) && (!pairedDevices.isEmpty())) {
                 for (BluetoothDevice pairedDevice : pairedDevices) {
                     if (pairedDevice.getAddress().equals(device.getAddress())) {

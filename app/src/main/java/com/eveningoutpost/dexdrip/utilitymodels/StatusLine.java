@@ -2,6 +2,8 @@ package com.eveningoutpost.dexdrip.utilitymodels;
 
 import androidx.annotation.NonNull;
 
+import com.eveningoutpost.dexdrip.utilitymodels.InsulinPenManager;
+
 import com.eveningoutpost.dexdrip.models.Accuracy;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.BloodTest;
@@ -142,6 +144,13 @@ public class StatusLine {
             append(sb, PumpStatus.getBolusIoBString());
             sb.append(PumpStatus.getReservoirString());
             sb.append(PumpStatus.getBatteryString());
+        }
+
+        if (Pref.getBoolean("status_line_pen_units", false)) {
+            final String penStr = InsulinPenManager.getStatusString();
+            if (penStr != null) {
+                append(sb, penStr);
+            }
         }
 
         if (Pref.getBooleanDefaultFalse("status_line_external_status")) {

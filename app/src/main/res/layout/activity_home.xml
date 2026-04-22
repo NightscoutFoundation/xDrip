@@ -221,13 +221,28 @@
                     android:paddingTop="2dp"
                     android:src="@drawable/ic_note_plus_grey600_24dp" />
 
+                <ImageButton
+                    android:id="@+id/btnSnooze"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignEnd="@+id/btnNote"
+                    android:layout_below="@+id/btnNote"
+                    android:layout_marginTop="4dp"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="@string/snooze_all_alerts"
+                    android:gravity="right"
+                    android:paddingBottom="2dp"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="6dp"
+                    android:paddingTop="2dp"
+                    android:src="@drawable/ic_bell_snooze_grey600_24dp" />
 
                 <ImageButton
                     android:id="@+id/btnUndo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignStart="@+id/btnNote"
-                    android:layout_below="@+id/btnNote"
+                    android:layout_below="@+id/btnSnooze"
                     android:layout_marginTop="8dp"
                     android:background="@android:color/transparent"
 
@@ -255,6 +270,34 @@
                     android:paddingRight="3dp"
                     android:paddingTop="1dp"
                     android:src="@drawable/ic_redo_variant_grey600_24dp" />
+
+                <ImageButton
+                    android:id="@+id/btnPen"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignStart="@+id/btnRedo"
+                    android:layout_below="@+id/btnRedo"
+                    android:layout_marginTop="8dp"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="@string/new_insulin_pen"
+                    android:paddingBottom="1dp"
+                    android:paddingLeft="1dp"
+                    android:paddingRight="3dp"
+                    android:paddingTop="1dp"
+                    android:src="@drawable/ic_insulin_pen_grey600_24dp" />
+
+                <TextView
+                    android:id="@+id/penStatusText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignStart="@+id/btnPen"
+                    android:layout_below="@+id/btnPen"
+                    android:layout_marginTop="2dp"
+                    android:paddingRight="4dp"
+                    android:textColor="#757575"
+                    android:textSize="11sp"
+                    android:text=""
+                    android:visibility="gone" />
 
 
                 <TextView
