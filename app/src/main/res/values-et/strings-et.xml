@@ -2028,4 +2028,10 @@
     <string name="glupro_reading_frequency">Lugemissagedus</string>
     <string name="need_bluetooth_permission">Vaja Bluetoothi luba</string>
     <string name="ob1_sensor_stopped">Sensor peatatud</string>
+    <string name="invalid_transmitter_id">Vigane saatja ID</string>
+    <string name="you_entered">Sa sisestasid:</string>
+    <string name="fixed_version">Parandatud variant:</string>
+    <string name="click">Klõpsa</string>
+    <string name="to_use_this_instead">selle kasutamiseks?</string>
+    <string name="the_transmitter_id_you_have_entered_is_incorrect">Sisestatud saatja ID või sidumiskood on ebakorrektne ja ei toimiks.\n\nKontrolli andmed üle ja proovi uuesti.</string>
 </resources>

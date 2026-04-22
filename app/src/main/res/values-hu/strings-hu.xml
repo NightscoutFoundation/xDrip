@@ -1922,4 +1922,10 @@
     <string name="glupro_start_time">Bekapcsolás</string>
     <string name="glupro_sensor_serial">Szenzor szériaszáma</string>
     <string name="need_bluetooth_permission">Bluetooth engedély kell</string>
+    <string name="invalid_transmitter_id">Téves transzmitter ID:</string>
+    <string name="you_entered">Megadott:</string>
+    <string name="fixed_version">Javított:</string>
+    <string name="click">Kattints</string>
+    <string name="to_use_this_instead">inkább ezt használja?</string>
+    <string name="the_transmitter_id_you_have_entered_is_incorrect">A megadott transzmitter azonosító vagy párosítási kód helytelen, ezért nem fog működni.\n\nKérjük, ellenőrizze újra az adatokat, majd próbálja meg újra.</string>
 </resources>
