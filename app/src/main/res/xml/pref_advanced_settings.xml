@@ -1347,11 +1347,6 @@
                     android:defaultValue="20"
                     android:dependency="bluetooth_watchdog" />
                 <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="g5_bluetooth_watchdog"
-                    android:summary="@string/reset_bluetooth_g5"
-                    android:title="@string/g5_bluetooth_watchdog" />
-                <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="close_gatt_on_ble_disconnect"
                     android:summary="@string/close_gatt"
@@ -1386,21 +1381,6 @@
                     android:key="bluetooth_excessive_wakelocks"
                     android:summary="@string/older_bluetooth_wakelocks"
                     android:title="@string/bluetooth_wakelocks" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="bluetooth_frequent_reset"
-                    android:summary="@string/reset_bluetooth_on_off"
-                    android:title="@string/constantly_reset_bluetooth" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="use_transmiter_pl_bluetooth"
-                    android:summary="@string/experimental_transmitter_fpv_uav"
-                    android:title="@string/transmitter_pl_support" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="use_rfduino_bluetooth"
-                    android:summary="@string/experimental_rdfuino_support"
-                    android:title="@string/rfduino_support" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="pref_dex_collection_polling"
