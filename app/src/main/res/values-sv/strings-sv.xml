@@ -1710,7 +1710,11 @@
     <string name="without_camera_permission_cannot_scan_barcode">Utan tillåtelse att använda kameran kan vi inte skanna en streckkod</string>
     <string name="summary_create_missing_filtered">Gör filtrerad data efter behov</string>
     <string name="title_create_missing_filtered">Skapa missad filtrering</string>
+    <string name="summary_widget_hide_graph">Dölj grafen på widgetar (visar vid nästa läsning)</string>
     <string name="title_widget_hide_graph">Dölj widget-diagram</string>
+    <string name="summary_illustrate_remote_data">Visa data som tas emot på distans (endast diagnostik)</string>
+    <string name="title_illustrate_remote_data">Visa fjärrdata</string>
+    <string name="summary_show_accessibility_settings">Om telefonen har Always On Display kan du aktivera xDrip widgeten där genom att aktivera xDrip tillgänglighetstjänst från Android Systeminställningar.</string>
     <string name="title_show_accessibility_settings">Aktivera xDrip med tillgänglighet</string>
     <string name="title_multiple_insulin_types_settings">Flera insulinsorter</string>
     <string name="summary_multiple_insulin_types_settings">Alternativ för att arbeta med flera insulinsorter</string>
@@ -1718,9 +1722,12 @@
     <string name="summary_multiple_insulin_use_basal_activity">Rita basalaktivitet på grafen och införliva i prediktiv modell</string>
     <string name="title_multiple_insulin_use_basal_activity">Använd basalaktivitet</string>
     <string name="title_xdrip_plus_snooze_broadcast">Lokal utsändning</string>
+    <string name="summary_broadcast_snooze">Skicka snoozar till andra appar på denna telefon</string>
     <string name="title_broadcast_snooze">Lokal utsändning</string>
     <string name="summary_accept_broadcast_snooze">Acceptera snoozar från andra appar på denna telefon</string>
     <string name="title_accept_broadcast_snooze">Acceptera lokal utsändning</string>
+    <string name="title_bg_compensate_noise">Jämna ut brus från sensorn</string>
+    <string name="title_bg_compensate_noise_ultrasensitive">\u26A0 Jämna ut sensorbrus med hög känslighet</string>
     <string name="no_battery_optimization_whitelisting">Enheten verkar inte stödja vitlistning av batterioptimering!</string>
     <string name="no_i_really_know">Nej, jag vet verkligen vad jag gör</string>
     <string name="use_for_calibration">Använd %s för kalibrering?</string>
@@ -1737,6 +1744,7 @@
     <string name="sensor_not_started">Sensorsessionen verkar inte ha startats</string>
     <string name="not_getting_readings">Får inga avläsningar.</string>
     <string name="bridge_battery">Bbryggbatteri</string>
+    <string name="transmitter_maybe_dead">filtrerade data är exakt dubbla värdet av raw-datan, vilket troligen är fel (sändare kanske död)</string>
     <string name="noise_workings_noise">Brus: %s</string>
     <string name="snoozing_due_button_press">Snoozar varning på grund av volymknappstryckning</string>
     <string name="share_database">Dela databas...</string>
