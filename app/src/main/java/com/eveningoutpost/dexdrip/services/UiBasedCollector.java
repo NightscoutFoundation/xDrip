@@ -368,7 +368,7 @@ public class UiBasedCollector extends NotificationListenerService {
         int mgdl = -1;
         try {
             val ftext = filterString(text);
-            if (Unitized.usingMgDl()) {
+            if (sourcePackageUsesMgDl()) {
                 mgdl = Integer.parseInt(ftext);
             } else {
                 if (isValidMmol(ftext)) {
@@ -382,6 +382,24 @@ public class UiBasedCollector extends NotificationListenerService {
             UserError.Log.d(TAG, "Got exception in tryExtractString: " + e);
         }
         return mgdl;
+    }
+
+    /**
+     * Determine if the source companion app sends values in mg/dL based on its package name.
+     * Many companion apps encode their unit in the package name (e.g. .mmol, .mmoll, .mgdl).
+     * Falls back to xDrip's own unit preference if the package name doesn't indicate a unit.
+     */
+    boolean sourcePackageUsesMgDl() {
+        if (lastPackage != null) {
+            val pkg = lastPackage.toLowerCase();
+            if (pkg.endsWith(".mmol") || pkg.endsWith(".mmoll") || pkg.contains(".mmol.")) {
+                return false;
+            }
+            if (pkg.endsWith(".mgdl") || pkg.contains(".mgdl.")) {
+                return true;
+            }
+        }
+        return Unitized.usingMgDl();
     }
 
     boolean handleNewValue(final int mgdl) {
