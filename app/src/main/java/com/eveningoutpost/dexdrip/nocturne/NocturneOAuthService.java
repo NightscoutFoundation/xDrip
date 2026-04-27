@@ -25,7 +25,7 @@ public class NocturneOAuthService {
 
     private static final String TAG = "NocturneOAuth";
     private static final String SOFTWARE_ID = "org.nightscoutfoundation.xdrip";
-    private static final String REQUESTED_SCOPES = "entries.readwrite heartrate.readwrite stepcount.readwrite";
+    private static final String REQUESTED_SCOPES = "entries.readwrite heartrate.readwrite stepcount.readwrite treatments.readwrite devicestatus.readwrite";
 
     private static final String KEY_CLIENT_ID = "nocturne_client_id";
     private static final String KEY_ACCESS_TOKEN = "nocturne_access_token";
