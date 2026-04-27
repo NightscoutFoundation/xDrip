@@ -156,7 +156,7 @@ public class Treatments extends Model {
     }
 
     // lazily populate and return InsulinInjection array from json
-    List<InsulinInjection> getInsulinInjections() {
+    public List<InsulinInjection> getInsulinInjections() {
        // Log.d(TAG,"get injections: "+insulinJSON);
         if (insulinInjections == null) {
             if (insulinJSON != null) {
