@@ -6,6 +6,7 @@ import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.HeartRate;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.StepCounter;
+import com.eveningoutpost.dexdrip.models.Treatments;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper;
 import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
@@ -16,9 +17,15 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
@@ -262,9 +269,187 @@ public class NocturneUploader {
         return obj;
     }
 
-    private static String toIso8601(final long epochMillis) {
+    static String toIso8601(final long epochMillis) {
         final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.US);
         sdf.setTimeZone(TimeZone.getDefault());
         return sdf.format(new Date(epochMillis));
+    }
+
+    static int utcOffsetMinutes(final long epochMillis) {
+        return TimeZone.getDefault().getOffset(epochMillis) / 60000;
+    }
+
+    // --- Treatment routing ---
+
+    enum TreatmentRoute { DEVICE_EVENT, MEAL, BOLUS, CARBS, NOTE, SKIP }
+
+    static final Set<String> DEVICE_EVENT_TYPES = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
+            "Sensor Start", "Sensor Change", "Sensor Stop",
+            "Site Change", "Insulin Change", "Pump Battery Change",
+            "Pod Change", "Reservoir Change", "Cannula Change",
+            "Transmitter Sensor Insert"
+    )));
+
+    static final Map<String, String> DEVICE_EVENT_TYPE_MAP;
+    static {
+        final Map<String, String> m = new HashMap<>();
+        m.put("Sensor Start", "SensorStart");
+        m.put("Sensor Change", "SensorChange");
+        m.put("Sensor Stop", "SensorStop");
+        m.put("Site Change", "SiteChange");
+        m.put("Insulin Change", "InsulinChange");
+        m.put("Pump Battery Change", "PumpBatteryChange");
+        m.put("Pod Change", "PodChange");
+        m.put("Reservoir Change", "ReservoirChange");
+        m.put("Cannula Change", "CannulaChange");
+        m.put("Transmitter Sensor Insert", "TransmitterSensorInsert");
+        DEVICE_EVENT_TYPE_MAP = Collections.unmodifiableMap(m);
+    }
+
+    static TreatmentRoute routeTreatment(final Treatments t) {
+        // Loop prevention
+        if (t.enteredBy != null
+                && (t.enteredBy.contains("via Nightscout") || t.enteredBy.contains("Nightscout Loader"))) {
+            return TreatmentRoute.SKIP;
+        }
+
+        if (t.eventType != null && DEVICE_EVENT_TYPES.contains(t.eventType)) {
+            return TreatmentRoute.DEVICE_EVENT;
+        }
+
+        if (t.insulin > 0 && t.carbs > 0) {
+            return TreatmentRoute.MEAL;
+        }
+        if (t.insulin > 0) {
+            return TreatmentRoute.BOLUS;
+        }
+        if (t.carbs > 0) {
+            return TreatmentRoute.CARBS;
+        }
+        if (t.notes != null && !t.notes.isEmpty()) {
+            return TreatmentRoute.NOTE;
+        }
+
+        return TreatmentRoute.SKIP;
+    }
+
+    // --- Mapping methods for treatments ---
+
+    static JSONObject mapBloodTest(final double mgdl, final long timestamp, final String source) {
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put("mgdl", mgdl);
+            obj.put("device", source);
+            obj.put("app", "xDrip+");
+            obj.put("dataSource", "xdrip");
+            obj.put("timestamp", toIso8601(timestamp));
+            obj.put("utcOffset", utcOffsetMinutes(timestamp));
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Error mapping BloodTest: " + e.getMessage());
+        }
+        return obj;
+    }
+
+    static JSONObject mapCalibration(final long timestamp, final double slope, final double intercept, final double scale) {
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put("slope", slope);
+            obj.put("intercept", intercept);
+            obj.put("scale", scale);
+            obj.put("device", "xDrip-" + DexCollectionType.getDexCollectionType().toString());
+            obj.put("app", "xDrip+");
+            obj.put("dataSource", "xdrip");
+            obj.put("timestamp", toIso8601(timestamp));
+            obj.put("utcOffset", utcOffsetMinutes(timestamp));
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Error mapping Calibration: " + e.getMessage());
+        }
+        return obj;
+    }
+
+    static JSONObject mapBolus(final long timestamp, final double insulin, final String insulinType, final String syncIdentifier) {
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put("insulin", insulin);
+            obj.put("kind", "Manual");
+            if (insulinType != null) {
+                obj.put("insulinType", insulinType);
+            }
+            obj.put("syncIdentifier", syncIdentifier);
+            obj.put("app", "xDrip+");
+            obj.put("dataSource", "xdrip");
+            obj.put("timestamp", toIso8601(timestamp));
+            obj.put("utcOffset", utcOffsetMinutes(timestamp));
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Error mapping Bolus: " + e.getMessage());
+        }
+        return obj;
+    }
+
+    static JSONObject mapCarbIntake(final long timestamp, final double carbs, final String syncIdentifier) {
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put("carbs", carbs);
+            obj.put("syncIdentifier", syncIdentifier);
+            obj.put("app", "xDrip+");
+            obj.put("dataSource", "xdrip");
+            obj.put("timestamp", toIso8601(timestamp));
+            obj.put("utcOffset", utcOffsetMinutes(timestamp));
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Error mapping CarbIntake: " + e.getMessage());
+        }
+        return obj;
+    }
+
+    static JSONObject mapMeal(final long timestamp, final double insulin, final double carbs, final String syncIdentifier) {
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put("insulin", insulin);
+            obj.put("carbs", carbs);
+            obj.put("syncIdentifier", syncIdentifier);
+            obj.put("app", "xDrip+");
+            obj.put("dataSource", "xdrip");
+            obj.put("timestamp", toIso8601(timestamp));
+            obj.put("utcOffset", utcOffsetMinutes(timestamp));
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Error mapping Meal: " + e.getMessage());
+        }
+        return obj;
+    }
+
+    static JSONObject mapNote(final long timestamp, final String text, final String eventType, final String syncIdentifier) {
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put("text", text);
+            obj.put("eventType", eventType);
+            obj.put("isAnnouncement", false);
+            obj.put("syncIdentifier", syncIdentifier);
+            obj.put("app", "xDrip+");
+            obj.put("dataSource", "xdrip");
+            obj.put("timestamp", toIso8601(timestamp));
+            obj.put("utcOffset", utcOffsetMinutes(timestamp));
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Error mapping Note: " + e.getMessage());
+        }
+        return obj;
+    }
+
+    static JSONObject mapDeviceEvent(final long timestamp, final String xdripEventType, final String notes, final String syncIdentifier) {
+        final JSONObject obj = new JSONObject();
+        try {
+            final String mapped = DEVICE_EVENT_TYPE_MAP.get(xdripEventType);
+            obj.put("eventType", mapped != null ? mapped : xdripEventType);
+            if (notes != null && !notes.isEmpty()) {
+                obj.put("notes", notes);
+            }
+            obj.put("syncIdentifier", syncIdentifier);
+            obj.put("app", "xDrip+");
+            obj.put("dataSource", "xdrip");
+            obj.put("timestamp", toIso8601(timestamp));
+            obj.put("utcOffset", utcOffsetMinutes(timestamp));
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Error mapping DeviceEvent: " + e.getMessage());
+        }
+        return obj;
     }
 }
