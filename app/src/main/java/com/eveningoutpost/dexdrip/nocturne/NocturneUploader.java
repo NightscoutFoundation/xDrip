@@ -125,9 +125,13 @@ public class NocturneUploader {
             uploadStepCounts();
         }
 
-        uploadDeviceStatus();
+        if (Pref.getBoolean("nocturne_upload_devicestatus", true)) {
+            uploadDeviceStatus();
+        }
 
-        uploadMotionTracking();
+        if (Pref.getBooleanDefaultFalse("nocturne_upload_motion")) {
+            uploadMotionTracking();
+        }
 
         return sgvSuccess;
     }
@@ -387,7 +391,7 @@ public class NocturneUploader {
             boolean deleted = false;
             for (final String path : deletePaths) {
                 try {
-                    final int code = delete(path + "?dataSource=xdrip&syncIdentifier=" + uuid);
+                    final int code = delete(path + "?dataSource=xdrip&syncIdentifier=" + java.net.URLEncoder.encode(uuid, "UTF-8"));
                     if (code == 204) {
                         deleted = true;
                         break;
