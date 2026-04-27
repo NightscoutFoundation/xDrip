@@ -140,7 +140,7 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
                                     }
                                     break;
                                 case "delete":
-                                    if ((THIS_QUEUE == UploaderQueue.WATCH_WEARAPI || THIS_QUEUE == UploaderQueue.NIGHTSCOUT_RESTAPI) && type.equals(Treatments.class.getSimpleName())) {
+                                    if ((THIS_QUEUE == UploaderQueue.WATCH_WEARAPI || THIS_QUEUE == UploaderQueue.NIGHTSCOUT_RESTAPI || THIS_QUEUE == UploaderQueue.NOCTURNE_RESTAPI) && type.equals(Treatments.class.getSimpleName())) {
                                         items.add(up);
                                         Log.wtf(TAG, "Delete Treatments with ID: " + up.reference_uuid);
                                         treatmentsDel.add(up.reference_uuid);
@@ -178,7 +178,7 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
                         uploadStatus = WatchUpdaterService.sendWearUpload(bgReadings, calibrations, bloodtests, treatmentsAdd, treatmentsDel);
                     } else if (THIS_QUEUE == UploaderQueue.NOCTURNE_RESTAPI) {
                         final NocturneUploader nocturneUploader = new NocturneUploader(xdrip.getAppContext());
-                        uploadStatus = nocturneUploader.upload(bgReadings);
+                        uploadStatus = nocturneUploader.upload(bgReadings, calibrations, bloodtests, treatmentsAdd, treatmentsDel);
                     }
 
                     if (retry_timer) {

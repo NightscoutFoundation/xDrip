@@ -91,11 +91,12 @@ public class NocturneUploader {
     /**
      * Main upload entry point called from UploaderTask.
      */
-    public boolean upload(final List<BgReading> bgReadings) {
-        if (!ready) {
-            UserError.Log.e(TAG, "upload: not ready (missing token or URL)");
-            return false;
-        }
+    public boolean upload(final List<BgReading> bgReadings,
+                          final List<Calibration> calibrations,
+                          final List<BloodTest> bloodTests,
+                          final List<Treatments> treatmentsAdd,
+                          final List<String> treatmentsDel) {
+        if (!ready) return false;
 
         boolean sgvSuccess = true;
 
@@ -103,21 +104,30 @@ public class NocturneUploader {
             sgvSuccess = uploadSgv(bgReadings);
         }
 
+        if (Pref.getBooleanDefaultFalse("nocturne_upload_calibrations")) {
+            uploadCalibrations(calibrations);
+        }
+
+        if (Pref.getBooleanDefaultFalse("nocturne_upload_bloodtests")) {
+            uploadBloodTests(bloodTests);
+        }
+
+        if (Pref.getBooleanDefaultFalse("nocturne_upload_treatments")) {
+            uploadTreatments(treatmentsAdd);
+            deleteTreatments(treatmentsDel);
+        }
+
         if (Pref.getBooleanDefaultFalse("nocturne_upload_heartrate")) {
-            try {
-                uploadHeartRates();
-            } catch (Exception e) {
-                UserError.Log.e(TAG, "Heart rate upload failed: " + e.getMessage());
-            }
+            uploadHeartRates();
         }
 
         if (Pref.getBooleanDefaultFalse("nocturne_upload_stepcount")) {
-            try {
-                uploadStepCounts();
-            } catch (Exception e) {
-                UserError.Log.e(TAG, "Step count upload failed: " + e.getMessage());
-            }
+            uploadStepCounts();
         }
+
+        uploadDeviceStatus();
+
+        uploadMotionTracking();
 
         return sgvSuccess;
     }
@@ -460,6 +470,7 @@ public class NocturneUploader {
             obj.put("device", "xDrip-" + DexCollectionType.getDexCollectionType());
             obj.put("app", "xDrip+");
             obj.put("dataSource", Pref.getString("dex_collection_method", "unknown"));
+            obj.put("syncIdentifier", reading.uuid);
 
             final String direction = reading.slopeName();
             if (direction != null && !direction.isEmpty()) {
@@ -487,6 +498,7 @@ public class NocturneUploader {
             obj.put("accuracy", hr.accuracy);
             obj.put("device", "xDrip+");
             obj.put("app", "xDrip+");
+            obj.put("dataSource", "xdrip");
         } catch (Exception e) {
             UserError.Log.e("NocturneUploader", "Error mapping HeartRate: " + e.getMessage());
         }
@@ -501,6 +513,7 @@ public class NocturneUploader {
             obj.put("source", step.source);
             obj.put("device", "xDrip+");
             obj.put("app", "xDrip+");
+            obj.put("dataSource", "xdrip");
         } catch (Exception e) {
             UserError.Log.e("NocturneUploader", "Error mapping StepCount: " + e.getMessage());
         }
