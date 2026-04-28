@@ -306,7 +306,11 @@ public class NocturneOAuthService {
             try (Response response = httpClient.newCall(request).execute()) {
                 if (!response.isSuccessful() || response.body() == null) {
                     UserError.Log.e(TAG, "refreshAccessToken: HTTP " + response.code());
-                    clearTokens();
+                    // Only clear tokens on definitive rejection (4xx).
+                    // Transient server errors (5xx) should not nuke credentials.
+                    if (response.code() >= 400 && response.code() < 500) {
+                        clearTokens();
+                    }
                     return false;
                 }
 
@@ -320,8 +324,8 @@ public class NocturneOAuthService {
                 return true;
             }
         } catch (Exception e) {
+            // Network errors are transient — don't clear tokens
             UserError.Log.e(TAG, "refreshAccessToken failed: " + e.getMessage());
-            clearTokens();
             return false;
         }
     }
@@ -360,7 +364,7 @@ public class NocturneOAuthService {
         } catch (Exception e) {
             UserError.Log.e(TAG, "revokeToken failed: " + e.getMessage());
         } finally {
-            clearTokens();
+            clearAll();
         }
     }
 
@@ -372,22 +376,26 @@ public class NocturneOAuthService {
     public String getValidAccessToken() {
         try {
             final String accessToken = PersistentStore.getString(KEY_ACCESS_TOKEN);
-            if (accessToken.isEmpty()) {
-                return null;
-            }
-
             final long expiry = PersistentStore.getLong(KEY_TOKEN_EXPIRY);
             final long now = JoH.tsl();
 
-            // Refresh if within 60 seconds of expiry
-            if (expiry - now < 60_000) {
-                if (!refreshAccessToken()) {
-                    return null;
-                }
-                return PersistentStore.getString(KEY_ACCESS_TOKEN);
+            // If we have a valid, non-expired token, return it
+            if (!accessToken.isEmpty() && expiry - now >= 60_000) {
+                return accessToken;
             }
 
-            return accessToken;
+            // Token missing or near expiry — attempt refresh if we have a refresh token
+            final String refreshToken = PersistentStore.getString(KEY_REFRESH_TOKEN);
+            if (refreshToken.isEmpty()) {
+                return null;
+            }
+
+            if (!refreshAccessToken()) {
+                // Refresh failed but tokens may still be valid for transient failures
+                final String current = PersistentStore.getString(KEY_ACCESS_TOKEN);
+                return current.isEmpty() ? null : current;
+            }
+            return PersistentStore.getString(KEY_ACCESS_TOKEN);
         } catch (Exception e) {
             UserError.Log.e(TAG, "getValidAccessToken failed: " + e.getMessage());
             return null;
@@ -413,9 +421,19 @@ public class NocturneOAuthService {
     }
 
     private void clearTokens() {
-        PersistentStore.setString(KEY_CLIENT_ID, "");
+        // Preserve client_id — the client registration is reusable and
+        // should only be cleared on explicit disconnect/re-registration.
         PersistentStore.setString(KEY_ACCESS_TOKEN, "");
         PersistentStore.setString(KEY_REFRESH_TOKEN, "");
         PersistentStore.setLong(KEY_TOKEN_EXPIRY, 0);
+    }
+
+    /**
+     * Clears all stored credentials including client registration.
+     * Only call on explicit disconnect or re-registration.
+     */
+    private void clearAll() {
+        PersistentStore.setString(KEY_CLIENT_ID, "");
+        clearTokens();
     }
 }
