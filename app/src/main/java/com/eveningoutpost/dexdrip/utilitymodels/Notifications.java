@@ -664,7 +664,8 @@ public class Notifications extends IntentService {
                 final SpannableString deltaString = new SpannableString("Delta: " + ((dg != null) ? (dg.spannableString(dg.unitized_delta + (dg.from_plugin ? " " + context.getString(R.string.p_in_circle) : "")))
                         : bgGraphBuilder.unitizedDeltaString(true, true)));
 
-                b.setContentText(deltaString);
+                final String summaryString = deltaString + buildSnoozeLine(context);
+                b.setContentText(summaryString);
 
                 notifiationBitmap = new BgSparklineBuilder(mContext)
                         .setBgGraphBuilder(bgGraphBuilder)
@@ -690,12 +691,12 @@ public class Notifications extends IntentService {
                 RemoteViews collapsedViews = new RemoteViews(context.getPackageName(), R.layout.notification_bg_collapsed);
                 collapsedViews.setImageViewBitmap(R.id.notification_image, iconBitmap);
                 collapsedViews.setTextViewText(R.id.notification_title, titleString);
-                collapsedViews.setTextViewText(R.id.notification_summary, deltaString);
+                collapsedViews.setTextViewText(R.id.notification_summary, summaryString);
 
                 RemoteViews expandedViews = new RemoteViews(context.getPackageName(), R.layout.notification_bg_expanded);
                 expandedViews.setImageViewBitmap(R.id.notification_image, notifiationBitmap);
                 expandedViews.setTextViewText(R.id.notification_title, titleString);
-                expandedViews.setTextViewText(R.id.notification_summary, deltaString);
+                expandedViews.setTextViewText(R.id.notification_summary, summaryString);
 
                 b.setStyle(customViewStyle)
                         .setCustomContentView(collapsedViews)
@@ -722,13 +723,24 @@ public class Notifications extends IntentService {
             extras.putString("android.shortCriticalText", critical.replace("\u2192"+"\uFE0E","›"));
             b.addExtras(extras);
             b.setContentTitle(titleString);
-            b.setStyle(new Notification.BigTextStyle().bigText(deltaString));
+            b.setStyle(new Notification.BigTextStyle().bigText(deltaString + buildSnoozeLine(context)));
             b.setCustomContentView(null);
             b.setCustomBigContentView(null);
         }
 
         // strips channel ID if disabled
         return XdripNotification.build(b);
+    }
+
+    private String buildSnoozeLine(final Context context) {
+        final ActiveBgAlert aba = ActiveBgAlert.getOnly();
+        if (aba == null || !aba.is_snoozed) return "";
+        if (aba.last_alerted_at == null || aba.last_alerted_at == 0L) return "";
+        final AlertType alertType = ActiveBgAlert.alertTypegetOnly();
+        if (alertType == null) return "";
+        final String time = android.text.format.DateFormat.getTimeFormat(context)
+                .format(new java.util.Date(aba.next_alert_at));
+        return "\n" + String.format(context.getString(R.string.notification_alert_snoozed_until), alertType.name, time);
     }
 
     private synchronized void bgOngoingNotification(final BgGraphBuilder bgGraphBuilder) {
