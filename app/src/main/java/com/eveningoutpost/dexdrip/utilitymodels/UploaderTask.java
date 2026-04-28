@@ -30,7 +30,7 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
     public static Exception exception;
     private static final String TAG = UploaderTask.class.getSimpleName();
     public static final String BACKFILLING_BOOSTER = "backfilling-nightscout";
-    private static final boolean retry_timer = false;
+
 
 
     public Void doInBackground(String... urls) {
@@ -181,11 +181,6 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
                         uploadStatus = nocturneUploader.upload(bgReadings, calibrations, bloodtests, treatmentsAdd, treatmentsDel);
                     }
 
-                    if (retry_timer) {
-                        SyncService.startSyncService(Constants.MINUTE_IN_MS * 6); // standard retry timer
-                    }
-
-                    // TODO some kind of fail counter?
                     if (uploadStatus) {
                         for (UploaderQueue up : items) {
                             up.completed(THIS_QUEUE); // approve all types for this queue
@@ -197,6 +192,9 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
                             SyncService.startSyncService(2000);
                         }
 
+                    } else {
+                        Log.d(TAG, UploaderQueue.getCircuitName(THIS_QUEUE) + " upload failed, scheduling retry");
+                        SyncService.startSyncService(Constants.MINUTE_IN_MS * 6);
                     }
 
 
