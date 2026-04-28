@@ -812,6 +812,11 @@
     <string name="minimum_value">The minimum value you consider to be in range.</string>
     <string name="volume_buttons_snooze">Pressing the volume up or down button will snooze an active alarm when in the app</string>
     <string name="buttons_silence_alarms">Buttons silence alarms</string>
+    <string name="volume_button_snooze_wake_screen_title">Volume snooze from lock screen</string>
+    <string name="volume_button_snooze_wake_screen_summary">When an alert fires, wake the screen and show the snooze screen so volume buttons can snooze the alarm from the lock screen</string>
+    <string name="volume_button_confirm_snooze">Press the same volume button again to snooze</string>
+    <string name="volume_down_confirm_snooze">Press the volume DOWN button again to snooze</string>
+    <string name="volume_up_confirm_snooze">Press the volume UP button again to snooze</string>
     <string name="create_shortcut">Create a shortcut from main navigation to BG level screen</string>
     <string name="shortcut_to_bg_alerts">Shortcut to BG Level Alerts</string>
     <string name="suppress_alerts_missed_readings">Suppress snoozed and active alerts after predefined period of missed readings</string>
@@ -1793,6 +1798,12 @@
     <string name="transmitter_maybe_dead">filtered data is exactly double raw sensor data which looks wrong! (Transmitter maybe dead)</string>
     <string name="noise_workings_noise">Noise: %s</string>
     <string name="snoozing_due_button_press">Snoozing alert due to volume button press</string>
+    <string name="snoozing_due_volume_down_button_press">Snoozing alert due to double volume DOWN button press</string>
+    <string name="snoozing_due_volume_up_button_press">Snoozing alert due to double volume UP button press</string>
+    <string name="snoozing_due_mute_button_press">Snoozing alert due to MUTE button press</string>
+    <string name="volume_button_wrong_button">Double press the same volume button to snooze</string>
+    <string name="notification_alert_snoozed_until">Alert %1$s snoozed until %2$s</string>
+    <string name="test_alert_passed">Test scenario passed, no further action</string>
     <string name="share_database">Share database...</string>
     <string name="title_motion_detection_warning">Motion Detection Warning</string>
     <string name="message_motion_detection_warning">Activity Motion Detection is experimental and only some phones are compatible. Its main purpose is to detect vehicle mode.\n\nIn tests it seems higher end phones are the most likely to properly support the sensors needed for it to work.  It may also drain your battery.\n\nFor exercise related movement, Smartwatch step counters work better.</string>
