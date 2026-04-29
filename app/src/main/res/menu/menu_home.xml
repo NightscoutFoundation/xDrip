@@ -58,6 +58,13 @@
                 android:onClick="exportCSVasSiDiary"
                 android:showAsAction="never"/>
 
+            <item android:id="@+id/action_export_pdf"
+                android:title="@string/export_pdf_report"
+                android:checkable="false"
+                android:orderInCategory="1"
+                android:onClick="exportPdf"
+                android:showAsAction="never"/>
+
             <item android:id="@+id/importsettings"
                 android:title="@string/load_save_settings_on_sdcard"
                 android:checkable="false"

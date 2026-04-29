@@ -1,0 +1,9 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:height="24dp"
+    android:width="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Sun: circle with rays -->
+    <path android:fillColor="#fff" android:pathData="M12,7C9.2,7 7,9.2 7,12C7,14.8 9.2,17 12,17C14.8,17 17,14.8 17,12C17,9.2 14.8,7 12,7Z" />
+    <path android:fillColor="#fff" android:pathData="M12,2L12,4M12,20L12,22M4,12L2,12M22,12L20,12M5.6,5.6L4.2,4.2M19.8,4.2L18.4,5.6M5.6,18.4L4.2,19.8M19.8,19.8L18.4,18.4" android:strokeColor="#fff" android:strokeWidth="2" />
+</vector>

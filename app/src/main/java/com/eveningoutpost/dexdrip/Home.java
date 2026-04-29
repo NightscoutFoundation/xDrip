@@ -23,6 +23,7 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
@@ -67,6 +68,10 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -92,6 +97,9 @@ import com.eveningoutpost.dexdrip.models.ProcessInitialDataQuality;
 import com.eveningoutpost.dexdrip.models.Sensor;
 import com.eveningoutpost.dexdrip.models.StepCounter;
 import com.eveningoutpost.dexdrip.models.Treatments;
+import com.eveningoutpost.dexdrip.models.UserEvent;
+import com.eveningoutpost.dexdrip.pdf.PdfExportConfig;
+import com.eveningoutpost.dexdrip.pdf.PdfReportRenderer;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.services.DexCollectionService;
@@ -169,6 +177,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.internal.bind.DateTypeAdapter;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
 
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -208,6 +218,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     public final static String START_TEXT_RECOGNITION = "START_APP_TEXT_RECOGNITION";
     public final static String CREATE_TREATMENT_NOTE = "CREATE_TREATMENT_NOTE";
     public final static String BLOOD_TEST_ACTION = "BLOOD_TEST_ACTION";
+    public final static String EVENT_LOG_ACTION = "EVENT_LOG_ACTION";
     public final static String HOME_FULL_WAKEUP = "HOME_FULL_WAKEUP";
     public final static String GCM_RESOLUTION_ACTIVITY = "GCM_RESOLUTION_ACTIVITY";
     public final static String SNOOZE_CONFIRM_DIALOG = "SNOOZE_CONFIRM_DIALOG";
@@ -252,6 +263,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private ImageButton btnUndo;
     private ImageButton btnRedo;
     private ImageButton btnVehicleMode;
+    private ImageButton btnEventLog;
     private TextView voiceRecognitionText;
     private TextView textCarbohydrates;
     private TextView textBloodGlucose;
@@ -500,6 +512,9 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 promptSpeechNoteInput(v);
             }
         });
+
+        this.btnEventLog = (ImageButton) findViewById(R.id.btnEventLog);
+        btnEventLog.setOnClickListener(v -> showEventLogDialog());
 
         btnCancel.setOnClickListener(v -> cancelTreatment());
 
@@ -980,6 +995,13 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     Log.d(TAG, "Got null point exception during CREATE_TREATMENT_NOTE Intent");
                 } catch (NumberFormatException e) {
                     JoH.static_toast_long(gs(R.string.number_error_) + e);
+                }
+            } else if (bundle.getString(Home.EVENT_LOG_ACTION) != null) {
+                final String eventUuid = bundle.getString(Home.EVENT_LOG_ACTION + "2");
+                if (eventUuid != null && !eventUuid.isEmpty()) {
+                    showEventEditDialog(eventUuid);
+                } else {
+                    showEventLogDialog();
                 }
             } else if (bundle.getString(Home.HOME_FULL_WAKEUP) != null) {
                 if (!JoH.isScreenOn()) {
@@ -1994,6 +2016,28 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         public InterceptingGestureHandler(Home context, GestureDetector originalDetector) {
             super(context, new GestureDetector.SimpleOnGestureListener() {
+                @Override
+                public boolean onDown(MotionEvent e) {
+                    return true; // must return true for onLongPress to fire
+                }
+
+                @Override
+                public void onLongPress(MotionEvent e) {
+                    // Convert screen X to timestamp and open event log dialog
+                    try {
+                        final android.graphics.PointF dataPoint = new android.graphics.PointF();
+                        if (context.chart != null && context.chart.getChartComputator().rawPixelsToDataPoint(e.getX(), e.getY(), dataPoint)) {
+                            final long timestamp = (long) (dataPoint.x * BgGraphBuilder.FUZZER);
+                            final long now = System.currentTimeMillis();
+                            // Only allow events in the past and not too far back (30 days)
+                            if (timestamp > 0 && timestamp <= now && timestamp > now - 30L * 24 * 3600 * 1000) {
+                                context.runOnUiThread(() -> context.showEventLogDialog(timestamp, null));
+                            }
+                        }
+                    } catch (Exception ex) {
+                        UserError.Log.e("LongPress", "Error converting long press to event: " + ex);
+                    }
+                }
             });
             this.originalDetector = originalDetector;
             this.context = context;
@@ -2001,6 +2045,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         @Override
         public boolean onTouchEvent(MotionEvent ev) {
+            // Pass to our listener first for long press detection
+            super.onTouchEvent(ev);
             if (ev.getAction() == MotionEvent.ACTION_MOVE) {
                 if (JoH.quietratelimit("viewport-intercept",5)) {
                     UserError.Log.d("VIEWPORT", "Intercept gesture move event " + ev);
@@ -3481,6 +3527,119 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         startActivity(new Intent(getApplicationContext(), SdcardImportExport.class));
     }
 
+    public void exportPdf(MenuItem myitem) {
+        showPdfExportDialog();
+    }
+
+    private void showPdfExportDialog() {
+        final long now = System.currentTimeMillis();
+        final long[] startTime = {now - 7 * 24 * 3600 * 1000L};
+        final long[] endTime = {now};
+
+        final LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        final int pad = (int) (16 * getResources().getDisplayMetrics().density);
+        layout.setPadding(pad, pad, pad, 0);
+
+        // Start date button
+        final Button btnStart = new Button(this);
+        btnStart.setText(gs(R.string.pdf_start_date) + ": " + new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(new java.util.Date(startTime[0])));
+        btnStart.setOnClickListener(v -> {
+            final java.util.Calendar cal = java.util.Calendar.getInstance();
+            cal.setTimeInMillis(startTime[0]);
+            new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
+                cal.set(year, month, dayOfMonth, 0, 0, 0);
+                cal.set(java.util.Calendar.MILLISECOND, 0);
+                startTime[0] = cal.getTimeInMillis();
+                btnStart.setText(gs(R.string.pdf_start_date) + ": " + new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(new java.util.Date(startTime[0])));
+            }, cal.get(java.util.Calendar.YEAR), cal.get(java.util.Calendar.MONTH), cal.get(java.util.Calendar.DAY_OF_MONTH)).show();
+        });
+        layout.addView(btnStart);
+
+        // End date button
+        final Button btnEnd = new Button(this);
+        btnEnd.setText(gs(R.string.pdf_end_date) + ": " + new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(new java.util.Date(endTime[0])));
+        btnEnd.setOnClickListener(v -> {
+            final java.util.Calendar cal = java.util.Calendar.getInstance();
+            cal.setTimeInMillis(endTime[0]);
+            new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
+                cal.set(year, month, dayOfMonth, 23, 59, 59);
+                cal.set(java.util.Calendar.MILLISECOND, 999);
+                endTime[0] = cal.getTimeInMillis();
+                btnEnd.setText(gs(R.string.pdf_end_date) + ": " + new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(new java.util.Date(endTime[0])));
+            }, cal.get(java.util.Calendar.YEAR), cal.get(java.util.Calendar.MONTH), cal.get(java.util.Calendar.DAY_OF_MONTH)).show();
+        });
+        layout.addView(btnEnd);
+
+        // Page count
+        final TextView pageLabel = new TextView(this);
+        pageLabel.setText(gs(R.string.pdf_page_count));
+        pageLabel.setPadding(0, pad / 2, 0, 0);
+        layout.addView(pageLabel);
+        final Spinner pageSpinner = new Spinner(this);
+        final String[] pageOptions = new String[30];
+        for (int i = 0; i < 30; i++) pageOptions[i] = String.valueOf(i + 1);
+        pageSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, pageOptions));
+        layout.addView(pageSpinner);
+
+        // Checkboxes
+        final CheckBox cbEvents = new CheckBox(this);
+        cbEvents.setText(R.string.pdf_include_events);
+        cbEvents.setChecked(true);
+        layout.addView(cbEvents);
+
+        final CheckBox cbTreatments = new CheckBox(this);
+        cbTreatments.setText(R.string.pdf_include_treatments);
+        cbTreatments.setChecked(true);
+        layout.addView(cbTreatments);
+
+        final CheckBox cbStats = new CheckBox(this);
+        cbStats.setText(R.string.pdf_include_statistics);
+        cbStats.setChecked(true);
+        layout.addView(cbStats);
+
+        final ScrollView scrollView = new ScrollView(this);
+        scrollView.addView(layout);
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.export_pdf_report)
+                .setView(scrollView)
+                .setPositiveButton(R.string.done, (dialog, which) -> {
+                    final PdfExportConfig pdfConfig = new PdfExportConfig(
+                            startTime[0], endTime[0],
+                            pageSpinner.getSelectedItemPosition() + 1,
+                            cbEvents.isChecked(),
+                            cbTreatments.isChecked(),
+                            cbStats.isChecked());
+
+                    JoH.static_toast_short(gs(R.string.pdf_exporting));
+
+                    new AsyncTask<Void, Void, File>() {
+                        @Override
+                        protected File doInBackground(Void... params) {
+                            try {
+                                return new PdfReportRenderer(getBaseContext(), pdfConfig).render();
+                            } catch (Exception e) {
+                                UserError.Log.e("PdfExport", "PDF export failed: " + e.toString());
+                                return null;
+                            }
+                        }
+
+                        @Override
+                        protected void onPostExecute(File file) {
+                            if (file != null) {
+                                snackBar(R.string.share, getString(R.string.exported_to) + file.getAbsolutePath(),
+                                        makeSnackBarUriLauncher(Uri.fromFile(file), getString(R.string.share)), Home.this);
+                            } else {
+                                Toast.makeText(Home.this, gs(R.string.pdf_export_failed), Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    }.execute();
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
     public void showMapFromMenu(MenuItem myitem) {
         startActivity(new Intent(getApplicationContext(), MapsActivity.class));
     }
@@ -3607,6 +3766,202 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         });
         dialog.show();
+    }
+
+    // Event Log dialogs
+
+    private void showEventLogDialog() {
+        showEventLogDialog(JoH.tsl(), null);
+    }
+
+    private void showEventLogDialog(final long timestamp, final String existingUuid) {
+        final java.util.List<String> typeNames = UserEvent.getAllTypeNames();
+        final String[] eventNames = typeNames.toArray(new String[0]);
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.select_event_type);
+        builder.setItems(eventNames, (dialog, which) ->
+                showEventDescriptionDialog(UserEvent.getAllTypeCode(which), timestamp, existingUuid));
+        builder.setNegativeButton(R.string.cancel, null);
+        builder.show();
+    }
+
+    private void showEventDescriptionDialog(final int eventType, final long timestamp, final String existingUuid) {
+        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        dialogBuilder.setTitle(UserEvent.eventTypeName(eventType));
+
+        final ScrollView scrollView = new ScrollView(this);
+        final LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        final int pad = (int) (16 * getResources().getDisplayMetrics().density);
+        layout.setPadding(pad, pad, pad, 0);
+
+        // Sub-option spinners for Food, Exercise, Sleep
+        final Spinner spinner1;
+        final Spinner spinner2;
+        final String[] spinner1Values;
+        final String[] spinner2Values;
+        final String spinner1Key;
+        final String spinner2Key;
+
+        if (eventType == UserEvent.EventType.FOOD.code) {
+            spinner1Key = "mealSize";
+            spinner2Key = "mealType";
+            spinner1Values = new String[]{gs(R.string.meal_size_small), gs(R.string.meal_size_medium), gs(R.string.meal_size_large)};
+            spinner2Values = new String[]{gs(R.string.meal_type_fast_carbs), gs(R.string.meal_type_mixed), gs(R.string.meal_type_low_carb), gs(R.string.meal_type_high_fat)};
+
+            final TextView label1 = new TextView(this);
+            label1.setText(R.string.meal_size);
+            layout.addView(label1);
+            spinner1 = new Spinner(this);
+            spinner1.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, spinner1Values));
+            spinner1.setSelection(1); // default Medium
+            layout.addView(spinner1);
+
+            final TextView label2 = new TextView(this);
+            label2.setText(R.string.meal_type);
+            label2.setPadding(0, pad / 2, 0, 0);
+            layout.addView(label2);
+            spinner2 = new Spinner(this);
+            spinner2.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, spinner2Values));
+            spinner2.setSelection(1); // default Mixed
+            layout.addView(spinner2);
+        } else if (eventType == UserEvent.EventType.EXERCISE.code) {
+            spinner1Key = "exerciseType";
+            spinner2Key = "exerciseIntensity";
+            spinner1Values = new String[]{gs(R.string.exercise_type_cardio), gs(R.string.exercise_type_strength), gs(R.string.exercise_type_mixed)};
+            spinner2Values = new String[]{gs(R.string.exercise_intensity_low), gs(R.string.exercise_intensity_medium), gs(R.string.exercise_intensity_high)};
+
+            final TextView label1 = new TextView(this);
+            label1.setText(R.string.exercise_type);
+            layout.addView(label1);
+            spinner1 = new Spinner(this);
+            spinner1.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, spinner1Values));
+            layout.addView(spinner1);
+
+            final TextView label2 = new TextView(this);
+            label2.setText(R.string.exercise_intensity);
+            label2.setPadding(0, pad / 2, 0, 0);
+            layout.addView(label2);
+            spinner2 = new Spinner(this);
+            spinner2.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, spinner2Values));
+            spinner2.setSelection(1); // default Medium
+            layout.addView(spinner2);
+        } else if (eventType == UserEvent.EventType.SLEEP.code) {
+            spinner1Key = "sleepQuality";
+            spinner2Key = "sleepEvent";
+            spinner1Values = new String[]{gs(R.string.sleep_quality_poor), gs(R.string.sleep_quality_ok), gs(R.string.sleep_quality_good)};
+            spinner2Values = new String[]{gs(R.string.sleep_event_bedtime), gs(R.string.sleep_event_wakeup)};
+
+            final TextView label1 = new TextView(this);
+            label1.setText(R.string.sleep_quality);
+            layout.addView(label1);
+            spinner1 = new Spinner(this);
+            spinner1.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, spinner1Values));
+            spinner1.setSelection(1); // default OK
+            layout.addView(spinner1);
+
+            final TextView label2 = new TextView(this);
+            label2.setText(R.string.sleep_event);
+            label2.setPadding(0, pad / 2, 0, 0);
+            layout.addView(label2);
+            spinner2 = new Spinner(this);
+            spinner2.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, spinner2Values));
+            layout.addView(spinner2);
+        } else {
+            spinner1 = null;
+            spinner2 = null;
+            spinner1Values = null;
+            spinner2Values = null;
+            spinner1Key = null;
+            spinner2Key = null;
+        }
+
+        final EditText input = new EditText(this);
+        input.setHint(R.string.event_description_hint);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        input.setPadding(0, pad / 2, 0, 0);
+        layout.addView(input);
+
+        scrollView.addView(layout);
+        dialogBuilder.setView(scrollView);
+
+        // Pre-fill if editing
+        if (existingUuid != null) {
+            final UserEvent existing = UserEvent.byUUID(existingUuid);
+            if (existing != null) {
+                if (existing.description != null) input.setText(existing.description);
+                if (existing.details != null && spinner1 != null && spinner2 != null) {
+                    try {
+                        final JSONObject json = new JSONObject(existing.details);
+                        if (json.has(spinner1Key)) {
+                            final String val = json.getString(spinner1Key);
+                            for (int i = 0; i < spinner1Values.length; i++) {
+                                if (spinner1Values[i].equals(val)) {
+                                    spinner1.setSelection(i);
+                                    break;
+                                }
+                            }
+                        }
+                        if (json.has(spinner2Key)) {
+                            final String val = json.getString(spinner2Key);
+                            for (int i = 0; i < spinner2Values.length; i++) {
+                                if (spinner2Values[i].equals(val)) {
+                                    spinner2.setSelection(i);
+                                    break;
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        // ignore parse errors
+                    }
+                }
+            }
+        }
+
+        dialogBuilder.setPositiveButton(R.string.done, (dialog, which) -> {
+            final String description = input.getText().toString().trim();
+            String details = null;
+
+            if (spinner1 != null && spinner2 != null) {
+                try {
+                    final JSONObject json = new JSONObject();
+                    json.put(spinner1Key, spinner1Values[spinner1.getSelectedItemPosition()]);
+                    json.put(spinner2Key, spinner2Values[spinner2.getSelectedItemPosition()]);
+                    details = json.toString();
+                } catch (Exception e) {
+                    // ignore
+                }
+            }
+
+            if (existingUuid != null) {
+                UserEvent.update(existingUuid, eventType, description, details);
+            } else {
+                UserEvent.create(eventType, description, details, timestamp);
+            }
+            Home.staticRefreshBGCharts();
+            Home.snackBar(R.string.event_log,
+                    gs(R.string.event_saved) + ": " + UserEvent.eventTypeName(eventType),
+                    null, mActivity);
+        });
+
+        dialogBuilder.setNegativeButton(R.string.cancel, null);
+
+        if (existingUuid != null) {
+            dialogBuilder.setNeutralButton(R.string.delete_event, (dialog, which) -> {
+                UserEvent.deleteByUUID(existingUuid);
+                Home.staticRefreshBGCharts();
+                JoH.static_toast_short(gs(R.string.event_deleted));
+            });
+        }
+
+        dialogBuilder.show();
+    }
+
+    private void showEventEditDialog(final String uuid) {
+        final UserEvent event = UserEvent.byUUID(uuid);
+        if (event == null) return;
+        showEventDescriptionDialog(event.eventType, event.timestamp, uuid);
     }
 
     public void doBackFillBroadcast(MenuItem myitem) {
