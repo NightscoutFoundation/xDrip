@@ -6,17 +6,21 @@ import java.util.Date;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.WindowManager;
 
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
 
 import android.util.TypedValue;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.models.AlertType;
@@ -153,6 +157,12 @@ public class SnoozeActivity extends ActivityWithMenu {
 
 
     private final static String TAG = AlertPlayer.class.getSimpleName();
+    public static final String EXTRA_LAUNCHED_OVER_OTHER_APP = "launched_over_other_app";
+    private static final long VOLUME_BUTTON_DOUBLE_PRESS_WINDOW_MS = 1500;
+    private long volumeDownFirstPressTime = 0;
+    private long volumeUpFirstPressTime = 0;
+    private long volumeMuteFirstPressTime = 0;
+    private Toast volumeButtonToast = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,6 +170,20 @@ public class SnoozeActivity extends ActivityWithMenu {
         if (Home.get_holo()) { setTheme(R.style.OldAppThemeNoTitleBar); }
         JoH.fixActionBar(this);
         setContentView(R.layout.activity_snooze);
+
+        // Show over the lock screen when an alarm is active so volume buttons
+        // can snooze without requiring the user to unlock the device first.
+        if (ActiveBgAlert.getOnly() != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+                setShowWhenLocked(true);
+                setTurnScreenOn(true);
+            } else {
+                getWindow().addFlags(
+                        WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                        | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+            }
+        }
+
         alertStatus = (TextView) findViewById(R.id.alert_status);
         snoozeValue = (NumberPicker) findViewById(R.id.snooze);
 
@@ -351,7 +375,7 @@ public class SnoozeActivity extends ActivityWithMenu {
             return;
         }
         if(aba != null && activeBgAlert== null) {
-            Log.wtf(TAG, "ERRRO displayStatus: aba != null, but activeBgAlert == null exiting...");
+            alertStatus.setText(getString(R.string.test_alert_passed));
             return;
         }
         long now = new Date().getTime();
@@ -374,8 +398,12 @@ public class SnoozeActivity extends ActivityWithMenu {
         } else {
             sendRemoteSnooze.setVisibility(View.GONE);
             if(!aba.ready_to_alarm()) {
-                status = MessageFormat.format("Active alert exists named \"{0}\" {1,choice,0#Alert will rerise at|1#Alert snoozed until} {2,time} ({3} minutes left)",
-                        activeBgAlert.name, aba.is_snoozed ? 1 : 0 , new Date(aba.next_alert_at),(aba.next_alert_at - now) / 60000);
+                final long msLeft = aba.next_alert_at - now;
+                final String timeLeft = msLeft < 120000
+                        ? (msLeft / 1000) + " seconds left"
+                        : (msLeft / 60000) + " minutes left";
+                status = MessageFormat.format("Active alert exists named \"{0}\" {1,choice,0#Alert will rerise at|1#Alert snoozed until} {2,time} ({3})",
+                        activeBgAlert.name, aba.is_snoozed ? 1 : 0, new Date(aba.next_alert_at), timeLeft);
             } else {
                 status = getString(R.string.active_alert_exists_named)+" \"" + activeBgAlert.name + "\" "+getString(R.string.bracket_not_snoozed);
             }
@@ -402,6 +430,105 @@ public class SnoozeActivity extends ActivityWithMenu {
 
         alertStatus.setText(status);
 
+    }
+
+    private void showVolumeButtonToast(final String message) {
+        if (volumeButtonToast != null) {
+            volumeButtonToast.cancel();
+        }
+        volumeButtonToast = Toast.makeText(this, message, Toast.LENGTH_LONG);
+        volumeButtonToast.show();
+    }
+
+    private void doSnoozeFromVolumeButton(final int toastResId, final String logMessage) {
+        int snooze = 30;
+        final AlertType alertType = ActiveBgAlert.alertTypegetOnly();
+        if (alertType != null) {
+            snooze = alertType.default_snooze != 0
+                    ? alertType.default_snooze
+                    : getDefaultSnooze(alertType.above);
+        }
+        AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), snooze);
+        recheckAlerts();
+        JoH.static_toast_long(getString(toastResId));
+        Log.ueh(TAG, logMessage);
+        // Only move xDrip to the background when SnoozeActivity was launched over
+        // another app (screen on). If xDrip was already in the foreground, finish()
+        // alone is correct — moveTaskToBack() would incorrectly hide xDrip.
+        if (getIntent().getBooleanExtra(EXTRA_LAUNCHED_OVER_OTHER_APP, false)) {
+            moveTaskToBack(true);
+        }
+        finish();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (event.getKeyCode()) {
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                if (Pref.getBooleanDefaultFalse("buttons_silence_alert")) {
+                    if (ActiveBgAlert.getOnly() != null) {
+                        final long now = System.currentTimeMillis();
+                        if (now - volumeDownFirstPressTime <= VOLUME_BUTTON_DOUBLE_PRESS_WINDOW_MS) {
+                            volumeDownFirstPressTime = 0;
+                            doSnoozeFromVolumeButton(R.string.snoozing_due_volume_down_button_press,
+                                    "Snoozing alert due to double volume DOWN button press");
+                        } else {
+                            final boolean otherActive = now - volumeUpFirstPressTime <= VOLUME_BUTTON_DOUBLE_PRESS_WINDOW_MS
+                                    || now - volumeMuteFirstPressTime <= VOLUME_BUTTON_DOUBLE_PRESS_WINDOW_MS;
+                            volumeDownFirstPressTime = now;
+                            volumeUpFirstPressTime = 0;
+                            volumeMuteFirstPressTime = 0;
+                            showVolumeButtonToast(getString(otherActive
+                                    ? R.string.volume_button_wrong_button
+                                    : R.string.volume_down_confirm_snooze));
+                        }
+                    }
+                }
+                return true;
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                if (Pref.getBooleanDefaultFalse("buttons_silence_alert")) {
+                    if (ActiveBgAlert.getOnly() != null) {
+                        final long now = System.currentTimeMillis();
+                        if (now - volumeUpFirstPressTime <= VOLUME_BUTTON_DOUBLE_PRESS_WINDOW_MS) {
+                            volumeUpFirstPressTime = 0;
+                            doSnoozeFromVolumeButton(R.string.snoozing_due_volume_up_button_press,
+                                    "Snoozing alert due to double volume UP button press");
+                        } else {
+                            final boolean otherActive = now - volumeDownFirstPressTime <= VOLUME_BUTTON_DOUBLE_PRESS_WINDOW_MS
+                                    || now - volumeMuteFirstPressTime <= VOLUME_BUTTON_DOUBLE_PRESS_WINDOW_MS;
+                            volumeUpFirstPressTime = now;
+                            volumeDownFirstPressTime = 0;
+                            volumeMuteFirstPressTime = 0;
+                            showVolumeButtonToast(getString(otherActive
+                                    ? R.string.volume_button_wrong_button
+                                    : R.string.volume_up_confirm_snooze));
+                        }
+                    }
+                }
+                return true;
+            case KeyEvent.KEYCODE_VOLUME_MUTE:
+                if (Pref.getBooleanDefaultFalse("buttons_silence_alert")) {
+                    if (ActiveBgAlert.getOnly() != null) {
+                        final long now = System.currentTimeMillis();
+                        if (now - volumeMuteFirstPressTime <= VOLUME_BUTTON_DOUBLE_PRESS_WINDOW_MS) {
+                            volumeMuteFirstPressTime = 0;
+                            doSnoozeFromVolumeButton(R.string.snoozing_due_mute_button_press,
+                                    "Snoozing alert due to double MUTE button press");
+                        } else {
+                            final boolean otherActive = now - volumeDownFirstPressTime <= VOLUME_BUTTON_DOUBLE_PRESS_WINDOW_MS
+                                    || now - volumeUpFirstPressTime <= VOLUME_BUTTON_DOUBLE_PRESS_WINDOW_MS;
+                            volumeMuteFirstPressTime = now;
+                            volumeDownFirstPressTime = 0;
+                            volumeUpFirstPressTime = 0;
+                            showVolumeButtonToast(getString(otherActive
+                                    ? R.string.volume_button_wrong_button
+                                    : R.string.volume_button_confirm_snooze));
+                        }
+                    }
+                }
+                return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     public void setSendRemoteSnoozeOnClick(View v) {

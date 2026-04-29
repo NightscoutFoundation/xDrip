@@ -61,6 +61,13 @@
 
                 <CheckBoxPreference
                     android:defaultValue="false"
+                    android:dependency="buttons_silence_alert"
+                    android:key="volume_button_snooze_wake_screen"
+                    android:summary="@string/volume_button_snooze_wake_screen_summary"
+                    android:title="@string/volume_button_snooze_wake_screen_title" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
                     android:key="show_buttons_in_alerts"
                     android:summary="@string/show_action_buttons_within_alerts"
                     android:title="@string/alert_buttons" />
@@ -418,5 +425,3 @@
         </PreferenceCategory>
     </PreferenceScreen>
 </PreferenceScreen>
-
-

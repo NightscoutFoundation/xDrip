@@ -6,11 +6,14 @@ import static com.eveningoutpost.dexdrip.models.JoH.setMediaDataSource;
 import static com.eveningoutpost.dexdrip.models.JoH.stopAndReleasePlayer;
 import static com.eveningoutpost.dexdrip.receiver.InfoContentProvider.ping;
 
+import android.app.ActivityManager;
 import android.app.Notification;
+import android.app.KeyguardManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.provider.Settings;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -23,6 +26,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.SnoozeActivity;
 import com.eveningoutpost.dexdrip.models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.models.AlertType;
 import com.eveningoutpost.dexdrip.models.JoH;
@@ -570,10 +574,78 @@ public class AlertPlayer {
 
             boolean forceSpeaker = alert.force_speaker;
 
-            if (overrideSilent) {
+            if (overrideSilent || Pref.getBooleanDefaultFalse("volume_button_snooze_wake_screen")) {
                 UserError.Log.d(TAG, "Setting full screen intent");
                 builder.setCategory(NotificationCompat.CATEGORY_ALARM);
-                builder.setFullScreenIntent(notificationIntent(context, new Intent(context, Home.class)), true);
+                builder.setFullScreenIntent(notificationIntent(context, new Intent(context, SnoozeActivity.class)), true);
+                // IMPORTANCE_HIGH is required for setFullScreenIntent to activate on Android 8+.
+                // Without it the system silently downgrades the notification and never launches
+                // the full screen activity.
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    final NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                    final android.app.NotificationChannel ch = nm.getNotificationChannel(NotificationChannels.BG_ALERT_CHANNEL);
+                    if (ch != null && ch.getImportance() < NotificationManager.IMPORTANCE_HIGH) {
+                        ch.setImportance(NotificationManager.IMPORTANCE_HIGH);
+                        nm.createNotificationChannel(ch);
+                    }
+                }
+            }
+
+            // When the screen is on, start SnoozeActivity directly so it comes to the
+            // foreground regardless of what is on screen. This applies whenever xDrip is
+            // already in the foreground (e.g. testing an alert from Settings) or when
+            // override_silent_mode / volume_button_snooze_wake_screen is enabled.
+            final PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+            if (pm != null && pm.isInteractive()) {
+                final KeyguardManager km = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
+                final boolean locked = km != null && km.isKeyguardLocked();
+                if (locked) {
+                    // Screen is on but locked: only launch when override_silent_mode or the
+                    // wake-screen preference is enabled, since setFullScreenIntent handles this
+                    // case and we don't want to unexpectedly interrupt the lock screen otherwise.
+                    if (overrideSilent || Pref.getBooleanDefaultFalse("volume_button_snooze_wake_screen")) {
+                        UserError.Log.d(TAG, "Screen on + locked — starting SnoozeActivity directly");
+                        final Intent launch = new Intent(context, SnoozeActivity.class);
+                        launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        launch.putExtra(SnoozeActivity.EXTRA_LAUNCHED_OVER_OTHER_APP, true);
+                        context.startActivity(launch);
+                    }
+                } else {
+                    // Screen is on and unlocked. Determine whether xDrip is already the
+                    // foreground app. If so, always show SnoozeActivity — no permission needed
+                    // and no preference check required (covers testing alerts from Settings).
+                    // If another app is in the foreground, SYSTEM_ALERT_WINDOW is required and
+                    // the wake-screen preference must be enabled.
+                    boolean xdripAlreadyForeground = false;
+                    final ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+                    if (am != null) {
+                        final java.util.List<ActivityManager.RunningAppProcessInfo> procs = am.getRunningAppProcesses();
+                        if (procs != null) {
+                            for (ActivityManager.RunningAppProcessInfo p : procs) {
+                                if (p.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+                                        && p.processName.equals(context.getPackageName())) {
+                                    xdripAlreadyForeground = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (xdripAlreadyForeground) {
+                        UserError.Log.d(TAG, "Screen on + unlocked + xDrip foreground — starting SnoozeActivity directly");
+                        final Intent launch = new Intent(context, SnoozeActivity.class);
+                        launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        context.startActivity(launch);
+                    } else if ((overrideSilent || Pref.getBooleanDefaultFalse("volume_button_snooze_wake_screen"))
+                            && Settings.canDrawOverlays(context)) {
+                        UserError.Log.d(TAG, "Screen on + unlocked + overlay permission — starting SnoozeActivity over other app");
+                        final Intent launch = new Intent(context, SnoozeActivity.class);
+                        launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        launch.putExtra(SnoozeActivity.EXTRA_LAUNCHED_OVER_OTHER_APP, true);
+                        context.startActivity(launch);
+                    } else if (overrideSilent || Pref.getBooleanDefaultFalse("volume_button_snooze_wake_screen")) {
+                        UserError.Log.d(TAG, "Screen on + unlocked — no overlay permission, falling back to heads-up notification");
+                    }
+                }
             }
 
             if (notSilencedDueToCall()) {
