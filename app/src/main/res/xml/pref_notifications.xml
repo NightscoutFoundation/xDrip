@@ -154,6 +154,117 @@
                 </PreferenceScreen>
 
             </PreferenceScreen>
+            <PreferenceScreen
+                android:key="persistent_high_alert_page"
+                android:title="@string/persistent_high_alert">
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:key="persistent_high_alert_enabled"
+                    android:summary="@string/alarm_if_above_high_value"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="@string/persistent_high_alert_enable" />
+                <SwitchPreference
+                    android:defaultValue="true"
+                    android:disableDependentsState="true"
+                    android:key="high_value_is_persistent_high_threshold"
+                    android:summary="@string/summary_persistent_high_threshold_link"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="@string/title_persistent_high_threshold_link" />
+                <EditTextPreference
+                    android:defaultValue="170"
+                    android:dependency="high_value_is_persistent_high_threshold"
+                    android:inputType="numberDecimal"
+                    android:key="persistent_high_threshold"
+                    android:title="@string/title_persistent_high_threshold" />
+                <EditTextPreference
+                    android:defaultValue="60"
+                    android:dependency="persistent_high_alert_enabled"
+                    android:inputType="number"
+                    android:key="persistent_high_threshold_mins"
+                    android:numeric="integer"
+                    android:title="@string/for_longer_than_minutes" />
+                <EditTextPreference
+                    android:defaultValue="20"
+                    android:dependency="persistent_high_alert_enabled"
+                    android:inputType="number"
+                    android:key="persistent_high_repeat_mins"
+                    android:numeric="integer"
+                    android:title="@string/persistent_repeat_max" />
+                <RingtonePreference
+                    android:defaultValue="content://settings/system/notification_sound"
+                    android:dependency="persistent_high_alert_enabled"
+                    android:key="persistent_high_alert_sound"
+                    android:ringtoneType="all"
+                    android:showSilent="true"
+                    android:summary="@string/choose_sound_used_for_persistent_high_alarm"
+                    android:title="@string/persistent_high_sound" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="persistent_high_alert_override_silent"
+                    android:title="@string/override_silent_mode" />
+            </PreferenceScreen>
+            <PreferenceScreen
+                android:key="@string/forecasted_low_alert"
+                android:title="@string/forecasted_low_alert">
+                <SwitchPreference
+                    android:defaultValue="true"
+                    android:key="predict_lows"
+                    android:summary="@string/extrapolate_data_to_try_to_predict_lows"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="@string/forecast_lows" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="predict_lows"
+                    android:key="predict_lows_alarm"
+                    android:summary="@string/notify_when_predicted_low_time_reaches_threshold"
+                    android:title="@string/raise_alarm_on_forecast_low" />
+                <SwitchPreference
+                    android:defaultValue="true"
+                    android:disableDependentsState="true"
+                    android:key="low_value_is_forecast_low_threshold"
+                    android:summary="@string/summary_forecast_low_threshold_link"
+                    android:title="@string/title_forecast_low_threshold_link" />
+                <EditTextPreference
+                    android:defaultValue="70"
+                    android:dependency="low_value_is_forecast_low_threshold"
+                    android:inputType="numberDecimal"
+                    android:key="forecast_low_threshold"
+                    android:title="@string/title_forecast_low_threshold" />
+                <EditTextPreference
+                    android:defaultValue="40"
+                    android:dependency="predict_lows_alarm"
+                    android:digits="0123456789"
+                    android:inputType="number"
+                    android:key="low_predict_alarm_level"
+                    android:summary=""
+                    android:title="@string/alarm_at_forecasted_low_mins" />
+                <RingtonePreference
+                    android:defaultValue="content://settings/system/notification_sound"
+                    android:dependency="predict_lows"
+                    android:key="bg_predict_alert_sound"
+                    android:ringtoneType="all"
+                    android:showSilent="true"
+                    android:summary="@string/choose_sound_used_for_predicted_low_alarm"
+                    android:title="@string/predicted_low_sound" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="bg_predict_alert_override_silent"
+                    android:title="@string/override_silent_mode" />
+            </PreferenceScreen>
+            <PreferenceScreen
+                android:key="@string/title_sens_expiry"
+                android:title="@string/title_sens_expiry">
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:key="alert_raise_for_sensor_expiry"
+                    android:summary="@string/summary_sens_expiry_notify"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="@string/title_sens_expiry_notify" />
+            </PreferenceScreen>
 
 
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
@@ -299,121 +410,6 @@
                         android:key="other_alerts_override_silent"
                         android:title="@string/override_silent_mode_these" />
                 </PreferenceCategory>
-            </PreferenceScreen>
-            <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-                android:key="smart_alerts_screen"
-                android:title="@string/extra_alerts_xdrip_plus">
-                <PreferenceScreen
-                    android:key="persistent_high_alert_page"
-                    android:title="@string/persistent_high_alert">
-                    <SwitchPreference
-                        android:defaultValue="false"
-                        android:key="persistent_high_alert_enabled"
-                        android:summary="@string/alarm_if_above_high_value"
-                        android:switchTextOff="@string/short_off_text_for_switches"
-                        android:switchTextOn="@string/short_on_text_for_switches"
-                        android:title="@string/persistent_high_alert_enable" />
-                    <SwitchPreference
-                        android:defaultValue="true"
-                        android:disableDependentsState="true"
-                        android:key="high_value_is_persistent_high_threshold"
-                        android:summary="@string/summary_persistent_high_threshold_link"
-                        android:switchTextOff="@string/short_off_text_for_switches"
-                        android:switchTextOn="@string/short_on_text_for_switches"
-                        android:title="@string/title_persistent_high_threshold_link" />
-                    <EditTextPreference
-                        android:defaultValue="170"
-                        android:dependency="high_value_is_persistent_high_threshold"
-                        android:inputType="numberDecimal"
-                        android:key="persistent_high_threshold"
-                        android:title="@string/title_persistent_high_threshold" />
-                    <EditTextPreference
-                        android:defaultValue="60"
-                        android:dependency="persistent_high_alert_enabled"
-                        android:inputType="number"
-                        android:key="persistent_high_threshold_mins"
-                        android:numeric="integer"
-                        android:title="@string/for_longer_than_minutes" />
-                    <EditTextPreference
-                        android:defaultValue="20"
-                        android:dependency="persistent_high_alert_enabled"
-                        android:inputType="number"
-                        android:key="persistent_high_repeat_mins"
-                        android:numeric="integer"
-                        android:title="@string/persistent_repeat_max" />
-                    <RingtonePreference
-                        android:defaultValue="content://settings/system/notification_sound"
-                        android:dependency="persistent_high_alert_enabled"
-                        android:key="persistent_high_alert_sound"
-                        android:ringtoneType="all"
-                        android:showSilent="true"
-                        android:summary="@string/choose_sound_used_for_persistent_high_alarm"
-                        android:title="@string/persistent_high_sound" />
-                    <CheckBoxPreference
-                        android:defaultValue="false"
-                        android:key="persistent_high_alert_override_silent"
-                        android:title="@string/override_silent_mode" />
-                </PreferenceScreen>
-                <PreferenceScreen
-                    android:key="@string/forecasted_low_alert"
-                    android:title="@string/forecasted_low_alert">
-                    <SwitchPreference
-                        android:defaultValue="true"
-                        android:key="predict_lows"
-                        android:summary="@string/extrapolate_data_to_try_to_predict_lows"
-                        android:switchTextOff="@string/short_off_text_for_switches"
-                        android:switchTextOn="@string/short_on_text_for_switches"
-                        android:title="@string/forecast_lows" />
-                    <CheckBoxPreference
-                        android:defaultValue="false"
-                        android:dependency="predict_lows"
-                        android:key="predict_lows_alarm"
-                        android:summary="@string/notify_when_predicted_low_time_reaches_threshold"
-                        android:title="@string/raise_alarm_on_forecast_low" />
-                    <SwitchPreference
-                        android:defaultValue="true"
-                        android:disableDependentsState="true"
-                        android:key="low_value_is_forecast_low_threshold"
-                        android:summary="@string/summary_forecast_low_threshold_link"
-                        android:title="@string/title_forecast_low_threshold_link" />
-                    <EditTextPreference
-                        android:defaultValue="70"
-                        android:dependency="low_value_is_forecast_low_threshold"
-                        android:inputType="numberDecimal"
-                        android:key="forecast_low_threshold"
-                        android:title="@string/title_forecast_low_threshold" />
-                    <EditTextPreference
-                        android:defaultValue="40"
-                        android:dependency="predict_lows_alarm"
-                        android:digits="0123456789"
-                        android:inputType="number"
-                        android:key="low_predict_alarm_level"
-                        android:summary=""
-                        android:title="@string/alarm_at_forecasted_low_mins" />
-                    <RingtonePreference
-                        android:defaultValue="content://settings/system/notification_sound"
-                        android:dependency="predict_lows"
-                        android:key="bg_predict_alert_sound"
-                        android:ringtoneType="all"
-                        android:showSilent="true"
-                        android:summary="@string/choose_sound_used_for_predicted_low_alarm"
-                        android:title="@string/predicted_low_sound" />
-                    <CheckBoxPreference
-                        android:defaultValue="false"
-                        android:key="bg_predict_alert_override_silent"
-                        android:title="@string/override_silent_mode" />
-                </PreferenceScreen>
-                <PreferenceScreen
-                    android:key="@string/title_sens_expiry"
-                    android:title="@string/title_sens_expiry">
-                    <SwitchPreference
-                        android:defaultValue="false"
-                        android:key="alert_raise_for_sensor_expiry"
-                        android:summary="@string/summary_sens_expiry_notify"
-                        android:switchTextOff="@string/short_off_text_for_switches"
-                        android:switchTextOn="@string/short_on_text_for_switches"
-                        android:title="@string/title_sens_expiry_notify" />
-                </PreferenceScreen>
             </PreferenceScreen>
         </PreferenceCategory>
     </PreferenceScreen>
