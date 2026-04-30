@@ -105,6 +105,44 @@ public class NightscoutFollowIntegrationTest extends RobolectricTestWithConfig {
     }
 
     @Test
+    public void getEntriesSince_sendsDateFilterAndCountAndRrParams() throws Exception {
+        // :: Setup
+        server.enqueue(new MockResponse()
+                .setBody(ENTRIES_JSON)
+                .addHeader("Content-Type", "application/json"));
+
+        // :: Act
+        api.getEntriesSince("test-secret", 288, 1773581680000L, "12345").execute();
+
+        // :: Verify
+        RecordedRequest request = server.takeRequest();
+        String path = java.net.URLDecoder.decode(request.getPath(), "UTF-8");
+        assertThat(path).contains("/api/v1/entries.json");
+        assertThat(path).contains("count=288");
+        assertThat(path).contains("find[date][$gt]=1773581680000");
+        assertThat(path).contains("rr=12345");
+        assertThat(request.getHeader("api-secret")).isEqualTo("test-secret");
+    }
+
+    @Test
+    public void getEntriesSince_parsesEntryArray() throws Exception {
+        // :: Setup
+        server.enqueue(new MockResponse()
+                .setBody(ENTRIES_JSON)
+                .addHeader("Content-Type", "application/json"));
+
+        // :: Act
+        Response<List<Entry>> response = api.getEntriesSince("test-secret", 288, 1773581680000L, "12345").execute();
+
+        // :: Verify
+        assertThat(response.isSuccessful()).isTrue();
+        List<Entry> entries = response.body();
+        assertThat(entries).hasSize(2);
+        assertThat(entries.get(0).sgv).isEqualTo(180);
+        assertThat(entries.get(1).sgv).isEqualTo(204);
+    }
+
+    @Test
     public void getTreatments_getsWithApiSecret() throws Exception {
         // :: Setup
         server.enqueue(new MockResponse()
