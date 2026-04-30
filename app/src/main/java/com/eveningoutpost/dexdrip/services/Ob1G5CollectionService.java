@@ -1635,6 +1635,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
 
     private void onServicesDiscovered(RxBleDeviceServices services) {
+
         for (BluetoothGattService service : services.getBluetoothGattServices()) {
             if (d) UserError.Log.d(TAG, "Service: " + getUUIDName(service.getUuid()));
             if (service.getUuid().equals(BluetoothServices.CGMService)) {
