@@ -580,11 +580,14 @@ public class AlertPlayer {
                 builder.setFullScreenIntent(notificationIntent(context, new Intent(context, SnoozeActivity.class)), true);
                 // IMPORTANCE_HIGH is required for setFullScreenIntent to activate on Android 8+.
                 // Without it the system silently downgrades the notification and never launches
-                // the full screen activity.
+                // the full screen activity. The upgrade runs whenever setFullScreenIntent is set
+                // (override_silent_mode or volume_button_snooze_wake_screen). Both settings
+                // represent an explicit user opt-in to interruptive alert behaviour.
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                     final NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
                     final android.app.NotificationChannel ch = nm.getNotificationChannel(NotificationChannels.BG_ALERT_CHANNEL);
                     if (ch != null && ch.getImportance() < NotificationManager.IMPORTANCE_HIGH) {
+                        UserError.Log.ueh(TAG, "Upgrading BG alert channel importance to HIGH for full screen intent");
                         ch.setImportance(NotificationManager.IMPORTANCE_HIGH);
                         nm.createNotificationChannel(ch);
                     }
@@ -608,7 +611,11 @@ public class AlertPlayer {
                         final Intent launch = new Intent(context, SnoozeActivity.class);
                         launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         launch.putExtra(SnoozeActivity.EXTRA_LAUNCHED_OVER_OTHER_APP, true);
-                        context.startActivity(launch);
+                        try {
+                            context.startActivity(launch);
+                        } catch (Exception e) {
+                            UserError.Log.e(TAG, "Failed to start SnoozeActivity (locked): " + e);
+                        }
                     }
                 } else {
                     // Screen is on and unlocked. Determine whether xDrip is already the
@@ -634,14 +641,22 @@ public class AlertPlayer {
                         UserError.Log.d(TAG, "Screen on + unlocked + xDrip foreground — starting SnoozeActivity directly");
                         final Intent launch = new Intent(context, SnoozeActivity.class);
                         launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        context.startActivity(launch);
+                        try {
+                            context.startActivity(launch);
+                        } catch (Exception e) {
+                            UserError.Log.e(TAG, "Failed to start SnoozeActivity (foreground): " + e);
+                        }
                     } else if ((overrideSilent || Pref.getBooleanDefaultFalse("volume_button_snooze_wake_screen"))
                             && Settings.canDrawOverlays(context)) {
                         UserError.Log.d(TAG, "Screen on + unlocked + overlay permission — starting SnoozeActivity over other app");
                         final Intent launch = new Intent(context, SnoozeActivity.class);
                         launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         launch.putExtra(SnoozeActivity.EXTRA_LAUNCHED_OVER_OTHER_APP, true);
-                        context.startActivity(launch);
+                        try {
+                            context.startActivity(launch);
+                        } catch (Exception e) {
+                            UserError.Log.e(TAG, "Failed to start SnoozeActivity (overlay): " + e);
+                        }
                     } else if (overrideSilent || Pref.getBooleanDefaultFalse("volume_button_snooze_wake_screen")) {
                         UserError.Log.d(TAG, "Screen on + unlocked — no overlay permission, falling back to heads-up notification");
                     }
