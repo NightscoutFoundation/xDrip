@@ -53,6 +53,11 @@ public class ActiveBgAlert extends Model {
         return activeBgAlert != null && !activeBgAlert.is_snoozed;
     }
 
+    public static boolean currentlySnoozed() {
+        final ActiveBgAlert aba = getOnly();
+        return aba != null && aba.is_snoozed;
+    }
+
     public static boolean alertSnoozeOver() {
         ActiveBgAlert activeBgAlert = getOnly();
         if (activeBgAlert == null) {
