@@ -37,6 +37,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.models.AlertType;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
@@ -575,7 +576,12 @@ public class EditAlertActivity extends ActivityWithMenu {
                             if (uuid == null) {
                                 Log.wtf(TAG, "Error remove pressed, while we were adding an alert");
                             } else {
+                                final ActiveBgAlert aba = ActiveBgAlert.getOnly();
+                                if (aba != null && uuid.equals(aba.alert_uuid)) {
+                                    AlertPlayer.getPlayer().stopAlert(mContext, true, false);
+                                }
                                 AlertType.remove_alert(uuid);
+                                SnoozeActivity.recheckAlerts();
                                 startWatchUpdaterService(mContext, WatchUpdaterService.ACTION_SYNC_ALERTTYPE, TAG);
                             }
                             Intent returnIntent = new Intent();
