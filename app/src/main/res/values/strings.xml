@@ -1803,7 +1803,7 @@
     <string name="snoozing_due_mute_button_press">Snoozing alert due to MUTE button press</string>
     <string name="volume_button_wrong_button">Double press the same volume button to snooze</string>
     <string name="notification_alert_snoozed_until">Alert %1$s snoozed until %2$s</string>
-    <string name="test_alert_passed">Test scenario passed, no further action</string>
+    <string name="test_alert_passed">Alert type not found</string>
     <string name="share_database">Share database...</string>
     <string name="title_motion_detection_warning">Motion Detection Warning</string>
     <string name="message_motion_detection_warning">Activity Motion Detection is experimental and only some phones are compatible. Its main purpose is to detect vehicle mode.\n\nIn tests it seems higher end phones are the most likely to properly support the sensors needed for it to work.  It may also drain your battery.\n\nFor exercise related movement, Smartwatch step counters work better.</string>
