@@ -8,6 +8,7 @@ import android.os.Looper;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 
 import org.junit.After;
@@ -82,7 +83,7 @@ public class NightscoutFollowEntriesWorkTest extends RobolectricTestWithConfig {
     @Test
     public void work_usesDateFilter_whenLastReadingExists() throws Exception {
         // :: Setup
-        final long lastTs = 1773581680168L;
+        final long lastTs = JoH.tsl() - 5 * Constants.MINUTE_IN_MS;
         insertReading(lastTs);
         server.setDispatcher(new okhttp3.mockwebserver.Dispatcher() {
             @Override
@@ -108,7 +109,7 @@ public class NightscoutFollowEntriesWorkTest extends RobolectricTestWithConfig {
     @Test
     public void work_includesSafetyCountWithDateFilter() throws Exception {
         // :: Setup
-        insertReading(1773581680168L);
+        insertReading(JoH.tsl() - 5 * Constants.MINUTE_IN_MS);
         server.setDispatcher(new okhttp3.mockwebserver.Dispatcher() {
             @Override
             public MockResponse dispatch(RecordedRequest request) {
@@ -127,6 +128,64 @@ public class NightscoutFollowEntriesWorkTest extends RobolectricTestWithConfig {
                 .findFirst()
                 .orElse("");
         assertThat(entriesPath).contains("count=");
+    }
+
+    // ===== Safety limit is fixed 2880 (24h at 1-min × 2) ====================================
+
+    @Test
+    public void work_safetyLimitIs2880_whenLastReadingExists() throws Exception {
+        // :: Setup
+        insertReading(JoH.tsl() - 5 * Constants.MINUTE_IN_MS);
+        server.setDispatcher(new okhttp3.mockwebserver.Dispatcher() {
+            @Override
+            public MockResponse dispatch(RecordedRequest request) {
+                return new MockResponse().setBody("[]");
+            }
+        });
+
+        // :: Act
+        NightscoutFollow.work(false);
+        awaitCallbacks();
+
+        // :: Verify — safety count is exactly 2880 regardless of sample period
+        List<String> paths = drainRequestPaths();
+        String entriesPath = paths.stream()
+                .filter(p -> p.contains("entries"))
+                .findFirst()
+                .orElse("");
+        assertThat(entriesPath).contains("count=2880");
+    }
+
+    // ===== 24-hour time cap on date filter ===================================================
+
+    @Test
+    public void work_dateFilterCapsAt24Hours_whenLastReadingIsOlderThan24Hours() throws Exception {
+        // :: Setup — last reading 30 hours old
+        final long thirtyHoursAgo = JoH.tsl() - 30 * Constants.HOUR_IN_MS;
+        final long expectedCutoffFloor = JoH.tsl() - Constants.DAY_IN_MS - 2000L;
+        insertReading(thirtyHoursAgo);
+        server.setDispatcher(new okhttp3.mockwebserver.Dispatcher() {
+            @Override
+            public MockResponse dispatch(RecordedRequest request) {
+                return new MockResponse().setBody("[]");
+            }
+        });
+
+        // :: Act
+        NightscoutFollow.work(false);
+        awaitCallbacks();
+
+        // :: Verify — date filter uses ~now-24h, not the 30h-old reading timestamp
+        List<String> paths = drainRequestPaths();
+        String entriesPath = paths.stream()
+                .filter(p -> p.contains("entries"))
+                .findFirst()
+                .orElse("");
+        String decoded = URLDecoder.decode(entriesPath, "UTF-8");
+        String afterGt = decoded.substring(decoded.indexOf("find[date][$gt]=") + "find[date][$gt]=".length());
+        long actualCutoff = Long.parseLong(afterGt.split("&")[0]);
+        assertThat(actualCutoff).isGreaterThan(thirtyHoursAgo);
+        assertThat(actualCutoff).isAtLeast(expectedCutoffFloor);
     }
 
     // ===== Count-only on first run (no prior readings) =======================================

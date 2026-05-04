@@ -26,7 +26,6 @@ import retrofit2.http.Headers;
 import retrofit2.http.Query;
 
 import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
-import static com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder.DEXCOM_PERIOD;
 import static com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollowService.msg;
 
 /**
@@ -106,11 +105,12 @@ public class NightscoutFollow {
         if (!emptyString(urlString)) {
             try {
                 final BgReading last = BgReading.last(true);
-                final long sinceMs = (last != null) ? last.timestamp : 0;
-                final int safetyLimit = (int) (Constants.DAY_IN_MS / DEXCOM_PERIOD);
-                if (sinceMs > 0) {
-                    UserError.Log.d(TAG, "Fetching entries since: " + sinceMs + " (limit " + safetyLimit + ")");
-                    getService().getEntriesSince(session.url.getHashedSecret(), safetyLimit, sinceMs, JoH.tsl() + "").enqueue(session.entriesCallback);
+                final long lastTs = (last != null) ? last.timestamp : 0;
+                if (lastTs > 0) {
+                    final long cutoff = Math.max(lastTs, JoH.tsl() - Constants.DAY_IN_MS);
+                    final int safetyLimit = 2 * 24 * 60; // 2× headroom: fits 24h at any upload rate
+                    UserError.Log.d(TAG, "Fetching entries since: " + cutoff + " (limit " + safetyLimit + ")");
+                    getService().getEntriesSince(session.url.getHashedSecret(), safetyLimit, cutoff, JoH.tsl() + "").enqueue(session.entriesCallback);
                 } else {
                     UserError.Log.d(TAG, "No prior reading - fetching last 10 entries");
                     getService().getEntries(session.url.getHashedSecret(), 10, JoH.tsl() + "").enqueue(session.entriesCallback);
