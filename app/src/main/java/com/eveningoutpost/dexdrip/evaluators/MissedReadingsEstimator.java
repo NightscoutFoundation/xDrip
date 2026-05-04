@@ -5,8 +5,7 @@ package com.eveningoutpost.dexdrip.evaluators;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
-
-import static com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder.DEXCOM_PERIOD;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 public class MissedReadingsEstimator {
 
@@ -14,7 +13,7 @@ public class MissedReadingsEstimator {
 
         final BgReading bgReading = BgReading.last();
         final long since = bgReading != null ? JoH.msSince(bgReading.timestamp) : Constants.DAY_IN_MS;
-        return (int) (since / DEXCOM_PERIOD);
+        return (int) (since / DexCollectionType.getCurrentSamplePeriod());
     }
 
 }
