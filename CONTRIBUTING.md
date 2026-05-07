@@ -51,7 +51,7 @@ AI can be a useful tool, especially for accelerating changes which might be meni
 
 # Translations
 
-Please use [xDrip+ on Crowdin](https://crowdin.com/project/xdrip) if you have any questions about translations, or like to add a language or contribute to an existing language. 
+Please use [xDrip on Crowdin](https://crowdin.com/project/xdrip) if you have any questions about translations, or like to add a language or contribute to an existing language. 
 
 ___
 Nightscout xDrip is maintained by volunteers.

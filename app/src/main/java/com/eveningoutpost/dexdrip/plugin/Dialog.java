@@ -51,7 +51,7 @@ public class Dialog {
         if (txIdMatch(txId)) {
           val plugin = Registry.get("keks");
             if (!Consent.isGiven(plugin)) {
-                runOnUiThread(() -> ask(activity, plugin, "To use Dex ONE transmitters a plugin is needed.\n\nPlease select YES to download and use the plugin which is published by xDrip+ project lead JamOrHam",
+                runOnUiThread(() -> ask(activity, plugin, "To use Dex ONE transmitters a plugin is needed.\n\nPlease select YES to download and use the plugin which is published by xDrip project lead JamOrHam",
                         () -> Loader.getInstance(plugin, ""),
                         () -> UserError.Log.wtf(TAG, "User declined to download plugin")));
                 return true;

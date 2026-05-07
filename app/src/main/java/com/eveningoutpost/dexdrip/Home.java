@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip;
 
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static android.os.Build.VERSION_CODES.N;
 import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.shortTxId;
 import static com.eveningoutpost.dexdrip.models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.models.JoH.quietratelimit;
@@ -364,7 +365,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             }
         }
 
-        if (Build.VERSION.SDK_INT < 17) {
+        if (Build.VERSION.SDK_INT < N) {
             JoH.static_toast_long(gs(R.string.xdrip_will_not_work_below_android_version_42));
             finish();
         }
@@ -622,7 +623,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         PlusSyncService.startSyncService(getApplicationContext(), "HomeOnCreate");
         ParakeetHelper.notifyOnNextCheckin(false);
 
-        if (checkedeula && (!getString(R.string.app_name).equals("xDrip+"))) {
+        if (checkedeula && (!getString(R.string.app_name).equals("xDrip"))) {
             showcasemenu(SHOWCASE_VARIANT);
         }
 
@@ -3309,7 +3310,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                         size1=0;
                         size2=0;
                         title="G5 Firmware Warning";
-                        message="Transmitters containing updated firmware which started shipping around 20th Nov 2016 appear to be currently incompatible with xDrip+\n\nWork will continue to try to resolve this issue but at the time of writing there is not yet a solution.  For the latest updates you can select the Alpha or Nightly update channel.";
+                        message="Transmitters containing updated firmware which started shipping around 20th Nov 2016 appear to be currently incompatible with xDrip\n\nWork will continue to try to resolve this issue but at the time of writing there is not yet a solution.  For the latest updates you can select the Alpha or Nightly update channel.";
                         break;*/
 
                 case SHOWCASE_VARIANT:
