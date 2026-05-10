@@ -1138,6 +1138,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             units_pref = findPreference("units");
             bindPreferenceSummaryToValue(units_pref);
 
+            addPreferencesFromResource(R.xml.pref_language);
+
             addPreferencesFromResource(R.xml.pref_notifications);
             bindPreferenceSummaryToValue(findPreference("bg_alert_profile"));
             bindPreferenceSummaryToValue(findPreference("calibration_notification_sound"));

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceScreen
+        android:key="language_settings_screen"
+        android:title="@string/language">
+        <PreferenceCategory
+            android:title="@string/language"
+            android:key="language_category">
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="force_english"
+                android:summary="@string/using_local_language"
+                android:summaryOn="@string/forcing_alternate_language"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="@string/force_english_text" />
+            <ListPreference
+                android:defaultValue="en"
+                android:entries="@array/LocaleChoices"
+                android:entryValues="@array/LocaleChoicesValues"
+                android:key="forced_language"
+                android:summary="@string/need_alternate_language"
+                android:title="@string/chosse_language" />
+        </PreferenceCategory>
+    </PreferenceScreen>
+</PreferenceScreen>

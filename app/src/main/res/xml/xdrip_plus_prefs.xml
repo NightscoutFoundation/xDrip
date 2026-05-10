@@ -368,22 +368,6 @@
             </PreferenceScreen>
 
             <SwitchPreference
-                android:defaultValue="false"
-                android:key="force_english"
-                android:summary="@string/using_local_language"
-                android:summaryOn="@string/forcing_alternate_language"
-                android:switchTextOff="@string/short_off_text_for_switches"
-                android:switchTextOn="@string/short_on_text_for_switches"
-                android:title="@string/force_english_text" />
-            <ListPreference
-                android:defaultValue="en"
-                android:entries="@array/LocaleChoices"
-                android:entryValues="@array/LocaleChoicesValues"
-                android:key="forced_language"
-                android:summary="@string/need_alternate_language"
-                android:title="@string/chosse_language" />
-
-            <SwitchPreference
                 android:defaultValue="true"
                 android:key="bg_compensate_noise"
                 android:summary="@string/try_to_work_around_noisy_readings"

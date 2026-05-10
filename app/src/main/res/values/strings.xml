@@ -863,6 +863,7 @@
     <string name="using_local_language">Currently using your device\'s local language</string>
     <string name="forcing_alternate_language">Currently forcing use of alternate language</string>
     <string name="need_alternate_language">If you need an alternate language translation within xDrip+</string>
+    <string name="language">Language</string>
     <string name="chosse_language">Choose a specific language</string>
     <string name="widget_range_lines">Widget Range Lines</string>
     <string name="show_range_on_widget">Show a high and low line on the widget.</string>
