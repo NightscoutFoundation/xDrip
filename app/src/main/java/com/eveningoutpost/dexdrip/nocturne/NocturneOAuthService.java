@@ -73,13 +73,29 @@ public class NocturneOAuthService {
 
     /**
      * Returns the configured Nocturne instance base URL with trailing slash.
+     * Upgrades http:// to https:// for non-local hosts since Cloudflare-fronted
+     * servers reject form POSTs whose Origin scheme doesn't match (403).
      */
     public String getBaseUrl() {
         String url = Pref.getString("nocturne_instance_url", "").trim();
+        if (!url.isEmpty() && url.startsWith("http://")) {
+            final String host = url.substring(7).split("[:/]")[0];
+            if (!isLocalHost(host)) {
+                url = "https://" + url.substring(7);
+            }
+        }
         if (!url.isEmpty() && !url.endsWith("/")) {
             url = url + "/";
         }
         return url;
+    }
+
+    private static boolean isLocalHost(final String host) {
+        return host.equals("localhost")
+                || host.equals("127.0.0.1")
+                || host.startsWith("192.168.")
+                || host.startsWith("10.")
+                || host.endsWith(".local");
     }
 
     /**
@@ -304,17 +320,27 @@ public class NocturneOAuthService {
                     .build();
 
             try (Response response = httpClient.newCall(request).execute()) {
-                if (!response.isSuccessful() || response.body() == null) {
+                if (response.body() == null) {
+                    UserError.Log.e(TAG, "refreshAccessToken: HTTP " + response.code() + " (no body)");
+                    return false;
+                }
+
+                final String responseBody = response.body().string();
+
+                if (!response.isSuccessful()) {
                     UserError.Log.e(TAG, "refreshAccessToken: HTTP " + response.code());
-                    // Only clear tokens on definitive rejection (4xx).
-                    // Transient server errors (5xx) should not nuke credentials.
+                    // Only clear tokens on definitive OAuth rejection — the response
+                    // must be a JSON object with an "error" field (e.g. invalid_grant).
+                    // Cloudflare/proxy 403s return plain text and must not nuke credentials.
                     if (response.code() >= 400 && response.code() < 500) {
-                        clearTokens();
+                        if (isOAuthErrorResponse(responseBody)) {
+                            clearTokens();
+                        }
                     }
                     return false;
                 }
 
-                final JSONObject result = new JSONObject(response.body().string());
+                final JSONObject result = new JSONObject(responseBody);
                 storeTokens(
                         result.getString("access_token"),
                         result.getString("refresh_token"),
@@ -435,5 +461,22 @@ public class NocturneOAuthService {
     private void clearAll() {
         PersistentStore.setString(KEY_CLIENT_ID, "");
         clearTokens();
+    }
+
+    /**
+     * Checks whether a response body is a valid OAuth error (JSON with "error" field).
+     * Distinguishes real OAuth rejections (e.g. invalid_grant) from proxy/CDN errors
+     * like Cloudflare's plain-text "Cross-site POST form submissions are forbidden".
+     */
+    private static boolean isOAuthErrorResponse(final String body) {
+        if (body == null || body.isEmpty()) {
+            return false;
+        }
+        try {
+            final JSONObject json = new JSONObject(body);
+            return json.has("error");
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
