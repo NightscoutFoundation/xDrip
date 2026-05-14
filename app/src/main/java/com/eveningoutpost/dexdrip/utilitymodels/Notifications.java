@@ -599,12 +599,7 @@ public class Notifications extends IntentService {
         //final NotificationCompat.Builder b = new NotificationCompat.Builder(mContext); // temporary fix until ONGOING CHANNEL is silent by default on android 8+
         //final Notification.Builder b = new Notification.Builder(mContext); // temporary fix until ONGOING CHANNEL is silent by default on android 8+
         final Notification.Builder b;
-        if (useOngoingChannel() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            b = new Notification.Builder(mContext, NotificationChannels.ONGOING_CHANNEL);
-            b.setSound(null);
-        } else {
-            b = new Notification.Builder(mContext);
-        }
+        b = new Notification.Builder(mContext, NotificationChannels.ONGOING_CHANNEL);
         b.setOngoing(Pref.getBoolean("use_proper_ongoing", true));
         try {
             b.setGroup("xDrip ongoing");
@@ -612,10 +607,10 @@ public class Notifications extends IntentService {
             //
         }
         b.setVisibility(Pref.getBooleanDefaultFalse("public_notifications") ? Notification.VISIBILITY_PUBLIC : Notification.VISIBILITY_PRIVATE);
-        b.setCategory(NotificationCompat.CATEGORY_STATUS);
-        if (Pref.getBooleanDefaultFalse("high_priority_notifications")) {
-            b.setPriority(Notification.PRIORITY_HIGH);
-        }
+        b.setCategory(Notification.CATEGORY_STATUS);
+    //    if (Pref.getBooleanDefaultFalse("high_priority_notifications")) {
+    //        b.setPriority(Notification.PRIORITY_HIGH);
+    //    }
         final BestGlucose.DisplayGlucose dg = (use_best_glucose) ? BestGlucose.getDisplayGlucose() : null;
         final boolean use_color_in_notification = false; // could be preference option
         final SpannableString titleString = new SpannableString(lastReading == null ? "BG Reading Unavailable" : (dg != null) ? (dg.spannableString(dg.unitized + " " + dg.delta_arrow,use_color_in_notification))

@@ -301,4 +301,22 @@ public class NotificationChannels {
         }
     }
 
+    public static void createOngoingChannel() {
+        NotificationManager nm = getNotifManager();
+        String id = ONGOING_CHANNEL; // We use the stable ID
+
+        // Check if the channel already exists to avoid redundant calls
+        if (nm.getNotificationChannel(id) == null) {
+            NotificationChannel channel = new NotificationChannel(
+                    id,
+                    "xDrip Ongoing Service", // The Title
+                    NotificationManager.IMPORTANCE_LOW);
+
+            channel.setSound(null, null); // Ongoing service should usually be silent
+            channel.setShowBadge(false);
+
+            nm.createNotificationChannel(channel);
+        }
+    }
+
 }
